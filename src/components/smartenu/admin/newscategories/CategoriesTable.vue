@@ -101,8 +101,8 @@
         </Dropdown>
       </div>
       <template #footer>
-        <Button v-bind:label="$t('common.save')" icon="pi pi-check" class="p-button-text" v-on:click="addCategory"/>
-        <Button v-bind:label="$t('common.cancel')" icon="pi pi-times" class="p-button-text" @click="hideDialog"/>
+        <Button v-bind:label="$t('common.save')" icon="pi pi-check" class="p-button p-component p-button-success p-mr-2" v-on:click="addCategory"/>
+        <Button v-bind:label="$t('common.cancel')" icon="pi pi-times" class="p-button p-component p-button-danger" @click="hideDialog"/>
       </template>
     </Dialog>
     <Dialog v-model:visible="deleteVisible" :closable="false" header="" :style="{width: '450px'}" :modal="true">
@@ -151,7 +151,6 @@ export default {
       axios.get(smartEnuApi + '/allCategories', {headers:getHeader()}).then((response) => {
         this.categories = response.data
         this.categories = this.categories.reverse()
-        console.log(response)
         this.loading = false
       }).catch((error) => {
         this.$toast.add({
@@ -178,9 +177,6 @@ export default {
     },
     addCategory() {
       this.submitted = true
-
-      console.log(this.category)
-
       axios.post(smartEnuApi + '/categories',
           this.category, {headers:getHeader()})
       .then((response) => {
@@ -207,7 +203,6 @@ export default {
     getParentName(id) {
       if (id) {
         let category = this.categories.find(x => x.id === id)
-        console.log(category)
         return this.$i18n.locale === 'kz' ? category.nameKz : this.$i18n.locale === 'ru' ? category.nameRu : category.nameEn
       } else {
         return null
@@ -232,7 +227,6 @@ export default {
       this.editVisible = true
       this.submitted = false;
       let category = this.categories.find(x => x.id === id)
-      console.log("FIRST CATEGORY", category)
       this.category.id = category.id
       this.category.nameKz = category.nameKz
       this.category.nameRu = category.nameRu
@@ -253,7 +247,6 @@ export default {
         this.roles.isPublisher = this.findRole(this.userRoles, 'PUBLISHER')
         this.roles.isStudent = this.findRole(this.userRoles, 'STUDENT')
         this.roles.isModer = this.findRole(this.userRoles, 'MODERATOR')
-        console.log(this.userRoles)
       }).catch((error) => {
         this.$toast.add({
           severity: 'error',
@@ -264,7 +257,6 @@ export default {
     },
     findRole(roles, code) {
       for (let i = 0; i < roles.length; i++) {
-        console.log(roles[i])
         if(roles[i].roleCode === code) {
           return true
         }

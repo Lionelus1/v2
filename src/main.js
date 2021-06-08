@@ -3,6 +3,7 @@ import { createApp } from 'vue';
 import { reactive } from 'vue';
 import router from './router';
 import App from './App.vue';
+import PrimeVue from 'primevue/config';
 import AutoComplete from 'primevue/autocomplete';
 import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
@@ -72,6 +73,7 @@ import TreeTable from 'primevue/treetable';
 import TriStateCheckbox from 'primevue/tristatecheckbox';
 import Editor from 'primevue/editor';
 import VueClipboard from 'vue3-clipboard'
+import TreeSelect from 'primevue/treeselect';
 
 import CodeHighlight from './AppCodeHighlight';
 import i18n from './locales/index'
@@ -98,8 +100,11 @@ router.beforeEach(function(to, from, next) {
 const app = createApp(App);
 const emitter = mitt();
 
-app.config.globalProperties.$appState = reactive({ inputStyle: 'outlined' });
-app.config.globalProperties.$primevue = reactive({ ripple: true });
+app.use(PrimeVue, {
+    ripple: true,
+    inputStyle: 'outlined'
+});
+
 app.config.globalProperties.emitter = emitter;
 
 
@@ -182,5 +187,6 @@ app.component('TreeTable', TreeTable);
 app.component('TriStateCheckbox', TriStateCheckbox);
 app.component('Editor', Editor);
 app.component("VueElementLoading", VueElementLoading);
+app.component('TreeSelect', TreeSelect);
 
 app.mount('#app');

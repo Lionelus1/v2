@@ -76,11 +76,27 @@
 
     <Dialog v-model:visible="editVisible" :style="{width: '1000px'}" :header="$t('smartenu.createOrEditNews')" :modal="true" class="p-fluid">
         <div class="card">
-            <label for="cat-tree">{{ $t('smartenu.selectCategories') }}</label>
-            <Tree :value="catTree.root" selectionMode="checkbox" v-model:selectionKeys="selectedCatTree" style="margin-bottom: 1.5rem" />
+            <!-- <label for="cat-tree">{{ $t('smartenu.selectCategories') }}</label> -->
+            <!-- <Tree :value="catTree.root" selectionMode="checkbox" v-model:selectionKeys="selectedCatTree" style="margin-bottom: 1.5rem" /> -->
+            <TreeSelect v-model="selectedCatTree" :options="catTree.root" selectionMode="checkbox" :placeholder="$t('smartenu.selectCategories')" class="p-mb-3" />
+            <div class="p-fluid p-formgrid p-grid">
+                <div class="p-field p-col">
+                    <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadImage1($event)" :auto="true" v-bind:chooseLabel="$t('smartenu.chooseImage1')"></FileUpload>
+                    <div v-if="newsData.image1" class="p-mt-3">
+                        <img :src="newsData.image1" style="width: 50%; height: 50%;" />
+                    </div>
+                </div>
+                <!-- <div class="p-field p-col">
+                    <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadImage2($event)" :auto="true" v-bind:chooseLabel="$t('smartenu.chooseImage2')"></FileUpload>
+                    <div v-if="newsData.image2" class="p-mt-3">
+                        <img :src="newsData.image2" style="width: 50%; height: 50%;" />
+                    </div>
+                </div> -->
+            </div>
+
             <TabView>
-                <TabPanel header="Header I">
-                    <div class="p-field" style="margin-bottom: 1.5rem">
+                <TabPanel header="Қазақша">
+                    <div class="p-field p-mt-3" style="margin-bottom: 1.5rem">
                         <span class="p-float-label">
                             <InputText id="kz-title" v-model="newsData.titleKz" rows="3" />
                             <label for="kz-title">{{ $t('common.nameInQazaq') }}</label>
@@ -91,8 +107,8 @@
                         <Editor id="kz-content" v-model="newsData.contentKz" editorStyle="height: 320px" />
                     </div>
                 </TabPanel>
-                <TabPanel header="Header II">
-                    <div class="p-field" style="margin-bottom: 1.5rem">
+                <TabPanel header="Русский">
+                    <div class="p-field p-mt-3" style="margin-bottom: 1.5rem">
                         <span class="p-float-label">
                             <InputText id="ru-title" v-model="newsData.titleRu" rows="3" />
                             <label for="ru-title">{{ $t('common.nameInRussian') }}</label>
@@ -103,8 +119,8 @@
                         <Editor id="ru-content" v-model="newsData.contentRu" editorStyle="height: 320px" />
                     </div>
                 </TabPanel>
-                <TabPanel header="Header III">
-                    <div class="p-field" style="margin-bottom: 1.5rem">
+                <TabPanel header="English">
+                    <div class="p-field p-mt-3" style="margin-bottom: 1.5rem">
                         <span class="p-float-label">
                             <InputText id="en-title" v-model="newsData.titleEn" rows="3" />
                             <label for="en-title">{{ $t('common.nameInEnglish') }}</label>
@@ -117,31 +133,10 @@
                     </div>
                 </TabPanel>
             </TabView>
-
-            <div class="p-field">
-                <div class="p-grid">
-                    <div class="p-col-12 p-md-3">
-                        <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadImage1($event)" :auto="true" v-bind:chooseLabel="$t('smartenu.chooseImage1')"></FileUpload>
-                    </div>
-                </div>
-                <div v-if="newsData.image1">
-                    <img :src="newsData.image1" style="width: 50%; height: 50%;" />
-                </div>
-            </div>
-            <div class="p-field">
-                <div class="p-grid">
-                    <div class="p-col-12 p-md-3">
-                        <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadImage2($event)" :auto="true" v-bind:chooseLabel="$t('smartenu.chooseImage2')"></FileUpload>
-                    </div>
-                </div>
-                <div v-if="newsData.image2">
-                    <img :src="newsData.image2" style="width: 50%; height: 50%;" />
-                </div>
-            </div>
         </div>
         <template #footer>
-            <Button v-bind:label="$t('common.save')" icon="pi pi-check" class="p-button-text" v-on:click="addNews" />
-            <Button v-bind:label="$t('common.cancel')" icon="pi pi-times" class="p-button-text" @click="hideDialog" />
+            <Button v-bind:label="$t('common.save')" icon="pi pi-check" class="p-button p-component p-button-success p-mr-2" v-on:click="addNews" />
+            <Button v-bind:label="$t('common.cancel')" icon="pi pi-times" class="p-button p-component p-button-danger" @click="hideDialog" />
         </template>
     </Dialog>
 
@@ -149,19 +144,19 @@
 
     <Dialog v-model:visible="rejectVisible" :style="{width: '600px'}" :header="$t('smartenu.createOrEditNews')" :modal="true" class="p-fluid">
         <div class="card">
-            <div class="p-field" style="margin-bottom: 1.5rem">
+            <div class="p-field p-mt-3" style="margin-bottom: 1.5rem">
                 <span class="p-float-label">
                     <InputText id="kz-title" v-model="selectedNews.history.rejectReasonKz" rows="3" />
-                    <label for="kz-title">{{ $t('common.nameInQazaq') }}</label>
+                    <label for="kz-title" >{{ $t('common.nameInQazaq') }}</label>
                 </span>
             </div>
-            <div class="p-field" style="margin-bottom: 1.5rem">
+            <div class="p-field p-mt-3" style="margin-bottom: 1.5rem">
                 <span class="p-float-label">
                     <InputText id="ru-title" v-model="selectedNews.history.rejectReasonRu" rows="3" />
                     <label for="ru-title">{{ $t('common.nameInRussian') }}</label>
                 </span>
             </div>
-            <div class="p-field">
+            <div class="p-field p-mt-3">
                 <span class="p-float-label">
                     <InputText id="en-title" v-model="selectedNews.history.rejectReasonEn" rows="3" />
                     <label for="en-title">{{ $t('common.nameInEnglish') }}</label>
@@ -186,8 +181,8 @@
             </span>
         </div>
         <template #footer>
-            <Button :label="$t('common.yes')" icon="pi pi-check" class="p-button-text" @click="deleteNews(newsData.id)" />
-            <Button :label="$t('common.no')" icon="pi pi-times" class="p-button-text" @click="deleteVisible = false" />
+            <Button :label="$t('common.yes')" icon="pi pi-check" class="p-button p-component p-button-success p-mr-2" @click="deleteNews(newsData.id)" />
+            <Button :label="$t('common.no')" icon="pi pi-times" class="p-button p-component p-button-danger p-mr-2" @click="deleteVisible = false" />
         </template>
     </Dialog>
 
@@ -222,7 +217,7 @@
             </template>
         </Card>
         <template #footer>
-            <Button v-bind:label="$t('common.close')" icon="pi pi-times" class="p-button-text" @click="newsViewVisible = false" />
+            <Button v-bind:label="$t('common.close')" icon="pi pi-times" class="p-button p-component p-button-primary" @click="newsViewVisible = false" />
         </template>
     </Dialog>
 </div>
@@ -230,6 +225,8 @@
 
 <script>
 import axios from "axios";
+import * as imageResizeCompress from 'image-resize-compress'; // ES6
+
 import {
     getHeader,
     header,
@@ -281,13 +278,11 @@ export default {
          */
         uploadImage1(event) {
             const file = event.files[0]
-            try {
-                this.convertBase64(file).then(r => {
-                    this.newsData.image1 = r;
-                })
-            } catch (err) {
-                console.log(err)
-            }
+            imageResizeCompress.fromBlob(file, 90, 720, 'auto', 'jpeg').then(res => {
+                imageResizeCompress.blobToURL(res).then(resp => {
+                    this.newsData.image1 = resp
+                });  
+            })
         },
 
         /**
@@ -295,13 +290,11 @@ export default {
          */
         uploadImage2(event) {
             const file = event.files[0]
-            try {
-                this.convertBase64(file).then(r => {
-                    this.newsData.image2 = r;
-                })
-            } catch (err) {
-                console.log(err)
-            }
+            imageResizeCompress.fromBlob(file, 90, 720, 'auto', 'jpeg').then(res => {
+                imageResizeCompress.blobToURL(res).then(resp => {
+                    this.newsData.image2 = resp
+                });  
+            })
         },
 
         /**
@@ -349,7 +342,6 @@ export default {
                 this.allNews = response.data
                 this.allNews = this.allNews.reverse()
                 this.loading = false
-                console.log(this.allNews)
             }).catch((error) => {
                 this.$toast.add({
                     severity: 'error',
@@ -386,7 +378,6 @@ export default {
          *  ADD NEWS
          */
         addNews() {
-            console.log(this.newsData.contentCategoryRelations)
             this.submitted = true
             for (let key in this.catTreeElementsList) {
                 for (let ixd in this.selectedCatTree) {
@@ -401,7 +392,6 @@ export default {
                     }
                 }
             }
-            console.log("DAATTAAA", this.newsData)
             axios.post(smartEnuApi + '/addNews', this.newsData, {
                 headers: getHeader()
             }).then((response) => {
@@ -627,7 +617,6 @@ export default {
                 this.roles.isPublisher = this.findRole(this.userRoles, 'PUBLISHER')
                 this.roles.isStudent = this.findRole(this.userRoles, 'STUDENT')
                 this.roles.isModer = this.findRole(this.userRoles, 'MODERATOR')
-                console.log(this.userRoles)
             }).catch((error) => {
                 this.$toast.add({
                     severity: 'error',
@@ -638,7 +627,6 @@ export default {
         },
         findRole(roles, code) {
             for (let i = 0; i < roles.length; i++) {
-                console.log(roles[i])
                 if (roles[i].roleCode === code) {
                     return true
                 }

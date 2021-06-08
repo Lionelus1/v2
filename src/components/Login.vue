@@ -13,7 +13,7 @@
                 </div>
                 <div class="p-field p-col-12">
                     <span class="p-float-label">
-                        <InputText id="inputpassword" type="password" v-model="loginData.password" />
+                        <InputText id="inputpassword" type="password" v-model="loginData.password" @keyup.enter="login" />
                         <label for="inputpassword">{{$t('common.enterPassword')}}</label>
                     </span>
                 </div>
