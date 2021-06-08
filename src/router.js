@@ -40,22 +40,11 @@ const routes = [
     },
     {
         path: '/',
-        redirect:'/smartenu/admin/newscategories/cattable',
+        redirect:'/smartenu/admin/news/newstable',
         name: '/',
         component: Full,
         children:[
 
-
-            {
-                path: '/calendar',
-                name: '/calendar',
-                component: () => import('./pages/CalendarDemo.vue'),
-            },
-            {
-                path: '/empty',
-                name: 'empty',
-                component: () => import('./components/EmptyPage.vue'),
-            },
 
             // Менің қосқандарым
             {
@@ -63,38 +52,45 @@ const routes = [
                 path: '/documents/doctemplate:',
                 name: '/documents/doctemplate',
                 component: load('documents/DocTemplate'),
+                beforeEnter: ifAuthenticated,
             },
             {
 
                 path: '/documents/contracts',
                 name: '/documents/contracts',
                 component: load('documents/Contracts'),
+                beforeEnter: ifAuthenticated,
             },
             {
 
                 path: '/documents/contract/:id',
                 name: '/documents/contract',
                 component: load('documents/Contract'),
+                beforeEnter: ifAuthenticated,
             },
             {
                 path: '/contragent/banks',
                 name: '/contragent/banks',
                 component: load('contragent/Banks'),
+                beforeEnter: ifAuthenticated,
             },
             {
                 path: '/contragent/organizations',
                 name: '/contragent/organizations',
                 component: load('contragent/Organizations'),
+                beforeEnter: ifAuthenticated,
             },
             {
                 path: '/contragent/persons/:type',
                 name: '/contragent/persons',
                 component: load('contragent/Persons'),
+                beforeEnter: ifAuthenticated,
             },
             {
                 path: '/hdfs/hdfsmain',
                 name: '/hdfs/hdfsmain',
-                component: () => import('./components/hdfs/HdfsMain.vue')
+                component: () => import('./components/hdfs/HdfsMain.vue'),
+                beforeEnter: ifAuthenticated,
             },
 
             {

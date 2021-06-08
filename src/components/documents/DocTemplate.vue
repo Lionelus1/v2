@@ -1,14 +1,14 @@
-  <template>
+<template>
   <div>
     <div class="content-section introduction">
-      <div class="feature-intro">
-        <h1>{{$t('doctemplate.title')}}</h1>
+      <div class="feature-intro p-ml-3">
+        <h3>{{$t('doctemplate.title')}}</h3>
       </div>
     </div>
     <div class="content-section implementation">
-      <div class="card">
-        <TabView ref="templateView" v-model:activeIndex="active">
-          <TabPanel v-bind:header="$t('doctemplate.templates')">
+      <div class="card p-p-0">
+        <TabView ref="templateView" v-model:activeIndex="active" class="p-p-0">
+          <TabPanel v-bind:header="$t('doctemplate.templates')" class="p-p-0">
             <template #left>
             </template>
             <!-- Жаңа қалта құру диалогы -->
@@ -20,6 +20,8 @@
                   <InputText id="foldernamerus" v-model="createdFolder.nameRus"  type="text"  />
                   <label for="foldernameen">{{$t('common.nameInEnglish')}}</label>
                   <InputText id="foldernameen" v-model="createdFolder.nameEn"  type="text" />
+                  <label for="foldercode">{{$t('common.code')}}</label>
+                  <InputText id="foldercode" v-model="createdFolder.code"  type="text" />
                   <label for="foldergroup">{{$t('common.userGroup')}}</label>
                   <MultiSelect v-model="createdFolder.groups" :options="groupsData" optionLabel="name" v-bind:placeholder="$t('common.selectGroup')" :filter="true" display="chip"/>
               </div>
@@ -32,8 +34,10 @@
             <Dialog :modal="true"  v-bind:header="$t('doctemplate.newTemplate')" v-model:visible="dialogOpenState.addTemplate" :style="{width: '50vw'}">
               <div class="p-fluid">
                 <div class="p-field">
-                    <label for="dtdescription">{{$t('doctemplate.description')}}</label>
-                    <InputText id="dtdescription" class="p-mb-2" v-bind:placeholder="$t('common.description')" v-model="createdTemplate.description" type="text" />
+                    <label for="dtdescriptionkz">{{$t('doctemplate.description')}} ({{$t('common.language.kz')}})</label>
+                    <InputText id="dtdescriptionkz" class="p-mb-2" v-bind:placeholder="$t('common.description')" v-model="createdTemplate.descriptionKaz" type="text" />
+                    <label for="dtdescriptionru">{{$t('doctemplate.description')}}  ({{$t('common.language.ru')}})</label>
+                    <InputText id="dtdescriptionru" class="p-mb-2" v-bind:placeholder="$t('common.description')" v-model="createdTemplate.descriptionRus" type="text" />
                 </div>
               </div>
               <template #footer>
@@ -52,6 +56,7 @@
                 </template>
               </Column>
               <Column field="typeText" v-bind:header="$t('common.type')" headerClass="sm-invisible" bodyClass="sm-invisible"></Column>
+              <Column field="code" v-bind:header="$t('common.code')" headerClass="sm-invisible" bodyClass="sm-invisible"></Column>
               <Column field="createdDate" v-bind:header="$t('common.created')"  headerClass="sm-invisible" bodyClass="sm-invisible"></Column>
               <Column field="state" v-bind:header="$t('common.state')" headerClass="sm-invisible" bodyClass="sm-invisible">
                 <template #body="slotProps">
@@ -92,7 +97,6 @@
                   <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
                   <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
                   <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
-                  <button class="ql-table" v-tooltip.bottom="'Table'"></button>
                 </span>
                 <span class="ql-formats">
                   <button class="ql-list" value="ordered"></button>
@@ -113,7 +117,6 @@
                   <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
                   <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
                   <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
-                  <button class="ql-table" v-tooltip.bottom="'Table'"></button>
                 </span>
                 <span class="ql-formats">
                   <button class="ql-list" value="ordered"></button>
@@ -150,12 +153,12 @@
       </div>
 
     </div>
-    <div>{{selectedNode}}</div>
+    <div></div>
   </div>
 </template>
 
 <script>
-  import {apiDomain} from "@/config/config";
+  import {templateApi} from "@/config/config";
   import axios from 'axios';
   import RichEditor from "./editor/RichEditor.vue";
   import UserSearch from "./usersearch/UserSearch.vue";
@@ -200,7 +203,8 @@
           creatorId: 1,
           mainTextKaz: '',
           mainTextRus: '',
-          description: '',
+          descriptionKaz: '',
+          descriptionRus: '',
           folderID: -1,
         },
       }
@@ -233,7 +237,7 @@
           entities: this.selectedUsers,
           comment: this.dialogNote,
         }
-        axios.post(apiDomain+url, req).then(()=>{
+        axios.post(templateApi+url, req).then(()=>{
           this.selectedNode.data.stateID = this.DocState.INAPPROVAL;
           this.selectedNode.data.state =  this.$t('common.states.inapproval');
           this.selectedNode.data.stateEn =  "inapproval";
@@ -258,15 +262,15 @@
         if (this.templateLanguage != "kz") {
           req.lang = "rus"
         }
-        axios.post(apiDomain+url, req)
+        axios.post(templateApi+url, req)
         .then(response=>{
           let pdf = response.data;
-          var obj = document.createElement('object');
-          obj.style.width = '100%';
-          obj.style.height = '842pt';
-          obj.type = 'application/pdf';
-          obj.data = 'data:application/pdf;base64,' + pdf;
-          document.body.appendChild(obj);
+          // var obj = document.createElement('object');
+          // obj.style.width = '100%';
+          // obj.style.height = '842pt';
+          // obj.type = 'application/pdf';
+          // obj.data = 'data:application/pdf;base64,' + pdf;
+          // document.body.appendChild(obj);
           // Insert a link that allows the user to download the PDF file
           var link = document.createElement('a');
           link.innerHTML = 'Download PDF file';
@@ -301,7 +305,7 @@
         } else {
           req.textRus = "";
         }
-        axios.post(apiDomain+url, req)
+        axios.post(templateApi+url, req)
         .then(()=>{
           this.showMessage('success', this.$t('doctemplate.updateTemplate'), this.$t('doctemplate.message.succesUpdated'));
 
@@ -312,7 +316,11 @@
 
       },
       createNewDocTemplate() {
-        if (this.createdFolder == null || this.createdTemplate.description.length<1) {
+        if (this.createdFolder == null || this.createdTemplate.descriptionKaz.length<1) {
+          this.showMessage('error',this.$t('doctemplate.newTemplate'), this.$t('doctemplate.message.descriptionNotFilled'));
+          return
+        }
+          if (this.createdFolder == null || this.createdTemplate.descriptionRus.length<1) {
           this.showMessage('error',this.$t('doctemplate.newTemplate'), this.$t('doctemplate.message.descriptionNotFilled'));
           return
         }
@@ -322,7 +330,7 @@
         }
         this.createdTemplate.folderID = this.selectedNode.key;
         let url = "/doctemplate/create";
-        axios.post(apiDomain+url, this.createdTemplate)
+        axios.post(templateApi+url, this.createdTemplate)
         .then(response=>{
           this.templates.forEach(folder=>{
             if (folder.key == response.data.folderID) {
@@ -333,7 +341,8 @@
                 creatorId: 1,
                 mainTextKaz: '',
                 mainTextRus: '',
-                description: '',
+                descriptionKaz: '',
+                descriptionRus: '',
                 folderID: -1,
               }
               this.showMessage('success', this.$t('doctemplate.newTemplate'), this.$t('doctemplate.message.succesFilled'));
@@ -361,8 +370,12 @@
           this.showMessage('error',this.$t('common.message.catCreateError'),this.$t('common.message.engNameNotfilled'));
           return
         }
+        if (this.createdFolder.code == null || this.createdFolder.code == "") {
+          this.showMessage('error',this.$t('common.message.catCreateError'),this.$t('common.message.codeNotFilled'));
+          return
+        }
         let url = "/doctemplate/createFolder";
-        axios.post(apiDomain+url, this.createdFolder)
+        axios.post(templateApi+url, this.createdFolder)
         .then(response=>{
 
           let node = new Object();
@@ -373,6 +386,7 @@
             nodeData.typeText= this.$t('common.catalog');
             nodeData.createdDate = response.data.createDate;
             nodeData.updatedDate = response.data.updateDate;
+            nodeData.code = response.data.code;
             nodeData.stateEn = "";
           node.data = nodeData;
           this.templates.push(node)
@@ -409,7 +423,7 @@
           childData.stateEn =  node.History[0].stateEn;
 
         }
-        childData.name=node.description;
+        childData.name= this.$i18n.locale == "ru" ? node.descriptionRus : node.descriptionKaz;
         childData.createdDate = node.createDate;
         childData.mainTextKaz = node.mainTextKaz
         childData.mainTextRus = node.mainTextRus
@@ -421,7 +435,7 @@
       },
       initApiCall(){
         let url = "/doctemplates?groupID=1";
-        axios.get(apiDomain+url)
+        axios.get(templateApi+url)
         .then(res=>{
           let treeData = [];
           res.data.forEach(el => {
@@ -433,6 +447,7 @@
             nodeData.typeText= this.$t('common.catalog');
             nodeData.createdDate = el.createDate;
             nodeData.updatedDate = el.updateDate;
+            nodeData.code = el.code;
             let nodeDataChildren = [];
 
             if(el.DocTemplates){

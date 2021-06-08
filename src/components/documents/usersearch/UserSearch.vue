@@ -17,11 +17,12 @@
 					<p v-if="searchInProgres">{{$t('common.loading')}}...</p>
 					<Listbox v-else-if="(foundEntities != null)" v-model="selectedEntity" :options="foundEntities" listStyle="max-height:250px" @change="addItemMouseExt($event)">
 						<template #option="slotProps">
-							<div class="user-item">
-								<div class="image-container">
-									<img v-if="slotProps.option.photo != null" :src="'data:image/jpeg;base64,' + slotProps.option.photo "/>
+							<div class="user-item p-grid">
+								<div class="image-container p-lg-2  p-md-3 p-sm-12">
+									<img v-if="slotProps.option.photo != null && slotProps.option.photo !=''" :src="'data:image/jpeg;base64,' + slotProps.option.photo "/>
+                                    <img v-if="!(slotProps.option.photo != null && slotProps.option.photo !='')" src="assets/layout/images/default-user-image.png"/>
 								</div>
-								<div class="user-list-detail">
+								<div class="user-list-detail p-lg-10  p-md-9 p-sm-12">
 									<h5 class="p-mb-2">{{slotProps.option.name}}</h5>
 									<span class="product-category">{{slotProps.option.position}}</span>
 								</div>

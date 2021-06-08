@@ -1,95 +1,148 @@
 <template>
 	<div class="ontent-section">
-		<h4>{{$t('contracts.contract')}}</h4>
-		<TabView>
-			<TabPanel :header="$t('common.params')">
+		<h4 class="p-ml-3">{{$t('contracts.contract')}}</h4>
 
+			<Menubar :model="menu" :key="active" style="height:36px;margin-top:-7px;margin-left:-14px;"></Menubar>
+		<TabView @TabChange="tabChanged" v-model:activeIndex="activeTab">
+			<TabPanel :header="$t('common.params')">
 				<div class="p-grid">
-					<div class="p-col-8">
+					<div class="p-lg-8  p-md-12 p-sm-12">
 						<h6>{{$t('common.main').toUpperCase()}}</h6>
 						<div v-if="contract != null && contract.sourceType === 0" class="p-fluid">
 							<div v-for="param in contract.params" :key="param.id" class="p-field p-grid">
-									<label :for="param.name + param.id" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">{{ getParamDesciption(param, contract.lang)}}</label>
-									<div class="p-col-12 p-md-10">
-											<UserSearch v-if="param.name=='student'" v-model="param.value" :userType="1"></UserSearch>
-											<DatePicker v-else-if="param.name=='period'" v-model="param.value" is-range>
-											  <template v-slot="{ inputValue, inputEvents }">
-													<div class="flex justify-center items-center">
-														<input
-															:value="inputValue.start"
-															v-on="inputEvents.start"
-															class="border px-2 py-1 w-32 rounded focus:outline-none focus:border-indigo-300"
-														/>
-														<svg
-															class="w-4 h-4 mx-2"
-															fill="none"
-															viewBox="0 0 24 24"
-															stroke="currentColor"
-														>
-															<path
-																stroke-linecap="round"
-																stroke-linejoin="round"
-																stroke-width="2"
-																d="M14 5l7 7m0 0l-7 7m7-7H3"
-															/>
-														</svg>
-														<input
-															:value="inputValue.end"
-															v-on="inputEvents.end"
-															class="border px-2 py-1 w-32 rounded focus:outline-none focus:border-indigo-300"
-														/>
-													</div>
-												</template>
-											</DatePicker>
-											<InputText v-else :id="param.name + param.id" type="text" />
+									<label v-if="param.name =='contragent' || param.name=='ourside'" :for="param.name + param.id" class="p-col-12 p-mb-12 p-md-12 p-mb-md-0 p-text-uppercase">{{$t('doctemplate.editor.'+param.name)}}</label>
+									<label v-else-if="param.name !=='text'" :for="param.name + param.id" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">{{$t('doctemplate.editor.'+param.name)}}</label>
+									<label v-else :for="param.name + param.id" class="p-col-12 p-mb-2 p-md-2 p-mb-md-0">{{param.description}}</label>
 
+									<div v-if="param.name=='contragent' || param.name=='ourside'" class="p-col-12 p-md-12">
+										<ContragentSelect v-model="param.value"></ContragentSelect>
+									</div>
+									<div v-else class="p-col-12 p-md-10">
+										<UserSearch v-if="param.name=='student'" v-model="param.value" :max="1" :userType="1"></UserSearch>
+										<DatePicker v-else-if="param.name=='period'" v-model="param.value" is-range>
+										  <template v-slot="{ inputValue, inputEvents }">
+												<div class="flex justify-center items-center">
+													<input :value="inputValue.start" v-on="inputEvents.start" class="border px-2 py-1 w-32 rounded focus:outline-none focus:border-indigo-300"/>
+													<svg class="w-4 h-4 mx-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+														<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+													</svg>
+													<input :value="inputValue.end" v-on="inputEvents.end" class="border px-2 py-1 w-32 rounded focus:outline-none focus:border-indigo-300"/>
+												</div>
+											</template>
+										</DatePicker>
+										<InputText v-model="contract.number" v-else-if="param.name === 'number'" :id="param.name + param.id" type="text" :readonly="(param.name == 'number' || param.name == 'date')" :placeholder="((param.name == 'number' || param.name == 'date') ? $t('contracts.autogenerate') : '')"/>
+										<InputText v-model="param.value" v-else :id="param.name + param.id" type="text" :readonly="(param.name == 'number' || param.name == 'date')" :placeholder="((param.name == 'number' || param.name == 'date') ? $t('contracts.autogenerate') : '')"/>
 									</div>
 							</div>
-
-						</div>
-
-
-					</div>
-					<div class="p-col-4">
-						<div v-if="contract != null && contract.sourceType === 0" class="p-fluid">
-							<embed style="min-height:300px" src="data:application/pdf;base64,JVBERi0xLjEKJcKlwrHDqwoKMSAwIG9iagogIDw8IC9UeXBlIC9DYXRhbG9nCiAgICAgL1BhZ2VzIDIgMCBSCiAgPj4KZW5kb2JqCgoyIDAgb2JqCiAgPDwgL1R5cGUgL1BhZ2VzCiAgICAgL0tpZHMgWzMgMCBSXQogICAgIC9Db3VudCAxCiAgICAgL01lZGlhQm94IFswIDAgMzAwIDE0NF0KICA+PgplbmRvYmoKCjMgMCBvYmoKICA8PCAgL1R5cGUgL1BhZ2UKICAgICAgL1BhcmVudCAyIDAgUgogICAgICAvUmVzb3VyY2VzCiAgICAgICA8PCAvRm9udAogICAgICAgICAgIDw8IC9GMQogICAgICAgICAgICAgICA8PCAvVHlwZSAvRm9udAogICAgICAgICAgICAgICAgICAvU3VidHlwZSAvVHlwZTEKICAgICAgICAgICAgICAgICAgL0Jhc2VGb250IC9UaW1lcy1Sb21hbgogICAgICAgICAgICAgICA+PgogICAgICAgICAgID4+CiAgICAgICA+PgogICAgICAvQ29udGVudHMgNCAwIFIKICA+PgplbmRvYmoKCjQgMCBvYmoKICA8PCAvTGVuZ3RoIDU1ID4+CnN0cmVhbQogIEJUCiAgICAvRjEgMTggVGYKICAgIDAgMCBUZAogICAgKEhlbGxvIFdvcmxkKSBUagogIEVUCmVuZHN0cmVhbQplbmRvYmoKCnhyZWYKMCA1CjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAwMDAxOCAwMDAwMCBuIAowMDAwMDAwMDc3IDAwMDAwIG4gCjAwMDAwMDAxNzggMDAwMDAgbiAKMDAwMDAwMDQ1NyAwMDAwMCBuIAp0cmFpbGVyCiAgPDwgIC9Sb290IDEgMCBSCiAgICAgIC9TaXplIDUKICA+PgpzdGFydHhyZWYKNTY1CiUlRU9GCg==#toolbar=0&navpanes=0&scrollbar=0"    type="application/pdf"
-								frameBorder="0"
-								scrolling="auto"
-								height="100%"
-								width="100%"
-								/>
 						</div>
 					</div>
-				</div> I
-			</TabPanel>
-
-			<TabPanel header="Header III">
-				Content III
+					<div class="p-lg-4 p-md-12 p-sm-12">
+					</div>
+				</div>
 			</TabPanel>
 		</TabView>
-
-
-	Hello {{$route.params.id}}
 	</div>
 </template>
 <script>
-import {apiDomain} from "@/config/config";
+import {templateApi} from "@/config/config";
 import axios from 'axios';
 
 import UserSearch from "./usersearch/UserSearch.vue";
+import ContragentSelect from '../contragent/ContragentSelect.vue';
 import { DatePicker } from 'v-calendar';
+import Enum from "@/enum/docstates/index"
+import { incline, inclineFirstname, inclineLastname, inclineMiddlename } from 'lvovich';
 export default {
 
 	name: "Contract",
-	components: {  UserSearch, DatePicker},
+	components: {  UserSearch, DatePicker, ContragentSelect},
 	data() {
 		return {
 			contract: null,
 			students: null,
+			organization: null,
+			activeTab: 0,
+			readonly: true,
+			ContragentType : Enum.ContragentType,
+			tabs: {
+				Parameters: 0,
+				Preview: 1,
+			},
+			sourceType: {
+				template: 0,
+				uploadedDoc: 1,
+			},
+
 			range: {
       	start: new Date(2020, 0, 1),
       	end: new Date(2020, 0, 5)
     	},
+			language: {
+				kz: 0,
+				ru: 1,
+				en: 2
+			},
+			menu: [
+        {
+          label:this.$t('common.save'),
+          icon:'pi pi-fw pi-save',
+          disabled: this.readonly,
+					command: () => {
+						this.saveContract();
+          	}
+        },
+		{
+          label:this.$t('common.download'),
+          icon:'pi pi-fw pi-download',
+          disabled: this.readonly,
+					command: () => {
+						this.downloadContract();
+          	}
+        },
+        {
+          label: this.$t('common.registration'),
+          icon:'pi pi-fw pi-tag',
+		    	disabled: this.readonly,
+					command: () => {
+						this.registrateContract();
+			}
+        },
+				{
+					label: this.$t('common.send'),
+					icon: 'pi pi-send',
+					items: [
+						{
+							label: this.$t('common.toapprove'),
+							icon: 'pi pi-check',
+							visible: () => this.contract && this.contract.sourceType === this.sourceType.uploadedDoc,
+						},
+						{
+							label: this.$t('contracts.signing'),
+							icon: 'pi pi-user-edit',
+							visible: () => this.contract && this.contract.sourceType === this.sourceType.template,
+						}
+					]
+				}
+
+      ]
+		}
+
+	},
+	computed: {
+		previewText() {
+			if (!this.contract)
+				return "";
+		var result = this.contract.text;
+		var ourside = null
+
+		var contragents = null
+		this.contract.params.forEach(param => {
+			if (param.name == "ourside")
+
+			result = result.replace("{" + param.name + (param.description != null && param.description != "" ? ":" + param.description + "}": "}"), this.paramToString(param))
+		});
+		return result;
+
 		}
 
 	},
@@ -98,39 +151,143 @@ export default {
 			alert( JSON.stringify(message));
 
 		},
+		tabChanged() {
+			if (this.activeTab === this.tabs.Preview)
+			{
+				if (!this.contract)
+					return;
+
+			}
+
+		},
 		initApiCall() {
 			let url = "/agreement/get";
 			var req = {"id" : parseInt(this.$route.params.id)};
 			console.log(req)
-      axios.post(apiDomain+url, req)
+      axios.post(templateApi+url, req)
 			.then(res=>{
 				this.contract = res.data
 				if (this.contract.sourceType == 0){
 					this.contract.text = this.contract.lang == this.language.kz ? this.contract.template.mainTextKaz : this.contract.template.mainTextRus
-					this.contract.params.forEach(param => {
-						if (param.name === 'period') {
-							param.value = JSON.parse(`{"start":"03-05-2021","end":"04.06.2025"}`);
-						}
 
-					});
 				}
 				})
-		},
-		getParamDesciption(param, lang) {
-			if (param.description != "")
-				return param.description;
-			if (param.name == "ourside")
-				return lang == this.language.kz ? "біздің тарап" : "наша сторона"
-			if (param.name == "contragent")
-				return lang == "контрагент"
-			if (param.name == "period")
-				return lang == this.language.kz ? "келісім-шарт кезеңі" : "период договора"
-			if (param.name == "date")
-				return lang == this.language.kz ? "келісім-шарт күні" : "дата соглашения договора"
-			if (param.name == "place")
-				return lang == this.language.kz ? "келісім-шарт жасалған орын" : "место заключения договора"
 
-		}
+		},
+		paramToString(param) {
+			var result = "";
+			if (!param || !param.name)
+				return	result;
+
+			switch(param.name) {
+				case "text":
+					result = param.value;
+					break;
+				case "number":
+					result = "№ " + (param.value ?? "________");
+					break;
+				case "date":
+					result = this.getDate(param.value ?? new Date());
+					break;
+				case "contragent":
+					result = result + this.getContragentName(param.value, this.contract.lang);
+
+					break;
+				default:
+					result = param.name;
+			}
+			return result;
+
+		},
+		getContragentName(agent, lang) {
+			if (!agent) {
+				return ""
+			}
+			switch(agent.type) {
+        case Enum.ContragentType.Organization:
+          var orgName = lang != this.language.ru ? '"' + agent.data.name + '" ' + agent.data.form.shortname : agent.data.form.shortnamerus + ' "' + agent.data.namerus + '"';
+					if (lang === this.language.kz) {
+						orgName += " в лице " + inclineFirstname('директор', 'genitive')
+					}
+					orgName +=" " + agent.data.chief.lname + " " +  agent.data.chief.fname + " " +( agent.data.chief.sname ?? "");
+					if (lang === this.language.ru) {
+						orgName += " тұлғасында"
+					}
+					return orgName;
+        case Enum.ContragentType.Person:
+          return this.value.data.lname + ' ' + agent.data.fname + ' ' + (agent.data.sname ?? '');
+        case Enum.ContragentType.Bank:
+          return lang != this.language.ru ? '"' + agent.data.organization.name + '" ' + agent.data.organization.form.shortname : agent.data.organization.form.shortnamerus + ' "' + agent.data.organization.namerus + '"'
+      }
+		},
+		getDate(date) {
+ 				var dd = date.getDate();
+        var mm = date.getMonth() + 1;
+
+        var yyyy = date.getFullYear();
+        if (dd < 10) {
+            dd = '0' + dd;
+        }
+        if (mm < 10) {
+            mm = '0' + mm;
+        }
+				return dd + '.' + mm + '.' + yyyy;
+		},
+
+		saveContract() {
+
+			if (!this.contract)
+				return;
+					let url = "/agreement/updatedocparams";
+			var req = this.contract;
+			console.log(req)
+      axios.post(templateApi+url, req)
+			.then(res=>{
+				this.$toast.add({severity:'success', summary:this.$t('common.save'), detail:this.$t('common.message.succesSaved'), life: 3000});
+			})
+
+
+		},
+		downloadContract() {
+
+			if (!this.contract)
+				return;
+				let url = "/contract/getpdf";
+				var req = {"id" : this.contract.id};
+        req.lang = "kaz";
+        if (this.contract.lang != 0) {
+          req.lang = "rus"
+        }
+      axios.post(templateApi+url, req)
+			.then(response=>{
+				console.log(response.data)
+        let pdf = response.data;
+        var link = document.createElement('a');
+        link.innerHTML = 'Download PDF file';
+        link.download = this.contract.id + '.pdf';
+        link.href = 'data:application/octet-stream;base64,' + pdf;
+        link.click();
+
+			})
+
+
+		},
+		registrateContract() {
+			if (!this.contract)
+				return;
+					let url = "/contract/setnumber";
+			var req = {
+				"id": this.contract.id
+			};
+
+      axios.post(templateApi+url, req)
+			.then(res=>{
+				this.contract.number = res.data
+				this.$toast.add({severity:'success', summary:this.$t('common.save'), detail:this.$t('common.message.succesRegistered'), life: 3000});
+			})
+
+
+		},
 	},
 	mounted() {
       this.initApiCall();
@@ -175,6 +332,26 @@ export default {
 	.mx-2 {
     margin-left: .5rem;
     margin-right: .5rem;
+	}
+	.embed-cover {
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+  	margin-right: 20px;
+
+	}
+
+	.wrapper {
+	position: relative;
+	overflow: hidden;
+	}
+
+
+	/* Not Important*/
+	img {
+	width: 300px
 	}
 
 

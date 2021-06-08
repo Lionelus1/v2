@@ -1,10 +1,10 @@
 <template>
 <div>
   <div class="content-section">
-    <div class="feature-intro">
-      <h1>{{$t('contracts.title')}}</h1>
+    <div class="feature-intro p-ml-3">
+      <h3>{{$t('contracts.title')}}</h3>
     </div>
-    <div class="p-grid card">
+    <div class="card">
       <div class="p-col">
         <div class="box">
           <span><i class="pi pi-copy subtitle">&nbsp;{{$t('contracts.documents')}}</i></span>
@@ -31,6 +31,7 @@
         </div>
       </div>
     </div>
+
   </div>
   <Dialog v-bind:header="$t('common.newDoc')" v-model:visible="dialogOpenState.createDocDialog" :modal="true" :breakpoints="{'960px': '75vw', '640px': '100vw'}" :style="{width: '760px', overflow:'hidden'}">
   <div class="p-d-flex">
@@ -50,7 +51,7 @@
     <div v-if="selectedDocSourceType == DocState.DocSourceType.Template" style="overflow-y:hidden" >
       <div class="p-d-flex">
         <div class="p-mr-2" style="width:300px">
-          <Listbox v-model="selectedTemplate" :options="docTemplates" optionLabel="name" :filter="true" listStyle="max-height:300px" style="width:300px;height:320px" :filterPlaceholder="$t('hdfs.search')"/>
+          <Listbox v-model="selectedTemplate" :options="docTemplates" :optionLabel="($i18n.locale == 'kz' ? 'nameKaz' : 'nameRus')" :filter="true" listStyle="max-height:300px" style="width:300px;height:320px" :filterPlaceholder="$t('hdfs.search')"/>
         </div>
         <div v-if="selectedTemplate != null">
           <RichEditor v-if="selectedDocLanguage == 'kz'" :readonly="true"  v-model="selectedTemplate.mainTextKaz" editorStyle="height:300px;width:400px;max-width:700px">
@@ -74,7 +75,7 @@
 </div>
 </template>
 <script>
-  import {apiDomain} from "@/config/config";
+  import {templateApi} from "@/config/config";
   import axios from 'axios';
   import DocState from "@/enum/docstates/index";
   import RichEditor from "./editor/RichEditor.vue";
@@ -120,7 +121,7 @@
           lang: this.selectedDocLanguage == "kz" ? 0 : 1
         }
         console.log(req);
-        axios.post(apiDomain+url, req).then(responce=>{
+        axios.post(templateApi+url, req).then(responce=>{
           this.showMessage('success', this.$t('contracts.title'), this.$t('contracts.message.created'));
           this.$router.push({ path: '/documents/contract/' + responce.data});
 
@@ -138,7 +139,8 @@
           childData.stateEn =  node.History[0].stateEn;
 
         }
-        childData.name=node.description;
+        childData.nameKaz= node.descriptionKaz;
+        childData.nameRus= node.descriptionRus;
         childData.createdDate = node.createDate;
         childData.mainTextKaz = node.mainTextKaz
         childData.mainTextRus = node.mainTextRus
@@ -149,12 +151,13 @@
       },
       initApiCall(){
         let url = "/doctemplates?groupID=1";
-        axios.get(apiDomain+url)
+        axios.get(templateApi+url)
         .then(res=>{
           res.data.forEach(el => {
             if(el.DocTemplates){
               el.DocTemplates.forEach((child)=>{
-                this.addTemplateNode(this.docTemplates, child)              })
+                this.addTemplateNode(this.docTemplates, child)
+              })
             }
           });
         })
