@@ -61,7 +61,7 @@
 </div>
 </template>
 <script>
-	import {apiDomain} from "@/config/config";
+	import {templateApi} from "@/config/config";
   import axios from 'axios';
 	import Person from './Person.vue';
 	import Enum from "@/enum/docstates/index"
@@ -130,7 +130,7 @@
 				this.staffDisplay = this.personType === Enum.PersonType.IndividualEntrepreneur ? "dnone" :"";
 				var req = {"id" : 0, "count": this.orgShowCount, "persontype" : this.personType, "orgID" : this.orgID ? this.orgID : -1, "signRight" : this.signRight ? this.signRight: -1 };
 				this.persons = null,
-        axios.post(apiDomain+url, req)
+        axios.post(templateApi+url, req)
         .then(res=>{
           this.persons =  res.data
         })

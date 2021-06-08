@@ -80,7 +80,7 @@
 </div>
 </template>
 <script>
-	import {apiDomain} from "@/config/config";
+	import {templateApi} from "@/config/config";
   import axios from 'axios';
 	import Organization from './Organization.vue';
 	import Person from './Person.vue';
@@ -147,7 +147,7 @@
 			initApiCall(){
         let url = "/contragent/contragents";
 				var req = {"id" : 0, "count": this.orgShowCount, "agenttype" : this.agentType.value };
-        axios.post(apiDomain+url, req)
+        axios.post(templateApi+url, req)
         .then(res=>{
           this.contragents = res.data
         })

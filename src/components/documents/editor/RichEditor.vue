@@ -75,7 +75,7 @@ export default {
       displayModal: false,
       agreementDesctiption: "",
       agreementElement: "",
-      isValid:false
+      isValid:false,
 		}
 	},
   emits: ["update:modelValue", "text-change"],
@@ -116,6 +116,7 @@ export default {
       "period": this.$t('doctemplate.editor.period'),
       "student": this.$t('doctemplate.editor.student'),
       "text": this.$t('doctemplate.editor.text'),
+      "number": this.$t('common.number'),
     };
 
     const myDropDown = new QuillToolbarDropDown({

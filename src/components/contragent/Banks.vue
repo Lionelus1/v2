@@ -48,7 +48,7 @@
 </div>
 </template>
 <script>
-	import {apiDomain} from "@/config/config";
+	import {templateApi} from "@/config/config";
   import axios from 'axios';
 	import Bank from './Bank.vue';
 
@@ -88,7 +88,7 @@
 			initApiCall(){
         let url = "/contragent/banks";
 				var req = {"id" : 0, "count": this.bankShowCount};
-        axios.post(apiDomain+url, req)
+        axios.post(templateApi+url, req)
         .then(res=>{
 
           this.banks =  res.data

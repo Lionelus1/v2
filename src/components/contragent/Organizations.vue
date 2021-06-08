@@ -48,7 +48,7 @@
 </div>
 </template>
 <script>
-	import {apiDomain} from "@/config/config";
+	import {templateApi} from "@/config/config";
   import axios from 'axios';
 	import Organization from './Organization.vue';
 	import Enum from "@/enum/docstates/index"
@@ -94,7 +94,7 @@
         let url = "/contragent/organizations";
 
 				var req = {"id" : 0, "count": this.orgShowCount, "orgtype" : Enum.ContragentType.Bank + Enum.ContragentType.Organization };
-        axios.post(apiDomain+url, req)
+        axios.post(templateApi+url, req)
         .then(res=>{
 
           this.organizations =  res.data
