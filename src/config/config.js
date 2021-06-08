@@ -1,9 +1,10 @@
 import mitt from "mitt";
 
-export const  apiDomain = "http://localhost:8080";
+export const apiDomain = "http://localhost:8080";
 export const hdfsApi = "http://localhost:8085";
 export const signerApi = "http://localhost:9000"
 export const smartEnuApi = "http://localhost:8080"
+export const templateApi = "http://localhost:9191"
 export const header  = {
   "Accept": "application/json",
   "Access-Control-Allow-Origin": "*",
