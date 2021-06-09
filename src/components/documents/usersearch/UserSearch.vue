@@ -19,8 +19,8 @@
 						<template #option="slotProps">
 							<div class="user-item p-grid">
 								<div class="image-container p-lg-2  p-md-3 p-sm-12">
-									<img v-if="slotProps.option.photo != null && slotProps.option.photo !=''" :src="'data:image/jpeg;base64,' + slotProps.option.photo "/>
-                                    <img v-if="!(slotProps.option.photo != null && slotProps.option.photo !='')" src="assets/layout/images/default-user-image.png"/>
+									<img class="round" v-if="slotProps.option.photo != null && slotProps.option.photo !=''" :src="'data:image/jpeg;base64,' + slotProps.option.photo "/>
+                                    <img class="round" v-if="!(slotProps.option.photo != null && slotProps.option.photo !='')" src="assets/layout/images/default-user.jpg"/>
 								</div>
 								<div class="user-list-detail p-lg-10  p-md-9 p-sm-12">
 									<h5 class="p-mb-2">{{slotProps.option.name}}</h5>
@@ -40,7 +40,7 @@
 </template>
 
 <script>
-	import {apiDomain} from "@/config/config";
+	import {templateApi} from "@/config/config";
 	import axios from 'axios';
 
 	export default {
@@ -99,7 +99,7 @@
 				let url = "/getadusers";
 				const axiosSource = axios.CancelToken.source();
 				this.request = { cancel: axiosSource.cancel, msg: "Loading..." };
-				axios.post(apiDomain+url, {cancelToken: axiosSource.token, "dn" : inputValue, "userType" : this.userType})
+				axios.post(templateApi+url, {cancelToken: axiosSource.token, "dn" : inputValue, "userType" : this.userType})
         .then(response=>{
 					this.foundEntities = response.data;
 					this.searchInProgres = false;
@@ -229,6 +229,10 @@
 </script>
 
 <style lang="scss" scoped>
+.round {
+    border-radius: 100px; /* Радиус скругления */
+    box-shadow: 0 0 0 3px green, 0 0 13px #333; /* Параметры теней */
+   }
 .user-item {
 	display: flex;
 	align-items: center;

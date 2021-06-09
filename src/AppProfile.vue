@@ -1,7 +1,8 @@
 <template>
 	<div class="layout-profile">
 		<div>
-			<img src="assets/layout/images/profile.png" alt="" />
+			<img class="round" v-if="loginedUser.photo != null && loginedUser.photo !=''" :src="'data:image/jpeg;base64,' + loginedUser.photo "/>
+            <img class="round" v-else src="assets/layout/images/default-user.jpg"/>
 		</div>
 		<button class="p-link layout-profile-link" @click="onClick">
 			<span class="username">{{loginedUser.name}}</span>
@@ -47,5 +48,8 @@
 </script>
 
 <style scoped>
-
+.round {
+    border-radius: 100px; /* Радиус скругления */
+    box-shadow: 0 0 0 3px #2196f3, 0 0 13px #333; /* Параметры теней */
+   }
 </style>
