@@ -18,7 +18,7 @@ export default {
         //alert(JSON.stringify(response.data));
         window.localStorage.setItem("loginedUser",JSON.stringify(response.data));
         this.setLoginedUser();
-        this.$router.push({name:'/smartenu/admin/newscategories/cattable'});
+        this.$router.push({name:'/smartenu/admin/news/newstable'});
       })
       .catch(error => {
         //console.log(error.message)

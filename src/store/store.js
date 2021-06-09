@@ -1,50 +1,53 @@
 import { createStore } from "vuex"
 import createPersistedState from 'vuex-persistedstate'
 import axios from "axios";
-import {getHeader, smartEnuApi} from "@/config/config";
+import { getHeader, smartEnuApi } from "@/config/config";
+import router from '@/router';
+
 const store = createStore({
     plugins: [createPersistedState()],
-    state:{
+    state: {
 
         loginedUser: {},
-        token:""
+        token: ""
     },
     mutations: {
-        SET_LOGINED_USER(state){
+        SET_LOGINED_USER(state) {
             //alert("yess");
-            state.loginedUser=JSON.parse(window.localStorage.getItem('loginedUser'));
+            state.loginedUser = JSON.parse(window.localStorage.getItem('loginedUser'));
             //alert(JSON.stringify(state.loginedUser))
-            state.token=JSON.parse(window.localStorage.getItem('authUser')).access_token;
+            state.token = JSON.parse(window.localStorage.getItem('authUser')).access_token;
 
         },
-        LOG_OUT_SYSTEM(state){
-          axios.post(smartEnuApi+"/logoutsystem",{},{headers:getHeader()})
-              .then(()=>{
-                  localStorage.removeItem('authUser');
-                  localStorage.removeItem('loginedUser');
-                  state.token="";
-                  this.$router.push({"name":"Login"})
-              })
-              .catch(()=>{
-                  localStorage.removeItem('authUser');
-                  localStorage.removeItem('loginedUser');
-                  state.token="";
-                  this.$router.push({"name":"Login"})
-              })
+        LOG_OUT_SYSTEM(globalState) {
+            globalState.loginedUser={};
+            globalState.token = "";
+            axios.post(smartEnuApi + "/logoutsystem", {}, { headers: getHeader() })
+                .then(() => {
+                    localStorage.removeItem('authUser');
+                    localStorage.removeItem('loginedUser');
+                    router.push({ "name": "Login" })
+                })
+                .catch((err) => {
+                    //alert(JSON.stringify(err))
+                    localStorage.removeItem('authUser');
+                    localStorage.removeItem('loginedUser');
+                
+                    router.push({ "name": "Login" })
+                })
 
         }
     },
     actions: {
-        setLoginedUser(context){
+        setLoginedUser(context) {
             //alert("it shoild be call the state");
             context.commit("SET_LOGINED_USER");
         },
-        logLout(context){
+        logLout(context) {
             context.commit("LOG_OUT_SYSTEM");
-
         }
     },
-    getters:{
+    getters: {
         isAuthenticated: state => !!state.token,
 
     }

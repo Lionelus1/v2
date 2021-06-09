@@ -15,13 +15,13 @@
 
     <!-- BEGINNING OF TABLE -->
 
-    <DataTable :value="allNews" :paginator="true" class="p-datatable-customers" :rows="10" dataKey="id" :rowHover="true" v-model:selection="selectedNews" :filters="filters" :loading="loading">
+    <DataTable :value="allNews" :paginator="true" class="p-datatable-customers" :rows="10" dataKey="id" :rowHover="true" v-model:selection="selectedNews" :filters="filters" filterDisplay="menu" :showFilterMatchModes="false" :loading="loading">
         <template #header>
             <div class="table-header">
                 {{ $t('smartenu.newsTitle') }}
                 <span class="p-input-icon-left">
                     <i class="pi pi-search" />
-                    <InputText v-model="filters['global']" v-bind:placeholder="$t('hdfs.search')" />
+                    <InputText v-model="filters['global'].value" v-bind:placeholder="$t('hdfs.search')" />
                 </span>
             </div>
         </template>
@@ -76,24 +76,6 @@
 
     <Dialog v-model:visible="editVisible" :style="{width: '1000px'}" :header="$t('smartenu.createOrEditNews')" :modal="true" class="p-fluid">
         <div class="card">
-            <!-- <label for="cat-tree">{{ $t('smartenu.selectCategories') }}</label> -->
-            <!-- <Tree :value="catTree.root" selectionMode="checkbox" v-model:selectionKeys="selectedCatTree" style="margin-bottom: 1.5rem" /> -->
-            <TreeSelect v-model="selectedCatTree" :options="catTree.root" selectionMode="checkbox" :placeholder="$t('smartenu.selectCategories')" class="p-mb-3" />
-            <div class="p-fluid p-formgrid p-grid">
-                <div class="p-field p-col">
-                    <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadImage1($event)" :auto="true" v-bind:chooseLabel="$t('smartenu.chooseImage1')"></FileUpload>
-                    <div v-if="newsData.image1" class="p-mt-3">
-                        <img :src="newsData.image1" style="width: 50%; height: 50%;" />
-                    </div>
-                </div>
-                <!-- <div class="p-field p-col">
-                    <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadImage2($event)" :auto="true" v-bind:chooseLabel="$t('smartenu.chooseImage2')"></FileUpload>
-                    <div v-if="newsData.image2" class="p-mt-3">
-                        <img :src="newsData.image2" style="width: 50%; height: 50%;" />
-                    </div>
-                </div> -->
-            </div>
-
             <TabView>
                 <TabPanel header="Қазақша">
                     <div class="p-field p-mt-3" style="margin-bottom: 1.5rem">
@@ -133,6 +115,23 @@
                     </div>
                 </TabPanel>
             </TabView>
+            <!-- <label for="cat-tree">{{ $t('smartenu.selectCategories') }}</label> -->
+            <!-- <Tree :value="catTree.root" selectionMode="checkbox" v-model:selectionKeys="selectedCatTree" style="margin-bottom: 1.5rem" /> -->
+            <TreeSelect v-model="selectedCatTree" :options="catTree.root" selectionMode="checkbox" :placeholder="$t('smartenu.selectCategories')" class="p-mb-3" />
+            <div class="p-fluid p-formgrid p-grid">
+                <div class="p-field p-col">
+                    <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadImage1($event)" :auto="true" v-bind:chooseLabel="$t('smartenu.chooseImage1')"></FileUpload>
+                    <div v-if="newsData.image1" class="p-mt-3">
+                        <img :src="newsData.image1" style="width: 50%; height: 50%;" />
+                    </div>
+                </div>
+                <!-- <div class="p-field p-col">
+                    <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadImage2($event)" :auto="true" v-bind:chooseLabel="$t('smartenu.chooseImage2')"></FileUpload>
+                    <div v-if="newsData.image2" class="p-mt-3">
+                        <img :src="newsData.image2" style="width: 50%; height: 50%;" />
+                    </div>
+                </div> -->
+            </div>
         </div>
         <template #footer>
             <Button v-bind:label="$t('common.save')" icon="pi pi-check" class="p-button p-component p-button-success p-mr-2" v-on:click="addNews" />
@@ -147,7 +146,7 @@
             <div class="p-field p-mt-3" style="margin-bottom: 1.5rem">
                 <span class="p-float-label">
                     <InputText id="kz-title" v-model="selectedNews.history.rejectReasonKz" rows="3" />
-                    <label for="kz-title" >{{ $t('common.nameInQazaq') }}</label>
+                    <label for="kz-title">{{ $t('common.nameInQazaq') }}</label>
                 </span>
             </div>
             <div class="p-field p-mt-3" style="margin-bottom: 1.5rem">
@@ -226,7 +225,7 @@
 <script>
 import axios from "axios";
 import * as imageResizeCompress from 'image-resize-compress'; // ES6
-
+import {FilterMatchMode,FilterOperator} from 'primevue/api'
 import {
     getHeader,
     header,
@@ -253,7 +252,32 @@ export default {
             newsData: null,
             allNews: [],
             selectedNews: null,
-            filters: {},
+            filters: {
+                'global': {
+                    value: null,
+                    matchMode: FilterMatchMode.CONTAINS
+                },
+                'name': {
+                    value: null,
+                    matchMode: FilterMatchMode.STARTS_WITH
+                },
+                'country.name': {
+                    value: null,
+                    matchMode: FilterMatchMode.STARTS_WITH
+                },
+                'representative': {
+                    value: null,
+                    matchMode: FilterMatchMode.IN
+                },
+                'status': {
+                    value: null,
+                    matchMode: FilterMatchMode.EQUALS
+                },
+                'verified': {
+                    value: null,
+                    matchMode: FilterMatchMode.EQUALS
+                }
+            },
             loading: true,
             catTree: {
                 root: []
@@ -281,7 +305,7 @@ export default {
             imageResizeCompress.fromBlob(file, 90, 720, 'auto', 'jpeg').then(res => {
                 imageResizeCompress.blobToURL(res).then(resp => {
                     this.newsData.image1 = resp
-                });  
+                });
             })
         },
 
@@ -293,7 +317,7 @@ export default {
             imageResizeCompress.fromBlob(file, 90, 720, 'auto', 'jpeg').then(res => {
                 imageResizeCompress.blobToURL(res).then(resp => {
                     this.newsData.image2 = resp
-                });  
+                });
             })
         },
 
@@ -339,6 +363,7 @@ export default {
             axios.get(smartEnuApi + '/allNews', {
                 headers: getHeader()
             }).then((response) => {
+                console.log(response.data);
                 this.allNews = response.data
                 this.allNews = this.allNews.reverse()
                 this.loading = false
