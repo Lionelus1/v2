@@ -178,6 +178,7 @@ export default {
         create: "Fast creation of contracts, agreements",
         list: "Register of contracts ",
         listdesc: "List of all contracts, agreements",
+        journal: "Журнал",
         orgdesc: "Organizations we interact with",
         person: "Individuals with whom we interact",
         signer: "Signer",

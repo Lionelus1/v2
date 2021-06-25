@@ -3,8 +3,9 @@
 		<button class="p-link layout-menu-button" @click="onMenuToggle">
 			<span class="pi pi-bars"></span>
 		</button>
+
 		<div class="layout-topbar-icons">
-			<span class="layout-topbar-search">
+			<!-- <span class="layout-topbar-search">
 				<InputText type="text" placeholder="Search" />
 				<span class="layout-topbar-search-icon pi pi-search"></span>
 			</span>
@@ -20,10 +21,8 @@
 			<button class="p-link">
 				<span class="layout-topbar-item-text">User</span>
 				<span class="layout-topbar-icon pi pi-user"></span>
-			</button>
+			</button> -->
 			<Dropdown class="p-link" v-model="language" :options="languages" optionLabel="name" @change="changeLanguage" />
-
-
 		</div>
 	</div>
 </template>
@@ -53,7 +52,7 @@ export default {
     },
 		created() {
 			localStorage.setItem("lang", this.$i18n.locale);
-			this.language = this.languages.filter(function(item){
+			this.language = this.languages.filter(function(item) {
 				return item.value === localStorage.getItem("lang")
 			})[0];
 		}

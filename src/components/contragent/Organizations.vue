@@ -13,7 +13,7 @@
 				<template #end>
 					<span class="p-input-icon-left">
             <i class="pi pi-search" />
-            <InputText style="height:30px" v-model="filters['global']" placeholder="іздеу" />
+            <InputText style="height:30px" v-model="filters['global'].value" placeholder="іздеу" />
           </span>
 				</template>
 			</Menubar>
@@ -49,24 +49,30 @@
 </template>
 <script>
 	import {templateApi} from "@/config/config";
-  import axios from 'axios';
+	import axios from 'axios';
 	import Organization from './Organization.vue';
 	import Enum from "@/enum/docstates/index"
+	import {FilterMatchMode,FilterOperator} from 'primevue/api'
 
 
 	export default {
   components: { Organization },
     data() {
         return {
-						active: null,
-						organizations: null,
-						count:0,
-						selectedOrganizations: null,
-						currentOrganization: {},
-						orgShowCount : 15,
-						loading: true,
-						sideVisible : false,
-						filters: {},
+					active: null,
+					organizations: null,
+					count:0,
+					selectedOrganizations: null,
+					currentOrganization: {},
+					orgShowCount : 15,
+					loading: true,
+					sideVisible : false,
+					filters: {
+						'global': {
+							value: null,
+							matchMode: FilterMatchMode.CONTAINS
+						},
+					},
             menu: [
                 {
                   label:'',

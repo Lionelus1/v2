@@ -63,6 +63,13 @@ const routes = [
             },
             {
 
+                path: '/documents/journal',
+                name: '/documents/journal',
+                component: load('documents/Journal'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+
                 path: '/documents/contract/:id',
                 name: '/documents/contract',
                 component: load('documents/Contract'),
