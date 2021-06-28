@@ -412,7 +412,6 @@ export default {
             this.allNews = []
             axios.get(smartEnuApi + '/allEvents').then((response) => {
                 this.allEvents = response.data
-                this.allEvents = this.allEvents.reverse()
                 this.loading = false
                 console.log(this.allEvents)
             }).catch((error) => {
@@ -421,6 +420,9 @@ export default {
                     summary: this.$t('smartenu.loadAllEventsError') + ":\n" + error,
                     life: 3000
                 });
+                if (error.response.status == 401) {
+                    this.$store.dispatch('logLout');
+                }
             });
         },
 

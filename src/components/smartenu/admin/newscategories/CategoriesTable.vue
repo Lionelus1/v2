@@ -181,6 +181,9 @@ export default {
                     summary: this.$t('smartenu.loadAllCategoriesError') + ":\n" + error,
                     life: 3000
                 });
+                if (error.response.status == 401) {
+                    this.$store.dispatch('logLout');
+                }
             });
         },
         deleteNewsCategory(id) {

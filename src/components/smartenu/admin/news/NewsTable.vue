@@ -363,16 +363,19 @@ export default {
             axios.get(smartEnuApi + '/allNews', {
                 headers: getHeader()
             }).then((response) => {
-                console.log(response.data);
                 this.allNews = response.data
                 this.allNews = this.allNews.reverse()
                 this.loading = false
             }).catch((error) => {
+                console.log(error.response);
                 this.$toast.add({
                     severity: 'error',
                     summary: this.$t('smartenu.loadAllNewsError') + ":\n" + error,
                     life: 3000
                 });
+                if (error.response.status == 401) {
+                    this.$store.dispatch('logLout');
+                }
             });
         },
 
