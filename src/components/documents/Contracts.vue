@@ -13,7 +13,7 @@
             <i class="p-mx-3">{{$t('contracts.create')}}</i>
           </div>
           <div class="p-field menu-item p-pb-3">
-            <Button :label="$t('contracts.list')" class="p-button-link" /><br>
+            <router-link to="/documents/journal"  class="p-button p-button-link">{{$t('contracts.list')}}</router-link><br>
             <i class="p-mx-3">{{$t('contracts.listdesc')}}</i>
           </div>
         </div>

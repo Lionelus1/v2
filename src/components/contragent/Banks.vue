@@ -13,7 +13,7 @@
 				<template #end>
 					<span class="p-input-icon-left">
             <i class="pi pi-search" />
-            <InputText style="height:30px" v-model="filters['global']" :placeholder="$t('common.search')" />
+            <InputText style="height:30px" v-model="filters['global'].value" :placeholder="$t('common.search')" />
           </span>
 				</template>
 			</Menubar>
@@ -51,6 +51,7 @@
 	import {templateApi} from "@/config/config";
   import axios from 'axios';
 	import Bank from './Bank.vue';
+	import {FilterMatchMode,FilterOperator} from 'primevue/api'
 
 	export default {
   components: { Bank },
@@ -64,7 +65,12 @@
 						bankShowCount : 15,
 						loading: true,
 						sideVisible : false,
-						filters: {},
+						filters: {
+							'global': {
+								value: null,
+								matchMode: FilterMatchMode.CONTAINS
+							},
+						},
             menu: [
                 {
                   label:'',

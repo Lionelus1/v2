@@ -13,7 +13,7 @@
 				<template #end>
 					<span class="p-input-icon-left">
             <i class="pi pi-search" />
-            <InputText style="height:30px" v-model="filters['global']" placeholder="іздеу" />
+            <InputText style="height:30px" v-model="filters['global'].value" placeholder="іздеу" />
           </span>
 				</template>
 			</Menubar>
@@ -27,7 +27,9 @@
 						{{this.$t('common.recordsLoading')}}
 					</template>
 					<Column selectionMode="multiple" headerStyle="width: 3em"></Column>
-					<Column field="name" :header="$t('common.name')" :sortable="true">
+					<Column style="display:none" field="fname" :sortable="true"></Column>
+					<Column style="display:none" field="sname" :sortable="true"></Column>
+					<Column field="lname" :header="$t('common.name')" :sortable="true">
 						<template #body="slotProps">
             	<Button class="p-button-link p-text-left" @click="toggle($event,slotProps.data)">{{slotProps.data.lname + ' ' + slotProps.data.fname + ' ' + (slotProps.data.sname ?? '')}}</Button>
         		</template>
@@ -65,25 +67,30 @@
   import axios from 'axios';
 	import Person from './Person.vue';
 	import Enum from "@/enum/docstates/index"
-
+	import {FilterMatchMode,FilterOperator} from 'primevue/api'
 
 	export default {
   components: { Person },
     data() {
         return {
-						active: null,
-						persons: null,
-						personType: Number(this.$route.params.type),
-						PersonType: Enum.PersonType,
-						staffDisplay: this.personType === Enum.PersonType.IndividualEntrepreneur ? 'dnone' :'',
-						count:0,
-						selectedPersons: null,
-						currentPerson: {},
-						orgShowCount : 15,
-						loading: true,
-						sideVisible : false,
-						filters: {},
-            menu: [
+					active: null,
+					persons: null,
+					personType: Number(this.$route.params.type),
+					PersonType: Enum.PersonType,
+					staffDisplay: this.personType === Enum.PersonType.IndividualEntrepreneur ? 'dnone' :'',
+					count:0,
+					selectedPersons: null,
+					currentPerson: {},
+					orgShowCount : 15,
+					loading: true,
+					sideVisible : false,
+					filters: {
+						'global': {
+							value: null,
+							matchMode: FilterMatchMode.CONTAINS
+						},
+					},
+          menu: [
                 {
                   label:'',
                   icon:'pi pi-fw pi-refresh',

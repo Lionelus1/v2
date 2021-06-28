@@ -12,7 +12,7 @@
 			<Menubar :model="menu" :key="active" style="height:36px;margin-top:7px;margin-right:-7px;margin-left:-7px;" >
 				<template #end>
 					<div class="p-formgroup-inline">
-					<div >
+					<div>
 						<Button :label="agentType ? agentType.name : $t('common.filter')" icon="pi pi-filter" style="height:28px;right:5px" class="p-button-secondary p-button-text"  @click="openAgentTypeSelect"/>
 						<OverlayPanel ref="op" appendTo="body" :showCloseIcon="true" id="overlay_panel" style="width: 200px" :breakpoints="{'960px': '75vw'}">
 							<DataTable :value="contragent" v-model:selection="agentType" selectionMode="single" @rowSelect="onAgentTypeChange" responsiveLayout="scroll" >
@@ -22,27 +22,20 @@
 					</div>
 					<div>
 						<span class="p-input-icon-left">
-							<i class="pi pi-search" />
-							<InputText style="height:30px" v-model="filters['global']" placeholder="іздеу" />
+							<i class="pi pi-search"/>
+							<InputText style="height:30px" v-model="filters['global'].value" placeholder="іздеу"/>
 						</span>
 					</div>
 				</div>
 				</template>
-
 			</Menubar>
       <div class="box">
-				<DataTable class="p-datatable-sm" v-model:selection="currentOrganization" selectionMode="single" dataKey="id" :value="contragents" :paginator="true" :rowHover="true" :rows="orgShowCount" :filters="filters"
-				:loading="loading">
-					<template #empty>
-						{{this.$t('common.recordsNotFound')}}
-					</template>
-					<template #loading>
-						{{this.$t('common.recordsLoading')}}
-					</template>
+				<DataTable class="p-datatable-sm" v-model:selection="currentOrganization" selectionMode="single" dataKey="id" :value="contragents" :paginator="true" :rowHover="true" :rows="orgShowCount" :filters="filters" :loading="loading">
+					<template #empty>{{this.$t('common.recordsNotFound')}}</template>
+					<template #loading>{{this.$t('common.recordsLoading')}}</template>
 					<Column selectionMode="multiple" headerStyle="width: 3em"></Column>
 					<Column field="data.name" :header="$t('common.name')" :sortable="true">
 						<template #body="slotProps">
-
             	<Button v-if="slotProps.data.type== ContragentType.Organization" class="p-button-link p-text-left" @click="toggle($event,slotProps.data)">{{(this.$i18n.locale != 'ru' ? '"' + slotProps.data.data.name + '" ' + slotProps.data.data.form.shortname : slotProps.data.data.form.shortnamerus + ' "' + slotProps.data.data.namerus + '"')}}</Button>
 							<Button v-if="slotProps.data.type== ContragentType.Person" class="p-button-link p-text-left" @click="toggle($event,slotProps.data)">{{slotProps.data.data.lname + ' ' + slotProps.data.data.fname + ' ' + (slotProps.data.data.sname ?? '')}}</Button>
 							<Button v-if="slotProps.data.type== ContragentType.Bank" @click="toggle($event,slotProps.data)" class="p-button-link p-text-left">{{(this.$i18n.locale != 'ru' ? '"' + slotProps.data.data.organization.name + '" ' + slotProps.data.data.organization.form.shortname : slotProps.data.data.organization.form.shortnamerus + ' "' + slotProps.data.data.organization.namerus + '"')}}</Button>
@@ -81,15 +74,14 @@
 </template>
 <script>
 	import {templateApi} from "@/config/config";
-  import axios from 'axios';
+  	import axios from 'axios';
 	import Organization from './Organization.vue';
 	import Person from './Person.vue';
 	import Bank from './Bank.vue';
 	import Enum from "@/enum/docstates/index"
-
-
+	import {FilterMatchMode,FilterOperator} from 'primevue/api'
 	export default {
-  components: { Organization, Person, Bank },
+  		components: { Organization, Person, Bank },
     data() {
         return {
 						active: null,
@@ -103,7 +95,12 @@
 						organizationVisible: false,
 						personVisible: false,
 						bankVisible : false,
-						filters: {},
+						filters: {
+							'global': {
+								value: null,
+								matchMode: FilterMatchMode.CONTAINS
+							},
+						},
 
 						contragent : [
 							{ name: this.$t('common.organization'), value: Enum.ContragentType.Organization },
