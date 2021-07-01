@@ -255,6 +255,22 @@ export default {
         selectBachelor: "Select bachelor course",
         selectFaculty: "Select faculty",
         selectDepartment: "Select department",
-        eventParticipants: "Participants list"
+        eventParticipants: "Participants list",
+        titleKzInvalid: "The name in Kazakh is not filled",
+        titleRuInvalid: "The name in Russian is not filled",
+        titleEnInvalid: "The name in English is not filled",
+        contentKzInvalid: "Content in Kazakh is not filled",
+        contentRuInvalid: "Content in Russian is not filled",
+        contentEnInvalid: "Content in English is not filled",
+        image1Invalid: "Image not found",
+        selectedCatInvalid: "Category not selected",
+        isOnlineInvalid: "The format of the event is not selected",
+        eventLinkInvalid: "The link to the event is not filled in",
+        eventLocationInvalid: "The address of the event is not filled in",
+        posterImageKk: "Upload poster in kazakh",
+        posterImageRu: "Upload poster in russian",
+        posterImageEn: "Upload poster in english",
+        posterLink: "Poster link",
+        addPoster: "Add poster"
     },
 }

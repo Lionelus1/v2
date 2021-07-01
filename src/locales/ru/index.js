@@ -317,6 +317,22 @@ export default {
         selectBachelor: "Выберите курс бакалавров",
         selectFaculty: "Выберите факультет",
         selectDepartment: "Выберите кафедру",
-        eventParticipants: "Участники мероприятия"
+        eventParticipants: "Участники мероприятия",
+        titleKzInvalid: "Название на казахском не заполнено",
+        titleRuInvalid: "Название на русском не заполнено",
+        titleEnInvalid: "Название на английском не заполнено",
+        contentKzInvalid: "Контент на казахском не заполнено",
+        contentRuInvalid: "Контент на русском не заполнено",
+        contentEnInvalid: "Контент на английском не заполнено",
+        image1Invalid: "Картинка не найдена",
+        selectedCatInvalid: "Категория не выбрана",
+        isOnlineInvalid: "Формат проведения не выбрана",
+        eventLinkInvalid: "Ссылка на мероприятие не заполнена",
+        eventLocationInvalid: "Адрес мероприятия не заполнена",
+        posterImageKk: "Загрузить постер на казахском",
+        posterImageRu: "Загрузить постер на русском",
+        posterImageEn: "Загрузить постер на английском",
+        posterLink: "Ссылка постера",
+        addPoster: "Добавить постер"
     },
 }

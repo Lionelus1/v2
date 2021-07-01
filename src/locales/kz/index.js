@@ -258,7 +258,23 @@ export default {
         selectBachelor: "Бакалаврлар курсын таңдаңыз",
         selectFaculty: "Факультетті таңдаңыз",
         selectDepartment: "Кафедраны таңдаңыз",
-        eventParticipants: "Іс-шара қатысушылары"
+        eventParticipants: "Іс-шара қатысушылары",
+        titleKzInvalid: "Қазақша атау толтырылмаған",
+        titleRuInvalid: "Орысша атау толтырылмаған",
+        titleEnInvalid: "Ағылшынша атау толтырылмаған",
+        contentKzInvalid: "Қазақша контент толтырылмаған",
+        contentRuInvalid: "Орысша контент толтырылмаған",
+        contentEnInvalid: "Ағылшынша контент толтырылмаған",
+        image1Invalid: "Сурет табылмады",
+        selectedCatInvalid: "Санат таңдалмаған",
+        isOnlineInvalid: "Өткізу форматы таңдалмаған",
+        eventLinkInvalid: "Іс-шараға сілтеме толтырылмаған",
+        eventLocationInvalid: "Іс-шараның мекен-жайы толтырылмаған",
+        posterImageKk: "Қазақ тіліндегі постерді жүктеу",
+        posterImageRu: "Орыс тіліндегі постерді жүктеу",
+        posterImageEn: "Ағылшын тіліндегі постерді жүктеу",
+        posterLink: "Постер сілтемесі",
+        addPoster: "Постер қосу"
     },
 
 }
