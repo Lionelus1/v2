@@ -661,7 +661,7 @@ export default {
         });
     },
     /**
-     *  UPLOAD POSTER IMAGEKK
+     *  UPLOAD POSTER IMAGERU
      */
     uploadPosterImageRu(event) {
       const file = event.files[0];
@@ -674,7 +674,7 @@ export default {
         });
     },
     /**
-     *  UPLOAD POSTER IMAGEKK
+     *  UPLOAD POSTER IMAGEEN
      */
     uploadPosterImageEn(event) {
       const file = event.files[0];
@@ -761,8 +761,8 @@ export default {
           headers: getHeader(),
         })
         .then((response) => {
+          console.log(response.data);
           this.allNews = response.data;
-          this.allNews = this.allNews.reverse();
           this.loading = false;
         })
         .catch((error) => {
@@ -909,6 +909,7 @@ export default {
       this.editVisible = true;
       this.submitted = false;
       let newsData = this.allNews.find((x) => x.id === id);
+      console.log(newsData);
       this.newsData.id = newsData.id;
       this.newsData.titleKz = newsData.titleKz;
       this.newsData.titleRu = newsData.titleRu;
@@ -920,6 +921,11 @@ export default {
       this.newsData.contentEn = newsData.contentEn;
       this.newsData.history = newsData.history;
       this.newsData.createdBy = newsData.createdBy;
+      this.isPoster = newsData.isPoster;
+      this.poster.link = newsData.poster.link
+      this.poster.imageKk = newsData.poster.imageKk
+      this.poster.imageKk = newsData.poster.imageRu
+      this.poster.imageKk = newsData.poster.imageEn
       this.selectedCatTree = [];
       this.newsData.contentCategoryRelations = [];
       for (let key in this.catTreeElementsList) {
