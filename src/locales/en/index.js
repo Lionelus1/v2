@@ -271,6 +271,9 @@ export default {
         posterImageRu: "Upload poster in russian",
         posterImageEn: "Upload poster in english",
         posterLink: "Poster link",
-        addPoster: "Add poster"
+        addPoster: "Add poster",
+        posterImageKkInvalid: "The poster in Kazakh not selected",
+        posterImageRuInvalid: "The poster in Russian not selected",
+        posterImageEnInvalid: "The poster in English not selected",
     },
 }
