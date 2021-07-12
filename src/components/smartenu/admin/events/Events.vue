@@ -254,9 +254,9 @@
             :placeholder="$t('smartenu.eventFormat')"
             :class="{ 'p-invalid': formValid.isOnline && submitted }"
           />
-          <small v-show="formValid.isOnline && submitted" class="p-error"
-            >{{ $t('smartenu.isOnlineInvalid') }}</small
-          >
+          <small v-show="formValid.isOnline && submitted" class="p-error">{{
+            $t("smartenu.isOnlineInvalid")
+          }}</small>
         </div>
         <div
           class="p-field"
@@ -270,9 +270,9 @@
             rows="3"
             :class="{ 'p-invalid': formValid.eventLink && submitted }"
           />
-          <small v-show="formValid.eventLink && submitted" class="p-error"
-            >{{ $t('smartenu.eventLinkInvalid') }}</small
-          >
+          <small v-show="formValid.eventLink && submitted" class="p-error">{{
+            $t("smartenu.eventLinkInvalid")
+          }}</small>
         </div>
         <div
           class="p-field"
@@ -288,8 +288,10 @@
             rows="3"
             :class="{ 'p-invalid': formValid.eventLocation && submitted }"
           />
-          <small v-show="formValid.eventLocation && submitted" class="p-error"
-            >{{ $t('smartenu.eventLocationInvalid') }}</small
+          <small
+            v-show="formValid.eventLocation && submitted"
+            class="p-error"
+            >{{ $t("smartenu.eventLocationInvalid") }}</small
           >
         </div>
         <div class="p-field">
@@ -312,7 +314,7 @@
           <small
             v-show="formValid.selectedMainCategories && submitted"
             class="p-error"
-            >{{ $t('smartenu.selectedCatInvalid') }}</small
+            >{{ $t("smartenu.selectedCatInvalid") }}</small
           >
         </div>
         <div class="p-field">
@@ -420,6 +422,69 @@
               <InlineMessage severity="info" show v-if="file">
                 {{ $t("ncasigner.chosenFile", { fn: file ? file.name : "" }) }}
               </InlineMessage>
+            </div>
+          </div>
+        </div>
+        <div class="p-field-checkbox">
+          <Checkbox
+            id="isPoster"
+            name="isPoster"
+            v-model="isPoster"
+            :binary="true"
+          />
+          <label for="isPoster">{{ $t("smartenu.addPoster") }}</label>
+        </div>
+        <div
+          class="p-field p-mt-3"
+          style="margin-bottom: 1.5rem"
+          v-if="isPoster"
+        >
+          <label for="poster-link">{{ $t("smartenu.posterLink") }}</label>
+          <InputText
+            id="poster-link"
+            v-model="poster.link"
+            rows="3"
+            :placeholder="$t('smartenu.posterLink')"
+          />
+          <div class="p-grid p-mt-3" v-if="isPoster">
+            <div class="p-col">
+              <FileUpload
+                ref="form"
+                mode="basic"
+                :customUpload="true"
+                @uploader="uploadPosterImageKk($event)"
+                :auto="true"
+                v-bind:chooseLabel="$t('smartenu.posterImageKk')"
+              ></FileUpload>
+              <div v-if="poster.imageKk" class="p-mt-3">
+                <img :src="poster.imageKk" style="width: 50%; height: 50%" />
+              </div>
+            </div>
+            <div class="p-col">
+              <FileUpload
+                ref="form"
+                mode="basic"
+                :customUpload="true"
+                @uploader="uploadPosterImageRu($event)"
+                :auto="true"
+                v-bind:chooseLabel="$t('smartenu.posterImageRu')"
+              ></FileUpload>
+              <div v-if="poster.imageRu" class="p-mt-3">
+                <img :src="poster.imageRu" style="width: 50%; height: 50%" />
+              </div>
+            </div>
+            <div class="p-col">
+              <FileUpload
+                ref="form"
+                mode="basic"
+                :customUpload="true"
+                @uploader="uploadPosterImageEn($event)"
+                :auto="true"
+                v-bind:chooseLabel="$t('smartenu.posterImageEn')"
+              ></FileUpload>
+              <div v-if="poster.imageEn" class="p-mt-3">
+                <img :src="poster.imageEn" style="width: 50%; height: 50%" />
+              </div>
             </div>
           </div>
         </div>
@@ -600,6 +665,7 @@ import { getHeader, header, smartEnuApi } from "@/config/config";
 import { DatePicker } from "v-calendar";
 import LoginedUserDetailsService from "@/service/LoginedUserDetailsService";
 import { FilterMatchMode, FilterOperator } from "primevue/api";
+import * as imageResizeCompress from "image-resize-compress"; // ES6
 
 export default {
   name: "Events",
@@ -679,10 +745,10 @@ export default {
       formValid: [],
       isPoster: false,
       poster: {
-          imageKk: "",
-          imageRu: "",
-          imageEn: ""
-      }
+        imageKk: "",
+        imageRu: "",
+        imageEn: "",
+      },
     };
   },
   methods: {
@@ -711,7 +777,45 @@ export default {
         (category) => category.parentId === 6
       );
     },
-
+    /**
+     *  UPLOAD POSTER IMAGEKK
+     */
+    uploadPosterImageKk(event) {
+      const file = event.files[0];
+      imageResizeCompress
+        .fromBlob(file, 90, 720, "auto", "jpeg")
+        .then((res) => {
+          imageResizeCompress.blobToURL(res).then((resp) => {
+            this.poster.imageKk = resp;
+          });
+        });
+    },
+    /**
+     *  UPLOAD POSTER IMAGERU
+     */
+    uploadPosterImageRu(event) {
+      const file = event.files[0];
+      imageResizeCompress
+        .fromBlob(file, 90, 720, "auto", "jpeg")
+        .then((res) => {
+          imageResizeCompress.blobToURL(res).then((resp) => {
+            this.poster.imageRu = resp;
+          });
+        });
+    },
+    /**
+     *  UPLOAD POSTER IMAGEEN
+     */
+    uploadPosterImageEn(event) {
+      const file = event.files[0];
+      imageResizeCompress
+        .fromBlob(file, 90, 720, "auto", "jpeg")
+        .then((res) => {
+          imageResizeCompress.blobToURL(res).then((resp) => {
+            this.poster.imageEn = resp;
+          });
+        });
+    },
     /**
      *  UPLOAD MAIN IMAGE
      */
@@ -848,8 +952,7 @@ export default {
     addEvent() {
       this.submitted = true;
       this.validateEvents();
-      console.log(this.formValid);
-      if (this.formValid.length > 0 && Object.keys(this.formValid)) {
+      if (this.formValid.length > 0) {
         return;
       }
       let main = [];
@@ -876,8 +979,26 @@ export default {
             )
           : null
       );
-      this.submitted = true;
-      console.log("EVEEEEENT", this.event);
+      if (this.isPoster) {
+        this.validPosterImages();
+        if (this.formValid.length > 0) {
+          return;
+        }
+        axios
+          .post(smartEnuApi + "/addPoster", this.poster, {
+            headers: getHeader(),
+          })
+          .then((res) => {
+            this.event.posterId = res.data.id;
+            this.event.isPoster = this.isPoster;
+            this.insertEvent();
+          });
+      } else {
+        this.insertEvent();
+      }
+    },
+
+    insertEvent() {
       axios
         .post(smartEnuApi + "/addEvent", this.event, {
           headers: getHeader(),
@@ -942,6 +1063,7 @@ export default {
       this.editVisible = true;
       this.submitted = false;
       let event = this.allEvents.find((x) => x.id === id);
+      console.log(event);
       this.event.id = event.id;
       this.event.titleKz = event.titleKz;
       this.event.titleRu = event.titleRu;
@@ -959,6 +1081,12 @@ export default {
       this.event.createdBy = event.createdBy;
       this.event.mainImageName = event.mainImageName;
       this.event.additionalFileName = event.additionalFileName;
+      this.isPoster = event.isPoster;
+      this.poster.id = event.posterId;
+      this.poster.link = event.poster.link;
+      this.poster.imageKk = event.poster.posterKk;
+      this.poster.imageRu = event.poster.posterRu;
+      this.poster.imageEn = event.poster.posterEn;
       this.getMainCategories();
       this.getMasterCourses();
       this.getBachelorCourses();
@@ -1067,32 +1195,32 @@ export default {
     },
     validateEvents() {
       this.formValid = [];
-      if (!this.event.titleKz.trim()) {
+      if (!this.event.titleKz) {
         this.formValid["titleKz"] = true;
       } else {
         delete this.formValid["titleKz"];
       }
-      if (!this.event.titleRu.trim()) {
+      if (!this.event.titleRu) {
         this.formValid["titleRu"] = true;
       } else {
         delete this.formValid["titleRu"];
       }
-      if (!this.event.titleEn.trim()) {
+      if (!this.event.titleEn) {
         this.formValid["titleEn"] = true;
       } else {
         delete this.formValid["titleEn"];
       }
-      if (!this.event.contentKz.trim()) {
+      if (!this.event.contentKz) {
         this.formValid["contentKz"] = true;
       } else {
         delete this.formValid["contentKz"];
       }
-      if (!this.event.contentRu.trim()) {
+      if (!this.event.contentRu) {
         this.formValid["contentRu"] = true;
       } else {
         delete this.formValid["contentRu"];
       }
-      if (!this.event.contentEn.trim()) {
+      if (!this.event.contentEn) {
         this.formValid["contentEn"] = true;
       } else {
         delete this.formValid["contentEn"];
@@ -1102,23 +1230,34 @@ export default {
       } else {
         delete this.formValid["isOnline"];
       }
-      if (this.event.isOnline == true && !this.event.eventLink.trim()) {
+      if (this.event.isOnline == true && !this.event.eventLink) {
         this.formValid["eventLink"] = true;
       } else {
         delete this.formValid["eventLink"];
       }
-      if (this.event.isOnline == false && !this.event.eventLocation.trim()) {
+      if (this.event.isOnline == false && !this.event.eventLocation) {
         this.formValid["eventLocation"] = true;
       } else {
         delete this.formValid["eventLocation"];
       }
-      if (!this.event.mainImage.trim()) {
+      if (!this.event.mainImage) {
         this.formValid.push(this.$t("smartenu.image1Invalid"));
       }
       if (!this.selectedMainCategories) {
         this.formValid["selectedMainCategories"] = true;
       } else {
         delete this.formValid["selectedMainCategories"];
+      }
+    },
+    validPosterImages() {
+      if (!this.poster.imageKk) {
+        this.formValid.push(this.$t("smartenu.posterImageKkInvalid"));
+      }
+      if (!this.poster.imageRu) {
+        this.formValid.push(this.$t("smartenu.posterImageRuInvalid"));
+      }
+      if (!this.poster.imageEn) {
+        this.formValid.push(this.$t("smartenu.posterImageEnInvalid"));
       }
     },
   },

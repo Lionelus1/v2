@@ -337,7 +337,10 @@ export default {
         posterImageRu: "Загрузить постер на русском",
         posterImageEn: "Загрузить постер на английском",
         posterLink: "Ссылка постера",
-        addPoster: "Добавить постер"
+        addPoster: "Добавить постер",
+        posterImageKkInvalid: "Постер на казахском не выбрана",
+        posterImageRuInvalid: "Постер на русском не выбрана",
+        posterImageEnInvalid: "Постер на английском не выбрана",
     },
     vaccination: {
         title : "Вакцинация",

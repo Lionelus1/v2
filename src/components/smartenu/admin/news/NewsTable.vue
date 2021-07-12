@@ -325,19 +325,19 @@
             v-model="isPoster"
             :binary="true"
           />
-          <label for="isPoster">{{ $t('smartenu.addPoster') }}</label>
+          <label for="isPoster">{{ $t("smartenu.addPoster") }}</label>
         </div>
         <div
           class="p-field p-mt-3"
           style="margin-bottom: 1.5rem"
           v-if="isPoster"
         >
-          <label for="poster-link">{{ $t('smartenu.posterLink') }}</label>
+          <label for="poster-link">{{ $t("smartenu.posterLink") }}</label>
           <InputText
             id="poster-link"
             v-model="poster.link"
             rows="3"
-            :class="{ 'p-invalid': formValid.titleEn && submitted }"
+            :placeholder="$t('smartenu.posterLink')"
           />
           <div class="p-grid p-mt-3" v-if="isPoster">
             <div class="p-col">
@@ -354,33 +354,29 @@
               </div>
             </div>
             <div class="p-col">
-              <div class="p-col">
-                <FileUpload
-                  ref="form"
-                  mode="basic"
-                  :customUpload="true"
-                  @uploader="uploadPosterImageRu($event)"
-                  :auto="true"
-                  v-bind:chooseLabel="$t('smartenu.posterImageRu')"
-                ></FileUpload>
-                <div v-if="poster.imageRu" class="p-mt-3">
-                  <img :src="poster.imageRu" style="width: 50%; height: 50%" />
-                </div>
+              <FileUpload
+                ref="form"
+                mode="basic"
+                :customUpload="true"
+                @uploader="uploadPosterImageRu($event)"
+                :auto="true"
+                v-bind:chooseLabel="$t('smartenu.posterImageRu')"
+              ></FileUpload>
+              <div v-if="poster.imageRu" class="p-mt-3">
+                <img :src="poster.imageRu" style="width: 50%; height: 50%" />
               </div>
             </div>
             <div class="p-col">
-              <div class="p-col">
-                <FileUpload
-                  ref="form"
-                  mode="basic"
-                  :customUpload="true"
-                  @uploader="uploadPosterImageEn($event)"
-                  :auto="true"
-                  v-bind:chooseLabel="$t('smartenu.posterImageEn')"
-                ></FileUpload>
-                <div v-if="poster.imageEn" class="p-mt-3">
-                  <img :src="poster.imageEn" style="width: 50%; height: 50%" />
-                </div>
+              <FileUpload
+                ref="form"
+                mode="basic"
+                :customUpload="true"
+                @uploader="uploadPosterImageEn($event)"
+                :auto="true"
+                v-bind:chooseLabel="$t('smartenu.posterImageEn')"
+              ></FileUpload>
+              <div v-if="poster.imageEn" class="p-mt-3">
+                <img :src="poster.imageEn" style="width: 50%; height: 50%" />
               </div>
             </div>
           </div>
@@ -766,7 +762,7 @@ export default {
           this.loading = false;
         })
         .catch((error) => {
-          console.log(error.response);
+          console.log(error.data);
           this.$toast.add({
             severity: "error",
             summary: this.$t("smartenu.loadAllNewsError") + ":\n" + error,
@@ -840,7 +836,7 @@ export default {
             headers: getHeader(),
           })
           .then((res) => {
-            this.newsData.posterId = res.data;
+            this.newsData.posterId = res.data.id;
             this.newsData.isPoster = this.isPoster;
             this.insertNews();
           });
@@ -849,7 +845,7 @@ export default {
       }
     },
     insertNews() {
-        console.log(this.newsData);
+      console.log(this.newsData);
       axios
         .post(smartEnuApi + "/addNews", this.newsData, {
           headers: getHeader(),
@@ -922,10 +918,11 @@ export default {
       this.newsData.history = newsData.history;
       this.newsData.createdBy = newsData.createdBy;
       this.isPoster = newsData.isPoster;
-      this.poster.link = newsData.poster.link
-      this.poster.imageKk = newsData.poster.imageKk
-      this.poster.imageKk = newsData.poster.imageRu
-      this.poster.imageKk = newsData.poster.imageEn
+      this.poster.id = newsData.posterId;
+      this.poster.link = newsData.poster.link;
+      this.poster.imageKk = newsData.poster.posterKk;
+      this.poster.imageRu = newsData.poster.posterRu;
+      this.poster.imageEn = newsData.poster.posterEn;
       this.selectedCatTree = [];
       this.newsData.contentCategoryRelations = [];
       for (let key in this.catTreeElementsList) {
@@ -1176,13 +1173,13 @@ export default {
     },
     validPosterImages() {
       if (!this.poster.imageKk) {
-        this.formValid.push("Постер на казахском не выбрана");
+        this.formValid.push(this.$t("smartenu.posterImageKkInvalid"));
       }
       if (!this.poster.imageRu) {
-        this.formValid.push("Постер на русском не выбрана");
+        this.formValid.push(this.$t("smartenu.posterImageRuInvalid"));
       }
       if (!this.poster.imageEn) {
-        this.formValid.push("Постер на английском не выбрана");
+        this.formValid.push(this.$t("smartenu.posterImageEnInvalid"));
       }
     },
   },

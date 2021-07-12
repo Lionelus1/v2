@@ -278,7 +278,10 @@ export default {
         posterImageRu: "Орыс тіліндегі постерді жүктеу",
         posterImageEn: "Ағылшын тіліндегі постерді жүктеу",
         posterLink: "Постер сілтемесі",
-        addPoster: "Постер қосу"
+        addPoster: "Постер қосу",
+        posterImageKkInvalid: "Қазақша постер таңдалмады",
+        posterImageRuInvalid: "Орысша постер таңдалмады",
+        posterImageEnInvalid: "Ағылшынша постер таңдалмады",
     },
     vaccination: {
          title : "Вакцинация",
