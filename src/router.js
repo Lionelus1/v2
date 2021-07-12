@@ -119,6 +119,12 @@ const routes = [
                 component: load('smartenu/admin/events/Events'),
                 beforeEnter: ifAuthenticated,
             },
+            {
+                path: '/smartenu/vaccination',
+                name: '/smartenu/vaccination',
+                component: load('smartenu/vaccination/Vaccination'),
+                beforeEnter: ifAuthenticated,
+            },
         ]
     }
 

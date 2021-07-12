@@ -1,6 +1,6 @@
 export default {
     common: {
-        login: "кіру",
+        login: "Кіру",
         logout: "Шығу",
         enterLogin: "ЖСН немесе platonus почтасын енгізіңіз",
         enterPassword: "Құпия сөзді еңгізіңіз",
@@ -10,11 +10,12 @@ export default {
         close: "Жабу",
         name : "Аты",
         created: "Құрылды",
-        createdBy: "автор",
+        createdBy: "Автор",
+        fullName: "Толық аты",
         updated: "Өзгертілді",
         type:   "Типі",
         state: "Күйі",
-        status: "статус",
+        status: "Статус",
         show: "Көру",
         save: "Cақтау",
         download: "Қотару",
@@ -51,10 +52,13 @@ export default {
         registration: "Тіркеу",
         search: "Іздеу",
         send: "Жіберу",
+        showingRecordsCount: "{totalRecords} жазбаның {first} - {last} аралығындағы жазбалар көрсетулі",
         organization: "Ұйымдық",
         params: "Параметрлер",
         person: "Жеке тұлға",
         personal: "Қызметкерлер",
+        teacher: "ПОҚ",
+        student: "Білім алушы",
         doYouWantDelete: "Сіз шынымен жойғыңыз келе ме",
         publish: "Жариялау",
         reject: "Қайтару",
@@ -275,6 +279,22 @@ export default {
         posterImageEn: "Ағылшын тіліндегі постерді жүктеу",
         posterLink: "Постер сілтемесі",
         addPoster: "Постер қосу"
+    },
+    vaccination: {
+         title : "Вакцинация",
+         list: "Вакцина алғандардың тізімі",
+         plannedDate: "Жоспарлаған уақыты",
+         date1: "1-ші компонент күні",
+         date2: "1-ші компонент күні",
+         vaccine: "Вакцина",
+         status : {
+            firstcomponent: "1-ші компонент",
+            vaccinated: "вакциналанған",
+            planned: "жоспарланған",
+            rejected: "вакцинадан босатылған",
+         },
+
+
     },
 
 }

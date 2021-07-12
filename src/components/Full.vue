@@ -164,8 +164,13 @@ export default {
                   {label:  this.$t('smartenu.newsList'), icon: 'pi pi-fw pi-money-bill',to: '/smartenu/admin/news/newstable'},
                 ]
 
-              },{
+              },
+
+              {
                 label:  this.$t('smartenu.eventsTitle'), icon: 'pi pi-fw pi-folder', to: '/smartenu/admin/events/events'
+              },
+              {
+                label:  this.$t('vaccination.title'), icon: 'pi pi-fw pi-check-circle', to: '/smartenu/vaccination'
               },
 
             ]

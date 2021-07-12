@@ -12,21 +12,21 @@
 			<Menubar :model="menu" :key="active" style="height:36px;margin-top:7px;margin-right:-7px;margin-left:-7px;" >
 				<template #end>
 					<div class="p-formgroup-inline">
-					<div>
-						<Button :label="agentType ? agentType.name : $t('common.filter')" icon="pi pi-filter" style="height:28px;right:5px" class="p-button-secondary p-button-text"  @click="openAgentTypeSelect"/>
-						<OverlayPanel ref="op" appendTo="body" :showCloseIcon="true" id="overlay_panel" style="width: 200px" :breakpoints="{'960px': '75vw'}">
-							<DataTable :value="contragent" v-model:selection="agentType" selectionMode="single" @rowSelect="onAgentTypeChange" responsiveLayout="scroll" >
-								<Column field="name" headerClass="hidden" header="Name" sortable style="width: 50%"></Column>
-							</DataTable>
-						</OverlayPanel>
+						<div>
+							<Button :label="agentType ? agentType.name : $t('common.filter')" icon="pi pi-filter" style="height:28px;right:5px" class="p-button-secondary p-button-text"  @click="openAgentTypeSelect"/>
+							<OverlayPanel ref="op" appendTo="body" :showCloseIcon="true" id="overlay_panel" style="width: 200px" :breakpoints="{'960px': '75vw'}">
+								<DataTable :value="contragent" v-model:selection="agentType" selectionMode="single" @rowSelect="onAgentTypeChange" responsiveLayout="scroll" >
+									<Column field="name" headerClass="hidden" header="Name" sortable style="width: 50%"></Column>
+								</DataTable>
+							</OverlayPanel>
+						</div>
+						<div>
+							<span class="p-input-icon-left">
+								<i class="pi pi-search"/>
+								<InputText style="height:30px" v-model="filters['global'].value" placeholder="іздеу"/>
+							</span>
+						</div>
 					</div>
-					<div>
-						<span class="p-input-icon-left">
-							<i class="pi pi-search"/>
-							<InputText style="height:30px" v-model="filters['global'].value" placeholder="іздеу"/>
-						</span>
-					</div>
-				</div>
 				</template>
 			</Menubar>
       <div class="box">
