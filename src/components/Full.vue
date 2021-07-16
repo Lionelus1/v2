@@ -136,26 +136,26 @@ export default {
                 // },
                 // {label: 'Documentation', icon: 'pi pi-fw pi-question', command: () => {window.location = "#/documentation"}},
                 // {label: 'View Source', icon: 'pi pi-fw pi-search', command: () => {window.location = "https://github.com/primefaces/sigma-vue"}},
-                {
-                    label: 'Құжаттар', icon: 'pi pi-fw pi-folder',
-                    items: [
-                        {label: 'Келісім-шарт үлгілері', icon: 'pi pi-fw pi-book',to: '/documents/doctemplate'},
-                        {label: 'Келісім-шарттар', icon: 'pi pi-fw pi-copy',to: '/documents/contracts'},
-                        ]
-                },
-                {
-                    label: 'Контрагенттер', icon: 'pi pi-fw pi-users',
-                    items: [
-                        {label: 'Ұйымдықтар', icon: 'pi pi-fw pi-home',to: '/contragent/organizations'},
-                        {label: 'Банктер', icon: 'pi pi-fw pi-money-bill',to: '/contragent/banks'},
-                        {label: 'Жеке тұлғалар', icon: 'pi pi-fw pi-user',to: '/contragent/persons/' +  Enum.PersonType.IndividualEntrepreneur},
-                        {label: 'Қызметкерлер', icon: 'pi pi-fw pi-user',to: '/contragent/persons/' +  Enum.PersonType.OrganizationMember}
-                    ]
+                // {
+                //     label: 'Құжаттар', icon: 'pi pi-fw pi-folder',
+                //     items: [
+                //         {label: 'Келісім-шарт үлгілері', icon: 'pi pi-fw pi-book',to: '/documents/doctemplate'},
+                //         {label: 'Келісім-шарттар', icon: 'pi pi-fw pi-copy',to: '/documents/contracts'},
+                //         ]
+                // },
+                // {
+                //     label: 'Контрагенттер', icon: 'pi pi-fw pi-users',
+                //     items: [
+                //         {label: 'Ұйымдықтар', icon: 'pi pi-fw pi-home',to: '/contragent/organizations'},
+                //         {label: 'Банктер', icon: 'pi pi-fw pi-money-bill',to: '/contragent/banks'},
+                //         {label: 'Жеке тұлғалар', icon: 'pi pi-fw pi-user',to: '/contragent/persons/' +  Enum.PersonType.IndividualEntrepreneur},
+                //         {label: 'Қызметкерлер', icon: 'pi pi-fw pi-user',to: '/contragent/persons/' +  Enum.PersonType.OrganizationMember}
+                //     ]
 
-                },
-                {
-                    label: 'HDFS', icon: 'pi pi-fw pi-folder', to: '/hdfs/hdfsmain'
-                },
+                // },
+                // {
+                //     label: 'HDFS', icon: 'pi pi-fw pi-folder', to: '/hdfs/hdfsmain'
+                // },
               {
 
                 label: this.$t('smartenu.newsTitle'), icon: 'pi pi-fw pi-users',
