@@ -365,7 +365,7 @@ export default {
         })
         .then((response) => {
           this.detailsCount = response.data;
-          this.detailsCount = 20000;
+          //this.detailsCount = 20000;
 
         })
         .catch((error) => {
