@@ -6,7 +6,9 @@ export default {
         enterPassword: "Enter password",
         add: "Add",
         edit: "edit",
+        date: "Date",
         delete: "delete",
+        department: "department",
         close: "close",
         name : "Name",
         created: "Created",
@@ -14,6 +16,7 @@ export default {
         fullName: "Full name",
         updated: "Updated",
         type:   "Type",
+        reason: "Reason",
         state: "State",
         status: "Status",
         show: "Show",
@@ -30,11 +33,17 @@ export default {
         cancel: "Cancel",
         code: "Code",
         main: "Main",
+        myData: "My details",
         nameIn: "Name",
         nameInQazaq: "Name in qazaq",
         nameInRussian: "Name in russian",
         nameInEnglish: "Name in english",
+        noData: "No data",
+        null : "unknown",
         number: "Number",
+        other:  "Other",
+        confirm: "Confirmation",
+        confirmation: "Are you sure you want to proceed?",
         contentInQazaq: "Content in qazaq",
         contentInRussian: "Content in russian",
         contentInEnglish: "Content in english",
@@ -76,6 +85,7 @@ export default {
                 saveError: "Save error",
                 docCreation: "Adding a new catalog"
             },
+            fillError: "Not all the data listed. Please fill in all fields!",
             sendToApprovalError: "An error occurred while sending for approval. Check the correctness of the specified data!",
             downloadError: "Error during download",
             uploadError: "Error during upload",
@@ -283,15 +293,23 @@ export default {
     vaccination: {
         title: "Vaccination",
         list: "Vaccinated List",
+        pasport: "Vaccination passport",
         plannedDate: "Planned date",
         date1: "Date (1st component)",
         date2: "Date (2nd component)",
+        doctorsNote: "Doctor’s Note",
         vaccine: "Vaccine",
+        fillVacTitle: "Enter the name of the vaccine",
+        clinic: "Clinic",
         status : {
             firstcomponent: "1st component",
             vaccinated: "vacinated",
             planned: "planned",
             rejected: "medical exemptions",
-         }
+            noData: "No data",
+         },
+         error: {
+            list: "vaccine list not loaded"
+        }
     },
 }
