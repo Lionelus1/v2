@@ -482,7 +482,7 @@ export default {
                 this.myDetails = {status : this.myDetails.status, userId: this.myDetails.userId}
                 break;
               case VS_Rejected:
-                this.myDetails = {status: this.myDetails.status, userId: this.myDetails.userId, rejectReason: this.myDetails.rejectReason, doctorsNotePath: this.myDetails.doctorsNotePath}
+                this.myDetails = {userRole: this.myDetails.userRole, department: this.myDetails.department, status: this.myDetails.status, userId: this.myDetails.userId, rejectReason: this.myDetails.rejectReason, doctorsNotePath: this.myDetails.doctorsNotePath}
                 if (this.myDetails.rejectReason === null || this.doctorsNoteFile === null) {
                   this.$toast.add({ severity: "error", summary: this.$t('common.message.fillError'),life: 3000,});
                   return;
@@ -490,14 +490,14 @@ export default {
                 data.append("doctorsnote", this.doctorsNoteFile)
                 break;
               case VS_Planned:
-                this.myDetails = { status : this.myDetails.status, userId: this.myDetails.userId, plannedDate : this.myDetails.plannedDate}
+                this.myDetails = { userRole: this.myDetails.userRole, department: this.myDetails.department, status : this.myDetails.status, userId: this.myDetails.userId, plannedDate : this.myDetails.plannedDate}
                 if (this.myDetails.plannedDate === null) {
                   this.$toast.add({ severity: "error", summary: this.$t('common.message.fillError'),life: 3000,});
                   return;
                 }
                 break;
               case VS_FirstComponent:
-                this.myDetails = { status : this.myDetails.status, userId: this.myDetails.userId, plannedDate : this.myDetails.plannedDate,
+                this.myDetails = { userRole: this.myDetails.userRole, department: this.myDetails.department, status : this.myDetails.status, userId: this.myDetails.userId, plannedDate : this.myDetails.plannedDate,
                   date1: this.myDetails.date1, vaccine: this.myDetails.vaccine, clinic: this.myDetails.clinic
                 }
                 if (this.myDetails.date1 === null || this.myDetails.date1 === '' || this.myDetails.vaccine.id === null || this.myDetails.clinic === null) {
@@ -506,7 +506,7 @@ export default {
                 }
                 break;
               case VS_Vaccinated:
-                this.myDetails = { status : this.myDetails.status,  userId: this.myDetails.userId, plannedDate : this.myDetails.plannedDate,
+                this.myDetails = {userRole: this.myDetails.userRole, department: this.myDetails.department, status : this.myDetails.status,  userId: this.myDetails.userId, plannedDate : this.myDetails.plannedDate,
                   date1: this.myDetails.date1, date2: this.myDetails.date2,  vaccine: this.myDetails.vaccine, clinic: this.myDetails.clinic,
                   pasportPath: this.myDetails.pasportPath
                 }
@@ -531,6 +531,7 @@ export default {
                 this.myDetails.pasportPath = response.data.pasportPath
                 this.$toast.add({severity:'success', summary:this.$t('common.save'), detail:this.$t('common.message.succesSaved'), life: 3000});
                 this.disabled = true;
+                this.getDetailsList();
                   })
                   .catch((error) => {
                     this.$toast.add({
