@@ -1,6 +1,9 @@
 <template>
   <div>
+
     <div class="p-col-12">
+    <h4>{{ $t("vaccination.title") }}</h4>
+
       <ConfirmDialog></ConfirmDialog>
         <div class="card">
           <div class="p-field">
@@ -90,7 +93,7 @@
 
       </div>
       <div v-if="(myDetails.userRole === 'dean' || myDetails.userRole === 'prorector' || myDetails.userRole === 'dephead' || myDetails.department === 'Департамент по социальному и гражданскому развитию')" class="card">
-        <h4>{{ $t("vaccination.title") }}</h4>
+        <h5>{{ $t("vaccination.list") }}</h5>
          <DataTable :lazy="true" :totalRecords="detailsCount" :value="vaccinated" @page="onPage($event)" :paginator="true" class="p-datatable-vaccinated" :rows="10"
             dataKey="id" :rowHover="true" v-model:selection="selectedCustomers" v-model:filters="filters" filterDisplay="menu" :loading="loading"
             paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown" :rowsPerPageOptions="[10,25,50]"
@@ -98,15 +101,7 @@
             :globalFilterFields="['userRole','fullName','plannedDate','status', 'date2', 'date1']" responsiveLayout="scroll"
             @sort="onSort($event)" @filter="onFilter($event)"
             >
-            <template #header>
-              <div class="p-d-flex p-jc-between p-ai-center">
-                <h5 class="p-m-0">{{$t('vaccination.list')}}</h5>
-                <span class="p-input-icon-left ">
-                  <i class="pi pi-search" />
-                  <InputText v-model="filters['global'].value" :placeholder="$t('common.search')" />
-                </span>
-              </div>
-            </template>
+
           <template #empty> {{$t('common.recordsNotFound')}} </template>
           <template #loading> Loading vaccinated data. Please wait. </template>
           <Column field="userRole" :header="$t('common.type')" sortable>
@@ -217,6 +212,7 @@ export default {
       lazyParams: {
         page :0,
         rows: 10,
+        countMode: null,
       },
       addVaccineDialogDisplay: false,
       newVaccine : {vname:''},
@@ -359,8 +355,10 @@ export default {
     },
     getDetailsCount() {
       this.vaccines = [];
+      this.lazyParams.countMode = 1
+
       axios
-        .get(smartEnuApi + "/getDetailsCount", {
+        .post(smartEnuApi + "/getDetailsList", this.lazyParams, {
           headers: getHeader(),
         })
         .then((response) => {
@@ -379,11 +377,13 @@ export default {
     getDetailsList() {
       this.loading = true;
       this.vaccines = [];
+      this.lazyParams.countMode = null
       axios
         .post(smartEnuApi + "/getDetailsList", this.lazyParams, {
           headers: getHeader(),
         })
         .then((response) => {
+          this.getDetailsCount()
           this.vaccinated = response.data;
           this.loading = false;
 
