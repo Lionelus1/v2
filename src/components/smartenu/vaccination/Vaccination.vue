@@ -174,6 +174,12 @@
               </Dropdown>
             </template>
           </Column>
+          <Column :exportable="false">
+            <template #body="slotProps">
+              <Button v-if="slotProps.data.status == VS_Vaccinated" icon="pi pi-download" class="p-button-rounded p-button-success p-mr-2" @click="downloadFile(slotProps.data.pasportPath, VS_Vaccinated)" />
+              <Button v-else-if="slotProps.data.status == VS_Rejected" icon="pi pi-download" class="p-button-rounded p-button-success p-mr-2" @click="downloadFile(slotProps.data.doctorsNotePath, VS_Rejected)" />
+            </template>
+          </Column>
         </DataTable>
       </div>
     </div>
@@ -427,10 +433,10 @@ export default {
         .then((response) => {
           this.myDetails = response.data
 
-          if (this.myDetails.vaccine.id === null) {
-            this.myDetails.vaccine.id = -2
-            this.myDetails.vaccine.vname = this.$t("common.select")
-          }
+          // if (this.myDetails.vaccine.id === null) {
+          //   this.myDetails.vaccine.id = -2
+          //   this.myDetails.vaccine.vname = this.$t("common.select")
+          // }
 
 
           if (this.myDetails.status === null) {
@@ -529,6 +535,7 @@ export default {
 
 
             }
+
             data.append('myDetails', JSON.stringify(this.myDetails))
 
 
