@@ -38,12 +38,12 @@
         <div v-if="myDetails.status == VS_FirstComponent || myDetails.status == VS_Vaccinated" class="p-col-12 p-mb-2 p-lg-3 p-mb-lg-0 p-field p-grid">
           <label class="p-col-fixed" style="width:60px">{{$t('vaccination.vaccine')}}</label>
           <div class="p-col">
-            <Dropdown style="width:150px" :disabled="disabled" ref="vaccine" @change="VaccineSelect()" v-model="myDetails.vaccine" :options="vaccines" optionLabel="vname">
+            <Dropdown style="width:150px" :disabled="disabled" ref="vaccine" placeholder="Select a Vaccine" @change="VaccineSelect()" v-model="myDetails.vaccine" :options="vaccines" optionLabel="vname">
                   <template #value="slotProps" >
-                    <span>{{(slotProps.value.id >= 0 ? slotProps.value.vname : $t('common.other'))}}</span>
+                    <span>{{(slotProps.value.id >= 0 ? slotProps.value.vname : (slotProps.value.vname === -1 ? $t('common.other') : $t('common.select')))}}</span>
                   </template>
                   <template #option="slotProps">
-                    <span>{{(slotProps.option.id >= 0 ? slotProps.option.vname : $t('common.other'))}}</span>
+                    <span>{{(slotProps.option.id >= 0 ? slotProps.option.vname : (slotProps.option.id === -1 ? $t('common.other') : $t('common.select')))}}</span>
                   </template>
             </Dropdown>
           </div>
@@ -249,7 +249,7 @@ export default {
   },
   mounted() {
     this.loading = false;
-    this.vaccinated.forEach(vaccinate => (vaccinate.plannedDate = new Date(vaccinate.plannedDate), vaccinate.date1 = new Date(vaccinate.date1)));
+
   },
   methods: {
     Change() {
@@ -264,7 +264,7 @@ export default {
       }
     },
     VaccineSelect() {
-      if (this.myDetails.vaccine.id <0) {
+      if (this.myDetails.vaccine.id === -1) {
         this.addVaccineDialogDisplay = true
         this.addVaccineDialogMessage = []
       }
@@ -310,6 +310,7 @@ export default {
       this.VS_NoData = VS_NoData;
     },
     LoadMyDetail() {
+
       this.myDetails = {};
       axios
         .get(smartEnuApi + "/getMyDetails", {
@@ -354,7 +355,7 @@ export default {
       return result == 'Invalid Date' ? '' : result
     },
     getDetailsCount() {
-      this.vaccines = [];
+
       this.lazyParams.countMode = 1
 
       axios
@@ -376,7 +377,7 @@ export default {
     },
     getDetailsList() {
       this.loading = true;
-      this.vaccines = [];
+
       this.lazyParams.countMode = null
       axios
         .post(smartEnuApi + "/getDetailsList", this.lazyParams, {
@@ -403,7 +404,10 @@ export default {
           headers: getHeader(),
         })
         .then((response) => {
-          this.vaccines = response.data;
+          this.vaccines.push({id : -2, vname: this.$t('common.select')})
+          response.data.forEach(element => {
+            this.vaccines.push(element)
+          });
           this.vaccines.push(this.otherVaccine)
           this.loading = false;
         })
@@ -422,6 +426,12 @@ export default {
         })
         .then((response) => {
           this.myDetails = response.data
+
+          if (this.myDetails.vaccine.id === null) {
+            this.myDetails.vaccine.id = -2
+            this.myDetails.vaccine.vname = this.$t("common.select")
+          }
+
 
           if (this.myDetails.status === null) {
             this.myDetails.status = VS_NoData
@@ -500,7 +510,7 @@ export default {
                 this.myDetails = { userRole: this.myDetails.userRole, department: this.myDetails.department, status : this.myDetails.status, userId: this.myDetails.userId, plannedDate : this.myDetails.plannedDate,
                   date1: this.myDetails.date1, vaccine: this.myDetails.vaccine, clinic: this.myDetails.clinic
                 }
-                if (this.myDetails.date1 === null || this.myDetails.date1 === '' || this.myDetails.vaccine.id === null || this.myDetails.clinic === null) {
+                if ( this.myDetails.vaccine.id < 0 || this.myDetails.date1 === null || this.myDetails.date1 === '' || this.myDetails.vaccine.id === null || this.myDetails.clinic === null) {
                   this.$toast.add({ severity: "error", summary: this.$t('common.message.fillError'),life: 3000,});
                   return;
                 }
@@ -510,7 +520,7 @@ export default {
                   date1: this.myDetails.date1, date2: this.myDetails.date2,  vaccine: this.myDetails.vaccine, clinic: this.myDetails.clinic,
                   pasportPath: this.myDetails.pasportPath
                 }
-                 if (this.myDetails.date2 === null || this.myDetails.date2 === '' || this.myDetails.vaccine.id === null || this.myDetails.clinic === null || this.passportFile === null) {
+                 if (this.myDetails.vaccine.id < 0 || this.myDetails.date2 === null || this.myDetails.date2 === '' || this.myDetails.vaccine.id === null || this.myDetails.clinic === null || this.passportFile === null) {
                   this.$toast.add({ severity: "error", summary: this.$t('common.message.fillError'),life: 3000,});
                   return;
                 }

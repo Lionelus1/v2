@@ -30,6 +30,7 @@ export default {
         filter: "Filter",
         yes: "Yes",
         no: "No",
+        select: "Select",
         cancel: "Cancel",
         code: "Code",
         main: "Main",

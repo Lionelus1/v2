@@ -33,6 +33,7 @@ export default {
         filter: "фильтр",
         yes: "Да",
         no: "Нет",
+        select: "Выберите",
         cancel: "Отмена",
         main: "Основные",
         myData: "Мои данные",

@@ -30,6 +30,7 @@ export default {
         filter: "Сүзгі",
         yes: "Иә",
         no: "Жоқ",
+        select: "Таңдаңыз",
         cancel: "Қайтару",
         code: "Коды",
         main: "Негізгі",
