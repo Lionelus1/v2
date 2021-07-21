@@ -6,6 +6,7 @@ export default {
         enterPassword: "Enter password",
         add: "Add",
         edit: "edit",
+        orgname: "L.N. Gumilyov Eurasian National University",
         date: "Date",
         delete: "delete",
         department: "department",

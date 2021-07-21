@@ -6,6 +6,7 @@ export default {
         enterPassword: "Құпия сөзді еңгізіңіз",
         add : "Қосу",
         edit: "Өзгерту",
+        orgname: "Л.Н. Гумилев атындағы Еуразия ұлттық университеті",
         date: "Күні",
         delete: "Жою",
         department: "Бөлім",

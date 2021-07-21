@@ -6,6 +6,7 @@ export default {
         enterPassword: "Введите пароль",
         add : "Добавить",
         edit: "Редактировать",
+        orgname: "Евразийский университет имени Л.Н. Гумилева",
         date: "Дата",
         delete: "Удалить",
         department: "Отдел",

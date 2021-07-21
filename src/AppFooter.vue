@@ -1,6 +1,6 @@
 <template>
 	<div class="layout-footer">
-		<span class="footer-text" style="margin-right: 5px">Л.Н. Нумилев атындағы Еуразия ұлттық университеті</span>
+		<span class="footer-text" style="margin-right: 5px">@ {{$t.common("common.orgname")}}</span>
 
 
 	</div>
