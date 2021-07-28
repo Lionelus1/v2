@@ -1,6 +1,6 @@
 <template>
 	<div class="layout-footer">
-		<span class="footer-text" style="margin-right: 5px">@ {{$t.common("common.orgname")}}</span>
+		<span class="footer-text" style="margin-right: 5px">@ {{$t("common.orgname")}}</span>
 
 
 	</div>

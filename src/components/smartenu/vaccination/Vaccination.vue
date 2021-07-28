@@ -5,6 +5,16 @@
     <h4>{{ $t("vaccination.title") }}</h4>
 
       <ConfirmDialog></ConfirmDialog>
+      <Sidebar v-model:visible="visibleFull" position="full">
+	      <div class="card">
+            <SelectButton @click="ChangeStackData" v-model="selectedData" :options="usertype">
+              <template #option="slotProps">
+                {{$t('common.' + slotProps.option)}}
+              </template>
+            </SelectButton>
+            <Chart type="bar" :data="stackedData" :options="stackedOptions" />
+        </div>
+      </Sidebar>
         <div class="card">
           <div class="p-field">
           <div class="p-grid p-formgrid">
@@ -92,8 +102,8 @@
         <!-- <Button class="p-button-help" v-if="myDetails.status === VS_Vaccinated"  :label="$t('vaccination.pasport')" icon="pi pi-upload" /> -->
 
       </div>
-      <div v-if="(myDetails.userRole === 'dean' || myDetails.userRole === 'prorector' || myDetails.userRole === 'dephead' || myDetails.department === 'Департамент по социальному и гражданскому развитию')" class="card">
-        <h5>{{ $t("vaccination.list") }}</h5>
+      <div v-if="(myDetails.userRole === 'dean' || myDetails.userRole === 'prorector' || myDetails.userRole === 'dephead' || myDetails.department === 'Департамент по социальному и гражданскому развитию' || myDetails.department === 'Отдел социальной поддержки'  || myDetails.department === 'Департамент цифрового развития и дистанционного обучения' )" class="card">
+
          <DataTable :lazy="true" :totalRecords="detailsCount" :value="vaccinated" @page="onPage($event)" :paginator="true" class="p-datatable-vaccinated" :rows="10"
             dataKey="id" :rowHover="true" v-model:selection="selectedCustomers" v-model:filters="filters" filterDisplay="menu" :loading="loading"
             paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown" :rowsPerPageOptions="[10,25,50]"
@@ -101,6 +111,12 @@
             :globalFilterFields="['userRole','fullName','plannedDate','status', 'date2', 'date1']" responsiveLayout="scroll"
             @sort="onSort($event)" @filter="onFilter($event)"
             >
+            <template #header>
+              <div class="p-d-flex p-jc-between">
+                {{ $t("vaccination.list") }}<Button icon="pi pi-chart-bar" label="Статистика" @click="visibleFull = true"  />
+              </div>
+            </template>
+
 
           <template #empty> {{$t('common.recordsNotFound')}} </template>
           <template #loading> Loading vaccinated data. Please wait. </template>
@@ -109,7 +125,15 @@
               {{$t('common.' + data.userRole)}}
             </template>
             <template #filter="{filterModel}">
-              <InputText type="text" v-model="filterModel.value" class="p-column-filter" placeholder="Search by name"/>
+              <Dropdown v-model="filterModel.value"  :options="usertype" placeholder="Any" class="p-column-filter" :showClear="true">
+                <template #value="slotProps" >
+                  <span v-if="slotProps.value" class="customer-badge">{{$t('common.' + slotProps.value)}}</span>
+                  <span v-else class="customer-badge">{{slotProps.value}}</span>
+                </template>
+                <template #option="slotProps">
+                  <span class="customer-badge">{{$t('common.' + slotProps.option)}}</span>
+                </template>
+              </Dropdown>
             </template>
           </Column>
           <Column :header="$t('common.fullName')" field="fullName" sortable>
@@ -228,10 +252,121 @@ export default {
       detailPagecount : 10,
       vaccinated: [ ],
       myDetails: {},
+      statistic : [],
+      selectedData : "student",
+      stackedData : {},
+      visibleFull : false,
+      personalData : {
+        labels: [],
+        datasets: [{
+            type: 'bar',
+            label: this.$t('vaccination.status.firstcomponent'),
+            backgroundColor: '#23547b',
+            data: []
+        }, {
+            type: 'bar',
+            label: this.$t('vaccination.status.vaccinated'),
+            backgroundColor: '#256029',
+            data: []
+        }, {
+            type: 'bar',
+            label: this.$t('vaccination.status.planned'),
+            backgroundColor: '#694382',
+            data: []
+        }, {
+            type: 'bar',
+            label: this.$t('vaccination.status.rejected'),
+            backgroundColor: '#8a5340',
+            data: []
+        }]
+      },
+      teacherData : {
+        labels: [],
+        datasets: [{
+            type: 'bar',
+            label: this.$t('vaccination.status.firstcomponent'),
+            backgroundColor: '#23547b',
+            data: []
+        }, {
+            type: 'bar',
+            label: this.$t('vaccination.status.vaccinated'),
+            backgroundColor: '#256029',
+            data: []
+        }, {
+            type: 'bar',
+            label: this.$t('vaccination.status.planned'),
+            backgroundColor: '#694382',
+            data: []
+        }, {
+            type: 'bar',
+            label: this.$t('vaccination.status.rejected'),
+            backgroundColor: '#8a5340',
+            data: []
+        }]
+      },
+      studentData : {
+        labels: [],
+        datasets: [{
+            type: 'bar',
+            label: this.$t('vaccination.status.firstcomponent'),
+            backgroundColor: '#23547b',
+            data: []
+        }, {
+            type: 'bar',
+            label: this.$t('vaccination.status.vaccinated'),
+            backgroundColor: '#256029',
+            data: []
+        }, {
+            type: 'bar',
+            label: this.$t('vaccination.status.planned'),
+            backgroundColor: '#694382',
+            data: []
+        }, {
+            type: 'bar',
+            label: this.$t('vaccination.status.rejected'),
+            backgroundColor: '#8a5340',
+            data: []
+        }]
+      },
+
+      stackedOptions: {
+                plugins: {
+                    tooltips: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    legend: {
+                        labels: {
+                            color: '#495057'
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        stacked: true,
+                        ticks: {
+                            color: '#495057'
+                        },
+                        grid: {
+                            color: '#ebedef'
+                        }
+                    },
+                    y: {
+                        stacked: true,
+                        ticks: {
+                            color: '#495057'
+                        },
+                        grid: {
+                            color: '#ebedef'
+                        }
+                    }
+                }
+            },
+
       loading : true,
       filters: {
           'global': {value: null, matchMode: FilterMatchMode.CONTAINS},
-          'userRole': {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.CONTAINS}]},
+          'userRole': {value: null, matchMode: FilterMatchMode.EQUALS},
           'fullName': {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.CONTAINS}]},
           'department': {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.CONTAINS}]},
           'plannedDate': {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.DATE_IS}]},
@@ -380,6 +515,174 @@ export default {
             life: 3000,
           });
         });
+
+    },
+    getDetailsChart() {
+      this.lazyParams.countMode = 2
+      axios
+        .post(smartEnuApi + "/getDetailsList", this.lazyParams, {
+          headers: getHeader(),
+        })
+        .then((response) => {
+          this.statistic = response.data;
+          // stackedData: {
+          //       labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+          //       datasets: [{
+          //           type: 'bar',
+          //           label: 'Dataset 1',
+          //           backgroundColor: '#42A5F5',
+          //           data: [50,25,12,48,90,76,42]
+          //       }, {
+          //           type: 'bar',
+          //           label: 'Dataset 2',
+          //           backgroundColor: '#66BB6A',
+          //           data: [21,84,24,75,37,65,34]
+          //       }, {
+          //           type: 'bar',
+          //           label: 'Dataset 3',
+          //           backgroundColor: '#FFA726',
+          //           data: [41,52,24,74,23,21,32]
+          //       }]
+          //   },
+          //statuses: ["firstcomponent", "vaccinated", "planned", "rejected", "noData"],
+          // &.status-vaccinated{
+          //   background: #c8e6c9;
+          //   color: #256029;
+          // }
+          // &.status-firstcomponent{
+          //   background: #b3e5fc;
+          //   color: #23547b;
+          // }
+          // &.status-noData {
+          //   background: #ffcdd2;
+          //   color: #c63737;
+          // }
+          // &.status-rejected {
+          //   background: #feedaf;
+          //   color: #8a5340;
+          // }
+          // &.status-planned {
+          //   background: #eccfff;
+          //   color: #694382;
+          // }
+          this.studentData.labels = [];
+          this.teacherData.labels = [];
+          this.personalData.labels = [];
+          response.data.forEach(el => {
+            var studentPushed = false
+
+            el.role.forEach(role => {
+              if (role.name === 'student') {
+                if (!studentPushed) {
+                  this.studentData.labels.push(el.name);
+                  studentPushed = true;
+                }
+                var f = 0;
+                var v = 0;
+                var p = 0;
+                var r = 0;
+                role.status.forEach(status => {
+                  switch (status.id) {
+                    case this.statuses.indexOf("firstcomponent"):
+                      f = status.count;
+                      break;
+                    case this.statuses.indexOf("vaccinated"):
+                      v = status.count;
+                      break;
+                    case this.statuses.indexOf("planned"):
+                      p = status.count;
+                      break;
+                    case this.statuses.indexOf("rejected"):
+                      r = status.count;
+                      break;
+                  }
+                })
+                this.studentData.datasets[0].data.push(f);
+                this.studentData.datasets[1].data.push(v);
+                this.studentData.datasets[2].data.push(p);
+                this.studentData.datasets[3].data.push(r);
+
+              }
+              var personalPushed = false;
+               if (role.name === 'personal') {
+                if (!personalPushed) {
+                  this.personalData.labels.push(el.name);
+                  personalPushed = true;
+                }
+                f = 0;
+                v = 0;
+                p = 0;
+                r = 0;
+                role.status.forEach(status => {
+                  switch (status.id) {
+                    case this.statuses.indexOf("firstcomponent"):
+                      f = status.count;
+                      break;
+                    case this.statuses.indexOf("vaccinated"):
+                      v = status.count;
+                      break;
+                    case this.statuses.indexOf("planned"):
+                      p = status.count;
+                      break;
+                    case this.statuses.indexOf("rejected"):
+                      r = status.count;
+                      break;
+                  }
+                })
+                this.personalData.datasets[0].data.push(f);
+                this.personalData.datasets[1].data.push(v);
+                this.personalData.datasets[2].data.push(p);
+                this.personalData.datasets[3].data.push(r);
+
+              }
+              var teacherPushed = false;
+               if (role.name === 'teacher') {
+                if (!teacherPushed) {
+                  this.teacherData.labels.push(el.name);
+                  teacherPushed = true;
+                }
+                f = 0;
+                v = 0;
+                p = 0;
+                r = 0;
+                role.status.forEach(status => {
+                  switch (status.id) {
+                    case this.statuses.indexOf("firstcomponent"):
+                      f = status.count;
+                      break;
+                    case this.statuses.indexOf("vaccinated"):
+                      v = status.count;
+                      break;
+                    case this.statuses.indexOf("planned"):
+                      p = status.count;
+                      break;
+                    case this.statuses.indexOf("rejected"):
+                      r = status.count;
+                      break;
+                  }
+                })
+                this.teacherData.datasets[0].data.push(f);
+                this.teacherData.datasets[1].data.push(v);
+                this.teacherData.datasets[2].data.push(p);
+                this.teacherData.datasets[3].data.push(r);
+              }
+            })
+          })
+          if (this.selectedData === "student")
+            this.stackedData = this.studentData
+          else if (this.selectedData === "teacher")
+            this.stackedData = this.teacherData
+          else
+             this.stackedData = this.personalData
+
+        })
+        .catch((error) => {
+          this.$toast.add({
+            severity: "error",
+            summary: this.$t("vaccination.error.list") + ":\n" + error,
+            life: 3000,
+          });
+        });
     },
     getDetailsList() {
       this.loading = true;
@@ -391,6 +694,7 @@ export default {
         })
         .then((response) => {
           this.getDetailsCount()
+          this.getDetailsChart()
           this.vaccinated = response.data;
           this.loading = false;
 
@@ -563,6 +867,14 @@ export default {
           }
         });
       }
+  },
+  ChangeStackData() {
+    if (this.selectedData === "student")
+            this.stackedData = this.studentData
+          else if (this.selectedData === "teacher")
+            this.stackedData = this.teacherData
+          else
+             this.stackedData = this.personalData
   },
   uploadPassport(event) {
     this.passportFile = event.files[0];

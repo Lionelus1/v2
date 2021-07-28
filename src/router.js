@@ -40,7 +40,7 @@ const routes = [
     },
     {
         path: '/',
-        redirect:'/smartenu/admin/news/newstable',
+        redirect:'/smartenu/vaccination',
         name: '/',
         component: Full,
         children:[
