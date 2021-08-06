@@ -112,13 +112,18 @@ const routes = [
                 component: load('smartenu/admin/newscategories/CategoriesTable'),
                 beforeEnter: ifAuthenticated,
             },
-
             {
                 path: '/smartenu/admin/events/events',
                 name: '/smartenu/admin/events/events',
                 component: load('smartenu/admin/events/Events'),
                 beforeEnter: ifAuthenticated,
             },
+            {
+                path: '/faq/faqmain',
+                name: '/faq/faqmain',
+                component: load('faq/FaqMain'),
+                beforeEnter: ifAuthenticated,
+            }
         ]
     }
 
