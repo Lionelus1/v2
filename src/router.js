@@ -40,7 +40,7 @@ const routes = [
     },
     {
         path: '/',
-        redirect:'/smartenu/vaccination',
+        redirect:'/smartenu/admin/news/newstable',
         name: '/',
         component: Full,
         children:[
@@ -112,7 +112,6 @@ const routes = [
                 component: load('smartenu/admin/newscategories/CategoriesTable'),
                 beforeEnter: ifAuthenticated,
             },
-
             {
                 path: '/smartenu/admin/events/events',
                 name: '/smartenu/admin/events/events',
@@ -127,9 +126,20 @@ const routes = [
             },
             {
                 path: '/faq/faqmain',
-                name: '/faq/faqmain',
-                component: load('faq/FaqMain'),
-                beforeEnter: ifAuthenticated,
+                name: 'FaqComponent',
+                component: load('faq/FaqComponent'),
+                children: [
+                    {
+                        path: '',
+                        name: 'FaqMain',
+                        component: load('faq/FaqMain'),
+                    },
+                    {
+                        path: ':id',
+                        name: 'FaqView',
+                        component: load('faq/FaqView'),
+                    }
+                ]
             }
         ]
     }
