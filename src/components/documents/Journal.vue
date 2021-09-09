@@ -5,8 +5,11 @@
 				<h4>{{$t("contracts.journal")}}</h4>
 			</div>
 			<div class="content-section implementation">
-        <div class="card">
-					<Menubar :model="menu" :key="active" style="height:36px;margin-top:7px;margin-right:-7px;margin-left:-7px;" />
+        <div class="card  p-p-0">
+          <div class="p-col p-p-0">
+					  <Menubar :model="menu" :key="active" style="height:36px;margin-top:0px;margin-right:-7px;margin-left:-7px;" />
+            
+          </div>
 				</div>
 			</div>
 		</div>
