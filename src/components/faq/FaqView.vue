@@ -143,12 +143,12 @@ export default {
   font-size: 12px;
   letter-spacing: 0.3px;
 
-  &.status-3 {
+  &.status-2 {
     background: #c8e6c9;
     color: #256029;
   }
 
-  &.status-4 {
+  &.status-3 {
     background: #ffcdd2;
     color: #c63737;
   }
@@ -163,7 +163,7 @@ export default {
     color: #23547b;
   }
 
-  &.status-2 {
+  &.status-4 {
     background: #eccfff;
     color: #694382;
   }
