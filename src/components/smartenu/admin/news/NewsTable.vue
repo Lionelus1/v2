@@ -739,11 +739,16 @@ export default {
           this.loading = false;
         })
         .catch((error) => {
-          this.$toast.add({
-            severity: "error",
-            summary: this.$t("smartenu.loadAllCategoriesError") + ":\n" + error,
-            life: 3000,
-          });
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          } else {
+            this.$toast.add({
+              severity: "error",
+              summary:
+                this.$t("smartenu.loadAllCategoriesError") + ":\n" + error,
+              life: 3000,
+            });
+          }
         });
     },
 
@@ -762,14 +767,14 @@ export default {
           this.loading = false;
         })
         .catch((error) => {
-          console.log(error.data);
-          this.$toast.add({
-            severity: "error",
-            summary: this.$t("smartenu.loadAllNewsError") + ":\n" + error,
-            life: 3000,
-          });
           if (error.response.status == 401) {
             this.$store.dispatch("logLout");
+          } else {
+            this.$toast.add({
+              severity: "error",
+              summary: this.$t("smartenu.loadAllNewsError") + ":\n" + error,
+              life: 3000,
+            });
           }
         });
     },
@@ -794,11 +799,15 @@ export default {
           }
         })
         .catch((error) => {
-          this.$toast.add({
-            severity: "error",
-            summary: this.$t("smartenu.delNewsError") + ":\n" + error,
-            life: 3000,
-          });
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          } else {
+            this.$toast.add({
+              severity: "error",
+              summary: this.$t("smartenu.delNewsError") + ":\n" + error,
+              life: 3000,
+            });
+          }
         });
       this.deleteVisible = false;
       this.newsData = {};
@@ -864,11 +873,15 @@ export default {
           }
         })
         .catch((error) => {
-          this.$toast.add({
-            severity: "error",
-            summary: this.$t("smartenu.saveNewsError") + ":\n" + error,
-            life: 3000,
-          });
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          } else {
+            this.$toast.add({
+              severity: "error",
+              summary: this.$t("smartenu.saveNewsError") + ":\n" + error,
+              life: 3000,
+            });
+          }
         });
     },
     /**
@@ -993,11 +1006,15 @@ export default {
           }
         })
         .catch((error) => {
-          this.$toast.add({
-            severity: "error",
-            summary: this.$t("smartenu.saveNewsError") + ":\n" + error,
-            life: 3000,
-          });
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          } else {
+            this.$toast.add({
+              severity: "error",
+              summary: this.$t("smartenu.saveNewsError") + ":\n" + error,
+              life: 3000,
+            });
+          }
         });
     },
 
@@ -1027,11 +1044,15 @@ export default {
           }
         })
         .catch((error) => {
-          this.$toast.add({
-            severity: "error",
-            summary: this.$t("smartenu.saveNewsError") + ":\n" + error,
-            life: 3000,
-          });
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          } else {
+            this.$toast.add({
+              severity: "error",
+              summary: this.$t("smartenu.saveNewsError") + ":\n" + error,
+              life: 3000,
+            });
+          }
         });
     },
 
@@ -1065,11 +1086,15 @@ export default {
           }
         })
         .catch((error) => {
-          this.$toast.add({
-            severity: "error",
-            summary: this.$t("smartenu.saveNewsError") + ":\n" + error,
-            life: 3000,
-          });
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          } else {
+            this.$toast.add({
+              severity: "error",
+              summary: this.$t("smartenu.saveNewsError") + ":\n" + error,
+              life: 3000,
+            });
+          }
         });
     },
 
@@ -1117,11 +1142,15 @@ export default {
           this.roles.isModer = this.findRole(this.userRoles, "MODERATOR");
         })
         .catch((error) => {
-          this.$toast.add({
-            severity: "error",
-            summary: this.$t("smartenu.loadAllEventsError") + ":\n" + error,
-            life: 3000,
-          });
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          } else {
+            this.$toast.add({
+              severity: "error",
+              summary: this.$t("smartenu.loadAllEventsError") + ":\n" + error,
+              life: 3000,
+            });
+          }
         });
     },
     findRole(roles, code) {

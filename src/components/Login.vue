@@ -1,6 +1,6 @@
 <template>
   <div class="flexgrid-demo ">
-    
+
       <div class="p-grid p-ai-center vertical-container">
         <div class="p-lg-4 p-md-8 p-sm-12 p-lg-offset-4 p-md-offset-2 p-sm-offset-0 p-text-center">
           <Fieldset legend="Login System">
@@ -24,7 +24,7 @@
           </Fieldset>
         </div>
       </div>
-    
+
   </div>
 </template>
 
@@ -43,6 +43,9 @@
             password:''
           }
         }
+      },
+      created() {
+        this.$store.dispatch("logLout");
       },
       methods:{
         login(){
@@ -69,7 +72,7 @@
           });
         }
 
-      }        
+      }
   }
 </script>
 

@@ -309,6 +309,7 @@ export default {
             planned: "planned",
             rejected: "medical exemptions",
             noData: "No data",
+            minor: "no 18",
          },
          error: {
             list: "vaccine list not loaded"
