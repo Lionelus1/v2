@@ -61,7 +61,7 @@ export default {
         recordsNotFound: "Не найдено записей",
         refinf: "Справочная информация",
         registration: "Регистрация",
-        search: "Пойск",
+        search: "Поиск",
         send: "Отправить",
         showingRecordsCount: ' Показаны записи с {first} по {last} из  {totalRecords} ',
         organization: "Организация",
@@ -377,4 +377,22 @@ export default {
             list: "не удалость загрузить список вакцин"
         }
     },
+    faq: {
+        title: "Обращения",
+        addFaq: "Задать вопрос",
+        loading: "Ждите...",
+        question: "Вопрос",
+        recipient: "Получатель",
+        status: "Статус",
+        sendDate: "Дата отправления",
+        createDate: "Дата создания",
+        attachments: "Вложения",
+        toAnswer: "Ответить",
+        forward: "Переслать",
+        selectRecipient: "Выберите получателя",
+        uploadImage: "Добавить картинку",
+        uploadFile: "Добавить файл",
+        answer: "Ответ",
+        noAnswer: "Ответ не получен",
+    }
 }

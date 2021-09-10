@@ -315,4 +315,22 @@ export default {
             list: "vaccine list not loaded"
         }
     },
+    faq: {
+        title: "Request",
+        addFaq: "Ask a question",
+        loading: "Wait...",
+        question: "Question",
+        recipient: "Recipient",
+        status: "Status",
+        sendDate: "Send date",
+        createDate: "Date of creation",
+        attachments: "Attachments",
+        toAnswer: "To answer",
+        forward: "Forward",
+        selectRecipient: "Select the recipient",
+        uploadImage: "Add a picture",
+        uploadFile: "Add a file",
+        answer: "Answer",
+        noAnswer: "No response received"
+    }
 }

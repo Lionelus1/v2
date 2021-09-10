@@ -320,5 +320,23 @@ export default {
 
 
     },
+    faq: {
+        title: "Сұрау",
+        addFaq: "Сұрақ қою",
+        loading: "Күтіңіз...",
+        question: "Сұрақ",
+        recipient: "Қабылдаушы",
+        status: "Статус",
+        sendDate: "Жіберілген күні",
+        createDate: "Құрылған күні",
+        attachments: "Тіркемелер",
+        toAnswer: "Жауап беру",
+        forward: "Бағыттау",
+        selectRecipient: "Қабылдаушыны таңдаңыз",
+        uploadImage: "Сурет қосу",
+        uploadFile: "Құжат қосу",
+        answer: "Жауап",
+        noAnswer: "Жауап берілмеді"
+    }
 
 }
