@@ -5,7 +5,7 @@
         <img class="round" v-else src="assets/layout/images/default-user.jpg" />
     </div>
     <button class="p-link layout-profile-link" @click="onClick">
-        <span class="username">{{ loginedUser.name }}</span>
+        <span class="username">{{ loginedUser.fullName }}</span>
         <i class="pi pi-fw pi-cog"></i>
     </button>
     <transition name="layout-submenu-wrapper">
