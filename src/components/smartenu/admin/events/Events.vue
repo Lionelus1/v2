@@ -884,13 +884,14 @@ export default {
           console.log(this.allEvents);
         })
         .catch((error) => {
-          this.$toast.add({
-            severity: "error",
-            summary: this.$t("smartenu.loadAllEventsError") + ":\n" + error,
-            life: 3000,
-          });
           if (error.response.status == 401) {
             this.$store.dispatch("logLout");
+          } else {
+            this.$toast.add({
+              severity: "error",
+              summary: this.$t("smartenu.loadAllEventsError") + ":\n" + error,
+              life: 3000,
+            });
           }
         });
     },
@@ -908,11 +909,15 @@ export default {
           this.participantsCategories = response.data;
         })
         .catch((error) => {
-          this.$toast.add({
-            severity: "error",
-            summary: this.$t("smartenu.loadAllEventsError") + ":\n" + error,
-            life: 3000,
-          });
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          } else {
+            this.$toast.add({
+              severity: "error",
+              summary: this.$t("smartenu.loadAllEventsError") + ":\n" + error,
+              life: 3000,
+            });
+          }
         });
     },
 
@@ -936,11 +941,15 @@ export default {
           }
         })
         .catch((error) => {
-          this.$toast.add({
-            severity: "error",
-            summary: this.$t("smartenu.delEventError") + ":\n" + error,
-            life: 3000,
-          });
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          } else {
+            this.$toast.add({
+              severity: "error",
+              summary: this.$t("smartenu.delEventError") + ":\n" + error,
+              life: 3000,
+            });
+          }
         });
       this.deleteVisible = false;
       this.event = {};
@@ -1154,11 +1163,15 @@ export default {
           }
         })
         .catch((error) => {
-          this.$toast.add({
-            severity: "error",
-            summary: this.$t("smartenu.saveEventError") + ":\n" + error,
-            life: 3000,
-          });
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          } else {
+            this.$toast.add({
+              severity: "error",
+              summary: this.$t("smartenu.saveEventError") + ":\n" + error,
+              life: 3000,
+            });
+          }
         });
     },
 
@@ -1177,11 +1190,15 @@ export default {
           console.log(this.userRoles);
         })
         .catch((error) => {
-          this.$toast.add({
-            severity: "error",
-            summary: this.$t("smartenu.loadAllEventsError") + ":\n" + error,
-            life: 3000,
-          });
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          } else {
+            this.$toast.add({
+              severity: "error",
+              summary: this.$t("smartenu.loadAllEventsError") + ":\n" + error,
+              life: 3000,
+            });
+          }
         });
     },
     findRole(roles, code) {

@@ -311,6 +311,7 @@ export default {
             vaccinated: "вакциналанған",
             planned: "жоспарланған",
             rejected: "вакцинадан босатылған",
+            minor: "18-ге толмаған",
             noData: "Мәлімет жоқ",
          },
          error: {

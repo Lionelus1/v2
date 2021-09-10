@@ -371,6 +371,7 @@ export default {
             planned: "планируется",
             rejected: "медотвод",
             noData: "Нет данных",
+            minor: "до 18 лет",
          },
          error: {
             list: "не удалость загрузить список вакцин"

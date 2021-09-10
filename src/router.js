@@ -30,7 +30,6 @@ const routes = [
         path:'/login',
         name:'Login',
         component: load('Login'),
-        beforeEnter: ifNotAuthenticated,
     },
     {
         path: '/afterauth',
