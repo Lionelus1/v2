@@ -316,7 +316,7 @@ export default {
         }
     },
     faq: {
-        title: "Request",
+        title: "Help desk",
         addFaq: "Ask a question",
         loading: "Wait...",
         question: "Question",

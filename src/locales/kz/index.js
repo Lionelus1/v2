@@ -321,7 +321,7 @@ export default {
 
     },
     faq: {
-        title: "Сұрау",
+        title: "Қолдау қызметі",
         addFaq: "Сұрақ қою",
         loading: "Күтіңіз...",
         question: "Сұрақ",
