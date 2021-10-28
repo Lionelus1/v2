@@ -36,17 +36,23 @@ import AppConfig from '../AppConfig.vue';
 import AppFooter from '../AppFooter.vue';
 import { useRoute } from "vue-router"
 import Enum from "@/enum/docstates"
+import { mapState} from "vuex";
 export default {
     setup() {
         useRoute();
+
+
+
     },
     data() {
         return {
+            loginedUser : {},
             layoutMode: 'static',
             layoutColorMode: 'dark',
             staticMenuInactive: false,
             overlayMenuActive: false,
             mobileMenuActive: false,
+
             menu : [
                 // {label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/'},
 				// {
@@ -135,24 +141,23 @@ export default {
                 //     ]
                 // },
                 // {label: 'Documentation', icon: 'pi pi-fw pi-question', command: () => {window.location = "#/documentation"}},
-                // {label: 'View Source', icon: 'pi pi-fw pi-search', command: () => {window.location = "https://github.com/primefaces/sigma-vue"}},
-                // {
-                //     label: 'Құжаттар', icon: 'pi pi-fw pi-folder',
-                //     items: [
-                //         {label: 'Келісім-шарт үлгілері', icon: 'pi pi-fw pi-book',to: '/documents/doctemplate'},
-                //         {label: 'Келісім-шарттар', icon: 'pi pi-fw pi-copy',to: '/documents/contracts'},
-                //         ]
-                // },
-                // {
-                //     label: 'Контрагенттер', icon: 'pi pi-fw pi-users',
-                //     items: [
-                //         {label: 'Ұйымдықтар', icon: 'pi pi-fw pi-home',to: '/contragent/organizations'},
-                //         {label: 'Банктер', icon: 'pi pi-fw pi-money-bill',to: '/contragent/banks'},
-                //         {label: 'Жеке тұлғалар', icon: 'pi pi-fw pi-user',to: '/contragent/persons/' +  Enum.PersonType.IndividualEntrepreneur},
-                //         {label: 'Қызметкерлер', icon: 'pi pi-fw pi-user',to: '/contragent/persons/' +  Enum.PersonType.OrganizationMember}
-                //     ]
-
-                // },
+                 //{label: 'View Source', icon: 'pi pi-fw pi-search', command: () => {window.location = "https://github.com/primefaces/sigma-vue"}},
+                 {
+                     label: 'Құжаттар', icon: 'pi pi-fw pi-folder',
+                     items: [
+                         {label: 'Келісім-шарт үлгілері', icon: 'pi pi-fw pi-book',to: '/documents/doctemplate'},
+                         {label: 'Келісім-шарттар', icon: 'pi pi-fw pi-copy',to: '/documents/contracts'},
+                         ]
+                },
+                {
+                    label: 'Контрагенттер', icon: 'pi pi-fw pi-users',
+                    items: [
+                        {label: 'Ұйымдықтар', icon: 'pi pi-fw pi-home',to: '/contragent/organizations'},
+                        {label: 'Банктер', icon: 'pi pi-fw pi-money-bill',to: '/contragent/banks'},
+                        {label: 'Жеке тұлғалар', icon: 'pi pi-fw pi-user',to: '/contragent/persons/' +  Enum.PersonType.IndividualEntrepreneur},
+                        {label: 'Қызметкерлер', icon: 'pi pi-fw pi-user',to: '/contragent/persons/' +  Enum.PersonType.OrganizationMember}
+                    ]
+                },
                 // {
                 //     label: 'HDFS', icon: 'pi pi-fw pi-folder', to: '/hdfs/hdfsmain'
                 // },
@@ -175,6 +180,15 @@ export default {
               {
                 label:  this.$t('faq.title'), icon: 'pi pi-fw pi-question-circle', to: '/faq/faqmain'
               },
+              {
+                label:  this.$t('dissertation.title'), icon: 'pi pi-fw pi-book',
+                items: [
+                    {
+                        label:  this.$t('dissertation.council.list'), icon: 'pi pi-fw pi-list', to: '/dissertation/main', visible : this.isDissertationAdmin()
+                    }
+                ]
+
+              },
             ]
         }
     },
@@ -185,6 +199,15 @@ export default {
         }
     },
     methods: {
+        getLoginedUser() {
+            this.loginedUser = this.$store.state.loginedUser;
+        },
+        isDissertationAdmin() {
+            if (!this.loginedUser)
+                this.getLoginedUser();
+            return (this.loginedUser.info === "Департамент цифрового развития и дистанционного обучения" && this.loginedUser.position === "начальник отдела");
+
+        },
         onWrapperClick() {
             if (!this.menuClick) {
                 this.overlayMenuActive = false;
@@ -260,6 +283,7 @@ export default {
         },
     },
     computed: {
+        ...mapState(["loginedUser"]),
         containerClass() {
             return ['layout-wrapper', {
                 'layout-overlay': this.layoutMode === 'overlay',
@@ -279,9 +303,15 @@ export default {
         },
         logo() {
             return (this.layoutColorMode === 'dark') ? "assets/layout/images/logo-white.svg" : "assets/layout/images/logo.svg";
-        }
+        },
+
+
+    },
+    created(){
+        this.getLoginedUser();
     },
     beforeUpdate() {
+
         if (this.mobileMenuActive)
             this.addClass(document.body, 'body-overflow-hidden');
         else
