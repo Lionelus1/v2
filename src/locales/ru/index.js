@@ -390,7 +390,7 @@ export default {
 
     },
     faq: {
-        title: "Обращения",
+        title: "Служба поддержки",
         addFaq: "Задать вопрос",
         loading: "Ждите...",
         question: "Вопрос",

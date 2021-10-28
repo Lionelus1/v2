@@ -38,6 +38,11 @@ const routes = [
         beforeEnter: ifNotAuthenticated,
     },
     {
+      path: '/privacy',
+      name: 'Privacy',
+      component: load('Privacy')
+    },
+    {
         path: '/',
         redirect:'/smartenu/admin/news/newstable',
         name: '/',
