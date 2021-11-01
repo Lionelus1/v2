@@ -276,7 +276,6 @@
           :rows="10"
           dataKey="id"
           :rowHover="true"
-          v-model:selection="selectedCustomers"
           v-model:filters="filters"
           filterDisplay="menu"
           :loading="loading"
@@ -899,46 +898,7 @@ export default {
         .then((response) => {
           console.log(response);
           this.statistic = response.data;
-          // stackedData: {
-          //       labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-          //       datasets: [{
-          //           type: 'bar',
-          //           label: 'Dataset 1',
-          //           backgroundColor: '#42A5F5',
-          //           data: [50,25,12,48,90,76,42]
-          //       }, {
-          //           type: 'bar',
-          //           label: 'Dataset 2',
-          //           backgroundColor: '#66BB6A',
-          //           data: [21,84,24,75,37,65,34]
-          //       }, {
-          //           type: 'bar',
-          //           label: 'Dataset 3',
-          //           backgroundColor: '#FFA726',
-          //           data: [41,52,24,74,23,21,32]
-          //       }]
-          //   },
-          //statuses: ["firstcomponent", "vaccinated", "planned", "rejected", "noData"],
-          // &.status-vaccinated{
-          //   background: #c8e6c9;
-          //   color: #256029;
-          // }
-          // &.status-firstcomponent{
-          //   background: #b3e5fc;
-          //   color: #23547b;
-          // }
-          // &.status-noData {
-          //   background: #ffcdd2;
-          //   color: #c63737;
-          // }
-          // &.status-rejected {
-          //   background: #feedaf;
-          //   color: #8a5340;
-          // }
-          // &.status-planned {
-          //   background: #eccfff;
-          //   color: #694382;
-          // }
+
           this.studentData.labels = [];
           this.teacherData.labels = [];
           this.personalData.labels = [];

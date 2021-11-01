@@ -129,6 +129,12 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
+                path: '/dissertation/main',
+                name: '/dissertation/main',
+                component: load('dissertation/Dissertation'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
                 path: '/faq/faqmain',
                 name: 'FaqComponent',
                 component: load('faq/FaqComponent'),

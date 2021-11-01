@@ -320,6 +320,17 @@ export default {
 
 
     },
+    dissertation: {
+        title: "Диссертациялық кеңес",
+        council: {
+            list: "Кеңестер тізімі"
+        },
+        inactive: "Жабылған",
+        directionCode: "Кадрларды даярлау бағытының коды мен атауы",
+        specialityCode: "Мамандық атауы мен коды",
+        secretary: "Ғылыми хатшының аты-жөні",
+        faculty: "Факультет",
+    },
     faq: {
         title: "Қолдау қызметі",
         addFaq: "Сұрақ қою",

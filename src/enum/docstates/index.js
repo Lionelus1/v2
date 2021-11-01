@@ -18,5 +18,12 @@ export default {
       IndividualEntrepreneur: 1,
       //ұйым мүшесі (қызметкер, студент, магистрант, бастық және т.б.)
       OrganizationMember: 2
-    }
+    },
+    
+    EducationLevel: {
+      Bachelor: '6B',
+      Magister: '7M',
+      Residency: '7R',
+      Doctorate: '8D',
+    },
 }

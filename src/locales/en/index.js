@@ -315,6 +315,19 @@ export default {
             list: "vaccine list not loaded"
         }
     },
+    dissertation: {
+        title: "Dissertation council",
+        council: {
+            list: "List of councils",
+        },
+        inactive: "Inactive",
+        directionCode: "Code and name of the direction of personnel training",
+        specialityCode: "Specialty code and name",
+        secretary: "Full name of the scientific secretary",
+        faculty: "Faculty",
+
+
+    },
     faq: {
         title: "Help desk",
         addFaq: "Ask a question",

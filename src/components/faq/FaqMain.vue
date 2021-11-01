@@ -694,7 +694,7 @@ export default {
             headers: getHeader(),
           })
           .then((response) => {
-            console.log(response);
+
             this.userData.userType = response.data.userType;
             this.userData.departmentId = response.data.departmentId;
             this.userData.departmentName = response.data.departmentName;
