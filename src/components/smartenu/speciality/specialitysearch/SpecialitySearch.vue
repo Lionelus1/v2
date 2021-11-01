@@ -46,10 +46,7 @@
             type: Array,
             default: null
         },
-        userType: {
-            type: Number,
-            default:0
-        },
+        educationLevel: null,
         max: {
             type: Number,
             default: null
@@ -84,7 +81,9 @@
         };
     },
     methods: {
+            
 			toggle(event, inputValue) {
+                
 				if (inputValue.length<2)
 					return;
 				this.foundSpecialists = null;
@@ -96,7 +95,7 @@
 
 
 
-				axios.post(smartEnuApi+url, { "name" : inputValue}, {headers: getHeader()})
+				axios.post(smartEnuApi+url, { "name" : inputValue, "level" : this.educationLevel}, {headers: getHeader()})
         .then(response=>{
                     this.foundSpecialists = response.data;
 					this.searchInProgres = false;

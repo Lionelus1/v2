@@ -117,7 +117,7 @@
 		},
 		setup(props, context) {
 			function updateValue(currentPerson) {
-				context.emit("update:modelValue", currentPerson);
+				context.emit("", currentPerson);
 				context.emit("update:windowOpened", false);
 			}
 			return {

@@ -47,9 +47,11 @@
           <Dialog v-model:visible="councilDialog" :style="{width: '450px'}" :header="$t('dissertation.title')" :modal="true" class="p-fluid">
             <div class="p-field">
                 <label for="name">{{$t('dissertation.specialityCode')}}</label>
-                <SpecialitySearch v-model="selectedUsers" id="name"></SpecialitySearch>
+                <SpecialitySearch :educationLevel="Enums.EducationLevel.Doctorate"  v-model="selectedSpecialities" id="name"></SpecialitySearch>
+                <label for="name">{{$t('dissertation.faculty')}}</label>
+                <DepartmentList v-model="selectedDepartment"></DepartmentList>
 
-                <small class="p-error" v-if="submitted && !product.name">Name is required.</small>
+                <small class="p-error" v-if="submitted && (!selectedSpecialities || selectedSpecialities.count <=0)">select specilities</small>
             </div>
 
 
@@ -68,13 +70,17 @@ import {
 
     mapState
 } from "vuex";
-import SpecialitySearch from "./specialitysearch/SpecialitySearch.vue";
+import SpecialitySearch from "../smartenu/speciality/specialitysearch/SpecialitySearch.vue";
+import DepartmentList from "../smartenu/DepartmentList.vue"
+import Enums from "@/enum/docstates/index"
 export default {
-  components: { SpecialitySearch },
+  components: { SpecialitySearch, DepartmentList },
  data() {
    return {
     councilDialog: false,
-    selectedUsers: null,
+    selectedSpecialities: null,
+    selectedDepartment: null,
+    Enums: Enums,
     CouncilsList : [
       {directionCode: 1005, specialityCode: 2006, secretary: "Ергеш Бану Жантуғанқызы", faculty: "Факультет информационных технологий", inactive : this.$t('dissertation.inactive')}
     ],

@@ -180,6 +180,8 @@ export default {
               /*{
                 label:  this.$t('faq.title'), icon: 'pi pi-fw pi-question-circle', to: '/faq/faqmain'
               },
+              
+              },*/
               {
                 label:  this.$t('dissertation.title'), icon: 'pi pi-fw pi-book',
                 items: [
@@ -189,7 +191,6 @@ export default {
                 ]
 
               },
-              },*/
             ]
         }
     },
