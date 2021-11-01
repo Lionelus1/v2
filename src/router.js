@@ -144,6 +144,23 @@ const routes = [
                         component: load('faq/FaqView'),
                     }
                 ]
+            },
+            {
+                path: '/work-plan',
+                name: 'WorkPlanComponent',
+                component: load('work_plan/WorkPlanComponent'),
+                children: [
+                    {
+                        path: '',
+                        name: 'WorkPlanWorkPlan',
+                        component: load('work_plan/WorkPlan')
+                    },
+                    {
+                        path: ':id',
+                        name: 'WorkPlanEvents',
+                        component: load('work_plan/WorkPlanEvents')
+                    }
+                ]
             }
         ]
     }
