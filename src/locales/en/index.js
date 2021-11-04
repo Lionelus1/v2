@@ -323,7 +323,13 @@ export default {
         inactive: "Inactive",
         directionCode: "Code and name of the direction of personnel training",
         specialityCode: "Specialty code and name",
-        secretary: "Full name of the scientific secretary",
+        secretaryname: "Full name of the scientific secretary",
+        secretary: "Scientific secretary",
+        validationErrors: {
+            selectSpeciality: "Please select a specialty",
+            selectDepartment: "Select a faculty",
+            selectSecretary: "Please select a scientific secretary"
+        },
         faculty: "Faculty",
 
 

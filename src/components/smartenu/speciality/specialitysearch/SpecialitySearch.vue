@@ -46,6 +46,8 @@
             type: Array,
             default: null
         },
+        // білім деңгейі (бакалавриат, докторантура, магистратура, резидентура)
+        // @/enum/docstates/index" EducationLevel 
         educationLevel: null,
         max: {
             type: Number,

@@ -49,7 +49,7 @@ import {getHeader, smartEnuApi, templateApi} from "@/config/config";
 import axios from 'axios';
 
 export default {
-  name: 'FinUser',
+  name: 'FindUser',
   inheritAttrs: false,
   emits: ['update:modelValue', 'add', 'remove'],
   props: {

@@ -385,7 +385,13 @@ export default {
         inactive: "Недействующий",
         directionCode: "Код и наименование направления подготовки кадров",
         specialityCode: "Код и наименование специальности",
-        secretary: "ФИО ученого секретаря",
+        secretaryname: "ФИО ученого секретаря",
+        secretary: "Ученый секретарь",
+        validationErrors: {
+            selectSpeciality : "Укажите специальность",
+            selectDepartment: "Выберите факультет",
+            selectSecretary: "Укажите ученого секретаря"
+        },
         faculty: "Факультет",
 
     },

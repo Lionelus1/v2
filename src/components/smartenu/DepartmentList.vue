@@ -43,11 +43,15 @@ export default {
          
         })
         .catch((error) => {
+           if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          }
           this.$toast.add({
           severity: "error",
           summary: "getDepattments:\n" + error,
           life: 3000,
         });
+       
         if (error.response.status === 404) {
           this.departments = null;
         }

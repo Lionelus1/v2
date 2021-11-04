@@ -327,8 +327,14 @@ export default {
         },
         inactive: "Жабылған",
         directionCode: "Кадрларды даярлау бағытының коды мен атауы",
+        validationErrors: {
+            selectSpeciality : "Мамандықты таңдаңыз",
+            selectDepartment: "Факультетті таңдаңыз",
+            selectSecretary: "Ғалым хатшыны көрсетіңіз"
+        },
         specialityCode: "Мамандық атауы мен коды",
-        secretary: "Ғылыми хатшының аты-жөні",
+        secretaryname: "Ғылыми хатшының аты-жөні",
+        secretary: "Ғылыми хатшы",
         faculty: "Факультет",
     },
     faq: {
