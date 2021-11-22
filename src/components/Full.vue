@@ -1,6 +1,7 @@
 <template>
 	<div :class="containerClass" @click="onWrapperClick">
         <Toast />
+        <ConfirmDialog></ConfirmDialog>
 		<AppTopBar @menu-toggle="onMenuToggle" />
 
         <transition name="layout-sidebar">

@@ -1,5 +1,7 @@
 export default {
     common: {
+        academicDegree: "Ғылыми дәрежесі",
+        academicTitle: "Ғылыми атағы",
         login: "Кіру",
         logout: "Шығу",
         enterLogin: "ЖСН немесе platonus почтасын енгізіңіз",
@@ -12,6 +14,7 @@ export default {
         department: "Бөлім",
         close: "Жабу",
         name : "Аты",
+        createNew: "Жаңасын қосу",
         created: "Құрылды",
         createdBy: "Автор",
         fullName: "Толық аты",
@@ -75,6 +78,8 @@ export default {
         reject: "Қайтару",
         online: "Онлайн",
         offline: "Оффлайн",
+        workPlace: "Жұмыс орны",
+        role: "Рөлі",
         states: {
             created : "құрылды",
             inapproval : "келісуде",
@@ -330,12 +335,15 @@ export default {
         validationErrors: {
             selectSpeciality : "Мамандықты таңдаңыз",
             selectDepartment: "Факультетті таңдаңыз",
-            selectSecretary: "Ғалым хатшыны көрсетіңіз"
+            selectSecretary: "Ғалым хатшыны көрсетіңіз",
+            selectCreatedDate: "Құрылған уақытын көрсетіңіз"
         },
+        members: "Диссертациялық кеңес мүшелері",
         specialityCode: "Мамандық атауы мен коды",
-        secretaryname: "Ғылыми хатшының аты-жөні",
-        secretary: "Ғылыми хатшы",
+        secretaryname: "Ғалым хатшының аты-жөні",
+        secretary: "Ғалым хатшы",
         faculty: "Факультет",
+        
     },
     faq: {
         title: "Қолдау қызметі",

@@ -1,5 +1,7 @@
 export default {
     common: {
+        academicDegree: "Academic degree",
+        academicTitle: "Academic title",
         login: "login",
         logout: "Logout",
         enterLogin: "Enter IIN or platonus mail",
@@ -12,6 +14,7 @@ export default {
         department: "department",
         close: "close",
         name : "Name",
+        createNew: "Create",
         created: "Created",
         createdBy: "Autor",
         fullName: "Full name",
@@ -75,6 +78,7 @@ export default {
         reject: "Reject",
         online: "Online",
         offline: "Offline",
+        role: "Role",
         states: {
             created : "created",
             inapproval : "in approval",
@@ -322,13 +326,15 @@ export default {
         },
         inactive: "Inactive",
         directionCode: "Code and name of the direction of personnel training",
+        members: "Members of the Dissertation Council",
         specialityCode: "Specialty code and name",
         secretaryname: "Full name of the scientific secretary",
         secretary: "Scientific secretary",
         validationErrors: {
             selectSpeciality: "Please select a specialty",
             selectDepartment: "Select a faculty",
-            selectSecretary: "Please select a scientific secretary"
+            selectSecretary: "Please select a scientific secretary",
+            selectCreatedDate: "Select a a created date"
         },
         faculty: "Faculty",
 

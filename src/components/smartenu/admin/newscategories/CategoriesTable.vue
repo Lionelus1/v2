@@ -1,7 +1,7 @@
 <template>
   <div class="card">
     <Toolbar class="p-mb-4">
-      <template #left>
+      <template #start>
         <Button
           :label="$t('common.add')"
           v-if="isAdmin"

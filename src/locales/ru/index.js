@@ -1,5 +1,7 @@
 export default {
     common: {
+        academicDegree: "Ученая степень",
+        academicTitle: "Ученое звание",
         login: "Вход",
         logout: "Выход",
         enterLogin: "Введите ИИН или почту platonus",
@@ -11,6 +13,7 @@ export default {
         delete: "Удалить",
         department: "Отдел",
         close: "закрыть",
+        createNew: "Создать",
         name : "Имя",
         created: "Создан",
         createdBy: "автор",
@@ -75,7 +78,8 @@ export default {
         reject: "Отказать",
         online: "Онлайн",
         offline: "Оффлайн",
-
+        workPlace: "Место работы",
+        role: "Роль",
         states: {
             created : "создан",
             inapproval : "на согласовании",
@@ -384,13 +388,15 @@ export default {
         },
         inactive: "Недействующий",
         directionCode: "Код и наименование направления подготовки кадров",
+        members: "Члены диссертационного совета",
         specialityCode: "Код и наименование специальности",
         secretaryname: "ФИО ученого секретаря",
         secretary: "Ученый секретарь",
         validationErrors: {
             selectSpeciality : "Укажите специальность",
             selectDepartment: "Выберите факультет",
-            selectSecretary: "Укажите ученого секретаря"
+            selectSecretary: "Укажите ученого секретаря",
+            selectCreatedDate: "Укажети дату создания"
         },
         faculty: "Факультет",
 

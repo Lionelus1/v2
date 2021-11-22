@@ -70,6 +70,7 @@
     },
     data() {
         return {
+            cancelToken : null,
 						requests: [],
 						request: null,
             inputValue: null,
@@ -83,37 +84,45 @@
         };
     },
     methods: {
-            
-			toggle(event, inputValue) {
-                
-				if (inputValue.length<2)
-					return;
-				this.foundSpecialists = null;
-				this.$refs.op.hide();
-				this.$refs.op.toggle(event);
-				this.searchInProgres = true;
-				let url = "/getspecialities";
+		toggle(event, inputValue) {
+    		if (inputValue.length<2)
+				return;
+                    //Check if there are any previous pending requests
+            if (this.cancelToken && typeof this.cancelToken != typeof undefined) {
+                this.cancelToken.cancel("Operation canceled due to new request.")
+            }
+            this.cancelToken = axios.CancelToken.source()
+			this.foundSpecialists = null;
+			this.$refs.op.hide();
+			this.$refs.op.toggle(event);
+			this.searchInProgres = true;
+			let url = "/getspecialities";
+			axios.post(smartEnuApi+url, { 
+                "name" : inputValue, 
+                "level" : this.educationLevel
+                }, 
+                {
+                    headers: getHeader(),
+                    cancelToken: this.cancelToken.token 
+                }
+            )
+            .then(response=>{
+                this.foundSpecialists = response.data;
+			    this.searchInProgres = false;
 
-
-
-
-				axios.post(smartEnuApi+url, { "name" : inputValue, "level" : this.educationLevel}, {headers: getHeader()})
-        .then(response=>{
-                    this.foundSpecialists = response.data;
-					this.searchInProgres = false;
-
-        })
-				.catch((error) => {
-                    this.$toast.add({
-                    severity: "error",
-                    summary: "getSpeciliatyListError:\n" + error,
-                    life: 3000,
-                    });
-					this.searchInProgres = false;
-					if (error.response.status === 404) {
-							this.foundSpecialists = null;
-					}
-				});
+            })
+			.catch((error) => {
+                if(!axios.isCancel(error)) {
+                this.$toast.add({
+                severity: "error",
+                summary: "getSpeciliatyListError:\n" + error,
+                life: 3000,
+                });
+    			this.searchInProgres = false;
+				if (error.response.status === 404) {
+					this.foundSpecialists = null;
+				}
+			}});
 			},
 			addItemMouseExt(event) {
 				this.addItem(event, event.value, false);

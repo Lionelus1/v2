@@ -103,7 +103,7 @@
             <Button
                 type="button"
                 icon="pi pi-check-square"
-                @click="openAnswerFaq(data)"
+                @click="openAnswerFfaq(data)"
                 v-if="departmentAccess && data.status.id !== 2 && !isChancery"
                 :label="$t('faq.toAnswer')"
             ></Button>
