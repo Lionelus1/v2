@@ -9,13 +9,13 @@
           <Button icon="pi pi-trash" class="p-button-danger" @click="deleteCouncil()" :disabled="!selectedCouncil"/>
         </template>
         <template #start>
-          <h4>{{ $t("dissertation.title") }}</h4>
+          <h4>{{ $t("dissertation.members") }}</h4>
         </template>
       </Toolbar>
       <DataTable selectionMode="single" v-model:selection="selectedCouncil" 
           :lazy="true"
-          :totalRecords="(CouncilsList.length)"
-          :value="CouncilsList"
+          :totalRecords="(MembersList.length)"
+          :value="MembersList"
           @page="reload($event)"
           
           :paginator="true"
@@ -37,36 +37,39 @@
           @sort="reload($event)"
           @filter="reload($event)"
         >
-           <Column field="specialitites" :header="$t('dissertation.directionCode')" style="min-width:12rem">
+      
+           <Column field="fullName" :header="$t('common.fullName')" sortable="true" style="min-width:12rem"></Column>
+           <Column :field="($i18n.locale=='kz'? 'academicDegree.nameKz' : $i18n.locale=='ru'? 'academicDegree.nameRu': 'academicDegree.nameEn')" sortable="true" :header="$t('common.academicDegree')"  style="min-width:12rem"></Column>
+           <Column :field="($i18n.locale=='kz'? 'academicTitle.nameKz' : $i18n.locale=='ru'? 'academicTitle.nameRu': 'academicTitle.nameEn')" sortable="true" :header="$t('common.academicTitle')"  style="min-width:12rem"></Column>
+           <Column :field="($i18n.locale=='ru' ? 'organization.nameRu' :  'organization.name')" sortable="true" :header="$t('common.workPlace')"  style="min-width:12rem"></Column>
+           <Column :field="('mainPosition.name'+$i18n.locale)" sortable="true" :header="$t('contact.position')"  style="min-width:12rem"></Column>
+           <Column field="specialitites" :header="$t('common.role')" style="min-width:12rem">
            <template #body="slotProps">
-             <span v-for="sp in slotProps.data.specialities" :key="sp.id" >
-               {{sp.trainingDirection.code}}-{{getTrainigName(sp)}}<span v-if="slotProps.data.specialities.indexOf(sp)<slotProps.data.specialities.length-1">, </span>
+             <span v-for="role in slotProps.data.roles" :key="role.id" >
+               {{getRoleName(role)}}
 
              </span>
            </template>
            </Column>
-           <Column field="Specialitites" :header="$t('dissertation.specialityCode')" style="min-width:12rem">
-           <template #body="slotProps">
-             <span v-for="sp in slotProps.data.specialities" :key="sp.code" >
-               {{sp.code}}-{{getTrainigName(sp)}}<span v-if="slotProps.data.specialities.indexOf(sp)<slotProps.data.specialities.length-1">, </span>
-             </span>
-           </template>
-           </Column>
-           <Column field="Secretary" :header="$t('dissertation.secretary')" sortable="true" style="min-width:12rem">
-            <template #body="slotProps">
-             <span v-if="slotProps.data.members.length>0"> {{slotProps.data.members[0].fullName }}</span>
-           </template>
-           </Column>
-           <Column :field="($i18n.locale=='kz'? 'department.nameKz' : $i18n.locale=='en'? 'department.nameEn': 'department.name')" sortable="true" :header="$t('dissertation.faculty')"  style="min-width:12rem"></Column>
-           <Column headerStyle="width: 7rem; text-align: left" bodyStyle="text-align: left; overflow: visible">
-             <template #body="slotProps">
-              <Button type="button" icon="pi pi-user-edit" @click="openCouncil(slotProps.data.id)"></Button>
+           <Column headerStyle="width: 4rem; text-align: center" bodyStyle="text-align: center; overflow: visible">
+             <template #body>
+              <Button type="button" icon="pi pi-user-edit"></Button>
             </template>
           </Column>
 
           </DataTable>
-          <Dialog v-model:visible="dialog.addCouncil.state" :style="{width: '450px'}" :header="$t('dissertation.title')" :modal="true" class="p-fluid">
+          <Dialog v-model:visible="dialog.addMember.state" :style="{width: '450px'}" :header="$t('dissertation.members')" :modal="true" class="p-fluid">
             <div class="p-fluid">
+              <div class="p-field">
+                  <label for="name">{{$t('common.role')}}</label>
+                  <RolesByName v-model="DissertationCouncilRoles" roleGroupName="dissertation_council"></RolesByName>
+                  <small class="p-error" v-if="submitted && validationErrors.faculty">{{$t('dissertation.validationErrors.selectDepartment')}}</small>
+                </div>
+                <div class="p-field">
+                  <label for="name">{{$t('common.fullName')}}</label>
+                  <FindUser v-model="newCouncil.members" :max="1"></FindUser>
+                  <small class="p-error" v-if="submitted && validationErrors.members">{{$t('dissertation.validationErrors.selectSecretary')}}</small>
+                </div>
                 <div class="p-field">
                   <label for="name">{{$t('dissertation.specialityCode')}}</label>
                   <SpecialitySearch :educationLevel="Enums.EducationLevel.Doctorate"  v-model="newCouncil.specialities" id="name"></SpecialitySearch>
@@ -77,11 +80,7 @@
                   <DepartmentList v-model="newCouncil.department"></DepartmentList>
                   <small class="p-error" v-if="submitted && validationErrors.faculty">{{$t('dissertation.validationErrors.selectDepartment')}}</small>
                 </div>
-                <div class="p-field">
-                  <label for="name">{{$t('dissertation.secretary')}}</label>
-                  <FindUser v-model="newCouncil.members" :max="1"></FindUser>
-                  <small class="p-error" v-if="submitted && validationErrors.members">{{$t('dissertation.validationErrors.selectSecretary')}}</small>
-                </div>
+               
                 <div class="p-field">
                   <label for="name">{{$t('faq.createDate')}}</label>
                   <PrimeCalendar 
@@ -98,29 +97,30 @@
                 </div>
             </div>
             <template #footer>
-                <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-text" @click="hideDialog(dialog.addCouncil)"/>
-                <Button :label="$t('common.add')" icon="pi pi-check" class="p-button-text" @click="addCouncil" />
+                <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-text" @click="hideDialog(dialog.addMember)"/>
+                <Button :label="$t('common.add')" icon="pi pi-check" class="p-button-text" @click="addMember" />
             </template>
         </Dialog>
- 
+        {{members}}
     </div>
-    {{selectedCouncil}}
   </div>
 </template>
 <script>
 import { mapState} from "vuex";
 import SpecialitySearch from "../smartenu/speciality/specialitysearch/SpecialitySearch.vue";
 import DepartmentList from "../smartenu/DepartmentList.vue"
+import RolesByName from "../smartenu/RolesByName.vue"
 import FindUser from "@/helpers/FindUser";
 import Enums from "@/enum/docstates/index";
 import axios from 'axios';
 import {getHeader, header, smartEnuApi} from "@/config/config";
 export default {
-  components: { SpecialitySearch, DepartmentList, FindUser },
+  components: { SpecialitySearch, DepartmentList, FindUser , RolesByName},
  data() {
    return {
+     councilID:-1,
     dialog: {
-      addCouncil: {
+      addMember: {
         state: false
       },
       deleteCouncil: {
@@ -134,10 +134,11 @@ export default {
       createdDate: null,
     },
     selectedCouncil : null,
+    selectedRole : null,
     
     Enums: Enums,
-    CouncilsList :[],
-    
+    MembersList :[],
+    DissertationCouncilRoles: [],
     CouncilsCount : 10,
     submitted: false,
     validationErrors :{
@@ -154,7 +155,8 @@ export default {
    }
  },
  created() {
-   this.loadCouncilsList()
+   this.councilID = Number(this.$route.params.id);
+   this.loadCouncil()
  },
  methods: {
   isDissertationAdmin() {
@@ -172,7 +174,7 @@ export default {
           headers: getHeader(),
         })
         .then((response) => {
-          this.CouncilsList.splice(this.CouncilsList.indexOf(this.selectedCouncil),1);
+          this.MembersList.splice(this.MembersList.indexOf(this.selectedCouncil),1);
         })
         .catch((error) => {
           if (error.response.status == 401) {
@@ -183,15 +185,12 @@ export default {
       },
     });
   },
-  openCouncil(id) {
-    this.$router.push({name: "Members", params: {id: id}});
-  },
   showAddCouncilDialog(){
     this.newCouncil.specialities = [];
     this.newCouncil.department = null;
     this.newCouncil.members = [];
     this.newCouncil.createdDate = null;
-    this.dialog.addCouncil.state = true;
+    this.dialog.addMember.state = true;
   },
   showDialog(dialog) {
     dialog.state = true;
@@ -203,30 +202,29 @@ export default {
   reload(event) {
       //this.lazyParams = event;
       this.lazyParams = event;
-      this.loadCouncilsList();
+      this.loadCouncil();
     },
-  loadCouncilsList() {
+  loadCouncil() {
     this.loading = true;
-
+      let id = this.councilID
       //this.lazyParams.countMode = null;
       axios
-        .post(smartEnuApi + "/dissertation/getcouncils", this.lazyParams,  {
+        .post(smartEnuApi + "/dissertation/getcouncilmembers", {id:id},  {
           headers: getHeader(),
         })
         .then((response) => {
-          this.CouncilsList = response.data;
-          console.log(this.CouncilsList);
+          this.MembersList = response.data;
+          console.log(this.MembersList);
           this.loading = false;
         })
         .catch((error) => {
           if (error.response.status == 401) {
             this.$store.dispatch("logLout");
           }
-         
         });
-    
   },
-  addCouncil() {
+  
+  addMember() {
     this.submitted = true;
     if (this.validateAddConsulForm()) {
       axios.
@@ -235,9 +233,9 @@ export default {
         })
         .then((res) => {
           this.newCouncil.id = res.data;
-          this.CouncilsList.push(JSON.parse(JSON.stringify(this.newCouncil)));
+          this.MembersList.push(JSON.parse(JSON.stringify(this.newCouncil)));
           this.submitted = false;
-          this.hideDialog(this.dialog.addCouncil);
+          this.hideDialog(this.dialog.addMember);
         })
         .catch((error) => {
           if (error.response.status == 401) {
@@ -255,17 +253,19 @@ export default {
     
   },
   validateAddConsulForm() {
+    alert(this.newCouncil.members.count)
     this.validationErrors.speciality = !this.newCouncil.specialities || this.newCouncil.specialities.count <=0;
     this.validationErrors.faculty = !this.newCouncil.department;
-    this.validationErrors.members = !this.newCouncil.members;
+    this.validationErrors.members = !this.newCouncil.members || this.newCouncil.members.count<=0;
     this.validationErrors.createdDate =  !this.newCouncil.createdDate;
     return !this.validationErrors.members && !this.validationErrors.speciality && !this.validationErrors.faculty && !this.validationErrors.createdDate;
   },
-  getTrainigName(sp) {
-      switch(this.$i18n.locale) {
-      case "kz": return sp.trainingDirection.nameInKz;
-      case "en": return sp.trainingDirection.nameInEn;
-      case "ru": return sp.trainingDirection.nameInRu;
+  getRoleName(role) {
+    //alert("Hello");
+    switch(this.$i18n.locale) {
+      case "kz": return role.kz;
+      case "en": return role.en;
+      case "ru": return role.ru;
     }
   }
  },
@@ -274,3 +274,6 @@ export default {
     },
 }
 </script>
+<style scoped>
+
+</style>

@@ -1,7 +1,8 @@
 <template>
-  <div :class="containerClass" @click="onWrapperClick">
-    <Toast/>
-    <AppTopBar @menu-toggle="onMenuToggle"/>
+	<div :class="containerClass" @click="onWrapperClick">
+        <Toast />
+        <ConfirmDialog></ConfirmDialog>
+		<AppTopBar @menu-toggle="onMenuToggle" />
 
     <transition name="layout-sidebar">
       <div :class="sidebarClass" @click="onSidebarClick" v-show="isSidebarVisible()">

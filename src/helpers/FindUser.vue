@@ -13,7 +13,7 @@
         <li class="p-chips-input-token">
           <input aria:haspopup="true" ref="input" type="text" v-bind="$attrs" @focus="onFocus" @blur="onBlur($event)"
                  @input="onInput" @keydown="onKeyDown($event)" @keyup="onKeyUp($event)" @paste="onPaste($event)"
-                 :disabled="$attrs.disabled || maxedOut">
+                 :disabled="$attrs.disabled || maxedOut" aria-controls="overlay_panel">
         </li>
       </ul>
       <OverlayPanel ref="op" appendTo="body" id="overlay_panel" style="width: 45vw">
@@ -35,21 +35,32 @@
             </div>
           </template>
         </Listbox>
-
-        <p v-else>{{ $t('common.message.recordNotFound') }}</p>
+        <div v-else class="p-field p-grid">
+          <label for="firstname" style="height:33px;" class="p-col-fixed">{{ $t('common.message.recordNotFound') }}</label>
+          <div class="p-col">
+              <Button class="p-button-link"  @click="showUserDialog()">{{$t('common.createNew')}}</Button>
+          </div>
+        </div>
       </OverlayPanel>
 
 
     </div>
+    
+    <Sidebar v-model:visible="userDialog" position="right" class="p-sidebar-lg" style="overflow-y:scroll">
+			<Person :modelValue="newUser" :readonly="false"></Person>
+		</Sidebar>
   </div>
 </template>
 
 <script>
 import {getHeader, smartEnuApi, templateApi} from "@/config/config";
 import axios from 'axios';
+import Person from '../components/contragent/Person.vue';
 
 export default {
-  name: 'FindUser',
+  components: {Person},
+  name: 
+    'FindUser',
   inheritAttrs: false,
   emits: ['update:modelValue', 'add', 'remove'],
   props: {
@@ -82,43 +93,101 @@ export default {
   },
   data() {
     return {
+      newUser: {
+        IIN: null,
+        name: null,
+        type: null,
+        mail: null,
+        info: null,
+        id : null,
+        photo: null,
+        lastName: null,
+        thirdName: null,
+        firstName: null,
+        birthday: null,
+        gender: null,
+        state: null,
+        residnet: null,
+        locality: {
+          id: null,
+          name: null,
+        },
+        address: null, 
+        addressrus: null,
+        phone: null,
+        email: null,
+        idnumber: null,
+
+        mainPosition: {
+          id: null,
+          name:null,
+          nameen: null,
+          namekz:null,
+          nameru:null,
+        },
+        bank: {}
+        
+      },
+      cancelToken : null,
       requests: [],
       request: null,
       inputValue: null,
       focused: false,
       foundEntities: null,
       keyPressDate: Date.now(),
+      userDialog: false,
       selectedEntity: {
         name: "",
       },
       searchInProgres: false,
     };
   },
+  created () {
+
+
+  },
   methods: {
+    showUserDialog() {
+    
+      this.userDialog = true;
+    },
     toggle(event, inputValue) {
       if (inputValue.length < 2)
         return;
+      //Check if there are any previous pending requests
+      if (this.cancelToken && typeof this.cancelToken != typeof undefined) {
+        this.cancelToken.cancel("Operation canceled due to new request.")
+      }
+      this.cancelToken = axios.CancelToken.source()
       this.foundEntities = null;
       this.$refs.op.hide();
       this.$refs.op.toggle(event);
       this.searchInProgres = true;
-      const axiosSource = axios.CancelToken.source();
-      this.request = {cancel: axiosSource.cancel, msg: "Loading..."};
-      axios.post(smartEnuApi + `/getUser`, {
+      axios.post(
+        smartEnuApi + `/getUser`, {
         "dn": inputValue,
         "userType": this.userType
-      }, {headers: getHeader()})
-          .then(response => {
+        },
+        {
+          headers: getHeader(), cancelToken: this.cancelToken.token 
+        },
+      )
+      .then(
+        response => {
             this.foundEntities = response.data;
             this.searchInProgres = false;
-
-          })
-          .catch((error) => {
+        },
+      )
+      .catch(
+        (error) => {
+          if(!axios.isCancel(error)) {
             this.searchInProgres = false;
             if (error.response.status === 404) {
               this.foundEntities = null;
             }
-          });
+          }
+        }
+      );
     },
     addItemMouseExt(event) {
       this.addItem(event, event.value, false);
@@ -220,7 +289,8 @@ export default {
         originalEvent: event,
         value: removedItem
       });
-    }
+    },
+  
   },
   computed: {
     maxedOut() {

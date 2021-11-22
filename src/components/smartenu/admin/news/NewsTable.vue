@@ -3,7 +3,7 @@
     <!-- BEGINNING OF TOOLBAR -->
 
     <Toolbar class="p-mb-4">
-      <template #left>
+      <template #start>
         <Button
             :label="$t('common.add')"
             icon="pi pi-plus"

@@ -131,8 +131,20 @@ const routes = [
             {
                 path: '/dissertation/main',
                 name: '/dissertation/main',
-                component: load('dissertation/Dissertation'),
+                component: load('dissertation/DissertationRouter'),
                 beforeEnter: ifAuthenticated,
+                children: [
+                    {
+                        path: '',
+                        name: 'Main',
+                        component: load('dissertation/Dissertation')
+                    },
+                    {
+                        path: 'members/:id',
+                        name: 'Members',
+                        component: load('dissertation/Members')
+                    }
+                ]
             },
             {
                 path: '/faq/faqmain',

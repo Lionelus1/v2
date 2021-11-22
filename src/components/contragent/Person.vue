@@ -1,7 +1,7 @@
 <template>
   <div id="carddiv" class="p-grid">
     <div class="p-col-12">
-      <h3>{{ value.lname + " " + value.fname + " " + (value.sname ?? "") }}</h3>
+      <h3>{{ value.fullName }}</h3>
       <TopMenuBar :organization="value" :readonly="readonly"></TopMenuBar>
     </div>
     <div class="p-col-12 p-md-12 p-fluid">
@@ -13,7 +13,7 @@
               :readonly="readonly"
               class="p-mt-2"
               type="text"
-              v-model="value.lname"
+              v-model="value.lastName"
             ></InputText>
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
@@ -22,7 +22,7 @@
               :readonly="readonly"
               class="p-mt-2"
               type="text"
-              v-model="value.fname"
+              v-model="value.firstName"
             ></InputText>
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
@@ -31,26 +31,20 @@
               :readonly="readonly"
               class="p-mt-2"
               type="text"
-              v-model="value.sname"
+              v-model="value.thirdName"
             ></InputText>
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label>{{ this.$t("contact.birthday") }}</label>
-            <DatePicker v-if="readonly" v-model="value.birthday" mode="date">
-              <template v-slot="{ inputValue, inputEvents }">
-                <input
-                  v-if="readonly"
-                  class="p-inputtext p-component p-filled p-mt-2"
-                  :value="inputValue"
-                />
-                <input
-                  v-else
-                  class="p-inputtext p-component p-filled p-mt-2"
-                  :value="inputValue"
-                  v-on="inputEvents"
-                />
-              </template>
-            </DatePicker>
+            <PrimeCalendar id="dateformat" v-model="date2"  dateFormat="mm-dd-yy" />
+            <PrimeCalendar
+                v-model="value.birthday"
+                dateFormat="dd.mm.yy"
+                placeholder="dd.mm.yyyy"
+                :monthNavigator="true"
+                :yearNavigator="true"
+                yearRange="1900:2030"
+              />
           </div>
 		  <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label>{{ this.$t("contact.position") }}</label>
@@ -58,7 +52,7 @@
               :readonly="readonly"
               class="p-mt-2"
               type="text"
-              v-model="value.role[$i18n.locale]"
+              :v-model="'value.mainPosition.name' + $i18n.locale"
 			  :placeholder="$t('contact.position')"
             ></InputText>
           </div>
@@ -206,43 +200,25 @@
               </div>
               <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
                 <label>{{ this.$t("contact.idcard.givendate") }}</label>
-                <DatePicker v-if="readonly" v-model="value.iddate" mode="date">
-                  <template v-slot="{ inputValue, inputEvents }">
-                    <input
-                      v-if="readonly"
-                      class="p-inputtext p-component p-filled p-mt-2"
-                      :value="inputValue"
-                    />
-                    <input
-                      v-else
-                      class="p-inputtext p-component p-filled p-mt-2"
-                      :value="inputValue"
-                      v-on="inputEvents"
-                    />
-                  </template>
-                </DatePicker>
+                <PrimeCalendar
+                v-model="value.iddate"
+                dateFormat="dd.mm.yy"
+                placeholder="dd.mm.yyyy"
+                :monthNavigator="true"
+                :yearNavigator="true"
+                yearRange="1990:2050"
+              />      
               </div>
               <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
                 <label>{{ this.$t("contact.idcard.expire") }}</label>
-                <DatePicker
-                  v-if="readonly"
-                  v-model="value.idexpire"
-                  mode="date"
-                >
-                  <template v-slot="{ inputValue, inputEvents }">
-                    <input
-                      v-if="readonly"
-                      class="p-inputtext p-component p-filled p-mt-2"
-                      :value="inputValue"
-                    />
-                    <input
-                      v-else
-                      class="p-inputtext p-component p-filled p-mt-2"
-                      :value="inputValue"
-                      v-on="inputEvents"
-                    />
-                  </template>
-                </DatePicker>
+              <PrimeCalendar
+                v-model="value.idexpire"
+                dateFormat="dd.mm.yy"
+                placeholder="dd.mm.yyyy"
+                :monthNavigator="true"
+                :yearNavigator="true"
+                yearRange="1990:2050"
+              />        
               </div>
             </div>
           </div>
@@ -282,9 +258,10 @@
 </template>
 <script>
 import TopMenuBar from "./TopMenuBar.vue";
-import { DatePicker } from "v-calendar";
+
 export default {
-  components: { TopMenuBar, DatePicker },
+  components: { TopMenuBar },
+  name: "Person",
   data() {
     return {
       value: this.modelValue,

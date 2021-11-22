@@ -4,7 +4,6 @@
       <h4>{{ $t("vaccination.title") }}</h4>
 
 
-      <ConfirmDialog></ConfirmDialog>
       <Sidebar v-model:visible="visibleFull" position="full">
         <div class="card">
           <SelectButton

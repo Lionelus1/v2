@@ -1,3 +1,4 @@
+
 import { createApp } from 'vue';
 
 import { reactive } from 'vue';
@@ -13,7 +14,6 @@ import VCalendar from 'v-calendar';
 import Calendar from 'primevue/calendar';
 import Card from 'primevue/card';
 import Carousel from 'primevue/carousel';
-import Chart from 'primevue/chart';
 import Checkbox from 'primevue/checkbox';
 import Chips from 'primevue/chips';
 import ColorPicker from 'primevue/colorpicker';
@@ -28,8 +28,8 @@ import Dialog from 'primevue/dialog';
 import Dropdown from 'primevue/dropdown';
 import Fieldset from 'primevue/fieldset';
 import FileUpload from 'primevue/fileupload';
-import FullCalendar from 'primevue/fullcalendar';
 import InlineMessage from 'primevue/inlinemessage';
+import Chart from 'primevue/chart';
 import Inplace from 'primevue/inplace';
 import InputMask from 'primevue/inputmask';
 import InputNumber from 'primevue/inputnumber';
@@ -100,7 +100,7 @@ router.beforeEach(function(to, from, next) {
 });
 const app = createApp(App);
 const emitter = mitt();
-
+/* eslint-disable */
 app.use(PrimeVue, {
     locale: {
         startsWith: 'Starts with',
@@ -174,7 +174,7 @@ app.component('VCalendar', VCalendar);
 app.component('PrimeCalendar', Calendar)
 app.component('Card', Card);
 app.component('Carousel', Carousel);
-app.component('Chart', Chart);
+app.component('Chart', Chart)
 app.component('Checkbox', Checkbox);
 app.component('Chips', Chips);
 app.component('ColorPicker', ColorPicker);
@@ -189,7 +189,6 @@ app.component('Dialog', Dialog);
 app.component('Dropdown', Dropdown);
 app.component('Fieldset', Fieldset);
 app.component('FileUpload', FileUpload);
-app.component('FullCalendar', FullCalendar);
 app.component('InlineMessage', InlineMessage);
 app.component('Inplace', Inplace);
 app.component('InputMask', InputMask);
