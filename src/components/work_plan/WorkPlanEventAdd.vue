@@ -1,7 +1,5 @@
 <template>
-  <div class="card">
-    <Button label="Добавить мероприятие" icon="pi pi-plus" @click="openBasic"/>
-  </div>
+  <Button label="Добавить мероприятие" icon="pi pi-plus" @click="openBasic"/>
 
   <Dialog header="Добавить мероприятие" v-model:visible="showWorkPlanEventModal" :style="{width: '450px'}"
           class="p-fluid">
@@ -13,7 +11,7 @@
       <label>Ответственные лица</label>
       <FindUser v-model="selectedUsers"></FindUser>
     </div>
-    <div class="p-field">
+    <div class="p-field" v-if="!parentData">
       <label>Квартал</label>
       <Dropdown v-model="quarter" :options="quarters" optionLabel="name" optionValue="id" placeholder="Выберите"
                 @select="selectQuarter"/>
@@ -39,6 +37,7 @@ import {getHeader, smartEnuApi} from "@/config/config";
 export default {
   name: 'WorkPlanEventAdd',
   components: {FindUser},
+  props: ['data'],
   data() {
     return {
       showWorkPlanEventModal: false,
@@ -66,8 +65,14 @@ export default {
           name: 'IV'
         }
       ],
-      selectedUsers: null
+      selectedUsers: null,
+      parentData: null,
+      parentId: null
     }
+  },
+  mounted() {
+    if (this.data)
+      this.parentData = this.data;
   },
   created() {
     this.work_plan_id = parseInt(this.$route.params.id);
@@ -85,12 +90,16 @@ export default {
     createEvent() {
       let userIds = [];
       this.selectedUsers.forEach(e => {
-        userIds.push(e.id)
+        userIds.push(e.userID)
       });
-      console.log(userIds)
+      if (this.parentData) {
+        this.parentId = parseInt(this.parentData.work_plan_event_id);
+        this.quarter = parseInt(this.parentData.quarter);
+      }
       axios.post(smartEnuApi + `/workPlan/addEvent`, {
         work_plan_id: this.work_plan_id,
         event_name: this.event_name,
+        parent_id: this.parentId,
         quarter: this.quarter,
         result: this.result,
         resp_person_ids: userIds
@@ -98,9 +107,17 @@ export default {
         this.emitter.emit("workPlanEventIsAdded", true);
         this.$toast.add({severity: 'info', summary: 'Success', detail: 'Мероприятие успешно создан', life: 3000});
         this.showWorkPlanEventModal = false;
+        this.clearModel();
       }).catch(error => {
         console.log(error)
       });
+    },
+    clearModel() {
+      this.event_name = null;
+      this.parentId = null;
+      this.quarter = null;
+      this.result = null;
+      this.selectedUsers = null;
     }
   }
 }
