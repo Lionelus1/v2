@@ -4,7 +4,7 @@
       <ul class="steps-list">
         <li :class="{
                         'steps-item': true,
-                        'done': index < activeIndex ,
+                        /*'done': index < activeIndex ,*/
                         'active': index === activeIndex,
                     }"
             v-for="(step, index) in steps"
@@ -14,11 +14,11 @@
         </li>
       </ul>
       <div class="steps-content">
-        <find-user v-model="selectedUsers"></find-user>
+        <find-user @add="updateModel" v-model="selectedUsers"></find-user>
       </div>
       <div v-if="!isStepsFinished">
-        <button class="btn" @click="prev" :disabled="isFirstStep">Назад</button>
-        <button class="btn primary" @click="addStep"> Добавить</button>
+        <Button icon="pi pi-plus" class="p-button-rounded p-button-success"
+                @click="addStep"/>
       </div>
       <button v-else class="btn" @click="reset">Начать заново</button>
     </div>
@@ -27,21 +27,20 @@
 
 <script>
 import FindUser from "@/helpers/FindUser";
+
 export default {
   name: "ApproveComponent",
   components: {FindUser},
-  props: {
-    modelValue: null
-  },
+  props: ['modelValue', 'add', 'changeStep'],
   data() {
     return {
       selectedUsers: null,
-      stage: 0,
+      stage: 1,
       activeIndex: 0,
       isStepsFinished: false,
       steps: [
         {
-          stage: 0,
+          stage: 1,
           users: null
         }
       ],
@@ -54,6 +53,7 @@ export default {
         context.emit("update:modelValue", e.value);
       }
     }
+
     return {
       updateValue,
     };
@@ -77,7 +77,8 @@ export default {
     },
     setActive(index) {
       this.activeIndex = index;
-
+      this.stage = index + 1;
+      this.$emit('changeStep', this.stage);
       if (this.isStepsFinished) {
         this.isStepsFinished = false;
       }
@@ -85,13 +86,21 @@ export default {
     addStep() {
       this.stage += 1;
       this.activeIndex += 1;
-      this.steps.push({stage:  this.stage})
+      this.steps.push({stage: this.stage})
       this.updateModel();
+      this.$emit('changeStep', this.stage);
       this.selectedUsers = null;
     },
-    updateModel(event) {
-      this.result.push({stage: this.stage, users: this.selectedUsers});
-      this.$emit('update:modelValue', this.result);
+    updateModel(event, value, preventDefault) {
+      if (this.result.length === 0) {
+        this.result.push({stage: this.stage, users: this.selectedUsers})
+      }
+      this.$emit('update:modelValue', this.selectedUsers);
+      this.$emit('add', {stage: this.stage, users: this.selectedUsers});
+
+      if (preventDefault) {
+        event.preventDefault();
+      }
     },
   },
   computed: {

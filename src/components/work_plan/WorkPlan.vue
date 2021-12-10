@@ -35,7 +35,6 @@
         </Column>-->
         <Column field="actions" header="Действие">
           <template #body="{ data }">
-            <WorkPlanApprove :data="data" v-if="data.status.work_plan_status_id !== 2"/>
             <Button type="button" v-if="isCurrentUserApprove && data.status.work_plan_status_id === 2" icon="pi pi-check" class="p-button-success p-mr-2"
                     label="Подписать" @click="openAcceptModal(data.id)"></Button>
             <Button type="button" v-if="isCurrentUserApprove && data.status.work_plan_status_id === 2" icon="pi pi-times-circle" class="p-button-danger p-mr-2"
@@ -77,7 +76,7 @@ import {getHeader, smartEnuApi} from "@/config/config";
 import WorkPlanApprove from "@/components/work_plan/WorkPlanApprove";
 
 export default {
-  components: {WorkPlanApprove, WorkPlanAdd},
+  components: {WorkPlanAdd},
   data() {
     return {
       data: [],
@@ -96,7 +95,6 @@ export default {
         this.getPlans();
       }
     });
-    console.log(this.selected)
   },
   created() {
     this.getPlans();

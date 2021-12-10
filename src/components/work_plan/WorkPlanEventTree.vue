@@ -29,12 +29,12 @@
     <Column field="status" header="Статус">
       <template #body="slotProps">
             <span
-                :class="'customer-badge status-' + slotProps.data.status.work_plan_event_status_id">{{ slotProps.data.status.work_plan_event_status_id }}</span>
+                :class="'customer-badge status-' + slotProps.data.status.work_plan_event_status_id">{{ slotProps.data.status.name_ru }}</span>
       </template>
     </Column>
     <Column field="actions" header="Действия">
       <template #body="slotProps">
-        <work-plan-event-add v-if="slotProps.data.is_finish" :data="slotProps.data"></work-plan-event-add>
+        <work-plan-event-add v-if="!slotProps.data.is_finish" :data="slotProps.data"></work-plan-event-add>
       </template>
     </Column>
     <template #expansion="slotProps">
@@ -60,6 +60,8 @@ export default {
   created() {
     if (this.child)
       this.data = this.child;
+
+    console.log(this.data)
   },
   methods: {
     onRowExpand(event) {

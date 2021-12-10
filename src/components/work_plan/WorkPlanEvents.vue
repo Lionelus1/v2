@@ -1,10 +1,13 @@
 <template>
-  <div class="p-col-12">
+  <div class="p-col-12" v-if="!loading">
+    <Message severity="error" :closable="false" v-if="plan.comment && !isFinish">{{ plan.comment }}</Message>
     <div class="card">
-      <work-plan-event-add v-if="isCreator"></work-plan-event-add>
+      <work-plan-event-add v-if="isCreator || isEventsNull"></work-plan-event-add>
       <Button v-if="isCreator" label="Завершить" icon="pi pi-check" @click="finish"
               class="p-button p-button-danger p-ml-2"/>
-      <work-plan-approve v-if="isPlanCreator && !isCreator"></work-plan-approve>
+      <work-plan-approve v-if="isPlanCreator && !isCreator && !isApproval && isFinish" :plan="plan" :events="data"></work-plan-approve>
+      <Button label="Посмотреть документь" icon="pi pi-download" @click="viewDoc"
+              class="p-button p-button-info p-ml-2"/>
     </div>
     <div class="card">
       <DataTable :value="data" dataKey="work_plan_event_id"
@@ -68,7 +71,7 @@
         </Column>
         <Column field="actions" header="Действия">
           <template #body="slotProps">
-            <work-plan-event-add v-if="isCreator" :data="slotProps.data"></work-plan-event-add>
+            <work-plan-event-add v-if="!slotProps.data.is_finish" :data="slotProps.data"></work-plan-event-add>
           </template>
         </Column>
         <template #expansion="slotProps">
@@ -76,6 +79,20 @@
         </template>
       </DataTable>
     </div>
+
+    <Dialog header="Отправить на корректировку" v-model:visible="showRejectPlan" :style="{width: '450px'}"
+            class="p-fluid">
+      <div class="p-field">
+        <label>Комментарий</label>
+        <Textarea inputId="textarea" rows="3" cols="30" v-model="rejectComment"></Textarea>
+      </div>
+      <template #footer>
+        <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
+                @click="closeModal"/>
+        <Button :label="$t('common.send')" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2"
+                @click="rejectPlan"/>
+      </template>
+    </Dialog>
   </div>
 </template>
 
@@ -85,6 +102,7 @@ import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
 import WorkPlanEventTree from "@/components/work_plan/WorkPlanEventTree";
 import WorkPlanApprove from "@/components/work_plan/WorkPlanApprove";
+import {NCALayerClient} from "ncalayer-js-client";
 
 export default {
   components: {WorkPlanApprove, WorkPlanEventTree, WorkPlanEventAdd},
@@ -113,11 +131,18 @@ export default {
           name: 'IV'
         }
       ],
-      loading: false,
+      loading: true,
       isCreator: false,
       isPlanCreator: false,
       plan: null,
-      loginedUserId: 0
+      loginedUserId: 0,
+      rejectComment: "",
+      showRejectPlan: false,
+      approval_users: null,
+      isApproval: false,
+      isRejected: false,
+      isFinish: false,
+      isEventsNull: false,
     }
   },
   mounted() {
@@ -132,12 +157,12 @@ export default {
     this.loginedUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
     this.getWorkPlanEvents();
     this.plan = JSON.parse(localStorage.getItem("workPlan"));
-    console.log(this.plan)
+    this.isRejected = this.plan.is_reject;
     if (this.plan && this.plan.user.id === this.loginedUserId) {
       this.isPlanCreator = true;
     } else {
       this.isPlanCreator = false;
-      this.$router.push('/work-plan')
+      //this.$router.push('/work-plan')
     }
   },
   methods: {
@@ -145,15 +170,20 @@ export default {
       this.loading = true;
       axios.post(smartEnuApi + `/workPlan/getEvents`, {work_plan_id: parseInt(this.work_plan_id)}, {headers: getHeader()})
           .then(res => {
-            this.data = res.data
+            this.data = res.data;
             if (this.data) {
               this.data.map(e => {
                 if (e.creator_id === this.loginedUserId && e.parent_id == null && !e.is_finish) {
                   this.isCreator = true;
                 }
+                if (e.is_finish) {
+                  this.isFinish = e.is_finish
+                }
               });
+            } else {
+              this.isEventsNull = true
             }
-            console.log(this.data)
+            this.getWorkPlanApprovalUsers();
             this.loading = false;
           }).catch(error => {
         if (error.response.status === 401) {
@@ -161,12 +191,33 @@ export default {
         } else {
           this.$toast.add({
             severity: "error",
-            summary: this.$t("smartenu.saveNewsError") + ":\n" + error,
+            summary: error,
             life: 3000,
           });
         }
         this.loading = false;
       })
+    },
+    getWorkPlanApprovalUsers() {
+      axios.get(smartEnuApi + `/workPlan/getApprovalUsers/${parseInt(this.work_plan_id)}`)
+          .then(res => {
+            this.approval_users = res.data;
+            this.approval_users.forEach(e => {
+              if (this.loginedUserId === e.user_id) {
+                this.isApproval = true;
+              }
+            })
+          }).catch(error => {
+        if (error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+      });
     },
     finish() {
       this.loading = true;
@@ -189,7 +240,7 @@ export default {
         } else {
           this.$toast.add({
             severity: "error",
-            summary: this.$t("smartenu.saveNewsError") + ":\n" + error,
+            summary: error,
             life: 3000,
           });
         }
@@ -197,7 +248,6 @@ export default {
       })
     },
     onRowExpand(event) {
-      console.log(event)
       this.$toast.add({severity: 'info', summary: 'Row Expanded', detail: event.data.event_name, life: 3000});
     },
     onRowCollapse(event) {
@@ -213,11 +263,63 @@ export default {
     collapseTable(event) {
       event.isExpanded = false;
       this.rows = null;
+    },
+    approvePlan() {
+
+    },
+    rejectPlan() {
+      this.loading = true;
+      axios.post(smartEnuApi + '/workPlan/reject',{
+            work_plan_id: parseInt(this.work_plan_id),
+            comment: this.rejectComment
+          },
+          {headers: getHeader()}
+      ).then(res => {
+        if (res.data.is_success) {
+          this.getWorkPlanEvents();
+          this.loading = false;
+          this.showRejectPlan = false;
+        }
+      }).catch(error => {
+        if (error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+        this.loading = false;
+      })
+    },
+    async openApprovePlan() {
+      let NCALaClient = new NCALayerClient();
+
+      try {
+        await NCALaClient.connect();
+      } catch (error) {
+        this.$toast.add({
+          severity: 'error',
+          summary: this.$t('ncasigner.failConnectToNcaLayer'),
+          life: 3000
+        });
+        return;
+      }
+    },
+    viewDoc() {
+      this.$router.push({ name: 'WorkPlanView', params: { id: this.work_plan_id }})
+    },
+    openRejectPlan() {
+      this.showRejectPlan = true;
+    },
+    closeModal() {
+      this.showRejectPlan = false;
     }
   },
-  unmounted() {
+  /*unmounted() {
     localStorage.removeItem("workPlan");
-  }
+  }*/
 }
 </script>
 
