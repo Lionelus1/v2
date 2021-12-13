@@ -65,8 +65,10 @@ export default {
         refinf: "Reference information",
         organization: "Organization",
         params: "Parameters",
+        password: "Password",
         person: "Person",
         personal: "Staff",
+        requiredField: "Required field",
         teacher: "Academic personnel",
         student: "Student",
         registration: "Registration",
@@ -78,7 +80,9 @@ export default {
         reject: "Reject",
         online: "Online",
         offline: "Offline",
+        userDetail: "User details",
         role: "Role",
+        workPlace: "Work place",
         states: {
             created : "created",
             inapproval : "in approval",
@@ -108,6 +112,8 @@ export default {
             succesSendToApproval: "Succes sent to approval",
             succesRegistered: "Registered succesfully",
             succesSaved: "Saved successfully",
+            selectRole: "Plewse, select a role",
+            userSuccessInserted: "The user has been successfully created, download the authorization data to send to the user.",
         },
         language: {
             kz: "in kazakh",
@@ -334,7 +340,11 @@ export default {
             selectSpeciality: "Please select a specialty",
             selectDepartment: "Select a faculty",
             selectSecretary: "Please select a scientific secretary",
+            selectMember: "Please select a council memberß",
             selectCreatedDate: "Select a a created date"
+        },
+        message: {
+            hasSameMember: "The user already has a council membership",
         },
         faculty: "Faculty",
 

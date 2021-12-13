@@ -37,7 +37,7 @@
         </Listbox>
         <div v-else class="p-field p-grid">
           <label for="firstname" style="height:33px;" class="p-col-fixed">{{ $t('common.message.recordNotFound') }}</label>
-          <div class="p-col">
+          <div v-if="editMode" class="p-col">
               <Button class="p-button-link"  @click="showUserDialog()">{{$t('common.createNew')}}</Button>
           </div>
         </div>
@@ -47,7 +47,7 @@
     </div>
     
     <Sidebar v-model:visible="userDialog" position="right" class="p-sidebar-lg" style="overflow-y:scroll">
-			<Person :modelValue="newUser" :readonly="false"></Person>
+			<Person @userCreated="userCreated" :modelValue="newUser" :addMode="true" :readonly="false"></Person>
 		</Sidebar>
   </div>
 </template>
@@ -64,6 +64,7 @@ export default {
   inheritAttrs: false,
   emits: ['update:modelValue', 'add', 'remove'],
   props: {
+    editMode: Boolean,
     modelValue: {
       type: Array,
       default: null
@@ -147,6 +148,11 @@ export default {
 
   },
   methods: {
+    userCreated(user) {
+    const event = new Event('userCreated');
+    console.log(user) 
+    this.addItem(event,user,true)
+    },
     showUserDialog() {
     
       this.userDialog = true;

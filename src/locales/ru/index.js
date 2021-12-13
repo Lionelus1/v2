@@ -69,8 +69,10 @@ export default {
         showingRecordsCount: ' Показаны записи с {first} по {last} из  {totalRecords} ',
         organization: "Организация",
         params: "Параметры",
+        password: "Пароль",
         person: "Персона",
         personal: "Сотрудник",
+        requiredField: "Обязательное поле",
         teacher: "ППС",
         student: "Обучающийся",
         doYouWantDelete: "Вы действительно хотите удалить",
@@ -78,6 +80,7 @@ export default {
         reject: "Отказать",
         online: "Онлайн",
         offline: "Оффлайн",
+        userDetail: "Данные пользователя",
         workPlace: "Место работы",
         role: "Роль",
         states: {
@@ -109,6 +112,8 @@ export default {
             succesSendToApproval: "Успешно отправлено на соглашение",
             succesRegistered: "Успешно зарегистрировано",
             succesSaved: "Успешно сохранено",
+            selectRole: "Выберите роль",
+            userSuccessInserted: "Пользователь успешно создан, скачайте данные для авторизации для отправки пользователю.",
         },
         language: {
             kz: "на казахском",
@@ -396,7 +401,11 @@ export default {
             selectSpeciality : "Укажите специальность",
             selectDepartment: "Выберите факультет",
             selectSecretary: "Укажите ученого секретаря",
+            selectMember: "Укажите члена совета",
             selectCreatedDate: "Укажети дату создания"
+        },
+        message: {
+            hasSameMember: "Пользователь уже имеет членство в совете",
         },
         faculty: "Факультет",
 

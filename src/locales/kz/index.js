@@ -17,7 +17,7 @@ export default {
         createNew: "Жаңасын қосу",
         created: "Құрылды",
         createdBy: "Автор",
-        fullName: "Толық аты",
+        fullName: "Толық аты-жөні",
         updated: "Өзгертілді",
         type:   "Типі",
         reason: "Себебі",
@@ -69,8 +69,10 @@ export default {
         showingRecordsCount: "{totalRecords} жазбаның {first} - {last} аралығындағы жазбалар көрсетулі",
         organization: "Ұйымдық",
         params: "Параметрлер",
+        password: "Құпия сөз",
         person: "Жеке тұлға",
         personal: "Қызметкерлер",
+        requiredField: "Міндетті түрде толтыру керек",
         teacher: "ПОҚ",
         student: "Білім алушы",
         doYouWantDelete: "Сіз шынымен жойғыңыз келе ме",
@@ -78,6 +80,7 @@ export default {
         reject: "Қайтару",
         online: "Онлайн",
         offline: "Оффлайн",
+        userDetail: "Қолданушы деректері",
         workPlace: "Жұмыс орны",
         role: "Рөлі",
         states: {
@@ -92,6 +95,7 @@ export default {
                 saveError: "Сақтау қатесі",
                 docCreation: "Жаңа қалта қосу"
             },
+
             downloadError: "Қотару кезінде қате пайда болды",
             fillError: "Мәліметтер толық көрсетілмеген. Барлық өрісті толтырыңыз!",
             sendToApprovalError: "Келісімге жіберуде қате пайда болды. Мәліметтердің дұрыстығын тексеріңіз!",
@@ -109,6 +113,8 @@ export default {
             succesSendToApproval: "Келісімге сәтті жіберілді",
             succesRegistered: "Сәтті тіркелді",
             succesSaved: "Сәтті сақталды",
+            userSuccessInserted: "Қолданушы сәтті қосылды, авторизациялық мәліметтерді қолданушға жіберу үшін жүктеп алыңыз. ",
+            selectRole: "Рөлді таңдаңыз"
         },
         language: {
             kz: "қазақша",
@@ -336,7 +342,11 @@ export default {
             selectSpeciality : "Мамандықты таңдаңыз",
             selectDepartment: "Факультетті таңдаңыз",
             selectSecretary: "Ғалым хатшыны көрсетіңіз",
+            selectMember: "Кеңес мүшесін көрсетіңіз",
             selectCreatedDate: "Құрылған уақытын көрсетіңіз"
+        },
+        message: {
+            hasSameMember: "Бұл қолданушы кеңес мүшелігінде бұрыннан бар",
         },
         members: "Диссертациялық кеңес мүшелері",
         specialityCode: "Мамандық атауы мен коды",

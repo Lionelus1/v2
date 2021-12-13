@@ -188,6 +188,9 @@ export default {
                 items: [
                     {
                         label:  this.$t('dissertation.council.list'), icon: 'pi pi-fw pi-list', to: '/dissertation/main', visible : this.isDissertationAdmin()
+                    },
+                    {
+                        label:  this.$t('dissertation.council.list'), icon: 'pi pi-fw pi-list', to: '/dissertation/doctorates', visible : this.findRole("dissertation_council_secretary")
                     }
                 ]
 
@@ -208,8 +211,19 @@ export default {
         isDissertationAdmin() {
             if (!this.loginedUser)
                 this.getLoginedUser();
-            return (this.loginedUser.info === "Департамент цифрового развития и дистанционного обучения" && this.loginedUser.position === "начальник отдела");
-
+            console.log(this.loginedUser)
+            return (this.loginedUser.mainPosition.department.name === "Департамент цифрового развития и дистанционного обучения" && this.loginedUser.mainPosition.nameru === "начальник отдела");
+        },
+        findRole(roleName) {
+            if (!this.loginedUser)
+                this.getLoginedUser();
+            for (let i = 0; i < this.loginedUser.roles.length; i++) {
+                alert(this.loginedUser.roles[i].name); 
+                if (this.loginedUser.roles[i].name === roleName) {
+                    return true;
+                }
+            }
+            return false;
         },
         onWrapperClick() {
             if (!this.menuClick) {

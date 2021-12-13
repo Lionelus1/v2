@@ -1,16 +1,16 @@
 <template>
   <div class="p-field p-grid">
     
-    <div class="p-col-12 p-md-10 p-mb-2">
+    <div class="p-col-12 p-md-12 p-mb-2">
       <span class="p-float-label p-ibutoon-right">
         <i v-if="value" class="pi pi-id-card ibutton" style="margin-right:35px;height:30px;margin-top: 2px;" @click="showcard()"/>
         <i class="pi pi-ellipsis-h ibutton" style="height:30px;margin-top: 2px;margin-right: 2px;" @click="showside()"/>
-        <InputText id="inputtext-right" readonly="true" type="text" v-model="selectedContragentName"/>
+        <InputText id="inputtext-right" :placeholder="$t('common.select')" readonly="true" type="text" v-model="selectedContragentName"/>
         <Sidebar @hide="updateValue(value)" v-model:visible="contragentVisible" position="right" class="p-sidebar-lg p-m-0 p-p-0 p-pt-7" style="overflow-y:scroll">
           <Contragents v-model="value" v-model:windowOpened="contragentVisible"></Contragents>
         </Sidebar>
         <Sidebar v-model:visible="cardVisible" position="right" class="p-sidebar-lg" style="overflow-y:scroll">
-          <Organization v-if="value.type == ContragentType.Organization" :readonly="true" :modelValue="value.data"></Organization>
+          <Organization v-if="value.type == null || value.type == ContragentType.Organization" :readonly="true" :modelValue="value"></Organization>
           <Person v-if="value.type == ContragentType.Person" :modelValue="value.data" :readonly="true"></Person>
           <Bank v-if="value.type == ContragentType.Bank" :modelValue="value.data" :readonly="true"></Bank>
         </Sidebar>
@@ -18,21 +18,7 @@
     </div>
 
 
-    <label v-if="value && value.type != ContragentType.Person" class="p-col-12 p-md-2">{{$t('contracts.signer')}}</label>
-    <div v-if="value && value.type != ContragentType.Person" class="p-col-12 p-md-10">
-      <span class="p-float-label p-ibutoon-right">
-        <i v-if="value && value.data && value.data.signer" class="pi pi-id-card ibutton" style="margin-right:35px;height:30px;margin-top: 2px;" @click="showcard('person')"/>
-        <i v-if="value" class="pi pi-ellipsis-h ibutton" style="height:30px;margin-top: 2px;margin-right: 2px;" @click="showside('person')"/>
-        <InputText id="inputtext-right" readonly="true" type="text" v-model="selectedPersonName"/>
-        <Sidebar v-model:visible="personsVisible" position="right" class="p-sidebar-lg" style="overflow-y:scroll">
-        <br/>
-          <Persons v-model="value.data.signer" style="padding:-1em" v-model:orgID="value.data.id" v-model:signRight="signRight" v-model:windowOpened="personsVisible"></Persons>
-        </Sidebar>
-        <Sidebar v-model:visible="personVisible" position="right" class="p-sidebar-lg" style="overflow-y:scroll;">
-          <Person :modelValue="value.data.signer" class="p-mt-10" style="padding:-1rem" :readonly="true"></Person>
-        </Sidebar>
-      </span>
-    </div>
+    
   </div>
 </template>
 
@@ -41,11 +27,10 @@
 import Contragents from './Contragents.vue';
 import Organization from './Organization.vue';
 import Person from './Person.vue'
-import Persons from './Persons.vue'
 import Bank from './Bank.vue'
 import Enum from "@/enum/docstates/index"
 export default {
-  components : { Contragents, Organization, Person, Persons, Bank },
+  components : { Contragents, Organization, Person, Bank },
   data() {
     return {
       value: this.modelValue,
@@ -62,15 +47,8 @@ export default {
 
       if (!this.value)
         return "";
-      switch(this.value.type) {
-        case Enum.ContragentType.Organization:
-          return this.$i18n.locale != 'ru' ? '"' + this.value.data.name + '" ' + this.value.data.form.shortname : this.value.data.form.shortnameru + ' "' + this.value.data.nameru + '"';
-        case Enum.ContragentType.Person:
-          return this.value.data.lname + ' ' + this.value.data.fname + ' ' + (this.value.data.sname ?? '');
-        case Enum.ContragentType.Bank:
-          return this.$i18n.locale != 'ru' ? '"' + this.value.data.organization.name + '" ' + this.value.data.organization.form.shortname : this.value.data.organization.form.shortnameru + ' "' + this.value.data.organization.nameru + '"'
-      }
-      return this.value ? (this.value.type == Enum.ContragentType.Organization) : ""
+      //return this.value
+      return this.$i18n.locale != 'ru' ? '"' + this.value.name + '" ' + this.value.form.shortname : this.value.form.shortnameru + ' "' + this.value.nameru + '"';
     },
     selectedPersonName() {
       if (!this.value || !this.value.data || !this.value.data.signer)

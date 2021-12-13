@@ -104,7 +104,6 @@
         </Dialog>
  
     </div>
-    {{selectedCouncil}}
   </div>
 </template>
 <script>
@@ -184,7 +183,7 @@ export default {
     });
   },
   openCouncil(id) {
-    this.$router.push({name: "Members", params: {id: id}});
+    this.$router.push({name: "Members", params: {id: id,role:1}});
   },
   showAddCouncilDialog(){
     this.newCouncil.specialities = [];
@@ -215,7 +214,6 @@ export default {
         })
         .then((response) => {
           this.CouncilsList = response.data;
-          console.log(this.CouncilsList);
           this.loading = false;
         })
         .catch((error) => {

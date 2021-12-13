@@ -1,29 +1,92 @@
 <template>
   <div id="carddiv" class="p-grid">
     <div class="p-col-12">
-      <h3>{{ value.fullName }}</h3>
-      <TopMenuBar :organization="value" :readonly="readonly"></TopMenuBar>
+      <h3>{{ $t("common.userDetail") }}</h3>
+      <div>
+        <Menubar
+          :model="menu"
+          :key="active"
+          style="
+            height: 36px;
+            margin-top: -7px;
+            margin-left: -14px;
+            margin-right: -14px;
+          "
+        ></Menubar>
+      </div>
     </div>
+    <div
+      v-if="userDetailSaved"
+      id="contentcnv"
+      class="p-col-12"
+      :style="backcolor"
+      ref="content"
+    >
+      <h6>{{ $t("common.message.userSuccessInserted") }}</h6>
+      <table style="border: 1px solid black; border-collapse: collapse">
+        <tr style="border: 1px solid black; border-collapse: collapse">
+          <th style="border: 1px solid black; border-collapse: collapse">
+            {{ $t("contact.iin") }}
+          </th>
+          <th style="border: 1px solid black; border-collapse: collapse">
+            {{ $t("common.password") }}
+          </th>
+        </tr>
+        <tr style="border: 1px solid black; border-collapse: collapse">
+          <td style="border: 1px solid black; border-collapse: collapse">
+            {{ value.IIN }}
+          </td>
+          <td style="border: 1px solid black; border-collapse: collapse">
+            {{ password }}
+          </td>
+        </tr>
+      </table>
+    </div>
+    <Button
+      v-if="userDetailSaved"
+      @click="download"
+      :label="$t('common.download')"
+      class="p-button-link"
+    />
     <div class="p-col-12 p-md-12 p-fluid">
       <div class="card">
         <div class="p-grid p-formgrid">
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
-            <label>{{ this.$t("contact.lname") }}</label>
+            <label
+              >{{ this.$t("contact.lname")
+              }}<span class="p-error" v-if="addMode">*</span></label
+            >
+
             <InputText
               :readonly="readonly"
               class="p-mt-2"
               type="text"
-              v-model="value.lastName"
+              v-model="value.thirdName"
+              :tabindex="tabindex++"
             ></InputText>
+            <small
+              class="p-error"
+              v-if="submitted && validationErrors.thirdName"
+              >{{ $t("common.requiredField") }}</small
+            >
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
-            <label>{{ this.$t("contact.fname") }}</label>
+            <label
+              >{{ this.$t("contact.fname")
+              }}<span class="p-error" v-if="addMode">*</span></label
+            >
             <InputText
               :readonly="readonly"
               class="p-mt-2"
               type="text"
               v-model="value.firstName"
+              :tabindex="tabindex++"
             ></InputText>
+            <small
+              class="p-error"
+              v-if="submitted && validationErrors.firstName"
+              >{{ $t("common.requiredField") }}</small
+            >
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label>{{ this.$t("contact.sname") }}</label>
@@ -31,44 +94,96 @@
               :readonly="readonly"
               class="p-mt-2"
               type="text"
-              v-model="value.thirdName"
+              v-model="value.lastName"
+              :tabindex="tabindex++"
             ></InputText>
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
-            <label>{{ this.$t("contact.birthday") }}</label>
-            <PrimeCalendar id="dateformat" v-model="date2"  dateFormat="mm-dd-yy" />
+            <label
+              >{{ this.$t("contact.birthday")
+              }}<span class="p-error" v-if="addMode">*</span></label
+            >
+
             <PrimeCalendar
-                v-model="value.birthday"
-                dateFormat="dd.mm.yy"
-                placeholder="dd.mm.yyyy"
-                :monthNavigator="true"
-                :yearNavigator="true"
-                yearRange="1900:2030"
-              />
+              :readonly="readonly"
+              class="p-mt-2"
+              v-model="value.birthday"
+              dateFormat="dd.mm.yy"
+              :tabindex="tabindex++"
+            />
           </div>
-		  <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
-            <label>{{ this.$t("contact.position") }}</label>
+          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+            <label
+              >{{ this.$t("contact.iin")
+              }}<span class="p-error" v-if="addMode">*</span></label
+            >
             <InputText
               :readonly="readonly"
               class="p-mt-2"
               type="text"
-              :v-model="'value.mainPosition.name' + $i18n.locale"
-			  :placeholder="$t('contact.position')"
+              :placeholder="$t('contact.iin')"
+              v-model="value.IIN"
+              :tabindex="tabindex++"
             ></InputText>
+            <small class="p-error" v-if="submitted && validationErrors.iin">{{
+              $t("common.requiredField")
+            }}</small>
+          </div>
+          <div v-if="addMode" class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+            <label>{{ this.$t("common.password") }}</label>
+            <InputText
+              :readonly="readonly"
+              class="p-mt-2"
+              type="text"
+              v-model="password"
+              :tabindex="tabindex++"
+            ></InputText>
+          </div>
+          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+            <label>{{ this.$t("common.academicDegree") }}</label>
+            <Dropdown :tabindex="tabindex++"  class="p-mt-2"  v-model="value.academicDegree" :options="academicDegreeDictionary" :optionLabel="('name'+$i18n.locale)" :placeholder="$t('common.select')" />
+
+          </div>
+          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+            <label>{{ this.$t("common.academicTitle") }}</label>
+            <Dropdown :tabindex="tabindex++"  class="p-mt-2" :disabled="readonly && !addMode" v-model="value.academicTitle" :options="academicTitleDictionary" :optionLabel="('name'+$i18n.locale)" :placeholder="$t('common.select')" />
+
+          </div>
+          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+            <label
+              >{{ this.$t("common.workPlace")
+              }}<span class="p-error" v-if="addMode">*</span></label
+            >
+            <ContragentSelectOrg :tabindex="tabindex++"
+              v-model="value.organization"
+              class="p-mt-2"
+            ></ContragentSelectOrg>
+          </div>
+          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+            <label
+              >{{ this.$t("contact.position")
+              }}<span class="p-error" v-if="addMode">*</span></label
+            >
+            <PositionsList :tabindex="tabindex++"
+              class="p-mt-2"
+              :readonly="readonly && !addMode"
+              v-model="value.mainPosition"
+            ></PositionsList>
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label>{{ this.$t("contact.gender") }}</label>
             <Dropdown
-              :disabled="readonly"
+              :disabled="readonly && !addMode"
               class="p-mt-2"
               v-model="value.gender"
               :options="gender"
               :optionLabel="$i18n.locale"
               optionValue="id"
               :placeholder="$t('contact.gender')"
+              :tabindex="tabindex++"
             />
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div v-if="!addMode" class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label>{{ this.$t("common.state") }}</label>
             <SelectButton
               :disabled="readonly"
@@ -77,6 +192,7 @@
               :options="states"
               optionValue="id"
               optionLabel="name"
+              :tabindex="tabindex++"
             />
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
@@ -88,6 +204,7 @@
               :options="resident"
               optionValue="id"
               optionLabel="name"
+              :tabindex="tabindex++"
             />
           </div>
         </div>
@@ -98,14 +215,18 @@
         </div>
         <div class="p-grid p-formgrid">
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
-            <label>{{ this.$t("contact.bin") }}</label>
+            <label>{{ this.$t("contact.email") }}</label>
             <InputText
               :readonly="readonly"
               class="p-mt-2"
               type="text"
-              :placeholder="$t('contact.bin')"
-              v-model="value.iin"
+              :placeholder="$t('contact.email')"
+              v-model="value.email"
+              :tabindex="tabindex++"
             ></InputText>
+            <small class="p-error" v-if="submitted && validationErrors.email">{{
+              $t("common.requiredField")
+            }}</small>
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label>{{ this.$t("contact.locality") }}</label>
@@ -115,6 +236,7 @@
               type="text"
               :placeholder="$t('contact.locality')"
               v-model="value.locality.name"
+              :tabindex="tabindex++"
             ></InputText>
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
@@ -129,6 +251,7 @@
               type="text"
               :placeholder="$t('contact.address')"
               v-model="value.address"
+              :tabindex="tabindex++"
             ></InputText>
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
@@ -143,6 +266,7 @@
               type="text"
               :placeholder="$t('contact.address')"
               v-model="value.addressrus"
+              :tabindex="tabindex++"
             ></InputText>
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
@@ -153,16 +277,7 @@
               type="text"
               :placeholder="$t('contact.phone')"
               v-model="value.phone"
-            ></InputText>
-          </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
-            <label>{{ this.$t("contact.email") }}</label>
-            <InputText
-              :readonly="readonly"
-              class="p-mt-2"
-              type="text"
-              :placeholder="$t('contact.email')"
-              v-model="value.email"
+              :tabindex="tabindex++"
             ></InputText>
           </div>
         </div>
@@ -184,6 +299,7 @@
                   type="text"
                   :placeholder="$t('common.number')"
                   v-model="value.idnumber"
+                  :tabindex="tabindex++"
                 ></InputText>
               </div>
               <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
@@ -196,29 +312,32 @@
                   :optionLabel="$i18n.locale"
                   optionValue="id"
                   :placeholder="$t('contact.idcard.givenorg')"
+                  :tabindex="tabindex++"
                 />
               </div>
               <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
                 <label>{{ this.$t("contact.idcard.givendate") }}</label>
                 <PrimeCalendar
-                v-model="value.iddate"
-                dateFormat="dd.mm.yy"
-                placeholder="dd.mm.yyyy"
-                :monthNavigator="true"
-                :yearNavigator="true"
-                yearRange="1990:2050"
-              />      
+                  v-model="value.iddate"
+                  dateFormat="dd.mm.yy"
+                  placeholder="dd.mm.yyyy"
+                  :monthNavigator="true"
+                  :yearNavigator="true"
+                  yearRange="1990:2050"
+                  :tabindex="tabindex++"
+                />
               </div>
               <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
                 <label>{{ this.$t("contact.idcard.expire") }}</label>
-              <PrimeCalendar
-                v-model="value.idexpire"
-                dateFormat="dd.mm.yy"
-                placeholder="dd.mm.yyyy"
-                :monthNavigator="true"
-                :yearNavigator="true"
-                yearRange="1990:2050"
-              />        
+                <PrimeCalendar
+                  v-model="value.idexpire"
+                  dateFormat="dd.mm.yy"
+                  placeholder="dd.mm.yyyy"
+                  :monthNavigator="true"
+                  :yearNavigator="true"
+                  yearRange="1990:2050"
+                  :tabindex="tabindex++"
+                />
               </div>
             </div>
           </div>
@@ -237,6 +356,7 @@
                   type="text"
                   :placeholder="$t('bank.accnumber')"
                   v-model="value.bankaccount"
+                  :tabindex="tabindex++"
                 ></InputText>
               </div>
               <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
@@ -247,6 +367,7 @@
                   type="text"
                   :placeholder="$t('bank.title2')"
                   v-model="value.bank.name"
+                  :tabindex="tabindex++"
                 ></InputText>
               </div>
             </div>
@@ -257,13 +378,23 @@
   </div>
 </template>
 <script>
-import TopMenuBar from "./TopMenuBar.vue";
-
+import ContragentSelectOrg from "../contragent/ContragentSelectOrg.vue";
+import PositionsList from "../smartenu/PositionsList.vue";
+import axios from "axios";
+import { getHeader, smartEnuApi } from "@/config/config";
+import html2canvas from "html2canvas";
+import * as jsPDF from "jspdf";
 export default {
-  components: { TopMenuBar },
+  components: { ContragentSelectOrg, PositionsList },
   name: "Person",
   data() {
     return {
+      tabindex: 0,
+      userDetailSaved: false,
+      academicDegreeDictionary: [],
+      academicTitleDictionary: [],
+      backcolor: "background-color: var(--green-100);",
+      password: "",
       value: this.modelValue,
       states: [
         { id: 1, name: this.$t("contragent.active") },
@@ -281,23 +412,26 @@ export default {
         { id: 1, kz: "еркек", ru: "мужчина", en: "Male" },
         { id: 2, kz: "әйел", ru: "женщина", en: "Female" },
       ],
+      validationErrors: {
+        thirdName: false,
+        firstName: false,
+        iin: false,
+        email: false,
+      },
+      submitted: false,
       active: null,
       menu: [
         {
           label: this.$t("common.save"),
           icon: "pi pi-fw pi-save",
           command: () => {
-            this.$toast.add({
-              severity: "success",
-              summary: "Updated",
-              detail: "Data Updated",
-              life: 3000,
-            });
+            if (this.addMode) this.insertUser();
           },
         },
         {
           label: this.$t("contact.mailto"),
           icon: "pi pi-fw pi-envelope",
+          visible: !this.addMode,
           command: () => {
             window.location.href = "mailto:" + this.modelValue.value.email;
           },
@@ -305,6 +439,7 @@ export default {
         {
           label: this.$t("common.contacts"),
           icon: "pi pi-fw pi-user",
+          visible: !this.addMode,
         },
       ],
     };
@@ -313,6 +448,130 @@ export default {
     modelValue: null,
     placeholder: String,
     readonly: Boolean,
+    addMode: Boolean,
+  },
+  emits: ['userCreated'],
+  created() {
+    var generator = require("generate-password");
+
+    this.password = generator.generate({
+      length: 10,
+      numbers: true,
+      symbols: true,
+    });
+    this.getCatalog("academic_degree");
+    this.getCatalog("academic_title")
+  },
+  methods: {
+    getCatalog(name) {
+      axios
+        .post(
+          smartEnuApi + "/auth/getDictionary",
+          { name: name },
+          {
+            headers: getHeader(),
+          }
+        )
+        .then((res) => {
+          if (name === "academic_degree") {
+            this.academicDegreeDictionary = res.data
+          } else {
+            this.academicTitleDictionary = res.data
+          }
+        })
+        .catch((error) => {
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          } else {
+            this.$toast.add({
+              severity: "error",
+              summary: "Dictionary load error:\n" + error,
+              life: 3000,
+            });
+          }
+        });
+    },
+    insertUser() {
+      this.submitted = true;
+      if (this.validateAddForm()) {
+        axios
+          .post(
+            smartEnuApi + "/insertUser",
+            { user: this.value, password: this.password },
+            {
+              headers: getHeader(),
+            }
+          )
+          .then((res) => {
+            this.value.userID = res.data;
+            this.submitted = false;
+            this.userDetailSaved = true;
+            if (this.value.thirdName != "") {
+              this.value.fullName =  this.value.thirdName
+            }
+            if (this.value.firstName != "") {
+               this.value.fullName =  this.value.fullName + " " +  this.value.firstName
+            }
+            if (this.value.lastName != "") {
+               this.value.fullName =  this.value.fullName + " " +  this.value.lastName
+            }
+            this.$emit("userCreated", this.value);
+          })
+          .catch((error) => {
+            if (error.response.status == 401) {
+              this.$store.dispatch("logLout");
+            } else if (error.response.status == 302) {
+              this.$toast.add({
+                severity: "error",
+                summary: "User create error: " + error,
+                life: 3000,
+              });
+            } else {
+              this.$toast.add({
+                severity: "error",
+                summary: "User create error\n" + error,
+                life: 3000,
+              });
+            }
+          });
+      }
+    },
+    validateAddForm() {
+      this.validationErrors.firstName =
+        !this.value.firstName || this.value.firstName == "";
+      this.validationErrors.thirdName =
+        !this.value.thirdName || this.value.thirdName == "";
+      this.validationErrors.email = !this.value.email || this.value.email == "";
+      this.validationErrors.iin = !this.value.IIN || this.value.IIN == "";
+      return (
+        !this.validationErrors.firstName &&
+        !this.validationErrors.thirdName &&
+        !this.validationErrors.email &&
+        !this.validationErrors.iin
+      );
+    },
+    download() {
+      this.backcolor = "background-color: white";
+      var element = document.getElementById("contentcnv");
+      var positionInfo = element.getBoundingClientRect();
+      var divHeight = positionInfo.height;
+      var divWidth = positionInfo.width;
+      var ratio = divHeight / divWidth;
+      html2canvas(this.$refs.content, {
+        height: divHeight,
+        width: divWidth,
+      }).then(function (canvas) {
+        var image = canvas.toDataURL("image/jpeg");
+        var doc = new jsPDF(); // using defaults: orientation=portrait, unit=mm, size=A4
+        var width = doc.internal.pageSize.getWidth();
+        var height = doc.internal.pageSize.getHeight();
+        height = ratio * width;
+        doc.addImage(image, "JPEG", 10, 10, width - 10, height);
+        doc.save("user-credentials.pdf"); //Download the rendered PDF.
+      });
+      this.backcolor = "background-color: var(--teal-100);";
+      this.userDetailSaved = false;
+    },
   },
 };
 </script>

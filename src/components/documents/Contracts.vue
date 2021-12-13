@@ -51,7 +51,7 @@
     <div v-if="selectedDocSourceType == DocState.DocSourceType.Template" style="overflow-y:hidden" >
       <div class="p-d-flex">
         <div class="p-mr-2" style="width:300px">
-          <Listbox v-model="selectedTemplate" :options="docTemplates" :optionLabel="($i18n.locale == 'kz' ? 'nameKaz' : 'nameRus')" :filter="true" listStyle="max-height:300px" style="width:300px;height:320px" :filterPlaceholder="$t('hdfs.search')"/>
+          <Listbox v-model="selectedTemplate" :options="docTemplates" :optionLabel="('kz' ? 'nameKaz' : 'nameRus')" :filter="true" listStyle="max-height:300px" style="width:300px;height:320px" :filterPlaceholder="$t('hdfs.search')"/>
         </div>
         <div v-if="selectedTemplate != null">
           <RichEditor v-if="selectedDocLanguage == 'kz'" :readonly="true"  v-model="selectedTemplate.mainTextKaz" editorStyle="height:300px;width:400px;max-width:700px">

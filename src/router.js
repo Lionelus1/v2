@@ -140,7 +140,7 @@ const routes = [
                         component: load('dissertation/Dissertation')
                     },
                     {
-                        path: 'members/:id',
+                        path: 'members/:id&:role',
                         name: 'Members',
                         component: load('dissertation/Members')
                     }

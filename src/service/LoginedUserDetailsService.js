@@ -1,9 +1,9 @@
 
 export default class LoginedUserDetailsService {
 
-    static ADMINISTRATOR = 'ADMINISTRATOR'
-    static MODERATOR = 'MODERATOR'
+    static ADMINISTRATOR = 'news_administrator'
+    static MODERATOR = 'news_moderator'
     static USER = 'USER'
-    static STUDENT = 'STUDENT'
-    static PUBLISHER = 'PUBLISHER'
+    static STUDENT = 'student'
+    static PUBLISHER = 'news_publisher'
 }

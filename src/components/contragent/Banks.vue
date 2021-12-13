@@ -29,7 +29,7 @@
 					<Column selectionMode="multiple" headerStyle="width: 3em"></Column>
 					<Column field="organization.name" :header="$t('common.name')" :sortable="true">
 						<template #body="slotProps">
-            	<Button class="p-button-link" @click="toggle($event,slotProps.data)">{{(this.$i18n.locale != 'ru' ? '"' + slotProps.data.organization.name + '" ' + slotProps.data.organization.form.shortname : slotProps.data.organization.form.shortnamerus + ' "' + slotProps.data.organization.namerus + '"')}}</Button>
+            	<Button class="p-button-link" @click="toggle($event,slotProps.data)">{{(this.$i18n.locale != 'ru' ? '"' + slotProps.data.organization.name + '" ' + slotProps.data.organization.form.shortname : slotProps.data.organization.form.shortnameru + ' "' + slotProps.data.organization.nameru + '"')}}</Button>
         		</template>
 					</Column>
 					<Column field="swift" :header="$t('bank.swift')" :sortable="true"></Column>
@@ -48,7 +48,7 @@
 </div>
 </template>
 <script>
-	import {templateApi} from "@/config/config";
+	import {smartEnuApi, getHeader} from "@/config/config";
   import axios from 'axios';
 	import Bank from './Bank.vue';
 	import {FilterMatchMode,FilterOperator} from 'primevue/api'
@@ -94,7 +94,7 @@
 			initApiCall(){
         let url = "/contragent/banks";
 				var req = {"id" : 0, "count": this.bankShowCount};
-        axios.post(templateApi+url, req)
+        axios.post(smartEnuApi+url, req,  {headers: getHeader()})
         .then(res=>{
 
           this.banks =  res.data

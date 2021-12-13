@@ -14,7 +14,6 @@ export default {
     return {
       value: this.modelValue,
       departments:  null,
-      
     }
   },
   
@@ -59,7 +58,7 @@ export default {
       },
       
       updateModel(event) {
-        this.$emit('update:modelValue', this.selectedDepartment);
+        this.$emit('update:modelValue', this.value);
         
       },
       

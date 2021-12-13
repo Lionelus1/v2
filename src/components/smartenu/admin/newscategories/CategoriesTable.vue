@@ -400,10 +400,10 @@ export default {
         })
         .then((response) => {
           this.userRoles = response.data;
-          this.roles.isAdmin = this.findRole(this.userRoles, "ADMINISTRATOR");
-          this.roles.isPublisher = this.findRole(this.userRoles, "PUBLISHER");
-          this.roles.isStudent = this.findRole(this.userRoles, "STUDENT");
-          this.roles.isModer = this.findRole(this.userRoles, "MODERATOR");
+          this.roles.isAdmin = this.findRole(this.userRoles, "news_administrator");
+          this.roles.isPublisher = this.findRole(this.userRoles, "news_publisher");
+          this.roles.isStudent = this.findRole(this.userRoles, "student");
+          this.roles.isModer = this.findRole(this.userRoles, "news_moderator");
         })
         .catch((error) => {
           this.$toast.add({
@@ -415,7 +415,7 @@ export default {
     },
     findRole(roles, code) {
       for (let i = 0; i < roles.length; i++) {
-        if (roles[i].roleCode === code) {
+        if (roles[i].name === code) {
           return true;
         }
       }
