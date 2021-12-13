@@ -44,12 +44,8 @@ export default {
   setup() {
     useRoute();
     },
-    watch: {
-        $route() {
-            this.menuActive = false;
-            this.$toast.removeAllGroups();
-        }
-    },
+    
+    
   data() {
     return {
       loginedUser: {},
@@ -148,7 +144,6 @@ export default {
             if (!this.loginedUser)
                 this.getLoginedUser();
             for (let i = 0; i < this.loginedUser.roles.length; i++) {
-                alert(this.loginedUser.roles[i].name); 
                 if (this.loginedUser.roles[i].name === roleName) {
                     return true;
                 }
