@@ -46,6 +46,7 @@
 	"dependencies": {
 		"@popperjs/core": "^2.9.2",
 		"generate-password": "^1.7.0",
+		"html2pdf.js": "^0.9.0",
 		"image-resize-compress": "^1.0.8",
 		"jspdf": "^1.4.1",
 		"lvovich": "^1.0.16",
@@ -57,7 +58,9 @@
 		"vue-element-loading": "^3.0.1",
 		"vue-html2pdf": "^1.8.0",
 		"vue-i18n": "^9.0.0-rc.7",
+		"vue-pdf-embed": "^1.0.5",
 		"vue3-clipboard": "^1.0.0",
+		"vue3-simple-html2pdf": "^0.0.6",
 		"vuex": "^4.0.0",
 		"vuex-persistedstate": "^4.0.0-beta.3"
 	}

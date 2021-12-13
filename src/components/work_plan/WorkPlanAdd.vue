@@ -1,16 +1,16 @@
 <template>
-  <div class="card">
-    <Button :label="$t('common.add')" icon="pi pi-plus" @click="openBasic"/>
-  </div>
+  <Button label="Добавить план" icon="pi pi-plus" @click="openBasic" class="p-ml-2"/>
 
   <Dialog header="Добавить план" v-model:visible="showModal" :style="{width: '450px'}" class="p-fluid">
     <div class="p-field">
       <label>Название плана</label>
-      <InputText v-model="work_plan_name" />
+      <InputText v-model="work_plan_name"/>
     </div>
     <template #footer>
-      <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger" @click="closeBasic" />
-      <Button :label="$t('common.add')" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2" @click="createPlan" />
+      <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
+              @click="closeBasic"/>
+      <Button :label="$t('common.add')" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2"
+              @click="createPlan"/>
     </template>
   </Dialog>
 
@@ -26,10 +26,27 @@ export default {
     return {
       showModal: false,
       position: 'center',
-      work_plan_name: null
+      work_plan_name: null,
+      steps: [
+        {
+          label: 'Personal',
+          to: '/'
+        },
+        {
+          label: 'Seat',
+          to: '/seat'
+        },
+        {
+          label: 'Payment',
+          to: '/payment'
+        },
+        {
+          label: 'Confirmation',
+          to: '/confirmation'
+        }],
     }
   },
-  props: ['isAdded'],
+  props: ['isAdded', 'isSub'],
   methods: {
     openBasic() {
       this.showModal = true;

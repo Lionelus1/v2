@@ -75,6 +75,8 @@ import TriStateCheckbox from 'primevue/tristatecheckbox';
 import Editor from 'primevue/editor';
 import VueClipboard from 'vue3-clipboard'
 import TreeSelect from 'primevue/treeselect';
+import Vue3SimpleHtml2pdf from "vue3-simple-html2pdf";
+import VuePdfEmbed from 'vue-pdf-embed'
 
 import CodeHighlight from './AppCodeHighlight';
 import i18n from './locales/index'
@@ -94,6 +96,7 @@ import VueElementLoading from "vue-element-loading";
 
 import ConfirmationService from 'primevue/confirmationservice';
 import store from "./store/store"
+
 router.beforeEach(function(to, from, next) {
     window.scrollTo(0, 0);
     next();
@@ -161,6 +164,8 @@ app.use(VueClipboard, {
 })
 app.use(ConfirmationService);
 app.use(store)
+app.use(Vue3SimpleHtml2pdf);
+app.use(VuePdfEmbed);
 app.directive('tooltip', Tooltip);
 app.directive('ripple', Ripple);
 app.directive('code', CodeHighlight);

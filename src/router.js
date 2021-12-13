@@ -177,8 +177,18 @@ const routes = [
                         path: ':id',
                         name: 'WorkPlanEvents',
                         component: load('work_plan/WorkPlanEvents')
+                    },
+                    {
+                        path: 'view/:id',
+                        name: 'WorkPlanView',
+                        component: load('work_plan/WorkPlanView')
                     }
                 ]
+            },
+            {
+                path: '/pdf',
+                name: 'PdfContent',
+                component: load('work_plan/PdfContent')
             }
         ]
     }
