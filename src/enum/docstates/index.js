@@ -21,6 +21,7 @@ export default {
       Student: 3,
     },
     
+    
     EducationLevel: {
       Bachelor: '6B',
       Magister: '7M',

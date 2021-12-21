@@ -62,7 +62,6 @@
               class="p-mt-2"
               type="text"
               v-model="value.thirdName"
-              :tabindex="tabindex++"
             ></InputText>
             <small
               class="p-error"
@@ -80,7 +79,6 @@
               class="p-mt-2"
               type="text"
               v-model="value.firstName"
-              :tabindex="tabindex++"
             ></InputText>
             <small
               class="p-error"
@@ -95,7 +93,6 @@
               class="p-mt-2"
               type="text"
               v-model="value.lastName"
-              :tabindex="tabindex++"
             ></InputText>
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
@@ -109,7 +106,6 @@
               class="p-mt-2"
               v-model="value.birthday"
               dateFormat="dd.mm.yy"
-              :tabindex="tabindex++"
             />
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
@@ -123,7 +119,6 @@
               type="text"
               :placeholder="$t('contact.iin')"
               v-model="value.IIN"
-              :tabindex="tabindex++"
             ></InputText>
             <small class="p-error" v-if="submitted && validationErrors.iin">{{
               $t("common.requiredField")
@@ -136,17 +131,16 @@
               class="p-mt-2"
               type="text"
               v-model="password"
-              :tabindex="tabindex++"
             ></InputText>
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label>{{ this.$t("common.academicDegree") }}</label>
-            <Dropdown :tabindex="tabindex++"  class="p-mt-2"  v-model="value.academicDegree" :options="academicDegreeDictionary" :optionLabel="('name'+$i18n.locale)" :placeholder="$t('common.select')" />
+            <Dropdown  class="p-mt-2"  v-model="value.academicDegree" :options="academicDegreeDictionary" :optionLabel="('name'+$i18n.locale)" :placeholder="$t('common.select')" />
 
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label>{{ this.$t("common.academicTitle") }}</label>
-            <Dropdown :tabindex="tabindex++"  class="p-mt-2" :disabled="readonly && !addMode" v-model="value.academicTitle" :options="academicTitleDictionary" :optionLabel="('name'+$i18n.locale)" :placeholder="$t('common.select')" />
+            <Dropdown  class="p-mt-2" :disabled="readonly && !addMode" v-model="value.academicTitle" :options="academicTitleDictionary" :optionLabel="('name'+$i18n.locale)" :placeholder="$t('common.select')" />
 
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
@@ -154,7 +148,7 @@
               >{{ this.$t("common.workPlace")
               }}<span class="p-error" v-if="addMode">*</span></label
             >
-            <ContragentSelectOrg :tabindex="tabindex++"
+            <ContragentSelectOrg 
               v-model="value.organization"
               class="p-mt-2"
             ></ContragentSelectOrg>
@@ -164,7 +158,7 @@
               >{{ this.$t("contact.position")
               }}<span class="p-error" v-if="addMode">*</span></label
             >
-            <PositionsList :tabindex="tabindex++"
+            <PositionsList 
               class="p-mt-2"
               :readonly="readonly && !addMode"
               v-model="value.mainPosition"
@@ -180,7 +174,6 @@
               :optionLabel="$i18n.locale"
               optionValue="id"
               :placeholder="$t('contact.gender')"
-              :tabindex="tabindex++"
             />
           </div>
           <div v-if="!addMode" class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
@@ -192,7 +185,6 @@
               :options="states"
               optionValue="id"
               optionLabel="name"
-              :tabindex="tabindex++"
             />
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
@@ -204,7 +196,6 @@
               :options="resident"
               optionValue="id"
               optionLabel="name"
-              :tabindex="tabindex++"
             />
           </div>
         </div>
@@ -222,7 +213,6 @@
               type="text"
               :placeholder="$t('contact.email')"
               v-model="value.email"
-              :tabindex="tabindex++"
             ></InputText>
             <small class="p-error" v-if="submitted && validationErrors.email">{{
               $t("common.requiredField")
@@ -236,7 +226,6 @@
               type="text"
               :placeholder="$t('contact.locality')"
               v-model="value.locality.name"
-              :tabindex="tabindex++"
             ></InputText>
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
@@ -251,7 +240,6 @@
               type="text"
               :placeholder="$t('contact.address')"
               v-model="value.address"
-              :tabindex="tabindex++"
             ></InputText>
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
@@ -266,7 +254,6 @@
               type="text"
               :placeholder="$t('contact.address')"
               v-model="value.addressrus"
-              :tabindex="tabindex++"
             ></InputText>
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
@@ -277,7 +264,6 @@
               type="text"
               :placeholder="$t('contact.phone')"
               v-model="value.phone"
-              :tabindex="tabindex++"
             ></InputText>
           </div>
         </div>
@@ -299,8 +285,7 @@
                   type="text"
                   :placeholder="$t('common.number')"
                   v-model="value.idnumber"
-                  :tabindex="tabindex++"
-                ></InputText>
+                    ></InputText>
               </div>
               <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
                 <label>{{ this.$t("contact.idcard.givenorg") }}</label>
@@ -312,8 +297,7 @@
                   :optionLabel="$i18n.locale"
                   optionValue="id"
                   :placeholder="$t('contact.idcard.givenorg')"
-                  :tabindex="tabindex++"
-                />
+                    />
               </div>
               <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
                 <label>{{ this.$t("contact.idcard.givendate") }}</label>
@@ -324,8 +308,7 @@
                   :monthNavigator="true"
                   :yearNavigator="true"
                   yearRange="1990:2050"
-                  :tabindex="tabindex++"
-                />
+                    />
               </div>
               <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
                 <label>{{ this.$t("contact.idcard.expire") }}</label>
@@ -336,8 +319,7 @@
                   :monthNavigator="true"
                   :yearNavigator="true"
                   yearRange="1990:2050"
-                  :tabindex="tabindex++"
-                />
+                    />
               </div>
             </div>
           </div>
@@ -356,8 +338,7 @@
                   type="text"
                   :placeholder="$t('bank.accnumber')"
                   v-model="value.bankaccount"
-                  :tabindex="tabindex++"
-                ></InputText>
+                    ></InputText>
               </div>
               <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
                 <label>{{ this.$t("bank.title2") }}</label>
@@ -367,8 +348,7 @@
                   type="text"
                   :placeholder="$t('bank.title2')"
                   v-model="value.bank.name"
-                  :tabindex="tabindex++"
-                ></InputText>
+                    ></InputText>
               </div>
             </div>
           </div>
@@ -389,7 +369,6 @@ export default {
   name: "Person",
   data() {
     return {
-      tabindex: 0,
       userDetailSaved: false,
       academicDegreeDictionary: [],
       academicTitleDictionary: [],

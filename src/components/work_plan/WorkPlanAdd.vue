@@ -10,7 +10,7 @@
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
               @click="closeBasic"/>
       <Button :label="$t('common.add')" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2"
-              @click="createPlan"/>
+              @click="sendDoc"/>
     </template>
   </Dialog>
 
@@ -18,7 +18,7 @@
 
 <script>
 import axios from "axios";
-import {getHeader, smartEnuApi} from "@/config/config";
+import {getHeader, signerApi, smartEnuApi} from "@/config/config";
 
 export default {
   name: 'WorkPlanAdd',
@@ -44,6 +44,8 @@ export default {
           label: 'Confirmation',
           to: '/confirmation'
         }],
+      documentID: null,
+      isDocCreated: false
     }
   },
   props: ['isAdded', 'isSub'],
@@ -55,7 +57,7 @@ export default {
       this.showModal = false;
     },
     createPlan() {
-      axios.post(smartEnuApi + `/workPlan/addPlan`, {work_plan_name: this.work_plan_name}, {
+      axios.post(smartEnuApi + `/workPlan/addPlan`, {work_plan_name: this.work_plan_name, doc_id: this.documentID}, {
         headers: getHeader(),
       }).then(res => {
         this.emitter.emit("workPlanIsAdded", true);
@@ -64,7 +66,43 @@ export default {
       }).catch(error => {
         console.log(error)
       });
-    }
+    },
+    sendDoc() {
+      axios.post(signerApi + '/documents', {
+        id: null,
+        name: "test name",
+      }, {headers: getHeader()}).then((response) => {
+        if (response.data.id !== null || response.data.id !== '') {
+          this.documentID = response.data.uuid
+          this.setDocHistory(response.data)
+        } else {
+          this.$toast.add({
+            severity: 'error',
+            summary: this.$t('ncasigner.failToSendDoc'),
+            life: 3000
+          });
+        }
+      });
+    },
+    setDocHistory(document) {
+      let loginedUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
+      axios.post(signerApi + '/documents/history', {
+        id: null,
+        stateId: 1,
+        documentUuid: document.uuid,
+        setterId: loginedUserId
+      }, {headers: getHeader()}).then((response) => {
+        if (response.data.id !== null || response.data.id !== '') {
+          this.createPlan();
+        } else {
+          this.$toast.add({
+            severity: 'error',
+            summary: this.$t('ncasigner.failToSendDoc'),
+            life: 3000
+          });
+        }
+      });
+    },
   }
 }
 </script>

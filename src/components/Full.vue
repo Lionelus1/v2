@@ -110,10 +110,10 @@ export default {
                 label:  this.$t('dissertation.title'), icon: 'pi pi-fw pi-book',
                 items: [
                     {
-                        label:  this.$t('dissertation.council.list'), icon: 'pi pi-fw pi-list', to: '/dissertation/main', visible : this.isDissertationAdmin()
+                        label:  this.$t('dissertation.council.list'), icon: 'pi pi-fw pi-list', to: '/dissertation', visible : this.isDissertationAdmin()
                     },
                     {
-                        label:  this.$t('dissertation.council.list'), icon: 'pi pi-fw pi-list', to: '/dissertation/doctorates', visible : this.findRole("dissertation_council_secretary")
+                        label:  this.$t('dissertation.doctoralCard'), icon: 'pi pi-fw pi-users', to: '/dissertation/doctorals', visible : this.findRole("dissertation_council_secretary")
                     }
                 ]
 
@@ -146,7 +146,6 @@ export default {
         isDissertationAdmin() {
             if (!this.loginedUser)
                 this.getLoginedUser();
-            console.log(this.loginedUser)
             return (this.loginedUser.mainPosition.department.name === "Департамент цифрового развития и дистанционного обучения" && this.loginedUser.mainPosition.nameru === "начальник отдела");
         },
         findRole(roleName) {
@@ -233,7 +232,6 @@ export default {
     },
   },
   computed: {
-    ...mapState(["loginedUser"]),
     containerClass() {
       return ['layout-wrapper', {
         'layout-overlay': this.layoutMode === 'overlay',

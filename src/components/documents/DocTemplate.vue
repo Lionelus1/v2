@@ -84,10 +84,11 @@
                 <Button v-if="selectedNode.data.stateEn == DocState.CREATED" v-bind:label="$t('common.toapprove')" icon="pi pi-send" @click="openForm('toApproval')" />
               </span>
 
-               <SelectButton v-model="templateLanguage" :options="language" class="p-mb-3">
+              <SelectButton v-model="templateLanguage" :options="language" class="p-mb-3">
                 <template #option="slotProps">
                   <div v-if="slotProps.option == 'kz'">{{$t('common.language.kz')}}</div>
-                  <div v-else>{{$t('common.language.ru')}}</div>
+                  <div v-else-if="slotProps.option == 'ru'">{{$t('common.language.ru')}}</div>
+                  <div v-else>{{$t('common.language.en')}}</div>
                 </template>
               </SelectButton>
             </div>

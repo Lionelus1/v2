@@ -1,5 +1,5 @@
 <template xmlns:aria="http://www.w3.org/1999/xhtml">
-  <div class="p-field">
+  <div>
     <div :class="containerClass" :style="style">
 
       <ul :class="['p-inputtext p-chips-multiple-container', {'p-disabled': $attrs.disabled, 'p-focus': focused}]"
@@ -11,7 +11,7 @@
           </slot>
         </li>
         <li class="p-chips-input-token">
-          <input aria:haspopup="true" ref="input" type="text" v-bind="$attrs" @focus="onFocus" @blur="onBlur($event)"
+          <input aria:haspopup="true" :placeholder="(foundEntities == null ? $t('common.fullName'): null)" ref="input" type="text" v-bind="$attrs" @focus="onFocus" @blur="onBlur($event)"
                  @input="onInput" @keydown="onKeyDown($event)" @keyup="onKeyUp($event)" @paste="onPaste($event)"
                  :disabled="$attrs.disabled || maxedOut" aria-controls="overlay_panel">
         </li>
@@ -150,7 +150,6 @@ export default {
   methods: {
     userCreated(user) {
     const event = new Event('userCreated');
-    console.log(user) 
     this.addItem(event,user,true)
     },
     showUserDialog() {

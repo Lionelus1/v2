@@ -171,7 +171,6 @@
             >
               <Person :modelValue="currentPerson" :readonly="true"></Person>
             </Sidebar>
-            {{ orgType }}
           </div>
         </div>
       </div>

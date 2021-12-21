@@ -129,8 +129,8 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
-                path: '/dissertation/main',
-                name: '/dissertation/main',
+                path: '/dissertation',
+                name: '/dissertation',
                 component: load('dissertation/DissertationRouter'),
                 beforeEnter: ifAuthenticated,
                 children: [
@@ -143,6 +143,11 @@ const routes = [
                         path: 'members/:id&:role',
                         name: 'Members',
                         component: load('dissertation/Members')
+                    },
+                    {
+                        path: 'doctorals',
+                        name: 'Doctorals',
+                        component: load('dissertation/Doctorals')
                     }
                 ]
             },
@@ -197,6 +202,11 @@ const routes = [
                         path: 'view/:id',
                         name: 'WorkPlanView',
                         component: load('work_plan/WorkPlanView')
+                    },
+                    {
+                        path: 'report/:id',
+                        name: 'WorkPlanReportView',
+                        component: load('work_plan/WorkPlanReportView')
                     }
                 ]
             },
