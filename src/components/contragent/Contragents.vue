@@ -320,7 +320,6 @@ export default {
         });
     },
     toggle(event, data) {
-	  console.log(data.data)
       this.currentOrganization = data.data;
       this.updateValue(data.data);
     },

@@ -217,7 +217,6 @@ export default {
           this.hideDialog(this.dialog.addMember);
         })
         .catch((error) => {
-          console.log(error)
           if (error.response.status == 401) {
             this.$store.dispatch("logLout");
           } 
