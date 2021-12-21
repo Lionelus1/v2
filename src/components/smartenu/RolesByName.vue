@@ -54,7 +54,7 @@ export default {
       },
       
       updateModel(event) {
-        this.$emit('update:modelValue', this.selectedRole);
+        this.$emit('update:modelValue', this.value);
         
       },
       

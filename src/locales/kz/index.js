@@ -2,8 +2,10 @@ export default {
     common: {
         academicDegree: "Ғылыми дәрежесі",
         academicTitle: "Ғылыми атағы",
+        annotation: "Аннотация",
         login: "Кіру",
         logout: "Шығу",
+        enter: "Теріңіз",
         enterLogin: "ЖСН немесе platonus почтасын енгізіңіз",
         enterPassword: "Құпия сөзді еңгізіңіз",
         add : "Қосу",
@@ -12,12 +14,18 @@ export default {
         date: "Күні",
         delete: "Жою",
         department: "Бөлім",
-        close: "Жабу",
+        diplomNumber: "Диплом нөмірі",
+        docFormat: "doc форматында",
+        pdfFormat: "pdf форматында",
+        graduate: "Түлек",
+        faculty: "Факультет",
+        cafedra: "Кафедра",
         name : "Аты",
         createNew: "Жаңасын қосу",
         created: "Құрылды",
         createdBy: "Автор",
-        fullName: "Толық аты",
+        fullName: "Толық аты-жөні",
+        hei: "ЖОО",
         updated: "Өзгертілді",
         type:   "Типі",
         reason: "Себебі",
@@ -26,12 +34,15 @@ export default {
         show: "Көру",
         save: "Cақтау",
         download: "Қотару",
+        learnlang: "Оқу тілі",
         loading: "Жүктеу",
         toapprove: "Келісімге",
         tosign: "Қол қоюға",
         comment: "Түсінктеме",
         contacts: "Байланыстар",
         filter: "Сүзгі",
+        graduationyear: "Оқуды бастады",
+        admissionyear: "Оқуды аяқтады",
         yes: "Иә",
         no: "Жоқ",
         select: "Таңдаңыз",
@@ -47,6 +58,7 @@ export default {
         null : "белгісіз",
         number: "Нөмір",
         other:  "Басқа",
+        order: "Бұйрық",
         confirm: "Растау",
         confirmation: "Амалды жалғастырғыңыз келе ме?",
         contentInQazaq: "Қазақша контент",
@@ -69,8 +81,10 @@ export default {
         showingRecordsCount: "{totalRecords} жазбаның {first} - {last} аралығындағы жазбалар көрсетулі",
         organization: "Ұйымдық",
         params: "Параметрлер",
+        password: "Құпия сөз",
         person: "Жеке тұлға",
         personal: "Қызметкерлер",
+        requiredField: "Міндетті түрде толтыру керек",
         teacher: "ПОҚ",
         student: "Білім алушы",
         doYouWantDelete: "Сіз шынымен жойғыңыз келе ме",
@@ -78,6 +92,7 @@ export default {
         reject: "Қайтару",
         online: "Онлайн",
         offline: "Оффлайн",
+        userDetail: "Қолданушы деректері",
         workPlace: "Жұмыс орны",
         role: "Рөлі",
         states: {
@@ -92,6 +107,7 @@ export default {
                 saveError: "Сақтау қатесі",
                 docCreation: "Жаңа қалта қосу"
             },
+
             downloadError: "Қотару кезінде қате пайда болды",
             fillError: "Мәліметтер толық көрсетілмеген. Барлық өрісті толтырыңыз!",
             sendToApprovalError: "Келісімге жіберуде қате пайда болды. Мәліметтердің дұрыстығын тексеріңіз!",
@@ -109,6 +125,8 @@ export default {
             succesSendToApproval: "Келісімге сәтті жіберілді",
             succesRegistered: "Сәтті тіркелді",
             succesSaved: "Сәтті сақталды",
+            userSuccessInserted: "Қолданушы сәтті қосылды, авторизациялық мәліметтерді қолданушға жіберу үшін жүктеп алыңыз. ",
+            selectRole: "Рөлді таңдаңыз"
         },
         language: {
             kz: "қазақша",
@@ -322,8 +340,6 @@ export default {
          error: {
             list: "вакцина тізімі жүктелмеді"
         }
-
-
     },
     dissertation: {
         title: "Диссертациялық кеңес",
@@ -332,17 +348,31 @@ export default {
         },
         inactive: "Жабылған",
         directionCode: "Кадрларды даярлау бағытының коды мен атауы",
+        doctorals: "Докторанттар",
+        doctoralCard: "Докторант картасы",
+        abstractFile: "Автореферат файлы",
+        dissertationFile: "Диссертация файлы",
+        swList: "Ғылыми еңбектерінің тізімі",
+        advisors: "Ғылыми кеңесшілер",
+        reviewers: "Ресми рецензенттер",
+        meetingTime: "Отырыс күні мен уақыты",
+        defenseLang: "Қорғау тілі",
+        councilDecision: "Кеңестің шешімі",
+        disstitle: "Диссертация тақырыбы",
         validationErrors: {
             selectSpeciality : "Мамандықты таңдаңыз",
             selectDepartment: "Факультетті таңдаңыз",
             selectSecretary: "Ғалым хатшыны көрсетіңіз",
+            selectMember: "Кеңес мүшесін көрсетіңіз",
             selectCreatedDate: "Құрылған уақытын көрсетіңіз"
+        },
+        message: {
+            hasSameMember: "Бұл қолданушы кеңес мүшелігінде бұрыннан бар",
         },
         members: "Диссертациялық кеңес мүшелері",
         specialityCode: "Мамандық атауы мен коды",
         secretaryname: "Ғалым хатшының аты-жөні",
         secretary: "Ғалым хатшы",
-        faculty: "Факультет",
         
     },
     faq: {

@@ -70,7 +70,6 @@ export default {
     this.faqId = this.$route.params.id;
     this.getFaqById();
     this.currentUser = JSON.parse(localStorage.getItem("loginedUser"));
-    console.log(this.currentUser);
   },
   methods: {
     getFaqById() {

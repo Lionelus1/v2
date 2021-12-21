@@ -129,8 +129,8 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
-                path: '/dissertation/main',
-                name: '/dissertation/main',
+                path: '/dissertation',
+                name: '/dissertation',
                 component: load('dissertation/DissertationRouter'),
                 beforeEnter: ifAuthenticated,
                 children: [
@@ -140,9 +140,14 @@ const routes = [
                         component: load('dissertation/Dissertation')
                     },
                     {
-                        path: 'members/:id',
+                        path: 'members/:id&:role',
                         name: 'Members',
                         component: load('dissertation/Members')
+                    },
+                    {
+                        path: 'doctorals',
+                        name: 'Doctorals',
+                        component: load('dissertation/Doctorals')
                     }
                 ]
             },

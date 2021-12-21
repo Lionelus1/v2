@@ -590,7 +590,6 @@ export default {
             headers: getHeader(),
           })
           .then((response) => {
-            console.log(response.data.total);
             this.data = response.data.items;
             this.total = response.data.total;
             this.loading = false;
@@ -630,7 +629,6 @@ export default {
             headers: getHeader(),
           })
           .then((response) => {
-            console.log(response);
             this.departmentList = response.data;
             response.data.map(res => {
               if (res.nameRu !== 'Другое') {
@@ -671,7 +669,6 @@ export default {
             headers: getHeader(),
           })
           .then((response) => {
-            console.log(response);
             this.hideDialog();
             this.getData();
           })
@@ -704,7 +701,6 @@ export default {
               return field === response.data.departmentName;
             });
             this.isChancery = response.data.departmentName === 'Отдел документооборота и контроля';
-            console.log(this.isChancery);
             this.getData();
           })
           .catch((error) => {
@@ -791,7 +787,6 @@ export default {
       this.getData();
     },
     onSort(event) {
-      console.log(event)
       this.userData.sortField = event.sortField;
       this.userData.sortOrder = event.sortOrder;
       this.getData();
@@ -802,7 +797,7 @@ export default {
       this.getData();
     },
     openAnswerFaq(data) {
-      console.log(data);
+      (data);
       this.selectedFaq = data;
       this.answerDialog = true;
     },
@@ -811,7 +806,7 @@ export default {
       this.forwardDialog = true;
     },
     openFaq(selected) {
-      console.log(selected);
+      (selected);
       this.$router.push({name: "FaqView", params: {id: selected.id}});
       //this.selectedFaq = selected;
       //this.faqViewDialog = true;

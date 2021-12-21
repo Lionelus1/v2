@@ -1,7 +1,7 @@
 <template>
 	<div  id="carddiv" class="p-grid">
 		<div class="p-col-12">
-		<h3>{{(this.$i18n.locale != 'ru' ? '"' + value.organization.name + '" ' + value.organization.form.shortname : value.organization.form.shortnamerus + ' "' + value.organization.namerus + '"')}}</h3>
+		<h3>{{(this.$i18n.locale != 'ru' ? '"' + value.organization.name + '" ' + value.organization.form.shortname : value.organization.form.shortnameru + ' "' + value.organization.nameru + '"')}}</h3>
 		<TopMenuBar :organization="value.organization" :readonly="readonly"></TopMenuBar>
 		</div>
 		<div class="p-col-12 p-md-12 p-fluid">
@@ -13,7 +13,7 @@
           </div>
 					<div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
 						<label>{{this.$t('common.nameInRussian')}}</label>
-            <InputText :readonly="readonly"  class="p-mt-2"  type="text" :placeholder="$t('common.nameInRussian')" v-model="value.organization.namerus" ></InputText>
+            <InputText :readonly="readonly"  class="p-mt-2"  type="text" :placeholder="$t('common.nameInRussian')" v-model="value.organization.nameru" ></InputText>
           </div>
 					<div class="p-col-12 p-mb-2  p-pb-2 p-lg-6 p-mb-lg-0">
 						<label>{{this.$t('bank.account')}}</label>

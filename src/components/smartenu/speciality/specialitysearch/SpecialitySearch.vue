@@ -9,7 +9,7 @@
                 </slot>
             </li>
             <li class="p-chips-input-token">
-                <input aria:haspopup="true" ref="input" type="text" v-bind="$attrs" @focus="onFocus" @blur="onBlur($event)" @input="onInput" @keydown="onKeyDown($event)" @keyup="onKeyUp($event)" @paste="onPaste($event)"
+                <input :placeholder="(foundSpecialists == null ? $t('common.enter'): null)" aria:haspopup="true" ref="input" type="text" v-bind="$attrs" @focus="onFocus" @blur="onBlur($event)" @input="onInput" @keydown="onKeyDown($event)" @keyup="onKeyUp($event)" @paste="onPaste($event)"
                      :disabled="$attrs.disabled || maxedOut">
             </li>
         </ul>

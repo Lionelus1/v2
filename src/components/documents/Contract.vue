@@ -205,7 +205,7 @@ export default {
 			}
 			switch(agent.type) {
         case Enum.ContragentType.Organization:
-          var orgName = lang != this.language.ru ? '"' + agent.data.name + '" ' + agent.data.form.shortname : agent.data.form.shortnamerus + ' "' + agent.data.namerus + '"';
+          var orgName = lang != this.language.ru ? '"' + agent.data.name + '" ' + agent.data.form.shortname : agent.data.form.shortnameru + ' "' + agent.data.nameru + '"';
 					if (lang === this.language.kz) {
 						orgName += " в лице " + inclineFirstname('директор', 'genitive')
 					}
@@ -217,7 +217,7 @@ export default {
         case Enum.ContragentType.Person:
           return this.value.data.lname + ' ' + agent.data.fname + ' ' + (agent.data.sname ?? '');
         case Enum.ContragentType.Bank:
-          return lang != this.language.ru ? '"' + agent.data.organization.name + '" ' + agent.data.organization.form.shortname : agent.data.organization.form.shortnamerus + ' "' + agent.data.organization.namerus + '"'
+          return lang != this.language.ru ? '"' + agent.data.organization.name + '" ' + agent.data.organization.form.shortname : agent.data.organization.form.shortnameru + ' "' + agent.data.organization.nameru + '"'
       }
 		},
 		getDate(date) {

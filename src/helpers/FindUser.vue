@@ -1,5 +1,5 @@
 <template xmlns:aria="http://www.w3.org/1999/xhtml">
-  <div class="p-field">
+  <div>
     <div :class="containerClass" :style="style">
 
       <ul :class="['p-inputtext p-chips-multiple-container', {'p-disabled': $attrs.disabled, 'p-focus': focused}]"
@@ -11,7 +11,7 @@
           </slot>
         </li>
         <li class="p-chips-input-token">
-          <input aria:haspopup="true" ref="input" type="text" v-bind="$attrs" @focus="onFocus" @blur="onBlur($event)"
+          <input aria:haspopup="true" :placeholder="(foundEntities == null ? $t('common.fullName'): null)" ref="input" type="text" v-bind="$attrs" @focus="onFocus" @blur="onBlur($event)"
                  @input="onInput" @keydown="onKeyDown($event)" @keyup="onKeyUp($event)" @paste="onPaste($event)"
                  :disabled="$attrs.disabled || maxedOut" aria-controls="overlay_panel">
         </li>
@@ -37,7 +37,7 @@
         </Listbox>
         <div v-else class="p-field p-grid">
           <label for="firstname" style="height:33px;" class="p-col-fixed">{{ $t('common.message.recordNotFound') }}</label>
-          <div class="p-col">
+          <div v-if="editMode" class="p-col">
               <Button class="p-button-link"  @click="showUserDialog()">{{$t('common.createNew')}}</Button>
           </div>
         </div>
@@ -47,7 +47,7 @@
     </div>
     
     <Sidebar v-model:visible="userDialog" position="right" class="p-sidebar-lg" style="overflow-y:scroll">
-			<Person :modelValue="newUser" :readonly="false"></Person>
+			<Person @userCreated="userCreated" :modelValue="newUser" :addMode="true" :readonly="false"></Person>
 		</Sidebar>
   </div>
 </template>
@@ -64,6 +64,7 @@ export default {
   inheritAttrs: false,
   emits: ['update:modelValue', 'add', 'remove'],
   props: {
+    editMode: Boolean,
     modelValue: {
       type: Array,
       default: null
@@ -147,6 +148,10 @@ export default {
 
   },
   methods: {
+    userCreated(user) {
+    const event = new Event('userCreated');
+    this.addItem(event,user,true)
+    },
     showUserDialog() {
     
       this.userDialog = true;

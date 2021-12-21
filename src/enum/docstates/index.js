@@ -17,8 +17,10 @@ export default {
       //жеке кәсіпкер
       IndividualEntrepreneur: 1,
       //ұйым мүшесі (қызметкер, студент, магистрант, бастық және т.б.)
-      OrganizationMember: 2
+      OrganizationMember: 2,
+      Student: 3,
     },
+    
     
     EducationLevel: {
       Bachelor: '6B',

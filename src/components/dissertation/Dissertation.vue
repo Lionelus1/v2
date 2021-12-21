@@ -45,7 +45,7 @@
              </span>
            </template>
            </Column>
-           <Column field="Specialitites" :header="$t('dissertation.specialityCode')" style="min-width:12rem">
+           <Column field="specialitites" :header="$t('dissertation.specialityCode')" style="min-width:12rem">
            <template #body="slotProps">
              <span v-for="sp in slotProps.data.specialities" :key="sp.code" >
                {{sp.code}}-{{getTrainigName(sp)}}<span v-if="slotProps.data.specialities.indexOf(sp)<slotProps.data.specialities.length-1">, </span>
@@ -73,8 +73,8 @@
                   <small class="p-error" v-if="(submitted && validationErrors.speciality)">{{$t('dissertation.validationErrors.selectSpeciality')}}</small>
                 </div>
                 <div class="p-field">
-                  <label for="name">{{$t('dissertation.faculty')}}</label>
-                  <DepartmentList v-model="newCouncil.department"></DepartmentList>
+                  <label for="name">{{$t('common.faculty')}}</label>
+                  <DepartmentList :autoLoad="true" v-model="newCouncil.department" :placeHolder="$t('smartenu.selectFaculty')"></DepartmentList>
                   <small class="p-error" v-if="submitted && validationErrors.faculty">{{$t('dissertation.validationErrors.selectDepartment')}}</small>
                 </div>
                 <div class="p-field">
@@ -104,7 +104,6 @@
         </Dialog>
  
     </div>
-    {{selectedCouncil}}
   </div>
 </template>
 <script>
@@ -184,7 +183,7 @@ export default {
     });
   },
   openCouncil(id) {
-    this.$router.push({name: "Members", params: {id: id}});
+    this.$router.push({name: "Members", params: {id: id,role:1}});
   },
   showAddCouncilDialog(){
     this.newCouncil.specialities = [];
@@ -215,7 +214,6 @@ export default {
         })
         .then((response) => {
           this.CouncilsList = response.data;
-          console.log(this.CouncilsList);
           this.loading = false;
         })
         .catch((error) => {
