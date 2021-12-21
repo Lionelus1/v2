@@ -164,6 +164,21 @@ const routes = [
                 ]
             },
             {
+                path: '/nca/sign',
+                name: '/nca/sign',
+                component: load('ncasigner/SignDoc'),
+            },
+            {
+                path: '/nca/find',
+                name: '/nca/find',
+                component: load('ncasigner/FindDoc'),
+            },
+            {
+                path: '/ncasigner/showdoc/:id',
+                name: '/ncasigner/showdoc',
+                component: load('ncasigner/ShowDoc'),
+            },
+            {
                 path: '/work-plan',
                 name: 'WorkPlanComponent',
                 component: load('work_plan/WorkPlanComponent'),
@@ -189,6 +204,21 @@ const routes = [
                 path: '/pdf',
                 name: 'PdfContent',
                 component: load('work_plan/PdfContent')
+            },
+            {
+                path: '/human-resources/public/vacancies',
+                name: '/human-resources/public/vacancies',
+                component: load('humanResources/vacancy/PublicVacancies'),
+            },
+            {
+                path: '/human-resources/vacancies',
+                name: '/human-resources/vacancies',
+                component: load('humanResources/vacancy/Vacancies'),
+            },
+            {
+                path: '/resume',
+                name: '/resume',
+                component: load('humanResources/candidate/Resume')
             }
         ]
     }

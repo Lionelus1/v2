@@ -83,6 +83,11 @@ export default {
         userDetail: "Қолданушы деректері",
         workPlace: "Жұмыс орны",
         role: "Рөлі",
+        publishDate:"Жарияланған күні мен уақыты:",
+        deadlineDate:"Құжаттарды қабылдау мерзімі",
+        organizationNameLabel:"Мекеменің атауы",
+        departmentNameLabel: "Құрылымдық бөлімшенің атауы",
+        headLabel: "Жетекші:",
         states: {
             created : "құрылды",
             inapproval : "келісуде",
@@ -372,6 +377,16 @@ export default {
         uploadFile: "Құжат қосу",
         answer: "Жауап",
         noAnswer: "Жауап берілмеді"
+    },
+    hr: {
+        vacancies: "Вакансиялар",
+        responsibilitiesLabel:"Функционалдық міндеттері",
+        educationLabel:"Білімі",
+        qualificationLabel: "Мамандығы бойынша біліктілігі",
+        experienceLabel: "Қажетті кәсіби тәжірибесі",
+        languageLevelLabel: "Тілдерді меңгеру деңгейі",
+        certificateRequirementsLabel: "Сертификаттардың, дипломдардың болуы",
+        personalQualitiesLabel: "Жеке қасиеттері",
     }
 
 }

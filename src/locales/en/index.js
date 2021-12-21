@@ -83,6 +83,11 @@ export default {
         userDetail: "User details",
         role: "Role",
         workPlace: "Work place",
+        publishDate:"Date and time of publication:",
+        deadlineDate:"Deadline for submission of documents",
+        organizationNameLabel:"Name of company",
+        departmentNameLabel: "The name of the structural unit",
+        headLabel: "Head:",
         states: {
             created : "created",
             inapproval : "in approval",
@@ -367,5 +372,15 @@ export default {
         uploadFile: "Add a file",
         answer: "Answer",
         noAnswer: "No response received"
+    },
+    hr: {
+        vacancies: "Vacancies",
+        responsibilitiesLabel:"Functional responsibilities",
+        educationLabel:"Education",
+        qualificationLabel: "Qualification in the specialty",
+        experienceLabel: "Required professional experience",
+        languageLevelLabel: "The level of knowledge of languages",
+        certificateRequirementsLabel: "Availability of certificates, diplomas",
+        personalQualitiesLabel: "Personal qualities",
     }
 }
