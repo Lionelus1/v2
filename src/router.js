@@ -182,6 +182,11 @@ const routes = [
                         path: 'view/:id',
                         name: 'WorkPlanView',
                         component: load('work_plan/WorkPlanView')
+                    },
+                    {
+                        path: 'report/:id',
+                        name: 'WorkPlanReportView',
+                        component: load('work_plan/WorkPlanReportView')
                     }
                 ]
             },

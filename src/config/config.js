@@ -2,7 +2,7 @@ import mitt from "mitt";
 
 export const apiDomain = "http://localhost:8080";
 export const hdfsApi = "http://localhost:8085";
-export const signerApi = "http://localhost:9000"
+export const signerApi = "http://smart.enu.kz:6990"
 export const smartEnuApi = "http://localhost:8080"
 export const templateApi = "http://localhost:8082"
 export const header  = {

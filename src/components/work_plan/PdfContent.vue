@@ -1,9 +1,7 @@
 <template>
   <div>
     <div ref="htmlToPdf" class="p-grid">
-      <h5 class="p-col-6 p-offset-3 p-text-center p-text-bold">План Департамента цифровых развитии и дистанционного
-        обучения на
-        {{ year }}</h5>
+      <h5 class="p-col-6 p-offset-3 p-text-center p-text-bold">{{ plan.work_plan_name }}</h5>
       <br/>
       <div class="p-col-12">
         <table>
@@ -29,12 +27,6 @@
           </tbody>
         </table>
       </div>
-      <div class="p-col-6 p-pt-5">
-        Член Правления – Проректор по науке, коммерциализации и интернационализации
-      </div>
-      <div class="p-col-6 p-pt-5">
-        Мерзадинова Гульнара Тынышбаевна
-      </div>
     </div>
   </div>
 </template>
@@ -50,6 +42,7 @@ export default {
     return {
       items: [],
       work_plan_id: this.planId,
+      plan: null,
       pdfOptions: {
         margin: 15,
         image: {
@@ -67,6 +60,7 @@ export default {
     }
   },
   created() {
+    this.plan = JSON.parse(localStorage.getItem("workPlan"));
     this.getData();
     this.year = new Date().getFullYear();
     //this.data.push({index: 1, name: "Test name", resp: 'User Name', quarter: 1, result: '', comment: 'Comment'})

@@ -49,19 +49,19 @@ export default {
       comment: null,
       quarters: [
         {
-          id: 0,
+          id: 1,
           name: 'I'
         },
         {
-          id: 1,
+          id: 2,
           name: 'II'
         },
         {
-          id: 2,
+          id: 3,
           name: 'III'
         },
         {
-          id: 3,
+          id: 4,
           name: 'IV'
         }
       ],

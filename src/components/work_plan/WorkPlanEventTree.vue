@@ -19,7 +19,11 @@
       </template>
     </Column>
     <Column field="event_name" header="Название мероприятия" />
-    <Column field="quarter" header="Квартал" />
+    <Column field="quarter" header="Квартал">
+      <template #body="{ data }">
+        {{ data.quarter.String }}
+      </template>
+    </Column>
     <Column field="fullName" header="Ответственные лица">
       <template #body="{ data }">
         <p v-for="item in data.user" :key="item.id">{{ item.fullName }}</p>
@@ -34,6 +38,7 @@
     </Column>
     <Column field="actions" header="Действия">
       <template #body="slotProps">
+        <work-plan-execute :data="slotProps.data" v-if="parseInt(slotProps.data.quarter.String) === currentQuarter"></work-plan-execute>
         <work-plan-event-add v-if="!slotProps.data.is_finish" :data="slotProps.data"></work-plan-event-add>
       </template>
     </Column>
@@ -45,23 +50,25 @@
 
 <script>
 import WorkPlanEventAdd from "@/components/work_plan/WorkPlanEventAdd";
+import WorkPlanExecute from "@/components/work_plan/WorkPlanExecute";
 
 export default {
   name: "WorkPlanEventTree",
-  components: {WorkPlanEventAdd},
+  components: {WorkPlanEventAdd, WorkPlanExecute},
   props: ['child'],
   data() {
     return {
       data: null,
       rows: [],
-      isExpanded: false
+      isExpanded: false,
+      currentQuarter: null
     }
   },
   created() {
     if (this.child)
       this.data = this.child;
 
-    console.log(this.data)
+    this.initQuarter();
   },
   methods: {
     onRowExpand(event) {
@@ -77,6 +84,11 @@ export default {
     collapseTable(event) {
       this.isExpanded = false;
       this.rows = null;
+    },
+    initQuarter() {
+      let currentDate = new Date();
+      let currentMonth = currentDate.getMonth() + 1;
+      this.currentQuarter = Math.ceil(currentMonth / 3);
     }
   }
 }

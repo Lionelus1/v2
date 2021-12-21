@@ -30,7 +30,7 @@ import ApproveComponent from "@/components/work_plan/ApproveComponent";
 import PdfContent from "@/components/work_plan/PdfContent";
 import html2pdf from "html2pdf.js";
 import axios from "axios";
-import {getHeader, getMultipartHeader, smartEnuApi} from "@/config/config";
+import {getHeader, getMultipartHeader, signerApi, smartEnuApi} from "@/config/config";
 
 export default {
   name: "WorkPlanApprove",
@@ -78,7 +78,7 @@ export default {
     closeModal() {
       this.showModal = false;
     },
-    async approve() {
+    approve() {
       let workPlanId = this.data.work_plan_id;
       let pdfOptions = {
         margin: 15,
@@ -96,24 +96,21 @@ export default {
       };
       const pdfContent = this.$refs.pdf.$refs.htmlToPdf;
       const worker = html2pdf().set(pdfOptions).from(pdfContent);
-      await worker.toPdf().output("blob").then(function (pdf) {
+
+      worker.toPdf().output("blob").then((pdf) => {
         const fd = new FormData();
         fd.append('wpfile', pdf);
-        fd.append('fname', pdfOptions.filename);
+        fd.append('fname', pdfOptions.filename)
         fd.append('work_plan_id', workPlanId)
-        console.log(fd)
-        //this.approvePlan(fd);
+        this.approvePlan(fd);
       });
     },
     approvePlan(fd) {
       let userIds = [];
-      if(fd) {
-        console.log(fd)
-        return
-      }
 
       axios.post(smartEnuApi + `/workPlan/savePlanFile`, fd, {headers: getMultipartHeader()}).then(res => {
         if (res.data) {
+          this.updateDoc(res.data);
           this.selectedUsers.forEach(e => {
             userIds.push(e.userID);
           });
@@ -152,6 +149,14 @@ export default {
             life: 3000,
           });
         }
+      });
+    },
+    updateDoc(fpath) {
+      axios.put(signerApi + '/documents', {
+        filePath: fpath,
+        uuid: this.data.doc_id,
+      }, {headers: getHeader()}).then((response) => {
+        console.log(response)
       });
     },
     approveChange(result) {

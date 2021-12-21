@@ -6,8 +6,9 @@
       <Button v-if="isCreator" label="Завершить" icon="pi pi-check" @click="finish"
               class="p-button p-button-danger p-ml-2"/>
       <work-plan-approve v-if="isPlanCreator && !isCreator && !isApproval && isFinish" :plan="plan" :events="data"></work-plan-approve>
-      <Button label="Посмотреть документь" icon="pi pi-download" @click="viewDoc"
+      <Button label="Посмотреть план" icon="pi pi-eye" @click="viewDoc"
               class="p-button p-button-info p-ml-2"/>
+      <SplitButton label="Отчет" icon="pi pi-document" class="p-button-info p-ml-2" @click="save" :model="splitButtonItems"></SplitButton>
     </div>
     <div class="card">
       <DataTable :value="data" dataKey="work_plan_event_id"
@@ -80,17 +81,18 @@
       </DataTable>
     </div>
 
-    <Dialog header="Отправить на корректировку" v-model:visible="showRejectPlan" :style="{width: '450px'}"
+    <Dialog header="Выберите квартал для отчета" v-model:visible="selectQuarterModal" :style="{width: '450px'}"
             class="p-fluid">
       <div class="p-field">
-        <label>Комментарий</label>
-        <Textarea inputId="textarea" rows="3" cols="30" v-model="rejectComment"></Textarea>
+        <label>Квартал</label>
+        <Dropdown v-model="quarter" :options="quarters" optionLabel="name" optionValue="id" placeholder="Выберите"
+                  @select="selectQuarter"/>
       </div>
       <template #footer>
         <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
-                @click="closeModal"/>
-        <Button :label="$t('common.send')" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2"
-                @click="rejectPlan"/>
+                @click="closeSelectQuarter"/>
+        <Button :label="$t('common.save')" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2"
+                @click="initReport"/>
       </template>
     </Dialog>
   </div>
@@ -102,7 +104,7 @@ import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
 import WorkPlanEventTree from "@/components/work_plan/WorkPlanEventTree";
 import WorkPlanApprove from "@/components/work_plan/WorkPlanApprove";
-import {NCALayerClient} from "ncalayer-js-client";
+import WorkPlanExecute from "@/components/work_plan/WorkPlanExecute";
 
 export default {
   components: {WorkPlanApprove, WorkPlanEventTree, WorkPlanEventAdd},
@@ -115,22 +117,23 @@ export default {
       lastEvent: null,
       quarters: [
         {
-          id: 0,
+          id: 1,
           name: 'I'
         },
         {
-          id: 1,
+          id: 2,
           name: 'II'
         },
         {
-          id: 2,
+          id: 3,
           name: 'III'
         },
         {
-          id: 3,
+          id: 4,
           name: 'IV'
         }
       ],
+      quarter: null,
       loading: true,
       isCreator: false,
       isPlanCreator: false,
@@ -143,12 +146,32 @@ export default {
       isRejected: false,
       isFinish: false,
       isEventsNull: false,
+      splitButtonItems: [
+        {
+          label: 'Годовой',
+          command: () => {
+            this.$toast.add({severity:'success', summary:'Updated', detail:'Data Updated', life: 3000});
+          }
+        },
+        {
+          label: 'Квартальный',
+          command: () => {
+            this.selectQuarter();
+          }
+        }
+      ],
+      selectQuarterModal: false
     }
   },
   mounted() {
     this.emitter.on('workPlanEventIsAdded', (data) => {
       if (data === true) {
         this.getWorkPlanEvents();
+      }
+    });
+    this.emitter.on('planRejected', (data) => {
+      if (data === true) {
+        this.getPlan();
       }
     });
   },
@@ -201,13 +224,33 @@ export default {
     getWorkPlanApprovalUsers() {
       axios.get(smartEnuApi + `/workPlan/getApprovalUsers/${parseInt(this.work_plan_id)}`)
           .then(res => {
-            this.approval_users = res.data;
-            this.approval_users.forEach(e => {
-              if (this.loginedUserId === e.user_id) {
-                this.isApproval = true;
-              }
-            })
+            if (res.data) {
+              this.approval_users = res.data;
+              this.approval_users.forEach(e => {
+                if (this.loginedUserId === e.user_id) {
+                  this.isApproval = true;
+                }
+              })
+            } else {
+              this.isApproval = false;
+            }
           }).catch(error => {
+        if (error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+      });
+    },
+    getPlan() {
+      axios.get(smartEnuApi + `/workPlan/getWorkPlanById/${this.work_plan_id}`, {headers: getHeader()})
+      .then(res => {
+        this.plan = res.data;
+      }).catch(error => {
         if (error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
@@ -228,6 +271,8 @@ export default {
         if (res.data.is_success) {
           this.isCreator = false;
           this.loading = false;
+          this.isFinish = true;
+          this.getPlan();
           this.$toast.add({
             severity: "success",
             summary: 'Успешно!',
@@ -246,6 +291,9 @@ export default {
         }
         this.loading = false;
       })
+    },
+    initReport() {
+      this.$router.push({ name: 'WorkPlanReportView', params: { id: this.work_plan_id }})
     },
     onRowExpand(event) {
       this.$toast.add({severity: 'info', summary: 'Row Expanded', detail: event.data.event_name, life: 3000});
@@ -267,54 +315,14 @@ export default {
     approvePlan() {
 
     },
-    rejectPlan() {
-      this.loading = true;
-      axios.post(smartEnuApi + '/workPlan/reject',{
-            work_plan_id: parseInt(this.work_plan_id),
-            comment: this.rejectComment
-          },
-          {headers: getHeader()}
-      ).then(res => {
-        if (res.data.is_success) {
-          this.getWorkPlanEvents();
-          this.loading = false;
-          this.showRejectPlan = false;
-        }
-      }).catch(error => {
-        if (error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
-        this.loading = false;
-      })
-    },
-    async openApprovePlan() {
-      let NCALaClient = new NCALayerClient();
-
-      try {
-        await NCALaClient.connect();
-      } catch (error) {
-        this.$toast.add({
-          severity: 'error',
-          summary: this.$t('ncasigner.failConnectToNcaLayer'),
-          life: 3000
-        });
-        return;
-      }
-    },
     viewDoc() {
       this.$router.push({ name: 'WorkPlanView', params: { id: this.work_plan_id }})
     },
-    openRejectPlan() {
-      this.showRejectPlan = true;
+    selectQuarter() {
+      this.selectQuarterModal = true;
     },
-    closeModal() {
-      this.showRejectPlan = false;
+    closeSelectQuarter() {
+      this.selectQuarterModal = false;
     }
   },
   /*unmounted() {
