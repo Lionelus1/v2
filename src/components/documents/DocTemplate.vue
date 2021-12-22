@@ -140,7 +140,7 @@
                     <label for="dialognote">{{$t('common.comment')}}</label>
                     <InputText id="dialognote" class="p-mb-2" v-bind:placeholder="$t('common.comment')" v-model="dialogNote" type="text" />
                     <label for="approvingusers">{{$t('doctemplate.approvingUsers')}}</label>
-                    <user-search v-model="selectedUsers" id="approvingusers"></user-search>
+                    <FindUser v-model="selectedUsers" id="approvingusers"></FindUser>
                 </div>
               </div>
               <template #footer>
@@ -159,14 +159,14 @@
 </template>
 
 <script>
-  import {templateApi} from "@/config/config";
+  import {smartEnuApi} from "@/config/config";
   import axios from 'axios';
   import RichEditor from "./editor/RichEditor.vue";
-  import UserSearch from "./usersearch/UserSearch.vue";
+  import FindUser from "@/helpers/FindUser";
   import DocState from "@/enum/docstates/index"
 
   export default {
-    components: { RichEditor, UserSearch },
+    components: { RichEditor, FindUser },
     data() {
       return {
         currentNode: null,
@@ -238,7 +238,7 @@
           entities: this.selectedUsers,
           comment: this.dialogNote,
         }
-        axios.post(templateApi+url, req).then(()=>{
+        axios.post(smartEnuApi+url, req).then(()=>{
           this.selectedNode.data.stateID = this.DocState.INAPPROVAL;
           this.selectedNode.data.state =  this.$t('common.states.inapproval');
           this.selectedNode.data.stateEn =  "inapproval";
@@ -263,7 +263,7 @@
         if (this.templateLanguage != "kz") {
           req.lang = "rus"
         }
-        axios.post(templateApi+url, req)
+        axios.post(smartEnuApi+url, req)
         .then(response=>{
           let pdf = response.data;
           // var obj = document.createElement('object');
@@ -306,7 +306,7 @@
         } else {
           req.textRus = "";
         }
-        axios.post(templateApi+url, req)
+        axios.post(smartEnuApi+url, req)
         .then(()=>{
           this.showMessage('success', this.$t('doctemplate.updateTemplate'), this.$t('doctemplate.message.succesUpdated'));
 
@@ -331,7 +331,7 @@
         }
         this.createdTemplate.folderID = this.selectedNode.key;
         let url = "/doctemplate/create";
-        axios.post(templateApi+url, this.createdTemplate)
+        axios.post(smartEnuApi+url, this.createdTemplate)
         .then(response=>{
           this.templates.forEach(folder=>{
             if (folder.key == response.data.folderID) {
@@ -376,7 +376,7 @@
           return
         }
         let url = "/doctemplate/createFolder";
-        axios.post(templateApi+url, this.createdFolder)
+        axios.post(smartEnuApi+url, this.createdFolder)
         .then(response=>{
 
           let node = new Object();
@@ -436,7 +436,7 @@
       },
       initApiCall(){
         let url = "/doctemplates?groupID=1";
-        axios.get(templateApi+url)
+        axios.get(smartEnuApi+url)
         .then(res=>{
           let treeData = [];
           res.data.forEach(el => {

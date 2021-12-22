@@ -44,7 +44,7 @@
 	</div>
 </template>
 <script>
-import {templateApi} from "@/config/config";
+import {smartEnuApi} from "@/config/config";
 import axios from 'axios';
 
 import UserSearch from "./usersearch/UserSearch.vue";
@@ -164,7 +164,7 @@ export default {
 			let url = "/agreement/get";
 			var req = {"id" : parseInt(this.$route.params.id)};
 			console.log(req)
-      axios.post(templateApi+url, req)
+      axios.post(smartEnuApi+url, req)
 			.then(res=>{
 				this.contract = res.data
 				if (this.contract.sourceType == 0){
@@ -241,7 +241,7 @@ export default {
 					let url = "/agreement/updatedocparams";
 			var req = this.contract;
 			console.log(req)
-      axios.post(templateApi+url, req)
+      axios.post(smartEnuApi+url, req)
 			.then(res=>{
 				this.$toast.add({severity:'success', summary:this.$t('common.save'), detail:this.$t('common.message.succesSaved'), life: 3000});
 			})
@@ -258,7 +258,7 @@ export default {
         if (this.contract.lang != 0) {
           req.lang = "rus"
         }
-      axios.post(templateApi+url, req)
+      axios.post(smartEnuApi+url, req)
 			.then(response=>{
 				console.log(response.data)
         let pdf = response.data;
@@ -280,7 +280,7 @@ export default {
 				"id": this.contract.id
 			};
 
-      axios.post(templateApi+url, req)
+      axios.post(smartEnuApi+url, req)
 			.then(res=>{
 				this.contract.number = res.data
 				this.$toast.add({severity:'success', summary:this.$t('common.save'), detail:this.$t('common.message.succesRegistered'), life: 3000});
