@@ -49,7 +49,7 @@
         </Column>
         <Column field="quarter" header="Квартал" sortable>
           <template #body="{ data }">
-            {{ data.quarter }}
+            {{ data.quarter ? data.quarter.String : "" }}
           </template>
         </Column>
         <Column field="fullName" header="Ответственные лица" sortable>
