@@ -120,6 +120,15 @@ export default {
               },
         {
           label: 'План', icon: 'pi pi-fw pi-folder', to: '/work-plan'
+        },
+        {
+          label: 'Вакансиялар', icon: 'pi pi-fw pi-user-plus', to: '/human-resources/public/vacancies'
+        },
+        {
+          label: 'Вакансиялар', icon: 'pi pi-fw pi-user-plus', to: '/human-resources/vacancies'
+        },
+        {
+          label: 'Моё резюме', icon: 'pi pi-fw pi-id-card', to: '/resume'
         }
       ]
     }

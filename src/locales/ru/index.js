@@ -96,6 +96,11 @@ export default {
         userDetail: "Данные пользователя",
         workPlace: "Место работы",
         role: "Роль",
+        publishDate:"Дата и время публикации:",
+        deadlineDate:"Срок подачи документов",
+        organizationNameLabel:"Наименование организации",
+        departmentNameLabel: "Наименование структурного подразделения",
+        headLabel: "Руководитель:",
         states: {
             created : "создан",
             inapproval : "на согласовании",
@@ -451,5 +456,15 @@ export default {
         uploadFile: "Добавить файл",
         answer: "Ответ",
         noAnswer: "Ответ не получен",
+    },
+    hr: {
+        vacancies: "Вакансии",
+        responsibilitiesLabel:"Функциональные обязанности",
+        educationLabel:"Образование",
+        qualificationLabel: "Квалификация по специальности",
+        experienceLabel: "Необходимый профессиональный опыт",
+        languageLevelLabel: "Уровень знаний языков",
+        certificateRequirementsLabel: "Наличие сертификатов, дипломов",
+        personalQualitiesLabel: "Личные качества",
     }
 }
