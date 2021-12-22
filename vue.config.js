@@ -8,6 +8,6 @@
       enableInSFC: false
     }
   },
-	publicPath: process.env.NODE_ENV === 'production' ? '/sigma-vue' : '/',
+	publicPath: process.env.NODE_ENV === 'production' ? '/' : '/',
 
 }
