@@ -38,7 +38,7 @@
     </Column>
     <Column field="actions" header="Действия">
       <template #body="slotProps">
-        <work-plan-execute :data="slotProps.data" v-if="parseInt(slotProps.data.quarter.String) === currentQuarter"></work-plan-execute>
+        <work-plan-execute :data="slotProps.data" v-if="parseInt(slotProps.data.quarter.String) === currentQuarter && isUserApproval(slotProps.data)"></work-plan-execute>
         <work-plan-event-add v-if="!slotProps.data.is_finish" :data="slotProps.data"></work-plan-event-add>
       </template>
     </Column>
@@ -61,14 +61,15 @@ export default {
       data: null,
       rows: [],
       isExpanded: false,
-      currentQuarter: null
+      currentQuarter: null,
+      loginedUserId: 0,
     }
   },
   created() {
     if (this.child)
       this.data = this.child;
-
     this.initQuarter();
+    this.loginedUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
   },
   methods: {
     onRowExpand(event) {
@@ -89,6 +90,16 @@ export default {
       let currentDate = new Date();
       let currentMonth = currentDate.getMonth() + 1;
       this.currentQuarter = Math.ceil(currentMonth / 3);
+    },
+    isUserApproval(data) {
+      console.log(data)
+      let userApproval = false;
+      data.user.forEach(e => {
+        if (e.id === this.loginedUserId) {
+          userApproval = true;
+        }
+      });
+      return userApproval;
     }
   }
 }

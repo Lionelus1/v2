@@ -1,5 +1,10 @@
 <template>
   <div>
+    <Breadcrumb :home="{icon: 'pi pi-home', to: '/'}" :model="items">
+      <template #item="{item}">
+        <a :href="item.url">{{item.label}}</a>
+      </template>
+    </Breadcrumb>
     <div class="p-col-12">
       <div class="card" v-if="isApproval && !isApproved">
         <Button v-if="isApproval && !isRejected" label="Согласовать" icon="pi pi-check" @click="openApprovePlan"
