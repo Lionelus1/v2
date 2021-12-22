@@ -75,7 +75,7 @@
 </div>
 </template>
 <script>
-  import {templateApi} from "@/config/config";
+  import {smartEnuApi} from "@/config/config";
   import axios from 'axios';
   import DocState from "@/enum/docstates/index";
   import RichEditor from "./editor/RichEditor.vue";
@@ -121,7 +121,7 @@
           lang: this.selectedDocLanguage == "kz" ? 0 : 1
         }
         console.log(req);
-        axios.post(templateApi+url, req).then(responce=>{
+        axios.post(smartEnuApi+url, req).then(responce=>{
           this.showMessage('success', this.$t('contracts.title'), this.$t('contracts.message.created'));
           this.$router.push({ path: '/documents/contract/' + responce.data});
 
@@ -151,7 +151,7 @@
       },
       initApiCall(){
         let url = "/doctemplates?groupID=1";
-        axios.get(templateApi+url)
+        axios.get(smartEnuApi+url)
         .then(res=>{
           res.data.forEach(el => {
             if(el.DocTemplates){
