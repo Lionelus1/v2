@@ -13,6 +13,8 @@
             <th>Квартал</th>
             <th>Планируемый результат</th>
             <th>Примечание</th>
+            <th>Отчет</th>
+            <th>Выполнено/Не выполнено</th>
           </tr>
           </thead>
           <tbody>
@@ -23,6 +25,8 @@
             <td>{{ item.quarter }}</td>
             <td>{{ item.result }}</td>
             <td>{{ item.comment }}</td>
+            <td></td>
+            <td></td>
           </tr>
           </tbody>
         </table>
@@ -36,8 +40,8 @@ import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
 
 export default {
-  name: "PdfContent",
-  props: ['planId', 'type', 'isReport', 'data'],
+  name: "ReportPdf",
+  props: ['planId', 'isReport', 'data'],
   data() {
     return {
       items: [],

@@ -11,7 +11,7 @@
       <label>Ответственные лица</label>
       <FindUser v-model="selectedUsers"></FindUser>
     </div>
-    <div class="p-field" v-if="!parentData">
+    <div class="p-field">
       <label>Квартал</label>
       <Dropdown v-model="quarter" :options="quarters" optionLabel="name" optionValue="id" placeholder="Выберите"
                 @select="selectQuarter"/>
@@ -63,6 +63,10 @@ export default {
         {
           id: 4,
           name: 'IV'
+        },
+        {
+          id: 5,
+          name: 'Весь год'
         }
       ],
       selectedUsers: null,
@@ -94,7 +98,8 @@ export default {
       });
       if (this.parentData) {
         this.parentId = parseInt(this.parentData.work_plan_event_id);
-        this.quarter = parseInt(this.parentData.quarter);
+      } else {
+        console.log("parent data is null")
       }
       axios.post(smartEnuApi + `/workPlan/addEvent`, {
         work_plan_id: this.work_plan_id,
@@ -105,7 +110,7 @@ export default {
         resp_person_ids: userIds
       }, {headers: getHeader()}).then(res => {
         this.emitter.emit("workPlanEventIsAdded", true);
-        this.$toast.add({severity: 'info', summary: 'Success', detail: 'Мероприятие успешно создан', life: 3000});
+        this.$toast.add({severity: 'success', detail: 'Мероприятие успешно создан', life: 3000});
         this.showWorkPlanEventModal = false;
         this.clearModel();
       }).catch(error => {

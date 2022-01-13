@@ -1,10 +1,5 @@
 <template>
   <div>
-    <Breadcrumb :home="{icon: 'pi pi-home', to: '/'}" :model="items">
-      <template #item="{item}">
-        <a :href="item.url">{{item.label}}</a>
-      </template>
-    </Breadcrumb>
     <div class="p-col-12">
       <div class="card" v-if="isApproval && !isApproved">
         <Button v-if="isApproval && !isRejected" label="Согласовать" icon="pi pi-check" @click="openApprovePlan"
@@ -35,9 +30,11 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: "WorkPlanReportView",
-  props: ['type', 'reportQuarter'],
+  props: ['id'],
   data() {
     return {
       source: null,
@@ -53,13 +50,18 @@ export default {
       documentByteArray: null,
       isApproved: false,
       reportType: this.type,
-      quarter: this.reportQuarter
+      quarter: null
     }
   },
   created() {
     this.work_plan_id = this.$route.params.id;
+    this.quarter = this.$route.params.quarter;
+    console.log(this.work_plan_id)
+    console.log("quarter:", this.quarter ? this.quarter : "year")
     this.loginedUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
     this.plan = JSON.parse(localStorage.getItem("workPlan"));
+  },
+  methods: {
   }
 }
 </script>

@@ -39,6 +39,7 @@
     <Column field="actions" header="Действия">
       <template #body="slotProps">
         <work-plan-execute :data="slotProps.data" v-if="parseInt(slotProps.data.quarter.String) === currentQuarter && isUserApproval(slotProps.data)"></work-plan-execute>
+        <work-plan-event-result-modal v-if="slotProps.data.event_result" :event-result="slotProps.data.event_result"></work-plan-event-result-modal>
         <work-plan-event-add v-if="!slotProps.data.is_finish" :data="slotProps.data"></work-plan-event-add>
       </template>
     </Column>
@@ -51,10 +52,11 @@
 <script>
 import WorkPlanEventAdd from "@/components/work_plan/WorkPlanEventAdd";
 import WorkPlanExecute from "@/components/work_plan/WorkPlanExecute";
+import WorkPlanEventResultModal from "@/components/work_plan/WorkPlanEventResultModal";
 
 export default {
   name: "WorkPlanEventTree",
-  components: {WorkPlanEventAdd, WorkPlanExecute},
+  components: {WorkPlanEventResultModal, WorkPlanEventAdd, WorkPlanExecute},
   props: ['child'],
   data() {
     return {
@@ -70,6 +72,10 @@ export default {
       this.data = this.child;
     this.initQuarter();
     this.loginedUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
+  },
+  mounted() {
+    if (this.child)
+      this.data = this.child;
   },
   methods: {
     onRowExpand(event) {
@@ -92,14 +98,13 @@ export default {
       this.currentQuarter = Math.ceil(currentMonth / 3);
     },
     isUserApproval(data) {
-      console.log(data)
       let userApproval = false;
       data.user.forEach(e => {
         if (e.id === this.loginedUserId) {
           userApproval = true;
         }
       });
-      return userApproval;
+      return userApproval && data.is_finish && !data.event_result;
     }
   }
 }

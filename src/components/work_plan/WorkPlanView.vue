@@ -1,11 +1,16 @@
 <template>
   <div>
-    <div class="p-col-12">
+    <div class="p-col-12" v-if="!loading">
       <div class="card" v-if="isApproval && !isApproved">
-        <Button v-if="isApproval && !isRejected" label="Согласовать" icon="pi pi-check" @click="openApprovePlan"
+        <Button v-if="isApproval && !plan.is_reject" :label="isLast ? 'Утвердить' : 'Согласовать'" icon="pi pi-check"
+                @click="openApprovePlan"
                 class="p-button p-button-success p-ml-2"/>
-        <Button v-if="isApproval && !isRejected" label="Отменить" icon="pi pi-check" @click="openRejectPlan"
+        <Button v-if="isApproval && !plan.is_reject" label="На доработку" icon="pi pi-times" @click="openRejectPlan"
                 class="p-button p-button-danger p-ml-2"/>
+      </div>
+
+      <div class="card">
+        <h5>{{ plan.work_plan_name }}</h5>
       </div>
       <div class="card">
         <object src="#toolbar=0" style="width: 100%; height: 1000px" v-if="source" type="application/pdf"
@@ -50,16 +55,14 @@ export default {
       CMSSignature: null,
       documentByteArray: null,
       isApproved: false,
+      isLast: false,
+      loading: false
     }
   },
   created() {
     this.work_plan_id = this.$route.params.id;
     this.loginedUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
-    this.plan = JSON.parse(localStorage.getItem("workPlan"));
-    this.isRejected = this.plan.is_reject;
-    this.getFile();
-    this.getSignatures();
-    this.getWorkPlanApprovalUsers();
+    this.getPlan();
   },
   methods: {
     getFile() {
@@ -67,10 +70,10 @@ export default {
         axios.post(smartEnuApi + `/workPlan/getWorkPlanFile`,
             {file_path: resp.data.filePath},
             {headers: getHeader()}).then(res => {
-              if (res.data) {
-                this.source = `data:application/pdf;base64,${res.data}`;
-                this.document = res.data;
-              }
+          if (res.data) {
+            this.source = `data:application/pdf;base64,${res.data}`;
+            this.document = res.data;
+          }
         }).catch(error => {
           if (error.response.status === 401) {
             this.$store.dispatch("logLout");
@@ -92,6 +95,33 @@ export default {
             life: 3000,
           });
         }
+      });
+    },
+    getPlan() {
+      this.loading = true;
+      axios.get(smartEnuApi + `/workPlan/getWorkPlanById/${this.work_plan_id}`, {headers: getHeader()})
+          .then(res => {
+            if (res.data) {
+              this.plan = res.data;
+              if (this.plan && this.plan.user.id === this.loginedUserId) {
+                this.isPlanCreator = true;
+              }
+              this.getFile();
+              this.getSignatures();
+              this.getWorkPlanApprovalUsers();
+            }
+            this.loading = false;
+          }).catch(error => {
+        if (error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+        this.loading = false;
       });
     },
     getWorkPlanApprovalUsers() {
@@ -118,6 +148,7 @@ export default {
         if (res.data) {
           this.signatures = res.data;
           const signUser = res.data.find(x => x.userId === this.loginedUserId);
+          console.log(signUser)
           if (signUser) {
             this.isApproved = true;
           }
@@ -138,18 +169,23 @@ export default {
       })
     },
     init() {
-      const foundIndex = this.approval_users?.findIndex(x => x.user_id === this.loginedUserId);
+      const foundIndex = this.approval_users.findIndex(x => x.user_id === this.loginedUserId);
+      const last = this.approval_users?.at(-1);
       const prevObj = this.approval_users[foundIndex - 1];
       const currentObj = this.approval_users[foundIndex];
-      const findUserFromSignatures = this.signatures ? this.signatures.find(x => x.userId === currentObj.user_id) : null;
-      if (!prevObj) {
+      const findUserFromSignatures = this.signatures && prevObj ? this.signatures.find(x => x.userId === prevObj.user_id) : null;
+      if (prevObj == null && !currentObj.is_success) {
         this.isApproval = true;
-      } else if (currentObj.stage === prevObj.stage && !findUserFromSignatures) {
+      } else if (prevObj && currentObj.stage === prevObj.stage && !findUserFromSignatures) {
         this.isApproval = true;
-      } else if (prevObj.is_success) {
-        this.isApproval = false;
+      } else if (prevObj && prevObj.is_success && !currentObj.is_success) {
+        this.isApproval = true;
       } else {
-        this.isApproval = true;
+        this.isApproval = false;
+      }
+
+      if (last.stage === currentObj.stage) {
+        this.isLast = true;
       }
       /*const findApprovalUser = this.approval_users?.find(x => x.user_id === this.loginedUserId);
       const findUserFromSignatures = this.signatures.find(x => x.userId === findApprovalUser.user_id);
@@ -195,7 +231,7 @@ export default {
           this.loading = false;
           this.showRejectPlan = false;
           this.emitter.emit("planRejected", true);
-          this.$router.push({ name: 'WorkPlanEvents', params: { id: this.plan.work_plan_id }});
+          this.$router.push({name: 'WorkPlanEvents', params: {id: this.plan.work_plan_id}});
         }
       }).catch(error => {
         if (error.response.status === 401) {
@@ -216,7 +252,7 @@ export default {
     closeModal() {
       this.showRejectPlan = false;
     },
-    sendDoc() {
+    /*sendDoc() {
       axios.post(signerApi + '/documents', {
         id: null,
         name: "test name",
@@ -251,7 +287,7 @@ export default {
           });
         }
       });
-    },
+    },*/
     sendSignature() {
       axios.post(signerApi + '/signature', {
         id: null,
@@ -262,11 +298,31 @@ export default {
         if (response.data === '') {
           this.$toast.add({severity: 'error', summary: this.$t('ncasigner.notEnoughRights'), life: 3000});
         } else if (response.data.id !== null || response.data.id !== '') {
-          this.$toast.add({
-            severity: "success",
-            summary: 'Успешно!',
-            life: 3000,
-          });
+          axios.post(smartEnuApi + '/workPlan/successApprove', {
+            work_plan_id: parseInt(this.work_plan_id)
+          }, {headers: getHeader()}).then(res => {
+            if (res.data.is_success) {
+              this.$toast.add({
+                severity: "success",
+                summary: 'Успешно!',
+                life: 3000,
+              });
+              this.getSignatures();
+              this.getWorkPlanApprovalUsers();
+            } else {
+              console.log(res)
+            }
+          }).catch(error => {
+            if (error.response.status === 401) {
+              this.$store.dispatch("logLout");
+            } else {
+              this.$toast.add({
+                severity: "error",
+                summary: error,
+                life: 3000,
+              });
+            }
+          })
         } else {
           this.$toast.add({severity: 'error', summary: this.$t('ncasigner.failToSign'), life: 3000});
         }

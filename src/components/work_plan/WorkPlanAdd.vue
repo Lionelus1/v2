@@ -70,7 +70,7 @@ export default {
     sendDoc() {
       axios.post(signerApi + '/documents', {
         id: null,
-        name: "test name",
+        name: this.work_plan_name,
       }, {headers: getHeader()}).then((response) => {
         if (response.data.id !== null || response.data.id !== '') {
           this.documentID = response.data.uuid

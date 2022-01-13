@@ -5,7 +5,7 @@
           class="p-fluid">
     <div class="p-field">
       <label>Название мероприятия</label>
-      <InputText v-model="plan.event_name" disabled/>
+      <InputText v-model="event.event_name" disabled/>
     </div>
     <div class="p-field">
       <label>Результат</label>
@@ -40,30 +40,30 @@ export default {
   data() {
     return {
       showWorkPlanExecuteModal: false,
-      plan: this.data,
+      event: this.data,
       result: null,
       file: null,
     }
   },
-  created() {
-  },
   methods: {
     openBasic() {
       this.showWorkPlanExecuteModal = true;
+      console.log("asd", this.event)
     },
     closeBasic() {
       this.showWorkPlanExecuteModal = false;
     },
     saveResult() {
       const fd = new FormData();
-      fd.append('work_plan_id', this.plan.work_plan_id);
+      fd.append('work_plan_event_id', this.event.work_plan_event_id);
       fd.append('result', this.result);
       if (this.file) {
         fd.append('file', this.file)
+        fd.append('fname', this.file.name.replace(" ", "_"))
       }
       axios.post(smartEnuApi + `/workPlan/saveResult`, fd, {headers: getHeader()}).then(res => {
-        this.emitter.emit("workPlanEventIsAdded", true);
-        this.$toast.add({severity: 'info', summary: 'Success', detail: 'Мероприятие успешно создан', life: 3000});
+        this.emitter.emit("workPlanEventIsCompleted", true);
+        this.$toast.add({severity: 'success', detail: 'Выполнено', life: 3000});
         this.showWorkPlanExecuteModal = false;
         this.clearModel();
       }).catch(error => {

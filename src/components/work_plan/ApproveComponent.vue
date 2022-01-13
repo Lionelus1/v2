@@ -31,11 +31,12 @@ import FindUser from "@/helpers/FindUser";
 export default {
   name: "ApproveComponent",
   components: {FindUser},
-  props: ['modelValue', 'add', 'changeStep'],
+  props: ['value', 'modelValue', 'add', 'changeStep', 'stepValue'],
   data() {
     return {
       selectedUsers: null,
       stage: 1,
+      stageValue: this.value,
       activeIndex: 0,
       isStepsFinished: false,
       steps: [
@@ -44,7 +45,8 @@ export default {
           users: null
         }
       ],
-      result: []
+      result: [],
+      approval_users: []
     }
   },
   setup(props, context) {
@@ -82,19 +84,22 @@ export default {
       if (this.isStepsFinished) {
         this.isStepsFinished = false;
       }
+      debugger;
+      const currentRes = this.result.find(x => x.stage === this.stage);
+      if (currentRes && currentRes.stage === this.stage) {
+        this.selectedUsers = currentRes.users;
+      }
     },
     addStep() {
       this.stage += 1;
       this.activeIndex += 1;
       this.steps.push({stage: this.stage})
+      this.selectedUsers = null;
       this.updateModel();
       this.$emit('changeStep', this.stage);
-      this.selectedUsers = null;
     },
     updateModel(event, value, preventDefault) {
-      if (this.result.length === 0) {
-        this.result.push({stage: this.stage, users: this.selectedUsers})
-      }
+      this.initResult()
       this.$emit('update:modelValue', this.selectedUsers);
       this.$emit('add', {stage: this.stage, users: this.selectedUsers});
 
@@ -102,6 +107,18 @@ export default {
         event.preventDefault();
       }
     },
+    initResult() {
+      if (this.result.length === 0) {
+        this.result.push({stage: this.stage, users: this.selectedUsers})
+      } else {
+        const index = this.result.find(x => x.stage === this.stage);
+        if (index) {
+          index.users = this.selectedUsers;
+        } else {
+          this.result.push({stage: this.stage, users: this.selectedUsers})
+        }
+      }
+    }
   },
   computed: {
     activeStep() {
@@ -114,6 +131,9 @@ export default {
       return this.activeIndex === this.steps.length - 1;
     },
   },
+  unmounted() {
+    this.result = [];
+  }
 }
 </script>
 
@@ -317,7 +337,7 @@ h3 {
 }
 
 .steps-item.active span, .steps-item.done span {
-  background: #42b983;
+  background: #05a8ee;
 }
 
 .steps-item.active span {

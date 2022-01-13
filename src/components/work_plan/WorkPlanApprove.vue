@@ -7,15 +7,12 @@
       @click="openModal"
   ></Button>
 
-  <PdfContent ref="pdf" v-if="data" :planId="data.work_plan_id" style="display: none;"></PdfContent>
+  <PdfContent ref="pdf" v-if="data" :data="data" :planId="data.work_plan_id" style="display: none;"></PdfContent>
 
   <Dialog header="Отправить на согласование" v-model:visible="showModal" :style="{width: '450px'}" class="p-fluid">
     <div class="p-field">
       <label>Выберите</label>
-      <ApproveComponent @add="approveChange" v-model="selectedUsers" @changeStep="changeStep"></ApproveComponent>
-      <p>
-        {{ currentStageUsers }}
-      </p>
+      <ApproveComponent @add="approveChange" :stepValue="selectedUsers" v-model="selectedUsers" @changeStep="changeStep"></ApproveComponent>
     </div>
     <template #footer>
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
@@ -35,7 +32,7 @@ import {getHeader, getMultipartHeader, signerApi, smartEnuApi} from "@/config/co
 export default {
   name: "WorkPlanApprove",
   components: {ApproveComponent, PdfContent},
-  props: ['plan', 'events'],
+  props: ['docId', 'plan', 'events'],
   data() {
     return {
       data: this.plan,
@@ -69,7 +66,6 @@ export default {
   },
   created() {
     this.loginedUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
-    console.log(this.data)
   },
   methods: {
     openModal() {
@@ -124,6 +120,7 @@ export default {
                 summary: "План успешно отправлен на согласование",
                 life: 3000,
               });
+              this.emitter.emit("planSentToApprove", true)
             }
             this.showModal = false;
           }).catch(error => {
@@ -179,6 +176,8 @@ export default {
       this.currentStageUsers = "";
       const foundIndex = this.approval_users.findIndex(x => x.stage === step);
       if (foundIndex !== -1 && step === this.approval_users[foundIndex].stage) {
+        this.selectedUsers = this.approval_users[foundIndex];
+        this.$emit('stepChanged', this.approval_users[foundIndex]);
         this.approval_users[foundIndex].users.forEach(e => {
           this.currentStageUsers += `${e.fullName}, `
         })
