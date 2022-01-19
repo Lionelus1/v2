@@ -56,17 +56,20 @@ export default {
       documentByteArray: null,
       isApproved: false,
       isLast: false,
-      loading: false
+      loading: false,
+      user: null
     }
   },
   created() {
     this.work_plan_id = this.$route.params.id;
-    this.loginedUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
+    this.user = JSON.parse(localStorage.getItem("loginedUser"));
+    this.loginedUserId = this.user.userID;
     this.getPlan();
   },
   methods: {
     getFile() {
       axios.get(signerApi + `/documents/${this.plan.doc_id}`).then(resp => {
+        console.log("qwe", resp)
         axios.post(smartEnuApi + `/workPlan/getWorkPlanFile`,
             {file_path: resp.data.filePath},
             {headers: getHeader()}).then(res => {
@@ -290,10 +293,13 @@ export default {
     },*/
     sendSignature() {
       axios.post(signerApi + '/signature', {
-        id: null,
-        userId: this.loginedUserId,
-        documentUuid: this.plan.doc_id,
-        signature: this.CMSSignature
+        iin: this.user.IIN,
+        rightType: "individual",
+        documentSigning: {
+          userId: this.loginedUserId,
+          documentUuid: this.plan.doc_id,
+          signature: this.CMSSignature
+        }
       }, {headers: getHeader()}).then((response) => {
         if (response.data === '') {
           this.$toast.add({severity: 'error', summary: this.$t('ncasigner.notEnoughRights'), life: 3000});

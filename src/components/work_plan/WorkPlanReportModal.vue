@@ -7,8 +7,6 @@
       @click="openModal"
   ></Button>
 
-  <PdfContent ref="pdf" v-if="work_plan_id" :planId="work_plan_id" style="display: none;"></PdfContent>
-
   <Dialog header="Отчет" v-model:visible="selectQuarterModal" :style="{width: '450px'}"
           class="p-fluid">
     <div class="p-field">
@@ -28,17 +26,13 @@
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
               @click="closeModal"/>
       <Button label="Ок" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2"
-              @click="initReport(true)"/>
+              @click="initReport"/>
     </template>
   </Dialog>
 </template>
 
 <script>
-import PdfContent from "@/components/work_plan/PdfContent";
-import html2pdf from "html2pdf.js";
-
 export default {
-  components: [PdfContent],
   name: "WorkPlanReportModal",
   props: ['planId', 'plan'],
   data() {
@@ -76,6 +70,7 @@ export default {
           name: 'IV'
         }
       ],
+      isPdf: false
     }
   },
   methods: {
@@ -86,32 +81,8 @@ export default {
 
       }*/
     },
-    initReportFile() {
-      let workPlanId = this.data.work_plan_id;
-      let pdfOptions = {
-        margin: 15,
-        image: {
-          type: 'jpeg',
-          quality: 1,
-        },
-        html2canvas: {scale: 3},
-        jsPDF: {
-          unit: 'mm',
-          format: 'a4',
-          orientation: 'p',
-        },
-        filename: "work_plan_report.pdf"
-      };
-      const pdfContent = this.$refs.pdf.$refs.htmlToPdf;
-      const worker = html2pdf().set(pdfOptions).from(pdfContent);
-
-      worker.toPdf().output("blob").then((pdf) => {
-        const fd = new FormData();
-        fd.append('wpfile', pdf);
-        fd.append('fname', pdfOptions.filename)
-        fd.append('work_plan_id', workPlanId)
-        this.approvePlan(fd);
-      });
+    initReport() {
+      this.$router.push({ name: 'WorkPlanReportView', params: { id: this.work_plan_id, type: this.type, name: this.report_name, quarter: this.quarter }})
     },
     openModal() {
       this.selectQuarterModal = true;
