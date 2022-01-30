@@ -49,7 +49,7 @@
         </Column>
         <Column field="quarter" header="Квартал" sortable>
           <template #body="{ data }">
-            {{ data.quarter ? data.quarter.String : "" }}
+            {{ data.quarter ? initQuarterString(data.quarter.String) : "" }}
           </template>
         </Column>
         <Column field="fullName" header="Ответственные лица" sortable>
@@ -374,6 +374,27 @@ export default {
       let currentMonth = currentDate.getMonth() + 1;
       this.currentQuarter = Math.ceil(currentMonth / 3);
     },
+    initQuarterString(quarter) {
+      let res = '';
+      switch (quarter) {
+        case "1":
+          res = 'I';
+          break;
+        case "2":
+          res = 'II';
+          break;
+        case "3":
+          res = 'III';
+          break;
+        case "4":
+          res = 'IV';
+          break;
+        case "5":
+          res = 'Весь год';
+          break;
+      }
+      return res;
+    }
   },
   /*unmounted() {
     localStorage.removeItem("workPlan");

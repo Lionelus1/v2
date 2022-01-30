@@ -4,17 +4,17 @@
   <Dialog header="Добавить мероприятие" v-model:visible="showWorkPlanEventModal" :style="{width: '450px'}"
           class="p-fluid">
     <div class="p-field">
-      <label>Название мероприятия</label>
-      <InputText v-model="event_name"/>
+      <label>Название мероприятия *</label>
+      <InputText v-model="event_name" @input="nameInput" />
     </div>
     <div class="p-field">
-      <label>Ответственные лица</label>
-      <FindUser v-model="selectedUsers"></FindUser>
+      <label>Ответственные лица *</label>
+      <FindUser v-model="selectedUsers" @add="userChange"></FindUser>
     </div>
     <div class="p-field">
-      <label>Квартал</label>
+      <label>Квартал *</label>
       <Dropdown v-model="quarter" :options="quarters" optionLabel="name" optionValue="id" placeholder="Выберите"
-                @select="selectQuarter"/>
+                @change="selectQuarter"/>
     </div>
     <div class="p-field">
       <label>Результат</label>
@@ -71,7 +71,8 @@ export default {
       ],
       selectedUsers: null,
       parentData: null,
-      parentId: null
+      parentId: null,
+      formValid: [],
     }
   },
   mounted() {
@@ -82,8 +83,21 @@ export default {
     this.work_plan_id = parseInt(this.$route.params.id);
   },
   methods: {
-    selectQuarter(event) {
+    nameInput(event) {
+      if (event.target.value) {
+        this.formValid.push(true);
+      }
+    },
+    userChange(event) {
       console.log(event)
+      if (event.value && event.value.length > 0) {
+        this.formValid.push(true);
+      }
+    },
+    selectQuarter() {
+      if (this.quarter) {
+        this.formValid.push(true);
+      }
     },
     openBasic() {
       this.showWorkPlanEventModal = true;
@@ -124,6 +138,6 @@ export default {
       this.result = null;
       this.selectedUsers = null;
     }
-  }
+  },
 }
 </script>

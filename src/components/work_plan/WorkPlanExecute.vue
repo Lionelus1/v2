@@ -9,7 +9,7 @@
     </div>
     <div class="p-field">
       <label>Результат</label>
-      <Textarea v-model="result" rows="3" style="resize: vertical"/>
+      <Textarea v-model="result" @input="resultInput" rows="3" style="resize: vertical"/>
     </div>
     <div class="p-field">
       <FileUpload
@@ -25,7 +25,7 @@
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
               @click="closeBasic"/>
       <Button :label="$t('common.save')" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2"
-              @click="saveResult"/>
+              :disabled="isDisabled" @click="saveResult"/>
     </template>
   </Dialog>
 </template>
@@ -43,6 +43,7 @@ export default {
       event: this.data,
       result: null,
       file: null,
+      isDisabled: true,
     }
   },
   methods: {
@@ -70,6 +71,11 @@ export default {
         console.log(error)
       });
     },
+    resultInput(e) {
+      if (e.target.value.length > 0) {
+        this.isDisabled = false;
+      }
+    },
     clearModel() {
       this.event_name = null;
       this.parentId = null;
@@ -79,6 +85,7 @@ export default {
     },
     uploadFile(event) {
       this.file = event.files[0];
+      this.isDisabled = false;
     },
   }
 }
