@@ -301,9 +301,8 @@ export default {
           signature: this.CMSSignature
         }
       }, {headers: getHeader()}).then((response) => {
-        if (response.data === '') {
-          this.$toast.add({severity: 'error', summary: this.$t('ncasigner.notEnoughRights'), life: 3000});
-        } else if (response.data.id !== null || response.data.id !== '') {
+        console.log(response);
+        if (response.data && response.data.success) {
           axios.post(smartEnuApi + '/workPlan/successApprove', {
             work_plan_id: parseInt(this.work_plan_id)
           }, {headers: getHeader()}).then(res => {

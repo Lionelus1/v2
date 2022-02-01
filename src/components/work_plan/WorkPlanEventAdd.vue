@@ -4,17 +4,19 @@
   <Dialog header="Добавить мероприятие" v-model:visible="showWorkPlanEventModal" :style="{width: '450px'}"
           class="p-fluid">
     <div class="p-field">
-      <label>Название мероприятия *</label>
-      <InputText v-model="event_name" @input="nameInput" />
+      <label>Название мероприятия</label>
+      <InputText v-model="event_name" />
+      <small class="p-error" v-if="submitted && formValid.event_name">Введите название мероприятия</small>
     </div>
     <div class="p-field">
-      <label>Ответственные лица *</label>
-      <FindUser v-model="selectedUsers" @add="userChange"></FindUser>
+      <label>Ответственные лица</label>
+      <FindUser v-model="selectedUsers" :editMode="true"></FindUser>
+      <small class="p-error" v-if="submitted && formValid.users">Выберите ответственных лиц</small>
     </div>
     <div class="p-field">
-      <label>Квартал *</label>
-      <Dropdown v-model="quarter" :options="quarters" optionLabel="name" optionValue="id" placeholder="Выберите"
-                @change="selectQuarter"/>
+      <label>Квартал</label>
+      <Dropdown v-model="quarter" :options="quarters" optionLabel="name" optionValue="id" placeholder="Выберите" />
+      <small class="p-error" v-if="submitted && formValid.quarter">Выберите квартал</small>
     </div>
     <div class="p-field">
       <label>Результат</label>
@@ -69,10 +71,15 @@ export default {
           name: 'Весь год'
         }
       ],
-      selectedUsers: null,
+      selectedUsers: [],
       parentData: null,
       parentId: null,
-      formValid: [],
+      formValid: {
+        event_name: false,
+        users: false,
+        quarter: false
+      },
+      submitted: false,
     }
   },
   mounted() {
@@ -83,22 +90,6 @@ export default {
     this.work_plan_id = parseInt(this.$route.params.id);
   },
   methods: {
-    nameInput(event) {
-      if (event.target.value) {
-        this.formValid.push(true);
-      }
-    },
-    userChange(event) {
-      console.log(event)
-      if (event.value && event.value.length > 0) {
-        this.formValid.push(true);
-      }
-    },
-    selectQuarter() {
-      if (this.quarter) {
-        this.formValid.push(true);
-      }
-    },
     openBasic() {
       this.showWorkPlanEventModal = true;
     },
@@ -106,6 +97,11 @@ export default {
       this.showWorkPlanEventModal = false;
     },
     createEvent() {
+      this.submitted = true;
+      if (!this.validateForm()) {
+        console.log(this.selectedUsers)
+        return;
+      }
       let userIds = [];
       this.selectedUsers.forEach(e => {
         userIds.push(e.userID)
@@ -131,12 +127,18 @@ export default {
         console.log(error)
       });
     },
+    validateForm() {
+      this.formValid.event_name = !this.event_name;
+      this.formValid.users =  this.selectedUsers.length === 0;
+      this.formValid.quarter = !this.quarter;
+      return !this.formValid.event_name && !this.formValid.user && !this.formValid.quarter;
+    },
     clearModel() {
       this.event_name = null;
       this.parentId = null;
       this.quarter = null;
       this.result = null;
-      this.selectedUsers = null;
+      this.selectedUsers = [];
     }
   },
 }

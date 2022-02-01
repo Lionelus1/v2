@@ -102,19 +102,30 @@ export default {
         work_plan_id: parseInt(this.work_plan_id),
         quarter: this.reportType === 2 ? this.quarter : null
       }, {headers: getHeader()}).then(res => {
+        console.log("report", res)
         let ind = 1;
         let parentIndex = 0;
         res.data.map(e => {
+          this.items.push(e);
           if (e.parent_id) {
             e.index = `${parentIndex}.${ind++}`
           } else {
             e.index = ind++;
             parentIndex = e.index
           }
+          if (e.children) {
+            let chInd = 1;
+            e.children.forEach(ec => {
+              ec.index = `${e.index}.${chInd++}`
+              if (ec.quarter) {
+                ec.quarter = this.initQuarter(ec.quarter.String);
+              }
+              this.items.push(ec);
+            });
+          }
           if (e.quarter) {
             e.quarter = this.initQuarter(e.quarter.String);
           }
-          this.items.push(e);
         });
         this.initReportFile();
       }).catch(error => {
@@ -146,7 +157,7 @@ export default {
           res = 'IV';
           break;
         case "5":
-          res = '';
+          res = 'Весь год';
           break;
       }
       return res;

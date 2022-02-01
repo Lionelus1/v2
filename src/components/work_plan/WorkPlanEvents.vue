@@ -19,11 +19,11 @@
             <h5 class="p-m-0">Мероприятия |
               <router-link tag="a" to="/work-plan">Планы</router-link>
             </h5>
-            <span class="p-input-icon-left">
+<!--            <span class="p-input-icon-left">
               <i class="pi pi-search"/>
               <InputText type="search" v-model="searchText" :placeholder="$t('common.search')"/>
               <Button icon="pi pi-search" class="p-ml-1" @click="getWorkPlanEvents"/>
-            </span>
+            </span>-->
           </div>
         </template>
         <template #empty> {{ $t('common.noData') }}</template>

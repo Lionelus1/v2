@@ -76,16 +76,26 @@ export default {
         let ind = 1;
         let parentIndex = 0;
         res.data.map(e => {
+          this.items.push(e);
           if (e.parent_id) {
             e.index = `${parentIndex}.${ind++}`
           } else {
             e.index = ind++;
             parentIndex = e.index
           }
+          if (e.children) {
+            let chInd = 1;
+            e.children.forEach(ec => {
+              ec.index = `${e.index}.${chInd++}`
+              if (ec.quarter) {
+                ec.quarter = this.initQuarter(ec.quarter.String);
+              }
+              this.items.push(ec);
+            });
+          }
           if (e.quarter) {
             e.quarter = this.initQuarter(e.quarter.String);
           }
-          this.items.push(e)
         });
       }).catch(error => {
         if (error.response.status === 401) {

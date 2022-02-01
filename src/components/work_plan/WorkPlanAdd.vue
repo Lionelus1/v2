@@ -105,9 +105,7 @@ export default {
       });
     },
     input(event) {
-      if (event.target.value.length > 0) {
-        this.isDisabled = false;
-      }
+      this.isDisabled = event.target.value.length <= 0;
     }
   }
 }
