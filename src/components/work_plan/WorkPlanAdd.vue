@@ -4,13 +4,13 @@
   <Dialog header="Добавить план" v-model:visible="showModal" :style="{width: '450px'}" class="p-fluid">
     <div class="p-field">
       <label>Название плана</label>
-      <InputText v-model="work_plan_name"/>
+      <InputText v-model="work_plan_name" @input="input"/>
     </div>
     <template #footer>
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
               @click="closeBasic"/>
       <Button :label="$t('common.add')" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2"
-              @click="sendDoc"/>
+              :disabled="isDisabled" @click="sendDoc"/>
     </template>
   </Dialog>
 
@@ -45,7 +45,8 @@ export default {
           to: '/confirmation'
         }],
       documentID: null,
-      isDocCreated: false
+      isDocCreated: false,
+      isDisabled: true,
     }
   },
   props: ['isAdded', 'isSub'],
@@ -70,7 +71,7 @@ export default {
     sendDoc() {
       axios.post(signerApi + '/documents', {
         id: null,
-        name: "test name",
+        name: this.work_plan_name,
       }, {headers: getHeader()}).then((response) => {
         if (response.data.id !== null || response.data.id !== '') {
           this.documentID = response.data.uuid
@@ -103,6 +104,9 @@ export default {
         }
       });
     },
+    input(event) {
+      this.isDisabled = event.target.value.length <= 0;
+    }
   }
 }
 </script>

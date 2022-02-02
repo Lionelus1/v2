@@ -14,11 +14,11 @@
         <template #header>
           <div class="p-d-flex p-jc-between p-ai-center">
             <h5 class="p-m-0">Планы</h5>
-            <span class="p-input-icon-left">
+<!--            <span class="p-input-icon-left">
               <i class="pi pi-search"/>
               <InputText type="search" v-model="searchText" :placeholder="$t('common.search')"/>
               <Button icon="pi pi-search" class="p-ml-1" @click="getData"/>
-            </span>
+            </span>-->
           </div>
         </template>
         <template #empty> {{ $t('common.noData') }}</template>
