@@ -21,7 +21,6 @@ export default {
         this.$router.push({name:'/smartenu/vaccination'});
       })
       .catch(error => {
-        //console.log(error.message)
         this.$router.push({name:'Login'});
       })
     }

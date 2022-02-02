@@ -6,6 +6,7 @@
       </div>
     </div>
     <div class="content-section implementation">
+      <ProgressBar v-if="signing" mode="indeterminate" style="height: .5em" />
       <div class="card p-p-0">
         <TabView ref="templateView" v-model:activeIndex="active" class="p-p-0">
           <TabPanel v-bind:header="$t('doctemplate.templates')" class="p-p-0">
@@ -72,6 +73,7 @@
               <template #body="slotProps">
                   <Button v-if="slotProps.node.data.type==1" type="button" icon="pi pi-plus" @click="openForm('addTemplate',slotProps.node)" class="p-button-success" v-tooltip.bottom="$t('doctemplate.newTemplate')"></Button>
                   <Button v-else type="button" icon="pi pi-search" class="p-button-warning" @click="editDocTemplate(slotProps.node)" v-tooltip.bottom="$t('common.show')"></Button>
+                  <Button v-if="slotProps.node.data.type!=1 && slotProps.node.data.stateEn == DocState.REVISION.Value" icon="pi pi-comment"></Button>
               </template>
             </Column>
           </TreeTable>
@@ -79,9 +81,11 @@
           <TabPanel v-bind:header="$t('doctemplate.selected')" :disabled="(selectedNode.data.type == null || selectedNode.data.type == 1)">
             <div class="p-formgroup-inline">
               <span class="p-buttonset">
-                <Button v-if="(!(selectedNode.data.stateEn == DocState.INAPPROVAL))" v-bind:label="$t('common.save')" icon="pi pi-save" @click="saveDocTemplate"/>
+                <Button v-if="(selectedNode.data.stateEn == DocState.CREATED.Value || selectedNode.data.stateEn == DocState.REVISION.Value)" v-bind:label="$t('common.save')" icon="pi pi-save" @click="saveDocTemplate"/>
                 <Button v-bind:label="$t('common.download')" icon="pi pi-file-pdf" @click="downloadDocTemplatePdf" />
-                <Button v-if="selectedNode.data.stateEn == DocState.CREATED" v-bind:label="$t('common.toapprove')" icon="pi pi-send" @click="openForm('toApproval')" />
+                <Button v-if="selectedNode.data.stateEn == DocState.CREATED.Value || selectedNode.data.stateEn == DocState.REVISION.Value" v-bind:label="$t('common.toapprove')" icon="pi pi-send" @click="openForm('toApproval')" />
+                <Button v-if="selectedNode.data.stateEn == DocState.INAPPROVAL.Value && findRole(null, DocState.roles.LegalServiceHead)" class="p-button-success" :label ="$t('common.approve')" icon="pi pi-check" @click="approve()"/>
+                <Button v-if="selectedNode.data.stateEn == DocState.INAPPROVAL.Value && findRole(null, DocState.roles.LegalServiceHead)" class="p-button-warning" :label ="$t('common.revision')" icon="pi pi-times" @click="openForm('revision')"/>
               </span>
 
               <SelectButton v-model="templateLanguage" :options="language" class="p-mb-3">
@@ -92,12 +96,34 @@
                 </template>
               </SelectButton>
             </div>
-            <RichEditor v-if="templateLanguage =='kz'" v-model="selectedNode.data.mainTextKaz" editorStyle="height:500px;max-width:700px">
+            <RichEditor ref="kzEditor" v-if="templateLanguage =='kz'" v-model="selectedNode.data.mainTextKaz" editorStyle="height:500px;max-width:700px">
               <template v-slot:toolbar>
                 <span class="ql-formats">
                   <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
                   <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
                   <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
+                  <select class="ql-background" v-tooltip.bottom="'Color'"></select>
+                </span>
+                <span class="ql-formats">
+                  <button class="ql-list" value="ordered"></button>
+                  <button class="ql-list" value="bullet"></button>
+                  <select class="ql-align">
+                    <option defaultValue></option>ß
+                    <option value="center"></option>
+                    <option value="right"></option>
+                    <option value="justify"></option>
+                  </select>
+                </span>
+
+              </template>
+            </RichEditor>
+            <RichEditor ref="kzEditor" v-else v-model="selectedNode.data.mainTextRus" editorStyle="height:500px;max-width:700px">
+              <template v-slot:toolbar>
+                <span class="ql-formats">
+                  <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
+                  <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
+                  <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
+                  <select class="ql-background" v-tooltip.bottom="'Color'"></select>
                 </span>
                 <span class="ql-formats">
                   <button class="ql-list" value="ordered"></button>
@@ -109,30 +135,10 @@
                     <option value="justify"></option>
                   </select>
                 </span>
-
+                
               </template>
             </RichEditor>
-            <RichEditor v-else v-model="selectedNode.data.mainTextRus" editorStyle="height:500px;max-width:700px">
-              <template v-slot:toolbar>
-                <span class="ql-formats">
-                  <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
-                  <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
-                  <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
-                </span>
-                <span class="ql-formats">
-                  <button class="ql-list" value="ordered"></button>
-                  <button class="ql-list" value="bullet"></button>
-                  <select class="ql-align">
-                    <option defaultValue></option>
-                    <option value="center"></option>
-                    <option value="right"></option>
-                    <option value="justify"></option>
-                  </select>
-                </span>
-
-              </template>
-            </RichEditor>
-
+{{selectedNode}}
             <!-- Келісімге жіберу диалогы -->
             <Dialog :modal="true"  v-bind:header="$t('common.toapprove')" v-model:visible="dialogOpenState.toApproval" :style="{width: '50vw'}">
               <div class="p-fluid">
@@ -148,6 +154,19 @@
                 <Button v-bind:label="$t('common.yes')" icon="pi pi-check" @click="sendToApproval" autofocus />
               </template>
             </Dialog>
+            <!-- Қайтару диалогы -->
+            <Dialog :modal="true"  v-bind:header="$t('common.revision')" v-model:visible="dialogOpenState.revision" :style="{width: '50vw'}">
+              <div class="p-fluid">
+                <div class="p-field">
+                    <label for="dialognote">{{$t('common.comment')}}</label>
+                    <InputText id="dialognote" class="p-mb-2" v-bind:placeholder="$t('common.comment')" v-model="revisionComment" type="text" />
+                </div>
+              </div>
+              <template #footer>
+                <Button v-bind:label="$t('common.no')" icon="pi pi-times" @click="closeForm('toApproval')" class="p-button-text"/>
+                <Button v-bind:label="$t('common.yes')" icon="pi pi-check" @click="revisionTemplate" autofocus />
+              </template>
+            </Dialog>
 
           </TabPanel>
         </TabView>
@@ -159,7 +178,8 @@
 </template>
 
 <script>
-  import {smartEnuApi} from "@/config/config";
+  import {smartEnuApi, findRole, getHeader} from "@/config/config";
+  import {runNCaLayer} from "@/helpers/SignDocFunctions"
   import axios from 'axios';
   import RichEditor from "./editor/RichEditor.vue";
   import FindUser from "@/helpers/FindUser";
@@ -169,18 +189,22 @@
     components: { RichEditor, FindUser },
     data() {
       return {
+        readonly : true,
         currentNode: null,
         selectedUsers: null,
         dialogNote: "",
+        revisionComment: "",
         selectedNode: {
           data : {},
         },
+        signing : false,
         DocState: DocState,
         templateLanguage: 'kz',
         dialogOpenState: {
           addFolder : false,
           addTemplate : false,
           toApproval : false,
+          revision :false,
         },
         active: 0,
         templates: null,
@@ -214,6 +238,8 @@
       showMessage(msgtype,message,content) {
         this.$toast.add({severity:msgtype, summary: message, detail:content, life: 3000});
       },
+     
+      findRole: findRole,
       openForm(formName,node) {
 
         this.dialogOpenState[formName] = true;
@@ -224,7 +250,86 @@
       closeForm(formName) {
         this.dialogOpenState[formName] = false;
       },
+      approve() {
+        this.$confirm.require({
+          message: this.$t('common.confirmation'),
+          header: this.$t('common.approve'),
+          icon: 'pi pi-exclamation-triangle',
+          accept: () => {
+                axios.post(smartEnuApi + "/doctemplate/getbase64",
+                { id: this.selectedNode.key},  
+                { headers: getHeader() }).then(
+                  response => {
+                    runNCaLayer(this.$t, this.$toast, response.data).then(sign=>{
+                      this.signing = true
+                      if (sign != undefined) {
 
+                        var req = {
+                          userID : this.$store.state.loginedUser.userID,
+                          id: this.selectedNode.key,
+                          sign: sign
+                        };
+                        axios.post(smartEnuApi+"/doctemplate/sign", req, { headers: getHeader() }).then(response=>{
+                        this.selectedNode.data.stateID = this.DocState.APPROVED.ID;
+                        this.selectedNode.data.state =  this.$t('common.states.approved');
+                        this.selectedNode.data.stateEn =  this.DocState.APPROVED.Value;
+                        this.showMessage('success', this.$t('doctemplate.title'), this.$t('common.message.succesSendToApproval'));
+                        this.signing = false;
+                      }).catch(error => {
+                          if (error.response.status == 405) {
+                            this.$toast.add({
+                              severity: "error",
+                              summary: this.$t(error.response.data),
+                              life: 3000,
+                            });
+                          }
+                          if (error.response.status == 401) {
+                            this.$store.dispatch("logLout");
+                          } else 
+                          this.signing = false;
+                      })
+                      
+                      }
+                    });
+                  }
+                ).catch(error => {
+                    if (error.response.status == 401) {
+                      this.$store.dispatch("logLout");
+                    } else 
+                    console.log(error);
+                          console.log(error);
+
+                })
+                
+              }
+        });
+      },
+      revisionTemplate() {
+        this.saveDocTemplate();
+        let url ="/doctemplate/updatedoсtemplatestate"
+         var req = {
+          userID : this.$store.state.loginedUser.userID,
+          id: this.selectedNode.key,
+          state: this.DocState.REVISION.ID,
+          comment: this.revisionComment,
+        }
+        axios.post(smartEnuApi+url, req, { headers: getHeader() }).then(()=>{
+          this.selectedNode.data.stateID = this.DocState.REVISION.ID;
+          this.selectedNode.data.state =  this.$t('common.states.revision');
+          this.selectedNode.data.stateEn =  "revision";
+          this.dialogOpenState.revision = false;
+        })
+        .catch(error => {
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          } else 
+          console.log(error);
+        })
+
+        this.dialogOpenState.revision = false;
+       
+        
+      },
       sendToApproval() {
         let url = "/doctemplate/toapproval";
 
@@ -233,12 +338,21 @@
           return;
         }
         var req = {
-          userID : 1,
+          userID : this.$store.state.loginedUser.userID,
           docTemplateID: this.selectedNode.key,
           entities: this.selectedUsers,
           comment: this.dialogNote,
         }
-        axios.post(smartEnuApi+url, req).then(()=>{
+        let isLegalHead = false;
+        this.selectedUsers.forEach(user => {
+          isLegalHead = this.findRole(user, DocState.roles.LegalServiceHead)
+        });
+        
+        if (isLegalHead ===false) {
+          this.showMessage('error', this.$t('doctemplate.title'), this.$t('common.message.notPermissionForApprove'));
+          return;
+        }
+        axios.post(smartEnuApi+url, req, { headers: getHeader() }).then(()=>{
           this.selectedNode.data.stateID = this.DocState.INAPPROVAL;
           this.selectedNode.data.state =  this.$t('common.states.inapproval');
           this.selectedNode.data.stateEn =  "inapproval";
@@ -247,6 +361,9 @@
           this.showMessage('success', this.$t('doctemplate.title'), this.$t('common.message.succesSendToApproval'));
         })
         .catch(error => {
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          } else 
           console.log(error);
         })
 
@@ -260,10 +377,13 @@
         let url = "/doctemplate/getpdf";
         var req = {"id" : this.selectedNode.key};
         req.lang = "kaz";
-        if (this.templateLanguage != "kz") {
+        if (this.templateLanguage != "ru") {
           req.lang = "rus"
-        }
-        axios.post(smartEnuApi+url, req)
+        } 
+        if (this.templateLanguage != "kz") {
+          req.lang = "kaz"
+        } 
+        axios.post(smartEnuApi+url, req, { headers: getHeader() })
         .then(response=>{
           let pdf = response.data;
           // var obj = document.createElement('object');
@@ -306,12 +426,16 @@
         } else {
           req.textRus = "";
         }
-        axios.post(smartEnuApi+url, req)
+        axios.post(smartEnuApi+url, req, { headers: getHeader() })
         .then(()=>{
           this.showMessage('success', this.$t('doctemplate.updateTemplate'), this.$t('doctemplate.message.succesUpdated'));
 
         })
         .catch(error => {
+          console.log(error)
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          } else 
           console.log(error);
         })
 
@@ -331,7 +455,7 @@
         }
         this.createdTemplate.folderID = this.selectedNode.key;
         let url = "/doctemplate/create";
-        axios.post(smartEnuApi+url, this.createdTemplate)
+        axios.post(smartEnuApi+url, this.createdTemplate, { headers: getHeader() })
         .then(response=>{
           this.templates.forEach(folder=>{
             if (folder.key == response.data.folderID) {
@@ -351,6 +475,9 @@
           })
         })
         .catch(error => {
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          } else 
             console.error(error)
         })
       },
@@ -376,7 +503,7 @@
           return
         }
         let url = "/doctemplate/createFolder";
-        axios.post(smartEnuApi+url, this.createdFolder)
+        axios.post(smartEnuApi+url, this.createdFolder, { headers: getHeader() })
         .then(response=>{
 
           let node = new Object();
@@ -409,10 +536,14 @@
       },
       editDocTemplate(node){
         this.active = 1;
-        this.selectedNode = node;
+        this.onNodeSelect(node)
+        
       },
       onNodeSelect(node) {
         this.selectedNode = node;
+        this.readonly = this.selectedNode.data.stateEn == DocState.CREATED.Value || this.selectedNode.data.stateEn == DocState.REVISION.Value || (this.selectedNode.data.stateEn == DocState.INAPPROVAL.Value && this.findRole(null, DocState.roles.LegalServiceHead))
+        this.$refs.kzEditor.setReadOnly(this.readonly);
+        
       },
       addTemplateNode(nodeDataChildren,node) {
         let child=new Object();
@@ -428,6 +559,7 @@
         childData.createdDate = node.createDate;
         childData.mainTextKaz = node.mainTextKaz
         childData.mainTextRus = node.mainTextRus
+        childData.base64 = node.base64
         childData.type = 0;
         childData.typeText= this.$t('common.doc');
         child.data = childData;
@@ -436,7 +568,7 @@
       },
       initApiCall(){
         let url = "/doctemplates?groupID=1";
-        axios.get(smartEnuApi+url)
+        axios (smartEnuApi+url, { headers: getHeader() })
         .then(res=>{
           let treeData = [];
           res.data.forEach(el => {
@@ -465,6 +597,10 @@
 
         })
         .catch(error => {
+          console.log(error)
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          } else 
             console.error(error)
         })
       }
@@ -493,7 +629,7 @@
     color: #256029;
   }
 
-  .template-status.negotiation {
+  .template-status.revision {
       background-color: #FFCDD2;
       color: #C63737;
   }

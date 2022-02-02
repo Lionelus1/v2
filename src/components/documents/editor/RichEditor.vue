@@ -158,6 +158,10 @@ export default {
         else this.quill.setText("");
       }
     },
+    setReadOnly(value)
+    {
+      this.quill.enable(value); 
+    },
     openModal(value) {
       this.agreementElement = value;
       if (value == "text") {

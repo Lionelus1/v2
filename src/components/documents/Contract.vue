@@ -1,7 +1,6 @@
 <template>
 	<div class="ontent-section">
 		<h4 class="p-ml-3">{{$t('contracts.contract')}}</h4>
-
 			<Menubar :model="menu" :key="active" style="height:36px;margin-top:-7px;margin-left:-14px;"></Menubar>
 		<TabView @TabChange="tabChanged" v-model:activeIndex="activeTab">
 			<TabPanel :header="$t('common.params')">
@@ -44,7 +43,7 @@
 	</div>
 </template>
 <script>
-import {smartEnuApi} from "@/config/config";
+import {smartEnuApi, getHeader} from "@/config/config";
 import axios from 'axios';
 
 import UserSearch from "./usersearch/UserSearch.vue";
@@ -163,8 +162,7 @@ export default {
 		initApiCall() {
 			let url = "/agreement/get";
 			var req = {"id" : parseInt(this.$route.params.id)};
-			console.log(req)
-      axios.post(smartEnuApi+url, req)
+      axios.post(smartEnuApi+url, req, { headers: getHeader() })
 			.then(res=>{
 				this.contract = res.data
 				if (this.contract.sourceType == 0){
@@ -240,8 +238,7 @@ export default {
 				return;
 					let url = "/agreement/updatedocparams";
 			var req = this.contract;
-			console.log(req)
-      axios.post(smartEnuApi+url, req)
+      		axios.post(smartEnuApi+url, req,{ headers: getHeader() })
 			.then(res=>{
 				this.$toast.add({severity:'success', summary:this.$t('common.save'), detail:this.$t('common.message.succesSaved'), life: 3000});
 			})
@@ -258,9 +255,8 @@ export default {
         if (this.contract.lang != 0) {
           req.lang = "rus"
         }
-      axios.post(smartEnuApi+url, req)
+      axios.post(smartEnuApi+url, req, { headers: getHeader() })
 			.then(response=>{
-				console.log(response.data)
         let pdf = response.data;
         var link = document.createElement('a');
         link.innerHTML = 'Download PDF file';
@@ -280,7 +276,7 @@ export default {
 				"id": this.contract.id
 			};
 
-      axios.post(smartEnuApi+url, req)
+      axios.post(smartEnuApi+url, req, { headers: getHeader() })
 			.then(res=>{
 				this.contract.number = res.data
 				this.$toast.add({severity:'success', summary:this.$t('common.save'), detail:this.$t('common.message.succesRegistered'), life: 3000});

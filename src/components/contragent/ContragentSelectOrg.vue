@@ -1,6 +1,5 @@
 <template>
   <div class="p-field p-grid">
-    
     <div class="p-col-12 p-md-12 p-mb-2">
       <span class="p-float-label p-ibutoon-right">
         <i v-if="value" class="pi pi-id-card ibutton" style="margin-right:35px;height:30px;margin-top: 2px;" @click="showcard()"/>
@@ -10,15 +9,12 @@
           <Contragents v-model="value" v-model:windowOpened="contragentVisible"></Contragents>
         </Sidebar>
         <Sidebar v-model:visible="cardVisible" position="right" class="p-sidebar-lg" style="overflow-y:scroll">
-          <Organization v-if="value.type == null || value.type == ContragentType.Organization" :readonly="true" :modelValue="value"></Organization>
+          <Organization v-if="value.type == null || value.type == ContragentType.Organization" :readonly="true" :modelValue="value.data"></Organization>
           <Person v-if="value.type == ContragentType.Person" :modelValue="value.data" :readonly="true"></Person>
           <Bank v-if="value.type == ContragentType.Bank" :modelValue="value.data" :readonly="true"></Bank>
         </Sidebar>
       </span>
     </div>
-
-
-    
   </div>
 </template>
 

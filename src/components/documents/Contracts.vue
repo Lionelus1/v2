@@ -120,7 +120,6 @@
           filePath: "",
           lang: this.selectedDocLanguage == "kz" ? 0 : 1
         }
-        console.log(req);
         axios.post(smartEnuApi+url, req).then(responce=>{
           this.showMessage('success', this.$t('contracts.title'), this.$t('contracts.message.created'));
           this.$router.push({ path: '/documents/contract/' + responce.data});

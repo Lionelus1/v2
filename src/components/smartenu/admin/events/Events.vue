@@ -1,8 +1,10 @@
 <template>
   <div class="card">
     <!-- BEGINNING OF TABLE -->
+    
     <Toolbar class="p-mb-4">
-      <template #left>
+     
+      <template #start>
         <Button
           v-if="isAdmin || isModer"
           :label="$t('common.add')"
@@ -1071,7 +1073,6 @@ export default {
       this.editVisible = true;
       this.submitted = false;
       let event = this.allEvents.find((x) => x.id === id);
-      console.log(event);
       this.event.id = event.id;
       this.event.titleKz = event.titleKz;
       this.event.titleRu = event.titleRu;
@@ -1186,7 +1187,6 @@ export default {
           this.roles.isPublisher = this.findRole(this.userRoles, "news_publisher");
           this.roles.isStudent = this.findRole(this.userRoles, "student");
           this.roles.isModer = this.findRole(this.userRoles, "news_moderator");
-          console.log(this.userRoles);
         })
         .catch((error) => {
           if (error.response.status == 401) {
@@ -1202,7 +1202,6 @@ export default {
     },
     findRole(roles, code) {
       for (let i = 0; i < roles.length; i++) {
-        console.log(roles[i]);
         if (roles[i].name === code) {
           return true;
         }

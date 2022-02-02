@@ -1,3 +1,4 @@
+import {NCALayerClient} from "ncalayer-js-client"
 export async function docToByteArray(document) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -94,4 +95,23 @@ export function identifyOIDs(oid) {
     }
 
     return message
+}
+export async function runNCaLayer(t,toast, document) {
+    let NCALaClient = new NCALayerClient();
+
+    try {
+      await NCALaClient.connect();
+    } catch (error) {
+      toast.add({
+        severity: 'error',
+        summary: t('ncasigner.failConnectToNcaLayer'),
+        life: 3000
+      });
+    }
+    try {
+      var res = await NCALaClient.createCAdESFromBase64('PKCS12', document, 'SIGNATURE', false)
+      return res
+    } catch (error) {
+        toast.add({severity: 'error', summary: t('ncasigner.failToSign') + error, life: 3000});
+    }
 }
