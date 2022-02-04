@@ -65,7 +65,15 @@ export default {
         this.$toast.add({severity: 'info', summary: 'Success', detail: 'План успешно создан', life: 3000});
         this.showModal = false;
       }).catch(error => {
-        console.log(error)
+        if (error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
       });
     },
     sendDoc() {
@@ -81,6 +89,16 @@ export default {
             severity: 'error',
             summary: this.$t('ncasigner.failToSendDoc'),
             life: 3000
+          });
+        }
+      }).catch(error => {
+        if (error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
           });
         }
       });

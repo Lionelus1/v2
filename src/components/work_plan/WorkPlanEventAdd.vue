@@ -99,7 +99,6 @@ export default {
     createEvent() {
       this.submitted = true;
       if (!this.validateForm()) {
-        console.log(this.selectedUsers)
         return;
       }
       let userIds = [];
@@ -124,14 +123,22 @@ export default {
         this.showWorkPlanEventModal = false;
         this.clearModel();
       }).catch(error => {
-        console.log(error)
+        if (error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
       });
     },
     validateForm() {
       this.formValid.event_name = !this.event_name;
-      this.formValid.users =  this.selectedUsers.length === 0;
+      this.formValid.users = this.selectedUsers.length === 0;
       this.formValid.quarter = !this.quarter;
-      return !this.formValid.event_name && !this.formValid.user && !this.formValid.quarter;
+      return !this.formValid.event_name && !this.formValid.users && !this.formValid.quarter;
     },
     clearModel() {
       this.event_name = null;

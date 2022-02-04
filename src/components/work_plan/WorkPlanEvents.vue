@@ -6,9 +6,9 @@
       <Button v-if="isPlanCreator && !isFinish" label="Завершить" icon="pi pi-check" @click="finish"
               class="p-button p-button-danger p-ml-2"/>
       <work-plan-approve v-if="isPlanCreator && !isPlanSentApproval && isFinish" :plan="plan" :events="data"></work-plan-approve>
-      <Button v-if="isFinish && (isApproval || isPlanCreator)" label="Посмотреть план" icon="pi pi-eye" @click="viewDoc"
+      <Button v-if="isFinish && (isApproval || isPlanCreator) && isPlanSentApproval" label="Посмотреть план" icon="pi pi-eye" @click="viewDoc"
               class="p-button p-button-info p-ml-2"/>
-      <WorkPlanReportModal v-if="isFinish && (isApproval || isPlanCreator)" :planId="work_plan_id" :plan="plan"></WorkPlanReportModal>
+      <WorkPlanReportModal v-if="isFinish && (isApproval || isPlanCreator) && isPlanSentApproval" :planId="work_plan_id" :plan="plan"></WorkPlanReportModal>
     </div>
     <div class="card">
       <DataTable :value="data" dataKey="work_plan_event_id"
@@ -73,7 +73,7 @@
 
         <Column field="actions" header="Действия">
           <template #body="slotProps">
-            <work-plan-execute v-if="parseInt(slotProps.data.quarter.String) === currentQuarter && isUserApproval(slotProps.data)" :data="slotProps.data"></work-plan-execute>
+            <work-plan-execute v-if="parseInt(slotProps.data.quarter.String) === currentQuarter && isUserApproval(slotProps.data) && isPlanSentApproval" :data="slotProps.data"></work-plan-execute>
             <work-plan-event-result-modal v-if="slotProps.data.event_result" :event-result="slotProps.data.event_result"></work-plan-event-result-modal>
             <work-plan-event-add v-if="!slotProps.data.is_finish" :data="slotProps.data"></work-plan-event-add>
           </template>
@@ -278,7 +278,6 @@ export default {
           this.isPlanCreator = false;
           //this.$router.push('/work-plan')
         }
-        console.log("finish", this.isFinish)
         this.loading = false;
       }).catch(error => {
         if (error.response.status === 401) {

@@ -69,7 +69,6 @@ export default {
   methods: {
     getFile() {
       axios.get(signerApi + `/documents/${this.plan.doc_id}`).then(resp => {
-        console.log("qwe", resp)
         axios.post(smartEnuApi + `/workPlan/getWorkPlanFile`,
             {file_path: resp.data.filePath},
             {headers: getHeader()}).then(res => {
@@ -151,11 +150,9 @@ export default {
         if (res.data) {
           this.signatures = res.data;
           const signUser = res.data.find(x => x.userId === this.loginedUserId);
-          console.log(signUser)
           if (signUser) {
             this.isApproved = true;
           }
-          console.log(this.isApproved)
         } else {
           this.$toast.add({
             severity: 'error',
@@ -216,7 +213,6 @@ export default {
       }
       try {
         this.CMSSignature = await NCALaClient.createCAdESFromBase64('PKCS12', this.document, 'SIGNATURE', false)
-        console.log("SIGNATURE IS ", this.CMSSignature)
         this.sendSignature();
       } catch (error) {
         this.$toast.add({severity: 'error', summary: this.$t('ncasigner.failToSign'), life: 3000});
@@ -224,10 +220,8 @@ export default {
     },
     rejectPlan() {
       this.loading = true;
-      axios.post(smartEnuApi + '/workPlan/reject', {
-            work_plan_id: parseInt(this.work_plan_id),
-            comment: this.rejectComment
-          },
+      this.plan.comment = this.rejectComment;
+      axios.post(smartEnuApi + '/workPlan/reject', this.plan,
           {headers: getHeader()}
       ).then(res => {
         if (res.data.is_success) {
@@ -301,7 +295,6 @@ export default {
           signature: this.CMSSignature
         }
       }, {headers: getHeader()}).then((response) => {
-        console.log(response);
         if (response.data && response.data.success) {
           axios.post(smartEnuApi + '/workPlan/successApprove', {
             work_plan_id: parseInt(this.work_plan_id)
@@ -314,8 +307,6 @@ export default {
               });
               this.getSignatures();
               this.getWorkPlanApprovalUsers();
-            } else {
-              console.log(res)
             }
           }).catch(error => {
             if (error.response.status === 401) {
@@ -329,7 +320,17 @@ export default {
             }
           })
         } else {
-          this.$toast.add({severity: 'error', summary: this.$t('ncasigner.failToSign'), life: 3000});
+          this.$toast.add({severity: 'error', summary: this.$t(response.data.errorMessage), life: 3000});
+        }
+      }).catch(error => {
+        if (error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
         }
       });
     },

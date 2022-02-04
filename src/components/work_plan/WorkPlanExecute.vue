@@ -49,7 +49,6 @@ export default {
   methods: {
     openBasic() {
       this.showWorkPlanExecuteModal = true;
-      console.log("asd", this.event)
     },
     closeBasic() {
       this.showWorkPlanExecuteModal = false;
@@ -68,12 +67,22 @@ export default {
         this.showWorkPlanExecuteModal = false;
         this.clearModel();
       }).catch(error => {
-        console.log(error)
+        if (error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
       });
     },
     resultInput(e) {
       if (e.target.value.length > 0) {
         this.isDisabled = false;
+      } else {
+        this.isDisabled = true;
       }
     },
     clearModel() {

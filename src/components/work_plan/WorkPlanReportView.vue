@@ -93,7 +93,6 @@ export default {
       const worker = html2pdf().set(pdfOptions).from(pdfContent);
 
       worker.toPdf().output("datauristring").then((pdf, item) => {
-        console.log("REPORT PDF ", pdf)
         this.source = pdf;
       });
     },
@@ -129,7 +128,6 @@ export default {
         });
         this.initReportFile();
       }).catch(error => {
-        console.log(error)
         if (error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {

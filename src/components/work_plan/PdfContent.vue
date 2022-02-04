@@ -72,7 +72,6 @@ export default {
       axios.post(smartEnuApi + `/workPlan/getWorkPlanReportData`, {
         work_plan_id: this.work_plan_id
       }, {headers: getHeader()}).then(res => {
-        console.log("pdfcontent", res)
         let ind = 1;
         let parentIndex = 0;
         res.data.map(e => {
