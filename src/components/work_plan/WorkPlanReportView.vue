@@ -13,8 +13,10 @@
       </div>
     </div>
 
-
-    <ReportPdf ref="reportpdf" :data="items" :report-title="report_name" style="display: none"></ReportPdf>
+    <div v-if="items">
+      <ReportPdf ref="report" :data="items" :report-title="report_name"
+                 style="display: none;"></ReportPdf>
+    </div>
 
     <Dialog header="Отправить на корректировку" v-model:visible="showRejectPlan" :style="{width: '450px'}"
             class="p-fluid">
@@ -36,7 +38,8 @@
 import axios from "axios";
 import html2pdf from "html2pdf.js";
 import ReportPdf from "./RerportPdf";
-import {getHeader, smartEnuApi} from "../../config/config";
+import {getHeader, smartEnuApi} from "@/config/config";
+import treeToList from "@/service/treeToList";
 
 export default {
   name: "WorkPlanReportView",
@@ -59,7 +62,7 @@ export default {
       reportType: null,
       quarter: null,
       report_name: null,
-      items: []
+      items: null,
     }
   },
   created() {
@@ -75,7 +78,7 @@ export default {
     initReportFile() {
       //let workPlanId = this.data.work_plan_id;
       let pdfOptions = {
-        margin: 15,
+        margin: 10,
         image: {
           type: 'jpeg',
           quality: 1,
@@ -87,9 +90,11 @@ export default {
           //orientation: 'p',
           hotfixes: ["px_scaling"]
         },
+        pagebreak: {avoid: 'tr'},
         filename: "work_plan_report.pdf"
       };
-      const pdfContent = this.$refs.reportpdf.$refs.htmlToPdf;
+      const pdfContent = this.$refs.report.$refs.toPdf;
+      console.log("ddd")
       const worker = html2pdf().set(pdfOptions).from(pdfContent);
 
       worker.toPdf().output("datauristring").then((pdf, item) => {
@@ -102,31 +107,11 @@ export default {
         quarter: this.reportType === 2 ? this.quarter : null
       }, {headers: getHeader()}).then(res => {
         console.log("report", res)
-        let ind = 1;
-        let parentIndex = 0;
-        res.data.map(e => {
-          this.items.push(e);
-          if (e.parent_id) {
-            e.index = `${parentIndex}.${ind++}`
-          } else {
-            e.index = ind++;
-            parentIndex = e.index
-          }
-          if (e.children) {
-            let chInd = 1;
-            e.children.forEach(ec => {
-              ec.index = `${e.index}.${chInd++}`
-              if (ec.quarter) {
-                ec.quarter = this.initQuarter(ec.quarter.String);
-              }
-              this.items.push(ec);
-            });
-          }
-          if (e.quarter) {
-            e.quarter = this.initQuarter(e.quarter.String);
-          }
-        });
-        this.initReportFile();
+        ///// FLATTEN ARRAY
+        this.items = treeToList(res.data, 'children');
+        this.$nextTick(() => {
+          this.initReportFile();
+        })
       }).catch(error => {
         if (error.response.status === 401) {
           this.$store.dispatch("logLout");
@@ -138,28 +123,30 @@ export default {
           });
         }
       });
-    },
-    initQuarter(quarter) {
-      let res = '';
-      switch (quarter) {
-        case "1":
-          res = 'I';
-          break;
-        case "2":
-          res = 'II';
-          break;
-        case "3":
-          res = 'III';
-          break;
-        case "4":
-          res = 'IV';
-          break;
-        case "5":
-          res = 'Весь год';
-          break;
-      }
-      return res;
     }
+    /*initChild(e, parentIndex, ind) {
+      this.items.push(e);
+      if (e.parent_id) {
+        e.index = `${parentIndex}.${ind++}`
+      } else {
+        e.index = ind++;
+        parentIndex = e.index
+      }
+      if (e.quarter) {
+        e.quarter = this.initQuarter(e.quarter.String);
+      }
+      if (e.children) {
+        let chInd = 1;
+        e.children.forEach((ec, index) => {
+          this.items.push(ec);
+          ec.index = `${e.index}.${index + 1}`
+          if (ec.quarter) {
+            ec.quarter = this.initQuarter(ec.quarter.String);
+          }
+          this.initChild(ec, parentIndex, index)
+        });
+      }
+    }*/
   }
 }
 </script>

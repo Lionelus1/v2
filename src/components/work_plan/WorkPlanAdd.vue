@@ -4,7 +4,7 @@
   <Dialog header="Добавить план" v-model:visible="showModal" :style="{width: '450px'}" class="p-fluid">
     <div class="p-field">
       <label>Название плана</label>
-      <InputText v-model="work_plan_name" @input="input"/>
+      <InputText v-model="work_plan_name" @input="input" v-on:keyup.enter="sendDoc"/>
     </div>
     <template #footer>
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"

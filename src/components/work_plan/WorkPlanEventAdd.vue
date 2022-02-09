@@ -13,7 +13,7 @@
       <FindUser v-model="selectedUsers" :editMode="true"></FindUser>
       <small class="p-error" v-if="submitted && formValid.users">Выберите ответственных лиц</small>
     </div>
-    <div class="p-field">
+    <div class="p-field" v-if="!parentData">
       <label>Квартал</label>
       <Dropdown v-model="quarter" :options="quarters" optionLabel="name" optionValue="id" placeholder="Выберите" />
       <small class="p-error" v-if="submitted && formValid.quarter">Выберите квартал</small>
@@ -107,6 +107,7 @@ export default {
       });
       if (this.parentData) {
         this.parentId = parseInt(this.parentData.work_plan_event_id);
+        this.quarter = parseInt(this.parentData.quarter.String);
       } else {
         console.log("parent data is null")
       }
@@ -138,7 +139,8 @@ export default {
       this.formValid.event_name = !this.event_name;
       this.formValid.users = this.selectedUsers.length === 0;
       this.formValid.quarter = !this.quarter;
-      return !this.formValid.event_name && !this.formValid.users && !this.formValid.quarter;
+
+      return this.parentData ? !this.formValid.event_name && !this.formValid.users : !this.formValid.event_name && !this.formValid.users && !this.formValid.quarter;
     },
     clearModel() {
       this.event_name = null;

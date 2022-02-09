@@ -17,7 +17,7 @@
           </thead>
           <tbody>
           <tr v-for="(item, index) in items" :key="index">
-            <td>{{ item.index }}</td>
+            <td>{{ item.row_number }}</td>
             <td>{{ item.event_name }}</td>
             <td><p v-for="(userItem, userIndex) in item.user" :key="userIndex"> {{ userItem.fullName }} </p></td>
             <td>{{ item.quarter }}</td>
@@ -34,6 +34,7 @@
 <script>
 import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
+import treeToList from "@/service/treeToList";
 
 export default {
   name: "PdfContent",
@@ -51,6 +52,7 @@ export default {
           quality: 1,
         },
         html2canvas: {scale: 3},
+        pagebreak: {avoid: 'tr'},
         jsPDF: {
           unit: 'mm',
           format: 'a4',
@@ -72,30 +74,7 @@ export default {
       axios.post(smartEnuApi + `/workPlan/getWorkPlanReportData`, {
         work_plan_id: this.work_plan_id
       }, {headers: getHeader()}).then(res => {
-        let ind = 1;
-        let parentIndex = 0;
-        res.data.map(e => {
-          this.items.push(e);
-          if (e.parent_id) {
-            e.index = `${parentIndex}.${ind++}`
-          } else {
-            e.index = ind++;
-            parentIndex = e.index
-          }
-          if (e.children) {
-            let chInd = 1;
-            e.children.forEach(ec => {
-              ec.index = `${e.index}.${chInd++}`
-              if (ec.quarter) {
-                ec.quarter = this.initQuarter(ec.quarter.String);
-              }
-              this.items.push(ec);
-            });
-          }
-          if (e.quarter) {
-            e.quarter = this.initQuarter(e.quarter.String);
-          }
-        });
+        this.items = treeToList(res.data, 'children');
       }).catch(error => {
         if (error.response.status === 401) {
           this.$store.dispatch("logLout");
