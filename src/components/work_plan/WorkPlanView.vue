@@ -11,6 +11,9 @@
 
       <div class="card">
         <h5>{{ plan.work_plan_name }}</h5>
+        <WorkPlanApproveStep style="height: 200px" now-step="1" direction="vertical" :step-list="approvals" />
+<!--        <WorkPlanApproveStatus :options="approvals"></WorkPlanApproveStatus>-->
+        <Message severity="success">Dynamic Success Message</Message>
       </div>
       <div class="card">
         <object src="#toolbar=0" style="width: 100%; height: 1000px" v-if="source" type="application/pdf"
@@ -38,9 +41,12 @@
 import axios from "axios";
 import {getHeader, signerApi, smartEnuApi} from "@/config/config";
 import {NCALayerClient} from "ncalayer-js-client";
+import WorkPlanApproveStatus from "@/components/work_plan/WorkPlanApproveStatus";
+import WorkPlanApproveStep from "@/components/work_plan/WorkPlanApproveStep";
 
 export default {
   name: "WorkPlanView",
+  components: {WorkPlanApproveStep},
   data() {
     return {
       source: null,
@@ -57,7 +63,19 @@ export default {
       isApproved: false,
       isLast: false,
       loading: false,
-      user: null
+      user: null,
+      stepperOptions: {
+        headers: [
+          {title: 'Title One'},
+          {title: 'Title Two'},
+          {title: 'Title Three'},
+          {title: 'Title Four'}
+        ],
+        prevText: 'Previous',
+        nextText: 'Next'
+      },
+      approval_users: [],
+      approvals: []
     }
   },
   created() {
@@ -130,6 +148,12 @@ export default {
       axios.get(smartEnuApi + `/workPlan/getApprovalUsers/${parseInt(this.work_plan_id)}`)
           .then(res => {
             if (res.data) {
+              const d = res.data
+              const unique = [...new Set(d.map(item => item.stage))];
+              unique.forEach(r => {
+                let f = d.filter(x => x.stage === r);
+                this.approvals.push(f);
+              });
               this.approval_users = res.data;
               this.init();
             }
@@ -169,16 +193,18 @@ export default {
       })
     },
     init() {
-      const foundIndex = this.approval_users.findIndex(x => x.user_id === this.loginedUserId);
+      const currentUser = this.approval_users.findIndex(x => x.user.id === this.loginedUserId);
       const last = this.approval_users?.at(-1);
-      const prevObj = this.approval_users[foundIndex - 1];
-      const currentObj = this.approval_users[foundIndex];
-      const findUserFromSignatures = this.signatures && prevObj ? this.signatures.find(x => x.userId === prevObj.user_id) : null;
+      const prevObj = this.approval_users[currentUser - 1];
+      const currentObj = this.approval_users[currentUser];
+      const findUserFromSignatures = this.signatures && prevObj ? this.signatures.find(x => x.userId === prevObj.user.id) : null;
       if (prevObj == null && !currentObj.is_success) {
         this.isApproval = true;
       } else if (prevObj && currentObj.stage === prevObj.stage && !findUserFromSignatures) {
         this.isApproval = true;
-      } else if (prevObj && prevObj.is_success && !currentObj.is_success) {
+      } else if (prevObj && prevObj.is_success && !currentObj.is_success && prevObj.stage === currentObj.stage) {
+        this.isApproval = true;
+      } else if (currentObj.stage !== prevObj.stage && this.approval_users.filter(x => x.stage === 1 && x.is_success === true).length > 0) {
         this.isApproval = true;
       } else {
         this.isApproval = false;

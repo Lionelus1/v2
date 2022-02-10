@@ -272,7 +272,7 @@ export default {
               this.approval_users = res.data;
               this.isPlanSentApproval = true;
               this.approval_users.forEach(e => {
-                if (this.loginedUserId === e.user_id) {
+                if (this.loginedUserId === e.user.id) {
                   this.isApproval = true;
                 }
               });
