@@ -4,6 +4,7 @@ export default {
         academicDegree: "Academic degree",
         academicTitle: "Academic title",
         annotation: "Annotation",
+        approve: "Approve",
         action: {
             submit: 'Submit',
             accept: 'Accept',
@@ -96,11 +97,13 @@ export default {
         person: "Person",
         personal: "Staff",
         requiredField: "Required field",
+        revision: "To revision",
         teacher: "Academic personnel",
         student: "Student",
         registration: "Registration",
         search: "Search",
         showingRecordsCount: "Showing {first} to {last} of {totalRecords} entries",
+        doYouWantDelete: "Are you sure to delete this item?",
         startDate: 'Start date',
         endDate: 'End date',
         doYouWantDelete: "Сіз шынымен жойғыңыз келе ме",
@@ -121,6 +124,9 @@ export default {
             created : "created",
             inapproval : "in approval",
             approved: "approved",
+            rejected: "rejected",
+            revision: "for revision"
+
         },
         message: {
             title: {
@@ -129,6 +135,7 @@ export default {
                 saveError: "Save error",
                 docCreation: "Adding a new catalog"
             },
+            notPermissionForApprove: "The selected user does not have the appropriate privileges to reconcile the document",
             fillError: "Not all the data listed. Please fill in all fields!",
             sendToApprovalError: "An error occurred while sending for approval. Check the correctness of the specified data!",
             downloadError: "Error during download",
@@ -144,6 +151,7 @@ export default {
             catSuccesCreated: "New catalog added successfully",
             recordNotFound: "No matching entries found",
             succesSendToApproval: "Succes sent to approval",
+            successApproved: "Success approved",
             succesRegistered: "Registered succesfully",
             succesSaved: "Saved successfully",
             selectRole: "Plewse, select a role",
@@ -267,19 +275,75 @@ export default {
         loading: "Loading...",
     },
     ncasigner: {
-        signatureError: {
-            extractCertificate: "Failed to get user certificate from CMS signing.",
-            certificateNotForSigning: "The certificate is not intended for signing",
-            extractIin:"Failed to get IIN from user certificate",
-            mismatchIin: "The IIN obtained from the certificate is not equal to the IIN of the user",
-            notIndividual: "The certificate does not belong to an individual",
-            notCeo: "The certificate does not belong to the chief executive",
-            financialSignRightsRequirement: "The certificate does not have the right to sign financial documents",
-            signRightsRequirement: "The certificate does not have the right to sign documents",
-            notHrWorker: "The certificate does not belong to the HR employee",
-            notCompanyEmployee: "The certificate does not belong to an employee of the organization",
-            noRightsToSign: "The certificate does not have the right to sign documents (algorithm required: GOST)"
+        chooseFile: "Select  the file",
+        docIdNotExistMessageForFind: "In order to find the signed document page by file, the correct SIGNERAPP identifier must be present in the file name. Make sure that the correct SIGNERAPP ID is specified in your file name.",
+        docIdNotExistMessageForSign: "In order to sign a previously signed document by file, the correct SIGNERAPP identifier must be present in the file name. Make sure that the correct SIGNERAPP ID is specified in your file name. Otherwise, specify the file name without the SIGNERAPP identifier to create a new signature chain.",
+        reload: "Reload the page and try again",
+        fileWithIdNotFound: "The file with this identifier {dn} was not found in the SIGNERAPP system",
+        signedDocPageTitle: "Page of the signed document {name}",
+        linkForOthersTitle: "Use the link to the page of the signed document in order to give others the opportunity to check signatures and sign this document:",
+        copy: "Copy",
+        filHasNoIdTitle: "The SIGNERAPP ID is missing in the name of the file you selected",
+        fileHasNoIdContent: "In order to find the signed document page by file, the SIGNERAPP identifier must be present in the file name. Try to find a file of the following format:",
+        IncorrectFileTitle: "A file with this name {dn} failed signature verification in the SIGNERAPP system",
+        IncorrectFileContent: "This file has been modified or another file has been provided. Please check the file.",
+        signed: "he/she signed this document",
+        certTemplate: "Certificate Template: ",
+        IIN: "IIN",
+        certType: "Signature type: ",
+        exportCMS: "Export a signature to a file",
+        //
+        signNotFoundById: "Couldn't find a signature for this ID!",
+        //
+        successSignTitle: "File {dn} has been successfully signed!",
+        successSignContentFirstRow: "Your signature has been verified and has been registered in SIGNAPP",
+        successSignContentSecondRow: "We recommend saving a copy of the signed file with the <b>SIGNAPP ID</b>. In the future, this will simplify the search for the signed document page in the SIGNAPP service.",
+        saveFileCopyWithId: "Save a copy of the signed file with the ID",
+        changeNameManually: "You can also rename the file yourself as follows:",
+        goToDoc: "Go to the document",
+        successCopy: "Successfully copied to the clipboard!",
+        failCopy: "Copying succeeded",
+        findDocTitle: "Document Search",
+        //
+        chosenFile: "Selected file: {fn}",
+        //
+        find: "Find",
+
+        signatureListTitle: "List of signatures",
+        success: {
+            header: "Verification of all signatures registered in the system has been successfully completed!",
+            subHeader: "This suggests that:",
+            firstRow: "all signatures registered in the system are correct;",
+            secondRow:"the document that was just submitted for verification was signed, no one made any changes to it.",
+            //
+            signSuccess: "The document has been successfully signed!"
         },
+        signatureError: {
+            extractCertificate: "Failed to get user certificate from CMS signature.",
+            certificateNotForSigning: "The certificate is not intended for signing",
+            extractIin: "Failed to get the IIN from the user certificate",
+            mismatchIin: "The IIN received from the certificate is not equal to the user's IIN",
+            notIndividual: "The certificate does not belong to an individual",
+            notCeo: "The certificate does not belong to the first manager",
+            financialSignRightsRequirement: "The certificate does not have the right to sign financial documents",
+            signRightsRequirement: "The certificate does not have the right to be signed",
+            notHrWorker: "The certificate does not belong to an employee of the HR department",
+            notCompanyEmployee: "The certificate does not belong to an employee of the organization.",
+            noRightsToSign: "The certificate does not have the right to sign documents (required algorithm: GOST)"
+        },
+        verifySignatureTitle: "Check the signature under the document",
+        verify: "Verify",
+        signDocTitle: "Sign the document",
+        sign: "To sign",
+        chooseDocument: "Select the document!",
+        failToBase64: "Failed to convert file to Base64 format",
+        signError: "Signature error",
+        docNotFoundById: "Could not find a document for this ID!",
+        failConnectToNcaLayer: "Failed to connect to NCALayer",
+        failToSign: "Failed to sign the document!",
+        notEnoughRights: "You don't have enough rights to sign the document!",
+        failToSendDoc: "The document ID could not be sent to the server!",
+
     },
     smartenu: {
         categories: "categories",

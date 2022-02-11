@@ -7,7 +7,7 @@
         <i class="pi pi-ellipsis-h ibutton" style="height:30px;margin-top: 2px;margin-right: 2px;" @click="showside()"/>
         <InputText id="inputtext-right" readonly="true" type="text" v-model="selectedContragentName"/>
         <Sidebar @hide="updateValue(value)" v-model:visible="contragentVisible" position="right" class="p-sidebar-lg p-m-0 p-p-0 p-pt-7" style="overflow-y:scroll">
-          <Contragents v-model="value" v-model:windowOpened="contragentVisible"></Contragents>
+          <Contragents v-model="value.data" v-model:windowOpened="contragentVisible"></Contragents>
         </Sidebar>
         <Sidebar v-model:visible="cardVisible" position="right" class="p-sidebar-lg" style="overflow-y:scroll">
           <Organization v-if="value.type == ContragentType.Organization" :readonly="true" :modelValue="value.data"></Organization>
@@ -59,7 +59,6 @@ export default {
   },
   computed: {
     selectedContragentName() {
-
       if (!this.value)
         return "";
       switch(this.value.type) {
@@ -70,13 +69,19 @@ export default {
         case Enum.ContragentType.Bank:
           return this.$i18n.locale != 'ru' ? '"' + this.value.data.organization.name + '" ' + this.value.data.organization.form.shortname : this.value.data.organization.form.shortnameru + ' "' + this.value.data.organization.nameru + '"'
       }
-      return this.value ? (this.value.type == Enum.ContragentType.Organization) : ""
+      return  ""
     },
     selectedPersonName() {
       if (!this.value || !this.value.data || !this.value.data.signer)
         return "";
-
-      return this.value.data.signer.lname + ' ' + this.value.data.signer.fname + ' ' + (this.value.data.signer.sname ?? '');
+      let name = ""
+      if (this.value.data.signer.lname)
+        name = this.value.data.signer.lname
+      if (this.value.data.signer.fname)
+        name +=' ' + this.value.data.signer.fname
+     if (this.value.data.signer.sname)
+        name +=' ' + this.value.data.signer.sname     
+      return name
     }
   },
   methods: {

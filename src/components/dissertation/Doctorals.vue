@@ -484,7 +484,6 @@ export default {
       }
     },
     validateAddDoctoralForm() {
-      console.log(this.doctoral.hei)
       this.validationErrors.user = !this.selectedUsers;
       this.validationErrors.hei = !this.doctoral.hei;
       this.validationErrors.faculty = !this.selectedDepartment;

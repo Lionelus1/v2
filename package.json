@@ -33,7 +33,7 @@
 		"eslint": "^6.7.2",
 		"eslint-plugin-vue": "^7.0.0-0",
 		"mitt": "^2.1.0",
-		"node-sass": "^4.12.0",
+		"node-sass": "npm:sass@^1.48.0",
 		"primeflex": "2.0.0",
 		"primeicons": "4.1.0",
 		"primevue": "^3.9.1",

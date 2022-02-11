@@ -5,16 +5,18 @@
           class="p-fluid">
     <div class="p-field">
       <label>Название мероприятия</label>
-      <InputText v-model="event_name"/>
+      <InputText v-model="event_name" />
+      <small class="p-error" v-if="submitted && formValid.event_name">Введите название мероприятия</small>
     </div>
     <div class="p-field">
       <label>Ответственные лица</label>
-      <FindUser v-model="selectedUsers"></FindUser>
+      <FindUser v-model="selectedUsers" :editMode="true"></FindUser>
+      <small class="p-error" v-if="submitted && formValid.users">Выберите ответственных лиц</small>
     </div>
     <div class="p-field" v-if="!parentData">
       <label>Квартал</label>
-      <Dropdown v-model="quarter" :options="quarters" optionLabel="name" optionValue="id" placeholder="Выберите"
-                @select="selectQuarter"/>
+      <Dropdown v-model="quarter" :options="quarters" optionLabel="name" optionValue="id" placeholder="Выберите" />
+      <small class="p-error" v-if="submitted && formValid.quarter">Выберите квартал</small>
     </div>
     <div class="p-field">
       <label>Результат</label>
@@ -63,11 +65,21 @@ export default {
         {
           id: 4,
           name: 'IV'
+        },
+        {
+          id: 5,
+          name: 'Весь год'
         }
       ],
-      selectedUsers: null,
+      selectedUsers: [],
       parentData: null,
-      parentId: null
+      parentId: null,
+      formValid: {
+        event_name: false,
+        users: false,
+        quarter: false
+      },
+      submitted: false,
     }
   },
   mounted() {
@@ -78,9 +90,6 @@ export default {
     this.work_plan_id = parseInt(this.$route.params.id);
   },
   methods: {
-    selectQuarter(event) {
-      console.log(event)
-    },
     openBasic() {
       this.showWorkPlanEventModal = true;
     },
@@ -88,13 +97,19 @@ export default {
       this.showWorkPlanEventModal = false;
     },
     createEvent() {
+      this.submitted = true;
+      if (!this.validateForm()) {
+        return;
+      }
       let userIds = [];
       this.selectedUsers.forEach(e => {
         userIds.push(e.userID)
       });
       if (this.parentData) {
         this.parentId = parseInt(this.parentData.work_plan_event_id);
-        this.quarter = parseInt(this.parentData.quarter);
+        this.quarter = parseInt(this.parentData.quarter.String);
+      } else {
+        console.log("parent data is null")
       }
       axios.post(smartEnuApi + `/workPlan/addEvent`, {
         work_plan_id: this.work_plan_id,
@@ -105,20 +120,35 @@ export default {
         resp_person_ids: userIds
       }, {headers: getHeader()}).then(res => {
         this.emitter.emit("workPlanEventIsAdded", true);
-        this.$toast.add({severity: 'info', summary: 'Success', detail: 'Мероприятие успешно создан', life: 3000});
+        this.$toast.add({severity: 'success', detail: 'Мероприятие успешно создан', life: 3000});
         this.showWorkPlanEventModal = false;
         this.clearModel();
       }).catch(error => {
-        console.log(error)
+        if (error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
       });
+    },
+    validateForm() {
+      this.formValid.event_name = !this.event_name;
+      this.formValid.users = this.selectedUsers.length === 0;
+      this.formValid.quarter = !this.quarter;
+
+      return this.parentData ? !this.formValid.event_name && !this.formValid.users : !this.formValid.event_name && !this.formValid.users && !this.formValid.quarter;
     },
     clearModel() {
       this.event_name = null;
       this.parentId = null;
       this.quarter = null;
       this.result = null;
-      this.selectedUsers = null;
+      this.selectedUsers = [];
     }
-  }
+  },
 }
 </script>

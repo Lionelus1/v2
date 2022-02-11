@@ -115,25 +115,19 @@ export default {
         {
           label: this.$t('vaccination.title'), icon: 'pi pi-fw pi-check-circle', to: '/smartenu/vaccination'
         },
-        /*{
-          label:  this.$t('faq.title'), icon: 'pi pi-fw pi-question-circle', to: '/faq/faqmain'
-        },*/
         {
-          label: this.$t('dissertation.title'), icon: 'pi pi-fw pi-book',
-          items: [
-            {
-              label: this.$t('dissertation.council.list'),
-              icon: 'pi pi-fw pi-list',
-              to: '/dissertation',
-              visible: this.isDissertationAdmin()
-            },
-            {
-              label: this.$t('dissertation.doctoralCard'),
-              icon: 'pi pi-fw pi-users',
-              to: '/dissertation/doctorals',
-              visible: this.findRole("dissertation_council_secretary")
-            }
-          ]
+          label:  this.$t('faq.title'), icon: 'pi pi-fw pi-question-circle', to: '/faq/faqmain'
+        },
+         {
+                label:  this.$t('dissertation.title'), icon: 'pi pi-fw pi-book',
+                items: [
+                    {
+                        label:  this.$t('dissertation.council.list'), icon: 'pi pi-fw pi-list', to: '/dissertation', visible : this.isDissertationAdmin()
+                    },
+                    {
+                        label:  this.$t('dissertation.doctoralCard'), icon: 'pi pi-fw pi-users', to: '/dissertation/doctorals', visible : this.findRole("dissertation_council_secretary")
+                    }
+                ]
 
         },
         {

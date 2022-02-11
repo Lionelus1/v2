@@ -1,186 +1,186 @@
 <template>
-  <div class="card">
+  <div class="p-col-12">
     <!-- BEGINNING OF TABLE -->
-    <Toolbar class="p-mb-4">
-      <template #left>
-        <Button
+    <div class="card">
+      <Button
           v-if="isAdmin || isModer"
           :label="$t('common.add')"
           icon="pi pi-plus"
           class="p-button-success p-mr-2"
           v-on:click="createEvent"
-        />
-        <Button
+      />
+      <Button
           :label="$t('common.publish')"
           v-if="isCreated && (isAdmin || isPublisher)"
           icon="pi pi-check"
           class="p-button-help p-mr-2"
           v-on:click="publishEvent"
-        />
-        <Button
+      />
+      <Button
           :label="$t('common.show')"
           v-if="selectedEvent"
           icon="pi pi-eye"
           class="p-button-secondary p-mr-2"
           v-on:click="eventView"
-        />
-      </template>
-    </Toolbar>
+      />
+    </div>
 
     <!-- BEGINNING OF TABLE -->
-
-    <DataTable
-      :value="allEvents"
-      :paginator="true"
-      class="p-datatable-customers"
-      :rows="10"
-      dataKey="id"
-      :rowHover="true"
-      v-model:selection="selectedEvent"
-      :filters="filters"
-      :loading="loading"
-    >
-      <template #header>
-        <div class="table-header">
-          {{ $t("smartenu.eventsTitle") }}
-          <span class="p-input-icon-left">
-            <i class="pi pi-search" />
+    <div class="card">
+      <DataTable
+          :value="allEvents"
+          :paginator="true"
+          class="p-datatable-customers"
+          :rows="10"
+          dataKey="id"
+          :rowHover="true"
+          v-model:selection="selectedEvent"
+          :filters="filters"
+          :loading="loading"
+      >
+        <template #header>
+          <div class="table-header">
+            {{ $t("smartenu.eventsTitle") }}
+            <span class="p-input-icon-left">
+            <i class="pi pi-search"/>
             <InputText
-              v-model="filters['global'].value"
-              v-bind:placeholder="$t('hdfs.search')"
+                v-model="filters['global'].value"
+                v-bind:placeholder="$t('hdfs.search')"
             />
           </span>
-        </div>
-      </template>
-      <template #empty>
-        {{ $t("smartenu.eventsNotFound") }}
-      </template>
-      <template #loading>
-        {{ $t("smartenu.loadingEvents") }}
-      </template>
-      <Column selectionMode="single" headerStyle="width: 3em"></Column>
-      <Column
-        :field="
+          </div>
+        </template>
+        <template #empty>
+          {{ $t("smartenu.eventsNotFound") }}
+        </template>
+        <template #loading>
+          {{ $t("smartenu.loadingEvents") }}
+        </template>
+        <Column selectionMode="single" headerStyle="width: 3em"></Column>
+        <Column
+            :field="
           $i18n.locale === 'kz'
             ? `titleKz`
             : $i18n.locale === 'ru'
             ? `titleRu`
             : `titleEn`
         "
-        v-bind:header="$t('common.nameIn')"
-        :sortable="true"
-      >
-        <template #body="slotProps">
+            v-bind:header="$t('common.nameIn')"
+            :sortable="true"
+        >
+          <template #body="slotProps">
           <span>
             {{
               $i18n.locale === "kz"
-                ? slotProps.data.titleKz
-                : $i18n.locale === "ru"
-                ? slotProps.data.titleRu
-                : slotProps.data.titleEn
+                  ? slotProps.data.titleKz
+                  : $i18n.locale === "ru"
+                      ? slotProps.data.titleRu
+                      : slotProps.data.titleEn
             }}
           </span>
-        </template>
-      </Column>
-      <Column
-        :field="
+          </template>
+        </Column>
+        <Column
+            :field="
           $i18n.locale === 'kz'
             ? `history.status.nameKz`
             : $i18n.locale === 'ru'
             ? `history.status.nameRu`
             : `history.status.nameEn`
         "
-        v-bind:header="$t('common.status')"
-        :sortable="true"
-      >
-        <template #body="slotProps">
+            v-bind:header="$t('common.status')"
+            :sortable="true"
+        >
+          <template #body="slotProps">
           <span
-            :class="'customer-badge status-' + slotProps.data.history.status.id"
+              :class="'customer-badge status-' + slotProps.data.history.status.id"
           >
             {{
               $i18n.locale === "kz"
-                ? slotProps.data.history.status.nameKz
-                : $i18n.locale === "ru"
-                ? slotProps.data.history.status.nameRu
-                : slotProps.data.history.status.nameEn
+                  ? slotProps.data.history.status.nameKz
+                  : $i18n.locale === "ru"
+                      ? slotProps.data.history.status.nameRu
+                      : slotProps.data.history.status.nameEn
             }}
           </span>
-        </template>
-      </Column>
-      <Column
-        field="createdBy"
-        v-bind:header="$t('common.createdBy')"
-        :sortable="true"
-      >
-        <template #body="slotProps">
+          </template>
+        </Column>
+        <Column
+            field="createdBy"
+            v-bind:header="$t('common.createdBy')"
+            :sortable="true"
+        >
+          <template #body="slotProps">
           <span>
             {{ slotProps.data.createdBy.name }}
           </span>
-        </template>
-      </Column>
-      <Column>
-        <template #body="slotProps">
-          <Button
-            icon="pi pi-pencil"
-            class="p-button-rounded p-button-success p-mr-2"
-            @click="editEvent(slotProps.data.id)"
-            v-if="
+          </template>
+        </Column>
+        <Column>
+          <template #body="slotProps">
+            <Button
+                icon="pi pi-pencil"
+                class="p-button-rounded p-button-success p-mr-2"
+                @click="editEvent(slotProps.data.id)"
+                v-if="
               slotProps.data.history.status.id === statuses.created ||
               isAdmin ||
               isModer
             "
-          />
-          <Button
-            icon="pi pi-trash"
-            class="p-button-rounded p-button-warning"
-            v-if="
+            />
+            <Button
+                icon="pi pi-trash"
+                class="p-button-rounded p-button-warning"
+                v-if="
               slotProps.data.history.status.id === statuses.created || isAdmin
             "
-            @click="delEvent(slotProps.data.id)"
-          />
-        </template>
-      </Column>
-    </DataTable>
+                @click="delEvent(slotProps.data.id)"
+            />
+          </template>
+        </Column>
+      </DataTable>
+    </div>
 
     <!--    BEGINNING OF ADD/EDIT DIALOG-->
 
     <Dialog
-      v-model:visible="editVisible"
-      :closable="false"
-      :style="{ width: '1000px' }"
-      :header="$t('smartenu.createOrEditEvents')"
-      :modal="true"
-      class="p-fluid"
+        v-model:visible="editVisible"
+        :closable="false"
+        :style="{ width: '1000px' }"
+        :header="$t('smartenu.createOrEditEvents')"
+        :modal="true"
+        class="p-fluid"
     >
       <div class="card">
         <Message v-for="msg of formValid" severity="error" :key="msg">{{
-          msg
-        }}</Message>
+            msg
+          }}
+        </Message>
         <TabView>
           <TabPanel header="Қазақша">
             <div class="p-field p-mt-3">
               <label for="kz-title">{{ $t("common.nameInQazaq") }}</label>
               <InputText
-                id="kz-title"
-                v-model="event.titleKz"
-                rows="3"
-                :class="{ 'p-invalid': formValid.titleKz && submitted }"
+                  id="kz-title"
+                  v-model="event.titleKz"
+                  rows="3"
+                  :class="{ 'p-invalid': formValid.titleKz && submitted }"
               />
               <small v-show="formValid.titleKz && submitted" class="p-error">{{
-                $t("smartenu.titleKzInvalid")
-              }}</small>
+                  $t("smartenu.titleKzInvalid")
+                }}</small>
             </div>
             <div class="p-field">
               <label for="kz-content">{{ $t("common.contentInQazaq") }}</label>
               <Editor
-                id="kz-content"
-                v-model="event.contentKz"
-                editorStyle="height: 320px"
+                  id="kz-content"
+                  v-model="event.contentKz"
+                  editorStyle="height: 320px"
               />
               <small
-                v-show="formValid.contentKz && submitted"
-                class="p-error"
-                >{{ $t("smartenu.contentKzInvalid") }}</small
+                  v-show="formValid.contentKz && submitted"
+                  class="p-error"
+              >{{ $t("smartenu.contentKzInvalid") }}</small
               >
             </div>
           </TabPanel>
@@ -188,28 +188,28 @@
             <div class="p-field p-mt-3" style="margin-bottom: 1.5rem">
               <label for="ru-title">{{ $t("common.nameInRussian") }}</label>
               <InputText
-                id="ru-title"
-                v-model="event.titleRu"
-                rows="3"
-                :class="{ 'p-invalid': formValid.titleRu && submitted }"
+                  id="ru-title"
+                  v-model="event.titleRu"
+                  rows="3"
+                  :class="{ 'p-invalid': formValid.titleRu && submitted }"
               />
               <small v-show="formValid.titleRu && submitted" class="p-error">{{
-                $t("smartenu.titleRuInvalid")
-              }}</small>
+                  $t("smartenu.titleRuInvalid")
+                }}</small>
             </div>
             <div class="p-field">
               <label for="ru-content">{{
-                $t("common.contentInRussian")
-              }}</label>
+                  $t("common.contentInRussian")
+                }}</label>
               <Editor
-                id="ru-content"
-                v-model="event.contentRu"
-                editorStyle="height: 320px"
+                  id="ru-content"
+                  v-model="event.contentRu"
+                  editorStyle="height: 320px"
               />
               <small
-                v-show="formValid.contentRu && submitted"
-                class="p-error"
-                >{{ $t("smartenu.contentRuInvalid") }}</small
+                  v-show="formValid.contentRu && submitted"
+                  class="p-error"
+              >{{ $t("smartenu.contentRuInvalid") }}</small
               >
             </div>
           </TabPanel>
@@ -217,28 +217,28 @@
             <div class="p-field p-mt-3" style="margin-bottom: 1.5rem">
               <label for="en-title">{{ $t("common.nameInEnglish") }}</label>
               <InputText
-                id="en-title"
-                v-model="event.titleEn"
-                rows="3"
-                :class="{ 'p-invalid': formValid.titleEn && submitted }"
+                  id="en-title"
+                  v-model="event.titleEn"
+                  rows="3"
+                  :class="{ 'p-invalid': formValid.titleEn && submitted }"
               />
               <small v-show="formValid.titleEn && submitted" class="p-error">{{
-                $t("smartenu.titleEnInvalid")
-              }}</small>
+                  $t("smartenu.titleEnInvalid")
+                }}</small>
             </div>
             <div class="p-field">
               <label for="en-content">{{
-                $t("common.contentInEnglish")
-              }}</label>
+                  $t("common.contentInEnglish")
+                }}</label>
               <Editor
-                id="en-content"
-                v-model="event.contentEn"
-                editorStyle="height: 320px"
+                  id="en-content"
+                  v-model="event.contentEn"
+                  editorStyle="height: 320px"
               />
               <small
-                v-show="formValid.contentEn && submitted"
-                class="p-error"
-                >{{ $t("smartenu.contentEnInvalid") }}</small
+                  v-show="formValid.contentEn && submitted"
+                  class="p-error"
+              >{{ $t("smartenu.contentEnInvalid") }}</small
               >
             </div>
           </TabPanel>
@@ -246,135 +246,135 @@
         <div class="p-field">
           <label for="is-online">{{ $t("smartenu.eventFormat") }}</label>
           <Dropdown
-            id="is-online"
-            v-model="event.isOnline"
-            :options="format"
-            optionLabel="name"
-            optionValue="value"
-            :placeholder="$t('smartenu.eventFormat')"
-            :class="{ 'p-invalid': formValid.isOnline && submitted }"
+              id="is-online"
+              v-model="event.isOnline"
+              :options="format"
+              optionLabel="name"
+              optionValue="value"
+              :placeholder="$t('smartenu.eventFormat')"
+              :class="{ 'p-invalid': formValid.isOnline && submitted }"
           />
           <small v-show="formValid.isOnline && submitted" class="p-error">{{
-            $t("smartenu.isOnlineInvalid")
-          }}</small>
+              $t("smartenu.isOnlineInvalid")
+            }}</small>
         </div>
         <div
-          class="p-field"
-          style="margin-top: 1.5rem"
-          v-if="event.isOnline == true"
+            class="p-field"
+            style="margin-top: 1.5rem"
+            v-if="event.isOnline == true"
         >
           <label for="event-link">{{ $t("smartenu.meetingLink") }}</label>
           <InputText
-            id="event-link"
-            v-model="event.eventLink"
-            rows="3"
-            :class="{ 'p-invalid': formValid.eventLink && submitted }"
+              id="event-link"
+              v-model="event.eventLink"
+              rows="3"
+              :class="{ 'p-invalid': formValid.eventLink && submitted }"
           />
           <small v-show="formValid.eventLink && submitted" class="p-error">{{
-            $t("smartenu.eventLinkInvalid")
-          }}</small>
+              $t("smartenu.eventLinkInvalid")
+            }}</small>
         </div>
         <div
-          class="p-field"
-          style="margin-top: 1.5rem"
-          v-if="event.isOnline == false"
+            class="p-field"
+            style="margin-top: 1.5rem"
+            v-if="event.isOnline == false"
         >
           <label for="event-location">{{
-            $t("smartenu.meetingLocation")
-          }}</label>
+              $t("smartenu.meetingLocation")
+            }}</label>
           <InputText
-            id="event-location"
-            v-model="event.eventLocation"
-            rows="3"
-            :class="{ 'p-invalid': formValid.eventLocation && submitted }"
+              id="event-location"
+              v-model="event.eventLocation"
+              rows="3"
+              :class="{ 'p-invalid': formValid.eventLocation && submitted }"
           />
           <small
-            v-show="formValid.eventLocation && submitted"
-            class="p-error"
-            >{{ $t("smartenu.eventLocationInvalid") }}</small
+              v-show="formValid.eventLocation && submitted"
+              class="p-error"
+          >{{ $t("smartenu.eventLocationInvalid") }}</small
           >
         </div>
         <div class="p-field">
           <label for="p-cat">{{ $t("smartenu.participantsCategory") }}</label>
           <MultiSelect
-            v-model="selectedMainCategories"
-            :options="participantsMainCategories"
-            :optionLabel="
+              v-model="selectedMainCategories"
+              :options="participantsMainCategories"
+              :optionLabel="
               $i18n.locale === 'kz'
                 ? `nameKz`
                 : $i18n.locale === 'ru'
                 ? `nameRu`
                 : `nameEn`
             "
-            :placeholder="$t('smartenu.selectMainCategory')"
-            :class="{
+              :placeholder="$t('smartenu.selectMainCategory')"
+              :class="{
               'p-invalid': formValid.selectedMainCategories && submitted,
             }"
           />
           <small
-            v-show="formValid.selectedMainCategories && submitted"
-            class="p-error"
-            >{{ $t("smartenu.selectedCatInvalid") }}</small
+              v-show="formValid.selectedMainCategories && submitted"
+              class="p-error"
+          >{{ $t("smartenu.selectedCatInvalid") }}</small
           >
         </div>
         <div class="p-field">
           <MultiSelect
-            v-if="isBachelor"
-            v-model="selectedBachelorCourses"
-            :options="bachelorCourses"
-            :optionLabel="
+              v-if="isBachelor"
+              v-model="selectedBachelorCourses"
+              :options="bachelorCourses"
+              :optionLabel="
               $i18n.locale === 'kz'
                 ? `nameKz`
                 : $i18n.locale === 'ru'
                 ? `nameRu`
                 : `nameEn`
             "
-            :placeholder="$t('smartenu.selectBachelor')"
+              :placeholder="$t('smartenu.selectBachelor')"
           />
         </div>
         <div class="p-field">
           <MultiSelect
-            v-if="isMaster"
-            v-model="selectedMasterCourses"
-            :options="masterCourses"
-            :optionLabel="
+              v-if="isMaster"
+              v-model="selectedMasterCourses"
+              :options="masterCourses"
+              :optionLabel="
               $i18n.locale === 'kz'
                 ? `nameKz`
                 : $i18n.locale === 'ru'
                 ? `nameRu`
                 : `nameEn`
             "
-            :placeholder="$t('smartenu.selectMaster')"
+              :placeholder="$t('smartenu.selectMaster')"
           />
         </div>
         <div class="p-field">
           <MultiSelect
-            v-if="isFaculty"
-            v-model="selectedFaculties"
-            :options="faculties"
-            :optionLabel="
+              v-if="isFaculty"
+              v-model="selectedFaculties"
+              :options="faculties"
+              :optionLabel="
               $i18n.locale === 'kz'
                 ? `nameKz`
                 : $i18n.locale === 'ru'
                 ? `nameRu`
                 : `nameEn`
             "
-            :placeholder="$t('smartenu.selectFaculty')"
+              :placeholder="$t('smartenu.selectFaculty')"
           />
         </div>
         <div class="p-field">
           <MultiSelect
-            v-if="isFacultySelected"
-            v-model="selectedDepartments"
-            :options="departments"
-            :optionLabel="
+              v-if="isFacultySelected"
+              v-model="selectedDepartments"
+              :options="departments"
+              :optionLabel="
               $i18n.locale === 'kz'
                 ? `nameKz`
                 : $i18n.locale === 'ru'
                 ? `nameRu`
                 : `nameEn`
             "
-            :placeholder="$t('smartenu.selectDepartment')"
+              :placeholder="$t('smartenu.selectDepartment')"
           />
         </div>
         <div class="p-field">
@@ -382,108 +382,108 @@
             <label for="data-and-time">{{ $t("smartenu.dataAndTime") }}</label>
           </div>
           <DatePicker
-            id="data-and-time"
-            v-model="event.eventDate"
-            mode="dateTime"
-            is24hr
-            class="p-invalid"
+              id="data-and-time"
+              v-model="event.eventDate"
+              mode="dateTime"
+              is24hr
+              class="p-invalid"
           />
         </div>
         <div class="p-field">
           <div class="p-grid">
             <div class="p-col-12 p-md-5">
               <FileUpload
-                ref="form"
-                mode="basic"
-                :customUpload="true"
-                @uploader="uploadMainImage($event)"
-                :auto="true"
-                v-bind:chooseLabel="$t('smartenu.chooseMainImage')"
+                  ref="form"
+                  mode="basic"
+                  :customUpload="true"
+                  @uploader="uploadMainImage($event)"
+                  :auto="true"
+                  v-bind:chooseLabel="$t('smartenu.chooseMainImage')"
               ></FileUpload>
             </div>
           </div>
           <div v-if="event.mainImage">
-            <img :src="event.mainImage" style="width: 50%; height: 50%" />
+            <img :src="event.mainImage" style="width: 50%; height: 50%"/>
           </div>
         </div>
         <div class="p-field">
           <div class="p-grid">
             <div class="p-col-12 p-md-3">
               <FileUpload
-                ref="form"
-                mode="basic"
-                :customUpload="true"
-                @uploader="uploadFile($event)"
-                :auto="true"
-                v-bind:chooseLabel="$t('smartenu.chooseAdditionalFile')"
+                  ref="form"
+                  mode="basic"
+                  :customUpload="true"
+                  @uploader="uploadFile($event)"
+                  :auto="true"
+                  v-bind:chooseLabel="$t('smartenu.chooseAdditionalFile')"
               ></FileUpload>
             </div>
             <div class="p-col-12 p-md-5">
               <InlineMessage severity="info" show v-if="file">
-                {{ $t("ncasigner.chosenFile", { fn: file ? file.name : "" }) }}
+                {{ $t("ncasigner.chosenFile", {fn: file ? file.name : ""}) }}
               </InlineMessage>
             </div>
           </div>
         </div>
         <div class="p-field-checkbox">
           <Checkbox
-            id="isPoster"
-            name="isPoster"
-            v-model="isPoster"
-            :binary="true"
+              id="isPoster"
+              name="isPoster"
+              v-model="isPoster"
+              :binary="true"
           />
           <label for="isPoster">{{ $t("smartenu.addPoster") }}</label>
         </div>
         <div
-          class="p-field p-mt-3"
-          style="margin-bottom: 1.5rem"
-          v-if="isPoster"
+            class="p-field p-mt-3"
+            style="margin-bottom: 1.5rem"
+            v-if="isPoster"
         >
           <label for="poster-link">{{ $t("smartenu.posterLink") }}</label>
           <InputText
-            id="poster-link"
-            v-model="poster.link"
-            rows="3"
-            :placeholder="$t('smartenu.posterLink')"
+              id="poster-link"
+              v-model="poster.link"
+              rows="3"
+              :placeholder="$t('smartenu.posterLink')"
           />
           <div class="p-grid p-mt-3" v-if="isPoster">
             <div class="p-col">
               <FileUpload
-                ref="form"
-                mode="basic"
-                :customUpload="true"
-                @uploader="uploadPosterImageKk($event)"
-                :auto="true"
-                v-bind:chooseLabel="$t('smartenu.posterImageKk')"
+                  ref="form"
+                  mode="basic"
+                  :customUpload="true"
+                  @uploader="uploadPosterImageKk($event)"
+                  :auto="true"
+                  v-bind:chooseLabel="$t('smartenu.posterImageKk')"
               ></FileUpload>
               <div v-if="poster.imageKk" class="p-mt-3">
-                <img :src="poster.imageKk" style="width: 50%; height: 50%" />
+                <img :src="poster.imageKk" style="width: 50%; height: 50%"/>
               </div>
             </div>
             <div class="p-col">
               <FileUpload
-                ref="form"
-                mode="basic"
-                :customUpload="true"
-                @uploader="uploadPosterImageRu($event)"
-                :auto="true"
-                v-bind:chooseLabel="$t('smartenu.posterImageRu')"
+                  ref="form"
+                  mode="basic"
+                  :customUpload="true"
+                  @uploader="uploadPosterImageRu($event)"
+                  :auto="true"
+                  v-bind:chooseLabel="$t('smartenu.posterImageRu')"
               ></FileUpload>
               <div v-if="poster.imageRu" class="p-mt-3">
-                <img :src="poster.imageRu" style="width: 50%; height: 50%" />
+                <img :src="poster.imageRu" style="width: 50%; height: 50%"/>
               </div>
             </div>
             <div class="p-col">
               <FileUpload
-                ref="form"
-                mode="basic"
-                :customUpload="true"
-                @uploader="uploadPosterImageEn($event)"
-                :auto="true"
-                v-bind:chooseLabel="$t('smartenu.posterImageEn')"
+                  ref="form"
+                  mode="basic"
+                  :customUpload="true"
+                  @uploader="uploadPosterImageEn($event)"
+                  :auto="true"
+                  v-bind:chooseLabel="$t('smartenu.posterImageEn')"
               ></FileUpload>
               <div v-if="poster.imageEn" class="p-mt-3">
-                <img :src="poster.imageEn" style="width: 50%; height: 50%" />
+                <img :src="poster.imageEn" style="width: 50%; height: 50%"/>
               </div>
             </div>
           </div>
@@ -491,16 +491,16 @@
       </div>
       <template #footer>
         <Button
-          v-bind:label="$t('common.save')"
-          icon="pi pi-check"
-          class="p-button-rounded p-button-success p-mr-2"
-          v-on:click="addEvent"
+            v-bind:label="$t('common.cancel')"
+            icon="pi pi-times"
+            class="p-button-rounded p-button-danger"
+            @click="hideDialog"
         />
         <Button
-          v-bind:label="$t('common.cancel')"
-          icon="pi pi-times"
-          class="p-button-rounded p-button-danger"
-          @click="hideDialog"
+            v-bind:label="$t('common.save')"
+            icon="pi pi-check"
+            class="p-button-rounded p-button-success p-mr-2"
+            v-on:click="addEvent"
         />
       </template>
     </Dialog>
@@ -508,37 +508,37 @@
     <!--    BEGINNING OF DELETE DIALOG-->
 
     <Dialog
-      v-model:visible="deleteVisible"
-      :closable="false"
-      :style="{ width: '450px' }"
-      :modal="true"
+        v-model:visible="deleteVisible"
+        :closable="false"
+        :style="{ width: '450px' }"
+        :modal="true"
     >
       <div class="confirmation-content">
-        <i class="pi pi-exclamation-triangle p-mr-3" style="font-size: 2rem" />
+        <i class="pi pi-exclamation-triangle p-mr-3" style="font-size: 2rem"/>
         <span v-if="event"
-          >{{ $t("common.doYouWantDelete") }}
+        >{{ $t("common.doYouWantDelete") }}
           <b>{{
-            $i18n.locale === "kz"
-              ? event.titleKz
-              : $i18n.locale === "ru"
-              ? event.titleRu
-              : event.titleEn
-          }}</b
+              $i18n.locale === "kz"
+                  ? event.titleKz
+                  : $i18n.locale === "ru"
+                      ? event.titleRu
+                      : event.titleEn
+            }}</b
           >?
         </span>
       </div>
       <template #footer>
         <Button
-          :label="$t('common.yes')"
-          icon="pi pi-check"
-          class="p-button-rounded p-button-success p-mr-2"
-          @click="deleteEvent(event.id)"
+            :label="$t('common.no')"
+            icon="pi pi-times"
+            class="p-button-rounded p-button-danger"
+            @click="deleteVisible = false"
         />
         <Button
-          :label="$t('common.no')"
-          icon="pi pi-times"
-          class="p-button-rounded p-button-danger"
-          @click="deleteVisible = false"
+            :label="$t('common.yes')"
+            icon="pi pi-check"
+            class="p-button-rounded p-button-success p-mr-2"
+            @click="deleteEvent(event.id)"
         />
       </template>
     </Dialog>
@@ -546,28 +546,28 @@
     <!--    BEGINNING OF VIEW DIALOG-->
 
     <Dialog
-      v-model:visible="eventViewVisible"
-      :closable="false"
-      :style="{ width: '1000px' }"
-      :modal="true"
-      class="p-fluid"
+        v-model:visible="eventViewVisible"
+        :closable="false"
+        :style="{ width: '1000px' }"
+        :modal="true"
+        class="p-fluid"
     >
       <Card style="box-shadow: none">
         <template #header>
           <div style="padding: 0 100px">
             <img
-              :src="selectedEvent.mainImage"
-              style="width: 100%; height: 100%"
+                :src="selectedEvent.mainImage"
+                style="width: 100%; height: 100%"
             />
           </div>
         </template>
         <template #title>
           {{
             $i18n.locale === "kz"
-              ? selectedEvent.titleKz
-              : $i18n.locale === "ru"
-              ? selectedEvent.titleRu
-              : selectedEvent.titleEn
+                ? selectedEvent.titleKz
+                : $i18n.locale === "ru"
+                    ? selectedEvent.titleRu
+                    : selectedEvent.titleEn
           }}
         </template>
         <template #subtitle>
@@ -575,23 +575,23 @@
             $t("smartenu.dataAndTime", {
               fn: new Date(selectedEvent.eventDate).toLocaleString(),
             })
-          }}<br />
+          }}<br/>
           {{
             $t("smartenu.eventFormatView", {
               fn: selectedEvent.isOnline
-                ? $t("common.online")
-                : $t("common.offline"),
+                  ? $t("common.online")
+                  : $t("common.offline"),
             })
-          }}<br />
+          }}<br/>
           {{ $t("smartenu.meetingLinkView") }}
           <a
-            v-if="selectedEvent.isOnline"
-            :href="'//' + selectedEvent.eventLink"
-            target="_blank"
+              v-if="selectedEvent.isOnline"
+              :href="'//' + selectedEvent.eventLink"
+              target="_blank"
           >
             {{ selectedEvent.eventLink }}
           </a>
-          <br />
+          <br/>
           <p v-if="!selectedEvent.isOnline">
             {{
               $t("smartenu.meetingLocationView", {
@@ -602,21 +602,21 @@
           {{
             $t("smartenu.participantsCategoryView", {
               fn: selectedEvent.participantsCategory
-                .map((category) =>
-                  $i18n.locale === "kz"
-                    ? category.nameKz
-                    : $i18n.locale === "ru"
-                    ? category.nameRu
-                    : category.nameEn
-                )
-                .toString()
-                .replaceAll(",", ", "),
+                  .map((category) =>
+                      $i18n.locale === "kz"
+                          ? category.nameKz
+                          : $i18n.locale === "ru"
+                              ? category.nameRu
+                              : category.nameEn
+                  )
+                  .toString()
+                  .replaceAll(",", ", "),
             })
-          }}<br />
+          }}<br/>
         </template>
         <template #content>
           <div
-            v-html="
+              v-html="
               $i18n.locale === 'kz'
                 ? selectedEvent.contentKz
                 : $i18n.locale === 'ru'
@@ -627,18 +627,18 @@
         </template>
         <template #footer>
           <Button
-            v-if="selectedEvent.additionalFile"
-            v-bind:label="$t('common.download')"
-            icon="pi pi-download"
-            class="p-button-link"
-            @click="downloadFile(selectedEvent)"
+              v-if="selectedEvent.additionalFile"
+              v-bind:label="$t('common.download')"
+              icon="pi pi-download"
+              class="p-button-link"
+              @click="downloadFile(selectedEvent)"
           />
           <div>
             <Accordion v-if="selectedEvent.participants">
               <AccordionTab :header="$t('smartenu.eventParticipants')">
                 <li
-                  v-for="participant in selectedEvent.participants"
-                  :key="participant.id"
+                    v-for="participant in selectedEvent.participants"
+                    :key="participant.id"
                 >
                   {{ participant.name + " " + participant.info }}
                 </li>
@@ -649,10 +649,10 @@
       </Card>
       <template #footer>
         <Button
-          v-bind:label="$t('common.close')"
-          icon="pi pi-times"
-          class="p-button-rounded p-button-danger"
-          @click="eventViewVisible = false"
+            v-bind:label="$t('common.close')"
+            icon="pi pi-times"
+            class="p-button-rounded p-button-danger"
+            @click="eventViewVisible = false"
         />
       </template>
     </Dialog>
@@ -661,10 +661,10 @@
 
 <script>
 import axios from "axios";
-import { getHeader, header, smartEnuApi } from "@/config/config";
-import { DatePicker } from "v-calendar";
+import {getHeader, header, smartEnuApi} from "@/config/config";
+import {DatePicker} from "v-calendar";
 import LoginedUserDetailsService from "@/service/LoginedUserDetailsService";
-import { FilterMatchMode, FilterOperator } from "primevue/api";
+import {FilterMatchMode, FilterOperator} from "primevue/api";
 import * as imageResizeCompress from "image-resize-compress"; // ES6
 
 export default {
@@ -755,26 +755,26 @@ export default {
     getMainCategories() {
       this.participantsMainCategories = [];
       this.participantsMainCategories = this.participantsCategories.filter(
-        (category) => category.parentId === null
+          (category) => category.parentId === null
       );
     },
     getMasterCourses() {
       this.masterCourses = [];
       this.masterCourses = this.participantsCategories.filter(
-        (category) => category.parentId === 3
+          (category) => category.parentId === 3
       );
     },
 
     getBachelorCourses() {
       this.bachelorCourses = [];
       this.bachelorCourses = this.participantsCategories.filter(
-        (category) => category.parentId === 4
+          (category) => category.parentId === 4
       );
     },
     getFaculties() {
       this.faculties = [];
       this.faculties = this.participantsCategories.filter(
-        (category) => category.parentId === 6
+          (category) => category.parentId === 6
       );
     },
     /**
@@ -783,12 +783,12 @@ export default {
     uploadPosterImageKk(event) {
       const file = event.files[0];
       imageResizeCompress
-        .fromBlob(file, 90, 720, "auto", "jpeg")
-        .then((res) => {
-          imageResizeCompress.blobToURL(res).then((resp) => {
-            this.poster.imageKk = resp;
+          .fromBlob(file, 90, 720, "auto", "jpeg")
+          .then((res) => {
+            imageResizeCompress.blobToURL(res).then((resp) => {
+              this.poster.imageKk = resp;
+            });
           });
-        });
     },
     /**
      *  UPLOAD POSTER IMAGERU
@@ -796,12 +796,12 @@ export default {
     uploadPosterImageRu(event) {
       const file = event.files[0];
       imageResizeCompress
-        .fromBlob(file, 90, 720, "auto", "jpeg")
-        .then((res) => {
-          imageResizeCompress.blobToURL(res).then((resp) => {
-            this.poster.imageRu = resp;
+          .fromBlob(file, 90, 720, "auto", "jpeg")
+          .then((res) => {
+            imageResizeCompress.blobToURL(res).then((resp) => {
+              this.poster.imageRu = resp;
+            });
           });
-        });
     },
     /**
      *  UPLOAD POSTER IMAGEEN
@@ -809,12 +809,12 @@ export default {
     uploadPosterImageEn(event) {
       const file = event.files[0];
       imageResizeCompress
-        .fromBlob(file, 90, 720, "auto", "jpeg")
-        .then((res) => {
-          imageResizeCompress.blobToURL(res).then((resp) => {
-            this.poster.imageEn = resp;
+          .fromBlob(file, 90, 720, "auto", "jpeg")
+          .then((res) => {
+            imageResizeCompress.blobToURL(res).then((resp) => {
+              this.poster.imageEn = resp;
+            });
           });
-        });
     },
     /**
      *  UPLOAD MAIN IMAGE
@@ -877,23 +877,23 @@ export default {
     getAllEvents() {
       this.allNews = [];
       axios
-        .get(smartEnuApi + "/allEvents")
-        .then((response) => {
-          this.allEvents = response.data;
-          this.loading = false;
-          console.log(this.allEvents);
-        })
-        .catch((error) => {
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          } else {
-            this.$toast.add({
-              severity: "error",
-              summary: this.$t("smartenu.loadAllEventsError") + ":\n" + error,
-              life: 3000,
-            });
-          }
-        });
+          .get(smartEnuApi + "/allEvents")
+          .then((response) => {
+            this.allEvents = response.data;
+            this.loading = false;
+            console.log(this.allEvents);
+          })
+          .catch((error) => {
+            if (error.response.status == 401) {
+              this.$store.dispatch("logLout");
+            } else {
+              this.$toast.add({
+                severity: "error",
+                summary: this.$t("smartenu.loadAllEventsError") + ":\n" + error,
+                life: 3000,
+              });
+            }
+          });
     },
 
     /**
@@ -902,23 +902,23 @@ export default {
     getParticipantsCategories() {
       this.participantsCategories = [];
       axios
-        .get(smartEnuApi + "/getParticipantsCategories", {
-          headers: getHeader(),
-        })
-        .then((response) => {
-          this.participantsCategories = response.data;
-        })
-        .catch((error) => {
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          } else {
-            this.$toast.add({
-              severity: "error",
-              summary: this.$t("smartenu.loadAllEventsError") + ":\n" + error,
-              life: 3000,
-            });
-          }
-        });
+          .get(smartEnuApi + "/getParticipantsCategories", {
+            headers: getHeader(),
+          })
+          .then((response) => {
+            this.participantsCategories = response.data;
+          })
+          .catch((error) => {
+            if (error.response.status == 401) {
+              this.$store.dispatch("logLout");
+            } else {
+              this.$toast.add({
+                severity: "error",
+                summary: this.$t("smartenu.loadAllEventsError") + ":\n" + error,
+                life: 3000,
+              });
+            }
+          });
     },
 
     /**
@@ -926,31 +926,31 @@ export default {
      */
     deleteEvent(id) {
       axios
-        .post(
-          smartEnuApi + "/delEvent",
-          {
-            id: id,
-          },
-          {
-            headers: getHeader(),
-          }
-        )
-        .then((response) => {
-          if (response.status === 200) {
-            this.getAllEvents();
-          }
-        })
-        .catch((error) => {
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          } else {
-            this.$toast.add({
-              severity: "error",
-              summary: this.$t("smartenu.delEventError") + ":\n" + error,
-              life: 3000,
-            });
-          }
-        });
+          .post(
+              smartEnuApi + "/delEvent",
+              {
+                id: id,
+              },
+              {
+                headers: getHeader(),
+              }
+          )
+          .then((response) => {
+            if (response.status === 200) {
+              this.getAllEvents();
+            }
+          })
+          .catch((error) => {
+            if (error.response.status == 401) {
+              this.$store.dispatch("logLout");
+            } else {
+              this.$toast.add({
+                severity: "error",
+                summary: this.$t("smartenu.delEventError") + ":\n" + error,
+                life: 3000,
+              });
+            }
+          });
       this.deleteVisible = false;
       this.event = {};
     },
@@ -966,27 +966,27 @@ export default {
       }
       let main = [];
       main =
-        this.selectedMainCategories != null
-          ? this.selectedMainCategories.concat(
-              this.selectedBachelorCourses != null
-                ? this.selectedBachelorCourses.concat(
-                    this.selectedMasterCourses != null
-                      ? this.selectedMasterCourses
-                      : null
-                  )
-                : this.selectedMasterCourses != null
-                ? this.selectedMasterCourses
-                : null
-            )
-          : null;
+          this.selectedMainCategories != null
+              ? this.selectedMainCategories.concat(
+                  this.selectedBachelorCourses != null
+                      ? this.selectedBachelorCourses.concat(
+                          this.selectedMasterCourses != null
+                              ? this.selectedMasterCourses
+                              : null
+                      )
+                      : this.selectedMasterCourses != null
+                          ? this.selectedMasterCourses
+                          : null
+              )
+              : null;
       this.event.participantsCategory = main.concat(
-        this.selectedFaculties !== null
-          ? this.selectedFaculties.concat(
-              this.selectedDepartments !== null
-                ? this.selectedDepartments
-                : null
-            )
-          : null
+          this.selectedFaculties !== null
+              ? this.selectedFaculties.concat(
+                  this.selectedDepartments !== null
+                      ? this.selectedDepartments
+                      : null
+              )
+              : null
       );
       if (this.isPoster) {
         this.validPosterImages();
@@ -994,14 +994,14 @@ export default {
           return;
         }
         axios
-          .post(smartEnuApi + "/addPoster", this.poster, {
-            headers: getHeader(),
-          })
-          .then((res) => {
-            this.event.posterId = res.data.id;
-            this.event.isPoster = this.isPoster;
-            this.insertEvent();
-          });
+            .post(smartEnuApi + "/addPoster", this.poster, {
+              headers: getHeader(),
+            })
+            .then((res) => {
+              this.event.posterId = res.data.id;
+              this.event.isPoster = this.isPoster;
+              this.insertEvent();
+            });
       } else {
         this.insertEvent();
       }
@@ -1009,28 +1009,28 @@ export default {
 
     insertEvent() {
       axios
-        .post(smartEnuApi + "/addEvent", this.event, {
-          headers: getHeader(),
-        })
-        .then((response) => {
-          if (response.data !== null) {
+          .post(smartEnuApi + "/addEvent", this.event, {
+            headers: getHeader(),
+          })
+          .then((response) => {
+            if (response.data !== null) {
+              this.$toast.add({
+                severity: "success",
+                summary: this.$t("smartenu.saveSuccess"),
+                life: 3000,
+              });
+              this.getAllEvents();
+              this.editVisible = false;
+              this.event = {};
+            }
+          })
+          .catch((error) => {
             this.$toast.add({
-              severity: "success",
-              summary: this.$t("smartenu.saveSuccess"),
+              severity: "error",
+              summary: this.$t("smartenu.saveEventError") + ":\n" + error,
               life: 3000,
             });
-            this.getAllEvents();
-            this.editVisible = false;
-            this.event = {};
-          }
-        })
-        .catch((error) => {
-          this.$toast.add({
-            severity: "error",
-            summary: this.$t("smartenu.saveEventError") + ":\n" + error,
-            life: 3000,
           });
-        });
     },
 
     /**
@@ -1071,7 +1071,6 @@ export default {
       this.editVisible = true;
       this.submitted = false;
       let event = this.allEvents.find((x) => x.id === id);
-      console.log(event);
       this.event.id = event.id;
       this.event.titleKz = event.titleKz;
       this.event.titleRu = event.titleRu;
@@ -1100,21 +1099,21 @@ export default {
       this.getBachelorCourses();
       this.getFaculties();
       this.selectedMainCategories = event.participantsCategory.filter(
-        (category) => category.parentId === null
+          (category) => category.parentId === null
       );
       this.selectedMasterCourses = event.participantsCategory.filter(
-        (category) => category.parentId === 3
+          (category) => category.parentId === 3
       );
       this.selectedBachelorCourses = event.participantsCategory.filter(
-        (category) => category.parentId === 4
+          (category) => category.parentId === 4
       );
       this.selectedFaculties = event.participantsCategory.filter(
-        (category) => category.parentId === 6
+          (category) => category.parentId === 6
       );
       this.selectedDepartments = [];
       for (let i = 0; i < this.selectedFaculties.length; i++) {
         let array = this.participantsCategories.filter(
-          (category) => category.parentId === this.selectedFaculties[i].id
+            (category) => category.parentId === this.selectedFaculties[i].id
         );
         this.selectedDepartments = this.selectedDepartments.concat(array);
       }
@@ -1141,68 +1140,68 @@ export default {
      */
     publishEvent() {
       axios
-        .post(
-          smartEnuApi + "/publishEvent",
-          {
-            id: this.selectedEvent.id,
-            userId: this.selectedEvent.history.userId,
-          },
-          {
-            headers: getHeader(),
-          }
-        )
-        .then((response) => {
-          if (response.data !== null) {
-            this.$toast.add({
-              severity: "success",
-              summary: this.$t("smartenu.saveSuccess"),
-              life: 3000,
-            });
-            this.getAllEvents();
-          }
-        })
-        .catch((error) => {
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          } else {
-            this.$toast.add({
-              severity: "error",
-              summary: this.$t("smartenu.saveEventError") + ":\n" + error,
-              life: 3000,
-            });
-          }
-        });
+          .post(
+              smartEnuApi + "/publishEvent",
+              {
+                id: this.selectedEvent.id,
+                userId: this.selectedEvent.history.userId,
+              },
+              {
+                headers: getHeader(),
+              }
+          )
+          .then((response) => {
+            if (response.data !== null) {
+              this.$toast.add({
+                severity: "success",
+                summary: this.$t("smartenu.saveSuccess"),
+                life: 3000,
+              });
+              this.getAllEvents();
+            }
+          })
+          .catch((error) => {
+            if (error.response.status == 401) {
+              this.$store.dispatch("logLout");
+            } else {
+              this.$toast.add({
+                severity: "error",
+                summary: this.$t("smartenu.saveEventError") + ":\n" + error,
+                life: 3000,
+              });
+            }
+          });
     },
 
     getRoles() {
       this.userRoles = [];
       axios
-        .get(smartEnuApi + "/getroles", {
-          headers: getHeader(),
-        })
-        .then((response) => {
-          this.userRoles = response.data;
-          this.roles.isAdmin = this.findRole(this.userRoles, "news_administrator");
-          this.roles.isPublisher = this.findRole(this.userRoles, "news_publisher");
-          this.roles.isStudent = this.findRole(this.userRoles, "student");
-          this.roles.isModer = this.findRole(this.userRoles, "news_moderator");
-          console.log(this.userRoles);
-        })
-        .catch((error) => {
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          } else {
-            this.$toast.add({
-              severity: "error",
-              summary: this.$t("smartenu.loadAllEventsError") + ":\n" + error,
-              life: 3000,
-            });
-          }
-        });
+          .get(smartEnuApi + "/getroles", {
+            headers: getHeader(),
+          })
+          .then((response) => {
+            console.log(response.data)
+            this.userRoles = response.data;
+            this.roles.isAdmin = this.findRole(this.userRoles, "news_administrator");
+            this.roles.isPublisher = this.findRole(this.userRoles, "news_publisher");
+            this.roles.isStudent = this.findRole(this.userRoles, "student");
+            this.roles.isModer = this.findRole(this.userRoles, "news_moderator");
+          })
+          .catch((error) => {
+            if (error.response.status == 401) {
+              this.$store.dispatch("logLout");
+            } else {
+              this.$toast.add({
+                severity: "error",
+                summary: this.$t("smartenu.loadAllEventsError") + ":\n" + error,
+                life: 3000,
+              });
+            }
+          });
     },
     findRole(roles, code) {
       for (let i = 0; i < roles.length; i++) {
-        console.log(roles[i]);
+        console.log(roles[i].name)
         if (roles[i].name === code) {
           return true;
         }
@@ -1290,7 +1289,7 @@ export default {
         return false;
       } else {
         return this.selectedMainCategories.find(
-          (category) => category.id === 3
+            (category) => category.id === 3
         );
       }
     },
@@ -1299,7 +1298,7 @@ export default {
         return false;
       } else {
         return this.selectedMainCategories.find(
-          (category) => category.id === 4
+            (category) => category.id === 4
         );
       }
     },
@@ -1308,7 +1307,7 @@ export default {
         return false;
       } else {
         return this.selectedMainCategories.find(
-          (category) => category.id === 6
+            (category) => category.id === 6
         );
       }
     },
@@ -1318,15 +1317,15 @@ export default {
         return false;
       } else {
         return this.selectedFaculties.find(
-          (category) => category.parentId === 6
+            (category) => category.parentId === 6
         );
       }
     },
 
     isCreated: function () {
       return (
-        this.selectedEvent &&
-        this.selectedEvent.history.status.id === this.statuses.created
+          this.selectedEvent &&
+          this.selectedEvent.history.status.id === this.statuses.created
       );
     },
 
@@ -1351,7 +1350,7 @@ export default {
         this.departments = [];
         for (let i = 0; i < this.selectedFaculties.length; i++) {
           let array = this.participantsCategories.filter(
-            (category) => category.parentId === this.selectedFaculties[i].id
+              (category) => category.parentId === this.selectedFaculties[i].id
           );
           this.departments = this.departments.concat(array);
         }

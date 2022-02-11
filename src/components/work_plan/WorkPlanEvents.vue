@@ -1,14 +1,17 @@
 <template>
   <div class="p-col-12" v-if="!loading">
-    <Message severity="error" :closable="false" v-if="plan.comment && !isFinish">{{ plan.comment }}</Message>
-    <div class="card">
-      <work-plan-event-add v-if="isCreator || isEventsNull"></work-plan-event-add>
-      <Button v-if="isCreator" label="Завершить" icon="pi pi-check" @click="finish"
+    <Message severity="warn" :closable="false" v-if="plan.comment && isRejected">{{ plan.comment }}</Message>
+    <div class="card" v-if="plan || data">
+      <work-plan-event-add v-if="(isCreator || isEventsNull) && !isFinish && isPlanCreator"></work-plan-event-add>
+      <Button v-if="isPlanCreator && !isFinish" label="Завершить" icon="pi pi-check" @click="finish"
               class="p-button p-button-danger p-ml-2"/>
-      <work-plan-approve v-if="isPlanCreator && !isCreator && !isApproval && isFinish" :plan="plan" :events="data"></work-plan-approve>
-      <Button label="Посмотреть план" icon="pi pi-eye" @click="viewDoc"
+      <work-plan-approve v-if="isPlanCreator && !isPlanSentApproval && isFinish" :plan="plan"
+                         :events="data"></work-plan-approve>
+      <Button v-if="isFinish && (isApproval || isPlanCreator) && isPlanSentApproval" label="Посмотреть план"
+              icon="pi pi-eye" @click="viewDoc"
               class="p-button p-button-info p-ml-2"/>
-      <SplitButton label="Отчет" icon="pi pi-document" class="p-button-info p-ml-2" @click="save" :model="splitButtonItems"></SplitButton>
+      <WorkPlanReportModal v-if="isFinish && (isApproval || isPlanCreator) && isPlanSentApproval" :planId="work_plan_id"
+                           :plan="plan"></WorkPlanReportModal>
     </div>
     <div class="card">
       <DataTable :value="data" dataKey="work_plan_event_id"
@@ -19,11 +22,11 @@
             <h5 class="p-m-0">Мероприятия |
               <router-link tag="a" to="/work-plan">Планы</router-link>
             </h5>
-            <span class="p-input-icon-left">
-              <i class="pi pi-search"/>
-              <InputText type="search" v-model="searchText" :placeholder="$t('common.search')"/>
-              <Button icon="pi pi-search" class="p-ml-1" @click="getWorkPlanEvents"/>
-            </span>
+            <!--            <span class="p-input-icon-left">
+                          <i class="pi pi-search"/>
+                          <InputText type="search" v-model="searchText" :placeholder="$t('common.search')"/>
+                          <Button icon="pi pi-search" class="p-ml-1" @click="getWorkPlanEvents"/>
+                        </span>-->
           </div>
         </template>
         <template #empty> {{ $t('common.noData') }}</template>
@@ -49,7 +52,7 @@
         </Column>
         <Column field="quarter" header="Квартал" sortable>
           <template #body="{ data }">
-            {{ data.quarter ? data.quarter.String : "" }}
+            {{ data.quarter ? initQuarterString(data.quarter.String) : "" }}
           </template>
         </Column>
         <Column field="fullName" header="Ответственные лица" sortable>
@@ -70,13 +73,24 @@
               }}</span>
           </template>
         </Column>
+
         <Column field="actions" header="Действия">
           <template #body="slotProps">
+            <work-plan-execute
+                v-if="parseInt(slotProps.data.quarter.String) === currentQuarter && isUserApproval(slotProps.data) && isPlanSentApproval"
+                :data="slotProps.data"></work-plan-execute>
+            <work-plan-event-result-modal v-if="slotProps.data.event_result"
+                                          :event-result="slotProps.data.event_result"></work-plan-event-result-modal>
             <work-plan-event-add v-if="!slotProps.data.is_finish" :data="slotProps.data"></work-plan-event-add>
+            <work-plan-event-edit-modal v-if="isPlanCreator && !isPlanSentApproval && !isFinish" :event="slotProps.data"></work-plan-event-edit-modal>
+            <Button v-if="isPlanCreator && !isPlanSentApproval && !isFinish"
+                    @click="remove_event(slotProps.data.work_plan_event_id)" icon="pi pi-trash"
+                    class="p-button-danger p-ml-2" label="Удалить"></Button>
           </template>
         </Column>
         <template #expansion="slotProps">
-          <WorkPlanEventTree :child="slotProps.data.children" v-if="slotProps.data.children"/>
+          <WorkPlanEventTree :plan-creator="isPlanCreator" :finish="isFinish" :approval-sent="isPlanSentApproval"
+                             :child="slotProps.data.children" v-if="slotProps.data.children"/>
         </template>
       </DataTable>
     </div>
@@ -85,14 +99,14 @@
             class="p-fluid">
       <div class="p-field">
         <label>Квартал</label>
-        <Dropdown v-model="quarter" :options="quarters" optionLabel="name" optionValue="id" placeholder="Выберите"
+        <Dropdown v-model="quarter" :options="reportQuarters" optionLabel="name" optionValue="id" placeholder="Выберите"
                   @select="selectQuarter"/>
       </div>
       <template #footer>
         <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
                 @click="closeSelectQuarter"/>
         <Button :label="$t('common.save')" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2"
-                @click="initReport"/>
+                @click="initReport(true)"/>
       </template>
     </Dialog>
   </div>
@@ -105,9 +119,15 @@ import {getHeader, smartEnuApi} from "@/config/config";
 import WorkPlanEventTree from "@/components/work_plan/WorkPlanEventTree";
 import WorkPlanApprove from "@/components/work_plan/WorkPlanApprove";
 import WorkPlanExecute from "@/components/work_plan/WorkPlanExecute";
+import WorkPlanReportModal from "@/components/work_plan/WorkPlanReportModal";
+import WorkPlanEventResultModal from "@/components/work_plan/WorkPlanEventResultModal";
+import WorkPlanEventEditModal from "@/components/work_plan/WorkPlanEventEditModal";
 
 export default {
-  components: {WorkPlanApprove, WorkPlanEventTree, WorkPlanEventAdd},
+  components: {
+    WorkPlanEventEditModal,
+    WorkPlanReportModal, WorkPlanApprove, WorkPlanEventTree, WorkPlanEventAdd, WorkPlanExecute, WorkPlanEventResultModal
+  },
   data() {
     return {
       data: null,
@@ -131,6 +151,10 @@ export default {
         {
           id: 4,
           name: 'IV'
+        },
+        {
+          id: 5,
+          name: 'Весь квартал'
         }
       ],
       quarter: null,
@@ -143,14 +167,16 @@ export default {
       showRejectPlan: false,
       approval_users: null,
       isApproval: false,
+      isPlanSentApproval: false,
       isRejected: false,
       isFinish: false,
       isEventsNull: false,
+      currentQuarter: null,
       splitButtonItems: [
         {
           label: 'Годовой',
           command: () => {
-            this.$toast.add({severity:'success', summary:'Updated', detail:'Data Updated', life: 3000});
+            this.initReport(false);
           }
         },
         {
@@ -172,21 +198,42 @@ export default {
     this.emitter.on('planRejected', (data) => {
       if (data === true) {
         this.getPlan();
+        this.getWorkPlanEvents();
+      }
+    });
+    this.emitter.on('planSentToApprove', (data) => {
+      if (data) {
+        this.getPlan();
+        this.getWorkPlanEvents();
+      }
+    })
+    this.emitter.on('workPlanEventIsCompleted', (data) => {
+      if (data) {
+        this.getPlan();
+        this.getWorkPlanEvents();
+      }
+    })
+    this.emitter.on('workPlanChildEventIsDeleted', (data) => {
+      if (data) {
+        this.getPlan();
+        this.initQuarter();
+        this.getWorkPlanEvents();
+      }
+    });
+    this.emitter.on('planEventChanged', (data) => {
+      if (data) {
+        this.getPlan();
+        this.initQuarter();
+        this.getWorkPlanEvents();
       }
     });
   },
   created() {
     this.work_plan_id = this.$route.params.id
     this.loginedUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
+    this.getPlan();
+    this.initQuarter();
     this.getWorkPlanEvents();
-    this.plan = JSON.parse(localStorage.getItem("workPlan"));
-    this.isRejected = this.plan.is_reject;
-    if (this.plan && this.plan.user.id === this.loginedUserId) {
-      this.isPlanCreator = true;
-    } else {
-      this.isPlanCreator = false;
-      //this.$router.push('/work-plan')
-    }
   },
   methods: {
     getWorkPlanEvents() {
@@ -196,11 +243,8 @@ export default {
             this.data = res.data;
             if (this.data) {
               this.data.map(e => {
-                if (e.creator_id === this.loginedUserId && e.parent_id == null && !e.is_finish) {
+                if (e.creator_id === this.loginedUserId && e.parent_id == null) {
                   this.isCreator = true;
-                }
-                if (e.is_finish) {
-                  this.isFinish = e.is_finish
                 }
               });
             } else {
@@ -226,13 +270,15 @@ export default {
           .then(res => {
             if (res.data) {
               this.approval_users = res.data;
+              this.isPlanSentApproval = true;
               this.approval_users.forEach(e => {
-                if (this.loginedUserId === e.user_id) {
+                if (this.loginedUserId === e.user.id) {
                   this.isApproval = true;
                 }
-              })
+              });
             } else {
               this.isApproval = false;
+              this.isPlanSentApproval = false;
             }
           }).catch(error => {
         if (error.response.status === 401) {
@@ -247,10 +293,22 @@ export default {
       });
     },
     getPlan() {
+      this.loading = true;
       axios.get(smartEnuApi + `/workPlan/getWorkPlanById/${this.work_plan_id}`, {headers: getHeader()})
-      .then(res => {
-        this.plan = res.data;
-      }).catch(error => {
+          .then(res => {
+            this.plan = res.data;
+            if (this.plan && this.plan.is_finish) {
+              this.isFinish = this.plan.is_finish;
+            }
+            this.isRejected = this.plan.is_reject;
+            if (this.plan && this.plan.user.id === this.loginedUserId) {
+              this.isPlanCreator = true;
+            } else {
+              this.isPlanCreator = false;
+              //this.$router.push('/work-plan')
+            }
+            this.loading = false;
+          }).catch(error => {
         if (error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
@@ -260,6 +318,7 @@ export default {
             life: 3000,
           });
         }
+        this.loading = false;
       });
     },
     finish() {
@@ -273,6 +332,7 @@ export default {
           this.loading = false;
           this.isFinish = true;
           this.getPlan();
+          this.getWorkPlanEvents();
           this.$toast.add({
             severity: "success",
             summary: 'Успешно!',
@@ -292,8 +352,12 @@ export default {
         this.loading = false;
       })
     },
-    initReport() {
-      this.$router.push({ name: 'WorkPlanReportView', params: { id: this.work_plan_id }})
+    initReport(isQuarter) {
+      if (isQuarter) {
+        this.$router.push({name: 'WorkPlanReportView', params: {id: this.work_plan_id, quarter: this.quarter}})
+      } else {
+        this.$router.push({name: 'WorkPlanReportView', params: {id: this.work_plan_id}})
+      }
     },
     onRowExpand(event) {
       this.$toast.add({severity: 'info', summary: 'Row Expanded', detail: event.data.event_name, life: 3000});
@@ -316,13 +380,81 @@ export default {
 
     },
     viewDoc() {
-      this.$router.push({ name: 'WorkPlanView', params: { id: this.work_plan_id }})
+      this.$router.push({name: 'WorkPlanView', params: {id: this.work_plan_id}})
     },
     selectQuarter() {
       this.selectQuarterModal = true;
     },
     closeSelectQuarter() {
       this.selectQuarterModal = false;
+    },
+    isUserApproval(data) {
+      let userApproval = false;
+      data.user.forEach(e => {
+        if (e.id === this.loginedUserId) {
+          userApproval = true;
+        }
+      });
+      return userApproval && data.is_finish && !data.event_result;
+    },
+    initQuarter() {
+      let currentDate = new Date();
+      let currentMonth = currentDate.getMonth() + 1;
+      this.currentQuarter = Math.ceil(currentMonth / 3);
+    },
+    initQuarterString(quarter) {
+      let res = '';
+      switch (quarter) {
+        case "1":
+          res = 'I';
+          break;
+        case "2":
+          res = 'II';
+          break;
+        case "3":
+          res = 'III';
+          break;
+        case "4":
+          res = 'IV';
+          break;
+        case "5":
+          res = 'Весь год';
+          break;
+      }
+      return res;
+    },
+    remove_event(event_id) {
+      this.$confirm.require({
+        message: 'Вы точно хотите удалить?',
+        header: 'Удаление',
+        icon: 'pi pi-info-circle',
+        accept: () => {
+          this.remove(event_id);
+        },
+        reject: () => {
+          //callback to execute when user rejects the action
+        }
+      });
+    },
+    remove(event_id) {
+      axios.post(smartEnuApi + `/workPlan/removeEvent/${event_id}`, {}, {headers: getHeader()}).then(res => {
+        if (res.data.is_success) {
+          this.$toast.add({severity: 'success', summary: 'Успешно', life: 3000});
+          this.getPlan();
+          this.initQuarter();
+          this.getWorkPlanEvents();
+        }
+      }).catch(error => {
+        if (error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+      });
     }
   },
   /*unmounted() {

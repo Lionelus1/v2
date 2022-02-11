@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div ref="htmlToPdf" class="p-grid">
-      <h5 class="p-col-6 p-offset-3 p-text-center p-text-bold">{{ plan.work_plan_name }}</h5>
+    <div ref="toPdf" class="p-grid">
+      <h5 class="p-col-6 p-offset-3 p-text-center p-text-bold">{{ reportTitle }}</h5>
       <br/>
       <div class="p-col-12">
         <table>
@@ -13,6 +13,8 @@
             <th>Квартал</th>
             <th>Планируемый результат</th>
             <th>Примечание</th>
+            <th>Отчет</th>
+            <th>Выполнено/Не выполнено</th>
           </tr>
           </thead>
           <tbody>
@@ -23,6 +25,8 @@
             <td>{{ item.quarter }}</td>
             <td>{{ item.result }}</td>
             <td>{{ item.comment }}</td>
+            <td>{{ item.event_result ? item.event_result.event_result : "" }}</td>
+            <td>{{ item.event_result ? "Выполнено" : "Не выполнено" }}</td>
           </tr>
           </tbody>
         </table>
@@ -34,17 +38,15 @@
 <script>
 import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
-import treeToList from "@/service/treeToList";
 
 export default {
-  name: "PdfContent",
-  props: ['planId', 'type', 'isReport', 'data'],
+  name: "ReportPdf",
+  props: ['planId', 'data', 'type', 'quarter', 'reportTitle'],
   data() {
     return {
-      items: [],
       work_plan_id: this.planId,
-      plan: this.data,
-      pdfType: this.isReport,
+      items: this.data,
+      pdfType: this.type,
       pdfOptions: {
         margin: 15,
         image: {
@@ -52,7 +54,6 @@ export default {
           quality: 1,
         },
         html2canvas: {scale: 3},
-        pagebreak: {avoid: 'tr'},
         jsPDF: {
           unit: 'mm',
           format: 'a4',
@@ -63,51 +64,19 @@ export default {
     }
   },
   created() {
-    this.getData();
+    //this.getData();
+
+    console.log("title", this.reportTitle)
     this.year = new Date().getFullYear();
     //this.data.push({index: 1, name: "Test name", resp: 'User Name', quarter: 1, result: '', comment: 'Comment'})
     this.loginedUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
     this.filename = 'flname.pdf'
   },
   methods: {
-    getData() {
-      axios.post(smartEnuApi + `/workPlan/getWorkPlanReportData`, {
-        work_plan_id: this.work_plan_id
-      }, {headers: getHeader()}).then(res => {
-        this.items = treeToList(res.data, 'children');
-      }).catch(error => {
-        if (error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
-      });
-    },
-    initQuarter(quarter) {
-      let res = '';
-      switch (quarter) {
-        case "1":
-          res = 'I';
-          break;
-        case "2":
-          res = 'II';
-          break;
-        case "3":
-          res = 'III';
-          break;
-        case "4":
-          res = 'IV';
-          break;
-        case "5":
-          res = '';
-          break;
-      }
-      return res;
-    }
+
+  },
+  mounted() {
+    console.log("report items", this.items)
   }
 }
 </script>
@@ -117,7 +86,6 @@ table {
   width: 100%;
   font-size: 14px;
   text-align: center;
-  border: 1px solid #dee2e6;
   border-collapse: collapse;
 
   th {
@@ -127,7 +95,7 @@ table {
   td,
   th {
     padding: 8px;
-    border: 1px solid #dee2e6;
+    border: 0.03em solid #3f3f3f;
   }
 }
 
