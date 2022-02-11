@@ -1,7 +1,7 @@
 <template>
   <div id="carddiv" class="p-grid">
     <div class="p-col-12">
-      <h3>Создание и редактирование вакансии</h3>
+      <h3>Создание и редактирование образования</h3>
       <div>
         <Menubar :model="menu" :key="active"
                  style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px"></Menubar>
@@ -11,64 +11,109 @@
       <div class="card">
         <div class="p-grid p-formgrid">
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
-            <label>Учебное заведение</label>
+            <label>{{ $t('hr.edu.institution') }}</label>
             <InputText
                 :readonly="readonly"
                 class="p-mt-2"
+                :class="{'p-invalid': validation.institution}"
                 type="text"
-                placeholder="Учебное заведение"
+                :placeholder="$t('hr.edu.institution')"
                 v-model="value.institution"
             ></InputText>
+            <small
+                class="p-error"
+                v-if="validation.institution"
+            >{{ $t("common.requiredField") }}</small>
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
-            <label>Факультет</label>
+            <label>{{ $t('hr.edu.institutionAddress') }}</label>
             <InputText
                 :readonly="readonly"
                 class="p-mt-2"
+                :class="{'p-invalid': validation.institutionAddress}"
                 type="text"
-                placeholder="Факультет"
+                :placeholder="$t('hr.edu.institutionAddress')"
+                v-model="value.institutionAddress"
+            ></InputText>
+            <small
+                class="p-error"
+                v-if="validation.institutionAddress"
+            >{{ $t("common.requiredField") }}</small>
+          </div>
+          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+            <label>{{ $t('common.faculty') }}</label>
+            <InputText
+                :readonly="readonly"
+                class="p-mt-2"
+                :class="{'p-invalid': validation.faculty}"
+                type="text"
+                :placeholder="$t('common.faculty')"
                 v-model="value.faculty"
             ></InputText>
+            <small
+                class="p-error"
+                v-if="validation.faculty"
+            >{{ $t("common.requiredField") }}</small>
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
-            <label>Специальность</label>
+            <label>{{ $t('common.speciality') }}</label>
             <InputText
                 :readonly="readonly"
                 class="p-mt-2"
+                :class="{'p-invalid': validation.speciality}"
                 type="text"
-                placeholder="Специальность"
+                :placeholder="$t('common.speciality')"
                 v-model="value.speciality"
             ></InputText>
+            <small
+                class="p-error"
+                v-if="validation.speciality"
+            >{{ $t("common.requiredField") }}</small>
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
-            <label>Номер диплома</label>
+            <label>{{ $t('hr.ad.diplomaNumber') }}</label>
             <InputText
                 :readonly="readonly"
                 class="p-mt-2"
+                :class="{'p-invalid': validation.diplomaNumber}"
                 type="text"
-                placeholder="Номер диплома"
-                v-model="value.faculty"
+                :placeholder="$t('hr.ad.diplomaNumber')"
+                v-model="value.diplomaNumber"
             ></InputText>
+            <small
+                class="p-error"
+                v-if="validation.diplomaNumber"
+            >{{ $t("common.requiredField") }}</small>
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
-            <label>Год поступления</label>
+            <label>{{ $t('hr.edu.receiptDate') }}</label>
             <PrimeCalendar
                 :readonly="readonly"
                 view="year"
                 class="p-mt-2"
+                :class="{'p-invalid': validation.receiptDate}"
                 v-model="value.receiptDate"
-                placeholder="Год поступления"
+                :placeholder="$t('hr.edu.receiptDate')"
                 dateFormat="yy"/>
+            <small
+                class="p-error"
+                v-if="validation.receiptDate"
+            >{{ $t("common.requiredField") }}</small>
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
-            <label>Год окончания</label>
+            <label>{{$t('hr.edu.expirationDate')}}</label>
             <PrimeCalendar
                 :readonly="readonly"
                 view="year"
                 class="p-mt-2"
+                :class="{'p-invalid': validation.expirationDate}"
                 v-model="value.expirationDate"
-                placeholder="Год окончания"
+                :placeholder="$t('hr.edu.expirationDate')"
                 dateFormat="yy"/>
+            <small
+                class="p-error"
+                v-if="validation.expirationDate"
+            >{{ $t("common.requiredField") }}</small>
           </div>
         </div>
       </div>
@@ -91,38 +136,59 @@ export default {
           label: this.$t("common.save"),
           icon: "pi pi-fw pi-save",
           command: () => {
-            this.vacancyAction()
+            this.action()
           },
         },
       ],
+      validation: {
+        institution: false,
+        institutionAddress: false,
+        faculty: false,
+        speciality: false,
+        diplomaNumber: false,
+        receiptDate: false,
+        expirationDate: false
+      }
     };
   },
   methods: {
-    vacancyAction() {
-      let path = this.value.id === undefined ? "/vacancy/add" : "/vacancy/update"
-      this.value.departmentHead = this.head[0]
-      axios
-          .post(smartEnuApi + path, this.value, {headers: getHeader(),})
-          .then(res => {
-            this.emitter.emit("vacancyAdded", true);
-            this.$toast.add({
-              severity: 'info',
-              summary: 'Success',
-              detail: 'Вакансия успешно создана/обнавлена',
-              life: 3000
-            });
-          }).catch(error => {
-        console.log(error)
-      });
+    validateForm() {
+      this.validation.institution = !this.value.institution || this.value.institution == ""
+      this.validation.institutionAddress = !this.value.institutionAddress || this.value.institutionAddress == ""
+      this.validation.faculty = !this.value.faculty || this.value.faculty == ""
+      this.validation.speciality = !this.value.speciality || this.value.speciality == ""
+      this.validation.diplomaNumber = !this.value.diplomaNumber || this.value.diplomaNumber == ""
+      this.validation.receiptDate = !this.value.receiptDate || this.value.receiptDate == ""
+      this.validation.expirationDate = !this.value.expirationDate || this.value.expirationDate == ""
+      return (
+          !this.validation.institution &&
+          !this.validation.institutionAddress &&
+          !this.validation.faculty &&
+          !this.validation.speciality &&
+          !this.validation.diplomaNumber &&
+          !this.validation.receiptDate &&
+          !this.validation.expirationDate
+      )
+    },
+    action() {
+      if (this.validateForm()) {
+        let path = !this.value.id ? "/candidate/education/create" : "/candidate/education/update"
+        axios
+            .post(smartEnuApi + path, this.value, {headers: getHeader(),})
+            .then(res => {
+              this.emitter.emit("education", true);
+            }).catch(error => {
+          console.log(error)
+        });
+      }
     }
   },
   props: {
     modelValue: null,
-    placeholder: String,
+    candidateId: null,
     readonly: Boolean,
   },
   created() {
-    this.head = this.modelValue.departmentHead === undefined ? null : [this.modelValue.departmentHead]
   }
 };
 </script>

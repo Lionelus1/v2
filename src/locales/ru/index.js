@@ -1,16 +1,26 @@
 export default {
     common: {
+        administration: 'Администрирование',
         academicDegree: "Ученая степень",
         academicTitle: "Ученое звание",
         annotation: "Аннотация",
+        action: {
+            submit: 'Отправить',
+            accept: 'Принять',
+            notAccept: 'Отклонить',
+            sendToApprove: 'Отправить на согласование',
+            approve: 'Согласовать',
+            publish: 'Опубликовать',
+        },
         login: "Вход",
         logout: "Выход",
         enter: "Наберите",
         enterLogin: "Введите ИИН или почту platonus",
         enterPassword: "Введите пароль",
-        add : "Добавить",
+        add: "Добавить",
         edit: "Редактировать",
         orgname: "Евразийский университет имени Л.Н. Гумилева",
+        organizationName: 'Название организации',
         date: "Дата",
         delete: "Удалить",
         department: "Отдел",
@@ -21,20 +31,23 @@ export default {
         createNew: "Создать",
         graduate: "Выпускник",
         faculty: "Факультет",
+        forStudentsAndGraduates: 'Для студентов и выпускников',
         cafedra: "Кафедра",
-        name : "Имя",
+        name: "Имя",
         created: "Создан",
         createdBy: "автор",
         fullName: "ФИО",
         hei: "ВУЗ",
         updated: "Изменен",
-        type:   "Тип",
+        type: "Тип",
         reason: "Причина",
         state: "Статус",
         status: "Статус",
         show: "Просмотр",
         save: "Сохранить",
+        speciality: "Специальность",
         download: "Скачать",
+        lang: 'Язык',
         learnlang: "Язык обучения",
         loading: "загрузка",
         toapprove: "На согласование",
@@ -53,13 +66,14 @@ export default {
         cancel: "Отмена",
         main: "Основные",
         myData: "Мои данные",
+        myResume: 'Моё резюме',
         nameIn: "Наименование",
         nameInQazaq: "Наименование на казахском",
         nameInRussian: "Наименование на русском",
         nameInEnglish: "Наименование на английском",
         noData: "Нет данных",
-        null : "неизвестно",
-        other:  "Другая",
+        null: "неизвестно",
+        other: "Другая",
         order: "Приказ",
         contentInQazaq: "Контент на казахском",
         contentInRussian: "Контент на русском",
@@ -80,11 +94,14 @@ export default {
         search: "Поиск",
         send: "Отправить",
         showingRecordsCount: ' Показаны записи с {first} по {last} из  {totalRecords} ',
+        startDate: 'Дата начала',
+        endDate: 'Дата окончания',
         organization: "Организация",
         params: "Параметры",
         password: "Пароль",
         person: "Персона",
         personal: "Сотрудник",
+        phoneNumber: '',
         requiredField: "Обязательное поле",
         teacher: "ППС",
         student: "Обучающийся",
@@ -96,14 +113,14 @@ export default {
         userDetail: "Данные пользователя",
         workPlace: "Место работы",
         role: "Роль",
-        publishDate:"Дата и время публикации:",
-        deadlineDate:"Срок подачи документов",
-        organizationNameLabel:"Наименование организации",
+        publishDate: "Дата и время публикации:",
+        deadlineDate: "Срок подачи документов",
+        organizationNameLabel: "Наименование организации",
         departmentNameLabel: "Наименование структурного подразделения",
         headLabel: "Руководитель:",
         states: {
-            created : "создан",
-            inapproval : "на согласовании",
+            created: "создан",
+            inapproval: "на согласовании",
             approved: "согласован",
         },
         message: {
@@ -159,6 +176,7 @@ export default {
         email: "Эл.почта",
         bin: "БСН",
         iin: "ИИН",
+
         mailto: "Написать письмо",
         fname: "Имя",
         lname: "Фамилия",
@@ -184,7 +202,7 @@ export default {
         title: "Контрагенты",
     },
     doctemplate: {
-        title : "Создание шаблона документа",
+        title: "Создание шаблона документа",
         templates: "Шаблоны документов",
         selected: "Выбранный шаблон",
         description: "Короткое описание шаблона",
@@ -212,14 +230,13 @@ export default {
             place: "Место заключения договора",
             date: "Дата заключения договора",
             addElement: "Добавление элемента договора",
-            message: {
-            }
+            message: {}
         },
     },
-    contracts : {
+    contracts: {
         title: "Договоры",
         autogenerate: "Будет сформировано автоматически при подписании или регистрации",
-        contract:"Договор",
+        contract: "Договор",
         documents: "Договорные документы",
         create: "Быстрое создание договоров, соглашений",
         list: "Реестр договоров",
@@ -253,6 +270,19 @@ export default {
         loading: "Загрузка...",
     },
     ncasigner: {
+        signatureError: {
+            extractCertificate: "Не удалось получить сертификат пользователя из CMS подписи.",
+            certificateNotForSigning: "Сертификат не предназначен для подписи",
+            extractIin: "Не удалось получить ИИН из сертификата пользователя",
+            mismatchIin: "ИИН полученный из сертификата не равен ИИН-у пользователя",
+            notIndividual: "Сертификат не принадлежит физическому лицу",
+            notCeo: "Сертификат не принадлежит первому руководителю",
+            financialSignRightsRequirement: "Сертификат не имеет права на подпись финансовых документов",
+            signRightsRequirement: "Сертификат не имеет права на подпись",
+            notHrWorker: "Сертификат не принадлежит сотруднику отдела кадров",
+            notCompanyEmployee: "Сертификат не принадлежит сотруднику организации.",
+            noRightsToSign: "Сертификат не имеет права на подпись документов (необходимы алгоритм: ГОСТ)"
+        },
         chooseFile: "Выберите файл",
         docIdNotExistMessageForFind: "Для того, чтобы найти страницу подписанного документа по файлу, в имени файла должен присутствовать корректный идентификатор SIGNERAPP. Убедитесть, что в имени вашего файла указан правильный идентификатор SIGNERAPP.",
         docIdNotExistMessageForSign: "Для того, чтобы подписать ранее подписанный документ по файлу, в имени файла должен присутствовать корректный идентификатор SIGNERAPP. Убедитесть, что в имени вашего файла указан правильный идентификатор SIGNERAPP. В противном случее, укажите имя файла без идентификатора SIGNERAPP для создания новой цепочки подписей.",
@@ -286,17 +316,15 @@ export default {
         chosenFile: "Выбранный файл: {fn}",
         //
         find: "Найти",
-
         signatureListTitle: "Перечень подписей",
         success: {
             header: "Проверки всех зарегистрированных в системе подписей успешно завершены!",
             subHeader: "Это говорит о том, что:",
             firstRow: "все зарегистрированные в системе подписи корректны;",
-            secondRow:"подписан был именно тот документ, который был только что предоставлен на проверку, никто не вносил в него изменений.",
+            secondRow: "подписан был именно тот документ, который был только что предоставлен на проверку, никто не вносил в него изменений.",
             //
             signSuccess: "Документ успешно подписан!"
         },
-
         verifySignatureTitle: "Проверить подпись под документом",
         verify: "Проверить",
         signDocTitle: "Подписать документ",
@@ -309,7 +337,6 @@ export default {
         failToSign: "Не удалось подписать документ!",
         notEnoughRights: "У вас недостаточно прав для подписи документа!",
         failToSendDoc: "Не удалось отправить ID документа на сервер!",
-
     },
     smartenu: {
         categories: "категории",
@@ -382,7 +409,7 @@ export default {
         posterImageEnInvalid: "Постер на английском не выбрана",
     },
     vaccination: {
-        title : "Вакцинация",
+        title: "Вакцинация",
         list: "Список вакцинированных",
         pasport: "Паспорт вакцинации",
         plannedDate: "Планируемая дата",
@@ -392,15 +419,15 @@ export default {
         vaccine: "Вакцина",
         fillVacTitle: "Введите наименование вакцины",
         clinic: "Клиника",
-        status : {
+        status: {
             firstcomponent: "первый компонент",
             vaccinated: "вакцинирован(а)",
             planned: "планируется",
             rejected: "медотвод",
             noData: "Нет данных",
             minor: "до 18 лет",
-         },
-         error: {
+        },
+        error: {
             list: "не удалость загрузить список вакцин"
         }
     },
@@ -427,7 +454,7 @@ export default {
         councilDecision: "Решение диссовета",
         disstitle: "Тема диссертации",
         validationErrors: {
-            selectSpeciality : "Укажите специальность",
+            selectSpeciality: "Укажите специальность",
             selectDepartment: "Выберите факультет",
             selectSecretary: "Укажите ученого секретаря",
             selectMember: "Укажите члена совета",
@@ -436,7 +463,7 @@ export default {
         message: {
             hasSameMember: "Пользователь уже имеет членство в совете",
         },
-        
+
 
     },
     faq: {
@@ -459,12 +486,62 @@ export default {
     },
     hr: {
         vacancies: "Вакансии",
-        responsibilitiesLabel:"Функциональные обязанности",
-        educationLabel:"Образование",
+        responsibilitiesLabel: "Функциональные обязанности",
+        educationLabel: "Образование",
         qualificationLabel: "Квалификация по специальности",
         experienceLabel: "Необходимый профессиональный опыт",
         languageLevelLabel: "Уровень знаний языков",
         certificateRequirementsLabel: "Наличие сертификатов, дипломов",
         personalQualitiesLabel: "Личные качества",
+        title: {
+            general: 'Жалпы ақпарат',
+            degreeAndTitle: 'Наличие ученой степени и ученого звания',
+            academicDegree: 'Ученая степень',
+            academicTitle: 'Ученое звание',
+            academicDetail: 'Публикации, научные работы, изобретения, государственные награды, поощрения (дипломы и др.)',
+            education: 'Образование',
+            experience: 'Опыт работы',
+            id: 'Удостоверение личности',
+            info: 'Другая важная информация',
+            language: 'Языки',
+            referee: 'Список людей, которые могут вас порекомендовать',
+            refresherCourse: 'Курсы повышения квалификации, семинары и стажировки'
+        },
+        resume: {
+            loading: 'Резюме загружается. Пожалуйста, подождите...',
+            create: 'Создать резюме',
+            delete: 'Удалить резюме',
+        },
+        ad: {
+            defensePlace: 'Место защиты',
+            defenseDate: 'Дата защиты',
+            diplomaNumber: 'Номер диплома',
+        },
+        edu: {
+            institution: 'Учебное заведение',
+            institutionAddress: 'Адрес учебного заведения',
+            receiptDate: 'Год поступления',
+            expirationDate: 'Год окончания',
+        },
+        we: {
+            responsibilities: 'Должностные обязанности',
+            untilNow: 'До настоящего времени'
+        },
+        id: {
+            startDate: 'Дата выдачи',
+            issuedBy: 'Кем выдан'
+        },
+        lang: {
+            pl: 'Уровень владения',
+            rl: 'Уровень чтения',
+            wl: 'Уровень письма',
+            sl: 'Уровень речи',
+            c: 'Сертификаты',
+            native: 'Свободное',
+            notNative: 'Ограниченное',
+        },
+        rc: {
+            title: 'Мамандандыру тақырыбы'
+        }
     }
 }
