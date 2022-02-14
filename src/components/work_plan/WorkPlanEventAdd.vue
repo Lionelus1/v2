@@ -124,7 +124,7 @@ export default {
         this.showWorkPlanEventModal = false;
         this.clearModel();
       }).catch(error => {
-        if (error.response.status === 401) {
+        if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
           this.$toast.add({

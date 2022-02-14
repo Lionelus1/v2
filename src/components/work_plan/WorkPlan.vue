@@ -14,11 +14,11 @@
         <template #header>
           <div class="p-d-flex p-jc-between p-ai-center">
             <h5 class="p-m-0">Планы</h5>
-<!--            <span class="p-input-icon-left">
-              <i class="pi pi-search"/>
-              <InputText type="search" v-model="searchText" :placeholder="$t('common.search')"/>
-              <Button icon="pi pi-search" class="p-ml-1" @click="getData"/>
-            </span>-->
+            <!--            <span class="p-input-icon-left">
+                          <i class="pi pi-search"/>
+                          <InputText type="search" v-model="searchText" :placeholder="$t('common.search')"/>
+                          <Button icon="pi pi-search" class="p-ml-1" @click="getData"/>
+                        </span>-->
           </div>
         </template>
         <template #empty> {{ $t('common.noData') }}</template>
@@ -28,16 +28,18 @@
             <a href="javascript:void(0)" @click="navigateToEvent(data)">{{ data.work_plan_name }}</a>
           </template>
         </Column>
-<!--        <Column field="status" header="Статус">
-          <template #body="{ data }">
-            <span :class="'customer-badge status-' + data.status.work_plan_status_id">{{ data.status.name_ru }}</span>
-          </template>
-        </Column>-->
+        <!--        <Column field="status" header="Статус">
+                  <template #body="{ data }">
+                    <span :class="'customer-badge status-' + data.status.work_plan_status_id">{{ data.status.name_ru }}</span>
+                  </template>
+                </Column>-->
         <Column field="actions" header="Действие">
           <template #body="{ data }">
-            <Button type="button" v-if="isCurrentUserApprove && data.status.work_plan_status_id === 2" icon="pi pi-check" class="p-button-success p-mr-2"
+            <Button type="button" v-if="isCurrentUserApprove && data.status.work_plan_status_id === 2"
+                    icon="pi pi-check" class="p-button-success p-mr-2"
                     label="Подписать" @click="openAcceptModal(data.id)"></Button>
-            <Button type="button" v-if="isCurrentUserApprove && data.status.work_plan_status_id === 2" icon="pi pi-times-circle" class="p-button-danger p-mr-2"
+            <Button type="button" v-if="isCurrentUserApprove && data.status.work_plan_status_id === 2"
+                    icon="pi pi-times-circle" class="p-button-danger p-mr-2"
                     label="Отказать" @click="openRejectModal(data.id)"></Button>
           </template>
         </Column>
@@ -108,16 +110,16 @@ export default {
           .then(res => {
             this.data = res.data;
             let localUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
-            this.data.forEach(d => {
-              /*d.approval_users.forEach(e => {
+            /*this.data.forEach(d => {
+              /!*d.approval_users.forEach(e => {
                 console.log(e)
                 if (e.id === localUserId) {
                   this.isCurrentUserApprove = true
                 }
-              });*/
-            });
+              });*!/
+            });*/
           }).catch(error => {
-        if (error.response.status === 401) {
+        if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
           this.$toast.add({
@@ -143,7 +145,7 @@ export default {
         this.isRejectModal = false;
         this.getPlans();
       }).catch(error => {
-        if (error.response.status === 401) {
+        if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
           this.$toast.add({
@@ -156,7 +158,7 @@ export default {
     },
     navigateToEvent(event) {
       localStorage.setItem('workPlan', JSON.stringify(event));
-      this.$router.push({ name: 'WorkPlanEvents', params: { id: event.work_plan_id }});
+      this.$router.push({name: 'WorkPlanEvents', params: {id: event.work_plan_id}});
     },
     openAcceptModal(id) {
       this.isAcceptModal = true;

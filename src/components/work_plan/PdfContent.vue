@@ -76,7 +76,7 @@ export default {
       }, {headers: getHeader()}).then(res => {
         this.items = treeToList(res.data, 'children');
       }).catch(error => {
-        if (error.response.status === 401) {
+        if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
           this.$toast.add({

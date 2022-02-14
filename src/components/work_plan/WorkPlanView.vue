@@ -11,9 +11,17 @@
 
       <div class="card">
         <h5>{{ plan.work_plan_name }}</h5>
-        <WorkPlanApproveStep style="height: 200px" now-step="1" direction="vertical" :step-list="approvals" />
+<!--        <WorkPlanApproveStep style="height: 200px" now-step="1" direction="vertical" :step-list="approvals" />-->
 <!--        <WorkPlanApproveStatus :options="approvals"></WorkPlanApproveStatus>-->
-        <Message severity="success">Dynamic Success Message</Message>
+        <Timeline :value="approvals">
+          <template #content="slotProps">
+            <div v-for="(item, index) of slotProps.item" :key="index">
+              {{ item.user.fullName }}
+              <i v-if="item.is_success" class="pi pi-check-circle p-ml-2 p-message-success" style="font-size: 1.2rem;color: #3eaf7c"></i>
+              <i v-if="!item.is_success" class="pi pi-spinner p-ml-2" style="font-size: 1.2rem;color: #c63737"></i>
+            </div>
+          </template>
+        </Timeline>
       </div>
       <div class="card">
         <object src="#toolbar=0" style="width: 100%; height: 1000px" v-if="source" type="application/pdf"
@@ -46,7 +54,6 @@ import WorkPlanApproveStep from "@/components/work_plan/WorkPlanApproveStep";
 
 export default {
   name: "WorkPlanView",
-  components: {WorkPlanApproveStep},
   data() {
     return {
       source: null,
@@ -95,7 +102,7 @@ export default {
             this.document = res.data;
           }
         }).catch(error => {
-          if (error.response.status === 401) {
+          if (error.response && error.response.status === 401) {
             this.$store.dispatch("logLout");
           } else {
             this.$toast.add({
@@ -106,7 +113,7 @@ export default {
           }
         });
       }).catch(error => {
-        if (error.response.status === 401) {
+        if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
           this.$toast.add({
@@ -132,7 +139,7 @@ export default {
             }
             this.loading = false;
           }).catch(error => {
-        if (error.response.status === 401) {
+        if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
           this.$toast.add({
@@ -148,6 +155,7 @@ export default {
       axios.get(smartEnuApi + `/workPlan/getApprovalUsers/${parseInt(this.work_plan_id)}`)
           .then(res => {
             if (res.data) {
+              this.approvals = [];
               const d = res.data
               const unique = [...new Set(d.map(item => item.stage))];
               unique.forEach(r => {
@@ -158,7 +166,7 @@ export default {
               this.init();
             }
           }).catch(error => {
-        if (error.response.status === 401) {
+        if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
           this.$toast.add({
@@ -204,7 +212,7 @@ export default {
         this.isApproval = true;
       } else if (prevObj && prevObj.is_success && !currentObj.is_success && prevObj.stage === currentObj.stage) {
         this.isApproval = true;
-      } else if (currentObj.stage !== prevObj.stage && this.approval_users.filter(x => x.stage === 1 && x.is_success === true).length > 0) {
+      } else if (prevObj && currentObj.stage !== prevObj.stage && this.approval_users.filter(x => x.stage === 1 && x.is_success === true).length > 0) {
         this.isApproval = true;
       } else {
         this.isApproval = false;
@@ -257,7 +265,7 @@ export default {
           this.$router.push({name: 'WorkPlanEvents', params: {id: this.plan.work_plan_id}});
         }
       }).catch(error => {
-        if (error.response.status === 401) {
+        if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
           this.$toast.add({
@@ -335,7 +343,7 @@ export default {
               this.getWorkPlanApprovalUsers();
             }
           }).catch(error => {
-            if (error.response.status === 401) {
+            if (error.response && error.response.status === 401) {
               this.$store.dispatch("logLout");
             } else {
               this.$toast.add({
@@ -349,7 +357,7 @@ export default {
           this.$toast.add({severity: 'error', summary: this.$t(response.data.errorMessage), life: 3000});
         }
       }).catch(error => {
-        if (error.response.status === 401) {
+        if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
           this.$toast.add({
@@ -365,5 +373,7 @@ export default {
 </script>
 
 <style scoped>
-
+::v-deep(.p-timeline-event-opposite) {
+  flex: 0;
+}
 </style>

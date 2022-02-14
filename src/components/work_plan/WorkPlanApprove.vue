@@ -124,7 +124,7 @@ export default {
             }
             this.showModal = false;
           }).catch(error => {
-            if (error.response.status === 401) {
+            if (error.response && error.response.status === 401) {
               this.$store.dispatch("logLout");
             } else {
               this.$toast.add({
@@ -137,7 +137,7 @@ export default {
           })
         }
       }).catch(error => {
-        if (error.response.status === 401) {
+        if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
           this.$toast.add({
