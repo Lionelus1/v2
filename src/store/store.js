@@ -26,14 +26,14 @@ const store = createStore({
                 .then(() => {
                     localStorage.removeItem('authUser');
                     localStorage.removeItem('loginedUser');
-                    router.push({ "name": "Login" })
+                    router.push({ "name": "PublicVacancies" })
                 })
                 .catch((err) => {
                     //alert(JSON.stringify(err))
                     localStorage.removeItem('authUser');
                     localStorage.removeItem('loginedUser');
                 
-                    router.push({ "name": "Login" })
+                    router.push({ "name": "PublicVacancies" })
                 })
 
         }

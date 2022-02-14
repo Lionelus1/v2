@@ -1,13 +1,10 @@
 <template>
   <div class="card def-border">
-    <p><b>{{ $t('hr.edu.institution') }}:</b> <em>{{ value.institution }}</em></p>
-    <p><b>{{ $t('hr.edu.institutionAddress') }}:</b> <em>{{ value.institutionAddress }}</em></p>
-    <p><b>{{$t('common.faculty')}}:</b> <em>{{ value.faculty }}</em></p>
+    <p><b>{{ $t("common.academicTitle") }}:</b> <em>{{ value.academicTitle['name' + ($i18n.locale).charAt(0).toUpperCase() + ($i18n.locale).slice(1)] }}</em></p>
+    <p><b>{{ $t('hr.ad.defensePlace') }}:</b> <em>{{ value.defensePlace }}</em></p>
     <p><b>{{ $t('common.speciality') }}:</b> <em>{{ value.speciality }}</em></p>
     <p><b>{{ $t('hr.ad.diplomaNumber') }}:</b> <em>{{ value.diplomaNumber }}</em></p>
-    <p><b>{{ $t('hr.edu.receiptDate') }}:</b> <em>{{ new Date(value.receiptDate).getFullYear() }}</em></p>
-    <p><b>{{ $t('hr.edu.expirationDate') }}:</b> <em>{{ new Date(value.expirationDate).getFullYear() }}</em></p>
-    <hr>
+    <p><b>{{ $t('hr.ad.defenseDate') }}:</b> <em>{{ new Date(value.defenseDate).toLocaleDateString() }}</em></p>
     <Button :label="$t('common.edit')" class="p-button-text" :onclick="update"/>
     <Button :label="$t('common.delete')" class="p-button-secondary p-button-text" :onclick="deleteValue"/>
   </div>
@@ -18,7 +15,7 @@ import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
 
 export default {
-  name: "EducationView",
+  name: "AcademicTitleView",
   props: {
     modelValue: null,
 
@@ -31,20 +28,21 @@ export default {
   methods: {
     deleteValue() {
       axios
-          .post(smartEnuApi + "/candidate/education/delete", {id: this.value.id}, {headers: getHeader(),})
+          .post(smartEnuApi + "/candidate/academic-title/delete", {id: this.value.id}, {headers: getHeader(),})
           .then(res => {
-            this.emitter.emit("education", true);
+            this.emitter.emit("academicTitle", true);
           }).catch(error => {
         console.log(error)
       });
     },
     update() {
-      this.emitter.emit("educationUpdate", this.value);
+      this.emitter.emit("academicTitleUpdate", this.value);
     }
   }
 }
 </script>
-<style>
+
+<style scoped>
 .def-border {
   border: 1px solid #dee2e6;
 

@@ -1,6 +1,5 @@
 <template>
   <div class="card">
-
     <Toolbar class="p-mb-4">
       <template #start>
         <Button
@@ -11,31 +10,60 @@
         />
       </template>
     </Toolbar>
-    <DataTable
-        :lazy="true" :value="vacancies" @page="onPage($event)" :totalRecords="count" :paginator="true"
-        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink
-                         LastPageLink CurrentPageReport RowsPerPageDropdown" :rowsPerPageOptions="[10, 25, 50]"
-        :currentPageReportTemplate="$t('common.showingRecordsCount',
-      { first: '{first}', last: '{last}', totalRecords: '{totalRecords}'})"
-        class="p-datatable-customers" :rows="10" dataKey="id" :rowHover="true" v-model:selection="vacancy"
-        selection-mode="single" @row-select="select($event)"
-        :filters="filters" filterDisplay="menu" :showFilterMatchModes="false"
-        responsiveLayout="scroll" @sort="onSort($event)">
+    <!-- DataTable -->
+    <DataTable :lazy="true"
+               :value="vacancies"
+               @page="onPage($event)"
+               :totalRecords="count"
+               :paginator="true"
+               paginatorTemplate="FirstPageLink
+                                  PrevPageLink
+                                  PageLinks
+                                  NextPageLink
+                                  LastPageLink
+                                  CurrentPageReport
+                                  RowsPerPageDropdown"
+               :rowsPerPageOptions="[10, 25, 50]"
+               :currentPageReportTemplate="$t('common.showingRecordsCount',
+                                                    { first: '{first}',
+                                                      last: '{last}',
+                                                      totalRecords: '{totalRecords}'
+                                                    })"
+               class="p-datatable-customers"
+               :rows="10"
+               dataKey="id"
+               :rowHover="true"
+               v-model:selection="vacancy"
+               selection-mode="single"
+               @row-select="select($event)"
+               :filters="filters"
+               filterDisplay="menu"
+               :showFilterMatchModes="false"
+               responsiveLayout="scroll"
+               @sort="onSort($event)">
+      <!--  HEADER -->
       <template #header>
         <div class="table-header p-d-flex p-flex-column p-flex-md-row p-jc-md-between">
           <h4 class="p-mb-2 p-m-md-0 p-as-md-center">{{ $t("hr.vacancies") }}</h4>
           <span class="p-input-icon-left">
             <i class="pi pi-search"/>
-            <InputText type="search" v-model="lazyParams.searchText" :placeholder="$t('common.search')"
-                       @keyup.enter="getVacancies" @click="clearData"/>
+            <InputText type="search"
+                       v-model="lazyParams.searchText"
+                       :placeholder="$t('common.search')"
+                       @keyup.enter="getVacancies"
+                       @click="clearData"/>
               <Button icon="pi pi-search" class="p-ml-1" @click="getVacancies"/>
           </span>
         </div>
       </template>
+      <!-- EMPTY -->
       <template #empty> {{ $t('common.noData') }}</template>
+      <!-- ON LOADING -->
       <template #loading> {{ $t('common.loading') }}</template>
-      <Column :field="$i18n.locale === 'kz' ? `nameKz` : $i18n.locale === 'ru' ? `nameRu` : `nameEn`"
-              v-bind:header="$t('common.nameIn')" :sortable="true" style="width: 50%">
+      <!-- NAME COLUMN -->
+      <Column :field="'name' + ($i18n.locale).charAt(0).toUpperCase() + ($i18n.locale).slice(1)"
+              v-bind:header="$t('common.nameIn')"
+              :sortable="true" style="width: 50%">
         <template #body="slotProps">
           <span>
             {{
@@ -45,15 +73,10 @@
           </span>
         </template>
       </Column>
-      <Column
-          :field="
-          $i18n.locale === 'kz'
-            ? `history.status.nameKz`
-            : $i18n.locale === 'ru'
-            ? `history.status.nameRu`
-            : `history.status.nameEn`
-        "
-          v-bind:header="$t('common.status')"
+      <!-- STATUS COLUMN -->
+      <Column :field=" $i18n.locale === 'kz' ? `history.status.nameKz` :
+                       $i18n.locale === 'ru' ? `history.status.nameRu` : `history.status.nameEn`"
+              v-bind:header="$t('common.status')"
       >
         <template #body="slotProps">
           <span :class="'customer-badge status-' + slotProps.data.history.status.id">
@@ -67,17 +90,26 @@
           </span>
         </template>
       </Column>
+      <!-- BUTTON COLUMN -->
+      <Column>
+        <template #body="slotProps">
+          <Button icon="pi pi-user" class="p-button-info" v-if="slotProps.data.candidateRelation" @click="apply(slotProps.data)"/>
+        </template>
+      </Column>
     </DataTable>
-    <Sidebar
-        v-model:visible="isView"
-        position="right"
-        class="p-sidebar-lg"
-        style="overflow-y: scroll"
-    >
-      <AddVacancy
-          :model-value=vacancy
-          :readonly="readonly"
-      ></AddVacancy>
+    <!--  ADD VACANCY SIDEBAR  -->
+    <Sidebar v-model:visible="isView"
+             position="right"
+             class="p-sidebar-lg"
+             style="overflow-y: scroll">
+      <AddVacancy :model-value=vacancy :readonly="readonly"/>
+    </Sidebar>
+    <!--   VACANCY CANDIDATES VIEW SIDEBAR  -->
+    <Sidebar v-model:visible="view.candidates"
+             position="right"
+             class="p-sidebar-lg"
+             style="overflow-y: scroll">
+      <VacancyCandidateView :candidates="vacancy.candidateRelation"/>
     </Sidebar>
   </div>
 </template>
@@ -86,12 +118,13 @@
 
 import {FilterMatchMode, FilterOperator} from "primevue/api";
 import axios from "axios";
-import {getHeader, header, smartEnuApi} from "@/config/config";
+import {getHeader, smartEnuApi} from "@/config/config";
 import AddVacancy from "./AddVacancy";
+import VacancyCandidateView from "./VacancyCandidateView";
 
 export default {
   name: "Vacancies",
-  components: {AddVacancy},
+  components: {VacancyCandidateView, AddVacancy},
   data() {
     return {
       filters: {
@@ -108,6 +141,9 @@ export default {
         searchText: null,
         sortField: "",
         sortOrder: 0
+      },
+      view: {
+        candidates: false,
       },
       vacancies: [],
       vacancy: null,
@@ -198,10 +234,10 @@ export default {
 
     /**
      * ***********************
-     * @param id
      */
-    apply(id) {
-
+    apply(vacancy) {
+      this.vacancy = vacancy
+      this.view.candidates = true
     },
   },
   created() {
@@ -240,7 +276,7 @@ export default {
     color: #c63737;
   }
 
-  &.status-5{
+  &.status-5 {
     background: #ffd8b2;
     color: #805b36;
   }

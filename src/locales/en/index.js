@@ -1,9 +1,18 @@
 export default {
     common: {
+        administration: 'Administration',
         academicDegree: "Academic degree",
         academicTitle: "Academic title",
         annotation: "Annotation",
         approve: "Approve",
+        action: {
+            submit: 'Submit',
+            accept: 'Accept',
+            notAccept: 'Deny',
+            sendToApprove: 'Send to Approve',
+            approve: 'Approve',
+            publish: 'Publish',
+        },
         login: "login",
         logout: "Logout",
         enter: "Type in",
@@ -12,6 +21,7 @@ export default {
         add: "Add",
         edit: "edit",
         orgname: "L.N. Gumilyov Eurasian National University",
+        organizationName: 'Organization name',
         date: "Date",
         delete: "delete",
         department: "department",
@@ -24,11 +34,12 @@ export default {
         created: "Created",
         createdBy: "Autor",
         graduate: "Graduate",
-        faculty: "Факультет",
+        faculty: "Faculty",
         cafedra: "Кафедра",
         graduationyear: "Start of study",
         admissionyear: "Finish of study",
         fullName: "Full name",
+        forStudentsAndGraduates: 'For students and graduates',
         hei: "HEI",
         updated: "Updated",
         type:   "Type",
@@ -37,7 +48,9 @@ export default {
         status: "Status",
         show: "Show",
         save: "Save",
+        speciality: "Speciality",
         download: "Download",
+        lang: 'Language',
         learnlang: "Teaching language",
         loading: "loadind",
         toapprove: "To approval",
@@ -52,6 +65,7 @@ export default {
         code: "Code",
         main: "Main",
         myData: "My details",
+        myResume: 'My resume',
         nameIn: "Name",
         nameInQazaq: "Name in qazaq",
         nameInRussian: "Name in russian",
@@ -90,6 +104,9 @@ export default {
         search: "Search",
         showingRecordsCount: "Showing {first} to {last} of {totalRecords} entries",
         doYouWantDelete: "Are you sure to delete this item?",
+        startDate: 'Start date',
+        endDate: 'End date',
+        doYouWantDelete: "Сіз шынымен жойғыңыз келе ме",
         send: "Send",
         publish: "Publish",
         reject: "Reject",
@@ -484,5 +501,55 @@ export default {
         languageLevelLabel: "The level of knowledge of languages",
         certificateRequirementsLabel: "Availability of certificates, diplomas",
         personalQualitiesLabel: "Personal qualities",
+        title: {
+            general: 'General information',
+            degreeAndTitle: 'The presence of a scientific degree and academic title',
+            academicDegree: 'Academic degree',
+            academicTitle: ' Academic title',
+            academicDetail: 'Publications, scientific works, inventions, state awards, encouragement (diplomas, etc.)',
+            education: 'Education',
+            experience: 'Required professional experience',
+            id: 'ID card',
+            info: 'Other important information',
+            language: 'Languages',
+            referee: 'List of people who can refer you',
+            refresherCourse: 'Refresher courses, seminars and internships'
+        },
+        resume: {
+            loading: 'Resume is uploading. Please wait...',
+            create: 'Create a resume',
+            delete: 'Delete resume',
+        },
+        ad: {
+            defensePlace: 'Defense place',
+            defenseDate: 'Defense date',
+            diplomaNumber: 'Diploma number',
+        },
+        edu: {
+            institution: 'Institution',
+            institutionAddress: 'Institution address',
+            receiptDate: 'Receipt date',
+            expirationDate: 'Expiration date',
+        },
+        we: {
+            responsibilities: 'Responsibilities',
+            untilNow: 'Until now'
+        },
+        id: {
+            startDate: 'Date of issue',
+            issuedBy: 'Issued by'
+        },
+        lang: {
+            pl: 'Proficiency level',
+            rl: 'Reading level',
+            wl: 'Writing level',
+            sl: 'Speaking level',
+            c: 'Certificates',
+            native: 'Free',
+            notNative: 'Limited',
+        },
+        rc: {
+            title: 'Title'
+        }
     }
 }

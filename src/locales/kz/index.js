@@ -1,17 +1,27 @@
 export default {
     common: {
+        administration: 'Әкімшілік',
         academicDegree: "Ғылыми дәрежесі",
         academicTitle: "Ғылыми атағы",
         annotation: "Аннотация",
         approve: "Бекіту",
+        action: {
+            submit: 'Жіберу',
+            accept: 'Қабылдау',
+            notAccept: 'Қабылдамау',
+            sendToApprove: 'Келісуге жіберу',
+            approve: 'Келусу',
+            publish: 'Жариялау',
+        },
         login: "Кіру",
         logout: "Шығу",
         enter: "Теріңіз",
         enterLogin: "ЖСН немесе platonus почтасын енгізіңіз",
         enterPassword: "Құпия сөзді еңгізіңіз",
-        add : "Қосу",
+        add: "Қосу",
         edit: "Өзгерту",
         orgname: "Л.Н. Гумилев атындағы Еуразия ұлттық университеті",
+        organizationName: 'Мекеменің атауы',
         date: "Күні",
         delete: "Жою",
         department: "Бөлім",
@@ -20,21 +30,25 @@ export default {
         pdfFormat: "pdf форматында",
         graduate: "Түлек",
         faculty: "Факультет",
+        forStudentsAndGraduates: 'Студенттер мен түлектерге',
         cafedra: "Кафедра",
-        name : "Аты",
+        name: "Аты",
+        close: "Жабу",
         createNew: "Жаңасын қосу",
         created: "Құрылды",
         createdBy: "Автор",
         fullName: "Толық аты-жөні",
         hei: "ЖОО",
         updated: "Өзгертілді",
-        type:   "Типі",
+        type: "Типі",
         reason: "Себебі",
         state: "Күйі",
         status: "Статус",
         show: "Көру",
         save: "Cақтау",
+        speciality: "Мамандығы",
         download: "Қотару",
+        lang: 'Тіл',
         learnlang: "Оқу тілі",
         loading: "Жүктеу",
         toapprove: "Келісімге",
@@ -51,14 +65,15 @@ export default {
         code: "Коды",
         main: "Негізгі",
         myData: "Менің мәліметтерім",
+        myResume: 'Менің түйіндемем',
         nameIn: "Атауы",
         nameInQazaq: "Қазақша атауы",
         nameInRussian: "Орысша атауы",
         nameInEnglish: "Ағылшынша атауы",
         noData: "Мәлімет жоқ",
-        null : "белгісіз",
+        null: "белгісіз",
         number: "Нөмір",
-        other:  "Басқа",
+        other: "Басқа",
         order: "Бұйрық",
         confirm: "Растау",
         confirmation: "Амалды жалғастырғыңыз келе ме?",
@@ -80,6 +95,8 @@ export default {
         search: "Іздеу",
         send: "Жіберу",
         showingRecordsCount: "{totalRecords} жазбаның {first} - {last} аралығындағы жазбалар көрсетулі",
+        startDate: 'Басталуы',
+        endDate: 'Аяқталуы',
         organization: "Ұйымдық",
         params: "Параметрлер",
         password: "Құпия сөз",
@@ -97,14 +114,14 @@ export default {
         userDetail: "Қолданушы деректері",
         workPlace: "Жұмыс орны",
         role: "Рөлі",
-        publishDate:"Жарияланған күні мен уақыты:",
-        deadlineDate:"Құжаттарды қабылдау мерзімі",
-        organizationNameLabel:"Мекеменің атауы",
+        publishDate: "Жарияланған күні мен уақыты:",
+        deadlineDate: "Құжаттарды қабылдау мерзімі",
+        organizationNameLabel: "Мекеменің атауы",
         departmentNameLabel: "Құрылымдық бөлімшенің атауы",
         headLabel: "Жетекші:",
         states: {
-            created : "құрылды",
-            inapproval : "келісуде",
+            created: "құрылды",
+            inapproval: "келісуде",
             approved: "келісілді",
             rejected: "қайтарылды",
             revision: "түзетуге"
@@ -190,7 +207,7 @@ export default {
 
     },
     doctemplate: {
-        title : "Құжат үлгісін жасау",
+        title: "Құжат үлгісін жасау",
         templates: "Құжат үлгілері",
         selected: "Таңдалған үлгі",
         description: "Үлгінің қысқаша сыйпаттамасы",
@@ -218,14 +235,13 @@ export default {
             place: "Келісім-шарт жасалған орын",
             date: "Келісім-шарт жасалған күн",
             addElement: "Келісім-шарт элементін қосу",
-            message: {
-            }
+            message: {}
         },
     },
-    contracts : {
+    contracts: {
         title: "Келісім-шарттар",
         autogenerate: "Қол қойылған немесе тіркелген уақытта автоматты түрде қойылады",
-        contract:"Келісім-шарт",
+        contract: "Келісім-шарт",
         documents: "Келісімдік құжаттар",
         create: "Келісім-шарттарды жылдам жасау",
         list: "Келісім-шарттар реестрі",
@@ -400,25 +416,25 @@ export default {
         posterImageEnInvalid: "Ағылшынша постер таңдалмады",
     },
     vaccination: {
-         title : "Вакциналау",
-         list: "Вакцина алғандардың тізімі",
-         pasport: "Вакциналау паспорты",
-         plannedDate: "Жоспарлаған уақыты",
-         date1: "1-ші компонент күні",
-         date2: "2-ші компонент күні",
-         doctorsNote: "Дәргер анықтамасы",
-         vaccine: "Вакцина",
-         fillVacTitle: "Вакцина атауын енгізіңіз",
-         clinic: "Клиника",
-         status : {
+        title: "Вакциналау",
+        list: "Вакцина алғандардың тізімі",
+        pasport: "Вакциналау паспорты",
+        plannedDate: "Жоспарлаған уақыты",
+        date1: "1-ші компонент күні",
+        date2: "2-ші компонент күні",
+        doctorsNote: "Дәргер анықтамасы",
+        vaccine: "Вакцина",
+        fillVacTitle: "Вакцина атауын енгізіңіз",
+        clinic: "Клиника",
+        status: {
             firstcomponent: "1-ші компонент",
             vaccinated: "вакциналанған",
             planned: "жоспарланған",
             rejected: "вакцинадан босатылған",
             minor: "18-ге толмаған",
             noData: "Мәлімет жоқ",
-         },
-         error: {
+        },
+        error: {
             list: "вакцина тізімі жүктелмеді"
         }
     },
@@ -441,7 +457,7 @@ export default {
         councilDecision: "Кеңестің шешімі",
         disstitle: "Диссертация тақырыбы",
         validationErrors: {
-            selectSpeciality : "Мамандықты таңдаңыз",
+            selectSpeciality: "Мамандықты таңдаңыз",
             selectDepartment: "Факультетті таңдаңыз",
             selectSecretary: "Ғалым хатшыны көрсетіңіз",
             selectMember: "Кеңес мүшесін көрсетіңіз",
@@ -454,7 +470,7 @@ export default {
         specialityCode: "Мамандық атауы мен коды",
         secretaryname: "Ғалым хатшының аты-жөні",
         secretary: "Ғалым хатшы",
-        
+
     },
     faq: {
         title: "Қолдау қызметі",
@@ -476,13 +492,63 @@ export default {
     },
     hr: {
         vacancies: "Вакансиялар",
-        responsibilitiesLabel:"Функционалдық міндеттері",
-        educationLabel:"Білімі",
+        responsibilitiesLabel: "Функционалдық міндеттері",
+        educationLabel: "Білімі",
         qualificationLabel: "Мамандығы бойынша біліктілігі",
         experienceLabel: "Қажетті кәсіби тәжірибесі",
         languageLevelLabel: "Тілдерді меңгеру деңгейі",
         certificateRequirementsLabel: "Сертификаттардың, дипломдардың болуы",
         personalQualitiesLabel: "Жеке қасиеттері",
+        title: {
+            general: '',
+            degreeAndTitle: 'Ғылыми дәреже және ғылыми атақ',
+            academicDegree: 'Ғылыми дәреже',
+            academicTitle: 'Ғылыми атақ',
+            academicDetail: 'Жарияланымдар, ғылыми еңбектер, өнертабыстар, мемлекеттік наградалар, көтермелеулер (грамоталар және т. б.)',
+            education: 'Білімі',
+            experience: 'Жұмыс өтілі',
+            id: 'Жеке куәлік',
+            info: 'Басқа маңызды ақпарат',
+            language: 'Тілдер',
+            referee: 'Сізді ұсына алатын адамдар тізімі',
+            refresherCourse: 'Біліктілікті арттыру курстары, семинарлар, тағылымдамалар'
+        },
+        resume: {
+            loading: 'Түйіндеме жүктелуде. Өтініш, күте тұрыңыз...',
+            create: 'Түйіндемені құру',
+            delete: 'Түйіндемені өшіру',
+        },
+        ad: {
+            defensePlace: 'Қорғау орны',
+            defenseDate: 'Қорғау күні',
+            diplomaNumber: 'Диплом нөмері',
+        },
+        edu: {
+            institution: 'Оқу орны',
+            institutionAddress: 'Орналасқан жері',
+            receiptDate: 'Түскен жылы',
+            expirationDate: 'Бітірген жылы',
+        },
+        we: {
+            responsibilities: 'Жұмыс орынындағы міндеттер',
+            untilNow: 'Қазіргі уақытқа дейін'
+        },
+        id: {
+            startDate: 'Берілген күні',
+            issuedBy: 'Берген мекеме'
+        },
+        lang: {
+            pl: 'Білу деңгейі',
+            rl: 'Оқу деңгейі',
+            wl: 'Жазу деңгейі',
+            sl: 'Сөйлеу деңгейі',
+            c: 'Сертификаттар',
+            native: 'Еркін',
+            notNative: 'Шектеулі',
+        },
+        rc: {
+            title: ''
+        }
     }
 
 }
