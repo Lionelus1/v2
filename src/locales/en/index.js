@@ -106,7 +106,6 @@ export default {
         doYouWantDelete: "Are you sure to delete this item?",
         startDate: 'Start date',
         endDate: 'End date',
-        doYouWantDelete: "Сіз шынымен жойғыңыз келе ме",
         send: "Send",
         publish: "Publish",
         reject: "Reject",
