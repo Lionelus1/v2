@@ -29,7 +29,7 @@
           >
             <template #end>
               <InputText
-                @keyup.enter="initApiCall" 
+                @keyup.enter="initApiCall"
                 style="height: 30px"
                 v-model="filters['global'].value"
                 placeholder="іздеу"
@@ -73,6 +73,7 @@
               <template #empty>
                 {{ this.$t("common.recordsNotFound") }}
               </template>
+
               <template #loading>
                 {{ this.$t("common.recordsLoading") }}
               </template>
@@ -177,6 +178,7 @@
     </div>
   </div>
 </template>
+
 <script>
 import { smartEnuApi, getHeader } from "@/config/config";
 import axios from "axios";
@@ -197,6 +199,7 @@ export default {
         rows: 10,
         userType: Number(this.$route.params.type),
         sortLang: this.$i18n.locale,
+        orgID: this.orgID
       },
       staffDisplay:
         this.personType === Enum.PersonType.IndividualEntrepreneur
@@ -258,7 +261,7 @@ export default {
   },
   setup(props, context) {
     function updateValue(currentPerson) {
-      context.emit("", currentPerson);
+      context.emit("update:modelValue", currentPerson);
       context.emit("update:windowOpened", false);
     }
     return {
@@ -276,23 +279,32 @@ export default {
     initApiCall() {
       let url = "/contragent/persons";
       this.personType = Number(this.$route.params.type);
+       if (this.$route.params.type === undefined) {
+        this.personType = 2
+      }
+
       this.filters.userType.value =
-        Number(this.$route.params.type) === Enum.PersonType.OrganizationMember
+        this.personType  === Enum.PersonType.OrganizationMember
           ? "student"
           : "INDIVIDUALENTREPRENEUR";
+      
       this.filters.userType.matchMode =
-        Number(this.$route.params.type) === Enum.PersonType.OrganizationMember
+        this.personType  === Enum.PersonType.OrganizationMember
           ? FilterMatchMode.NOT_EQUALS
           : FilterMatchMode.EQUALS;
-
+     
       this.staffDisplay =
         this.personType === Enum.PersonType.IndividualEntrepreneur
           ? "dnone"
           : "";
       this.lazyParams.filters = this.filters;
-      if (this.filters.global.value != null && this.filters.global.value != "") {
+      if (
+        this.filters.global.value != null &&
+        this.filters.global.value != ""
+      ) {
         this.lazyParams.page = 0;
       }
+      this.lazyParams.orgID = this.orgID
       axios
         .post(smartEnuApi + url, this.lazyParams, { headers: getHeader() })
         .then((res) => {
@@ -342,6 +354,7 @@ export default {
   },
 };
 </script>
+
 <style>
 .dnone {
   display: none;

@@ -57,7 +57,7 @@
              <span v-if="slotProps.data.members.length>0"> {{slotProps.data.members[0].fullName }}</span>
            </template>
            </Column>
-           <Column :field="($i18n.locale=='kz'? 'department.nameKz' : $i18n.locale=='en'? 'department.nameEn': 'department.name')" sortable="true" :header="$t('dissertation.faculty')"  style="min-width:12rem"></Column>
+           <Column :field="($i18n.locale=='kz'? 'department.nameKz' : $i18n.locale=='en'? 'department.nameEn': 'department.name')" sortable="true" :header="$t('common.faculty')"  style="min-width:12rem"></Column>
            <Column headerStyle="width: 7rem; text-align: left" bodyStyle="text-align: left; overflow: visible">
              <template #body="slotProps">
               <Button type="button" icon="pi pi-user-edit" @click="openCouncil(slotProps.data.id)"></Button>
@@ -207,7 +207,7 @@ export default {
   loadCouncilsList() {
     this.loading = true;
 
-      //this.lazyParams.countMode = null;
+      this.lazyParams.userID =  this.$store.state.loginedUser.userID
       axios
         .post(smartEnuApi + "/dissertation/getcouncils", this.lazyParams,  {
           headers: getHeader(),

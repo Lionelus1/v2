@@ -47,7 +47,6 @@
            <template #body="slotProps">
              <span v-for="role in slotProps.data.roles" :key="role.id" >
                {{getRoleName(role)}}
-
              </span>
            </template>
            </Column>
@@ -61,18 +60,21 @@
           <Dialog v-model:visible="dialog.addMember.state" :style="{width: '450px'}" :header="$t('dissertation.members')" :modal="true" class="p-fluid">
             <div class="p-fluid">
               <div class="p-field">
-                  <label for="name">{{$t('common.role')}}</label>
-                  <RolesByName v-model="selectedRole" roleGroupName="dissertation_council"></RolesByName>
-                  <small class="p-error" v-if="submitted && validationErrors.role">{{$t('common.message.selectRole')}}</small>
-                </div>
-                <div class="p-field">
-                  <label for="name">{{$t('common.fullName')}}</label>
-                  <FindUser v-model="selectedMembers" :max="1" :editMode="true"></FindUser>
-                  <small class="p-error" v-if="submitted && validationErrors.members">{{$t('dissertation.validationErrors.selectSecretary')}}</small>
-                </div>
-               
-               
-                
+                <label for="name">{{$t('common.fullName')}}</label>
+                <FindUser v-model="selectedMembers" :max="1" :editMode="true"></FindUser>
+                <small class="p-error" v-if="submitted && validationErrors.members">{{$t('dissertation.validationErrors.selectSecretary')}}</small>
+              </div>
+              <div class="p-field">
+                <label for="name">{{$t('common.role')}}</label>
+                <RolesByName v-model="selectedRole" roleGroupName="dissertation_council"></RolesByName>
+                <small class="p-error" v-if="submitted && validationErrors.role">{{$t('common.message.selectRole')}}</small>
+              </div>
+              <div v-if="selectedRole != null && selectedRole.name=== 'dissertation_council_reviewer'" class="p-field">
+                <label for="name">{{$t('dissertation.doctorals')}}</label>
+                <FindDoctorals :max="2" v-model="selectedDoctorals"></FindDoctorals>
+                <small class="p-error" v-if="submitted && validationErrors.doctorals">{{$t('dissertation.validationErrors.selectDoctorals')}}</small>
+              </div>
+              
             </div>
             <template #footer>
                 <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-text" @click="hideDialog(dialog.addMember)"/>
@@ -88,9 +90,11 @@ import RolesByName from "../smartenu/RolesByName.vue"
 import FindUser from "@/helpers/FindUser";
 import Enums from "@/enum/docstates/index";
 import axios from 'axios';
-import {getHeader, smartEnuApi} from "@/config/config";
+import {getHeader, smartEnuApi, findRole} from "@/config/config";
+import FindDoctorals from "./FindDoctorals.vue"
+
 export default {
-  components: {  FindUser , RolesByName},
+  components: {  FindUser , RolesByName, FindDoctorals},
  data() {
    return {
     councilID:-1,
@@ -105,6 +109,7 @@ export default {
     
     selectedMembers : null,
     selectedMember: null,
+    selectedDoctorals: null,
     selectedRole : null,
     
     Enums: Enums,
@@ -115,6 +120,7 @@ export default {
     validationErrors :{
       members: false,
       role: false,
+      doctorals: false,
     },
     loading: false,
     lazyParams: {
@@ -132,6 +138,7 @@ export default {
     if (this.myDetails && this.myDetails.status)
       this.myDetails.status = this.statuses.indexOf(this.myDetails.status);
   },
+  findRole: findRole,
   deleteMember(data) {
     
     if (data !== undefined) {
@@ -169,7 +176,6 @@ export default {
   },
   showDialog(dialog) {
     dialog.state = true;
-    
   },
   hideDialog(dialog) {
     dialog.state = false;
@@ -200,16 +206,22 @@ export default {
   
   addMember() {
     this.submitted = true;
-    
+    var request =  {userID: this.selectedMembers[0].userID, roleID: this.selectedRole.id, councilID: this.councilID}
     if (this.validateAddConsulMemberForm()) {
+      if (this.selectedRole != null && this.selectedRole.name === "dissertation_council_reviewer") {
+        request.dissertations = []
+        this.selectedDoctorals.forEach(element => {
+          request.dissertations.push(element.dissertation.id)
+        });
+      }
       axios.
         post(smartEnuApi + "/dissertation/addCouncilMember", 
-          {userID: this.selectedMembers[0].userID, roleID: this.selectedRole.id, councilID: this.councilID}, 
+          request, 
           {
           headers: getHeader(),
         })
         .then((res) => {
-          this.selectedMembers[0].memberUD = res.data;
+          this.selectedMembers[0].memberID = res.data;
           this.selectedMembers[0].roles = []
           this.selectedMembers[0].roles.push(JSON.parse(JSON.stringify(this.selectedRole)))
           this.MembersList.push(JSON.parse(JSON.stringify(this.selectedMembers[0])));
@@ -237,7 +249,8 @@ export default {
   validateAddConsulMemberForm() {
     this.validationErrors.members = !this.selectedMembers;
     this.validationErrors.role =  !this.selectedRole;
-    return !this.validationErrors.members && !this.validationErrors.role 
+    this.validationErrors.doctorals = !((this.selectedRole && this.selectedRole.name != "dissertation_council_reviewer") || (this.selectedRole && this.selectedRole.name == "dissertation_council_reviewer" && this.selectedDoctorals != null))
+    return !this.validationErrors.members && !this.validationErrors.role  && !this.validationErrors.doctorals
   },
   getRoleName(role) {
     //alert("Hello");
