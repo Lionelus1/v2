@@ -11,6 +11,17 @@
 
       <div class="card">
         <h5>{{ plan.work_plan_name }}</h5>
+<!--        <WorkPlanApproveStep style="height: 200px" now-step="1" direction="vertical" :step-list="approvals" />-->
+<!--        <WorkPlanApproveStatus :options="approvals"></WorkPlanApproveStatus>-->
+        <Timeline :value="approvals">
+          <template #content="slotProps">
+            <div v-for="(item, index) of slotProps.item" :key="index">
+              {{ item.user.fullName }}
+              <i v-if="item.is_success" class="pi pi-check-circle p-ml-2 p-message-success" style="font-size: 1.2rem;color: #3eaf7c"></i>
+              <i v-if="!item.is_success" class="pi pi-spinner p-ml-2" style="font-size: 1.2rem;color: #c63737"></i>
+            </div>
+          </template>
+        </Timeline>
       </div>
       <div class="card">
         <object src="#toolbar=0" style="width: 100%; height: 1000px" v-if="source" type="application/pdf"
@@ -38,6 +49,8 @@
 import axios from "axios";
 import {getHeader, signerApi, smartEnuApi} from "@/config/config";
 import {NCALayerClient} from "ncalayer-js-client";
+import WorkPlanApproveStatus from "@/components/work_plan/WorkPlanApproveStatus";
+import WorkPlanApproveStep from "@/components/work_plan/WorkPlanApproveStep";
 
 export default {
   name: "WorkPlanView",
@@ -57,7 +70,19 @@ export default {
       isApproved: false,
       isLast: false,
       loading: false,
-      user: null
+      user: null,
+      stepperOptions: {
+        headers: [
+          {title: 'Title One'},
+          {title: 'Title Two'},
+          {title: 'Title Three'},
+          {title: 'Title Four'}
+        ],
+        prevText: 'Previous',
+        nextText: 'Next'
+      },
+      approval_users: [],
+      approvals: []
     }
   },
   created() {
@@ -69,7 +94,6 @@ export default {
   methods: {
     getFile() {
       axios.get(signerApi + `/documents/${this.plan.doc_id}`).then(resp => {
-        console.log("qwe", resp)
         axios.post(smartEnuApi + `/workPlan/getWorkPlanFile`,
             {file_path: resp.data.filePath},
             {headers: getHeader()}).then(res => {
@@ -78,7 +102,7 @@ export default {
             this.document = res.data;
           }
         }).catch(error => {
-          if (error.response.status === 401) {
+          if (error.response && error.response.status === 401) {
             this.$store.dispatch("logLout");
           } else {
             this.$toast.add({
@@ -89,7 +113,7 @@ export default {
           }
         });
       }).catch(error => {
-        if (error.response.status === 401) {
+        if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
           this.$toast.add({
@@ -115,7 +139,7 @@ export default {
             }
             this.loading = false;
           }).catch(error => {
-        if (error.response.status === 401) {
+        if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
           this.$toast.add({
@@ -131,11 +155,18 @@ export default {
       axios.get(smartEnuApi + `/workPlan/getApprovalUsers/${parseInt(this.work_plan_id)}`)
           .then(res => {
             if (res.data) {
+              this.approvals = [];
+              const d = res.data
+              const unique = [...new Set(d.map(item => item.stage))];
+              unique.forEach(r => {
+                let f = d.filter(x => x.stage === r);
+                this.approvals.push(f);
+              });
               this.approval_users = res.data;
               this.init();
             }
           }).catch(error => {
-        if (error.response.status === 401) {
+        if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
           this.$toast.add({
@@ -151,11 +182,9 @@ export default {
         if (res.data) {
           this.signatures = res.data;
           const signUser = res.data.find(x => x.userId === this.loginedUserId);
-          console.log(signUser)
           if (signUser) {
             this.isApproved = true;
           }
-          console.log(this.isApproved)
         } else {
           this.$toast.add({
             severity: 'error',
@@ -172,16 +201,18 @@ export default {
       })
     },
     init() {
-      const foundIndex = this.approval_users.findIndex(x => x.user_id === this.loginedUserId);
+      const currentUser = this.approval_users.findIndex(x => x.user.id === this.loginedUserId);
       const last = this.approval_users?.at(-1);
-      const prevObj = this.approval_users[foundIndex - 1];
-      const currentObj = this.approval_users[foundIndex];
-      const findUserFromSignatures = this.signatures && prevObj ? this.signatures.find(x => x.userId === prevObj.user_id) : null;
+      const prevObj = this.approval_users[currentUser - 1];
+      const currentObj = this.approval_users[currentUser];
+      const findUserFromSignatures = this.signatures && prevObj ? this.signatures.find(x => x.userId === prevObj.user.id) : null;
       if (prevObj == null && !currentObj.is_success) {
         this.isApproval = true;
       } else if (prevObj && currentObj.stage === prevObj.stage && !findUserFromSignatures) {
         this.isApproval = true;
-      } else if (prevObj && prevObj.is_success && !currentObj.is_success) {
+      } else if (prevObj && prevObj.is_success && !currentObj.is_success && prevObj.stage === currentObj.stage) {
+        this.isApproval = true;
+      } else if (prevObj && currentObj.stage !== prevObj.stage && this.approval_users.filter(x => x.stage === 1 && x.is_success === true).length > 0) {
         this.isApproval = true;
       } else {
         this.isApproval = false;
@@ -216,7 +247,6 @@ export default {
       }
       try {
         this.CMSSignature = await NCALaClient.createCAdESFromBase64('PKCS12', this.document, 'SIGNATURE', false)
-        console.log("SIGNATURE IS ", this.CMSSignature)
         this.sendSignature();
       } catch (error) {
         this.$toast.add({severity: 'error', summary: this.$t('ncasigner.failToSign'), life: 3000});
@@ -224,10 +254,8 @@ export default {
     },
     rejectPlan() {
       this.loading = true;
-      axios.post(smartEnuApi + '/workPlan/reject', {
-            work_plan_id: parseInt(this.work_plan_id),
-            comment: this.rejectComment
-          },
+      this.plan.comment = this.rejectComment;
+      axios.post(smartEnuApi + '/workPlan/reject', this.plan,
           {headers: getHeader()}
       ).then(res => {
         if (res.data.is_success) {
@@ -237,7 +265,7 @@ export default {
           this.$router.push({name: 'WorkPlanEvents', params: {id: this.plan.work_plan_id}});
         }
       }).catch(error => {
-        if (error.response.status === 401) {
+        if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
           this.$toast.add({
@@ -301,7 +329,6 @@ export default {
           signature: this.CMSSignature
         }
       }, {headers: getHeader()}).then((response) => {
-        console.log(response);
         if (response.data && response.data.success) {
           axios.post(smartEnuApi + '/workPlan/successApprove', {
             work_plan_id: parseInt(this.work_plan_id)
@@ -314,11 +341,9 @@ export default {
               });
               this.getSignatures();
               this.getWorkPlanApprovalUsers();
-            } else {
-              console.log(res)
             }
           }).catch(error => {
-            if (error.response.status === 401) {
+            if (error.response && error.response.status === 401) {
               this.$store.dispatch("logLout");
             } else {
               this.$toast.add({
@@ -329,7 +354,17 @@ export default {
             }
           })
         } else {
-          this.$toast.add({severity: 'error', summary: this.$t('ncasigner.failToSign'), life: 3000});
+          this.$toast.add({severity: 'error', summary: this.$t(response.data.errorMessage), life: 3000});
+        }
+      }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
         }
       });
     },
@@ -338,5 +373,7 @@ export default {
 </script>
 
 <style scoped>
-
+::v-deep(.p-timeline-event-opposite) {
+  flex: 0;
+}
 </style>

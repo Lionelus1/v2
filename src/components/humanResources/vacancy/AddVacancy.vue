@@ -4,7 +4,8 @@
       <h3>Создание и редактирование вакансии</h3>
       <div>
         <Menubar :model="menu" :key="active"
-                 style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px"></Menubar>
+                 style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px">
+        </Menubar>
       </div>
     </div>
     <div class="p-col-12 p-md-12 p-fluid">
@@ -159,13 +160,15 @@
       </div>
     </div>
   </div>
-</template>x
+</template>
 <script>
 import ContragentSelectOrg from "../../contragent/ContragentSelectOrg";
 import DepartmentList from "../../smartenu/DepartmentList";
 import FindUser from "../../../helpers/FindUser";
 import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
+import ResumeService from "../candidate/ResumeService";
+import VacancyService from "./VacancyService";
 
 export default {
   components: {ContragentSelectOrg, DepartmentList, FindUser},
@@ -174,31 +177,48 @@ export default {
       value: this.modelValue,
       head: null,
       active: null,
+      action: null,
       menu: [
         {
           label: this.$t("common.save"),
           icon: "pi pi-fw pi-save",
+          visible: true,
           command: () => {
-            this.vacancyAction()
+            this.save()
+          },
+        },
+        {
+          label: 'action',
+          icon: "pi pi-fw pi-bolt",
+          visible: false,
+          command: () => {
+            this.save()
+          },
+        },
+        {
+          label: 'action',
+          icon: "pi pi-fw pi-bolt",
+          visible: false,
+          command: () => {
+            this.save()
           },
         },
       ],
     };
   },
   methods: {
-    vacancyAction() {
+    save() {
       let path = this.value.id === undefined ? "/vacancy/add" : "/vacancy/update"
       this.value.departmentHead = this.head[0]
-
-      console.log("VACANCY IS", this.value)
-      axios
-          .post(smartEnuApi + path, this.value, {headers: getHeader(),})
-      .then(res => {
+      console.log(this.value)
+      this.vacancyService.createOrUpdateVacancy(this.value, path).then( result => {
         this.emitter.emit("vacancyAdded", true);
-        this.$toast.add({severity: 'info', summary: 'Success', detail: 'Вакансия успешно создана/обнавлена', life: 3000});
       }).catch(error => {
         console.log(error)
       });
+    },
+    vacancyAction() {
+      this.vacancyService.vacancyAction(this.value.id, )
     }
   },
   props: {
@@ -207,10 +227,15 @@ export default {
     readonly: Boolean,
   },
   created() {
+    this.vacancyService = new VacancyService()
     this.head = this.modelValue.departmentHead === undefined ? null : [this.modelValue.departmentHead]
-  }
+    this.action = this.vacancyService.actions.find(action => action.alias === 'submit')
+    this.menu[1].label = this.$t(this.action.label)
+    this.menu[1].visible = this.action.visible
+  },
 };
 </script>
+
 <style>
 #carddiv label {
   position: inherit;

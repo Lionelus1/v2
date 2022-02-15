@@ -41,6 +41,8 @@
         <work-plan-execute :data="slotProps.data" v-if="parseInt(slotProps.data.quarter.String) === currentQuarter && isUserApproval(slotProps.data)"></work-plan-execute>
         <work-plan-event-result-modal v-if="slotProps.data.event_result" :event-result="slotProps.data.event_result"></work-plan-event-result-modal>
         <work-plan-event-add v-if="!slotProps.data.is_finish" :data="slotProps.data"></work-plan-event-add>
+        <work-plan-event-edit-modal v-if="isPlanCreator && !isPlanSentApproval && !isFinish" :event="slotProps.data"></work-plan-event-edit-modal>
+        <Button v-if="isPlanCreator && !isPlanSentApproval && !isFinish" @click="remove_event(slotProps.data.work_plan_event_id)" icon="pi pi-trash" class="p-button-danger p-ml-2" :label="$t('common.delete')"></Button>
       </template>
     </Column>
     <template #expansion="slotProps">
@@ -53,11 +55,14 @@
 import WorkPlanEventAdd from "@/components/work_plan/WorkPlanEventAdd";
 import WorkPlanExecute from "@/components/work_plan/WorkPlanExecute";
 import WorkPlanEventResultModal from "@/components/work_plan/WorkPlanEventResultModal";
+import axios from "axios";
+import {getHeader, smartEnuApi} from "@/config/config";
+import WorkPlanEventEditModal from "@/components/work_plan/WorkPlanEventEditModal";
 
 export default {
   name: "WorkPlanEventTree",
-  components: {WorkPlanEventResultModal, WorkPlanEventAdd, WorkPlanExecute},
-  props: ['child'],
+  components: {WorkPlanEventResultModal, WorkPlanEventAdd, WorkPlanExecute, WorkPlanEventEditModal},
+  props: ['child', 'planCreator', 'finish', 'approvalSent'],
   data() {
     return {
       data: null,
@@ -65,6 +70,9 @@ export default {
       isExpanded: false,
       currentQuarter: null,
       loginedUserId: 0,
+      isPlanCreator: this.planCreator,
+      isFinish: this.isFinish,
+      isPlanSentApproval: this.approvalSent
     }
   },
   created() {
@@ -126,6 +134,37 @@ export default {
           break;
       }
       return res;
+    },
+    remove_event(event_id) {
+      this.$confirm.require({
+        message: 'Вы точно хотите удалить?',
+        header: 'Удаление',
+        icon: 'pi pi-info-circle',
+        accept: () => {
+          this.remove(event_id);
+        },
+        reject: () => {
+          //callback to execute when user rejects the action
+        }
+      });
+    },
+    remove(event_id) {
+      axios.post(smartEnuApi + `/workPlan/removeEvent/${event_id}`, {}, {headers: getHeader()}).then(res => {
+        if (res.data.is_success) {
+          this.$toast.add({severity: 'success', summary: 'Успешно', life: 3000});
+          this.emitter.emit("workPlanChildEventIsDeleted", true);
+        }
+      }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+      });
     }
   }
 }

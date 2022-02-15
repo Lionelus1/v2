@@ -1,8 +1,8 @@
 <template>
-	<div :class="containerClass" @click="onWrapperClick">
-        <Toast />
-        <ConfirmDialog></ConfirmDialog>
-		<AppTopBar @menu-toggle="onMenuToggle" />
+  <div :class="containerClass" @click="onWrapperClick">
+    <Toast/>
+    <ConfirmDialog></ConfirmDialog>
+    <AppTopBar @menu-toggle="onMenuToggle"/>
 
     <transition name="layout-sidebar">
       <div :class="sidebarClass" @click="onSidebarClick" v-show="isSidebarVisible()">
@@ -43,9 +43,9 @@ import {mapState} from "vuex";
 export default {
   setup() {
     useRoute();
-    },
-    
-    
+  },
+
+
   data() {
     return {
       loginedUser: {},
@@ -56,6 +56,18 @@ export default {
       mobileMenuActive: false,
 
       menu: [
+
+        {
+          label: this.$t('common.administration'), icon: 'pi pi-fw pi-shield',
+          items: [
+            {
+              label: this.$t('hr.vacancies'),
+              icon: 'pi pi-fw pi-user-plus',
+              to: '/human-resources/vacancies'
+            },
+          ]
+
+        },
         {
           label: 'Құжаттар', icon: 'pi pi-fw pi-folder',
           items: [
@@ -117,19 +129,27 @@ export default {
                     }
                 ]
 
-              },
+        },
         {
           label: 'План', icon: 'pi pi-fw pi-folder', to: '/work-plan'
         },
         {
-          label: 'Вакансиялар', icon: 'pi pi-fw pi-user-plus', to: '/human-resources/public/vacancies'
+
+          label: this.$t('common.forStudentsAndGraduates'), icon: 'pi pi-fw pi-users',
+          items: [
+            {
+              label: this.$t('hr.vacancies'),
+              icon: 'pi pi-fw pi-user-plus',
+              to: '/human-resources/public/vacancies'
+            },
+          ]
         },
-        {
-          label: 'Вакансиялар', icon: 'pi pi-fw pi-user-plus', to: '/human-resources/vacancies'
-        },
-        {
-          label: 'Моё резюме', icon: 'pi pi-fw pi-id-card', to: '/resume'
-        }
+
+        // {
+        //   label: this.$t('hr.vacancies'),
+        //   icon: 'pi pi-fw pi-user-plus',
+        //   to: '/human-resources/public/vacancies'
+        // },
       ]
     }
   },

@@ -1,9 +1,8 @@
 
 <template>
   <div class="flexgrid-demo ">
-
-      <div class="p-grid p-ai-center vertical-container">
-        <div class="p-lg-4 p-md-8 p-sm-12 p-lg-offset-4 p-md-offset-2 p-sm-offset-0 p-text-center">
+<!--      <div class="p-grid p-ai-center vertical-container">-->
+<!--        <div class="p-lg-4 p-md-8 p-sm-12 p-lg-offset-4 p-md-offset-2 p-sm-offset-0 p-text-center">-->
           <Fieldset legend="Login System">
             <div class="p-fluid text-center">
                 <div class="p-field p-col-12">
@@ -23,8 +22,8 @@
               <Button :label="$t('common.login')" icon="pi pi-check" @click="login" iconPos="right" />
             </div>
           </Fieldset>
-        </div>
-      </div>
+<!--        </div>-->
+<!--      </div>-->
 
   </div>
 </template>

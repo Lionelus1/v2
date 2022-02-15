@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div ref="htmlToPdf" class="p-grid">
+    <div ref="toPdf" class="p-grid">
       <h5 class="p-col-6 p-offset-3 p-text-center p-text-bold">{{ reportTitle }}</h5>
       <br/>
       <div class="p-col-12">
@@ -19,7 +19,7 @@
           </thead>
           <tbody>
           <tr v-for="(item, index) in items" :key="index">
-            <td>{{ item.index }}</td>
+            <td>{{ item.row_number }}</td>
             <td>{{ item.event_name }}</td>
             <td><p v-for="(userItem, userIndex) in item.user" :key="userIndex"> {{ userItem.fullName }} </p></td>
             <td>{{ item.quarter }}</td>
@@ -65,6 +65,8 @@ export default {
   },
   created() {
     //this.getData();
+
+    console.log("title", this.reportTitle)
     this.year = new Date().getFullYear();
     //this.data.push({index: 1, name: "Test name", resp: 'User Name', quarter: 1, result: '', comment: 'Comment'})
     this.loginedUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
@@ -72,6 +74,9 @@ export default {
   },
   methods: {
 
+  },
+  mounted() {
+    console.log("report items", this.items)
   }
 }
 </script>
@@ -81,7 +86,6 @@ table {
   width: 100%;
   font-size: 14px;
   text-align: center;
-  border: 1px solid #dee2e6;
   border-collapse: collapse;
 
   th {
@@ -91,7 +95,7 @@ table {
   td,
   th {
     padding: 8px;
-    border: 1px solid #dee2e6;
+    border: 0.03em solid #3f3f3f;
   }
 }
 

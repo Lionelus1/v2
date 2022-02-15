@@ -1,74 +1,98 @@
 <template>
-  <div class="card">
-    <div class="p-field">
-      <Fieldset legend="Образование" :toggleable="true">
-        <Button icon="pi pi-plus" class="p-button-link" label="Добавить" :onclick="add"></Button>
-      </Fieldset>
-    </div>
-    <div class="p-grid p-formgrid">
-      <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
-        <Fieldset legend="Ученая степень" :toggleable="true">
-          <Button icon="pi pi-plus" class="p-button-link" label="Добавить"></Button>
-        </Fieldset>
+  <!-- РЕЗЮМЕ ҚҰРУ -->
+  <div>
+    <Toolbar class="p-mb-4">
+      <template #start>
+        <Button v-if="toolbar.start" :label="$t('hr.resume.create')" icon="pi pi-plus" :onclick="createCandidate"/>
+      </template>
+      <template #end>
+        <Button v-if="toolbar.end"
+                icon="pi pi-times"
+                class="p-button-danger"
+                :label="$t('hr.resume.delete')"
+                :onclick="deleteCandidate"/>
+      </template>
+    </Toolbar>
+  </div>
+  <!-- РЕЗЮМЕ  -->
+  <div class="card" v-if="candidate !== null && candidate !== {}">
+    <div class="card">
+      <div class="p-grid p-formgrid">
+        <div class="p-col-12 p-lg-9">
+          <ResumeView v-if="view" :value="candidate" :readonly="false"/>
+        </div>
       </div>
-      <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
-        <Fieldset legend="Ученое звание" :toggleable="true">
-          <Button icon="pi pi-plus" class="p-button-link" label="Добавить"></Button>
-        </Fieldset>
-      </div>
     </div>
-    <div class="p-field">
-      <Fieldset legend="Знания языков" :toggleable="true">
-        <Button icon="pi pi-plus" class="p-button-link" label="Добавить"></Button>
-      </Fieldset>
-    </div>
-    <div class="p-field">
-      <Fieldset legend="Опыт работы" :toggleable="true" collapsed>
-        <Button icon="pi pi-plus" class="p-button-link" label="Добавить"></Button>
-      </Fieldset>
-    </div>
-    <div class="p-field">
-      <Fieldset legend="Курсы повышения квалификации, семинары и стажировки" :toggleable="true">
-        <Button icon="pi pi-plus" class="p-button-link" label="Добавить"></Button>
-      </Fieldset>
-    </div>
-    <div class="p-field">
-      <Fieldset legend="Список людей, которые могут вас порекомендовать" :toggleable="true">
-        <Button icon="pi pi-plus" class="p-button-link" label="Добавить"></Button>
-      </Fieldset>
-    </div>
-    <Sidebar
-        v-model:visible="isView"
-        position="top"
-        class="p-sidebar-lg"
-        style="overflow-y: scroll"
-    >
-      <EducationEdit
-          :model-value=education
-      ></EducationEdit>
-    </Sidebar>
   </div>
 </template>
 
 <script>
-import EducationEdit from "./subedits/EducationEdit";
+import axios from "axios";
+import {getHeader, smartEnuApi} from "@/config/config";
+import ResumeService from "./ResumeService";
+import ResumeView from "./ResumeView";
 
 export default {
   name: "Resume",
-  components: {EducationEdit},
+  components: {
+    ResumeView,
+  },
   data() {
     return {
-      educations: [],
-      education: null,
-      isView: false,
+      candidate: {},
+      view: false,
+      toolbar: {
+        start: false,
+        end: false
+      }
     }
   },
+  created() {
+    this.resumeService = new ResumeService()
+  },
   methods: {
-    add() {
-      this.education = {}
-      this.isView = true
+    createCandidate() {
+      this.resumeService.createCandidate().then(response => {
+        this.candidate = {}
+        this.candidate = response.data
+        this.toolbar.start = false
+        this.toolbar.end = true
+        this.view = true
+      }).catch(error => {
+        console.log(error)
+      });
     },
-  }
+    deleteCandidate() {
+      this.resumeService.deleteCandidate(this.candidate.id).then(response => {
+        this.candidate = null
+        this.toolbar.start = true
+        this.toolbar.end = false
+      }).catch(error => {
+        if (error.response.status === 404) {
+          this.candidate = null
+        }
+        console.log(error)
+      });
+    },
+  },
+  mounted() {
+    this.resumeService.getCandidate().then(response => {
+      this.candidate = response.data
+      this.view = true
+      this.toolbar.start = false
+      this.toolbar.end = true
+    }).catch(error => {
+      if (error.response.status === 404) {
+        this.candidate = null
+        this.toolbar.start = true
+        this.toolbar.end = false
+      }
+      if (error.response.status === 401) {
+        this.$store.dispatch("logLout");
+      }
+      console.log(error)
+    })
+  },
 }
 </script>
 

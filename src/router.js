@@ -21,15 +21,15 @@ const ifAuthenticated = (to, from, next) => {
         next()
         return
     }
-    next('/login')
+    next('/public/vacancies')
 }
 
 
 const routes = [
     {
-        path:'/login',
-        name:'Login',
-        component: load('Login'),
+        path:'/public/vacancies',
+        name:'PublicVacancies',
+        component: load('humanResources/vacancy/PublicVacancies'),
     },
     {
         path: '/afterauth',
@@ -44,7 +44,7 @@ const routes = [
     },
     {
         path: '/',
-        redirect:'/smartenu/admin/news/newstable',
+        redirect:'/public/vacancies',
         name: '/',
         component: Full,
         children:[
@@ -227,7 +227,7 @@ const routes = [
             },
             {
                 path: '/resume',
-                name: '/resume',
+                name: 'Resume',
                 component: load('humanResources/candidate/Resume')
             }
         ]

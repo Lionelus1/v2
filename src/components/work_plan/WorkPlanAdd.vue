@@ -4,7 +4,7 @@
   <Dialog header="Добавить план" v-model:visible="showModal" :style="{width: '450px'}" class="p-fluid">
     <div class="p-field">
       <label>Название плана</label>
-      <InputText v-model="work_plan_name" @input="input"/>
+      <InputText v-model="work_plan_name" @input="input" v-on:keyup.enter="sendDoc"/>
     </div>
     <template #footer>
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
@@ -65,7 +65,15 @@ export default {
         this.$toast.add({severity: 'info', summary: 'Success', detail: 'План успешно создан', life: 3000});
         this.showModal = false;
       }).catch(error => {
-        console.log(error)
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
       });
     },
     sendDoc() {
@@ -81,6 +89,16 @@ export default {
             severity: 'error',
             summary: this.$t('ncasigner.failToSendDoc'),
             life: 3000
+          });
+        }
+      }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
           });
         }
       });

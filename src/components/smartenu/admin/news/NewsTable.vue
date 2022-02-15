@@ -62,7 +62,13 @@
         @page="onPage($event)"
         :totalRecords="newsCount"
         :paginator="true"
-        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+        paginatorTemplate="FirstPageLink
+        PrevPageLink
+        PageLinks
+        NextPageLink
+        LastPageLink
+        CurrentPageReport
+        RowsPerPageDropdown"
         :rowsPerPageOptions="[10, 25, 50]"
         :currentPageReportTemplate="$t('common.showingRecordsCount', {
               first: '{first}',
