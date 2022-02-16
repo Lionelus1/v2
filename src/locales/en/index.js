@@ -18,6 +18,7 @@ export default {
         enter: "Type in",
         enterLogin: "Enter IIN or platonus mail",
         enterPassword: "Enter password",
+        export: "Export",
         add: "Add",
         edit: "edit",
         orgname: "L.N. Gumilyov Eurasian National University",
@@ -35,6 +36,8 @@ export default {
         createNew: "Create",
         created: "Created",
         createdBy: "Autor",
+        checkMyVoice: "Check my voice",
+        yourVoice: "Your vote: ",
         graduate: "Graduate",
         faculty: "Faculty",
         cafedra: "Кафедра",
@@ -112,6 +115,7 @@ export default {
         register: "Check in",
         registered: "Rgistered",
         vote: "Vote",
+        revote: "Revote",
         voted: "Voted",
         voting: "Voting",
         search: "Search",
@@ -137,7 +141,9 @@ export default {
             inapproval : "in approval",
             approved: "approved",
             rejected: "rejected",
-            revision: "for revision"
+            revision: "for revision",
+            registered: "Registered",
+            notRegistered: "Not registered"
 
         },
         message: {
@@ -147,6 +153,7 @@ export default {
                 saveError: "Save error",
                 docCreation: "Adding a new catalog"
             },
+            invalidkey: "Wrong password entered",
             notPermissionForApprove: "The selected user does not have the appropriate privileges to reconcile the document",
             fillError: "Not all the data listed. Please fill in all fields!",
             sendToApprovalError: "An error occurred while sending for approval. Check the correctness of the specified data!",
@@ -500,10 +507,15 @@ export default {
             v2: "send the dissertation for revision",
             v3: "submit the thesis for re-defense",
             v4: "refuse to award the degree of Doctor of Philosophy (PhD) or Doctor of Science",
+            v5: "TOTAL"
         },
         message: {
             hasSameMember: "The user already has a council membership",
-            saveKey: "Voting is anonymous: we do not store your voting result. Please save or download this password to check your vote in the future. The password is known only to you and is not available for recovery."
+            saveKey: "Voting is anonymous: we do not store your voting result. Please save or download this password to check your vote in the future. The password is known only to you and is not available for recovery.",
+            notRegistered: "You cannot vote, because you are not registered",
+            enterKey: "Дауысыңызды дешифрлеу үшін дауыс бергенде қолданған кілт сөзді енгізіңіз",
+
+
         },
        
 
