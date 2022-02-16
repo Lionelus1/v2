@@ -17,7 +17,7 @@
 										<ContragentSelect v-model="param.value"></ContragentSelect>
 									</div>
 									<div v-else class="p-col-12 p-md-10">
-										<UserSearch v-if="param.name=='student'" v-model="param.value" :max="1" :userType="1"></UserSearch>
+										<UserSearch  v-if="param.name=='student'" v-model="param.value" :max="1" :userType="1"></UserSearch>
 										<DatePicker v-else-if="param.name=='period'" v-model="param.value" is-range>
 										  <template v-slot="{ inputValue, inputEvents }">
 												<div class="flex justify-center items-center">
@@ -35,11 +35,47 @@
 							</div>
 						</div>
 					</div>
-					<div class="p-lg-4 p-md-12 p-sm-12">
-					</div>
 				</div>
 			</TabPanel>
 		</TabView>
+										
+		<Dialog :header="$t((temp ? 'contracts.reserveNumber' : 'common.registration'))" modal="true" v-model:visible="dialog.setNumber" >
+			<div class="p-grid p-formgrid" >
+				
+				<div class="p-col-12 p-mb-2 p-lg-3 p-mb-lg-1">
+					<label for="catalog" >{{$t('contracts.journal')}}</label>
+				</div>
+				<div class="p-col-12 p-mb-2 p-lg-9 p-mb-lg-1 p-pr-2">
+					<InputText readonly="true" :modelValue="this.$i18n.locale  === 'kz' ? contract.template.folder.nameKaz : this.$i18n.locale  === 'ru' ? contract.template.folder.nameRus : contract.template.folder.nameEn">{{}}</InputText>
+				</div>
+				<div class="p-col-12 p-mb-2 p-lg-3 p-mb-lg-1">
+					<label for="catalog" >{{$t('common.date')}}</label>
+				</div>
+				<div class="p-col-12 p-mb-2 p-lg-9 p-mb-lg-1 p-pr-2">
+					<PrimeCalendar
+						:readonly="readonly"
+						class="p-mt-2"
+						v-model="contract.registerDate"
+						dateFormat="dd.mm.yy"
+					/>
+				</div>
+				<div class="p-col-12 p-mb-2 p-lg-3 p-mb-lg-0">
+					<label for="regnum" >{{$t('contracts.regnum')}}</label>
+				</div>
+				<div class="p-col-6 p-mb-2 p-lg-4 p-mb-lg-2 p-pr-2">
+					<InputText  v-model="contract.number" readonly="true" id="regnum" class="" style="width:100%"></InputText>
+				</div>
+				<div class="p-col-3 p-mb-2 p-lg-5 p-mb-lg-0">
+					<i>-{{$t('contracts.preliminary')}}</i>
+				</div>
+			</div>
+			
+			<template #footer>
+				<Button :label="$t(temp ? 'common.reserve' : 'common.registration')" @click="registrateContract()"/>
+				<Button :label="$t('common.cancel')" @click="closeForm('setNumber')"/>
+			</template>
+		</Dialog>
+	
 	</div>
 </template>
 <script>
@@ -51,6 +87,7 @@ import ContragentSelect from '../contragent/ContragentSelect.vue';
 import { DatePicker } from 'v-calendar';
 import Enum from "@/enum/docstates/index"
 import { incline, inclineFirstname, inclineLastname, inclineMiddlename } from 'lvovich';
+import { constantizeGenderInRules } from 'lvovich/lib/inclineRules';
 export default {
 
 	name: "Contract",
@@ -67,14 +104,15 @@ export default {
 				Parameters: 0,
 				Preview: 1,
 			},
+			temp: false,
 			sourceType: {
 				template: 0,
 				uploadedDoc: 1,
 			},
 
 			range: {
-      	start: new Date(2020, 0, 1),
-      	end: new Date(2020, 0, 5)
+			start: new Date(2020, 0, 1),
+			end: new Date(2020, 0, 5)
     	},
 			language: {
 				kz: 0,
@@ -99,12 +137,28 @@ export default {
           	}
         },
         {
-          label: this.$t('common.registration'),
-          icon:'pi pi-fw pi-tag',
-		    	disabled: this.readonly,
-					command: () => {
-						this.registrateContract();
-			}
+          	label: this.$t('common.registration'),
+          	icon:'pi pi-fw pi-paperclip',
+			disabled: this.readonly,
+			
+			items: [
+				{
+					label: this.$t('common.registration'),
+          			icon:'pi pi-fw pi-paperclip',
+				  	command: () => {
+						this.temp = false;
+						this.openForm('setNumber');
+					},
+				},
+				{
+					label: this.$t('contracts.setnumber'),
+          			icon:'pi pi-fw pi-list',
+				  	command: () => {
+						this.temp = true;
+						this.openForm('setNumber');
+					},
+				}
+			],
         },
 				{
 					label: this.$t('common.send'),
@@ -123,7 +177,10 @@ export default {
 					]
 				}
 
-      ]
+      ], 
+	  dialog: {
+			setNumber: false,
+		},
 		}
 
 	},
@@ -146,31 +203,41 @@ export default {
 
 	},
 	methods: {
+		openForm(formName) {
+        	this.dialog[formName] = true;
+			if (formName==='setNumber') {
+				this.registrateContract(true)
+				this.contract.registerDate = new Date().toJSON().slice(0,10).replace(/-/g,'.');
+			}
+      	},
+		closeForm(formName) {
+			this.dialog[formName] = false;
+		},
 		sm(message) {
 			alert( JSON.stringify(message));
-
 		},
 		tabChanged() {
 			if (this.activeTab === this.tabs.Preview)
 			{
 				if (!this.contract)
 					return;
-
 			}
-
 		},
 		initApiCall() {
 			let url = "/agreement/get";
 			var req = {"id" : parseInt(this.$route.params.id)};
-      axios.post(smartEnuApi+url, req, { headers: getHeader() })
+      		axios.post(smartEnuApi+url, req, { headers: getHeader() })
 			.then(res=>{
 				this.contract = res.data
 				if (this.contract.sourceType == 0){
 					this.contract.text = this.contract.lang == this.language.kz ? this.contract.template.mainTextKaz : this.contract.template.mainTextRus
-
 				}
 				})
-
+			.catch((error) => {
+              if (error.response.status == 401) {
+                this.$store.dispatch("logLout");
+              }
+            });
 		},
 		paramToString(param) {
 			var result = "";
@@ -189,100 +256,108 @@ export default {
 					break;
 				case "contragent":
 					result = result + this.getContragentName(param.value, this.contract.lang);
-
 					break;
 				default:
 					result = param.name;
 			}
 			return result;
-
 		},
 		getContragentName(agent, lang) {
 			if (!agent) {
 				return ""
 			}
 			switch(agent.type) {
-        case Enum.ContragentType.Organization:
-          var orgName = lang != this.language.ru ? '"' + agent.data.name + '" ' + agent.data.form.shortname : agent.data.form.shortnameru + ' "' + agent.data.nameru + '"';
-					if (lang === this.language.kz) {
-						orgName += " в лице " + inclineFirstname('директор', 'genitive')
-					}
-					orgName +=" " + agent.data.chief.lname + " " +  agent.data.chief.fname + " " +( agent.data.chief.sname ?? "");
-					if (lang === this.language.ru) {
-						orgName += " тұлғасында"
-					}
-					return orgName;
-        case Enum.ContragentType.Person:
-          return this.value.data.lname + ' ' + agent.data.fname + ' ' + (agent.data.sname ?? '');
-        case Enum.ContragentType.Bank:
-          return lang != this.language.ru ? '"' + agent.data.organization.name + '" ' + agent.data.organization.form.shortname : agent.data.organization.form.shortnameru + ' "' + agent.data.organization.nameru + '"'
-      }
+				case Enum.ContragentType.Organization:
+				var orgName = lang != this.language.ru ? '"' + agent.data.name + '" ' + agent.data.form.shortname : agent.data.form.shortnameru + ' "' + agent.data.nameru + '"';
+				if (lang === this.language.kz) {
+					orgName += " в лице " + inclineFirstname('директор', 'genitive')
+				}
+				orgName +=" " + agent.data.chief.lname + " " +  agent.data.chief.fname + " " +( agent.data.chief.sname ?? "");
+				if (lang === this.language.ru) {
+					orgName += " тұлғасында"
+				}
+				return orgName;
+				case Enum.ContragentType.Person:
+					return this.value.data.lname + ' ' + agent.data.fname + ' ' + (agent.data.sname ?? '');
+				case Enum.ContragentType.Bank:
+					return lang != this.language.ru ? '"' + agent.data.organization.name + '" ' + agent.data.organization.form.shortname : agent.data.organization.form.shortnameru + ' "' + agent.data.organization.nameru + '"'
+			}
 		},
 		getDate(date) {
- 				var dd = date.getDate();
-        var mm = date.getMonth() + 1;
-
-        var yyyy = date.getFullYear();
-        if (dd < 10) {
-            dd = '0' + dd;
-        }
-        if (mm < 10) {
-            mm = '0' + mm;
-        }
-				return dd + '.' + mm + '.' + yyyy;
-		},
-
+ 			var dd = date.getDate();
+			var mm = date.getMonth() + 1;
+			var yyyy = date.getFullYear();
+			if (dd < 10) {
+				dd = '0' + dd;
+			}
+			if (mm < 10) {
+				mm = '0' + mm;
+			}
+					return dd + '.' + mm + '.' + yyyy;
+			},
 		saveContract() {
-
 			if (!this.contract)
 				return;
-					let url = "/agreement/updatedocparams";
+			let url = "/agreement/updatedocparams";
 			var req = this.contract;
       		axios.post(smartEnuApi+url, req,{ headers: getHeader() })
 			.then(res=>{
 				this.$toast.add({severity:'success', summary:this.$t('common.save'), detail:this.$t('common.message.succesSaved'), life: 3000});
 			})
-
-
+			.catch((error) => {
+              if (error.response.status == 401) {
+                this.$store.dispatch("logLout");
+              }
+            });
 		},
 		downloadContract() {
-
 			if (!this.contract)
 				return;
-				let url = "/contract/getpdf";
-				var req = {"id" : this.contract.id};
-        req.lang = "kaz";
-        if (this.contract.lang != 0) {
-          req.lang = "rus"
-        }
-      axios.post(smartEnuApi+url, req, { headers: getHeader() })
+			let url = "/contract/getpdf";
+			var req = {"id" : this.contract.id};
+			req.lang = "kaz";
+			if (this.contract.lang != 0) {
+			req.lang = "rus"
+				}
+			axios.post(smartEnuApi+url, req, { headers: getHeader() })
 			.then(response=>{
-        let pdf = response.data;
-        var link = document.createElement('a');
-        link.innerHTML = 'Download PDF file';
-        link.download = this.contract.id + '.pdf';
-        link.href = 'data:application/octet-stream;base64,' + pdf;
-        link.click();
+				let pdf = response.data;
+				var link = document.createElement('a');
+				link.innerHTML = 'Download PDF file';
+				link.download = this.contract.id + '.pdf';
+				link.href = 'data:application/octet-stream;base64,' + pdf;
+				link.click();
 
 			})
-
-
+			.catch((error) => {
+              if (error.response.status == 401) {
+                this.$store.dispatch("logLout");
+              }
+            });
 		},
-		registrateContract() {
+		registrateContract(next=false) {
 			if (!this.contract)
 				return;
-					let url = "/contract/setnumber";
+			let url = "/contract/setnumber";
 			var req = {
-				"id": this.contract.id
+				"id": this.contract.id,
+				"temp": this.temp,
+				"next": next,
 			};
 
-      axios.post(smartEnuApi+url, req, { headers: getHeader() })
+			axios.post(smartEnuApi+url, req, { headers: getHeader() })
 			.then(res=>{
 				this.contract.number = res.data
-				this.$toast.add({severity:'success', summary:this.$t('common.save'), detail:this.$t('common.message.succesRegistered'), life: 3000});
+				if (!next) {
+					this.$toast.add({severity:'success', summary:this.$t('common.save'), detail:this.$t('common.message.succesRegistered'), life: 3000});
+				}
 			})
-
-
+			.catch((error) => {
+				console.log(error)
+			if (error.response.status == 401) {
+				this.$store.dispatch("logout");
+			}
+			});
 		},
 	},
 	mounted() {

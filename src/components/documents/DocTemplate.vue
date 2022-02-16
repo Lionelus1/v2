@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div class="content-section introduction">
+    <div v-if="!selectMode" class="content-section introduction">
       <div class="feature-intro p-ml-3">
-        <h3>{{$t('doctemplate.title')}}</h3>
+        <h3>{{$t('doctemplate.title')}}</h3> 
       </div>
     </div>
     <div class="content-section implementation">
@@ -47,35 +47,55 @@
               </template>
             </Dialog>
 
-            <TreeTable :value="templates" class="p-treetable-responsive p-treetable-sm" selectionMode="single" @node-select="onNodeSelect" v-model:selectionKeys="currentNode" style="margin-bottom: 2rem">
-              <Column field="name" v-bind:header="$t('common.name')" :expander="true">
+            <TreeTable :scrollable="selectMode" :value="templates" class="p-treetable-responsive p-treetable-sm" selectionMode="single" @node-select="onNodeSelect" v-model:selectionKeys="currentNode" style="margin-bottom: 2rem">
+              <Column headerStyle="width:6em" :expander="true" bodyStyle="padding: 0">
                 <template #body="slotProps">
-                  {{slotProps.node.data.name}}
+                  <i v-if="slotProps.node.data.type===1" class="pi pi-folder"></i>
+                  <i v-else class="pi pi-file"></i>
+                </template>
+              </Column>
+              
+              <Column field="name" v-bind:header="$t('common.name')">
+                <template #body="slotProps">
+                  <Button class="p-button-link" style="text-align:left" v-if="selectMode && slotProps.node.data.type===0" @click="select($event,slotProps.node)" v-tooltip.bottom="$t('common.choose')">{{slotProps.node.data.name}}</Button>
+                  <span v-else>{{slotProps.node.data.name}}</span>
                   <span class="sm-visible"> /{{slotProps.node.data.typeText}}</span>
                   <span  v-if="slotProps.node.data.state!=null" class="sm-visible"> /{{slotProps.node.data.state}}</span>
                   <span v-if="slotProps.node.data.updatedDate!=null" class="sm-visible"> /{{slotProps.node.data.updatedDate}}</span>
                 </template>
               </Column>
-              <Column field="typeText" v-bind:header="$t('common.type')" headerClass="sm-invisible" bodyClass="sm-invisible"></Column>
               <Column field="code" v-bind:header="$t('common.code')" headerClass="sm-invisible" bodyClass="sm-invisible"></Column>
-              <Column field="createdDate" v-bind:header="$t('common.created')"  headerClass="sm-invisible" bodyClass="sm-invisible"></Column>
-              <Column field="state" v-bind:header="$t('common.state')" headerClass="sm-invisible" bodyClass="sm-invisible">
+              <Column v-if="!selectMode" field="createdDate" v-bind:header="$t('common.created')"  headerClass="sm-invisible" bodyClass="sm-invisible">
+                <template #body="slotProps">
+                    {{slotProps.node.data.createdDate ? slotProps.node.data.createdDate.replace('Z', '').replace('T', ' '): ''}}
+                </template>
+              </Column>
+              <Column v-if="!selectMode" field="state" v-bind:header="$t('common.state')" headerClass="sm-invisible" bodyClass="sm-invisible">
                 <template #body="slotProps">
                   <span :class="'template-status ' + slotProps.node.data.stateEn"> {{slotProps.node.data.state}}</span>
                 </template>
 
               </Column>
-              <Column field="updatedDate" v-bind:header="$t('common.updated')" headerClass="sm-invisible" bodyClass="sm-invisible"></Column>
+              <Column field="updatedDate" v-bind:header="$t('common.updated')" headerClass="sm-invisible" bodyClass="sm-invisible">
+               <template #body="slotProps">
+                    {{slotProps.node.data.updatedDate ? slotProps.node.data.updatedDate.replace('Z', '').replace('T', ' ') : ''}}
+                </template>
+              </Column>
               <Column headerStyle="width: 8em" headerClass="p-text-center" bodyClass="p-text-center">
               <template #header>
-                  <Button icon="pi pi-plus" class="p-button-blue" @click="openForm('addFolder')" v-tooltip.bottom="$t('common.newCatalog')"  />
+                  <Button v-if="!selectMode" icon="pi pi-plus" class="p-button-blue" @click="openForm('addFolder')" v-tooltip.bottom="$t('common.newCatalog')"  />
               </template>
               <template #body="slotProps">
-                  <Button v-if="slotProps.node.data.type==1" type="button" icon="pi pi-plus" @click="openForm('addTemplate',slotProps.node)" class="p-button-success" v-tooltip.bottom="$t('doctemplate.newTemplate')"></Button>
-                  <Button v-else type="button" icon="pi pi-search" class="p-button-warning" @click="editDocTemplate(slotProps.node)" v-tooltip.bottom="$t('common.show')"></Button>
-                  <Button v-if="slotProps.node.data.type!=1 && slotProps.node.data.stateEn == DocState.REVISION.Value" icon="pi pi-comment"></Button>
+                  <Button v-if="slotProps.node.data.type==1 && !selectMode" type="button" icon="pi pi-plus" @click="openForm('addTemplate',slotProps.node)" class="p-button-success" v-tooltip.bottom="$t('doctemplate.newTemplate')"></Button>
+                  <Button v-if="slotProps.node.data.type!=1" type="button" icon="pi pi-search" class="p-button-warning" @click="editDocTemplate(slotProps.node)" v-tooltip.bottom="$t('common.show')"></Button>&nbsp;
+                  <Button v-if="slotProps.node.data.type!=1 && slotProps.node.data.stateEn == DocState.REVISION.Value" icon="pi pi-comment" @click="openForm('dialogComment',slotProps.node)" v-tooltip.bottom="$t('common.comment')"></Button>
+                  <Button v-if="selectMode && slotProps.node.data.type!=1" icon="pi pi-check-circle" class="p-button-success ml-2" @click="select($event,slotProps.node)" v-tooltip.bottom="$t('common.choose')"></Button>
+                  
               </template>
             </Column>
+            <!-- <template v-if="selectMode" #footer>
+                <Button label="OK" icon="pi pi-check" @click="closeForm('dialogComment')" class="p-button-blue">{{$t('common.select')}}</Button>
+            </template> -->
           </TreeTable>
           </TabPanel>
           <TabPanel v-bind:header="$t('doctemplate.selected')" :disabled="(selectedNode.data.type == null || selectedNode.data.type == 1)">
@@ -96,7 +116,7 @@
                 </template>
               </SelectButton>
             </div>
-            <RichEditor ref="kzEditor" v-if="templateLanguage =='kz'" v-model="selectedNode.data.mainTextKaz" editorStyle="height:500px;max-width:700px">
+            <RichEditor :readonly="selectMode" ref="kzEditor" v-if="templateLanguage =='kz'" v-model="selectedNode.data.mainTextKaz" editorStyle="height:500px;max-width:700px;min-width:500px">
               <template v-slot:toolbar>
                 <span class="ql-formats">
                   <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
@@ -117,7 +137,7 @@
 
               </template>
             </RichEditor>
-            <RichEditor ref="kzEditor" v-else v-model="selectedNode.data.mainTextRus" editorStyle="height:500px;max-width:700px">
+            <RichEditor :readonly="selectMode" ref="kzEditor" v-else v-model="selectedNode.data.mainTextRus" editorStyle="height:500px;max-width:700px;min-width:500px">
               <template v-slot:toolbar>
                 <span class="ql-formats">
                   <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
@@ -138,7 +158,6 @@
                 
               </template>
             </RichEditor>
-{{selectedNode}}
             <!-- Келісімге жіберу диалогы -->
             <Dialog :modal="true"  v-bind:header="$t('common.toapprove')" v-model:visible="dialogOpenState.toApproval" :style="{width: '50vw'}">
               <div class="p-fluid">
@@ -168,12 +187,23 @@
               </template>
             </Dialog>
 
+            <Dialog :header="$t('common.comment')" v-model:visible="dialogOpenState.dialogComment" :style="{width: '50vw'}">
+            <p>{{(selectedNode.data.comment && selectedNode.data.comment != '') ? selectedNode.data.comment : $t('common.noComment')}}</p>
+           
+            <template #footer>
+              <div style="text-align:right">
+                <Button label="OK" icon="pi pi-check" @click="closeForm('dialogComment')" class="p-button-text"/>
+              </div>
+            </template>
+        </Dialog>
+
           </TabPanel>
         </TabView>
       </div>
 
     </div>
-    <div></div>
+    
+    
   </div>
 </template>
 
@@ -186,6 +216,7 @@
   import DocState from "@/enum/docstates/index"
 
   export default {
+    emits: ['onselect'],
     components: { RichEditor, FindUser },
     data() {
       return {
@@ -205,6 +236,7 @@
           addTemplate : false,
           toApproval : false,
           revision :false,
+          dialogComment: false,
         },
         active: 0,
         templates: null,
@@ -234,7 +266,28 @@
         },
       }
     },
+     props: {
+      selectMode: Boolean,
+      modelValue: null,
+      windowOpened: Boolean,
+    },
+    setup(props, context) {
+      function updateValue(event, node) {
+        context.emit("modelValue", node);
+        context.emit("update:windowOpened", false);
+        this.$emit('onselect', {
+                originalEvent: event,
+                value: node
+            });
+      }
+      return {
+        updateValue,
+      };
+  },
     methods: {
+      select(event, node) {
+        this.updateValue(event,node)
+      },
       showMessage(msgtype,message,content) {
         this.$toast.add({severity:msgtype, summary: message, detail:content, life: 3000});
       },
@@ -257,7 +310,7 @@
           icon: 'pi pi-exclamation-triangle',
           accept: () => {
                 axios.post(smartEnuApi + "/doctemplate/getbase64",
-                { id: this.selectedNode.key},  
+                { id: this.selectedNode.id},  
                 { headers: getHeader() }).then(
                   response => {
                     runNCaLayer(this.$t, this.$toast, response.data).then(sign=>{
@@ -266,7 +319,7 @@
 
                         var req = {
                           userID : this.$store.state.loginedUser.userID,
-                          id: this.selectedNode.key,
+                          id: this.selectedNode.id,
                           sign: sign
                         };
                         axios.post(smartEnuApi+"/doctemplate/sign", req, { headers: getHeader() }).then(response=>{
@@ -309,7 +362,7 @@
         let url ="/doctemplate/updatedoсtemplatestate"
          var req = {
           userID : this.$store.state.loginedUser.userID,
-          id: this.selectedNode.key,
+          id: this.selectedNode.id,
           state: this.DocState.REVISION.ID,
           comment: this.revisionComment,
         }
@@ -339,7 +392,7 @@
         }
         var req = {
           userID : this.$store.state.loginedUser.userID,
-          docTemplateID: this.selectedNode.key,
+          docTemplateID: this.selectedNode.id,
           entities: this.selectedUsers,
           comment: this.dialogNote,
         }
@@ -375,13 +428,13 @@
           return
         }
         let url = "/doctemplate/getpdf";
-        var req = {"id" : this.selectedNode.key};
+        var req = {"id" : this.selectedNode.id};
         req.lang = "kaz";
         if (this.templateLanguage != "ru") {
-          req.lang = "rus"
+          req.lang = "kaz"
         } 
         if (this.templateLanguage != "kz") {
-          req.lang = "kaz"
+          req.lang = "rus"
         } 
         axios.post(smartEnuApi+url, req, { headers: getHeader() })
         .then(response=>{
@@ -414,7 +467,7 @@
           return
         }
         let url = "/doctemplate/update";
-        var req = {"id" : this.selectedNode.key};
+        var req = {"id" : this.selectedNode.id};
         if (this.selectedNode.data.mainTextKaz != null) {
           req.textKaz = this.selectedNode.data.mainTextKaz;
         } else {
@@ -459,7 +512,7 @@
         .then(response=>{
           this.templates.forEach(folder=>{
             if (folder.key == response.data.folderID) {
-                var newNode = this.addTemplateNode(folder.children, response.data);
+                var newNode = this.addTemplateNode(folder.children, response.data, folder.key);
                 this.editDocTemplate(newNode);
                 this.closeForm('addTemplate');
                 this.createdTemplate = {
@@ -507,7 +560,8 @@
         .then(response=>{
 
           let node = new Object();
-            node.key=""+response.data.id+"";
+            console.log(response.data)
+            node.key= response.data.id;
             let nodeData = new Object();
             nodeData.name=response.data.nameKaz;
             nodeData.type= 1;
@@ -515,9 +569,9 @@
             nodeData.createdDate = response.data.createDate;
             nodeData.updatedDate = response.data.updateDate;
             nodeData.code = response.data.code;
-            nodeData.stateEn = "";
-          node.data = nodeData;
-          this.templates.push(node)
+            node.children = []
+            node.data = nodeData;
+            this.templates.push(node)
           this.createdFolder = {
             groups: null,
             nameKaz: '',
@@ -540,25 +594,30 @@
         
       },
       onNodeSelect(node) {
+        
         this.selectedNode = node;
+        this.currentNode = node
         this.readonly = this.selectedNode.data.stateEn == DocState.CREATED.Value || this.selectedNode.data.stateEn == DocState.REVISION.Value || (this.selectedNode.data.stateEn == DocState.INAPPROVAL.Value && this.findRole(null, DocState.roles.LegalServiceHead))
         this.$refs.kzEditor.setReadOnly(this.readonly);
         
       },
-      addTemplateNode(nodeDataChildren,node) {
+      addTemplateNode(nodeDataChildren,node,fkey) {
         let child=new Object();
-        child.key=node.id;
+        child.key=fkey+"_"+node.id;
+        child.id = node.id;
         let childData = new Object();
         if (node.History != null) {
           childData.stateID = node.History[0].id;
           childData.state =  this.$i18n.locale == "kz" ? node.History[0].stateKaz : this.$i18n.locale == "ru" ?  node.History[0].stateRus : node.History[0].stateEn;
           childData.stateEn =  node.History[0].stateEn;
-
         }
         childData.name= this.$i18n.locale == "ru" ? node.descriptionRus : node.descriptionKaz;
         childData.createdDate = node.createDate;
         childData.mainTextKaz = node.mainTextKaz
         childData.mainTextRus = node.mainTextRus
+        if (node.History && node.History.length > 0) {
+          childData.comment = node.History[0].comment
+        }
         childData.base64 = node.base64
         childData.type = 0;
         childData.typeText= this.$t('common.doc');
@@ -568,6 +627,11 @@
       },
       initApiCall(){
         let url = "/doctemplates?groupID=1";
+        var stateFilter = "&stateID=-1"
+        if (this.selectMode) {
+          stateFilter = "&stateID=" + this.DocState.APPROVED.ID
+        }
+        url+= stateFilter
         axios (smartEnuApi+url, { headers: getHeader() })
         .then(res=>{
           let treeData = [];
@@ -585,7 +649,7 @@
 
             if(el.DocTemplates){
               el.DocTemplates.forEach((child)=>{
-                this.addTemplateNode(nodeDataChildren, child)
+                this.addTemplateNode(nodeDataChildren, child,node.key)
               })
             }
             node.children = nodeDataChildren;

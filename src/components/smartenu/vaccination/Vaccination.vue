@@ -895,7 +895,6 @@ export default {
           headers: getHeader(),
         })
         .then((response) => {
-          console.log(response);
           this.statistic = response.data;
 
           this.studentData.labels = [];

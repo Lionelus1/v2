@@ -122,10 +122,10 @@ export default {
                 label:  this.$t('dissertation.title'), icon: 'pi pi-fw pi-book',
                 items: [
                     {
-                        label:  this.$t('dissertation.council.list'), icon: 'pi pi-fw pi-list', to: '/dissertation', visible : this.isDissertationAdmin()
+                        label:  this.$t('dissertation.council.list'), icon: 'pi pi-fw pi-list', to: '/dissertation', visible : this.isDissertationAdmin() || this.findRole("dissertation_council_secretary") 
                     },
                     {
-                        label:  this.$t('dissertation.doctoralCard'), icon: 'pi pi-fw pi-users', to: '/dissertation/doctorals', visible : this.findRole("dissertation_council_secretary")
+                        label:  this.$t('dissertation.doctoralCard'), icon: 'pi pi-fw pi-users', to: '/dissertation/doctorals', visible : this.isRoleGroupMember("dissertation_council") 
                     }
                 ]
 
@@ -166,7 +166,7 @@ export default {
     isDissertationAdmin() {
       if (!this.loginedUser)
         this.getLoginedUser();
-      return (this.loginedUser.mainPosition.department.name === "Департамент цифрового развития и дистанционного обучения" && this.loginedUser.mainPosition.nameru === "начальник отдела");
+      return this.findRole('dissertation_chief');
     },
     findRole(roleName) {
       if (!this.loginedUser)
@@ -177,8 +177,16 @@ export default {
         }
       }
       return false;
-
-
+    },
+    isRoleGroupMember(groupPrefix) {
+      if (!this.loginedUser)
+        this.getLoginedUser();
+      for (let i = 0; i < this.loginedUser.roles.length; i++) {
+        if (this.loginedUser.roles[i].name.includes(groupPrefix)) {
+          return true;
+        }
+      }
+      return false;
     },
     onWrapperClick() {
       if (!this.menuClick) {

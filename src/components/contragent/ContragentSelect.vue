@@ -1,18 +1,17 @@
 <template>
   <div class="p-field p-grid">
-    
     <div class="p-col-12 p-md-10 p-mb-2">
       <span class="p-float-label p-ibutoon-right">
         <i v-if="value" class="pi pi-id-card ibutton" style="margin-right:35px;height:30px;margin-top: 2px;" @click="showcard()"/>
         <i class="pi pi-ellipsis-h ibutton" style="height:30px;margin-top: 2px;margin-right: 2px;" @click="showside()"/>
         <InputText id="inputtext-right" readonly="true" type="text" v-model="selectedContragentName"/>
         <Sidebar @hide="updateValue(value)" v-model:visible="contragentVisible" position="right" class="p-sidebar-lg p-m-0 p-p-0 p-pt-7" style="overflow-y:scroll">
-          <Contragents v-model="value.data" v-model:windowOpened="contragentVisible"></Contragents>
+          <Contragents v-model="value" v-model:windowOpened="contragentVisible"></Contragents>
         </Sidebar>
         <Sidebar v-model:visible="cardVisible" position="right" class="p-sidebar-lg" style="overflow-y:scroll">
-          <Organization v-if="value.type == ContragentType.Organization" :readonly="true" :modelValue="value.data"></Organization>
-          <Person v-if="value.type == ContragentType.Person" :modelValue="value.data" :readonly="true"></Person>
-          <Bank v-if="value.type == ContragentType.Bank" :modelValue="value.data" :readonly="true"></Bank>
+          <Organization v-if="value.type == ContragentType.Organization" :readonly="true" :modelValue="value"></Organization>
+          <Person v-if="value.type == ContragentType.Person" :modelValue="value" :readonly="true"></Person>
+          <Bank v-if="value.type == ContragentType.Bank" :modelValue="value" :readonly="true"></Bank>
         </Sidebar>
       </span>
     </div>
@@ -21,15 +20,15 @@
     <label v-if="value && value.type != ContragentType.Person" class="p-col-12 p-md-2">{{$t('contracts.signer')}}</label>
     <div v-if="value && value.type != ContragentType.Person" class="p-col-12 p-md-10">
       <span class="p-float-label p-ibutoon-right">
-        <i v-if="value && value.data && value.data.signer" class="pi pi-id-card ibutton" style="margin-right:35px;height:30px;margin-top: 2px;" @click="showcard('person')"/>
+        <i v-if="value && value.signer" class="pi pi-id-card ibutton" style="margin-right:35px;height:30px;margin-top: 2px;" @click="showcard('person')"/>
         <i v-if="value" class="pi pi-ellipsis-h ibutton" style="height:30px;margin-top: 2px;margin-right: 2px;" @click="showside('person')"/>
         <InputText id="inputtext-right" readonly="true" type="text" v-model="selectedPersonName"/>
         <Sidebar v-model:visible="personsVisible" position="right" class="p-sidebar-lg" style="overflow-y:scroll">
         <br/>
-          <Persons v-model="value.data.signer" style="padding:-1em" v-model:orgID="value.data.id" v-model:signRight="signRight" v-model:windowOpened="personsVisible"></Persons>
+          <Persons v-model="value.signer" style="padding:-1em" v-model:orgID="value.id" v-model:signRight="signRight" v-model:windowOpened="personsVisible"></Persons>
         </Sidebar>
         <Sidebar v-model:visible="personVisible" position="right" class="p-sidebar-lg" style="overflow-y:scroll;">
-          <Person :modelValue="value.data.signer" class="p-mt-10" style="padding:-1rem" :readonly="true"></Person>
+          <Person :modelValue="value.signer" class="p-mt-10" style="padding:-1rem" :readonly="true"></Person>
         </Sidebar>
       </span>
     </div>
@@ -59,28 +58,29 @@ export default {
   },
   computed: {
     selectedContragentName() {
+      console.log(this.value)
       if (!this.value)
         return "";
       switch(this.value.type) {
         case Enum.ContragentType.Organization:
-          return this.$i18n.locale != 'ru' ? '"' + this.value.data.name + '" ' + this.value.data.form.shortname : this.value.data.form.shortnameru + ' "' + this.value.data.nameru + '"';
+          return this.$i18n.locale != 'ru' ? '"' + this.value.name + '" ' + this.value.form.shortname : this.value.form.shortnameru + ' "' + this.value.nameru + '"';
         case Enum.ContragentType.Person:
-          return this.value.data.lname + ' ' + this.value.data.fname + ' ' + (this.value.data.sname ?? '');
+          return this.value.lname + ' ' + this.value.fname + ' ' + (this.value.sname ?? '');
         case Enum.ContragentType.Bank:
-          return this.$i18n.locale != 'ru' ? '"' + this.value.data.organization.name + '" ' + this.value.data.organization.form.shortname : this.value.data.organization.form.shortnameru + ' "' + this.value.data.organization.nameru + '"'
+          return this.$i18n.locale != 'ru' ? '"' + this.value.organization.name + '" ' + this.value.organization.form.shortname : this.value.organization.form.shortnameru + ' "' + this.value.organization.nameru + '"'
       }
       return  ""
     },
     selectedPersonName() {
-      if (!this.value || !this.value.data || !this.value.data.signer)
+      if (!this.value || !this.value.signer)
         return "";
       let name = ""
-      if (this.value.data.signer.lname)
-        name = this.value.data.signer.lname
-      if (this.value.data.signer.fname)
-        name +=' ' + this.value.data.signer.fname
-     if (this.value.data.signer.sname)
-        name +=' ' + this.value.data.signer.sname     
+      if (this.value.signer.thirdName)
+        name = this.value.signer.thirdName
+      if (this.value.signer.firstName)
+        name +=' ' + this.value.signer.firstName
+     if (this.value.signer.lastName)
+        name +=' ' + this.value.signer.lastName     
       return name
     }
   },

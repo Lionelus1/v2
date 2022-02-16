@@ -33,7 +33,8 @@
     </div>
 
   </div>
-  <Dialog v-bind:header="$t('common.newDoc')" v-model:visible="dialogOpenState.createDocDialog" :modal="true" :breakpoints="{'960px': '75vw', '640px': '100vw'}" :style="{width: '760px', overflow:'hidden'}">
+  <Sidebar v-model:visible="dialogOpenState.createDocDialog" position="right"
+  :modal="true" :breakpoints="{'960px': '75vw', '640px': '100vw'}" :style="{width: '760px', overflow:'hidden'}">
   <div class="p-d-flex">
     <SelectButton v-model="selectedDocSourceType" :options="docSourceType" class="p-mb-3 p-mr-3">
       <template #option="slotProps">
@@ -50,9 +51,68 @@
   </div>
     <div v-if="selectedDocSourceType == DocState.DocSourceType.Template" style="overflow-y:hidden" >
       <div class="p-d-flex">
-        <div class="p-mr-2" style="width:300px">
-          <Listbox v-model="selectedTemplate" :options="docTemplates" :optionLabel="('kz' ? 'nameKaz' : 'nameRus')" :filter="true" listStyle="max-height:300px" style="width:300px;height:320px" :filterPlaceholder="$t('hdfs.search')"/>
-        </div>
+<!-- <DataTable
+              class="p-datatable-sm"
+              v-model:selection="selectedTemplate"
+              selectionMode="single"
+              :value="docTemplates"
+              :paginator="true"
+              :rowHover="true"
+              :filters="filters"
+              :loading="loading"
+              :lazy="true"
+              :totalRecords="count"
+              @page="onPage($event)"
+              @sort="onSort($event)"
+              :rows="lazyParams.rows"
+              dataKey="id"
+              paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+              :rowsPerPageOptions="[10, 25, 50]"
+              :currentPageReportTemplate="
+                $t('common.showingRecordsCount', {
+                  first: '{first}',
+                  last: '{last}',
+                  totalRecords: '{totalRecords}',
+                })
+              "
+              responsiveLayout="scroll"
+            >
+              <template #empty>
+                {{ this.$t("common.recordsNotFound") }}
+              </template>
+
+              <template #loading>
+                {{ this.$t("common.recordsLoading") }}
+              </template>
+              <Column
+                :field="('kz' ? 'nameKaz' : 'nameRus')"
+                :header="$t('hdfs.fileName')"
+                :sortable="true"
+              ></Column>
+              <Column>
+
+              </Column>
+             
+            </DataTable> -->
+      <DocTemplate @onselect="createDocByTemplate($event)" selectMode="true" v-model:windowOpened="dialogOpenState.createDocDialog" :v-model="selectedTemplate"></DocTemplate>
+     
+ 
+      </div>
+    </div>
+    <Card v-else>
+      <template #content>
+        <HdfsUpload></HdfsUpload>
+      </template>  
+      <template #footer>
+        <Button v-bind:label="$t('common.createNew')" icon="pi pi-check" autofocus @click="createDoc" />
+      </template>
+    </Card>
+
+    
+      
+  </Sidebar>
+         <Sidebar :visible="false" position="right"
+  :modal="true" :breakpoints="{'960px': '75vw', '640px': '100vw'}" :style="{width: '760px', overflow:'hidden'}">
         <div v-if="selectedTemplate != null">
           <RichEditor v-if="selectedDocLanguage == 'kz'" :readonly="true"  v-model="selectedTemplate.mainTextKaz" editorStyle="height:300px;width:400px;max-width:700px">
             <template v-slot:toolbar></template>
@@ -61,28 +121,18 @@
             <template v-slot:toolbar></template>
           </RichEditor>
         </div>
-      </div>
-    </div>
-    <div v-else>
-      <HdfsUpload></HdfsUpload>
-    </div>
-
-    <template #footer>
-      <Button v-bind:label="$t('common.no')" icon="pi pi-times" @click="closeForm('createDocDialog')" class="p-button-text"/>
-      <Button v-bind:label="$t('common.yes')" icon="pi pi-check" autofocus @click="createDoc" />
-    </template>
-  </Dialog>
+        </Sidebar>
 </div>
 </template>
 <script>
-  import {smartEnuApi} from "@/config/config";
+  import {smartEnuApi, getHeader} from "@/config/config";
   import axios from 'axios';
   import DocState from "@/enum/docstates/index";
   import RichEditor from "./editor/RichEditor.vue";
   import HdfsUpload from "@/components/hdfs/HdfsUpload";
-
+  import DocTemplate from "@/components/documents/DocTemplate.vue"
   export default {
-    components: { RichEditor, HdfsUpload},
+    components: { RichEditor, HdfsUpload, DocTemplate},
     data() {
       return {
         dialogOpenState: {
@@ -95,6 +145,12 @@
         docSourceType: [DocState.DocSourceType.Template, DocState.DocSourceType.FilledDoc],
         languages: ["kz", "ru"],
         selectedDocLanguage : "kz",
+        lazyParams: {
+          page: 0,
+          rows: 10,
+          userType: Number(this.$route.params.type),
+          sortLang: this.$i18n.locale,
+      },
 
       }
     },
@@ -120,7 +176,27 @@
           filePath: "",
           lang: this.selectedDocLanguage == "kz" ? 0 : 1
         }
-        axios.post(smartEnuApi+url, req).then(responce=>{
+        axios.post(smartEnuApi+url, req, { headers: getHeader() }).then(responce=>{
+          this.showMessage('success', this.$t('contracts.title'), this.$t('contracts.message.created'));
+          this.$router.push({ path: '/documents/contract/' + responce.data});
+
+        })
+        .catch(error => {
+          console.log(error);
+        })
+      },
+      createDocByTemplate(event) {
+        console.log(event)
+        let url ="/agreement/create";
+        var req = {
+          sourceType : DocState.DocSourceType.Template,
+          templateId: event.value.id,
+          creatorId: this.$store.state.loginedUser.userID,
+          filePath: "",
+          lang: this.selectedDocLanguage == "kz" ? 0 : 1,
+          byParams: true
+        }
+        axios.post(smartEnuApi+url, req, { headers: getHeader() }).then(responce=>{
           this.showMessage('success', this.$t('contracts.title'), this.$t('contracts.message.created'));
           this.$router.push({ path: '/documents/contract/' + responce.data});
 
@@ -150,7 +226,7 @@
       },
       initApiCall(){
         let url = "/doctemplates?groupID=1";
-        axios.get(smartEnuApi+url)
+        axios.get(smartEnuApi+url, { headers: getHeader() })
         .then(res=>{
           res.data.forEach(el => {
             if(el.DocTemplates){
