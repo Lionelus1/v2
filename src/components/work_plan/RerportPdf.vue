@@ -47,19 +47,6 @@ export default {
       work_plan_id: this.planId,
       items: this.data,
       pdfType: this.type,
-      pdfOptions: {
-        margin: 15,
-        image: {
-          type: 'jpeg',
-          quality: 1,
-        },
-        html2canvas: {scale: 3},
-        jsPDF: {
-          unit: 'mm',
-          format: 'a4',
-          orientation: 'p',
-        },
-      },
       loginedUserId: 0
     }
   },
@@ -87,6 +74,7 @@ table {
   font-size: 14px;
   text-align: center;
   border-collapse: collapse;
+  border-spacing: 0;
 
   th {
     font-weight: bold;
@@ -94,8 +82,8 @@ table {
 
   td,
   th {
-    padding: 8px;
-    border: 0.03em solid #3f3f3f;
+    padding: 5px;
+    border: 1px solid black;
   }
 }
 

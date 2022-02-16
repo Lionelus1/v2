@@ -10,8 +10,10 @@
       <Button v-if="isFinish && (isApproval || isPlanCreator) && isPlanSentApproval" label="Посмотреть план"
               icon="pi pi-eye" @click="viewDoc"
               class="p-button p-button-info p-ml-2"/>
-      <WorkPlanReportModal v-if="isFinish && (isApproval || isPlanCreator) && isPlanSentApproval" :planId="work_plan_id"
-                           :plan="plan"></WorkPlanReportModal>
+      <Button v-if="isFinish && (isApproval || isPlanCreator) && isPlanSentApproval" label="Отчеты"
+              @click="navigateToReports" class="p-button p-button-info p-ml-2"/>
+<!--      <WorkPlanReportModal v-if="isFinish && (isApproval || isPlanCreator) && isPlanSentApproval" :planId="work_plan_id"
+                           :plan="plan"></WorkPlanReportModal>-->
     </div>
     <div class="card">
       <DataTable :value="data" dataKey="work_plan_event_id"
@@ -125,8 +127,7 @@ import WorkPlanEventEditModal from "@/components/work_plan/WorkPlanEventEditModa
 
 export default {
   components: {
-    WorkPlanEventEditModal,
-    WorkPlanReportModal, WorkPlanApprove, WorkPlanEventTree, WorkPlanEventAdd, WorkPlanExecute, WorkPlanEventResultModal
+    WorkPlanEventEditModal, WorkPlanApprove, WorkPlanEventTree, WorkPlanEventAdd, WorkPlanExecute, WorkPlanEventResultModal
   },
   data() {
     return {
@@ -455,6 +456,9 @@ export default {
           });
         }
       });
+    },
+    navigateToReports() {
+      this.$router.push({name: 'WorkPlanReport', params: {id: this.work_plan_id}});
     }
   },
   /*unmounted() {

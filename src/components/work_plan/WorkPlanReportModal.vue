@@ -3,7 +3,7 @@
       type="button"
       icon="pi pi-document"
       class="p-button p-button-info p-ml-2"
-      label="Отчет"
+      label="Создать отчет"
       @click="openModal"
   ></Button>
 
@@ -26,12 +26,15 @@
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
               @click="closeModal"/>
       <Button label="Ок" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2"
-              @click="initReport"/>
+              @click="create"/>
     </template>
   </Dialog>
 </template>
 
 <script>
+import axios from "axios";
+import {getHeader, smartEnuApi} from "@/config/config";
+
 export default {
   name: "WorkPlanReportModal",
   props: ['planId', 'plan'],
@@ -81,8 +84,27 @@ export default {
 
       }*/
     },
-    initReport() {
-      this.$router.push({ name: 'WorkPlanReportView', params: { id: this.work_plan_id, type: this.type, name: this.report_name, quarter: this.quarter }})
+    create() {
+      //this.$router.push({ name: 'WorkPlanReportView', params: { id: this.work_plan_id, type: this.type, name: this.report_name, quarter: this.quarter }})
+      axios.post(smartEnuApi + `/workPlan/createReport`, {
+        work_plan_id: parseInt(this.work_plan_id),
+        report_name: this.report_name,
+        report_type: this.type,
+        quarter: this.type === 2 ? this.quarter : null
+      }, {headers: getHeader()}).then(res => {
+        this.emitter.emit("isReportCreated", true);
+        this.closeModal();
+      }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+      })
     },
     openModal() {
       this.selectQuarterModal = true;

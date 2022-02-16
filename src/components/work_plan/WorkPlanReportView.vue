@@ -38,7 +38,7 @@
 import axios from "axios";
 import html2pdf from "html2pdf.js";
 import ReportPdf from "./RerportPdf";
-import {getHeader, smartEnuApi} from "@/config/config";
+import {getHeader, signerApi, smartEnuApi} from "@/config/config";
 import treeToList from "@/service/treeToList";
 
 export default {
@@ -63,18 +63,72 @@ export default {
       quarter: null,
       report_name: null,
       items: null,
+      report_id: null,
+      doc_id: null,
+      report: null,
     }
   },
   created() {
-    this.work_plan_id = this.$route.params.id;
+    this.report_id = parseInt(this.$route.params.id);
+    this.work_plan_id = this.$route.params.work_plan_id;
     this.quarter = parseInt(this.$route.params.quarter);
     this.report_name = this.$route.params.name;
     this.reportType = parseInt(this.$route.params.type);
     this.loginedUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
-    this.plan = JSON.parse(localStorage.getItem("workPlan"));
+    //this.plan = JSON.parse(localStorage.getItem("workPlan"));
+    //this.getReport();
     this.getData();
   },
   methods: {
+    getReport() {
+      axios.get(smartEnuApi + `/workPlan/getWorkPlanReportById/${this.report_id}`, {headers: getHeader()})
+      .then(res => {
+        console.log(res);
+        this.report = res.data;
+      }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+      });
+    },
+    getFile() {
+      axios.get(signerApi + `/documents/${this.doc_id}`).then(resp => {
+        axios.post(smartEnuApi + `/workPlan/getWorkPlanFile`,
+            {file_path: resp.data.filePath},
+            {headers: getHeader()}).then(res => {
+          if (res.data) {
+            this.source = `data:application/pdf;base64,${res.data}`;
+            this.document = res.data;
+          }
+        }).catch(error => {
+          if (error.response && error.response.status === 401) {
+            this.$store.dispatch("logLout");
+          } else {
+            this.$toast.add({
+              severity: "error",
+              summary: error,
+              life: 3000,
+            });
+          }
+        });
+      }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+      });
+    },
     initReportFile() {
       //let workPlanId = this.data.work_plan_id;
       let pdfOptions = {
@@ -83,7 +137,7 @@ export default {
           type: 'jpeg',
           quality: 1,
         },
-        html2canvas: {scale: 3},
+        html2canvas: {scale: 1},
         jsPDF: {
           unit: 'px',
           format: 'a4',
