@@ -493,7 +493,7 @@ export default {
         setMeetingTime: "Назначить день защиты",
         startRegistration: "Запустить регистрацию",
         finishRegistration: "Завершить регистрацию",
-        startVoting: "Запустить голосоание",
+        startVoting: "Запустить голосование",
         finishVoting: "Завершить голосование",
         validationErrors: {
             selectSpeciality: "Укажите специальность",
