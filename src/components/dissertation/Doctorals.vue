@@ -392,6 +392,17 @@
           <Column field="total" :header="$t('common.total')"></Column>
           <Column field="registered" :header="$t('common.registered')"></Column>
         </DataTable>
+        <DataTable v-if="regInfoDetail && isSecretary && selectedDoctoral.dissertation.state == dissertationState.ReadyToRegister" :loading="loading" :value="regInfoDetail" showGridlines responsiveLayout="scroll">
+          <Column field="fullName" :header="$t('common.fullName')"></Column>
+          <Column field="state" :header="$t('common.state')">
+            <template #body="slotProps">
+              <span v-if="slotProps.data.state ==0" class="p-tag p-tag-warning">{{$t('common.states.notRegistered')}}</span>
+              <span v-else class="p-tag p-tag-success">{{$t('common.states.registered')}}</span>             
+
+            </template>
+          </Column>
+            
+        </DataTable>
         <div v-if="voteInfo">
           <h3>{{$t('common.voting')}}</h3>
           <p>
@@ -402,18 +413,24 @@
           </p>
           <ProgressBar :value="(Math.floor((voteInfo.voted / voteInfo.total) * 100))" />
           
-          <DataTable v-if="voteInfo && (selectedDoctoral.dissertation.state == dissertationState.VotingFinished || selectedDoctoral.dissertation.state == dissertationState.VotinsFinishedSecondStep)" :loading="loading" :value="voteInfo.votes" showGridlines responsiveLayout="scroll">
-          <Column field="type">
+          <DataTable ref="voteReport" v-if="voteInfo && (selectedDoctoral.dissertation.state == dissertationState.VotingFinished || selectedDoctoral.dissertation.state == dissertationState.VotinsFinishedSecondStep)" :loading="loading" :value="voteInfo.votes" showGridlines responsiveLayout="scroll">
+            <template v-if="isSecretary" #header>
+                <div style="text-align: left">
+                    <Button icon="pi pi-external-link" :label="$t('common.export')" @click="exportCSV($event)" />
+                </div>
+            </template>
+          <Column header="_">
             <template #body="slotProps">
               {{ $t('dissertation.vote.v' + slotProps.data.type)  }}
             </template>
           </Column>
           <Column field="count" :header="$t('common.voted')"></Column>
+         
           </DataTable>
-          
+        
         </div>
         <div
-            v-if="isDissertationMember && ((currentMemberState === memberState.Registered && selectedDoctoral.dissertation.state === dissertationState.VotingStarted) || (currentMemberState === memberState.Voted && selectedDoctoral.dissertation.state === dissertationState.VotingRestarted))"
+            v-if="(isDissertationMember || isSecretary) && ((currentMemberState === memberState.Registered && selectedDoctoral.dissertation.state === dissertationState.VotingStarted) || (currentMemberState === memberState.Voted && selectedDoctoral.dissertation.state === dissertationState.VotingRestarted))"
           >
               <div id="keyword">
                 <p ref="content" style="border: 1px solid blue;margin-top:5px;padding: 5px;">{{ $t("common.voteKeyword")}}:<span style="text-decoration: underline;font-weight: bold;" >&nbsp; {{password}}</span>
@@ -429,7 +446,7 @@
 
               </div>
               <div class="p-field-radiobutton"
-                v-if="isDissertationMember && currentMemberState === memberState.Registered && selectedDoctoral.dissertation.state === dissertationState.VotingStarted"
+                v-if="(isDissertationMember || isSecretary) && currentMemberState === memberState.Registered && selectedDoctoral.dissertation.state === dissertationState.VotingStarted"
               >
                 <RadioButton id="vote1" name="vote" value="1" v-model="currentMemberVote" />
                 <label for="city1">{{$t('dissertation.vote.v1')}}</label>
@@ -443,17 +460,32 @@
                 <label for="city3">{{$t('dissertation.vote.v3')}}</label>
               </div>
               <div class="p-field-radiobutton"
-                v-if="isDissertationMember && currentMemberState === memberState.Registered && selectedDoctoral.dissertation.state === dissertationState.VotingStarted"
+                v-if="(isDissertationMember || isSecretary) && currentMemberState === memberState.Registered && selectedDoctoral.dissertation.state === dissertationState.VotingStarted"
               >
                 <RadioButton id="vote4" name="vote" value="4" v-model="currentMemberVote" />
                 <label for="city4">{{$t('dissertation.vote.v4')}}</label>
               </div>
           </div>
-        
+          <Inplace :closable="true" class = "p-mt-3"
+              v-if="(isDissertationMember || isSecretary) &&  (selectedDoctoral.dissertation.state === dissertationState.VotingFinished || selectedDoctoral.dissertation.state === dissertationState.VotinsFinishedSecondStep)"
+            >
+              <template #display>
+                  <Button
+                  :label="$t('common.checkMyVoice')"
+                  class="p-button-text"
+                  />
+              </template>
+              <template #content>
+                  <div class="p-inputgroup">
+                    <Button icon="pi pi-check" class="p-button-success" @click="checkMyVoice"/>
+                    <InputText :placeholder="$t('dissertation.message.enterKey')" type="text" id="inputgroup" v-model="checkPassword" />
+                  </div>
+              </template>
+          </Inplace>
         
         <template #footer>
           <Button
-            :label="$t('common.cancel')"
+            :label="$t('common.close')"
             icon="pi pi-times"
             class="p-button-text"
             @click="hideDialog(dialog.defenseConduct)"
@@ -479,35 +511,37 @@
             @click="ChangeDissertationState(dissertationState.VotingStarted)"
           />
           <Button
-            v-if="findRole(null, 'dissertation_council_secretary') && selectedDoctoral.dissertation.state === dissertationState.VotingStarted"
+            v-if="isSecretary && !isDissertationMember && selectedDoctoral.dissertation.state === dissertationState.VotingStarted"
             :label="$t('dissertation.finishVoting')"
             class="p-button-text"
             @click="ChangeDissertationState(dissertationState.VotingFinished)"
           />
+          
           <Button
-            v-if="findRole(null, 'dissertation_council_secretary') && selectedDoctoral.dissertation.state === dissertationState.VotingStarted"
-            :label="$t('dissertation.finishVoting')"
-            class="p-button-text"
-            @click="ChangeDissertationState(dissertationState.VotingFinished)"
-          />
-          <Button
-            v-if="isDissertationMember && currentMemberState === memberState.NotRegistered && selectedDoctoral.dissertation.state === dissertationState.ReadyToRegister"
+            v-if="isDissertationMember && !isSecretary && currentMemberState === memberState.NotRegistered && selectedDoctoral.dissertation.state === dissertationState.ReadyToRegister"
             :label="$t('common.register')"
             class="p-button-text"
             @click="memberRegister()"
           />
           <Button
-            v-if="isDissertationMember && ((currentMemberState === memberState.Registered && selectedDoctoral.dissertation.state === dissertationState.VotingStarted) || (currentMemberState === memberState.Voted && selectedDoctoral.dissertation.state === dissertationState.VotingRestarted))"
+            v-if="(isDissertationMember  || isSecretary) && ((currentMemberState === memberState.Registered && selectedDoctoral.dissertation.state === dissertationState.VotingStarted) || (currentMemberState === memberState.Voted && selectedDoctoral.dissertation.state === dissertationState.VotingRestarted))"
             :label="$t('common.vote')"
             class="p-button-text"
             @click="vote()"
           />
-          {{currentMemberState}}
-          {{selectedDoctoral.dissertation.state}}
-          {{(currentMemberState === memberState.Registered && selectedDoctoral.dissertation.state === dissertationState.VotingStarted)}}
+          <Button
+            v-if="(isSecretary && selectedDoctoral.dissertation.state === dissertationState.VotingFinished)"
+            :label="$t('common.revote')"
+            class="p-button-text"
+            @click="ChangeDissertationState(dissertationState.VotingRestarted)"
+          />
+       
+          <div v-if="isDissertationMember  && ((currentMemberState === memberState.NotRegistered && selectedDoctoral.dissertation.state === dissertationState.VotingStarted) || (currentMemberState === memberState.Voted && selectedDoctoral.dissertation.state === dissertationState.VotingRestarted))">
+          <small class="p-error">{{$t('dissertation.message.notRegistered')}}</small>
+          </div>
+
         </template>
       </Dialog>
-      {{selectedDoctoral}}
     </div>
   </div>
 </template>
@@ -530,6 +564,7 @@ export default {
       councilID: -1,
       currentMemberState: -1,
       currentMemberVote: null,
+      checkedVoice: null,
       doctoral: {
         cafedra: null,
         hei: null,
@@ -583,8 +618,12 @@ export default {
           state: false,
         },
       },
+      isDissertationMember : false,
+      isSecretary: false,
       password: null,
+      checkPassword: null,
       regInfo: null,
+      regInfoDetail: null,
       voteInfo: null,
       selectedUsers: null,
       selectedDepartment: null,
@@ -638,16 +677,27 @@ export default {
       numbers: true,
     });
   },
- 
+  mounted() {
+    this.getDissertationMember();
+    this.getSecretary();
+  },
+
   methods: {
     findRole: findRole,
-    isDissertationMember() {
-      return (
-        this.findRole(null, 'dissertation_council_permanent_member') 
+    exportCSV() {
+            this.$refs.voteReport.exportCSV();
+    },
+    getDissertationMember() {
+      this.isDissertationMember= (
+        (this.findRole(null, 'dissertation_council_permanent_member') 
         || this.findRole(null, 'dissertation_council_temporary_member')
         || this.findRole(null, 'dissertation_council_reviewer')
-        || this.findRole(null, 'dissertation_council_chief')
-        )
+        || this.findRole(null, 'dissertation_council_chief'))
+       
+        ) 
+    },
+    getSecretary() {
+      this.isSecretary = this.findRole(null, 'dissertation_council_secretary') 
     },
     getDepartments(event, departmentList) {
       departmentList.getDepartments(event.value.id);
@@ -713,7 +763,21 @@ export default {
         }
       )
       .then(response => {
-        this.currentMemberState = response.data
+        this.currentMemberState = response.data.memberState
+        this.selectedDoctoral.dissertation.state = response.data.dissertationState
+        if (this.selectedDoctoral.dissertation.state < this.dissertationState.VotingStarted){
+          this.voteInfo = null;
+        }
+         if (this.selectedDoctoral.dissertation.state < this.dissertationState.ReadyToRegister){
+          this.regInfo = null;
+          this.regInfoDetail = null;
+        }
+        console.log(response.data)
+        if (this.dialog.defenseConduct) {
+            setTimeout(() => {
+            this.getMemberState()
+          }, 5000);
+        }
       })
       .catch((error) => {
           if (error.response.status == 401) {
@@ -765,12 +829,16 @@ export default {
         this.getRegistrationInfo()
         
       }
-      if (this.selectedDoctoral && this.selectedDoctoral.dissertation.state == this.dissertationState.VotingStarted) {
-        this.getVotingInfo(true)
+
+      if (this.selectedDoctoral && (
+        this.selectedDoctoral.dissertation.state == this.dissertationState.VotingStarted ||
+        this.selectedDoctoral.dissertation.state == this.dissertationState.VotingRestarted ||
+        this.selectedDoctoral.dissertation.state == this.dissertationState.VotingFinished ||
+        this.selectedDoctoral.dissertation.state == this.dissertationState.VotinsFinishedSecondStep
+      )) {
+        this.getVotingInfo()
       }
-      if (this.selectedDoctoral && this.selectedDoctoral.dissertation.state == this.dissertationState.VotingFinished) {
-        this.getVotingInfo(false)
-      }
+      
       this.dialog.defenseConduct.state =true;
     },
     showDialog(dialog) {
@@ -824,6 +892,9 @@ export default {
       )
       .then(response => {
         this.regInfo = response.data
+        if (this.regInfo.length>0) {
+          this.regInfoDetail = this.regInfo[0].members
+        }
         this.selectedDoctoral.dissertation.state = this.dissertationState.ReadyToRegister
         if (this.dialog.defenseConduct.state) {
           setTimeout(() => {
@@ -850,12 +921,13 @@ export default {
       )
       .then(() => {
         this.selectedDoctoral.dissertation.state = state
-        if (state == this.dissertationState.VotingStarted) {
-          this.getVotingInfo(true)
+        if (state == this.dissertationState.VotingStarted || 
+          state == this.dissertationState.VotingFinished ||
+          state == this.dissertationState.VotingRestarted || 
+          state == this.dissertationState.VotinsFinishedSecondStep) {
+          this.getVotingInfo()
         }
-        if (state == this.dissertationState.VotingFinished) {
-          this.getVotingInfo(false)
-        }
+      
       })
       .catch((error) => {
           if (error.response.status == 401) {
@@ -879,7 +951,6 @@ export default {
         password: this.password,
         vote: Number(this.currentMemberVote)
       }
-      console.log(req)
       axios
       .post(
         smartEnuApi + "/dissertation/vote",
@@ -888,19 +959,67 @@ export default {
       )
       .then(() => {
         this.currentMemberState = this.memberState.Voted
-        this.getVotingInfo(true)
+        this.getVotingInfo()
+        this.currentMemberVote = null
+      })
+      .catch((error) => {
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+            this.$toast.add({
+                severity: "error",
+                summary: error,
+                life: 3000,
+              });
+          }
+      });
+
+    },
+    checkMyVoice() {
+      var req = {
+        dissertationID: this.selectedDoctoral.dissertation.id,
+        userID: this.$store.state.loginedUser.userID,
+        step: this.selectedDoctoral.dissertation.state == this.dissertationState.VotingRestarted ? 2 : 1,
+        password: this.checkPassword,
+      }
+      console.log(req)
+      axios
+      .post(
+        smartEnuApi + "/dissertation/checkMyVoice",
+        req,
+        { headers: getHeader()}
+      )
+      .then((res) => {
+        if (!res.data || (res.data !== "1" && res.data !== "2" && res.data !== "3" && res.data != "4")){
+          this.$toast.add({
+                severity: "error",
+                summary: this.$t('common.message.invalidkey'),
+                life: 3000,
+              });
+            return
+        }
+        this.checkedVoice = this.$t('dissertation.vote.v' +res.data)
+        this.$toast.add({
+                severity: "success",
+                summary: this.$t('common.yourVoice') + this.checkedVoice,
+                life: 3000,
+              });
       })
       .catch((error) => {
           if (error.response.status == 401) {
             this.$store.dispatch("logLout");
           }
+          this.$toast.add({
+                severity: "error",
+                summary: this.$t('common.message.invalidkey'),
+                life: 3000,
+              });
       });
 
     },
-    getVotingInfo(short) {
+    getVotingInfo() {
       var req = {
         dissertationID: this.selectedDoctoral.dissertation.id,
-        short: short,
+        short: this.selectedDoctoral.dissertation.state == this.dissertationState.VotingStarted || this.selectedDoctoral.dissertation.state == this.dissertationState.VotingRestarted ,
         step: this.selectedDoctoral.dissertation.state == this.dissertationState.VotingRestarted ? 2 : 1,
    
       }
@@ -916,9 +1035,10 @@ export default {
           this.selectedDoctoral.dissertation.state = this.voteInfo.dissertationState
         }
         this.loading = false
+        var short = this.selectedDoctoral.dissertation.state == this.dissertationState.VotingStarted || this.selectedDoctoral.dissertation.state == this.dissertationState.VotingRestarted;
         if (short && this.dialog.defenseConduct.state && this.selectedDoctoral && (this.selectedDoctoral.dissertation.state === this.dissertationState.VotingRestarted || this.selectedDoctoral.dissertation.state === this.dissertationState.VotingStarted)) {
           setTimeout(() => {
-            this.getVotingInfo(short)
+            this.getVotingInfo()
           }, 5000);
         }
 
@@ -944,6 +1064,7 @@ export default {
         this.regInfo = response.data
          if (this.regInfo && this.regInfo.length>0) {
           this.selectedDoctoral.dissertation.state = this.regInfo[0].dissertationState
+          this.regInfoDetail = this.regInfo[0].members
         }
         this.loading = false
         if ((this.dialog.defenseConduct.state && this.selectedDoctoral && this.selectedDoctoral.dissertation.state === this.dissertationState.ReadyToRegister) ||
