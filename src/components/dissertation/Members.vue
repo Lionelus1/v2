@@ -80,7 +80,6 @@
                 <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-text" @click="hideDialog(dialog.addMember)"/>
                 <Button :label="$t('common.add')" icon="pi pi-check" class="p-button-text" @click="addMember" />
             </template>
-            {{selectedMembers}}
         </Dialog>
     </div>
 
