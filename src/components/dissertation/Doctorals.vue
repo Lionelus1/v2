@@ -30,7 +30,7 @@
             class="p-button-info p-mr-2"
           />
           <Button
-            v-if = "isSecretary"
+            v-if="isSecretary"
             icon="pi pi-trash"
             class="p-button-danger"
             @click="deleteDissertation()"
