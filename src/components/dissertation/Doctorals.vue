@@ -5,6 +5,7 @@
         <template #end>
           <Button
             v-if="findRole(null,'dissertation_council_secretary')"
+            isSecretary
             icon="pi pi-plus"
             class="p-button-success p-mr-2"
             @click="showAddCouncilDialog()"
@@ -29,6 +30,7 @@
             class="p-button-info p-mr-2"
           />
           <Button
+            v-if="isSecretary"
             icon="pi pi-trash"
             class="p-button-danger"
             @click="deleteDissertation()"
@@ -417,13 +419,13 @@
             <template v-if="isSecretary" #header>
                 <div style="text-align: left">
                     <Button icon="pi pi-external-link" :label="$t('common.export')" @click="exportCSV($event)" />
-                </div>
+                </div>s
             </template>
           <Column header="_">
             <template #body="slotProps">
               {{ $t('dissertation.vote.v' + slotProps.data.type)  }}
             </template>
-          </Column>
+          </Column>s
           <Column field="count" :header="$t('common.voted')"></Column>
          
           </DataTable>
