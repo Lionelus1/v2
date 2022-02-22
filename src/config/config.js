@@ -5,8 +5,8 @@ export const hdfsApi = "http://localhost:8085";
 //export const signerApi = "https://smart.enu.kz:6990"
 export const signerApi = "http://10.1.1.161:6990"
 //export const signerApi = "http://10.1.3.124:6990"
-//export const smartEnuApi = "http://10.83.23.223:8080"
-export const smartEnuApi = "http://localhost:8080"
+export const smartEnuApi = "https://10.83.23.223:8080"
+//export const smartEnuApi = "http://localhost:8080"
 export const templateApi = "http://localshost:8082"
 export const header  = {
   "Accept": "application/json",

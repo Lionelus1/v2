@@ -57,25 +57,25 @@ export default {
 
       menu: [
 
-        {
-          label: this.$t('common.administration'), icon: 'pi pi-fw pi-shield',
-          items: [
-            {
-              label: this.$t('hr.vacancies'),
-              icon: 'pi pi-fw pi-user-plus',
-              to: '/human-resources/vacancies'
-            },
-          ]
+      //  {
+      //    label: this.$t('common.administration'), icon: 'pi pi-fw pi-shield',
+      //    items: [
+      //      {
+      //        label: this.$t('hr.vacancies'),
+      //        icon: 'pi pi-fw pi-user-plus',
+      //        to: '/human-resources/vacancies'
+      //      },
+      //    ]ß
+//
+      //  },
+        //{
+        //  label: 'Құжаттар', icon: 'pi pi-fw pi-folder',
+        //  items: [
+        //    {label: 'Келісім-шарт үлгілері', icon: 'pi pi-fw pi-book', to: '/documents/doctemplate'},
+        //    {label: 'Келісім-шарттар', icon: 'pi pi-fw pi-copy', to: '/documents/contracts'},
+        //  ]
 
-        },
-        {
-          label: 'Құжаттар', icon: 'pi pi-fw pi-folder',
-          items: [
-            {label: 'Келісім-шарт үлгілері', icon: 'pi pi-fw pi-book', to: '/documents/doctemplate'},
-            {label: 'Келісім-шарттар', icon: 'pi pi-fw pi-copy', to: '/documents/contracts'},
-          ]
-
-        },
+        //},
         {
           label: 'Контрагенттер', icon: 'pi pi-fw pi-users',
           items: [
@@ -115,9 +115,9 @@ export default {
         {
           label: this.$t('vaccination.title'), icon: 'pi pi-fw pi-check-circle', to: '/smartenu/vaccination'
         },
-        {
-          label:  this.$t('faq.title'), icon: 'pi pi-fw pi-question-circle', to: '/faq/faqmain'
-        },
+       // {
+       //   label:  this.$t('faq.title'), icon: 'pi pi-fw pi-question-circle', to: '/faq/faqmain'
+       // },
          {
                 label:  this.$t('dissertation.title'), icon: 'pi pi-fw pi-book',
                 items: [
@@ -130,20 +130,20 @@ export default {
                 ]
 
         },
-        {
-          label: 'План', icon: 'pi pi-fw pi-folder', to: '/work-plan'
-        },
-        {
-
-          label: this.$t('common.forStudentsAndGraduates'), icon: 'pi pi-fw pi-users',
-          items: [
-            {
-              label: this.$t('hr.vacancies'),
-              icon: 'pi pi-fw pi-user-plus',
-              to: '/human-resources/public/vacancies'
-            },
-          ]
-        },
+      //  {
+      //    label: 'План', icon: 'pi pi-fw pi-folder', to: '/work-plan'
+      //  },
+      //  {
+//
+ //         label: this.$t('common.forStudentsAndGraduates'), icon: 'pi pi-fw pi-users',
+ //         items: [
+ //           {
+ //             label: this.$t('hr.vacancies'),
+ //             icon: 'pi pi-fw pi-user-plus',
+ //             to: '/human-resources/public/vacancies'
+ //           },
+ //         ]
+ //       },
 
         // {
         //   label: this.$t('hr.vacancies'),
