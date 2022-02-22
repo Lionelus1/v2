@@ -106,14 +106,6 @@ export default {
         }
       });
     },
-    updateDoc(fpath) {
-      axios.put(signerApi + '/documents', {
-        filePath: fpath,
-        uuid: this.data.doc_id,
-      }, {headers: getHeader()}).then((response) => {
-        console.log(response)
-      });
-    },
     approveChange(result) {
       if (result.stage === this.currentStage) {
         if (this.approval_users.length === 0) {

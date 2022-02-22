@@ -107,7 +107,6 @@ export default {
     }
   },
   created() {
-    debugger;
     this.report_id = parseInt(this.$route.params.id);
     this.work_plan_id = parseInt(this.$route.params.work_plan_id);
     this.quarter = parseInt(this.$route.params.quarter);
@@ -292,7 +291,9 @@ export default {
       }
     },
     getSignatures() {
-      axios.get(signerApi + `/signature/signatures/${this.doc_id}`, {headers: getHeader()}).then(res => {
+      axios.post(smartEnuApi + `/workPlan/getSignatures`,
+          {doc_id: this.plan.doc_id},
+          {headers: getHeader()}).then(res => {
         if (res.data) {
           this.signatures = res.data;
           const signUser = res.data.find(x => x.userId === this.loginedUserId);
@@ -335,7 +336,7 @@ export default {
       }
     },
     sendSignature() {
-      axios.post(smartEnuApi + '/workPlan/signature', {
+      axios.post(smartEnuApi + '/workPlan/reportSignature', {
         uuid: this.doc_id,
         sign: this.CMSSignature,
         report_id: this.report_id,

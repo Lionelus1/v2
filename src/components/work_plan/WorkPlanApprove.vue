@@ -104,40 +104,18 @@ export default {
       });
     },
     approvePlan(fd) {
-      let userIds = [];
-
+      fd.append("doc_id", this.plan.doc_id)
+      fd.append("approval_users", JSON.stringify(this.approval_users))
       axios.post(smartEnuApi + `/workPlan/savePlanFile`, fd, {headers: getMultipartHeader()}).then(res => {
-        if (res.data) {
-          this.updateDoc(res.data);
-          this.selectedUsers.forEach(e => {
-            userIds.push(e.userID);
+        if (res.data && res.data.is_success) {
+          this.$toast.add({
+            severity: "success",
+            summary: "План успешно отправлен на согласование",
+            life: 3000,
           });
-          axios.post(smartEnuApi + `/workPlan/addApprove`, {
-            approval_users: this.approval_users,
-            work_plan_id: this.data.work_plan_id,
-          }, {headers: getHeader()}).then(res => {
-            if (res.data.is_success) {
-              this.$toast.add({
-                severity: "success",
-                summary: "План успешно отправлен на согласование",
-                life: 3000,
-              });
-              this.emitter.emit("planSentToApprove", true)
-            }
-            this.showModal = false;
-          }).catch(error => {
-            if (error.response && error.response.status === 401) {
-              this.$store.dispatch("logLout");
-            } else {
-              this.$toast.add({
-                severity: "error",
-                summary: error,
-                life: 3000,
-              });
-              this.showModal = false;
-            }
-          })
+          this.emitter.emit("planSentToApprove", true)
         }
+        this.showModal = false;
       }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
@@ -148,14 +126,6 @@ export default {
             life: 3000,
           });
         }
-      });
-    },
-    updateDoc(fpath) {
-      axios.put(signerApi + '/documents', {
-        filePath: fpath,
-        uuid: this.data.doc_id,
-      }, {headers: getHeader()}).then((response) => {
-        console.log(response)
       });
     },
     approveChange(result) {

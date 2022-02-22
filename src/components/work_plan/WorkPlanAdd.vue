@@ -4,13 +4,13 @@
   <Dialog header="Добавить план" v-model:visible="showModal" :style="{width: '450px'}" class="p-fluid">
     <div class="p-field">
       <label>Название плана</label>
-      <InputText v-model="work_plan_name" @input="input" v-on:keyup.enter="sendDoc"/>
+      <InputText v-model="work_plan_name" @input="input" v-on:keyup.enter="createPlan"/>
     </div>
     <template #footer>
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
               @click="closeBasic"/>
       <Button :label="$t('common.add')" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2"
-              :disabled="isDisabled" @click="sendDoc"/>
+              :disabled="isDisabled" @click="createPlan"/>
     </template>
   </Dialog>
 
@@ -61,8 +61,16 @@ export default {
       axios.post(smartEnuApi + `/workPlan/addPlan`, {work_plan_name: this.work_plan_name, doc_id: this.documentID}, {
         headers: getHeader(),
       }).then(res => {
-        this.emitter.emit("workPlanIsAdded", true);
-        this.$toast.add({severity: 'info', summary: 'Success', detail: 'План успешно создан', life: 3000});
+        if (res.data.is_success) {
+          this.emitter.emit("workPlanIsAdded", true);
+          this.$toast.add({severity: 'info', summary: 'Success', detail: 'План успешно создан', life: 3000});
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: "Create plan error",
+            life: 3000,
+          });
+        }
         this.showModal = false;
       }).catch(error => {
         if (error.response && error.response.status === 401) {
@@ -72,52 +80,6 @@ export default {
             severity: "error",
             summary: error,
             life: 3000,
-          });
-        }
-      });
-    },
-    sendDoc() {
-      axios.post(signerApi + '/documents', {
-        id: null,
-        name: this.work_plan_name,
-      }, {headers: getHeader()}).then((response) => {
-        if (response.data.id !== null || response.data.id !== '') {
-          this.documentID = response.data.uuid
-          this.setDocHistory(response.data)
-        } else {
-          this.$toast.add({
-            severity: 'error',
-            summary: this.$t('ncasigner.failToSendDoc'),
-            life: 3000
-          });
-        }
-      }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
-      });
-    },
-    setDocHistory(document) {
-      let loginedUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
-      axios.post(signerApi + '/documents/history', {
-        id: null,
-        stateId: 1,
-        documentUuid: document.uuid,
-        setterId: loginedUserId
-      }, {headers: getHeader()}).then((response) => {
-        if (response.data.id !== null || response.data.id !== '') {
-          this.createPlan();
-        } else {
-          this.$toast.add({
-            severity: 'error',
-            summary: this.$t('ncasigner.failToSendDoc'),
-            life: 3000
           });
         }
       });
