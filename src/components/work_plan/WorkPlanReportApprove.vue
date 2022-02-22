@@ -13,11 +13,12 @@
     <div class="p-field">
       <label>Выберите</label>
       <ApproveComponent @add="approveChange" :stepValue="selectedUsers" v-model="selectedUsers" @changeStep="changeStep"></ApproveComponent>
+      <small class="p-error" v-if="submitted && formValid.approvals">Выберите ответственных лиц</small>
     </div>
     <template #footer>
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
               @click="closeModal"/>
-      <Button label="Отправить" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2" @click="approve"/>
+      <Button label="Отправить" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2" @click="approvePlan"/>
     </template>
   </Dialog>
 </template>
@@ -30,42 +31,38 @@ import axios from "axios";
 import {getHeader, getMultipartHeader, signerApi, smartEnuApi} from "@/config/config";
 
 export default {
-  name: "WorkPlanApprove",
-  components: {ApproveComponent, PdfContent},
-  props: ['docId', 'plan', 'events'],
+  name: "WorkPlanReportApprove",
+  components: {ApproveComponent},
+  props: ['docId', 'report', 'events'],
   data() {
     return {
-      data: this.plan,
+      data: null,
       showModal: false,
-      selectedUsers: null,
-      steps: 3,
+      selectedUsers: [],
       step: 1,
-      items: [{
-        label: 'Personal',
-        to: '/steps'
-      },
-        {
-          label: 'Seat',
-          to: '/steps/seat'
-        },
-        {
-          label: 'Payment',
-          to: '/steps/payment'
-        },
-        {
-          label: 'Confirmation',
-          to: '/steps/confirmation'
-        }],
       approval_users: [],
       currentStageUsers: null,
       currentStage: 1,
       prevStage: 0,
       loginedUserId: 0,
-      fd: null
+      fd: null,
+      submitted: false,
+      formValid: {
+        approvals: false
+      },
+      doc_id: this.docId,
+      report_id: this.report
     }
   },
   created() {
     this.loginedUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
+  },
+  mounted() {
+    this.emitter.on("reportFD", (data) => {
+      if (data) {
+        this.fd = data;
+      }
+    });
   },
   methods: {
     openModal() {
@@ -74,69 +71,28 @@ export default {
     closeModal() {
       this.showModal = false;
     },
-    approve() {
-      let workPlanId = this.data.work_plan_id;
-      let pdfOptions = {
-        margin: 10,
-        image: {
-          type: 'jpeg',
-          quality: 0.98,
-        },
-        html2canvas: {scale: 3},
-        jsPDF: {
-          unit: 'mm',
-          format: 'a4',
-          orientation: 'landscape',
-          hotfixes: ["px_scaling"]
-        },
-        pagebreak: {avoid: 'tr'},
-        filename: "file.pdf"
-      };
-      const pdfContent = this.$refs.pdf.$refs.htmlToPdf;
-      const worker = html2pdf().set(pdfOptions).from(pdfContent);
-
-      worker.toPdf().output("blob").then((pdf) => {
-        const fd = new FormData();
-        fd.append('wpfile', pdf);
-        fd.append('fname', pdfOptions.filename)
-        fd.append('work_plan_id', workPlanId)
-        this.approvePlan(fd);
-      });
-    },
-    approvePlan(fd) {
+    approvePlan() {
+      console.log(this.data)
+      this.submitted = true;
+      if (!this.validate()) {
+        return;
+      }
       let userIds = [];
-
-      axios.post(smartEnuApi + `/workPlan/savePlanFile`, fd, {headers: getMultipartHeader()}).then(res => {
-        if (res.data) {
-          this.updateDoc(res.data);
-          this.selectedUsers.forEach(e => {
-            userIds.push(e.userID);
+      this.selectedUsers.forEach(e => {
+        userIds.push(e.userID);
+      });
+      this.fd.append("approval_users", JSON.stringify(this.approval_users));
+      this.fd.append("doc_id", this.doc_id);
+      this.fd.append("report_id", this.report_id)
+      axios.post(smartEnuApi + `/workPlan/savePlanReportFile`, this.fd, {headers: getMultipartHeader()}).then(res => {
+        if (res.data.is_success) {
+          this.$toast.add({
+            severity: "success",
+            summary: "Отчет успешно отправлен на согласование",
+            life: 3000,
           });
-          axios.post(smartEnuApi + `/workPlan/addApprove`, {
-            approval_users: this.approval_users,
-            work_plan_id: this.data.work_plan_id,
-          }, {headers: getHeader()}).then(res => {
-            if (res.data.is_success) {
-              this.$toast.add({
-                severity: "success",
-                summary: "План успешно отправлен на согласование",
-                life: 3000,
-              });
-              this.emitter.emit("planSentToApprove", true)
-            }
-            this.showModal = false;
-          }).catch(error => {
-            if (error.response && error.response.status === 401) {
-              this.$store.dispatch("logLout");
-            } else {
-              this.$toast.add({
-                severity: "error",
-                summary: error,
-                life: 3000,
-              });
-              this.showModal = false;
-            }
-          })
+          this.emitter.emit("reportSentToApprove", true)
+          this.closeModal();
         }
       }).catch(error => {
         if (error.response && error.response.status === 401) {
@@ -184,6 +140,11 @@ export default {
           this.currentStageUsers += `${e.fullName}, `
         })
       }
+    },
+    validate() {
+      this.formValid.approvals = this.selectedUsers.length === 0;
+
+      return !this.formValid.approvals;
     }
   }
 }

@@ -1,11 +1,13 @@
 <template>
-  <Button
-      type="button"
-      icon="pi pi-eye"
-      class="p-button p-button-info p-ml-2"
-      label="Посмотреть результат"
-      @click="openModal"
-  ></Button>
+  <div>
+    <Button
+        type="button"
+        icon="pi pi-eye"
+        class="p-button p-button-info p-ml-2"
+        label=""
+        @click="openModal"
+    ></Button>
+  </div>
 
   <Dialog header="Результат выполнения" v-model:visible="eventResultModal" :style="{width: '450px'}"
           class="p-fluid">

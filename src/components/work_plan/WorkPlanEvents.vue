@@ -2,7 +2,7 @@
   <div class="p-col-12" v-if="!loading">
     <Message severity="warn" :closable="false" v-if="plan.comment && isRejected">{{ plan.comment }}</Message>
     <div class="card" v-if="plan || data">
-      <work-plan-event-add v-if="(isCreator || isEventsNull) && !isFinish && isPlanCreator"></work-plan-event-add>
+      <work-plan-event-add v-if="(isCreator || isEventsNull) && !isFinish && isPlanCreator" :isMain="true"></work-plan-event-add>
       <Button v-if="isPlanCreator && !isFinish" label="Завершить" icon="pi pi-check" @click="finish"
               class="p-button p-button-danger p-ml-2"/>
       <work-plan-approve v-if="isPlanCreator && !isPlanSentApproval && isFinish" :plan="plan"
@@ -12,8 +12,8 @@
               class="p-button p-button-info p-ml-2"/>
       <Button v-if="isFinish && (isApproval || isPlanCreator) && isPlanSentApproval" label="Отчеты"
               @click="navigateToReports" class="p-button p-button-info p-ml-2"/>
-<!--      <WorkPlanReportModal v-if="isFinish && (isApproval || isPlanCreator) && isPlanSentApproval" :planId="work_plan_id"
-                           :plan="plan"></WorkPlanReportModal>-->
+      <!--      <WorkPlanReportModal v-if="isFinish && (isApproval || isPlanCreator) && isPlanSentApproval" :planId="work_plan_id"
+                                 :plan="plan"></WorkPlanReportModal>-->
     </div>
     <div class="card">
       <DataTable :value="data" dataKey="work_plan_event_id"
@@ -78,16 +78,21 @@
 
         <Column field="actions" header="Действия">
           <template #body="slotProps">
-            <work-plan-execute
-                v-if="parseInt(slotProps.data.quarter.String) === currentQuarter && isUserApproval(slotProps.data) && isPlanSentApproval"
-                :data="slotProps.data"></work-plan-execute>
-            <work-plan-event-result-modal v-if="slotProps.data.event_result"
-                                          :event-result="slotProps.data.event_result"></work-plan-event-result-modal>
-            <work-plan-event-add v-if="!slotProps.data.is_finish" :data="slotProps.data"></work-plan-event-add>
-            <work-plan-event-edit-modal v-if="isPlanCreator && !isPlanSentApproval && !isFinish" :event="slotProps.data"></work-plan-event-edit-modal>
-            <Button v-if="isPlanCreator && !isPlanSentApproval && !isFinish"
-                    @click="remove_event(slotProps.data.work_plan_event_id)" icon="pi pi-trash"
-                    class="p-button-danger p-ml-2" label="Удалить"></Button>
+            <div>
+              <work-plan-execute
+                  v-if="parseInt(slotProps.data.quarter.String) === currentQuarter && isUserApproval(slotProps.data) && isPlanSentApproval"
+                  :data="slotProps.data"></work-plan-execute>
+              <work-plan-event-result-modal v-if="slotProps.data.event_result"
+                                            :event-result="slotProps.data.event_result"></work-plan-event-result-modal>
+              <work-plan-event-add v-if="!slotProps.data.is_finish" :data="slotProps.data" :isMain="false"></work-plan-event-add>
+              <work-plan-event-edit-modal v-if="isPlanCreator && !isPlanSentApproval && !isFinish"
+                                          :event="slotProps.data"></work-plan-event-edit-modal>
+              <div>
+                <Button v-if="isPlanCreator && !isPlanSentApproval && !isFinish"
+                        @click="remove_event(slotProps.data.work_plan_event_id)" icon="pi pi-trash"
+                        class="p-button-danger p-ml-1 p-mt-1" label=""></Button>
+              </div>
+            </div>
           </template>
         </Column>
         <template #expansion="slotProps">
@@ -127,7 +132,12 @@ import WorkPlanEventEditModal from "@/components/work_plan/WorkPlanEventEditModa
 
 export default {
   components: {
-    WorkPlanEventEditModal, WorkPlanApprove, WorkPlanEventTree, WorkPlanEventAdd, WorkPlanExecute, WorkPlanEventResultModal
+    WorkPlanEventEditModal,
+    WorkPlanApprove,
+    WorkPlanEventTree,
+    WorkPlanEventAdd,
+    WorkPlanExecute,
+    WorkPlanEventResultModal
   },
   data() {
     return {

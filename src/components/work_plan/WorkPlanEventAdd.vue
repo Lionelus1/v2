@@ -1,5 +1,8 @@
 <template>
-  <Button label="Добавить мероприятие" icon="pi pi-plus" @click="openBasic"/>
+  <Button v-if="isMain" label="Добавить мероприятие" class="p-button-info p-ml-1" icon="pi pi-plus" @click="openBasic"/>
+  <div v-else>
+    <Button label="" class="p-button-info p-ml-1" icon="pi pi-plus" @click="openBasic"/>
+  </div>
 
   <Dialog header="Добавить мероприятие" v-model:visible="showWorkPlanEventModal" :style="{width: '450px'}"
           class="p-fluid">
@@ -39,7 +42,7 @@ import {getHeader, smartEnuApi} from "@/config/config";
 export default {
   name: 'WorkPlanEventAdd',
   components: {FindUser},
-  props: ['data'],
+  props: ['data', 'isMain'],
   data() {
     return {
       showWorkPlanEventModal: false,

@@ -71,16 +71,6 @@ export default {
       isLast: false,
       loading: false,
       user: null,
-      stepperOptions: {
-        headers: [
-          {title: 'Title One'},
-          {title: 'Title Two'},
-          {title: 'Title Three'},
-          {title: 'Title Four'}
-        ],
-        prevText: 'Previous',
-        nextText: 'Next'
-      },
       approval_users: [],
       approvals: []
     }
@@ -156,7 +146,8 @@ export default {
           .then(res => {
             if (res.data) {
               this.approvals = [];
-              const d = res.data
+              const d = res.data;
+              console.log(d.every(x => x.is_success === true));
               const unique = [...new Set(d.map(item => item.stage))];
               unique.forEach(r => {
                 let f = d.filter(x => x.stage === r);
@@ -322,7 +313,7 @@ export default {
     sendSignature() {
       axios.post(signerApi + '/signature', {
         iin: this.user.IIN,
-        rightType: "individual",
+        rightType: "internal",
         documentSigning: {
           userId: this.loginedUserId,
           documentUuid: this.plan.doc_id,

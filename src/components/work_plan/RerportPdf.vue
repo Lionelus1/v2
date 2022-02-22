@@ -74,7 +74,7 @@ table {
   font-size: 14px;
   text-align: center;
   border-collapse: collapse;
-  border-spacing: 0;
+  border: .1px solid #000;
 
   th {
     font-weight: bold;
@@ -83,7 +83,8 @@ table {
   td,
   th {
     padding: 5px;
-    border: 1px solid black;
+    border: .1px solid #000;
+    border-collapse: collapse;
   }
 }
 
