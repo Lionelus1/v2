@@ -19,9 +19,8 @@
         <Column field="status" header="Статус">
           <template #body="slotProps">
             <span
-                :class="'customer-badge status-' + slotProps.data.status.work_plan_status_id">{{
-                slotProps.data.status.name_ru
-              }}</span>
+                :class="'customer-badge status-' + slotProps.data.status.work_plan_status_id">
+              {{ $i18n.locale === "kz" ? slotProps.data.status.name_kk : $i18n.locale === "ru" ? slotProps.data.status.name_ru : slotProps.data.status.name_en }}</span>
           </template>
         </Column>
         <Column header="Тип">
@@ -172,19 +171,24 @@ export default {
   font-size: 12px;
   letter-spacing: .3px;
 
-  &.status-3 {
+  &.status-5 {
+    background: #ff3838;
+    color: #ffffff;
+  }
+
+  &.status-4 {
     background: #C8E6C9;
     color: #256029;
   }
 
   &.status-2 {
-    background: #FFCDD2;
-    color: #C63737;
-  }
-
-  &.status-4 {
     background: #FEEDAF;
     color: #8A5340;
+  }
+
+  &.status-3 {
+    background: #FFCDD2;
+    color: #C63737;
   }
 
   &.status-1 {

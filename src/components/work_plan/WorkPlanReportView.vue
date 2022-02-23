@@ -342,7 +342,6 @@ export default {
         report_id: this.report_id,
         is_last: this.isLast
       }, {headers: getHeader()}).then((response) => {
-        console.log(response)
         if (response.data.is_success) {
           this.$toast.add({
             severity: "success",
@@ -358,7 +357,7 @@ export default {
         } else {
           this.$toast.add({
             severity: "error",
-            summary: error,
+            summary: error.msg,
             life: 3000,
           });
         }

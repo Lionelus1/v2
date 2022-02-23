@@ -28,11 +28,11 @@
             <a href="javascript:void(0)" @click="navigateToEvent(data)">{{ data.work_plan_name }}</a>
           </template>
         </Column>
-        <!--        <Column field="status" header="Статус">
-                  <template #body="{ data }">
-                    <span :class="'customer-badge status-' + data.status.work_plan_status_id">{{ data.status.name_ru }}</span>
-                  </template>
-                </Column>-->
+        <Column field="status" header="Статус">
+          <template #body="{ data }">
+            <span :class="'customer-badge status-' + data.status.work_plan_status_id">{{ $i18n.locale === "kz" ? data.status.name_kk : $i18n.locale === "ru" ? data.status.name_ru : data.status.name_en }}</span>
+          </template>
+        </Column>
         <Column field="actions" header="Действие">
           <template #body="{ data }">
             <Button type="button" v-if="isCurrentUserApprove && data.status.work_plan_status_id === 2"
@@ -185,7 +185,7 @@ export default {
   font-size: 12px;
   letter-spacing: .3px;
 
-  &.status-3 {
+  &.status-4 {
     background: #C8E6C9;
     color: #256029;
   }

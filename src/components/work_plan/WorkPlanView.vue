@@ -282,7 +282,7 @@ export default {
         } else {
           this.$toast.add({
             severity: "error",
-            summary: error,
+            summary: this.$t(error.response.data),
             life: 3000,
           });
         }

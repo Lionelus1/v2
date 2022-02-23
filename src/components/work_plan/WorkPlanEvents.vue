@@ -487,18 +487,13 @@ export default {
   letter-spacing: .3px;
 
   &.status-3 {
-    background: #C8E6C9;
-    color: #256029;
-  }
-
-  &.status-2 {
     background: #FFCDD2;
     color: #C63737;
   }
 
-  &.status-4 {
-    background: #FEEDAF;
-    color: #8A5340;
+  &.status-2 {
+    background: #C8E6C9;
+    color: #256029;
   }
 
   &.status-1 {
