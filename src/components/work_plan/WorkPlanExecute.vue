@@ -1,5 +1,7 @@
 <template>
-  <Button label="Выполнить" icon="pi pi-check" @click="openBasic" class="p-mr-2"/>
+  <div>
+    <Button label="Выполнить" icon="pi pi-check" @click="openBasic" class="p-mr-2"/>
+  </div>
 
   <Dialog header="Выполнить мероприятие" v-model:visible="showWorkPlanExecuteModal" :style="{width: '450px'}"
           class="p-fluid">

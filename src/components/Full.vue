@@ -130,9 +130,9 @@ export default {
                 ]
 
         },
-      //  {
-      //    label: 'План', icon: 'pi pi-fw pi-folder', to: '/work-plan'
-      //  },
+        {
+          label: 'План', icon: 'pi pi-fw pi-folder', to: '/work-plan'
+        },
       //  {
 //
  //         label: this.$t('common.forStudentsAndGraduates'), icon: 'pi pi-fw pi-users',

@@ -11,13 +11,14 @@
 
       <div class="card">
         <h5>{{ plan.work_plan_name }}</h5>
-<!--        <WorkPlanApproveStep style="height: 200px" now-step="1" direction="vertical" :step-list="approvals" />-->
-<!--        <WorkPlanApproveStatus :options="approvals"></WorkPlanApproveStatus>-->
+        <!--        <WorkPlanApproveStep style="height: 200px" now-step="1" direction="vertical" :step-list="approvals" />-->
+        <!--        <WorkPlanApproveStatus :options="approvals"></WorkPlanApproveStatus>-->
         <Timeline :value="approvals">
           <template #content="slotProps">
             <div v-for="(item, index) of slotProps.item" :key="index">
               {{ item.user.fullName }}
-              <i v-if="item.is_success" class="pi pi-check-circle p-ml-2 p-message-success" style="font-size: 1.2rem;color: #3eaf7c"></i>
+              <i v-if="item.is_success" class="pi pi-check-circle p-ml-2 p-message-success"
+                 style="font-size: 1.2rem;color: #3eaf7c"></i>
               <i v-if="!item.is_success" class="pi pi-spinner p-ml-2" style="font-size: 1.2rem;color: #c63737"></i>
             </div>
           </template>
@@ -71,16 +72,6 @@ export default {
       isLast: false,
       loading: false,
       user: null,
-      stepperOptions: {
-        headers: [
-          {title: 'Title One'},
-          {title: 'Title Two'},
-          {title: 'Title Three'},
-          {title: 'Title Four'}
-        ],
-        prevText: 'Previous',
-        nextText: 'Next'
-      },
       approval_users: [],
       approvals: []
     }
@@ -93,25 +84,13 @@ export default {
   },
   methods: {
     getFile() {
-      axios.get(signerApi + `/documents/${this.plan.doc_id}`).then(resp => {
-        axios.post(smartEnuApi + `/workPlan/getWorkPlanFile`,
-            {file_path: resp.data.filePath},
-            {headers: getHeader()}).then(res => {
-          if (res.data) {
-            this.source = `data:application/pdf;base64,${res.data}`;
-            this.document = res.data;
-          }
-        }).catch(error => {
-          if (error.response && error.response.status === 401) {
-            this.$store.dispatch("logLout");
-          } else {
-            this.$toast.add({
-              severity: "error",
-              summary: error,
-              life: 3000,
-            });
-          }
-        });
+      axios.post(smartEnuApi + `/workPlan/getWorkPlanFile`,
+          {doc_id: this.plan.doc_id},
+          {headers: getHeader()}).then(res => {
+        if (res.data) {
+          this.source = `data:application/pdf;base64,${res.data}`;
+          this.document = res.data;
+        }
       }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
@@ -156,7 +135,8 @@ export default {
           .then(res => {
             if (res.data) {
               this.approvals = [];
-              const d = res.data
+              const d = res.data;
+              console.log(d.every(x => x.is_success === true));
               const unique = [...new Set(d.map(item => item.stage))];
               unique.forEach(r => {
                 let f = d.filter(x => x.stage === r);
@@ -178,19 +158,15 @@ export default {
       });
     },
     getSignatures() {
-      axios.get(signerApi + `/signature/signatures/${this.plan.doc_id}`, {headers: getHeader()}).then(res => {
+      axios.post(smartEnuApi + `/workPlan/getSignatures`,
+          {doc_id: this.plan.doc_id},
+          {headers: getHeader()}).then(res => {
         if (res.data) {
           this.signatures = res.data;
           const signUser = res.data.find(x => x.userId === this.loginedUserId);
           if (signUser) {
             this.isApproved = true;
           }
-        } else {
-          this.$toast.add({
-            severity: 'error',
-            summary: this.$t('common.noData'),
-            life: 3000
-          });
         }
       }).catch(error => {
         this.$toast.add({
@@ -206,19 +182,19 @@ export default {
       const prevObj = this.approval_users[currentUser - 1];
       const currentObj = this.approval_users[currentUser];
       const findUserFromSignatures = this.signatures && prevObj ? this.signatures.find(x => x.userId === prevObj.user.id) : null;
-      if (prevObj == null && !currentObj.is_success) {
+      if (prevObj == null && currentObj && !currentObj.is_success) {
         this.isApproval = true;
-      } else if (prevObj && currentObj.stage === prevObj.stage && !findUserFromSignatures) {
+      } else if (prevObj && currentObj && currentObj.stage === prevObj.stage && !findUserFromSignatures) {
         this.isApproval = true;
-      } else if (prevObj && prevObj.is_success && !currentObj.is_success && prevObj.stage === currentObj.stage) {
+      } else if (prevObj && prevObj.is_success && currentObj && !currentObj.is_success && prevObj.stage === currentObj.stage) {
         this.isApproval = true;
-      } else if (prevObj && currentObj.stage !== prevObj.stage && this.approval_users.filter(x => x.stage === 1 && x.is_success === true).length > 0) {
+      } else if (prevObj && currentObj && currentObj.stage !== prevObj.stage && this.approval_users.filter(x => x.stage === 1 && x.is_success === true).length > 0) {
         this.isApproval = true;
       } else {
         this.isApproval = false;
       }
 
-      if (last.stage === currentObj.stage) {
+      if (currentObj && last.stage === currentObj.stage) {
         this.isLast = true;
       }
       /*const findApprovalUser = this.approval_users?.find(x => x.user_id === this.loginedUserId);
@@ -283,78 +259,22 @@ export default {
     closeModal() {
       this.showRejectPlan = false;
     },
-    /*sendDoc() {
-      axios.post(signerApi + '/documents', {
-        id: null,
-        name: "test name",
-      }, {headers: getHeader()}).then((response) => {
-        if (response.data.id !== null || response.data.id !== '') {
-          this.documentID = response.data.uuid
-          this.setDocHistory(response.data)
-        } else {
-          this.$toast.add({
-            severity: 'error',
-            summary: this.$t('ncasigner.failToSendDoc'),
-            life: 3000
-          });
-        }
-      });
-    },
-    setDocHistory(document) {
-      axios.post(signerApi + '/documents/history', {
-        id: null,
-        stateId: 1,
-        documentUuid: document.uuid,
-        setterId: this.loginedUserId
-      }, {headers: getHeader()}).then((response) => {
-        if (response.data.id !== null || response.data.id !== '') {
-          console.log(response.data)
-          this.sendSignature(response.data)
-        } else {
-          this.$toast.add({
-            severity: 'error',
-            summary: this.$t('ncasigner.failToSendDoc'),
-            life: 3000
-          });
-        }
-      });
-    },*/
     sendSignature() {
-      axios.post(signerApi + '/signature', {
-        iin: this.user.IIN,
-        rightType: "individual",
-        documentSigning: {
-          userId: this.loginedUserId,
-          documentUuid: this.plan.doc_id,
-          signature: this.CMSSignature
-        }
+      axios.post(smartEnuApi + '/workPlan/signature', {
+        uuid: this.plan.doc_id,
+        sign: this.CMSSignature,
+        work_plan_id: parseInt(this.work_plan_id),
+        is_last: this.isLast
       }, {headers: getHeader()}).then((response) => {
-        if (response.data && response.data.success) {
-          axios.post(smartEnuApi + '/workPlan/successApprove', {
-            work_plan_id: parseInt(this.work_plan_id)
-          }, {headers: getHeader()}).then(res => {
-            if (res.data.is_success) {
-              this.$toast.add({
-                severity: "success",
-                summary: 'Успешно!',
-                life: 3000,
-              });
-              this.getSignatures();
-              this.getWorkPlanApprovalUsers();
-            }
-          }).catch(error => {
-            if (error.response && error.response.status === 401) {
-              this.$store.dispatch("logLout");
-            } else {
-              this.$toast.add({
-                severity: "error",
-                summary: error,
-                life: 3000,
-              });
-            }
-          })
-        } else {
-          this.$toast.add({severity: 'error', summary: this.$t(response.data.errorMessage), life: 3000});
+        console.log(response)
+        if (response.data.is_success) {
+          this.$toast.add({
+            severity: "success",
+            summary: 'Успешно!',
+            life: 3000,
+          });
+          this.getSignatures();
+          this.getWorkPlanApprovalUsers();
         }
       }).catch(error => {
         if (error.response && error.response.status === 401) {
@@ -362,7 +282,7 @@ export default {
         } else {
           this.$toast.add({
             severity: "error",
-            summary: error,
+            summary: this.$t(error.response.data),
             life: 3000,
           });
         }

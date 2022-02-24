@@ -366,8 +366,8 @@
                   :auto="true"
                   v-bind:chooseLabel="$t('smartenu.posterImageKk')"
               ></FileUpload>
-              <div v-if="poster.imageKk" class="p-mt-3">
-                <img :src="poster.imageKk" style="width: 50%; height: 50%"/>
+              <div v-if="posterImageKk" class="p-mt-3">
+                <img :src="posterImageKk" style="width: 50%; height: 50%"/>
               </div>
             </div>
             <div class="p-col">
@@ -379,8 +379,8 @@
                   :auto="true"
                   v-bind:chooseLabel="$t('smartenu.posterImageRu')"
               ></FileUpload>
-              <div v-if="poster.imageRu" class="p-mt-3">
-                <img :src="poster.imageRu" style="width: 50%; height: 50%"/>
+              <div v-if="posterImageRu" class="p-mt-3">
+                <img :src="posterImageRu" style="width: 50%; height: 50%"/>
               </div>
             </div>
             <div class="p-col">
@@ -392,8 +392,8 @@
                   :auto="true"
                   v-bind:chooseLabel="$t('smartenu.posterImageEn')"
               ></FileUpload>
-              <div v-if="poster.imageEn" class="p-mt-3">
-                <img :src="poster.imageEn" style="width: 50%; height: 50%"/>
+              <div v-if="posterImageEn" class="p-mt-3">
+                <img :src="posterImageEn" style="width: 50%; height: 50%"/>
               </div>
             </div>
           </div>
@@ -642,10 +642,15 @@ export default {
       isPoster: false,
       poster: {
         link: "",
-        imageKk: "",
-        imageRu: "",
-        imageEn: "",
+        imageKk: null,
+        imageRu: null,
+        imageEn: null,
       },
+      imageFileMain: null,
+      imageFileAdd: null,
+      posterImageKk: null,
+      posterImageRu: null,
+      posterImageEn: null
     };
   },
   methods: {
@@ -673,11 +678,12 @@ export default {
      */
     uploadPosterImageKk(event) {
       const file = event.files[0];
+      this.poster.imageKk = event.files[0];
       imageResizeCompress
           .fromBlob(file, 90, 720, "auto", "jpeg")
           .then((res) => {
             imageResizeCompress.blobToURL(res).then((resp) => {
-              this.poster.imageKk = resp;
+              this.posterImageKk = resp;
             });
           });
     },
@@ -686,11 +692,12 @@ export default {
      */
     uploadPosterImageRu(event) {
       const file = event.files[0];
+      this.poster.imageRu = event.files[0];
       imageResizeCompress
           .fromBlob(file, 90, 720, "auto", "jpeg")
           .then((res) => {
             imageResizeCompress.blobToURL(res).then((resp) => {
-              this.poster.imageRu = resp;
+              this.posterImageRu = resp;
             });
           });
     },
@@ -699,11 +706,12 @@ export default {
      */
     uploadPosterImageEn(event) {
       const file = event.files[0];
+      this.poster.imageEn = event.files[0];
       imageResizeCompress
           .fromBlob(file, 90, 720, "auto", "jpeg")
           .then((res) => {
             imageResizeCompress.blobToURL(res).then((resp) => {
-              this.poster.imageEn = resp;
+              this.posterImageEn = resp;
             });
           });
     },
@@ -712,6 +720,7 @@ export default {
      */
     uploadImage1(event) {
       const file = event.files[0];
+      this.imageFileMain = event.files[0];
       imageResizeCompress
           .fromBlob(file, 90, 720, "auto", "jpeg")
           .then((res) => {
@@ -868,8 +877,16 @@ export default {
         if (this.formValid.length > 0) {
           return;
         }
+        const fd = new FormData();
+        fd.append("link", this.poster.link)
+        fd.append("imageKk", this.poster.imageKk)
+        fd.append("imageRu", this.poster.imageRu)
+        fd.append("imageEn", this.poster.imageEn)
+        if (this.poster.id)
+          fd.append("id", this.poster.id)
+
         axios
-            .post(smartEnuApi + "/addPoster", this.poster, {
+            .post(smartEnuApi + "/addPoster", fd, {
               headers: getHeader(),
             })
             .then((res) => {
@@ -882,9 +899,11 @@ export default {
       }
     },
     insertNews() {
-      console.log(this.newsData);
+      const fd = new FormData();
+      fd.append("news", JSON.stringify(this.newsData))
+      fd.append("imageFileMain", this.imageFileMain);
       axios
-          .post(smartEnuApi + "/addNews", this.newsData, {
+          .post(smartEnuApi + "/addNews", fd, {
             headers: getHeader(),
           })
           .then((response) => {
@@ -939,7 +958,7 @@ export default {
      *  NEWS PRE EDITING
      */
     editNews(id) {
-      ``;
+
       this.catTreeElementsList = [];
       this.catTree.root = this.createCatTree(null, null);
       this.newsData = {};

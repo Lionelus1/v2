@@ -1,5 +1,7 @@
 <template>
-  <Button label="Редактировать" icon="pi pi-pencil" class="p-button-info p-ml-2" @click="openBasic"/>
+  <div>
+    <Button label="" icon="pi pi-pencil" class="p-button-info p-ml-1 p-mt-1" @click="openBasic"/>
+  </div>
 
   <Dialog header="Добавить мероприятие" v-model:visible="showWorkPlanEventEditModal" :style="{width: '450px'}"
           class="p-fluid">
