@@ -14,9 +14,9 @@
       </Toolbar>
       <DataTable selectionMode="single" v-model:selection="selectedCouncil" 
           :lazy="true"
-          :totalRecords="(CouncilsList.length)"
+          :totalRecords="CouncilsCount"
           :value="CouncilsList"
-          @page="reload($event)"
+          @page="onPage($event)"
           
           :paginator="true"
           :rows="lazyParams.rows"
@@ -34,8 +34,8 @@
             })
           "
            responsiveLayout="scroll"
-          @sort="reload($event)"
-          @filter="reload($event)"
+          @sort="onSort($event)"
+          @filter="onFilter($event)"
         >
            <Column field="specialitites" :header="$t('dissertation.directionCode')" style="min-width:12rem">
            <template #body="slotProps">
@@ -102,7 +102,6 @@
                 <Button :label="$t('common.add')" icon="pi pi-check" class="p-button-text" @click="addCouncil" />
             </template>
         </Dialog>
- 
     </div>
   </div>
 </template>
@@ -137,7 +136,7 @@ export default {
     Enums: Enums,
     CouncilsList :[],
     
-    CouncilsCount : 10,
+    CouncilsCount : -1,
     submitted: false,
     validationErrors :{
       speciality : false,
@@ -199,11 +198,20 @@ export default {
   hideDialog(dialog) {
     dialog.state = false;
   },
-  reload(event) {
+  onPage(event) {
       //this.lazyParams = event;
       this.lazyParams = event;
       this.loadCouncilsList();
     },
+    onSort(event) {
+      this.lazyParams = event;
+      this.loadCouncilsList();
+    },
+    onFilter() {
+      this.lazyParams.filters = this.filters;
+      this.loadCouncilsList();
+    },
+ 
   loadCouncilsList() {
     this.loading = true;
 
@@ -214,6 +222,10 @@ export default {
         })
         .then((response) => {
           this.CouncilsList = response.data;
+          if (this.CouncilsList.length> 0 && this.CouncilsCount < 0){
+            this.CouncilsCount = this.CouncilsList[0].count
+
+          }
           this.loading = false;
         })
         .catch((error) => {
