@@ -1,16 +1,16 @@
 <template>
   <div class="p-col-12" v-if="!loading">
-    <Message severity="warn" :closable="false" v-if="plan.comment && isRejected">{{ plan.comment }}</Message>
+    <Message severity="warn" :closable="false" v-if="plan.comment && isRejected && isPlanCreator">{{ plan.comment }}</Message>
     <div class="card" v-if="plan || data">
       <work-plan-event-add v-if="(isCreator || isEventsNull) && !isFinish && isPlanCreator" :isMain="true"></work-plan-event-add>
-      <Button v-if="isPlanCreator && !isFinish" label="Завершить" icon="pi pi-check" @click="finish"
+      <Button v-if="isPlanCreator && !isFinish" :label="$t('common.complete')" icon="pi pi-check" @click="finish"
               class="p-button p-button-danger p-ml-2"/>
       <work-plan-approve v-if="isPlanCreator && !isPlanSentApproval && isFinish" :plan="plan"
                          :events="data"></work-plan-approve>
-      <Button v-if="isFinish && (isApproval || isPlanCreator) && isPlanSentApproval" label="Посмотреть план"
+      <Button v-if="isFinish && (isApproval || isPlanCreator) && isPlanSentApproval" :label="$t('workPlan.viewPlan')"
               icon="pi pi-eye" @click="viewDoc"
               class="p-button p-button-info p-ml-2"/>
-      <Button v-if="isFinish && (isApproval || isPlanCreator) && isPlanSentApproval" label="Отчеты"
+      <Button v-if="isFinish && (isApproval || isPlanCreator) && isPlanSentApproval" :label="$t('workPlan.reports')"
               @click="navigateToReports" class="p-button p-button-info p-ml-2"/>
       <!--      <WorkPlanReportModal v-if="isFinish && (isApproval || isPlanCreator) && isPlanSentApproval" :planId="work_plan_id"
                                  :plan="plan"></WorkPlanReportModal>-->
@@ -21,8 +21,8 @@
                  :loading="loading" responsiveLayout="scroll">
         <template #header>
           <div class="p-d-flex p-jc-between p-ai-center">
-            <h5 class="p-m-0">Мероприятия |
-              <router-link tag="a" to="/work-plan">Планы</router-link>
+            <h5 class="p-m-0">{{ $t('workPlan.events') }} |
+              <router-link tag="a" to="/work-plan">{{ $t('workPlan.plans') }}</router-link>
             </h5>
             <!--            <span class="p-input-icon-left">
                           <i class="pi pi-search"/>
@@ -47,36 +47,36 @@
             </div>
           </template>
         </Column>
-        <Column field="event_name" header="Название мероприятия" sortable>
+        <Column field="event_name" :header="$t('workPlan.eventName')">
           <template #body="{ data }">
             {{ data.event_name }}
           </template>
         </Column>
-        <Column field="quarter" header="Квартал" sortable>
+        <Column field="quarter" :header="$t('workPlan.quarter')">
           <template #body="{ data }">
             {{ data.quarter ? initQuarterString(data.quarter.String) : "" }}
           </template>
         </Column>
-        <Column field="fullName" header="Ответственные лица" sortable>
+        <Column field="fullName" :header="$t('workPlan.approvalUsers')">
           <template #body="{ data }">
             <p v-for="item in data.user" :key="item.id">{{ item.fullName }}</p>
           </template>
         </Column>
-        <Column field="result" header="Результат" sortable>
+        <Column field="result" :header="$t('common.result')">
           <template #body="{ data }">
             {{ data.result }}
           </template>
         </Column>
-        <Column field="status" header="Статус">
+        <Column field="status" :header="$t('common.status')">
           <template #body="slotProps">
             <span
                 :class="'customer-badge status-' + slotProps.data.status.work_plan_event_status_id">{{
-                slotProps.data.status.name_ru
+                $i18n.locale === "kz" ? slotProps.data.status.name_kz : $i18n.locale === "ru" ? slotProps.data.status.name_ru : slotProps.data.status.name_en
               }}</span>
           </template>
         </Column>
 
-        <Column field="actions" header="Действия">
+        <Column field="actions" header="">
           <template #body="slotProps">
             <div>
               <work-plan-execute
@@ -101,21 +101,6 @@
         </template>
       </DataTable>
     </div>
-
-    <Dialog header="Выберите квартал для отчета" v-model:visible="selectQuarterModal" :style="{width: '450px'}"
-            class="p-fluid">
-      <div class="p-field">
-        <label>Квартал</label>
-        <Dropdown v-model="quarter" :options="reportQuarters" optionLabel="name" optionValue="id" placeholder="Выберите"
-                  @select="selectQuarter"/>
-      </div>
-      <template #footer>
-        <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
-                @click="closeSelectQuarter"/>
-        <Button :label="$t('common.save')" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2"
-                @click="initReport(true)"/>
-      </template>
-    </Dialog>
   </div>
 </template>
 
@@ -183,21 +168,6 @@ export default {
       isFinish: false,
       isEventsNull: false,
       currentQuarter: null,
-      splitButtonItems: [
-        {
-          label: 'Годовой',
-          command: () => {
-            this.initReport(false);
-          }
-        },
-        {
-          label: 'Квартальный',
-          command: () => {
-            this.selectQuarter();
-          }
-        }
-      ],
-      selectQuarterModal: false
     }
   },
   mounted() {
@@ -393,12 +363,6 @@ export default {
     viewDoc() {
       this.$router.push({name: 'WorkPlanView', params: {id: this.work_plan_id}})
     },
-    selectQuarter() {
-      this.selectQuarterModal = true;
-    },
-    closeSelectQuarter() {
-      this.selectQuarterModal = false;
-    },
     isUserApproval(data) {
       let userApproval = false;
       data.user.forEach(e => {
@@ -436,8 +400,8 @@ export default {
     },
     remove_event(event_id) {
       this.$confirm.require({
-        message: 'Вы точно хотите удалить?',
-        header: 'Удаление',
+        message: this.$t('common.doYouWantDelete'),
+        header: this.$t('common.delete'),
         icon: 'pi pi-info-circle',
         accept: () => {
           this.remove(event_id);
@@ -450,7 +414,7 @@ export default {
     remove(event_id) {
       axios.post(smartEnuApi + `/workPlan/removeEvent/${event_id}`, {}, {headers: getHeader()}).then(res => {
         if (res.data.is_success) {
-          this.$toast.add({severity: 'success', summary: 'Успешно', life: 3000});
+          this.$toast.add({severity: 'success', summary: this.$t('common.success'), life: 3000});
           this.getPlan();
           this.initQuarter();
           this.getWorkPlanEvents();

@@ -3,22 +3,22 @@
       type="button"
       icon="pi pi-send"
       class="p-button-success p-ml-2"
-      label="На согласование"
+      :label="$t('common.toapprove')"
       @click="openModal"
   ></Button>
 
   <PdfContent ref="pdf" v-if="data" :data="data" :planId="data.work_plan_id" style="display: none;"></PdfContent>
 
-  <Dialog header="Отправить на согласование" v-model:visible="showModal" :style="{width: '450px'}" class="p-fluid">
+  <Dialog :header="$t('common.action.sendToApprove')" v-model:visible="showModal" :style="{width: '450px'}" class="p-fluid">
     <div class="p-field">
-      <label>Выберите</label>
+      <label>{{ $t('common.select') }}</label>
       <ApproveComponent @add="approveChange" :stepValue="selectedUsers" v-model="selectedUsers" @changeStep="changeStep"></ApproveComponent>
-      <small class="p-error" v-if="submitted && formValid.approvals">Выберите ответственных лиц</small>
+      <small class="p-error" v-if="submitted && formValid.approvals">{{ $t('workPlan.errors.approvalUserError') }}</small>
     </div>
     <template #footer>
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
               @click="closeModal"/>
-      <Button label="Отправить" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2" @click="approvePlan"/>
+      <Button :label="$t('common.send')" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2" @click="approvePlan"/>
     </template>
   </Dialog>
 </template>
@@ -88,7 +88,7 @@ export default {
         if (res.data.is_success) {
           this.$toast.add({
             severity: "success",
-            summary: "Отчет успешно отправлен на согласование",
+            summary: this.$t('workPlan.message.reportSentToApprove'),
             life: 3000,
           });
           this.emitter.emit("reportSentToApprove", true)

@@ -3,21 +3,21 @@
       type="button"
       icon="pi pi-send"
       class="p-button-success p-ml-2"
-      label="На согласование"
+      :label="$t('common.action.sendToApprove')"
       @click="openModal"
   ></Button>
 
   <PdfContent ref="pdf" v-if="data" :data="data" :planId="data.work_plan_id" style="display: none;"></PdfContent>
 
-  <Dialog header="Отправить на согласование" v-model:visible="showModal" :style="{width: '450px'}" class="p-fluid">
+  <Dialog :header="$t('common.action.sendToApprove')" v-model:visible="showModal" :style="{width: '450px'}" class="p-fluid">
     <div class="p-field">
-      <label>Выберите</label>
+      <label>{{ $t('common.select') }}</label>
       <ApproveComponent @add="approveChange" :stepValue="selectedUsers" v-model="selectedUsers" @changeStep="changeStep"></ApproveComponent>
     </div>
     <template #footer>
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
               @click="closeModal"/>
-      <Button label="Отправить" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2" @click="approve"/>
+      <Button :label="$t('common.send')" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2" @click="approve"/>
     </template>
   </Dialog>
 </template>
@@ -40,22 +40,6 @@ export default {
       selectedUsers: null,
       steps: 3,
       step: 1,
-      items: [{
-        label: 'Personal',
-        to: '/steps'
-      },
-        {
-          label: 'Seat',
-          to: '/steps/seat'
-        },
-        {
-          label: 'Payment',
-          to: '/steps/payment'
-        },
-        {
-          label: 'Confirmation',
-          to: '/steps/confirmation'
-        }],
       approval_users: [],
       currentStageUsers: null,
       currentStage: 1,
@@ -110,7 +94,7 @@ export default {
         if (res.data && res.data.is_success) {
           this.$toast.add({
             severity: "success",
-            summary: "План успешно отправлен на согласование",
+            summary: this.$t('common.message.succesSendToApproval'),
             life: 3000,
           });
           this.emitter.emit("planSentToApprove", true)

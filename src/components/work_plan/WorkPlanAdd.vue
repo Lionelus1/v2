@@ -1,9 +1,9 @@
 <template>
-  <Button label="Добавить план" icon="pi pi-plus" @click="openBasic" class="p-ml-2"/>
+  <Button :label="$t('workPlan.addPlan')" icon="pi pi-plus" @click="openBasic" class="p-ml-2"/>
 
-  <Dialog header="Добавить план" v-model:visible="showModal" :style="{width: '450px'}" class="p-fluid">
+  <Dialog :header="$t('workPlan.addPlan')" v-model:visible="showModal" :style="{width: '450px'}" class="p-fluid">
     <div class="p-field">
-      <label>Название плана</label>
+      <label>{{ $t('workPlan.planName') }}</label>
       <InputText v-model="work_plan_name" @input="input" v-on:keyup.enter="createPlan"/>
     </div>
     <template #footer>
@@ -27,23 +27,6 @@ export default {
       showModal: false,
       position: 'center',
       work_plan_name: null,
-      steps: [
-        {
-          label: 'Personal',
-          to: '/'
-        },
-        {
-          label: 'Seat',
-          to: '/seat'
-        },
-        {
-          label: 'Payment',
-          to: '/payment'
-        },
-        {
-          label: 'Confirmation',
-          to: '/confirmation'
-        }],
       documentID: null,
       isDocCreated: false,
       isDisabled: true,
@@ -58,12 +41,12 @@ export default {
       this.showModal = false;
     },
     createPlan() {
-      axios.post(smartEnuApi + `/workPlan/addPlan`, {work_plan_name: this.work_plan_name, doc_id: this.documentID}, {
+      axios.post(smartEnuApi + `/workPlan/addPlan`, {work_plan_name: this.work_plan_name}, {
         headers: getHeader(),
       }).then(res => {
         if (res.data.is_success) {
           this.emitter.emit("workPlanIsAdded", true);
-          this.$toast.add({severity: 'info', summary: 'Success', detail: 'План успешно создан', life: 3000});
+          this.$toast.add({severity: 'info', summary: this.$t('common.success'), detail: this.$t('workPlan.message.planCreated'), life: 3000});
         } else {
           this.$toast.add({
             severity: "error",

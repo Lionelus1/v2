@@ -9,14 +9,14 @@
     ></Button>
   </div>
 
-  <Dialog header="Результат выполнения" v-model:visible="eventResultModal" :style="{width: '450px'}"
+  <Dialog :header="$t('workPlan.executionResult')" v-model:visible="eventResultModal" :style="{width: '450px'}"
           class="p-fluid">
     <div class="p-field" v-if="data.event_result">
-      <label>Результат</label>
+      <label>{{ $t('common.result') }}</label>
       <Textarea v-model="data.event_result" disabled style="resize: vertical"></textarea>
     </div>
     <div class="p-field" v-if="data.event_result_file">
-      <label>Прикрепленные файлы</label>
+      <label>{{ $t('workPlan.attachments') }}</label>
       <div>
         <Button
             icon="pi pi-download"
