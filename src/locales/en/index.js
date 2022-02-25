@@ -1,5 +1,9 @@
 export default {
     common: {
+        newPasswordError:"Passwords are not identical or character count is less than 5 symbol",
+        changePassword:"Change password",
+        newPassword:"Enter new password",
+        newPasswordRe:"Repeat new password",
         administration: 'Administration',
         academicDegree: "Academic degree",
         academicTitle: "Academic title",

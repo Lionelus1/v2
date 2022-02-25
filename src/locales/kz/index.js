@@ -1,5 +1,11 @@
 export default {
     common: {
+        newPasswordError:"Құпиясөздер сәйкес келмейді немесе құпиясөз ұзындығы 5 таңбадан кем ",
+        changePassword:"Құпиясөзді өзгерту",
+
+        newPassword:"Жаңа құпиясөзді енгізіңіз",
+        newPasswordRe:"Құпиясөзді қайталап енгізіңіз",
+
         administration: 'Әкімшілік',
         academicDegree: "Ғылыми дәрежесі",
         academicTitle: "Ғылыми атағы",
