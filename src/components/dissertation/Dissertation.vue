@@ -4,9 +4,9 @@
 
       <Toolbar class="p-mb-4">
         <template #end>
-          <Button icon="pi pi-plus" class="p-button-success p-mr-2" @click="showAddCouncilDialog()" />
-          <Button icon="pi pi-print" class="p-button-info p-mr-2" @click="openNew" />
-          <Button icon="pi pi-trash" class="p-button-danger" @click="deleteCouncil()" :disabled="!selectedCouncil"/>
+          <Button v-if="isDissertationAdmin" icon="pi pi-plus" class="p-button-success p-mr-2" @click="showAddCouncilDialog()" />
+          <Button v-if="isDissertationAdmin" icon="pi pi-print" class="p-button-info p-mr-2" @click="openNew" />
+          <Button v-if="isDissertationAdmin"  icon="pi pi-trash" class="p-button-danger" @click="deleteCouncil()" :disabled="!selectedCouncil"/>
         </template>
         <template #start>
           <h4>{{ $t("dissertation.title") }}</h4>
@@ -112,7 +112,7 @@ import DepartmentList from "../smartenu/DepartmentList.vue"
 import FindUser from "@/helpers/FindUser";
 import Enums from "@/enum/docstates/index";
 import axios from 'axios';
-import {getHeader, header, smartEnuApi} from "@/config/config";
+import {getHeader, findRole, smartEnuApi} from "@/config/config";
 export default {
   components: { SpecialitySearch, DepartmentList, FindUser },
  data() {
@@ -135,7 +135,7 @@ export default {
     
     Enums: Enums,
     CouncilsList :[],
-    
+    isDissertationAdmin : false,
     CouncilsCount : -1,
     submitted: false,
     validationErrors :{
@@ -154,11 +154,15 @@ export default {
  created() {
    this.loadCouncilsList()
  },
+ mounted() {
+    this.checkRole()
+ },
  methods: {
-  isDissertationAdmin() {
-    if (this.myDetails && this.myDetails.status)
-      this.myDetails.status = this.statuses.indexOf(this.myDetails.status);
+  findRole: findRole,
+  checkRole() {
+    this.isDissertationAdmin = this.findRole(null, 'dissertation_council_chief') 
   },
+
   deleteCouncil() {
     this.$confirm.require({
       message: this.$t("common.confirmation"),

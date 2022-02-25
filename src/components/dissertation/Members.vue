@@ -14,7 +14,7 @@
       </Toolbar>
       <DataTable selectionMode="single" v-model:selection="selectedMember" 
           :lazy="true"
-          :totalRecords="(MembersList.length)"
+          :totalRecords="membersCount"
           :value="MembersList"
           @page="reload($event)"
           
@@ -37,7 +37,6 @@
           @sort="reload($event)"
           @filter="reload($event)"
         >
-      
            <Column field="fullName" :header="$t('common.fullName')" sortable="true" style="min-width:12rem"></Column>
            <Column :field="('academicDegree.name'+$i18n.locale)" sortable="true" :header="$t('common.academicDegree')"  style="min-width:12rem"></Column>
            <Column :field="('academicTitle.name' + $i18n.locale)" sortable="true" :header="$t('common.academicTitle')"  style="min-width:12rem"></Column>
@@ -69,7 +68,8 @@
                 <RolesByName v-model="selectedRole" roleGroupName="dissertation_council"></RolesByName>
                 <small class="p-error" v-if="submitted && validationErrors.role">{{$t('common.message.selectRole')}}</small>
               </div>
-              <div v-if="selectedRole != null && selectedRole.name=== 'dissertation_council_reviewer'" class="p-field">
+              <!-- <div v-if="selectedRole != null && (selectedRole.name=== 'dissertation_council_reviewer' || selectedRole.name=== 'dissertation_council_temporary_member')" class="p-field"> -->
+              <div v-if="selectedRole != null && (selectedRole.name=== 'dissertation_council_reviewer')" class="p-field">
                 <label for="name">{{$t('dissertation.doctorals')}}</label>
                 <FindDoctorals :max="2" v-model="selectedDoctorals"></FindDoctorals>
                 <small class="p-error" v-if="submitted && validationErrors.doctorals">{{$t('dissertation.validationErrors.selectDoctorals')}}</small>
@@ -107,7 +107,6 @@ export default {
         state: false
       },
     },
-    
     selectedMembers : null,
     selectedMember: null,
     selectedDoctorals: null,
@@ -116,7 +115,7 @@ export default {
     Enums: Enums,
     MembersList :[],
     DissertationCouncilRoles: [],
-    membersCount : 10,
+    membersCount : -1,
     submitted: false,
     validationErrors :{
       members: false,
@@ -188,14 +187,16 @@ export default {
     },
   loadCouncil() {
     this.loading = true;
-      let id = this.councilID
-      //this.lazyParams.countMode = null;
+      this.lazyParams.id = this.councilID
       axios
-        .post(smartEnuApi + "/dissertation/getcouncilmembers", {id:id},  {
+        .post(smartEnuApi + "/dissertation/getcouncilmembers", this.lazyParams,  {
           headers: getHeader(),
         })
         .then((response) => {
           this.MembersList = response.data;
+          if (this.MembersList.length>0 && this.membersCount <0) {
+            this.membersCount = this.MembersList[0].count;
+          }
           this.loading = false;
         })
         .catch((error) => {
@@ -209,7 +210,8 @@ export default {
     this.submitted = true;
     var request =  {userID: this.selectedMembers[0].userID, roleID: this.selectedRole.id, councilID: this.councilID}
     if (this.validateAddConsulMemberForm()) {
-      if (this.selectedRole != null && this.selectedRole.name === "dissertation_council_reviewer") {
+      // if (this.selectedRole != null && (this.selectedRole.name === "dissertation_council_reviewer" || this.selectedRole.name === "dissertation_council_temporary_member")) {
+      if (this.selectedRole != null && (this.selectedRole.name === "dissertation_council_reviewer")) {
         request.dissertations = []
         this.selectedDoctorals.forEach(element => {
           request.dissertations.push(element.dissertation.id)

@@ -144,7 +144,9 @@ export default {
             revision: "на доработку",
             rejected: "отклонить",
             registered: "Зарегистрирован",
-            notRegistered: "Не зарегистрирован"
+            notRegistered: "Не зарегистрирован",
+            notVoted: "Не проголосовал",
+            voted: "Проголосовал",
         },
         message: {
             title: {
@@ -176,7 +178,7 @@ export default {
             selectRole: "Выберите роль",
             userSuccessInserted: "Пользователь успешно создан, скачайте данные для авторизации для отправки пользователю.",
             selectVariant: "Выберите нужный вариант",
-
+            userIINExists: "Пользователь с таким же ИИН уже имеется",
         },
         language: {
             kz: "на казахском",

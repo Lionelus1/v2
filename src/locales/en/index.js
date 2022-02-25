@@ -143,8 +143,9 @@ export default {
             rejected: "rejected",
             revision: "for revision",
             registered: "Registered",
-            notRegistered: "Not registered"
-
+            notRegistered: "Not registered",
+            notVoted: "Not voted",
+            voted: "Voted",
         },
         message: {
             title: {
@@ -176,6 +177,7 @@ export default {
             selectRole: "Plewse, select a role",
             userSuccessInserted: "The user has been successfully created, download the authorization data to send to the user.",
             selectVariant: "Choose the option you need",
+            userIINExists: "User with same iin already exists",
 
         },
         language: {

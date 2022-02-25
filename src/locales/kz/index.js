@@ -143,8 +143,9 @@ export default {
             rejected: "қайтарылды",
             revision: "түзетуге",
             registered: "Тіркелді",
-            notRegistered: "Тіркелмеді"
-
+            notRegistered: "Тіркелмеді",
+            notVoted: "Дауыс бермеді",
+            voted: "Дауыс берді",
         },
         message: {
             title: {
@@ -175,6 +176,7 @@ export default {
             userSuccessInserted: "Қолданушы сәтті қосылды, авторизациялық мәліметтерді қолданушға жіберу үшін жүктеп алыңыз. ",
             selectRole: "Рөлді таңдаңыз",
             selectVariant: "Керек нұсқаны таңдаңыз",
+            userIINExists: "Көрсетілген ЖСН бойынша қолданушы бұрыннан бар",
 
         },
         language: {

@@ -46,7 +46,7 @@
         v-model:selection="selectedDoctoral"
         style="font-size: smaller"
         :lazy="true"
-        :totalRecords="DoctoralList.length"
+        :totalRecords="doctoralCount"
         :value="DoctoralList"
         @page="reload($event)"
         :paginator="true"
@@ -405,6 +405,17 @@
           </Column>
             
         </DataTable>
+
+        <DataTable v-if="regInfoDetail && (selectedDoctoral.dissertation.state == dissertationState.VotingStarted || selectedDoctoral.dissertation.state == dissertationState.VotingFinished )" :loading="loading" :value="regInfoDetail" showGridlines responsiveLayout="scroll">
+          <Column field="fullName" :header="$t('common.fullName')"></Column>
+          <Column field="vote" :header="$t('common.state')">
+            <template #body="slotProps">
+              <span v-if="slotProps.data.state ==0" class="p-tag p-tag-warning">{{$t('common.states.notVoted')}}</span>
+              <span v-else class="p-tag p-tag-success">{{$t('common.states.voted')}}</span>             
+            </template>
+          </Column>
+        </DataTable>
+        
         <div v-if="voteInfo">
           <h3>{{$t('common.voting')}}</h3>
           <p>
@@ -539,7 +550,7 @@
           />
        
           <div v-if="isDissertationMember  && ((currentMemberState === memberState.NotRegistered && selectedDoctoral.dissertation.state === dissertationState.VotingStarted) || (currentMemberState === memberState.Voted && selectedDoctoral.dissertation.state === dissertationState.VotingRestarted))">
-          <small class="p-error">{{$t('dissertation.message.notRegistered')}}</small>
+            <small class="p-error">{{$t('dissertation.message.notRegistered')}}</small>
           </div>
 
         </template>
@@ -567,6 +578,7 @@ export default {
       currentMemberState: -1,
       currentMemberVote: null,
       checkedVoice: null,
+      doctoralCount: -1,
       doctoral: {
         cafedra: null,
         hei: null,
@@ -826,7 +838,7 @@ export default {
     },
     showDefenseDialog() {
       this.getMemberState()
-      if (this.selectedDoctoral && (this.selectedDoctoral.dissertation.state == this.dissertationState.ReadyToRegister ||this.selectedDoctoral.dissertation.state == this.dissertationState.RegistrationFinished )) {
+      if (this.selectedDoctoral && (this.selectedDoctoral.dissertation.state == this.dissertationState.ReadyToRegister ||this.selectedDoctoral.dissertation.state == this.dissertationState.RegistrationFinished ||this.selectedDoctoral.dissertation.state == this.dissertationState.VotingStarted ||this.selectedDoctoral.dissertation.state == this.dissertationState.VotingFinished )) {
         
         this.getRegistrationInfo()
         
@@ -862,17 +874,22 @@ export default {
     },
     getDoctorals() {
       this.loading = true;
+      this.lazyParams.userID = this.$store.state.loginedUser.userID
       //this.lazyParams.countMode = null;
       axios
         .post(
           smartEnuApi + "/dissertation/getdoctorals",
-          { userID:  this.$store.state.loginedUser.userID},
+          this.lazyParams,
           {
             headers: getHeader(),
           }
         )
         .then((response) => {
           this.DoctoralList = response.data;
+          if (this.DoctoralList.length >0 && this.doctoralCount <0)
+          {
+            this.doctoralCount = this.DoctoralList[0].count
+          }
           this.loading = false;
         })
         .catch((error) => {

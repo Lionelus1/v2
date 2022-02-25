@@ -159,6 +159,8 @@ export default {
       .post(
           smartEnuApi + "/dissertation/getdoctorals",
           { 
+            page: 0,
+            rows: 1000,
             userID:  this.$store.state.loginedUser.userID,
             name: inputValue
           },
