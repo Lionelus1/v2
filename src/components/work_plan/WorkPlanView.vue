@@ -2,10 +2,10 @@
   <div>
     <div class="p-col-12" v-if="!loading">
       <div class="card" v-if="isApproval && !isApproved">
-        <Button v-if="isApproval && !plan.is_reject" :label="isLast ? 'Утвердить' : 'Согласовать'" icon="pi pi-check"
+        <Button v-if="isApproval && !plan.is_reject" :label="isLast ? $t('common.action.approve') : $t('common.action.approve') " icon="pi pi-check"
                 @click="openApprovePlan"
                 class="p-button p-button-success p-ml-2"/>
-        <Button v-if="isApproval && !plan.is_reject" label="На доработку" icon="pi pi-times" @click="openRejectPlan"
+        <Button v-if="isApproval && !plan.is_reject" :label="$t('workPlan.toCorrect')" icon="pi pi-times" @click="openRejectPlan"
                 class="p-button p-button-danger p-ml-2"/>
       </div>
 
@@ -30,10 +30,10 @@
       </div>
     </div>
 
-    <Dialog header="Отправить на корректировку" v-model:visible="showRejectPlan" :style="{width: '450px'}"
+    <Dialog :header="$t('workPlan.toCorrect')" v-model:visible="showRejectPlan" :style="{width: '450px'}"
             class="p-fluid">
       <div class="p-field">
-        <label>Комментарий</label>
+        <label>{{ $t('common.comment') }}</label>
         <Textarea inputId="textarea" rows="3" cols="30" v-model="rejectComment"></Textarea>
       </div>
       <template #footer>
@@ -230,8 +230,13 @@ export default {
     },
     rejectPlan() {
       this.loading = true;
-      this.plan.comment = this.rejectComment;
-      axios.post(smartEnuApi + '/workPlan/reject', this.plan,
+      axios.post(smartEnuApi + '/workPlan/reject',
+          {
+            comment: this.rejectComment,
+            work_plan_id: parseInt(this.work_plan_id),
+            doc_id: this.plan.doc_id,
+            work_plan_name: this.plan.work_plan_name
+          },
           {headers: getHeader()}
       ).then(res => {
         if (res.data.is_success) {
@@ -270,7 +275,7 @@ export default {
         if (response.data.is_success) {
           this.$toast.add({
             severity: "success",
-            summary: 'Успешно!',
+            summary: this.$t('ncasigner.success.signSuccess'),
             life: 3000,
           });
           this.getSignatures();

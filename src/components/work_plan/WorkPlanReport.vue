@@ -7,28 +7,28 @@
       <DataTable :lazy="true" :value="data" :rows="10" dataKey="id" :rowHover="true" responsiveLayout="scroll">
         <template #header>
           <div class="p-d-flex p-jc-between p-ai-center">
-            <h5 class="p-m-0">Отчеты</h5>
+            <h5 class="p-m-0">{{ $t('workPlan.reports') }}</h5>
           </div>
         </template>
         <template #empty> {{ $t('common.noData') }}</template>
-        <Column field="content" header="Название отчета">
+        <Column field="content" :header="$t('workPlan.reportName')">
           <template #body="{ data }">
             <a href="javascript:void(0)" @click="navigate(data)">{{ data.report_name }}</a>
           </template>
         </Column>
-        <Column field="status" header="Статус">
+        <Column field="status" :header="$t('common.status')">
           <template #body="slotProps">
             <span
                 :class="'customer-badge status-' + slotProps.data.status.work_plan_status_id">
               {{ $i18n.locale === "kz" ? slotProps.data.status.name_kk : $i18n.locale === "ru" ? slotProps.data.status.name_ru : slotProps.data.status.name_en }}</span>
           </template>
         </Column>
-        <Column header="Тип">
+        <Column :header="$t('common.type')">
           <template #body="{ data }">
             {{ initReportType(data.report_type) }}
           </template>
         </Column>
-        <Column header="Квартал">
+        <Column :header="$t('workPlan.quarter')">
           <template #body="{ data }">
             {{ initQuarter(data.quarter) }}
           </template>
@@ -129,10 +129,10 @@ export default {
       let result = "";
       switch (type) {
         case 1:
-          result = "Годовой"
+          result = this.$t('workPlan.reportTypes.year');
           break;
         case 2:
-          result = "Квартальный"
+          result = this.$t('workPlan.reportTypes.quarter');
           break;
       }
       return result;

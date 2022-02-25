@@ -147,8 +147,9 @@ export default {
             rejected: "rejected",
             revision: "for revision",
             registered: "Registered",
-            notRegistered: "Not registered"
-
+            notRegistered: "Not registered",
+            notVoted: "Not voted",
+            voted: "Voted",
         },
         message: {
             title: {
@@ -180,6 +181,7 @@ export default {
             selectRole: "Plewse, select a role",
             userSuccessInserted: "The user has been successfully created, download the authorization data to send to the user.",
             selectVariant: "Choose the option you need",
+            userIINExists: "User with same iin already exists",
 
         },
         language: {
@@ -187,6 +189,12 @@ export default {
             ru: "in russian",
             en: "in english"
         },
+        result: "Result",
+        complete: "Complete",
+        perform: "To perform",
+        done: "Done",
+        notDone: "Not done",
+        success: "Success",
     },
     bank: {
         title: "Banks",
@@ -601,6 +609,41 @@ export default {
         },
         rc: {
             title: 'Title'
+        }
+    },
+    workPlan: {
+        plans: "Plans",
+        planName: "Plan Name",
+        addPlan: "Add plan",
+        addEvent: "Add event",
+        eventName: "Event name",
+        approvalUsers: "Responsible persons",
+        quarter: "Quarter",
+        executionResult: "Execution result",
+        attachments: "Attached files",
+        viewPlan: "View plan",
+        reports: "Reports",
+        events: "Events",
+        performEvent: "Perform an event",
+        reportName: "Report name",
+        createReport: "Create report",
+        toCorrect: "Send for correction",
+        editEvent: "Edit Event",
+        errors: {
+            eventNameError: "Enter the name of the event",
+            approvalUserError: "Select the responsible persons",
+            quarterError: "Select a quarter",
+        },
+        message: {
+            eventCreated: "Event created successfully",
+            eventChanged: "Event has been successfully edited",
+            reportSentToApprove: "The report was successfully sent for approval",
+            planSentToApprove: "Plan sent for revision",
+            planCreated: "Plan successfully created",
+        },
+        reportTypes: {
+            year: "Annual",
+            quarter: "Quarterly"
         }
     }
 }

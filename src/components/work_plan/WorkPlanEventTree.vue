@@ -18,25 +18,25 @@
         </div>
       </template>
     </Column>
-    <Column field="event_name" header="Название мероприятия" />
-    <Column field="quarter" header="Квартал">
+    <Column field="event_name" :header="$t('workPlan.eventName')" />
+    <Column field="quarter" :header="$t('workPlan.quarter')">
       <template #body="{ data }">
         {{ data.quarter ? initQuarterString(data.quarter.String) : "" }}
       </template>
     </Column>
-    <Column field="fullName" header="Ответственные лица">
+    <Column field="fullName" :header="$t('workPlan.approvalUsers')">
       <template #body="{ data }">
         <p v-for="item in data.user" :key="item.id">{{ item.fullName }}</p>
       </template>
     </Column>
-    <Column field="result" header="Результат" />
-    <Column field="status" header="Статус">
+    <Column field="result" :header="$t('common.result')" />
+    <Column field="status" :header="$t('common.status')">
       <template #body="slotProps">
             <span
-                :class="'customer-badge status-' + slotProps.data.status.work_plan_event_status_id">{{ slotProps.data.status.name_ru }}</span>
+                :class="'customer-badge status-' + slotProps.data.status.work_plan_event_status_id">{{ $i18n.locale === "kz" ? slotProps.data.status.name_kz : $i18n.locale === "ru" ? slotProps.data.status.name_ru : slotProps.data.status.name_en }}</span>
       </template>
     </Column>
-    <Column field="actions" header="Действия">
+    <Column field="actions" header="">
       <template #body="slotProps">
         <work-plan-execute :data="slotProps.data" v-if="parseInt(slotProps.data.quarter.String) === currentQuarter && isUserApproval(slotProps.data)"></work-plan-execute>
         <work-plan-event-result-modal v-if="slotProps.data.event_result" :event-result="slotProps.data.event_result"></work-plan-event-result-modal>
@@ -139,8 +139,8 @@ export default {
     },
     remove_event(event_id) {
       this.$confirm.require({
-        message: 'Вы точно хотите удалить?',
-        header: 'Удаление',
+        message: this.$t('common.doYouWantDelete'),
+        header: this.$t('common.delete'),
         icon: 'pi pi-info-circle',
         accept: () => {
           this.remove(event_id);
@@ -153,7 +153,7 @@ export default {
     remove(event_id) {
       axios.post(smartEnuApi + `/workPlan/removeEvent/${event_id}`, {}, {headers: getHeader()}).then(res => {
         if (res.data.is_success) {
-          this.$toast.add({severity: 'success', summary: 'Успешно', life: 3000});
+          this.$toast.add({severity: 'success', summary: this.$t('common.success'), life: 3000});
           this.emitter.emit("workPlanChildEventIsDeleted", true);
         }
       }).catch(error => {

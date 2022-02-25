@@ -3,24 +3,24 @@
       type="button"
       icon="pi pi-document"
       class="p-button p-button-info p-ml-2"
-      label="Создать отчет"
+      :label="$t('workPlan.createReport')"
       @click="openModal"
   ></Button>
 
-  <Dialog header="Отчет" v-model:visible="selectQuarterModal" :style="{width: '450px'}"
+  <Dialog :header="$t('workPlan.reports')" v-model:visible="selectQuarterModal" :style="{width: '450px'}"
           class="p-fluid">
     <div class="p-field">
-      <label>Наименование отчета</label>
+      <label>{{ $t('workPlan.reportName') }}</label>
       <InputText v-model="report_name" />
     </div>
     <div class="p-field">
-      <label>Выберите тип</label>
-      <Dropdown v-model="type" :options="reportTypes" optionLabel="name" optionValue="id" placeholder="Выберите"
+      <label>{{ $t('common.type') }}</label>
+      <Dropdown v-model="type" :options="reportTypes" optionLabel="name" optionValue="id" :placeholder="$t('common.select')"
                 @select="selectReportType"/>
     </div>
     <div class="p-field" v-if="type === 2">
-      <label>Квартал</label>
-      <Dropdown v-model="quarter" :options="reportQuarters" optionLabel="name" optionValue="id" placeholder="Выберите" />
+      <label>{{ $t('workPlan.quarter') }}</label>
+      <Dropdown v-model="quarter" :options="reportQuarters" optionLabel="name" optionValue="id" :placeholder="$t('common.select')" />
     </div>
     <template #footer>
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
@@ -48,11 +48,11 @@ export default {
       reportTypes: [
         {
           id: 1,
-          name: 'Годовой'
+          name: this.$t('workPlan.reportTypes.year')
         },
         {
           id: 2,
-          name: 'Квартальный'
+          name: this.$t('workPlan.reportTypes.quarter')
         },
       ],
       reportQuarters: [

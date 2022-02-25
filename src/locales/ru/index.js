@@ -150,7 +150,9 @@ export default {
             revision: "на доработку",
             rejected: "отклонить",
             registered: "Зарегистрирован",
-            notRegistered: "Не зарегистрирован"
+            notRegistered: "Не зарегистрирован",
+            notVoted: "Не проголосовал",
+            voted: "Проголосовал",
         },
         message: {
             title: {
@@ -182,14 +184,19 @@ export default {
             selectRole: "Выберите роль",
             userSuccessInserted: "Пользователь успешно создан, скачайте данные для авторизации для отправки пользователю.",
             selectVariant: "Выберите нужный вариант",
-
+            userIINExists: "Пользователь с таким же ИИН уже имеется",
         },
         language: {
             kz: "на казахском",
             ru: "на русском",
             en: "на английском"
         },
-
+        result: "Результат",
+        complete: "Завершить",
+        perform: "Выполнить",
+        done: "Выполнено",
+        notDone: "Не выполнено",
+        success: "Успешно",
     },
     bank: {
         title: "Банки",
@@ -601,6 +608,41 @@ export default {
         },
         rc: {
             title: 'Мамандандыру тақырыбы'
+        }
+    },
+    workPlan: {
+        plans: "Планы",
+        planName: "Название плана",
+        addPlan: "Добавить план",
+        addEvent: "Добавить мероприятие",
+        eventName: "Название мероприятия",
+        approvalUsers: "Ответственные лица",
+        quarter: "Квартал",
+        executionResult: "Результат выполнения",
+        attachments: "Прикрепленные файлы",
+        viewPlan: "Посмотреть план",
+        reports: "Отчеты",
+        events: "Мероприятия",
+        performEvent: "Выполнить мероприятие",
+        reportName: "Наименование отчета",
+        createReport: "Создать отчет",
+        toCorrect: "Отправить на корректировку",
+        editEvent: "Редактировать мероприятие",
+        errors: {
+            eventNameError: "Введите название мероприятия",
+            approvalUserError: "Выберите ответственных лиц",
+            quarterError: "Выберите квартал",
+        },
+        message: {
+            eventCreated: "Мероприятие успешно создано",
+            eventChanged: "Мероприятие успешно изменено",
+            reportSentToApprove: "Отчет успешно отправлен на согласование",
+            planSentToApprove: "План отправлен на корректировку",
+            planCreated: "План успешно создан",
+        },
+        reportTypes: {
+            year: "Годовой",
+            quarter: "Квартальный"
         }
     }
 }

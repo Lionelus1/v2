@@ -16,7 +16,7 @@ export default {
             accept: 'Қабылдау',
             notAccept: 'Қабылдамау',
             sendToApprove: 'Келісуге жіберу',
-            approve: 'Келусу',
+            approve: 'Келісу',
             publish: 'Жариялау',
         },
         login: "Кіру",
@@ -149,8 +149,9 @@ export default {
             rejected: "қайтарылды",
             revision: "түзетуге",
             registered: "Тіркелді",
-            notRegistered: "Тіркелмеді"
-
+            notRegistered: "Тіркелмеді",
+            notVoted: "Дауыс бермеді",
+            voted: "Дауыс берді",
         },
         message: {
             title: {
@@ -181,6 +182,7 @@ export default {
             userSuccessInserted: "Қолданушы сәтті қосылды, авторизациялық мәліметтерді қолданушға жіберу үшін жүктеп алыңыз. ",
             selectRole: "Рөлді таңдаңыз",
             selectVariant: "Керек нұсқаны таңдаңыз",
+            userIINExists: "Көрсетілген ЖСН бойынша қолданушы бұрыннан бар",
 
         },
         language: {
@@ -188,6 +190,12 @@ export default {
             ru: "орысша",
             en: "ағылшынша"
         },
+        result: "Нәтиже",
+        complete: "Аяқтау",
+        perform: "Орындау",
+        done: "Орындалды",
+        notDone: "Орындалмады",
+        success: "Сәтті",
     },
     bank: {
         title: "Банктер",
@@ -603,6 +611,40 @@ export default {
         rc: {
             title: ''
         }
+    },
+    workPlan: {
+        plans: "Жоспарлар",
+        planName: "Жоспар атауы",
+        addPlan: "Жоспар қосу",
+        addEvent: "Іс-шара қосу",
+        eventName: "Іс-шара атауы",
+        approvalUsers: "Жауапты тұлғалар",
+        quarter: "Квартал",
+        executionResult: "Орындалу нәтижесі",
+        attachments: "Тіркелген файлдар",
+        viewPlan: "Жоспарды қарау",
+        reports: "Есептер",
+        events: "Іс-шаралар",
+        performEvent: "Іс-шараны орындау",
+        reportName: "Есеп атауы",
+        createReport: "Есеп құру",
+        toCorrect: "Түзетуге жіберу",
+        editEvent: "Іс-шараны өзгерту",
+        errors: {
+            eventNameError: "Іс-шара атауын енгізіңіз",
+            approvalUserError: "Жауапты тұлғаларды таңдаңыз",
+            quarterError: "Тоқсан таңдаңыз",
+        },
+        message: {
+            eventCreated: "Іс-шара сәтті құрылды",
+            eventChanged: "Іс-шара сәтті өзгертілді",
+            reportSentToApprove: "Есеп келісуге сәтті жіберілді",
+            planSentToApprove: "Жоспар қайта қарауға жіберілді",
+            planCreated: "Жоспар сәтті құрылды",
+        },
+        reportTypes: {
+            year: "Жылдық",
+            quarter: "Тоқсандық"
+        }
     }
-
 }

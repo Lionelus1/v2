@@ -1,7 +1,6 @@
 <template xmlns:aria="http://www.w3.org/1999/xhtml">
   <div>
     <div :class="containerClass" :style="style">
-
       <ul :class="['p-inputtext p-chips-multiple-container', {'p-disabled': $attrs.disabled, 'p-focus': focused}]"
           @click="onWrapperClick()">
         <li v-for="(val,i) of modelValue" :key="`${i}_${val}`" class="p-chips-token">
@@ -42,10 +41,7 @@
           </div>
         </div>
       </OverlayPanel>
-
-
     </div>
-    
     <Sidebar v-model:visible="userDialog" position="right" class="p-sidebar-lg" style="overflow-y:scroll">
 			<Person @userCreated="userCreated" :modelValue="newUser" :addMode="true" :readonly="false"></Person>
 		</Sidebar>
