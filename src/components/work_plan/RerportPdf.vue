@@ -26,7 +26,7 @@
             <td>{{ item.result }}</td>
             <td>{{ item.comment }}</td>
             <td>{{ item.event_result ? item.event_result.event_result : "" }}</td>
-            <td>{{ item.event_result ? "Выполнено" : "Не выполнено" }}</td>
+            <td>{{ item.event_result ? $t('common.done') : $t('common.notDone') }}</td>
           </tr>
           </tbody>
         </table>

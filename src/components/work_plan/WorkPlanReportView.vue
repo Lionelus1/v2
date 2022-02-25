@@ -7,9 +7,9 @@
                 class="p-button p-button-info p-ml-2"/>
       </div>
       <div class="card" v-if="isApproval && !isApproved">
-        <Button v-if="isApproval && !isRejected" label="Согласовать" icon="pi pi-check" @click="openApprovePlan"
+        <Button v-if="isApproval && !isRejected" :label="$t('common.action.approve')" icon="pi pi-check" @click="openApprovePlan"
                 class="p-button p-button-success p-ml-2"/>
-        <Button v-if="isApproval && !isRejected" label="Отменить" icon="pi pi-check" @click="openRejectPlan"
+        <Button v-if="isApproval && !isRejected" :label="$t('workPlan.toCorrect')" icon="pi pi-check" @click="openRejectPlan"
                 class="p-button p-button-danger p-ml-2"/>
       </div>
       <div class="card" v-if="approval_users">
@@ -24,7 +24,6 @@
           </template>
         </Timeline>
       </div>
-      <h5>Превью</h5>
       <div class="card">
         <object src="#toolbar=0" style="width: 100%; height: 1000px" v-if="source" type="application/pdf"
                 :data="source"></object>
@@ -36,10 +35,10 @@
                  style="display: none;"></ReportPdf>
     </div>
 
-    <Dialog header="Отправить на корректировку" v-model:visible="showRejectPlan" :style="{width: '450px'}"
+    <Dialog :header="$t('workPlan.toCorrect')" v-model:visible="showRejectPlan" :style="{width: '450px'}"
             class="p-fluid">
       <div class="p-field">
-        <label>Комментарий</label>
+        <label>{{ $t('common.comment') }}</label>
         <Textarea inputId="textarea" rows="3" cols="30" v-model="rejectComment"></Textarea>
       </div>
       <template #footer>
@@ -345,7 +344,7 @@ export default {
         if (response.data.is_success) {
           this.$toast.add({
             severity: "success",
-            summary: 'Успешно!',
+            summary: this.$t('ncasigner.success.signSuccess'),
             life: 3000,
           });
           this.getSignatures();

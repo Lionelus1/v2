@@ -185,7 +185,12 @@ export default {
             ru: "на русском",
             en: "на английском"
         },
-
+        result: "Результат",
+        complete: "Завершить",
+        perform: "Выполнить",
+        done: "Выполнено",
+        notDone: "Не выполнено",
+        success: "Успешно",
     },
     bank: {
         title: "Банки",
@@ -597,6 +602,41 @@ export default {
         },
         rc: {
             title: 'Мамандандыру тақырыбы'
+        }
+    },
+    workPlan: {
+        plans: "Планы",
+        planName: "Название плана",
+        addPlan: "Добавить план",
+        addEvent: "Добавить мероприятие",
+        eventName: "Название мероприятия",
+        approvalUsers: "Ответственные лица",
+        quarter: "Квартал",
+        executionResult: "Результат выполнения",
+        attachments: "Прикрепленные файлы",
+        viewPlan: "Посмотреть план",
+        reports: "Отчеты",
+        events: "Мероприятия",
+        performEvent: "Выполнить мероприятие",
+        reportName: "Наименование отчета",
+        createReport: "Создать отчет",
+        toCorrect: "Отправить на корректировку",
+        editEvent: "Редактировать мероприятие",
+        errors: {
+            eventNameError: "Введите название мероприятия",
+            approvalUserError: "Выберите ответственных лиц",
+            quarterError: "Выберите квартал",
+        },
+        message: {
+            eventCreated: "Мероприятие успешно создано",
+            eventChanged: "Мероприятие успешно изменено",
+            reportSentToApprove: "Отчет успешно отправлен на согласование",
+            planSentToApprove: "План отправлен на корректировку",
+            planCreated: "План успешно создан",
+        },
+        reportTypes: {
+            year: "Годовой",
+            quarter: "Квартальный"
         }
     }
 }

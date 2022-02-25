@@ -1,28 +1,28 @@
 <template>
-  <Button v-if="isMain" label="Добавить мероприятие" class="p-button-info p-ml-1" icon="pi pi-plus" @click="openBasic"/>
+  <Button v-if="isMain" :label="$t('workPlan.addEvent')" class="p-button-info p-ml-1" icon="pi pi-plus" @click="openBasic"/>
   <div v-else>
     <Button label="" class="p-button-info p-ml-1" icon="pi pi-plus" @click="openBasic"/>
   </div>
 
-  <Dialog header="Добавить мероприятие" v-model:visible="showWorkPlanEventModal" :style="{width: '450px'}"
+  <Dialog :header="$t('workPlan.addEvent')" v-model:visible="showWorkPlanEventModal" :style="{width: '450px'}"
           class="p-fluid">
     <div class="p-field">
-      <label>Название мероприятия</label>
+      <label>{{ $t('workPlan.eventName') }}</label>
       <InputText v-model="event_name" />
-      <small class="p-error" v-if="submitted && formValid.event_name">Введите название мероприятия</small>
+      <small class="p-error" v-if="submitted && formValid.event_name">{{ $t('workPlan.errors.eventNameError') }}</small>
     </div>
     <div class="p-field">
-      <label>Ответственные лица</label>
+      <label>{{ $t('workPlan.approvalUsers') }}</label>
       <FindUser v-model="selectedUsers" :editMode="true"></FindUser>
-      <small class="p-error" v-if="submitted && formValid.users">Выберите ответственных лиц</small>
+      <small class="p-error" v-if="submitted && formValid.users">{{ $t('workPlan.errors.approvalUserError') }}</small>
     </div>
     <div class="p-field" v-if="!parentData">
-      <label>Квартал</label>
-      <Dropdown v-model="quarter" :options="quarters" optionLabel="name" optionValue="id" placeholder="Выберите" />
-      <small class="p-error" v-if="submitted && formValid.quarter">Выберите квартал</small>
+      <label>{{ $t('workPlan.quarter') }}</label>
+      <Dropdown v-model="quarter" :options="quarters" optionLabel="name" optionValue="id" :placeholder="$t('common.select')" />
+      <small class="p-error" v-if="submitted && formValid.quarter">{{ $t('workPlan.errors.quarterError') }}</small>
     </div>
     <div class="p-field">
-      <label>Результат</label>
+      <label>{{ $t('common.result') }}</label>
       <Textarea v-model="result" rows="3" style="resize: vertical"/>
     </div>
     <template #footer>
@@ -123,7 +123,7 @@ export default {
         resp_person_ids: userIds
       }, {headers: getHeader()}).then(res => {
         this.emitter.emit("workPlanEventIsAdded", true);
-        this.$toast.add({severity: 'success', detail: 'Мероприятие успешно создан', life: 3000});
+        this.$toast.add({severity: 'success', detail: this.$t('workPlan.message.eventCreated'), life: 3000});
         this.showWorkPlanEventModal = false;
         this.clearModel();
       }).catch(error => {
