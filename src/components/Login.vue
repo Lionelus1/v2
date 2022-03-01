@@ -2,11 +2,7 @@
 <template>
   <div class="flexgrid-demo ">
 
-          
-            
-            
-          
-          <TabView @tabChange="etspLogin" scrollable>
+          <TabView  scrollable>
             <TabPanel header="Login System">
               <div class="p-fluid text-center">
                   <div class="p-field p-col-12">
@@ -33,7 +29,7 @@
                           <Password :feedback="false" toggleMask v-model="newPass.password1"></Password>
                           <label for="inputtext">{{ $t('common.newPassword') }}</label>
                       </span> -->
-                      <Inplace :closable="true">
+                      <Inplace :closable="true" @close="resetPassword">
                         <template #display>
                             {{ text || $t('common.changePassword')}}
                         </template>
@@ -50,9 +46,17 @@
                       </span>
                   </div> -->
 
-                  <div class="p-w-100 p-text-right p-pr-2">
-                      <Button :label="$t('common.login')" :disabled="isSignUp" icon="pi pi-check" @click="signUp" iconPos="right" />
-                  </div>
+                 
+                  <div class="p-grid">
+                    <div class="p-col-8">
+                      <Button icon="pi pi-upload " :label="$t('common.chooseCert')" class="p-button-danger"  @click="resetEtspLogin(-1)" iconPos="right" />
+                    </div>
+                    <div class="p-col-4">
+                      <Button :label="$t('common.login')" :disabled="isSignUp"  icon="p-w-6 pi pi-check" @click="loginVerify" iconPos="right" />  
+                    </div>
+                    
+                    
+                </div>
               </div>
             </TabPanel>
            
@@ -83,7 +87,11 @@
             password2:""
           },
 
-          userData:{},
+          eloginData:{
+            connectionId : "",
+            xmlSignature : "",
+            password : ""
+          },
           isSignUp:true
         }
       },
@@ -92,57 +100,38 @@
         this.$store.dispatch("logLout");
       },
       methods:{
-        signUp(){
-          if(this.newPass.password1.length > 5 && (this.newPass.password1==this.newPass.password2)){
-            this.userData.Password = this.newPass.password1;
-            //alert(JSON.stringify(this.userData));
-            this.postNewUserViaEtsp(this.userData)
-          }else{
-            if((this.newPass.password1==this.newPass.password2) && this.newPass.password1.length==0){
-              this.userData.Password = "";
-              //alert(JSON.stringify(this.userData));
-              this.postNewUserViaEtsp(this.userData)
-            }else{
-              alert(this.$t('common.newPasswordError'));
-            }
-            
+        resetPassword(){
+          this.newPass = {
+            password1:"",
+            password2:""
           }
         },
-        postNewUserViaEtsp(userData){
-          alert(JSON.stringify(userData));
-          if(userData.company==null){
-            userData.company="";
-          }
-          if(userData.bin==null){
-            userData.bin="";
-          }
-          axios.post(etspTokenEndPoint+"/etsplogin",userData,header)
-          .then(res=>{
-              authUser.access_token=res.data.access_token;
-              authUser.refresh_token = res.data.refresh_token;
-              window.localStorage.setItem('authUser',JSON.stringify(authUser));
-              this.$router.push({name:'AfterAuth'});  
-
-          })
-          .catch(error=>{
-            alert(error.message)
-          });    
-        },
+      
+        
         etspLogin(event){
           var tabIndex = Number(event.index);
           if(tabIndex==1){
             //alert("i will do more thing");
-            this.userData={};
-            this.newPass.password1 = "";
-            this.newPass.password2 = "";
-            this.etspToken();  
+            this.resetEtspLogin();
           }
 
         },
+        resetEtspLogin(p=5){
+          this.eloginData={
+            connectionId : "",
+            xmlSignature : "",
+            password : ""
+          };
+          if(p==5) {
+            this.newPass.password1 = "";
+            this.newPass.password2 = "";
+          }
+          
+          this.etspToken();  
+        },
         etspToken(){
-          axios.post(etspTokenEndPoint+"/auth/generate/token",{}, {headers: getHeader()})
+          axios.post(smartEnuApi+"/etsptoken",{}, {headers: getHeader()})
           .then(res=>{
-              //alert(JSON.stringify(res));
               this.xmlSignature(res.data);
           })
           .catch(error=>{
@@ -150,7 +139,6 @@
           });  
         },
         async xmlSignature(res) {
-         
           let NCALaClient = new NCALayerClient();
           console.log("nc object ",NCALaClient);
           try {
@@ -158,34 +146,48 @@
           } 
           catch (error) {
             alert(error.message);
-            // this.$toast.add({
-            //   severity: 'error',
-            //   summary: this.$t('ncasigner.failConnectToNcaLayer'),
-            //   life: 3000
-            // });
             return
           }
           try {
             let XMLignature = await  NCALaClient.signXml('PKCS12', res.xml, 'AUTH')
-            res.xmlSignature=XMLignature;
-            this.loginVerify(res);
-
+            this.eloginData.xmlSignature=XMLignature;
+            this.eloginData.connectionId = res.connectionId;
+            this.isSignUp=false;
           } catch (error) {
             alert(error.message);
           }
         },
-        loginVerify(reqBody){
-           //alert(JSON.stringify(reqBody));
-           axios.post(etspTokenEndPoint+"/auth/verify",reqBody, {headers: getHeader()})
-          .then(res=>{
-              //alert(JSON.stringify(res.data.subject));
-              this.userData=res.data.subject;
-              this.isSignUp=false;
-              
-          })
-          .catch(error=>{
-            alert(error.message)
-          });  
+        loginVerify(){
+          if(this.newPass.password1.length > 5 && (this.newPass.password1==this.newPass.password2)){
+            this.eloginData.password = this.newPass.password1;
+            this.sendLoginData();
+          }else{
+            if((this.newPass.password1==this.newPass.password2) && this.newPass.password1.length==0){
+              this.eloginData.password = this.newPass.password1;
+              this.sendLoginData();
+            }else{
+              alert(this.$t('common.newPasswordError'));
+            }
+          }
+        },
+        sendLoginData(){
+          
+          if(this.eloginData.connectionId.length>4 && this.eloginData.xmlSignature.length>10){
+            this.isSignUp=true;
+            axios.post(smartEnuApi+"/etspverify",this.eloginData, {headers: getHeader()})
+            .then(res=>{
+                if(res.status===200){
+                  authUser.access_token=res.data.access_token;
+                  authUser.refresh_token = res.data.refresh_token;
+                  window.localStorage.setItem('authUser',JSON.stringify(authUser));
+                  this.$router.push({name:'AfterAuth'});
+                }      
+            })
+            .catch(error=>{
+              alert(error.message)
+            });
+          }
+            
         },
         login(){
           //alert(JSON.stringify(header));

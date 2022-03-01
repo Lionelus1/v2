@@ -1,5 +1,6 @@
 export default {
     common: {
+        chooseCert:"Выбрать сертификат",
         newPasswordError:"Пароли не совпадают или длина пароля менее 5 символов ",
         changePassword:"Изменение пароля ",
 

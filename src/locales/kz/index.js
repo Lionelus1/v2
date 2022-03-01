@@ -1,5 +1,7 @@
 export default {
     common: {
+        chooseCert:"Сертификатты таңдаңыз",
+
         newPasswordError:"Құпиясөздер сәйкес келмейді немесе құпиясөз ұзындығы 5 таңбадан кем ",
         changePassword:"Құпиясөзді өзгерту",
 
