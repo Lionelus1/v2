@@ -33,6 +33,11 @@
             {{ initQuarter(data.quarter) }}
           </template>
         </Column>
+        <Column :header="$t('common.comment')">
+          <template #body="{ data }">
+            <p v-if="data.reject_history"> {{ data.reject_history.message }} </p>
+          </template>
+        </Column>
       </DataTable>
     </div>
   </div>

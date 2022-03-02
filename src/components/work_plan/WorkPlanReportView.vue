@@ -1,24 +1,33 @@
 <template>
   <div>
     <div class="p-col-12">
-      <div class="card" v-if="isPlanCreator && !isApproval">
+      <div class="card" v-if="isPlanCreator && !isReportSentApproval">
         <WorkPlanReportApprove :doc-id="doc_id" :report="report_id"></WorkPlanReportApprove>
-        <Button label="" icon="pi pi-download" @click="download"
-                class="p-button p-button-info p-ml-2"/>
+<!--        <Button label="" icon="pi pi-download" @click="download"
+                class="p-button p-button-info p-ml-2"/>-->
       </div>
       <div class="card" v-if="isApproval && !isApproved">
-        <Button v-if="isApproval && !isRejected" :label="$t('common.action.approve')" icon="pi pi-check" @click="openApprovePlan"
+        <Button v-if="isApproval && !isRejected" :label="$t('common.action.approve')" icon="pi pi-check"
+                @click="openApprovePlan"
                 class="p-button p-button-success p-ml-2"/>
-        <Button v-if="isApproval && !isRejected" :label="$t('workPlan.toCorrect')" icon="pi pi-check" @click="openRejectPlan"
+        <Button v-if="isApproval && !isRejected" :label="$t('workPlan.toCorrect')" icon="pi pi-check"
+                @click="openRejectPlan"
                 class="p-button p-button-danger p-ml-2"/>
       </div>
       <div class="card" v-if="approval_users">
-        <h5>{{ report_name }}</h5>
+        <h5>{{ report_name }}
+          <span v-if="report" :class="'customer-badge status-' + report.status.work_plan_status_id">
+              {{
+              $i18n.locale === "kz" ? report.status.name_kk : $i18n.locale === "ru" ? report.status.name_ru : report.status.name_en
+            }}
+        </span>
+        </h5>
         <Timeline :value="approvals">
           <template #content="slotProps">
             <div v-for="(item, index) of slotProps.item" :key="index">
               {{ item.user.fullName }}
-              <i v-if="item.is_success" class="pi pi-check-circle p-ml-2 p-message-success" style="font-size: 1.2rem;color: #3eaf7c"></i>
+              <i v-if="item.is_success" class="pi pi-check-circle p-ml-2 p-message-success"
+                 style="font-size: 1.2rem;color: #3eaf7c"></i>
               <i v-if="!item.is_success" class="pi pi-spinner p-ml-2" style="font-size: 1.2rem;color: #c63737"></i>
             </div>
           </template>
@@ -102,7 +111,14 @@ export default {
         filename: "work_plan_report.pdf",
       },
       approval_users: [],
-      approvals: []
+      approvals: [],
+      reject: {
+        report_id: 0,
+        doc_id: null,
+        comment: null,
+        report_name: this.report_name
+      },
+      isReportSentApproval: false,
     }
   },
   created() {
@@ -115,14 +131,16 @@ export default {
     this.loginedUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
     //this.plan = JSON.parse(localStorage.getItem("workPlan"));
     //this.getReport();
-    this.getFile();
-    this.getPlan();
     this.getReport();
+    this.getPlan();
+    this.getFile();
     this.getReportApprovalUsers();
   },
   mounted() {
     this.emitter.on("reportSentToApprove", (data) => {
       if (data) {
+        this.getFile();
+        this.getReport();
         this.getReportApprovalUsers();
       }
     });
@@ -155,10 +173,10 @@ export default {
     },
     getReport() {
       axios.get(smartEnuApi + `/workPlan/getWorkPlanReportById/${this.report_id}`, {headers: getHeader()})
-      .then(res => {
-        console.log(res);
-        this.report = res.data;
-      }).catch(error => {
+          .then(res => {
+            console.log("report api", res);
+            this.report = res.data;
+          }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
@@ -201,6 +219,9 @@ export default {
       worker.toPdf().output("datauristring").then((pdf, item) => {
         if (!this.source)
           this.source = pdf;
+
+        if (!this.document)
+          this.document = pdf.replace("data:application/pdf;base64,", "")
       });
 
       worker1.toPdf().output("blob").then((pdf) => {
@@ -241,21 +262,21 @@ export default {
     },
     getReportApprovalUsers() {
       axios.get(smartEnuApi + `/workPlan/getReportApprovalUsers/${this.report_id}`, {headers: getHeader()})
-      .then(res => {
-        console.log(res)
-        if (res.data) {
-          this.approvals = [];
-          const d = res.data;
-          //console.log(d.every(x => x.is_success === true));
-          const unique = [...new Set(d.map(item => item.stage))];
-          unique.forEach(r => {
-            let f = d.filter(x => x.stage === r);
-            this.approvals.push(f);
-          });
-          this.approval_users = res.data;
-          this.init();
-        }
-      }).catch(error => {
+          .then(res => {
+            if (res.data) {
+              this.approvals = [];
+              this.isReportSentApproval = true;
+              const d = res.data;
+              //console.log(d.every(x => x.is_success === true));
+              const unique = [...new Set(d.map(item => item.stage))];
+              unique.forEach(r => {
+                let f = d.filter(x => x.stage === r);
+                this.approvals.push(f);
+              });
+              this.approval_users = res.data;
+              this.init();
+            }
+          }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
@@ -347,6 +368,7 @@ export default {
             summary: this.$t('ncasigner.success.signSuccess'),
             life: 3000,
           });
+          this.getReport();
           this.getSignatures();
           this.getReportApprovalUsers();
         }
@@ -364,15 +386,20 @@ export default {
     },
     rejectPlan() {
       this.loading = true;
-      this.plan.comment = this.rejectComment;
-      axios.post(smartEnuApi + '/workPlan/reject', this.plan,
+      if (this.rejectComment) {
+        this.reject.comment = this.rejectComment;
+      }
+      this.reject.doc_id = this.doc_id;
+      this.reject.report_id = this.report_id;
+      this.reject.report_name = this.report_name;
+      axios.post(smartEnuApi + '/workPlan/rejectReport', this.reject,
           {headers: getHeader()}
       ).then(res => {
         if (res.data.is_success) {
           this.loading = false;
           this.showRejectPlan = false;
           this.emitter.emit("planRejected", true);
-          this.$router.push({name: 'WorkPlanEvents', params: {id: this.plan.work_plan_id}});
+          this.$router.push({name: 'WorkPlanReport', params: {id: this.work_plan_id}});
         }
       }).catch(error => {
         if (error.response && error.response.status === 401) {
@@ -397,8 +424,42 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 ::v-deep(.p-timeline-event-opposite) {
   flex: 0;
+}
+
+.customer-badge {
+  border-radius: 2px;
+  padding: .25em .5rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: .3px;
+
+  &.status-5 {
+    background: #ff3838;
+    color: #ffffff;
+  }
+
+  &.status-4 {
+    background: #C8E6C9;
+    color: #256029;
+  }
+
+  &.status-2 {
+    background: #FEEDAF;
+    color: #8A5340;
+  }
+
+  &.status-3 {
+    background: #FFCDD2;
+    color: #C63737;
+  }
+
+  &.status-1 {
+    background: #B3E5FC;
+    color: #23547B;
+  }
 }
 </style>

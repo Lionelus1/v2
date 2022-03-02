@@ -2,15 +2,17 @@
   <div>
     <div class="p-col-12" v-if="!loading">
       <div class="card" v-if="isApproval && !isApproved">
-        <Button v-if="isApproval && !plan.is_reject" :label="isLast ? $t('common.action.approve') : $t('common.action.approve') " icon="pi pi-check"
+        <Button v-if="isApproval && !plan.is_reject"
+                :label="isLast ? $t('common.action.approve') : $t('common.action.approve') " icon="pi pi-check"
                 @click="openApprovePlan"
                 class="p-button p-button-success p-ml-2"/>
-        <Button v-if="isApproval && !plan.is_reject" :label="$t('workPlan.toCorrect')" icon="pi pi-times" @click="openRejectPlan"
+        <Button v-if="isApproval && !plan.is_reject" :label="$t('workPlan.toCorrect')" icon="pi pi-times"
+                @click="openRejectPlan"
                 class="p-button p-button-danger p-ml-2"/>
       </div>
 
       <div class="card">
-        <h5>{{ plan.work_plan_name }}</h5>
+        <h5>{{ plan.work_plan_name }} <span :class="'status-badge status-' + plan.status.work_plan_status_id">{{ $i18n.locale === "kz" ? plan.status.name_kk : $i18n.locale === "ru" ? plan.status.name_ru : plan.status.name_en }}</span></h5>
         <!--        <WorkPlanApproveStep style="height: 200px" now-step="1" direction="vertical" :step-list="approvals" />-->
         <!--        <WorkPlanApproveStatus :options="approvals"></WorkPlanApproveStatus>-->
         <Timeline :value="approvals">
@@ -297,8 +299,37 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 ::v-deep(.p-timeline-event-opposite) {
   flex: 0;
+}
+
+.status-badge {
+  border-radius: 2px;
+  padding: .25em .5rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: .3px;
+
+  &.status-4 {
+    background: #C8E6C9;
+    color: #256029;
+  }
+
+  &.status-3 {
+    background: #FFCDD2;
+    color: #C63737;
+  }
+
+  &.status-2 {
+    background: #FEEDAF;
+    color: #8A5340;
+  }
+
+  &.status-1 {
+    background: #B3E5FC;
+    color: #23547B;
+  }
 }
 </style>
