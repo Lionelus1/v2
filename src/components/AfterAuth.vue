@@ -18,7 +18,15 @@ export default {
         //alert(JSON.stringify(response.data));
         window.localStorage.setItem("loginedUser",JSON.stringify(response.data));
         this.setLoginedUser();
-        this.$router.push({name:'/smartenu/vaccination'});
+        let oldPath = this.$store.state.attemptedUrl;
+        if(oldPath.length==0){
+          this.$router.push({name:'/smartenu/vaccination'});
+        }else{
+          this.$store.dispatch("solveAttemptedUrl","");
+          this.$router.push({name:oldPath});
+          
+        }
+        
       })
       .catch(error => {
         this.$router.push({name:'Login'});
