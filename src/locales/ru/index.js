@@ -1,5 +1,12 @@
 export default {
     common: {
+        chooseCert:"Выбрать сертификат",
+        newPasswordError:"Пароли не совпадают или длина пароля менее 5 символов ",
+        changePassword:"Изменение пароля ",
+
+        newPassword:"Введите новый пароль",
+        newPasswordRe:"Повторно введите пароль",
+
         administration: 'Администрирование',
         academicDegree: "Ученая степень",
         academicTitle: "Ученое звание",
