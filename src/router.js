@@ -205,7 +205,7 @@ const routes = [
                 children: [
                     {
                         path: '',
-                        name: 'WorkPlanWorkPlan',
+                        name: 'WorkPlan',
                         component: load('work_plan/WorkPlan'),
                         beforeEnter: ifAuthenticated,
                     },

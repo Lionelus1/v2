@@ -97,6 +97,12 @@ export default {
         this.getPlans();
       }
     });
+    this.emitter.on('planSentToReapprove', (data) => {
+      if (data === true) {
+        this.getPlans();
+      }
+    });
+
   },
   created() {
     this.getPlans();
@@ -184,6 +190,11 @@ export default {
   font-weight: 700;
   font-size: 12px;
   letter-spacing: .3px;
+
+  &.status-5 {
+    background: #B48B7D;
+    color: #fff;
+  }
 
   &.status-4 {
     background: #C8E6C9;

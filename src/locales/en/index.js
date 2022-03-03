@@ -18,6 +18,7 @@ export default {
             sendToApprove: 'Send to Approve',
             approve: 'Approve',
             publish: 'Publish',
+            reApprove: 'Reapprove'
         },
         login: "login",
         logout: "Logout",

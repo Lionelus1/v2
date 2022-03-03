@@ -20,6 +20,7 @@ export default {
             sendToApprove: 'Келісуге жіберу',
             approve: 'Келісу',
             publish: 'Жариялау',
+            reApprove: 'Қайта бекіту'
         },
         login: "Кіру",
         logout: "Шығу",

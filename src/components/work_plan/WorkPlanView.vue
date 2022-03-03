@@ -1,6 +1,11 @@
 <template>
   <div>
     <div class="p-col-12" v-if="!loading">
+      <div class="card" v-if="isPlanCreator && isPlanApproved">
+        <Button :label="$t('common.action.reApprove')" icon="pi pi-check"
+                @click="reapproveConfirmDialog"
+                class="p-button p-ml-2"/>
+      </div>
       <div class="card" v-if="isApproval && !isApproved">
         <Button v-if="isApproval && !plan.is_reject"
                 :label="isLast ? $t('common.action.approve') : $t('common.action.approve') " icon="pi pi-check"
@@ -75,7 +80,8 @@ export default {
       loading: false,
       user: null,
       approval_users: [],
-      approvals: []
+      approvals: [],
+      isPlanApproved: false
     }
   },
   created() {
@@ -138,7 +144,7 @@ export default {
             if (res.data) {
               this.approvals = [];
               const d = res.data;
-              console.log(d.every(x => x.is_success === true));
+              this.isPlanApproved = d.every(x => x.is_success === true);
               const unique = [...new Set(d.map(item => item.stage))];
               unique.forEach(r => {
                 let f = d.filter(x => x.stage === r);
@@ -280,6 +286,7 @@ export default {
             summary: this.$t('ncasigner.success.signSuccess'),
             life: 3000,
           });
+          this.getPlan();
           this.getSignatures();
           this.getWorkPlanApprovalUsers();
         }
@@ -295,6 +302,39 @@ export default {
         }
       });
     },
+    reapproveConfirmDialog() {
+      this.$confirm.require({
+        message: this.$t('common.confirmation'),
+        header: this.$t('common.confirm'),
+        icon: 'pi pi-info-circle',
+        accept: () => {
+          this.reapprove();
+        }
+      });
+    },
+    reapprove() {
+      axios.post(smartEnuApi + '/workPlan/reapprove', {
+        work_plan_id: parseInt(this.work_plan_id),
+        doc_id: this.plan.doc_id,
+        work_plan_name: this.plan.work_plan_name
+      }, {headers: getHeader()}).then((response) => {
+        console.log(response)
+        if (response.data.is_success) {
+          this.emitter.emit("planSentToReapprove", true);
+          this.$router.push({name: 'WorkPlan'});
+        }
+      }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: this.$t(error.response.data),
+            life: 3000,
+          });
+        }
+      });
+    }
   }
 }
 </script>

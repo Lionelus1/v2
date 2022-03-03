@@ -19,6 +19,7 @@ export default {
             sendToApprove: 'Отправить на согласование',
             approve: 'Согласовать',
             publish: 'Опубликовать',
+            reApprove: 'Переутвердить'
         },
         login: "Вход",
         logout: "Выход",
