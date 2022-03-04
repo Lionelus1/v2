@@ -3,7 +3,7 @@
     <Button
         type="button"
         icon="pi pi-eye"
-        class="p-button p-button-info p-ml-2"
+        class="p-button p-button-info p-ml-1 p-mb-1"
         label=""
         @click="openModal"
     ></Button>
