@@ -198,6 +198,8 @@ export default {
         done: "Done",
         notDone: "Not done",
         success: "Success",
+        downloadSignaturesPdf: "Download signatures",
+        signatures: "Signatures"
     },
     bank: {
         title: "Banks",

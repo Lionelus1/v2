@@ -6,6 +6,11 @@
 <!--        <Button label="" icon="pi pi-download" @click="download"
                 class="p-button p-button-info p-ml-2"/>-->
       </div>
+      <div class="card" v-if="isPlanReportApproved && isPlanCreator || (isApproval && isCurrentUserApproved)">
+        <Button :label="$t('common.signatures')" icon="pi pi-file"
+                @click="viewSignatures"
+                class="p-button p-ml-2"/>
+      </div>
       <div class="card" v-if="isApproval && !isApproved">
         <Button v-if="isApproval && !isRejected" :label="$t('common.action.approve')" icon="pi pi-check"
                 @click="openApprovePlan"
@@ -101,7 +106,7 @@ export default {
           type: 'jpeg',
           quality: 0.98,
         },
-        html2canvas: {scale: 3, letterRendering: true},
+        html2canvas: {scale: 2.8,},
         jsPDF: {
           unit: 'in',
           format: 'letter',
@@ -119,6 +124,8 @@ export default {
         report_name: this.report_name
       },
       isReportSentApproval: false,
+      isCurrentUserApproved: false,
+      isPlanReportApproved: false
     }
   },
   created() {
@@ -174,7 +181,6 @@ export default {
     getReport() {
       axios.get(smartEnuApi + `/workPlan/getWorkPlanReportById/${this.report_id}`, {headers: getHeader()})
           .then(res => {
-            console.log("report api", res);
             this.report = res.data;
           }).catch(error => {
         if (error.response && error.response.status === 401) {
@@ -267,6 +273,7 @@ export default {
               this.approvals = [];
               this.isReportSentApproval = true;
               const d = res.data;
+              this.isPlanReportApproved = d.every(x => x.is_success);
               //console.log(d.every(x => x.is_success === true));
               const unique = [...new Set(d.map(item => item.stage))];
               unique.forEach(r => {
@@ -413,6 +420,9 @@ export default {
         }
         this.loading = false;
       })
+    },
+    viewSignatures() {
+      this.$router.push({name: 'DocSignaturesInfo', params: { uuid: this.doc_id }})
     },
     openRejectPlan() {
       this.showRejectPlan = true;

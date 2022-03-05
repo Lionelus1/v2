@@ -219,7 +219,7 @@ const routes = [
                         path: 'view/:id',
                         name: 'WorkPlanView',
                         component: load('work_plan/WorkPlanView'),
-                        beforeEnter: ifAuthenticated,
+                        beforeEnter: ifAuthenticated
                     },
                     {
                         path: 'reports/:id',
@@ -258,6 +258,11 @@ const routes = [
                 name: 'Resume',
                 component: load('humanResources/candidate/Resume'),
                 beforeEnter: ifAuthenticated,
+            },
+            {
+                path: 'sign/:uuid',
+                name: 'DocSignaturesInfo',
+                component: load('DocSignaturesInfo'),
             }
         ]
     }

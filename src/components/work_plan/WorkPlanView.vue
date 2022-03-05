@@ -6,6 +6,11 @@
                 @click="reapproveConfirmDialog"
                 class="p-button p-ml-2"/>
       </div>
+      <div class="card" v-if="isPlanApproved && isPlanCreator || (isApproval && isApproved)">
+        <Button :label="$t('common.signatures')" icon="pi pi-file"
+                @click="viewSignatures"
+                class="p-button p-ml-2"/>
+      </div>
       <div class="card" v-if="isApproval && !isApproved">
         <Button v-if="isApproval && !plan.is_reject"
                 :label="isLast ? $t('common.action.approve') : $t('common.action.approve') " icon="pi pi-check"
@@ -57,8 +62,6 @@
 import axios from "axios";
 import {getHeader, signerApi, smartEnuApi} from "@/config/config";
 import {NCALayerClient} from "ncalayer-js-client";
-import WorkPlanApproveStatus from "@/components/work_plan/WorkPlanApproveStatus";
-import WorkPlanApproveStep from "@/components/work_plan/WorkPlanApproveStep";
 
 export default {
   name: "WorkPlanView",
@@ -81,7 +84,9 @@ export default {
       user: null,
       approval_users: [],
       approvals: [],
-      isPlanApproved: false
+      isPlanApproved: false,
+      signatures: null,
+      isPlanCreator: false
     }
   },
   created() {
@@ -144,7 +149,7 @@ export default {
             if (res.data) {
               this.approvals = [];
               const d = res.data;
-              this.isPlanApproved = d.every(x => x.is_success === true);
+              this.isPlanApproved = d.every(x => x.is_success);
               const unique = [...new Set(d.map(item => item.stage))];
               unique.forEach(r => {
                 let f = d.filter(x => x.stage === r);
@@ -334,7 +339,10 @@ export default {
           });
         }
       });
-    }
+    },
+    viewSignatures() {
+      this.$router.push({name: 'DocSignaturesInfo', params: { uuid: this.plan.doc_id }})
+    },
   }
 }
 </script>

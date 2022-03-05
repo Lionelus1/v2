@@ -199,6 +199,8 @@ export default {
         done: "Орындалды",
         notDone: "Орындалмады",
         success: "Сәтті",
+        downloadSignaturesPdf: "Қолтаңбаларды жүктеу",
+        signatures: "Қолтаңбалар"
     },
     bank: {
         title: "Банктер",

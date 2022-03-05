@@ -199,6 +199,8 @@ export default {
         done: "Выполнено",
         notDone: "Не выполнено",
         success: "Успешно",
+        downloadSignaturesPdf: "Скачать подписи",
+        signatures: "Подписи"
     },
     bank: {
         title: "Банки",
