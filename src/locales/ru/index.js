@@ -19,6 +19,7 @@ export default {
             sendToApprove: 'Отправить на согласование',
             approve: 'Согласовать',
             publish: 'Опубликовать',
+            reApprove: 'Переутвердить'
         },
         login: "Вход",
         logout: "Выход",
@@ -203,6 +204,8 @@ export default {
         done: "Выполнено",
         notDone: "Не выполнено",
         success: "Успешно",
+        downloadSignaturesPdf: "Скачать подписи",
+        signatures: "Подписи"
     },
     bank: {
         title: "Банки",

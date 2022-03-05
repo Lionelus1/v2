@@ -1,6 +1,6 @@
 <template>
   <div class="p-col-12" v-if="!loading">
-    <Message severity="warn" :closable="false" v-if="plan.comment && isRejected && isPlanCreator">{{ plan.comment }}</Message>
+    <Message severity="warn" :closable="false" v-if="plan.reject_history && isRejected && isPlanCreator">{{ plan.reject_history.message }}</Message>
     <div class="card" v-if="plan || data">
       <work-plan-event-add v-if="(isCreator || isEventsNull) && !isFinish && isPlanCreator" :isMain="true"></work-plan-event-add>
       <Button v-if="isPlanCreator && !isFinish" :label="$t('common.complete')" icon="pi pi-check" @click="finish"

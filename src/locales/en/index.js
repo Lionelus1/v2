@@ -18,6 +18,7 @@ export default {
             sendToApprove: 'Send to Approve',
             approve: 'Approve',
             publish: 'Publish',
+            reApprove: 'Reapprove'
         },
         login: "login",
         logout: "Logout",
@@ -202,6 +203,8 @@ export default {
         done: "Done",
         notDone: "Not done",
         success: "Success",
+        downloadSignaturesPdf: "Download signatures",
+        signatures: "Signatures"
     },
     bank: {
         title: "Banks",

@@ -3,7 +3,7 @@
     <Button
         type="button"
         icon="pi pi-eye"
-        class="p-button p-button-info p-ml-2"
+        class="p-button p-button-info p-ml-1 p-mb-1"
         label=""
         @click="openModal"
     ></Button>
@@ -53,7 +53,7 @@ export default {
       this.eventResultModal = false;
     },
     downloadFile() {
-      axios.post(smartEnuApi + `/workPlan/getWorkPlanFile`,
+      axios.post(smartEnuApi + `/workPlan/getWorkPlanResultFile`,
           {file_path: this.data.event_result_file},{headers: getHeader()}).then(res => {
         const link = document.createElement("a");
         link.href = "data:application/octet-stream;base64," + res.data;

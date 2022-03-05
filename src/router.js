@@ -8,6 +8,7 @@ function load(component) {
 
 import store from '@/store/store' // your vuex store
 
+
 const ifNotAuthenticated = (to, from, next) => {
     if (!store.getters.isAuthenticated) {
         next()
@@ -17,11 +18,16 @@ const ifNotAuthenticated = (to, from, next) => {
 }
 
 const ifAuthenticated = (to, from, next) => {
+    
     if (store.getters.isAuthenticated) {
         next()
         return
+    }else{
+        store.dispatch("solveAttemptedUrl",to);
+        next('/public/vacancies')
+        return
     }
-    next('/public/vacancies')
+    
 }
 
 
@@ -137,17 +143,20 @@ const routes = [
                     {
                         path: '',
                         name: 'Main',
-                        component: load('dissertation/Dissertation')
+                        component: load('dissertation/Dissertation'),
+                        beforeEnter: ifAuthenticated,
                     },
                     {
                         path: 'members/:id&:role',
                         name: 'Members',
-                        component: load('dissertation/Members')
+                        component: load('dissertation/Members'),
+                        beforeEnter: ifAuthenticated
                     },
                     {
                         path: 'doctorals',
                         name: 'Doctorals',
-                        component: load('dissertation/Doctorals')
+                        component: load('dissertation/Doctorals'),
+                        beforeEnter: ifAuthenticated
                     }
                 ]
             },
@@ -155,16 +164,19 @@ const routes = [
                 path: '/faq/faqmain',
                 name: 'FaqComponent',
                 component: load('faq/FaqComponent'),
+                beforeEnter: ifAuthenticated,
                 children: [
                     {
                         path: '',
                         name: 'FaqMain',
                         component: load('faq/FaqMain'),
+                        beforeEnter: ifAuthenticated,
                     },
                     {
                         path: ':id',
                         name: 'FaqView',
                         component: load('faq/FaqView'),
+                        beforeEnter: ifAuthenticated,
                     }
                 ]
             },
@@ -172,11 +184,13 @@ const routes = [
                 path: '/nca/sign',
                 name: '/nca/sign',
                 component: load('ncasigner/SignDoc'),
+                
             },
             {
                 path: '/nca/find',
                 name: '/nca/find',
                 component: load('ncasigner/FindDoc'),
+                
             },
             {
                 path: '/ncasigner/showdoc/:id',
@@ -187,53 +201,68 @@ const routes = [
                 path: '/work-plan',
                 name: 'WorkPlanComponent',
                 component: load('work_plan/WorkPlanComponent'),
+                beforeEnter: ifAuthenticated,
                 children: [
                     {
                         path: '',
-                        name: 'WorkPlanWorkPlan',
-                        component: load('work_plan/WorkPlan')
+                        name: 'WorkPlan',
+                        component: load('work_plan/WorkPlan'),
+                        beforeEnter: ifAuthenticated,
                     },
                     {
                         path: ':id',
                         name: 'WorkPlanEvents',
-                        component: load('work_plan/WorkPlanEvents')
+                        component: load('work_plan/WorkPlanEvents'),
+                        beforeEnter: ifAuthenticated,
                     },
                     {
                         path: 'view/:id',
                         name: 'WorkPlanView',
-                        component: load('work_plan/WorkPlanView')
+                        component: load('work_plan/WorkPlanView'),
+                        beforeEnter: ifAuthenticated
                     },
                     {
                         path: 'reports/:id',
                         name: 'WorkPlanReport',
-                        component: load('work_plan/WorkPlanReport')
+                        component: load('work_plan/WorkPlanReport'),
+                        beforeEnter: ifAuthenticated,
                     },
                     {
                         path: 'report/:id',
                         name: 'WorkPlanReportView',
-                        component: load('work_plan/WorkPlanReportView')
+                        component: load('work_plan/WorkPlanReportView'),
+                        beforeEnter: ifAuthenticated,
                     }
                 ]
             },
             {
                 path: '/pdf',
                 name: 'PdfContent',
-                component: load('work_plan/PdfContent')
+                component: load('work_plan/PdfContent'),
+                beforeEnter: ifAuthenticated,
             },
             {
                 path: '/human-resources/public/vacancies',
                 name: '/human-resources/public/vacancies',
                 component: load('humanResources/vacancy/PublicVacancies'),
+                beforeEnter: ifAuthenticated,
             },
             {
                 path: '/human-resources/vacancies',
                 name: '/human-resources/vacancies',
                 component: load('humanResources/vacancy/Vacancies'),
+                beforeEnter: ifAuthenticated,
             },
             {
                 path: '/resume',
                 name: 'Resume',
-                component: load('humanResources/candidate/Resume')
+                component: load('humanResources/candidate/Resume'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: 'sign/:uuid',
+                name: 'DocSignaturesInfo',
+                component: load('DocSignaturesInfo'),
             }
         ]
     }

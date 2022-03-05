@@ -20,6 +20,7 @@ export default {
             sendToApprove: 'Келісуге жіберу',
             approve: 'Келісу',
             publish: 'Жариялау',
+            reApprove: 'Қайта бекіту'
         },
         login: "Кіру",
         logout: "Шығу",
@@ -203,6 +204,8 @@ export default {
         done: "Орындалды",
         notDone: "Орындалмады",
         success: "Сәтті",
+        downloadSignaturesPdf: "Қолтаңбаларды жүктеу",
+        signatures: "Қолтаңбалар"
     },
     bank: {
         title: "Банктер",

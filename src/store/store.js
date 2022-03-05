@@ -4,12 +4,14 @@ import axios from "axios";
 import { getHeader, smartEnuApi } from "@/config/config";
 import router from '@/router';
 
+
 const store = createStore({
     plugins: [createPersistedState()],
     state: {
 
         loginedUser: {},
-        token: ""
+        token: "",
+        attemptedUrl:""
     },
     mutations: {
         SET_LOGINED_USER(state) {
@@ -18,6 +20,9 @@ const store = createStore({
             //alert(JSON.stringify(state.loginedUser))
             state.token = JSON.parse(window.localStorage.getItem('authUser')).access_token;
 
+        },
+        SOLVE_ATTEMPT(state,data){
+            state.attemptedUrl=data;
         },
         LOG_OUT_SYSTEM(globalState) {
             globalState.loginedUser={};
@@ -45,6 +50,14 @@ const store = createStore({
         },
         logLout(context) {
             context.commit("LOG_OUT_SYSTEM");
+        },
+        solveAttemptedUrl(context,data){
+            if(data.fullPath){
+                context.commit("SOLVE_ATTEMPT",data.fullPath);
+            }else{
+                context.commit("SOLVE_ATTEMPT","");
+            }
+            
         }
     },
     getters: {
