@@ -68,8 +68,8 @@
                 <RolesByName v-model="selectedRole" roleGroupName="dissertation_council"></RolesByName>
                 <small class="p-error" v-if="submitted && validationErrors.role">{{$t('common.message.selectRole')}}</small>
               </div>
-              <!-- <div v-if="selectedRole != null && (selectedRole.name=== 'dissertation_council_reviewer' || selectedRole.name=== 'dissertation_council_temporary_member')" class="p-field"> -->
-              <div v-if="selectedRole != null && (selectedRole.name=== 'dissertation_council_reviewer')" class="p-field">
+              <div v-if="selectedRole != null && (selectedRole.name=== 'dissertation_council_reviewer' || selectedRole.name=== 'dissertation_council_temporary_member')" class="p-field">
+              <!-- <div v-if="selectedRole != null && (selectedRole.name=== 'dissertation_council_reviewer')" class="p-field"> -->
                 <label for="name">{{$t('dissertation.doctorals')}}</label>
                 <FindDoctorals :max="2" v-model="selectedDoctorals"></FindDoctorals>
                 <small class="p-error" v-if="submitted && validationErrors.doctorals">{{$t('dissertation.validationErrors.selectDoctorals')}}</small>
@@ -210,8 +210,8 @@ export default {
     this.submitted = true;
     var request =  {userID: this.selectedMembers[0].userID, roleID: this.selectedRole.id, councilID: this.councilID}
     if (this.validateAddConsulMemberForm()) {
-      // if (this.selectedRole != null && (this.selectedRole.name === "dissertation_council_reviewer" || this.selectedRole.name === "dissertation_council_temporary_member")) {
-      if (this.selectedRole != null && (this.selectedRole.name === "dissertation_council_reviewer")) {
+      if (this.selectedRole != null && (this.selectedRole.name === "dissertation_council_reviewer" || this.selectedRole.name === "dissertation_council_temporary_member")) {
+      // if (this.selectedRole != null && (this.selectedRole.name === "dissertation_council_reviewer")) {
         request.dissertations = []
         this.selectedDoctorals.forEach(element => {
           request.dissertations.push(element.dissertation.id)

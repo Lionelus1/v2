@@ -160,7 +160,7 @@ export default {
  methods: {
   findRole: findRole,
   checkRole() {
-    this.isDissertationAdmin = this.findRole(null, 'dissertation_council_chief') 
+    this.isDissertationAdmin = this.findRole(null, 'dissertation_chief') 
   },
 
   deleteCouncil() {

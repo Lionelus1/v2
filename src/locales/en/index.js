@@ -112,6 +112,7 @@ export default {
         password: "Password",
         person: "Person",
         personal: "Staff",
+        protocol: "Protocol",
         requiredField: "Required field",
         revision: "To revision",
         teacher: "Academic personnel",
@@ -126,6 +127,7 @@ export default {
         voting: "Voting",
         search: "Search",
         showingRecordsCount: "Showing {first} to {last} of {totalRecords} entries",
+        votedFor: "Voted for: {result}",
         doYouWantDelete: "Are you sure to delete this item?",
         startDate: 'Start date',
         endDate: 'End date',
@@ -189,7 +191,10 @@ export default {
         language: {
             kz: "in kazakh",
             ru: "in russian",
-            en: "in english"
+            en: "in english",
+            ln1: "in kazakh",
+            ln2: "in russian",
+            ln3: "in english"
         },
         result: "Result",
         complete: "Complete",
@@ -498,6 +503,7 @@ export default {
         secretary: "Scientific secretary",
         advisors: "Scientific consultants",
         reviewers: "Official reviewers",
+        protocol: "VOTING PROTOCOL OF THE DISSERT COUNCIL",
         permanentMember: "Permanent members",
         tempMember: "Temporary members",
         meetingTime: "Meeting time",
@@ -528,8 +534,7 @@ export default {
             saveKey: "Voting is anonymous: we do not store your voting result. Please save or download this password to check your vote in the future. The password is known only to you and is not available for recovery.",
             notRegistered: "You cannot vote, because you are not registered",
             enterKey: "Дауысыңызды дешифрлеу үшін дауыс бергенде қолданған кілт сөзді енгізіңіз",
-
-
+            votingRestarted: "The dissertataion has been submitted for re-voting",
         },
        
 

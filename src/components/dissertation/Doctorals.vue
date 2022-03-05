@@ -72,7 +72,8 @@
           :header="$t('dissertation.directionCode')"
         >
           <template #body="slotProps">
-            <span> {{ slotProps.data.speciality.code + '-'+ slotProps.data.speciality.nameInKz}}</span>
+            <span> {{ slotProps.data.speciality.trainingDirection.code + '-'+ slotProps.data.speciality.trainingDirection.nameInKz}}</span>
+
           </template>
         </Column>
         <Column
@@ -80,7 +81,7 @@
           :header="$t('dissertation.specialityCode')"
         >
           <template #body="slotProps">
-            <span> {{ slotProps.data.speciality.trainingDirection.code + '-'+ slotProps.data.speciality.trainingDirection.nameInKz}}</span>
+            <span> {{ slotProps.data.speciality.code + '-'+ slotProps.data.speciality.nameInKz}}</span>
             
           </template>
         </Column>
@@ -334,10 +335,9 @@
           <small class="p-error" v-if="(submitted && validationErrorsSetMeetingTime.meetingPlace)">{{$t('common.requiredField')}}</small>
         </div>
         <div>
-          <label for="url">{{ $t("dissertation.dissertationFile")}}</label>
-          <InputText id="url" class="p-pt-2 p-mb-2" type="text" v-model="selectedDoctoral.dissertation.url" />
-          <small class="p-error" v-if="(submitted && validationErrorsSetMeetingTime.url)">{{$t('common.requiredField')}}</small>
+          <Button icon="pi pi-download" :label="$t('dissertation.dissertationFile')" @click="downloadFile(selectedDoctoral.dissertation.dissFile)"/>
         </div>
+        
         <template #footer>
           <Button
             :label="$t('common.cancel')"
@@ -379,10 +379,8 @@
           </div>
           
           <div>
-            <label for="url">{{ $t("dissertation.dissertationFile")}}</label>
-            <InputText id="url" class="p-pt-2 p-mb-2" type="text" v-model="selectedDoctoral.dissertation.url" />
-            <small class="p-error" v-if="(submitted && validationErrorsSetMeetingTime.url)">{{$t('common.requiredField')}}</small>
-          </div>
+          <Button icon="pi pi-download" :label="$t('dissertation.dissertationFile')" @click="downloadFile(selectedDoctoral.dissertation.dissFile)"/>
+        </div>
         </div>
        
         <DataTable v-if="regInfo && (selectedDoctoral.dissertation.state == dissertationState.ReadyToRegister || selectedDoctoral.dissertation.state == dissertationState.RegistrationFinished )" :loading="loading" :value="regInfo" showGridlines responsiveLayout="scroll">
@@ -405,12 +403,11 @@
           </Column>
             
         </DataTable>
-
-        <DataTable v-if="regInfoDetail && (selectedDoctoral.dissertation.state == dissertationState.VotingStarted || selectedDoctoral.dissertation.state == dissertationState.VotingFinished )" :loading="loading" :value="regInfoDetail" showGridlines responsiveLayout="scroll">
+        <DataTable v-if="regInfoDetail && isSecretary  && (selectedDoctoral.dissertation.state == dissertationState.VotingStarted || selectedDoctoral.dissertation.state == dissertationState.VotingFinished )" :loading="loading" :value="regInfoDetail" showGridlines responsiveLayout="scroll">
           <Column field="fullName" :header="$t('common.fullName')"></Column>
           <Column field="vote" :header="$t('common.state')">
             <template #body="slotProps">
-              <span v-if="slotProps.data.state ==0" class="p-tag p-tag-warning">{{$t('common.states.notVoted')}}</span>
+              <span v-if="slotProps.data.voted ==0" class="p-tag p-tag-warning">{{$t('common.states.notVoted')}}</span>
               <span v-else class="p-tag p-tag-success">{{$t('common.states.voted')}}</span>             
             </template>
           </Column>
@@ -422,31 +419,55 @@
             <span>{{$t('common.registered')}}</span>: {{voteInfo.total}}
           </p>
           <p>
-            <span>{{$t('common.voted')}}</span>: {{voteInfo.voted}}
+            <span>{{$t('common.voted')}}</span>: {{(selectedDoctoral.dissertation.state === dissertationState.VotingRestarted ? voteInfo.voted2 : voteInfo.voted)}}
           </p>
-          <ProgressBar :value="(Math.floor((voteInfo.voted / voteInfo.total) * 100))" />
+          <ProgressBar :value="(Math.floor(((selectedDoctoral.dissertation.state === dissertationState.VotingRestarted ? voteInfo.voted2 : voteInfo.voted) / voteInfo.total) * 100))" />
+          <div v-if="voteInfo && (selectedDoctoral.dissertation.state > dissertationState.VotingStarted && selectedDoctoral.dissertation.state != dissertationState.VotingRestarted )">
+          <div ref="report">
           
-          <DataTable ref="voteReport" v-if="voteInfo && (selectedDoctoral.dissertation.state == dissertationState.VotingFinished || selectedDoctoral.dissertation.state == dissertationState.VotinsFinishedSecondStep)" :loading="loading" :value="voteInfo.votes" showGridlines responsiveLayout="scroll">
-            <template v-if="isSecretary" #header>
-                <div style="text-align: left">
-                    <Button icon="pi pi-external-link" :label="$t('common.export')" @click="exportCSV($event)" />
-                </div>s
-            </template>
-          <Column header="_">
-            <template #body="slotProps">
-              {{ $t('dissertation.vote.v' + slotProps.data.type)  }}
-            </template>
-          </Column>s
-          <Column field="count" :header="$t('common.voted')"></Column>
-         
+          <div v-if="isDissertationAdmin" :style="printStyle">
+            <h4>{{$t('dissertation.protocol')}}</h4>
+            <p style="text-align:left">
+              <b>{{$t('common.fullName')}}:</b>&nbsp;{{selectedDoctoral.user.fullName}}<br/>
+              <b>{{$t('dissertation.directionCode')}}:&nbsp;</b>{{selectedDoctoral.speciality.trainingDirection.code + '-'+ selectedDoctoral.speciality.trainingDirection.nameInKz }}<br/>
+              <b>{{$t('dissertation.specialityCode')}}:&nbsp;</b>{{selectedDoctoral.speciality.code + '-'+ selectedDoctoral.speciality.nameInKz }}<br/>
+              <b>{{$t('dissertation.disstitle')}}:&nbsp;</b>{{selectedDoctoral.dissertation['name'+$i18n.locale] }}<br/>
+              <b>{{$t('dissertation.meetingTime')}}:&nbsp;</b>{{selectedDoctoral.meetingTime.replace('T', ' ').substring(0,selectedDoctoral.meetingTime.length-4) }}<br/>
+              <b>{{$t('dissertation.defenseLang')}}:&nbsp;</b>{{$t('common.language.ln' + selectedDoctoral.dissertation.language)}}<br/>
+              <br/>
+            </p>
+
+          </div>
+          <DataTable ref="voteReport"  :loading="loading" :value="voteInfo.votes" showGridlines responsiveLayout="scroll">
+      
+            <Column>
+              <template #body="slotProps">
+                {{ $t('dissertation.vote.v' + slotProps.data.type)  }}
+              </template>
+            </Column>
+            <Column field="count" :header="$t('common.voted')"></Column>
           </DataTable>
-        
+          </div>
+          <Button v-if="isDissertationAdmin" :label="$t('common.protocol')" icon="pi pi-download" @click="exportReport"/>
+          </div>        
         </div>
+        <h4 
+           v-if="(selectedDoctoral.dissertation.state == dissertationState.Accepted || selectedDoctoral.dissertation.state == dissertationState.Revision || selectedDoctoral.dissertation.state == dissertationState.ReDefense || selectedDoctoral.dissertation.state == dissertationState.Reject)==true"
+          >{{ $t('common.votedFor', {
+                  result: (
+                    selectedDoctoral.dissertation.state == dissertationState.Accepted ? $t('dissertation.vote.v1') :
+                    selectedDoctoral.dissertation.state == dissertationState.Revision ? $t('dissertation.vote.v2') :
+                    selectedDoctoral.dissertation.state == dissertationState.ReDefense ? $t('dissertation.vote.v3') :
+                    $t('dissertation.vote.v4')),
+                })}}
+          </h4>
         <div
             v-if="(isDissertationMember || isSecretary) && ((currentMemberState === memberState.Registered && selectedDoctoral.dissertation.state === dissertationState.VotingStarted) || (currentMemberState === memberState.Voted && selectedDoctoral.dissertation.state === dissertationState.VotingRestarted))"
           >
+              <h3 v-if="selectedDoctoral.dissertation.state === dissertationState.VotingRestarted" class="p-error">{{$t('dissertation.message.votingRestarted')}}</h3>
+
               <div id="keyword">
-                <p ref="content" style="border: 1px solid blue;margin-top:5px;padding: 5px;">{{ $t("common.voteKeyword")}}:<span style="text-decoration: underline;font-weight: bold;" >&nbsp; {{password}}</span>
+                <p ref="content" style="border: 1px solid blue;margin-top:5px;padding: 5px;">{{ $t("common.voteKeyword")}}:&nbsp;<span style="text-decoration: underline;font-weight: bold;" >{{password}}</span>
                 <br><small class="p-error">{{$t('dissertation.message.saveKey')}}</small>
                 
                 </p>
@@ -455,8 +476,6 @@
                     class="p-button-text"
                     @click="download()"
                   />
-                 
-
               </div>
               <div class="p-field-radiobutton"
                 v-if="(isDissertationMember || isSecretary) && currentMemberState === memberState.Registered && selectedDoctoral.dissertation.state === dissertationState.VotingStarted"
@@ -529,6 +548,12 @@
             class="p-button-text"
             @click="ChangeDissertationState(dissertationState.VotingFinished)"
           />
+          <Button
+            v-if="isSecretary && !isDissertationMember && selectedDoctoral.dissertation.state === dissertationState.VotingRestarted"
+            :label="$t('dissertation.finishVoting')"
+            class="p-button-text"
+            @click="ChangeDissertationState(dissertationState.VotingRestarted)"
+          />
           
           <Button
             v-if="isDissertationMember && !isSecretary && currentMemberState === memberState.NotRegistered && selectedDoctoral.dissertation.state === dissertationState.ReadyToRegister"
@@ -563,7 +588,9 @@ import { mapState } from "vuex";
 import FindUser from "@/helpers/FindUser";
 import Enums from "@/enum/docstates/index";
 import axios from "axios";
-import { getHeader, findRole, smartEnuApi } from "@/config/config";
+import html2pdf from "html2pdf.js";
+
+import { getHeader, findRole, smartEnuApi, downloadFile } from "@/config/config";
 import DepartmentList from '../smartenu/DepartmentList.vue';
 import SpecialitySearch from "../smartenu/speciality/specialitysearch/SpecialitySearch.vue";
 import html2canvas from "html2canvas";
@@ -573,6 +600,7 @@ export default {
   components: { FindUser, DepartmentList, SpecialitySearch },
   data() {
     return {
+      printStyle: 'display:none;text-align:center',
       heiID: -1,
       councilID: -1,
       currentMemberState: -1,
@@ -605,8 +633,12 @@ export default {
         RegistrationFinished:3,
         VotingStarted: 4,
         VotingFinished: 5,
-        VotingRestarted: 6,
-        VotinsFinishedSecondStep: 7,
+        Accepted: 6,
+        Revision: 7,
+        VotingRestarted: 8,
+        ReDefense: 9,
+        Reject: 10,
+        VotinsFinishedSecondStep: 11,
       },
       memberState: {
         NotRegistered: 0,
@@ -672,7 +704,6 @@ export default {
         defenseLanguage: false,
         meetingPlace: false,
         meetingUrl: false,
-        url: false,
       },
       loading: false,
       lazyParams: {
@@ -695,11 +726,27 @@ export default {
     this.getDissertationMember();
     this.getSecretary();
   },
+  
 
   methods: {
     findRole: findRole,
+    downloadFile: downloadFile,
     exportCSV() {
             this.$refs.voteReport.exportCSV();
+    },
+    async exportReport() {
+      this.printStyle = 'text-align:center';
+      var opt = {
+        margin:       1,
+        filename:     this.selectedDoctoral.user.fullName + '.pdf',
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+      };
+      const pdfContent = this.$refs.report;
+
+      // New Promise-based usage:
+      await html2pdf().set(opt).from(pdfContent).save();
+      this.printStyle = 'display:none;text-align:center';
     },
     getDissertationMember() {
       this.isDissertationMember= (
@@ -845,10 +892,8 @@ export default {
       }
 
       if (this.selectedDoctoral && (
-        this.selectedDoctoral.dissertation.state == this.dissertationState.VotingStarted ||
-        this.selectedDoctoral.dissertation.state == this.dissertationState.VotingRestarted ||
-        this.selectedDoctoral.dissertation.state == this.dissertationState.VotingFinished ||
-        this.selectedDoctoral.dissertation.state == this.dissertationState.VotinsFinishedSecondStep
+        this.selectedDoctoral.dissertation.state > this.dissertationState.VotingStarted
+        
       )) {
         this.getVotingInfo()
       }
@@ -946,6 +991,7 @@ export default {
           state == this.dissertationState.VotinsFinishedSecondStep) {
           this.getVotingInfo()
         }
+        
       
       })
       .catch((error) => {
@@ -1039,7 +1085,7 @@ export default {
       var req = {
         dissertationID: this.selectedDoctoral.dissertation.id,
         short: this.selectedDoctoral.dissertation.state == this.dissertationState.VotingStarted || this.selectedDoctoral.dissertation.state == this.dissertationState.VotingRestarted ,
-        step: this.selectedDoctoral.dissertation.state == this.dissertationState.VotingRestarted ? 2 : 1,
+        step: this.selectedDoctoral.dissertation.state == this.dissertationState.Accepted || this.selectedDoctoral.dissertation.state == this.dissertationState.Reject   ? 1 : 2,
    
       }
       axios
@@ -1087,7 +1133,9 @@ export default {
         }
         this.loading = false
         if ((this.dialog.defenseConduct.state && this.selectedDoctoral && this.selectedDoctoral.dissertation.state === this.dissertationState.ReadyToRegister) ||
-        (this.isDissertationMember && this.dialog.defenseConduct.state && this.selectedDoctoral && this.selectedDoctoral.dissertation.state === this.dissertationState.RegistrationFinished)) {
+        (this.isDissertationMember && this.dialog.defenseConduct.state && this.selectedDoctoral && this.selectedDoctoral.dissertation.state === this.dissertationState.RegistrationFinished) ||
+        (this.isDissertationAdmin && this.selectedDoctoral && this.dialog.defenseConduct.state))
+        {
           setTimeout(() => {
             this.getRegistrationInfo()
           }, 5000);
@@ -1143,13 +1191,12 @@ export default {
       this.validationErrorsSetMeetingTime.defenseLanguage = !this.selectedDoctoral.dissertation.language;
       this.validationErrorsSetMeetingTime.meetingPlace = !this.selectedDoctoral.dissertation.meetingPlace;
       this.validationErrorsSetMeetingTime.meetingTime = !this.selectedDoctoral.meetingTime;
-      this.validationErrorsSetMeetingTime.meetingUrl = this.selectedDoctoral.dissertation.meetingUrl;
-      this.validationErrorsSetMeetingTime.url = !this.selectedDoctoral.dissertation.url;
+      this.validationErrorsSetMeetingTime.meetingUrl = !this.selectedDoctoral.dissertation.meetingUrl;
       let result = true
       for (var key of Object.keys(this.validationErrorsSetMeetingTime)) {
-        result = result && !this.validationErrors[key]
+        result = result && !this.validationErrorsSetMeetingTime[key]
       }
-      return result    
+      return result
       },
     addDoctoral() {
       this.submitted = true;

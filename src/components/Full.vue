@@ -68,14 +68,14 @@ export default {
       //    ]ß
 //
       //  },
-        //{
-        //  label: 'Құжаттар', icon: 'pi pi-fw pi-folder',
-        //  items: [
-        //    {label: 'Келісім-шарт үлгілері', icon: 'pi pi-fw pi-book', to: '/documents/doctemplate'},
-        //    {label: 'Келісім-шарттар', icon: 'pi pi-fw pi-copy', to: '/documents/contracts'},
-        //  ]
+        // {
+        //   label: 'Құжаттар', icon: 'pi pi-fw pi-folder',
+        //   items: [
+        //     {label: 'Келісім-шарт үлгілері', icon: 'pi pi-fw pi-book', to: '/documents/doctemplate'},
+        //     {label: 'Келісім-шарттар', icon: 'pi pi-fw pi-copy', to: '/documents/contracts'},
+        //   ]
 
-        //},
+        // },
         {
           label: 'Контрагенттер', icon: 'pi pi-fw pi-users',
           items: [

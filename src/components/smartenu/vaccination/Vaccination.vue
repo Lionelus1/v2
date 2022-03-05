@@ -1124,7 +1124,7 @@ export default {
 
       axios
         .post(
-          smartEnuApi + "/downloadFile",
+          smartEnuApi + "/vaccine/downloadFile",
           { filename: filename, status: status },
           {
             headers: getHeader(),
