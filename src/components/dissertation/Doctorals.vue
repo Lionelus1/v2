@@ -499,7 +499,7 @@
               </div>
           </div>
           <Inplace :closable="true" class = "p-mt-3"
-              v-if="(isDissertationMember || isSecretary) &&  (selectedDoctoral.dissertation.state === dissertationState.VotingFinished || selectedDoctoral.dissertation.state === dissertationState.VotinsFinishedSecondStep)"
+              v-if="(isDissertationMember || isSecretary) &&  (selectedDoctoral.dissertation.state >= dissertationState.VotingFinished && selectedDoctoral.dissertation.state !== dissertationState.VotingRestarted)"
             >
               <template #display>
                   <Button
