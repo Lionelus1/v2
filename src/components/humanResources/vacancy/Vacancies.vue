@@ -37,6 +37,7 @@
                selection-mode="single"
                @row-select="select($event)"
                :filters="filters"
+               :loading="loading"
                filterDisplay="menu"
                :showFilterMatchModes="false"
                responsiveLayout="scroll"
@@ -60,15 +61,45 @@
       <template #empty> {{ $t('common.noData') }}</template>
       <!-- ON LOADING -->
       <template #loading> {{ $t('common.loading') }}</template>
+      <Column>
+        <template #body="slotProps">
+          <Button icon="pi pi-users" class="p-button-info" v-if="slotProps.data.candidateRelation"
+                  @click="apply(slotProps.data)"/>
+        </template>
+      </Column>
       <!-- NAME COLUMN -->
       <Column :field="'name' + ($i18n.locale).charAt(0).toUpperCase() + ($i18n.locale).slice(1)"
               v-bind:header="$t('common.nameIn')"
-              :sortable="true" style="width: 50%">
+              :sortable="true">
         <template #body="slotProps">
           <span>
             {{
               $i18n.locale === "kz" ? slotProps.data.nameKz : $i18n.locale === "ru"
                   ? slotProps.data.nameRu : slotProps.data.nameEn
+            }}
+          </span>
+        </template>
+      </Column>
+      <Column field="org"
+              v-bind:header="$t('common.organizationName')"
+              :sortable="false">
+        <template #body="slotProps">
+          <span>
+            {{
+              $i18n.locale === "kz" ? slotProps.data.organization.name : $i18n.locale === "ru"
+                  ? slotProps.data.organization.nameru : slotProps.data.organization.name
+            }}
+          </span>
+        </template>
+      </Column>
+      <Column field="stp"
+              v-bind:header="$t('common.departmentNameLabel')"
+              :sortable="false">
+        <template #body="slotProps">
+          <span>
+            {{
+              $i18n.locale === "kz" ? slotProps.data.department.nameKz : $i18n.locale === "ru"
+                  ? slotProps.data.department.name : slotProps.data.department.nameEn
             }}
           </span>
         </template>
@@ -90,10 +121,21 @@
           </span>
         </template>
       </Column>
+      <Column field="date"
+              v-bind:header="$t('common.date')"
+              :sortable="false">
+        <template #body="slotProps">
+          <span>
+            {{
+              new Date(slotProps.data.history.modifyDate).toLocaleDateString()
+            }}
+          </span>
+        </template>
+      </Column>
       <!-- BUTTON COLUMN -->
       <Column>
         <template #body="slotProps">
-          <Button icon="pi pi-user" class="p-button-info" v-if="slotProps.data.candidateRelation" @click="apply(slotProps.data)"/>
+          <Button icon="pi pi-times" class="p-button-danger" @click="openDelete(slotProps.data)"/>
         </template>
       </Column>
     </DataTable>
@@ -111,6 +153,34 @@
              style="overflow-y: scroll">
       <VacancyCandidateView :candidates="vacancy.candidateRelation"/>
     </Sidebar>
+    <Dialog
+        v-model:visible="view.delete"
+        :style="{ width: '450px' }"
+        :modal="true"
+        :closable="false"
+    >
+      <div class="confirmation-content">
+        <i class="pi pi-exclamation-triangle p-mr-3" style="font-size: 2rem"/>
+        <span v-if="vacancy"
+        >{{ $t("common.doYouWantDelete") }}?
+        </span>
+      </div>
+      <template #footer>
+        <Button
+            :label="$t('common.yes')"
+            icon="pi pi-check"
+            class="p-button p-component p-button-success p-mr-2"
+            @click="deleteVacancy(vacancy.id)"
+        />
+        <Button
+            :label="$t('common.no')"
+            icon="pi pi-times"
+            class="p-button p-component p-button-danger p-mr-2"
+            @click="closeDelete"
+        />
+      </template>
+    </Dialog>
+
   </div>
 </template>
 
@@ -121,6 +191,7 @@ import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
 import AddVacancy from "./AddVacancy";
 import VacancyCandidateView from "./VacancyCandidateView";
+import VacancyService from "./VacancyService";
 
 export default {
   name: "Vacancies",
@@ -140,10 +211,12 @@ export default {
         rows: 10,
         searchText: null,
         sortField: "",
-        sortOrder: 0
+        sortOrder: 0,
+        orgCode: 'enu'
       },
       view: {
         candidates: false,
+        delete: false,
       },
       vacancies: [],
       vacancy: null,
@@ -157,11 +230,35 @@ export default {
   mounted() {
     this.emitter.on('vacancyAdded', (data) => {
       if (data === true) {
+        this.isView = false
+        this.getVacancies();
+      }
+    });
+    this.emitter.on('updateForm', (data) => {
+      if (data === true) {
+        this.view.candidates = false
         this.getVacancies();
       }
     });
   },
   methods: {
+    openDelete(data) {
+      this.vacancy = data
+      this.view.delete = true
+    },
+    closeDelete() {
+      this.vacancy = null
+      this.view.delete = false
+    },
+    deleteVacancy(id) {
+      this.vacancyService.deleteVacancy(id).then(response => {
+        this.view.delete = false
+        this.vacancy = null
+        this.getVacancies()
+      }).catch(error => {
+        console.log(error)
+      });
+    },
     clearData() {
       if (!this.lazyParams.searchText) {
         return;
@@ -195,6 +292,7 @@ export default {
      * @param event
      */
     select(event) {
+      this.vacancy = {}
       this.vacancy = event.data
       this.readonly = this.vacancy.history.status.id !== 1
       this.isView = true
@@ -210,11 +308,7 @@ export default {
      */
     getVacancies() {
       this.loading = true
-      this.lazyParams.countMode = null;
-      axios
-          .post(smartEnuApi + "/vacancy/all", this.lazyParams, {
-            headers: getHeader(),
-          }).then((response) => {
+      this.vacancyService.getVacancies(this.lazyParams).then((response) => {
         this.vacancies = response.data.vacancies;
         this.count = response.data.total;
         this.loading = false;
@@ -241,6 +335,7 @@ export default {
     },
   },
   created() {
+    this.vacancyService = new VacancyService()
     this.getVacancies();
   },
 }

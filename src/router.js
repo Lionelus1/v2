@@ -229,6 +229,11 @@ const routes = [
                 path: '/resume',
                 name: 'Resume',
                 component: load('humanResources/candidate/Resume')
+            },
+            {
+                path: '/cabinet',
+                name: 'Cabinet',
+                component: load('humanResources/candidate/Cabinet')
             }
         ]
     }
