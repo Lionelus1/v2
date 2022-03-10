@@ -6,8 +6,8 @@
                 @click="downloadSignatures"
                 class="p-button p-ml-2"/>
       </div>
-      <div class="card">
-        <work-plan-qr-pdf ref="qrToPdf" v-if="signatures" :signatures="signatures" :title="docInfo.name"></work-plan-qr-pdf>
+      <div class="card" v-if="signatures">
+        <work-plan-qr-pdf ref="qrToPdf" :signatures="signatures" :title="docInfo.name"></work-plan-qr-pdf>
 <!--        <div v-if="signatures" class="p-m-2">
           <div v-for="(item, index) of signatures" :key="index" style="border: 1px solid #000; padding: 5px; margin: 5px;display: inline-block;">
             <p v-if="item.user"><b>{{item.user.fullName}}</b> ({{$t('ncasigner.IIN')}} <em>{{item.user.IIN}}</em>) <br/> {{$t('ncasigner.signed')}} {{ new Date(item.signDate).toLocaleDateString() + ", " + new Date(item.signDate).toLocaleTimeString() }}</p>
@@ -47,6 +47,10 @@ export default {
             if (res.data) {
               this.docInfo = res.data;
               this.signatures = res.data.signatures;
+              this.signatures.map(e => {
+                console.log(e.signature.length)
+                e.sign = this.chunkString(e.signature, 1200)
+              })
             }
           }).catch(error => {
         if (error.response && error.response.status === 401) {
@@ -99,6 +103,9 @@ export default {
       };
       const pdfContent = this.$refs.qrToPdf.$refs.qrToPdf;
       html2pdf().set(pdfOptions).from(pdfContent).save();
+    },
+    chunkString(str, length) {
+      return str.match(new RegExp('.{1,' + length + '}', 'g'));
     }
   }
 }

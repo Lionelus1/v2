@@ -10,7 +10,7 @@
       <Button v-if="isFinish && (isApproval || isPlanCreator) && isPlanSentApproval" :label="$t('workPlan.viewPlan')"
               icon="pi pi-eye" @click="viewDoc"
               class="p-button p-button-info p-ml-2"/>
-      <Button v-if="isFinish && (isApproval || isPlanCreator) && isPlanSentApproval" :label="$t('workPlan.reports')"
+      <Button v-if="isFinish && (isApproval || isPlanCreator) && isPlanApproved" :label="$t('workPlan.reports')"
               @click="navigateToReports" class="p-button p-button-info p-ml-2"/>
       <!--      <WorkPlanReportModal v-if="isFinish && (isApproval || isPlanCreator) && isPlanSentApproval" :planId="work_plan_id"
                                  :plan="plan"></WorkPlanReportModal>-->
@@ -80,7 +80,7 @@
           <template #body="slotProps">
             <div>
               <work-plan-execute
-                  v-if="parseInt(slotProps.data.quarter.String) === currentQuarter && isUserApproval(slotProps.data) && isPlanSentApproval"
+                  v-if="parseInt(slotProps.data.quarter.String) === currentQuarter && isUserApproval(slotProps.data) && isPlanSentApproval && plan.status.work_plan_status_id === 4"
                   :data="slotProps.data"></work-plan-execute>
               <work-plan-event-result-modal v-if="slotProps.data.event_result"
                                             :event-result="slotProps.data.event_result"></work-plan-event-result-modal>
@@ -97,7 +97,7 @@
         </Column>
         <template #expansion="slotProps">
           <WorkPlanEventTree :plan-creator="isPlanCreator" :finish="isFinish" :approval-sent="isPlanSentApproval"
-                             :child="slotProps.data.children" v-if="slotProps.data.children"/>
+                             :child="slotProps.data.children" :plan="plan" v-if="slotProps.data.children"/>
         </template>
       </DataTable>
     </div>
@@ -168,6 +168,7 @@ export default {
       isFinish: false,
       isEventsNull: false,
       currentQuarter: null,
+      isPlanApproved: false
     }
   },
   mounted() {
@@ -251,6 +252,7 @@ export default {
           .then(res => {
             if (res.data) {
               this.approval_users = res.data;
+              this.isPlanApproved = res.data.every(x => x.is_success);
               this.isPlanSentApproval = true;
               this.approval_users.forEach(e => {
                 if (this.loginedUserId === e.user.id) {
