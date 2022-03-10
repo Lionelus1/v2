@@ -26,7 +26,7 @@
             <td>{{ item.result }}</td>
             <td>{{ item.comment }}</td>
             <td>{{ item.event_result ? item.event_result.event_result : "" }}</td>
-            <td>{{ item.event_result ? "Выполнено" : "Не выполнено" }}</td>
+            <td>{{ item.event_result ? $t('common.done') : $t('common.notDone') }}</td>
           </tr>
           </tbody>
         </table>
@@ -47,19 +47,6 @@ export default {
       work_plan_id: this.planId,
       items: this.data,
       pdfType: this.type,
-      pdfOptions: {
-        margin: 15,
-        image: {
-          type: 'jpeg',
-          quality: 1,
-        },
-        html2canvas: {scale: 3},
-        jsPDF: {
-          unit: 'mm',
-          format: 'a4',
-          orientation: 'p',
-        },
-      },
       loginedUserId: 0
     }
   },
@@ -87,6 +74,7 @@ table {
   font-size: 14px;
   text-align: center;
   border-collapse: collapse;
+  border: .1px solid #000;
 
   th {
     font-weight: bold;
@@ -94,8 +82,9 @@ table {
 
   td,
   th {
-    padding: 8px;
-    border: 0.03em solid #3f3f3f;
+    padding: 5px;
+    border: .1px solid #000;
+    border-collapse: collapse;
   }
 }
 

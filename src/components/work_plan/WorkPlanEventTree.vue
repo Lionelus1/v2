@@ -18,35 +18,37 @@
         </div>
       </template>
     </Column>
-    <Column field="event_name" header="Название мероприятия" />
-    <Column field="quarter" header="Квартал">
+    <Column field="event_name" :header="$t('workPlan.eventName')" />
+    <Column field="quarter" :header="$t('workPlan.quarter')">
       <template #body="{ data }">
         {{ data.quarter ? initQuarterString(data.quarter.String) : "" }}
       </template>
     </Column>
-    <Column field="fullName" header="Ответственные лица">
+    <Column field="fullName" :header="$t('workPlan.approvalUsers')">
       <template #body="{ data }">
         <p v-for="item in data.user" :key="item.id">{{ item.fullName }}</p>
       </template>
     </Column>
-    <Column field="result" header="Результат" />
-    <Column field="status" header="Статус">
+    <Column field="result" :header="$t('common.result')" />
+    <Column field="status" :header="$t('common.status')">
       <template #body="slotProps">
             <span
-                :class="'customer-badge status-' + slotProps.data.status.work_plan_event_status_id">{{ slotProps.data.status.name_ru }}</span>
+                :class="'customer-badge status-' + slotProps.data.status.work_plan_event_status_id">{{ $i18n.locale === "kz" ? slotProps.data.status.name_kz : $i18n.locale === "ru" ? slotProps.data.status.name_ru : slotProps.data.status.name_en }}</span>
       </template>
     </Column>
-    <Column field="actions" header="Действия">
+    <Column field="actions" header="">
       <template #body="slotProps">
-        <work-plan-execute :data="slotProps.data" v-if="parseInt(slotProps.data.quarter.String) === currentQuarter && isUserApproval(slotProps.data)"></work-plan-execute>
+        <work-plan-execute :data="slotProps.data" v-if="parseInt(slotProps.data.quarter.String) === currentQuarter && isUserApproval(slotProps.data) && plan.status.work_plan_status_id === 4"></work-plan-execute>
         <work-plan-event-result-modal v-if="slotProps.data.event_result" :event-result="slotProps.data.event_result"></work-plan-event-result-modal>
-        <work-plan-event-add v-if="!slotProps.data.is_finish" :data="slotProps.data"></work-plan-event-add>
-        <work-plan-event-edit-modal v-if="isPlanCreator && !isPlanSentApproval && !isFinish" :event="slotProps.data"></work-plan-event-edit-modal>
-        <Button v-if="isPlanCreator && !isPlanSentApproval && !isFinish" @click="remove_event(slotProps.data.work_plan_event_id)" icon="pi pi-trash" class="p-button-danger p-ml-2" :label="$t('common.delete')"></Button>
+        <work-plan-event-add v-if="!isPlanSentApproval && !slotProps.data.is_finish" :data="slotProps.data"></work-plan-event-add>
+        <work-plan-event-edit-modal v-if="(slotProps.data.creator_id === loginedUserId || isPlanCreator) && !isPlanSentApproval && !slotProps.data.is_finish" :event="slotProps.data"></work-plan-event-edit-modal>
+        <div>
+          <Button v-if="(slotProps.data.creator_id === loginedUserId || isPlanCreator) && !isPlanSentApproval && !slotProps.data.is_finish" @click="remove_event(slotProps.data.work_plan_event_id)" icon="pi pi-trash" class="p-button-danger p-ml-1 p-mt-1"></Button>
+        </div>
       </template>
     </Column>
     <template #expansion="slotProps">
-      <WorkPlanEventTree :child="slotProps.data.children" />
+      <WorkPlanEventTree v-if="slotProps.data.children" :plan-creator="isPlanCreator" :finish="isFinish" :approval-sent="isPlanSentApproval" :child="slotProps.data.children" :plan="plan" />
     </template>
   </DataTable>
 </template>
@@ -62,24 +64,24 @@ import WorkPlanEventEditModal from "@/components/work_plan/WorkPlanEventEditModa
 export default {
   name: "WorkPlanEventTree",
   components: {WorkPlanEventResultModal, WorkPlanEventAdd, WorkPlanExecute, WorkPlanEventEditModal},
-  props: ['child', 'planCreator', 'finish', 'approvalSent'],
+  props: ['child', 'planCreator', 'finish', 'approvalSent', 'plan'],
   data() {
     return {
       data: null,
       rows: [],
       isExpanded: false,
       currentQuarter: null,
-      loginedUserId: 0,
+      loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID,
       isPlanCreator: this.planCreator,
-      isFinish: this.isFinish,
+      isFinish: false,
       isPlanSentApproval: this.approvalSent
     }
   },
   created() {
     if (this.child)
       this.data = this.child;
+    this.isFinish = this.data.is_finish ?? this.data.is_finish;
     this.initQuarter();
-    this.loginedUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
   },
   mounted() {
     if (this.child)
@@ -137,8 +139,8 @@ export default {
     },
     remove_event(event_id) {
       this.$confirm.require({
-        message: 'Вы точно хотите удалить?',
-        header: 'Удаление',
+        message: this.$t('common.doYouWantDelete'),
+        header: this.$t('common.delete'),
         icon: 'pi pi-info-circle',
         accept: () => {
           this.remove(event_id);
@@ -151,11 +153,11 @@ export default {
     remove(event_id) {
       axios.post(smartEnuApi + `/workPlan/removeEvent/${event_id}`, {}, {headers: getHeader()}).then(res => {
         if (res.data.is_success) {
-          this.$toast.add({severity: 'success', summary: 'Успешно', life: 3000});
+          this.$toast.add({severity: 'success', summary: this.$t('common.success'), life: 3000});
           this.emitter.emit("workPlanChildEventIsDeleted", true);
         }
       }).catch(error => {
-        if (error.response.status === 401) {
+        if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
           this.$toast.add({
@@ -179,19 +181,19 @@ export default {
   font-size: 12px;
   letter-spacing: .3px;
 
-  &.status-3 {
-    background: #C8E6C9;
-    color: #256029;
+  &.status-4 {
+    background: #FEEDAF;
+    color: #8A5340;
   }
 
-  &.status-2 {
+  &.status-3 {
     background: #FFCDD2;
     color: #C63737;
   }
 
-  &.status-4 {
-    background: #FEEDAF;
-    color: #8A5340;
+  &.status-2 {
+    background: #C8E6C9;
+    color: #256029;
   }
 
   &.status-1 {

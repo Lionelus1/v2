@@ -595,7 +595,7 @@ export default {
             this.loading = false;
           })
           .catch((error) => {
-            if (error.response.status === 401) {
+            if (error.response && error.response.status === 401) {
               this.$store.dispatch("logLout");
             } else {
               this.$toast.add({
@@ -637,7 +637,7 @@ export default {
             })
           })
           .catch((error) => {
-            if (error.response.status === 401) {
+            if (error.response && error.response.status === 401) {
               this.$store.dispatch("logLout");
             } else {
               this.$toast.add({
@@ -704,7 +704,7 @@ export default {
             this.getData();
           })
           .catch((error) => {
-            if (error.response.status === 401) {
+            if (error.response && error.response.status === 401) {
               this.$store.dispatch("logLout");
             } else {
               console.log(error);

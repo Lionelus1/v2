@@ -895,7 +895,6 @@ export default {
           headers: getHeader(),
         })
         .then((response) => {
-          console.log(response);
           this.statistic = response.data;
 
           this.studentData.labels = [];
@@ -1125,7 +1124,7 @@ export default {
 
       axios
         .post(
-          smartEnuApi + "/downloadFile",
+          smartEnuApi + "/vaccine/downloadFile",
           { filename: filename, status: status },
           {
             headers: getHeader(),

@@ -46,11 +46,12 @@
 	"dependencies": {
 		"@popperjs/core": "^2.9.2",
 		"generate-password": "^1.7.0",
-		"html2pdf.js": "^0.10.1",
+		"html2pdf.js": "^0.9.3",
 		"image-resize-compress": "^1.0.8",
 		"jspdf": "^1.4.1",
 		"lvovich": "^1.0.16",
 		"ncalayer-js-client": "^1.0.4",
+		"qrcode.vue": "^3.3.3",
 		"quill": "^1.3.7",
 		"quill-better-table": "^1.2.10",
 		"v-calendar": "^3.0.0-alpha.3",

@@ -1,14 +1,16 @@
 <template>
-  <Button label="Выполнить" icon="pi pi-check" @click="openBasic" class="p-mr-2"/>
+  <div>
+    <Button :label="$t('common.perform')" icon="pi pi-check" @click="openBasic" class="p-mr-2"/>
+  </div>
 
-  <Dialog header="Выполнить мероприятие" v-model:visible="showWorkPlanExecuteModal" :style="{width: '450px'}"
+  <Dialog :header="$t('workPlan.performEvent')" v-model:visible="showWorkPlanExecuteModal" :style="{width: '450px'}"
           class="p-fluid">
     <div class="p-field">
-      <label>Название мероприятия</label>
+      <label>{{ $t('workPlan.eventName') }}</label>
       <InputText v-model="event.event_name" disabled/>
     </div>
     <div class="p-field">
-      <label>Результат</label>
+      <label>{{ $t('common.result') }}</label>
       <Textarea v-model="result" @input="resultInput" rows="3" style="resize: vertical"/>
     </div>
     <div class="p-field">
@@ -18,7 +20,7 @@
           :customUpload="true"
           @uploader="uploadFile($event)"
           :auto="true"
-          chooseLabel="Загрузить файл"
+          :chooseLabel="$t('smartenu.chooseAdditionalFile')"
       ></FileUpload>
     </div>
     <template #footer>
@@ -63,11 +65,11 @@ export default {
       }
       axios.post(smartEnuApi + `/workPlan/saveResult`, fd, {headers: getHeader()}).then(res => {
         this.emitter.emit("workPlanEventIsCompleted", true);
-        this.$toast.add({severity: 'success', detail: 'Выполнено', life: 3000});
+        this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
         this.showWorkPlanExecuteModal = false;
         this.clearModel();
       }).catch(error => {
-        if (error.response.status === 401) {
+        if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
           this.$toast.add({

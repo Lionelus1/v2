@@ -121,7 +121,7 @@
             <Button
                 icon="pi pi-pencil"
                 class="p-button-rounded p-button-success p-mr-2"
-                @click="editEvent(slotProps.data.id)"
+                @click="editEvent(slotProps.data)"
                 v-if="
               slotProps.data.history.status.id === statuses.created ||
               isAdmin ||
@@ -402,8 +402,8 @@
               ></FileUpload>
             </div>
           </div>
-          <div v-if="event.mainImage">
-            <img :src="event.mainImage" style="width: 50%; height: 50%"/>
+          <div >
+            <img :src="event.main_image_base_64 ? event.main_image_base_64 : event.mainImage" style="width: 50%; height: 50%"/>
           </div>
         </div>
         <div class="p-field">
@@ -419,9 +419,12 @@
               ></FileUpload>
             </div>
             <div class="p-col-12 p-md-5">
-              <InlineMessage severity="info" show v-if="file">
-                {{ $t("ncasigner.chosenFile", {fn: file ? file.name : ""}) }}
+              <InlineMessage severity="info" show v-if="event.additionalFileName">
+                {{ $t("ncasigner.chosenFile", {fn: event.additionalFileName}) }}
               </InlineMessage>
+<!--              <InlineMessage severity="info" show v-if="file">
+                {{ $t("ncasigner.chosenFile", {fn: file ? file.name : ""}) }}
+              </InlineMessage>-->
             </div>
           </div>
         </div>
@@ -556,7 +559,7 @@
         <template #header>
           <div style="padding: 0 100px">
             <img
-                :src="selectedEvent.mainImage"
+                :src="selectedEvent.main_image_base_64 ? selectedEvent.main_image_base_64 : selectedEvent.mainImage"
                 style="width: 100%; height: 100%"
             />
           </div>
@@ -627,10 +630,10 @@
         </template>
         <template #footer>
           <Button
-              v-if="selectedEvent.additionalFile"
+              v-if="selectedEvent.additionalFile || selectedEvent.additional_file_path"
               v-bind:label="$t('common.download')"
               icon="pi pi-download"
-              class="p-button-link"
+              class="p-button-success p-mb-2"
               @click="downloadFile(selectedEvent)"
           />
           <div>
@@ -749,6 +752,8 @@ export default {
         imageRu: "",
         imageEn: "",
       },
+      mainImageFile: null,
+      additionalFile: null
     };
   },
   methods: {
@@ -822,13 +827,14 @@ export default {
     uploadMainImage(event) {
       const file = event.files[0];
       this.event.mainImageName = event.files[0].name;
-      try {
+      this.mainImageFile = event.files[0];
+      /*try {
         this.convertBase64(file).then((r) => {
           this.event.mainImage = r;
         });
       } catch (err) {
         console.log(err);
-      }
+      }*/
     },
 
     /**
@@ -839,22 +845,43 @@ export default {
       const file = event.files[0];
       this.file = event.files[0];
       this.event.additionalFileName = event.files[0].name;
-      try {
+      /*try {
         this.convertBase64(file).then((r) => {
           this.event.additionalFile = r;
         });
       } catch (err) {
         console.log(err);
-      }
+      }*/
     },
 
     /**
      *  DOUNLOAD FILE
      */
     downloadFile(event) {
+      if (event.additional_file_path) {
+        axios.post(smartEnuApi + `/downloadEventFile`, {additional_file_path: event.additional_file_path})
+        .then(res => {
+          this.download(res.data, event.additionalFileName);
+        }).catch(error => {
+          if (error.response.status === 401) {
+            this.$store.dispatch("logLout");
+          } else {
+            this.$toast.add({
+              severity: "error",
+              summary: error,
+              life: 3000,
+            });
+          }
+        });
+      } else {
+        this.download(event.additionalFile, event.additionalFileName);
+      }
+    },
+
+    download(file, filename) {
       let aLink = document.createElement("a");
-      aLink.download = event.additionalFileName;
-      aLink.href = event.additionalFile;
+      aLink.download = filename;
+      aLink.href = file;
       aLink.click();
     },
 
@@ -884,7 +911,7 @@ export default {
             console.log(this.allEvents);
           })
           .catch((error) => {
-            if (error.response.status == 401) {
+            if (error.response.status === 401) {
               this.$store.dispatch("logLout");
             } else {
               this.$toast.add({
@@ -1008,8 +1035,15 @@ export default {
     },
 
     insertEvent() {
+      this.event.additionalFile = null;
+      this.event.mainImage = null;
+      this.event.main_image_base_64 = null;
+      const fd = new FormData();
+      fd.append("event", JSON.stringify(this.event))
+      fd.append("additionalFile", this.file ? this.file : null);
+      fd.append("mainImageFile", this.mainImageFile ? this.mainImageFile : null);
       axios
-          .post(smartEnuApi + "/addEvent", this.event, {
+          .post(smartEnuApi + "/addEvent", fd, {
             headers: getHeader(),
           })
           .then((response) => {
@@ -1065,29 +1099,10 @@ export default {
     /**
      *  NEWS PRE EDITING
      */
-    editEvent(id) {
-      //TODO надо переделать
-      this.event = {};
+    editEvent(event) {
+      this.event = event;
       this.editVisible = true;
       this.submitted = false;
-      let event = this.allEvents.find((x) => x.id === id);
-      this.event.id = event.id;
-      this.event.titleKz = event.titleKz;
-      this.event.titleRu = event.titleRu;
-      this.event.titleEn = event.titleEn;
-      this.event.mainImage = event.mainImage;
-      this.event.additionalFile = event.additionalFile;
-      this.event.isOnline = event.isOnline;
-      this.event.contentKz = event.contentKz;
-      this.event.contentRu = event.contentRu;
-      this.event.contentEn = event.contentEn;
-      this.event.eventLocation = event.eventLocation;
-      this.event.eventLink = event.eventLink;
-      this.event.eventDate = event.eventDate;
-      this.event.history = event.history;
-      this.event.createdBy = event.createdBy;
-      this.event.mainImageName = event.mainImageName;
-      this.event.additionalFileName = event.additionalFileName;
       this.isPoster = event.isPoster;
       this.poster.id = event.posterId;
       this.poster.link = event.poster.link;
@@ -1255,7 +1270,7 @@ export default {
       } else {
         delete this.formValid["eventLocation"];
       }
-      if (!this.event.mainImage) {
+      if (!this.mainImageFile) {
         this.formValid.push(this.$t("smartenu.image1Invalid"));
       }
       if (!this.selectedMainCategories) {

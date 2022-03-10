@@ -57,25 +57,25 @@ export default {
 
       menu: [
 
-        {
-          label: this.$t('common.administration'), icon: 'pi pi-fw pi-shield',
-          items: [
-            {
-              label: this.$t('hr.vacancies'),
-              icon: 'pi pi-fw pi-user-plus',
-              to: '/human-resources/vacancies'
-            },
-          ]
+      //  {
+      //    label: this.$t('common.administration'), icon: 'pi pi-fw pi-shield',
+      //    items: [
+      //      {
+      //        label: this.$t('hr.vacancies'),
+      //        icon: 'pi pi-fw pi-user-plus',
+      //        to: '/human-resources/vacancies'
+      //      },
+      //    ]ß
+//
+      //  },
+        // {
+        //   label: 'Құжаттар', icon: 'pi pi-fw pi-folder',
+        //   items: [
+        //     {label: 'Келісім-шарт үлгілері', icon: 'pi pi-fw pi-book', to: '/documents/doctemplate'},
+        //     {label: 'Келісім-шарттар', icon: 'pi pi-fw pi-copy', to: '/documents/contracts'},
+        //   ]
 
-        },
-        {
-          label: 'Құжаттар', icon: 'pi pi-fw pi-folder',
-          items: [
-            {label: 'Келісім-шарт үлгілері', icon: 'pi pi-fw pi-book', to: '/documents/doctemplate'},
-            {label: 'Келісім-шарттар', icon: 'pi pi-fw pi-copy', to: '/documents/contracts'},
-          ]
-
-        },
+        // },
         {
           label: 'Контрагенттер', icon: 'pi pi-fw pi-users',
           items: [
@@ -115,17 +115,17 @@ export default {
         {
           label: this.$t('vaccination.title'), icon: 'pi pi-fw pi-check-circle', to: '/smartenu/vaccination'
         },
-        {
-          label:  this.$t('faq.title'), icon: 'pi pi-fw pi-question-circle', to: '/faq/faqmain'
-        },
+       // {
+       //   label:  this.$t('faq.title'), icon: 'pi pi-fw pi-question-circle', to: '/faq/faqmain'
+       // },
          {
                 label:  this.$t('dissertation.title'), icon: 'pi pi-fw pi-book',
                 items: [
                     {
-                        label:  this.$t('dissertation.council.list'), icon: 'pi pi-fw pi-list', to: '/dissertation', visible : this.isDissertationAdmin()
+                        label:  this.$t('dissertation.council.list'), icon: 'pi pi-fw pi-list', to: '/dissertation', visible : this.isDissertationAdmin() || this.findRole("dissertation_council_secretary") 
                     },
                     {
-                        label:  this.$t('dissertation.doctoralCard'), icon: 'pi pi-fw pi-users', to: '/dissertation/doctorals', visible : this.findRole("dissertation_council_secretary")
+                        label:  this.$t('dissertation.doctoralCard'), icon: 'pi pi-fw pi-users', to: '/dissertation/doctorals', visible : this.isRoleGroupMember("dissertation_council") 
                     }
                 ]
 
@@ -133,17 +133,17 @@ export default {
         {
           label: 'План', icon: 'pi pi-fw pi-folder', to: '/work-plan'
         },
-        {
-
-          label: this.$t('common.forStudentsAndGraduates'), icon: 'pi pi-fw pi-users',
-          items: [
-            {
-              label: this.$t('hr.vacancies'),
-              icon: 'pi pi-fw pi-user-plus',
-              to: '/human-resources/public/vacancies'
-            },
-          ]
-        },
+      //  {
+//
+ //         label: this.$t('common.forStudentsAndGraduates'), icon: 'pi pi-fw pi-users',
+ //         items: [
+ //           {
+ //             label: this.$t('hr.vacancies'),
+ //             icon: 'pi pi-fw pi-user-plus',
+ //             to: '/human-resources/public/vacancies'
+ //           },
+ //         ]
+ //       },
 
         // {
         //   label: this.$t('hr.vacancies'),
@@ -166,7 +166,7 @@ export default {
     isDissertationAdmin() {
       if (!this.loginedUser)
         this.getLoginedUser();
-      return (this.loginedUser.mainPosition.department.name === "Департамент цифрового развития и дистанционного обучения" && this.loginedUser.mainPosition.nameru === "начальник отдела");
+      return this.findRole('dissertation_chief');
     },
     findRole(roleName) {
       if (!this.loginedUser)
@@ -177,8 +177,16 @@ export default {
         }
       }
       return false;
-
-
+    },
+    isRoleGroupMember(groupPrefix) {
+      if (!this.loginedUser)
+        this.getLoginedUser();
+      for (let i = 0; i < this.loginedUser.roles.length; i++) {
+        if (this.loginedUser.roles[i].name.includes(groupPrefix)) {
+          return true;
+        }
+      }
+      return false;
     },
     onWrapperClick() {
       if (!this.menuClick) {

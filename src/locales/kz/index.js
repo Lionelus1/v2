@@ -1,5 +1,13 @@
 export default {
     common: {
+        chooseCert:"Сертификатты таңдаңыз",
+
+        newPasswordError:"Құпиясөздер сәйкес келмейді немесе құпиясөз ұзындығы 5 таңбадан кем ",
+        changePassword:"Құпиясөзді өзгерту",
+
+        newPassword:"Жаңа құпиясөзді енгізіңіз",
+        newPasswordRe:"Құпиясөзді қайталап енгізіңіз",
+
         administration: 'Әкімшілік',
         academicDegree: "Ғылыми дәрежесі",
         academicTitle: "Ғылыми атағы",
@@ -10,14 +18,16 @@ export default {
             accept: 'Қабылдау',
             notAccept: 'Қабылдамау',
             sendToApprove: 'Келісуге жіберу',
-            approve: 'Келусу',
+            approve: 'Келісу',
             publish: 'Жариялау',
+            reApprove: 'Қайта бекіту'
         },
         cabinet: 'Жеке кабинет',
         login: "Кіру",
         logout: "Шығу",
         enter: "Теріңіз",
         enterLogin: "ЖСН немесе platonus почтасын енгізіңіз",
+        export: "Экспорт",
         enterPassword: "Құпия сөзді еңгізіңіз",
         add: "Қосу",
         edit: "Өзгерту",
@@ -28,16 +38,21 @@ export default {
         department: "Бөлім",
         diplomNumber: "Диплом нөмірі",
         docFormat: "doc форматында",
+        downloadPassword: "Кілт сөзді жүктеп алу",
+        voteKeyword: "Дауысты тексеру кілті",
         pdfFormat: "pdf форматында",
         graduate: "Түлек",
         faculty: "Факультет",
         forStudentsAndGraduates: 'Студенттер мен түлектерге',
         cafedra: "Кафедра",
-        name: "Аты",
+        choose: "Таңдау",
+        name : "Аты",
         close: "Жабу",
         createNew: "Жаңасын қосу",
         created: "Құрылды",
         createdBy: "Автор",
+        checkMyVoice: "Берген дауысымды тексеру",
+        yourVoice: "Сіздің дауысыңыз: ",
         fullName: "Толық аты-жөні",
         hei: "ЖОО",
         updated: "Өзгертілді",
@@ -64,7 +79,9 @@ export default {
         select: "Таңдаңыз",
         cancel: "Қайтару",
         code: "Коды",
-        main: "Негізгі",
+        main: "Негізгі", 
+        meetingUrl: "Онлайн жиналысқа сілтеме",
+        meetingPlace: "Жиналыс өтетін орын",
         myData: "Менің мәліметтерім",
         myResume: 'Менің түйіндемем',
         theResume: 'Түйіндемем',
@@ -73,6 +90,7 @@ export default {
         nameInQazaq: "Қазақша атауы",
         nameInRussian: "Орысша атауы",
         nameInEnglish: "Ағылшынша атауы",
+        noComment: "Түсініктеме берілмеген",
         noData: "Мәлімет жоқ",
         null: "белгісіз",
         number: "Нөмір",
@@ -95,6 +113,16 @@ export default {
         recordsNotFound: "Бірде бір жазба табылмады",
         refinf: "Анықтамалық мәліметтер",
         registration: "Тіркеу",
+        total: "Барлығы",
+        register: "Тіркелу",
+        registered: "Тіркелгендер",
+        protocol: "Хаттама",
+        vote: "Дауыс беру",
+        revote: "Қайта дауыс беру",
+        voted: "Дауыс бергендер",
+        voting: "Дауыс беру",
+        votedFor: "{result} үшін дауыс берілді",
+        reserve: "Резервтеу",
         search: "Іздеу",
         send: "Жіберу",
         showingRecordsCount: "{totalRecords} жазбаның {first} - {last} аралығындағы жазбалар көрсетулі",
@@ -128,7 +156,11 @@ export default {
             inapproval: "келісуде",
             approved: "келісілді",
             rejected: "қайтарылды",
-            revision: "түзетуге"
+            revision: "түзетуге",
+            registered: "Тіркелді",
+            notRegistered: "Тіркелмеді",
+            notVoted: "Дауыс бермеді",
+            voted: "Дауыс берді",
         },
         message: {
             title: {
@@ -137,6 +169,7 @@ export default {
                 saveError: "Сақтау қатесі",
                 docCreation: "Жаңа қалта қосу"
             },
+            invalidkey: "Дұрыс кілт енгізбедіңіз",
             notPermissionForApprove: "Таңдалған қолданушының құжатқа келісім беру құзыреті жоқ",
             downloadError: "Қотару кезінде қате пайда болды",
             fillError: "Мәліметтер толық көрсетілмеген. Барлық өрісті толтырыңыз!",
@@ -157,13 +190,26 @@ export default {
             succesSaved: "Сәтті сақталды",
             userSuccessInserted: "Қолданушы сәтті қосылды, авторизациялық мәліметтерді қолданушға жіберу үшін жүктеп алыңыз. ",
             selectRole: "Рөлді таңдаңыз",
+            selectVariant: "Керек нұсқаны таңдаңыз",
+            userIINExists: "Көрсетілген ЖСН бойынша қолданушы бұрыннан бар",
 
         },
         language: {
             kz: "қазақша",
             ru: "орысша",
-            en: "ағылшынша"
+            en: "ағылшынша",
+            ln1: "қазақша",
+            ln2: "орысша",
+            ln3: "ағылшынша",
         },
+        result: "Нәтиже",
+        complete: "Аяқтау",
+        perform: "Орындау",
+        done: "Орындалды",
+        notDone: "Орындалмады",
+        success: "Сәтті",
+        downloadSignaturesPdf: "Қолтаңбаларды жүктеу",
+        signatures: "Қолтаңбалар"
     },
     bank: {
         title: "Банктер",
@@ -253,13 +299,18 @@ export default {
         journal: "Журнал",
         orgdesc: "Біз қарым-қатынас орнатқан ұйымдықтар",
         person: "Біз қарым-қатынас орнатқан жеке тұлғалар",
+        preliminary: "алдын ала",
+        regnum: "Тіркеу №",
+        reserveNumber: "Нөмірді резервтеу",
         signer: "Қол қоюшы",
         signing: "Қол қою",
         fromtemplate: "Үлгі бойынша",
         fromdoc: "Дайын құжат бойынша",
         message: {
             created: "Келісім-шарт жобасы сәтті құрылды"
-        }
+        },
+        setnumber: "Нөмір тағайындау",
+
     },
     hdfs: {
         title: "Файлдар",
@@ -449,26 +500,47 @@ export default {
         },
         inactive: "Жабылған",
         directionCode: "Кадрларды даярлау бағытының коды мен атауы",
+        defenseConduct: "Қорғауды жүргізу",
         doctorals: "Докторанттар",
         doctoralCard: "Докторант картасы",
         abstractFile: "Автореферат файлы",
         dissertationFile: "Диссертация файлы",
+        protocol: "ДИССЕРТАЦИЯЛЫҚ КЕҢЕСТІҢ ДАУЫС БЕРУ ХАТТАМАСЫ",
         swList: "Ғылыми еңбектерінің тізімі",
         advisors: "Ғылыми кеңесшілер",
         reviewers: "Ресми рецензенттер",
+        permanentMember: "Кеңестің тұрақты мүшелері",
+        tempMember: "Кеңестің уақытша мүшелері",
         meetingTime: "Отырыс күні мен уақыты",
         defenseLang: "Қорғау тілі",
         councilDecision: "Кеңестің шешімі",
         disstitle: "Диссертация тақырыбы",
+        setMeetingTime: "Қорғау күнін тағайындау",
+        startRegistration: "Тіркеуді бастау",
+        finishRegistration: "Тіркеуді аяқтау",
+        startVoting: "Дауыс беруді бастау",
+        finishVoting: "Дауыс беруді аяқтау",
         validationErrors: {
             selectSpeciality: "Мамандықты таңдаңыз",
             selectDepartment: "Факультетті таңдаңыз",
             selectSecretary: "Ғалым хатшыны көрсетіңіз",
             selectMember: "Кеңес мүшесін көрсетіңіз",
-            selectCreatedDate: "Құрылған уақытын көрсетіңіз"
+            selectCreatedDate: "Құрылған уақытын көрсетіңіз",
+            selectDoctorals: "Таңдалған тұлға рецензент болып табылатын докторанттарды көрсетіңіз"
+        },
+        vote: {
+            v1: "Философия докторы (PhD) немесе ғылым докторы дәрежесін беру",
+            v2: "Диссертацияны кемшілігін жөндеуге жіберу",
+            v3: "Диссертацияны қайта қорғауға жіберу",
+            v4: "Философия докторы (PhD) немесе ғылым докторы дәрежесін беруден бас тарту",
+            v5: "БАРЛЫҒЫ"
         },
         message: {
             hasSameMember: "Бұл қолданушы кеңес мүшелігінде бұрыннан бар",
+            saveKey: "Дауыс беру анонимді: біз сіздің таңдауыңызды сақтамаймыз. Келешекте өзіңіздің даусыңызды тексере алуыңыз үшін берілген кілттік сөзді жүктеп немесе сақтап алуыңызды сұраймыз. Кілттік сөз тек сізге ғана белгілі және есіңізде сақтап алмаған жағдайда қалпына келтіру мүмкін емес.",
+            notRegistered: "Тіркеуден өтпегендіктен сіз дауыс бере алмайсыз",
+            enterKey: "Дауыс бергенде қолданған кілт сөзді енгізіңіз",
+            votingRestarted: "Диссертация қайта дауыс беруге жіберілді",
         },
         members: "Диссертациялық кеңес мүшелері",
         specialityCode: "Мамандық атауы мен коды",
@@ -581,6 +653,40 @@ export default {
         rc: {
             title: ''
         }
+    },
+    workPlan: {
+        plans: "Жоспарлар",
+        planName: "Жоспар атауы",
+        addPlan: "Жоспар қосу",
+        addEvent: "Іс-шара қосу",
+        eventName: "Іс-шара атауы",
+        approvalUsers: "Жауапты тұлғалар",
+        quarter: "Квартал",
+        executionResult: "Орындалу нәтижесі",
+        attachments: "Тіркелген файлдар",
+        viewPlan: "Жоспарды қарау",
+        reports: "Есептер",
+        events: "Іс-шаралар",
+        performEvent: "Іс-шараны орындау",
+        reportName: "Есеп атауы",
+        createReport: "Есеп құру",
+        toCorrect: "Түзетуге жіберу",
+        editEvent: "Іс-шараны өзгерту",
+        errors: {
+            eventNameError: "Іс-шара атауын енгізіңіз",
+            approvalUserError: "Жауапты тұлғаларды таңдаңыз",
+            quarterError: "Тоқсан таңдаңыз",
+        },
+        message: {
+            eventCreated: "Іс-шара сәтті құрылды",
+            eventChanged: "Іс-шара сәтті өзгертілді",
+            reportSentToApprove: "Есеп келісуге сәтті жіберілді",
+            planSentToApprove: "Жоспар қайта қарауға жіберілді",
+            planCreated: "Жоспар сәтті құрылды",
+        },
+        reportTypes: {
+            year: "Жылдық",
+            quarter: "Тоқсандық"
+        }
     }
-
 }

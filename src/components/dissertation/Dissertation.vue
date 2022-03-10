@@ -4,9 +4,9 @@
 
       <Toolbar class="p-mb-4">
         <template #end>
-          <Button icon="pi pi-plus" class="p-button-success p-mr-2" @click="showAddCouncilDialog()" />
-          <Button icon="pi pi-print" class="p-button-info p-mr-2" @click="openNew" />
-          <Button icon="pi pi-trash" class="p-button-danger" @click="deleteCouncil()" :disabled="!selectedCouncil"/>
+          <Button v-if="isDissertationAdmin" icon="pi pi-plus" class="p-button-success p-mr-2" @click="showAddCouncilDialog()" />
+          <Button v-if="isDissertationAdmin" icon="pi pi-print" class="p-button-info p-mr-2" @click="openNew" />
+          <Button v-if="isDissertationAdmin"  icon="pi pi-trash" class="p-button-danger" @click="deleteCouncil()" :disabled="!selectedCouncil"/>
         </template>
         <template #start>
           <h4>{{ $t("dissertation.title") }}</h4>
@@ -14,9 +14,9 @@
       </Toolbar>
       <DataTable selectionMode="single" v-model:selection="selectedCouncil" 
           :lazy="true"
-          :totalRecords="(CouncilsList.length)"
+          :totalRecords="CouncilsCount"
           :value="CouncilsList"
-          @page="reload($event)"
+          @page="onPage($event)"
           
           :paginator="true"
           :rows="lazyParams.rows"
@@ -34,8 +34,8 @@
             })
           "
            responsiveLayout="scroll"
-          @sort="reload($event)"
-          @filter="reload($event)"
+          @sort="onSort($event)"
+          @filter="onFilter($event)"
         >
            <Column field="specialitites" :header="$t('dissertation.directionCode')" style="min-width:12rem">
            <template #body="slotProps">
@@ -57,7 +57,7 @@
              <span v-if="slotProps.data.members.length>0"> {{slotProps.data.members[0].fullName }}</span>
            </template>
            </Column>
-           <Column :field="($i18n.locale=='kz'? 'department.nameKz' : $i18n.locale=='en'? 'department.nameEn': 'department.name')" sortable="true" :header="$t('dissertation.faculty')"  style="min-width:12rem"></Column>
+           <Column :field="($i18n.locale=='kz'? 'department.nameKz' : $i18n.locale=='en'? 'department.nameEn': 'department.name')" sortable="true" :header="$t('common.faculty')"  style="min-width:12rem"></Column>
            <Column headerStyle="width: 7rem; text-align: left" bodyStyle="text-align: left; overflow: visible">
              <template #body="slotProps">
               <Button type="button" icon="pi pi-user-edit" @click="openCouncil(slotProps.data.id)"></Button>
@@ -102,7 +102,6 @@
                 <Button :label="$t('common.add')" icon="pi pi-check" class="p-button-text" @click="addCouncil" />
             </template>
         </Dialog>
- 
     </div>
   </div>
 </template>
@@ -113,7 +112,7 @@ import DepartmentList from "../smartenu/DepartmentList.vue"
 import FindUser from "@/helpers/FindUser";
 import Enums from "@/enum/docstates/index";
 import axios from 'axios';
-import {getHeader, header, smartEnuApi} from "@/config/config";
+import {getHeader, findRole, smartEnuApi} from "@/config/config";
 export default {
   components: { SpecialitySearch, DepartmentList, FindUser },
  data() {
@@ -136,8 +135,8 @@ export default {
     
     Enums: Enums,
     CouncilsList :[],
-    
-    CouncilsCount : 10,
+    isDissertationAdmin : false,
+    CouncilsCount : -1,
     submitted: false,
     validationErrors :{
       speciality : false,
@@ -155,11 +154,15 @@ export default {
  created() {
    this.loadCouncilsList()
  },
+ mounted() {
+    this.checkRole()
+ },
  methods: {
-  isDissertationAdmin() {
-    if (this.myDetails && this.myDetails.status)
-      this.myDetails.status = this.statuses.indexOf(this.myDetails.status);
+  findRole: findRole,
+  checkRole() {
+    this.isDissertationAdmin = this.findRole(null, 'dissertation_chief') 
   },
+
   deleteCouncil() {
     this.$confirm.require({
       message: this.$t("common.confirmation"),
@@ -199,21 +202,34 @@ export default {
   hideDialog(dialog) {
     dialog.state = false;
   },
-  reload(event) {
+  onPage(event) {
       //this.lazyParams = event;
       this.lazyParams = event;
       this.loadCouncilsList();
     },
+    onSort(event) {
+      this.lazyParams = event;
+      this.loadCouncilsList();
+    },
+    onFilter() {
+      this.lazyParams.filters = this.filters;
+      this.loadCouncilsList();
+    },
+ 
   loadCouncilsList() {
     this.loading = true;
 
-      //this.lazyParams.countMode = null;
+      this.lazyParams.userID =  this.$store.state.loginedUser.userID
       axios
         .post(smartEnuApi + "/dissertation/getcouncils", this.lazyParams,  {
           headers: getHeader(),
         })
         .then((response) => {
           this.CouncilsList = response.data;
+          if (this.CouncilsList.length> 0 && this.CouncilsCount < 0){
+            this.CouncilsCount = this.CouncilsList[0].count
+
+          }
           this.loading = false;
         })
         .catch((error) => {

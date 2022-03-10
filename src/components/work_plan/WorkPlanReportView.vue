@@ -1,11 +1,42 @@
 <template>
   <div>
     <div class="p-col-12">
+      <div class="card" v-if="isPlanCreator && !isReportSentApproval">
+        <WorkPlanReportApprove :doc-id="report.doc_id" :report="report_id"></WorkPlanReportApprove>
+<!--        <Button label="" icon="pi pi-download" @click="download"
+                class="p-button p-button-info p-ml-2"/>-->
+      </div>
+      <div class="card" v-if="isPlanReportApproved && isPlanCreator || (isApproval && isCurrentUserApproved)">
+        <Button :label="$t('common.signatures')" icon="pi pi-file"
+                @click="viewSignatures"
+                class="p-button p-ml-2"/>
+      </div>
       <div class="card" v-if="isApproval && !isApproved">
-        <Button v-if="isApproval && !isRejected" label="Согласовать" icon="pi pi-check" @click="openApprovePlan"
+        <Button v-if="isApproval && !isRejected" :label="$t('common.action.approve')" icon="pi pi-check"
+                @click="openApprovePlan"
                 class="p-button p-button-success p-ml-2"/>
-        <Button v-if="isApproval && !isRejected" label="Отменить" icon="pi pi-check" @click="openRejectPlan"
+        <Button v-if="isApproval && !isRejected" :label="$t('workPlan.toCorrect')" icon="pi pi-check"
+                @click="openRejectPlan"
                 class="p-button p-button-danger p-ml-2"/>
+      </div>
+      <div class="card" v-if="approval_users && report.status">
+        <h5>{{ report_name }}
+          <span v-if="report" :class="'customer-badge status-' + report.status.work_plan_status_id">
+              {{
+              $i18n.locale === "kz" ? report.status.name_kk : $i18n.locale === "ru" ? report.status.name_ru : report.status.name_en
+            }}
+        </span>
+        </h5>
+        <Timeline :value="approvals">
+          <template #content="slotProps">
+            <div v-for="(item, index) of slotProps.item" :key="index">
+              {{ item.user.fullName }}
+              <i v-if="item.is_success" class="pi pi-check-circle p-ml-2 p-message-success"
+                 style="font-size: 1.2rem;color: #3eaf7c"></i>
+              <i v-if="!item.is_success" class="pi pi-spinner p-ml-2" style="font-size: 1.2rem;color: #c63737"></i>
+            </div>
+          </template>
+        </Timeline>
       </div>
       <div class="card">
         <object src="#toolbar=0" style="width: 100%; height: 1000px" v-if="source" type="application/pdf"
@@ -14,14 +45,14 @@
     </div>
 
     <div v-if="items">
-      <ReportPdf ref="report" :data="items" :report-title="report_name"
+      <ReportPdf ref="report" :data="items" :report-title="report.report_name"
                  style="display: none;"></ReportPdf>
     </div>
 
-    <Dialog header="Отправить на корректировку" v-model:visible="showRejectPlan" :style="{width: '450px'}"
+    <Dialog :header="$t('workPlan.toCorrect')" v-model:visible="showRejectPlan" :style="{width: '450px'}"
             class="p-fluid">
       <div class="p-field">
-        <label>Комментарий</label>
+        <label>{{ $t('common.comment') }}</label>
         <Textarea inputId="textarea" rows="3" cols="30" v-model="rejectComment"></Textarea>
       </div>
       <template #footer>
@@ -38,12 +69,14 @@
 import axios from "axios";
 import html2pdf from "html2pdf.js";
 import ReportPdf from "./RerportPdf";
-import {getHeader, smartEnuApi} from "@/config/config";
+import {getHeader, signerApi, smartEnuApi} from "@/config/config";
 import treeToList from "@/service/treeToList";
+import WorkPlanReportApprove from "@/components/work_plan/WorkPlanReportApprove";
+import {NCALayerClient} from "ncalayer-js-client";
 
 export default {
   name: "WorkPlanReportView",
-  components: {ReportPdf},
+  components: {WorkPlanReportApprove, ReportPdf},
   props: ['id'],
   data() {
     return {
@@ -59,61 +92,101 @@ export default {
       CMSSignature: null,
       documentByteArray: null,
       isApproved: false,
-      reportType: null,
       quarter: null,
       report_name: null,
       items: null,
+      report_id: null,
+      doc_id: null,
+      report: {
+        work_plan_id: null,
+        quarter: null,
+        report_name: null,
+        report_type: null,
+        doc_id: null
+      },
+      isPlanCreator: false,
+      pdfOptions: {
+        margin: 0.5,
+        image: {
+          type: 'jpeg',
+          quality: 0.98,
+        },
+        html2canvas: {scale: 2.8,},
+        jsPDF: {
+          unit: 'in',
+          format: 'letter',
+          orientation: 'landscape',
+        },
+        pagebreak: {avoid: 'tr'},
+        filename: "work_plan_report.pdf",
+      },
+      approval_users: [],
+      approvals: [],
+      reject: {
+        report_id: 0,
+        doc_id: null,
+        comment: null,
+        report_name: this.report_name
+      },
+      isReportSentApproval: false,
+      isCurrentUserApproved: false,
+      isPlanReportApproved: false
     }
   },
   created() {
-    this.work_plan_id = this.$route.params.id;
-    this.quarter = parseInt(this.$route.params.quarter);
-    this.report_name = this.$route.params.name;
-    this.reportType = parseInt(this.$route.params.type);
+    this.report_id = parseInt(this.$route.params.id);
+    this.report.work_plan_id = parseInt(this.$route.params.work_plan_id);
+    this.report.quarter = parseInt(this.$route.params.quarter);
+    this.report.report_name = this.$route.params.name;
+    this.report.report_type = parseInt(this.$route.params.type);
+    this.report.doc_id = this.$route.params.doc_id;
     this.loginedUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
-    this.plan = JSON.parse(localStorage.getItem("workPlan"));
-    this.getData();
+    //this.plan = JSON.parse(localStorage.getItem("workPlan"));
+    //this.getReport();
+    this.getReport();
+  },
+  mounted() {
+    this.emitter.on("reportSentToApprove", (data) => {
+      if (data) {
+        this.getReport();
+      }
+    });
   },
   methods: {
-    initReportFile() {
-      //let workPlanId = this.data.work_plan_id;
-      let pdfOptions = {
-        margin: 10,
-        image: {
-          type: 'jpeg',
-          quality: 1,
-        },
-        html2canvas: {scale: 3},
-        jsPDF: {
-          unit: 'px',
-          format: 'a4',
-          //orientation: 'p',
-          hotfixes: ["px_scaling"]
-        },
-        pagebreak: {avoid: 'tr'},
-        filename: "work_plan_report.pdf"
-      };
-      const pdfContent = this.$refs.report.$refs.toPdf;
-      console.log("ddd")
-      const worker = html2pdf().set(pdfOptions).from(pdfContent);
-
-      worker.toPdf().output("datauristring").then((pdf, item) => {
-        this.source = pdf;
+    getPlan() {
+      this.loading = true;
+      axios.get(smartEnuApi + `/workPlan/getWorkPlanById/${this.report.work_plan_id}`, {headers: getHeader()})
+          .then(res => {
+            if (res.data) {
+              this.plan = res.data;
+              if (this.plan && this.plan.user.id === this.loginedUserId) {
+                this.isPlanCreator = true;
+              }
+              //this.getFile();
+            }
+            this.loading = false;
+          }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+        this.loading = false;
       });
     },
-    getData() {
-      axios.post(smartEnuApi + `/workPlan/getWorkPlanReportData`, {
-        work_plan_id: parseInt(this.work_plan_id),
-        quarter: this.reportType === 2 ? this.quarter : null
-      }, {headers: getHeader()}).then(res => {
-        console.log("report", res)
-        ///// FLATTEN ARRAY
-        this.items = treeToList(res.data, 'children');
-        this.$nextTick(() => {
-          this.initReportFile();
-        })
-      }).catch(error => {
-        if (error.response.status === 401) {
+    getReport() {
+      axios.get(smartEnuApi + `/workPlan/getWorkPlanReportById/${this.report_id}`, {headers: getHeader()})
+          .then(res => {
+            this.report = res.data;
+            this.getPlan();
+            this.getFile();
+            this.getReportApprovalUsers();
+          }).catch(error => {
+        if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
           this.$toast.add({
@@ -123,34 +196,284 @@ export default {
           });
         }
       });
-    }
-    /*initChild(e, parentIndex, ind) {
-      this.items.push(e);
-      if (e.parent_id) {
-        e.index = `${parentIndex}.${ind++}`
+    },
+    getFile() {
+      axios.post(smartEnuApi + `/workPlan/getWorkPlanReportFile`,
+          {doc_id: this.report.doc_id},
+          {headers: getHeader()}).then(res => {
+        if (res.data) {
+          this.source = `data:application/pdf;base64,${res.data}`;
+          this.document = res.data;
+        } else {
+          this.getData();
+        }
+      }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+      });
+    },
+    initReportFile() {
+      //let workPlanId = this.data.work_plan_id;
+      const pdfContent = this.$refs.report.$refs.toPdf;
+      const worker = html2pdf().set(this.pdfOptions).from(pdfContent);
+      const worker1 = html2pdf().set(this.pdfOptions).from(pdfContent);
+
+      worker.toPdf().output("datauristring").then((pdf, item) => {
+        if (!this.source)
+          this.source = pdf;
+
+        if (!this.document)
+          this.document = pdf.replace("data:application/pdf;base64,", "")
+      });
+
+      worker1.toPdf().output("blob").then((pdf) => {
+        const fd = new FormData();
+        fd.append('file', pdf);
+        fd.append('filename', this.pdfOptions.filename)
+        //this.fileFd.append('work_plan_id', workPlanId)
+        this.emitter.emit("reportFD", fd);
+      });
+    },
+    getData() {
+      console.log("TYPE = ", this.report.report_type, " <> QUARTER = ", this.report.quarter)
+      axios.post(smartEnuApi + `/workPlan/getWorkPlanReportData`, {
+        work_plan_id: parseInt(this.report.work_plan_id),
+        quarter: this.report.report_type === 2 ? this.report.quarter : null
+      }, {headers: getHeader()}).then(res => {
+        ///// FLATTEN ARRAY
+        this.items = treeToList(res.data, 'children');
+        if (!this.source) {
+          this.$nextTick(() => {
+            this.initReportFile();
+          });
+        }
+      }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+      });
+    },
+    download() {
+      const pdfContent = this.$refs.report.$refs.toPdf;
+      html2pdf().set(this.pdfOptions).from(pdfContent).save();
+    },
+    getReportApprovalUsers() {
+      axios.get(smartEnuApi + `/workPlan/getReportApprovalUsers/${this.report_id}`, {headers: getHeader()})
+          .then(res => {
+            if (res.data) {
+              this.approvals = [];
+              this.isReportSentApproval = true;
+              const d = res.data;
+              this.isPlanReportApproved = d.every(x => x.is_success);
+              //console.log(d.every(x => x.is_success === true));
+              const unique = [...new Set(d.map(item => item.stage))];
+              unique.forEach(r => {
+                let f = d.filter(x => x.stage === r);
+                this.approvals.push(f);
+              });
+              this.approval_users = res.data;
+              this.init();
+            }
+          }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+      });
+    },
+    init() {
+      const currentUser = this.approval_users.findIndex(x => x.user.id === this.loginedUserId);
+      const last = this.approval_users?.at(-1);
+      const prevObj = this.approval_users[currentUser - 1];
+      const currentObj = this.approval_users[currentUser];
+      const findUserFromSignatures = this.signatures && prevObj ? this.signatures.find(x => x.userId === prevObj.user.id) : null;
+      if (prevObj == null && !currentObj.is_success) {
+        this.isApproval = true;
+      } else if (prevObj && currentObj.stage === prevObj.stage && !findUserFromSignatures) {
+        this.isApproval = true;
+      } else if (prevObj && prevObj.is_success && !currentObj.is_success && prevObj.stage === currentObj.stage) {
+        this.isApproval = true;
+      } else if (prevObj && currentObj.stage !== prevObj.stage && this.approval_users.filter(x => x.stage === 1 && x.is_success === true).length > 0) {
+        this.isApproval = true;
       } else {
-        e.index = ind++;
-        parentIndex = e.index
+        this.isApproval = false;
       }
-      if (e.quarter) {
-        e.quarter = this.initQuarter(e.quarter.String);
+
+      if (last.stage === currentObj.stage) {
+        this.isLast = true;
       }
-      if (e.children) {
-        let chInd = 1;
-        e.children.forEach((ec, index) => {
-          this.items.push(ec);
-          ec.index = `${e.index}.${index + 1}`
-          if (ec.quarter) {
-            ec.quarter = this.initQuarter(ec.quarter.String);
+    },
+    getSignatures() {
+      axios.post(smartEnuApi + `/workPlan/getSignatures`,
+          {doc_id: this.report.doc_id},
+          {headers: getHeader()}).then(res => {
+        if (res.data) {
+          this.signatures = res.data;
+          const signUser = res.data.find(x => x.userId === this.loginedUserId);
+          if (signUser) {
+            this.isCurrentUserApproved = true;
           }
-          this.initChild(ec, parentIndex, index)
+        } else {
+          this.$toast.add({
+            severity: 'error',
+            summary: this.$t('common.noData'),
+            life: 3000
+          });
+        }
+      }).catch(error => {
+        this.$toast.add({
+          severity: 'error',
+          summary: error,
+          life: 3000
         });
+      })
+    },
+    async openApprovePlan() {
+      let NCALaClient = new NCALayerClient();
+
+      try {
+        await NCALaClient.connect();
+      } catch (error) {
+        this.$toast.add({
+          severity: 'error',
+          summary: this.$t('ncasigner.failConnectToNcaLayer'),
+          life: 3000
+        });
+        return;
       }
-    }*/
+      try {
+        this.CMSSignature = await NCALaClient.createCAdESFromBase64('PKCS12', this.document, 'SIGNATURE', false)
+        this.sendSignature();
+      } catch (error) {
+        this.$toast.add({severity: 'error', summary: this.$t('ncasigner.failToSign'), life: 3000});
+      }
+    },
+    sendSignature() {
+      axios.post(smartEnuApi + '/workPlan/reportSignature', {
+        uuid: this.report.doc_id,
+        sign: this.CMSSignature,
+        report_id: this.report_id,
+        is_last: this.isLast
+      }, {headers: getHeader()}).then((response) => {
+        if (response.data.is_success) {
+          this.$toast.add({
+            severity: "success",
+            summary: this.$t('ncasigner.success.signSuccess'),
+            life: 3000,
+          });
+          this.getReport();
+          this.getSignatures();
+          this.getReportApprovalUsers();
+        }
+      }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error.msg,
+            life: 3000,
+          });
+        }
+      });
+    },
+    rejectPlan() {
+      this.loading = true;
+      if (this.rejectComment) {
+        this.reject.comment = this.rejectComment;
+      }
+      this.reject.doc_id = this.report.doc_id;
+      this.reject.report_id = this.report_id;
+      this.reject.report_name = this.report.report_name;
+      axios.post(smartEnuApi + '/workPlan/rejectReport', this.reject,
+          {headers: getHeader()}
+      ).then(res => {
+        if (res.data.is_success) {
+          this.loading = false;
+          this.showRejectPlan = false;
+          this.emitter.emit("planRejected", true);
+          this.$router.push({name: 'WorkPlanReport', params: {id: this.work_plan_id}});
+        }
+      }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+        this.loading = false;
+      })
+    },
+    viewSignatures() {
+      this.$router.push({name: 'DocSignaturesInfo', params: { uuid: this.report.doc_id }})
+    },
+    openRejectPlan() {
+      this.showRejectPlan = true;
+    },
+    closeModal() {
+      this.showRejectPlan = false;
+    },
   }
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+::v-deep(.p-timeline-event-opposite) {
+  flex: 0;
+}
 
+.customer-badge {
+  border-radius: 2px;
+  padding: .25em .5rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: .3px;
+
+  &.status-5 {
+    background: #ff3838;
+    color: #ffffff;
+  }
+
+  &.status-4 {
+    background: #C8E6C9;
+    color: #256029;
+  }
+
+  &.status-2 {
+    background: #FEEDAF;
+    color: #8A5340;
+  }
+
+  &.status-3 {
+    background: #FFCDD2;
+    color: #C63737;
+  }
+
+  &.status-1 {
+    background: #B3E5FC;
+    color: #23547B;
+  }
+}
 </style>

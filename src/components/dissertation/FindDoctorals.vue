@@ -1,11 +1,12 @@
 <template xmlns:aria="http://www.w3.org/1999/xhtml">
   <div>
     <div :class="containerClass" :style="style">
+
       <ul :class="['p-inputtext p-chips-multiple-container', {'p-disabled': $attrs.disabled, 'p-focus': focused}]"
           @click="onWrapperClick()">
         <li v-for="(val,i) of modelValue" :key="`${i}_${val}`" class="p-chips-token">
-          <slot name="chip" :value="val.fullName">
-            <span class="p-chips-token-label">{{ val.fullName }}</span>
+          <slot name="chip" :value="val.user.fullName">
+            <span class="p-chips-token-label">{{ val.user.fullName }}</span>
             <span class="p-chips-token-icon pi pi-times-circle" @click="removeItem($event, i)"></span>
           </slot>
         </li>
@@ -21,15 +22,9 @@
                  listStyle="max-height:250px" @change="addItemMouseExt($event)">
           <template #option="slotProps">
             <div class="user-item p-grid">
-              <div class="image-container p-lg-2  p-md-3 p-sm-12">
-                <img class="round" v-if="slotProps.option.photo != null && slotProps.option.photo !==''"
-                     :src="'data:image/jpeg;base64,' + slotProps.option.photo "/>
-                <img class="round" v-if="!(slotProps.option.photo != null && slotProps.option.photo !=='')"
-                     src="assets/layout/images/default-user.jpg"/>
-              </div>
               <div class="user-list-detail p-lg-10  p-md-9 p-sm-12">
-                <h5 class="p-mb-2">{{ slotProps.option.fullName }}</h5>
-                <span class="product-category">{{ slotProps.option.position }}</span>
+                <h5 class="p-mb-2">{{ slotProps.option.user != null ? slotProps.option.user.fullName : ""  }}</h5>
+                <span class="product-category">{{ slotProps.option.dissertation != null ? slotProps.option.dissertation['name'+$i18n.locale] :""}}</span>
               </div>
             </div>
           </template>
@@ -42,19 +37,15 @@
         </div>
       </OverlayPanel>
     </div>
-    <Sidebar v-model:visible="userDialog" position="right" class="p-sidebar-lg" style="overflow-y:scroll">
-			<Person @userCreated="userCreated" :modelValue="newUser" :addMode="true" :readonly="false"></Person>
-		</Sidebar>
   </div>
 </template>
 
 <script>
 import {getHeader, smartEnuApi, templateApi} from "@/config/config";
 import axios from 'axios';
-import Person from '../components/contragent/Person.vue';
 
 export default {
-  components: {Person},
+  components: {},
   name: 
     'FindUser',
   inheritAttrs: false,
@@ -164,15 +155,19 @@ export default {
       this.$refs.op.hide();
       this.$refs.op.toggle(event);
       this.searchInProgres = true;
-      axios.post(
-        smartEnuApi + `/getUser`, {
-        "dn": inputValue,
-        "userType": this.userType
-        },
-        {
-          headers: getHeader(), cancelToken: this.cancelToken.token 
-        },
-      )
+      axios
+      .post(
+          smartEnuApi + "/dissertation/getdoctorals",
+          { 
+            page: 0,
+            rows: 1000,
+            userID:  this.$store.state.loginedUser.userID,
+            name: inputValue
+          },
+          {
+            headers: getHeader(),
+          }
+        )
       .then(
         response => {
             this.foundEntities = response.data;

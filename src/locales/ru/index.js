@@ -1,5 +1,12 @@
 export default {
     common: {
+        chooseCert:"Выбрать сертификат",
+        newPasswordError:"Пароли не совпадают или длина пароля менее 5 символов ",
+        changePassword:"Изменение пароля ",
+
+        newPassword:"Введите новый пароль",
+        newPasswordRe:"Повторно введите пароль",
+
         administration: 'Администрирование',
         academicDegree: "Ученая степень",
         academicTitle: "Ученое звание",
@@ -12,6 +19,7 @@ export default {
             sendToApprove: 'Отправить на согласование',
             approve: 'Согласовать',
             publish: 'Опубликовать',
+            reApprove: 'Переутвердить'
         },
         cabinet: 'Личный кабинет',
         login: "Вход",
@@ -19,6 +27,7 @@ export default {
         enter: "Наберите",
         enterLogin: "Введите ИИН или почту platonus",
         enterPassword: "Введите пароль",
+        export: "Экспорт",
         add: "Добавить",
         edit: "Редактировать",
         orgname: "Евразийский университет имени Л.Н. Гумилева",
@@ -28,14 +37,19 @@ export default {
         department: "Отдел",
         diplomNumber: "Номер диплома",
         docFormat: "в doc-формате",
+        downloadPassword: "Скачать пароль",
+        voteKeyword: "Пароль для проверки голоса",
         pdfFormat: "в pdf-формате",
         close: "закрыть",
         createNew: "Создать",
+        checkMyVoice: "Проверить мой голос",
+        yourVoice: "Ваш голос: ",
         graduate: "Выпускник",
         faculty: "Факультет",
         forStudentsAndGraduates: 'Для студентов и выпускников',
         cafedra: "Кафедра",
-        name: "Имя",
+        choose: "Выбрать",
+        name : "Имя",
         created: "Создан",
         createdBy: "автор",
         fullName: "ФИО",
@@ -67,6 +81,8 @@ export default {
         select: "Выберите",
         cancel: "Отмена",
         main: "Основные",
+        meetingUrl: "Ссылка для онлайн собрания",
+        meetingPlace: "Место собрания",
         myData: "Мои данные",
         myResume: 'Моё резюме',
         theResume: 'Резюме',
@@ -75,6 +91,7 @@ export default {
         nameInQazaq: "Наименование на казахском",
         nameInRussian: "Наименование на русском",
         nameInEnglish: "Наименование на английском",
+        noComment: "Комментарий отсутствует",
         noData: "Нет данных",
         null: "неизвестно",
         other: "Другая",
@@ -95,6 +112,16 @@ export default {
         recordsNotFound: "Не найдено записей",
         refinf: "Справочная информация",
         registration: "Регистрация",
+        total: "Всего",
+        register: "Зарегистрироваться",
+        registered: "Зарегистрированы",
+        reserve: "Зарезервировать",
+        protocol: "Протокол",
+        vote: "Проголосовать",
+        revote: "Повторное голосование",
+        voted: "Проголосовали",
+        voting: "Голосование",
+        votedFor: "Проголосовали за: {result}",
         search: "Поиск",
         send: "Отправить",
         showingRecordsCount: ' Показаны записи с {first} по {last} из  {totalRecords} ',
@@ -129,7 +156,11 @@ export default {
             inapproval: "на согласовании",
             approved: "согласован",
             revision: "на доработку",
-            rejected: "отклонить"
+            rejected: "отклонить",
+            registered: "Зарегистрирован",
+            notRegistered: "Не зарегистрирован",
+            notVoted: "Не проголосовал",
+            voted: "Проголосовал",
         },
         message: {
             title: {
@@ -138,6 +169,7 @@ export default {
                 saveError: "Ошибка сохранения",
                 docCreation: "Добавление нового каталога",
             },
+            invalidkey: "Введен неправильный пароль",
             notPermissionForApprove: "Выбранный пользователь не имеет соответствующие привилегия для согласования документа",
             sendToApprovalError: "Ошибка во время отправления на согласование. Проверьте правильность указанных данных!",
             fillError: "Не все данные указаны. Заполните все поля!",
@@ -159,13 +191,25 @@ export default {
             succesSaved: "Успешно сохранено",
             selectRole: "Выберите роль",
             userSuccessInserted: "Пользователь успешно создан, скачайте данные для авторизации для отправки пользователю.",
+            selectVariant: "Выберите нужный вариант",
+            userIINExists: "Пользователь с таким же ИИН уже имеется",
         },
         language: {
             kz: "на казахском",
             ru: "на русском",
-            en: "на английском"
+            en: "на английском",
+            ln1: "на казахском",
+            ln2: "на русском",
+            ln3: "на английском"
         },
-
+        result: "Результат",
+        complete: "Завершить",
+        perform: "Выполнить",
+        done: "Выполнено",
+        notDone: "Не выполнено",
+        success: "Успешно",
+        downloadSignaturesPdf: "Скачать подписи",
+        signatures: "Подписи"
     },
     bank: {
         title: "Банки",
@@ -254,13 +298,17 @@ export default {
         journal: "Журнал",
         orgdesc: "Организации, с которыми взаимодействуем",
         person: "Физические лица, с которыми взаимодействуем.",
+        preliminary: "предварительный",
+        regnum: "Рег. №",
+        reserveNumber: "Резервирование номера",
         signer: "Подписывает",
         signing: "Подписание",
         fromtemplate: "Из шаблона",
         fromdoc: "Из готового документа",
         message: {
             created: "Проект договора успешно создан"
-        }
+        },
+        setnumber: "Присвоить номер",
     },
     hdfs: {
         title: "Файлы",
@@ -450,10 +498,12 @@ export default {
         },
         inactive: "Недействующий",
         directionCode: "Код и наименование направления подготовки кадров",
+        defenseConduct: "Проведение защиты",
         doctorals: "Докторанты",
         doctoralCard: "Карточка докторанта",
         abstractFile: "Файл автореферата",
         dissertationFile: "Файл диссертации",
+        protocol: "ПРОТОКОЛ ГОЛОСОВАНИЯ ДИССЕРТАЦИОННОГО СОВЕТА",
         swList: "Список научных трудов",
         members: "Члены диссертационного совета",
         specialityCode: "Код и наименование специальности",
@@ -461,19 +511,38 @@ export default {
         secretary: "Ученый секретарь",
         advisors: "Научные консультанты",
         reviewers: "Официальные рецензенты",
+        permanentMember: "Постоянные члены совета",
+        tempMember: "Временные члены совета",
         meetingTime: "Дата и время заседания",
         defenseLang: "Язык защиты",
         councilDecision: "Решение диссовета",
         disstitle: "Тема диссертации",
+        setMeetingTime: "Назначить день защиты",
+        startRegistration: "Запустить регистрацию",
+        finishRegistration: "Завершить регистрацию",
+        startVoting: "Запустить голосование",
+        finishVoting: "Завершить голосование",
         validationErrors: {
             selectSpeciality: "Укажите специальность",
             selectDepartment: "Выберите факультет",
             selectSecretary: "Укажите ученого секретаря",
             selectMember: "Укажите члена совета",
-            selectCreatedDate: "Укажети дату создания"
+            selectCreatedDate: "Укажети дату создания",
+            selectDoctorals: "Выберите докторантов для которых указанное лицо является рецензентом"
+        },
+        vote: {
+            v1: "присудить степень доктора философии (PhD) или доктора по профилю",
+            v2: "направить диссертацию на доработку",
+            v3: "направить диссертацию на повторную защиту",
+            v4: "отказать в присуждении степени доктора философии (PhD) или доктора по профилю",
+            v5: "ИТОГО"
         },
         message: {
             hasSameMember: "Пользователь уже имеет членство в совете",
+            saveKey: "Голосование анонимно: мы не храним Ваш результат голосования. Просим сохранить или скачать  данный пароль для проверки Вашего голоса в дальнейшем. Пароль известен только Вам и недоступен для восстановления.",
+            notRegistered: "У вас нет возможности проголосовать, так как вы не прошли регистрацию",
+            enterKey: "Enter the password used in voting",
+            votingRestarted: "Диссертация отправлена на повторное голосование",
         },
 
 
@@ -582,6 +651,41 @@ export default {
         },
         rc: {
             title: 'Мамандандыру тақырыбы'
+        }
+    },
+    workPlan: {
+        plans: "Планы",
+        planName: "Название плана",
+        addPlan: "Добавить план",
+        addEvent: "Добавить мероприятие",
+        eventName: "Название мероприятия",
+        approvalUsers: "Ответственные лица",
+        quarter: "Квартал",
+        executionResult: "Результат выполнения",
+        attachments: "Прикрепленные файлы",
+        viewPlan: "Посмотреть план",
+        reports: "Отчеты",
+        events: "Мероприятия",
+        performEvent: "Выполнить мероприятие",
+        reportName: "Наименование отчета",
+        createReport: "Создать отчет",
+        toCorrect: "Отправить на корректировку",
+        editEvent: "Редактировать мероприятие",
+        errors: {
+            eventNameError: "Введите название мероприятия",
+            approvalUserError: "Выберите ответственных лиц",
+            quarterError: "Выберите квартал",
+        },
+        message: {
+            eventCreated: "Мероприятие успешно создано",
+            eventChanged: "Мероприятие успешно изменено",
+            reportSentToApprove: "Отчет успешно отправлен на согласование",
+            planSentToApprove: "План отправлен на корректировку",
+            planCreated: "План успешно создан",
+        },
+        reportTypes: {
+            year: "Годовой",
+            quarter: "Квартальный"
         }
     }
 }

@@ -4,18 +4,36 @@
       <Toolbar class="p-mb-4">
         <template #end>
           <Button
+            v-if="findRole(null,'dissertation_council_secretary')"
+            isSecretary
             icon="pi pi-plus"
             class="p-button-success p-mr-2"
             @click="showAddCouncilDialog()"
+          />
+          <Button
+            v-if="findRole(null,'dissertation_council_secretary')"
+            :disabled="(!selectedDoctoral || (selectedDoctoral && selectedDoctoral.meetingTime))"
+            icon="pi pi-clock"
+            class="p-button-warning p-mr-2"
+            @click="showDialog(dialog.setMeetingTime)"
+            v-tooltip.top="$t('dissertation.setMeetingTime')"
+          />
+          <Button
+            v-if="selectedDoctoral && selectedDoctoral.meetingTime"
+            icon="pi pi-shield"
+            class="p-button-success p-mr-2"
+            @click="showDefenseDialog()"
+             v-tooltip.top="$t('dissertation.defenseConduct')"
           />
           <Button
             icon="pi pi-print"
             class="p-button-info p-mr-2"
           />
           <Button
+            v-if="isSecretary"
             icon="pi pi-trash"
             class="p-button-danger"
-            @click="deleteMember()"
+            @click="deleteDissertation()"
             :disabled="!selectedDoctoral"
           />
         </template>
@@ -28,12 +46,12 @@
         v-model:selection="selectedDoctoral"
         style="font-size: smaller"
         :lazy="true"
-        :totalRecords="DoctoralList.length"
+        :totalRecords="doctoralCount"
         :value="DoctoralList"
         @page="reload($event)"
         :paginator="true"
         :rows="lazyParams.rows"
-        dataKey="memberID"
+        dataKey="dissertation.id"
         :rowHover="true"
         :loading="loading"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
@@ -54,7 +72,8 @@
           :header="$t('dissertation.directionCode')"
         >
           <template #body="slotProps">
-            <span> {{ slotProps.data.speciality.code + '-'+ slotProps.data.speciality.nameInKz}}</span>
+            <span> {{ slotProps.data.speciality.trainingDirection.code + '-'+ slotProps.data.speciality.trainingDirection.nameInKz}}</span>
+
           </template>
         </Column>
         <Column
@@ -62,7 +81,7 @@
           :header="$t('dissertation.specialityCode')"
         >
           <template #body="slotProps">
-            <span> {{ slotProps.data.speciality.trainingDirection.code + '-'+ slotProps.data.speciality.trainingDirection.nameInKz}}</span>
+            <span> {{ slotProps.data.speciality.code + '-'+ slotProps.data.speciality.nameInKz}}</span>
             
           </template>
         </Column>
@@ -89,11 +108,20 @@
           field="meetingTime"
           :sortable="true"
           :header="$t('dissertation.meetingTime')"
-        ></Column>
+        >
+          <template #body="slotProps">
+            {{(slotProps.data.meetingTime != null ? new Date(slotProps.data.meetingTime).toLocaleString() : "")}}
+          </template>
+        </Column>
         <Column
           field="dissertation.language"
           :header="$t('dissertation.defenseLang')"
         >
+          <template #body="slotProps">
+            <span v-if="slotProps.data.dissertation.language == 1">{{$t('common.language.kz')}}</span>
+            <span v-else-if="slotProps.data.dissertation.language== 2">{{$t('common.language.ru')}}</span>
+            <span v-else-if="slotProps.data.dissertation.language == 3">{{$t('common.language.en')}}</span>
+          </template>
         </Column>
         <Column
           field="councilDecision"
@@ -268,6 +296,290 @@
           />
         </template>
       </Dialog>
+      <Dialog
+        v-model:visible="dialog.setMeetingTime.state"
+        :style="{ width: '600px' }"
+        :header="$t('dissertation.setMeetingTime')"
+        :modal="true"
+        :maximizable="true"
+        class="p-fluid"
+      >
+        <div>
+          <label for="doctoralName">{{ $t("common.fullName")}}</label>
+          <InputText id="doctoralName" class="p-pt-2 p-mb-2" type="text" readonly="true" v-model="selectedDoctoral.user.fullName" />
+        </div>
+        <div>
+          <label for="defenseLanguage">{{ $t("dissertation.defenseLang")}}</label>
+          <SelectButton id = "defenseLanguage" style="height:35px"  v-model="selectedDoctoral.dissertation.language" :options="language" class="p-mt-1 p-mb-2">
+            <template #option="slotProps">
+              <div v-if="slotProps.option == 1">{{$t('common.language.kz')}}</div>
+              <div v-else-if="slotProps.option == 2">{{$t('common.language.ru')}}</div>
+              <div v-else-if="slotProps.option == 3">{{$t('common.language.en')}}</div>
+            </template>
+          </SelectButton>
+          <small class="p-error" v-if="(submitted && validationErrorsSetMeetingTime.defenseLanguage)">{{$t('common.requiredField')}}</small>
+        </div>
+        <div>
+          <label for="meetingTime">{{ $t("dissertation.meetingTime")}}</label>
+          <PrimeCalendar id="meetingTime" :placeholder="$t('common.select')" style="height:33px" class="p-pt-1" v-model="selectedDoctoral.meetingTime" :showTime="true" :showIcon="true"  :stepMinute="10" :manualInput="true"  dateFormat="dd.mm.yy"/>
+          <small class="p-error" v-if="(submitted && validationErrorsSetMeetingTime.meetingTime)">{{$t('common.requiredField')}}</small>
+        </div>
+        <div>
+          <label for="meetingUrl">{{ $t("common.meetingUrl")}}</label>
+          <InputText id="meetingUrl" class="p-pt-2 p-mb-2" type="text"  v-model="selectedDoctoral.dissertation.meetingUrl" />
+          <small class="p-error" v-if="(submitted && validationErrorsSetMeetingTime.meetingUrl)">{{$t('common.requiredField')}}</small>
+        </div>
+        <div>
+          <label for="meetingPlace">{{ $t("common.meetingPlace")}}</label>
+          <InputText id="meetingUrl" class="p-pt-2 p-mb-2" type="text"  v-model="selectedDoctoral.dissertation.meetingPlace" />
+          <small class="p-error" v-if="(submitted && validationErrorsSetMeetingTime.meetingPlace)">{{$t('common.requiredField')}}</small>
+        </div>
+        <div>
+          <Button icon="pi pi-download" :label="$t('dissertation.dissertationFile')" @click="downloadFile(selectedDoctoral.dissertation.dissFile)"/>
+        </div>
+        
+        <template #footer>
+          <Button
+            :label="$t('common.cancel')"
+            icon="pi pi-times"
+            class="p-button-text"
+            @click="hideDialog(dialog.setMeetingTime)"
+          />
+          <Button
+            :label="$t('common.yes')"
+            icon="pi pi-check"
+            class="p-button-text"
+            @click="setMeetingTime"
+          />
+        </template>
+      </Dialog>
+      <Dialog
+        v-model:visible="dialog.defenseConduct.state"
+        :style="{ width: '600px' }"
+        :header="$t('dissertation.defenseConduct')"
+        :modal="true"
+        :maximizable="true"
+        class="p-fluid"
+      >
+        <div v-if="!(selectedDoctoral && selectedDoctoral.dissertation.state == dissertationState.VotingFinished) && !(isDissertationMember && ((currentMemberState === memberState.Registered && selectedDoctoral.dissertation.state === dissertationState.VotingStarted) || (currentMemberState === memberState.Voted && selectedDoctoral.dissertation.state === dissertationState.VotingRestarted)))">
+          <div>
+            <label for="doctoralName">{{ $t("common.fullName")}}</label>
+            <InputText id="doctoralName" class="p-pt-2 p-mb-2" type="text" readonly="true" v-model="selectedDoctoral.user.fullName" />
+          </div>
+        
+          <div>
+            <label for="meetingTime">{{ $t("dissertation.meetingTime")}}</label>
+            <PrimeCalendar id="meetingTime" :placeholder="$t('common.select')" style="height:33px" class="p-pt-1" v-model="selectedDoctoral.meetingTime" :showTime="true" :showIcon="true"  :stepMinute="10" :manualInput="true"  dateFormat="dd.mm.yy"/>
+            <small class="p-error" v-if="(submitted && validationErrorsSetMeetingTime.meetingTime)">{{$t('common.requiredField')}}</small>
+          </div>
+          <div>
+            <label for="meetingUrl">{{ $t("common.meetingUrl")}}</label>
+            <InputText id="meetingUrl" class="p-pt-2 p-mb-2" type="text"  v-model="selectedDoctoral.dissertation.meetingUrl" />
+            <small class="p-error" v-if="(submitted && validationErrorsSetMeetingTime.meetingUrl)">{{$t('common.requiredField')}}</small>
+          </div>
+          
+          <div>
+          <Button icon="pi pi-download" :label="$t('dissertation.dissertationFile')" @click="downloadFile(selectedDoctoral.dissertation.dissFile)"/>
+        </div>
+        </div>
+       
+        <DataTable v-if="regInfo && (selectedDoctoral.dissertation.state == dissertationState.ReadyToRegister || selectedDoctoral.dissertation.state == dissertationState.RegistrationFinished )" :loading="loading" :value="regInfo" showGridlines responsiveLayout="scroll">
+          <Column field="voterType" :header="$t('dissertation.members')">
+            <template #body="slotProps">
+              {{slotProps.data.voterType ==0 ? $t('dissertation.permanentMember') : slotProps.data.voterType == 1 ? $t('dissertation.tempMember') : $t('dissertation.reviewers') }}
+            </template>
+          </Column>
+          <Column field="total" :header="$t('common.total')"></Column>
+          <Column field="registered" :header="$t('common.registered')"></Column>
+        </DataTable>
+        <DataTable v-if="regInfoDetail && isSecretary && selectedDoctoral.dissertation.state == dissertationState.ReadyToRegister" :loading="loading" :value="regInfoDetail" showGridlines responsiveLayout="scroll">
+          <Column field="fullName" :header="$t('common.fullName')"></Column>
+          <Column field="state" :header="$t('common.state')">
+            <template #body="slotProps">
+              <span v-if="slotProps.data.state ==0" class="p-tag p-tag-warning">{{$t('common.states.notRegistered')}}</span>
+              <span v-else class="p-tag p-tag-success">{{$t('common.states.registered')}}</span>             
+
+            </template>
+          </Column>
+            
+        </DataTable>
+        <DataTable v-if="regInfoDetail && isSecretary  && (selectedDoctoral.dissertation.state == dissertationState.VotingStarted || selectedDoctoral.dissertation.state == dissertationState.VotingFinished )" :loading="loading" :value="regInfoDetail" showGridlines responsiveLayout="scroll">
+          <Column field="fullName" :header="$t('common.fullName')"></Column>
+          <Column field="vote" :header="$t('common.state')">
+            <template #body="slotProps">
+              <span v-if="slotProps.data.voted ==0" class="p-tag p-tag-warning">{{$t('common.states.notVoted')}}</span>
+              <span v-else class="p-tag p-tag-success">{{$t('common.states.voted')}}</span>             
+            </template>
+          </Column>
+        </DataTable>
+        
+        <div v-if="voteInfo">
+          <h3>{{$t('common.voting')}}</h3>
+          <p>
+            <span>{{$t('common.registered')}}</span>: {{voteInfo.total}}
+          </p>
+          <p>
+            <span>{{$t('common.voted')}}</span>: {{(selectedDoctoral.dissertation.state === dissertationState.VotingRestarted ? voteInfo.voted2 : voteInfo.voted)}}
+          </p>
+          <ProgressBar :value="(Math.floor(((selectedDoctoral.dissertation.state === dissertationState.VotingRestarted ? voteInfo.voted2 : voteInfo.voted) / voteInfo.total) * 100))" />
+          <div v-if="voteInfo && (selectedDoctoral.dissertation.state > dissertationState.VotingStarted && selectedDoctoral.dissertation.state != dissertationState.VotingRestarted )">
+          <div ref="report">
+          
+          <div v-if="isDissertationAdmin" :style="printStyle">
+            <h4>{{$t('dissertation.protocol')}}</h4>
+            <p style="text-align:left">
+              <b>{{$t('common.fullName')}}:</b>&nbsp;{{selectedDoctoral.user.fullName}}<br/>
+              <b>{{$t('dissertation.directionCode')}}:&nbsp;</b>{{selectedDoctoral.speciality.trainingDirection.code + '-'+ selectedDoctoral.speciality.trainingDirection.nameInKz }}<br/>
+              <b>{{$t('dissertation.specialityCode')}}:&nbsp;</b>{{selectedDoctoral.speciality.code + '-'+ selectedDoctoral.speciality.nameInKz }}<br/>
+              <b>{{$t('dissertation.disstitle')}}:&nbsp;</b>{{selectedDoctoral.dissertation['name'+$i18n.locale] }}<br/>
+              <b>{{$t('dissertation.meetingTime')}}:&nbsp;</b>{{selectedDoctoral.meetingTime.replace('T', ' ').substring(0,selectedDoctoral.meetingTime.length-4) }}<br/>
+              <b>{{$t('dissertation.defenseLang')}}:&nbsp;</b>{{$t('common.language.ln' + selectedDoctoral.dissertation.language)}}<br/>
+              <br/>
+            </p>
+
+          </div>
+          <DataTable ref="voteReport"  :loading="loading" :value="voteInfo.votes" showGridlines responsiveLayout="scroll">
+      
+            <Column>
+              <template #body="slotProps">
+                {{ $t('dissertation.vote.v' + slotProps.data.type)  }}
+              </template>
+            </Column>
+            <Column field="count" :header="$t('common.voted')"></Column>
+          </DataTable>
+          </div>
+          <Button v-if="isDissertationAdmin" :label="$t('common.protocol')" icon="pi pi-download" @click="exportReport"/>
+          </div>        
+        </div>
+        <h4 
+           v-if="(selectedDoctoral.dissertation.state == dissertationState.Accepted || selectedDoctoral.dissertation.state == dissertationState.Revision || selectedDoctoral.dissertation.state == dissertationState.ReDefense || selectedDoctoral.dissertation.state == dissertationState.Reject)==true"
+          >{{ $t('common.votedFor', {
+                  result: (
+                    selectedDoctoral.dissertation.state == dissertationState.Accepted ? $t('dissertation.vote.v1') :
+                    selectedDoctoral.dissertation.state == dissertationState.Revision ? $t('dissertation.vote.v2') :
+                    selectedDoctoral.dissertation.state == dissertationState.ReDefense ? $t('dissertation.vote.v3') :
+                    $t('dissertation.vote.v4')),
+                })}}
+          </h4>
+        <div
+            v-if="(isDissertationMember || isSecretary) && ((currentMemberState === memberState.Registered && selectedDoctoral.dissertation.state === dissertationState.VotingStarted) || (currentMemberState === memberState.Voted && selectedDoctoral.dissertation.state === dissertationState.VotingRestarted))"
+          >
+              <h3 v-if="selectedDoctoral.dissertation.state === dissertationState.VotingRestarted" class="p-error">{{$t('dissertation.message.votingRestarted')}}</h3>
+
+              <div id="keyword">
+                <p ref="content" style="border: 1px solid blue;margin-top:5px;padding: 5px;">{{ $t("common.voteKeyword")}}:&nbsp;<span style="text-decoration: underline;font-weight: bold;" >{{password}}</span>
+                <br><small class="p-error">{{$t('dissertation.message.saveKey')}}</small>
+                
+                </p>
+                <Button
+                    :label="$t('common.downloadPassword')"
+                    class="p-button-text"
+                    @click="download()"
+                  />
+              </div>
+              <div class="p-field-radiobutton"
+                v-if="(isDissertationMember || isSecretary) && currentMemberState === memberState.Registered && selectedDoctoral.dissertation.state === dissertationState.VotingStarted"
+              >
+                <RadioButton id="vote1" name="vote" value="1" v-model="currentMemberVote" />
+                <label for="city1">{{$t('dissertation.vote.v1')}}</label>
+              </div>
+              <div class="p-field-radiobutton">
+                <RadioButton id="vote2" name="vote" value="2" v-model="currentMemberVote" />
+                <label for="city2">{{$t('dissertation.vote.v2')}}</label>
+              </div>
+              <div class="p-field-radiobutton">
+                <RadioButton id="vote3" name="vote" value="3" v-model="currentMemberVote" />
+                <label for="city3">{{$t('dissertation.vote.v3')}}</label>
+              </div>
+              <div class="p-field-radiobutton"
+                v-if="(isDissertationMember || isSecretary) && currentMemberState === memberState.Registered && selectedDoctoral.dissertation.state === dissertationState.VotingStarted"
+              >
+                <RadioButton id="vote4" name="vote" value="4" v-model="currentMemberVote" />
+                <label for="city4">{{$t('dissertation.vote.v4')}}</label>
+              </div>
+          </div>
+          <Inplace :closable="true" class = "p-mt-3"
+              v-if="(isDissertationMember || isSecretary) &&  (selectedDoctoral.dissertation.state >= dissertationState.VotingFinished && selectedDoctoral.dissertation.state !== dissertationState.VotingRestarted)"
+            >
+              <template #display>
+                  <Button
+                  :label="$t('common.checkMyVoice')"
+                  class="p-button-text"
+                  />
+              </template>
+              <template #content>
+                  <div class="p-inputgroup">
+                    <Button icon="pi pi-check" class="p-button-success" @click="checkMyVoice"/>
+                    <InputText :placeholder="$t('dissertation.message.enterKey')" type="text" id="inputgroup" v-model="checkPassword" />
+                  </div>
+              </template>
+          </Inplace>
+        
+        <template #footer>
+          <Button
+            :label="$t('common.close')"
+            icon="pi pi-times"
+            class="p-button-text"
+            @click="hideDialog(dialog.defenseConduct)"
+          />
+         
+          <Button
+            v-if="findRole(null, 'dissertation_council_secretary') && selectedDoctoral.dissertation.state === dissertationState.DefenseDate"
+            :label="$t('dissertation.startRegistration')"
+            class="p-button-text"
+            @click="startRegistration"
+          />
+          <Button
+            v-if="findRole(null, 'dissertation_council_secretary') && selectedDoctoral.dissertation.state === dissertationState.ReadyToRegister"
+            :label="$t('dissertation.finishRegistration')"
+            icon="pi pi-check"
+            class="p-button-text"
+            @click="ChangeDissertationState(dissertationState.RegistrationFinished)"
+          />
+          <Button
+            v-if="findRole(null, 'dissertation_council_secretary') && selectedDoctoral.dissertation.state === dissertationState.RegistrationFinished"
+            :label="$t('dissertation.startVoting')"
+            class="p-button-text"
+            @click="ChangeDissertationState(dissertationState.VotingStarted)"
+          />
+          <Button
+            v-if="isSecretary && !isDissertationMember && selectedDoctoral.dissertation.state === dissertationState.VotingStarted"
+            :label="$t('dissertation.finishVoting')"
+            class="p-button-text"
+            @click="ChangeDissertationState(dissertationState.VotingFinished)"
+          />
+          <Button
+            v-if="isSecretary && !isDissertationMember && selectedDoctoral.dissertation.state === dissertationState.VotingRestarted"
+            :label="$t('dissertation.finishVoting')"
+            class="p-button-text"
+            @click="ChangeDissertationState(dissertationState.VotingRestarted)"
+          />
+          
+          <Button
+            v-if="isDissertationMember && !isSecretary && currentMemberState === memberState.NotRegistered && selectedDoctoral.dissertation.state === dissertationState.ReadyToRegister"
+            :label="$t('common.register')"
+            class="p-button-text"
+            @click="memberRegister()"
+          />
+          <Button
+            v-if="(isDissertationMember  || isSecretary) && ((currentMemberState === memberState.Registered && selectedDoctoral.dissertation.state === dissertationState.VotingStarted) || (currentMemberState === memberState.Voted && selectedDoctoral.dissertation.state === dissertationState.VotingRestarted))"
+            :label="$t('common.vote')"
+            class="p-button-text"
+            @click="vote()"
+          />
+          <Button
+            v-if="(isSecretary && selectedDoctoral.dissertation.state === dissertationState.VotingFinished)"
+            :label="$t('common.revote')"
+            class="p-button-text"
+            @click="ChangeDissertationState(dissertationState.VotingRestarted)"
+          />
+       
+          <div v-if="isDissertationMember  && ((currentMemberState === memberState.NotRegistered && selectedDoctoral.dissertation.state === dissertationState.VotingStarted) || (currentMemberState === memberState.Voted && selectedDoctoral.dissertation.state === dissertationState.VotingRestarted))">
+            <small class="p-error">{{$t('dissertation.message.notRegistered')}}</small>
+          </div>
+
+        </template>
+      </Dialog>
     </div>
   </div>
 </template>
@@ -276,16 +588,25 @@ import { mapState } from "vuex";
 import FindUser from "@/helpers/FindUser";
 import Enums from "@/enum/docstates/index";
 import axios from "axios";
-import { getHeader, smartEnuApi } from "@/config/config";
+import html2pdf from "html2pdf.js";
+
+import { getHeader, findRole, smartEnuApi, downloadFile } from "@/config/config";
 import DepartmentList from '../smartenu/DepartmentList.vue';
 import SpecialitySearch from "../smartenu/speciality/specialitysearch/SpecialitySearch.vue";
+import html2canvas from "html2canvas";
+import * as jsPDF from "jspdf";
 
 export default {
   components: { FindUser, DepartmentList, SpecialitySearch },
   data() {
     return {
+      printStyle: 'display:none;text-align:center',
       heiID: -1,
       councilID: -1,
+      currentMemberState: -1,
+      currentMemberVote: null,
+      checkedVoice: null,
+      doctoralCount: -1,
       doctoral: {
         cafedra: null,
         hei: null,
@@ -305,6 +626,26 @@ export default {
           },
         }
       },
+      dissertationState: {
+        Added: 0,
+        DefenseDate: 1,
+        ReadyToRegister: 2,
+        RegistrationFinished:3,
+        VotingStarted: 4,
+        VotingFinished: 5,
+        Accepted: 6,
+        Revision: 7,
+        VotingRestarted: 8,
+        ReDefense: 9,
+        Reject: 10,
+        VotinsFinishedSecondStep: 11,
+      },
+      memberState: {
+        NotRegistered: 0,
+        Registered: 1,
+        Voted: 2,
+        ReVoted: 3,
+      },
       abstractFile: null,
       dissertationFile: null,
       swListFile: null,
@@ -313,10 +654,23 @@ export default {
         addDoctoral: {
           state: false,
         },
-        deleteMember: {
+        deleteDissertation: {
+          state: false,
+        },
+        setMeetingTime: {
+          state: false,
+        },
+        defenseConduct: {
           state: false,
         },
       },
+      isDissertationMember : false,
+      isSecretary: false,
+      password: null,
+      checkPassword: null,
+      regInfo: null,
+      regInfoDetail: null,
+      voteInfo: null,
       selectedUsers: null,
       selectedDepartment: null,
       selectedDoctoral: null,
@@ -345,7 +699,11 @@ export default {
         abstractFile: false,
         dissertationFile:false,
         swListFile: false,
-        
+      },
+      validationErrorsSetMeetingTime: {
+        defenseLanguage: false,
+        meetingPlace: false,
+        meetingUrl: false,
       },
       loading: false,
       lazyParams: {
@@ -357,17 +715,138 @@ export default {
   created() {
     this.councilID = Number(this.$route.params.id);
     this.getDoctorals();
+    var generator = require("generate-password");
+
+    this.password = generator.generate({
+      length: 10,
+      numbers: true,
+    });
   },
+  mounted() {
+    this.getDissertationMember();
+    this.getSecretary();
+  },
+  
+
   methods: {
+    findRole: findRole,
+    downloadFile: downloadFile,
+    exportCSV() {
+            this.$refs.voteReport.exportCSV();
+    },
+    async exportReport() {
+      this.printStyle = 'text-align:center';
+      var opt = {
+        margin:       1,
+        filename:     this.selectedDoctoral.user.fullName + '.pdf',
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+      };
+      const pdfContent = this.$refs.report;
+
+      // New Promise-based usage:
+      await html2pdf().set(opt).from(pdfContent).save();
+      this.printStyle = 'display:none;text-align:center';
+    },
+    getDissertationMember() {
+      this.isDissertationMember= (
+        (this.findRole(null, 'dissertation_council_permanent_member') 
+        || this.findRole(null, 'dissertation_council_temporary_member')
+        || this.findRole(null, 'dissertation_council_reviewer')
+        || this.findRole(null, 'dissertation_council_chief'))
+       
+        ) 
+    },
+    getSecretary() {
+      this.isSecretary = this.findRole(null, 'dissertation_council_secretary') 
+    },
     getDepartments(event, departmentList) {
-     
       departmentList.getDepartments(event.value.id);
     },
     isDissertationAdmin() {
       if (this.myDetails && this.myDetails.status)
         this.myDetails.status = this.statuses.indexOf(this.myDetails.status);
     },
-    deleteMember(data) {
+    download() {
+      this.backcolor = "background-color: white";
+      var element = document.getElementById("keyword");
+      var positionInfo = element.getBoundingClientRect();
+      var divHeight = positionInfo.height;
+      var divWidth = positionInfo.width;
+      var ratio = divHeight / divWidth;
+      
+
+      html2canvas(this.$refs.content, {
+        height: divHeight,
+        width: divWidth,
+      }).then(function (canvas) {
+        var image = canvas.toDataURL("image/jpeg");
+        var doc = new jsPDF(); // using defaults: orientation=portrait, unit=mm, size=A4
+        var width = doc.internal.pageSize.getWidth();
+        var height = doc.internal.pageSize.getHeight();
+        height = ratio * width;
+        doc.addImage(image, "JPEG", 10, 10, width - 10, height);
+        doc.save("user-credentials.pdf"); //Download the rendered PDF.
+      });
+      this.backcolor = "background-color: var(--teal-100);";
+    },
+    memberRegister() {
+      axios
+      .post(
+        smartEnuApi + "/dissertation/memberregister",
+        {
+          userID:  this.$store.state.loginedUser.userID,
+          dissertationID: this.selectedDoctoral.dissertation.id
+        },
+        { 
+          headers: getHeader()
+        }
+      )
+      .then(response => {
+        this.currentMemberState = response.data
+      })
+      .catch((error) => {
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          }
+      });
+    },
+    getMemberState() {
+      axios
+      .post(
+        smartEnuApi + "/dissertation/getMemberState",
+        {
+          userID:  this.$store.state.loginedUser.userID,
+          dissertationID: this.selectedDoctoral.dissertation.id
+        },
+        { 
+          headers: getHeader()
+        }
+      )
+      .then(response => {
+        this.currentMemberState = response.data.memberState
+        this.selectedDoctoral.dissertation.state = response.data.dissertationState
+        if (this.selectedDoctoral.dissertation.state < this.dissertationState.VotingStarted){
+          this.voteInfo = null;
+        }
+         if (this.selectedDoctoral.dissertation.state < this.dissertationState.ReadyToRegister){
+          this.regInfo = null;
+          this.regInfoDetail = null;
+        }
+        console.log(response.data)
+        if (this.dialog.defenseConduct) {
+            setTimeout(() => {
+            this.getMemberState()
+          }, 5000);
+        }
+      })
+      .catch((error) => {
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          }
+      });
+    },
+    deleteDissertation(data) {
       if (data !== undefined) {
         this.selectedDoctoral = data;
       }
@@ -378,8 +857,8 @@ export default {
         accept: () => {
           axios
             .post(
-              smartEnuApi + "/dissertation/deleteCouncilMember",
-              { id: this.selectedDoctoral.memberID },
+              smartEnuApi + "/dissertation/deleteDissertation",
+              { id: this.selectedDoctoral.dissertation.id },
               {
                 headers: getHeader(),
               }
@@ -404,6 +883,23 @@ export default {
       this.selectedRole = null;
       this.dialog.addDoctoral.state = true;
     },
+    showDefenseDialog() {
+      this.getMemberState()
+      if (this.selectedDoctoral && (this.selectedDoctoral.dissertation.state == this.dissertationState.ReadyToRegister ||this.selectedDoctoral.dissertation.state == this.dissertationState.RegistrationFinished ||this.selectedDoctoral.dissertation.state == this.dissertationState.VotingStarted ||this.selectedDoctoral.dissertation.state == this.dissertationState.VotingFinished )) {
+        
+        this.getRegistrationInfo()
+        
+      }
+
+      if (this.selectedDoctoral && (
+        this.selectedDoctoral.dissertation.state > this.dissertationState.VotingStarted
+        
+      )) {
+        this.getVotingInfo()
+      }
+      
+      this.dialog.defenseConduct.state =true;
+    },
     showDialog(dialog) {
       dialog.state = true;
     },
@@ -423,18 +919,22 @@ export default {
     },
     getDoctorals() {
       this.loading = true;
-      let id = this.councilID;
+      this.lazyParams.userID = this.$store.state.loginedUser.userID
       //this.lazyParams.countMode = null;
       axios
         .post(
           smartEnuApi + "/dissertation/getdoctorals",
-          { userID:  this.$store.state.loginedUser.userID},
+          this.lazyParams,
           {
             headers: getHeader(),
           }
         )
         .then((response) => {
           this.DoctoralList = response.data;
+          if (this.DoctoralList.length >0 && this.doctoralCount <0)
+          {
+            this.doctoralCount = this.DoctoralList[0].count
+          }
           this.loading = false;
         })
         .catch((error) => {
@@ -443,7 +943,261 @@ export default {
           }
         });
     },
+    startRegistration() {
+      var req =  {
+          councilID: this.selectedDoctoral.councilID,
+          dissertationID: this.selectedDoctoral.dissertation.id
+      }
+      axios
+      .post(
+        smartEnuApi + "/dissertation/startRegistration",
+        req,
+        { headers: getHeader()}
+      )
+      .then(response => {
+        this.regInfo = response.data
+        if (this.regInfo.length>0) {
+          this.regInfoDetail = this.regInfo[0].members
+        }
+        this.selectedDoctoral.dissertation.state = this.dissertationState.ReadyToRegister
+        if (this.dialog.defenseConduct.state) {
+          setTimeout(() => {
+            this.getRegistrationInfo()
+          }, 2000);
+        }
+      })
+      .catch((error) => {
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          }
+      });
+    },
+    ChangeDissertationState(state) {
+      var req =  {
+          dissertationID: this.selectedDoctoral.dissertation.id,
+          state: state
+      }
+      axios
+      .post(
+        smartEnuApi + "/dissertation/changeDissertationState",
+        req,
+        { headers: getHeader()}
+      )
+      .then(() => {
+        this.selectedDoctoral.dissertation.state = state
+        if (state == this.dissertationState.VotingStarted || 
+          state == this.dissertationState.VotingFinished ||
+          state == this.dissertationState.VotingRestarted || 
+          state == this.dissertationState.VotinsFinishedSecondStep) {
+          this.getVotingInfo()
+        }
+        
+      
+      })
+      .catch((error) => {
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          }
+      });
+    },
+    vote() {
+      if (!this.currentMemberVote) {
+        this.$toast.add({
+          severity: "warn",
+          summary: this.$t('common.message.selectVariant'),
+          life: 3000,
+        });
+        return
+      }
+      var req = {
+        dissertationID: this.selectedDoctoral.dissertation.id,
+        userID: this.$store.state.loginedUser.userID,
+        step: this.selectedDoctoral.dissertation.state == this.dissertationState.VotingRestarted ? 2 : 1,
+        password: this.password,
+        vote: Number(this.currentMemberVote)
+      }
+      axios
+      .post(
+        smartEnuApi + "/dissertation/vote",
+        req,
+        { headers: getHeader()}
+      )
+      .then(() => {
+        this.currentMemberState = this.memberState.Voted
+        this.getVotingInfo()
+        this.currentMemberVote = null
+      })
+      .catch((error) => {
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+            this.$toast.add({
+                severity: "error",
+                summary: error,
+                life: 3000,
+              });
+          }
+      });
 
+    },
+    checkMyVoice() {
+      var req = {
+        dissertationID: this.selectedDoctoral.dissertation.id,
+        userID: this.$store.state.loginedUser.userID,
+        step: this.selectedDoctoral.dissertation.state == this.dissertationState.VotingRestarted ? 2 : 1,
+        password: this.checkPassword,
+      }
+      console.log(req)
+      axios
+      .post(
+        smartEnuApi + "/dissertation/checkMyVoice",
+        req,
+        { headers: getHeader()}
+      )
+      .then((res) => {
+        if (!res.data || (res.data !== "1" && res.data !== "2" && res.data !== "3" && res.data != "4")){
+          this.$toast.add({
+                severity: "error",
+                summary: this.$t('common.message.invalidkey'),
+                life: 3000,
+              });
+            return
+        }
+        this.checkedVoice = this.$t('dissertation.vote.v' +res.data)
+        this.$toast.add({
+                severity: "success",
+                summary: this.$t('common.yourVoice') + this.checkedVoice,
+                life: 3000,
+              });
+      })
+      .catch((error) => {
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          }
+          this.$toast.add({
+                severity: "error",
+                summary: this.$t('common.message.invalidkey'),
+                life: 3000,
+              });
+      });
+
+    },
+    getVotingInfo() {
+      var req = {
+        dissertationID: this.selectedDoctoral.dissertation.id,
+        short: this.selectedDoctoral.dissertation.state == this.dissertationState.VotingStarted || this.selectedDoctoral.dissertation.state == this.dissertationState.VotingRestarted ,
+        step: this.selectedDoctoral.dissertation.state == this.dissertationState.Accepted || this.selectedDoctoral.dissertation.state == this.dissertationState.Reject   ? 1 : 2,
+   
+      }
+      axios
+      .post(
+        smartEnuApi + "/dissertation/getVoteInformation",
+        req,
+        { headers: getHeader()}
+      )
+      .then(response => {
+        this.voteInfo = response.data
+        if (this.voteInfo) {
+          this.selectedDoctoral.dissertation.state = this.voteInfo.dissertationState
+        }
+        this.loading = false
+        var short = this.selectedDoctoral.dissertation.state == this.dissertationState.VotingStarted || this.selectedDoctoral.dissertation.state == this.dissertationState.VotingRestarted;
+        if (short && this.dialog.defenseConduct.state && this.selectedDoctoral && (this.selectedDoctoral.dissertation.state === this.dissertationState.VotingRestarted || this.selectedDoctoral.dissertation.state === this.dissertationState.VotingStarted)) {
+          setTimeout(() => {
+            this.getVotingInfo()
+          }, 5000);
+        }
+
+      })
+      .catch((error) => {
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          }
+      });
+    },
+    getRegistrationInfo() {
+      this.loading = true
+      var req =  {
+          dissertationID: this.selectedDoctoral.dissertation.id
+      }
+      axios
+      .post(
+        smartEnuApi + "/dissertation/getRegistrationInfo",
+        req,
+        { headers: getHeader()}
+      )
+      .then(response => {
+        this.regInfo = response.data
+         if (this.regInfo && this.regInfo.length>0) {
+          this.selectedDoctoral.dissertation.state = this.regInfo[0].dissertationState
+          this.regInfoDetail = this.regInfo[0].members
+        }
+        this.loading = false
+        if ((this.dialog.defenseConduct.state && this.selectedDoctoral && this.selectedDoctoral.dissertation.state === this.dissertationState.ReadyToRegister) ||
+        (this.isDissertationMember && this.dialog.defenseConduct.state && this.selectedDoctoral && this.selectedDoctoral.dissertation.state === this.dissertationState.RegistrationFinished) ||
+        (this.isDissertationAdmin && this.selectedDoctoral && this.dialog.defenseConduct.state))
+        {
+          setTimeout(() => {
+            this.getRegistrationInfo()
+          }, 5000);
+        }
+
+      })
+      .catch((error) => {
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          }
+      });
+    },
+    setMeetingTime() {
+      this.submitted = true;
+      if (this.validateSetMeetingTimeForm()) {
+        var request = { id: this.selectedDoctoral.dissertation.id,
+              url: this.selectedDoctoral.dissertation.url,
+              meetingUrl: this.selectedDoctoral.dissertation.meetingUrl,
+              meetingPlace: this.selectedDoctoral.dissertation.meetingPlace,
+              meetingTime: this.selectedDoctoral.meetingTime,
+              language: this.selectedDoctoral.dissertation.language
+        }
+        console.log(request)
+        axios
+          .post(
+            smartEnuApi + "/dissertation/setMeetingTime",
+            request,
+            {
+              headers: getHeader(),
+            }
+          )
+          .then((res) => {
+            this.submitted = false;
+            this.selectedDoctoral.dissertation.state = this.dissertationState.DefenseDate
+            this.hideDialog(this.dialog.setMeetingTime)
+          })
+          .catch((error) => {
+            if (error.response.status == 401) {
+              this.$store.dispatch("logLout");
+            }
+             else {
+              this.$toast.add({
+                severity: "error",
+                summary: "dissertationSetMeetingTimeError\n" + error,
+                life: 3000,
+              });
+            }
+          });
+        
+      }
+    },
+    validateSetMeetingTimeForm() {
+      this.validationErrorsSetMeetingTime.defenseLanguage = !this.selectedDoctoral.dissertation.language;
+      this.validationErrorsSetMeetingTime.meetingPlace = !this.selectedDoctoral.dissertation.meetingPlace;
+      this.validationErrorsSetMeetingTime.meetingTime = !this.selectedDoctoral.meetingTime;
+      this.validationErrorsSetMeetingTime.meetingUrl = !this.selectedDoctoral.dissertation.meetingUrl;
+      let result = true
+      for (var key of Object.keys(this.validationErrorsSetMeetingTime)) {
+        result = result && !this.validationErrorsSetMeetingTime[key]
+      }
+      return result
+      },
     addDoctoral() {
       this.submitted = true;
 

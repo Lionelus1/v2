@@ -46,18 +46,19 @@ export default {
       plan: this.data,
       pdfType: this.isReport,
       pdfOptions: {
-        margin: 15,
+        margin: 10,
         image: {
           type: 'jpeg',
           quality: 1,
         },
-        html2canvas: {scale: 3},
-        pagebreak: {avoid: 'tr'},
+        html2canvas: {scale: 1},
         jsPDF: {
           unit: 'mm',
           format: 'a4',
-          orientation: 'p',
+          orientation: 'landscape',
+          hotfixes: ["px_scaling"]
         },
+        pagebreak: {avoid: 'tr'},
       },
       loginedUserId: 0
     }
@@ -76,7 +77,7 @@ export default {
       }, {headers: getHeader()}).then(res => {
         this.items = treeToList(res.data, 'children');
       }).catch(error => {
-        if (error.response.status === 401) {
+        if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
           this.$toast.add({
@@ -117,7 +118,7 @@ table {
   width: 100%;
   font-size: 14px;
   text-align: center;
-  border: 1px solid #dee2e6;
+  border: 1px solid black;
   border-collapse: collapse;
 
   th {
@@ -127,7 +128,7 @@ table {
   td,
   th {
     padding: 8px;
-    border: 1px solid #dee2e6;
+    border: 1px solid black;
   }
 }
 

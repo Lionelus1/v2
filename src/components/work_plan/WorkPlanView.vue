@@ -1,19 +1,39 @@
 <template>
   <div>
     <div class="p-col-12" v-if="!loading">
-      <div class="card" v-if="isApproval && !isApproved">
-        <Button v-if="isApproval && !plan.is_reject" :label="isLast ? 'Утвердить' : 'Согласовать'" icon="pi pi-check"
+      <div class="card" v-if="isPlanApproved && isPlanCreator || (isApproval && isApproved) && plan.status.work_plan_status_id === 4">
+        <Button v-if="isPlanCreator" :label="$t('common.action.reApprove')" icon="pi pi-check"
+                @click="reapproveConfirmDialog"
+                class="p-button p-ml-2"/>
+        <Button :label="$t('common.signatures')" icon="pi pi-file"
+                v-if="isPlanApproved && isPlanCreator || (isApproval && isApproved)"
+                @click="viewSignatures"
+                class="p-button p-ml-2"/>
+      </div>
+      <div class="card" v-if="isApproval && plan.status.work_plan_status_id === 2">
+        <Button v-if="isApproval"
+                :label="isLast ? $t('common.action.approve') : $t('common.action.approve') " icon="pi pi-check"
                 @click="openApprovePlan"
                 class="p-button p-button-success p-ml-2"/>
-        <Button v-if="isApproval && !plan.is_reject" label="На доработку" icon="pi pi-times" @click="openRejectPlan"
+        <Button v-if="isApproval" :label="$t('workPlan.toCorrect')" icon="pi pi-times"
+                @click="openRejectPlan"
                 class="p-button p-button-danger p-ml-2"/>
       </div>
 
       <div class="card">
-        <h5>{{ plan.work_plan_name }}</h5>
-        <WorkPlanApproveStep style="height: 200px" now-step="1" direction="vertical" :step-list="approvals" />
-<!--        <WorkPlanApproveStatus :options="approvals"></WorkPlanApproveStatus>-->
-        <Message severity="success">Dynamic Success Message</Message>
+        <h5>{{ plan.work_plan_name }} <span :class="'status-badge status-' + plan.status.work_plan_status_id">{{ $i18n.locale === "kz" ? plan.status.name_kk : $i18n.locale === "ru" ? plan.status.name_ru : plan.status.name_en }}</span></h5>
+        <!--        <WorkPlanApproveStep style="height: 200px" now-step="1" direction="vertical" :step-list="approvals" />-->
+        <!--        <WorkPlanApproveStatus :options="approvals"></WorkPlanApproveStatus>-->
+        <Timeline :value="approvals">
+          <template #content="slotProps">
+            <div v-for="(item, index) of slotProps.item" :key="index">
+              {{ item.user.fullName }}
+              <i v-if="item.is_success" class="pi pi-check-circle p-ml-2 p-message-success"
+                 style="font-size: 1.2rem;color: #3eaf7c"></i>
+              <i v-if="!item.is_success" class="pi pi-spinner p-ml-2" style="font-size: 1.2rem;color: #c63737"></i>
+            </div>
+          </template>
+        </Timeline>
       </div>
       <div class="card">
         <object src="#toolbar=0" style="width: 100%; height: 1000px" v-if="source" type="application/pdf"
@@ -21,10 +41,10 @@
       </div>
     </div>
 
-    <Dialog header="Отправить на корректировку" v-model:visible="showRejectPlan" :style="{width: '450px'}"
+    <Dialog :header="$t('workPlan.toCorrect')" v-model:visible="showRejectPlan" :style="{width: '450px'}"
             class="p-fluid">
       <div class="p-field">
-        <label>Комментарий</label>
+        <label>{{ $t('common.comment') }}</label>
         <Textarea inputId="textarea" rows="3" cols="30" v-model="rejectComment"></Textarea>
       </div>
       <template #footer>
@@ -41,12 +61,9 @@
 import axios from "axios";
 import {getHeader, signerApi, smartEnuApi} from "@/config/config";
 import {NCALayerClient} from "ncalayer-js-client";
-import WorkPlanApproveStatus from "@/components/work_plan/WorkPlanApproveStatus";
-import WorkPlanApproveStep from "@/components/work_plan/WorkPlanApproveStep";
 
 export default {
   name: "WorkPlanView",
-  components: {WorkPlanApproveStep},
   data() {
     return {
       source: null,
@@ -64,18 +81,11 @@ export default {
       isLast: false,
       loading: false,
       user: null,
-      stepperOptions: {
-        headers: [
-          {title: 'Title One'},
-          {title: 'Title Two'},
-          {title: 'Title Three'},
-          {title: 'Title Four'}
-        ],
-        prevText: 'Previous',
-        nextText: 'Next'
-      },
       approval_users: [],
-      approvals: []
+      approvals: [],
+      isPlanApproved: false,
+      signatures: null,
+      isPlanCreator: false
     }
   },
   created() {
@@ -86,27 +96,15 @@ export default {
   },
   methods: {
     getFile() {
-      axios.get(signerApi + `/documents/${this.plan.doc_id}`).then(resp => {
-        axios.post(smartEnuApi + `/workPlan/getWorkPlanFile`,
-            {file_path: resp.data.filePath},
-            {headers: getHeader()}).then(res => {
-          if (res.data) {
-            this.source = `data:application/pdf;base64,${res.data}`;
-            this.document = res.data;
-          }
-        }).catch(error => {
-          if (error.response.status === 401) {
-            this.$store.dispatch("logLout");
-          } else {
-            this.$toast.add({
-              severity: "error",
-              summary: error,
-              life: 3000,
-            });
-          }
-        });
+      axios.post(smartEnuApi + `/workPlan/getWorkPlanFile`,
+          {doc_id: this.plan.doc_id},
+          {headers: getHeader()}).then(res => {
+        if (res.data) {
+          this.source = `data:application/pdf;base64,${res.data}`;
+          this.document = res.data;
+        }
       }).catch(error => {
-        if (error.response.status === 401) {
+        if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
           this.$toast.add({
@@ -132,7 +130,7 @@ export default {
             }
             this.loading = false;
           }).catch(error => {
-        if (error.response.status === 401) {
+        if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
           this.$toast.add({
@@ -148,7 +146,9 @@ export default {
       axios.get(smartEnuApi + `/workPlan/getApprovalUsers/${parseInt(this.work_plan_id)}`)
           .then(res => {
             if (res.data) {
-              const d = res.data
+              this.approvals = [];
+              const d = res.data;
+              this.isPlanApproved = d.every(x => x.is_success);
               const unique = [...new Set(d.map(item => item.stage))];
               unique.forEach(r => {
                 let f = d.filter(x => x.stage === r);
@@ -158,7 +158,7 @@ export default {
               this.init();
             }
           }).catch(error => {
-        if (error.response.status === 401) {
+        if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
           this.$toast.add({
@@ -170,19 +170,15 @@ export default {
       });
     },
     getSignatures() {
-      axios.get(signerApi + `/signature/signatures/${this.plan.doc_id}`, {headers: getHeader()}).then(res => {
+      axios.post(smartEnuApi + `/workPlan/getSignatures`,
+          {doc_id: this.plan.doc_id},
+          {headers: getHeader()}).then(res => {
         if (res.data) {
           this.signatures = res.data;
           const signUser = res.data.find(x => x.userId === this.loginedUserId);
           if (signUser) {
             this.isApproved = true;
           }
-        } else {
-          this.$toast.add({
-            severity: 'error',
-            summary: this.$t('common.noData'),
-            life: 3000
-          });
         }
       }).catch(error => {
         this.$toast.add({
@@ -198,19 +194,19 @@ export default {
       const prevObj = this.approval_users[currentUser - 1];
       const currentObj = this.approval_users[currentUser];
       const findUserFromSignatures = this.signatures && prevObj ? this.signatures.find(x => x.userId === prevObj.user.id) : null;
-      if (prevObj == null && !currentObj.is_success) {
+      if (prevObj == null && currentObj && !currentObj.is_success) {
         this.isApproval = true;
-      } else if (prevObj && currentObj.stage === prevObj.stage && !findUserFromSignatures) {
+      } else if (prevObj && currentObj && currentObj.stage === prevObj.stage && !findUserFromSignatures) {
         this.isApproval = true;
-      } else if (prevObj && prevObj.is_success && !currentObj.is_success && prevObj.stage === currentObj.stage) {
+      } else if (prevObj && prevObj.is_success && currentObj && !currentObj.is_success && prevObj.stage === currentObj.stage) {
         this.isApproval = true;
-      } else if (currentObj.stage !== prevObj.stage && this.approval_users.filter(x => x.stage === 1 && x.is_success === true).length > 0) {
+      } else if (prevObj && currentObj && currentObj.stage !== prevObj.stage && this.approval_users.filter(x => x.stage === 1 && x.is_success === true).length > 0) {
         this.isApproval = true;
       } else {
         this.isApproval = false;
       }
 
-      if (last.stage === currentObj.stage) {
+      if (currentObj && last.stage === currentObj.stage) {
         this.isLast = true;
       }
       /*const findApprovalUser = this.approval_users?.find(x => x.user_id === this.loginedUserId);
@@ -246,8 +242,13 @@ export default {
     },
     rejectPlan() {
       this.loading = true;
-      this.plan.comment = this.rejectComment;
-      axios.post(smartEnuApi + '/workPlan/reject', this.plan,
+      axios.post(smartEnuApi + '/workPlan/reject',
+          {
+            comment: this.rejectComment,
+            work_plan_id: parseInt(this.work_plan_id),
+            doc_id: this.plan.doc_id,
+            work_plan_name: this.plan.work_plan_name
+          },
           {headers: getHeader()}
       ).then(res => {
         if (res.data.is_success) {
@@ -257,7 +258,7 @@ export default {
           this.$router.push({name: 'WorkPlanEvents', params: {id: this.plan.work_plan_id}});
         }
       }).catch(error => {
-        if (error.response.status === 401) {
+        if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
           this.$toast.add({
@@ -275,95 +276,107 @@ export default {
     closeModal() {
       this.showRejectPlan = false;
     },
-    /*sendDoc() {
-      axios.post(signerApi + '/documents', {
-        id: null,
-        name: "test name",
-      }, {headers: getHeader()}).then((response) => {
-        if (response.data.id !== null || response.data.id !== '') {
-          this.documentID = response.data.uuid
-          this.setDocHistory(response.data)
-        } else {
-          this.$toast.add({
-            severity: 'error',
-            summary: this.$t('ncasigner.failToSendDoc'),
-            life: 3000
-          });
-        }
-      });
-    },
-    setDocHistory(document) {
-      axios.post(signerApi + '/documents/history', {
-        id: null,
-        stateId: 1,
-        documentUuid: document.uuid,
-        setterId: this.loginedUserId
-      }, {headers: getHeader()}).then((response) => {
-        if (response.data.id !== null || response.data.id !== '') {
-          console.log(response.data)
-          this.sendSignature(response.data)
-        } else {
-          this.$toast.add({
-            severity: 'error',
-            summary: this.$t('ncasigner.failToSendDoc'),
-            life: 3000
-          });
-        }
-      });
-    },*/
     sendSignature() {
-      axios.post(signerApi + '/signature', {
-        iin: this.user.IIN,
-        rightType: "individual",
-        documentSigning: {
-          userId: this.loginedUserId,
-          documentUuid: this.plan.doc_id,
-          signature: this.CMSSignature
-        }
+      axios.post(smartEnuApi + '/workPlan/signature', {
+        uuid: this.plan.doc_id,
+        sign: this.CMSSignature,
+        work_plan_id: parseInt(this.work_plan_id),
+        is_last: this.isLast
       }, {headers: getHeader()}).then((response) => {
-        if (response.data && response.data.success) {
-          axios.post(smartEnuApi + '/workPlan/successApprove', {
-            work_plan_id: parseInt(this.work_plan_id)
-          }, {headers: getHeader()}).then(res => {
-            if (res.data.is_success) {
-              this.$toast.add({
-                severity: "success",
-                summary: 'Успешно!',
-                life: 3000,
-              });
-              this.getSignatures();
-              this.getWorkPlanApprovalUsers();
-            }
-          }).catch(error => {
-            if (error.response.status === 401) {
-              this.$store.dispatch("logLout");
-            } else {
-              this.$toast.add({
-                severity: "error",
-                summary: error,
-                life: 3000,
-              });
-            }
-          })
-        } else {
-          this.$toast.add({severity: 'error', summary: this.$t(response.data.errorMessage), life: 3000});
+        console.log(response)
+        if (response.data.is_success) {
+          this.$toast.add({
+            severity: "success",
+            summary: this.$t('ncasigner.success.signSuccess'),
+            life: 3000,
+          });
+          this.getPlan();
+          this.getSignatures();
+          this.getWorkPlanApprovalUsers();
         }
       }).catch(error => {
-        if (error.response.status === 401) {
+        if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
           this.$toast.add({
             severity: "error",
-            summary: error,
+            summary: this.$t(error.response.data),
             life: 3000,
           });
         }
       });
     },
+    reapproveConfirmDialog() {
+      this.$confirm.require({
+        message: this.$t('common.confirmation'),
+        header: this.$t('common.confirm'),
+        icon: 'pi pi-info-circle',
+        accept: () => {
+          this.reapprove();
+        }
+      });
+    },
+    reapprove() {
+      axios.post(smartEnuApi + '/workPlan/reapprove', {
+        work_plan_id: parseInt(this.work_plan_id),
+        doc_id: this.plan.doc_id,
+        work_plan_name: this.plan.work_plan_name
+      }, {headers: getHeader()}).then((response) => {
+        console.log(response)
+        if (response.data.is_success) {
+          this.emitter.emit("planSentToReapprove", true);
+          this.$router.push({name: 'WorkPlan'});
+        }
+      }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: this.$t(error.response.data),
+            life: 3000,
+          });
+        }
+      });
+    },
+    viewSignatures() {
+      this.$router.push({name: 'DocSignaturesInfo', params: { uuid: this.plan.doc_id }})
+    },
   }
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+::v-deep(.p-timeline-event-opposite) {
+  flex: 0;
+}
 
+.status-badge {
+  border-radius: 2px;
+  padding: .25em .5rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: .3px;
+
+  &.status-4 {
+    background: #C8E6C9;
+    color: #256029;
+  }
+
+  &.status-3 {
+    background: #FFCDD2;
+    color: #C63737;
+  }
+
+  &.status-2 {
+    background: #FEEDAF;
+    color: #8A5340;
+  }
+
+  &.status-1 {
+    background: #B3E5FC;
+    color: #23547B;
+  }
+}
 </style>

@@ -1,5 +1,11 @@
 export default {
     common: {
+        chooseCert:"Choose the certificate",
+        
+        newPasswordError:"Passwords are not identical or character count is less than 5 symbol",
+        changePassword:"Change password",
+        newPassword:"Enter new password",
+        newPasswordRe:"Repeat new password",
         administration: 'Administration',
         academicDegree: "Academic degree",
         academicTitle: "Academic title",
@@ -12,6 +18,7 @@ export default {
             sendToApprove: 'Send to Approve',
             approve: 'Approve',
             publish: 'Publish',
+            reApprove: 'Reapprove'
         },
         cabinet: 'Personal account',
         login: "login",
@@ -19,6 +26,7 @@ export default {
         enter: "Type in",
         enterLogin: "Enter IIN or platonus mail",
         enterPassword: "Enter password",
+        export: "Export",
         add: "Add",
         edit: "edit",
         orgname: "L.N. Gumilyov Eurasian National University",
@@ -28,15 +36,20 @@ export default {
         department: "department",
         diplomNumber: "Diplom number",
         docFormat: "in doc format",
+        downloadPassword: "Download password",
+        voteKeyword: "Password to check voice",
         pdfFormat: "in pdf format",
         close: "close",
         name : "Name",
         createNew: "Create",
         created: "Created",
         createdBy: "Autor",
+        checkMyVoice: "Check my voice",
+        yourVoice: "Your vote: ",
         graduate: "Graduate",
         faculty: "Faculty",
         cafedra: "Кафедра",
+        choose: "Choose",
         graduationyear: "Start of study",
         admissionyear: "Finish of study",
         fullName: "Full name",
@@ -65,6 +78,8 @@ export default {
         cancel: "Cancel",
         code: "Code",
         main: "Main",
+        meetingUrl: "Link to online meeting",
+        meetingPlace: "Meeting place",
         myData: "My details",
         myResume: 'My resume',
         theResume: 'Resume',
@@ -73,11 +88,13 @@ export default {
         nameInQazaq: "Name in qazaq",
         nameInRussian: "Name in russian",
         nameInEnglish: "Name in english",
+        noComment: "No comment",
         noData: "No data",
         null : "unknown",
         number: "Number",
         other:  "Other",
         order: "Order",
+        reserve: "Reserve",
         confirm: "Confirmation",
         confirmation: "Are you sure you want to proceed?",
         contentInQazaq: "Content in qazaq",
@@ -99,13 +116,22 @@ export default {
         password: "Password",
         person: "Person",
         personal: "Staff",
+        protocol: "Protocol",
         requiredField: "Required field",
         revision: "To revision",
         teacher: "Academic personnel",
         student: "Student",
         registration: "Registration",
+        total: "Total",
+        register: "Check in",
+        registered: "Rgistered",
+        vote: "Vote",
+        revote: "Revote",
+        voted: "Voted",
+        voting: "Voting",
         search: "Search",
         showingRecordsCount: "Showing {first} to {last} of {totalRecords} entries",
+        votedFor: "Voted for: {result}",
         doYouWantDelete: "Are you sure to delete this item?",
         startDate: 'Start date',
         endDate: 'End date',
@@ -128,8 +154,11 @@ export default {
             inapproval : "in approval",
             approved: "approved",
             rejected: "rejected",
-            revision: "for revision"
-
+            revision: "for revision",
+            registered: "Registered",
+            notRegistered: "Not registered",
+            notVoted: "Not voted",
+            voted: "Voted",
         },
         message: {
             title: {
@@ -138,6 +167,7 @@ export default {
                 saveError: "Save error",
                 docCreation: "Adding a new catalog"
             },
+            invalidkey: "Wrong password entered",
             notPermissionForApprove: "The selected user does not have the appropriate privileges to reconcile the document",
             fillError: "Not all the data listed. Please fill in all fields!",
             sendToApprovalError: "An error occurred while sending for approval. Check the correctness of the specified data!",
@@ -159,12 +189,26 @@ export default {
             succesSaved: "Saved successfully",
             selectRole: "Plewse, select a role",
             userSuccessInserted: "The user has been successfully created, download the authorization data to send to the user.",
+            selectVariant: "Choose the option you need",
+            userIINExists: "User with same iin already exists",
+
         },
         language: {
             kz: "in kazakh",
             ru: "in russian",
-            en: "in english"
+            en: "in english",
+            ln1: "in kazakh",
+            ln2: "in russian",
+            ln3: "in english"
         },
+        result: "Result",
+        complete: "Complete",
+        perform: "To perform",
+        done: "Done",
+        notDone: "Not done",
+        success: "Success",
+        downloadSignaturesPdf: "Download signatures",
+        signatures: "Signatures"
     },
     bank: {
         title: "Banks",
@@ -252,13 +296,18 @@ export default {
         journal: "Журнал",
         orgdesc: "Organizations we interact with",
         person: "Individuals with whom we interact",
+        preliminary: "preliminary",
+        regnum: "Reg. №",
+        reserveNumber: "Number reservation",
         signer: "Signer",
         signing: "Signing",
         fromtemplate: "From template",
         fromdoc: "From a finished document",
         message: {
             created: "Draft contract has been successfully created"
-        }
+        },
+        setnumber: "Set number",
+
     },
     hdfs: {
         title: "Files",
@@ -448,6 +497,7 @@ export default {
         },
         inactive: "Inactive",
         directionCode: "Code and name of the direction of personnel training",
+        defenseConduct: "Conducting a defense",
         doctorals: "Doctoral students",
         doctoralCard: "Doctoral student card",
         disstitle: "Dissertation title",
@@ -460,18 +510,38 @@ export default {
         secretary: "Scientific secretary",
         advisors: "Scientific consultants",
         reviewers: "Official reviewers",
+        protocol: "VOTING PROTOCOL OF THE DISSERT COUNCIL",
+        permanentMember: "Permanent members",
+        tempMember: "Temporary members",
         meetingTime: "Meeting time",
         defenseLang: "Defense language",
         councilDecision: "Council decision",
+        setMeetingTime: "Schedule a defense day",
+        startRegistration: "Start registration",
+        finishRegistration: "Finish registration",
+        startVoting: "Start voting",
+        finishVoting: "Finish voting",
         validationErrors: {
             selectSpeciality: "Please select a specialty",
             selectDepartment: "Select a faculty",
             selectSecretary: "Please select a scientific secretary",
-            selectMember: "Please select a council memberß",
-            selectCreatedDate: "Select a a created date"
+            selectMember: "Please select a council member",
+            selectCreatedDate: "Select a a created date",
+            selectDoctorals: "Select doctoral students for which the named person is a reviewer"
+        },
+        vote: {
+            v1: "to award the degree of Doctor of Philosophy (PhD) or Doctor of Science",
+            v2: "send the dissertation for revision",
+            v3: "submit the thesis for re-defense",
+            v4: "refuse to award the degree of Doctor of Philosophy (PhD) or Doctor of Science",
+            v5: "TOTAL"
         },
         message: {
             hasSameMember: "The user already has a council membership",
+            saveKey: "Voting is anonymous: we do not store your voting result. Please save or download this password to check your vote in the future. The password is known only to you and is not available for recovery.",
+            notRegistered: "You cannot vote, because you are not registered",
+            enterKey: "Дауысыңызды дешифрлеу үшін дауыс бергенде қолданған кілт сөзді енгізіңіз",
+            votingRestarted: "The dissertataion has been submitted for re-voting",
         },
        
 
@@ -581,6 +651,41 @@ export default {
         },
         rc: {
             title: 'Title'
+        }
+    },
+    workPlan: {
+        plans: "Plans",
+        planName: "Plan Name",
+        addPlan: "Add plan",
+        addEvent: "Add event",
+        eventName: "Event name",
+        approvalUsers: "Responsible persons",
+        quarter: "Quarter",
+        executionResult: "Execution result",
+        attachments: "Attached files",
+        viewPlan: "View plan",
+        reports: "Reports",
+        events: "Events",
+        performEvent: "Perform an event",
+        reportName: "Report name",
+        createReport: "Create report",
+        toCorrect: "Send for correction",
+        editEvent: "Edit Event",
+        errors: {
+            eventNameError: "Enter the name of the event",
+            approvalUserError: "Select the responsible persons",
+            quarterError: "Select a quarter",
+        },
+        message: {
+            eventCreated: "Event created successfully",
+            eventChanged: "Event has been successfully edited",
+            reportSentToApprove: "The report was successfully sent for approval",
+            planSentToApprove: "Plan sent for revision",
+            planCreated: "Plan successfully created",
+        },
+        reportTypes: {
+            year: "Annual",
+            quarter: "Quarterly"
         }
     }
 }

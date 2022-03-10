@@ -13,44 +13,46 @@
                  @sort="onSort($event)">
         <template #header>
           <div class="p-d-flex p-jc-between p-ai-center">
-            <h5 class="p-m-0">Планы</h5>
-<!--            <span class="p-input-icon-left">
-              <i class="pi pi-search"/>
-              <InputText type="search" v-model="searchText" :placeholder="$t('common.search')"/>
-              <Button icon="pi pi-search" class="p-ml-1" @click="getData"/>
-            </span>-->
+            <h5 class="p-m-0">{{ $t('workPlan.addPlan') }}</h5>
+            <!--            <span class="p-input-icon-left">
+                          <i class="pi pi-search"/>
+                          <InputText type="search" v-model="searchText" :placeholder="$t('common.search')"/>
+                          <Button icon="pi pi-search" class="p-ml-1" @click="getData"/>
+                        </span>-->
           </div>
         </template>
         <template #empty> {{ $t('common.noData') }}</template>
         <template #loading> {{ $t('common.loading') }}</template>
-        <Column field="content" header="Название плана" sortable>
+        <Column field="content" :header="$t('workPlan.planName')" sortable>
           <template #body="{ data }">
             <a href="javascript:void(0)" @click="navigateToEvent(data)">{{ data.work_plan_name }}</a>
           </template>
         </Column>
-<!--        <Column field="status" header="Статус">
+        <Column field="status" :header="$t('common.status')">
           <template #body="{ data }">
-            <span :class="'customer-badge status-' + data.status.work_plan_status_id">{{ data.status.name_ru }}</span>
-          </template>
-        </Column>-->
-        <Column field="actions" header="Действие">
-          <template #body="{ data }">
-            <Button type="button" v-if="isCurrentUserApprove && data.status.work_plan_status_id === 2" icon="pi pi-check" class="p-button-success p-mr-2"
-                    label="Подписать" @click="openAcceptModal(data.id)"></Button>
-            <Button type="button" v-if="isCurrentUserApprove && data.status.work_plan_status_id === 2" icon="pi pi-times-circle" class="p-button-danger p-mr-2"
-                    label="Отказать" @click="openRejectModal(data.id)"></Button>
+            <span :class="'customer-badge status-' + data.status.work_plan_status_id">{{ $i18n.locale === "kz" ? data.status.name_kk : $i18n.locale === "ru" ? data.status.name_ru : data.status.name_en }}</span>
           </template>
         </Column>
+<!--        <Column field="actions" header="">
+          <template #body="{ data }">
+            <Button type="button" v-if="isCurrentUserApprove && data.status.work_plan_status_id === 2"
+                    icon="pi pi-check" class="p-button-success p-mr-2"
+                    label="Подписать" @click="openAcceptModal(data.id)"></Button>
+            <Button type="button" v-if="isCurrentUserApprove && data.status.work_plan_status_id === 2"
+                    icon="pi pi-times-circle" class="p-button-danger p-mr-2"
+                    label="Отказать" @click="openRejectModal(data.id)"></Button>
+          </template>
+        </Column>-->
       </DataTable>
     </div>
 
-    <Dialog header="Принять" v-model:visible="isAcceptModal" :style="{width: '450px'}" class="p-fluid">
+<!--    <Dialog :header="$t('common.action.accept')" v-model:visible="isAcceptModal" :style="{width: '450px'}" class="p-fluid">
       <div class="p-field">
       </div>
       <template #footer>
         <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
                 @click="closeModal"/>
-        <Button label="Подписать" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2" @click="approve"/>
+        <Button :label="$t('ncasigner.sign')" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2" @click="approve"/>
       </template>
     </Dialog>
 
@@ -65,7 +67,7 @@
         <Button label="Отправить" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2"
                 @click="rejectPlan"/>
       </template>
-    </Dialog>
+    </Dialog>-->
   </div>
 </template>
 
@@ -95,6 +97,12 @@ export default {
         this.getPlans();
       }
     });
+    this.emitter.on('planSentToReapprove', (data) => {
+      if (data === true) {
+        this.getPlans();
+      }
+    });
+
   },
   created() {
     this.getPlans();
@@ -108,16 +116,16 @@ export default {
           .then(res => {
             this.data = res.data;
             let localUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
-            this.data.forEach(d => {
-              /*d.approval_users.forEach(e => {
+            /*this.data.forEach(d => {
+              /!*d.approval_users.forEach(e => {
                 console.log(e)
                 if (e.id === localUserId) {
                   this.isCurrentUserApprove = true
                 }
-              });*/
-            });
+              });*!/
+            });*/
           }).catch(error => {
-        if (error.response.status === 401) {
+        if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
           this.$toast.add({
@@ -136,14 +144,14 @@ export default {
         if (res.data.is_success) {
           this.$toast.add({
             severity: "success",
-            summary: "План отправлен на доработку",
+            summary: this.$t('workPlan.message.planSentToApprove'),
             life: 3000,
           });
         }
         this.isRejectModal = false;
         this.getPlans();
       }).catch(error => {
-        if (error.response.status === 401) {
+        if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
           this.$toast.add({
@@ -156,7 +164,7 @@ export default {
     },
     navigateToEvent(event) {
       localStorage.setItem('workPlan', JSON.stringify(event));
-      this.$router.push({ name: 'WorkPlanEvents', params: { id: event.work_plan_id }});
+      this.$router.push({name: 'WorkPlanEvents', params: {id: event.work_plan_id}});
     },
     openAcceptModal(id) {
       this.isAcceptModal = true;
@@ -183,7 +191,12 @@ export default {
   font-size: 12px;
   letter-spacing: .3px;
 
-  &.status-3 {
+  &.status-5 {
+    background: #B48B7D;
+    color: #fff;
+  }
+
+  &.status-4 {
     background: #C8E6C9;
     color: #256029;
   }

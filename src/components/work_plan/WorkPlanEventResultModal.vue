@@ -1,20 +1,22 @@
 <template>
-  <Button
-      type="button"
-      icon="pi pi-eye"
-      class="p-button p-button-info p-ml-2"
-      label="Посмотреть результат"
-      @click="openModal"
-  ></Button>
+  <div>
+    <Button
+        type="button"
+        icon="pi pi-eye"
+        class="p-button p-button-info p-ml-1 p-mb-1"
+        label=""
+        @click="openModal"
+    ></Button>
+  </div>
 
-  <Dialog header="Результат выполнения" v-model:visible="eventResultModal" :style="{width: '450px'}"
+  <Dialog :header="$t('workPlan.executionResult')" v-model:visible="eventResultModal" :style="{width: '450px'}"
           class="p-fluid">
     <div class="p-field" v-if="data.event_result">
-      <label>Результат</label>
+      <label>{{ $t('common.result') }}</label>
       <Textarea v-model="data.event_result" disabled style="resize: vertical"></textarea>
     </div>
     <div class="p-field" v-if="data.event_result_file">
-      <label>Прикрепленные файлы</label>
+      <label>{{ $t('workPlan.attachments') }}</label>
       <div>
         <Button
             icon="pi pi-download"
@@ -51,7 +53,7 @@ export default {
       this.eventResultModal = false;
     },
     downloadFile() {
-      axios.post(smartEnuApi + `/workPlan/getWorkPlanFile`,
+      axios.post(smartEnuApi + `/workPlan/getWorkPlanResultFile`,
           {file_path: this.data.event_result_file},{headers: getHeader()}).then(res => {
         const link = document.createElement("a");
         link.href = "data:application/octet-stream;base64," + res.data;
@@ -60,7 +62,7 @@ export default {
         link.click();
         URL.revokeObjectURL(link.href);
       }).catch((error) => {
-        if (error.response.status === 401) {
+        if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
           this.$toast.add({
