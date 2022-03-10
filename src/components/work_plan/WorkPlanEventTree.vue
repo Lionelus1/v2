@@ -48,7 +48,7 @@
       </template>
     </Column>
     <template #expansion="slotProps">
-      <WorkPlanEventTree v-if="slotProps.data.children" :plan-creator="isPlanCreator" :finish="isFinish" :approval-sent="isPlanSentApproval" :child="slotProps.data.children" />
+      <WorkPlanEventTree v-if="slotProps.data.children" :plan-creator="isPlanCreator" :finish="isFinish" :approval-sent="isPlanSentApproval" :child="slotProps.data.children" :plan="plan" />
     </template>
   </DataTable>
 </template>

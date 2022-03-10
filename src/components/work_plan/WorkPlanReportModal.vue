@@ -111,6 +111,8 @@ export default {
     },
     closeModal() {
       this.selectQuarterModal = false;
+      this.quarter = null;
+      this.type = null;
     }
   }
 }
