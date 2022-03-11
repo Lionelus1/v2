@@ -263,6 +263,7 @@ const routes = [
                 path: 'sign/:uuid',
                 name: 'DocSignaturesInfo',
                 component: load('DocSignaturesInfo'),
+                beforeEnter: ifAuthenticated,
             },
             {
                 path: '/cabinet',
