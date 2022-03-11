@@ -1,25 +1,24 @@
 <template>
   <!-- РЕЗЮМЕ ҚҰРУ -->
-  <div>
-    <Toolbar class="p-mb-4">
-      <template #start>
-        <Button v-if="toolbar.start" :label="$t('hr.resume.create')" icon="pi pi-plus" :onclick="createCandidate"/>
-      </template>
-      <template #end>
-        <Button v-if="toolbar.end"
-                icon="pi pi-times"
-                class="p-button-danger"
-                :label="$t('hr.resume.delete')"
-                :onclick="deleteCandidate"/>
-      </template>
-    </Toolbar>
-  </div>
+  <Toolbar class="p-mb-4" style="height:42px;margin-top:-7px;margin-left:-14px;margin-right:-14px">
+    <template #start>
+      <Button v-if="toolbar.start" style="margin-top:-10px" :label="$t('hr.resume.create')" icon="pi pi-plus" :onclick="createCandidate"/>
+    </template>
+    <template #end>
+      <Button v-if="toolbar.end"
+              icon="pi pi-times"
+              class="p-button-danger"
+              style="margin-top:-10px"
+              :label="$t('hr.resume.delete')"
+              :onclick="deleteCandidate"/>
+    </template>
+  </Toolbar>
   <!-- РЕЗЮМЕ  -->
   <div class="card" v-if="candidate !== null && candidate !== {}">
     <div class="card">
       <div class="p-grid p-formgrid">
-        <div class="p-col-12 p-lg-9">
-          <ResumeView v-if="view" :value="candidate" :readonly="false"/>
+        <div class="p-col-12 p-lg-9 card-border">
+          <ResumeView  v-if="view" :value="candidate" :readonly="false"/>
         </div>
       </div>
     </div>
@@ -96,6 +95,9 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style>
+.card-border {
+  border-right: 2px solid #dee2e6;
+  border-radius: 0;
+}
 </style>

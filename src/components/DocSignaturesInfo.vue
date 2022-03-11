@@ -1,19 +1,24 @@
 <template>
-  <div>
-    <div class="p-col-12">
+  <div v-if="!loading">
+    <div class="p-col-12" v-if="isShow">
       <div class="card">
         <Button :label="$t('common.downloadSignaturesPdf')" icon="pi pi-download"
                 @click="downloadSignatures"
                 class="p-button p-ml-2"/>
       </div>
-      <div class="card">
-        <work-plan-qr-pdf ref="qrToPdf" v-if="signatures" :signatures="signatures" :title="docInfo.name"></work-plan-qr-pdf>
+      <div class="card" v-if="signatures">
+        <work-plan-qr-pdf ref="qrToPdf" :signatures="signatures" :title="docInfo.name"></work-plan-qr-pdf>
 <!--        <div v-if="signatures" class="p-m-2">
           <div v-for="(item, index) of signatures" :key="index" style="border: 1px solid #000; padding: 5px; margin: 5px;display: inline-block;">
             <p v-if="item.user"><b>{{item.user.fullName}}</b> ({{$t('ncasigner.IIN')}} <em>{{item.user.IIN}}</em>) <br/> {{$t('ncasigner.signed')}} {{ new Date(item.signDate).toLocaleDateString() + ", " + new Date(item.signDate).toLocaleTimeString() }}</p>
             <qrcode-vue class="p-m-2" margin="1" size="300" render-as="svg"  :value="item.signature" level="L"></qrcode-vue>
           </div>
         </div>-->
+      </div>
+    </div>
+    <div class="p-col-12" v-else>
+      <div class="card">
+        <Message severity="error">{{ $t('common.message.accessDenied') }}</Message>
       </div>
     </div>
   </div>
@@ -34,7 +39,10 @@ export default {
       signatures: null,
       plan: null,
       doc_id: this.$route.params.uuid,
-      docInfo: null
+      docInfo: null,
+      loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID,
+      isShow: false,
+      loading: true
     }
   },
   created() {
@@ -47,7 +55,12 @@ export default {
             if (res.data) {
               this.docInfo = res.data;
               this.signatures = res.data.signatures;
+              this.isShow = this.signatures.some(x => x.userId === this.loginedUserId);
+              this.signatures.map(e => {
+                e.sign = this.chunkString(e.signature, 1200)
+              });
             }
+            this.loading = false;
           }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
@@ -58,6 +71,7 @@ export default {
             life: 3000,
           });
         }
+        this.loading = false;
       });
     },
     getSignatures() {
@@ -99,6 +113,9 @@ export default {
       };
       const pdfContent = this.$refs.qrToPdf.$refs.qrToPdf;
       html2pdf().set(pdfOptions).from(pdfContent).save();
+    },
+    chunkString(str, length) {
+      return str.match(new RegExp('.{1,' + length + '}', 'g'));
     }
   }
 }

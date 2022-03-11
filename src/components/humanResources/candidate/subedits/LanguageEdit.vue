@@ -73,13 +73,27 @@
             >{{ $t("common.requiredField") }}</small>
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
-            <label>{{ $t('hr.lang.c') }}</label>
+            <label>{{ $t('hr.lang.cs') }}</label>
             <Textarea v-model="value.certificate"
                       class="p-mt-2"
                       :readonly="readonly"
                       :autoResize="true"
                       type="text"
                       rows="3" cols="30"/>
+          </div>
+          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+            <label>{{ $t('hr.lang.c') }}</label>
+            <FileUpload ref="form" mode="basic"
+                        class="p-mt-2"
+                        :customUpload="true"
+                        accept="image/*"
+                        @uploader="upload($event)" :auto="true"
+                        v-bind:chooseLabel="$t('ncasigner.chooseFile')"/>
+            <InlineMessage severity="info"
+                           class="p-mt-2"
+                           show v-if="file">
+              {{ $t('ncasigner.chosenFile', {fn: file ? file.name : ""}) }}
+            </InlineMessage>
           </div>
         </div>
       </div>
@@ -103,6 +117,7 @@ export default {
   data() {
     return {
       knowledgeLevels: [],
+      file: null,
       states: [
         {id: true, name: 'Свободное'},
         {id: false, name: 'Ограниченное'},
@@ -122,11 +137,15 @@ export default {
         language: false,
         readingLevel: false,
         speakingLevel: false,
-        writingLevel: false,
+        writingLevel: false
       }
     };
   },
   methods: {
+    upload(event) {
+      this.file = event.files[0];
+    },
+
     validateForm() {
       this.validation.language = !this.value.language || this.value.language == ""
       this.validation.readingLevel = !this.value.readingLevel || this.value.readingLevel == ""
@@ -157,11 +176,14 @@ export default {
       });
     },
     action() {
+      const fd = new FormData();
+      fd.append("lang", JSON.stringify(this.value))
+      fd.append("cert", this.file);
       if (this.validateForm()) {
         let path = !this.value.id ? "/candidate/language/create" : "/candidate/language/update"
         console.log("VALUE IS ", this.value)
         axios
-            .post(smartEnuApi + path, this.value, {headers: getHeader(),})
+            .post(smartEnuApi + path, fd, {headers: getHeader(),})
             .then(res => {
               this.emitter.emit("language", true);
             }).catch(error => {

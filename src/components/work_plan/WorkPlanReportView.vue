@@ -2,7 +2,7 @@
   <div>
     <div class="p-col-12">
       <div class="card" v-if="isPlanCreator && !isReportSentApproval">
-        <WorkPlanReportApprove :doc-id="doc_id" :report="report_id"></WorkPlanReportApprove>
+        <WorkPlanReportApprove :doc-id="report.doc_id" :report="report_id"></WorkPlanReportApprove>
 <!--        <Button label="" icon="pi pi-download" @click="download"
                 class="p-button p-button-info p-ml-2"/>-->
       </div>
@@ -19,7 +19,7 @@
                 @click="openRejectPlan"
                 class="p-button p-button-danger p-ml-2"/>
       </div>
-      <div class="card" v-if="approval_users">
+      <div class="card" v-if="approval_users && report.status">
         <h5>{{ report_name }}
           <span v-if="report" :class="'customer-badge status-' + report.status.work_plan_status_id">
               {{
@@ -45,7 +45,7 @@
     </div>
 
     <div v-if="items">
-      <ReportPdf ref="report" :data="items" :report-title="report_name"
+      <ReportPdf ref="report" :data="items" :report-title="report.report_name"
                  style="display: none;"></ReportPdf>
     </div>
 
@@ -92,13 +92,18 @@ export default {
       CMSSignature: null,
       documentByteArray: null,
       isApproved: false,
-      reportType: null,
       quarter: null,
       report_name: null,
       items: null,
       report_id: null,
       doc_id: null,
-      report: null,
+      report: {
+        work_plan_id: null,
+        quarter: null,
+        report_name: null,
+        report_type: null,
+        doc_id: null
+      },
       isPlanCreator: false,
       pdfOptions: {
         margin: 0.5,
@@ -130,32 +135,27 @@ export default {
   },
   created() {
     this.report_id = parseInt(this.$route.params.id);
-    this.work_plan_id = parseInt(this.$route.params.work_plan_id);
-    this.quarter = parseInt(this.$route.params.quarter);
-    this.report_name = this.$route.params.name;
-    this.reportType = parseInt(this.$route.params.type);
-    this.doc_id = this.$route.params.doc_id;
+    this.report.work_plan_id = parseInt(this.$route.params.work_plan_id);
+    this.report.quarter = parseInt(this.$route.params.quarter);
+    this.report.report_name = this.$route.params.name;
+    this.report.report_type = parseInt(this.$route.params.type);
+    this.report.doc_id = this.$route.params.doc_id;
     this.loginedUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
     //this.plan = JSON.parse(localStorage.getItem("workPlan"));
     //this.getReport();
     this.getReport();
-    this.getPlan();
-    this.getFile();
-    this.getReportApprovalUsers();
   },
   mounted() {
     this.emitter.on("reportSentToApprove", (data) => {
       if (data) {
-        this.getFile();
         this.getReport();
-        this.getReportApprovalUsers();
       }
     });
   },
   methods: {
     getPlan() {
       this.loading = true;
-      axios.get(smartEnuApi + `/workPlan/getWorkPlanById/${this.work_plan_id}`, {headers: getHeader()})
+      axios.get(smartEnuApi + `/workPlan/getWorkPlanById/${this.report.work_plan_id}`, {headers: getHeader()})
           .then(res => {
             if (res.data) {
               this.plan = res.data;
@@ -182,6 +182,9 @@ export default {
       axios.get(smartEnuApi + `/workPlan/getWorkPlanReportById/${this.report_id}`, {headers: getHeader()})
           .then(res => {
             this.report = res.data;
+            this.getPlan();
+            this.getFile();
+            this.getReportApprovalUsers();
           }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
@@ -196,7 +199,7 @@ export default {
     },
     getFile() {
       axios.post(smartEnuApi + `/workPlan/getWorkPlanReportFile`,
-          {doc_id: this.doc_id},
+          {doc_id: this.report.doc_id},
           {headers: getHeader()}).then(res => {
         if (res.data) {
           this.source = `data:application/pdf;base64,${res.data}`;
@@ -239,9 +242,10 @@ export default {
       });
     },
     getData() {
+      console.log("TYPE = ", this.report.report_type, " <> QUARTER = ", this.report.quarter)
       axios.post(smartEnuApi + `/workPlan/getWorkPlanReportData`, {
-        work_plan_id: parseInt(this.work_plan_id),
-        quarter: this.reportType === 2 ? this.quarter : null
+        work_plan_id: parseInt(this.report.work_plan_id),
+        quarter: this.report.report_type === 2 ? this.report.quarter : null
       }, {headers: getHeader()}).then(res => {
         ///// FLATTEN ARRAY
         this.items = treeToList(res.data, 'children');
@@ -273,7 +277,7 @@ export default {
               this.approvals = [];
               this.isReportSentApproval = true;
               const d = res.data;
-              this.isPlanReportApproved = d.every(x => x.is_success);
+              this.isPlanReportApproved = d.some(x => x.is_success);
               //console.log(d.every(x => x.is_success === true));
               const unique = [...new Set(d.map(item => item.stage))];
               unique.forEach(r => {
@@ -319,7 +323,7 @@ export default {
     },
     getSignatures() {
       axios.post(smartEnuApi + `/workPlan/getSignatures`,
-          {doc_id: this.plan.doc_id},
+          {doc_id: this.report.doc_id},
           {headers: getHeader()}).then(res => {
         if (res.data) {
           this.signatures = res.data;
@@ -364,7 +368,7 @@ export default {
     },
     sendSignature() {
       axios.post(smartEnuApi + '/workPlan/reportSignature', {
-        uuid: this.doc_id,
+        uuid: this.report.doc_id,
         sign: this.CMSSignature,
         report_id: this.report_id,
         is_last: this.isLast
@@ -396,9 +400,9 @@ export default {
       if (this.rejectComment) {
         this.reject.comment = this.rejectComment;
       }
-      this.reject.doc_id = this.doc_id;
+      this.reject.doc_id = this.report.doc_id;
       this.reject.report_id = this.report_id;
-      this.reject.report_name = this.report_name;
+      this.reject.report_name = this.report.report_name;
       axios.post(smartEnuApi + '/workPlan/rejectReport', this.reject,
           {headers: getHeader()}
       ).then(res => {
@@ -422,7 +426,7 @@ export default {
       })
     },
     viewSignatures() {
-      this.$router.push({name: 'DocSignaturesInfo', params: { uuid: this.doc_id }})
+      this.$router.push({name: 'DocSignaturesInfo', params: { uuid: this.report.doc_id }})
     },
     openRejectPlan() {
       this.showRejectPlan = true;

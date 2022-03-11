@@ -22,6 +22,7 @@ export default {
             publish: 'Жариялау',
             reApprove: 'Қайта бекіту'
         },
+        cabinet: 'Жеке кабинет',
         login: "Кіру",
         logout: "Шығу",
         enter: "Теріңіз",
@@ -83,6 +84,8 @@ export default {
         meetingPlace: "Жиналыс өтетін орын",
         myData: "Менің мәліметтерім",
         myResume: 'Менің түйіндемем',
+        theResume: 'Түйіндемем',
+        myVacancy: 'Менің вакансияларым',
         nameIn: "Атауы",
         nameInQazaq: "Қазақша атауы",
         nameInRussian: "Орысша атауы",
@@ -143,6 +146,7 @@ export default {
         workPlace: "Жұмыс орны",
         role: "Рөлі",
         publishDate: "Жарияланған күні мен уақыты:",
+        pDate: "Жарияланған күні",
         deadlineDate: "Құжаттарды қабылдау мерзімі",
         organizationNameLabel: "Мекеменің атауы",
         departmentNameLabel: "Құрылымдық бөлімшенің атауы",
@@ -188,7 +192,7 @@ export default {
             selectRole: "Рөлді таңдаңыз",
             selectVariant: "Керек нұсқаны таңдаңыз",
             userIINExists: "Көрсетілген ЖСН бойынша қолданушы бұрыннан бар",
-
+            accessDenied: "Бұл құжатты көруге құзіретіңіз жоқ!"
         },
         language: {
             kz: "қазақша",
@@ -576,6 +580,32 @@ export default {
         noAnswer: "Жауап берілмеді"
     },
     hr: {
+        action: {
+            interview: 'Сұхбатқа шақыру',
+            hire: 'Қабылдау',
+            notHire: 'Қабылдамау',
+            reserve: 'Резерв',
+            apply: 'Пікір айту',
+            applied: 'Пікір жіберілді',
+            applied2: 'Сіз бұл вакансияға пікір бердіңіз.'
+        },
+        candidates: 'Үміткерлер',
+        candidateResume: 'Үміткердің түйіндемесі',
+        vacancySource: 'Жұмыс туралы ақпарат көзі',
+        motivationLetter: 'Мотивациялық хат',
+        sendMessage: 'Хат жіберу',
+        messageTitle: 'Хаттың тақырыбы',
+        messageBody: 'Хаттың мазмұны',
+        sp: {
+            header: 'Бос лауазымдарға іріктеу процессі бірнеше кезеңдерден тұрады',
+            label1: '– ПОҚ, ӘБҚ және ҒҚ бос лауазымдарына орналасуға кандидаттардың түйіндемелерін қарастыру',
+            label2: '– басқарманың HR маманымен және іріктеуге өтінім жіберген құрылымдық \n' +
+                '                бөлімшенің басшысымен сұхбаттасу;',
+            label3: '– конкурстық комиссиямен сұхбаттасу және конкурс қорытындысын шығару.',
+            agreement: 'Мен ережелерді оқып шықтым және жеке түйіндемемдегі мәліметтердің дұрыстығын растаймын. \n ' +
+                '                Берілген деректерді тексеруге келісемін.',
+            request: 'Өтініш беру'
+        },
         vacancies: "Вакансиялар",
         responsibilitiesLabel: "Функционалдық міндеттері",
         educationLabel: "Білімі",
@@ -585,7 +615,7 @@ export default {
         certificateRequirementsLabel: "Сертификаттардың, дипломдардың болуы",
         personalQualitiesLabel: "Жеке қасиеттері",
         title: {
-            general: '',
+            general: 'Жалпы ақпарат',
             degreeAndTitle: 'Ғылыми дәреже және ғылыми атақ',
             academicDegree: 'Ғылыми дәреже',
             academicTitle: 'Ғылыми атақ',
@@ -603,6 +633,7 @@ export default {
             create: 'Түйіндемені құру',
             delete: 'Түйіндемені өшіру',
         },
+        resumeNorFound: 'Сіздің түйіндемеңіз табылмады. Құрғыңыз келе ме?',
         ad: {
             defensePlace: 'Қорғау орны',
             defenseDate: 'Қорғау күні',
@@ -627,7 +658,8 @@ export default {
             rl: 'Оқу деңгейі',
             wl: 'Жазу деңгейі',
             sl: 'Сөйлеу деңгейі',
-            c: 'Сертификаттар',
+            cs: 'Сертификаттар',
+            c: 'Сертификат',
             native: 'Еркін',
             notNative: 'Шектеулі',
         },

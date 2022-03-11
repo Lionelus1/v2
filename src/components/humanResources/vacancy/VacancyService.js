@@ -4,7 +4,7 @@ import {getHeader, smartEnuApi} from "@/config/config";
 export default class VacancyService {
 
 
-     actions = [
+    actions = [
         {
             alias: 'submit',
             label: 'common.action.submit',
@@ -37,6 +37,39 @@ export default class VacancyService {
         }
     ]
 
+    applyActions = [
+        {
+            alias: 'interview',
+            label: 'hr.action.interview',
+            visible: true,
+        },
+        {
+            alias: 'hire',
+            label: 'hr.action.hire',
+            visible: true,
+        },
+        {
+            alias: 'not-hire',
+            label: 'hr.action.notHire',
+            visible: true,
+        },
+        {
+            alias: 'reserve',
+            label: 'hr.action.reserve',
+            visible: true,
+        }
+    ]
+
+
+    getVacancies(lazyParams) {
+        return axios.post(
+            smartEnuApi + "/vacancy/all",
+            lazyParams,
+            {headers: getHeader(),}
+        )
+    }
+
+
     createOrUpdateVacancy(value, path) {
         return axios.post(
             smartEnuApi + path,
@@ -45,14 +78,67 @@ export default class VacancyService {
         )
     }
 
-    vacancyAction(vacancyId, userId, path) {
+    vacancyAction(vacancyId, path) {
+        console.log(vacancyId + ', ' + path)
         return axios.post(
-            smartEnuApi + path,
+            smartEnuApi + '/vacancy/' + path,
             {
                 id: vacancyId,
+            },
+            {headers: getHeader()}
+        )
+    }
+
+    applyAction(request, path) {
+        console.log(request)
+        console.log(path)
+        return axios.post(
+            smartEnuApi + '/vacancy/apply/' + path,
+            request,
+            {headers: getHeader()}
+        )
+    }
+
+    downloadLetter(vacancyId, userId) {
+        return axios.post(
+            smartEnuApi + '/vacancy/download/letter',
+            {
+                vacancyId: vacancyId,
                 userId: userId
             },
-            {headers: getHeader}
+            {headers: getHeader()}
+        )
+    }
+
+    checkAction(statusId) {
+        console.log(statusId)
+        return axios.post(
+            smartEnuApi + '/vacancy/check/action',
+            {
+                statusId: statusId
+            },
+            {headers: getHeader()}
+        )
+    }
+
+    checkApplyAction(statusId) {
+        console.log(statusId)
+        return axios.post(
+            smartEnuApi + '/vacancy/check/apply/action',
+            {
+                statusId: statusId
+            },
+            {headers: getHeader()}
+        )
+    }
+
+    deleteVacancy(vacancyId) {
+        return axios.post(
+            smartEnuApi + "/vacancy/delete",
+            {id: vacancyId},
+            {headers: getHeader()}
         )
     }
 }
+
+

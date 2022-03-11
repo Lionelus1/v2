@@ -1,22 +1,21 @@
 <template>
   <div>
     <div class="p-col-12" v-if="!loading">
-      <div class="card" v-if="isPlanCreator && isPlanApproved">
-        <Button :label="$t('common.action.reApprove')" icon="pi pi-check"
+      <div class="card" v-if="isPlanApproved && isPlanCreator || (isApproval && isApproved) && plan.status.work_plan_status_id === 4">
+        <Button v-if="isPlanCreator" :label="$t('common.action.reApprove')" icon="pi pi-check"
                 @click="reapproveConfirmDialog"
                 class="p-button p-ml-2"/>
-      </div>
-      <div class="card" v-if="isPlanApproved && isPlanCreator || (isApproval && isApproved)">
         <Button :label="$t('common.signatures')" icon="pi pi-file"
+                v-if="isPlanApproved && isPlanCreator || (isApproval && isApproved)"
                 @click="viewSignatures"
                 class="p-button p-ml-2"/>
       </div>
-      <div class="card" v-if="isApproval && !isApproved">
-        <Button v-if="isApproval && !plan.is_reject"
+      <div class="card" v-if="isApproval && plan.status.work_plan_status_id === 2">
+        <Button v-if="isApproval"
                 :label="isLast ? $t('common.action.approve') : $t('common.action.approve') " icon="pi pi-check"
                 @click="openApprovePlan"
                 class="p-button p-button-success p-ml-2"/>
-        <Button v-if="isApproval && !plan.is_reject" :label="$t('workPlan.toCorrect')" icon="pi pi-times"
+        <Button v-if="isApproval" :label="$t('workPlan.toCorrect')" icon="pi pi-times"
                 @click="openRejectPlan"
                 class="p-button p-button-danger p-ml-2"/>
       </div>
@@ -149,7 +148,7 @@ export default {
             if (res.data) {
               this.approvals = [];
               const d = res.data;
-              this.isPlanApproved = d.every(x => x.is_success);
+              this.isPlanApproved = d.some(x => x.is_success);
               const unique = [...new Set(d.map(item => item.stage))];
               unique.forEach(r => {
                 let f = d.filter(x => x.stage === r);

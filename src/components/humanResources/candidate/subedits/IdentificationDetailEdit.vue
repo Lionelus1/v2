@@ -69,6 +69,25 @@
                 v-if="validation.iin"
             >{{ $t("common.requiredField") }}</small>
           </div>
+          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+            <label>{{ $t('hr.title.id') }}</label>
+            <FileUpload ref="form" mode="basic"
+                        class="p-mt-2"
+                        :customUpload="true"
+                        accept="image/*"
+                        :class="{'p-invalid': validation.file}"
+                        @uploader="upload($event)" :auto="true"
+                        v-bind:chooseLabel="$t('ncasigner.chooseFile')"/>
+            <InlineMessage severity="info"
+                           class="p-mt-2"
+                           show v-if="file">
+              {{ $t('ncasigner.chosenFile', {fn: file ? file.name : ""}) }}
+            </InlineMessage>
+            <small
+                class="p-error"
+                v-if="validation.file"
+            >{{ $t("common.requiredField") }}</small>
+          </div>
         </div>
       </div>
     </div>
@@ -84,6 +103,7 @@ export default {
   data() {
     return {
       value: this.modelValue,
+      file: null,
       active: null,
       menu: [
         {
@@ -99,27 +119,37 @@ export default {
         startDate: false,
         issuedBy: false,
         iin: false,
+        file: false
       }
     };
   },
   methods: {
+    upload(event) {
+      this.file = event.files[0];
+    },
+
     validateForm() {
       this.validation.number = !this.value.number || this.value.number == ""
       this.validation.startDate = !this.value.startDate || this.value.startDate == ""
       this.validation.issuedBy = !this.value.issuedBy || this.value.issuedBy == ""
       this.validation.iin = !this.value.iin || this.value.iin == ""
+      this.validation.file = !this.file || this.file == ""
       return (
           !this.validation.number &&
           !this.validation.startDate &&
           !this.validation.issuedBy &&
-          !this.validation.iin
+          !this.validation.iin &&
+          !this.validation.file
       )
     },
     action() {
+      const fd = new FormData();
+      fd.append("id", JSON.stringify(this.value))
+      fd.append("idImage", this.file);
       if (this.validateForm()) {
         let path = !this.value.id ? "/candidate/id/create" : "/candidate/id/update"
         axios
-            .post(smartEnuApi + path, this.value, {headers: getHeader(),})
+            .post(smartEnuApi + path, fd, {headers: getHeader(),})
             .then(res => {
               this.emitter.emit("id", true);
             }).catch(error => {

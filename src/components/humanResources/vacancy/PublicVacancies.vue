@@ -64,7 +64,7 @@
       <!-- NAME COLUMN -->
       <Column :field="'name' + ($i18n.locale).charAt(0).toUpperCase() + ($i18n.locale).slice(1)"
               v-bind:header="$t('common.nameIn')"
-              :sortable="true" style="width: 50%">
+              :sortable="true">
         <template #body="slotProps">
           <span>
             {{
@@ -74,10 +74,34 @@
           </span>
         </template>
       </Column>
+      <Column field="org"
+              v-bind:header="$t('common.organizationName')"
+              :sortable="false">
+        <template #body="slotProps">
+          <span>
+            {{
+              $i18n.locale === "kz" ? slotProps.data.organization.name : $i18n.locale === "ru"
+                  ? slotProps.data.organization.nameru : slotProps.data.organization.name
+            }}
+          </span>
+        </template>
+      </Column>
+      <Column field="stp"
+              v-bind:header="$t('common.departmentNameLabel')"
+              :sortable="false">
+        <template #body="slotProps">
+          <span>
+            {{
+              $i18n.locale === "kz" ? slotProps.data.department.nameKz : $i18n.locale === "ru"
+                  ? slotProps.data.department.name : slotProps.data.department.nameEn
+            }}
+          </span>
+        </template>
+      </Column>
       <!-- DATE COLUMN -->
       <Column field="date"
-              v-bind:header="$t('common.date')"
-              :sortable="false" style="width: 30%">
+              v-bind:header="$t('common.pDate')"
+              :sortable="false">
         <template #body="slotProps">
           <span>
             {{
@@ -89,9 +113,9 @@
       <!-- APPLY BUTTON COLUMN -->
       <Column>
         <template #body="slotProps">
-          <Button v-if="!slotProps.data.isApply" icon="pi pi-star" class="p-button-success" label="Откликнуться"
+          <Button v-if="!slotProps.data.isApply" icon="pi pi-star" class="p-button-success" :label="$t('hr.action.apply')"
                   @click="openApplyDialog(slotProps.data.id)"/>
-          <Tag v-if="slotProps.data.isApply" class="mr-2" severity="info" :value="'Отклик отправлен'"></Tag>
+          <Tag v-if="slotProps.data.isApply" class="mr-2" severity="info" :value="$t('hr.action.applied')"></Tag>
         </template>
       </Column>
     </DataTable>
@@ -108,9 +132,9 @@
     <Card style="box-shadow: none">
       <template #header>
         <div style="padding-left: 15px">
-          <Button v-if="!vacancy.isApply" icon="pi pi-star" class="p-button-success" label="Откликнуться"
+          <Button v-if="!vacancy.isApply" icon="pi pi-star" class="p-button-success" :label="$t('hr.action.apply')"
                   @click="openApplyDialog(vacancy.id)"/>
-          <Message v-if="vacancy.isApply" severity="info" :closable="false">Вы уже откликнулись на эту вакансию
+          <Message v-if="vacancy.isApply" severity="info" :closable="false">{{ $t('hr.action.applied2') }}
           </Message>
         </div>
       </template>
@@ -127,7 +151,7 @@
         <p><b>{{ $t('common.organizationNameLabel') }}</b></p>
         <p style="padding-left: 20px"><i>{{
             $i18n.locale === "kz" ? vacancy.organization.name :
-                $i18n.locale === "ru" ? vacancy.organization.nameRu : vacancy.organization.name
+                $i18n.locale === "ru" ? vacancy.organization.nameru : vacancy.organization.name
           }}</i>
         </p>
 
@@ -137,8 +161,8 @@
 
         <p><b>{{ $t('common.departmentNameLabel') }}</b></p>
         <p style="padding-left: 20px"><i>{{
-            $i18n.locale === "kz" ? vacancy.department.name :
-                $i18n.locale === "ru" ? vacancy.organization.name : vacancy.organization.nameEn
+            $i18n.locale === "kz" ? vacancy.department.nameKz :
+                $i18n.locale === "ru" ? vacancy.department.name : vacancy.department.nameEn
           }}</i><br>
           <i><b style="font-weight: 600">{{ $t('common.headLabel') }}</b> {{ vacancy.departmentHead.fullName }}</i>
         </p>
@@ -202,48 +226,63 @@
   <Dialog v-model:visible="visible.apply" :style="{ width: '650px' }" :modal="true">
 
     <template #header>
-      <h5>ОТКЛИКНУТЬСЯ</h5>
+      <h5>{{ $t('hr.action.apply').toUpperCase() }}</h5>
     </template>
 
     <div class="p-col-12 p-md-12 p-fluid">
       <div class="card">
         <div class="p-fluid p-grid p-formgrid">
           <div class="p-field p-col-12">
-            <Label>Источник информации о вакансии: </Label>
+            <Label>{{ $t('hr.vacancySource') }}: </Label>
             <Dropdown class="p-mt-2" v-model="relation.vacancySource"
                       :options="vacancySources"
+                      :class="{'p-invalid': validation.source}"
                       :optionLabel="('name' + ($i18n.locale).charAt(0).toUpperCase() + ($i18n.locale).slice(1))"
                       :placeholder="$t('common.select')"/>
+            <small
+                class="p-error"
+                v-if="validation.source"
+            >{{ $t("common.requiredField") }}</small>
           </div>
           <div class="p-field p-col-12">
-            <Label>Мотивационное письмо: </Label>
+            <Label>{{ $t('hr.motivationLetter') }}: </Label>
             <FileUpload
                 class="p-mt-2"
                 mode="basic"
                 :customUpload="true"
+                :class="{'p-invalid': validation.ml}"
+                @uploader="upload($event)"
                 :auto="true"
                 v-bind:chooseLabel="$t('hdfs.chooseFile')"
             ></FileUpload>
+            <InlineMessage severity="info"
+                           class="p-mt-2"
+                           show v-if="file">
+              {{ $t('ncasigner.chosenFile', {fn: file ? file.name : ""}) }}
+            </InlineMessage>
+            <small
+                class="p-error"
+                v-if="validation.ml"
+            >{{ $t("common.requiredField") }}</small>
           </div>
           <div class="p-field p-col-12">
             <hr>
           </div>
           <div class="p-field p-col-12">
-            <p><b><em>Процесс отбора на вакантные должности проходит в несколько этапов:</em></b></p>
+            <p><b><em>{{ $t('hr.sp.header') }}:</em></b></p>
             <p style="text-align: justify">
               <em>
-                – рассмотрение резюме кандидатов на замещение вакантных должностей ППС, АУП и НР;
+                {{ $t('hr.sp.label1') }}
               </em>
             </p>
             <p style="text-align: justify">
               <em>
-                – собеседование с HR специалистом и руководителем структурного подразделения,
-                подавшим заявку на подбор персонала;
+                {{ $t('hr.sp.label2') }}
               </em>
             </p>
             <p style="text-align: justify">
               <em>
-                – собеседование с членами Конкурсной комиссии и подведение итогов конкурса.
+                {{ $t('hr.sp.label3') }}
               </em>
             </p>
           </div>
@@ -255,8 +294,7 @@
               <Checkbox id="binary" v-model="agreement" :binary="true"/>
               <label for="binary" style="font-size: 15px; text-align: justify">
                 <b>
-                  Ознокомлен и подтверждаю, что данные в моем персональном резюме корректные.
-                  Даю согласие на проверку предоставленных данных.
+                  {{ $t('hr.sp.agreement') }}
                 </b>
               </label>
             </div>
@@ -266,7 +304,7 @@
     </div>
     <template #footer>
       <Button
-          v-bind:label="'Подать заявку'"
+          v-bind:label="$t('hr.sp.request')"
           icon="pi pi-check"
           class="p-button p-component p-button-primary"
           :disabled="!agreement"
@@ -284,7 +322,7 @@
     <div class="confirmation-content">
       <i class="pi pi-exclamation-circle p-mr-3" style="font-size: 2rem"/>
       <span>
-        <b>{{'Ваше резюме не найдено. Желаете создать?'}}</b>
+        <b>{{$t('hr.resumeNorFound')}}</b>
         </span>
     </div>
 
@@ -308,13 +346,12 @@ import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
 import Login from "../../Login";
 import router from '@/router';
-import {getLoginedUser} from "../../Full";
-
 export default {
   name: "PublicVacancies",
   components: {Login},
   data() {
     return {
+      file: null,
       userId: 0,
       count: 200,
       filters: {
@@ -330,7 +367,8 @@ export default {
         rows: 10,
         searchText: null,
         sortField: "",
-        sortOrder: 0
+        sortOrder: 0,
+        orgCode: 'enu'
       },
       visible: {
         loading: false,
@@ -338,6 +376,10 @@ export default {
         apply: false,
         login: false,
         notFound: false,
+      },
+      validation: {
+        source: false,
+        ml: false
       },
       vacancies: [],
       vacancySources: [],
@@ -348,6 +390,9 @@ export default {
     }
   },
   methods: {
+    upload(event) {
+      this.file = event.files[0];
+    },
     /**
      * *********************** ПОЛУЧЕНИЕ ВСЕХ ОПУБЛИКОВАННЫХ ВАКАНСИЙ
      */
@@ -413,26 +458,30 @@ export default {
      * *********************** ПОДАЧА ЗАЯВКИ НА УЧАСТИЕ В КОНКУРСЕ
      */
     apply() {
-      this.relation.motivationLetter = 'hello world'
-      axios.post(smartEnuApi + "/vacancy/apply",
-          this.relation, {headers: getHeader()}).then((response) => {
-        for (let key in this.vacancies) {
-          if (this.vacancies[key].id === this.relation.vacancyId) {
-            this.vacancies[key].isApply = true
+      const fd = new FormData();
+      fd.append("rel", JSON.stringify(this.relation))
+      fd.append("ml", this.file);
+      if (this.validateForm()) {
+        axios.post(smartEnuApi + "/vacancy/apply",
+            fd, {headers: getHeader()}).then((response) => {
+          for (let key in this.vacancies) {
+            if (this.vacancies[key].id === this.relation.vacancyId) {
+              this.vacancies[key].isApply = true
+            }
           }
-        }
-        this.visible.apply = false;
-      }).catch((error) => {
-        if (error.response.status == 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: this.$t("smartenu.loadAllNewsError") + ":\n" + error,
-            life: 3000,
-          });
-        }
-      });
+          this.visible.apply = false;
+        }).catch((error) => {
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          } else {
+            this.$toast.add({
+              severity: "error",
+              summary: this.$t("smartenu.loadAllNewsError") + ":\n" + error,
+              life: 3000,
+            });
+          }
+        });
+      }
     },
 
     /**
@@ -493,7 +542,12 @@ export default {
      * *********************** ПЕРЕНАПРАВЛЕНИЕ НА РЕЗЮМЕ
      */
     redirectToResume() {
-      router.push({ "name": "Resume" })
+      router.push({ "name": "Cabinet" })
+    },
+    validateForm() {
+      this.validation.source = !this.relation.vacancySource || this.relation.vacancySource === ""
+      this.validation.ml = !this.file || this.file === ""
+      return (!this.validation.source && !this.validation.ml)
     }
   },
   created() {

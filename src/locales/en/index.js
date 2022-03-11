@@ -20,6 +20,7 @@ export default {
             publish: 'Publish',
             reApprove: 'Reapprove'
         },
+        cabinet: 'Personal account',
         login: "login",
         logout: "Logout",
         enter: "Type in",
@@ -81,6 +82,8 @@ export default {
         meetingPlace: "Meeting place",
         myData: "My details",
         myResume: 'My resume',
+        theResume: 'Resume',
+        myVacancy: 'My vacancies',
         nameIn: "Name",
         nameInQazaq: "Name in qazaq",
         nameInRussian: "Name in russian",
@@ -141,6 +144,7 @@ export default {
         role: "Role",
         workPlace: "Work place",
         publishDate:"Date and time of publication:",
+        pDate: 'Date of publication',
         deadlineDate:"Deadline for submission of documents",
         organizationNameLabel:"Name of company",
         departmentNameLabel: "The name of the structural unit",
@@ -187,7 +191,7 @@ export default {
             userSuccessInserted: "The user has been successfully created, download the authorization data to send to the user.",
             selectVariant: "Choose the option you need",
             userIINExists: "User with same iin already exists",
-
+            accessDenied: "You do not have permission to view this document!"
         },
         language: {
             kz: "in kazakh",
@@ -572,6 +576,32 @@ export default {
         noAnswer: "No response received"
     },
     hr: {
+        action: {
+            interview: 'Invite to interview',
+            hire: 'Hire',
+            notHire: 'Reject',
+            reserve: 'To reserve',
+            apply: 'Respond',
+            applied: 'Respond sent',
+            applied2: 'You have already applied for this position.'
+        },
+        candidates: 'Candidates',
+        candidateResume: 'Candidate resume',
+        vacancySource: 'Source of vacancy information',
+        motivationLetter: 'Motivation letter',
+        sendMessage: 'Send email',
+        messageTitle: 'Email header',
+        messageBody: 'Content of the email',
+        sp: {
+            header: 'The selection process for vacant positions takes place in several stages',
+            label1: 'consideration of resumes of candidates for filling vacant positions of teaching staff, AUP and HR;',
+            label2: 'an interview with an HR specialist and the head of the structural \n ' +
+                '                unit who applied for recruitment;',
+            label3: 'interview with members of the Competition Commission and summing up the results of the competition.',
+            agreement: 'I have read the rules and certify that the information in my personal resume is correct.\n ' +
+                '                   I consent to the verification of the provided data.',
+            request: 'Submit an application'
+        },
         vacancies: "Vacancies",
         responsibilitiesLabel:"Functional responsibilities",
         educationLabel:"Education",
@@ -599,6 +629,7 @@ export default {
             create: 'Create a resume',
             delete: 'Delete resume',
         },
+        resumeNorFound: 'Your resume was not found. Would you like to create?',
         ad: {
             defensePlace: 'Defense place',
             defenseDate: 'Defense date',
@@ -623,7 +654,8 @@ export default {
             rl: 'Reading level',
             wl: 'Writing level',
             sl: 'Speaking level',
-            c: 'Certificates',
+            cs: 'Certificates',
+            c: 'Certificate',
             native: 'Free',
             notNative: 'Limited',
         },
