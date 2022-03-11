@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div class="p-col-12">
+  <div v-if="!loading">
+    <div class="p-col-12" v-if="isShow">
       <div class="card">
         <Button :label="$t('common.downloadSignaturesPdf')" icon="pi pi-download"
                 @click="downloadSignatures"
@@ -14,6 +14,11 @@
             <qrcode-vue class="p-m-2" margin="1" size="300" render-as="svg"  :value="item.signature" level="L"></qrcode-vue>
           </div>
         </div>-->
+      </div>
+    </div>
+    <div class="p-col-12" v-else>
+      <div class="card">
+        <Message severity="error">{{ $t('common.message.accessDenied') }}</Message>
       </div>
     </div>
   </div>
@@ -34,7 +39,10 @@ export default {
       signatures: null,
       plan: null,
       doc_id: this.$route.params.uuid,
-      docInfo: null
+      docInfo: null,
+      loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID,
+      isShow: false,
+      loading: true
     }
   },
   created() {
@@ -47,11 +55,13 @@ export default {
             if (res.data) {
               this.docInfo = res.data;
               this.signatures = res.data.signatures;
+              if (this.loginedUserId)
+                this.isShow = this.signatures.every(x => x.userId === this.loginedUserId);
               this.signatures.map(e => {
-                console.log(e.signature.length)
                 e.sign = this.chunkString(e.signature, 1200)
-              })
+              });
             }
+            this.loading = false;
           }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
@@ -62,6 +72,7 @@ export default {
             life: 3000,
           });
         }
+        this.loading = false;
       });
     },
     getSignatures() {
