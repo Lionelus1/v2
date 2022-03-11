@@ -252,7 +252,7 @@ export default {
           .then(res => {
             if (res.data) {
               this.approval_users = res.data;
-              this.isPlanApproved = res.data.every(x => x.is_success);
+              this.isPlanApproved = res.data.some(x => x.is_success);
               this.isPlanSentApproval = true;
               this.approval_users.forEach(e => {
                 if (this.loginedUserId === e.user.id) {

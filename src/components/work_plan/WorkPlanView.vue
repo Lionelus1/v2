@@ -148,7 +148,7 @@ export default {
             if (res.data) {
               this.approvals = [];
               const d = res.data;
-              this.isPlanApproved = d.every(x => x.is_success);
+              this.isPlanApproved = d.some(x => x.is_success);
               const unique = [...new Set(d.map(item => item.stage))];
               unique.forEach(r => {
                 let f = d.filter(x => x.stage === r);

@@ -55,8 +55,7 @@ export default {
             if (res.data) {
               this.docInfo = res.data;
               this.signatures = res.data.signatures;
-              if (this.loginedUserId)
-                this.isShow = this.signatures.every(x => x.userId === this.loginedUserId);
+              this.isShow = this.signatures.some(x => x.userId === this.loginedUserId);
               this.signatures.map(e => {
                 e.sign = this.chunkString(e.signature, 1200)
               });
