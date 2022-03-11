@@ -77,6 +77,16 @@ export default {
 
         // },
         {
+          label: this.$t('common.administration'), icon: 'pi pi-fw pi-shield',
+          items: [
+            {
+              label: this.$t('hr.vacancies'),
+              icon: 'pi pi-fw pi-user-plus',
+              to: '/human-resources/vacancies'
+            },
+          ]
+        },
+        {
           label: 'Контрагенттер', icon: 'pi pi-fw pi-users',
           items: [
             {label: 'Ұйымдықтар', icon: 'pi pi-fw pi-home', to: '/contragent/organizations'},
@@ -132,6 +142,16 @@ export default {
         },
         {
           label: 'План', icon: 'pi pi-fw pi-folder', to: '/work-plan'
+        },
+        {
+          label: this.$t('common.forStudentsAndGraduates'), icon: 'pi pi-fw pi-users',
+          items: [
+            {
+              label: this.$t('hr.vacancies'),
+              icon: 'pi pi-fw pi-user-plus',
+              to: '/human-resources/public/vacancies'
+            },
+          ]
         },
       //  {
 //
