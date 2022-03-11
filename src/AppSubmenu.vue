@@ -33,7 +33,7 @@ export default {
 		root: {
 			type: Boolean,
 			default: false
-		}
+		},
 	},
 	data() {
 		return {

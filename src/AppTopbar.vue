@@ -5,7 +5,7 @@
 		</button>
 
 		<div class="layout-topbar-icons">
-			<!-- <span class="layout-topbar-search">
+			<span class="layout-topbar-search">
 				<InputText type="text" placeholder="Search" />
 				<span class="layout-topbar-search-icon pi pi-search"></span>
 			</span>
@@ -21,7 +21,7 @@
 			<button class="p-link">
 				<span class="layout-topbar-item-text">User</span>
 				<span class="layout-topbar-icon pi pi-user"></span>
-			</button> -->
+			</button>
 			<Dropdown class="p-link" v-model="language" :options="languages" optionLabel="name" @change="changeLanguage" />
 		</div>
 	</div>
@@ -29,6 +29,9 @@
 
 <script>
 export default {
+  	props : {
+		  pagemenu: null,
+	  },
 	data() {
 		return {
 			languages: [
@@ -36,12 +39,16 @@ export default {
 				{	name:	"Русский", value: "ru"},
 				{	name:	"English", value: "en"},
 			],
-			language : null
+			language : null,
 		}
 	},
     methods: {
         onMenuToggle(event) {
             this.$emit('menu-toggle', event);
+		    this.$emit('update:pagemenu', "HELLO");
+			alert("HELLO")
+
+
         },
 				changeLanguage() {
 					if (this.$i18n.locale !== this.language.value) {
