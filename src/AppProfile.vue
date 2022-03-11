@@ -13,7 +13,7 @@
       <ul v-show="expanded">
         <li>
           <button @click="myResume" class="p-link">
-            <i class="pi pi-fw pi-id-card"></i><span>{{ $t("common.myResume") }}</span>
+            <i class="pi pi-fw pi-id-card"></i><span>{{ $t("common.cabinet") }}</span>
           </button>
         </li>
         <li>
@@ -48,7 +48,7 @@ export default {
       this.logLout();
     },
     myResume() {
-      this.$router.push({path: "/resume"})
+      this.$router.push({path: "/cabinet"})
     },
   },
   computed: {

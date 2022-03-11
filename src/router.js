@@ -18,7 +18,7 @@ const ifNotAuthenticated = (to, from, next) => {
 }
 
 const ifAuthenticated = (to, from, next) => {
-    
+
     if (store.getters.isAuthenticated) {
         next()
         return
@@ -27,7 +27,7 @@ const ifAuthenticated = (to, from, next) => {
         next('/public/vacancies')
         return
     }
-    
+
 }
 
 
@@ -184,13 +184,13 @@ const routes = [
                 path: '/nca/sign',
                 name: '/nca/sign',
                 component: load('ncasigner/SignDoc'),
-                
+
             },
             {
                 path: '/nca/find',
                 name: '/nca/find',
                 component: load('ncasigner/FindDoc'),
-                
+
             },
             {
                 path: '/ncasigner/showdoc/:id',
@@ -263,6 +263,11 @@ const routes = [
                 path: 'sign/:uuid',
                 name: 'DocSignaturesInfo',
                 component: load('DocSignaturesInfo'),
+            },
+            {
+                path: '/cabinet',
+                name: 'Cabinet',
+                component: load('humanResources/candidate/Cabinet')
             }
         ]
     }

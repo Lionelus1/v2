@@ -3,7 +3,7 @@
     <h5><em>{{ $t('hr.resume.loading') }}</em></h5>
     <ProgressBar :value="progress"/>
   </div>
-  <div class="card card-border" v-if="progressed">
+  <div ref="htmlToPdf" class="card" v-if="progressed">
     <div class="p-grid p-formgrid">
       <div class="p-col-12 p-lg-9">
         <p style="text-align: center">
@@ -11,10 +11,9 @@
         </p>
         <hr>
         <span style="white-space: pre-line">
-          <b>{{ $t('common.fullName') }}:</b> <em><b>{{ loginedUser.fullName + '\n' }}</b></em>
-          <b>{{ $t('contact.birthday') }}:</b> <em>{{ loginedUser.birthday + '\n' }}</em>
-          <b>{{ $t('contact.email') }}:</b> <em>{{ loginedUser.email }}</em>
-
+          <b>{{ $t('common.fullName') }}:</b> <em><b>{{ candidate.user.fullName + '\n' }}</b></em>
+          <b>{{ $t('contact.birthday') }}:</b> <em>{{ candidate.user.birthday + '\n' }}</em>
+          <b>{{ $t('contact.email') }}:</b> <em>{{ candidate.user.email }}</em>
         </span>
         <hr>
         <p style="text-align: center">
@@ -28,12 +27,13 @@
           <b>{{ $t('common.number') }}:</b> <em>{{ identificationDetail.number + '\n' }}</em>
           <b>{{ $t('hr.id.startDate') }}:</b> <em>{{ new Date(identificationDetail.startDate).toLocaleDateString() + '\n' }}</em>
           <b>{{ $t('hr.id.issuedBy') }}:</b> <em>{{ identificationDetail.issuedBy + '\n' }}</em>
+          <Button :label="$t('hr.title.id')" style="text-align: left" class="p-button-link" @click="showFile(identificationDetail.image)" />
         </span>
         <em v-if="!identificationDetail">{{ $t('common.noData') }}</em>
       </div>
       <div class="p-col-12 p-lg-2">
         <div class="card">
-          <img :src="'data:image/jpeg;base64,' + loginedUser.photo" style="width: 150px"/>
+<!--          <img :src="'data:image/jpeg;base64,' + candidate.user.photo" style="width: 150px"/>-->
         </div>
       </div>
       <div class="p-col-12">
@@ -199,12 +199,13 @@
                     <em><b>{{ $t('hr.lang.rl') }}:</b> {{ slotProps.item.readingLevel.value + '\n' }}</em>
                     <em><b>{{ $t('hr.lang.sl') }}:</b> {{ slotProps.item.speakingLevel.value + '\n' }}</em>
                     <em><b>{{ $t('hr.lang.wl') }}:</b> {{ slotProps.item.writingLevel.value + '\n' }}</em>
-                    <em><b>{{ $t('hr.lang.c') }}:</b> {{ slotProps.item.certificate }}</em>
+                    <em><b>{{ $t('hr.lang.cs') }}:</b> {{ slotProps.item.certificate }}</em>
                   </span>
               </em>
-              <br>
-              <br>
             </div>
+            <Button v-if="slotProps.item.image" :label="$t('hr.lang.c')" style="text-align: left" class="p-button-link" @click="showFile(slotProps.item.image)" />
+            <br>
+            <br>
           </template>
         </Timeline>
         <em v-if="!languages">{{ $t('common.noData') }}</em>
@@ -294,6 +295,20 @@
              style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px"></Menubar>
     <ResumeEdit :section="exchange.section" :value="exchange.value" :title-value="exchange.titleValue"/>
   </Sidebar>
+  <Dialog v-model:visible="fileView" :style="{ width: '650px' }" :modal="true">
+    <div style="padding: 0 100px">
+      <img :src="fileData" style="width: 100%; height: 100%"/>
+    </div>
+    <template #footer>
+      <Button
+          v-bind:label="$t('common.close')"
+          icon="pi pi-times"
+          class="p-button p-component p-button-primary"
+          @click="fileView = false"
+      />
+    </template>
+  </Dialog>
+
 </template>
 
 <script>
@@ -313,12 +328,14 @@ export default {
   },
   data() {
     return {
+      fileData: null,
+      fileView: false,
       progressed: false,
       progress: 0,
       iter: 0,
       interval: null,
       loginedUser: null,
-      candidate: [],
+      candidate: {},
       educations: [],
       academicDegrees: [],
       academicTitles: [],
@@ -444,6 +461,10 @@ export default {
       clearInterval(this.interval);
       this.interval = null;
     },
+    showFile(fileData) {
+      this.fileData = fileData
+      this.fileView = true
+    },
     getCandidate() {
       this.resumeService.getCandidate().then(response => {
         this.candidate = response.data
@@ -479,6 +500,7 @@ export default {
       this.resumeService.getCandidateLanguages(this.candidate.id).then(response => {
         this.languages = response.data
         this.iter++
+        console.log(response.data)
       }).catch(error => {
         console.log(error)
       })
@@ -591,7 +613,7 @@ export default {
 
 <style>
 .card-border {
-  border-right: 2px solid #dee2e6;
+  border-right: 0px solid #dee2e6;
   border-radius: 0;
 }
 
