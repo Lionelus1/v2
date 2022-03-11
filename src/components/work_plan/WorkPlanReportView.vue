@@ -277,7 +277,7 @@ export default {
               this.approvals = [];
               this.isReportSentApproval = true;
               const d = res.data;
-              this.isPlanReportApproved = d.every(x => x.is_success);
+              this.isPlanReportApproved = d.some(x => x.is_success);
               //console.log(d.every(x => x.is_success === true));
               const unique = [...new Set(d.map(item => item.stage))];
               unique.forEach(r => {

@@ -191,7 +191,7 @@ export default {
             userSuccessInserted: "The user has been successfully created, download the authorization data to send to the user.",
             selectVariant: "Choose the option you need",
             userIINExists: "User with same iin already exists",
-
+            accessDenied: "You do not have permission to view this document!"
         },
         language: {
             kz: "in kazakh",

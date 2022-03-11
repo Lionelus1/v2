@@ -192,7 +192,7 @@ export default {
             selectRole: "Рөлді таңдаңыз",
             selectVariant: "Керек нұсқаны таңдаңыз",
             userIINExists: "Көрсетілген ЖСН бойынша қолданушы бұрыннан бар",
-
+            accessDenied: "Бұл құжатты көруге құзіретіңіз жоқ!"
         },
         language: {
             kz: "қазақша",
