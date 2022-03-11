@@ -42,7 +42,7 @@ import {getHeader, smartEnuApi} from "@/config/config";
 export default {
   name: 'WorkPlanEventAdd',
   components: {FindUser},
-  props: ['data', 'isMain'],
+  props: ['data', 'isMain', 'items'],
   data() {
     return {
       showWorkPlanEventModal: false,
@@ -141,6 +141,9 @@ export default {
           });
         }
       });
+    },
+    addToArray() {
+
     },
     validateForm() {
       this.formValid.event_name = !this.event_name;

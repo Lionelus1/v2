@@ -6,7 +6,7 @@
 <!--        <Button label="" icon="pi pi-download" @click="download"
                 class="p-button p-button-info p-ml-2"/>-->
       </div>
-      <div class="card" v-if="isPlanReportApproved && isPlanCreator || (isApproval && isCurrentUserApproved)">
+      <div class="card" v-if="isPlanReportApproved && (isPlanCreator || (isApproval || isCurrentUserApproved))">
         <Button :label="$t('common.signatures')" icon="pi pi-file"
                 @click="viewSignatures"
                 class="p-button p-ml-2"/>
@@ -185,6 +185,7 @@ export default {
             this.getPlan();
             this.getFile();
             this.getReportApprovalUsers();
+            this.getSignatures();
           }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
@@ -277,7 +278,7 @@ export default {
               this.approvals = [];
               this.isReportSentApproval = true;
               const d = res.data;
-              this.isPlanReportApproved = d.some(x => x.is_success);
+              this.isPlanReportApproved = d.every(x => x.is_success);
               //console.log(d.every(x => x.is_success === true));
               const unique = [...new Set(d.map(item => item.stage))];
               unique.forEach(r => {

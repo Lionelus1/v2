@@ -40,7 +40,7 @@
       <template #body="slotProps">
         <work-plan-execute :data="slotProps.data" v-if="parseInt(slotProps.data.quarter.String) === currentQuarter && isUserApproval(slotProps.data) && plan.status.work_plan_status_id === 4"></work-plan-execute>
         <work-plan-event-result-modal v-if="slotProps.data.event_result" :event-result="slotProps.data.event_result"></work-plan-event-result-modal>
-        <work-plan-event-add v-if="!isPlanSentApproval && !slotProps.data.is_finish" :data="slotProps.data"></work-plan-event-add>
+        <work-plan-event-add v-if="!isPlanSentApproval && !slotProps.data.is_finish" :data="slotProps.data" :items="data"></work-plan-event-add>
         <work-plan-event-edit-modal v-if="(slotProps.data.creator_id === loginedUserId || isPlanCreator) && !isPlanSentApproval && !slotProps.data.is_finish" :event="slotProps.data"></work-plan-event-edit-modal>
         <div>
           <Button v-if="(slotProps.data.creator_id === loginedUserId || isPlanCreator) && !isPlanSentApproval && !slotProps.data.is_finish" @click="remove_event(slotProps.data.work_plan_event_id)" icon="pi pi-trash" class="p-button-danger p-ml-1 p-mt-1"></Button>

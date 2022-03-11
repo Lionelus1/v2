@@ -2,7 +2,7 @@
   <div class="p-col-12" v-if="!loading">
     <Message severity="warn" :closable="false" v-if="plan.reject_history && isRejected && isPlanCreator">{{ plan.reject_history.message }}</Message>
     <div class="card" v-if="plan || data">
-      <work-plan-event-add v-if="(isCreator || isEventsNull) && !isFinish && isPlanCreator" :isMain="true"></work-plan-event-add>
+      <work-plan-event-add v-if="(isCreator || isEventsNull) && !isFinish && isPlanCreator" :items="data" :isMain="true"></work-plan-event-add>
       <Button v-if="isPlanCreator && !isFinish" :label="$t('common.complete')" icon="pi pi-check" @click="finish"
               class="p-button p-button-danger p-ml-2"/>
       <work-plan-approve v-if="isPlanCreator && !isPlanSentApproval && isFinish" :plan="plan"
@@ -84,7 +84,7 @@
                   :data="slotProps.data"></work-plan-execute>
               <work-plan-event-result-modal v-if="slotProps.data.event_result"
                                             :event-result="slotProps.data.event_result"></work-plan-event-result-modal>
-              <work-plan-event-add v-if="!slotProps.data.is_finish" :data="slotProps.data" :isMain="false"></work-plan-event-add>
+              <work-plan-event-add v-if="!slotProps.data.is_finish" :data="slotProps.data" :items="slotProps.data" :isMain="false"></work-plan-event-add>
               <work-plan-event-edit-modal v-if="isPlanCreator && !isPlanSentApproval && !isFinish"
                                           :event="slotProps.data"></work-plan-event-edit-modal>
               <div>
