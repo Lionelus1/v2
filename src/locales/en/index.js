@@ -652,6 +652,8 @@ export default {
         rc: {
             title: 'Title'
         }
+        ,
+        sendingMessage: 'Sending a message. Please wait...'
     },
     workPlan: {
         plans: "Plans",

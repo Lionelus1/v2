@@ -87,7 +87,21 @@
               <Editor v-model="value.responsibilitiesKz"
                       class="p-invalid"
                       :readonly="readonly"
-                      editorStyle="height: 120px"/>
+                      editorStyle="height: 120px">
+                <template v-slot:toolbar>
+                <span class="ql-formats">
+                    <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
+                    <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
+                    <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
+                  <select class="ql-align">
+                    <option defaultValue></option>ß
+                    <option value="center"></option>
+                    <option value="right"></option>
+                    <option value="justify"></option>
+                  </select>
+                </span>
+                </template>
+              </Editor>
               <small
                   class="p-error"
                   v-if="validation.responsibilitiesKz"
@@ -98,7 +112,21 @@
               <Editor v-model="value.educationKz"
                       :readonly="readonly"
                       :class="{'p-invalid': validation.educationKz}"
-                      editorStyle="height: 120px"/>
+                      editorStyle="height: 120px">
+                <template v-slot:toolbar>
+                <span class="ql-formats">
+                    <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
+                    <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
+                    <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
+                  <select class="ql-align">
+                    <option defaultValue></option>ß
+                    <option value="center"></option>
+                    <option value="right"></option>
+                    <option value="justify"></option>
+                  </select>
+                </span>
+                </template>
+              </Editor>
               <small
                   class="p-error"
                   v-if="validation.educationKz"
@@ -109,7 +137,21 @@
               <Editor v-model="value.qualificationKz"
                       :readonly="readonly"
                       :class="{'p-invalid': validation.qualificationKz}"
-                      editorStyle="height: 120px"/>
+                      editorStyle="height: 120px">
+                <template v-slot:toolbar>
+                <span class="ql-formats">
+                    <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
+                    <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
+                    <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
+                  <select class="ql-align">
+                    <option defaultValue></option>ß
+                    <option value="center"></option>
+                    <option value="right"></option>
+                    <option value="justify"></option>
+                  </select>
+                </span>
+                </template>
+              </Editor>
               <small
                   class="p-error"
                   v-if="validation.qualificationKz"
@@ -120,7 +162,21 @@
               <Editor v-model="value.experienceKz"
                       :readonly="readonly"
                       :class="{'p-invalid': validation.experienceKz}"
-                      editorStyle="height: 120px"/>
+                      editorStyle="height: 120px">
+                <template v-slot:toolbar>
+                <span class="ql-formats">
+                    <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
+                    <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
+                    <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
+                  <select class="ql-align">
+                    <option defaultValue></option>ß
+                    <option value="center"></option>
+                    <option value="right"></option>
+                    <option value="justify"></option>
+                  </select>
+                </span>
+                </template>
+              </Editor>
               <small
                   class="p-error"
                   v-if="validation.experienceKz"
@@ -131,7 +187,21 @@
               <Editor v-model="value.languageLevelKz"
                       :readonly="readonly"
                       :class="{'p-invalid': validation.languageLevelKz}"
-                      editorStyle="height: 120px"/>
+                      editorStyle="height: 120px">
+                <template v-slot:toolbar>
+                <span class="ql-formats">
+                    <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
+                    <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
+                    <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
+                  <select class="ql-align">
+                    <option defaultValue></option>ß
+                    <option value="center"></option>
+                    <option value="right"></option>
+                    <option value="justify"></option>
+                  </select>
+                </span>
+                </template>
+              </Editor>
               <small
                   class="p-error"
                   v-if="validation.languageLevelKz"
@@ -142,7 +212,21 @@
               <Editor v-model="value.certificateRequirementsKz"
                       :readonly="readonly"
                       :class="{'p-invalid': validation.certificateRequirementsKz}"
-                      editorStyle="height: 120px"/>
+                      editorStyle="height: 120px">
+                <template v-slot:toolbar>
+                <span class="ql-formats">
+                    <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
+                    <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
+                    <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
+                  <select class="ql-align">
+                    <option defaultValue></option>ß
+                    <option value="center"></option>
+                    <option value="right"></option>
+                    <option value="justify"></option>
+                  </select>
+                </span>
+                </template>
+              </Editor>
               <small
                   class="p-error"
                   v-if="validation.certificateRequirementsKz"
@@ -153,7 +237,21 @@
               <Editor v-model="value.personalQualitiesKz"
                       :readonly="readonly"
                       :class="{'p-invalid': validation.personalQualitiesRu}"
-                      editorStyle="height: 120px"/>
+                      editorStyle="height: 120px">
+                <template v-slot:toolbar>
+                <span class="ql-formats">
+                    <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
+                    <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
+                    <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
+                  <select class="ql-align">
+                    <option defaultValue></option>ß
+                    <option value="center"></option>
+                    <option value="right"></option>
+                    <option value="justify"></option>
+                  </select>
+                </span>
+                </template>
+              </Editor>
               <small
                   class="p-error"
                   v-if="validation.personalQualitiesRu"
@@ -182,7 +280,21 @@
               <Editor v-model="value.responsibilitiesRu"
                       :readonly="readonly"
                       :class="{'p-invalid': validation.responsibilitiesRu}"
-                      editorStyle="height: 120px"/>
+                      editorStyle="height: 120px">
+                <template v-slot:toolbar>
+                <span class="ql-formats">
+                    <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
+                    <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
+                    <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
+                  <select class="ql-align">
+                    <option defaultValue></option>ß
+                    <option value="center"></option>
+                    <option value="right"></option>
+                    <option value="justify"></option>
+                  </select>
+                </span>
+                </template>
+              </Editor>
               <small
                   class="p-error"
                   v-if="validation.responsibilitiesRu"
@@ -193,7 +305,21 @@
               <Editor v-model="value.educationRu"
                       :readonly="readonly"
                       :class="{'p-invalid': validation.experienceRu}"
-                      editorStyle="height: 120px"/>
+                      editorStyle="height: 120px">
+                <template v-slot:toolbar>
+                <span class="ql-formats">
+                    <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
+                    <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
+                    <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
+                  <select class="ql-align">
+                    <option defaultValue></option>ß
+                    <option value="center"></option>
+                    <option value="right"></option>
+                    <option value="justify"></option>
+                  </select>
+                </span>
+                </template>
+              </Editor>
               <small
                   class="p-error"
                   v-if="validation.experienceRu"
@@ -204,7 +330,21 @@
               <Editor v-model="value.qualificationRu"
                       :readonly="readonly"
                       :class="{'p-invalid': validation.qualificationRu}"
-                      editorStyle="height: 120px"/>
+                      editorStyle="height: 120px">
+                <template v-slot:toolbar>
+                <span class="ql-formats">
+                    <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
+                    <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
+                    <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
+                  <select class="ql-align">
+                    <option defaultValue></option>ß
+                    <option value="center"></option>
+                    <option value="right"></option>
+                    <option value="justify"></option>
+                  </select>
+                </span>
+                </template>
+              </Editor>
               <small
                   class="p-error"
                   v-if="validation.qualificationRu"
@@ -215,7 +355,21 @@
               <Editor v-model="value.experienceRu"
                       :readonly="readonly"
                       :class="{'p-invalid': validation.experienceRu}"
-                      editorStyle="height: 120px"/>
+                      editorStyle="height: 120px">
+                <template v-slot:toolbar>
+                <span class="ql-formats">
+                    <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
+                    <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
+                    <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
+                  <select class="ql-align">
+                    <option defaultValue></option>ß
+                    <option value="center"></option>
+                    <option value="right"></option>
+                    <option value="justify"></option>
+                  </select>
+                </span>
+                </template>
+              </Editor>
               <small
                   class="p-error"
                   v-if="validation.experienceRu"
@@ -226,7 +380,21 @@
               <Editor v-model="value.languageLevelRu"
                       :readonly="readonly"
                       :class="{'p-invalid': validation.languageLevelRu}"
-                      editorStyle="height: 120px"/>
+                      editorStyle="height: 120px">
+                <template v-slot:toolbar>
+                <span class="ql-formats">
+                    <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
+                    <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
+                    <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
+                  <select class="ql-align">
+                    <option defaultValue></option>ß
+                    <option value="center"></option>
+                    <option value="right"></option>
+                    <option value="justify"></option>
+                  </select>
+                </span>
+                </template>
+              </Editor>
               <small
                   class="p-error"
                   v-if="validation.languageLevelRu"
@@ -237,7 +405,21 @@
               <Editor v-model="value.certificateRequirementsRu"
                       :readonly="readonly"
                       :class="{'p-invalid': validation.certificateRequirementsRu}"
-                      editorStyle="height: 120px"/>
+                      editorStyle="height: 120px">
+                <template v-slot:toolbar>
+                <span class="ql-formats">
+                    <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
+                    <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
+                    <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
+                  <select class="ql-align">
+                    <option defaultValue></option>ß
+                    <option value="center"></option>
+                    <option value="right"></option>
+                    <option value="justify"></option>
+                  </select>
+                </span>
+                </template>
+              </Editor>
               <small
                   class="p-error"
                   v-if="validation.certificateRequirementsRu"
@@ -248,7 +430,21 @@
               <Editor v-model="value.personalQualitiesRu"
                       :readonly="readonly"
                       :class="{'p-invalid': validation.personalQualitiesRu}"
-                      editorStyle="height: 120px"/>
+                      editorStyle="height: 120px">
+                <template v-slot:toolbar>
+                <span class="ql-formats">
+                    <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
+                    <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
+                    <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
+                  <select class="ql-align">
+                    <option defaultValue></option>ß
+                    <option value="center"></option>
+                    <option value="right"></option>
+                    <option value="justify"></option>
+                  </select>
+                </span>
+                </template>
+              </Editor>
               <small
                   class="p-error"
                   v-if="validation.personalQualitiesRu"
@@ -276,7 +472,21 @@
               <label for="kazname">Functional responsibilities</label>
               <Editor v-model="value.responsibilitiesEn"
                       :class="{'p-invalid': validation.responsibilitiesEn}"
-                      editorStyle="height: 120px"/>
+                      editorStyle="height: 120px">
+                <template v-slot:toolbar>
+                <span class="ql-formats">
+                    <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
+                    <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
+                    <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
+                  <select class="ql-align">
+                    <option defaultValue></option>ß
+                    <option value="center"></option>
+                    <option value="right"></option>
+                    <option value="justify"></option>
+                  </select>
+                </span>
+                </template>
+              </Editor>
               <small
                   class="p-error"
                   v-if="validation.responsibilitiesEn"
@@ -286,7 +496,21 @@
               <label for="kazname">Education</label>
               <Editor v-model="value.educationEn"
                       :class="{'p-invalid': validation.educationEn}"
-                      editorStyle="height: 120px"/>
+                      editorStyle="height: 120px">
+                <template v-slot:toolbar>
+                <span class="ql-formats">
+                    <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
+                    <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
+                    <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
+                  <select class="ql-align">
+                    <option defaultValue></option>ß
+                    <option value="center"></option>
+                    <option value="right"></option>
+                    <option value="justify"></option>
+                  </select>
+                </span>
+                </template>
+              </Editor>
               <small
                   class="p-error"
                   v-if="validation.educationEn"
@@ -296,7 +520,21 @@
               <label for="kazname">Qualification by specialty</label>
               <Editor v-model="value.qualificationEn"
                       :class="{'p-invalid': validation.qualificationEn}"
-                      editorStyle="height: 120px"/>
+                      editorStyle="height: 120px">
+                <template v-slot:toolbar>
+                <span class="ql-formats">
+                    <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
+                    <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
+                    <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
+                  <select class="ql-align">
+                    <option defaultValue></option>ß
+                    <option value="center"></option>
+                    <option value="right"></option>
+                    <option value="justify"></option>
+                  </select>
+                </span>
+                </template>
+              </Editor>
               <small
                   class="p-error"
                   v-if="validation.qualificationEn"
@@ -306,7 +544,21 @@
               <label for="kazname">Required work experience</label>
               <Editor v-model="value.experienceEn"
                       :class="{'p-invalid': validation.experienceEn}"
-                      editorStyle="height: 120px"/>
+                      editorStyle="height: 120px">
+                <template v-slot:toolbar>
+                <span class="ql-formats">
+                    <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
+                    <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
+                    <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
+                  <select class="ql-align">
+                    <option defaultValue></option>ß
+                    <option value="center"></option>
+                    <option value="right"></option>
+                    <option value="justify"></option>
+                  </select>
+                </span>
+                </template>
+              </Editor>
               <small
                   class="p-error"
                   v-if="validation.experienceEn"
@@ -316,7 +568,21 @@
               <label for="kazname">Language skills</label>
               <Editor v-model="value.languageLevelEn"
                       :class="{'p-invalid': validation.languageLevelEn}"
-                      editorStyle="height: 120px"/>
+                      editorStyle="height: 120px">
+                <template v-slot:toolbar>
+                <span class="ql-formats">
+                    <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
+                    <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
+                    <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
+                  <select class="ql-align">
+                    <option defaultValue></option>ß
+                    <option value="center"></option>
+                    <option value="right"></option>
+                    <option value="justify"></option>
+                  </select>
+                </span>
+                </template>
+              </Editor>
               <small
                   class="p-error"
                   v-if="validation.languageLevelEn"
@@ -326,17 +592,45 @@
               <label for="kazname">Availability of certificates and diplomas</label>
               <Editor v-model="value.certificateRequirementsEn"
                       :class="{'p-invalid': validation.certificateRequirementsEn}"
-                      editorStyle="height: 120px"/>
+                      editorStyle="height: 120px">
+                <template v-slot:toolbar>
+                <span class="ql-formats">
+                    <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
+                    <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
+                    <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
+                  <select class="ql-align">
+                    <option defaultValue></option>ß
+                    <option value="center"></option>
+                    <option value="right"></option>
+                    <option value="justify"></option>
+                  </select>
+                </span>
+                </template>
+              </Editor>
               <small
                   class="p-error"
                   v-if="validation.certificateRequirementsEn"
-              >{{ $t("common.requiredField") }}</small>s
+              >{{ $t("common.requiredField") }}</small>
             </div>
             <div class="p-field">
               <label for="kazname">Personal qualities</label>
               <Editor v-model="value.personalQualitiesEn"
                       :class="{'p-invalid': validation.personalQualitiesEn}"
-                      editorStyle="height: 120px"/>
+                      editorStyle="height: 120px">
+                <template v-slot:toolbar>
+                <span class="ql-formats">
+                    <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
+                    <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
+                    <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
+                  <select class="ql-align">
+                    <option defaultValue></option>ß
+                    <option value="center"></option>
+                    <option value="right"></option>
+                    <option value="justify"></option>
+                  </select>
+                </span>
+                </template>
+              </Editor>
               <small
                   class="p-error"
                   v-if="validation.personalQualitiesEn"
@@ -434,8 +728,6 @@ export default {
       let path = this.value.id === undefined ? "/vacancy/add" : "/vacancy/update"
 
       this.value.departmentHead = this.head === null ? null : this.head[0]
-      console.log(this.value)
-      console.log(this.validationForm())
       if (this.validationForm()) {
         this.vacancyService.createOrUpdateVacancy(this.value, path).then(result => {
           this.emitter.emit("vacancyAdded", true);
@@ -477,7 +769,6 @@ export default {
     },
 
     validationForm() {
-      console.log('the org', this.value.organization)
       this.validation.organization = !this.value.organization || this.value.organization === ""
       this.validation.department = !this.value.department || this.value.department === ""
       this.validation.head = !this.value.departmentHead || this.value.departmentHead === ""
@@ -530,7 +821,6 @@ export default {
 
   },
   created() {
-    console.log(this.value.organization)
     this.vacancyService = new VacancyService()
     this.head = this.modelValue.departmentHead === undefined ? null : [this.modelValue.departmentHead]
     this.checkAction()

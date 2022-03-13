@@ -651,8 +651,10 @@ export default {
             notNative: 'Шектеулі',
         },
         rc: {
-            title: ''
+            title: 'Мамандандыру тақырыбы'
         }
+        ,
+        sendingMessage: 'Хабарлама жіберу. Өтінемін, күте тұрыңыз...'
     },
     workPlan: {
         plans: "Жоспарлар",

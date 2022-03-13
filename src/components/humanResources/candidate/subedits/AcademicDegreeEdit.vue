@@ -150,7 +150,6 @@ export default {
     action() {
       if (this.validateForm()) {
         let path = !this.value.id ? "/candidate/academic-degree/create" : "/candidate/academic-degree/update"
-        console.log("VALUE IS ", this.value)
         axios
             .post(smartEnuApi + path, this.value, {headers: getHeader(),})
             .then(res => {

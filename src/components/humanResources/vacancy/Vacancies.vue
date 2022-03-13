@@ -312,7 +312,6 @@ export default {
         this.vacancies = response.data.vacancies;
         this.count = response.data.total;
         this.loading = false;
-        console.log(this.vacancies)
       }).catch((error) => {
         if (error.response.status == 401) {
           this.$store.dispatch("logLout");

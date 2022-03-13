@@ -261,7 +261,6 @@ export default {
       this.lazyParams.countMode = null;
       axios.post(smartEnuApi + "/vacancy/user",
           this.lazyParams, {headers: getHeader()}).then((response) => {
-        console.log(response.data)
         this.vacancies = response.data.vacancies;
         this.count = response.data.total;
         this.loading = false;

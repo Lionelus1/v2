@@ -10,6 +10,7 @@ import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
 import Button from 'primevue/button';
 import Breadcrumb from 'primevue/breadcrumb';
+import BlockUI from 'primevue/blockui';
 import VCalendar from 'v-calendar';
 import Calendar from 'primevue/calendar';
 import Card from 'primevue/card';
@@ -177,6 +178,7 @@ app.component('Accordion', Accordion);
 app.component('AccordionTab', AccordionTab);
 app.component('AutoComplete', AutoComplete);
 app.component('Breadcrumb', Breadcrumb);
+app.component('BlockUI', BlockUI);
 app.component('Button', Button);
 app.component('VCalendar', VCalendar);
 app.component('PrimeCalendar', Calendar)
