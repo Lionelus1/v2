@@ -6,7 +6,7 @@
 <!--        <Button label="" icon="pi pi-download" @click="download"
                 class="p-button p-button-info p-ml-2"/>-->
       </div>
-      <div class="card" v-if="isPlanReportApproved && isPlanCreator || (isApproval && isCurrentUserApproved)">
+      <div class="card" v-if="isPlanReportApproved && (isPlanCreator || (isApproval || isCurrentUserApproved))">
         <Button :label="$t('common.signatures')" icon="pi pi-file"
                 @click="viewSignatures"
                 class="p-button p-ml-2"/>
@@ -185,6 +185,7 @@ export default {
             this.getPlan();
             this.getFile();
             this.getReportApprovalUsers();
+            this.getSignatures();
           }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
@@ -277,7 +278,7 @@ export default {
               this.approvals = [];
               this.isReportSentApproval = true;
               const d = res.data;
-              this.isPlanReportApproved = d.some(x => x.is_success);
+              this.isPlanReportApproved = d.every(x => x.is_success);
               //console.log(d.every(x => x.is_success === true));
               const unique = [...new Set(d.map(item => item.stage))];
               unique.forEach(r => {
@@ -301,24 +302,26 @@ export default {
     },
     init() {
       const currentUser = this.approval_users.findIndex(x => x.user.id === this.loginedUserId);
-      const last = this.approval_users?.at(-1);
-      const prevObj = this.approval_users[currentUser - 1];
-      const currentObj = this.approval_users[currentUser];
-      const findUserFromSignatures = this.signatures && prevObj ? this.signatures.find(x => x.userId === prevObj.user.id) : null;
-      if (prevObj == null && !currentObj.is_success) {
-        this.isApproval = true;
-      } else if (prevObj && currentObj.stage === prevObj.stage && !findUserFromSignatures) {
-        this.isApproval = true;
-      } else if (prevObj && prevObj.is_success && !currentObj.is_success && prevObj.stage === currentObj.stage) {
-        this.isApproval = true;
-      } else if (prevObj && currentObj.stage !== prevObj.stage && this.approval_users.filter(x => x.stage === 1 && x.is_success === true).length > 0) {
-        this.isApproval = true;
-      } else {
-        this.isApproval = false;
-      }
+      if (currentUser !== -1) {
+        const last = this.approval_users?.at(-1);
+        const prevObj = this.approval_users[currentUser - 1];
+        const currentObj = this.approval_users[currentUser];
+        const findUserFromSignatures = this.signatures && prevObj ? this.signatures.find(x => x.userId === prevObj.user.id) : null;
+        if (prevObj == null && !currentObj.is_success) {
+          this.isApproval = true;
+        } else if (prevObj && currentObj.stage === prevObj.stage && !findUserFromSignatures) {
+          this.isApproval = true;
+        } else if (prevObj && prevObj.is_success && !currentObj.is_success && prevObj.stage === currentObj.stage) {
+          this.isApproval = true;
+        } else if (prevObj && currentObj.stage !== prevObj.stage && this.approval_users.filter(x => x.stage === 1 && x.is_success === true).length > 0) {
+          this.isApproval = true;
+        } else {
+          this.isApproval = false;
+        }
 
-      if (last.stage === currentObj.stage) {
-        this.isLast = true;
+        if (last.stage === currentObj.stage) {
+          this.isLast = true;
+        }
       }
     },
     getSignatures() {

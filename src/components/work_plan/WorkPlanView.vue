@@ -1,12 +1,12 @@
 <template>
   <div>
     <div class="p-col-12" v-if="!loading">
-      <div class="card" v-if="isPlanApproved && isPlanCreator || (isApproval && isApproved) && plan.status.work_plan_status_id === 4">
+      <div class="card" v-if="isPlanApproved && (isPlanCreator || (isApproval || isApproved)) && plan.status.work_plan_status_id === 4">
         <Button v-if="isPlanCreator" :label="$t('common.action.reApprove')" icon="pi pi-check"
                 @click="reapproveConfirmDialog"
                 class="p-button p-ml-2"/>
         <Button :label="$t('common.signatures')" icon="pi pi-file"
-                v-if="isPlanApproved && isPlanCreator || (isApproval && isApproved)"
+                v-if="isPlanApproved && isPlanCreator || (isApproval || isApproved)"
                 @click="viewSignatures"
                 class="p-button p-ml-2"/>
       </div>
@@ -148,7 +148,7 @@ export default {
             if (res.data) {
               this.approvals = [];
               const d = res.data;
-              this.isPlanApproved = d.some(x => x.is_success);
+              this.isPlanApproved = d.every(x => x.is_success);
               const unique = [...new Set(d.map(item => item.stage))];
               unique.forEach(r => {
                 let f = d.filter(x => x.stage === r);
@@ -157,6 +157,8 @@ export default {
               this.approval_users = res.data;
               this.init();
             }
+            console.log("sss", this.isPlanApproved && (this.isPlanCreator || (this.isApproval && this.isApproved)) && this.plan.status.work_plan_status_id === 4)
+            console.log("asdqwe", (this.isPlanCreator || (this.isApproval && this.isApproved)))
           }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
