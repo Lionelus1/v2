@@ -14,11 +14,10 @@
         <template #header>
           <div class="p-d-flex p-jc-between p-ai-center">
             <h5 class="p-m-0">{{ $t('workPlan.addPlan') }}</h5>
-            <!--            <span class="p-input-icon-left">
-                          <i class="pi pi-search"/>
-                          <InputText type="search" v-model="searchText" :placeholder="$t('common.search')"/>
-                          <Button icon="pi pi-search" class="p-ml-1" @click="getData"/>
-                        </span>-->
+            <span class="p-input-icon-left"><i class="pi pi-search"/>
+              <InputText type="search" v-model="searchText" @keyup.enter="getPlans" :placeholder="$t('common.search')" @search="getPlans"/>
+              <Button icon="pi pi-search" class="p-ml-1" @click="getPlans"/>
+            </span>
           </div>
         </template>
         <template #empty> {{ $t('common.noData') }}</template>
@@ -30,44 +29,46 @@
         </Column>
         <Column field="status" :header="$t('common.status')">
           <template #body="{ data }">
-            <span :class="'customer-badge status-' + data.status.work_plan_status_id">{{ $i18n.locale === "kz" ? data.status.name_kk : $i18n.locale === "ru" ? data.status.name_ru : data.status.name_en }}</span>
+            <span :class="'customer-badge status-' + data.status.work_plan_status_id">{{
+                $i18n.locale === "kz" ? data.status.name_kk : $i18n.locale === "ru" ? data.status.name_ru : data.status.name_en
+              }}</span>
           </template>
         </Column>
-<!--        <Column field="actions" header="">
-          <template #body="{ data }">
-            <Button type="button" v-if="isCurrentUserApprove && data.status.work_plan_status_id === 2"
-                    icon="pi pi-check" class="p-button-success p-mr-2"
-                    label="Подписать" @click="openAcceptModal(data.id)"></Button>
-            <Button type="button" v-if="isCurrentUserApprove && data.status.work_plan_status_id === 2"
-                    icon="pi pi-times-circle" class="p-button-danger p-mr-2"
-                    label="Отказать" @click="openRejectModal(data.id)"></Button>
-          </template>
-        </Column>-->
+        <!--        <Column field="actions" header="">
+                  <template #body="{ data }">
+                    <Button type="button" v-if="isCurrentUserApprove && data.status.work_plan_status_id === 2"
+                            icon="pi pi-check" class="p-button-success p-mr-2"
+                            label="Подписать" @click="openAcceptModal(data.id)"></Button>
+                    <Button type="button" v-if="isCurrentUserApprove && data.status.work_plan_status_id === 2"
+                            icon="pi pi-times-circle" class="p-button-danger p-mr-2"
+                            label="Отказать" @click="openRejectModal(data.id)"></Button>
+                  </template>
+                </Column>-->
       </DataTable>
     </div>
 
-<!--    <Dialog :header="$t('common.action.accept')" v-model:visible="isAcceptModal" :style="{width: '450px'}" class="p-fluid">
-      <div class="p-field">
-      </div>
-      <template #footer>
-        <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
-                @click="closeModal"/>
-        <Button :label="$t('ncasigner.sign')" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2" @click="approve"/>
-      </template>
-    </Dialog>
+    <!--    <Dialog :header="$t('common.action.accept')" v-model:visible="isAcceptModal" :style="{width: '450px'}" class="p-fluid">
+          <div class="p-field">
+          </div>
+          <template #footer>
+            <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
+                    @click="closeModal"/>
+            <Button :label="$t('ncasigner.sign')" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2" @click="approve"/>
+          </template>
+        </Dialog>
 
-    <Dialog header="На доработку" v-model:visible="isRejectModal" :style="{width: '450px'}" class="p-fluid">
-      <div class="p-field">
-        <label>Комментарий</label>
-        <Textarea v-model="comment" rows="3" style="resize: vertical"/>
-      </div>
-      <template #footer>
-        <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
-                @click="closeModal"/>
-        <Button label="Отправить" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2"
-                @click="rejectPlan"/>
-      </template>
-    </Dialog>-->
+        <Dialog header="На доработку" v-model:visible="isRejectModal" :style="{width: '450px'}" class="p-fluid">
+          <div class="p-field">
+            <label>Комментарий</label>
+            <Textarea v-model="comment" rows="3" style="resize: vertical"/>
+          </div>
+          <template #footer>
+            <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
+                    @click="closeModal"/>
+            <Button label="Отправить" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2"
+                    @click="rejectPlan"/>
+          </template>
+        </Dialog>-->
   </div>
 </template>
 
@@ -112,7 +113,7 @@ export default {
 
     },
     getPlans() {
-      axios.post(smartEnuApi + `/workPlan/getPlans`, {}, {headers: getHeader()})
+      axios.post(smartEnuApi + `/workPlan/getPlans`, {search_text: this.searchText}, {headers: getHeader()})
           .then(res => {
             this.data = res.data;
             let localUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
