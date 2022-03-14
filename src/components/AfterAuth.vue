@@ -20,13 +20,11 @@ export default {
         this.setLoginedUser();
         let oldPath = this.$store.state.attemptedUrl;
         if(oldPath.length==0){
-          this.$router.push({name:'/smartenu/vaccination'});
+          location.replace('/#/smartenu/vaccination');
         }else{
           this.$store.dispatch("solveAttemptedUrl","");
-          this.$router.push({name:oldPath});
-          
+          location.replace("/#"+oldPath); 
         }
-        
       })
       .catch(error => {
         this.$router.push({name:'Login'});
