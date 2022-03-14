@@ -72,7 +72,6 @@ export default {
       this.showModal = false;
     },
     approvePlan() {
-      console.log(this.data)
       this.submitted = true;
       if (!this.validate()) {
         return;

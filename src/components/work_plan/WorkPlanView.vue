@@ -157,8 +157,6 @@ export default {
               this.approval_users = res.data;
               this.init();
             }
-            console.log("sss", this.isPlanApproved && (this.isPlanCreator || (this.isApproval && this.isApproved)) && this.plan.status.work_plan_status_id === 4)
-            console.log("asdqwe", (this.isPlanCreator || (this.isApproval && this.isApproved)))
           }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
@@ -285,7 +283,6 @@ export default {
         work_plan_id: parseInt(this.work_plan_id),
         is_last: this.isLast
       }, {headers: getHeader()}).then((response) => {
-        console.log(response)
         if (response.data.is_success) {
           this.$toast.add({
             severity: "success",
@@ -324,7 +321,6 @@ export default {
         doc_id: this.plan.doc_id,
         work_plan_name: this.plan.work_plan_name
       }, {headers: getHeader()}).then((response) => {
-        console.log(response)
         if (response.data.is_success) {
           this.emitter.emit("planSentToReapprove", true);
           this.$router.push({name: 'WorkPlan'});

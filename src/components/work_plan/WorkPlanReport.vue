@@ -116,7 +116,6 @@ export default {
       });
     },
     navigate(data) {
-      console.log(data)
       this.$router.push({
         name: 'WorkPlanReportView',
         params: {

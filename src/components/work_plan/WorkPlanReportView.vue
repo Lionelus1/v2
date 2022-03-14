@@ -19,8 +19,8 @@
                 @click="openRejectPlan"
                 class="p-button p-button-danger p-ml-2"/>
       </div>
-      <div class="card" v-if="approval_users && report.status">
-        <h5>{{ report_name }}
+      <div class="card" v-if="approval_users && report && report.status">
+        <h5>{{ report.report_name }}
           <span v-if="report" :class="'customer-badge status-' + report.status.work_plan_status_id">
               {{
               $i18n.locale === "kz" ? report.status.name_kk : $i18n.locale === "ru" ? report.status.name_ru : report.status.name_en
@@ -82,7 +82,6 @@ export default {
     return {
       source: null,
       document: null,
-      work_plan_id: 0,
       isApproval: false,
       isRejected: false,
       loginedUserId: 0,
@@ -93,7 +92,6 @@ export default {
       documentByteArray: null,
       isApproved: false,
       quarter: null,
-      report_name: null,
       items: null,
       report_id: null,
       doc_id: null,
@@ -126,7 +124,7 @@ export default {
         report_id: 0,
         doc_id: null,
         comment: null,
-        report_name: this.report_name
+        report_name: null
       },
       isReportSentApproval: false,
       isCurrentUserApproved: false,
@@ -243,7 +241,6 @@ export default {
       });
     },
     getData() {
-      console.log("TYPE = ", this.report.report_type, " <> QUARTER = ", this.report.quarter)
       axios.post(smartEnuApi + `/workPlan/getWorkPlanReportData`, {
         work_plan_id: parseInt(this.report.work_plan_id),
         quarter: this.report.report_type === 2 ? this.report.quarter : null
@@ -413,7 +410,7 @@ export default {
           this.loading = false;
           this.showRejectPlan = false;
           this.emitter.emit("planRejected", true);
-          this.$router.push({name: 'WorkPlanReport', params: {id: this.work_plan_id}});
+          this.$router.push({name: 'WorkPlanReport', params: {id: this.report.work_plan_id}});
         }
       }).catch(error => {
         if (error.response && error.response.status === 401) {

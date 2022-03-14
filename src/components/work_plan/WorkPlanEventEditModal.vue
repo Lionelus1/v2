@@ -80,14 +80,12 @@ export default {
     }
   },
   created() {
-    console.log(this.data)
     this.editData.quarter = parseInt(this.editData.quarter.String)
     this.editData.user.forEach(e => {
       e.userID = e.id;
       this.selectedUsers.push(e);
     })
     this.selectedUsers = this.editData.user;
-    console.log(this.editData)
   },
   methods: {
     openBasic() {
