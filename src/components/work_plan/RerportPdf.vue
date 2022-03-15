@@ -8,13 +8,13 @@
           <thead>
           <tr>
             <th>№</th>
-            <th>Наименование мероприятия</th>
-            <th>Ответственный исполнитель</th>
-            <th>Квартал</th>
-            <th>Планируемый результат</th>
-            <th>Примечание</th>
-            <th>Отчет</th>
-            <th>Выполнено/Не выполнено</th>
+            <th>{{ plan.lang === 1 ? 'Іс-шараның атауы' : plan.lang === 2 ? 'Наименование мероприятия' : 'Name of the event' }}</th>
+            <th>{{ plan.lang === 1 ? 'Жауапты орындаушы' : plan.lang === 2 ? 'Ответственный исполнитель' : 'Responsible executor' }}</th>
+            <th>{{ plan.lang === 1 ? 'Квартал' : plan.lang === 2 ? 'Квартал' : 'Quarter' }}</th>
+            <th>{{ plan.lang === 1 ? 'Жоспарланған нәтиже' : plan.lang === 2 ? 'Планируемый результат' : 'Planned result' }}</th>
+            <th>{{ plan.lang === 1 ? 'Ескерту' : plan.lang === 2 ? 'Примечание' : 'Note' }}</th>
+            <th>{{ plan.lang === 1 ? 'Есеп' : plan.lang === 2 ? 'Отчет' : 'Report' }}</th>
+            <th>{{ plan.lang === 1 ? 'Орындалды/Орындалмады' : plan.lang === 2 ? 'Выполнено/Не выполнено' : 'Completed/Not completed' }}</th>
           </tr>
           </thead>
           <tbody>
@@ -41,7 +41,7 @@ import {getHeader, smartEnuApi} from "@/config/config";
 
 export default {
   name: "ReportPdf",
-  props: ['planId', 'data', 'type', 'quarter', 'reportTitle'],
+  props: ['planId', 'data', 'type', 'quarter', 'reportTitle', 'plan'],
   data() {
     return {
       work_plan_id: this.planId,
@@ -51,9 +51,6 @@ export default {
     }
   },
   created() {
-    //this.getData();
-
-    console.log("title", this.reportTitle)
     this.year = new Date().getFullYear();
     //this.data.push({index: 1, name: "Test name", resp: 'User Name', quarter: 1, result: '', comment: 'Comment'})
     this.loginedUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
@@ -62,9 +59,6 @@ export default {
   methods: {
 
   },
-  mounted() {
-    console.log("report items", this.items)
-  }
 }
 </script>
 

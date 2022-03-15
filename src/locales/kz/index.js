@@ -69,7 +69,7 @@ export default {
         loading: "Жүктеу",
         toapprove: "Келісімге",
         tosign: "Қол қоюға",
-        comment: "Түсінктеме",
+        comment: "Түсініктеме",
         contacts: "Байланыстар",
         filter: "Сүзгі",
         graduationyear: "Оқуды бастады",
@@ -678,6 +678,7 @@ export default {
             eventNameError: "Іс-шара атауын енгізіңіз",
             approvalUserError: "Жауапты тұлғаларды таңдаңыз",
             quarterError: "Тоқсан таңдаңыз",
+            langError: "Тіл таңдаңыз",
         },
         message: {
             eventCreated: "Іс-шара сәтті құрылды",
@@ -689,6 +690,7 @@ export default {
         reportTypes: {
             year: "Жылдық",
             quarter: "Тоқсандық"
-        }
+        },
+        quarterYear: "Жыл бойы"
     }
 }

@@ -66,7 +66,7 @@ export default {
         },
         {
           id: 5,
-          name: 'Весь год'
+          name: this.$t('workPlan.quarterYear')
         }
       ],
       parentData: null,

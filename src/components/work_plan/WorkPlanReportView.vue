@@ -45,7 +45,7 @@
     </div>
 
     <div v-if="items">
-      <ReportPdf ref="report" :data="items" :report-title="report.report_name"
+      <ReportPdf ref="report" :data="items" :report-title="report.report_name" :plan="plan"
                  style="display: none;"></ReportPdf>
     </div>
 
@@ -246,7 +246,7 @@ export default {
         quarter: this.report.report_type === 2 ? this.report.quarter : null
       }, {headers: getHeader()}).then(res => {
         ///// FLATTEN ARRAY
-        this.items = treeToList(res.data, 'children');
+        this.items = treeToList(res.data, 'children', this.plan.lang);
         if (!this.source) {
           this.$nextTick(() => {
             this.initReportFile();

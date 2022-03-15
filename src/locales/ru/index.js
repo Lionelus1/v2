@@ -677,6 +677,7 @@ export default {
             eventNameError: "Введите название мероприятия",
             approvalUserError: "Выберите ответственных лиц",
             quarterError: "Выберите квартал",
+            langError: "Выберите язык",
         },
         message: {
             eventCreated: "Мероприятие успешно создано",
@@ -688,6 +689,7 @@ export default {
         reportTypes: {
             year: "Годовой",
             quarter: "Квартальный"
-        }
+        },
+        quarterYear: "Весь год"
     }
 }

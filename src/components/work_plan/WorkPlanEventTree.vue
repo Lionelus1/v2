@@ -132,7 +132,7 @@ export default {
           res = 'IV';
           break;
         case "5":
-          res = 'Весь год';
+          res = this.$t('workPlan.quarterYear');
           break;
       }
       return res;
@@ -142,6 +142,8 @@ export default {
         message: this.$t('common.doYouWantDelete'),
         header: this.$t('common.delete'),
         icon: 'pi pi-info-circle',
+        acceptClass: 'p-button-rounded p-button-success',
+        rejectClass: 'p-button-rounded p-button-danger',
         accept: () => {
           this.remove(event_id);
         },

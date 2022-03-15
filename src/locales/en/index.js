@@ -677,6 +677,7 @@ export default {
             eventNameError: "Enter the name of the event",
             approvalUserError: "Select the responsible persons",
             quarterError: "Select a quarter",
+            langError: "Choose language",
         },
         message: {
             eventCreated: "Event created successfully",
@@ -688,6 +689,7 @@ export default {
         reportTypes: {
             year: "Annual",
             quarter: "Quarterly"
-        }
+        },
+        quarterYear: "Whole year"
     }
 }
