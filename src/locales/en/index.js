@@ -1,9 +1,10 @@
 export default {
     common: {
         chooseCert:"Choose the certificate",
-        
+        activeList: "Active list",
         newPasswordError:"Passwords are not identical or character count is less than 5 symbol",
         changePassword:"Change password",
+        head: "Head of organization",
         newPassword:"Enter new password",
         newPasswordRe:"Repeat new password",
         administration: 'Administration',
@@ -207,6 +208,7 @@ export default {
         done: "Done",
         notDone: "Not done",
         success: "Success",
+        successDone: "Successfully completed",
         downloadSignaturesPdf: "Download signatures",
         signatures: "Signatures"
     },

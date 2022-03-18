@@ -17,7 +17,7 @@
       </div>
     </transition>
     <div class="layout-main p-pr-0 p-pl-0">
-      <router-view/>
+      <router-view v-model:pagemenu="localpagemenu"/>
     </div>
     <AppConfig :layoutMode="layoutMode" :layoutColorMode="layoutColorMode" @layout-change="onLayoutChange"
                @layout-color-change="onLayoutColorChange"/>

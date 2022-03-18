@@ -1,9 +1,10 @@
 export default {
     common: {
         chooseCert:"Выбрать сертификат",
+        activeList: "Активный список",
         newPasswordError:"Пароли не совпадают или длина пароля менее 5 символов ",
         changePassword:"Изменение пароля ",
-
+        head: "Руководитель организации",
         newPassword:"Введите новый пароль",
         newPasswordRe:"Повторно введите пароль",
 
@@ -208,6 +209,7 @@ export default {
         perform: "Выполнить",
         done: "Выполнено",
         notDone: "Не выполнено",
+        successDone: "Успешно выполнено",
         success: "Успешно",
         downloadSignaturesPdf: "Скачать подписи",
         signatures: "Подписи"

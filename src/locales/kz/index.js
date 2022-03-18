@@ -1,10 +1,10 @@
 export default {
     common: {
         chooseCert:"Сертификатты таңдаңыз",
-
+        activeList: "Белсенді тізім",
         newPasswordError:"Құпиясөздер сәйкес келмейді немесе құпиясөз ұзындығы 5 таңбадан кем ",
         changePassword:"Құпиясөзді өзгерту",
-
+        head: "Ұйымдық жетекшісі",
         newPassword:"Жаңа құпиясөзді енгізіңіз",
         newPasswordRe:"Құпиясөзді қайталап енгізіңіз",
 
@@ -208,6 +208,7 @@ export default {
         done: "Орындалды",
         notDone: "Орындалмады",
         success: "Сәтті",
+        successDone: "Сәтті орындалды",
         downloadSignaturesPdf: "Қолтаңбаларды жүктеу",
         signatures: "Қолтаңбалар"
     },

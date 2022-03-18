@@ -322,6 +322,7 @@ export default {
     toggle(event, data) {
       this.currentOrganization = data.data;
       this.updateValue(data.data);
+      this.$emit("selected", {value: data.data})
     },
     openAgentTypeSelect(event) {
       this.$refs.op.toggle(event);

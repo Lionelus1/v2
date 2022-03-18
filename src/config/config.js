@@ -67,8 +67,7 @@ export const testFunction= function(){
   //console.log("ene bol busgui chini");
 }
 export const findRole = function(user, role) {
-    if (user == null)
-      user = this.$store.state.loginedUser;
+    user = this.$store.state.loginedUser;
     if (!user)
       return false;
     

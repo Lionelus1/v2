@@ -2,16 +2,14 @@
   <div class="p-field p-grid">
     <div class="p-col-12 p-md-12 p-mb-2">
       <span class="p-float-label p-ibutoon-right">
-        <i v-if="value" class="pi pi-id-card ibutton" style="margin-right:35px;height:30px;margin-top: 2px;" @click="showcard()"/>
-        <i class="pi pi-ellipsis-h ibutton" style="height:30px;margin-top: 2px;margin-right: 2px;" @click="showside()"/>
+        <i v-if="value" class="pi pi-id-card ibutton" :style="(!editVisible ? 'height:30px;margin-top: 2px;margin-right: 2px;' : 'margin-right:35px;height:30px;margin-top: 2px;')" @click="showcard()"/>
+        <i v-if="editVisible" class="pi pi-ellipsis-h ibutton" style="height:30px;margin-top: 2px;margin-right: 2px;" @click="showside()"/>
         <InputText id="inputtext-right" :placeholder="$t('common.select')" readonly="true" type="text" v-model="selectedContragentName"/>
-        <Sidebar @hide="updateValue(value)" v-model:visible="contragentVisible" position="right" class="p-sidebar-lg p-m-0 p-p-0 p-pt-7" style="overflow-y:scroll">
-          <Contragents v-model="value" v-model:windowOpened="contragentVisible"></Contragents>
+        <Sidebar @hide="updateValue(value)" @selected="selected" v-model:visible="contragentVisible" position="right" class="p-sidebar-lg p-m-0 p-p-0 p-pt-7" style="overflow-y:scroll">
+          <Contragents v-model="value" v-model:windowOpened="contragentVisible" @selected="selected"></Contragents>
         </Sidebar>
         <Sidebar v-model:visible="cardVisible" position="right" class="p-sidebar-lg" style="overflow-y:scroll">
-          <Organization v-if="value.type == null || value.type == ContragentType.Organization" :readonly="true" :modelValue="value.data"></Organization>
-          <Person v-if="value.type == ContragentType.Person" :modelValue="value.data" :readonly="true"></Person>
-          <Bank v-if="value.type == ContragentType.Bank" :modelValue="value.data" :readonly="true"></Bank>
+          <Organization :readonly="true" :modelValue="value"></Organization>
         </Sidebar>
       </span>
     </div>
@@ -26,7 +24,7 @@ import Person from './Person.vue'
 import Bank from './Bank.vue'
 import Enum from "@/enum/docstates/index"
 export default {
-  components : { Contragents, Organization, Person, Bank },
+  components : { Contragents, Organization },
   data() {
     return {
       value: this.modelValue,
@@ -36,6 +34,7 @@ export default {
       cardVisible: false,
       personVisible: false,
       ContragentType : Enum.ContragentType,
+      editVisible: !this.disabled
     }
   },
   computed: {
@@ -60,6 +59,9 @@ export default {
       else
         this.contragentVisible = true;
     },
+    selected(event) {
+      this.$emit("selected", event)
+    },
     showcard(cardname) {
       if (cardname == 'person')
         this.personVisible = true;
@@ -69,6 +71,10 @@ export default {
   },
   props: {
     modelValue: null,
+    disabled: {
+      typeof: Boolean,
+      default: false
+    },
   },
   setup(props, context) {
 			function updateValue(value) {

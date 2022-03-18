@@ -54,14 +54,15 @@
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label
               >{{ this.$t("contact.lname")
-              }}<span class="p-error" v-if="addMode">*</span></label
+              }}<span class="p-error" v-if="addMode || !localReadonly">*</span></label
             >
 
             <InputText
-              :readonly="readonly"
+              :readonly="localReadonly"
               class="p-mt-2"
               type="text"
               v-model="value.thirdName"
+              @input="correct"
             ></InputText>
             <small
               class="p-error"
@@ -72,13 +73,14 @@
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label
               >{{ this.$t("contact.fname")
-              }}<span class="p-error" v-if="addMode">*</span></label
+              }}<span class="p-error" v-if="addMode || !localReadonly">*</span></label
             >
             <InputText
-              :readonly="readonly"
+              :readonly="localReadonly"
               class="p-mt-2"
               type="text"
               v-model="value.firstName"
+              @input="correct"
             ></InputText>
             <small
               class="p-error"
@@ -89,32 +91,35 @@
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label>{{ this.$t("contact.sname") }}</label>
             <InputText
-              :readonly="readonly"
+              :readonly="localReadonly"
               class="p-mt-2"
               type="text"
               v-model="value.lastName"
+              @input="correct"
             ></InputText>
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label
               >{{ this.$t("contact.birthday")
-              }}<span class="p-error" v-if="addMode">*</span></label
+              }}<span class="p-error" v-if="addMode || !localReadonly">*</span></label
             >
 
             <PrimeCalendar
-              :readonly="readonly"
+              :readonly="localReadonly"
               class="p-mt-2"
               v-model="value.birthday"
               dateFormat="dd.mm.yy"
+              @date-select="correct"
+              @input="correct"
             />
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label
               >{{ this.$t("contact.iin")
-              }}<span class="p-error" v-if="addMode">*</span></label
+              }}<span class="p-error" v-if="addMode || !localReadonly">*</span></label
             >
             <InputText
-              :readonly="readonly"
+              :readonly="!addMode"
               class="p-mt-2"
               type="text"
               :placeholder="$t('contact.iin')"
@@ -124,14 +129,18 @@
               $t("common.requiredField")
             }}</small>
           </div>
-          <div v-if="addMode" class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
-            <label>{{ this.$t("common.password") }}</label>
-            <InputText
-              :readonly="readonly"
-              class="p-mt-2"
-              type="text"
-              v-model="password"
-            ></InputText>
+          <div v-if="addMode || isAdmin" class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+            <label>{{ this.$t("common.password") }}<span class="p-error" v-if="addMode">*</span></label>
+            <span class="p-input-icon-right p-mt-2">
+              <Password
+                :readonly="localReadonly"
+                type="text"
+                v-model="password"
+                @input="correct"
+              ></Password>
+              <i class="pi pi-key" style="cursor: pointer;" @click="generatePassword" />
+            </span>
+             
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label>{{ this.$t("common.academicDegree") }}</label>
@@ -140,34 +149,36 @@
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label>{{ this.$t("common.academicTitle") }}</label>
-            <Dropdown  class="p-mt-2" :disabled="readonly && !addMode" v-model="value.academicTitle" :options="academicTitleDictionary" :optionLabel="('name'+$i18n.locale)" :placeholder="$t('common.select')" />
+            <Dropdown  class="p-mt-2" :disabled="localReadonly && !addMode" v-model="value.academicTitle" :options="academicTitleDictionary" :optionLabel="('name'+$i18n.locale)" :placeholder="$t('common.select')" />
 
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label
               >{{ this.$t("common.workPlace")
-              }}<span class="p-error" v-if="addMode">*</span></label
+              }}</label
             >
             <ContragentSelectOrg 
               v-model="value.organization"
               class="p-mt-2"
+              :disabled="localReadonly && !addMode"
+              @selected="correct"
             ></ContragentSelectOrg>
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label
               >{{ this.$t("contact.position")
-              }}<span class="p-error" v-if="addMode">*</span></label
+              }}</label
             >
             <PositionsList 
               class="p-mt-2"
-              :readonly="readonly && !addMode"
+              :readonly="localReadonly && !addMode"
               v-model="value.mainPosition"
             ></PositionsList>
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label>{{ this.$t("contact.gender") }}</label>
             <Dropdown
-              :disabled="readonly && !addMode"
+              :disabled="localReadonly && !addMode"
               class="p-mt-2"
               v-model="value.gender"
               :options="gender"
@@ -179,7 +190,7 @@
           <div v-if="!addMode" class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label>{{ this.$t("common.state") }}</label>
             <SelectButton
-              :disabled="readonly"
+              :disabled="localReadonly"
               class="p-mt-2"
               v-model="value.state"
               :options="states"
@@ -190,7 +201,7 @@
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label>&nbsp;</label>
             <SelectButton
-              :disabled="readonly"
+              :disabled="localReadonly"
               class="p-mt-2"
               v-model="value.resident"
               :options="resident"
@@ -206,9 +217,9 @@
         </div>
         <div class="p-grid p-formgrid">
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
-            <label>{{ this.$t("contact.email") }}</label>
+            <label>{{ this.$t("contact.email") }}<span class="p-error" v-if="addMode || !localReadonly">*</span></label>
             <InputText
-              :readonly="readonly"
+              :readonly="localReadonly"
               class="p-mt-2"
               type="text"
               :placeholder="$t('contact.email')"
@@ -221,7 +232,7 @@
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label>{{ this.$t("contact.locality") }}</label>
             <InputText
-              :readonly="readonly"
+              :readonly="localReadonly"
               class="p-mt-2"
               type="text"
               :placeholder="$t('contact.locality')"
@@ -235,7 +246,7 @@
               }})</label
             >
             <InputText
-              :readonly="readonly"
+              :readonly="localReadonly"
               class="p-mt-2"
               type="text"
               :placeholder="$t('contact.address')"
@@ -249,7 +260,7 @@
               }})</label
             >
             <InputText
-              :readonly="readonly"
+              :readonly="localReadonly"
               class="p-mt-2"
               type="text"
               :placeholder="$t('contact.address')"
@@ -259,7 +270,7 @@
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label>{{ this.$t("contact.phone") }}</label>
             <InputText
-              :readonly="readonly"
+              :readonly="localReadonly"
               class="p-mt-2"
               type="text"
               :placeholder="$t('contact.phone')"
@@ -280,7 +291,7 @@
               <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
                 <label>{{ this.$t("common.number") }}</label>
                 <InputText
-                  :readonly="readonly"
+                  :readonly="localReadonly"
                   class="p-mt-2"
                   type="text"
                   :placeholder="$t('common.number')"
@@ -290,7 +301,7 @@
               <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
                 <label>{{ this.$t("contact.idcard.givenorg") }}</label>
                 <Dropdown
-                  :disabled="readonly"
+                  :disabled="localReadonly"
                   class="p-mt-2"
                   v-model="value.idsource"
                   :options="givenorg"
@@ -333,7 +344,7 @@
               <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
                 <label>{{ this.$t("bank.accnumber") }}</label>
                 <InputText
-                  :readonly="readonly"
+                  :readonly="localReadonly"
                   class="p-mt-2"
                   type="text"
                   :placeholder="$t('bank.accnumber')"
@@ -343,7 +354,7 @@
               <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
                 <label>{{ this.$t("bank.title2") }}</label>
                 <InputText
-                  :readonly="readonly"
+                  :readonly="localReadonly"
                   class="p-mt-2"
                   type="text"
                   :placeholder="$t('bank.title2')"
@@ -361,7 +372,7 @@
 import ContragentSelectOrg from "../contragent/ContragentSelectOrg.vue";
 import PositionsList from "../smartenu/PositionsList.vue";
 import axios from "axios";
-import { getHeader, smartEnuApi } from "@/config/config";
+import { getHeader, smartEnuApi, findRole } from "@/config/config";
 import html2canvas from "html2canvas";
 import * as jsPDF from "jspdf";
 export default {
@@ -373,6 +384,8 @@ export default {
       academicDegreeDictionary: [],
       academicTitleDictionary: [],
       backcolor: "background-color: var(--green-100);",
+      localReadonly: true,
+      isAdmin: false,
       password: "",
       value: this.modelValue,
       states: [
@@ -396,6 +409,7 @@ export default {
         firstName: false,
         iin: false,
         email: false,
+        password: false,
       },
       submitted: false,
       active: null,
@@ -403,8 +417,9 @@ export default {
         {
           label: this.$t("common.save"),
           icon: "pi pi-fw pi-save",
+          disabled: !this.addMode,
           command: () => {
-            if (this.addMode) this.insertUser();
+            this.insertUser();
           },
         },
         {
@@ -431,17 +446,26 @@ export default {
   },
   emits: ['userCreated'],
   created() {
-    var generator = require("generate-password");
-
-    this.password = generator.generate({
-      length: 10,
-      numbers: true,
-      symbols: true,
-    });
+    
     this.getCatalog("academic_degree");
     this.getCatalog("academic_title")
+    this.isAdmin = this.findRole(null, 'main_administrator')
+    this.localReadonly =  this.readonly && !this.isAdmin
   },
   methods: {
+    findRole: findRole,
+    generatePassword() {
+      var generator = require("generate-password");
+      this.password = generator.generate({
+        length: 10,
+        numbers: true,
+        symbols: true,
+      });
+      this.correct()
+    },
+    correct() {
+      this.menu[0].disabled = false
+    },
     getCatalog(name) {
       axios
         .post(
@@ -473,18 +497,23 @@ export default {
     insertUser() {
       this.submitted = true;
       if (this.validateAddForm()) {
+
         axios
           .post(
-            smartEnuApi + "/insertUser",
+            
+            smartEnuApi + (this.addMode ? "/insertUser" : "/updateUser"),
             { user: this.value, password: this.password },
             {
               headers: getHeader(),
             }
           )
           .then((res) => {
+            if (this.password != null && this.password != "") {
+              this.userDetailSaved = true
+            }
             this.value.userID = res.data;
             this.submitted = false;
-            this.userDetailSaved = true;
+            
             if (this.value.thirdName != "") {
               this.value.fullName =  this.value.thirdName
             }
@@ -494,7 +523,15 @@ export default {
             if (this.value.lastName != "") {
                this.value.fullName =  this.value.fullName + " " +  this.value.lastName
             }
-            this.$emit("userCreated", this.value);
+            if (this.addMode) {
+              this.$emit("userCreated", this.value);
+            }
+            this.menu[0].disabled = true
+            this.$toast.add({
+              severity: "success",
+              summary:  this.$t('common.successDone'),
+              life: 3000,
+            });
           })
           .catch((error) => {
             if (error.response.status == 401) {
@@ -523,12 +560,22 @@ export default {
         !this.value.thirdName || this.value.thirdName == "";
       this.validationErrors.email = !this.value.email || this.value.email == "";
       this.validationErrors.iin = !this.value.IIN || this.value.IIN == "";
+      this.validationErrors.password = !this.password || this.password == ""
+      if (this.addMode)
       return (
         !this.validationErrors.firstName &&
         !this.validationErrors.thirdName &&
         !this.validationErrors.email &&
-        !this.validationErrors.iin
-      );
+        !this.validationErrors.iin &&
+        !this.validationErrors.password
+      ) 
+      return (
+        !this.validationErrors.firstName &&
+        !this.validationErrors.thirdName &&
+        !this.validationErrors.email &&
+        !this.validationErrors.iin 
+      ) 
+
     },
     download() {
       this.backcolor = "background-color: white";

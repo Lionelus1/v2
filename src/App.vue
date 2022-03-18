@@ -8,7 +8,7 @@
     name:'app',
     data() {
       return {
-        menu: "salem"
+        menu: null
       }
     }
   }
