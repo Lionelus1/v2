@@ -182,20 +182,17 @@ export default {
     checkAction(data) {
       if (data.history !== undefined) {
         this.vacancyService.checkApplyAction(data.history.status.id).then(response => {
-          console.log(response.data)
           if (response.data === 'hiring') {
             this.action = this.vacancyService.applyActions.find(action => action.alias === 'hire')
             this.menu[0].label = this.$t(this.action.label)
             this.menu[0].visible = this.action.visible
             this.actionReject = this.vacancyService.applyActions.find(action => action.alias === 'not-hire')
-            console.log(this.actionReject)
             this.menu[1].label = this.$t(this.actionReject.label)
             this.menu[1].visible = this.actionReject.visible
             this.actionReserve = this.vacancyService.applyActions.find(action => action.alias === 'reserve')
-            console.log(this.actionReserve)
             this.menu[2].label = this.$t(this.actionReserve.label)
             this.menu[2].visible = this.actionReserve.visible
-          } else {
+          } else if (response.data !== "") {
             this.action = this.vacancyService.applyActions.find(action => action.alias === 'interview')
             this.menu[0].label = this.$t(this.action.label)
             this.menu[0].visible = this.action.visible
@@ -213,7 +210,6 @@ export default {
   },
   created() {
     this.vacancyService = new VacancyService()
-    console.log(this.candidates)
   }
 }
 </script>

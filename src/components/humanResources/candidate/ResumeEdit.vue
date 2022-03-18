@@ -307,7 +307,6 @@ export default {
           .post(smartEnuApi + "/candidate/create", {}, {headers: getHeader(),})
           .then(res => {
             this.$toast.add({severity: 'success', summary: 'Success', detail: 'Резюме успешно создано', life: 3000});
-            console.log(res.data)
             this.candidate = {}
             this.candidate = res.data
           }).catch(error => {
@@ -319,7 +318,6 @@ export default {
           .post(smartEnuApi + "/candidate/delete", {id: this.candidate.id}, {headers: getHeader(),})
           .then(res => {
             this.$toast.add({severity: 'success', summary: 'Success', detail: 'Резюме успешно удалено', life: 3000});
-            console.log(res.data)
             this.candidate = null
           }).catch(error => {
         if (error.response.status === 404) {

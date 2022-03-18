@@ -1,6 +1,6 @@
 <template>
   <!-- Toolbar -->
-  <Toolbar class="p-mb-4" v-if="userId === 0">
+  <Toolbar class="p-mb-4" v-if="userId === undefined">
     <template #end>
       <Button :label="$t('common.login')" icon="pi pi-user" v-on:click="visible.login = true"/>
     </template>
@@ -352,7 +352,7 @@ export default {
   data() {
     return {
       file: null,
-      userId: 0,
+      userId: null,
       count: 200,
       filters: {
         'global': {value: null, matchMode: FilterMatchMode.CONTAINS},
@@ -511,8 +511,6 @@ export default {
     select(event) {
       this.vacancy = event.data
       this.visible.view = true
-      console.log(this.vacancy)
-      // this.$toast.add({severity: 'info', summary: 'Product Selected', detail: 'ID: ' + event.data.id, life: 3000});
     },
 
     /**
@@ -552,11 +550,7 @@ export default {
   },
   created() {
     this.getVacancies();
-    // this.userId = this.$store.state.loginedUser.userID;
-    // if (JSON.parse(localStorage.getItem("loginedUser")) !== null) {
-    //   this.userId = JSON.parse(localStorage.getItem("loginedUser")).userID
-      console.log(this.userId)
-    // }
+    this.userId = this.$store.state.loginedUser.userID;
   },
 }
 </script>

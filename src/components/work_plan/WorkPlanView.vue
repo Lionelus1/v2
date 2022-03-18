@@ -1,12 +1,12 @@
 <template>
   <div>
     <div class="p-col-12" v-if="!loading">
-      <div class="card" v-if="isPlanApproved && isPlanCreator || (isApproval && isApproved) && plan.status.work_plan_status_id === 4">
+      <div class="card" v-if="isPlanApproved && (isPlanCreator || (isApproval || isApproved)) && plan.status.work_plan_status_id === 4">
         <Button v-if="isPlanCreator" :label="$t('common.action.reApprove')" icon="pi pi-check"
                 @click="reapproveConfirmDialog"
                 class="p-button p-ml-2"/>
         <Button :label="$t('common.signatures')" icon="pi pi-file"
-                v-if="isPlanApproved && isPlanCreator || (isApproval && isApproved)"
+                v-if="isPlanApproved && isPlanCreator || (isApproval || isApproved)"
                 @click="viewSignatures"
                 class="p-button p-ml-2"/>
       </div>
@@ -148,7 +148,7 @@ export default {
             if (res.data) {
               this.approvals = [];
               const d = res.data;
-              this.isPlanApproved = d.some(x => x.is_success);
+              this.isPlanApproved = d.every(x => x.is_success);
               const unique = [...new Set(d.map(item => item.stage))];
               unique.forEach(r => {
                 let f = d.filter(x => x.stage === r);
@@ -283,7 +283,6 @@ export default {
         work_plan_id: parseInt(this.work_plan_id),
         is_last: this.isLast
       }, {headers: getHeader()}).then((response) => {
-        console.log(response)
         if (response.data.is_success) {
           this.$toast.add({
             severity: "success",
@@ -311,6 +310,8 @@ export default {
         message: this.$t('common.confirmation'),
         header: this.$t('common.confirm'),
         icon: 'pi pi-info-circle',
+        acceptClass: 'p-button-rounded p-button-success',
+        rejectClass: 'p-button-rounded p-button-danger',
         accept: () => {
           this.reapprove();
         }
@@ -322,7 +323,6 @@ export default {
         doc_id: this.plan.doc_id,
         work_plan_name: this.plan.work_plan_name
       }, {headers: getHeader()}).then((response) => {
-        console.log(response)
         if (response.data.is_success) {
           this.emitter.emit("planSentToReapprove", true);
           this.$router.push({name: 'WorkPlan'});

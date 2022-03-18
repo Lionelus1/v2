@@ -8,6 +8,10 @@
         </Menubar>
       </div>
     </div>
+    <div v-if="sending" class="p-col-12 p-md-12 p-fluid">
+      <label>{{$t('hr.sendingMessage')}}</label>
+      <ProgressBar  mode="indeterminate" class="p-mt-2" style="height: .5em" />
+    </div>
     <div class="p-col-12 p-md-12 p-fluid">
       <div class="card">
         <div class="p-field">
@@ -45,6 +49,7 @@ export default {
   data() {
     return {
       active: null,
+      sending: false,
       request: {},
       menu: [
         {
@@ -63,12 +68,15 @@ export default {
   },
   methods: {
     sendMessage() {
+      this.sending = true
       this.request.relId = this.candidateRelation.id
       this.request.to = this.candidateRelation.candidate.user.email
       this.vacancyService.applyAction(this.request, this.path).then(response => {
+        this.sending = false
         this.emitter.emit("updateForm", true);
       }).catch(error => {
         console.log(error)
+        this.sending = false
       })
     }
   }

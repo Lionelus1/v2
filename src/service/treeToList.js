@@ -19,7 +19,7 @@ function transformStack(tree) {
     return stack;
 }
 
-const treeToList = function (tree, key) {
+const treeToList = function (tree, key, lang) {
     if (key === void 0) { key = 'children'; }
     var list;
     if (Array.isArray(tree)) { // array tree
@@ -45,7 +45,7 @@ const treeToList = function (tree, key) {
                 item[prop] = node[prop];
             }
             if (prop === 'quarter') {
-                item[prop] = initQuarter(item[prop].String)
+                item[prop] = initQuarter(item[prop].String, lang)
             }
         });
         if (nodeKey) { // object
@@ -63,7 +63,7 @@ const treeToList = function (tree, key) {
     return list;
 };
 
-function initQuarter(quarter) {
+function initQuarter(quarter, lang) {
     let res = '';
     switch (quarter) {
         case "1":
@@ -79,7 +79,7 @@ function initQuarter(quarter) {
             res = 'IV';
             break;
         case "5":
-            res = 'Весь год';
+            res = lang === 1 ? 'Жыл бойы' : lang === 2 ? 'Весь год' : 'Whole year';
             break;
     }
     return res;

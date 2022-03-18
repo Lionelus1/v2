@@ -377,7 +377,6 @@ export default {
     }
   },
   mounted() {
-    console.log(this.value)
     this.candidate = this.value
     this.startProgress()
     this.getCandidateEducations()
@@ -500,7 +499,6 @@ export default {
       this.resumeService.getCandidateLanguages(this.candidate.id).then(response => {
         this.languages = response.data
         this.iter++
-        console.log(response.data)
       }).catch(error => {
         console.log(error)
       })

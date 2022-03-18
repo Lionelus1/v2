@@ -6,11 +6,16 @@
       <label>{{ $t('workPlan.planName') }}</label>
       <InputText v-model="work_plan_name" @input="input" v-on:keyup.enter="createPlan"/>
     </div>
+    <div class="p-field">
+      <label>{{ $t('common.lang') }}</label>
+      <Dropdown v-model="lang" :options="languages" optionLabel="name" optionValue="id" :placeholder="$t('common.select')" />
+      <small class="p-error" v-if="submitted && !lang">{{ $t('workPlan.errors.langError') }}</small>
+    </div>
     <template #footer>
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
               @click="closeBasic"/>
       <Button :label="$t('common.add')" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2"
-              :disabled="isDisabled" @click="createPlan"/>
+              :disabled="isDisabled && lang" @click="createPlan"/>
     </template>
   </Dialog>
 
@@ -30,6 +35,22 @@ export default {
       documentID: null,
       isDocCreated: false,
       isDisabled: true,
+      lang: null,
+      languages: [
+        {
+          id: 1,
+          name: 'Қазақ'
+        },
+        {
+          id: 2,
+          name: 'Русский'
+        },
+        {
+          id: 3,
+          name: 'English'
+        }
+      ],
+      submitted: false
     }
   },
   props: ['isAdded', 'isSub'],
@@ -41,7 +62,10 @@ export default {
       this.showModal = false;
     },
     createPlan() {
-      axios.post(smartEnuApi + `/workPlan/addPlan`, {work_plan_name: this.work_plan_name}, {
+      this.submitted = true;
+      if (!this.validate())
+        return
+      axios.post(smartEnuApi + `/workPlan/addPlan`, {work_plan_name: this.work_plan_name, lang: this.lang}, {
         headers: getHeader(),
       }).then(res => {
         if (res.data.is_success) {
@@ -55,6 +79,7 @@ export default {
           });
         }
         this.showModal = false;
+        this.submitted = false;
       }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
@@ -65,10 +90,14 @@ export default {
             life: 3000,
           });
         }
+        this.submitted = false;
       });
     },
     input(event) {
       this.isDisabled = event.target.value.length <= 0;
+    },
+    validate() {
+      return this.work_plan_name && this.lang;
     }
   }
 }

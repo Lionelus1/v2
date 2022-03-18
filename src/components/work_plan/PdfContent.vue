@@ -8,11 +8,11 @@
           <thead>
           <tr>
             <th>№</th>
-            <th>Наименование мероприятия</th>
-            <th>Ответственный исполнитель</th>
-            <th>Квартал</th>
-            <th>Планируемый результат</th>
-            <th>Примечание</th>
+            <th>{{ plan.lang === 1 ? 'Іс-шараның атауы' : plan.lang === 2 ? 'Наименование мероприятия' : 'Name of the event' }}</th>
+            <th>{{ plan.lang === 1 ? 'Жауапты орындаушы' : plan.lang === 2 ? 'Ответственный исполнитель' : 'Responsible executor' }}</th>
+            <th>{{ plan.lang === 1 ? 'Квартал' : plan.lang === 2 ? 'Квартал' : 'Quarter' }}</th>
+            <th>{{ plan.lang === 1 ? 'Жоспарланған нәтиже' : plan.lang === 2 ? 'Планируемый результат' : 'Planned result' }}</th>
+            <th>{{ plan.lang === 1 ? 'Ескерту' : plan.lang === 2 ? 'Примечание' : 'Note' }}</th>
           </tr>
           </thead>
           <tbody>
@@ -75,7 +75,7 @@ export default {
       axios.post(smartEnuApi + `/workPlan/getWorkPlanReportData`, {
         work_plan_id: this.work_plan_id
       }, {headers: getHeader()}).then(res => {
-        this.items = treeToList(res.data, 'children');
+        this.items = treeToList(res.data, 'children', this.plan.lang);
       }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");

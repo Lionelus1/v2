@@ -162,7 +162,6 @@ export default {
       axios.post(
           smartEnuApi + "/knowledge/levels", {}, {headers: getHeader()}).then((res) => {
         this.knowledgeLevels = res.data
-        console.log("LEVELS ", res.data)
       }).catch((error) => {
         if (error.response.status == 401) {
           this.$store.dispatch("logLout");
@@ -181,7 +180,6 @@ export default {
       fd.append("cert", this.file);
       if (this.validateForm()) {
         let path = !this.value.id ? "/candidate/language/create" : "/candidate/language/update"
-        console.log("VALUE IS ", this.value)
         axios
             .post(smartEnuApi + path, fd, {headers: getHeader(),})
             .then(res => {
