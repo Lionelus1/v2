@@ -1,5 +1,6 @@
 export default {
     common: {
+        loginWelcome:"Smart.enu жүйесіне қош келдіңіз.",
         chooseCert:"Сертификатты таңдаңыз",
 
         newPasswordError:"Құпиясөздер сәйкес келмейді немесе құпиясөз ұзындығы 5 таңбадан кем ",

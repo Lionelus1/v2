@@ -33,10 +33,15 @@ const ifAuthenticated = (to, from, next) => {
 
 const routes = [
     {
-        path:'/public/vacancies',
-        name:'PublicVacancies',
-        component: load('humanResources/vacancy/PublicVacancies'),
+        path:'/login',
+        name:'Login',
+        component: load('Login'),
     },
+    // {
+    //     path:'/login',
+    //     name:'PublicVacancies',
+    //     component: load('humanResources/vacancy/PublicVacancies'),
+    // },
     {
         path: '/afterauth',
         name: 'AfterAuth',
@@ -50,8 +55,8 @@ const routes = [
     },
     {
         path: '/',
-        redirect:'/public/vacancies',
-        name: '/',
+        redirect:'/login',
+        name: '/login',
         component: Full,
         children:[
 

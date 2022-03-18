@@ -1,5 +1,6 @@
 export default {
     common: {
+        loginWelcome:"Welcome to smart.enu system.",
         chooseCert:"Choose the certificate",
         
         newPasswordError:"Passwords are not identical or character count is less than 5 symbol",

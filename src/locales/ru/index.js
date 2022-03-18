@@ -1,5 +1,6 @@
 export default {
     common: {
+        loginWelcome:"Добро пожаловать в систему smart.enu",
         chooseCert:"Выбрать сертификат",
         newPasswordError:"Пароли не совпадают или длина пароля менее 5 символов ",
         changePassword:"Изменение пароля ",

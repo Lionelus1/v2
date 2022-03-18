@@ -38,7 +38,7 @@ const store = createStore({
                     localStorage.removeItem('authUser');
                     localStorage.removeItem('loginedUser');
                 
-                    router.push({ "name": "PublicVacancies" })
+                    router.push({ "name": "/login" })
                 })
 
         }
