@@ -126,11 +126,10 @@
         <Column
           field="councilDecision"
           :header="$t('dissertation.councilDecision')"
+          
         >
           <template #body="slotProps">
-            <span v-for="role in slotProps.data.roles" :key="role.id">
-              {{ getRoleName(role) }}
-            </span>
+            <span>{{$t('dissertation.states.s' + slotProps.data.dissertation.state)}}</span>
           </template>
         </Column>
       </DataTable>

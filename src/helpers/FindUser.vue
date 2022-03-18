@@ -10,7 +10,7 @@
           </slot>
         </li>
         <li class="p-chips-input-token">
-          <input aria:haspopup="true" :placeholder="(foundEntities == null ? $t('common.fullName'): null)" ref="input" type="text" v-bind="$attrs" @focus="onFocus" @blur="onBlur($event)"
+          <input aria:haspopup="true"  ref="input" type="text" v-bind="$attrs" @focus="onFocus" @blur="onBlur($event)"
                  @input="onInput" @keydown="onKeyDown($event)" @keyup="onKeyUp($event)" @paste="onPaste($event)"
                  :disabled="$attrs.disabled || maxedOut" aria-controls="overlay_panel">
         </li>
@@ -64,6 +64,9 @@ export default {
     modelValue: {
       type: Array,
       default: null
+    },
+    first: {
+      default: null,
     },
     userType: {
       type: Number,
@@ -139,8 +142,10 @@ export default {
       searchInProgres: false,
     };
   },
-  created () {
-
+   mounted() {
+    if (this.first != null && this.max == 1) {
+      this.addItem(null, this.first,false)
+    }
 
   },
   methods: {
@@ -257,6 +262,9 @@ export default {
     },
     updateModel(event, value, preventDefault) {
       this.$emit('update:modelValue', value);
+      if (this.max == 1 && value.length >0) {
+         this.$emit('update:first', value[0]);
+      }
       this.$emit('add', {
         originalEvent: event,
         value: value
@@ -286,6 +294,9 @@ export default {
       let values = [...this.modelValue];
       const removedItem = values.splice(index, 1);
       this.$emit('update:modelValue', values);
+      if (this.max == 1 && values.length == 0) {
+         this.$emit('update:first', null);
+      }
       this.$emit('remove', {
         originalEvent: event,
         value: removedItem

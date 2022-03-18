@@ -2,9 +2,10 @@ export default {
     common: {
         loginWelcome:"Welcome to smart.enu system.",
         chooseCert:"Choose the certificate",
-        
+        activeList: "Active list",
         newPasswordError:"Passwords are not identical or character count is less than 5 symbol",
         changePassword:"Change password",
+        head: "Head of organization",
         newPassword:"Enter new password",
         newPasswordRe:"Repeat new password",
         administration: 'Administration',
@@ -208,6 +209,7 @@ export default {
         done: "Done",
         notDone: "Not done",
         success: "Success",
+        successDone: "Successfully completed",
         downloadSignaturesPdf: "Download signatures",
         signatures: "Signatures"
     },
@@ -298,7 +300,7 @@ export default {
         orgdesc: "Organizations we interact with",
         person: "Individuals with whom we interact",
         preliminary: "preliminary",
-        regnum: "Reg. №",
+        regnum: "Reg. N",
         reserveNumber: "Number reservation",
         signer: "Signer",
         signing: "Signing",
@@ -541,12 +543,22 @@ export default {
             hasSameMember: "The user already has a council membership",
             saveKey: "Voting is anonymous: we do not store your voting result. Please save or download this password to check your vote in the future. The password is known only to you and is not available for recovery.",
             notRegistered: "You cannot vote, because you are not registered",
-            enterKey: "Дауысыңызды дешифрлеу үшін дауыс бергенде қолданған кілт сөзді енгізіңіз",
+            enterKey: "Enter the password you used to vote to decrypt your vote",
             votingRestarted: "The dissertataion has been submitted for re-voting",
         },
-       
-
-
+        states: {
+            s0: "created",
+            s1: "defend date assigned",
+            s2: "registration in progress",
+            s3: "registration completed",
+            s4: "voting in progress",
+            s5: "voting completed",
+            s6: "to award the degree of Doctor of Philosophy (PhD) or Doctor of Science",
+            s7: "send the dissertation for revision",
+            s8: "revote",
+            s9: "submit the dissertation for re-defense",
+            s10: "refuse to award the degree of Doctor of Philosophy (PhD) or Doctor of Science",
+        },
     },
     faq: {
         title: "Help desk",
@@ -678,6 +690,7 @@ export default {
             eventNameError: "Enter the name of the event",
             approvalUserError: "Select the responsible persons",
             quarterError: "Select a quarter",
+            langError: "Choose language",
         },
         message: {
             eventCreated: "Event created successfully",
@@ -689,6 +702,7 @@ export default {
         reportTypes: {
             year: "Annual",
             quarter: "Quarterly"
-        }
+        },
+        quarterYear: "Whole year"
     }
 }

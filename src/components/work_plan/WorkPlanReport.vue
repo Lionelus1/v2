@@ -157,7 +157,7 @@ export default {
           res = 'IV';
           break;
         case 5:
-          res = 'Весь год';
+          res = this.$t('workPlan.quarterYear');
           break;
       }
       return res;

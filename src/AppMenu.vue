@@ -9,7 +9,7 @@ import AppSubmenu from './AppSubmenu';
 
 export default {
 	props: {
-		model: Array
+		model: Array,
 	},
     methods: {
         onMenuItemClick(event) {

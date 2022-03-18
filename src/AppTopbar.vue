@@ -3,25 +3,9 @@
 		<button class="p-link layout-menu-button" @click="onMenuToggle">
 			<span class="pi pi-bars"></span>
 		</button>
-
+		<Button v-if="($route.name=='organizations') || ($route.name=='persons')" class="p-ml-5 p-button" style="height:27px;background-color: #e3f2fd;color: #495057;" icon="pi pi-plus" :label="$t('common.createNew')" @click="toggle" aria-haspopup="true" aria-controls="overlay_menu" />
+		<Menu id="overlay_menu" ref="menu" :model="pagemenu" :popup="true" />
 		<div class="layout-topbar-icons">
-			<!-- <span class="layout-topbar-search">
-				<InputText type="text" placeholder="Search" />
-				<span class="layout-topbar-search-icon pi pi-search"></span>
-			</span>
-			<button class="p-link">
-				<span class="layout-topbar-item-text">Events</span>
-				<span class="layout-topbar-icon pi pi-calendar"></span>
-				<span class="layout-topbar-badge">5</span>
-			</button>
-			<button class="p-link">
-				<span class="layout-topbar-item-text">Settings</span>
-				<span class="layout-topbar-icon pi pi-cog"></span>
-			</button>
-			<button class="p-link">
-				<span class="layout-topbar-item-text">User</span>
-				<span class="layout-topbar-icon pi pi-user"></span>
-			</button> -->
 			<Dropdown class="p-link" v-model="language" :options="languages" optionLabel="name" @change="changeLanguage" />
 		</div>
 	</div>
@@ -29,6 +13,9 @@
 
 <script>
 export default {
+  	props : {
+		  pagemenu: null,
+	  },
 	data() {
 		return {
 			languages: [
@@ -36,10 +23,13 @@ export default {
 				{	name:	"Русский", value: "ru"},
 				{	name:	"English", value: "en"},
 			],
-			language : null
+			language : null,
 		}
 	},
     methods: {
+		toggle(event) {
+            this.$refs.menu.toggle(event);
+        },
         onMenuToggle(event) {
             this.$emit('menu-toggle', event);
         },

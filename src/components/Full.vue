@@ -2,7 +2,7 @@
   <div :class="containerClass" @click="onWrapperClick">
     <Toast/>
     <ConfirmDialog></ConfirmDialog>
-    <AppTopBar @menu-toggle="onMenuToggle"/>
+    <AppTopBar @menu-toggle="onMenuToggle" v-model:pagemenu="localpagemenu"/>
 
     <transition name="layout-sidebar">
       <div :class="sidebarClass" @click="onSidebarClick" v-show="isSidebarVisible()">
@@ -12,20 +12,15 @@
             <!-- <img alt="Logo" :src="logo" /> -->
           </router-link>
         </div>
-
         <AppProfile/>
-        <AppMenu :model="menu" @menuitem-click="onMenuItemClick"/>
+        <AppMenu :model="menu"  @menuitem-click="onMenuItemClick"/>
       </div>
     </transition>
-
     <div class="layout-main p-pr-0 p-pl-0">
-
-      <router-view/>
+      <router-view v-model:pagemenu="localpagemenu"/>
     </div>
-
     <AppConfig :layoutMode="layoutMode" :layoutColorMode="layoutColorMode" @layout-change="onLayoutChange"
                @layout-color-change="onLayoutColorChange"/>
-
     <AppFooter/>
   </div>
 </template>
@@ -45,7 +40,9 @@ export default {
     useRoute();
   },
 
-
+  props : {
+    pagemenu: null,
+  },
   data() {
     return {
       loginedUser: {},
@@ -54,6 +51,7 @@ export default {
       staticMenuInactive: false,
       overlayMenuActive: false,
       mobileMenuActive: false,
+      localpagemenu: this.pagemenu,
 
       menu: [
 
@@ -135,7 +133,7 @@ export default {
                         label:  this.$t('dissertation.council.list'), icon: 'pi pi-fw pi-list', to: '/dissertation', visible : this.isDissertationAdmin() || this.findRole("dissertation_council_secretary") 
                     },
                     {
-                        label:  this.$t('dissertation.doctoralCard'), icon: 'pi pi-fw pi-users', to: '/dissertation/doctorals', visible : this.isRoleGroupMember("dissertation_council") 
+                        label:  this.$t('dissertation.doctoralCard'), icon: 'pi pi-fw pi-users', to: '/dissertation/doctorals', visible : this.isRoleGroupMember("dissertation_council") ||  this.isDissertationAdmin()
                     }
                 ]
 
@@ -173,6 +171,7 @@ export default {
       ]
     }
   },
+  
   watch: {
     $route() {
       this.menuActive = false;
@@ -218,6 +217,7 @@ export default {
     },
     onMenuToggle() {
       this.menuClick = true;
+        this.$emit("update:pagemenu", this.localpagemenu);
 
       if (this.isDesktop()) {
         if (this.layoutMode === 'overlay') {

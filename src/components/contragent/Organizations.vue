@@ -98,7 +98,8 @@
             >
               <Organization
                 :modelValue="currentOrganization"
-                :readonly="true"
+                :readonly="readOnly"
+                @inserted="inserted"
               ></Organization>
             </Sidebar>
           </div>
@@ -118,6 +119,18 @@ export default {
   components: { Organization },
   data() {
     return {
+      localmenu: [{
+          label: this.$t("common.activeList"),
+          items:[{
+            label: this.$t("common.organization"),
+            icon: "pi pi-home",
+            command: () => {
+              this.addOrganization()
+            }
+          }
+          ]
+      }],
+      readOnly: true,
       active: null,
       organizations: null,
       count: 0,
@@ -158,9 +171,15 @@ export default {
   },
   props: {
     modelValue: null,
+    pagemenu: null,
   },
   methods: {
+    inserted(value) {
+      this.sideVisible = false;
+      this.organizations.push(value.value);
+    },
     initApiCall() {
+      this.$emit("update:pagemenu", this.localmenu)
       let url = "/contragent/organizations";
 
       var req = {
@@ -177,10 +196,52 @@ export default {
           console.error(error);
         });
     },
+    addOrganization() {
+      this.readOnly = false;
+      this.currentOrganization = {
+        
+        id: null,
+        name: "",
+        nameru: "",
+        form: {
+          id: 1,
+          name: "",
+          shortname: "",
+          namerus: "",
+          shortnameru:"",
+        },
+        iin: null,
+        address: null,
+        addressru: null,
+        postal: null,
+        email: null,
+        city: null,
+        phone: null,
+        bankaccount: null,
+        state: 1,
+        bank: {
+          id: null,
+          resident : null,
+          name: null,
+          namerus: null,
+        },
+        resident: 1,
+        locality: {
+          id: null,
+          name: null,
+          nameru: null,
+          parentID: null,
+        },
+        type: 1,
+        chief: null,
+      };
+      this.sideVisible = true;
+    },
     toggle(event, data) {
       this.currentOrganization = data;
       this.selectedOrganizations = data;
       this.sideVisible = true;
+      this.readOnly = true;
     },
   },
   mounted() {

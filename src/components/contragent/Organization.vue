@@ -8,73 +8,67 @@
             : value.form.shortnameru + ' "' + value.nameru + '"'
         }}
       </h3>
-      <TopMenuBar :organization="value" :readonly="readonly"></TopMenuBar>
+      <TopMenuBar :menu="menu" :readonly="localReadonly"></TopMenuBar>
     </div>
     <div class="p-col-12 p-md-12 p-fluid">
       <div class="card">
         <div class="p-grid p-formgrid">
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
-            <label for="kazname">{{ this.$t("common.nameInQazaq") }}</label>
+            <label for="kazname">{{ this.$t("common.nameInQazaq") }}<span class="p-error" v-if="!readonly">*</span></label>
             <InputText
               id="kazname"
-              :readonly="readonly"
+              :readonly="localReadonly"
               class="p-mt-2"
               type="text"
               :placeholder="$t('common.nameInQazaq')"
               v-model="value.name"
+              @input="correct"
             ></InputText>
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
-            <label for="rusname">{{ this.$t("common.nameInRussian") }}</label>
+            <label for="rusname">{{ this.$t("common.nameInRussian") }}<span class="p-error" v-if="!readonly">*</span></label>
             <InputText
               id="rusname"
-              :readonly="readonly"
+              :readonly="localReadonly"
               class="p-mt-2"
               type="text"
               :placeholder="$t('common.nameInRussian')"
               v-model="value.nameru"
+              @input="correct"
             ></InputText>
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
-            <label>{{ this.$t("contragent.form") }}</label>
-            <Inplace :closable="true" class="p-pt-2">
-              <template #display>
-                <InputText
-                  :readonly="readonly"
-                  style="margin-left: -7px"
-                  v-model="value.form.name"
-                  autoFocus
-                />
-              </template>
-              <template #content>
-                <InputText
-                  :readonly="readonly"
-                  v-model="value.form.name"
-                  autoFocus
-                />
-              </template>
-            </Inplace>
+            <label>{{ this.$t("contragent.form") }}<span class="p-error" v-if="!readonly">*</span></label>
+            <Dropdown  @change="correct" class="p-mt-2" :disabled="localReadonly" v-model="value.form" :options="orgforms" :optionLabel="($i18n.locale == 'ru' ? 'namerus' : 'name')" :placeholder="$t('common.select')" />
           </div>
+
+          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+            <label>{{ this.$t("common.head") }}</label>
+            <FindUser @input="correct" @remove="correct" class="p-mt-2" :disabled="localReadonly" :editMode="true" v-model="users"  v-model:first="value.chief" :max="1"/>
+          </div>
+          
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label>{{ this.$t("common.state") }}</label>
             <SelectButton
-              :disabled="readonly"
+              :disabled="localReadonly"
               class="p-mt-2"
               v-model="value.state"
               :options="states"
               optionValue="id"
+              @change="correct"
               optionLabel="name"
             />
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label>&nbsp;</label>
             <SelectButton
-              :disabled="readonly"
+              :disabled="localReadonly"
               class="p-mt-2"
               v-model="value.resident"
               :options="resident"
               optionValue="id"
               optionLabel="name"
+              @change="correct"
             />
           </div>
         </div>
@@ -85,23 +79,25 @@
         </div>
         <div class="p-grid p-formgrid">
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
-            <label>{{ this.$t("contact.bin") }}</label>
+            <label>{{ this.$t("contact.bin") }}<span class="p-error" v-if="!readonly">*</span></label>
             <InputText
-              :readonly="readonly"
+              :readonly="localReadonly"
               class="p-mt-2"
               type="text"
               :placeholder="$t('contact.bin')"
               v-model="value.iin"
+              @input="correct"
             ></InputText>
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label>{{ this.$t("contact.locality") }}</label>
             <InputText
-              :readonly="readonly"
+              :readonly="localReadonly"
               class="p-mt-2"
               type="text"
               :placeholder="$t('contact.locality')"
               v-model="value.locality.name"
+              @input="correct"
             ></InputText>
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
@@ -111,10 +107,11 @@
               }})</label
             >
             <InputText
-              :readonly="readonly"
+              :readonly="localReadonly"
               class="p-mt-2"
               type="text"
               :placeholder="$t('contact.address')"
+              @input="correct"
               v-model="value.address"
             ></InputText>
           </div>
@@ -125,30 +122,33 @@
               }})</label
             >
             <InputText
-              :readonly="readonly"
+              :readonly="localReadonly"
               class="p-mt-2"
               type="text"
               :placeholder="$t('contact.address')"
+              @input="correct"
               v-model="value.addressrus"
             ></InputText>
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label>{{ this.$t("contact.phone") }}</label>
             <InputText
-              :readonly="readonly"
+              :readonly="localReadonly"
               class="p-mt-2"
               type="text"
               :placeholder="$t('contact.phone')"
+              @input="correct"
               v-model="value.phone"
             ></InputText>
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
-            <label>{{ this.$t("contact.email") }}</label>
+            <label>{{ this.$t("contact.email") }}<span class="p-error" v-if="!readonly">*</span></label>
             <InputText
-              :readonly="readonly"
+              :readonly="localReadonly"
               class="p-mt-2"
               type="text"
               :placeholder="$t('contact.email')"
+              @input="correct"
               v-model="value.email"
             ></InputText>
           </div>
@@ -164,20 +164,22 @@
               <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
                 <label>{{ this.$t("bank.accnumber") }}</label>
                 <InputText
-                  :readonly="readonly"
+                  :readonly="localReadonly"
                   class="p-mt-2"
                   type="text"
                   :placeholder="$t('bank.accnumber')"
+                  @input="correct"
                   v-model="value.bankaccount"
                 ></InputText>
               </div>
               <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
                 <label>{{ this.$t("bank.title2") }}</label>
                 <InputText
-                  :readonly="readonly"
+                  :readonly="localReadonly"
                   class="p-mt-2"
                   type="text"
                   :placeholder="$t('bank.title2')"
+                  @input="correct"
                   v-model="value.bank.name"
                 ></InputText>
               </div>
@@ -190,11 +192,20 @@
 </template>
 <script>
 import TopMenuBar from "./TopMenuBar.vue";
+import { getHeader, smartEnuApi,findRole } from "@/config/config";
+import FindUser from "@/helpers/FindUser";
+
+import axios from "axios";
+
 export default {
-  components: { TopMenuBar },
+  components: { TopMenuBar, FindUser },
   data() {
     return {
       value: this.modelValue,
+      users: [],
+      orgforms: [],
+      isAdmin: false,
+      localReadonly: false,
       states: [
         { id: 1, name: this.$t("contragent.active") },
         { id: -1, name: this.$t("contragent.inactive") },
@@ -208,20 +219,17 @@ export default {
         {
           label: this.$t("common.save"),
           icon: "pi pi-fw pi-save",
+          disabled: true,
           command: () => {
-            this.$toast.add({
-              severity: "success",
-              summary: "Updated",
-              detail: "Data Updated",
-              life: 3000,
-            });
+            this.saveOrganization()
+          
           },
         },
         {
           label: this.$t("contact.mailto"),
           icon: "pi pi-fw pi-envelope",
           command: () => {
-            window.location.href = "mailto:" + this.modelValue.value.email;
+            window.location.href = "mailto:" + this.value.email;
           },
         },
         {
@@ -229,7 +237,94 @@ export default {
           icon: "pi pi-fw pi-user",
         },
       ],
+     validationErrors: {
+        nameInQazaq: false,
+        nameInRus: false,
+        orgForm: false,
+        email: false,
+        bin: false,
+      },
     };
+  },
+  created() {
+    this.getOrgForms();
+    this.isAdmin = this.findRole(null, 'main_administrator')
+    this.localReadonly =  this.readonly && !this.isAdmin
+  },
+  methods: {
+    findRole: findRole,
+    correct() {
+      this.menu[0].disabled = false
+    },
+    getOrgForms() {
+      axios.get(smartEnuApi+"/contragent/orgforms", {headers: getHeader()})
+      .then(response=>{
+        this.orgforms = response.data;
+      })
+      .catch((error) => {
+        if (error.response.status == 401) {
+          this.$store.dispatch("logLout");
+        }
+        this.$toast.add({
+          severity: "error",
+          summary: "getOrgForms:\n" + error,
+          life: 3000,
+        });
+      });
+    },
+    validateAddForm() {
+      this.validationErrors.nameInQazaq =
+        !this.value.name || this.value.name == "";
+      this.validationErrors.nameInRus =
+        !this.value.nameru || this.value.nameru == "";
+      this.validationErrors.orgForm = !this.value.form.id;
+      this.validationErrors.bin = !this.value.iin || this.value.iin == "";
+      this.validationErrors.email = !this.value.email || this.value.email == "";
+      return (
+        !this.validationErrors.nameInQazaq &&
+        !this.validationErrors.nameInRus &&
+        !this.validationErrors.orgForm &&
+        !this.validationErrors.email &&
+        !this.validationErrors.bin
+      );
+    },
+    saveOrganization() {
+      if (!this.validateAddForm()) {
+        this.$toast.add({
+                severity: "error",
+                summary:  this.$t('common.message.fillError'),
+                life: 3000,
+              });
+        return
+      }
+      
+      axios.post(smartEnuApi+"/contragent/updateorg", this.value, {headers: getHeader()})
+      .then(response=> {
+        this.menu[0].disabled = true
+        if (this.value.id == null) { 
+          this.value.id = response.data
+          this.$emit('inserted', {
+              value: this.value
+          });
+        }
+        this.$toast.add({
+              severity: "success",
+              summary:  this.$t('common.successDone'),
+              life: 3000,
+            });
+      })
+      .catch((error) => {
+        if (error.response.status == 401) {
+          this.$store.dispatch("logLout");
+        }
+        this.$toast.add({
+          severity: "error",
+          summary: "updateOrg:\n" + error,
+          life: 3000,
+        });
+      });
+
+    }
   },
   props: {
     modelValue: null,

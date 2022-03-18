@@ -98,13 +98,13 @@ const routes = [
             },
             {
                 path: '/contragent/organizations',
-                name: '/contragent/organizations',
+                name: 'organizations',
                 component: load('contragent/Organizations'),
                 beforeEnter: ifAuthenticated,
             },
             {
                 path: '/contragent/persons/:type',
-                name: '/contragent/persons',
+                name: 'persons',
                 component: load('contragent/Persons'),
                 beforeEnter: ifAuthenticated,
             },

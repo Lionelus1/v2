@@ -84,7 +84,7 @@
                   :data="slotProps.data"></work-plan-execute>
               <work-plan-event-result-modal v-if="slotProps.data.event_result"
                                             :event-result="slotProps.data.event_result"></work-plan-event-result-modal>
-              <work-plan-event-add v-if="!slotProps.data.is_finish" :data="slotProps.data" :items="slotProps.data" :isMain="false"></work-plan-event-add>
+              <work-plan-event-add v-if="!slotProps.data.is_finish" :data="slotProps.data" :items="slotProps.data.children" :isMain="false"></work-plan-event-add>
               <work-plan-event-edit-modal v-if="isPlanCreator && !isPlanSentApproval && !isFinish"
                                           :event="slotProps.data"></work-plan-event-edit-modal>
               <div>
@@ -318,7 +318,7 @@ export default {
           this.getWorkPlanEvents();
           this.$toast.add({
             severity: "success",
-            summary: 'Успешно!',
+            summary: this.$t('common.success'),
             life: 3000,
           });
         }
@@ -334,13 +334,6 @@ export default {
         }
         this.loading = false;
       })
-    },
-    initReport(isQuarter) {
-      if (isQuarter) {
-        this.$router.push({name: 'WorkPlanReportView', params: {id: this.work_plan_id, quarter: this.quarter}})
-      } else {
-        this.$router.push({name: 'WorkPlanReportView', params: {id: this.work_plan_id}})
-      }
     },
     onRowExpand(event) {
       this.$toast.add({severity: 'info', summary: 'Row Expanded', detail: event.data.event_name, life: 3000});
@@ -395,7 +388,7 @@ export default {
           res = 'IV';
           break;
         case "5":
-          res = 'Весь год';
+          res = this.$t('workPlan.quarterYear');
           break;
       }
       return res;
@@ -405,6 +398,8 @@ export default {
         message: this.$t('common.doYouWantDelete'),
         header: this.$t('common.delete'),
         icon: 'pi pi-info-circle',
+        acceptClass: 'p-button-rounded p-button-success',
+        rejectClass: 'p-button-rounded p-button-danger',
         accept: () => {
           this.remove(event_id);
         },

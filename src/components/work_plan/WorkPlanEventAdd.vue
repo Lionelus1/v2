@@ -52,6 +52,7 @@ export default {
       quarter: null,
       result: null,
       comment: null,
+      parentItems: this.items,
       quarters: [
         {
           id: 1,
@@ -71,7 +72,7 @@ export default {
         },
         {
           id: 5,
-          name: 'Весь год'
+          name: this.$t('workPlan.quarterYear')
         }
       ],
       selectedUsers: [],
@@ -83,7 +84,9 @@ export default {
         quarter: false
       },
       submitted: false,
-      newQuarters: []
+      newQuarters: [],
+      loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID,
+      respUsers: []
     }
   },
   mounted() {
@@ -112,8 +115,10 @@ export default {
         return;
       }
       let userIds = [];
+      this.respUsers = [];
       this.selectedUsers.forEach(e => {
-        userIds.push(e.userID)
+        userIds.push(e.userID);
+        this.respUsers.push({id: e.userID, fullName: e.fullName});
       });
       if (this.parentData) {
         this.parentId = parseInt(this.parentData.work_plan_event_id);
@@ -130,6 +135,7 @@ export default {
         this.$toast.add({severity: 'success', detail: this.$t('workPlan.message.eventCreated'), life: 3000});
         this.showWorkPlanEventModal = false;
         this.clearModel();
+        //this.addToArray(res.data);
       }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
@@ -142,8 +148,16 @@ export default {
         }
       });
     },
-    addToArray() {
-
+    addToArray(data) {
+      data.user = this.respUsers;
+      data.quarter = { String: JSON.stringify(this.quarter), Valid: true }
+      data.status = {
+        work_plan_event_status_id: 1,
+            name_ru: "Запланировано",
+            name_kz: "Жоспарланды",
+            name_en: "Planned"
+      }
+      this.parentItems.push(data);
     },
     validateForm() {
       this.formValid.event_name = !this.event_name;

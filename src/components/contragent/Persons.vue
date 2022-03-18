@@ -170,7 +170,7 @@
               class="p-sidebar-lg"
               style="overflow-y: scroll"
             >
-              <Person :modelValue="currentPerson" :readonly="true"></Person>
+              <Person :modelValue="currentPerson" :addMode="addMode" :readonly="true" @userCreated="insertUser"></Person>
             </Sidebar>
           </div>
         </div>
@@ -192,6 +192,7 @@ export default {
     return {
       active: null,
       persons: null,
+      addMode: false,
       personType: Number(this.$route.params.type),
       PersonType: Enum.PersonType,
       lazyParams: {
@@ -251,6 +252,17 @@ export default {
           icon: "pi pi-fw pi-user",
         },
       ],
+      localmenu: [{
+          label: this.$t("common.activeList"),
+          items:[{
+            label: this.$t("common.person"),
+            icon: "pi pi-home",
+            command: () => {
+              this.addPerson()
+            }
+          }
+          ]
+      }],
     };
   },
   props: {
@@ -258,6 +270,7 @@ export default {
     orgID: Number,
     signRight: Number,
     windowOpened: Boolean,
+    pagemenu: null,
   },
   setup(props, context) {
     function updateValue(currentPerson) {
@@ -277,6 +290,7 @@ export default {
 
   methods: {
     initApiCall() {
+      this.$emit("update:pagemenu", this.localmenu)
       let url = "/contragent/persons";
       this.personType = Number(this.$route.params.type);
        if (this.$route.params.type === undefined) {
@@ -323,7 +337,11 @@ export default {
           console.error(error);
         });
     },
+    insertUser(user) {
+      this.persons.push(user)
+    },
     toggle(event, data) {
+      this.addMode = false;
       this.currentPerson = data;
       this.selectedPersons = data;
       if (this.orgID) this.updateValue(data);
@@ -345,6 +363,46 @@ export default {
       this.lazyParams.sortLang = this.$i18n.locale;
       this.initApiCall();
     },
+    addPerson(){
+      this.currentPerson = {
+        IIN: null,
+        name: null,
+        type: null,
+        mail: null,
+        info: null,
+        id : null,
+        photo: null,
+        lastName: null,
+        thirdName: null,
+        firstName: null,
+        birthday: null,
+        gender: null,
+        state: null,
+        residnet: null,
+        locality: {
+          id: null,
+          name: null,
+        },
+        address: null, 
+        addressrus: null,
+        phone: null,
+        email: null,
+        idnumber: null,
+
+        mainPosition: {
+          id: null,
+          name:null,
+          nameen: null,
+          namekz:null,
+          nameru:null,
+        },
+        bank: {}
+        
+      }
+      this.addMode = true
+      this.sideVisible = true;
+
+    }
   },
 
   mounted() {

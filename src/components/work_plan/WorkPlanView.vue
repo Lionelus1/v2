@@ -310,6 +310,8 @@ export default {
         message: this.$t('common.confirmation'),
         header: this.$t('common.confirm'),
         icon: 'pi pi-info-circle',
+        acceptClass: 'p-button-rounded p-button-success',
+        rejectClass: 'p-button-rounded p-button-danger',
         accept: () => {
           this.reapprove();
         }
