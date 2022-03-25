@@ -17,7 +17,7 @@
     <template #footer>
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
               @click="closeModal"/>
-      <Button :label="$t('common.send')" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2" @click="approve"/>
+      <Button ref="approveBtn" :disabled="submitted" :label="$t('common.send')" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2" @click="approve"/>
     </template>
   </Dialog>
 </template>
@@ -45,7 +45,8 @@ export default {
       currentStage: 1,
       prevStage: 0,
       loginedUserId: 0,
-      fd: null
+      fd: null,
+      submitted: false
     }
   },
   created() {
@@ -59,6 +60,7 @@ export default {
       this.showModal = false;
     },
     approve() {
+      this.submitted = true;
       let workPlanId = this.data.work_plan_id;
       let pdfOptions = {
         margin: 10,
@@ -97,7 +99,8 @@ export default {
             summary: this.$t('common.message.succesSendToApproval'),
             life: 3000,
           });
-          this.emitter.emit("planSentToApprove", true)
+          this.emitter.emit("planSentToApprove", true);
+          this.submitted = false;
         }
         this.showModal = false;
       }).catch(error => {
@@ -110,6 +113,7 @@ export default {
             life: 3000,
           });
         }
+        this.submitted = false;
       });
     },
     approveChange(result) {
