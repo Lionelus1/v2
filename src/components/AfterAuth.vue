@@ -15,7 +15,6 @@ export default {
     getLoginedUser(){
       axios.get(smartEnuApi +'/logineduserinfo',{headers:getHeader()})
       .then(response=>{
-        //alert(JSON.stringify(response.data));
         window.localStorage.setItem("loginedUser",JSON.stringify(response.data));
         this.setLoginedUser();
         let oldPath = this.$store.state.attemptedUrl;

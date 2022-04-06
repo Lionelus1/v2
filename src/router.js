@@ -24,7 +24,7 @@ const ifAuthenticated = (to, from, next) => {
         return
     }else{
         store.dispatch("solveAttemptedUrl",to);
-        next('/public/vacancies')
+        next('/login')
         return
     }
 
