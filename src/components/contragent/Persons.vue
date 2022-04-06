@@ -180,7 +180,7 @@
 </template>
 
 <script>
-import { smartEnuApi, getHeader } from "@/config/config";
+import { smartEnuApi, getHeader, findRole } from "@/config/config";
 import axios from "axios";
 import Person from "./Person.vue";
 import Enum from "@/enum/docstates/index";
@@ -257,6 +257,7 @@ export default {
           items:[{
             label: this.$t("common.person"),
             icon: "pi pi-home",
+            disabled: false,
             command: () => {
               this.addPerson()
             }
@@ -289,7 +290,10 @@ export default {
   },
 
   methods: {
+    findRole: findRole,
     initApiCall() {
+      this.isAdmin = this.findRole(null, 'main_administrator')
+      this.localmenu[0].items[0].disabled = !this.isAdmin
       this.$emit("update:pagemenu", this.localmenu)
       let url = "/contragent/persons";
       this.personType = Number(this.$route.params.type);

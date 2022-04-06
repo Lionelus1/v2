@@ -25,6 +25,7 @@
               <span class="p-input-icon-left">
                 <i class="pi pi-search" />
                 <InputText
+                  @keyup.enter="initApiCall"
                   style="height: 30px"
                   v-model="filters['global'].value"
                   placeholder="іздеу"
@@ -41,9 +42,22 @@
               :value="organizations"
               :paginator="true"
               :rowHover="true"
-              :rows="orgShowCount"
               :filters="filters"
               :loading="loading"
+              :totalRecords="total"
+              :lazy="true"
+              :rows="lazyParams.rows"
+              @page="onPage($event)"
+              @sort="onSort($event)"
+              paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+              :rowsPerPageOptions="[10, 25, 50]"
+              :currentPageReportTemplate="
+                $t('common.showingRecordsCount', {
+                  first: '{first}',
+                  last: '{last}',
+                  totalRecords: '{totalRecords}',
+                })
+              "
             >
               <template #empty>
                 {{ this.$t("common.recordsNotFound") }}
@@ -109,7 +123,7 @@
   </div>
 </template>
 <script>
-import { smartEnuApi, getHeader } from "@/config/config";
+import { smartEnuApi, getHeader, findRole } from "@/config/config";
 import axios from "axios";
 import Organization from "./Organization.vue";
 import Enum from "@/enum/docstates/index";
@@ -130,9 +144,18 @@ export default {
           }
           ]
       }],
+      isAdmin: false,
       readOnly: true,
       active: null,
       organizations: null,
+      total: 10,
+      lazyParams: {
+        page: 0,
+        rows: 10,
+        userType: Number(this.$route.params.type),
+        sortLang: this.$i18n.locale,
+        orgID: this.orgID
+      },
       count: 0,
       selectedOrganizations: null,
       currentOrganization: {},
@@ -174,27 +197,52 @@ export default {
     pagemenu: null,
   },
   methods: {
+    findRole: findRole,
     inserted(value) {
       this.sideVisible = false;
       this.organizations.push(value.value);
     },
     initApiCall() {
+      this.isAdmin = this.findRole(null, 'main_administrator')
+      this.localmenu[0].items[0].disabled = !this.isAdmin
       this.$emit("update:pagemenu", this.localmenu)
       let url = "/contragent/organizations";
-
-      var req = {
-        id: 0,
-        count: this.orgShowCount,
-        orgtype: Enum.ContragentType.Bank + Enum.ContragentType.Organization,
-      };
+      if (
+        this.filters.global.value != null &&
+        this.filters.global.value != ""
+      )
+      {
+        this.lazyParams.page = 0;
+      }
+      this.lazyParams.filters = this.filters
       axios
-        .post(smartEnuApi + url, req,  {headers: getHeader()})
+        .post(smartEnuApi + url, this.lazyParams,  {headers: getHeader()})
         .then((res) => {
-          this.organizations = res.data;
+          this.organizations = res.data.organizations;
+          this.total = res.data.count
         })
         .catch((error) => {
           console.error(error);
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          }
         });
+    },
+    onPage(event) {
+      this.lazyParams = event;
+      this.lazyParams.sortLang = this.$i18n.locale;
+      this.initApiCall();
+    },
+    onSort(event) {
+      this.lazyParams = event;
+      this.lazyParams.filters = this.filters;
+      this.lazyParams.sortLang = this.$i18n.locale;
+      this.initApiCall();
+    },
+    onFilter() {
+      this.lazyParams.filters = this.filters;
+      this.lazyParams.sortLang = this.$i18n.locale;
+      this.initApiCall();
     },
     addOrganization() {
       this.readOnly = false;
