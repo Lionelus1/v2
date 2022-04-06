@@ -70,7 +70,7 @@ export const findRole = function(user, role) {
     user = this.$store.state.loginedUser;
     if (!user)
       return false;
-    
+    if (user.roles)
     for (let i = 0; i < user.roles.length; i++) {
       if (user.roles[i].name === role) {
         return true;

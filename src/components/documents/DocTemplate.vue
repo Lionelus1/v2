@@ -186,10 +186,8 @@
                 <Button v-bind:label="$t('common.yes')" icon="pi pi-check" @click="revisionTemplate" autofocus />
               </template>
             </Dialog>
-
             <Dialog :header="$t('common.comment')" v-model:visible="dialogOpenState.dialogComment" :style="{width: '50vw'}">
             <p>{{(selectedNode.data.comment && selectedNode.data.comment != '') ? selectedNode.data.comment : $t('common.noComment')}}</p>
-           
             <template #footer>
               <div style="text-align:right">
                 <Button label="OK" icon="pi pi-check" @click="closeForm('dialogComment')" class="p-button-text"/>
@@ -439,13 +437,6 @@
         axios.post(smartEnuApi+url, req, { headers: getHeader() })
         .then(response=>{
           let pdf = response.data;
-          // var obj = document.createElement('object');
-          // obj.style.width = '100%';
-          // obj.style.height = '842pt';
-          // obj.type = 'application/pdf';
-          // obj.data = 'data:application/pdf;base64,' + pdf;
-          // document.body.appendChild(obj);
-          // Insert a link that allows the user to download the PDF file
           var link = document.createElement('a');
           link.innerHTML = 'Download PDF file';
           link.download = this.selectedNode.data.name + '.pdf';
