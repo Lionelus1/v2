@@ -207,13 +207,7 @@ export default {
       this.localmenu[0].items[0].disabled = !this.isAdmin
       this.$emit("update:pagemenu", this.localmenu)
       let url = "/contragent/organizations";
-      if (
-        this.filters.global.value != null &&
-        this.filters.global.value != ""
-      )
-      {
-        this.lazyParams.page = 0;
-      }
+      
       this.lazyParams.filters = this.filters
       axios
         .post(smartEnuApi + url, this.lazyParams,  {headers: getHeader()})
