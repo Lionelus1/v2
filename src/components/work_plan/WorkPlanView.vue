@@ -63,10 +63,8 @@
 
 <script>
 import axios from "axios";
-import {getHeader, signerApi, smartEnuApi} from "@/config/config";
+import {getHeader, smartEnuApi} from "@/config/config";
 import {NCALayerClient} from "ncalayer-js-client";
-import pdf from 'pdfvuer'
-import 'pdfjs-dist/build/pdf.worker.entry'
 
 export default {
   name: "WorkPlanView",
