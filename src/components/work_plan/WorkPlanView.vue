@@ -1,7 +1,8 @@
 <template>
   <div>
     <div class="p-col-12" v-if="!loading">
-      <div class="card" v-if="isPlanApproved && (isPlanCreator || (isApproval || isApproved)) && plan.status.work_plan_status_id === 4">
+      <div class="card"
+           v-if="isPlanApproved && (isPlanCreator || (isApproval || isApproved)) && plan.status.work_plan_status_id === 4">
         <Button v-if="isPlanCreator" :label="$t('common.action.reApprove')" icon="pi pi-check"
                 @click="reapproveConfirmDialog"
                 class="p-button p-ml-2"/>
@@ -21,7 +22,9 @@
       </div>
 
       <div class="card">
-        <h5>{{ plan.work_plan_name }} <span :class="'status-badge status-' + plan.status.work_plan_status_id">{{ $i18n.locale === "kz" ? plan.status.name_kk : $i18n.locale === "ru" ? plan.status.name_ru : plan.status.name_en }}</span></h5>
+        <h5>{{ plan.work_plan_name }} <span :class="'status-badge status-' + plan.status.work_plan_status_id">{{
+            $i18n.locale === "kz" ? plan.status.name_kk : $i18n.locale === "ru" ? plan.status.name_ru : plan.status.name_en
+          }}</span></h5>
         <!--        <WorkPlanApproveStep style="height: 200px" now-step="1" direction="vertical" :step-list="approvals" />-->
         <!--        <WorkPlanApproveStatus :options="approvals"></WorkPlanApproveStatus>-->
         <Timeline :value="approvals">
@@ -36,8 +39,9 @@
         </Timeline>
       </div>
       <div class="card">
-        <object src="#toolbar=0" style="width: 100%; height: 1000px" v-if="source" type="application/pdf"
-                :data="source"></object>
+<!--        <object src="#toolbar=0" style="width: 100%; height: 1000px" v-if="source" type="application/pdf"
+                :data="sourceb64"></object>-->
+        <embed :src="sourceb64" style="width: 100%; height: 1000px" v-if="sourceb64" type="application/pdf" />
       </div>
     </div>
 
@@ -59,7 +63,7 @@
 
 <script>
 import axios from "axios";
-import {getHeader, signerApi, smartEnuApi} from "@/config/config";
+import {getHeader, smartEnuApi} from "@/config/config";
 import {NCALayerClient} from "ncalayer-js-client";
 
 export default {
@@ -85,7 +89,8 @@ export default {
       approvals: [],
       isPlanApproved: false,
       signatures: null,
-      isPlanCreator: false
+      isPlanCreator: false,
+      sourceb64: null
     }
   },
   created() {
@@ -101,6 +106,7 @@ export default {
           {headers: getHeader()}).then(res => {
         if (res.data) {
           this.source = `data:application/pdf;base64,${res.data}`;
+          this.sourceb64 = this.b64toBlob(res.data);
           this.document = res.data;
         }
       }).catch(error => {
@@ -114,6 +120,25 @@ export default {
           });
         }
       });
+    },
+    b64toBlob(b64Data, sliceSize=512) {
+      const byteCharacters = window.atob(b64Data);
+      const byteArrays = [];
+
+      for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+        const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+        const byteNumbers = new Array(slice.length);
+        for (let i = 0; i < slice.length; i++) {
+          byteNumbers[i] = slice.charCodeAt(i);
+        }
+
+        const byteArray = new Uint8Array(byteNumbers);
+        byteArrays.push(byteArray);
+      }
+
+      const blob = new Blob(byteArrays, {type: "application/pdf"});
+      return URL.createObjectURL(blob);
     },
     getPlan() {
       this.loading = true;
@@ -340,7 +365,7 @@ export default {
       });
     },
     viewSignatures() {
-      this.$router.push({name: 'DocSignaturesInfo', params: { uuid: this.plan.doc_id }})
+      this.$router.push({name: 'DocSignaturesInfo', params: {uuid: this.plan.doc_id}})
     },
   }
 }
