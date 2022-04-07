@@ -39,8 +39,9 @@
         </Timeline>
       </div>
       <div class="card">
-        <object src="#toolbar=0" style="width: 100%; height: 1000px" v-if="source" type="application/pdf"
-                :data="source"></object>
+<!--        <object src="#toolbar=0" style="width: 100%; height: 1000px" v-if="source" type="application/pdf"
+                :data="source"></object>-->
+        <embed :src="blobSource" style="width: 100%; height: 1000px" v-if="blobSource" type="application/pdf" />
       </div>
     </div>
 
@@ -81,6 +82,7 @@ export default {
   data() {
     return {
       source: null,
+      blobSource: null,
       document: null,
       isApproval: false,
       isRejected: false,
@@ -202,6 +204,7 @@ export default {
           {headers: getHeader()}).then(res => {
         if (res.data) {
           this.source = `data:application/pdf;base64,${res.data}`;
+          this.blobSource = this.b64toBlob(res.data)
           this.document = res.data;
         } else {
           this.getData();
@@ -225,8 +228,11 @@ export default {
       const worker1 = html2pdf().set(this.pdfOptions).from(pdfContent);
 
       worker.toPdf().output("datauristring").then((pdf, item) => {
-        if (!this.source)
+        if (!this.source) {
+          let pdfSplit = pdf.split(',');
+          this.blobSource = this.b64toBlob(pdfSplit[1])
           this.source = pdf;
+        }
 
         if (!this.document)
           this.document = pdf.replace("data:application/pdf;base64,", "")
@@ -424,6 +430,25 @@ export default {
         }
         this.loading = false;
       })
+    },
+    b64toBlob(b64Data, sliceSize=512) {
+      const byteCharacters = window.atob(b64Data);
+      const byteArrays = [];
+
+      for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+        const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+        const byteNumbers = new Array(slice.length);
+        for (let i = 0; i < slice.length; i++) {
+          byteNumbers[i] = slice.charCodeAt(i);
+        }
+
+        const byteArray = new Uint8Array(byteNumbers);
+        byteArrays.push(byteArray);
+      }
+
+      const blob = new Blob(byteArrays, {type: "application/pdf"});
+      return URL.createObjectURL(blob);
     },
     viewSignatures() {
       this.$router.push({name: 'DocSignaturesInfo', params: { uuid: this.report.doc_id }})

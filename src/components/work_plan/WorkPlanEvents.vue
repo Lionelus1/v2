@@ -276,7 +276,6 @@ export default {
       });
     },
     getPlan() {
-      this.loading = true;
       axios.get(smartEnuApi + `/workPlan/getWorkPlanById/${this.work_plan_id}`, {headers: getHeader()})
           .then(res => {
             this.plan = res.data;
@@ -290,7 +289,6 @@ export default {
               this.isPlanCreator = false;
               //this.$router.push('/work-plan')
             }
-            this.loading = false;
           }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
@@ -301,7 +299,6 @@ export default {
             life: 3000,
           });
         }
-        this.loading = false;
       });
     },
     finish() {

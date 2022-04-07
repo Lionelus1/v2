@@ -89,7 +89,8 @@ export default {
       isAcceptModal: false,
       isRejectModal: false,
       comment: null,
-      currentWorkPlanId: 0
+      currentWorkPlanId: 0,
+      loading: false
     }
   },
   mounted() {
@@ -113,18 +114,11 @@ export default {
 
     },
     getPlans() {
+      this.loading = true;
       axios.post(smartEnuApi + `/workPlan/getPlans`, {search_text: this.searchText}, {headers: getHeader()})
           .then(res => {
             this.data = res.data;
-            let localUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
-            /*this.data.forEach(d => {
-              /!*d.approval_users.forEach(e => {
-                console.log(e)
-                if (e.id === localUserId) {
-                  this.isCurrentUserApprove = true
-                }
-              });*!/
-            });*/
+            this.loading = false;
           }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
@@ -135,6 +129,7 @@ export default {
             life: 3000,
           });
         }
+        this.loading = false;
       });
     },
     rejectPlan() {
