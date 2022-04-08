@@ -468,7 +468,11 @@ export default {
       this.resumeService.getCandidate().then(response => {
         this.candidate = response.data
       }).catch(error => {
-        console.log(error)
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
       })
     },
     getCandidateEducations() {
@@ -476,7 +480,11 @@ export default {
         this.educations = response.data
         this.iter++
       }).catch(error => {
-        console.log(error)
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
       })
     },
     getCandidateAcademicDegrees() {
@@ -484,7 +492,11 @@ export default {
         this.academicDegrees = response.data
         this.iter++
       }).catch(error => {
-        console.log(error)
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
       })
     },
     getCandidateAcademicTitles() {
@@ -492,7 +504,11 @@ export default {
         this.academicTitles = response.data
         this.iter++
       }).catch(error => {
-        console.log(error)
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
       })
     },
     getCandidateLanguages() {
@@ -500,7 +516,11 @@ export default {
         this.languages = response.data
         this.iter++
       }).catch(error => {
-        console.log(error)
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
       })
     },
     getCandidateWorkExperiences() {
@@ -508,7 +528,11 @@ export default {
         this.experiences = response.data
         this.iter++
       }).catch(error => {
-        console.log(error)
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
       })
     },
     getCandidateRefresherCourses() {
@@ -516,7 +540,11 @@ export default {
         this.refresherCourses = response.data
         this.iter++
       }).catch(error => {
-        console.log(error)
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
       })
     },
     getCandidateReferees() {
@@ -536,7 +564,6 @@ export default {
           this.identificationDetail = null
           this.iter++
         }
-        console.log(error)
       })
     },
     getCandidateAcademicDetail() {
@@ -548,7 +575,6 @@ export default {
           this.academicDetail = null
           this.iter++
         }
-        console.log(error)
       })
     },
     editEducation() {
@@ -611,7 +637,7 @@ export default {
 
 <style>
 .card-border {
-  border-right: 0px solid #dee2e6;
+  border-right: 0 solid #dee2e6;
   border-radius: 0;
 }
 

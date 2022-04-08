@@ -310,7 +310,11 @@ export default {
             this.candidate = {}
             this.candidate = res.data
           }).catch(error => {
-        console.log(error)
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
       });
     },
     deleteCandidate() {
@@ -323,56 +327,88 @@ export default {
         if (error.response.status === 404) {
           this.candidate = null
         }
-        console.log(error)
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
       });
     },
     getCandidateEducations() {
       this.resumeService.getCandidateEducations(this.candidate.id).then(response => {
         this.educations = response.data
       }).catch(error => {
-        console.log(error)
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
       })
     },
     getCandidateAcademicDegrees() {
       this.resumeService.getCandidateAcademicDegrees(this.candidate.id).then(response => {
         this.academicDegrees = response.data
       }).catch(error => {
-        console.log(error)
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
       })
     },
     getCandidateAcademicTitles() {
       this.resumeService.getCandidateAcademicTitles(this.candidate.id).then(response => {
         this.academicTitles = response.data
       }).catch(error => {
-        console.log(error)
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
       })
     },
     getCandidateLanguages() {
       this.resumeService.getCandidateLanguages(this.candidate.id).then(response => {
         this.languages = response.data
       }).catch(error => {
-        console.log(error)
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
       })
     },
     getCandidateWorkExperiences() {
       this.resumeService.getCandidateWorkExperiences(this.candidate.id).then(response => {
         this.experiences = response.data
       }).catch(error => {
-        console.log(error)
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
       })
     },
     getCandidateRefresherCourses() {
       this.resumeService.getCandidateRefresherCourses(this.candidate.id).then(response => {
         this.refresherCourses = response.data
       }).catch(error => {
-        console.log(error)
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
       })
     },
     getCandidateReferees() {
       this.resumeService.getCandidateReferees(this.candidate.id).then(response => {
         this.referees = response.data
       }).catch(error => {
-        console.log(error)
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
       })
     },
     getCandidateIdentificationDetail() {
@@ -382,7 +418,6 @@ export default {
         if (error.response.status === 404) {
           this.identificationDetail = null
         }
-        console.log(error)
       })
     },
     getCandidateAcademicDetail() {
@@ -392,14 +427,18 @@ export default {
         if (error.response.status === 404) {
           this.academicDetail = null
         }
-        console.log(error)
+
       })
     },
     getCandidate() {
       this.resumeService.getCandidate().then(response => {
         this.candidate = response.data
       }).catch(error => {
-        console.log(error)
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
       })
     }
   },

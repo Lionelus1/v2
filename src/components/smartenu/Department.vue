@@ -1,7 +1,7 @@
 <template>
   <div id="carddiv" class="p-grid">
     <div class="p-col-12">
-      <h3>{{ $t('hr.title.referee') }}</h3>
+      <h3>{{ $t('common.structuralUnit') }}</h3>
       <div>
         <Menubar :model="menu" :key="active"
                  style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px"></Menubar>
@@ -9,50 +9,50 @@
     </div>
     <div class="p-col-12 p-md-12 p-fluid">
       <div class="card">
-        <div class="p-grid p-formgrid">
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
-            <label>{{ $t('common.fullName') }}</label>
+        <div>
+          <div class="p-field">
+            <label>{{ $t('common.nameInQazaq') }}</label>
             <InputText
                 :readonly="readonly"
                 class="p-mt-2"
-                :class="{'p-invalid': validation.fullName}"
+                :class="{'p-invalid': validation.nameKz}"
                 type="text"
-                :placeholder="$t('common.fullName')"
-                v-model="value.fullName"
+                :placeholder="$t('common.nameInQazaq')"
+                v-model="value.nameKz"
             ></InputText>
             <small
                 class="p-error"
-                v-if="validation.fullName"
+                v-if="validation.nameKz"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
-            <label>{{ $t('contact.position') }}</label>
+          <div class="p-field">
+            <label>{{ $t('common.nameInRussian') }}</label>
             <InputText
                 :readonly="readonly"
                 class="p-mt-2"
-                :class="{'p-invalid': validation.position}"
+                :class="{'p-invalid': validation.name}"
                 type="text"
-                :placeholder="$t('contact.position')"
-                v-model="value.position"
+                :placeholder="$t('common.nameInRussian')"
+                v-model="value.name"
             ></InputText>
             <small
                 class="p-error"
-                v-if="validation.position"
+                v-if="validation.name"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
-            <label>{{ $t('contact.phone') }}</label>
+          <div class="p-field">
+            <label>{{ $t('common.nameInEnglish') }}</label>
             <InputText
                 :readonly="readonly"
                 class="p-mt-2"
-                :class="{'p-invalid': validation.phoneNumber}"
+                :class="{'p-invalid': validation.nameEn}"
                 type="text"
-                :placeholder="$t('contact.phone')"
-                v-model="value.phoneNumber"
+                :placeholder="$t('common.nameInEnglish')"
+                v-model="value.nameEn"
             ></InputText>
             <small
                 class="p-error"
-                v-if="validation.phoneNumber"
+                v-if="validation.nameEn"
             >{{ $t("common.requiredField") }}</small>
           </div>
         </div>
@@ -66,10 +66,18 @@ import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
 
 export default {
-  name: "RefereeEdit",
+  name: "Department",
+  props: {
+    modelValue: null,
+    readonly: Boolean,
+    orgId: null
+  },
+  created() {
+    console.log(this.modelValue)
+  },
   data() {
     return {
-      value: this.modelValue,
+      value: this.modelValue === null ? {} : this.modelValue,
       active: null,
       menu: [
         {
@@ -81,30 +89,31 @@ export default {
         },
       ],
       validation: {
-        fullName: false,
-        position: false,
-        phoneNumber: false
+        nameKz: false,
+        name: false,
+        nameEn: false,
       }
     };
   },
   methods: {
     validateForm() {
-      this.validation.fullName = !this.value.fullName || this.value.fullName == ""
-      this.validation.position = !this.value.position || this.value.position == ""
-      this.validation.phoneNumber = !this.value.phoneNumber || this.value.phoneNumber == ""
+      this.validation.nameKz = !this.value.nameKz || this.value.nameKz == ""
+      this.validation.name = !this.value.name || this.value.name == ""
+      this.validation.nameEn = !this.value.nameEn || this.value.nameEn == ""
       return (
-          !this.validation.fullName &&
-          !this.validation.position &&
-          !this.validation.phoneNumber
+          !this.validation.nameKz &&
+          !this.validation.name &&
+          !this.validation.nameEn
       )
     },
     action() {
       if (this.validateForm()) {
-        let path = !this.value.id ? "/candidate/referee/create" : "/candidate/referee/update"
+        this.value.orgId = this.orgId
+        let path = "/add-department"
         axios
             .post(smartEnuApi + path, this.value, {headers: getHeader(),})
             .then(res => {
-              this.emitter.emit("referee", true);
+              this.emitter.emit("department", true);
             }).catch(error => {
           this.$toast.add({
             severity: "error",
@@ -114,11 +123,8 @@ export default {
         });
       }
     }
-  },
-  props: {
-    modelValue: null,
-    readonly: Boolean,
-  },
+
+  }
 }
 </script>
 

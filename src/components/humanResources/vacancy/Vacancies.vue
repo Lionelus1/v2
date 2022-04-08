@@ -3,6 +3,7 @@
     <Toolbar class="p-mb-4">
       <template #start>
         <Button
+            v-if="view.modifier"
             :label="$t('common.add')"
             icon="pi pi-plus"
             class="p-button-success p-mr-2"
@@ -63,7 +64,9 @@
       <template #loading> {{ $t('common.loading') }}</template>
       <Column>
         <template #body="slotProps">
-          <Button icon="pi pi-users" class="p-button-info" v-if="slotProps.data.candidateRelation"
+          <Button icon="pi pi-users"
+                  class="p-button-info"
+                  v-if="slotProps.data.candidateRelation && view.modifier"
                   @click="apply(slotProps.data)"/>
         </template>
       </Column>
@@ -135,7 +138,10 @@
       <!-- BUTTON COLUMN -->
       <Column>
         <template #body="slotProps">
-          <Button icon="pi pi-times" class="p-button-danger" @click="openDelete(slotProps.data)"/>
+          <Button v-if="view.modifier"
+                  icon="pi pi-times"
+                  class="p-button-danger"
+                  @click="openDelete(slotProps.data)"/>
         </template>
       </Column>
     </DataTable>
@@ -151,7 +157,7 @@
              position="right"
              class="p-sidebar-lg"
              style="overflow-y: scroll">
-      <VacancyCandidateView :candidates="vacancy.candidateRelation"/>
+      <VacancyCandidateView :candidates="vacancy.candidateRelation" :vacancy="vacancy"/>
     </Sidebar>
     <Dialog
         v-model:visible="view.delete"
@@ -191,7 +197,7 @@ import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
 import AddVacancy from "./AddVacancy";
 import VacancyCandidateView from "./VacancyCandidateView";
-import VacancyService from "./VacancyService";
+import VacancyService, {RIGHTS} from "./VacancyService";
 
 export default {
   name: "Vacancies",
@@ -212,11 +218,12 @@ export default {
         searchText: null,
         sortField: "",
         sortOrder: 0,
-        orgCode: 'enu'
+        right: null
       },
       view: {
         candidates: false,
         delete: false,
+        modifier: false,
       },
       vacancies: [],
       vacancy: null,
@@ -256,7 +263,11 @@ export default {
         this.vacancy = null
         this.getVacancies()
       }).catch(error => {
-        console.log(error)
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
       });
     },
     clearData() {
@@ -296,7 +307,6 @@ export default {
       this.vacancy = event.data
       this.readonly = this.vacancy.history.status.id !== 1
       this.isView = true
-      // this.$toast.add({severity: 'info', summary: 'Product Selected', detail: 'ID: ' + event.data.id, life: 3000});
     },
     add() {
       this.vacancy = {}
@@ -315,13 +325,58 @@ export default {
       }).catch((error) => {
         if (error.response.status == 401) {
           this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: this.$t("smartenu.loadAllNewsError") + ":\n" + error,
-            life: 3000,
-          });
         }
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
+      });
+    },
+
+    /**
+     * rights validation
+     */
+
+    rightsValidation() {
+      this.vacancyService.rightsValidity().then((response) => {
+        if (response.data === RIGHTS.MAIN_ADMINISTRATOR) {
+          console.log(response.data)
+          this.lazyParams.right = RIGHTS.MAIN_ADMINISTRATOR
+          this.getVacancies()
+          this.view.modifier = true
+        } else if (response.data === RIGHTS.HR_ADMINISTRATOR) {
+          console.log(response.data)
+          this.lazyParams.right = RIGHTS.HR_ADMINISTRATOR
+          this.getVacancies()
+          this.view.modifier = true
+        } else if (response.data === RIGHTS.HR_MODERATOR) {
+          console.log(response.data)
+          this.lazyParams.right = RIGHTS.HR_MODERATOR
+          this.getVacancies()
+          this.view.modifier = true
+        } else if (response.data === RIGHTS.CAREER_ADMINISTRATOR) {
+          console.log(response.data)
+          this.lazyParams.right = RIGHTS.CAREER_ADMINISTRATOR
+          this.getVacancies()
+          this.view.modifier = true
+        } else if (response.data === RIGHTS.CAREER_MODERATOR) {
+          console.log(response.data)
+          this.lazyParams.right = RIGHTS.CAREER_MODERATOR
+          this.getVacancies()
+          this.view.modifier = true
+        } else {
+          this.loading = false
+        }
+      }).catch((error) => {
+        if (error.response.status == 401) {
+          this.$store.dispatch("logLout");
+        }
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
       });
     },
 
@@ -335,7 +390,7 @@ export default {
   },
   created() {
     this.vacancyService = new VacancyService()
-    this.getVacancies();
+    this.rightsValidation()
   },
 }
 </script>
@@ -364,8 +419,7 @@ export default {
     color: #8a5340;
   }
 
-  &
-  .status-4 {
+  &.status-4 {
     background: #ffcdd2;
     color: #c63737;
   }

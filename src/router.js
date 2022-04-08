@@ -273,7 +273,8 @@ const routes = [
             {
                 path: '/cabinet',
                 name: 'Cabinet',
-                component: load('humanResources/candidate/Cabinet')
+                component: load('humanResources/candidate/Cabinet'),
+                beforeEnter: ifAuthenticated,
             }
         ]
     }

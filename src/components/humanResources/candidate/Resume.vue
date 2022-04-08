@@ -58,7 +58,11 @@ export default {
         this.toolbar.end = true
         this.view = true
       }).catch(error => {
-        console.log(error)
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
       });
     },
     deleteCandidate() {
@@ -70,7 +74,11 @@ export default {
         if (error.response.status === 404) {
           this.candidate = null
         }
-        console.log(error)
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
       });
     },
   },
@@ -89,7 +97,11 @@ export default {
       if (error.response.status === 401) {
         this.$store.dispatch("logLout");
       }
-      console.log(error)
+      this.$toast.add({
+        severity: "error",
+        summary: error,
+        life: 3000,
+      });
     })
   },
 }

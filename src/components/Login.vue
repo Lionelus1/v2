@@ -202,7 +202,7 @@
           axios.post(smartEnuApi+'/login',{
             'username':this.loginData.username,
             'password':this.loginData.password
-          },header)
+          }, {headers: getHeader()})
           .then((res)=>{
             if(res.status===200){
               authUser.access_token=res.data.access_token;
