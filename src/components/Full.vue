@@ -81,7 +81,7 @@ export default {
               label: this.$t('hr.vacancies'),
               icon: 'pi pi-fw pi-user-plus',
               to: '/human-resources/vacancies',
-              // visible: this.isVacancyRightsValidity()
+              visible: this.isVacancyRightsValidity()
             },
           ]
         },
