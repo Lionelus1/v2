@@ -64,7 +64,11 @@ export default {
             .then(res => {
               this.emitter.emit("info", true);
             }).catch(error => {
-          console.log(error)
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
         });
       }
     }

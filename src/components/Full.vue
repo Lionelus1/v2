@@ -80,7 +80,8 @@ export default {
             {
               label: this.$t('hr.vacancies'),
               icon: 'pi pi-fw pi-user-plus',
-              to: '/human-resources/vacancies'
+              to: '/human-resources/vacancies',
+              // visible: this.isVacancyRightsValidity()
             },
           ]
         },
@@ -186,6 +187,14 @@ export default {
       if (!this.loginedUser)
         this.getLoginedUser();
       return this.findRole('dissertation_chief');
+    },
+    isVacancyRightsValidity() {
+      if (!this.loginedUser)
+        this.getLoginedUser();
+      return this.findRole('hr_administrator') ||
+          this.findRole('career_administrator') ||
+          this.findRole('hr_moderator') ||
+          this.findRole('career_moderator');
     },
     findRole(roleName) {
       if (!this.loginedUser)

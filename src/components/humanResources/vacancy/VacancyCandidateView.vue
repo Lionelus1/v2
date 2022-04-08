@@ -49,7 +49,7 @@
         class="p-sidebar-lg"
         style="overflow-y: scroll"
     >
-      <ApplyActionEdit :readonly="false" :candidate-relation="this.candidateRelation" :path="path"/>
+      <ApplyActionEdit :readonly="false" :candidate-relation="this.candidateRelation" :path="path" :vacancy="vacancy"/>
     </Sidebar>
   </div>
 </template>
@@ -140,7 +140,11 @@ export default {
         link.href = response.data.file;
         link.click();
       }).catch(error => {
-        console.log(error)
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
       })
     },
     downloadResume() {
@@ -200,13 +204,18 @@ export default {
             this.menu[2].visible = false
           }
         }).catch(error => {
-          console.log(error)
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
         })
       }
     }
   },
   props: {
-    candidates: []
+    candidates: [],
+    vacancy: null,
   },
   created() {
     this.vacancyService = new VacancyService()

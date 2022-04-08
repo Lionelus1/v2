@@ -20,7 +20,7 @@ export const header  = {
 //export const apiDomain="";
 
 export const loginUrl = apiDomain+"/oauth/token";
-export const getHeader = function(){
+export const getHeader = function() {
   const tokenData = JSON.parse(window.localStorage.getItem("authUser"));
 
   if(tokenData){

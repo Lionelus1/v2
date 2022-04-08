@@ -368,7 +368,7 @@ export default {
         searchText: null,
         sortField: "",
         sortOrder: 0,
-        orgCode: 'enu'
+        orgCode: 'other'
       },
       visible: {
         loading: false,
@@ -410,7 +410,7 @@ export default {
         } else {
           this.$toast.add({
             severity: "error",
-            summary: 'Не удалось загрузить вакансии' + ":\n" + error,
+            summary: error,
             life: 3000,
           });
         }
@@ -431,7 +431,7 @@ export default {
         } else {
           this.$toast.add({
             severity: "error",
-            summary: "Dictionary load error:\n" + error,
+            summary: error,
             life: 3000,
           });
         }
@@ -449,8 +449,13 @@ export default {
         if (error.response.status === 404) {
           this.candidate = null
           this.visible.notFound = true
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
         }
-        console.log(error)
       });
     },
 
@@ -476,7 +481,7 @@ export default {
           } else {
             this.$toast.add({
               severity: "error",
-              summary: this.$t("smartenu.loadAllNewsError") + ":\n" + error,
+              summary: error,
               life: 3000,
             });
           }

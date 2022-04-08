@@ -111,6 +111,14 @@
           </span>
       </template>
     </Column>
+    <Column>
+      <template #body="slotProps">
+        <Button v-if="slotProps.data.candidateRelation[0].history.status.id === 10 && slotProps.data.organization.id !== 1"
+                icon="pi pi-file-pdf"
+                class="p-button-secondary"
+                @click="getPetition(slotProps.data)"/>
+      </template>
+    </Column>
   </DataTable>
   <!-- Просмотр резюме -->
   <Dialog v-model:visible="visible.view" :style="{ width: '800px' }" :modal="true">
@@ -217,15 +225,40 @@
     </template>
 
   </Dialog>
+  <Dialog v-model:visible="visible.petition" :style="{ width: '1000px' }" :modal="true" :closable="false">
+    <div class="card" v-if="signatures">
+      <work-plan-qr-pdf ref="qrToPdf" :signatures="signatures" :title="docInfo.name"></work-plan-qr-pdf>
+      <div class="p-grid p-formgrid">
+        <div class="p-col-12 p-mb-2 p-pb-2 p-lg-3 p-mb-lg-0">
+          <Button :label="$t('hr.petition.download')" icon="pi pi-download" :onclick="downloadPDF"/>
+        </div>
+        <div class="p-col-12 p-mb-2 p-pb-2 p-lg-3 p-mb-lg-0">
+          <Button :label="$t('common.downloadSignaturesPdf')" icon="pi pi-download" :disabled="!pdfFile" :onclick="downloadSignatures"/>
+        </div>
+      </div>
+    </div>
+    <template #footer>
+      <Button
+          v-bind:label="$t('common.close')"
+          icon="pi pi-times"
+          class="p-button p-component p-button-primary"
+          @click="visible.petition = false"
+      />
+    </template>
+
+  </Dialog>
 </template>
 
 <script>
+import WorkPlanQrPdf from "@/components/work_plan/WorkPlanQrPdf";
 import {FilterMatchMode, FilterOperator} from "primevue/api";
 import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
+import html2pdf from "html2pdf.js";
 
 export default {
   name: "CandidateVacancy",
+  components: {WorkPlanQrPdf},
   data() {
     return {
       count: 200,
@@ -246,10 +279,14 @@ export default {
       },
       visible: {
         loading: false,
-        view: false
+        view: false,
+        petition: false
       },
       vacancies: null,
       vacancy: null,
+      pdfFile: null,
+      docInfo: null,
+      signatures: null
     }
   },
   methods: {
@@ -270,12 +307,76 @@ export default {
         } else {
           this.$toast.add({
             severity: "error",
-            summary: 'Не удалось загрузить вакансии' + ":\n" + error,
+            summary: error,
             life: 3000,
           });
         }
       });
     },
+
+    /**
+     ******************** GET PETITION
+     */
+    getPetition(data) {
+      this.pdfFile = null
+      this.docInfo = null
+      this.signatures = null
+      axios.post( smartEnuApi + "/vacancy/petition",
+          {
+            candidateId: data.candidateRelation[0].candidate.id,
+            vacancyId: data.id
+          },
+          {headers: getHeader()}
+      ).then(response => {
+        console.log(response.data)
+        this.pdfFile = response.data.fileData
+        this.docInfo = response.data.docInfo
+        this.signatures = this.docInfo.signatures
+        this.signatures.map(e => {
+          e.sign = this.chunkString(e.signature, 1200)
+        });
+        this.visible.petition = true
+      }).catch(error => {
+        console.log(error)
+      })
+    },
+
+    /**
+     * download pdf
+     */
+    downloadPDF() {
+      let pdf = this.pdfFile;
+      var link = document.createElement('a');
+      link.innerHTML = 'Download PDF file';
+      link.download = this.docInfo.name + '.pdf';
+      link.href = 'data:application/octet-stream;base64,' + pdf;
+      link.click();
+    },
+
+    /**
+     * download signature
+     */
+    downloadSignatures() {
+      let pdfOptions = {
+        margin: 10,
+        image: {
+          type: 'jpeg',
+          quality: 0.95,
+        },
+        html2canvas: {scale: 3, letterRendering: true},
+        jsPDF: {
+          unit: 'mm',
+          format: 'a4',
+          orientation: 'portrait',
+          hotfixes: ["px_scaling"]
+        },
+        pagebreak: {avoid: '#qr'},
+        filename: this.docInfo.name + ".pdf"
+      };
+      const pdfContent = this.$refs.qrToPdf.$refs.qrToPdf;
+      html2pdf().set(pdfOptions).from(pdfContent).save();
+    },
+
     /**
      * *********************** СОРТИРОВКА
      * @param event
@@ -312,6 +413,9 @@ export default {
       this.lazyParams.searchText = "";
       this.getVacancies();
     },
+    chunkString(str, length) {
+      return str.match(new RegExp('.{1,' + length + '}', 'g'));
+    }
   },
   created() {
     this.getVacancies();

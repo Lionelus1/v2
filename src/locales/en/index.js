@@ -6,8 +6,11 @@ export default {
         newPasswordError:"Passwords are not identical or character count is less than 5 symbol",
         changePassword:"Change password",
         head: "Head of organization",
+        headIin: 'Head IIN',
+        headFio: 'Head full name',
         newPassword:"Enter new password",
         newPasswordRe:"Repeat new password",
+        createDocument: 'Generate document',
         administration: 'Administration',
         academicDegree: "Academic degree",
         academicTitle: "Academic title",
@@ -29,6 +32,7 @@ export default {
         enterLogin: "Enter IIN or platonus mail",
         enterPassword: "Enter password",
         export: "Export",
+        error: "Error",
         add: "Add",
         edit: "edit",
         orgname: "L.N. Gumilyov Eurasian National University",
@@ -36,6 +40,7 @@ export default {
         date: "Date",
         delete: "delete",
         department: "department",
+        structuralUnit: 'Structural unit',
         diplomNumber: "Diplom number",
         docFormat: "in doc format",
         downloadPassword: "Download password",
@@ -666,7 +671,16 @@ export default {
             title: 'Title'
         }
         ,
-        sendingMessage: 'Sending a message. Please wait...'
+        sendingMessage: 'Sending a message. Please wait...',
+        petition: {
+            download: 'Download petition',
+            lang: 'Select the language of the petition.',
+            number: 'Outgoing document number',
+            warn: 'Attention! Before sending the message, it is required to sign the petition by the first head.',
+            success: 'The document has been successfully signed! Send a letter to the candidate.',
+            info: 'The document has been successfully created. Download the document to check it out. Next, sign the electronic document using the digital signature of the first head of your organization.',
+            error: 'Failed to sign the document!'
+        }
     },
     workPlan: {
         plans: "Plans",

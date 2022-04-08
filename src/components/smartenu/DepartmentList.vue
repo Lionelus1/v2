@@ -10,30 +10,44 @@
           {{slotProps.placeholder}}
         </span>
       </template>
+      <template v-if="orgId !== null" #empty>
+        <div class="p-field p-grid">
+          <label for="firstname" class="p-col-fixed p-mt-2">{{$primevue.config.locale.emptyFilterMessage}}</label>
+          <div class="p-col">
+            <Button v-if="editMode" :label="$t('common.createNew')" class="p-button-link" @click="openDepartment()"/>
+          </div>
+        </div>
+      </template>
       <template #emptyfilter>
         <div class="p-field p-grid">
           <label for="firstname" class="p-col-fixed p-mt-2">{{$primevue.config.locale.emptyFilterMessage}}</label>
           <div class="p-col">
-            <Button v-if="editMode" :label="$t('common.createNew')" class="p-button-link" />
+            <Button v-if="editMode" :label="$t('common.createNew')" class="p-button-link"  @click="openDepartment()"/>
           </div>
         </div>
       </template>
     </Dropdown>
+    <Sidebar v-model:visible="sidebar" position="right" class="p-sidebar-lg" style="overflow-y:scroll">
+      <Department :readonly="false" :orgId="this.orgId" :modelValue="this.value"></Department>
+    </Sidebar>
   </div>
 </template>
 
 <script>
 import { getHeader, smartEnuApi } from "@/config/config";
 import axios from 'axios';
+import Department from "./Department";
 
 export default {
-   data() {
+  components: {Department},
+  data() {
     return {
       value: this.modelValue,
       departments:  null,
+      orgId: null,
+      sidebar: false,
     }
   },
-  
   props: {
     modelValue: null,
     orgType: Number,
@@ -54,12 +68,22 @@ export default {
 				updateValue,
 			};
 	  },
- 
+  mounted() {
+    this.emitter.on('department', (data) => {
+      if (data === true) {
+        this.getDepartments(this.orgId)
+        this.sidebar = false
+      }
+    })
+  },
   created() {
     if (this.autoLoad)
       this.getDepartments();
   },
   methods: {
+    openDepartment() {
+      this.sidebar = true
+    },
     sayChange(event) {
       this.$emit("changed",event)
       this.updateValue(event);
@@ -67,14 +91,15 @@ export default {
     getDepartments(parentID) {
       this.departments = null;
       this.value = null;
+      this.parentID != undefined ? this.orgId = this.parentID : (parentID != undefined ? this.orgId = parentID : this.orgId = null)
       axios.post(smartEnuApi+"/getdepartments", {
         orgType: this.orgType,
         parentID: this.parentID != undefined ? this.parentID : (parentID != undefined ? parentID: undefined)
-        
+
         } ,{headers: getHeader()})
         .then(response=>{
           this.departments = response.data;
-         
+
         })
         .catch((error) => {
            if (error.response.status == 401) {
@@ -85,18 +110,18 @@ export default {
           summary: "getDepartments:\n" + error,
           life: 3000,
         });
-       
+
         if (error.response.status === 404) {
           this.departments = null;
         }
         });
       },
-      
+
       updateModel(event) {
         this.$emit('update:modelValue', this.value);
-        
+
       },
-      
+
   }
 }
 
