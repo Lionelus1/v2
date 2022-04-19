@@ -16,6 +16,7 @@ export default {
         academicTitle: "Academic title",
         annotation: "Annotation",
         approve: "Approve",
+        notUpload: 'Document not uploaded',
         action: {
             submit: 'Submit',
             accept: 'Accept',
@@ -680,6 +681,28 @@ export default {
             success: 'The document has been successfully signed! Send a letter to the candidate.',
             info: 'The document has been successfully created. Download the document to check it out. Next, sign the electronic document using the digital signature of the first head of your organization.',
             error: 'Failed to sign the document!'
+        },
+        doc: {
+            upInOne: '(upload in one file)',
+            up: 'Uploading Documents',
+            eh: 'Employment history',
+            diploma: 'Diploma of Education with Applications',
+            certs: 'Professional Development Documents',
+            pension: 'Pension contract',
+            medCert: 'Medical certificate 075, chest x-ray',
+            narcoCert: 'Certificate from the narcological dispensary',
+            psychoCert: 'Certificate from the psycho-neurological dispensary',
+            gcCert: 'Certificate of presence or absence of a criminal record',
+            mId: 'Military ID',
+            signedResumeDownload: 'Signed resume',
+            resumeDownload: 'Download resume',
+            resumeSign: 'Sign resume',
+            chooseSignWay: 'Choose a resume signing method',
+            resumeView: 'Open resume',
+            upSignedResume: 'Upload signed resume',
+            resumeSuccessSigned: 'Resume successfully signed',
+            digital: 'EDS',
+            paper: 'On paper'
         }
     },
     workPlan: {

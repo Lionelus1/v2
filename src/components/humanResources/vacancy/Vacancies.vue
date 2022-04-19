@@ -322,6 +322,7 @@ export default {
         this.vacancies = response.data.vacancies;
         this.count = response.data.total;
         this.loading = false;
+        console.log(response.data)
       }).catch((error) => {
         if (error.response.status == 401) {
           this.$store.dispatch("logLout");
@@ -340,6 +341,7 @@ export default {
 
     rightsValidation() {
       this.vacancyService.rightsValidity().then((response) => {
+        console.log(response.data)
         if (response.data === RIGHTS.MAIN_ADMINISTRATOR) {
           console.log(response.data)
           this.lazyParams.right = RIGHTS.MAIN_ADMINISTRATOR
@@ -365,6 +367,14 @@ export default {
           this.lazyParams.right = RIGHTS.CAREER_MODERATOR
           this.getVacancies()
           this.view.modifier = true
+        } else if (response.data === RIGHTS.INITIAL_APPROVE) {
+          console.log(response.data)
+          this.lazyParams.right = RIGHTS.INITIAL_APPROVE
+          this.getVacancies()
+        } else if (response.data === RIGHTS.FINAL_APPROVE) {
+          console.log(response.data)
+          this.lazyParams.right = RIGHTS.FINAL_APPROVE
+          this.getVacancies()
         } else {
           this.loading = false
         }

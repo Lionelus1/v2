@@ -148,7 +148,7 @@ export default {
             {
               label: this.$t('hr.vacancies'),
               icon: 'pi pi-fw pi-user-plus',
-              to: '/human-resources/public/vacancies'
+              to: '/human-resources/career/vacancies'
             },
           ]
         },
@@ -164,11 +164,11 @@ export default {
  //         ]
  //       },
 
-        // {
-        //   label: this.$t('hr.vacancies'),
-        //   icon: 'pi pi-fw pi-user-plus',
-        //   to: '/human-resources/public/vacancies'
-        // },
+        {
+          label: this.$t('hr.vacancies'),
+          icon: 'pi pi-fw pi-user-plus',
+          to: '/human-resources/public/vacancies'
+        },
       ]
     }
   },
@@ -194,7 +194,9 @@ export default {
       return this.findRole('hr_administrator') ||
           this.findRole('career_administrator') ||
           this.findRole('hr_moderator') ||
-          this.findRole('career_moderator');
+          this.findRole('career_moderator') ||
+          this.findRole('vacancy_initial_approve') ||
+          this.findRole('vacancy_final_approve');
     },
     findRole(roleName) {
       if (!this.loginedUser)

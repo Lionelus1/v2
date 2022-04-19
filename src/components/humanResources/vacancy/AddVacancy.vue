@@ -756,7 +756,7 @@ export default {
     checkAction() {
       this.menu[0].visible = !this.readonly
       if (this.value.history !== undefined) {
-        this.vacancyService.checkAction(this.value.history.status.id).then(response => {
+        this.vacancyService.checkAction(this.value.history.status.id, this.value).then(response => {
           console.log("RESONSE IS ", response.data)
           if (response.data === 'acceptance') {
             this.action = this.vacancyService.actions.find(action => action.alias === 'accept')
