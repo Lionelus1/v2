@@ -19,7 +19,8 @@
           <tr v-for="(item, index) in items" :key="index">
             <td>{{ item.row_number }}</td>
             <td>{{ item.event_name }}</td>
-            <td><p v-for="(userItem, userIndex) in item.user" :key="userIndex"> {{ userItem.fullName }} </p></td>
+<!--            <td><p v-for="(userItem, userIndex) in item.user" :key="userIndex"> {{ userItem.fullName }} </p></td>-->
+            <td style="padding: 5px; border-collapse: collapse;">{{ item.userList }}</td>
             <td>{{ item.quarter }}</td>
             <td>{{ item.result }}</td>
             <td>{{ item.comment }}</td>
@@ -76,6 +77,9 @@ export default {
         work_plan_id: this.work_plan_id
       }, {headers: getHeader()}).then(res => {
         this.items = treeToList(res.data, 'children', this.plan.lang);
+        this.items.map(e => {
+          e.userList = Object.keys(e.user).map(key => `${e.user[key].fullName}`).join(", ");
+        });
       }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
