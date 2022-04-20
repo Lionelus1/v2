@@ -6,7 +6,9 @@ export const RIGHTS = {
     HR_ADMINISTRATOR: 'hr_administrator',
     HR_MODERATOR: 'hr_moderator',
     CAREER_ADMINISTRATOR: 'career_administrator',
-    CAREER_MODERATOR: 'career_moderator'
+    CAREER_MODERATOR: 'career_moderator',
+    INITIAL_APPROVE: 'vacancy_initial_approve',
+    FINAL_APPROVE: 'vacancy_final_approve'
 }
 
 export default class VacancyService {
@@ -118,12 +120,14 @@ export default class VacancyService {
         )
     }
 
-    checkAction(statusId) {
+    checkAction(statusId, vacancy) {
         console.log(statusId)
+        console.log(vacancy)
         return axios.post(
             smartEnuApi + '/vacancy/check/action',
             {
-                statusId: statusId
+                statusId: statusId,
+                vacancy: vacancy
             },
             {headers: getHeader()}
         )

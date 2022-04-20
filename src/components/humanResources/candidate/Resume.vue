@@ -93,15 +93,16 @@ export default {
         this.candidate = null
         this.toolbar.start = true
         this.toolbar.end = false
-      }
+      } else
       if (error.response.status === 401) {
         this.$store.dispatch("logLout");
+      } else {
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
       }
-      this.$toast.add({
-        severity: "error",
-        summary: error,
-        life: 3000,
-      });
     })
   },
 }
