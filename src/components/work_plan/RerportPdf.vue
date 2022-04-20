@@ -1,32 +1,32 @@
 <template>
   <div>
-    <div ref="toPdf" class="p-grid">
+    <div ref="toPdf" class="WordContent p-grid">
       <h5 class="p-col-6 p-offset-3 p-text-center p-text-bold">{{ reportTitle }}</h5>
       <br/>
       <div class="p-col-12">
-        <table>
+        <table style="width: 100%; font-size: 14px; text-align: center;border-collapse: collapse;border: 1px solid grey">
           <thead>
           <tr>
             <th>№</th>
-            <th>{{ plan.lang === 1 ? 'Іс-шараның атауы' : plan.lang === 2 ? 'Наименование мероприятия' : 'Name of the event' }}</th>
-            <th>{{ plan.lang === 1 ? 'Жауапты орындаушы' : plan.lang === 2 ? 'Ответственный исполнитель' : 'Responsible executor' }}</th>
-            <th>{{ plan.lang === 1 ? 'Квартал' : plan.lang === 2 ? 'Квартал' : 'Quarter' }}</th>
-            <th>{{ plan.lang === 1 ? 'Жоспарланған нәтиже' : plan.lang === 2 ? 'Планируемый результат' : 'Planned result' }}</th>
-            <th>{{ plan.lang === 1 ? 'Ескерту' : plan.lang === 2 ? 'Примечание' : 'Note' }}</th>
-            <th>{{ plan.lang === 1 ? 'Есеп' : plan.lang === 2 ? 'Отчет' : 'Report' }}</th>
-            <th>{{ plan.lang === 1 ? 'Орындалды/Орындалмады' : plan.lang === 2 ? 'Выполнено/Не выполнено' : 'Completed/Not completed' }}</th>
+            <th style="font-weight: bold; padding: 5px; border-collapse: collapse;">{{ plan.lang === 1 ? 'Іс-шараның атауы' : plan.lang === 2 ? 'Наименование мероприятия' : 'Name of the event' }}</th>
+            <th style="font-weight: bold; padding: 5px; border-collapse: collapse;">{{ plan.lang === 1 ? 'Жауапты орындаушы' : plan.lang === 2 ? 'Ответственный исполнитель' : 'Responsible executor' }}</th>
+            <th style="font-weight: bold; padding: 5px; border-collapse: collapse;">{{ plan.lang === 1 ? 'Квартал' : plan.lang === 2 ? 'Квартал' : 'Quarter' }}</th>
+            <th style="font-weight: bold; padding: 5px; border-collapse: collapse;">{{ plan.lang === 1 ? 'Жоспарланған нәтиже' : plan.lang === 2 ? 'Планируемый результат' : 'Planned result' }}</th>
+            <th style="font-weight: bold; padding: 5px; border-collapse: collapse;">{{ plan.lang === 1 ? 'Ескерту' : plan.lang === 2 ? 'Примечание' : 'Note' }}</th>
+            <th style="font-weight: bold; padding: 5px; border-collapse: collapse;">{{ plan.lang === 1 ? 'Есеп' : plan.lang === 2 ? 'Отчет' : 'Report' }}</th>
+            <th style="font-weight: bold; padding: 5px; border-collapse: collapse;">{{ plan.lang === 1 ? 'Орындалды/Орындалмады' : plan.lang === 2 ? 'Выполнено/Не выполнено' : 'Completed/Not completed' }}</th>
           </tr>
           </thead>
           <tbody>
           <tr v-for="(item, index) in items" :key="index">
-            <td>{{ item.row_number }}</td>
-            <td>{{ item.event_name }}</td>
-            <td><p v-for="(userItem, userIndex) in item.user" :key="userIndex"> {{ userItem.fullName }} </p></td>
-            <td>{{ item.quarter }}</td>
-            <td>{{ item.result }}</td>
-            <td>{{ item.comment }}</td>
-            <td>{{ item.event_result ? item.event_result.event_result : "" }}</td>
-            <td>{{ item.event_result ? $t('common.done') : $t('common.notDone') }}</td>
+            <td style="padding: 5px; border-collapse: collapse;">{{ item.row_number }}</td>
+            <td style="padding: 5px; border-collapse: collapse;">{{ item.event_name }}</td>
+            <td style="padding: 5px; border-collapse: collapse;">{{ item.userList }}</td>
+            <td style="padding: 5px; border-collapse: collapse;">{{ item.quarter }}</td>
+            <td style="padding: 5px; border-collapse: collapse;">{{ item.result }}</td>
+            <td style="padding: 5px; border-collapse: collapse;">{{ item.comment }}</td>
+            <td style="padding: 5px; border-collapse: collapse;">{{ item.event_result ? item.event_result.event_result : "" }}</td>
+            <td style="padding: 5px; border-collapse: collapse;">{{ item.event_result ? $t('common.done') : $t('common.notDone') }}</td>
           </tr>
           </tbody>
         </table>
@@ -51,6 +51,9 @@ export default {
     }
   },
   created() {
+    this.items.map(e => {
+      e.userList = Object.keys(e.user).map(key => `${e.user[key].fullName}`).join(", ");
+    });
     this.year = new Date().getFullYear();
     //this.data.push({index: 1, name: "Test name", resp: 'User Name', quarter: 1, result: '', comment: 'Comment'})
     this.loginedUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
@@ -82,4 +85,9 @@ table {
   }
 }
 
+.user-item {
+  display: block;
+  padding: 0;
+  margin: 0;
+}
 </style>

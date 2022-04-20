@@ -10,6 +10,9 @@
         <Button :label="$t('common.signatures')" icon="pi pi-file"
                 @click="viewSignatures"
                 class="p-button p-ml-2"/>
+<!--        <Button label="" icon="pi pi-download"
+                @click="downloadWord"
+                class="p-button p-button-info p-ml-2"/>-->
       </div>
       <div class="card" v-if="isApproval && !isApproved">
         <Button v-if="isApproval && !isRejected" :label="$t('common.action.approve')" icon="pi pi-check"
@@ -430,6 +433,31 @@ export default {
         }
         this.loading = false;
       })
+    },
+    async downloadWord() {
+      const header = `<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+                        <html xmlns:office="urn:schemas-microsoft-com:office:office"
+                              xmlns:word="urn:schemas-microsoft-com:office:word"
+                              xmlns="http://www.w3.org/TR/REC-html40"><head>`;
+      const html = this.$refs.report.$refs.toPdf.innerHTML;
+      let css = (
+          '<style>' +
+          '@page WordContent{size: 841.95pt 595.35pt;mso-page-orientation:landscape;}' +
+          'div.WordContent {page:WordContent;}' +
+          'table{width:100%;border-collapse:collapse;border:1px gray solid}td, th{border:1px gray solid;padding:2px;}th{font-weight: bold}'+
+          '</style>'
+      );
+
+      let blob = new Blob(['\ufeff', header + css + '</head><body>' + html + "</body></html>"], {
+        type: 'application/msword'
+      });
+      let url = URL.createObjectURL(blob);
+      let link = document.createElement('a');
+      link.href = url;
+      // Set default file name.
+      // Word will append file extension - do not add an extension here.
+      link.download = this.report.report_name;
+      link.click();
     },
     b64toBlob(b64Data, sliceSize=512) {
       const byteCharacters = window.atob(b64Data);
