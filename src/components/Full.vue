@@ -88,6 +88,8 @@ export default {
         },
         {
           label: 'Контрагенттер', icon: 'pi pi-fw pi-users',
+          visible: !this.findRole("student"),
+
           items: [
             {label: 'Ұйымдықтар', icon: 'pi pi-fw pi-home', to: '/contragent/organizations'},
             {label: 'Банктер', icon: 'pi pi-fw pi-money-bill', to: '/contragent/banks'},
