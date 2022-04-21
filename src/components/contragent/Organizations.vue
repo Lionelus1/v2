@@ -66,7 +66,7 @@
                 {{ this.$t("common.recordsLoading") }}
               </template>
               <Column
-                selectionMode="multiple"
+                selectionMode="single"
                 headerStyle="width: 3em"
               ></Column>
               <Column field="name" :header="$t('common.name')" :sortable="true">
@@ -96,12 +96,10 @@
               <Column
                 field="locality.name"
                 :header="$t('contact.locality')"
-                :sortable="true"
               ></Column>
               <Column
                 field="phone"
                 :header="$t('contact.phone')"
-                :sortable="true"
               ></Column>
             </DataTable>
             <Sidebar
@@ -184,6 +182,9 @@ export default {
         {
           label: this.$t("bank.card"),
           icon: "pi pi-fw pi-id-card",
+          command: () => {
+            this.toggle(null, this.selectedOrganizations)
+          }
         },
         {
           label: this.$t("common.contacts"),
@@ -195,6 +196,19 @@ export default {
   props: {
     modelValue: null,
     pagemenu: null,
+    selectedMode: {
+      type: Boolean,
+      default: false
+    }
+  },
+  setup(props, context) {
+    function updateValue(currentOrganization) {
+      context.emit("update:modelValue", currentOrganization);
+      context.emit("update:windowOpened", false);
+    }
+    return {
+      updateValue,
+    };
   },
   methods: {
     findRole: findRole,
@@ -280,10 +294,17 @@ export default {
       this.sideVisible = true;
     },
     toggle(event, data) {
+      
       this.currentOrganization = data;
       this.selectedOrganizations = data;
-      this.sideVisible = true;
-      this.readOnly = true;
+      if (this.selectedMode && event) {
+         this.updateValue(data);
+         this.$emit("selected", {value: data})
+      } else {
+          this.sideVisible = true;
+          this.readOnly = true;
+      }
+
     },
   },
   mounted() {

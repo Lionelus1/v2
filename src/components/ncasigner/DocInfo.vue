@@ -17,10 +17,11 @@
     import {apiDomain} from "../../config/config";
 
     export default {
-        props: ['document'],
+        props: ['document', 'docID'],
+        
         data() {
             return {
-                url: apiDomain + this.$route.fullPath
+                url: apiDomain + "/sign/" +  this.docID
             }
         },
         methods: {
