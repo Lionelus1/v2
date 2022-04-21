@@ -227,13 +227,11 @@
 <script>
 import { getHeader, smartEnuApi } from "@/config/config";
 import axios from "axios";
-import Organization from "./Organization.vue";
-import Person from "./Person.vue";
 import Bank from "./Bank.vue";
 import Enum from "@/enum/docstates/index";
 import { FilterMatchMode, FilterOperator } from "primevue/api";
 export default {
-  components: { Organization, Person, Bank },
+  components: { Bank },
   data() {
     return {
       active: null,

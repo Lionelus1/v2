@@ -114,7 +114,7 @@
          <Sidebar :visible="false" position="right"
   :modal="true" :breakpoints="{'960px': '75vw', '640px': '100vw'}" :style="{width: '760px', overflow:'hidden'}">
         <div v-if="selectedTemplate != null">
-          <RichEditor v-if="selectedDocLanguage == 'kz'" :readonly="true"  v-model="selectedTemplate.mainTextKaz" editorStyle="height:300px;width:400px;max-width:700px">
+          <RichEditor v-if="selectedDocLanguage === 'kz'" :readonly="true"  v-model="selectedTemplate.mainTextKaz" editorStyle="height:300px;width:400px;max-width:700px">
             <template v-slot:toolbar></template>
           </RichEditor>
           <RichEditor v-else :readonly="true"  v-model="selectedTemplate.mainTextRus" editorStyle="height:300px;width:400px;max-width:700px">
@@ -168,6 +168,7 @@
         this.$toast.add({severity:msgtype, summary: message, detail:content, life: 3000});
       },
       createDoc() {
+        
         let url ="/agreement/create";
         var req = {
           sourceType : this.selectedDocSourceType,
@@ -176,6 +177,7 @@
           filePath: "",
           lang: this.selectedDocLanguage == "kz" ? 0 : 1
         }
+        
         axios.post(smartEnuApi+url, req, { headers: getHeader() }).then(responce=>{
           this.showMessage('success', this.$t('contracts.title'), this.$t('contracts.message.created'));
           this.$router.push({ path: '/documents/contract/' + responce.data});
@@ -186,7 +188,6 @@
         })
       },
       createDocByTemplate(event) {
-        console.log(event)
         let url ="/agreement/create";
         var req = {
           sourceType : DocState.DocSourceType.Template,
@@ -196,6 +197,7 @@
           lang: this.selectedDocLanguage == "kz" ? 0 : 1,
           byParams: true
         }
+        
         axios.post(smartEnuApi+url, req, { headers: getHeader() }).then(responce=>{
           this.showMessage('success', this.$t('contracts.title'), this.$t('contracts.message.created'));
           this.$router.push({ path: '/documents/contract/' + responce.data});

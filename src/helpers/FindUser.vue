@@ -43,7 +43,7 @@
       </OverlayPanel>
     </div>
     <Sidebar v-model:visible="userDialog" position="right" class="p-sidebar-lg" style="overflow-y:scroll">
-			<Person @userCreated="userCreated" :modelValue="newUser" :addMode="true" :readonly="false"></Person>
+			<Person @userCreated="userCreated" id="newUser" :modelValue="newUser" :addMode="true" :readonly="false"></Person>
 		</Sidebar>
   </div>
 </template>
@@ -51,10 +51,8 @@
 <script>
 import {getHeader, smartEnuApi, templateApi} from "@/config/config";
 import axios from 'axios';
-import Person from '../components/contragent/Person.vue';
 
 export default {
-  components: {Person},
   name: 
     'FindUser',
   inheritAttrs: false,
@@ -112,6 +110,7 @@ export default {
           id: null,
           name: null,
         },
+        organization: null,
         address: null, 
         addressrus: null,
         phone: null,

@@ -3,6 +3,7 @@ export default {
         loginWelcome:"Welcome to smart.enu system.",
         chooseCert:"Choose the certificate",
         activeList: "Active list",
+        approvalList: "Approval sheet",
         newPasswordError:"Passwords are not identical or character count is less than 5 symbol",
         changePassword:"Change password",
         head: "Head of organization",
@@ -51,7 +52,7 @@ export default {
         name : "Name",
         createNew: "Create",
         created: "Created",
-        createdBy: "Autor",
+        createdBy: "Author",
         checkMyVoice: "Check my voice",
         yourVoice: "Your vote: ",
         graduate: "Graduate",
@@ -66,6 +67,7 @@ export default {
         updated: "Updated",
         type:   "Type",
         reason: "Reason",
+        registeredDate: "Registered date",
         state: "State",
         status: "Status",
         show: "Show",
@@ -167,6 +169,8 @@ export default {
             notRegistered: "Not registered",
             notVoted: "Not voted",
             voted: "Voted",
+            signing: "Signing",
+            signed: "Signed"
         },
         message: {
             title: {
@@ -199,7 +203,8 @@ export default {
             userSuccessInserted: "The user has been successfully created, download the authorization data to send to the user.",
             selectVariant: "Choose the option you need",
             userIINExists: "User with same iin already exists",
-            accessDenied: "You do not have permission to view this document!"
+            accessDenied: "You do not have permission to view this document!",
+            saveChanges: "Save changes",
         },
         language: {
             kz: "in kazakh",
@@ -302,7 +307,7 @@ export default {
         create: "Fast creation of contracts, agreements",
         list: "Register of contracts ",
         listdesc: "List of all contracts, agreements",
-        journal: "Журнал",
+        journal: "Journal of contracts",
         orgdesc: "Organizations we interact with",
         person: "Individuals with whom we interact",
         preliminary: "preliminary",
@@ -337,6 +342,7 @@ export default {
     },
     ncasigner: {
         chooseFile: "Select  the file",
+        noteMark: "By continuing to use the Smart.ENU service, you consent to the collection, processing and storage of your personal data to the extent contained in the certificate (electronic digital signature) of the NCA for the purpose of displaying electronic signature data.",
         docIdNotExistMessageForFind: "In order to find the signed document page by file, the correct SIGNERAPP identifier must be present in the file name. Make sure that the correct SIGNERAPP ID is specified in your file name.",
         docIdNotExistMessageForSign: "In order to sign a previously signed document by file, the correct SIGNERAPP identifier must be present in the file name. Make sure that the correct SIGNERAPP ID is specified in your file name. Otherwise, specify the file name without the SIGNERAPP identifier to create a new signature chain.",
         reload: "Reload the page and try again",
@@ -349,6 +355,7 @@ export default {
         IncorrectFileTitle: "A file with this name {dn} failed signature verification in the SIGNERAPP system",
         IncorrectFileContent: "This file has been modified or another file has been provided. Please check the file.",
         signed: "he/she signed this document",
+        signingexpected: "Signing is expected",
         certTemplate: "Certificate Template: ",
         IIN: "IIN",
         certType: "Signature type: ",
@@ -356,6 +363,7 @@ export default {
         //
         signNotFoundById: "Couldn't find a signature for this ID!",
         //
+        successSentToSign: "Sent to sign",
         successSignTitle: "File {dn} has been successfully signed!",
         successSignContentFirstRow: "Your signature has been verified and has been registered in SIGNAPP",
         successSignContentSecondRow: "We recommend saving a copy of the signed file with the <b>SIGNAPP ID</b>. In the future, this will simplify the search for the signed document page in the SIGNAPP service.",

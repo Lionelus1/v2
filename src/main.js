@@ -97,6 +97,8 @@ import './assets/layout/layout.scss';
 import './assets/layout/flags/flags.css';
 import mitt from "mitt";
 import VueElementLoading from "vue-element-loading";
+import Person from '@/components/contragent/Person.vue';
+import Organization from '@/components/contragent/Organization.vue';
 
 import ConfirmationService from 'primevue/confirmationservice';
 import store from "./store/store"
@@ -175,6 +177,8 @@ app.directive('ripple', Ripple);
 app.directive('code', CodeHighlight);
 
 app.component('Accordion', Accordion);
+app.component('Person', Person)
+app.component('Organization', Organization)
 app.component('AccordionTab', AccordionTab);
 app.component('AutoComplete', AutoComplete);
 app.component('Breadcrumb', Breadcrumb);
