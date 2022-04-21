@@ -39,13 +39,11 @@
 <script>
 
 import Organizations from './Organizations.vue';
-import Organization from './Organization.vue';
-import Person from './Person.vue'
 import Persons from './Persons.vue'
 import Bank from './Bank.vue'
 import Enum from "@/enum/docstates/index"
 export default {
-  components : { Organizations, Organization, Person, Persons, Bank },
+  components : { Organizations, Persons, Bank },
   data() {
     return {
       value: this.modelValue,

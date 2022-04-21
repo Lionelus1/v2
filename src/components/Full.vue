@@ -196,7 +196,6 @@ export default {
         this.getLoginedUser();
 
       for (let i = 0; i < this.loginedUser.roles.length; i++) {
-        console.log(this.loginedUser.roles[i].name)
         if (this.loginedUser.roles[i].name === roleName) {
           return true;
         }

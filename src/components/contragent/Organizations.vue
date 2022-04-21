@@ -108,7 +108,7 @@
               class="p-sidebar-lg"
               style="overflow-y: scroll"
             >
-              <Organization
+              <Organization id="orgOrgs"
                 :modelValue="currentOrganization"
                 :readonly="readOnly"
                 @inserted="inserted"
@@ -123,12 +123,10 @@
 <script>
 import { smartEnuApi, getHeader, findRole } from "@/config/config";
 import axios from "axios";
-import Organization from "./Organization.vue";
 import Enum from "@/enum/docstates/index";
 import { FilterMatchMode, FilterOperator } from "primevue/api";
 
 export default {
-  components: { Organization },
   data() {
     return {
       localmenu: [{

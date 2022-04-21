@@ -6,11 +6,11 @@
         <i v-if="editVisible && !readonly" class="pi pi-ellipsis-h ibutton" style="height:30px;margin-top: 2px;margin-right: 2px;" @click="showside()"/>
         <InputText id="inputtext-right" :placeholder="$t('common.select')" readonly="true" type="text" v-model="selectedContragentName"/>
         <Sidebar @hide="updateValue(value)" @selected="selected" v-model:visible="contragentVisible" position="right" class="p-sidebar-lg p-m-0 p-p-0 p-pt-7" style="overflow-y:scroll">
-          <Organizations v-model="value" v-model:windowOpened="contragentVisible" :selectedMode="true" @selected="selected"></Organizations>
+          <Organizations id="contragentSelectOrgOrgs" v-model="value" v-model:windowOpened="contragentVisible" :selectedMode="true" @selected="selected"></Organizations>
         </Sidebar>
         
         <Sidebar v-model:visible="cardVisible" position="right" class="p-sidebar-lg" style="overflow-y:scroll">
-          <Organization :readonly="true" :modelValue="value"></Organization>
+          <Organization id="contragentSelectOrgOrg" :readonly="true" :modelValue="value"></Organization>
         </Sidebar>
       </span>
     </div>
@@ -20,12 +20,9 @@
 <script>
 
 import Organizations from './Organizations.vue';
-import Organization from './Organization.vue';
-import Person from './Person.vue'
-import Bank from './Bank.vue'
 import Enum from "@/enum/docstates/index"
 export default {
-  components : { Organizations, Organization },
+  components : { Organizations },
   data() {
     return {
       value: this.modelValue,

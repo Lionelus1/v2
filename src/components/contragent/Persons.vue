@@ -183,12 +183,10 @@
 <script>
 import { smartEnuApi, getHeader, findRole } from "@/config/config";
 import axios from "axios";
-import Person from "./Person.vue";
 import Enum from "@/enum/docstates/index";
 import { FilterMatchMode, FilterOperator } from "primevue/api";
 
 export default {
-  components: { Person },
   data() {
     return {
       active: null,

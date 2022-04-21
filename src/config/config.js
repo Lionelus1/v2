@@ -7,8 +7,7 @@ export const signerApi = "https://smart.enu.kz:6990"
 //export const signerApi = "http://10.1.1.161:6990"
 //export const smartEnuApi = "https://smart.enu.kz:8081"
 //export const smartEnuApi = "http://smart.enu.kz:8090"
-//export const smartEnuApi = "http://localhost:8080"
-export const smartEnuApi = "http://192.168.137.151:8080"
+export const smartEnuApi = "http://localhost:8080"
 export const templateApi = "http://localshost:8082"
 
 export const header  = {
