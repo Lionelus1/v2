@@ -140,6 +140,7 @@
         etspToken(){
           axios.post(smartEnuApi+"/etsptoken",{}, {headers: getHeader()})
           .then(res=>{
+              alert(res.data);
               this.xmlSignature(res.data);
           })
           .catch(error=>{
@@ -157,11 +158,13 @@
             return
           }
           try {
+            alert(res.connectionId)
             let XMLignature = await  NCALaClient.signXml('PKCS12', res.xml, 'AUTH')
             this.eloginData.xmlSignature=XMLignature;
             this.eloginData.connectionId = res.connectionId;
             this.isSignUp=false;
           } catch (error) {
+            alert("hate osi jerde");
             alert(error.message);
           }
         },
