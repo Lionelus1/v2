@@ -1,10 +1,11 @@
 <template>
   <div>
+    {{selectedUsers}}
     <div v-if="!selectMode" class="content-section introduction">
       <div class="feature-intro p-ml-3">
         <h3>{{$t('doctemplate.title')}}</h3> 
       </div>
-x    </div>
+    </div>
     <div class="content-section implementation">
       <ProgressBar v-if="signing" mode="indeterminate" style="height: .5em" />
       <BlockUI :blocked="signing" :fullScreen="true"></BlockUI>
