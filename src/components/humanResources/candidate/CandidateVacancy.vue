@@ -473,7 +473,7 @@
 </template>
 
 <script>
-import WorkPlanQrPdf from "@/components/work_plan/WorkPlanQrPdf";
+//import WorkPlanQrPdf from "@/components/work_plan/WorkPlanQrPdf";
 import {FilterMatchMode, FilterOperator} from "primevue/api";
 import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
@@ -482,7 +482,6 @@ import CandidateDocument from "./CandidateDocument";
 
 export default {
   name: "CandidateVacancy",
-  components: {WorkPlanQrPdf},
   data() {
     return {
       count: 200,
