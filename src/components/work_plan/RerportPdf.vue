@@ -1,31 +1,33 @@
 <template>
   <div>
-    <div ref="toPdf" class="WordContent p-grid">
+    <div ref="toPdf" class="WordSection1 p-grid">
       <h5 class="p-col-6 p-offset-3 p-text-center p-text-bold">{{ reportTitle }}</h5>
       <br/>
       <div class="p-col-12">
-        <table style="width: 100%; font-size: 14px; text-align: center;border-collapse: collapse;border: 1px solid grey">
-          <thead>
-          <tr>
-            <th>№</th>
-            <th style="font-weight: bold; padding: 5px; border-collapse: collapse;">{{ plan.lang === 1 ? 'Іс-шараның атауы' : plan.lang === 2 ? 'Наименование мероприятия' : 'Name of the event' }}</th>
-            <th style="font-weight: bold; padding: 5px; border-collapse: collapse;">{{ plan.lang === 1 ? 'Жауапты орындаушы' : plan.lang === 2 ? 'Ответственный исполнитель' : 'Responsible executor' }}</th>
-            <th style="font-weight: bold; padding: 5px; border-collapse: collapse;">{{ plan.lang === 1 ? 'Квартал' : plan.lang === 2 ? 'Квартал' : 'Quarter' }}</th>
-            <th style="font-weight: bold; padding: 5px; border-collapse: collapse;">{{ plan.lang === 1 ? 'Жоспарланған нәтиже' : plan.lang === 2 ? 'Планируемый результат' : 'Planned result' }}</th>
-            <th style="font-weight: bold; padding: 5px; border-collapse: collapse;">{{ plan.lang === 1 ? 'Ескерту' : plan.lang === 2 ? 'Примечание' : 'Note' }}</th>
-            <th style="font-weight: bold; padding: 5px; border-collapse: collapse;">{{ plan.lang === 1 ? 'Есеп' : plan.lang === 2 ? 'Отчет' : 'Report' }}</th>
-            <th style="font-weight: bold; padding: 5px; border-collapse: collapse;">{{ plan.lang === 1 ? 'Орындалды/Орындалмады' : plan.lang === 2 ? 'Выполнено/Не выполнено' : 'Completed/Not completed' }}</th>
-          </tr>
-          </thead>
+        <table style="width: 100%; font-size: 12px; text-align: center;border-collapse: collapse;border: 1px solid grey">
           <tbody>
+          <tr style="mso-yfti-firstrow:yes;">
+            <td class="header">№</td>
+            <td class="header" style="font-weight: bold; padding: 5px; border-collapse: collapse;">{{ plan.lang === 1 ? 'Іс-шараның атауы' : plan.lang === 2 ? 'Наименование мероприятия' : 'Name of the event' }}</td>
+            <td class="header" style="font-weight: bold; padding: 5px; border-collapse: collapse;">{{ plan.lang === 1 ? 'Жауапты орындаушы' : plan.lang === 2 ? 'Ответственный исполнитель' : 'Responsible executor' }}</td>
+            <td class="header" style="font-weight: bold; padding: 5px; border-collapse: collapse;">{{ plan.lang === 1 ? 'Квартал' : plan.lang === 2 ? 'Квартал' : 'Quarter' }}</td>
+            <td class="header" style="font-weight: bold; padding: 5px; border-collapse: collapse;">{{ plan.lang === 1 ? 'Жоспарланған нәтиже' : plan.lang === 2 ? 'Планируемый результат' : 'Planned result' }}</td>
+            <td class="header" style="font-weight: bold; padding: 5px; border-collapse: collapse;">{{ plan.lang === 1 ? 'Ескерту' : plan.lang === 2 ? 'Примечание' : 'Note' }}</td>
+            <td class="header" style="font-weight: bold; padding: 5px; border-collapse: collapse;">{{ plan.lang === 1 ? 'Есеп' : plan.lang === 2 ? 'Отчет' : 'Report' }}</td>
+            <td class="header" style="font-weight: bold; padding: 5px; border-collapse: collapse;">{{ plan.lang === 1 ? 'Орындалды/Орындалмады' : plan.lang === 2 ? 'Выполнено/Не выполнено' : 'Completed/Not completed' }}</td>
+          </tr>
           <tr v-for="(item, index) in items" :key="index">
-            <td style="padding: 5px; border-collapse: collapse;">{{ item.row_number }}</td>
-            <td style="padding: 5px; border-collapse: collapse;">{{ item.event_name }}</td>
-            <td style="padding: 5px; border-collapse: collapse;">{{ item.userList }}</td>
-            <td style="padding: 5px; border-collapse: collapse;">{{ item.quarter }}</td>
-            <td style="padding: 5px; border-collapse: collapse;">{{ item.result }}</td>
-            <td style="padding: 5px; border-collapse: collapse;">{{ item.comment }}</td>
-            <td style="padding: 5px; border-collapse: collapse;">{{ item.event_result ? item.event_result.event_result : "" }}</td>
+            <td style="text-align: center;border-collapse: collapse;vertical-align: top;">{{ item.row_number }}</td>
+            <td style="text-align: justify;border-collapse: collapse;vertical-align: top;">{{ item.event_name }}</td>
+            <td style="text-align: justify;border-collapse: collapse;vertical-align: top;">{{ item.userList }}</td>
+            <td style="text-align: justify;border-collapse: collapse;vertical-align: top;">{{ item.quarter }}</td>
+            <td style="text-align: justify;border-collapse: collapse;vertical-align: top;">{{ item.result }}</td>
+            <td style="text-align: justify;border-collapse: collapse;vertical-align: top;">{{ item.comment }}</td>
+            <td style="text-align: justify;border-collapse: collapse;vertical-align: top;" v-bind:style="(item.event_result && item.event_result.length > 100) ? 'font-size: 10px' : 'font-size:12px;'">
+              {{
+                item.event_result ? item.event_result.event_result : ""
+              }}
+            </td>
             <td style="padding: 5px; border-collapse: collapse;">{{ item.event_result ? $t('common.done') : $t('common.notDone') }}</td>
           </tr>
           </tbody>

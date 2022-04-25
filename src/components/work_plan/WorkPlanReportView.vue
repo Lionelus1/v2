@@ -1,6 +1,9 @@
 <template>
   <div>
     <div class="p-col-12">
+      <Button label="" icon="pi pi-download"
+              @click="downloadWord"
+              class="p-button p-button-info p-ml-2"/>
       <div class="card" v-if="isPlanCreator && !isReportSentApproval">
         <WorkPlanReportApprove :doc-id="report.doc_id" :report="report_id"></WorkPlanReportApprove>
 <!--        <Button label="" icon="pi pi-download" @click="download"
@@ -10,9 +13,7 @@
         <Button :label="$t('common.signatures')" icon="pi pi-file"
                 @click="viewSignatures"
                 class="p-button p-ml-2"/>
-<!--        <Button label="" icon="pi pi-download"
-                @click="downloadWord"
-                class="p-button p-button-info p-ml-2"/>-->
+
       </div>
       <div class="card" v-if="isApproval && !isApproved">
         <Button v-if="isApproval && !isRejected" :label="$t('common.action.approve')" icon="pi pi-check"
@@ -50,7 +51,7 @@
 
     <div v-if="items">
       <ReportPdf ref="report" :data="items" :report-title="report.report_name" :plan="plan"
-                 style="display: none;"></ReportPdf>
+                 ></ReportPdf>
     </div>
 
     <Dialog :header="$t('workPlan.toCorrect')" v-model:visible="showRejectPlan" :style="{width: '450px'}"
@@ -120,7 +121,9 @@ export default {
           format: 'letter',
           orientation: 'landscape',
         },
-        pagebreak: {avoid: 'tr'},
+        pagebreak: {
+          avoid: ['tr']
+        },
         filename: "work_plan_report.pdf",
       },
       approval_users: [],
@@ -435,16 +438,16 @@ export default {
       })
     },
     async downloadWord() {
-      const header = `<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-                        <html xmlns:office="urn:schemas-microsoft-com:office:office"
-                              xmlns:word="urn:schemas-microsoft-com:office:word"
-                              xmlns="http://www.w3.org/TR/REC-html40"><head>`;
+      const header = `<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office"
+                    xmlns:w="urn:schemas-microsoft-com:office:word" xmlns:m="http://schemas.microsoft.com/office/2004/12/omml"
+                    xmlns="http://www.w3.org/TR/REC-html40"><head><meta name=ProgId content=Word.Document>`;
       const html = this.$refs.report.$refs.toPdf.innerHTML;
       let css = (
           '<style>' +
-          '@page WordContent{size: 841.95pt 595.35pt;mso-page-orientation:landscape;}' +
-          'div.WordContent {page:WordContent;}' +
-          'table{width:100%;border-collapse:collapse;border:1px gray solid}td, th{border:1px gray solid;padding:2px;}th{font-weight: bold}'+
+          '@page WordSection1{size: 841.9pt 595.3pt;mso-page-orientation: landscape;mso-title-page: yes;margin: 49.65pt 2.0cm 42.5pt 2.0cm;mso-header-margin: 35.4pt;mso-footer-margin: 35.4pt;mso-page-numbers: 0;mso-paper-source: 0;}' +
+          'div.WordSection1 {page:WordSection1;}' +
+          'table{width:100%;border-collapse:collapse;border:1px gray solid}td{border:1px gray solid;padding:0cm 5.4pt 0cm 5.4pt;}'+
+          '.header {font-weight: bold}' +
           '</style>'
       );
 
