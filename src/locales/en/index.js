@@ -12,6 +12,7 @@ export default {
         newPassword:"Enter new password",
         newPasswordRe:"Repeat new password",
         createDocument: 'Generate document',
+        createReport: 'Generate report',
         administration: 'Administration',
         academicDegree: "Academic degree",
         academicTitle: "Academic title",
@@ -689,6 +690,10 @@ export default {
             success: 'The document has been successfully signed! Send a letter to the candidate.',
             info: 'The document has been successfully created. Download the document to check it out. Next, sign the electronic document using the digital signature of the first head of your organization.',
             error: 'Failed to sign the document!'
+        },
+        report: {
+            title: 'Report',
+            success: 'Successfully generated!'
         },
         doc: {
             upInOne: '(upload in one file)',

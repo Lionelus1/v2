@@ -6,16 +6,11 @@
       :key="active"
       style="height: 36px; margin-top: -7px; margin-left: -14px"
     ></Menubar>
-    <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em" />
-    <BlockUI :blocked="loading" :fullScreen="true"></BlockUI>
     <TabView @TabChange="tabChanged" v-model:activeIndex="activeTab">
       <TabPanel :header="$t('common.params')">
-
         <div class="p-grid">
           <div class="p-lg-8 p-md-12 p-sm-12">
-            <p v-if="contract">{{ $t("common.state") + ": " }}
-            <span :class="'customer-badge status-' + contract.docHistory.stateEn">{{$t("common.states." + contract.docHistory.stateEn)}}</span>
-            </p>
+            <h6>{{ $t("common.main").toUpperCase() }}</h6>
             <div
               v-if="contract != null && contract.sourceType === 0"
               class="p-fluid"
@@ -48,23 +43,19 @@
                   v-if="param.name == 'contragent' || param.name == 'ourside'"
                   class="p-col-12 p-md-12"
                 >
-                  <ContragentSelect @updated="correct" v-model="param.value"></ContragentSelect>
+                  <ContragentSelect v-model="param.value"></ContragentSelect>
                 </div>
                 <div v-else class="p-col-12 p-md-10">
-                  <FindUser
+                  <UserSearch
                     v-if="param.name == 'student'"
-                    v-model:first="param.value"
-                    v-model="users"
+                    v-model="param.value"
                     :max="1"
                     :userType="1"
-                    @input="correct" @remove="correct"
-                  ></FindUser>
+                  ></UserSearch>
                   <DatePicker
                     v-else-if="param.name == 'period'"
                     v-model="param.value"
                     is-range
-                    @input="correct"
-                    @dayclick="correct"
                   >
                     <template v-slot="{ inputValue, inputEvents }">
                       <div class="flex justify-center items-center">
@@ -105,7 +96,6 @@
                         ? $t('contracts.autogenerate')
                         : ''
                     "
-                    @input="correct"
                   />
                   <InputText
                     v-model="param.value"
@@ -118,7 +108,6 @@
                         ? $t('contracts.autogenerate')
                         : ''
                     "
-                    @input="correct"
                   />
                 </div>
               </div>
@@ -128,13 +117,18 @@
       </TabPanel>
       <TabPanel :header="$t('common.show')">
         <div class="card">
-          <embed :src="pdf+'#toolbar=0&navpanes=0&scrollbar=0'" style="width: 100%; height: 1000px" v-if="pdf" type="application/pdf" />
+          <embed
+            style="width: 100%; height: 1000px"
+            v-if="pdf"
+            type="application/pdf"
+            :src="'data:application/pdf;base64,' + pdf + '#toolbar=0'"
+          />
         </div>
       </TabPanel>
     </TabView>
 
     <Dialog
-      :header="$t('common.registration')"
+      :header="$t(temp ? 'contracts.reserveNumber' : 'common.registration')"
       modal="true"
       v-model:visible="dialog.setNumber"
     >
@@ -152,18 +146,19 @@
                 ? contract.template.folder.nameRus
                 : contract.template.folder.nameEn
             "
-            >
-            </InputText
+            >{{}}</InputText
           >
         </div>
         <div class="p-col-12 p-mb-2 p-lg-3 p-mb-lg-1">
           <label for="catalog">{{ $t("common.date") }}</label>
         </div>
         <div class="p-col-12 p-mb-2 p-lg-9 p-mb-lg-1 p-pr-2">
-          <i
+          <PrimeCalendar
+            :readonly="readonly"
             class="p-mt-2"
-            
-          >{{(contract.registerDate ? contract.registerDate.split('T')[0] : '')}}</i>
+            v-model="contract.registerDate"
+            dateFormat="dd.mm.yy"
+          />
         </div>
         <div class="p-col-12 p-mb-2 p-lg-3 p-mb-lg-0">
           <label for="regnum">{{ $t("contracts.regnum") }}</label>
@@ -178,38 +173,28 @@
           ></InputText>
         </div>
         <div class="p-col-3 p-mb-2 p-lg-5 p-mb-lg-0">
-          <i v-if="!(this.contract.number && this.contract.number !== '')">-{{ $t("contracts.preliminary") }}</i>
+          <i>-{{ $t("contracts.preliminary") }}</i>
         </div>
       </div>
 
       <template #footer>
         <Button
 			:disabled= "(this.contract.number && this.contract.number !== '')"
-          	:label="$t('common.registration')"
+          	:label="$t(temp ? 'common.reserve' : 'common.registration')"
           	@click="registrateContract()"
         />
         <Button :label="$t('common.cancel')" @click="closeForm('setNumber')" />
       </template>
     </Dialog>
-    <Sidebar
-      v-model:visible="signerInfo"
-      position="right"
-      class="p-sidebar-lg"
-      style="overflow-y: scroll"
-    >
-     <DocSignaturesInfo :docIdParam="contract.uuid"></DocSignaturesInfo>
-    </Sidebar>
   </div>
 </template>
 <script>
-import { smartEnuApi, getHeader, b64toBlob, findRole } from "@/config/config";
+import { smartEnuApi, getHeader } from "@/config/config";
 import axios from "axios";
-import FindUser from "@/helpers/FindUser";
+
+import UserSearch from "./usersearch/UserSearch.vue";
 import ContragentSelect from "../contragent/ContragentSelect.vue";
 import { DatePicker } from "v-calendar";
-import {runNCaLayer} from "@/helpers/SignDocFunctions"
-import DocSignaturesInfo from "@/components/DocSignaturesInfo"
-
 import Enum from "@/enum/docstates/index";
 import {
   incline,
@@ -220,13 +205,12 @@ import {
 import { constantizeGenderInRules } from "lvovich/lib/inclineRules";
 export default {
   name: "Contract",
-  components: { FindUser, DatePicker, ContragentSelect, DocSignaturesInfo },
+  components: { UserSearch, DatePicker, ContragentSelect },
   data() {
     return {
       contract: null,
       students: null,
       organization: null,
-      users:[],
       pdf: null,
       activeTab: 0,
       readonly: true,
@@ -235,19 +219,16 @@ export default {
         Parameters: 0,
         Preview: 1,
       },
-      corrected: false,
       temp: false,
       sourceType: {
         template: 0,
         uploadedDoc: 1,
       },
-      signerInfo : false,
-	    reserveNumber: null,
+	  reserveNumber: null,
       range: {
         start: new Date(2020, 0, 1),
         end: new Date(2020, 0, 5),
       },
-      loading: false,
       language: {
         kz: 0,
         ru: 1,
@@ -257,7 +238,7 @@ export default {
         {
           label: this.$t("common.save"),
           icon: "pi pi-fw pi-save",
-          disabled: !this.corrected,
+          disabled: this.readonly,
           command: () => {
             this.saveContract();
           },
@@ -303,25 +284,16 @@ export default {
               icon: "pi pi-check",
               visible: () =>
                 this.contract &&
-                this.contract.sourceType === this.sourceType.uploadedDoc ,
+                this.contract.sourceType === this.sourceType.uploadedDoc,
             },
             {
-              label: this.$t("common.tosign"),
+              label: this.$t("contracts.signing"),
               icon: "pi pi-user-edit",
               visible: () =>
                 this.contract &&
-                this.contract.sourceType === this.sourceType.template &&
-                !this.findRole(null, 'student'),
-              command: ()=> { this.sendToSign()},
+                this.contract.sourceType === this.sourceType.template,
             },
           ],
-        },
-         {
-          label: this.$t('common.approvalList'),
-          icon: "pi pi-user-edit",
-          command: () => {
-            this.signerInfo = true
-          }
         },
       ],
       dialog: {
@@ -329,7 +301,6 @@ export default {
       },
     };
   },
-  
   computed: {
     previewText() {
       if (!this.contract) return "";
@@ -351,12 +322,6 @@ export default {
     },
   },
   methods: {
-    findRole: findRole,
-    correct() {
-      
-      this.corrected = true
-      this.menu[0].disabled = false
-    },
     openForm(formName) {
       this.dialog[formName] = true;
       if (formName === "setNumber" && (!this.contract.number  || this.contract.number === "" )) {
@@ -366,80 +331,6 @@ export default {
           .slice(0, 10)
           .replace(/-/g, ".");
       }
-    },
-    sendToSign() {
-      if (!this.formsValidate())
-      {
-        this.$toast.add({
-          severity: "error",
-          summary: this.$t("common.tosign"),
-          detail: this.$t("common.message.fillError"),
-          life: 3000,
-        });
-        return
-      }
-      if (this.corrected) {
-        this.$toast.add({
-          severity: "warn",
-          summary: this.$t("common.tosign"),
-          detail: this.$t("common.message.saveChanges"),
-          life: 3000,
-        });
-        return
-      }
-      this.$confirm.require({
-        message: this.$t('common.confirmation'),
-        header: this.$t('common.approve'),
-        icon: 'pi pi-exclamation-triangle',
-        accept: () => {
-          var req = { id: this.contract.id, userID: this.$store.state.loginedUser.userID };
-          req.lang = "kaz";
-          if (this.contract.lang != 0) {
-            req.lang = "rus";
-          }
-          this.loading = true
-          axios.post(smartEnuApi + "/contract/sendtosign", req, { headers: getHeader() })
-          .then(response => {
-            this.loading = false
-            this.contract.docUUID = response.data.docUUID
-            this.contract.filePath = response.data.filePath
-            this.contract.docHistory = response.data.docHistory
-            this.$toast.add({
-              severity: "success",
-              summary: this.$t("common.tosign"),
-              detail: this.$t("ncasigner.successSentToSign"),
-              life: 3000,
-            });
-          }).
-          catch(error => {
-            this.loading = false;
-            if (error.response.status == 401) {
-              this.$store.dispatch("logLout");
-            } else 
-              console.log(error);
-          })
-                    
-        }
-      })
-    },
-    formsValidate() {
-      var result = true
-      if (this.contract == null) {
-        result = false
-        return result
-      }
-      if (this.contract.params != null)
-      this.contract.params.forEach((param)=> {
-        if ((param.value == null || param.value == "null" || param.value == "") && ((param.name !== "number") && (param.name !=="date"))) {
-          result = false
-          return result
-        }
-        if ((param.name == "contragent" || param.name == "ourside") && (param.value.signer == null) ) {
-            result = false
-            return result
-        }
-      });
-      return result
     },
     closeForm(formName) {
       this.dialog[formName] = false;
@@ -456,20 +347,11 @@ export default {
     initApiCall() {
       let url = "/agreement/get";
       var req = { id: parseInt(this.$route.params.id) };
-      this.loading = true
       axios
         .post(smartEnuApi + url, req, { headers: getHeader() })
         .then((res) => {
-          this.loading = false
           this.contract = res.data;
-		      this.reserveNumber = this.contract.number
-          if (this.contract.docHistory.stateId >= 6) {
-            if (this.contract.docHistory.stateId >=2) {
-              this.menu[3].items[0].disabled = true
-            }
-            this.menu[3].items[1].disabled = true
-
-          } 
+		  this.reserveNumber = this.contract.number
           if (this.contract.sourceType == 0) {
             this.contract.text =
               this.contract.lang == this.language.kz
@@ -478,7 +360,6 @@ export default {
           }
         })
         .catch((error) => {
-          this.loading = false
           if (error.response.status == 401) {
             this.$store.dispatch("logLout");
           }
@@ -570,8 +451,6 @@ export default {
       axios
         .post(smartEnuApi + url, req, { headers: getHeader() })
         .then((res) => {
-          this.corrected = false
-          this.menu[0].disabled = true
           this.$toast.add({
             severity: "success",
             summary: this.$t("common.save"),
@@ -580,8 +459,6 @@ export default {
           });
         })
         .catch((error) => {
-          alert(error)
-          console.log(error)
           if (error.response.status == 401) {
             this.$store.dispatch("logLout");
           }
@@ -595,22 +472,19 @@ export default {
       if (this.contract.lang != 0) {
         req.lang = "rus";
       }
-      this.loading = true
       axios
         .post(smartEnuApi + url, req, { headers: getHeader() })
         .then((response) => {
-          this.loading = false
-          this.pdf = b64toBlob(response.data);
+          this.pdf = response.data;
           if (saveFile) {
             var link = document.createElement("a");
             link.innerHTML = "Download PDF file";
             link.download = this.contract.id + ".pdf";
-            link.href =  this.pdf;
+            link.href = "data:application/octet-stream;base64," + this.pdf;
             link.click();
           }
         })
         .catch((error) => {
-          this.loading = false
           if (error.response.status == 401) {
             this.$store.dispatch("logLout");
           }
@@ -624,11 +498,10 @@ export default {
         temp: this.temp,
         next: next,
       };
-      this.loading = true
+
       axios
         .post(smartEnuApi + url, req, { headers: getHeader() })
         .then((res) => {
-          this.loading = false
 		  this.reserveNumber = res.data;
           if (!next) {
             this.contract.number = res.data;
@@ -642,7 +515,6 @@ export default {
           }
         })
         .catch((error) => {
-          this.loading = false
           console.log(error);
           if (error.response.status == 401) {
             this.$store.dispatch("logout");

@@ -38,8 +38,7 @@
     </Column>
     <Column field="actions" header="">
       <template #body="slotProps">
-<!--        (parseInt(slotProps.data.quarter.String) === currentQuarter || parseInt(slotProps.data.quarter.String) === 5) &&-->
-        <work-plan-execute :data="slotProps.data" v-if="isUserApproval(slotProps.data) && plan.status.work_plan_status_id === 4"></work-plan-execute>
+        <work-plan-execute :data="slotProps.data" v-if="(parseInt(slotProps.data.quarter.String) === currentQuarter || parseInt(slotProps.data.quarter.String) === 5) && isUserApproval(slotProps.data) && plan.status.work_plan_status_id === 4"></work-plan-execute>
         <work-plan-event-result-modal v-if="slotProps.data.event_result" :event-result="slotProps.data.event_result"></work-plan-event-result-modal>
         <work-plan-event-add v-if="!isPlanSentApproval && !slotProps.data.is_finish" :data="slotProps.data" :items="data"></work-plan-event-add>
         <work-plan-event-edit-modal v-if="(slotProps.data.creator_id === loginedUserId || isPlanCreator) && !isPlanSentApproval && !slotProps.data.is_finish" :event="slotProps.data"></work-plan-event-edit-modal>
