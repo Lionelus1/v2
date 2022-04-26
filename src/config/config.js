@@ -68,7 +68,7 @@ export const testFunction= function(){
 }
 //findRole
 export const findRole = function(user, role) {
-    if (user === null) {
+    if (user == null) {
       user = this.$store.state.loginedUser;
     } 
     if (user.roles)
