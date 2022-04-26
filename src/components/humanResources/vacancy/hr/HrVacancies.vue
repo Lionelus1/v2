@@ -113,14 +113,15 @@
       <!-- APPLY BUTTON COLUMN -->
       <Column>
         <template #body="slotProps">
-          <Button v-if="!slotProps.data.isApply" icon="pi pi-star" class="p-button-success" :label="$t('hr.action.apply')"
+          <Button v-if="!slotProps.data.isApply" icon="pi pi-star" class="p-button-success"
+                  :label="$t('hr.action.apply')"
                   @click="openApplyDialog(slotProps.data.id)"/>
           <Tag v-if="slotProps.data.isApply" class="mr-2" severity="info" :value="$t('hr.action.applied')"></Tag>
         </template>
       </Column>
     </DataTable>
   </div>
-  <!-- Просмотр резюме -->
+  <!-- Просмотр вакансии -->
   <Dialog v-model:visible="visible.view" :style="{ width: '800px' }" :modal="true">
 
     <template #header>
@@ -290,6 +291,47 @@
             <hr>
           </div>
           <div class="p-field p-col-12">
+            <Label>{{ $t('hr.doc.chooseSignWay') }}</Label>
+            <SelectButton v-model="signWay"
+                          :options="signWayOption"
+                          class="p-mt-2"
+                          optionValue="value"
+                          optionLabel="name"/>
+          </div>
+          <div class="p-field p-col-12">
+            <hr>
+          </div>
+          <div class="p-field p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+            <Button class="p-mt-2"
+                    :label="$t('hr.doc.resumeView')"
+                    icon="pi pi-plus" :onclick="openResume"/>
+          </div>
+          <div class="p-field p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+            <FileUpload
+                class="p-mt-2"
+                mode="basic"
+                v-if="signWay === 1"
+                :customUpload="true"
+                @uploader="uploadResume($event)"
+                :auto="true"
+                v-bind:chooseLabel="$t('hr.doc.upSignedResume')"/>
+          </div>
+          <div class="p-field p-col-12">
+            <InlineMessage severity="info"
+                           class="p-mt-2"
+                           show v-if="resumeFile">
+              {{ $t('ncasigner.chosenFile', {fn: resumeFile ? resumeFile.name : ""}) }}
+            </InlineMessage>
+            <div class="p-field">
+              <Message v-if="signature" :closable="false" severity="success">{{ $t('hr.doc.resumeSuccessSigned') }}</Message>
+            </div>
+            <small
+                class="p-error"
+                v-if="validation.resumeData"
+            >{{ $t("common.requiredField") }}</small>
+            <hr>
+          </div>
+          <div class="p-field p-col-12">
             <div class="p-field-checkbox">
               <Checkbox id="binary" v-model="agreement" :binary="true"/>
               <label for="binary" style="font-size: 15px; text-align: justify">
@@ -322,7 +364,7 @@
     <div class="confirmation-content">
       <i class="pi pi-exclamation-circle p-mr-3" style="font-size: 2rem"/>
       <span>
-        <b>{{$t('hr.resumeNorFound')}}</b>
+        <b>{{ $t('hr.resumeNorFound') }}</b>
         </span>
     </div>
 
@@ -338,17 +380,44 @@
           @click="visible.notFound = false"/>
     </template>
   </Dialog>
+  <!-- RESUME -->
+  <Dialog v-model:visible="visible.resume" :style="{ width: '650px' }" :modal="true">
+    <template #header>
+      <h5>{{ $t('hr.action.apply').toUpperCase() }}</h5>
+    </template>
+    <ResumeView ref="pdf" :value="candidate" :readonly="true"/>
+    <template #footer>
+      <Button
+          v-bind:label="$t('hr.doc.resumeDownload')"
+          icon="pi pi-check"
+          v-if="signWay === 1"
+          class="p-button p-component p-button-primary"
+          @click="downloadResume"
+      />
+      <Button
+          v-bind:label="$t('hr.doc.resumeSign')"
+          icon="pi pi-check"
+          v-if="signWay === 0 && !resumeFile"
+          class="p-button p-component p-button-primary"
+          @click="signResume"
+      />
+    </template>
+  </Dialog>
 </template>
 
 <script>
 import {FilterMatchMode, FilterOperator} from "primevue/api";
+import ResumeView from "../../candidate/ResumeView";
 import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
-import Login from "../../Login";
+import Login from "../../../Login";
 import router from '@/router';
+import html2pdf from "html2pdf.js";
+import {NCALayerClient} from "ncalayer-js-client";
+
 export default {
-  name: "PublicVacancies",
-  components: {Login},
+  name: "HrVacancies",
+  components: {Login, ResumeView},
   data() {
     return {
       file: null,
@@ -362,13 +431,18 @@ export default {
         'sendDate': {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.DATE_IS}]},
         'createDate': {operator: FilterOperator.AND, constraints: [{value: null, matchMode: FilterMatchMode.DATE_IS}]}
       },
+      signWayOption: [
+        {name: this.$t('hr.doc.digital'), value: 0},
+        {name: this.$t('hr.doc.paper'), value: 1},
+      ],
+      signWay: 0,
       lazyParams: {
         page: 0,
         rows: 10,
         searchText: null,
         sortField: "",
         sortOrder: 0,
-        orgCode: 'other'
+        orgCode: 'enu'
       },
       visible: {
         loading: false,
@@ -376,10 +450,12 @@ export default {
         apply: false,
         login: false,
         notFound: false,
+        resume: false,
       },
       validation: {
         source: false,
-        ml: false
+        ml: false,
+        resumeData: false,
       },
       vacancies: [],
       vacancySources: [],
@@ -387,11 +463,98 @@ export default {
       vacancy: null,
       agreement: false,
       candidate: null,
+      signature: null,
+      resumeBase64: null,
+      resumeFile: null,
     }
   },
   methods: {
+    openResume() {
+      this.visible.resume = true
+    },
+    downloadResume() {
+      let pdfOptions = {
+        margin: 0.5,
+        image: {
+          type: 'jpeg',
+          quality: 0.98,
+        },
+        html2canvas: {scale: 2.8,},
+        jsPDF: {
+          unit: 'in',
+          format: 'letter',
+          orientation: 'landscape',
+        },
+        pagebreak: {avoid: 'tr'},
+        filename: "file.pdf",
+      }
+      const pdfContent = this.$refs.pdf.$refs.htmlToPdf
+      const worker = html2pdf().set(pdfOptions).from(pdfContent);
+      worker.toPdf().output("blob").then((pdf) => {
+        var reader = new FileReader();
+        reader.readAsDataURL(pdf);
+        reader.onloadend = function () {
+          var base64data = reader.result;
+          var link = document.createElement('a');
+          link.innerHTML = 'Download PDF file';
+          link.download = 'Resume.pdf';
+          link.href = base64data;
+          console.log(link.href)
+          link.click();
+        }
+      });
+    },
+
+    signResume() {
+      let pdfOptions = {
+        margin: 0.5,
+        image: {
+          type: 'jpeg',
+          quality: 0.98,
+        },
+        html2canvas: {scale: 2.8,},
+        jsPDF: {
+          unit: 'in',
+          format: 'letter',
+          orientation: 'landscape',
+        },
+        pagebreak: {avoid: 'tr'},
+        filename: "file.pdf",
+      }
+      const pdfContent = this.$refs.pdf.$refs.htmlToPdf
+      const worker = html2pdf().set(pdfOptions).from(pdfContent);
+      worker.toPdf().output("datauristring").then((pdf, item) => {
+        this.resumeBase64 = pdf.replace("data:application/pdf;base64,", "")
+        this.signDocument()
+      });
+    },
+
+    async signDocument() {
+      let NCALaClient = new NCALayerClient();
+      try {
+        await NCALaClient.connect();
+      } catch (error) {
+        this.$toast.add({
+          severity: 'error',
+          summary: this.$t('ncasigner.failConnectToNcaLayer'),
+          life: 3000
+        });
+        return;
+      }
+      try {
+        this.signature = await NCALaClient.createCAdESFromBase64('PKCS12', this.resumeBase64, 'SIGNATURE', false)
+        this.visible.resume = false
+      } catch (error) {
+        this.$toast.add({severity: 'error', summary: this.$t('ncasigner.failToSign'), life: 3000});
+      }
+    },
+
     upload(event) {
       this.file = event.files[0];
+    },
+
+    uploadResume(event) {
+      this.resumeFile = event.files[0]
     },
     /**
      * *********************** ПОЛУЧЕНИЕ ВСЕХ ОПУБЛИКОВАННЫХ ВАКАНСИЙ
@@ -445,6 +608,7 @@ export default {
       axios.post(smartEnuApi + "/candidate/get",
           {}, {headers: getHeader()}).then(res => {
         this.visible.apply = true
+        this.candidate = res.data
       }).catch(error => {
         if (error.response.status === 404) {
           this.candidate = null
@@ -463,9 +627,16 @@ export default {
      * *********************** ПОДАЧА ЗАЯВКИ НА УЧАСТИЕ В КОНКУРСЕ
      */
     apply() {
+      this.relation.signWay = this.signWay
       const fd = new FormData();
       fd.append("rel", JSON.stringify(this.relation))
       fd.append("ml", this.file);
+      if (this.signWay === 0) {
+        fd.append("resumeData", this.resumeBase64)
+        fd.append("signature", this.signature)
+      } else {
+        fd.append("resumeData", this.resumeFile)
+      }
       if (this.validateForm()) {
         axios.post(smartEnuApi + "/vacancy/apply",
             fd, {headers: getHeader()}).then((response) => {
@@ -545,12 +716,13 @@ export default {
      * *********************** ПЕРЕНАПРАВЛЕНИЕ НА РЕЗЮМЕ
      */
     redirectToResume() {
-      router.push({ "name": "Cabinet" })
+      router.push({"name": "Cabinet"})
     },
     validateForm() {
       this.validation.source = !this.relation.vacancySource || this.relation.vacancySource === ""
       this.validation.ml = !this.file || this.file === ""
-      return (!this.validation.source && !this.validation.ml)
+      this.validation.resumeData = this.signWay === 0 ? (!this.signature || this.signature === "") : (!this.resumeFile || this.resumeFile === "")
+      return (!this.validation.source && !this.validation.ml && !this.validation.resumeData)
     }
   },
   created() {
