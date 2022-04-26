@@ -469,9 +469,9 @@ export default {
     generateReport() {
       if (this.validateReport()) {
         axios.post(
-            smartEnuApi + '/report',
+            smartEnuApi + '/vacancy/report',
             this.report,
-            {responseType: "blob"}
+            {responseType: "blob", headers: getHeader()},
         ).then(response => {
           console.log(response)
           this.reportResponse = response
