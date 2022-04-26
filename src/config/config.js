@@ -66,6 +66,7 @@ export const testFunction= function(){
   // let u go main test
   //console.log("ene bol busgui chini");
 }
+//findRole
 export const findRole = function(user, role) {
     if (user === null) {
       user = this.$store.state.loginedUser;
