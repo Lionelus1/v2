@@ -7,8 +7,8 @@ export const signerApi = "https://smart.enu.kz:6990"
 //export const signerApi = "http://10.1.1.161:6990"
 //export const smartEnuApi = "https://smart.enu.kz:8081"
 //export const smartEnuApi = "http://smart.enu.kz:8090"
-export const smartEnuApi = "https://10.1.2.75:8081"
-//export const smartEnuApi = "http://192.168.137.151:8081"
+//export const smartEnuApi = "https://10.1.2.75:8081"
+export const smartEnuApi = "http://192.168.137.151:8081"
 export const templateApi = "http://localshost:8082"
 
 export const header  = {
@@ -69,7 +69,7 @@ export const testFunction= function(){
 }
 //findRole ---
 export const findRole = function(user, role) {
-    if (user === null) {
+    if (user == null) {
       user = this.$store.state.loginedUser;
     } 
     if (user.roles)
