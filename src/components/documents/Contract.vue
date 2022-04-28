@@ -332,6 +332,81 @@ export default {
           .replace(/-/g, ".");
       }
     },
+    //Қол қою
+    sendToSign() {
+      if (!this.formsValidate())
+      {
+        this.$toast.add({
+          severity: "error",
+          summary: this.$t("common.tosign"),
+          detail: this.$t("common.message.fillError"),
+          life: 3000,
+        });
+        return
+      }
+      if (this.corrected) {
+        this.$toast.add({
+          severity: "warn",
+          summary: this.$t("common.tosign"),
+          detail: this.$t("common.message.saveChanges"),
+          life: 3000,
+        });
+        return
+      }
+      this.$confirm.require({
+        message: this.$t('common.confirmation'),
+        header: this.$t('common.approve'),
+        icon: 'pi pi-exclamation-triangle',
+        accept: () => {
+          var req = { id: this.contract.id, userID: this.$store.state.loginedUser.userID };
+          req.lang = "kaz";
+          if (this.contract.lang != 0) {
+            req.lang = "rus";
+          }
+          this.loading = true
+          axios.post(smartEnuApi + "/contract/sendtosign", req, { headers: getHeader() })
+          .then(response => {
+            this.loading = false
+            this.contract.docUUID = response.data.docUUID
+            this.contract.filePath = response.data.filePath
+            this.contract.docHistory = response.data.docHistory
+            this.$toast.add({
+              severity: "success",
+              summary: this.$t("common.tosign"),
+              detail: this.$t("ncasigner.successSentToSign"),
+              life: 3000,
+            });
+          }).
+          catch(error => {
+            this.loading = false;
+            if (error.response.status == 401) {
+              this.$store.dispatch("logLout");
+            } else 
+              console.log(error);
+          })
+                    
+        }
+      })
+    },
+    formsValidate() {
+      var result = true
+      if (this.contract == null) {
+        result = false
+        return result
+      }
+      if (this.contract.params != null)
+      this.contract.params.forEach((param)=> {
+        if ((param.value == null || param.value == "null" || param.value == "") && ((param.name !== "number") && (param.name !=="date"))) {
+          result = false
+          return result
+        }
+        if ((param.name == "contragent" || param.name == "ourside") && (param.value.signer == null) ) {
+            result = false
+            return result
+        }
+      });
+      return result
+    },
     closeForm(formName) {
       this.dialog[formName] = false;
     },
