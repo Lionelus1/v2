@@ -367,6 +367,7 @@ export default {
           .replace(/-/g, ".");
       }
     },
+    //Қол қою
     sendToSign() {
       if (!this.formsValidate())
       {
