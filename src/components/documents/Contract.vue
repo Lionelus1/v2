@@ -705,7 +705,7 @@ export default {
 
   right: 0;
 
-  
+
   margin-right: 20px;
 }
 
@@ -717,10 +717,6 @@ export default {
 /* Not Important*/
 img {
   width: 300px; 
-
-
-
-
 }
 
 </style>
