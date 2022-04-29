@@ -6,11 +6,16 @@
       :key="active"
       style="height: 36px; margin-top: -7px; margin-left: -14px"
     ></Menubar>
+    <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em" />
+    <BlockUI :blocked="loading" :fullScreen="true"></BlockUI>
     <TabView @TabChange="tabChanged" v-model:activeIndex="activeTab">
       <TabPanel :header="$t('common.params')">
+
         <div class="p-grid">
           <div class="p-lg-8 p-md-12 p-sm-12">
-            <h6>{{ $t("common.main").toUpperCase() }}</h6>
+            <p v-if="contract">{{ $t("common.state") + ": " }}
+            <span :class="'customer-badge status-' + contract.docHistory.stateEn">{{$t("common.states." + contract.docHistory.stateEn)}}</span>
+            </p>
             <div
               v-if="contract != null && contract.sourceType === 0"
               class="p-fluid"
@@ -43,21 +48,24 @@
                   v-if="param.name == 'contragent' || param.name == 'ourside'"
                   class="p-col-12 p-md-12"
                 >
-                  <ContragentSelect v-model="param.value"></ContragentSelect>
+                  <ContragentSelect @updated="correct" v-model="param.value"></ContragentSelect>
                 </div>
                 <div v-else class="p-col-12 p-md-10">
                    <!-- студент болса -->
                   <FindUser
                     v-if="param.name == 'student'"
-                    v-model="param.value"
+                    v-model:first="param.value"
+                    v-model="users"
                     :max="1"
                     :userType="1"
+                    @input="correct" @remove="correct"
                   ></FindUser>
-
                   <DatePicker
                     v-else-if="param.name == 'period'"
                     v-model="param.value"
                     is-range
+                    @input="correct"
+                    @dayclick="correct"
                   >
                     <template v-slot="{ inputValue, inputEvents }">
                       <div class="flex justify-center items-center">
@@ -98,6 +106,7 @@
                         ? $t('contracts.autogenerate')
                         : ''
                     "
+                    @input="correct"
                   />
                   <InputText
                     v-model="param.value"
@@ -110,6 +119,7 @@
                         ? $t('contracts.autogenerate')
                         : ''
                     "
+                    @input="correct"
                   />
                 </div>
               </div>
@@ -119,18 +129,13 @@
       </TabPanel>
       <TabPanel :header="$t('common.show')">
         <div class="card">
-          <embed
-            style="width: 100%; height: 1000px"
-            v-if="pdf"
-            type="application/pdf"
-            :src="'data:application/pdf;base64,' + pdf + '#toolbar=0'"
-          />
+          <embed :src="pdf+'#toolbar=0&navpanes=0&scrollbar=0'" style="width: 100%; height: 1000px" v-if="pdf" type="application/pdf" />
         </div>
       </TabPanel>
     </TabView>
 
     <Dialog
-      :header="$t(temp ? 'contracts.reserveNumber' : 'common.registration')"
+      :header="$t('common.registration')"
       modal="true"
       v-model:visible="dialog.setNumber"
     >
@@ -148,19 +153,18 @@
                 ? contract.template.folder.nameRus
                 : contract.template.folder.nameEn
             "
-            >{{}}</InputText
+            >
+            </InputText
           >
         </div>
         <div class="p-col-12 p-mb-2 p-lg-3 p-mb-lg-1">
           <label for="catalog">{{ $t("common.date") }}</label>
         </div>
         <div class="p-col-12 p-mb-2 p-lg-9 p-mb-lg-1 p-pr-2">
-          <PrimeCalendar
-            :readonly="readonly"
+          <i
             class="p-mt-2"
-            v-model="contract.registerDate"
-            dateFormat="dd.mm.yy"
-          />
+            
+          >{{(contract.registerDate ? contract.registerDate.split('T')[0] : '')}}</i>
         </div>
         <div class="p-col-12 p-mb-2 p-lg-3 p-mb-lg-0">
           <label for="regnum">{{ $t("contracts.regnum") }}</label>
@@ -175,28 +179,38 @@
           ></InputText>
         </div>
         <div class="p-col-3 p-mb-2 p-lg-5 p-mb-lg-0">
-          <i>-{{ $t("contracts.preliminary") }}</i>
+          <i v-if="!(this.contract.number && this.contract.number !== '')">-{{ $t("contracts.preliminary") }}</i>
         </div>
       </div>
 
       <template #footer>
         <Button
 			:disabled= "(this.contract.number && this.contract.number !== '')"
-          	:label="$t(temp ? 'common.reserve' : 'common.registration')"
+          	:label="$t('common.registration')"
           	@click="registrateContract()"
         />
         <Button :label="$t('common.cancel')" @click="closeForm('setNumber')" />
       </template>
     </Dialog>
+    <Sidebar
+      v-model:visible="signerInfo"
+      position="right"
+      class="p-sidebar-lg"
+      style="overflow-y: scroll"
+    >
+     <DocSignaturesInfo :docIdParam="contract.uuid"></DocSignaturesInfo>
+    </Sidebar>
   </div>
 </template>
 <script>
-import { smartEnuApi, getHeader } from "@/config/config";
+import { smartEnuApi, getHeader, b64toBlob, findRole } from "@/config/config";
 import axios from "axios";
-
-import UserSearch from "./usersearch/UserSearch.vue";
+import FindUser from "@/helpers/FindUser";
 import ContragentSelect from "../contragent/ContragentSelect.vue";
 import { DatePicker } from "v-calendar";
+import {runNCaLayer} from "@/helpers/SignDocFunctions"
+import DocSignaturesInfo from "@/components/DocSignaturesInfo"
+
 import Enum from "@/enum/docstates/index";
 import {
   incline,
@@ -207,12 +221,13 @@ import {
 import { constantizeGenderInRules } from "lvovich/lib/inclineRules";
 export default {
   name: "Contract",
-  components: { UserSearch, DatePicker, ContragentSelect },
+  components: { FindUser, DatePicker, ContragentSelect, DocSignaturesInfo },
   data() {
     return {
       contract: null,
       students: null,
       organization: null,
+      users:[],
       pdf: null,
       activeTab: 0,
       readonly: true,
@@ -221,16 +236,19 @@ export default {
         Parameters: 0,
         Preview: 1,
       },
+      corrected: false,
       temp: false,
       sourceType: {
         template: 0,
         uploadedDoc: 1,
       },
-	  reserveNumber: null,
+      signerInfo : false,
+	    reserveNumber: null,
       range: {
         start: new Date(2020, 0, 1),
         end: new Date(2020, 0, 5),
       },
+      loading: false,
       language: {
         kz: 0,
         ru: 1,
@@ -240,7 +258,7 @@ export default {
         {
           label: this.$t("common.save"),
           icon: "pi pi-fw pi-save",
-          disabled: this.readonly,
+          disabled: !this.corrected,
           command: () => {
             this.saveContract();
           },
@@ -286,16 +304,25 @@ export default {
               icon: "pi pi-check",
               visible: () =>
                 this.contract &&
-                this.contract.sourceType === this.sourceType.uploadedDoc,
+                this.contract.sourceType === this.sourceType.uploadedDoc ,
             },
             {
-              label: this.$t("contracts.signing"),
+              label: this.$t("common.tosign"),
               icon: "pi pi-user-edit",
               visible: () =>
                 this.contract &&
-                this.contract.sourceType === this.sourceType.template,
+                this.contract.sourceType === this.sourceType.template &&
+                !this.findRole(null, 'student'),
+              command: ()=> { this.sendToSign()},
             },
           ],
+        },
+         {
+          label: this.$t('common.approvalList'),
+          icon: "pi pi-user-edit",
+          command: () => {
+            this.signerInfo = true
+          }
         },
       ],
       dialog: {
@@ -303,6 +330,7 @@ export default {
       },
     };
   },
+  
   computed: {
     previewText() {
       if (!this.contract) return "";
@@ -324,6 +352,12 @@ export default {
     },
   },
   methods: {
+    findRole: findRole,
+    correct() {
+      
+      this.corrected = true
+      this.menu[0].disabled = false
+    },
     openForm(formName) {
       this.dialog[formName] = true;
       if (formName === "setNumber" && (!this.contract.number  || this.contract.number === "" )) {
@@ -424,11 +458,20 @@ export default {
     initApiCall() {
       let url = "/agreement/get";
       var req = { id: parseInt(this.$route.params.id) };
+      this.loading = true
       axios
         .post(smartEnuApi + url, req, { headers: getHeader() })
         .then((res) => {
+          this.loading = false
           this.contract = res.data;
-		  this.reserveNumber = this.contract.number
+		      this.reserveNumber = this.contract.number
+          if (this.contract.docHistory.stateId >= 6) {
+            if (this.contract.docHistory.stateId >=2) {
+              this.menu[3].items[0].disabled = true
+            }
+            this.menu[3].items[1].disabled = true
+
+          } 
           if (this.contract.sourceType == 0) {
             this.contract.text =
               this.contract.lang == this.language.kz
@@ -437,6 +480,7 @@ export default {
           }
         })
         .catch((error) => {
+          this.loading = false
           if (error.response.status == 401) {
             this.$store.dispatch("logLout");
           }
@@ -528,6 +572,8 @@ export default {
       axios
         .post(smartEnuApi + url, req, { headers: getHeader() })
         .then((res) => {
+          this.corrected = false
+          this.menu[0].disabled = true
           this.$toast.add({
             severity: "success",
             summary: this.$t("common.save"),
@@ -536,6 +582,8 @@ export default {
           });
         })
         .catch((error) => {
+          alert(error)
+          console.log(error)
           if (error.response.status == 401) {
             this.$store.dispatch("logLout");
           }
@@ -549,19 +597,22 @@ export default {
       if (this.contract.lang != 0) {
         req.lang = "rus";
       }
+      this.loading = true
       axios
         .post(smartEnuApi + url, req, { headers: getHeader() })
         .then((response) => {
-          this.pdf = response.data;
+          this.loading = false
+          this.pdf = b64toBlob(response.data);
           if (saveFile) {
             var link = document.createElement("a");
             link.innerHTML = "Download PDF file";
             link.download = this.contract.id + ".pdf";
-            link.href = "data:application/octet-stream;base64," + this.pdf;
+            link.href =  this.pdf;
             link.click();
           }
         })
         .catch((error) => {
+          this.loading = false
           if (error.response.status == 401) {
             this.$store.dispatch("logLout");
           }
@@ -575,10 +626,11 @@ export default {
         temp: this.temp,
         next: next,
       };
-
+      this.loading = true
       axios
         .post(smartEnuApi + url, req, { headers: getHeader() })
         .then((res) => {
+          this.loading = false
 		  this.reserveNumber = res.data;
           if (!next) {
             this.contract.number = res.data;
@@ -592,6 +644,7 @@ export default {
           }
         })
         .catch((error) => {
+          this.loading = false
           console.log(error);
           if (error.response.status == 401) {
             this.$store.dispatch("logout");
@@ -661,5 +714,4 @@ export default {
 img {
   width: 300px;
 }
-
 </style>
