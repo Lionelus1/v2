@@ -46,12 +46,15 @@
                   <ContragentSelect v-model="param.value"></ContragentSelect>
                 </div>
                 <div v-else class="p-col-12 p-md-10">
-                  <UserSearch
+                  
+                   <!-- студент болса -->
+                  <FindUser
                     v-if="param.name == 'student'"
                     v-model="param.value"
                     :max="1"
                     :userType="1"
-                  ></UserSearch>
+                  ></FindUser>
+
                   <DatePicker
                     v-else-if="param.name == 'period'"
                     v-model="param.value"
