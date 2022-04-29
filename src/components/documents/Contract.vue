@@ -712,6 +712,6 @@ export default {
 
 /* Not Important*/
 img {
-  width: 300px;
+  width: 300px; 
 }
 </style>
