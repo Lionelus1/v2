@@ -51,6 +51,7 @@
                   <ContragentSelect @updated="correct" v-model="param.value"></ContragentSelect>
                 </div>
                 <div v-else class="p-col-12 p-md-10">
+                   <!-- студент болса -->
                   <FindUser
                     v-if="param.name == 'student'"
                     v-model:first="param.value"
@@ -367,6 +368,7 @@ export default {
           .replace(/-/g, ".");
       }
     },
+    //Қол қою
     sendToSign() {
       if (!this.formsValidate())
       {
