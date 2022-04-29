@@ -81,7 +81,7 @@
             <div>
 <!--              (parseInt(slotProps.data.quarter.String) === currentQuarter || parseInt(slotProps.data.quarter.String) === 5)-->
               <work-plan-execute
-                  v-if="isUserApproval(slotProps.data) && isPlanSentApproval && plan.status.work_plan_status_id === 4"
+                  v-if="(parseInt(slotProps.data.quarter.String) === currentQuarter || parseInt(slotProps.data.quarter.String) === 5) && isUserApproval(slotProps.data) && isPlanSentApproval && plan.status.work_plan_status_id === 4"
                   :data="slotProps.data"></work-plan-execute>
               <work-plan-event-result-modal v-if="slotProps.data.event_result"
                                             :event-result="slotProps.data.event_result"></work-plan-event-result-modal>
@@ -192,13 +192,7 @@ export default {
     })
     this.emitter.on('workPlanEventIsCompleted', (data) => {
       if (data) {
-        this.getPlan();
-        this.getWorkPlanEvents();
-      }
-    })
-    this.emitter.on('workPlanChildEventIsDeleted', (data) => {
-      if (data) {
-        this.getPlan();
+        this.getPlan();http://10.1.1.161/Bonobo.Git.Server/mobilefrontend.git
         this.initQuarter();
         this.getWorkPlanEvents();
       }
