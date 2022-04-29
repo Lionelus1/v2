@@ -142,7 +142,7 @@ export default {
     };
   },
    mounted() {
-    if (this.first != null && this.max == 1) {
+    if (this.first !== null && this.first.fullName !== null && this.first.fullName !== "" && this.max == 1) {
       this.addItem(null, this.first,false)
     }
 
