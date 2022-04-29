@@ -4,7 +4,7 @@
     <Button label="" class="p-button-info p-ml-1" icon="pi pi-plus" @click="openBasic"/>
   </div>
 
-  <Dialog :header="$t('workPlan.addEvent')" v-model:visible="showWorkPlanEventModal" :style="{width: '450px'}"
+  <Dialog :header="$t('workPlan.addEvent')" v-model:visible="showWorkPlanEventModal"
           class="p-fluid">
     <div class="p-field">
       <label>{{ $t('workPlan.eventName') }}</label>
@@ -12,7 +12,7 @@
       <small class="p-error" v-if="submitted && formValid.event_name">{{ $t('workPlan.errors.eventNameError') }}</small>
     </div>
     <div class="p-field">
-      <label>{{ $t('workPlan.approvalUsers') }}</label>
+      <label>{{ plan && plan.is_oper ? 'Свод' : $t('workPlan.approvalUsers') }}</label>
       <FindUser v-model="selectedUsers" :editMode="true"></FindUser>
       <small class="p-error" v-if="submitted && formValid.users">{{ $t('workPlan.errors.approvalUserError') }}</small>
     </div>
@@ -20,6 +20,25 @@
       <label>{{ $t('workPlan.quarter') }}</label>
       <Dropdown v-model="quarter" :options="quarters" optionLabel="name" optionValue="id" :placeholder="$t('common.select')" />
       <small class="p-error" v-if="submitted && formValid.quarter">{{ $t('workPlan.errors.quarterError') }}</small>
+    </div>
+    <div class="p-field" v-if="plan && plan.is_oper">
+      <label>Показатель прямых результатов </label>
+      <InputText v-model="direct_result" />
+    </div>
+    <div class="p-field" v-if="plan && plan.is_oper">
+      <label>Единица измерения</label>
+      <InputText v-model="unit" />
+    </div>
+    <div class="p-field" v-if="plan && plan.is_oper">
+      <label>План </label>
+      <InputText v-model="plan_number" />
+    </div>
+    <div class="p-field" v-if="plan && plan.is_oper">
+      <label>Подтверждающие документы</label>
+      <InputText v-model="supporting_docs" />
+    </div>
+    <div class="p-field" v-if="plan && plan.is_oper">
+      <label>{{ $t('workPlan.approvalUsers') }}</label>
     </div>
     <div class="p-field">
       <label>{{ $t('common.result') }}</label>
@@ -42,7 +61,7 @@ import {getHeader, smartEnuApi} from "@/config/config";
 export default {
   name: 'WorkPlanEventAdd',
   components: {FindUser},
-  props: ['data', 'isMain', 'items'],
+  props: ['data', 'isMain', 'items', 'planData'],
   data() {
     return {
       showWorkPlanEventModal: false,
@@ -53,6 +72,7 @@ export default {
       result: null,
       comment: null,
       parentItems: this.items,
+      plan: this.planData,
       quarters: [
         {
           id: 1,
@@ -86,7 +106,11 @@ export default {
       submitted: false,
       newQuarters: [],
       loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID,
-      respUsers: []
+      respUsers: [],
+      direct_result: null,
+      unit: null,
+      plan_number: null,
+      supporting_docs: null,
     }
   },
   mounted() {
@@ -105,6 +129,7 @@ export default {
   methods: {
     openBasic() {
       this.showWorkPlanEventModal = true;
+      console.log("CREATE EVENT PLAN DATA = ", this.plan)
     },
     closeBasic() {
       this.showWorkPlanEventModal = false;
