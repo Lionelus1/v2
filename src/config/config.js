@@ -6,8 +6,14 @@ export const hdfsApi = "http://localhost:8085";
 export const signerApi = "https://smart.enu.kz:6990"
 //export const signerApi = "http://10.1.1.161:6990"
 //export const smartEnuApi = "https://smart.enu.kz:8081"
+<<<<<<< HEAD
 export const smartEnuApi = "http://smart.enu.kz:8090"
 //export const smartEnuApi = "http://localhost:8081"
+=======
+//export const smartEnuApi = "http://smart.enu.kz:8090"
+//export const smartEnuApi = "https://10.1.2.75:8081"
+export const smartEnuApi = "http://192.168.137.151:8081"
+>>>>>>> 63da596403a0e24011552fe2744aa6e61bac2a63
 export const templateApi = "http://localshost:8082"
 
 export const header  = {
@@ -66,7 +72,7 @@ export const testFunction= function(){
   // let u go main test
   //console.log("ene bol busgui chini");
 }
-//findRole
+//findRole ---
 export const findRole = function(user, role) {
   if (user == null) {
     user = this.$store.state.loginedUser;

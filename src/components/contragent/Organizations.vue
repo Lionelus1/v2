@@ -169,12 +169,8 @@ export default {
           label: "",
           icon: "pi pi-fw pi-refresh",
           command: () => {
-            this.$toast.add({
-              severity: "success",
-              summary: "Updated",
-              detail: "Data Updated",
-              life: 3000,
-            });
+           //ToDo
+           
           },
         },
         {
@@ -215,7 +211,7 @@ export default {
       this.organizations.push(value.value);
     },
     initApiCall() {
-      this.isAdmin = this.findRole(null, 'main_administrator')
+      this.isAdmin = this.findRole(null, 'main_administrator') || this.findRole(null, "career_administrator")
       this.localmenu[0].items[0].disabled = !this.isAdmin
       this.$emit("update:pagemenu", this.localmenu)
       let url = "/contragent/organizations";

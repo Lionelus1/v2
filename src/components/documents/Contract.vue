@@ -46,7 +46,10 @@
                   <ContragentSelect v-model="param.value"></ContragentSelect>
                 </div>
                 <div v-else class="p-col-12 p-md-10">
+<<<<<<< HEAD
                   
+=======
+>>>>>>> 63da596403a0e24011552fe2744aa6e61bac2a63
                    <!-- студент болса -->
                   <FindUser
                     v-if="param.name == 'student'"

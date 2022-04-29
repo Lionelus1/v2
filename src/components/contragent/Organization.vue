@@ -248,7 +248,7 @@ export default {
   },
   created() {
     this.getOrgForms();
-    this.isAdmin = this.findRole(null, 'main_administrator')
+    this.isAdmin = this.findRole(null, 'main_administrator') || this.findRole(null, "career_administrator")
     this.localReadonly =  this.readonly && !this.isAdmin
   },
   methods: {
