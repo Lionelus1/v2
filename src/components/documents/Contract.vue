@@ -406,6 +406,7 @@ export default {
             this.contract.docUUID = response.data.docUUID
             this.contract.filePath = response.data.filePath
             this.contract.docHistory = response.data.docHistory
+            this.menu[3].items[1].disabled = true
             this.$toast.add({
               severity: "success",
               summary: this.$t("common.tosign"),
@@ -701,7 +702,11 @@ export default {
   top: 0;
   left: 0;
   bottom: 0;
+
+
   right: 0;
+
+
   margin-right: 20px;
 }
 
@@ -712,6 +717,7 @@ export default {
 
 /* Not Important*/
 img {
-  width: 300px;
+  width: 300px; 
 }
+
 </style>

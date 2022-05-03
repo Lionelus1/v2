@@ -66,6 +66,9 @@ export default {
       else
         this.cardVisible = true;
     },
+    setValue(val) {
+      this.value = val
+    }
   },
   props: {
     modelValue: null,

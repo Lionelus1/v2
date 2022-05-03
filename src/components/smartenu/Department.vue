@@ -70,7 +70,8 @@ export default {
   props: {
     modelValue: null,
     readonly: Boolean,
-    orgId: null
+    orgId: null,
+    orgType: null,
   },
   created() {
     console.log(this.modelValue)
