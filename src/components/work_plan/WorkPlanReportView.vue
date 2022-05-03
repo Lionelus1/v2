@@ -1,4 +1,5 @@
 <template>
+
   <div>
     <div class="p-col-12">
       <Button label="" icon="pi pi-download"
@@ -437,8 +438,6 @@ export default {
         this.loading = false;
       })
     },
-<<<<<<< HEAD
-=======
     async downloadWord() {
       const header = `<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office"
                     xmlns:w="urn:schemas-microsoft-com:office:word" xmlns:m="http://schemas.microsoft.com/office/2004/12/omml"
@@ -464,7 +463,6 @@ export default {
       link.download = this.report.report_name;
       link.click();
     },
->>>>>>> work_plan
     b64toBlob(b64Data, sliceSize=512) {
       const byteCharacters = window.atob(b64Data);
       const byteArrays = [];
