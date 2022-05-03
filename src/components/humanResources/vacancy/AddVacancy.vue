@@ -49,7 +49,7 @@
                       :readonly="readonly"/>
             <small
                 class="p-error"
-                v-if="validation.organization"
+                v-if="validation.head"
             >{{ $t("common.requiredField") }}</small>
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
@@ -736,7 +736,7 @@ export default {
     },
     save() {
       let path = this.value.id === undefined ? "/vacancy/add" : "/vacancy/update"
-      this.value.departmentHead = this.head !== null ? this.head[0] : this.organization.chief !== null ? this.organization.chief[0] : null
+      this.value.departmentHead = this.head !== null ? this.head[0]  : null
       if (this.validationForm()) {
         this.vacancyService.createOrUpdateVacancy(this.value, path).then(result => {
           this.emitter.emit("vacancyAdded", true);

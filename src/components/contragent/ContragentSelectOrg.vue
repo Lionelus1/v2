@@ -68,6 +68,7 @@ export default {
     },
     setValue(val) {
       this.value = val
+      this.$emit("update:modelValue", val);
     }
   },
   props: {
