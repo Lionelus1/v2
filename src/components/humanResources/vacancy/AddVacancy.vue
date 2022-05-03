@@ -13,12 +13,15 @@
         <div class="p-grid p-formgrid">
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label>{{ this.$t("common.organizationNameLabel") }}</label>
-            <DepartmentList :autoLoad="true"
-                            :readonly="readonly"
-                            v-model="value.organization"
-                            :orgType="1"
-                            :validation="validation.organization"
-                            @changed="getDepartments($event, $refs.departmentList)"></DepartmentList>
+            
+            <ContragentSelectOrg 
+              ref = "contragent"
+              v-model="value.organization"
+              class="p-mt-2"
+              :disabled="localReadonly && !addMode"
+              @selected="getDepartments($event, $refs.departmentList)"
+              :readonly = "organization"
+            ></ContragentSelectOrg>
             <small
                 class="p-error"
                 v-if="validation.organization"
@@ -26,7 +29,7 @@
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label>{{ this.$t("common.departmentNameLabel") }}</label>
-            <DepartmentList :readonly="readonly"
+            <DepartmentList :readonly="readonly" class="p-mt-2"
                             :autoLoad="false"
                             :editMode="true"
                             ref="departmentList"
@@ -40,6 +43,7 @@
           </div>
           <div class="p-field p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label>{{ this.$t("common.headLabel") }}</label>
+            
             <FindUser v-model="head"
                       :max="1"
                       :class="{'p-invalid': validation.head}"
@@ -647,9 +651,10 @@ import ContragentSelectOrg from "../../contragent/ContragentSelectOrg";
 import DepartmentList from "../../smartenu/DepartmentList";
 import FindUser from "../../../helpers/FindUser";
 import VacancyService from "./VacancyService";
-
+import axios from 'axios';
+import {smartEnuApi, getHeader } from "@/config/config";
 export default {
-  components: {DepartmentList, FindUser},
+  components: {DepartmentList, FindUser, ContragentSelectOrg},
   props: {
     modelValue: null,
     placeholder: String,
@@ -658,6 +663,7 @@ export default {
   data() {
     return {
       value: this.modelValue,
+      loginedUser: null,
       head: null,
       active: null,
       action: null,
@@ -722,12 +728,17 @@ export default {
   },
   methods: {
     getDepartments(event, departmentList) {
+      if (event.value.chief)
+      {
+        this.head = []
+        this.head.push(event.value.chief)
+      }
       departmentList.getDepartments(event.value.id);
+
     },
     save() {
       let path = this.value.id === undefined ? "/vacancy/add" : "/vacancy/update"
-
-      this.value.departmentHead = this.head === null ? null : this.head[0]
+      this.value.departmentHead = this.head !== null ? this.head[0] : this.organization.chief !== null ? this.organization.chief[0] : null
       if (this.validationForm()) {
         this.vacancyService.createOrUpdateVacancy(this.value, path).then(result => {
           this.emitter.emit("vacancyAdded", true);
@@ -757,7 +768,6 @@ export default {
       this.menu[0].visible = !this.readonly
       if (this.value.history !== undefined) {
         this.vacancyService.checkAction(this.value.history.status.id, this.value).then(response => {
-          console.log("RESONSE IS ", response.data)
           if (response.data === 'acceptance') {
             this.action = this.vacancyService.actions.find(action => action.alias === 'accept')
             this.menu[1].label = this.$t(this.action.label)
@@ -837,10 +847,40 @@ export default {
     this.vacancyService = new VacancyService()
     this.head = this.modelValue.departmentHead === undefined ? null : [this.modelValue.departmentHead]
     this.checkAction()
+    this.loginedUser = this.$store.state.loginedUser;
+
+    var request = {  
+        page: 0,
+        rows: 1,
+        sortLang: this.$i18n.locale,
+        orgID: this.loginedUser.organization.id
+    }
+    axios
+        .post(smartEnuApi + "/contragent/organizations", request,  {headers: getHeader()})
+        .then((res) => {
+          if (res.data.organizations && res.data.organizations.length >0) {
+            this.$refs.contragent.setValue(res.data.organizations[0])
+            if (res.data.organizations[0].chief)
+            {
+              this.head = []
+              this.head.push(res.data.organizations[0].chief)
+              this.$refs.departmentList.getDepartments(res.data.organizations[0].id);
+
+            }
+          }
+          
+        })
+        .catch((error) => {
+          console.error(error);
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          }
+        });
   },
   mounted() {
     this.emitter.on('changeOrg', (data) => {
       this.getDepartments(data, this.$refs.departmentList);
+
     });
   }
 };

@@ -406,6 +406,7 @@ export default {
             this.contract.docUUID = response.data.docUUID
             this.contract.filePath = response.data.filePath
             this.contract.docHistory = response.data.docHistory
+            this.menu[3].items[1].disabled = true
             this.$toast.add({
               severity: "success",
               summary: this.$t("common.tosign"),
