@@ -1,11 +1,9 @@
 <template>
   <div id="carddiv" class="p-grid">
     <div class="p-col-12">
-      <h3>{{ this.$t("common.departmentNameLabel") }}</h3>
+      <h3>{{ this.$t("common.departmentNameLabel")}}</h3>
       <div>
-        <Menubar :model="menu" :key="active"
-                 style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px">
-        </Menubar>
+        <Menubar :model="menu" :key="active" style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px"></Menubar>
       </div>
     </div>
     <div class="p-col-12 p-md-12 p-fluid">
