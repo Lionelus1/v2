@@ -195,7 +195,7 @@ export default {
             userSuccessInserted: "Пользователь успешно создан, скачайте данные для авторизации для отправки пользователю.",
             selectVariant: "Выберите нужный вариант",
             userIINExists: "Пользователь с таким же ИИН уже имеется",
-            accessDenied: "У вас нет полномочий просматривать этот документ!"
+            accessDenied: "У вас нет полномочий просматривать этот документ!",
         },
         language: {
             kz: "на казахском",
@@ -213,7 +213,13 @@ export default {
         successDone: "Успешно выполнено",
         success: "Успешно",
         downloadSignaturesPdf: "Скачать подписи",
-        signatures: "Подписи"
+        signatures: "Подписи",
+        unit: "Единица измерения",
+        planNumber: "План (плановое число)",
+        suppDocs: "Подтверждающие документы",
+        additionalInfo: "Дополнительная информация",
+        resultSentToCorrect: "Результат отправлен на доработку",
+        toCorrect: "На проверку"
     },
     bank: {
         title: "Банки",
@@ -702,8 +708,12 @@ export default {
         },
         reportTypes: {
             year: "Годовой",
-            quarter: "Квартальный"
+            quarter: "Квартальный",
+            halfYear: "Полугодовой"
         },
-        quarterYear: "Весь год"
+        quarterYear: "Весь год",
+        resultIndicator: "Показатель прямых результатов",
+        summary: "Свод/Подтверждение",
+        respExecutor: "Ответственные исполнители"
     }
 }

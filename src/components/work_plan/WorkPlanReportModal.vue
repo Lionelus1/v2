@@ -73,7 +73,16 @@ export default {
           name: 'IV'
         }
       ],
-      isPdf: false
+      isPdf: false,
+      selectedDepartment: null
+    }
+  },
+  mounted() {
+    if (this.plan.is_oper) {
+      this.reportTypes.push({
+        id: 3,
+        name: this.$t('workPlan.reportTypes.halfYear')
+      })
     }
   },
   methods: {
@@ -83,6 +92,9 @@ export default {
       } else if (this.type === 2) {
 
       }*/
+    },
+    getDepartments(event, departmentList) {
+      departmentList.getDepartments(event.value.id);
     },
     create() {
       //this.$router.push({ name: 'WorkPlanReportView', params: { id: this.work_plan_id, type: this.type, name: this.report_name, quarter: this.quarter }})

@@ -1,9 +1,6 @@
 <template>
   <div>
     <div class="p-col-12">
-      <Button label="" icon="pi pi-download"
-              @click="downloadWord"
-              class="p-button p-button-info p-ml-2"/>
       <div class="card" v-if="isPlanCreator && !isReportSentApproval">
         <WorkPlanReportApprove :doc-id="report.doc_id" :report="report_id"></WorkPlanReportApprove>
 <!--        <Button label="" icon="pi pi-download" @click="download"
@@ -13,7 +10,9 @@
         <Button :label="$t('common.signatures')" icon="pi pi-file"
                 @click="viewSignatures"
                 class="p-button p-ml-2"/>
-
+        <Button label="" icon="pi pi-download" v-if="plan && plan.is_oper"
+                @click="downloadWord"
+                class="p-button p-button-info p-ml-2"/>
       </div>
       <div class="card" v-if="isApproval && !isApproved">
         <Button v-if="isApproval && !isRejected" :label="$t('common.action.approve')" icon="pi pi-check"
@@ -51,7 +50,7 @@
 
     <div v-if="items">
       <ReportPdf ref="report" :data="items" :report-title="report.report_name" :plan="plan"
-                 ></ReportPdf>
+                 style="display: none;"></ReportPdf>
     </div>
 
     <Dialog :header="$t('workPlan.toCorrect')" v-model:visible="showRejectPlan" :style="{width: '450px'}"
@@ -210,9 +209,8 @@ export default {
           {headers: getHeader()}).then(res => {
         if (res.data) {
           this.source = `data:application/pdf;base64,${res.data}`;
-          this.blobSource = this.b64toBlob(res.data)
+          this.blobSource = URL.createObjectURL(this.b64toBlob(res.data));
           this.document = res.data;
-        } else {
           this.getData();
         }
       }).catch(error => {
@@ -230,7 +228,9 @@ export default {
     initReportFile() {
       //let workPlanId = this.data.work_plan_id;
       const pdfContent = this.$refs.report.$refs.toPdf;
-      const worker = html2pdf().set(this.pdfOptions).from(pdfContent);
+      this.getGeneratedPdf();
+
+      /*const worker = html2pdf().set(this.pdfOptions).from(pdfContent);
       const worker1 = html2pdf().set(this.pdfOptions).from(pdfContent);
 
       worker.toPdf().output("datauristring").then((pdf, item) => {
@@ -250,7 +250,7 @@ export default {
         fd.append('filename', this.pdfOptions.filename)
         //this.fileFd.append('work_plan_id', workPlanId)
         this.emitter.emit("reportFD", fd);
-      });
+      });*/
     },
     getData() {
       axios.post(smartEnuApi + `/workPlan/getWorkPlanReportData`, {
@@ -261,7 +261,8 @@ export default {
         this.items = treeToList(res.data, 'children', this.plan.lang);
         if (!this.source) {
           this.$nextTick(() => {
-            this.initReportFile();
+            this.getGeneratedPdf();
+            //this.initReportFile();
           });
         }
       }).catch(error => {
@@ -438,13 +439,16 @@ export default {
       })
     },
     async downloadWord() {
-      const header = `<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office"
-                    xmlns:w="urn:schemas-microsoft-com:office:word" xmlns:m="http://schemas.microsoft.com/office/2004/12/omml"
-                    xmlns="http://www.w3.org/TR/REC-html40"><head><meta name=ProgId content=Word.Document>`;
+      this.getData();
+      const header = `<!DOCTYPE html><html>
+                    <head>
+                    <meta name=ProgId content=Word.Document>
+                    <meta name=Generator content="Microsoft Word 15">
+                    <meta name=Originator content="Microsoft Word 15">`;
       const html = this.$refs.report.$refs.toPdf.innerHTML;
       let css = (
           '<style>' +
-          '@page WordSection1{size: 841.9pt 595.3pt;mso-page-orientation: landscape;mso-title-page: yes;margin: 49.65pt 2.0cm 42.5pt 2.0cm;mso-header-margin: 35.4pt;mso-footer-margin: 35.4pt;mso-page-numbers: 0;mso-paper-source: 0;}' +
+          '@page WordSection1{size: 841.9pt 595.3pt;mso-page-orientation: landscape;}' +
           'div.WordSection1 {page:WordSection1;}' +
           'table{width:100%;border-collapse:collapse;border:1px gray solid}td{border:1px gray solid;padding:0cm 5.4pt 0cm 5.4pt;}'+
           '.header {font-weight: bold}' +
@@ -457,10 +461,32 @@ export default {
       let url = URL.createObjectURL(blob);
       let link = document.createElement('a');
       link.href = url;
-      // Set default file name.
-      // Word will append file extension - do not add an extension here.
       link.download = this.report.report_name;
       link.click();
+    },
+    getGeneratedPdf() {
+      const html = this.$refs.report.$refs.toPdf.innerHTML;
+      axios.post(smartEnuApi + `/workPlan/generatePdf`, {text: html}, {headers: getHeader()})
+      .then(res => {
+        const blob = this.b64toBlob(res.data);
+        this.blobSource = URL.createObjectURL(blob);
+        this.source = "data:application/pdf;base64," + res.data;
+        this.document = res.data;
+        const fd = new FormData();
+        fd.append('file', blob);
+        fd.append('filename', this.pdfOptions.filename)
+        this.emitter.emit("reportFD", fd);
+      }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+      })
     },
     b64toBlob(b64Data, sliceSize=512) {
       const byteCharacters = window.atob(b64Data);
@@ -479,7 +505,7 @@ export default {
       }
 
       const blob = new Blob(byteArrays, {type: "application/pdf"});
-      return URL.createObjectURL(blob);
+      return blob;
     },
     viewSignatures() {
       this.$router.push({name: 'DocSignaturesInfo', params: { uuid: this.report.doc_id }})

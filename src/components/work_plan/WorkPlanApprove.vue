@@ -17,7 +17,7 @@
     <template #footer>
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
               @click="closeModal"/>
-      <Button ref="approveBtn" :disabled="submitted" :label="$t('common.send')" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2" @click="approve"/>
+      <Button ref="approveBtn" :disabled="submitted" :label="$t('common.send')" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2" @click="getGeneratedPdf"/>
     </template>
   </Dialog>
 </template>
@@ -142,7 +142,42 @@ export default {
           this.currentStageUsers += `${e.fullName}, `
         })
       }
-    }
+    },
+    getGeneratedPdf() {
+      this.submitted = true
+      const pdfContent = this.$refs.pdf.$refs.htmlToPdf.innerHTML;
+      axios.post(smartEnuApi + `/workPlan/generatePdf`, {text: pdfContent}, {headers: getHeader()})
+          .then(res => {
+            let blob = this.b64toBlob(res.data)
+            this.source = "data:application/pdf;base64," + res.data;
+            const fd = new FormData();
+            fd.append('wpfile', blob);
+            fd.append('fname', "file.pdf")
+            fd.append('work_plan_id', this.data.work_plan_id)
+            this.approvePlan(fd);
+          }).catch(error => {
+        console.log(error)
+      })
+    },
+    b64toBlob(b64Data, sliceSize=512) {
+      const byteCharacters = window.atob(b64Data);
+      const byteArrays = [];
+
+      for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+        const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+        const byteNumbers = new Array(slice.length);
+        for (let i = 0; i < slice.length; i++) {
+          byteNumbers[i] = slice.charCodeAt(i);
+        }
+
+        const byteArray = new Uint8Array(byteNumbers);
+        byteArrays.push(byteArray);
+      }
+
+      const blob = new Blob(byteArrays, {type: "application/pdf"});
+      return blob;
+    },
   }
 }
 </script>
