@@ -50,6 +50,15 @@
     <!-- ON LOADING -->
     <template #loading> {{ $t('common.loading') }}</template>
     <!-- NAME COLUMN -->
+    <Column>
+      <template #body="slotProps">
+        <Button
+            v-if="slotProps.data.candidateRelation[0].history.status.id === 10 && slotProps.data.organization.id === 1"
+            icon="pi pi-upload"
+            class="p-button-success"
+            @click="openDialog(slotProps.data)"/>
+      </template>
+    </Column>
     <Column :field="'name' + ($i18n.locale).charAt(0).toUpperCase() + ($i18n.locale).slice(1)"
             v-bind:header="$t('common.nameIn')"
             :sortable="true">
@@ -109,6 +118,15 @@
               new Date(slotProps.data.deadline).toLocaleDateString()
             }}
           </span>
+      </template>
+    </Column>
+    <Column>
+      <template #body="slotProps">
+        <Button
+            v-if="slotProps.data.candidateRelation[0].history.status.id === 10 && slotProps.data.organization.id !== 1"
+            icon="pi pi-file-pdf"
+            class="p-button-secondary"
+            @click="getPetition(slotProps.data)"/>
       </template>
     </Column>
   </DataTable>
@@ -217,12 +235,250 @@
     </template>
 
   </Dialog>
+  <!-- Просмотр ходатайства -->
+  <Dialog v-model:visible="visible.petition" :style="{ width: '1000px' }" :modal="true" :closable="false">
+    <div class="card" v-if="signatures">
+      <work-plan-qr-pdf ref="qrToPdf" :signatures="signatures" :title="docInfo.name"></work-plan-qr-pdf>
+      <div class="p-grid p-formgrid">
+        <div class="p-col-12 p-mb-2 p-pb-2 p-lg-3 p-mb-lg-0">
+          <Button :label="$t('hr.petition.download')" icon="pi pi-download" :onclick="downloadPDF"/>
+        </div>
+        <div class="p-col-12 p-mb-2 p-pb-2 p-lg-3 p-mb-lg-0">
+          <Button :label="$t('common.downloadSignaturesPdf')" icon="pi pi-download" :disabled="!pdfFile"
+                  :onclick="downloadSignatures"/>
+        </div>
+      </div>
+    </div>
+    <template #footer>
+      <Button
+          v-bind:label="$t('common.close')"
+          icon="pi pi-times"
+          class="p-button p-component p-button-primary"
+          @click="visible.petition = false"
+      />
+    </template>
+  </Dialog>
+  <!-- Загрузка документов -->
+  <Dialog v-model:visible="visible.documents" :style="{ width: '800px' }" :modal="true" :closable="true">
+    <template #header>
+      <h5>{{ $t('hr.doc.up').toUpperCase() }}</h5>
+    </template>
+    <div class="card">
+      <!--  Трудовая книжка  -->
+      <div class="p-field">
+        <Label>{{ $t('hr.doc.eh') }}: </Label>
+        <FileUpload
+            class="p-mt-2"
+            mode="basic"
+            :customUpload="true"
+            :class="{'p-invalid': validation.employmentHistory}"
+            @uploader="uploadEmploymentHistory($event)"
+            :auto="true"
+            v-bind:chooseLabel="$t('hdfs.chooseFile')"
+        ></FileUpload>
+        <InlineMessage severity="info"
+                       class="p-mt-2"
+                       show v-if="documents.employmentHistory">
+          {{ $t('ncasigner.chosenFile', {fn: documents.employmentHistory ? documents.employmentHistory.name : ""}) }}
+        </InlineMessage>
+        <small
+            class="p-error"
+            v-if="validation.employmentHistory"
+        >{{ $t("common.requiredField") }}</small>
+      </div>
+      <hr>
+      <!--   дипломы   -->
+      <div class="p-field">
+        <Label>{{ $t('hr.doc.diploma') + " " + $t('hr.doc.upInOne')}}: </Label>
+        <FileUpload
+            class="p-mt-2"
+            mode="basic"
+            :customUpload="true"
+            :class="{'p-invalid': validation.diploma}"
+            @uploader="uploadDiploma($event)"
+            :auto="true"
+            v-bind:chooseLabel="$t('hdfs.chooseFile')"
+        ></FileUpload>
+        <InlineMessage severity="info"
+                       class="p-mt-2"
+                       show v-if="documents.diploma">
+          {{ $t('ncasigner.chosenFile', {fn: documents.diploma ? documents.diploma.name : ""}) }}
+        </InlineMessage>
+        <small
+            class="p-error"
+            v-if="validation.diploma"
+        >{{ $t("common.requiredField") }}</small>
+      </div>
+      <hr>
+      <!--   сертификаты   -->
+      <div class="p-field">
+        <Label>{{ $t('hr.doc.certs')  + " " + $t('hr.doc.upInOne')}}: </Label>
+        <FileUpload
+            class="p-mt-2"
+            mode="basic"
+            :customUpload="true"
+            @uploader="uploadCerts($event)"
+            :auto="true"
+            v-bind:chooseLabel="$t('hdfs.chooseFile')"
+        ></FileUpload>
+        <InlineMessage severity="info"
+                       class="p-mt-2"
+                       show v-if="documents.certs">
+          {{ $t('ncasigner.chosenFile', {fn: documents.certs ? documents.certs.name : ""}) }}
+        </InlineMessage>
+      </div>
+      <hr>
+      <!--   пенсионный   -->
+      <div class="p-field">
+        <Label>{{ $t('hr.doc.pension') }}: </Label>
+        <FileUpload
+            class="p-mt-2"
+            mode="basic"
+            :customUpload="true"
+            :class="{'p-invalid': validation.pension}"
+            @uploader="uploadPension($event)"
+            :auto="true"
+            v-bind:chooseLabel="$t('hdfs.chooseFile')"
+        ></FileUpload>
+        <InlineMessage severity="info"
+                       class="p-mt-2"
+                       show v-if="documents.pension">
+          {{ $t('ncasigner.chosenFile', {fn: documents.pension ? documents.pension.name : ""}) }}
+        </InlineMessage>
+        <small
+            class="p-error"
+            v-if="validation.pension"
+        >{{ $t("common.requiredField") }}</small>
+      </div>
+      <hr>
+      <!--   075   -->
+      <div class="p-field">
+        <Label>{{ $t('hr.doc.medCert')  + " " + $t('hr.doc.upInOne')}}: </Label>
+        <FileUpload
+            class="p-mt-2"
+            mode="basic"
+            :customUpload="true"
+            :class="{'p-invalid': validation.medCert}"
+            @uploader="uploadMedCert($event)"
+            :auto="true"
+            v-bind:chooseLabel="$t('hdfs.chooseFile')"
+        ></FileUpload>
+        <InlineMessage severity="info"
+                       class="p-mt-2"
+                       show v-if="documents.medCert">
+          {{ $t('ncasigner.chosenFile', {fn: documents.medCert ? documents.medCert.name : ""}) }}
+        </InlineMessage>
+        <small
+            class="p-error"
+            v-if="validation.medCert"
+        >{{ $t("common.requiredField") }}</small>
+      </div>
+      <hr>
+      <!--   нарко   -->
+      <div class="p-field">
+        <Label>{{ $t('hr.doc.narcoCert') }}: </Label>
+        <FileUpload
+            class="p-mt-2"
+            mode="basic"
+            :customUpload="true"
+            :class="{'p-invalid': validation.narcoCert}"
+            @uploader="uploadNarcoCert($event)"
+            :auto="true"
+            v-bind:chooseLabel="$t('hdfs.chooseFile')"
+        ></FileUpload>
+        <InlineMessage severity="info"
+                       class="p-mt-2"
+                       show v-if="documents.narcoCert">
+          {{ $t('ncasigner.chosenFile', {fn: documents.narcoCert ? documents.narcoCert.name : ""}) }}
+        </InlineMessage>
+        <small
+            class="p-error"
+            v-if="validation.narcoCert"
+        >{{ $t("common.requiredField") }}</small>
+      </div>
+      <hr>
+      <!--   ппсихо   -->
+      <div class="p-field">
+        <Label>{{ $t('hr.doc.psychoCert') }}: </Label>
+        <FileUpload
+            class="p-mt-2"
+            mode="basic"
+            :customUpload="true"
+            :class="{'p-invalid': validation.psychoCert}"
+            @uploader="uploadPsychoCert($event)"
+            :auto="true"
+            v-bind:chooseLabel="$t('hdfs.chooseFile')"
+        ></FileUpload>
+        <InlineMessage severity="info"
+                       class="p-mt-2"
+                       show v-if="documents.psychoCert">
+          {{ $t('ncasigner.chosenFile', {fn: documents.psychoCert ? documents.psychoCert.name : ""}) }}
+        </InlineMessage>
+        <small
+            class="p-error"
+            v-if="validation.psychoCert"
+        >{{ $t("common.requiredField") }}</small>
+      </div>
+      <hr>
+      <!--   судимость   -->
+      <div class="p-field">
+        <Label>{{ $t('hr.doc.gcCert') }}: </Label>
+        <FileUpload
+            class="p-mt-2"
+            mode="basic"
+            :customUpload="true"
+            :class="{'p-invalid': validation.gcCert}"
+            @uploader="uploadGcCert($event)"
+            :auto="true"
+            v-bind:chooseLabel="$t('hdfs.chooseFile')"
+        ></FileUpload>
+        <InlineMessage severity="info"
+                       class="p-mt-2"
+                       show v-if="documents.gcCert">
+          {{ $t('ncasigner.chosenFile', {fn: documents.gcCert ? documents.gcCert.name : ""}) }}
+        </InlineMessage>
+        <small
+            class="p-error"
+            v-if="validation.gcCert"
+        >{{ $t("common.requiredField") }}</small>
+      </div>
+      <hr>
+      <!--   военный билет   -->
+      <div class="p-field">
+        <Label>{{ $t('hr.doc.mId') }}: </Label>
+        <FileUpload
+            class="p-mt-2"
+            mode="basic"
+            :customUpload="true"
+            @uploader="uploadMilitaryId($event)"
+            :auto="true"
+            v-bind:chooseLabel="$t('hdfs.chooseFile')"
+        ></FileUpload>
+        <InlineMessage severity="info"
+                       class="p-mt-2"
+                       show v-if="documents.mId">
+          {{ $t('ncasigner.chosenFile', {fn: documents.mId ? documents.mId.name : ""}) }}
+        </InlineMessage>
+      </div>
+    </div>
+    <template #footer>
+      <Button
+          v-bind:label="$t('common.action.submit')"
+          icon="pi pi-check"
+          class="p-button p-component p-button-primary"
+          @click="sendData"
+      />
+    </template>
+  </Dialog>
 </template>
 
 <script>
+//import WorkPlanQrPdf from "@/components/work_plan/WorkPlanQrPdf";
 import {FilterMatchMode, FilterOperator} from "primevue/api";
 import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
+import html2pdf from "html2pdf.js";
+import CandidateDocument from "./CandidateDocument";
 
 export default {
   name: "CandidateVacancy",
@@ -246,13 +502,43 @@ export default {
       },
       visible: {
         loading: false,
-        view: false
+        view: false,
+        petition: false,
+        documents: false
       },
       vacancies: null,
       vacancy: null,
+      pdfFile: null,
+      docInfo: null,
+      signatures: null,
+      documents: {
+        employmentHistory: null,
+        diploma: null,
+        certs: null,
+        pension: null,
+        medCert: null,
+        narcoCert: null,
+        psychoCert: null,
+        gcCert: null,
+        mId: null
+      },
+      validation: {
+        employmentHistory: false,
+        diploma: false,
+        certs: false,
+        pension: false,
+        medCert: false,
+        narcoCert: false,
+        psychoCert: false,
+        gcCert: false,
+      },
     }
   },
   methods: {
+    openDialog(data) {
+      this.vacancy = data
+      this.visible.documents = true
+    },
     /**
      * *********************** ПОЛУЧЕНИЕ ВАКАНСИЙ ПОЛЬЗОВАТЕЛЯ
      */
@@ -270,12 +556,76 @@ export default {
         } else {
           this.$toast.add({
             severity: "error",
-            summary: 'Не удалось загрузить вакансии' + ":\n" + error,
+            summary: error,
             life: 3000,
           });
         }
       });
     },
+
+    /**
+     ******************** GET PETITION
+     */
+    getPetition(data) {
+      this.pdfFile = null
+      this.docInfo = null
+      this.signatures = null
+      axios.post(smartEnuApi + "/vacancy/petition",
+          {
+            candidateId: data.candidateRelation[0].candidate.id,
+            vacancyId: data.id
+          },
+          {headers: getHeader()}
+      ).then(response => {
+        console.log(response.data)
+        this.pdfFile = response.data.fileData
+        this.docInfo = response.data.docInfo
+        this.signatures = this.docInfo.signatures
+        this.signatures.map(e => {
+          e.sign = this.chunkString(e.signature, 1200)
+        });
+        this.visible.petition = true
+      }).catch(error => {
+        console.log(error)
+      })
+    },
+
+    /**
+     * download pdf
+     */
+    downloadPDF() {
+      let pdf = this.pdfFile;
+      var link = document.createElement('a');
+      link.innerHTML = 'Download PDF file';
+      link.download = this.docInfo.name;
+      link.href = 'data:application/octet-stream;base64,' + pdf;
+      link.click();
+    },
+
+    /**
+     * download signature
+     */
+    downloadSignatures() {
+      let pdfOptions = {
+        margin: 10,
+        image: {
+          type: 'jpeg',
+          quality: 0.95,
+        },
+        html2canvas: {scale: 3, letterRendering: true},
+        jsPDF: {
+          unit: 'mm',
+          format: 'a4',
+          orientation: 'portrait',
+          hotfixes: ["px_scaling"]
+        },
+        pagebreak: {avoid: '#qr'},
+        filename: this.docInfo.name + ".pdf"
+      };
+      const pdfContent = this.$refs.qrToPdf.$refs.qrToPdf;
+      html2pdf().set(pdfOptions).from(pdfContent).save();
+    },
+
     /**
      * *********************** СОРТИРОВКА
      * @param event
@@ -312,6 +662,85 @@ export default {
       this.lazyParams.searchText = "";
       this.getVacancies();
     },
+    chunkString(str, length) {
+      return str.match(new RegExp('.{1,' + length + '}', 'g'));
+    },
+
+    uploadEmploymentHistory(event) {
+      this.documents.employmentHistory = event.files[0]
+    },
+    uploadDiploma(event) {
+      this.documents.diploma = event.files[0]
+    },
+    uploadCerts(event) {
+      this.documents.certs = event.files[0]
+    },
+    uploadPension(event) {
+      this.documents.pension = event.files[0]
+    },
+    uploadMedCert(event) {
+      this.documents.medCert = event.files[0]
+    },
+    uploadNarcoCert(event) {
+      this.documents.narcoCert = event.files[0]
+    },
+    uploadPsychoCert(event) {
+      this.documents.psychoCert = event.files[0]
+    },
+    uploadGcCert(event) {
+      this.documents.gcCert = event.files[0]
+    },
+    uploadMilitaryId(event) {
+      this.documents.mId = event.files[0]
+    },
+
+    validateForm() {
+      this.validation.employmentHistory = !this.documents.employmentHistory || this.documents.employmentHistory === ""
+      this.validation.diploma = !this.documents.diploma || this.documents.diploma === ""
+      this.validation.pension = !this.documents.pension || this.documents.pension === ""
+      this.validation.medCert = !this.documents.medCert || this.documents.medCert === ""
+      this.validation.narcoCert = !this.documents.narcoCert || this.documents.narcoCert === ""
+      this.validation.psychoCert = !this.documents.psychoCert || this.documents.psychoCert === ""
+      this.validation.gcCert = !this.documents.gcCert || this.documents.gcCert === ""
+      return (
+          !this.validation.employmentHistory &&
+          !this.validation.diploma &&
+          !this.validation.pension &&
+          !this.validation.medCert &&
+          !this.validation.narcoCert &&
+          !this.validation.psychoCert &&
+          !this.validation.gcCert
+      )
+    },
+
+    sendData() {
+      if (this.validateForm()) {
+        const fd = new FormData()
+        let request = {}
+        request.vacancyId = this.vacancy.id
+        request.candidateId = this.vacancy.candidateRelation[0].candidate.id
+        fd.append('cvInfo', JSON.stringify(request))
+        fd.append('eh', this.documents.employmentHistory)
+        fd.append('diploma', this.documents.diploma)
+        fd.append('certs', this.documents.certs)
+        fd.append('pension', this.documents.pension)
+        fd.append('medCert', this.documents.medCert)
+        fd.append('narcoCert', this.documents.narcoCert)
+        fd.append('psychoCert', this.documents.psychoCert)
+        fd.append('gcCert', this.documents.gcCert)
+        fd.append('mId', this.documents.mId)
+        axios.post(smartEnuApi + '/candidate/documents/create', fd, {headers: getHeader()}).then(_ => {
+          this.visible.documents = false
+          this.vacancy = null
+        }).catch(error => {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        })
+      }
+    }
   },
   created() {
     this.getVacancies();
@@ -324,6 +753,7 @@ export default {
   padding-left: 20px;
   text-align: justify;
 }
+
 .customer-badge {
   border-radius: 2px;
   padding: 0.25em 0.5rem;

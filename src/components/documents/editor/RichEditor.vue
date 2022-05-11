@@ -134,12 +134,13 @@ export default {
     this.renderValue(this.modelValue);
 
     this.quill.on("text-change", (delta, oldContents, source) => {
-      if (source === "user") {
+
+      //if (source === "user") {
         let html = this.$refs.editorElement.children[0].innerHTML;
         let text = this.quill.getText().trim();
         if (html === "<p><br></p>") {
           html = "";
-        }
+       }
 
         this.$emit("update:modelValue", html);
         this.$emit("text-change", {
@@ -148,7 +149,6 @@ export default {
           delta: delta,
           source: source,
         });
-      }
     });
   },
   methods: {

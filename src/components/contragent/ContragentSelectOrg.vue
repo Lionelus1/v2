@@ -2,14 +2,15 @@
   <div class="p-field p-grid">
     <div class="p-col-12 p-md-12 p-mb-2">
       <span class="p-float-label p-ibutoon-right">
-        <i v-if="value" class="pi pi-id-card ibutton" :style="(!editVisible ? 'height:30px;margin-top: 2px;margin-right: 2px;' : 'margin-right:35px;height:30px;margin-top: 2px;')" @click="showcard()"/>
-        <i v-if="editVisible" class="pi pi-ellipsis-h ibutton" style="height:30px;margin-top: 2px;margin-right: 2px;" @click="showside()"/>
+        <i v-if="value && !readonly" class="pi pi-id-card ibutton" :style="(!editVisible ? 'height:30px;margin-top: 2px;margin-right: 2px;' : 'margin-right:35px;height:30px;margin-top: 2px;')" @click="showcard()"/>
+        <i v-if="editVisible && !readonly" class="pi pi-ellipsis-h ibutton" style="height:30px;margin-top: 2px;margin-right: 2px;" @click="showside()"/>
         <InputText id="inputtext-right" :placeholder="$t('common.select')" readonly="true" type="text" v-model="selectedContragentName"/>
         <Sidebar @hide="updateValue(value)" @selected="selected" v-model:visible="contragentVisible" position="right" class="p-sidebar-lg p-m-0 p-p-0 p-pt-7" style="overflow-y:scroll">
-          <Contragents v-model="value" v-model:windowOpened="contragentVisible" @selected="selected"></Contragents>
+          <Organizations id="contragentSelectOrgOrgs" v-model="value" v-model:windowOpened="contragentVisible" :selectedMode="true" @selected="selected"></Organizations>
         </Sidebar>
+        
         <Sidebar v-model:visible="cardVisible" position="right" class="p-sidebar-lg" style="overflow-y:scroll">
-          <Organization :readonly="true" :modelValue="value"></Organization>
+          <Organization id="contragentSelectOrgOrg" :readonly="true" :modelValue="value"></Organization>
         </Sidebar>
       </span>
     </div>
@@ -18,13 +19,10 @@
 
 <script>
 
-import Contragents from './Contragents.vue';
-import Organization from './Organization.vue';
-import Person from './Person.vue'
-import Bank from './Bank.vue'
+import Organizations from './Organizations.vue';
 import Enum from "@/enum/docstates/index"
 export default {
-  components : { Contragents, Organization },
+  components : { Organizations },
   data() {
     return {
       value: this.modelValue,
@@ -72,6 +70,10 @@ export default {
   props: {
     modelValue: null,
     disabled: {
+      typeof: Boolean,
+      default: false
+    },
+    readonly: {
       typeof: Boolean,
       default: false
     },

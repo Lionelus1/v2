@@ -1,9 +1,9 @@
 <template>
-  <h3>{{ $t('hr.candidates')}}</h3>
+  <h3>{{ $t('hr.candidates') }}</h3>
   <div>
     <DataTable :value="candidates" responsiveLayout="scroll">
       <Column field="candidate.user.fullName" :header="$t('common.fullName')"></Column>
-      <Column v-bind:header="$t('common.status')" >
+      <Column v-bind:header="$t('common.status')">
         <template #body="slotProps">
           <span :class="'customer-badge status-' + slotProps.data.history.status.id">
             {{
@@ -22,6 +22,14 @@
                   @click="view(slotProps.data)"/>
         </template>
       </Column>
+      <Column>
+        <template #body="slotProps">
+          <Button v-if="slotProps.data.history.status.id === 10 && vacancy.organization.id === 1"
+                  class="p-button-secondary"
+                  icon="pi pi-folder-open"
+                  @click="viewDocs(slotProps.data)"/>
+        </template>
+      </Column>
     </DataTable>
     <Sidebar
         v-model:visible="sidebar"
@@ -38,6 +46,12 @@
             </Menubar>
           </div>
         </div>
+        <div class="p-col-12 p-md-12 p-fluid"
+             v-if="vacancy.organization.id === 1">
+          <Button :label="$t('hr.doc.signedResumeDownload')"
+                  class="p-button-secondary"
+                  :onclick="downloadSignedResume"/>
+        </div>
         <div class="p-col-12 p-md-12 p-fluid">
           <ResumeView ref="pdf" :value="candidateRelation.candidate" :readonly="true"/>
         </div>
@@ -49,30 +63,96 @@
         class="p-sidebar-lg"
         style="overflow-y: scroll"
     >
-      <ApplyActionEdit :readonly="false" :candidate-relation="this.candidateRelation" :path="path"/>
+      <ApplyActionEdit :readonly="false" :candidate-relation="this.candidateRelation" :path="path" :vacancy="vacancy"/>
     </Sidebar>
+    <Sidebar
+        v-model:visible="docs"
+        position="right"
+        class="p-sidebar-lg"
+        style="overflow-y: scroll"
+    >
+      <div class="p-grid">
+        <div class="p-col-12">
+          <h3>{{ $t('hr.doc.up') }}</h3>
+          <div>
+            <Menubar style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px"/>
+          </div>
+        </div>
+        <div class="p-col-12 p-md-12 p-fluid">
+          <DocDownload :paths="documentsPath"/>
+        </div>
+      </div>
+    </Sidebar>
+    <Dialog v-model:visible="resumeView" :style="{ width: '1000px' }" :modal="true" :closable="false">
+      <div class="card" v-if="signatures">
+        <work-plan-qr-pdf ref="qrToPdf" :signatures="signatures" :title="docInfo.name"></work-plan-qr-pdf>
+        <div class="p-grid p-formgrid">
+          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-3 p-mb-lg-0">
+            <Button :label="$t('hr.doc.resumeDownload')" icon="pi pi-download" :onclick="downloadPDF"/>
+          </div>
+          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-3 p-mb-lg-0">
+            <Button :label="$t('common.downloadSignaturesPdf')" icon="pi pi-download" :disabled="!resumeFile"
+                    :onclick="downloadSignatures"/>
+          </div>
+        </div>
+      </div>
+      <template #footer>
+        <Button
+            v-bind:label="$t('common.close')"
+            icon="pi pi-times"
+            class="p-button p-component p-button-primary"
+            @click="resumeView = false"
+        />
+      </template>
+    </Dialog>
   </div>
 </template>
 
 <script>
 import ResumeView from "../candidate/ResumeView";
 import VacancyService from "./VacancyService";
+import DocDownload from "./DownloadCandidateDocuments";
 import ApplyActionEdit from "./ApplyActionEdit";
 import html2pdf from "html2pdf.js";
+import axios from "axios";
+import {getHeader, getMultipartHeader, smartEnuApi} from "@/config/config";
+//import WorkPlanQrPdf from "@/components/work_plan/WorkPlanQrPdf";
+
 
 export default {
   name: "VacancyCandidateView",
-  components: {ApplyActionEdit, ResumeView},
+  components: {ApplyActionEdit, DocDownload, ResumeView},
   data() {
     return {
       sidebar: false,
       sendMessage: false,
+      docs: false,
       candidateRelation: null,
       active: null,
       action: null,
       actionReject: null,
       actionReserve: null,
       path: null,
+      documentsPath: {
+        employmentHistoryPath: null,
+        employmentHistoryName: null,
+        diplomaPath: null,
+        diplomaName: null,
+        certsPath: null,
+        certsName: null,
+        pensionPath: null,
+        pensionName: null,
+        medCertPath: null,
+        medCertName: null,
+        narcoCertPath: null,
+        narcoCertName: null,
+        psychoCertPath: null,
+        psychoCertName: null,
+        gcCertPath: null,
+        gcCertName: null,
+        mIdPath: null,
+        mIdName: null
+      },
       menu: [
         {
           label: 'action',
@@ -122,13 +202,105 @@ export default {
           ]
         },
       ],
+      resumeFile: null,
+      docInfo: null,
+      signatures: null,
+      resumeView: false,
     }
   },
   methods: {
+
+    downloadSignedResume() {
+      axios.post(
+          smartEnuApi + '/candidate/resume/download',
+          {
+            vacancyId: this.vacancy.id,
+            candidateId: this.candidateRelation.candidate.id
+          },
+          {headers: getHeader()}).then(response => {
+        console.log(response.data)
+        if (response.data.docInfo !== null) {
+          this.resumeFile = response.data.fileData
+          this.docInfo = response.data.docInfo
+          this.signatures = this.docInfo.signatures
+          this.signatures.map(e => {
+            e.sign = this.chunkString(e.signature, 1200)
+          });
+          this.resumeView = true
+        } else {
+          console.log("HI!")
+          var link = document.createElement('a');
+          link.innerHTML = 'Download file';
+          link.download = response.data.fileName;
+          link.href = response.data.fileData;
+          link.click();
+        }
+      }).catch(error => {
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
+      })
+    },
+
+    downloadPDF() {
+      let pdf = this.resumeFile;
+      var link = document.createElement('a');
+      link.innerHTML = 'Download PDF file';
+      link.download = this.docInfo.name + '.pdf';
+      link.href = 'data:application/octet-stream;base64,' + pdf;
+      link.click();
+    },
+
+    downloadSignatures() {
+      let pdfOptions = {
+        margin: 10,
+        image: {
+          type: 'jpeg',
+          quality: 0.95,
+        },
+        html2canvas: {scale: 3, letterRendering: true},
+        jsPDF: {
+          unit: 'mm',
+          format: 'a4',
+          orientation: 'portrait',
+          hotfixes: ["px_scaling"]
+        },
+        pagebreak: {avoid: '#qr'},
+        filename: this.docInfo.name + ".pdf"
+      };
+      const pdfContent = this.$refs.qrToPdf.$refs.qrToPdf;
+      html2pdf().set(pdfOptions).from(pdfContent).save();
+    },
+
+    chunkString(str, length) {
+      return str.match(new RegExp('.{1,' + length + '}', 'g'));
+    },
+
     view(data) {
       this.candidateRelation = data
       this.checkAction(data)
       this.sidebar = true
+    },
+    viewDocs(data) {
+      axios.post(
+          smartEnuApi + '/candidate/documents/existence',
+          {
+            vacancyId: this.vacancy.id,
+            candidateId: data.candidate.id
+          },
+          {headers: getHeader()}).then(response => {
+        console.log(response.data)
+        this.documentsPath = response.data
+        this.docs = true
+      }).catch(error => {
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
+      })
     },
     downloadLetter() {
       this.vacancyService.downloadLetter(this.candidateRelation.vacancyId,
@@ -140,7 +312,11 @@ export default {
         link.href = response.data.file;
         link.click();
       }).catch(error => {
-        console.log(error)
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
       })
     },
     downloadResume() {
@@ -200,13 +376,18 @@ export default {
             this.menu[2].visible = false
           }
         }).catch(error => {
-          console.log(error)
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
         })
       }
     }
   },
   props: {
-    candidates: []
+    candidates: [],
+    vacancy: null,
   },
   created() {
     this.vacancyService = new VacancyService()

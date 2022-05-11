@@ -1,5 +1,15 @@
 import axios from "axios";
-import {getHeader, smartEnuApi} from "@/config/config";
+import {getHeader, getMultipartHeader, smartEnuApi} from "@/config/config";
+
+export const RIGHTS = {
+    MAIN_ADMINISTRATOR: 'main_administrator',
+    HR_ADMINISTRATOR: 'hr_administrator',
+    HR_MODERATOR: 'hr_moderator',
+    CAREER_ADMINISTRATOR: 'career_administrator',
+    CAREER_MODERATOR: 'career_moderator',
+    INITIAL_APPROVE: 'vacancy_initial_approve',
+    FINAL_APPROVE: 'vacancy_final_approve'
+}
 
 export default class VacancyService {
 
@@ -110,12 +120,14 @@ export default class VacancyService {
         )
     }
 
-    checkAction(statusId) {
+    checkAction(statusId, vacancy) {
         console.log(statusId)
+        console.log(vacancy)
         return axios.post(
             smartEnuApi + '/vacancy/check/action',
             {
-                statusId: statusId
+                statusId: statusId,
+                vacancy: vacancy
             },
             {headers: getHeader()}
         )
@@ -137,6 +149,28 @@ export default class VacancyService {
             smartEnuApi + "/vacancy/delete",
             {id: vacancyId},
             {headers: getHeader()}
+        )
+    }
+
+    rightsValidity() {
+        return axios.get(
+            smartEnuApi + '/vacancy/rights/validity',
+            {headers: getHeader()}
+        )
+    }
+
+    generatePetitionPdf(petition) {
+        return axios.post(
+            smartEnuApi + '/vacancy/petition/pdf',
+            petition,
+            {headers: getHeader()}
+        )
+    }
+    sendSign(fd) {
+        return axios.post(
+            smartEnuApi + '/vacancy/petition/sign',
+            fd,
+            {headers: getMultipartHeader()}
         )
     }
 }

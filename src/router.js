@@ -247,10 +247,15 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
+                path: '/human-resources/career/vacancies',
+                name: '/human-resources/career/vacancies',
+                component: load('humanResources/vacancy/career/CareerVacancies'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
                 path: '/human-resources/public/vacancies',
                 name: '/human-resources/public/vacancies',
-                component: load('humanResources/vacancy/PublicVacancies'),
-                beforeEnter: ifAuthenticated,
+                component: load('humanResources/vacancy/hr/HrVacancies'),
             },
             {
                 path: '/human-resources/vacancies',
@@ -273,7 +278,8 @@ const routes = [
             {
                 path: '/cabinet',
                 name: 'Cabinet',
-                component: load('humanResources/candidate/Cabinet')
+                component: load('humanResources/candidate/Cabinet'),
+                beforeEnter: ifAuthenticated,
             }
         ]
     }

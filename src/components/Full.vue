@@ -69,7 +69,9 @@ export default {
         {
           label: 'Құжаттар', icon: 'pi pi-fw pi-folder',
           items: [
-            {label: 'Келісім-шарт үлгілері', icon: 'pi pi-fw pi-book', to: '/documents/doctemplate'},
+            {label: 'Келісім-шарт үлгілері', icon: 'pi pi-fw pi-book', to: '/documents/doctemplate',
+            visible: !this.findRole("student")
+            },
             {label: 'Келісім-шарттар', icon: 'pi pi-fw pi-copy', to: '/documents/contracts'},
           ]
 
@@ -80,12 +82,15 @@ export default {
             {
               label: this.$t('hr.vacancies'),
               icon: 'pi pi-fw pi-user-plus',
-              to: '/human-resources/vacancies'
+              to: '/human-resources/vacancies',
+              visible: this.isVacancyRightsValidity()
             },
           ]
         },
         {
           label: 'Контрагенттер', icon: 'pi pi-fw pi-users',
+          visible: !this.findRole("student"),
+
           items: [
             {label: 'Ұйымдықтар', icon: 'pi pi-fw pi-home', to: '/contragent/organizations'},
             {label: 'Банктер', icon: 'pi pi-fw pi-money-bill', to: '/contragent/banks'},
@@ -147,7 +152,7 @@ export default {
             {
               label: this.$t('hr.vacancies'),
               icon: 'pi pi-fw pi-user-plus',
-              to: '/human-resources/public/vacancies'
+              to: '/human-resources/career/vacancies'
             },
           ]
         },
@@ -163,11 +168,11 @@ export default {
  //         ]
  //       },
 
-        // {
-        //   label: this.$t('hr.vacancies'),
-        //   icon: 'pi pi-fw pi-user-plus',
-        //   to: '/human-resources/public/vacancies'
-        // },
+        {
+          label: this.$t('hr.vacancies'),
+          icon: 'pi pi-fw pi-user-plus',
+          to: '/human-resources/public/vacancies'
+        },
       ]
     }
   },
@@ -187,9 +192,20 @@ export default {
         this.getLoginedUser();
       return this.findRole('dissertation_chief');
     },
+    isVacancyRightsValidity() {
+      if (!this.loginedUser)
+        this.getLoginedUser();
+      return this.findRole('hr_administrator') ||
+          this.findRole('career_administrator') ||
+          this.findRole('hr_moderator') ||
+          this.findRole('career_moderator') ||
+          this.findRole('vacancy_initial_approve') ||
+          this.findRole('vacancy_final_approve');
+    },
     findRole(roleName) {
       if (!this.loginedUser)
         this.getLoginedUser();
+
       for (let i = 0; i < this.loginedUser.roles.length; i++) {
         if (this.loginedUser.roles[i].name === roleName) {
           return true;
@@ -328,4 +344,58 @@ export default {
   z-index: 1000;
   top: 70px;
 }
+.customer-badge {
+    border-radius: 2px;
+    padding: 0.25em 0.5rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.3px;
+  
+    &.status-vaccinated {
+      background: #c8e6c9;
+      color: #256029;
+    }
+    &.status-firstcomponent {
+      background: #b3e5fc;
+      color: #23547b;
+    }
+    &.status-noData {
+      background: #ffcdd2;
+      color: #c63737;
+    }
+    &.status-rejected {
+      background: #feedaf;
+      color: #ff0000;
+    }
+    &.status-planned {
+      background: #eccfff;
+      color: #694382;
+    }
+    &.status-minor {
+      background: #a2fcfc;
+      color: #00f7f7;
+    }
+    &.status-created {
+        background: #6c757d;
+        color: #fff;
+    }
+    &.status-signing {
+        background: #17a2b8;
+        color: #fff;
+    }
+    &.status-signed {
+      background: #28a745;
+      color: #fff;
+    }
+    &.status-inapproval {
+      background: #9317b8;
+      color: #ffffff;
+    }
+    &.status-approved {
+      background: #007bff;
+      color: #ffffff;
+    }
+    
+  }
 </style>

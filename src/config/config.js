@@ -1,13 +1,15 @@
 import mitt from "mitt";
 import axios from "axios";
 
-export const apiDomain = "http://localhost:8080";
+export const apiDomain = "https://smart.enu.kz/#";
 export const hdfsApi = "http://localhost:8085";
 export const signerApi = "https://smart.enu.kz:6990"
 //export const signerApi = "http://10.1.1.161:6990"
 //export const smartEnuApi = "https://smart.enu.kz:8081"
-//export const smartEnuApi = "http://smart.enu.kz:8090"
-export const smartEnuApi = "http://localhost:8080"
+export const smartEnuApi = "http://smart.enu.kz:8090"
+//export const smartEnuApi = "https://10.1.2.75:8081"
+//export const smartEnuApi = "http://192.168.137.151:8081"
+
 export const templateApi = "http://localshost:8082"
 
 export const header  = {
@@ -20,7 +22,7 @@ export const header  = {
 //export const apiDomain="";
 
 export const loginUrl = apiDomain+"/oauth/token";
-export const getHeader = function(){
+export const getHeader = function() {
   const tokenData = JSON.parse(window.localStorage.getItem("authUser"));
 
   if(tokenData){
@@ -66,17 +68,18 @@ export const testFunction= function(){
   // let u go main test
   //console.log("ene bol busgui chini");
 }
+//findRole ---
 export const findRole = function(user, role) {
+  if (user == null) {
     user = this.$store.state.loginedUser;
-    if (!user)
-      return false;
-    if (user.roles)
-    for (let i = 0; i < user.roles.length; i++) {
-      if (user.roles[i].name === role) {
-        return true;
-      }
+  }
+  if (user.roles)
+  for (let i = 0; i < user.roles.length; i++) {
+    if (user.roles[i].name === role) {
+      return true;
     }
-    return false;
+  }
+  return false;
 }
 
 export const downloadFile = function(filePath) {
@@ -111,6 +114,26 @@ export const downloadFile = function(filePath) {
       });
     }
   });
+}
+
+export const b64toBlob = function(b64Data, sliceSize=512) {
+  const byteCharacters = window.atob(b64Data);
+  const byteArrays = [];
+
+  for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+    const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+    const byteNumbers = new Array(slice.length);
+    for (let i = 0; i < slice.length; i++) {
+      byteNumbers[i] = slice.charCodeAt(i);
+    }
+
+    const byteArray = new Uint8Array(byteNumbers);
+    byteArrays.push(byteArray);
+  }
+
+  const blob = new Blob(byteArrays, {type: "application/pdf"});
+  return URL.createObjectURL(blob);
 }
 
 

@@ -162,6 +162,7 @@
               class="p-mt-2"
               :disabled="localReadonly && !addMode"
               @selected="correct"
+              :readonly = "organization"
             ></ContragentSelectOrg>
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
@@ -359,7 +360,7 @@
                   type="text"
                   :placeholder="$t('bank.title2')"
                   v-model="value.bank.name"
-                    ></InputText>
+                ></InputText>
               </div>
             </div>
           </div>
@@ -443,6 +444,7 @@ export default {
     placeholder: String,
     readonly: Boolean,
     addMode: Boolean,
+    organization: null,
   },
   emits: ['userCreated'],
   created() {
@@ -451,6 +453,10 @@ export default {
     this.getCatalog("academic_title")
     this.isAdmin = this.findRole(null, 'main_administrator')
     this.localReadonly =  this.readonly && !this.isAdmin
+    if (this.organization) {
+      this.value.organization = this.organization
+    }
+
   },
   methods: {
     findRole: findRole,
@@ -497,7 +503,6 @@ export default {
     insertUser() {
       this.submitted = true;
       if (this.validateAddForm()) {
-
         axios
           .post(
             
@@ -511,7 +516,7 @@ export default {
             if (this.password != null && this.password != "") {
               this.userDetailSaved = true
             }
-            this.value.userID = res.data;
+            this.value = res.data;
             this.submitted = false;
             
             if (this.value.thirdName != "") {
@@ -534,6 +539,7 @@ export default {
             });
           })
           .catch((error) => {
+            console.log(error)
             if (error.response.status == 401) {
               this.$store.dispatch("logLout");
             } else if (error.response.status == 302) {

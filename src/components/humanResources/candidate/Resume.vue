@@ -58,7 +58,11 @@ export default {
         this.toolbar.end = true
         this.view = true
       }).catch(error => {
-        console.log(error)
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
       });
     },
     deleteCandidate() {
@@ -70,7 +74,11 @@ export default {
         if (error.response.status === 404) {
           this.candidate = null
         }
-        console.log(error)
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
       });
     },
   },
@@ -85,11 +93,16 @@ export default {
         this.candidate = null
         this.toolbar.start = true
         this.toolbar.end = false
-      }
+      } else
       if (error.response.status === 401) {
         this.$store.dispatch("logLout");
+      } else {
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
       }
-      console.log(error)
     })
   },
 }

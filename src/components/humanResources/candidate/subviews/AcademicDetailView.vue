@@ -28,7 +28,11 @@ export default {
           .then(res => {
             this.emitter.emit("academicDetail", true);
           }).catch(error => {
-        console.log(error)
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
       });
     },
     update() {

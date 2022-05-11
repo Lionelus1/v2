@@ -1,7 +1,8 @@
   <template>
   <router-view
     v-model:pagemenu="menu"
-  ></router-view>
+  ></router-view>x
+  
 </template>
 <script>
   export default {
@@ -13,6 +14,7 @@
     }
   }
 </script>
-<style scoped>
+<style>
+
 
 </style>

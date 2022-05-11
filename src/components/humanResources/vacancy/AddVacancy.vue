@@ -17,7 +17,6 @@
                             :readonly="readonly"
                             v-model="value.organization"
                             :orgType="1"
-                            :editMode="true"
                             :validation="validation.organization"
                             @changed="getDepartments($event, $refs.departmentList)"></DepartmentList>
             <small
@@ -28,7 +27,8 @@
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label>{{ this.$t("common.departmentNameLabel") }}</label>
             <DepartmentList :readonly="readonly"
-                            :autoLoad="true"
+                            :autoLoad="false"
+                            :editMode="true"
                             ref="departmentList"
                             :orgType="2"
                             :validation="validation.department"
@@ -732,7 +732,11 @@ export default {
         this.vacancyService.createOrUpdateVacancy(this.value, path).then(result => {
           this.emitter.emit("vacancyAdded", true);
         }).catch(error => {
-          console.log(error)
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
         });
       }
     },
@@ -741,14 +745,19 @@ export default {
       this.vacancyService.vacancyAction(id, action).then(response => {
         this.emitter.emit("vacancyAdded", true);
       }).catch(error => {
-        console.log(error)
+        this.$toast.add({
+          severity: "error",
+          summary: + error,
+          life: 3000,
+        });
       })
     },
 
     checkAction() {
       this.menu[0].visible = !this.readonly
       if (this.value.history !== undefined) {
-        this.vacancyService.checkAction(this.value.history.status.id).then(response => {
+        this.vacancyService.checkAction(this.value.history.status.id, this.value).then(response => {
+          console.log("RESONSE IS ", response.data)
           if (response.data === 'acceptance') {
             this.action = this.vacancyService.actions.find(action => action.alias === 'accept')
             this.menu[1].label = this.$t(this.action.label)
@@ -756,14 +765,18 @@ export default {
             this.actionReject = this.vacancyService.actions.find(action => action.alias === 'not-accept')
             this.menu[2].label = this.$t(this.actionReject.label)
             this.menu[2].visible = this.actionReject.visible
-          } else {
+          } else if (response.data) {
             this.action = this.vacancyService.actions.find(action => action.alias === response.data)
             this.menu[1].label = this.$t(this.action.label)
             this.menu[1].visible = this.action.visible
             this.menu[2].visible = false
           }
         }).catch(error => {
-          console.log(error)
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
         })
       }
     },

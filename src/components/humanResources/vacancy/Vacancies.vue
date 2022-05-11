@@ -3,11 +3,67 @@
     <Toolbar class="p-mb-4">
       <template #start>
         <Button
+            v-if="view.modifier"
             :label="$t('common.add')"
             icon="pi pi-plus"
             class="p-button-success p-mr-2"
             v-on:click="add"
         />
+      </template>
+      <template #end>
+        <Button
+            v-if="view.modifier && isCareerAdmin"
+            :label="$t('hr.report.title')"
+            icon="pi pi-list"
+            class="p-button-secondary p-mr-2"
+            @click="toggle"
+            aria:haspopup="true" aria-controls="overlay_panel"
+        />
+        <OverlayPanel ref="op" appendTo="body"
+                      :showCloseIcon="true"
+                      id="overlay_panel"
+                      style="width: 450px"
+                      :breakpoints="{'960px': '75vw'}">
+          <div class="p-col-12 p-md-12 p-fluid">
+            <div class="card">
+              <div class="p-field">
+                <label>{{ $t('common.startDate') }}</label>
+                <PrimeCalendar
+                    class="p-mt-2"
+                    :class="{'p-invalid': reportValidation.startDate}"
+                    v-model="report.startDate"
+                    :placeholder="$t('common.startDate')"
+                    dateFormat="dd.mm.yy"/>
+              </div>
+              <div class="p-field">
+                <label>{{ $t('common.endDate') }}</label>
+                <PrimeCalendar
+                    class="p-mt-2"
+                    :class="{'p-invalid': reportValidation.endDate}"
+                    v-model="report.endDate"
+                    :placeholder="$t('common.endDate')"
+                    dateFormat="dd.mm.yy"/>
+              </div>
+              <div class="p-field">
+                <div v-if="reportResponse" class="p-field">
+                  <Message :closable="false" severity="success">{{ $t('hr.report.success') }}</Message>
+                </div>
+              </div>
+              <div class="p-field">
+                <Button :label="$t('common.createReport')"
+                        icon="pi pi-history"
+                        :onclick="generateReport"/>
+              </div>
+              <div class="p-field">
+                <Button :label="$t('common.download')"
+                        :disabled="!reportResponse"
+                        icon="pi pi-history"
+                        class="p-button-warning"
+                        :onclick="downloadReport"/>
+              </div>
+            </div>
+          </div>
+        </OverlayPanel>
       </template>
     </Toolbar>
     <!-- DataTable -->
@@ -63,7 +119,9 @@
       <template #loading> {{ $t('common.loading') }}</template>
       <Column>
         <template #body="slotProps">
-          <Button icon="pi pi-users" class="p-button-info" v-if="slotProps.data.candidateRelation"
+          <Button icon="pi pi-users"
+                  class="p-button-info"
+                  v-if="slotProps.data.candidateRelation && view.modifier"
                   @click="apply(slotProps.data)"/>
         </template>
       </Column>
@@ -135,7 +193,10 @@
       <!-- BUTTON COLUMN -->
       <Column>
         <template #body="slotProps">
-          <Button icon="pi pi-times" class="p-button-danger" @click="openDelete(slotProps.data)"/>
+          <Button v-if="view.modifier"
+                  icon="pi pi-times"
+                  class="p-button-danger"
+                  @click="openDelete(slotProps.data)"/>
         </template>
       </Column>
     </DataTable>
@@ -151,7 +212,7 @@
              position="right"
              class="p-sidebar-lg"
              style="overflow-y: scroll">
-      <VacancyCandidateView :candidates="vacancy.candidateRelation"/>
+      <VacancyCandidateView :candidates="vacancy.candidateRelation" :vacancy="vacancy"/>
     </Sidebar>
     <Dialog
         v-model:visible="view.delete"
@@ -191,7 +252,7 @@ import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
 import AddVacancy from "./AddVacancy";
 import VacancyCandidateView from "./VacancyCandidateView";
-import VacancyService from "./VacancyService";
+import VacancyService, {RIGHTS} from "./VacancyService";
 
 export default {
   name: "Vacancies",
@@ -212,11 +273,12 @@ export default {
         searchText: null,
         sortField: "",
         sortOrder: 0,
-        orgCode: 'enu'
+        right: null
       },
       view: {
         candidates: false,
         delete: false,
+        modifier: false,
       },
       vacancies: [],
       vacancy: null,
@@ -225,6 +287,16 @@ export default {
       isView: false,
       count: 200,
       loading: false,
+      isCareerAdmin: false,
+      report: {
+        startDate: null,
+        endDate: null,
+      },
+      reportValidation: {
+        startDate: false,
+        endDate: false,
+      },
+      reportResponse: null
     }
   },
   mounted() {
@@ -242,6 +314,9 @@ export default {
     });
   },
   methods: {
+    toggle(event) {
+      this.$refs.op.toggle(event);
+    },
     openDelete(data) {
       this.vacancy = data
       this.view.delete = true
@@ -256,7 +331,11 @@ export default {
         this.vacancy = null
         this.getVacancies()
       }).catch(error => {
-        console.log(error)
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
       });
     },
     clearData() {
@@ -296,7 +375,6 @@ export default {
       this.vacancy = event.data
       this.readonly = this.vacancy.history.status.id !== 1
       this.isView = true
-      // this.$toast.add({severity: 'info', summary: 'Product Selected', detail: 'ID: ' + event.data.id, life: 3000});
     },
     add() {
       this.vacancy = {}
@@ -312,16 +390,72 @@ export default {
         this.vacancies = response.data.vacancies;
         this.count = response.data.total;
         this.loading = false;
+        console.log(response.data)
       }).catch((error) => {
         if (error.response.status == 401) {
           this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: this.$t("smartenu.loadAllNewsError") + ":\n" + error,
-            life: 3000,
-          });
         }
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
+      });
+    },
+
+    /**
+     * rights validation
+     */
+
+    rightsValidation() {
+      this.vacancyService.rightsValidity().then((response) => {
+        console.log(response.data)
+        if (response.data === RIGHTS.MAIN_ADMINISTRATOR) {
+          console.log(response.data)
+          this.lazyParams.right = RIGHTS.MAIN_ADMINISTRATOR
+          this.getVacancies()
+          this.view.modifier = true
+        } else if (response.data === RIGHTS.HR_ADMINISTRATOR) {
+          console.log(response.data)
+          this.lazyParams.right = RIGHTS.HR_ADMINISTRATOR
+          this.getVacancies()
+          this.view.modifier = true
+        } else if (response.data === RIGHTS.HR_MODERATOR) {
+          console.log(response.data)
+          this.lazyParams.right = RIGHTS.HR_MODERATOR
+          this.getVacancies()
+          this.view.modifier = true
+        } else if (response.data === RIGHTS.CAREER_ADMINISTRATOR) {
+          console.log(response.data)
+          this.lazyParams.right = RIGHTS.CAREER_ADMINISTRATOR
+          this.isCareerAdmin = true
+          this.getVacancies()
+          this.view.modifier = true
+        } else if (response.data === RIGHTS.CAREER_MODERATOR) {
+          console.log(response.data)
+          this.lazyParams.right = RIGHTS.CAREER_MODERATOR
+          this.getVacancies()
+          this.view.modifier = true
+        } else if (response.data === RIGHTS.INITIAL_APPROVE) {
+          console.log(response.data)
+          this.lazyParams.right = RIGHTS.INITIAL_APPROVE
+          this.getVacancies()
+        } else if (response.data === RIGHTS.FINAL_APPROVE) {
+          console.log(response.data)
+          this.lazyParams.right = RIGHTS.FINAL_APPROVE
+          this.getVacancies()
+        } else {
+          this.loading = false
+        }
+      }).catch((error) => {
+        if (error.response.status == 401) {
+          this.$store.dispatch("logLout");
+        }
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
       });
     },
 
@@ -332,10 +466,51 @@ export default {
       this.vacancy = vacancy
       this.view.candidates = true
     },
+    generateReport() {
+      if (this.validateReport()) {
+        axios.post(
+            smartEnuApi + '/vacancy/report',
+            this.report,
+            {responseType: "blob", headers: getHeader()},
+        ).then(response => {
+          console.log(response)
+          this.reportResponse = response
+        }).catch(error => {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        })
+      }
+
+    },
+    downloadReport() {
+      var blob = new Blob([this.reportResponse.data]);
+      var downloadElement = document.createElement("a");
+      var href = window.URL.createObjectURL(blob)
+      downloadElement.href = href;
+      downloadElement.download = "Report_between_" +
+          new Date(this.report.startDate).toLocaleDateString() +
+          "_and_" + new Date(this.report.endDate).toLocaleDateString() + ".xlsx"
+      document.body.appendChild(downloadElement)
+      downloadElement.click()
+      document.body.removeChild(downloadElement)
+      window.URL.revokeObjectURL(href);
+      this.reportResponse = null
+      this.report.startDate = null
+      this.report.endDate = null
+      this.$refs.op.hide();
+    },
+    validateReport() {
+      this.reportValidation.startDate = !this.report.startDate || this.report.startDate === ""
+      this.reportValidation.endDate = !this.report.endDate || this.report.endDate === ""
+      return (!this.reportValidation.startDate && !this.reportValidation.endDate)
+    }
   },
   created() {
     this.vacancyService = new VacancyService()
-    this.getVacancies();
+    this.rightsValidation()
   },
 }
 </script>
@@ -364,8 +539,7 @@ export default {
     color: #8a5340;
   }
 
-  &
-  .status-4 {
+  &.status-4 {
     background: #ffcdd2;
     color: #c63737;
   }
