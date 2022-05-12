@@ -3,7 +3,7 @@
     <div class="p-col-12" v-if="!loading">
       <div class="card"
            v-if="isPlanApproved && (isPlanCreator || (isApproval || isApproved)) && plan.status.work_plan_status_id === 4">
-        <Button v-if="isPlanCreator" :label="$t('common.action.reApprove')" icon="pi pi-check"
+        <Button v-if="isPlanCreator && plan && !plan.is_oper" :label="$t('common.action.reApprove')" icon="pi pi-check"
                 @click="reapproveConfirmDialog"
                 class="p-button p-ml-2"/>
         <Button :label="$t('common.signatures')" icon="pi pi-file"

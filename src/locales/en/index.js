@@ -223,7 +223,13 @@ export default {
         success: "Success",
         successDone: "Successfully completed",
         downloadSignaturesPdf: "Download signatures",
-        signatures: "Signatures"
+        signatures: "Signatures",
+        unit: "Unit",
+        planNumber: "Plan",
+        suppDocs: "Supporting documents",
+        additionalInfo: "Additional Information",
+        resultSentToCorrect: "Result sent for revision",
+        toCorrect: "To check"
     },
     bank: {
         title: "Banks",
@@ -753,6 +759,9 @@ export default {
             year: "Annual",
             quarter: "Quarterly"
         },
-        quarterYear: "Whole year"
+        quarterYear: "Whole year",
+        resultIndicator: "Indicator of direct results",
+        summary: "Summary/Confirmation",
+        respExecutor: "Responsible performers"
     }
 }

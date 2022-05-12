@@ -19,17 +19,41 @@
       </template>
     </Column>
     <Column field="event_name" :header="$t('workPlan.eventName')" />
+    <Column field="unit" :header="$t('common.unit')" v-if="plan && plan.is_oper">
+      <template #body="{ data }">
+        {{ data.unit }}
+      </template>
+    </Column>
+    <Column field="plan_number" :header="$t('common.planNumber')" v-if="plan && plan.is_oper">
+      <template #body="{ data }">
+        {{ data.plan_number }}
+      </template>
+    </Column>
     <Column field="quarter" :header="$t('workPlan.quarter')">
       <template #body="{ data }">
         {{ data.quarter ? initQuarterString(data.quarter.String) : "" }}
       </template>
     </Column>
-    <Column field="fullName" :header="$t('workPlan.approvalUsers')">
+    <Column field="responsible_executor" :header="$t('workPlan.respExecutor')" v-if="plan && plan.is_oper">
+      <template #body="{ data }">
+        {{ data.responsible_executor }}
+      </template>
+    </Column>
+    <Column field="fullName" :header="plan && plan.is_oper ? 'Свод/Подтверждение' : $t('workPlan.approvalUsers')">
       <template #body="{ data }">
         <p v-for="item in data.user" :key="item.id">{{ item.fullName }}</p>
       </template>
     </Column>
-    <Column field="result" :header="$t('common.result')" />
+    <Column field="supporting_docs" v-if="plan && plan.is_oper" :header="$t('common.suppDocs')">
+      <template #body="{ data }">
+        {{ data.supporting_docs }}
+      </template>
+    </Column>
+    <Column field="result" :header="plan && plan.is_oper ? $t('common.message.additionalInfo') : $t('common.result')">
+      <template #body="{ data }">
+        {{ data.result }}
+      </template>
+    </Column>
     <Column field="status" :header="$t('common.status')">
       <template #body="slotProps">
             <span
@@ -41,7 +65,7 @@
         <work-plan-execute :data="slotProps.data" v-if="(parseInt(slotProps.data.quarter.String) === currentQuarter || parseInt(slotProps.data.quarter.String) === 5) && isUserApproval(slotProps.data) && plan.status.work_plan_status_id === 4"></work-plan-execute>
         <work-plan-event-result-modal v-if="slotProps.data.event_result" :event-result="slotProps.data.event_result"></work-plan-event-result-modal>
         <work-plan-event-add v-if="!isPlanSentApproval && !slotProps.data.is_finish" :data="slotProps.data" :items="data" :plan-data="plan"></work-plan-event-add>
-        <work-plan-event-edit-modal v-if="(slotProps.data.creator_id === loginedUserId || isPlanCreator) && !isPlanSentApproval && !slotProps.data.is_finish" :event="slotProps.data"></work-plan-event-edit-modal>
+        <work-plan-event-edit-modal v-if="(slotProps.data.creator_id === loginedUserId || isPlanCreator) && !isPlanSentApproval && !slotProps.data.is_finish" :planData="plan" :event="slotProps.data"></work-plan-event-edit-modal>
         <div>
           <Button v-if="(slotProps.data.creator_id === loginedUserId || isPlanCreator) && !isPlanSentApproval && !slotProps.data.is_finish" @click="remove_event(slotProps.data.work_plan_event_id)" icon="pi pi-trash" class="p-button-danger p-ml-1 p-mt-1"></Button>
         </div>
