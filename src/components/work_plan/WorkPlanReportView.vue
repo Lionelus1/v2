@@ -211,8 +211,8 @@ export default {
           this.source = `data:application/pdf;base64,${res.data}`;
           this.blobSource = URL.createObjectURL(this.b64toBlob(res.data));
           this.document = res.data;
-          this.getData();
         }
+        this.getData();
       }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
@@ -440,17 +440,13 @@ export default {
     },
     async downloadWord() {
       this.getData();
-      const header = `<!DOCTYPE html><html>
-                    <head>
-                    <meta name=ProgId content=Word.Document>
-                    <meta name=Generator content="Microsoft Word 15">
-                    <meta name=Originator content="Microsoft Word 15">`;
+      const header = `<html>`;
       const html = this.$refs.report.$refs.toPdf.innerHTML;
       let css = (
           '<style>' +
           '@page WordSection1{size: 841.9pt 595.3pt;mso-page-orientation: landscape;}' +
           'div.WordSection1 {page:WordSection1;}' +
-          'table{width:100%;border-collapse:collapse;border:1px gray solid}td{border:1px gray solid;padding:0cm 5.4pt 0cm 5.4pt;}'+
+          'table{width:100%;border-collapse:collapse;border:1px gray solid;font-size: 10.0pt !important;}td{border:1px gray solid;padding:0cm 5.4pt 0cm 5.4pt;}'+
           '.header {font-weight: bold}' +
           '</style>'
       );
