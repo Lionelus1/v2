@@ -754,5 +754,17 @@ export default {
             quarter: "Quarterly"
         },
         quarterYear: "Whole year"
-    }
+    },
+    queue: {
+        title: "Queue",        
+        secretary:"Queue services",
+        queues:"Queues",      
+        responsible:"Responsible for the queue",
+        queueNotFound:"Queue not found",
+        createQueue:"Create/edit",        
+        next:"Next",
+        terminal:"Terminal",
+        tv:"TV"     
+       
+    },
 }

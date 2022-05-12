@@ -280,7 +280,35 @@ const routes = [
                 name: 'Cabinet',
                 component: load('humanResources/candidate/Cabinet'),
                 beforeEnter: ifAuthenticated,
-            }
+            },
+            {
+                path: '/queue',
+                name: '/queue',
+                component: load('queue/Queue'),
+                beforeEnter: ifAuthenticated,
+                
+            },
+            {
+                path: '/queue/opeartor',
+                name: '/queueOpeartor',
+                component: load('queue/Operator'),
+                beforeEnter: ifAuthenticated,
+                
+            },
+            {
+                path: '/queueService',
+                name: '/queueService',
+                component: load('queue/QueueService'),
+                beforeEnter: ifAuthenticated,
+                
+            },
+            {
+                path: '/queue/terminal/:id',
+                name: '/queueTerminal',
+                component: load('queue/Terminal'),
+                beforeEnter: ifAuthenticated,
+                
+            },       
         ]
     }
 

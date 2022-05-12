@@ -509,6 +509,20 @@ export default {
             list: "не удалость загрузить список вакцин"
         }
     },
+  
+    queue: {
+        title: "Очередь",
+        addService:"Услуги",
+        secretary:"Услуги",
+        queues:"Очереди",      
+        responsible:"Ответственный за очередь",
+        queueNotFound:"Очередь не найден",
+        createQueue:"Создание/редактирование",        
+        next:"Следующий",
+        terminal:"Терминал",
+        tv:"Телевизор"            
+       
+    },
     dissertation: {
         title: "Диссертационный совет",
         council: {

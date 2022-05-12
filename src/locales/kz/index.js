@@ -509,6 +509,18 @@ export default {
             list: "вакцина тізімі жүктелмеді"
         }
     },
+    queue: {
+        title: "Кезек",      
+        secretary:"Қызмет көрсету",
+        queues:"Кезектер",       
+        responsible:"Кезекке жауапты",
+        queueNotFound:"Кезек табылмады",
+        createQueue:"Кезек құру/өзгерту",  
+        next:"Келесі",
+        terminal:"Терминал",
+        tv:"Теледидар"        
+    },
+    
     dissertation: {
         title: "Диссертациялық кеңес",
         council: {
