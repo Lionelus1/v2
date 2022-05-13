@@ -22,6 +22,14 @@
       <label>{{ $t('workPlan.quarter') }}</label>
       <Dropdown v-model="quarter" :options="reportQuarters" optionLabel="name" optionValue="id" :placeholder="$t('common.select')" />
     </div>
+    <div class="p-field" v-if="type === 3">
+      <label>{{ $t('workPlan.reportTypes.halfYear') }}</label>
+      <Dropdown v-model="selectedHalfYear" :options="halfYearTypes" optionLabel="name" optionValue="id" :placeholder="$t('common.select')" />
+    </div>
+    <div class="p-field" v-if="plan && plan.is_oper">
+      <label>Департамент</label>
+      <Dropdown v-model="selectedDepartment" :options="departments" optionLabel="department_name" optionValue="department_id" :placeholder="$t('common.select')" />
+    </div>
     <template #footer>
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
               @click="closeModal"/>
@@ -74,7 +82,19 @@ export default {
         }
       ],
       isPdf: false,
-      selectedDepartment: null
+      selectedDepartment: null,
+      selectedHalfYear: null,
+      halfYearTypes: [
+        {
+          id: 1,
+          name: 1
+        },
+        {
+          id: 2,
+          name: 2
+        }
+      ],
+      departments: []
     }
   },
   mounted() {
@@ -82,7 +102,8 @@ export default {
       this.reportTypes.push({
         id: 3,
         name: this.$t('workPlan.reportTypes.halfYear')
-      })
+      });
+      this.getDepartments();
     }
   },
   methods: {
@@ -93,8 +114,24 @@ export default {
 
       }*/
     },
-    getDepartments(event, departmentList) {
-      departmentList.getDepartments(event.value.id);
+    getDepartments() {
+      this.departments = [];
+      axios.post(smartEnuApi + `/workPlan/getDepartments`, {work_plan_id: parseInt(this.work_plan_id)}, {headers: getHeader()})
+      .then(res => {
+        if (res.data) {
+          this.departments = res.data
+        }
+      }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+      });
     },
     create() {
       //this.$router.push({ name: 'WorkPlanReportView', params: { id: this.work_plan_id, type: this.type, name: this.report_name, quarter: this.quarter }})
@@ -102,7 +139,9 @@ export default {
         work_plan_id: parseInt(this.work_plan_id),
         report_name: this.report_name,
         report_type: this.type,
-        quarter: this.type === 2 ? this.quarter : null
+        quarter: this.type === 2 ? this.quarter : null,
+        halfYearType: this.type === 3 ? this.selectedHalfYear : null,
+        department_id: this.selectedDepartment ? this.selectedDepartment : null
       }, {headers: getHeader()}).then(res => {
         this.emitter.emit("isReportCreated", true);
         this.closeModal();

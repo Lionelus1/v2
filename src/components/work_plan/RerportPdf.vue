@@ -64,7 +64,7 @@
         <br/>
         <div class="p-col-12">
           <table
-              style="display: table;width: 100%;font-size: 12.0pt; text-align: center;border-collapse: collapse;border: 1px solid grey;" cellspacing=0 cellpadding=0>
+              style="display: table;width: 100%;font-size: 10.0pt; text-align: center;border-collapse: collapse;border: 1px solid grey;overflow: visible !important;" cellspacing=0 cellpadding=0>
             <tbody>
             <tr style="mso-yfti-firstrow:yes;">
               <td class="header" style="font-weight: bold;">№</td>
@@ -119,10 +119,12 @@
               <td class="td-va">{{ item.supporting_docs }}</td>
               <td class="td-va">{{ item.event_result ? $t('common.done') : $t('common.notDone') }}</td>
               <td style="text-align: left;vertical-align: top;"
-                  v-bind:style="(item.event_result && item.event_result.event_result.length > 200) ? 'font-size: 10pt;min-width: 250px;' : 'font-size:12pt;'">
+                  v-bind:style="(item.event_result && item.event_result.event_result.length > 200) ? 'font-size: 10pt;min-width: 250px;' : 'font-size:10pt;'">
+                <div style="padding-bottom: 20px">
                 {{
                   item.event_result ? item.event_result.event_result : ""
                 }}
+                </div>
               </td>
             </tr>
             </tbody>

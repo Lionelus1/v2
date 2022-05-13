@@ -763,6 +763,7 @@ export default {
         quarterYear: "Весь год",
         resultIndicator: "Показатель прямых результатов",
         summary: "Свод/Подтверждение",
-        respExecutor: "Ответственные исполнители"
+        respExecutor: "Ответственные исполнители",
+        halfYear: "полугодие"
     }
 }
