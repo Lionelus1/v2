@@ -195,7 +195,7 @@
 import { smartEnuApi, getHeader } from "@/config/config";
 import axios from "axios";
 
-import UserSearch from "./usersearch/UserSearch.vue";
+//import UserSearch from "./usersearch/UserSearch.vue";
 import ContragentSelect from "../contragent/ContragentSelect.vue";
 import { DatePicker } from "v-calendar";
 import Enum from "@/enum/docstates/index";
@@ -208,7 +208,7 @@ import {
 import { constantizeGenderInRules } from "lvovich/lib/inclineRules";
 export default {
   name: "Contract",
-  components: { UserSearch, DatePicker, ContragentSelect },
+  components: {  DatePicker, ContragentSelect },
   data() {
     return {
       contract: null,

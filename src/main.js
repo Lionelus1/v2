@@ -82,7 +82,6 @@ import VueClipboard from 'vue3-clipboard'
 import TreeSelect from 'primevue/treeselect';
 import Vue3SimpleHtml2pdf from "vue3-simple-html2pdf";
 import VuePdfEmbed from 'vue-pdf-embed'
-import VueHtmlToPaper from 'vue-html-to-paper';
 
 import CodeHighlight from './AppCodeHighlight';
 import i18n from './locales/index'
@@ -252,7 +251,6 @@ app.component('TreeTable', TreeTable);
 app.component('TriStateCheckbox', TriStateCheckbox);
 app.component('Editor', Editor);
 app.component("VueElementLoading", VueElementLoading);
-app.component("VueHtmlToPaper",VueHtmlToPaper)
 app.component('TreeSelect', TreeSelect);
 app.component('SpeedDial ', SpeedDial );
 app.mount('#app');

@@ -289,7 +289,7 @@ const routes = [
                 
             },
             {
-                path: '/queue/opeartor',
+                path: '/queue/opeartor/:id',
                 name: '/queueOpeartor',
                 component: load('queue/Operator'),
                 beforeEnter: ifAuthenticated,
@@ -308,7 +308,14 @@ const routes = [
                 component: load('queue/Terminal'),
                 beforeEnter: ifAuthenticated,
                 
-            },       
+            },
+            {
+                path: '/queue/tv/:id',
+                name: '/queueTv',
+                component: load('queue/Tv'),
+                beforeEnter: ifAuthenticated,
+                
+            },   
         ]
     }
 

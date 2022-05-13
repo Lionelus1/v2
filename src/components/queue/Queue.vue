@@ -55,6 +55,12 @@
             class="p-button-rounded p-button-danger p-mr-2" 
             @click="delQueue(slotProps.node)"/>
           <Button 
+            icon="pi pi-user" 
+            v-if="slotProps.node.createdUserId === loginedUser.userID || isOperator(slotProps.node) || findRole(null, 'queue_tv')"
+            :title="$t('queue.tv')"  
+            class="p-button-rounded p-button-info p-mr-2"  
+            @click="$router.push('/queue/opeartor/'+ slotProps.node.key )" />
+          <Button 
             icon="pi pi-desktop" 
             v-if="slotProps.node.createdUserId === loginedUser.userID || isOperator(slotProps.node) || findRole(null, 'queue_tv')"
             :title="$t('queue.tv')"  

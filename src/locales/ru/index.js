@@ -520,7 +520,9 @@ export default {
         createQueue:"Создание/редактирование",        
         next:"Следующий",
         terminal:"Терминал",
-        tv:"Телевизор"            
+        tv:"Телевизор",
+        number: "Номер очереди",
+
        
     },
     dissertation: {

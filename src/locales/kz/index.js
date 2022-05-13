@@ -510,15 +510,17 @@ export default {
         }
     },
     queue: {
-        title: "Кезек",      
+        title: "Кезек",
         secretary:"Қызмет көрсету",
         queues:"Кезектер",       
         responsible:"Кезекке жауапты",
         queueNotFound:"Кезек табылмады",
         createQueue:"Кезек құру/өзгерту",  
         next:"Келесі",
+        number: "Кезек нөмірі",
         terminal:"Терминал",
-        tv:"Теледидар"        
+        tv:"Теледидар",
+        count: "Сіздің алдыңызда {n} адам бар"        
     },
     
     dissertation: {
