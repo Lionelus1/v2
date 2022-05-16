@@ -461,8 +461,6 @@ export default {
       link.download = this.report.report_name;
       link.click();
     },
-<<<<<<< HEAD
-=======
     getGeneratedPdf() {
       const html = this.$refs.report.$refs.toPdf.innerHTML;
       axios.post(smartEnuApi + `/workPlan/generatePdf`, {text: html}, {headers: getHeader()})
@@ -487,7 +485,6 @@ export default {
         }
       })
     },
->>>>>>> work_plan
     b64toBlob(b64Data, sliceSize=512) {
       const byteCharacters = window.atob(b64Data);
       const byteArrays = [];
