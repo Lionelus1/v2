@@ -18,7 +18,7 @@
     <div class="p-col-12">
       <h3>{{ $t('common.result') }}</h3>
     </div>
-    <div class="p-col-12" v-if="plan && plan.is_oper && plan.user.id === loginedUserId">
+    <div class="p-col-12" v-if="plan && plan.is_oper && plan.user.id === loginedUserId && event && event.status.work_plan_event_status_id === 5">
       <div>
         <Menubar :model="menu" :key="active"
                  style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
@@ -59,7 +59,7 @@
            style="overflow-y: scroll"
            >
     <div class="p-col-12">
-      <h3>Отправить на корректировку</h3>
+      <h3>{{ $t('workPlan.toCorrect') }}</h3>
     </div>
     <div class="p-col-12">
       <div>
@@ -123,7 +123,6 @@ export default {
   methods: {
     openModal() {
       this.eventResultModal = true;
-      console.log(this.data)
       this.$nextTick(() => {
         const textarea = this.$refs.resultContainer.$el;
         textarea.style.height = textarea.scrollHeight + 10 + 'px';
