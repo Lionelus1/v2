@@ -49,7 +49,7 @@
         {{ data.supporting_docs }}
       </template>
     </Column>
-    <Column field="result" :header="plan && plan.is_oper ? $t('common.message.additionalInfo') : $t('common.result')">
+    <Column field="result" :header="plan && plan.is_oper ? $t('common.additionalInfo') : $t('common.result')">
       <template #body="{ data }">
         {{ data.result }}
       </template>
@@ -62,8 +62,14 @@
     </Column>
     <Column field="actions" header="">
       <template #body="slotProps">
-        <work-plan-execute :data="slotProps.data" v-if="(parseInt(slotProps.data.quarter.String) === currentQuarter || parseInt(slotProps.data.quarter.String) === 5) && isUserApproval(slotProps.data) && plan.status.work_plan_status_id === 4"></work-plan-execute>
-        <work-plan-event-result-modal v-if="slotProps.data.event_result" :event-result="slotProps.data.event_result"></work-plan-event-result-modal>
+        <work-plan-execute
+            :data="slotProps.data"
+            :planData="plan"
+            v-if="isUserApproval(slotProps.data) && isPlanSentApproval && (slotProps.data.status.work_plan_event_status_id === 1 || slotProps.data.status.work_plan_event_status_id === 4 || slotProps.data.status.work_plan_event_status_id === 6)"></work-plan-execute>
+        <work-plan-event-result-modal v-if="(slotProps.data.event_result && plan && !plan.is_oper) || slotProps.data.status.work_plan_event_status_id === 5"
+                                      :event-result="slotProps.data.event_result"
+                                      :eventData="slotProps.data"
+                                      :plan-data="plan"></work-plan-event-result-modal>
         <work-plan-event-add v-if="!isPlanSentApproval && !slotProps.data.is_finish" :data="slotProps.data" :items="data" :plan-data="plan"></work-plan-event-add>
         <work-plan-event-edit-modal v-if="(slotProps.data.creator_id === loginedUserId || isPlanCreator) && !isPlanSentApproval && !slotProps.data.is_finish" :planData="plan" :event="slotProps.data"></work-plan-event-edit-modal>
         <div>
@@ -138,7 +144,7 @@ export default {
           userApproval = true;
         }
       });
-      return userApproval && data.is_finish && !data.event_result;
+      return this.plan && this.plan.is_oper ? userApproval && data.is_finish : userApproval && data.is_finish && !data.event_result;
     },
     initQuarterString(quarter) {
       let res = '';
@@ -206,10 +212,22 @@ export default {
   font-weight: 700;
   font-size: 12px;
   letter-spacing: .3px;
+  display: inline-block;
+  text-align: center;
+
+  &.status-6 {
+    background: #FFCDD2;
+    color: #C63737;
+  }
+
+  &.status-5 {
+    background: #f1c21b;
+    color: #fff;
+  }
 
   &.status-4 {
-    background: #FEEDAF;
-    color: #8A5340;
+    background: #d9873e;
+    color: #ffffff;
   }
 
   &.status-3 {

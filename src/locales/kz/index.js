@@ -759,11 +759,13 @@ export default {
         },
         reportTypes: {
             year: "Жылдық",
-            quarter: "Тоқсандық"
+            quarter: "Тоқсандық",
+            halfYear: "Жартыжылдық"
         },
         quarterYear: "Жыл бойы",
         resultIndicator: "Нәтиже көрсеткіші",
         summary: "Жинақтаушы/Растау",
-        respExecutor: "Жауапты орындаушылар"
+        respExecutor: "Жауапты орындаушылар",
+        halfYear: "жартыжылдық"
     }
 }

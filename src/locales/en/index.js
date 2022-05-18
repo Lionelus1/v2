@@ -757,11 +757,13 @@ export default {
         },
         reportTypes: {
             year: "Annual",
-            quarter: "Quarterly"
+            quarter: "Quarterly",
+            halfYear: "Semi-annual"
         },
         quarterYear: "Whole year",
         resultIndicator: "Indicator of direct results",
         summary: "Summary/Confirmation",
-        respExecutor: "Responsible performers"
+        respExecutor: "Responsible performers",
+        halfYear: "semi-annual"
     }
 }

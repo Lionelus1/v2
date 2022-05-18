@@ -106,7 +106,8 @@ export default {
         quarter: null,
         report_name: null,
         report_type: null,
-        doc_id: null
+        doc_id: null,
+        halfYearType: null
       },
       isPlanCreator: false,
       pdfOptions: {
@@ -146,6 +147,8 @@ export default {
     this.report.report_name = this.$route.params.name;
     this.report.report_type = parseInt(this.$route.params.type);
     this.report.doc_id = this.$route.params.doc_id;
+    this.report.halfYearType = this.$route.params.halfYearType;
+    this.report.department_id = this.$route.params.department_id;
     this.loginedUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
     //this.plan = JSON.parse(localStorage.getItem("workPlan"));
     //this.getReport();
@@ -256,7 +259,9 @@ export default {
     getData() {
       axios.post(smartEnuApi + `/workPlan/getWorkPlanReportData`, {
         work_plan_id: parseInt(this.report.work_plan_id),
-        quarter: this.report.report_type === 2 ? this.report.quarter : null
+        quarter: this.report.report_type === 2 ? this.report.quarter : null,
+        halfYearType: this.report.report_type === 3 ? this.report.halfYearType : null,
+        department_id: this.report.department_id ? this.report.department_id : null
       }, {headers: getHeader()}).then(res => {
         ///// FLATTEN ARRAY
         this.items = treeToList(res.data, 'children', this.plan.lang);
