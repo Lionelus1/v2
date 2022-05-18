@@ -7,11 +7,11 @@
     <Column :expander="true" headerStyle="width: 2rem" field="is_expandable">
       <template #body="{ data }">
         <div v-if="data.is_expandable">
-          <button v-if="!isExpanded" class="p-row-toggler p-link" type="button" @click="expandTable(data)"><span
+          <button v-if="!data.isExpanded" class="p-row-toggler p-link" type="button" @click="expandTable(data)"><span
               class="p-row-toggler-icon pi pi-chevron-right"></span><span class="p-ink"
                                                                           style="height: 28px; width: 28px; top: 0.5px; left: 7px;"></span>
           </button>
-          <button v-if="isExpanded" class="p-row-toggler p-link" type="button" @click="collapseTable(data)"><span
+          <button v-if="data.isExpanded" class="p-row-toggler p-link" type="button" @click="collapseTable(data)"><span
               class="p-row-toggler-icon pi pi-chevron-down"></span><span class="p-ink"
                                                                          style="height: 28px; width: 28px; top: 9.67188px; left: 5px;"></span>
           </button>
@@ -66,7 +66,7 @@
             :data="slotProps.data"
             :planData="plan"
             v-if="isUserApproval(slotProps.data) && isPlanSentApproval && (slotProps.data.status.work_plan_event_status_id === 1 || slotProps.data.status.work_plan_event_status_id === 4 || slotProps.data.status.work_plan_event_status_id === 6)"></work-plan-execute>
-        <work-plan-event-result-modal v-if="(slotProps.data.event_result && (plan && !plan.is_oper)) || slotProps.data.status.work_plan_event_status_id === 5"
+        <work-plan-event-result-modal v-if="(slotProps.data.event_result && (plan && !plan.is_oper)) || slotProps.data.status.work_plan_event_status_id === 5 || slotProps.data.status.work_plan_event_status_id === 2"
                                       :event-result="slotProps.data.event_result"
                                       :eventData="slotProps.data"
                                       :plan-data="plan"></work-plan-event-result-modal>
@@ -79,7 +79,7 @@
     </Column>
     <template #expansion="slotProps">
       <WorkPlanEventTree :plan-creator="isPlanCreator" :finish="isFinish" :approval-sent="isPlanSentApproval"
-                         :child="slotProps.data.children" :plan="plan" v-if="slotProps.data.children"/>
+                         :child="slotProps.data.children" :plan="plan" v-if="slotProps.data.children" :expanded="slotProps.data.is_expanded"/>
     </template>
   </DataTable>
 </template>
@@ -95,12 +95,11 @@ import WorkPlanEventEditModal from "@/components/work_plan/WorkPlanEventEditModa
 export default {
   name: "WorkPlanEventTree",
   components: {WorkPlanEventResultModal, WorkPlanEventAdd, WorkPlanExecute, WorkPlanEventEditModal},
-  props: ['child', 'planCreator', 'finish', 'approvalSent', 'plan'],
+  props: ['child', 'planCreator', 'finish', 'approvalSent', 'plan', 'expanded'],
   data() {
     return {
       data: null,
       rows: [],
-      isExpanded: false,
       currentQuarter: null,
       loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID,
       isPlanCreator: this.planCreator,
@@ -117,6 +116,9 @@ export default {
   mounted() {
     if (this.child)
       this.data = this.child;
+    this.data.map(e => {
+      e.isExpanded = false;
+    });
   },
   methods: {
     onRowExpand(event) {
@@ -126,11 +128,16 @@ export default {
       this.$toast.add({severity: 'success', summary: 'Row Collapsed', detail: event.data.event_name, life: 3000});
     },
     expandTable(event) {
-      this.isExpanded = true;
+      if (this.rows && Array.isArray(this.rows)) {
+        this.rows.map(e => {
+          e.isExpanded = false;
+        });
+      }
       this.rows = this.data.filter(x => x.work_plan_event_id === event.work_plan_event_id)
+      event.isExpanded = true;
     },
     collapseTable(event) {
-      this.isExpanded = false;
+      event.isExpanded = false;
       this.rows = null;
     },
     initQuarter() {

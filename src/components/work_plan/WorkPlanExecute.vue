@@ -10,7 +10,7 @@
       style="overflow-y: scroll"
   >
     <div class="p-col-12" v-if="plan && plan.is_oper && resultData && resultData.reject_history">
-      <label>{{ $t('common.message.resultSentToCorrect') }}</label>
+      <label>{{ $t('common.resultSentToCorrect') }}</label>
       <Message severity="warn" :closable="false" title="">{{ resultData.reject_history.message }}</Message>
     </div>
     <div class="p-col-12">
