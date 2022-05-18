@@ -205,7 +205,9 @@
 <script>
 import { smartEnuApi, getHeader, b64toBlob, findRole } from "@/config/config";
 import axios from "axios";
+
 import FindUser from "@/helpers/FindUser";
+
 import ContragentSelect from "../contragent/ContragentSelect.vue";
 import { DatePicker } from "v-calendar";
 import {runNCaLayer} from "@/helpers/SignDocFunctions"
@@ -221,7 +223,9 @@ import {
 import { constantizeGenderInRules } from "lvovich/lib/inclineRules";
 export default {
   name: "Contract",
+
   components: { FindUser, DatePicker, ContragentSelect, DocSignaturesInfo },
+
   data() {
     return {
       contract: null,

@@ -192,7 +192,7 @@ export default {
     })
     this.emitter.on('workPlanEventIsCompleted', (data) => {
       if (data) {
-        this.getPlan();http://10.1.1.161/Bonobo.Git.Server/mobilefrontend.git
+        this.getPlan();//http://10.1.1.161/Bonobo.Git.Server/mobilefrontend.git
         this.initQuarter();
         this.getWorkPlanEvents();
       }

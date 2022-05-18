@@ -200,6 +200,7 @@ export default {
             successApproved: "Success approved",
             succesRegistered: "Registered succesfully",
             succesSaved: "Saved successfully",
+            successCompleted: "Successfully completed",
             selectRole: "Plewse, select a role",
             userSuccessInserted: "The user has been successfully created, download the authorization data to send to the user.",
             selectVariant: "Choose the option you need",
@@ -754,5 +755,29 @@ export default {
             quarter: "Quarterly"
         },
         quarterYear: "Whole year"
-    }
+    },
+    queue: {
+        title: "Queue",
+        secretary:"Maintenance",
+        queues:"Queues",
+        responsible:"responsible",
+        queueNotFound:"Queue not found",
+        createQueue:"Create/Modify Queue",
+        next:"Next",
+        number: "Queue number",
+        terminal:"Terminal",
+        tv:"TV",
+        count: "There are {n} people waiting in front of you",
+        operator:"Operator",
+        ticketCount: "Tickets queued:",
+        downtime: "Downtime:",
+        serviceTime: "Service time:",
+        called: "Called visitor:",
+        dnshowup: "Didn't show up",
+        norows: "Queue not found",
+        served: "Visitor served",
+        redirect: "Redirect",
+        selectTicket:"Select ticket",
+        call: "Call",
+    },
 }
