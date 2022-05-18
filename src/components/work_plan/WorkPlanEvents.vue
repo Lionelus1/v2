@@ -102,7 +102,7 @@
             <div>
 <!--              (parseInt(slotProps.data.quarter.String) === currentQuarter || parseInt(slotProps.data.quarter.String) === 5)-->
               <work-plan-execute
-                  v-if="isUserApproval(slotProps.data) && isPlanSentApproval && (slotProps.data.status.work_plan_event_status_id === 1 || slotProps.data.status.work_plan_event_status_id === 4 || slotProps.data.status.work_plan_event_status_id === 6)"
+                  v-if="isUserApproval(slotProps.data) && isPlanApproved && isPlanSentApproval && (slotProps.data.status.work_plan_event_status_id === 1 || slotProps.data.status.work_plan_event_status_id === 4 || slotProps.data.status.work_plan_event_status_id === 6)"
                   :data="slotProps.data" :planData="plan"></work-plan-execute>
               <work-plan-event-result-modal v-if="(slotProps.data.event_result && plan && !plan.is_oper) || slotProps.data.status.work_plan_event_status_id === 5"
                                             :event-result="slotProps.data.event_result"
@@ -292,6 +292,7 @@ export default {
             if (res.data) {
               this.approval_users = res.data;
               this.isPlanApproved = res.data.some(x => x.is_success);
+              console.log(this.isPlanApproved)
               this.isPlanSentApproval = true;
               this.approval_users.forEach(e => {
                 if (this.loginedUserId === e.user.id) {

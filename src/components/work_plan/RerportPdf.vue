@@ -10,20 +10,17 @@
           <tbody>
           <tr style="mso-yfti-firstrow:yes;">
             <td class="header" style="font-weight: bold;">№</td>
-            <td class="header" style="font-weight: bold;">{{
-                plan.lang === 1 ? 'Іс-шараның атауы' : plan.lang === 2 ? 'Наименование мероприятия' : 'Name of the event'
-              }}
+            <td class="header" style="font-weight: bold;">
+              {{ plan.lang === 1 ? 'Іс-шараның атауы' : plan.lang === 2 ? 'Наименование мероприятия' : 'Name of the event' }}
             </td>
-            <td class="header" style="font-weight: bold;">{{
-                plan.lang === 1 ? 'Жауапты орындаушы' : plan.lang === 2 ? 'Ответственный исполнитель' : 'Responsible executor'
-              }}
+            <td class="header" style="font-weight: bold;">
+              {{ plan.lang === 1 ? 'Жауапты орындаушы' : plan.lang === 2 ? 'Ответственный исполнитель' : 'Responsible executor' }}
             </td>
             <td class="header" style="font-weight: bold;">
               {{ plan.lang === 1 ? 'Квартал' : plan.lang === 2 ? 'Квартал' : 'Quarter' }}
             </td>
-            <td class="header" style="font-weight: bold;">{{
-                plan.lang === 1 ? 'Жоспарланған нәтиже' : plan.lang === 2 ? 'Планируемый результат' : 'Planned result'
-              }}
+            <td class="header" style="font-weight: bold;">
+              {{ plan.lang === 1 ? 'Жоспарланған нәтиже' : plan.lang === 2 ? 'Планируемый результат' : 'Planned result' }}
             </td>
             <td class="header" style="font-weight: bold;">
               {{ plan.lang === 1 ? 'Ескерту' : plan.lang === 2 ? 'Примечание' : 'Note' }}
@@ -31,9 +28,8 @@
             <td class="header" style="font-weight: bold;">
               {{ plan.lang === 1 ? 'Есеп' : plan.lang === 2 ? 'Отчет' : 'Report' }}
             </td>
-            <td class="header" style="font-weight: bold;">{{
-                plan.lang === 1 ? 'Орындалды/Орындалмады' : plan.lang === 2 ? 'Выполнено/Не выполнено' : 'Completed/Not completed'
-              }}
+            <td class="header" style="font-weight: bold;">
+              {{ plan.lang === 1 ? 'Орындалды/Орындалмады' : plan.lang === 2 ? 'Выполнено/Не выполнено' : 'Completed/Not completed' }}
             </td>
           </tr>
           <tr v-for="(item, index) in items" :key="index">
@@ -47,9 +43,7 @@
             <td class="td-va">{{ item.comment }}</td>
             <td style="text-align: start;vertical-align: top;"
                 v-bind:style="(item.event_result && item.event_result.length > 150) ? 'font-size: 10pt' : 'font-size:12pt;'">
-              {{
-                item.event_result ? item.event_result.event_result : ""
-              }}
+              {{ item.event_result ? item.event_result.event_result : "" }}
             </td>
             <td class="td-va">{{ item.event_result ? $t('common.done') : $t('common.notDone') }}</td>
           </tr>
@@ -117,7 +111,7 @@
               <td class="td-va">{{ item.userList }}</td>
               <td class="td-va">{{ item.quarter }}</td>
               <td class="td-va">{{ item.supporting_docs }}</td>
-              <td class="td-va">{{ item.event_result ? $t('common.done') : $t('common.notDone') }}</td>
+              <td class="td-va">{{ plan.lang === 1 ? item.status.name_kz : plan.lang === 2 ? item.status.name_ru : item.status.name_en }}</td>
               <td style="text-align: left;vertical-align: top;"
                   v-bind:style="(item.event_result && item.event_result.event_result.length > 200) ? 'font-size: 10pt;min-width: 250px;' : 'font-size:10pt;'">
                 <div style="padding-bottom: 20px">
