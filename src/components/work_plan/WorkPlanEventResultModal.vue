@@ -133,14 +133,12 @@ export default {
       this.eventResultModal = false;
     },
     downloadFile(name) {
-      console.log("name ", name)
-      console.log("file =" , this.data.event_result_file)
       axios.post(smartEnuApi + `/workPlan/getWorkPlanResultFile`,
           {file_path: name ? name : this.data.event_result_file}, {headers: getHeader()}).then(res => {
         const link = document.createElement("a");
         link.href = "data:application/octet-stream;base64," + res.data;
-        link.setAttribute("download", this.data.event_result_file);
-        link.download = this.data.event_result_file;
+        link.setAttribute("download", name ? name : this.data.event_result_file);
+        link.download = name ? name : this.data.event_result_file;
         link.click();
         URL.revokeObjectURL(link.href);
       }).catch((error) => {
