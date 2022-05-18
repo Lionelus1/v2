@@ -199,6 +199,7 @@ export default {
             succesSendToApproval: "Келісімге сәтті жіберілді",
             succesRegistered: "Сәтті тіркелді",
             succesSaved: "Сәтті сақталды",
+            successCompleted: "Сәтті орындалды",
             userSuccessInserted: "Қолданушы сәтті қосылды, авторизациялық мәліметтерді қолданушға жіберу үшін жүктеп алыңыз. ",
             selectRole: "Рөлді таңдаңыз",
             selectVariant: "Керек нұсқаны таңдаңыз",
@@ -520,7 +521,18 @@ export default {
         number: "Кезек нөмірі",
         terminal:"Терминал",
         tv:"Теледидар",
-        count: "Сіздің алдыңызда {n} адам бар"        
+        count: "Сіздің алдыңызда {n} адам бар",
+        operator:"Оператор",
+        ticketCount: "Кезектегі талондар саны:",
+        downtime: "Бос тұру уақыты:",
+        serviceTime: "Қызмет алу уақыты:",
+        called: "Шақырылушы:",
+        dnshowup: "Келмеді",
+        norows: "Кезек табылмады",
+        served: "Қызмет алды",
+        redirect: "Басқа терезеге",
+        selectTicket:"Таңдап шақыру",
+        call: "Шақыру",
     },
     
     dissertation: {

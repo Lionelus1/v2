@@ -126,6 +126,7 @@ export default {
   },
   created() {
       var parentID = parseInt(this.$route.params.id) ;
+      
       this.getQueue(parentID)
 
   },

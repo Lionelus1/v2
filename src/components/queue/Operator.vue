@@ -1,410 +1,302 @@
 <template>
-	<div>
-    <Toolbar class="p-mb-4 ">
-      <template #start>
-        <Button
-          :label="$t('common.add')"          
-          icon="pi pi-plus"
-          class="p-button-success p-mr-2"
-          v-on:click="createQueueCategory"
-        />
-      </template>
-    </Toolbar>
-    <Toast />
-
-    <DataTable
-      :lazy="true"  
-      :value="queueCats" 
-      v-model:expandedRows="expandedRows" 
-      dataKey="id"
-      class="p-datatable-customers"
-      @rowExpand="onRowExpand" 
-      @rowCollapse="onRowCollapse" 
-      responsiveLayout="scroll"     
-      > 
-      <template #header>
-        <div class="table-header">
-          {{$t("queue.addService")}}
-          <span class="p-input-icon-left">
-            <i class="pi pi-search" />
-            <InputText
-              v-model="filters"
-              v-bind:placeholder="$t('hdfs.search')"
-            />
-          </span>
-        </div>
-      </template>  
-      <Column :expander="true" headerStyle="width: 3rem"></Column>
-      <Column field="catNameKz" v-bind:header="$t('common.nameInQazaq')"  sortable></Column>        
-      <Column field="catNameRu" v-bind:header="$t('common.nameInRussian')" sortable></Column>
-      <Column field="catNameEn" v-bind:header="$t('common.nameInEnglish')" sortable></Column> 
-      <Column headerStyle="width">
-        <template  #body="slotProps">
-            <Button 
-              icon="pi pi-user-plus" 
-              class="p-button-rounded p-button-success p-mr-1"  
-              @click="createDesk(slotProps.data.catId)"
-            />
-            <Button 
-              icon="pi pi-pencil" 
-              class="p-button-rounded p-button-warning p-mr-1"  
-              @click="editCategory(slotProps.data.catId)"
-            />
-            <Button 
-              icon="pi pi-trash" 
-              class="p-button-rounded p-button-danger"
-              @click="delQueueCat(slotProps.data.catId)" 
-            />
-        </template>
-      </Column> 
-
-      <!-- <template #expansion="slotProps">
-        <QueueCategories :child="slotProps.data.queueCatDesks"></QueueCategories>
-      </template> -->
-      
-      <template  #expansion="slotProps">
-        <div class="orders-subtable">
-          <h5>{{$t('queue.secretary')}}</h5> 
-          <DataTable :queueCatDesks="slotProps.data.queueCatDesks" responsiveLayout="scroll">                          
-            <Column field="deskName" v-bind:header="$t('queue.desks')" sortable>
-              <template #body="slotProps">            
-                <div>{{slotProps.data.queueCatDesks.deskName}}</div>
-              </template>
-            </Column>            
-          </DataTable>
-        </div>
-      </template>
-    </DataTable>
-
-    <Dialog
-      v-model:visible="editVisible"
-      :closable="false"
-      :style="{ width: '450px' }"
-      :header="$t('queue.queueType')"
-      :modal="true"
-      class="p-fluid"
-    >
-      <div class="p-field" style="margin: 1.5rem 0 1.5rem 0">
-        <span class="p-float-label">
-          <InputText id="kz-title" v-model="queueCat.CatNameKz" />
-          <label for="kz-title">{{ $t("common.nameInQazaq") }}</label>
-        </span>
+  <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em;" />
+  <div class="card summary">
+    <h3>{{ (this.queue != null ? this.queue['queueName' + $i18n.locale]:"")}}</h3>
+  </div>
+  <div class="p-grid p-fluid dashboard">
+    <div class="p-col-12 p-lg-6">
+      <div class="card summary p-m-0">
+        <span class="title">{{$t('queue.ticketCount')}}</span>
+        <span class="count visitors">{{service.count}}</span>
       </div>
-      <div class="p-field" style="margin-bottom: 1.5rem">
-        <span class="p-float-label">
-          <InputText id="ru-title" v-model="queueCat.CatNameRu" />
-          <label for="ru-title">{{ $t("common.nameInRussian") }}</label>
-        </span>
+      <div class="card summary">
+        <span class="title">{{$t('queue.downtime')}}</span>
+        <span class="count visitors">{{downInfo.duration}}</span>
+        <Button :label="$t('queue.next')" :disabled="service.state===0" class="p-mt-2 p-mb-1" @click="callNextCustomer(true, null)"></Button>
+        
+        <Inplace :active="false" class="p-inplace-display"  ref="selectTicket">
+          <template #display>
+            <Button :label="$t('queue.selectTicket')" class="p-button-warning" style="left: -0.5rem;" :disabled="service.state===0" ></Button>
+          </template>
+          <template #content>
+            <div class="p-grid p-fluid">
+              <div class="p-col-12 p-lg-6 p-md-6 p-sm-6 p-mb-0">
+                <InputText  :placeholder="$t('common.number')" autoFocus v-model="number" />
+              </div>
+              <div class="p-col-12 p-lg-6 p-md-6 p-sm-6">
+                <Button :label="$t('queue.call')" :disabled="service.state===0" class="p-mb-6 p-button-warning p-mb-2" @click="callNextCustomer(true, number)"></Button>
+              </div>
+            </div>
+          </template>
+        </Inplace>
       </div>
-      <div class="p-field" style="margin-bottom: 1.5rem">
-        <span class="p-float-label">
-          <InputText id="en-title" v-model="queueCat.CatNameEn" />
-          <label for="en-title">{{ $t("common.nameInEnglish") }}</label>
-        </span>
+    </div>
+    <div class="p-col-12 p-lg-6">
+      <div class="card summary p-m-0">
+        <span class="title">{{$t('queue.called')}}</span>   
+        <span class="count revenue">{{service.number>0 ? service.number : "-"}}</span>
       </div>
-      
-      <template #footer>
-        <Button
-          v-bind:label="$t('common.save')"
-          icon="pi pi-check"
-          class="p-button p-component p-button-success p-mr-2"
-          v-on:click="addQueueCat"
-        />
-        <Button
-          v-bind:label="$t('common.cancel')"
-          icon="pi pi-times"
-          class="p-button p-component p-button-danger"
-          @click="editVisible=false"
-        />
-      </template>
-    </Dialog>
-    <Dialog
-      v-model:visible="edit"
-      :closable="false"
-      :style="{ width: '450px' }"
-      :header="$t('queue.regiterSecretory')"
-      :modal="true"
-      class="p-fluid"
-    >
-      <div class="p-field" style="margin: 1.5rem 0 1.5rem 0">
-        <span class="p-float-label">
-          <InputText id="kz-title" v-model="desk.deskName" />
-          <label for="kz-title">{{ $t("queue.deskNumber") }}</label>
-        </span>
+      <div class="card summary">
+        <span class="title">{{$t('queue.serviceTime')}}</span>
+        <span class="count revenue">{{service.info.duration}}</span>
+        <!-- :disabled="service.info.hour<1 && service.info.minute<1 && service.info.second<=59" -->
+        <Button :disabled="service.info.hour<1 && service.info.minute<1 && service.info.second<=59" :label="$t('queue.dnshowup')"  class="p-mb-1 p-mt-2 p-button-danger" @click="changeState(3, null)" ></Button>
+        <Button :label="$t('queue.served')" class="p-mb-1 p-button-success" @click="changeState(1, null)"></Button>
+        <Inplace :active="false" class="p-inplace-display"  ref="redirect" >
+          <template #display>
+            <Button :label="$t('queue.redirect')" class="p-button-primary" style="left: -0.5rem;" :disabled="service.state===-1" ></Button>
+          </template>
+          <template #content>
+            <div class="p-grid p-fluid">
+              <div class="p-col-12 p-lg-6 p-md-6 p-sm-6 p-mb-0">
+                <Dropdown v-model="selectedQueue" :options="neigbors" :optionLabel="'queueName'+$i18n.locale" :placeholder="$t('common.select')" />
+              </div>
+              <div class="p-col-12 p-lg-6 p-md-6 p-sm-6">
+                <Button :label="$t('queue.redirect')" :disabled="selectedQueue === null" class="p-mb-6 p-button-primary p-mb-2" @click="changeState(2, selectedQueue.key)"></Button>
+              </div>
+            </div>
+          </template>
+        </Inplace>
       </div>
-      
-      <div class="p-field">
-          <label for="name">{{$t('common.fullName')}}</label>
-          <FindUser v-model="selectedMembers" :max="1" :editMode="true" ></FindUser>
-          <small class="p-error" v-if="submitted && validationErrors.members">{{$t('dissertation.validationErrors.selectSecretary')}}</small>
-      </div>
-              
-      <template #footer>
-        <Button
-          v-bind:label="$t('common.save')"
-          icon="pi pi-check"
-          class="p-button p-component p-button-success p-mr-2"
-          v-on:click="addDesk"
-        />
-        <Button
-          v-bind:label="$t('common.cancel')"
-          icon="pi pi-times"
-          class="p-button p-component p-button-danger"
-          @click="edit=false"
-        />
-      </template>
-    </Dialog>
-
-    <Dialog
-      v-model:visible="deleteVisible"
-      :closable="false"
-      header=""
-      :style="{ width: '450px' }"
-      :modal="true"
-    >
-      <div class="confirmation-content">
-        <i class="pi pi-exclamation-triangle p-mr-3" style="font-size: 2rem" />
-        <span v-if="queueCat">{{ $t("common.doYouWantDelete")}}
-          <b>{{
-            $i18n.locale === "kz"
-              ? queueCat.catNameKz
-              : $i18n.locale === "ru"
-              ? queueCat.catNameRu
-              : queueCat.catNameEn
-          }}
-          </b
-          >?</span
-        >
-      </div>
-      <template #footer>
-        <Button
-          :label="$t('common.yes')"
-          icon="pi pi-check"
-          class="p-button p-component p-button-success p-mr-2"
-          @click="deleteQueueCat(queueCat.catId)"
-        />
-        <Button
-          :label="$t('common.no')"
-          icon="pi pi-times"
-          class="p-button p-component p-button-danger"
-          @click="deleteVisible = false"
-        />
-      </template>
-    </Dialog>
-	</div>
+    </div>
+    
+  </div>
+  
 </template>
 
 <script>
 
-import { authHeader, getHeader, smartEnuApi } from "@/config/config";
-import FindUser from "@/helpers/FindUser";
+import {  getHeader, smartEnuApi, findRole } from "@/config/config";
 import axios from "axios";
 export default {
-  name: "QueueCategories",
-  components:{FindUser},
+
   data() {
     return {
-      editVisible: false,
-      deleteVisible: false,
-      submitted: false,
-      queueCat:null, 
-      queueCats: [],           
-      selectedQueue: null,
-      loading: true,       
-      edit: false, 
-      selectedMembers:[],
-      desk:{
-        catId:null
-      } 
+      lazyParams: {
+        first: 0,
+        rows: 100,
+       
+      },
+      selectedQueue: null, 
+      number: null,
+
+      downInfo: {
+        start: Date.now(),
+        duration: "",
+        hour: 0,
+        minute:0,
+        second:0,
+        counting: true,
+      },
+      queues: [],
+      neigbors: [],
+      queue: null,
+      service:{
+        count: null,
+        info: {
+          start: Date.now(),
+          duration: "",
+          counting: false,
+          hour: 0,
+          minute:0,
+          second:0,
+        },
+        state: -1,
+      },
+      counting: true,
+      redirectVisible:false
+
+     
     }
-  }, 
-  
-  methods: {     
-    // getQueueCat() {         
-    //   this.queueCats = [];
-    //   axios
-    //   .get(smartEnuApi + "/queue/allQueueCats", {
-    //     headers: getHeader(),
-    //   })
-    //   .then((response) => {
-    //     this.queueCats = response.data;  
-    //     // alert(JSON.stringify(response.data))    
-    //     this.queueCats = this.queueCats.reverse();
-    //     this.loading = false;
-    //   })
-    //   .catch((error) => {
-    //     this.$toast.add({
-    //       severity: "error",
-    //       summary: this.$t("smartenu.loadAllCategoriesError") + ":\n" + error,
-    //       life: 3000,
-    //     });
-    //     if (error.response.status == 401) {
-    //       this.$store.dispatch("logLout");
-    //     }
-    //   });
-    // }, 
-    deleteQueueCat(id) {
-      axios
-        .post(
-          smartEnuApi + "/queue/delQueueCat",
-          {
-            id: id,
-          },
-          {
-            headers: getHeader(),
-          }
-        )
-        .then((response) => {
-          if (response.status === 200) {
-            this.getQueueCat();
-          }
-        })
-        .catch((error) => {
-          this.$toast.add({
-            severity: "error",
-            summary: this.$t("smartenu.delNewsCategoryError") + ":\n" + error,
-            life: 3000,
-          });
-        });
-      this.deleteVisible = false;
-      this.queueCat = {};
-    },
-    
-    addQueueCat() {          
-      this.submitted = true;
-      axios
-        .post(smartEnuApi + "/queue/addQueueCats", this.queueCat, {
-          headers: getHeader(),          
-        })        
-        .then((response) => {
-          if (response.data !== null) {
-            this.$toast.add({
-              severity: "success",
-              summary: this.$t("smartenu.saveSuccess"),
-              life: 3000,
-            });
-            this.getQueueCat();
-          }
-        })
-        .catch((error) => {
-          alert(JSON.stringify(error));
-          this.$toast.add({
-            severity: "error",
-            summary: this.$t("smartenu.saveCategoryError") + ":\n" + error,
-            life: 3000,
-          });
-        });
-      this.editVisible = false;
-      this.queueCat = {};
-    },
-    addDesk() {      
-      var request = {userID: this.selectedMembers[0].userID} 
-      this.desk.responsibleId=request.userID;
-      // this.desk.catId=id;        
-      this.submitted = true;
-      this.desk.deskName;
-      axios
-        .post(smartEnuApi + "/queue/addQueueCatDesk", this.desk, {
-          headers: getHeader(),          
-        })        
-        .then((response) => {
-          if (response.data !== null) {
-            this.$toast.add({
-              severity: "success",
-              summary: this.$t("smartenu.saveSuccess"),
-              life: 3000,
-            });
-            // this.getQueue();
-          }
-        })
-        .catch((error) => {
-          alert(JSON.stringify(error));
-          this.$toast.add({
-            severity: "error",
-            summary: this.$t("smartenu.saveCategoryError") + ":\n" + error,
-            life: 3000,
-          });
-        });
-      this.edit = false;
-      this.desk = {};
-      
-    },      
-    createQueueCategory() {    
-    this.queueCat = {};
-    this.editVisible = true;      
-    this.queueCat.id = null;
-    },   
-    editCategory(id) {      
-    this.queueCat = {};
-    this.editVisible = true;      
-    this.queueCat.catId = null;     
-    let queueCat = this.queueCats.find((x) => x.catId === id);
-    this.queueCat.catId = queueCat.catId;
-    this.queueCat.CatNameKz = queueCat.catNameKz;
-    this.queueCat.CatNameRu = queueCat.catNameRu;
-    this.queueCat.CatNameEn = queueCat.catNameEn;    
-    },
-    delQueueCat(id) {      
-      this.queueCat = {};
-      this.queueCat = this.queueCats.find((x) => x.catId === id);      
-      this.deleteVisible = true;
-    },  
-    
-    createDesk(id) { 
-      // alert(id)  
-      this.desk = {};
-      this.edit = true;      
-      this.submitted = false;
-      this.desk.catId = id;
-    },
-    editDesk() {
-      this.category = {};
-      this.edit = true;
-      this.submitted = false;
-      
-    },      
   },
+  methods: {   
+    getQueue(parentID) {
+        this.loading = true  
+        this.lazyParams.parentID = parentID
+        axios
+        .post(smartEnuApi + "/queue/allQueues", this.lazyParams, {
+          headers: getHeader(),
+        })
+        .then((response) => {
+          this.queues = response.data.queues;
+          this.callNextCustomer(false, null);
+          if (this.queues.length> 0) {
+            this.queues.forEach(queue=> {
+              if (queue.key == this.$route.params.id) {
+                this.queue = queue
+                return
+              }
+            })
+          }
+
+          this.loading = false;
+        })
+        .catch((error) => {
+          this.loading = false;
+          this.$toast.add({
+            severity: "error",
+            summary: this.$t("smartenu.loadError") + ":\n" + error,
+            life: 3000,
+          });
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          }
+        });
+    },
+    getNeigborQueue(parentID) {
+        this.loading = true  
+        this.lazyParams.id = parentID
+        axios
+        .post(smartEnuApi + "/queue/getneigbors", this.lazyParams, {
+          headers: getHeader(),
+        })
+        .then((response) => {
+          this.neigbors = response.data.queues;      
+          this.loading = false;
+        })
+        .catch((error) => {
+          this.loading = false;
+          this.$toast.add({
+            severity: "error",
+            summary: this.$t("smartenu.loadError") + ":\n" + error,
+            life: 3000,
+          });
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          }
+        });
+    },
+    callNextCustomer(call, number) {
+       this.loading = true  
+       axios
+        .post(smartEnuApi + "/queue/callCustomer", {
+          queueID: Number(this.$route.params.parentID),
+          windowID: Number(this.$route.params.id),
+          number: number!= null ? Number(number): null,
+          call: call
+        }, {
+          headers: getHeader(),
+        })
+        .then((response) => {
+          this.service = response.data;
+          this.service.info = {
+            start: Date.now(),
+            duration: "",
+            counting: call,
+            hour: 0,
+            minute: 0,
+            second: 0,
+          }
+          if (!call) {
+            this.service.state = -1
+          }
+          
+          this.counter(this.service.info)
+          this.downInfo.counting = !call
+          this.$refs.selectTicket.close()
+          this.loading = false;
+        })
+        .catch((error) => {
+          this.loading = false;
+          console.log(error.response)
+          this.$toast.add({
+            severity: "error",
+            summary: this.$t("queue.norows"),
+            life: 3000,
+          });
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          }
+        });
+
+
+    },
+    changeState(state, redirectID){
+      
+      this.loading = true
+      axios
+        .post(smartEnuApi + "/queue/statusChange", {serviceID: this.service.id, state: state, redirectID: redirectID}, {
+          headers: getHeader(),
+        })
+        .then((_) => {         
+          this.service = {
+            state:-1,
+            info:{
+              start: Date.now(),
+              duration: "",
+              counting: false,
+              hour: 0,
+              minute: 0,
+              second: 0,     
+            }
+          }
+          this.getQueue()
+          this.$toast.add({
+            severity: "success",
+            summary: this.$t("common.message.successCompleted"),
+            life: 3000,
+          });
+          if (state === 2) {
+            this.selectedQueue = null;
+            this.$refs.redirect.close()
+          }
+        })
+        .catch((error) => {
+          this.$toast.add({
+            severity: "error",
+            summary: this.$t("smartenu.loadError") + ":\n" + error,
+            life: 3000,
+          });
+        });
+          
+      
+    },
+    padTo2Digits(num) {
+      return num.toString().padStart(2, '0');
+    },
+    counter(info) {
+      var final = Date.now() 
+      var milliseconds = final- info.start;
+      info.second = Math.floor(milliseconds / 1000);
+      info.minute = Math.floor(info.second / 60);
+      info.hour = Math.floor(info.minute / 60);
+
+      info.second = info.second % 60;
+      info.minute = info.minute % 60;
+      info.hour = info.hour % 24;
+      
+      info.duration = info.counting ? `${this.padTo2Digits(info.hour)}:${this.padTo2Digits(info.minute)}:${this.padTo2Digits(info.second)}` : "00:00:00";
+      if (!info.counting) {
+        return
+      }
+      setTimeout(() => {
+        this.counter(info)
+      }, 1000)
+    },
+    getRedirectNumber(){
+    
+      this.redirectVisible=true
+    }
+
+   
+  },
+
   created() {
-    this.getQueueCat();
+      var parentID = parseInt(this.$route.params.parentID) ;
+      this.getQueue(parentID); 
+      this.counter(this.downInfo);
+      this.getNeigborQueue(parentID)
+      
   },
-    
-}
+ 
+};
 </script>
 
-<style lang="scss" scoped>
-.product-image {
-    width: 50px;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23)
+<style scoped>
+.font-style {    
+    width:300px;
+    height:300px;
+    font-size:220px;
 }
 
-.orders-subtable {
-    padding: 1rem;
-}
-.table-header {
-  display: flex;
-  justify-content: space-between;
-}
-::v-deep(.p-datatable.p-datatable-customers) {
-  .p-datatable-header {
-    padding: 1rem;
-    text-align: left;
-    font-size: 1.5rem;
-  }
-
-  .p-paginator {
-    padding: 1rem;
-  }
-
-  .p-datatable-thead > tr > th {
-    text-align: left;
-  }
-
-  .p-datatable-tbody > tr > td {
-    cursor: auto;
-  }
-
-  .p-dropdown-label:not(.p-placeholder) {
-    text-transform: uppercase;
-  }
-}
-</style>                    
+</style>

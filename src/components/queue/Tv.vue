@@ -66,9 +66,7 @@ export default {
       };
      
     },
-    async print () {
-      await this.$htmlToPaper('ticket');
-    },
+   
     printDiv(divName) {
   
     },

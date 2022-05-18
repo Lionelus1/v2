@@ -39,36 +39,36 @@
           <Button
             v-if="slotProps.node.createdUserId === loginedUser.userID || isOperator(slotProps.node)"
             icon="pi pi-plus" 
-            :title="$t('common.add')"
+            v-tooltip.bottom="$t('common.add')"            
             class="p-button-rounded p-button-success p-mr-2"  
             @click="createQueue(slotProps.node)" />            
           <Button 
             v-if="slotProps.node.createdUserId === loginedUser.userID || isOperator(slotProps.node)"
             icon="pi pi-pencil"
-            :title="$t('common.edit')" 
+            v-tooltip.bottom="$t('common.edit')"
             class="p-button-rounded p-button-warning p-mr-2"  
             @click="editQueue(slotProps.node)" />
           <Button 
             v-if="slotProps.node.createdUserId === loginedUser.userID || isOperator(slotProps.node)"
             icon="pi pi-trash" 
-            :title="$t('common.delete')"  
+            v-tooltip.bottom="$t('common.delete')"  
             class="p-button-rounded p-button-danger p-mr-2" 
             @click="delQueue(slotProps.node)"/>
           <Button 
             icon="pi pi-user" 
             v-if="slotProps.node.createdUserId === loginedUser.userID || isOperator(slotProps.node) || findRole(null, 'queue_tv')"
-            :title="$t('queue.tv')"  
+            v-tooltip.bottom="$t('queue.operator')"  
             class="p-button-rounded p-button-info p-mr-2"  
-            @click="$router.push('/queue/opeartor/'+ slotProps.node.key )" />
+            @click="$router.push('/queue/operator/'+ slotProps.node.key+ '/' +  slotProps.node.parentId)" />
           <Button 
             icon="pi pi-desktop" 
             v-if="slotProps.node.createdUserId === loginedUser.userID || isOperator(slotProps.node) || findRole(null, 'queue_tv')"
-            :title="$t('queue.tv')"  
+            v-tooltip.bottom="$t('queue.tv')"  
             class="p-button-rounded p-button-help p-mr-2"  
             @click="$router.push('/queue/tv/'+ slotProps.node.key )" />
            <Button 
             icon="pi pi-ticket" 
-            :title="$t('queue.terminal')"  
+            v-tooltip.bottom="$t('queue.terminal')"  
             v-if="slotProps.node.createdUserId === loginedUser.userID || isOperator(slotProps.node) || findRole(null, 'queue_terminal')"
             class="p-button-rounded p-button-help p-mr-2"  
             @click="$router.push('/queue/terminal/'+ slotProps.node.key )" />

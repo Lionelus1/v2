@@ -289,8 +289,8 @@ const routes = [
                 
             },
             {
-                path: '/queue/opeartor/:id',
-                name: '/queueOpeartor',
+                path: '/queue/operator/:id/:parentID',
+                name: '/queueOperator',
                 component: load('queue/Operator'),
                 beforeEnter: ifAuthenticated,
                 
