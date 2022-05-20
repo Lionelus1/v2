@@ -201,6 +201,7 @@ export default {
             successApproved: "Успешно согласован",
             succesRegistered: "Успешно зарегистрировано",
             succesSaved: "Успешно сохранено",
+            successCompleted: "Успешно выполнено",
             selectRole: "Выберите роль",
             userSuccessInserted: "Пользователь успешно создан, скачайте данные для авторизации для отправки пользователю.",
             selectVariant: "Выберите нужный вариант",
@@ -514,6 +515,31 @@ export default {
         error: {
             list: "не удалость загрузить список вакцин"
         }
+    },
+  
+    queue: {
+        title: "Очередь",
+        secretary:"Обслуживание",
+        queues:"Очереди",       
+        responsible:"Ответственный",
+        queueNotFound:"Очередь не найден",
+        createQueue:"Создать/изменить очередь",  
+        next:"Следующий",
+        number: "Номер очереди",
+        terminal:"Терминал",
+        tv:"Телевизор",
+        count: "Перед вами {n} ожидающих",
+        operator:"Оператор",
+        ticketCount: "Талонов в очереди:",
+        downtime: "Время простоя:",
+        serviceTime: "Время получения услуги:",
+        called: "Вызванный посетитель:",
+        dnshowup: "Не явился",
+        norows: "Очередь не найден",
+        served: "Посетитель обслужен",
+        redirect: "Перенаправить",
+        selectTicket:"Выбрать талон",
+        call: "Вызвать",
     },
     dissertation: {
         title: "Диссертационный совет",
