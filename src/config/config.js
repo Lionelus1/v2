@@ -6,16 +6,10 @@ export const hdfsApi = "http://localhost:8085";
 export const signerApi = "https://smart.enu.kz:6990"
 //export const signerApi = "http://10.1.1.161:6990"
 //export const smartEnuApi = "https://smart.enu.kz:8081"
-<<<<<<< HEAD
-export const smartEnuApi = "http://smart.enu.kz:8090"
-//export const smartEnuApi = "http://localhost:8081"
-//export const smartEnuApi = "http://192.168.137.151:8081/"
-=======
 //export const smartEnuApi = "http://smart.enu.kz:8090"
 export const smartEnuApi = "http://172.17.157.199:8090"
 export const socketApi = "ws://smart.enu.kz:8090" //test server
 //export const socketApi = "ws://smart.enu.kz" //prod server
->>>>>>> 9b4697d24ff30eba4eaa60c946174cd940d25709
 export const templateApi = "http://localshost:8082"
 
 export const header  = {
