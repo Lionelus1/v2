@@ -216,7 +216,6 @@ export default {
     })
     this.emitter.on('workPlanEventIsCompleted', (data) => {
       if (data) {
-<<<<<<< HEAD
         this.getPlan();
         this.getWorkPlanEvents();
       }
@@ -224,9 +223,6 @@ export default {
     this.emitter.on('workPlanChildEventIsDeleted', (data) => {
       if (data) {
         this.getPlan();
-=======
-        this.getPlan();//http://10.1.1.161/Bonobo.Git.Server/mobilefrontend.git
->>>>>>> 069f3610c6ab90226f283677d8b26d8d8000be59
         this.initQuarter();
         this.getWorkPlanEvents();
       }

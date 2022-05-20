@@ -761,39 +761,10 @@ export default {
             quarter: "Quarterly",
             halfYear: "Semi-annual"
         },
-<<<<<<< HEAD
         quarterYear: "Whole year",
         resultIndicator: "Indicator of direct results",
         summary: "Summary/Confirmation",
         respExecutor: "Responsible performers",
         halfYear: "semi-annual"
     }
-=======
-        quarterYear: "Whole year"
-    },
-    queue: {
-        title: "Queue",
-        secretary:"Maintenance",
-        queues:"Queues",
-        responsible:"responsible",
-        queueNotFound:"Queue not found",
-        createQueue:"Create/Modify Queue",
-        next:"Next",
-        number: "Queue number",
-        terminal:"Terminal",
-        tv:"TV",
-        count: "There are {n} people waiting in front of you",
-        operator:"Operator",
-        ticketCount: "Tickets queued:",
-        downtime: "Downtime:",
-        serviceTime: "Service time:",
-        called: "Called visitor:",
-        dnshowup: "Didn't show up",
-        norows: "Queue not found",
-        served: "Visitor served",
-        redirect: "Redirect",
-        selectTicket:"Select ticket",
-        call: "Call",
-    },
->>>>>>> 069f3610c6ab90226f283677d8b26d8d8000be59
 }
