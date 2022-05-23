@@ -163,11 +163,6 @@ app.use(PrimeVue, {
 app.config.globalProperties.emitter = emitter;
 
 
-
-
-
-
-
 app.use(i18n);
 app.use(ToastService);
 app.use(router);
