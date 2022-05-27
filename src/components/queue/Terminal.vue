@@ -1,15 +1,17 @@
 <template>
-    <div class="card">
-      {{this.queinfo}}
+ 
+    <div class="card">       
       <Sidebar  v-model:visible="visible" :baseZIndex="10000" :showCloseIcon="!findRole(null, 'queue_terminal')" position="full">
         <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em;" />
         <div class="p-w-100 p-text-center" style="min-height:100%;v-align:middle">
-          <SelectButton v-model="selectedlanguage" :options="languages" optionLabel="name" @click="selected"  />
-          <br>
-          <div class="card primary-box p-ripple p-w-100" style="margin-top:auto" v-for="queue of queues" :key="queue.key">
-            <Button  :label="queue['queueName' + $i18n.locale]" class="p-button-info p-button-lg" @click="registerQueue(queue)" style="width:90%;height:100px" />
+          <SelectButton v-model="selectedlanguage" :options="languages" optionLabel="name" @click="selected" /><br>          
+          <div >
+            <div :class="'card primary-box p-ripple p-w-100'+' '+ (queues.length>6 ? 'col2':'col1')" v-for="queue of queues" :key="queue.key"  style=" margin-top:auto">           
+              <Button  :label="queue['queueName' + $i18n.locale]" class="p-button-info p-button-lg" @click="registerQueue(queue)" style="width:90%;height:100px"/>            
+            </div>
           </div>
         </div>
+        
       </Sidebar>
       <div>
         <div style ="display:none">
@@ -22,6 +24,33 @@
         </div>
       </div>
     </div>
+    <!-- p:dialog position="right"  -->
+     <Dialog
+      v-model:visible="ticketVisible"
+      :closable="false"
+      header=""
+      :style="{ width: '400px' }"   
+        
+      >
+      <div class="confirmation-content">       
+        <embed :src="queinfo + '#toolbar=0'" style="width: 100%;height: 320px;" v-if="queinfo" type="application/pdf" />        
+        <h3 class="p-error">{{$t("queue.warning")}}</h3>
+      </div>
+      <template #footer> 
+        <Button
+          style="width:100%;height:40px;margin-bottom: 1.5rem;"
+          :label="$t('common.print')"         
+          class="p-button p-component p-button-success"                 
+          @click="printDocument(queinfob64)"
+        />    
+        <Button
+          style="width:100%;height:40px"
+          :label="$t('common.close')"         
+          class="p-button p-component p-button-secondary"          
+          @click=" ticketVisible = false, selectedlanguage={name: 'Қазақ тілі', code: 'kz'}, selected() "
+        />
+      </template>
+    </Dialog>
 </template>
 
 <script>
@@ -33,6 +62,7 @@ export default {
  
   data() {
     return {
+      ticketVisible:false,
       visible: true,
       printVisisble: true,
       lazyParams: {
@@ -40,7 +70,10 @@ export default {
         rows: 100,
         parentID: null,
       },
+      cols:"",
+      colCount: 2,      
       queinfo: null,
+      queinfob64: null,
       selectedQueue: null,
       queues: [],
       loading: false,
@@ -55,6 +88,7 @@ export default {
   },
   methods: {   
     findRole : findRole,
+    b64toBlob: b64toBlob,
     selected() {
       this.$i18n.locale = this.selectedlanguage.code
     },
@@ -63,15 +97,15 @@ export default {
       socket.onopen = function(e) {
         socket.send(document);
         
-      };
-     
+      };     
     },
-    async print () {
-      await this.$htmlToPaper('ticket');
+    selectDefaultParams() {
+        this.ticketVisible = false, 
+        this.selectedlanguage ={name: 'Қазақ тілі', code: 'kz'}; 
+        this.selected()
     },
-    printDiv(divName) {
   
-    },
+   
     getQueue(parentID) {
         this.loading = true  
         this.lazyParams.parentID = parentID
@@ -81,7 +115,7 @@ export default {
         })
         .then((response) => {
           this.queues = response.data.queues;
-          this.loading = false;
+          this.loading = false;          
         })
         .catch((error) => {
           this.loading = false;
@@ -97,7 +131,7 @@ export default {
     },
     registerQueue(queue) {
       this.selectedQueue = queue
-      this.loading = true
+      this.loading = true      
       var req = {
         queueID: queue.key, lang: this.selectedlanguage.code
       }
@@ -106,10 +140,17 @@ export default {
           headers: getHeader(),
         })
       .then(response => {
-        this.queinfo = response.data
-        this.printDocument(response.data)
+        this.queinfob64 = response.data
+        this.queinfo = this.b64toBlob(response.data)
+        this.ticketVisible = true
         this.loading = false
-      })
+        setTimeout(() => {
+					if (this.ticketVisible) {
+            this.ticketVisible = false;
+            this.selectDefaultParams()
+					}
+				}, 30000);
+      })      
       .catch((error) => {
         alert(error)
         this.loading = false;
@@ -122,13 +163,12 @@ export default {
           this.$store.dispatch("logLout");
         }
     });
-    }
+    },
+    
   },
-  created() {
-      var parentID = parseInt(this.$route.params.id) ;
-      
-      this.getQueue(parentID)
-
+  created(){
+    var parentID = parseInt(this.$route.params.id) ;      
+    this.getQueue(parentID)
   },
   
  
@@ -141,5 +181,15 @@ export default {
     height:300px;
     font-size:220px;
 }
+.col2{
+  display:block;
+  float:left;
+  width:50%;
+} 
+.col1{
+  display:block;
+  
+  width:100%;
+}  
 
 </style>

@@ -38,6 +38,7 @@ export default {
         error: "Error",
         add: "Add",
         edit: "edit",
+        print:"Print",
         orgname: "L.N. Gumilyov Eurasian National University",
         organizationName: 'Organization name',
         date: "Date",
@@ -779,5 +780,6 @@ export default {
         redirect: "Redirect",
         selectTicket:"Select ticket",
         call: "Call",
+        warning:"Take a photo of the coupon or print it by clicking on «Print». If you take a photo, be sure to close the window with the «Close button»!!!"
     },
 }
