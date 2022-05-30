@@ -333,6 +333,7 @@ export default {
         setnumber: "Присвоить номер",
     },
     hdfs: {
+        archiveBtn: "Архивировать",
         title: "Файлы",
         fileName: "Название файла",
         download: "Скачать",
@@ -424,6 +425,17 @@ export default {
 
     },
     smartenu: {
+        NormDoc: "Документ",
+        uploadNormDoc: "Загрузка документов",
+        catalogNormDoc: "Каталог нормативных документов",
+        chooseCatalogNormDoc: "выберите нормативный документ",
+        chooseSuperiorCatalogNormDoc: "Выберите вышестоящую нормативный документ",
+        createOrEditCatalogNormDoc: "Создание/редактирование нормативных документов",
+        catalogNormDocNotFound: "нормативных документы не найдены",
+        loadingcatalogNormDoc: "Загрузка нормативных документов. Пожалуйста, подождите.",
+        addNormDoc:"Добавить документ",
+        editNormDoc: "Редактировать документ",
+        delNormDoc:"Удалить документ",
         categories: "категории",
         selectCategories: "Выберите категории",
         newsList: "Список новостей",

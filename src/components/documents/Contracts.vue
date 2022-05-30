@@ -216,8 +216,8 @@
           childData.stateEn =  node.History[0].stateEn;
 
         }
-        childData.nameKaz= node.descriptionKaz;
-        childData.nameRus= node.descriptionRus;
+        childData.namekz= node.descriptionKaz;
+        childData.nameru= node.descriptionRus;
         childData.createdDate = node.createDate;
         childData.mainTextKaz = node.mainTextKaz
         childData.mainTextRus = node.mainTextRus

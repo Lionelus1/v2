@@ -333,6 +333,7 @@ export default {
 
     },
     hdfs: {
+        archiveBtn: "Мұрағаттау",
         title: "Файлдар",
         fileName: "Файл атауы",
         download: "Жүктеу",
@@ -424,6 +425,14 @@ export default {
 
     },
     smartenu: {
+        NormDoc: "Құжат",
+        uploadNormDoc: "Құжаттарды жүктеу",
+        catalogNormDoc: "Нормативті құжаттар каталогы",
+        chooseCatalogNormDoc: "Нормативті құжатты таңдаңыз",
+        chooseSuperiorCatalogNormDoc: "Жоғарыдағы нормативті құжатты таңдаңыз",
+        createOrEditCatalogNormDoc: "Нормативті құжаттар құру/өзгерту",
+        catalogNormDocNotFound: "Нормативті құжаттар каталогы табылмады",
+        loadingcatalogNormDoc: "Нормативті құжаттар жүктелуде. Өтініш, күте тұрыңыз.",
         categories: "санаттар",
         selectCategories: "Санаттарды таңдаңыз",
         newsList: "Жаңалықтар тізімі",

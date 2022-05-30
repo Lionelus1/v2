@@ -18,11 +18,11 @@
             <Dialog :modal="true"  v-bind:header="$t('common.newCatalog')" :contentStyle="{overflow: 'visible'}" v-model:visible="dialogOpenState.addFolder" :style="{width: '50vw'}">
               <div class="p-fluid">
                   <label for="foldername" >{{$t('common.nameInQazaq')}}</label>
-                  <InputText id="fodernamekaz" v-model="createdFolder.nameKaz" type="text" />
+                  <InputText id="fodernamekaz" v-model="createdFolder.namekz" type="text" />
                   <label for="foldernamerus">{{$t('common.nameInRussian')}}</label>
-                  <InputText id="foldernamerus" v-model="createdFolder.nameRus"  type="text"  />
+                  <InputText id="foldernamerus" v-model="createdFolder.nameru"  type="text"  />
                   <label for="foldernameen">{{$t('common.nameInEnglish')}}</label>
-                  <InputText id="foldernameen" v-model="createdFolder.nameEn"  type="text" />
+                  <InputText id="foldernameen" v-model="createdFolder.nameen"  type="text" />
                   <label for="foldercode">{{$t('common.code')}}</label>
                   <InputText id="foldercode" v-model="createdFolder.code"  type="text" />
                   <label for="foldergroup">{{$t('common.userGroup')}}</label>
@@ -259,9 +259,9 @@
         language: ['kz', 'ru'],
         createdFolder: {
           groups: null,
-          nameKaz: '',
-          nameRus: '',
-          nameEn: '',
+          namekz: '',
+          nameru: '',
+          nameen: '',
           id: -1,
           createdDate: null,
           updatedDate: null,
@@ -563,15 +563,15 @@
           this.showMessage('error',this.$t('common.message.catCreateError'),this.$t('common.message.groupsNotSelected'));
           return
         }
-        if (this.createdFolder.nameKaz == null || this.createdFolder.nameKaz == "") {
+        if (this.createdFolder.namekz == null || this.createdFolder.namekz == "") {
           this.showMessage('error',this.$t('common.message.catCreateError'),this.$t('common.message.qazNameNotfilled'));
           return
         }
-        if (this.createdFolder.nameRus == null || this.createdFolder.nameRus == "") {
+        if (this.createdFolder.nameru == null || this.createdFolder.nameru == "") {
           this.showMessage('error',this.$t('common.message.catCreateError'),this.$t('common.message.rusNameNotfilled'));
           return
         }
-        if (this.createdFolder.nameEn == null || this.createdFolder.nameEn == "") {
+        if (this.createdFolder.nameen == null || this.createdFolder.nameen == "") {
           this.showMessage('error',this.$t('common.message.catCreateError'),this.$t('common.message.engNameNotfilled'));
           return
         }
@@ -587,7 +587,7 @@
             console.log(response.data)
             node.key= response.data.id;
             let nodeData = new Object();
-            nodeData.name=response.data.nameKaz;
+            nodeData.name=response.data.namekz;
             nodeData.type= 1;
             nodeData.typeText= this.$t('common.catalog');
             nodeData.createdDate = response.data.createDate;
@@ -598,9 +598,9 @@
             this.templates.push(node)
           this.createdFolder = {
             groups: null,
-            nameKaz: '',
-            nameRus: '',
-            nameEn: '',
+            namekz: '',
+            nameru: '',
+            nameen: '',
             id: -1,
             createdDate: null,
             updatedDate: null,
@@ -666,7 +666,7 @@
             let node = new Object();
             node.key=el.id;
             let nodeData = new Object();
-            nodeData.name=el.nameKaz;
+            nodeData.name=el.namekz;
             nodeData.type= 1
             nodeData.typeText= this.$t('common.catalog');
             nodeData.createdDate = el.createDate;

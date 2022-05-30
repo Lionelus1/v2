@@ -332,6 +332,7 @@ export default {
 
     },
     hdfs: {
+        archiveBtn: "Аrchive",
         title: "Files",
         fileName: "File name",
         download: "Download",
@@ -423,6 +424,14 @@ export default {
 
     },
     smartenu: {
+        NormDoc: "Document",
+        uploadNormDoc: "Uploading documents",
+        catalogNormDoc: "Catalog of regulatory documents",
+        chooseCatalogNormDoc: "select a regulatory document",
+        chooseSuperiorCatalogNormDoc: "Select a higher regulatory document",
+        createOrEditCatalogNormDoc: "Create/edit regulatory documents",
+        catalogNormDocNotFound: "Catalog of regulatory documents not found",
+        loadingcatalogNormDoc: "Loading regulatory documents. Please wait.",
         categories: "categories",
         selectCategories: "Select categories",
         newsList: "News list",
