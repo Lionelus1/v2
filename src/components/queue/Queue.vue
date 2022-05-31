@@ -56,7 +56,7 @@
             @click="delQueue(slotProps.node)"/>
           <Button 
             icon="pi pi-user" 
-            v-if="slotProps.node.createdUserId === loginedUser.userID || isOperator(slotProps.node) || findRole(null, 'queue_tv')"
+            v-if="slotProps.node.createdUserId === loginedUser.userID || isOperator(slotProps.node)"
             v-tooltip.bottom="$t('queue.operator')"  
             class="p-button-rounded p-button-info p-mr-2"  
             @click="$router.push('/queue/operator/'+ slotProps.node.key+ '/' +  slotProps.node.parentId)" />
