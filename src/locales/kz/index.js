@@ -756,6 +756,7 @@ export default {
             reportSentToApprove: "Есеп келісуге сәтті жіберілді",
             planSentToApprove: "Жоспар қайта қарауға жіберілді",
             planCreated: "Жоспар сәтті құрылды",
+            maxFileUploadSize: "5 файлдан артық жүктеуге болмайды"
         },
         reportTypes: {
             year: "Жылдық",
