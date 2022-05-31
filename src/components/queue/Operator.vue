@@ -44,7 +44,7 @@
         <Button :label="$t('queue.served')" class="p-mb-1 p-button-success" @click="changeState(1, null)"></Button>
         <Inplace :active="false" class="p-inplace-display"  ref="redirect" >
           <template #display>
-            <Button :label="$t('queue.redirect')" class="p-button-primary" style="left: -0.5rem;" :disabled="service.state===-1" ></Button>
+            <Button :label="$t('queue.redirect')" class="p-button-primary" style="left: -0.5rem;" :disabled="service.state===null" ></Button>
           </template>
           <template #content>
             <div class="p-grid p-fluid">
