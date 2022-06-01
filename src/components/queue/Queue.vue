@@ -8,7 +8,7 @@
           icon="pi pi-plus"
           class="p-button-success p-mr-2"
           v-on:click="createQueue(null)"
-        />
+        />        
       </template>
     </Toolbar>
     <Toast />
@@ -72,6 +72,12 @@
             v-if="slotProps.node.createdUserId === loginedUser.userID || isOperator(slotProps.node) || findRole(null, 'queue_terminal')"
             class="p-button-rounded p-button-help p-mr-2"  
             @click="$router.push('/queue/terminal/'+ slotProps.node.key )" />
+            <Button 
+            icon="pi pi-chart-line" 
+            v-tooltip.bottom="$t('queue.terminal')"  
+            v-if="slotProps.node.createdUserId === loginedUser.userID || isOperator(slotProps.node)"
+            class="p-button-rounded p-button-help p-mr-2"  
+            @click="$router.push('/queue/queueReport/'+ slotProps.node.key )" />
         </template>
       </Column>              
     </TreeTable> 
