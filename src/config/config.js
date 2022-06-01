@@ -17,8 +17,8 @@ export const smartEnuApi = "http://smart.enu.kz:8090"
 
 export const templateApi = "http://localshost:8082"
 
-//export const queueApi = "http://localhost:8088"
-export const queueApi = "http://smart.enu.kz:8088"
+export const queueApi = "http://localhost:8088"
+// export const queueApi = "http://smart.enu.kz:8088"
 export const header  = {
   "Accept": "application/json",
   "Access-Control-Allow-Origin": "*",

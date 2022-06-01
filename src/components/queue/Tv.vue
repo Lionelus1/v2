@@ -1,14 +1,14 @@
 <template>
     <div class="card">
   
-      <Sidebar  v-model:visible="visible" :baseZIndex="10000" :showCloseIcon="!findRole(null, 'queue_tv')" position="full" style="background-color: grey;" >
+      <Sidebar  v-model:visible="visible" :baseZIndex="10000" :showCloseIcon="!findRole(null, 'queue_tv')" position="full" style="background-color: grey; overflow: hidden;" >
       <div>
-        <div class="p-text-center" style="margin-top: 0;margin-bottom: 0px;">          
-          <Logo strokeColor="none" fillColor="#ffffff"/>
+        <div class="p-text-center" style="margin-top: 0;margin-bottom: 20px;">          
+          <Logo strokeColor="none" fillColor="#4ce6fa"/>
         </div>
       </div>    
         <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em;" />
-        <div class="p-w-100 p-text-center" style="min-height:100%;v-align:middle">
+        <div class="p-w-100 p-text-center" style="min-height:100%;v-align:middle;">
         <audio id="audioq" :src="audioSrc" controls autoplay @ended="audioEnded" style="display:none"></audio>
           <div v-for="row in rowCount" :key="row" class="p-grid" :style="'min-height: ' + height + 'px'">
             <div v-for="col in colCount" :key="col" :class="'p-col-' + 12/colCount ">
@@ -127,12 +127,17 @@ export default {
         var msg = JSON.parse(event.data)
         if (msg.lang == 'ru') {
           msg.lang = 2
-        } else {
+        } else if(msg.lang=='kz') {
           msg.lang = 1
+        } else {
+          msg.lang=3
         }
         msg.window = Number(msg.window)
         self.getAudio(msg)        
-        queues.unshift(JSON.parse(event.data))
+        self.queues.unshift(JSON.parse(event.data))
+        if (self.queues.length() > 15) {
+          self.queues = self.queues.slice(0,15)
+        }
        
       };
 
@@ -164,6 +169,9 @@ export default {
 </script>
 
 <style lang="scss">
+.p-sidebar-content{
+  overflow-y: hidden !important;
+}
 .font-style {    
   width:300px;
   height:300px;

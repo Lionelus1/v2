@@ -211,11 +211,13 @@ export default {
 
 
     },
+    
+  
     changeState(state, redirectID){
-      
+      var workSecond=this.service.info.second+(this.service.info.minute*60)+(Number(this.service.info.hour*3600));
       this.loading = true
       axios
-        .post(smartEnuApi + "/queue/statusChange", {serviceID: this.service.id, state: state, redirectID: redirectID}, {
+        .post(smartEnuApi + "/queue/statusChange", {serviceID: this.service.id, state: state, redirectID: redirectID,workTime: workSecond}, {
           headers: getHeader(),
         })
         .then((_) => {         
