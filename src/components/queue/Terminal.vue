@@ -65,6 +65,7 @@ export default {
       ticketVisible:false,
       visible: true,
       printVisisble: true,
+      printVisibleStartedTime: null,
       lazyParams: {
         first: 0,
         rows: 100,
@@ -97,7 +98,8 @@ export default {
       socket.onopen = function(e) {
         socket.send(document);
         
-      };     
+      };  
+      this.ticketVisible=false;
     },
     selectDefaultParams() {
         this.ticketVisible = false, 
@@ -140,12 +142,13 @@ export default {
           headers: getHeader(),
         })
       .then(response => {
+        this.printVisibleStartedTime = Date.now()
         this.queinfob64 = response.data
         this.queinfo = this.b64toBlob(response.data)
         this.ticketVisible = true
         this.loading = false
         setTimeout(() => {
-					if (this.ticketVisible) {
+					if (this.ticketVisible && Date.now() - this.printVisibleStartedTime > 29000) {
             this.ticketVisible = false;
             this.selectDefaultParams()
 					}
@@ -176,6 +179,7 @@ export default {
 </script>
 
 <style scoped>
+
 .font-style {    
     width:300px;
     height:300px;
