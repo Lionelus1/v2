@@ -40,6 +40,13 @@
             <p v-if="data.reject_history"> {{ data.reject_history.message }} </p>
           </template>
         </Column>
+        <Column>
+          <template #body="{ data }">
+            <Button type="button" v-if="data.creator_id === loginedUserId && data.status.work_plan_status_id === 1"
+                    icon="pi pi-trash" class="p-button-danger p-mr-2"
+                    label="" @click="deleteConfirm(data)"></Button>
+          </template>
+        </Column>
       </DataTable>
     </div>
   </div>
@@ -59,7 +66,7 @@ export default {
       work_plan_id: null,
       plan: null,
       isPlanCreator: false,
-      loginedUserId: 0
+      loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID,
     }
   },
   mounted() {
@@ -72,7 +79,6 @@ export default {
   },
   created() {
     this.work_plan_id = this.$route.params.id;
-    this.loginedUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
     this.getPlan();
     this.getReports();
   },
@@ -132,6 +138,42 @@ export default {
         }
       });
       //this.$router.push({name: 'WorkPlanReportView', params: {id: data.id}});
+    },
+    deleteConfirm(event) {
+      this.$confirm.require({
+        message: this.$t('common.doYouWantDelete'),
+        header: this.$t('common.delete'),
+        icon: 'pi pi-info-circle',
+        acceptClass: 'p-button-rounded p-button-success',
+        rejectClass: 'p-button-rounded p-button-danger',
+        accept: () => {
+          this.delete(event);
+        },
+      });
+    },
+    delete(event) {
+      console.log(event)
+      axios.post(smartEnuApi + `/workPlan/deleteReport/${event.id}`,null, {headers: getHeader()})
+          .then(response => {
+            if (response.data.is_success) {
+              this.$toast.add({
+                severity: "success",
+                summary: this.$t('common.success'),
+                life: 3000,
+              });
+              this.getReports();
+            }
+          }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+      });
     },
     initReportType(type, halfYearType) {
       let result = "";

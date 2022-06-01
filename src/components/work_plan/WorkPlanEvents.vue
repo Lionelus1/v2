@@ -2,7 +2,7 @@
   <div class="p-col-12" v-if="!loading">
     <h3 v-if="plan">{{ plan.work_plan_name }}</h3>
     <Message severity="warn" :closable="false" v-if="plan && plan.reject_history && isRejected && isPlanCreator">{{ plan.reject_history.message }}</Message>
-    <div class="card" v-if="plan && (isCreator || isEventsNull) && isPlanCreator">
+    <div class="card" v-if="plan || data">
       <work-plan-event-add v-if="(isCreator || isEventsNull) && !isFinish && isPlanCreator" :items="data" :isMain="true" :plan-data="plan"></work-plan-event-add>
       <Button v-if="isPlanCreator && !isFinish" :label="$t('common.complete')" icon="pi pi-check" @click="finish"
               class="p-button p-button-danger p-ml-2"/>
