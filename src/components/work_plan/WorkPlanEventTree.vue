@@ -65,7 +65,7 @@
         <work-plan-execute
             :data="slotProps.data"
             :planData="plan"
-            v-if="isUserApproval(slotProps.data) && isPlanSentApproval && (slotProps.data.status.work_plan_event_status_id === 1 || slotProps.data.status.work_plan_event_status_id === 4 || slotProps.data.status.work_plan_event_status_id === 6)"></work-plan-execute>
+            v-if="isUserApproval(slotProps.data) && isPlanApproved && isPlanSentApproval && (slotProps.data.status.work_plan_event_status_id === 1 || slotProps.data.status.work_plan_event_status_id === 4 || slotProps.data.status.work_plan_event_status_id === 6)"></work-plan-execute>
         <work-plan-event-result-modal v-if="(slotProps.data.event_result && (plan && !plan.is_oper)) || slotProps.data.status.work_plan_event_status_id === 5 || slotProps.data.status.work_plan_event_status_id === 2"
                                       :event-result="slotProps.data.event_result"
                                       :eventData="slotProps.data"
@@ -78,7 +78,7 @@
       </template>
     </Column>
     <template #expansion="slotProps">
-      <WorkPlanEventTree :plan-creator="isPlanCreator" :finish="isFinish" :approval-sent="isPlanSentApproval"
+      <WorkPlanEventTree :plan-creator="isPlanCreator" :finish="isFinish" :approval-sent="isPlanSentApproval" :isPlanApproved="isPlanApproved"
                          :child="slotProps.data.children" :plan="plan" v-if="slotProps.data.children" :expanded="slotProps.data.is_expanded"/>
     </template>
   </DataTable>
@@ -95,7 +95,7 @@ import WorkPlanEventEditModal from "@/components/work_plan/WorkPlanEventEditModa
 export default {
   name: "WorkPlanEventTree",
   components: {WorkPlanEventResultModal, WorkPlanEventAdd, WorkPlanExecute, WorkPlanEventEditModal},
-  props: ['child', 'planCreator', 'finish', 'approvalSent', 'plan', 'expanded'],
+  props: ['child', 'planCreator', 'finish', 'approvalSent', 'plan', 'expanded', 'isPlanApproved'],
   data() {
     return {
       data: null,
