@@ -161,6 +161,7 @@ export default {
         organizationNameLabel:"Name of company",
         departmentNameLabel: "The name of the structural unit",
         headLabel: "Head:",
+        report:"Report",
         states: {
             created : "created",
             inapproval : "in approval",
