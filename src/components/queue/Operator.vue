@@ -113,6 +113,7 @@ export default {
     getQueue(parentID) {
         this.loading = true  
         this.lazyParams.parentID = parentID
+         //alert(parentID)
         axios
         .post(smartEnuApi + "/queue/allQueues", this.lazyParams, {
           headers: getHeader(),
