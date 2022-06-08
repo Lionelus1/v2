@@ -52,7 +52,7 @@
             v-if="slotProps.node.createdUserId === loginedUser.userID || isOperator(slotProps.node)"
             icon="pi pi-trash" 
             v-tooltip.bottom="$t('common.delete')"  
-            class="p-button-rounded p-button-danger p-mr-2" 
+            class="p-button-rounded p-button-danger p-mr-4" 
             @click="delQueue(slotProps.node)"/>
           <Button 
             icon="pi pi-user" 
@@ -74,7 +74,7 @@
             @click="$router.push('/queue/terminal/'+ slotProps.node.key )" />
             <Button 
             icon="pi pi-chart-line" 
-            v-tooltip.bottom="$t('queue.terminal')"  
+            v-tooltip.bottom="$t('common.report')"  
             v-if="slotProps.node.createdUserId === loginedUser.userID || isOperator(slotProps.node)"
             class="p-button-rounded p-button-help p-mr-2"  
             @click="$router.push('/queue/queueReport/'+ slotProps.node.key )" />

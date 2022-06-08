@@ -162,6 +162,7 @@ export default {
         organizationNameLabel: "Наименование организации",
         departmentNameLabel: "Наименование структурного подразделения",
         headLabel: "Руководитель:",
+        report:"Отчет",
         states: {
             created: "создан",
             inapproval: "на согласовании",
