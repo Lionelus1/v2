@@ -93,6 +93,7 @@ export default {
         main: "Основные",
         meetingUrl: "Ссылка для онлайн собрания",
         meetingPlace: "Место собрания",
+        move: "Перемещение",
         myData: "Мои данные",
         myResume: 'Моё резюме',
         theResume: 'Резюме',
@@ -207,6 +208,7 @@ export default {
             selectVariant: "Выберите нужный вариант",
             userIINExists: "Пользователь с таким же ИИН уже имеется",
             accessDenied: "У вас нет полномочий просматривать этот документ!",
+            impossible: "невозможно",
             saveChanges: "Сохраните изменения"
         },
         language: {

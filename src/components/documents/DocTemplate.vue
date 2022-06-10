@@ -26,7 +26,7 @@
                   <label for="foldercode">{{$t('common.code')}}</label>
                   <InputText id="foldercode" v-model="createdFolder.code"  type="text" />
                   <label for="foldergroup">{{$t('common.userGroup')}}</label>
-                  <MultiSelect v-model="createdFolder.groups" :options="groupsData" optionLabel="name" v-bind:placeholder="$t('common.selectGroup')" :filter="true" display="chip"/>
+                  <MultiSelect v-model="createdFolder.groups" :options="groupsData" :optionLabel="'name'+$i18n.locale" v-bind:placeholder="$t('common.selectGroup')" :filter="true" display="chip"/>
               </div>
               <template #footer>
                 <Button v-bind:label="$t('common.no')" icon="pi pi-times" @click="closeForm('addFolder')" class="p-button-text"/>
@@ -224,6 +224,8 @@
   import FindUser from "@/helpers/FindUser";
   import DocState from "@/enum/docstates/index"
   import DocSignaturesInfo from "@/components/DocSignaturesInfo"
+  import Enum from "@/enum/docstates/index"
+
   export default {
     emits: ['onselect'],
     components: { RichEditor, FindUser, DocSignaturesInfo },
@@ -251,11 +253,12 @@
         active: 0,
         templates: null,
         groupsData: [
-          {name: 'студент', id: 0},
-          {name: 'кафедра меңгерушісі', id: 1},
-          {name: 'қызметкер', id: 2},
-          {name: 'заңгер', id: 3},
-          ],
+          {namekz: 'білім алушы', nameru: 'обучающиеся', nameen:'students', id: 0},
+          {namekz: 'профессор-оқытушылар құрамы', nameru: 'профессорско-преподавательский состав', nameen:'teaching staff', id: 1},
+          {namekz: 'қызметкерлер', nameru: 'сотрудники', nameen:'staff', id: 2},
+          {namekz: 'заңгер', nameru: 'юрист', nameen:'lawyer', id: 3},
+        ],
+       
         language: ['kz', 'ru'],
         createdFolder: {
           groups: null,
@@ -265,6 +268,8 @@
           id: -1,
           createdDate: null,
           updatedDate: null,
+          type: Enum.FolderType.Journals
+          
         },
         createdTemplate: {
           creatorId: 1,

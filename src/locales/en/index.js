@@ -93,6 +93,7 @@ export default {
         meetingPlace: "Meeting place",
         myData: "My details",
         myResume: 'My resume',
+        move: "Move",
         theResume: 'Resume',
         myVacancy: 'My vacancies',
         nameIn: "Name",
@@ -207,6 +208,8 @@ export default {
             userIINExists: "User with same iin already exists",
             accessDenied: "You do not have permission to view this document!",
             saveChanges: "Save changes",
+            impossible: "impossible",
+
         },
         language: {
             kz: "in kazakh",

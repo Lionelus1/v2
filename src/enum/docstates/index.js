@@ -48,12 +48,14 @@ export default {
       HrWorker: 'hr_worker', //сотрудник отдела кадров
       Internal: 'internal' //внутренний документооборот (все ключи алгоритма ГОСТ)
     },
-    
-    
     EducationLevel: {
       Bachelor: '6B',
       Magister: '7M',
       Residency: '7R',
       Doctorate: '8D',
+    },
+    FolderType: {
+      NormativeDocuments: 0,
+      Journals: 1,
     },
 }

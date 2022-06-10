@@ -91,6 +91,7 @@ export default {
         main: "Негізгі", 
         meetingUrl: "Онлайн жиналысқа сілтеме",
         meetingPlace: "Жиналыс өтетін орын",
+        move: "Орнын ауыстыру",
         myData: "Менің мәліметтерім",
         myResume: 'Менің түйіндемем',
         theResume: 'Түйіндемем',
@@ -205,7 +206,8 @@ export default {
             selectVariant: "Керек нұсқаны таңдаңыз",
             userIINExists: "Көрсетілген ЖСН бойынша қолданушы бұрыннан бар",
             accessDenied: "Бұл құжатты көруге құзіретіңіз жоқ!",
-            saveChanges: "Алдымен өззгерістерді сақтаңыз"
+            saveChanges: "Алдымен өззгерістерді сақтаңыз",
+            impossible: "мүмкін емес",
         },
         language: {
             kz: "қазақша",

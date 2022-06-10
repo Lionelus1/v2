@@ -44,6 +44,11 @@
 		"vue-router": "^4.0.0-0"
 	},
 	"dependencies": {
+		"@fortawesome/fontawesome-svg-core": "^6.1.1",
+		"@fortawesome/free-brands-svg-icons": "^6.1.1",
+		"@fortawesome/free-regular-svg-icons": "^6.1.1",
+		"@fortawesome/free-solid-svg-icons": "^6.1.1",
+		"@fortawesome/vue-fontawesome": "^2.0.6",
 		"@popperjs/core": "^2.9.2",
 		"generate-password": "^1.7.0",
 		"howler": "^2.2.3",
