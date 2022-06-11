@@ -112,6 +112,7 @@ export default {
               this.file.key = this.parentID + "-" + this.file.id
           }
           this.uploading = false;
+          this.file.leaf = null;
           this.$emit("updated", this.file);
           this.onUpload();
         })

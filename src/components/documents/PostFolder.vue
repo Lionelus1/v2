@@ -102,7 +102,7 @@ export default {
         let url = "/doctemplate/createFolder";
         axios.post(smartEnuApi+url, this.folder, { headers: getHeader() })
         .then(response=>{
-            this.folder.key = response.data.id;
+            this.folder.key = response.data.id + "";
             this.showMessage('success', this.$t('common.message.title.docCreation'),this.$t('common.message.catSuccesCreated'));
             this.$emit("updated", this.folder);
         },
@@ -116,7 +116,7 @@ export default {
 
         axios.post(smartEnuApi+url, {id: this.folder.id, hide: hide}, { headers: getHeader() })
         .then(response=>{
-            this.folder.key = response.data.id;
+           
             this.showMessage('success', this.$t('common.message.title.docCreation'),this.$t('common.message.catSuccesCreated'));
             this.$emit("updated", this.folder);
         },
