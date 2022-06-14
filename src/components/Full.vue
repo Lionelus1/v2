@@ -76,6 +76,9 @@ export default {
             {
               label: this.$t('smartenu.catalogNormDoc'), icon: 'pi pi-fw pi-folder', to: '/documents/catalog/normdoc'
             },
+            {
+              label: this.$t('educomplex.title'), icon: 'pi pi-fw pi-folder', to: '/documents/catalog/educomplex'
+            },
           ]
 
         },

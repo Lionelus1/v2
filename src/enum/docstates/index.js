@@ -57,5 +57,6 @@ export default {
     FolderType: {
       NormativeDocuments: 0,
       Journals: 1,
+      EduComplex: 2,
     },
 }

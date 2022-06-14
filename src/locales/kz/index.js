@@ -804,5 +804,9 @@ export default {
         summary: "Жинақтаушы/Растау",
         respExecutor: "Жауапты орындаушылар",
         halfYear: "жартыжылдық"
-    }
+    },
+    educomplex: {
+        title: "Пәннің оқу-әдістемелік кешені",
+        forme: "Маған қатысты"
+    },
 }

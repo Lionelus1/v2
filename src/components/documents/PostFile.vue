@@ -1,6 +1,5 @@
 <template>
     <div>
-      {{file}}
     <ProgressBar v-if="uploading" mode="indeterminate" style="height: .5em" />
       <div class="p-fluid">
         <div class="p-field">
@@ -106,10 +105,13 @@ export default {
           headers: getFileHeader()
         })
         .then(resp => {
-          
           if (this.file.id === null && resp.data.length>0) {
-              this.file.id = resp.data[0]
-              this.file.key = this.parentID + "-" + this.file.id
+              this.file.key = resp.data[0].uuid
+              this.file.path = resp.data[0].filePath
+              this.file.stateID =  1
+              this.file.statekz = "құрылды"
+              this.file.stateru = "создан"
+              this.file.stateen = "created"
           }
           this.uploading = false;
           this.file.leaf = null;

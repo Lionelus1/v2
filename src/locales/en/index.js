@@ -778,5 +778,10 @@ export default {
         summary: "Summary/Confirmation",
         respExecutor: "Responsible performers",
         halfYear: "semi-annual"
-    }
+    },
+    educomplex: {
+        title: "Educational and methodological complex of the discipline",
+        forme: "Related to me"
+
+    },
 }
