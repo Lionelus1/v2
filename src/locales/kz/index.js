@@ -1,5 +1,6 @@
 export default {
     common: {
+        attention:"Назар аударыңыз",
         loginWelcome:"Smart.enu жүйесіне қош келдіңіз.",
         chooseCert:"Сертификатты таңдаңыз",
         activeList: "Белсенді тізім",
@@ -204,6 +205,7 @@ export default {
             userSuccessInserted: "Қолданушы сәтті қосылды, авторизациялық мәліметтерді қолданушға жіберу үшін жүктеп алыңыз. ",
             selectRole: "Рөлді таңдаңыз",
             selectVariant: "Керек нұсқаны таңдаңыз",
+            selectUsers: "Қолданушыларды таңдаңыз",
             userIINExists: "Көрсетілген ЖСН бойынша қолданушы бұрыннан бар",
             accessDenied: "Бұл құжатты көруге құзіретіңіз жоқ!",
             saveChanges: "Алдымен өззгерістерді сақтаңыз",
@@ -332,6 +334,8 @@ export default {
             created: "Келісім-шарт жобасы сәтті құрылды"
         },
         setnumber: "Нөмір тағайындау",
+        assigner: "Тағайындаған",
+
 
     },
     hdfs: {

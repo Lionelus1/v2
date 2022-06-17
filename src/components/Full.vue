@@ -421,6 +421,10 @@ export default {
       background: #007bff;
       color: #ffffff;
     }
+     &.status-revision {
+      background: #ffcdd2;
+      color: #c63737;
+    }
     
   }
 </style>

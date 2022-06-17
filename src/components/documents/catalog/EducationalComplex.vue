@@ -1,14 +1,16 @@
 <template>
     <div class="card">
+        <BlockUI :blocked="approving" :fullScreen="true"></BlockUI>
         <div>
             <h4 class="p-ml-3">{{ $t("educomplex.title") }}</h4>
             <Toolbar class="p-m-0 p-p-1" style="position:relative;">
                 
                 <template #start>
-                    <Button v-if="findRole(null, 'teacher') || findRole(null, 'main_administrator')" :disabled="selected===null || file.depType !=2" @click="resetFileInfo();openDialog('fileUpload')" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-file-circle-plus fa-xl"></i></Button>
-                    <Button v-if="loginedUser.userID == file.ownerId" :disabled="selected===null || file.depType !=3" @click="resetFileInfo();openDialog('fileUpload')" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-file-contract fa-xl"></i></Button>
-                    <!-- <Button @click="openDialog('fileUpload')" :disabled="selected===null || file.depType !=2" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-file-pen fa-xl"></i></Button>
-                    <Button @click="deleteFile(false)" :disabled="selected===null || file.type !=1" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-file-circle-minus fa-xl"></i></Button>
+                    <Button  :disabled="selected===null || file.depType !=2" @click="resetFileInfo();openDialog('fileUpload')" class="p-button-info p-p-1 p-mr-2"><i class="fa-solid fa-file-circle-plus fa-xl"></i>&nbsp;{{$t('common.add')}}</Button>
+                    <Button v-if="loginedUser != null && loginedUser.userID == file.ownerId && file.stateID == 1" :disabled="selected===null || file.depType !=3" @click="openDialog('sendToApprove')" class=" p-button-info p-p-1 p-mr-2"><i class="fa-solid fa-file-contract fa-xl"></i>&nbsp;{{$t('common.toapprove')}}</Button>
+                    <Button v-if="loginedUser != null && loginedUser.userID != file.ownerId && file.stateID == 2" :disabled="selected===null || file.depType !=3" @click="openDialog('revision')" class=" p-button-warning p-p-1 p-mr-2"><i class="fa-solid fa-file-circle-exclamation fa-xl"></i>&nbsp;{{$t('common.revision')}}</Button>
+                    <Button v-if="loginedUser != null && loginedUser.userID == file.ownerId && file.stateID == 4" @click="openDialog('fileUpload')" :disabled="selected===null || file.depType !=3" class="p-button-help p-p-1 p-mr-2"><i class="fa-solid fa-file-pen fa-xl"></i>&nbsp;{{$t('common.edit')}}</Button>
+                    <!--    <Button @click="deleteFile(false)" :disabled="selected===null || file.type !=1" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-file-circle-minus fa-xl"></i></Button>
                     <Button v-if="!file.hidden" @click="deleteFile(true)" :disabled="selected===null || file.type !=1" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-eye-slash fa-xl"></i></Button>
                     <Button v-if="file.hidden" @click="showFile()" :disabled="selected===null || file.type !=1" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-eye fa-xl"></i></Button>
                     <Button @click="downloadFile()" :disabled="selected===null || file.type !=1" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-file-arrow-down fa-xl"></i></Button> -->
@@ -23,51 +25,62 @@
       </Column>
       <Column field="state" :header="$t('common.state')">
         <template #body="slotProps">
-             <span :class="'customer-badge status-' + slotProps.node.stateen">{{slotProps.node["state"+$i18n.locale]}}</span>
+            <span :class="'customer-badge status-' + slotProps.node.stateen">{{slotProps.node["state"+$i18n.locale]}}</span>
         </template>
       </Column>
       <Column field="path">
         <template #body="slotProps">
              <Button v-if="slotProps.node.path != null" @click="downloadFile(slotProps.node.path)" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-file-arrow-down fa-xl"></i></Button>
+             <Button v-if="slotProps.node.key != null && slotProps.node.depType ===3 && slotProps.node.stateID !==4" @click="onNodeSelect(slotProps.node);openDialog('signerInfo')" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-eye fa-xl"></i></Button>
+             <Button v-if="slotProps.node.key != null && slotProps.node.depType ===3 &&  slotProps.node.stateID ===4" @click="onNodeSelect(slotProps.node);openDialog('docInfo')" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-eye fa-xl"></i></Button>
         </template>
       </Column>
+     
     </TreeTable>
     </div>
-    <Dialog :header="$t('common.newCatalog')" v-model:visible="dialogOpenState.addFolder" :style="{width: '60vw'}" :modal="true">
-      <PostFolder :modelValue="folder" @updated="folderUpdated"></PostFolder>
-    </Dialog>
-    <Dialog :header="$t('common.move')" v-model:visible="dialogOpenState.moveFolder"  :style="{width: '75vw'}" :maximizable="true" :modal="true" :contentStyle="{height: '300px'}"> 
-      <TreeTable :scrollable="true" scrollHeight="flex"  class="p-treetable-sm"  @node-select="onMoveNodeSelect" :value="catalog" :lazy="true" :loading="loading"
-        @nodeExpand="onExpand($event)" :totalRecords="totalRecords" selectionMode="single" v-model:selectionKeys="moveto">
-        <Column field="name" :header="$t('common.name')" :expander="true">
-<template #body="slotProps">
-    <span v-if="slotProps.node.hidden"><i class="fa-solid fa-eye-slash"></i>&nbsp;{{slotProps.node["name"+$i18n.locale]}}</span>
-    <span v-else><i :class="'fa-solid fa-' + (slotProps.node.type === 0 ? 'folder' : 'file')"></i>&nbsp;{{slotProps.node["name"+$i18n.locale]}}</span>
-</template>
-        </Column>
-      </TreeTable>
-<template #footer>
-    <Button label="No" icon="pi pi-times" @click="closeDialog('moveFolder')" class="p-button-text" />
-    <Button label="Yes" icon="pi pi-check" @click="moveFolder" autofocus />
-</template>
-    </Dialog>
-    <Dialog :header="$t('hdfs.uploadTitle')" v-model:visible="dialogOpenState.fileUpload" :style="{width: '60vw'}" :modal="true"> 
-      <PostFile :modelValue="file" directory="eduMetComplex" :parentID="folder.id" @updated="fileUpdated"></PostFile>
-    </Dialog>
-
-    <PostFolder style="display:none" ref="postFolder" :modelValue="folder" @updated="folderMoved"></PostFolder>
+  
     
+    <Dialog :header="$t('hdfs.uploadTitle')" v-model:visible="dialogOpenState.fileUpload" :style="{width: '60vw'}" :modal="true"> 
+      <PostFile :fileUpload="true" :modelValue="file" directory="eduMetComplex" :parentID="parent.id" @updated="fileUpdated"></PostFile>
+    </Dialog>
+   <Sidebar v-model:visible="dialogOpenState.signerInfo" position="right" class="p-sidebar-lg" style="overflow-y: scroll">
+        <DocSignaturesInfo :docIdParam="file.key" @signed="signed"></DocSignaturesInfo>
+    </Sidebar>
+    <Sidebar v-model:visible="dialogOpenState.docInfo" position="right" class="p-sidebar-lg" style="overflow-y: scroll">
+        <DocInfo :ID="file.id" ></DocInfo>
+    </Sidebar>
+    <Dialog :header="$t('common.action.sendToApprove')" v-model:visible="dialogOpenState.sendToApprove" :style="{width: '60vw'}" class="p-fluid">
+        <ProgressBar v-if="approving" mode="indeterminate" style="height: .5em" />
+        <div class="p-field">
+            <ApprovalUsers :approving="approving" v-model="selectedUsers" @closed="closeDialog('sendToApprove')" @approve="approve($event)"></ApprovalUsers>
+        </div>
+    </Dialog>
+    <Dialog :modal="true"  v-bind:header="$t('common.revision')" v-model:visible="dialogOpenState.revision" :style="{width: '50vw'}">
+        <div class="p-fluid">
+        <div class="p-field">
+            <label for="dialognote">{{$t('common.comment')}}</label>
+            <InputText id="dialognote" class="p-mb-2" v-bind:placeholder="$t('common.comment')" v-model="revisionComment" type="text" />
+        </div>
+        </div>
+        <template #footer>
+        <Button v-bind:label="$t('common.no')" icon="pi pi-times" @click="closeDialog('toApproval')" class="p-button-text"/>
+        <Button v-bind:label="$t('common.yes')" icon="pi pi-check" @click="toRevision" autofocus />
+        </template>
+    </Dialog>
   </div>
 </template>
 
 <script>
 import axios from "axios";
-import PostFolder from "../PostFolder.vue"
 import PostFile from "../PostFile.vue"
+import DocInfo from "../DocInfo.vue"
 import { smartEnuApi, getHeader, findRole } from "@/config/config";
-import Enum from "@/enum/docstates/index"
+import DocSignaturesInfo from "@/components/DocSignaturesInfo";
+import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers";
+import DocState from "@/enum/docstates/index"
+
 export default {
-    components: { PostFolder, PostFile },
+    components: {ApprovalUsers, DocInfo, DocSignaturesInfo, PostFile },
     data() {
         return {
             catalog: [],
@@ -81,33 +94,20 @@ export default {
                 showDocs: false,
                 userFilter: true,
             },
-            loginedUser: this.$store.state.loginedUser,
+            
+            DocState: DocState,
+            revisionComment: "",
+            approving: false,
+            loginedUser: null,
+            selectedUsers: [
+                {stage: 1, users: [this.$store.state.loginedUser], sertificate: {namekz: "Жеке тұлғаның сертификаты", nameru: "Сертификат физического лица", nameen: "Certificate of an individual", value: "individual"}}
+            ],
             loading: false,
             parent: null,
             selected: null,
-            moveto: null,
-            moveNode: null,
-            groupsData: [
-                { namekz: 'білім алушы', nameru: 'обучающиеся', nameen: 'students', id: 0 },
-                { namekz: 'профессор-оқытушылар құрамы', nameru: 'профессорско-преподавательский состав', nameen: 'teaching staff', id: 1 },
-                { namekz: 'қызметкерлер', nameru: 'сотрудники', nameen: 'staff', id: 2 },
-            ],
             dir: "normativedocs",
             language: ['kz', 'ru', 'en'],
-            folder: {
-                groups: null,
-                namekz: '',
-                nameru: '',
-                nameen: '',
-                code: '',
-                id: -1,
-                createdDate: null,
-                updatedDate: null,
-                leaf: false,
-                type: Enum.FolderType.NormativeDocuments,
-                parentId: null,
-                depType : 0,
-            },
+           
             file: {
                 namekz: '',
                 nameru: '',
@@ -128,39 +128,16 @@ export default {
                 addFolder: false,
                 moveFolder: false,
                 fileUpload: false,
+                signerInfo: false,
+                sendToApprove: false,
+                revision: false,
+                docInfo: false,
             },
-
-
-            folderItems: [{
-                    label: 'Add',
-                    icon: 'pi pi-plus',
-                    command: () => {
-                        this.$toast.add({ severity: 'info', summary: 'Add', detail: 'Data Added' });
-                    }
-                },
-                {
-                    label: 'Edit',
-                    icon: 'pi pi-pencil',
-                    command: () => {
-                        this.$toast.add({ severity: 'info', summary: 'Add', detail: 'Data Added' });
-                    }
-                },
-                {
-                    label: 'Delete',
-                    icon: 'pi pi-trash',
-                    command: () => {
-                        this.$toast.add({ severity: 'info', summary: 'Add', detail: 'Data Added' });
-                    }
-                },
-                {
-                    label: 'Delete',
-                    icon: 'pi pi-table',
-                    command: () => {
-                        this.$toast.add({ severity: 'info', summary: 'Add', detail: 'Data Added' });
-                    }
-                },
-            ],
         }
+    },
+    created() {
+        this.loginedUser = this.$store.state.loginedUser;
+
     },
     mounted() {
         this.getFolders(null);
@@ -171,6 +148,41 @@ export default {
         window.removeEventListener('resize', this.onResize);
     },
     methods: {
+        signed(event) {
+            this.file.stateID = 7,
+            this.file.stateen = "signed"
+            this.file.stateru = "подписан"
+            this.file.statekz = "қол қойылды"
+        },
+        approve(event) {
+            this.approving = true;
+            axios.post(smartEnuApi + "/doc/sendtoapprovebystage", {id: this.file.id, appUsers: event}, {headers: getHeader()}).then(res => {
+                this.$toast.add({
+                    severity: "success",
+                    summary: this.$t('common.message.succesSendToApproval'),
+                    life: 3000,
+                });
+
+                this.closeDialog("sendToApprove");
+                this.file.stateID = 2
+                this.file.stateen = "inapproval"
+	            this.file.statekz = "келісуде"
+                this.file.stateru = "на согласовании"
+                this.approving = false;
+	
+            }).catch(error => {
+                this.approving =false;
+                if (error.response && error.response.status === 401) {
+                this.$store.dispatch("logLout");
+                } else {
+                this.$toast.add({
+                    severity: "error",
+                    summary: error,
+                    life: 3000,
+                });
+                }
+            });
+        },
         onResize() {
             this.windowHeight = window.innerHeight - 270
         },
@@ -194,7 +206,6 @@ export default {
                     if (parent == null) {
                         this.catalog = response.data
                     } else {
-                        console.log(response.data)
                         parent.children = response.data
                     }
                     this.loading = false
@@ -206,24 +217,6 @@ export default {
                     } else
                         console.error(error)
                 })
-        },
-
-        resetForm() {
-            this.folder = {
-                groups: this.folder.groups,
-                namekz: '',
-                nameru: '',
-                nameen: '',
-                code: '',
-                id: null,
-                key: null,
-                createdDate: null,
-                updatedDate: null,
-                leaf: false,
-                type: Enum.FolderType.NormativeDocuments,
-                parentID: Number(this.folder.key),
-                depType : 0,
-            }
         },
         resetFileInfo() {
             this.file = {
@@ -254,73 +247,42 @@ export default {
         openDialog(dialog) {
             this.dialogOpenState[dialog] = true;
         },
-        folderUpdated(event) {
-            this.closeDialog('addFolder');
-            if (this.folder.key !== this.parent.key) {
-                if (this.parent.leaf) {
-                    return
-                }
-                if (this.parent.children == null) {
-                    this.parent.children = []
-                }
-                this.parent.children.push(event)
-
-            } else {
-                this.folder = event
-                this.folder.leaf = false
-            }
-        },
+       
         fileUpdated(event) {
             this.closeDialog('fileUpload');
             if (this.parent.leaf) {
                 return
             }
+
             if (this.parent.children == null) {
                 this.parent.children = []
             }
             event.depType = 3
-            this.parent.children.push(event)
+            event.ownerId = this.loginedUser.userID
+            event.stateID = 1
+            event.statekz = "құрылды"
+            event.stateru = "создан"
+            event.stateen = "created"
+            event.leaf = null
+
+            if (this.parent.key !== event.key)  {
+                this.parent.children.push(event)
+            } else {
+                this.file = event
+            }
             
         },
-        folderMoved(event) {
-            this.closeDialog('moveFolder');
-            this.deleteChild(this.catalog[0])
-            this.moveNode.children.push(event)
-
-        },
+       
         closeDialog(dialog) {
             this.dialogOpenState[dialog] = false;
 
         },
         onNodeSelect(node) {
             this.parent = node;
-            this.folder = node; //JSON.parse(JSON.stringify(node));
             this.file = node;
         },
-        onMoveNodeSelect(node) {
-            this.moveNode = node;
-        },
-        deleteFolder(hide) {
-            this.$confirm.require({
-                message: this.$t("common.confirmation"),
-                header: this.$t("common.confirm"),
-                icon: 'pi pi-exclamation-triangle',
-                accept: () => {
-                    let url = "/doc/deleteFolder";
-                    axios.post(smartEnuApi + url, { id: this.folder.id, hide: hide }, { headers: getHeader() })
-                        .then(_ => {
-                                this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
-                                this.folder.hidden = hide
-                                if (!hide) {
-                                    this.deleteChild(this.catalog[0])
-                                }
-                            },
-                            error => {
-                                console.log(error);
-                            });
-                },
-            });
-        },
+       
+       
         deleteFile(hide) {
             this.$confirm.require({
                 message: this.$t("common.confirmation"),
@@ -342,16 +304,7 @@ export default {
                 },
             });
         },
-        moveFolder() {
-            if (this.folder.key === this.moveNode.key || this.folder.parentID === this.moveNode.key) {
-                this.showMessage('warn', this.$t('common.move'), this.$t('common.message.impossible'))
-                return
-            }
-
-            this.folder.parentID = Number(this.moveNode.key);
-            this.folder.groups = this.moveNode.groups;
-            this.$refs.postFolder.moveFolder(this.folder);
-        },
+       
         deleteChild(node) {
             if (!(node.children && node.children.length)) {
                 return
@@ -364,23 +317,7 @@ export default {
                 this.deleteChild(node.children[i])
             }
         },
-        showFolder() {
-            let url = "/doc/showFolder";
-            axios.post(smartEnuApi + url, { id: this.folder.id }, { headers: getHeader() })
-                .then(_ => {
-                    this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
-                    this.folder.hidden = false
-                    this.selected.hidden = false
-
-                })
-                .catch(error => {
-                    console.log(error)
-                    if (error.response.status == 401) {
-                        this.$store.dispatch("logLout");
-                    } else
-                        console.error(error)
-                })
-        },
+        
         showFile() {
             let url = "/doc/showFile";
             axios.post(smartEnuApi + url, { id: this.file.id }, { headers: getHeader() })
@@ -424,6 +361,33 @@ export default {
                     });
             }
         },
+        toRevision() {
+            let url ="/doc/changestate"
+            var req = {
+            docID: this.file.id,
+            state: this.DocState.REVISION.ID,
+            comment: this.revisionComment,
+            }
+            this.approving = true
+            axios.post(smartEnuApi+url, req, { headers: getHeader() }).then(()=>{
+            this.file.stateID = this.DocState.REVISION.ID;
+            this.file.statekz =  "түзетуге";
+            this.file.stateкг =  "на доработку";
+            this.file.stateen =  "revision";
+
+            this.file.revision = false;
+            this.approving = false
+            })
+            .catch(error => {
+            this.approving = false
+            if (error.response && error.response.status == 401) {
+                this.$store.dispatch("logLout");
+            } else 
+                console.log(error);
+            })
+
+            this.dialogOpenState.revision = false;
+        }
     }
 }
 </script>

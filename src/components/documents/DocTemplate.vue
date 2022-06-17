@@ -389,7 +389,7 @@
           this.dialogOpenState.revision = false;
         })
         .catch(error => {
-          if (error.response.status == 401) {
+          if (error.response && error.response.status == 401) {
             this.$store.dispatch("logLout");
           } else 
           console.log(error);
@@ -589,7 +589,6 @@
         .then(response=>{
 
           let node = new Object();
-            console.log(response.data)
             node.key= response.data.id;
             let nodeData = new Object();
             nodeData.name=response.data.namekz;

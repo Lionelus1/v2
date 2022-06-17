@@ -1,5 +1,6 @@
 export default {
     common: {
+        attention:"Attention",
         loginWelcome:"Welcome to smart.enu system.",
         chooseCert:"Choose the certificate",
         activeList: "Active list",
@@ -205,6 +206,7 @@ export default {
             selectRole: "Plewse, select a role",
             userSuccessInserted: "The user has been successfully created, download the authorization data to send to the user.",
             selectVariant: "Choose the option you need",
+            selectUsers: "Please, select users",
             userIINExists: "User with same iin already exists",
             accessDenied: "You do not have permission to view this document!",
             saveChanges: "Save changes",
@@ -332,7 +334,7 @@ export default {
             created: "Draft contract has been successfully created"
         },
         setnumber: "Set number",
-
+        assigner: "Assigner",
     },
     hdfs: {
         archiveBtn: "Аrchive",

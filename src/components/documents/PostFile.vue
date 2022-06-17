@@ -19,7 +19,7 @@
         </div>
       </div>
       <div class="p-field">
-        <FileUpload v-if="file.id===null" :showUploadButton="false" :showCancelButton="true" ref="ufile" :multiple="false"  class= "p-mt-1"  fileLimit="1" accept=".doc,.docx,.pdf">
+        <FileUpload v-if="showUploader" :showUploadButton="false" :showCancelButton="true" ref="ufile" :multiple="false"  class= "p-mt-1"  fileLimit="1" accept=".doc,.docx,.pdf">
           <template #empty>
             <p>{{$t('hdfs.dragMsg')}}</p>
           </template>
@@ -42,6 +42,7 @@ export default {
         file: this.modelValue,
         state: this.visible,
         uploading: false,
+        showUploader: this.fileUpload,
         validation: {
             namekz: false,
             nameru: false,
@@ -55,6 +56,7 @@ export default {
       modelValue: null,
       directory: null,
       parentID: null,
+      fileUpload: Boolean,
     },
     emits: ['updated'],
     setup(props, context) {
@@ -71,7 +73,7 @@ export default {
       this.validation.nameru = this.file.nameru === null || this.file.nameru === ''
       this.validation.nameen = this.file.nameen === null || this.file.nameen === ''
       this.validation.parent = this.file.parentID === null || this.file.parentID === undefined
-      if (this.file.key === null) {
+      if (this.showUploader) {
         this.validation.file =  this.$refs.ufile.files.length <=0
       }
       var result = true;
@@ -90,7 +92,6 @@ export default {
     },
     updateFile() {
         if (this.notValid()) {
-            console.log("notValid")
             return
         }
         this.uploading = true;
@@ -106,12 +107,14 @@ export default {
         })
         .then(resp => {
           if (this.file.id === null && resp.data.length>0) {
+              this.file.id = resp.data[0].id
               this.file.key = resp.data[0].uuid
               this.file.path = resp.data[0].filePath
               this.file.stateID =  1
               this.file.statekz = "құрылды"
               this.file.stateru = "создан"
               this.file.stateen = "created"
+
           }
           this.uploading = false;
           this.file.leaf = null;

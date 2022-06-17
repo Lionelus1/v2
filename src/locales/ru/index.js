@@ -1,5 +1,6 @@
 export default {
     common: {
+        attention:"Внимание",
         loginWelcome:"Добро пожаловать в систему smart.enu",
         chooseCert:"Выбрать сертификат",
         activeList: "Активный список",
@@ -206,6 +207,7 @@ export default {
             selectRole: "Выберите роль",
             userSuccessInserted: "Пользователь успешно создан, скачайте данные для авторизации для отправки пользователю.",
             selectVariant: "Выберите нужный вариант",
+            selectUsers: "Выберите пользователей",
             userIINExists: "Пользователь с таким же ИИН уже имеется",
             accessDenied: "У вас нет полномочий просматривать этот документ!",
             impossible: "невозможно",
@@ -333,6 +335,7 @@ export default {
             created: "Проект договора успешно создан"
         },
         setnumber: "Присвоить номер",
+        assigner: "Присвоил",
     },
     hdfs: {
         archiveBtn: "Архивировать",

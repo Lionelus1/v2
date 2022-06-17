@@ -16,7 +16,7 @@
 
 <template #end>
     <Button v-if="findRole(null, 'normative_docs_admin')" :disabled="selected===null || file.type !=0" @click="resetFileInfo();openDialog('fileUpload')" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-file-circle-plus fa-xl"></i></Button>
-    <Button @click="openDialog('fileUpload')" :disabled="selected===null || file.type !=1" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-file-pen fa-xl"></i></Button>
+    <Button @click="disableFileUpload();openDialog('fileUpload')" :disabled="selected===null || file.type !=1" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-file-pen fa-xl"></i></Button>
     <Button @click="deleteFile(false)" :disabled="selected===null || file.type !=1" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-file-circle-minus fa-xl"></i></Button>
     <Button v-if="!file.hidden" @click="deleteFile(true)" :disabled="selected===null || file.type !=1" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-eye-slash fa-xl"></i></Button>
     <Button v-if="file.hidden" @click="showFile()" :disabled="selected===null || file.type !=1" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-eye fa-xl"></i></Button>
@@ -52,7 +52,7 @@
 </template>
     </Dialog>
     <Dialog :header="$t('hdfs.uploadTitle')" v-model:visible="dialogOpenState.fileUpload" :style="{width: '60vw'}" :modal="true"> 
-      <PostFile :modelValue="file" directory="normativeDocs" :parentID="folder.id" @updated="fileUpdated"></PostFile>
+      <PostFile :fileUpload="fileUpload" :modelValue="file" directory="normativeDocs" :parentID="folder.id" @updated="fileUpdated"></PostFile>
     </Dialog>
 
     <PostFolder style="display:none" ref="postFolder" :modelValue="folder" @updated="folderMoved"></PostFolder>
@@ -66,6 +66,7 @@ import PostFolder from "../PostFolder.vue"
 import PostFile from "../PostFile.vue"
 import { smartEnuApi, getHeader, findRole } from "@/config/config";
 import Enum from "@/enum/docstates/index"
+
 export default {
     components: { PostFolder, PostFile },
     data() {
@@ -80,6 +81,7 @@ export default {
                 type: 0,
                 showDocs: false,
             },
+            fileUpload : false,
             loading: false,
             parent: null,
             selected: null,
@@ -182,7 +184,6 @@ export default {
                     if (parent == null) {
                         this.catalog = response.data
                     } else {
-                        console.log(response.data)
                         parent.children = response.data
                     }
                     this.loading = false
@@ -213,6 +214,7 @@ export default {
             }
         },
         resetFileInfo() {
+            this.fileUpload = true;
             this.file = {
                 namekz: "",
                 nameru: "",
@@ -222,6 +224,9 @@ export default {
                 createdDate: null,
                 updatedDate: null
             }
+        },
+        disableFileUpload() {
+            this.fileUpload = false;
         },
         onExpand(node, showDocs = false) {
             this.lazyParams.parentID = Number(node.key)
@@ -252,7 +257,9 @@ export default {
         },
         fileUpdated(event) {
             this.closeDialog('fileUpload');
-            if (this.file.key !== this.parent.key == null) {
+           
+
+            if (this.file.key !== this.parent.key) {
                 if (this.parent.leaf) {
                     return
                 }
@@ -407,6 +414,7 @@ export default {
                     });
             }
         },
+        
     }
 }
 </script>
