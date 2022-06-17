@@ -1,5 +1,6 @@
 export default {
     common: {
+        attention:"Внимание",
         loginWelcome:"Добро пожаловать в систему smart.enu",
         chooseCert:"Выбрать сертификат",
         activeList: "Активный список",
@@ -94,6 +95,7 @@ export default {
         main: "Основные",
         meetingUrl: "Ссылка для онлайн собрания",
         meetingPlace: "Место собрания",
+        move: "Перемещение",
         myData: "Мои данные",
         myResume: 'Моё резюме',
         theResume: 'Резюме',
@@ -207,8 +209,10 @@ export default {
             selectRole: "Выберите роль",
             userSuccessInserted: "Пользователь успешно создан, скачайте данные для авторизации для отправки пользователю.",
             selectVariant: "Выберите нужный вариант",
+            selectUsers: "Выберите пользователей",
             userIINExists: "Пользователь с таким же ИИН уже имеется",
             accessDenied: "У вас нет полномочий просматривать этот документ!",
+            impossible: "невозможно",
             saveChanges: "Сохраните изменения"
         },
         language: {
@@ -333,8 +337,10 @@ export default {
             created: "Проект договора успешно создан"
         },
         setnumber: "Присвоить номер",
+        assigner: "Присвоил",
     },
     hdfs: {
+        archiveBtn: "Архивировать",
         title: "Файлы",
         fileName: "Название файла",
         download: "Скачать",
@@ -426,6 +432,17 @@ export default {
 
     },
     smartenu: {
+        NormDoc: "Документ",
+        uploadNormDoc: "Загрузка документов",
+        catalogNormDoc: "Каталог нормативных документов",
+        chooseCatalogNormDoc: "выберите нормативный документ",
+        chooseSuperiorCatalogNormDoc: "Выберите вышестоящую нормативный документ",
+        createOrEditCatalogNormDoc: "Создание/редактирование нормативных документов",
+        catalogNormDocNotFound: "нормативных документы не найдены",
+        loadingcatalogNormDoc: "Загрузка нормативных документов. Пожалуйста, подождите.",
+        addNormDoc:"Добавить документ",
+        editNormDoc: "Редактировать документ",
+        delNormDoc:"Удалить документ",
         categories: "категории",
         selectCategories: "Выберите категории",
         newsList: "Список новостей",
@@ -795,5 +812,9 @@ export default {
         summary: "Свод/Подтверждение",
         respExecutor: "Ответственные исполнители",
         halfYear: "полугодие"
-    }
+    },
+    educomplex: {
+        title: "Учебно-методический комплекс дисциплины",
+        forme: "Относительно меня"
+    },
 }

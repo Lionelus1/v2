@@ -148,10 +148,10 @@
             readonly="true"
             :modelValue="
               this.$i18n.locale === 'kz'
-                ? contract.template.folder.nameKaz
+                ? contract.template.folder.namekz
                 : this.$i18n.locale === 'ru'
-                ? contract.template.folder.nameRus
-                : contract.template.folder.nameEn
+                ? contract.template.folder.nameru
+                : contract.template.folder.nameen
             "
             >
             </InputText
@@ -223,9 +223,7 @@ import {
 import { constantizeGenderInRules } from "lvovich/lib/inclineRules";
 export default {
   name: "Contract",
-
   components: { FindUser, DatePicker, ContragentSelect, DocSignaturesInfo },
-
   data() {
     return {
       contract: null,
@@ -486,7 +484,7 @@ export default {
         })
         .catch((error) => {
           this.loading = false
-          if (error.response.status == 401) {
+          if (error.response && error.response.status == 401) {
             this.$store.dispatch("logLout");
           }
         });

@@ -73,6 +73,12 @@ export default {
             visible: !this.findRole("student")
             },
             {label: 'Келісім-шарттар', icon: 'pi pi-fw pi-copy', to: '/documents/contracts'},
+            {
+              label: this.$t('smartenu.catalogNormDoc'), icon: 'pi pi-fw pi-folder', to: '/documents/catalog/normdoc'
+            },
+            {
+              label: this.$t('educomplex.title'), icon: 'pi pi-fw pi-folder', to: '/documents/catalog/educomplex'
+            },
           ]
 
         },
@@ -125,6 +131,8 @@ export default {
         {
           label: this.$t('smartenu.eventsTitle'), icon: 'pi pi-fw pi-folder', to: '/smartenu/admin/events/events'
         },
+        
+  
         {
           label: this.$t('vaccination.title'), icon: 'pi pi-fw pi-check-circle', to: '/smartenu/vaccination'
         },
@@ -175,8 +183,20 @@ export default {
         },
         
         {
-          label: this.$t('queue.title'), icon: 'pi pi-fw pi-users ',to:'/queue'
-                     
+          label: this.$t('queue.title'), icon: 'pi pi-fw pi-users ',
+           items:[
+            {
+              label:  this.$t('queue.title'), icon: 'pi pi-fw pi-plus-circle', to:'/queue'
+            },
+             {
+              label:  this.$t('queue.addService'), icon: 'pi pi-fw pi-th-large', to:'/queueCategories'
+             },
+            // {
+            //   label:  this.$t('queue.secretary'), icon: 'pi pi-fw pi-user-edit', to:'/queueService'
+            // },
+           
+          ]
+          
         },
       ]
     }
@@ -400,6 +420,10 @@ export default {
     &.status-approved {
       background: #007bff;
       color: #ffffff;
+    }
+     &.status-revision {
+      background: #ffcdd2;
+      color: #c63737;
     }
     
   }

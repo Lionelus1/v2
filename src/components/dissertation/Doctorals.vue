@@ -832,7 +832,6 @@ export default {
           this.regInfo = null;
           this.regInfoDetail = null;
         }
-        console.log(response.data)
         if (this.dialog.defenseConduct) {
             setTimeout(() => {
             this.getMemberState()
@@ -1045,7 +1044,6 @@ export default {
         step: this.selectedDoctoral.dissertation.state == this.dissertationState.VotingRestarted ? 2 : 1,
         password: this.checkPassword,
       }
-      console.log(req)
       axios
       .post(
         smartEnuApi + "/dissertation/checkMyVoice",
@@ -1157,7 +1155,6 @@ export default {
               meetingTime: this.selectedDoctoral.meetingTime,
               language: this.selectedDoctoral.dissertation.language
         }
-        console.log(request)
         axios
           .post(
             smartEnuApi + "/dissertation/setMeetingTime",

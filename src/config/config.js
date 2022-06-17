@@ -45,6 +45,22 @@ export const getHeader = function() {
       return null;
   }
 }
+export const getFileHeader = function() {
+  const tokenData = JSON.parse(window.localStorage.getItem("authUser"));
+
+  if(tokenData){
+    const headers= {
+      'Access-Control-Allow-Credentials':'true',
+      'Content-Type': 'multipart/form-data',
+      'mode': 'no-cors',
+      'Authorization':'Bearer ' + tokenData.access_token
+    }
+    return headers;
+  }
+  else {
+      return null;
+  }
+}
 
 
 

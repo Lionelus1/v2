@@ -1,5 +1,6 @@
 export default {
     common: {
+        attention:"Attention",
         loginWelcome:"Welcome to smart.enu system.",
         chooseCert:"Choose the certificate",
         activeList: "Active list",
@@ -94,6 +95,7 @@ export default {
         meetingPlace: "Meeting place",
         myData: "My details",
         myResume: 'My resume',
+        move: "Move",
         theResume: 'Resume',
         myVacancy: 'My vacancies',
         nameIn: "Name",
@@ -206,9 +208,12 @@ export default {
             selectRole: "Plewse, select a role",
             userSuccessInserted: "The user has been successfully created, download the authorization data to send to the user.",
             selectVariant: "Choose the option you need",
+            selectUsers: "Please, select users",
             userIINExists: "User with same iin already exists",
             accessDenied: "You do not have permission to view this document!",
             saveChanges: "Save changes",
+            impossible: "impossible",
+
         },
         language: {
             kz: "in kazakh",
@@ -331,9 +336,10 @@ export default {
             created: "Draft contract has been successfully created"
         },
         setnumber: "Set number",
-
+        assigner: "Assigner",
     },
     hdfs: {
+        archiveBtn: "Аrchive",
         title: "Files",
         fileName: "File name",
         download: "Download",
@@ -425,6 +431,14 @@ export default {
 
     },
     smartenu: {
+        NormDoc: "Document",
+        uploadNormDoc: "Uploading documents",
+        catalogNormDoc: "Catalog of regulatory documents",
+        chooseCatalogNormDoc: "select a regulatory document",
+        chooseSuperiorCatalogNormDoc: "Select a higher regulatory document",
+        createOrEditCatalogNormDoc: "Create/edit regulatory documents",
+        catalogNormDocNotFound: "Catalog of regulatory documents not found",
+        loadingcatalogNormDoc: "Loading regulatory documents. Please wait.",
         categories: "categories",
         selectCategories: "Select categories",
         newsList: "News list",
@@ -764,31 +778,15 @@ export default {
             quarter: "Quarterly",
             halfYear: "Semi-annual"
         },
-        quarterYear: "Whole year"
+        quarterYear: "Whole year",
+        resultIndicator: "Indicator of direct results",
+        summary: "Summary/Confirmation",
+        respExecutor: "Responsible performers",
+        halfYear: "semi-annual"
     },
-    queue: {
-        title: "Queue",
-        secretary:"Maintenance",
-        queues:"Queues",
-        responsible:"responsible",
-        queueNotFound:"Queue not found",
-        createQueue:"Create/Modify Queue",
-        next:"Next",
-        number: "Queue number",
-        terminal:"Terminal",
-        tv:"TV",
-        count: "There are {n} people waiting in front of you",
-        operator:"Operator",
-        ticketCount: "Tickets queued:",
-        downtime: "Downtime:",
-        serviceTime: "Service time:",
-        called: "Called visitor:",
-        dnshowup: "Didn't show up",
-        norows: "Queue not found",
-        served: "Visitor served",
-        redirect: "Redirect",
-        selectTicket:"Select ticket",
-        call: "Call",
-        warning:"Take a photo of the coupon or print it by clicking on «Print». If you take a photo, be sure to close the window with the «Close button»!!!"
+    educomplex: {
+        title: "Educational and methodological complex of the discipline",
+        forme: "Related to me"
+
     },
 }
