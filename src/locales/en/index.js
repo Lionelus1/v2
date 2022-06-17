@@ -1,5 +1,6 @@
 export default {
     common: {
+        attention:"Attention",
         loginWelcome:"Welcome to smart.enu system.",
         chooseCert:"Choose the certificate",
         activeList: "Active list",
@@ -93,6 +94,7 @@ export default {
         meetingPlace: "Meeting place",
         myData: "My details",
         myResume: 'My resume',
+        move: "Move",
         theResume: 'Resume',
         myVacancy: 'My vacancies',
         nameIn: "Name",
@@ -204,9 +206,12 @@ export default {
             selectRole: "Plewse, select a role",
             userSuccessInserted: "The user has been successfully created, download the authorization data to send to the user.",
             selectVariant: "Choose the option you need",
+            selectUsers: "Please, select users",
             userIINExists: "User with same iin already exists",
             accessDenied: "You do not have permission to view this document!",
             saveChanges: "Save changes",
+            impossible: "impossible",
+
         },
         language: {
             kz: "in kazakh",
@@ -329,9 +334,10 @@ export default {
             created: "Draft contract has been successfully created"
         },
         setnumber: "Set number",
-
+        assigner: "Assigner",
     },
     hdfs: {
+        archiveBtn: "Аrchive",
         title: "Files",
         fileName: "File name",
         download: "Download",
@@ -423,6 +429,14 @@ export default {
 
     },
     smartenu: {
+        NormDoc: "Document",
+        uploadNormDoc: "Uploading documents",
+        catalogNormDoc: "Catalog of regulatory documents",
+        chooseCatalogNormDoc: "select a regulatory document",
+        chooseSuperiorCatalogNormDoc: "Select a higher regulatory document",
+        createOrEditCatalogNormDoc: "Create/edit regulatory documents",
+        catalogNormDocNotFound: "Catalog of regulatory documents not found",
+        loadingcatalogNormDoc: "Loading regulatory documents. Please wait.",
         categories: "categories",
         selectCategories: "Select categories",
         newsList: "News list",
@@ -766,5 +780,10 @@ export default {
         summary: "Summary/Confirmation",
         respExecutor: "Responsible performers",
         halfYear: "semi-annual"
-    }
+    },
+    educomplex: {
+        title: "Educational and methodological complex of the discipline",
+        forme: "Related to me"
+
+    },
 }

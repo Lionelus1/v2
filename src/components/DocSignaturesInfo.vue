@@ -16,12 +16,12 @@
                 </div>
             </TabPanel>
             <TabPanel :header="$t('ncasigner.goToDoc')" :disabled="!isShow">
-                <div class="card">
-                  <embed :src="file" style="width: 100%; height: 1000px" v-if="file" type="application/pdf" />
-
+                <div class="p-col-12" >
+                    <embed v-if="docInfo != null && docInfo.filePath != null && docInfo.filePath.includes('.pdf') && file != null" :src="file" style="width: 100%; height: 1000px" type="application/pdf" />
+                    <Button v-else :label="$t('common.download')" icon="pi pi-download" @click="downloadFile(docInfo.filePath)" class="p-button p-ml-2" />
                 </div>
             </TabPanel>
-            <TabPanel v-if="docInfo.docHistory.stateId==2 ||docInfo.docHistory.stateId==6" :header="$t('ncasigner.sign')" :disabled="!isShow">
+            <TabPanel v-if="docInfo && docInfo.docHistory != null && (docInfo.docHistory.stateId==2 ||docInfo.docHistory.stateId==6)" :header="$t('ncasigner.sign')" :disabled="!isShow">
                 <InlineMessage severity="info">{{$t('ncasigner.noteMark')}}</InlineMessage>
                 <div class="p-mt-2">
                     <Button icon="pi pi-user-edit" class="p-button-primary" @click="sign" :label="$t('ncasigner.sign')" />
@@ -40,7 +40,6 @@ import { getHeader, smartEnuApi, b64toBlob } from "@/config/config";
 import html2pdf from "html2pdf.js";
 import DocInfo from "@/components/ncasigner/DocInfo";
 
-
 export default {
     name: "DocSignaturesInfo",
     components: { SignatureQrPdf, DocInfo },
@@ -50,6 +49,7 @@ export default {
             default: null
         },
     },
+    emits: ["signed"],
     data() {
         return {
             signatures: null,
@@ -96,7 +96,7 @@ export default {
                     if (res.data) {
                         this.docInfo = res.data;
                         this.signatures = res.data.signatures;
-                        this.isShow = this.signatures.some(x => x.userId === this.loginedUserId) || this.docInfo.docHistory.setterId === this.loginedUserId;
+                        this.isShow = this.docInfo.creatorID === this.loginedUserId || this.signatures.some(x => x.userId === this.loginedUserId) ||( this.docInfo.docHistory != null && this.docInfo.docHistory.setterId === this.loginedUserId);
                         this.signatures.map(e => {
                             e.sign = this.chunkString(e.signature, 1200)
                         });
@@ -130,7 +130,6 @@ export default {
 
                             if (sign != undefined) {
                                 var req = {
-                                    userID: this.$store.state.loginedUser.userID,
                                     docUUID: this.docInfo.uuid,
                                     sign: sign
                                 };
@@ -141,6 +140,7 @@ export default {
                                         this.signing = false
                                         this.getData()
                                         this.showMessage('success', this.$t('ncasigner.signDocTitle'), this.$t('ncasigner.success.signSuccess'));
+                                        this.$emit("signed", this.docInfo)
                                     })
                                     .catch(error => {
                                         this.signing = false
@@ -168,6 +168,32 @@ export default {
                         }
                     })
                 })
+        },
+        downloadFile(path = null) {
+            if (this.file || path) {
+                axios.post(
+                        smartEnuApi + "/downloadFile", {
+                            filePath: path != null ? path : this.file.path
+                        }, {
+                            headers: getHeader()
+                        }
+                    )
+                    .then(response => {
+                        const link = document.createElement("a");
+                        link.href = "data:application/octet-stream;base64," + response.data;
+                        link.setAttribute("download", this.file.name);
+                        link.download = this.file.name;
+                        link.click();
+                        URL.revokeObjectURL(link.href);
+                    })
+                    .catch((error) => {
+                        this.$toast.add({
+                            severity: "error",
+                            summary: "downloadFileError:\n" + error,
+                            life: 3000,
+                        });
+                    });
+            }
         },
         getSignatures() {
             axios.post(smartEnuApi + `/workPlan/getSignatures`, { doc_id: this.plan.doc_id }, { headers: getHeader() }).then(res => {
