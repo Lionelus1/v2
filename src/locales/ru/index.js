@@ -12,6 +12,7 @@ export default {
         newPassword:"Введите новый пароль",
         newPasswordRe:"Повторно введите пароль",
         createDocument: 'Сформировать документ',
+        createReport: 'Сформировать отчет',
         administration: 'Администрирование',
         academicDegree: "Ученая степень",
         academicTitle: "Ученое звание",
@@ -200,6 +201,7 @@ export default {
             successApproved: "Успешно согласован",
             succesRegistered: "Успешно зарегистрировано",
             succesSaved: "Успешно сохранено",
+            successCompleted: "Успешно выполнено",
             selectRole: "Выберите роль",
             userSuccessInserted: "Пользователь успешно создан, скачайте данные для авторизации для отправки пользователю.",
             selectVariant: "Выберите нужный вариант",
@@ -223,7 +225,13 @@ export default {
         successDone: "Успешно выполнено",
         success: "Успешно",
         downloadSignaturesPdf: "Скачать подписи",
-        signatures: "Подписи"
+        signatures: "Подписи",
+        unit: "Единица измерения",
+        planNumber: "План (плановое число)",
+        suppDocs: "Подтверждающие документы",
+        additionalInfo: "Дополнительная информация",
+        resultSentToCorrect: "Результат отправлен на доработку",
+        toCorrect: "На проверку"
     },
     bank: {
         title: "Банки",
@@ -508,6 +516,31 @@ export default {
             list: "не удалость загрузить список вакцин"
         }
     },
+  
+    queue: {
+        title: "Очередь",
+        secretary:"Обслуживание",
+        queues:"Очереди",       
+        responsible:"Ответственный",
+        queueNotFound:"Очередь не найден",
+        createQueue:"Создать/изменить очередь",  
+        next:"Следующий",
+        number: "Номер очереди",
+        terminal:"Терминал",
+        tv:"Телевизор",
+        count: "Перед вами {n} ожидающих",
+        operator:"Оператор",
+        ticketCount: "Талонов в очереди:",
+        downtime: "Время простоя:",
+        serviceTime: "Время получения услуги:",
+        called: "Вызванный посетитель:",
+        dnshowup: "Не явился",
+        norows: "Очередь не найден",
+        served: "Посетитель обслужен",
+        redirect: "Перенаправить",
+        selectTicket:"Выбрать талон",
+        call: "Вызвать",
+    },
     dissertation: {
         title: "Диссертационный совет",
         council: {
@@ -690,6 +723,10 @@ export default {
             info: 'Документ успешно создан. Для проверки документа скачайте его. Далее подпишите электронный документ используя ЭЦП первого руководителя вашей организации.',
             error: 'Не удалось подписать документ!'
         },
+        report: {
+          title: 'Отчет',
+          success: 'Успешно сформирован!'
+        },
         doc: {
             upInOne: '(загрузить в одном файле)',
             up: 'Загрузка документов',
@@ -746,8 +783,13 @@ export default {
         },
         reportTypes: {
             year: "Годовой",
-            quarter: "Квартальный"
+            quarter: "Квартальный",
+            halfYear: "Полугодовой"
         },
-        quarterYear: "Весь год"
+        quarterYear: "Весь год",
+        resultIndicator: "Показатель прямых результатов",
+        summary: "Свод/Подтверждение",
+        respExecutor: "Ответственные исполнители",
+        halfYear: "полугодие"
     }
 }

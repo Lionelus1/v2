@@ -11,6 +11,8 @@ export default {
         headFio: 'Бірінші басшының толық аты жөні',
         newPassword:"Жаңа құпиясөзді енгізіңіз",
         newPasswordRe:"Құпиясөзді қайталап енгізіңіз",
+        createDocument: 'Құжатты құрастыру',
+        createReport: 'Есепті құрастыру',
         administration: 'Әкімшілік',
         academicDegree: "Ғылыми дәрежесі",
         academicTitle: "Ғылыми атағы",
@@ -197,6 +199,7 @@ export default {
             succesSendToApproval: "Келісімге сәтті жіберілді",
             succesRegistered: "Сәтті тіркелді",
             succesSaved: "Сәтті сақталды",
+            successCompleted: "Сәтті орындалды",
             userSuccessInserted: "Қолданушы сәтті қосылды, авторизациялық мәліметтерді қолданушға жіберу үшін жүктеп алыңыз. ",
             selectRole: "Рөлді таңдаңыз",
             selectVariant: "Керек нұсқаны таңдаңыз",
@@ -220,7 +223,13 @@ export default {
         success: "Сәтті",
         successDone: "Сәтті орындалды",
         downloadSignaturesPdf: "Қолтаңбаларды жүктеу",
-        signatures: "Қолтаңбалар"
+        signatures: "Қолтаңбалар",
+        unit: "Өлшем бірлігі",
+        planNumber: "Жоспар",
+        suppDocs: "Растайтын құжаттар",
+        additionalInfo: "Қосымша ақпарат",
+        resultSentToCorrect: "Нәтиже түзетуге жіберілді",
+        toCorrect: "Тексеруге жіберу"
     },
     bank: {
         title: "Банктер",
@@ -507,6 +516,31 @@ export default {
             list: "вакцина тізімі жүктелмеді"
         }
     },
+    queue: {
+        title: "Кезек",
+        secretary:"Қызмет көрсету",
+        queues:"Кезектер",       
+        responsible:"Кезекке жауапты",
+        queueNotFound:"Кезек табылмады",
+        createQueue:"Кезек құру/өзгерту",  
+        next:"Келесі",
+        number: "Кезек нөмірі",
+        terminal:"Терминал",
+        tv:"Теледидар",
+        count: "Сіздің алдыңызда {n} адам бар",
+        operator:"Оператор",
+        ticketCount: "Кезектегі талондар саны:",
+        downtime: "Бос тұру уақыты:",
+        serviceTime: "Қызмет алу уақыты:",
+        called: "Шақырылушы:",
+        dnshowup: "Келмеді",
+        norows: "Кезек табылмады",
+        served: "Қызмет алды",
+        redirect: "Басқа терезеге",
+        selectTicket:"Таңдап шақыру",
+        call: "Шақыру",
+    },
+    
     dissertation: {
         title: "Диссертациялық кеңес",
         council: {
@@ -691,6 +725,10 @@ export default {
             info: 'Құжат сәтті құрылды. Тексеру үшін құжатты жүктеп алыңыз. Әрі қарай ұйымыңыздың бірінші басшысының ЭЦҚ-сы арқылы электрондық құжатқа қол қойыңыз.',
             error: 'Құжатқа қол қою мүмкін болмады!'
         },
+        report: {
+            title: 'Есеп алу',
+            success: 'Сәтті құрылды!'
+        },
         doc: {
             upInOne: '(бір файлда жүктеу)',
             up: 'Құжаттарды жүктеу',
@@ -747,8 +785,13 @@ export default {
         },
         reportTypes: {
             year: "Жылдық",
-            quarter: "Тоқсандық"
+            quarter: "Тоқсандық",
+            halfYear: "Жартыжылдық"
         },
-        quarterYear: "Жыл бойы"
+        quarterYear: "Жыл бойы",
+        resultIndicator: "Нәтиже көрсеткіші",
+        summary: "Жинақтаушы/Растау",
+        respExecutor: "Жауапты орындаушылар",
+        halfYear: "жартыжылдық"
     }
 }

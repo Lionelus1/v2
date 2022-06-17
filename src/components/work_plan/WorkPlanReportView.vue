@@ -1,4 +1,5 @@
 <template>
+
   <div>
     <div class="p-col-12">
       <div class="card" v-if="isPlanCreator && !isReportSentApproval">
@@ -10,9 +11,9 @@
         <Button :label="$t('common.signatures')" icon="pi pi-file"
                 @click="viewSignatures"
                 class="p-button p-ml-2"/>
-<!--        <Button label="" icon="pi pi-download"
+        <Button label="" icon="pi pi-download" v-if="plan && plan.is_oper"
                 @click="downloadWord"
-                class="p-button p-button-info p-ml-2"/>-->
+                class="p-button p-button-info p-ml-2"/>
       </div>
       <div class="card" v-if="isApproval && !isApproved">
         <Button v-if="isApproval && !isRejected" :label="$t('common.action.approve')" icon="pi pi-check"
@@ -105,7 +106,8 @@ export default {
         quarter: null,
         report_name: null,
         report_type: null,
-        doc_id: null
+        doc_id: null,
+        halfYearType: null
       },
       isPlanCreator: false,
       pdfOptions: {
@@ -120,7 +122,9 @@ export default {
           format: 'letter',
           orientation: 'landscape',
         },
-        pagebreak: {avoid: 'tr'},
+        pagebreak: {
+          avoid: ['tr']
+        },
         filename: "work_plan_report.pdf",
       },
       approval_users: [],
@@ -143,6 +147,8 @@ export default {
     this.report.report_name = this.$route.params.name;
     this.report.report_type = parseInt(this.$route.params.type);
     this.report.doc_id = this.$route.params.doc_id;
+    this.report.halfYearType = this.$route.params.halfYearType;
+    this.report.department_id = this.$route.params.department_id;
     this.loginedUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
     //this.plan = JSON.parse(localStorage.getItem("workPlan"));
     //this.getReport();
@@ -207,11 +213,10 @@ export default {
           {headers: getHeader()}).then(res => {
         if (res.data) {
           this.source = `data:application/pdf;base64,${res.data}`;
-          this.blobSource = this.b64toBlob(res.data)
+          this.blobSource = URL.createObjectURL(this.b64toBlob(res.data));
           this.document = res.data;
-        } else {
-          this.getData();
         }
+        this.getData();
       }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
@@ -227,7 +232,9 @@ export default {
     initReportFile() {
       //let workPlanId = this.data.work_plan_id;
       const pdfContent = this.$refs.report.$refs.toPdf;
-      const worker = html2pdf().set(this.pdfOptions).from(pdfContent);
+      this.getGeneratedPdf();
+
+      /*const worker = html2pdf().set(this.pdfOptions).from(pdfContent);
       const worker1 = html2pdf().set(this.pdfOptions).from(pdfContent);
 
       worker.toPdf().output("datauristring").then((pdf, item) => {
@@ -247,18 +254,21 @@ export default {
         fd.append('filename', this.pdfOptions.filename)
         //this.fileFd.append('work_plan_id', workPlanId)
         this.emitter.emit("reportFD", fd);
-      });
+      });*/
     },
     getData() {
       axios.post(smartEnuApi + `/workPlan/getWorkPlanReportData`, {
         work_plan_id: parseInt(this.report.work_plan_id),
-        quarter: this.report.report_type === 2 ? this.report.quarter : null
+        quarter: this.report.report_type === 2 ? this.report.quarter : null,
+        halfYearType: this.report.report_type === 3 ? this.report.halfYearType : null,
+        department_id: this.report.department_id ? this.report.department_id : null
       }, {headers: getHeader()}).then(res => {
         ///// FLATTEN ARRAY
         this.items = treeToList(res.data, 'children', this.plan.lang);
         if (!this.source) {
           this.$nextTick(() => {
-            this.initReportFile();
+            this.getGeneratedPdf();
+            //this.initReportFile();
           });
         }
       }).catch(error => {
@@ -435,16 +445,15 @@ export default {
       })
     },
     async downloadWord() {
-      const header = `<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-                        <html xmlns:office="urn:schemas-microsoft-com:office:office"
-                              xmlns:word="urn:schemas-microsoft-com:office:word"
-                              xmlns="http://www.w3.org/TR/REC-html40"><head>`;
+      this.getData();
+      const header = `<html>`;
       const html = this.$refs.report.$refs.toPdf.innerHTML;
       let css = (
           '<style>' +
-          '@page WordContent{size: 841.95pt 595.35pt;mso-page-orientation:landscape;}' +
-          'div.WordContent {page:WordContent;}' +
-          'table{width:100%;border-collapse:collapse;border:1px gray solid}td, th{border:1px gray solid;padding:2px;}th{font-weight: bold}'+
+          '@page WordSection1{size: 841.9pt 595.3pt;mso-page-orientation: landscape;}' +
+          'div.WordSection1 {page:WordSection1;}' +
+          'table{width:100%;border-collapse:collapse;border:1px gray solid;font-size: 10.0pt !important;}td{border:1px gray solid;padding:0cm 5.4pt 0cm 5.4pt;}'+
+          '.header {font-weight: bold}' +
           '</style>'
       );
 
@@ -454,10 +463,32 @@ export default {
       let url = URL.createObjectURL(blob);
       let link = document.createElement('a');
       link.href = url;
-      // Set default file name.
-      // Word will append file extension - do not add an extension here.
       link.download = this.report.report_name;
       link.click();
+    },
+    getGeneratedPdf() {
+      const html = this.$refs.report.$refs.toPdf.innerHTML;
+      axios.post(smartEnuApi + `/workPlan/generatePdf`, {text: html}, {headers: getHeader()})
+      .then(res => {
+        const blob = this.b64toBlob(res.data);
+        this.blobSource = URL.createObjectURL(blob);
+        this.source = "data:application/pdf;base64," + res.data;
+        this.document = res.data;
+        const fd = new FormData();
+        fd.append('file', blob);
+        fd.append('filename', this.pdfOptions.filename)
+        this.emitter.emit("reportFD", fd);
+      }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+      })
     },
     b64toBlob(b64Data, sliceSize=512) {
       const byteCharacters = window.atob(b64Data);
@@ -476,7 +507,7 @@ export default {
       }
 
       const blob = new Blob(byteArrays, {type: "application/pdf"});
-      return URL.createObjectURL(blob);
+      return blob;
     },
     viewSignatures() {
       this.$router.push({name: 'DocSignaturesInfo', params: { uuid: this.report.doc_id }})

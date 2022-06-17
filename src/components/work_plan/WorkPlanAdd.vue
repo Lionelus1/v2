@@ -11,6 +11,10 @@
       <Dropdown v-model="lang" :options="languages" optionLabel="name" optionValue="id" :placeholder="$t('common.select')" />
       <small class="p-error" v-if="submitted && !lang">{{ $t('workPlan.errors.langError') }}</small>
     </div>
+    <div class="field-checkbox p-mt-4">
+      <Checkbox v-model="isOper" id="oper" :binary="true" />
+      <label class="p-ml-2" for="oper">Операционный план</label>
+    </div>
     <template #footer>
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
               @click="closeBasic"/>
@@ -50,7 +54,8 @@ export default {
           name: 'English'
         }
       ],
-      submitted: false
+      submitted: false,
+      isOper: false
     }
   },
   props: ['isAdded', 'isSub'],
@@ -65,7 +70,7 @@ export default {
       this.submitted = true;
       if (!this.validate())
         return
-      axios.post(smartEnuApi + `/workPlan/addPlan`, {work_plan_name: this.work_plan_name, lang: this.lang}, {
+      axios.post(smartEnuApi + `/workPlan/addPlan`, {work_plan_name: this.work_plan_name, lang: this.lang, is_oper: this.isOper}, {
         headers: getHeader(),
       }).then(res => {
         if (res.data.is_success) {

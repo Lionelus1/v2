@@ -51,6 +51,7 @@
                   <ContragentSelect @updated="correct" v-model="param.value"></ContragentSelect>
                 </div>
                 <div v-else class="p-col-12 p-md-10">
+                   <!-- студент болса -->
                   <FindUser
                     v-if="param.name == 'student'"
                     v-model:first="param.value"
@@ -204,7 +205,13 @@
 <script>
 import { smartEnuApi, getHeader, b64toBlob, findRole } from "@/config/config";
 import axios from "axios";
+<<<<<<< HEAD
 import FindUser from "@/helpers/FindUser";
+=======
+
+import FindUser from "@/helpers/FindUser";
+
+>>>>>>> be633d97ce1b158b2186b3d85a5751327ab0bb6a
 import ContragentSelect from "../contragent/ContragentSelect.vue";
 import { DatePicker } from "v-calendar";
 import {runNCaLayer} from "@/helpers/SignDocFunctions"
@@ -220,7 +227,13 @@ import {
 import { constantizeGenderInRules } from "lvovich/lib/inclineRules";
 export default {
   name: "Contract",
+<<<<<<< HEAD
   components: { FindUser, DatePicker, ContragentSelect, DocSignaturesInfo },
+=======
+
+  components: { FindUser, DatePicker, ContragentSelect, DocSignaturesInfo },
+
+>>>>>>> be633d97ce1b158b2186b3d85a5751327ab0bb6a
   data() {
     return {
       contract: null,
@@ -367,6 +380,7 @@ export default {
           .replace(/-/g, ".");
       }
     },
+    //Қол қою
     sendToSign() {
       if (!this.formsValidate())
       {
@@ -404,6 +418,7 @@ export default {
             this.contract.docUUID = response.data.docUUID
             this.contract.filePath = response.data.filePath
             this.contract.docHistory = response.data.docHistory
+            this.menu[3].items[1].disabled = true
             this.$toast.add({
               severity: "success",
               summary: this.$t("common.tosign"),
@@ -699,7 +714,11 @@ export default {
   top: 0;
   left: 0;
   bottom: 0;
+
+
   right: 0;
+
+
   margin-right: 20px;
 }
 
@@ -710,6 +729,7 @@ export default {
 
 /* Not Important*/
 img {
-  width: 300px;
+  width: 300px; 
 }
+
 </style>

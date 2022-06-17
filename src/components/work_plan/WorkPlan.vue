@@ -88,9 +88,7 @@ export default {
       isRejectModal: false,
       comment: null,
       currentWorkPlanId: 0,
-      loading: false,
-      isPlanCreator: false,
-      loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID
+      loading: false
     }
   },
   mounted() {
@@ -118,11 +116,6 @@ export default {
       axios.post(smartEnuApi + `/workPlan/getPlans`, {search_text: this.searchText}, {headers: getHeader()})
           .then(res => {
             this.data = res.data;
-            if (this.data && this.data.user && this.data.user.id === this.loginedUserId) {
-              this.isPlanCreator = true;
-            } else {
-              this.isPlanCreator = false;
-            }
             this.loading = false;
           }).catch(error => {
         if (error.response && error.response.status === 401) {

@@ -12,6 +12,7 @@ export default {
         newPassword:"Enter new password",
         newPasswordRe:"Repeat new password",
         createDocument: 'Generate document',
+        createReport: 'Generate report',
         administration: 'Administration',
         academicDegree: "Academic degree",
         academicTitle: "Academic title",
@@ -199,6 +200,7 @@ export default {
             successApproved: "Success approved",
             succesRegistered: "Registered succesfully",
             succesSaved: "Saved successfully",
+            successCompleted: "Successfully completed",
             selectRole: "Plewse, select a role",
             userSuccessInserted: "The user has been successfully created, download the authorization data to send to the user.",
             selectVariant: "Choose the option you need",
@@ -222,7 +224,13 @@ export default {
         success: "Success",
         successDone: "Successfully completed",
         downloadSignaturesPdf: "Download signatures",
-        signatures: "Signatures"
+        signatures: "Signatures",
+        unit: "Unit",
+        planNumber: "Plan",
+        suppDocs: "Supporting documents",
+        additionalInfo: "Additional Information",
+        resultSentToCorrect: "Result sent for revision",
+        toCorrect: "To check"
     },
     bank: {
         title: "Banks",
@@ -690,6 +698,10 @@ export default {
             info: 'The document has been successfully created. Download the document to check it out. Next, sign the electronic document using the digital signature of the first head of your organization.',
             error: 'Failed to sign the document!'
         },
+        report: {
+            title: 'Report',
+            success: 'Successfully generated!'
+        },
         doc: {
             upInOne: '(upload in one file)',
             up: 'Uploading Documents',
@@ -746,8 +758,13 @@ export default {
         },
         reportTypes: {
             year: "Annual",
-            quarter: "Quarterly"
+            quarter: "Quarterly",
+            halfYear: "Semi-annual"
         },
-        quarterYear: "Whole year"
+        quarterYear: "Whole year",
+        resultIndicator: "Indicator of direct results",
+        summary: "Summary/Confirmation",
+        respExecutor: "Responsible performers",
+        halfYear: "semi-annual"
     }
 }
