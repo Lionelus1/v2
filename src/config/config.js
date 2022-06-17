@@ -1,15 +1,14 @@
 import mitt from "mitt";
 import axios from "axios";
-
 export const apiDomain = "https://smart.enu.kz:8081";
 export const hdfsApi = "http://localhost:8085";
 export const signerApi = "https://smart.enu.kz:6990"
 //export const signerApi = "http://10.1.1.161:6990"
-export const smartEnuApi = "https://smart.enu.kz:8081"
-//export const smartEnuApi = "http://smart.enu.kz:8090"
+//export const smartEnuApi = "https://smart.enu.kz:8081"
+export const smartEnuApi = "http://smart.enu.kz:8090"
 //export const smartEnuApi = "http://172.17.157.199:8090"
-//export const socketApi = "ws://smart.enu.kz:8090" //test server
-export const socketApi = "wss://smart.enu.kz:8081" //prod server
+export const socketApi = "ws://smart.enu.kz:8090" //test server
+//export const socketApi = "wss://smart.enu.kz:8081" //prod server
 //export const smartEnuApi = "http://smart.enu.kz:8090"
 //export const smartEnuApi = "http://localhost:8090"
 //export const socketApi = "ws://localhost:8090" 
