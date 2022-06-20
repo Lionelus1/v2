@@ -75,6 +75,7 @@ export default {
         speciality: "Специальность",
         download: "Скачать",
         lang: 'Язык',
+        doclang: "Язык документа",
         learnlang: "Язык обучения",
         loading: "загрузка",
         toapprove: "На согласование",
@@ -354,6 +355,10 @@ export default {
         search: "Поиск",
         noData: "Нет данных",
         loading: "Загрузка...",
+        umktitle: "Введите параметры учебной программы",
+        modulname: "Код и наименование модуля:",
+        eduprogram: "Код и наименование образовательной программы:",
+        discipline: "Код и наименование дисциплины:",
     },
     ncasigner: {
         chooseFile: "Выберите файл",

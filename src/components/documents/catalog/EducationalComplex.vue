@@ -67,6 +67,26 @@
         <Button v-bind:label="$t('common.yes')" icon="pi pi-check" @click="toRevision" autofocus />
         </template>
     </Dialog>
+    <!-- <Dialog :modal="true" v-bind:header="$t('hdfs.umktitle')" v-model:visible="dialogOpenState.umkParams" :style="{width: '60vw'}" class="p-fluid">
+    <div class="p-fluid">
+        <div class="p-field">
+            <label for="module">{{$t('hdfs.modulname')}}</label>
+            <InputText id="module" class="p-mb-2" v-bind:placeholder="$t('hdfs.modulname')" v-model="revisionComment" type="text" />
+        </div>
+        <div class="p-field">
+            <label for="eduprogram">{{$t('hdfs.eduprogram')}}</label>
+            <InputText id="eduprogram" class="p-mb-2" v-bind:placeholder="$t('hdfs.eduprogram')" v-model="revisionComment" type="text" />
+        </div>
+        <div class="p-field">
+            <label for="discipline">{{$t('hdfs.discipline')}}</label>
+            <InputText id="discipline" class="p-mb-2" v-bind:placeholder="$t('hdfs.discipline')" v-model="revisionComment" type="text" />
+        </div>
+        </div>
+        <template #footer>
+        <Button v-bind:label="$t('common.no')" icon="pi pi-times" @click="closeDialog('toApproval')" class="p-button-text"/>
+        <Button v-bind:label="$t('common.yes')" icon="pi pi-check" @click="toRevision" autofocus />
+        </template>
+    </Dialog> -->
   </div>
 </template>
 
@@ -122,6 +142,27 @@ export default {
                 depType : 2,
                 departmentID: null,
                 docType: 2,
+                lang : null,
+                params: [
+                    {
+                        id: 1,
+                        name: "modulname",
+                        value: null,
+                        description: "модуль атауы",
+                    },
+                    { 
+                        id: 2,
+                        name: "eduprogram",
+                        value: null,
+                        description: "білім беру баағдарламасы атауы",
+                    },
+                    { 
+                        id: 3,
+                        name: "discipline",
+                        value: null,
+                        description: "discipline",
+                    },
+                ],
             },
             totalRecords: 10,
             dialogOpenState: {
@@ -132,6 +173,7 @@ export default {
                 sendToApprove: false,
                 revision: false,
                 docInfo: false,
+                umkParams: false,
             },
         }
     },
@@ -231,6 +273,24 @@ export default {
                 type: 2,
                 docType: 2,
                 departmentID: this.file.id,
+                lang : null,
+                params: [
+                    { 
+                        name: "modulname",
+                        value: null,
+                        description: "модуль атауы",
+                    },
+                    {
+                        name: "eduprogram",
+                        value: null,
+                        description: "білім беру баағдарламасы атауы",
+                    },
+                    { 
+                        name: "discipline",
+                        value: null,
+                        description: "discipline",
+                    },
+                ],
 
             }
         },
