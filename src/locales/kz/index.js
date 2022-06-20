@@ -74,7 +74,8 @@ export default {
         show: "Көру",
         save: "Cақтау",
         speciality: "Мамандығы",
-        download: "Қотару",
+        download: "Жүктеп алу",
+        doclang: "Құжат тілі",
         lang: 'Тіл',
         learnlang: "Оқу тілі",
         loading: "Жүктеу",
@@ -179,14 +180,14 @@ export default {
         },
         message: {
             title: {
-                downloadError: "Қотару қатесі",
+                downloadError: "Жүктеп алу қатесі",
                 uploadError: "Жүктеу қатесі",
                 saveError: "Сақтау қатесі",
                 docCreation: "Жаңа қалта қосу"
             },
             invalidkey: "Дұрыс кілт енгізбедіңіз",
             notPermissionForApprove: "Таңдалған қолданушының құжатқа келісім беру құзыреті жоқ",
-            downloadError: "Қотару кезінде қате пайда болды",
+            downloadError: "Жүктеп алу кезінде қате пайда болды",
             fillError: "Мәліметтер толық көрсетілмеген. Барлық өрісті толтырыңыз!",
             sendToApprovalError: "Келісімге жіберуде қате пайда болды. Мәліметтердің дұрыстығын тексеріңіз!",
             uploadError: "Жүктеу кезінде қате пайда болды",
@@ -357,6 +358,11 @@ export default {
         search: "Іздеу",
         noData: "Ақпарат жоқ",
         loading: "Күтіңіз...",
+        umktitle: "Бағдарлама параметрлерін енгізіңіз",
+        modulname: "Модульдің коды және атауы:",
+        eduprogram: "Білім беру бағдарламасының коды және атауы:",
+        discipline: "Пәннің коды және атауы:",
+
     },
     ncasigner: {
         noteMark: "Smart.Enu қызметін пайдалана отырып сіз ҰКО сертификатында (электронды қолтаңба) қамтылған жеке мәліметтеріңізді жинауға, өңдеуге және сақтауға келісіміңізді бересіз.",
@@ -644,7 +650,7 @@ export default {
         uploadImage: "Сурет қосу",
         uploadFile: "Құжат қосу",
         answer: "Жауап",
-        noAnswer: "Жауап берілмеді"
+        noAnswer: "Жауап берілмеді",
     },
     hr: {
         action: {

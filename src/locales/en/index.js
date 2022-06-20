@@ -77,6 +77,7 @@ export default {
         save: "Save",
         speciality: "Speciality",
         download: "Download",
+        doclang: "Document language",
         lang: 'Language',
         learnlang: "Teaching language",
         loading: "loadind",
@@ -355,6 +356,10 @@ export default {
         search: "Search",
         noData: "No data",
         loading: "Loading...",
+        umktitle: "Enter the parameters of the syllabus",
+        modulname: "Module code and name:",
+        eduprogram: "Education program code and name:",
+        discipline: "Discipline code and name:",
     },
     ncasigner: {
         chooseFile: "Select  the file",
