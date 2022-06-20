@@ -2,6 +2,15 @@
     <div>
     <ProgressBar v-if="uploading" mode="indeterminate" style="height: .5em" />
       <div class="p-fluid">
+         <div class="p-field">
+          <label for="language" >{{$t('common.doclang')}}</label>
+          <SelectButton v-model="file.lang" optionLabel="name" :options="languages" dataKey="value" class="p-mb-3">
+            <template #option="slotProps">
+              <div>{{$t('common.language.' + slotProps.option.name)}}</div>
+            </template>
+          </SelectButton>
+          <small class="p-error" v-if="validation.lang">{{ $t("common.requiredField") }}</small>
+        </div>
         <div class="p-field">
           <label for="filename" >{{$t('common.nameInQazaq')}}</label>
           <InputText id="fodernamekaz" v-model="file.namekz" type="text" />
@@ -17,7 +26,13 @@
           <InputText id="fodernameen" v-model="file.nameen" type="text" />
           <small class="p-error" v-if="validation.nameen">{{ $t("common.requiredField") }}</small>
         </div>
-      </div>
+        <div  v-if="file.params != null && file.params != undefined ">
+          <div class="p-field" v-for="(param,i) of file.params" :key="`${i}`" >
+            <label>{{$t('hdfs.' + param.name)}}</label>
+            <InputText  v-model="param.value" type="text" />
+            <small class="p-error" v-if="validation.param">{{ $t("common.requiredField") }}</small>
+          </div>
+        </div>
       <div class="p-field">
         <FileUpload v-if="showUploader" :showUploadButton="false" :showCancelButton="true" ref="ufile" :multiple="false"  class= "p-mt-1"  fileLimit="1" accept=".doc,.docx,.pdf">
           <template #empty>
@@ -26,11 +41,13 @@
         </FileUpload>
         <small class="p-error" v-if="validation.file">{{ $t("hdfs.chooseFile") }}</small>
       </div>
+      </div>
       <div  style="text-align:right">
         <Button v-if="file.id===null" :label="$t('hdfs.uploadBtn')" icon="pi pi-upload" @click="updateFile" />
         <Button v-else :label="$t('common.save')" icon="pi pi-check" @click="updateFile" />
       </div>
     </div>
+    
 </template>
 <script>
 import axios from "axios";
@@ -43,12 +60,15 @@ export default {
         state: this.visible,
         uploading: false,
         showUploader: this.fileUpload,
+        languages: [{name:"kz", value: 0}, {name:"ru", value:1},  {name:"en", value:2}],
         validation: {
             namekz: false,
             nameru: false,
             nameen: false,
             parent: false,
             file: false,
+            param: false,
+            lang: false,
         }
       }
     },
@@ -73,8 +93,17 @@ export default {
       this.validation.nameru = this.file.nameru === null || this.file.nameru === ''
       this.validation.nameen = this.file.nameen === null || this.file.nameen === ''
       this.validation.parent = this.file.parentID === null || this.file.parentID === undefined
+      this.validation.lang = (this.file.id === null && this.file.lang === null)
+      this.validation.param =  false
+      if (this.file.params != null) {
+        this.file.params.forEach(param=> {
+          if (param.value === null || param.value === '') {
+            this.validation.param = true
+          }
+        })
+      }
       if (this.showUploader) {
-        this.validation.file =  this.$refs.ufile.files.length <=0
+        this.validation.file = this.$refs.ufile.files == undefined || this.$refs.ufile.files.length <=0
       }
       var result = true;
       var validation = this.validation
