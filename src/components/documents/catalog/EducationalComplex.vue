@@ -4,7 +4,7 @@
         <div>
             <h4 class="p-ml-3">{{ $t("educomplex.title") }}</h4>
             <Toolbar class="p-m-0 p-p-1" style="position:relative;">
-                
+
                 <template #start>
                     <Button  :disabled="selected===null || file.depType !=2" @click="resetFileInfo();openDialog('fileUpload')" class="p-button-info p-p-1 p-mr-2"><i class="fa-solid fa-file-circle-plus fa-xl"></i>&nbsp;{{$t('common.add')}}</Button>
                     <Button v-if="loginedUser != null && loginedUser.userID == file.ownerId && file.stateID == 1" :disabled="selected===null || file.depType !=3" @click="openDialog('sendToApprove')" class=" p-button-info p-p-1 p-mr-2"><i class="fa-solid fa-file-contract fa-xl"></i>&nbsp;{{$t('common.toapprove')}}</Button>
@@ -35,12 +35,12 @@
              <Button v-if="slotProps.node.key != null && slotProps.node.depType ===3 &&  slotProps.node.stateID ===4" @click="onNodeSelect(slotProps.node);openDialog('docInfo')" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-eye fa-xl"></i></Button>
         </template>
       </Column>
-     
+
     </TreeTable>
     </div>
-  
-    
-    <Dialog :header="$t('hdfs.uploadTitle')" v-model:visible="dialogOpenState.fileUpload" :style="{width: '60vw'}" :modal="true"> 
+
+
+    <Dialog :header="$t('hdfs.uploadTitle')" v-model:visible="dialogOpenState.fileUpload" :style="{width: '60vw'}" :modal="true">
       <PostFile :fileUpload="true" :modelValue="file" directory="eduMetComplex" :parentID="parent.id" @updated="fileUpdated"></PostFile>
     </Dialog>
    <Sidebar v-model:visible="dialogOpenState.signerInfo" position="right" class="p-sidebar-lg" style="overflow-y: scroll">
@@ -114,7 +114,7 @@ export default {
                 showDocs: false,
                 userFilter: true,
             },
-            
+
             DocState: DocState,
             revisionComment: "",
             approving: false,
@@ -127,7 +127,7 @@ export default {
             selected: null,
             dir: "normativedocs",
             language: ['kz', 'ru', 'en'],
-           
+
             file: {
                 namekz: '',
                 nameru: '',
@@ -150,13 +150,13 @@ export default {
                         value: null,
                         description: "модуль атауы",
                     },
-                    { 
+                    {
                         id: 2,
                         name: "eduprogram",
                         value: null,
                         description: "білім беру баағдарламасы атауы",
                     },
-                    { 
+                    {
                         id: 3,
                         name: "discipline",
                         value: null,
@@ -211,7 +211,7 @@ export default {
 	            this.file.statekz = "келісуде"
                 this.file.stateru = "на согласовании"
                 this.approving = false;
-	
+
             }).catch(error => {
                 this.approving =false;
                 if (error.response && error.response.status === 401) {
@@ -275,7 +275,7 @@ export default {
                 departmentID: this.file.id,
                 lang : null,
                 params: [
-                    { 
+                    {
                         name: "modulname",
                         value: null,
                         description: "модуль атауы",
@@ -285,7 +285,7 @@ export default {
                         value: null,
                         description: "білім беру баағдарламасы атауы",
                     },
-                    { 
+                    {
                         name: "discipline",
                         value: null,
                         description: "discipline",
@@ -307,7 +307,7 @@ export default {
         openDialog(dialog) {
             this.dialogOpenState[dialog] = true;
         },
-       
+
         fileUpdated(event) {
             this.closeDialog('fileUpload');
             if (this.parent.leaf) {
@@ -330,9 +330,9 @@ export default {
             } else {
                 this.file = event
             }
-            
+
         },
-       
+
         closeDialog(dialog) {
             this.dialogOpenState[dialog] = false;
 
@@ -341,8 +341,8 @@ export default {
             this.parent = node;
             this.file = node;
         },
-       
-       
+
+
         deleteFile(hide) {
             this.$confirm.require({
                 message: this.$t("common.confirmation"),
@@ -364,7 +364,7 @@ export default {
                 },
             });
         },
-       
+
         deleteChild(node) {
             if (!(node.children && node.children.length)) {
                 return
@@ -377,7 +377,7 @@ export default {
                 this.deleteChild(node.children[i])
             }
         },
-        
+
         showFile() {
             let url = "/doc/showFile";
             axios.post(smartEnuApi + url, { id: this.file.id }, { headers: getHeader() })
@@ -407,8 +407,8 @@ export default {
                     .then(response => {
                         const link = document.createElement("a");
                         link.href = "data:application/octet-stream;base64," + response.data;
-                        link.setAttribute("download", this.file.name);
-                        link.download = this.file.name;
+                        link.setAttribute("download", path);
+                        link.download = path;
                         link.click();
                         URL.revokeObjectURL(link.href);
                     })
@@ -442,7 +442,7 @@ export default {
             this.approving = false
             if (error.response && error.response.status == 401) {
                 this.$store.dispatch("logLout");
-            } else 
+            } else
                 console.log(error);
             })
 
