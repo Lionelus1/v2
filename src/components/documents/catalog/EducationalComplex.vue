@@ -41,7 +41,7 @@
 
 
     <Dialog :header="$t('hdfs.uploadTitle')" v-model:visible="dialogOpenState.fileUpload" :style="{width: '60vw'}" :modal="true">
-      <PostFile :fileUpload="true" :modelValue="file" directory="eduMetComplex" :parentID="parent.id" @updated="fileUpdated"></PostFile>
+      <PostFile :fileUpload="true" :modelValue="file" directory="eduMetComplex" :parentID="parent.id" @updated="fileUpdated" accept=".pdf"></PostFile>
     </Dialog>
    <Sidebar v-model:visible="dialogOpenState.signerInfo" position="right" class="p-sidebar-lg" style="overflow-y: scroll">
         <DocSignaturesInfo :docIdParam="file.key" @signed="signed"></DocSignaturesInfo>

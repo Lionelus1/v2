@@ -112,7 +112,7 @@ export const downloadFile = function(filePath) {
     {
       filePath: filePath
     },
-    { 
+    {
       headers: getHeader()
     }
   )

@@ -34,7 +34,7 @@
           </div>
         </div>
       <div class="p-field">
-        <FileUpload v-if="showUploader" :showUploadButton="false" :showCancelButton="true" ref="ufile" :multiple="false"  class= "p-mt-1"  fileLimit="1" accept=".doc,.docx,.pdf">
+        <FileUpload v-if="showUploader" :showUploadButton="false" :showCancelButton="true" ref="ufile" :multiple="false"  class= "p-mt-1"  fileLimit="1" :accept="accept">
           <template #empty>
             <p>{{$t('hdfs.dragMsg')}}</p>
           </template>
@@ -47,7 +47,7 @@
         <Button v-else :label="$t('common.save')" icon="pi pi-check" @click="updateFile" />
       </div>
     </div>
-    
+
 </template>
 <script>
 import axios from "axios";
@@ -77,6 +77,9 @@ export default {
       directory: null,
       parentID: null,
       fileUpload: Boolean,
+      accept: {
+        default: ".doc,.docx,.pdf"
+      }
     },
     emits: ['updated'],
     setup(props, context) {
@@ -92,7 +95,7 @@ export default {
       this.validation.namekz = this.file.namekz === null || this.file.namekz === ''
       this.validation.nameru = this.file.nameru === null || this.file.nameru === ''
       this.validation.nameen = this.file.nameen === null || this.file.nameen === ''
-      this.validation.parent = this.file.parentID === null || this.file.parentID === undefined
+      //this.validation.parent = this.file.parentID === null || this.file.parentID === undefined
       this.validation.lang = (this.file.id === null && this.file.lang === null)
       this.validation.param =  false
       if (this.file.params != null) {
@@ -105,13 +108,15 @@ export default {
       if (this.showUploader) {
         this.validation.file = this.$refs.ufile.files == undefined || this.$refs.ufile.files.length <=0
       }
-      var result = true;
-      var validation = this.validation
+      //var result = true;
+      var validation = this.validation;
+      var errors = [];
       Object.keys(this.validation).forEach(function(k)
       {
-          result = result && validation[k];
+          if (validation[k] === true) errors.push(validation[k])
+          //result = result && validation[k];
       });
-      return result
+      return errors.length > 0
     },
     showMessage(msgtype,message,content) {
       this.$toast.add({severity:msgtype, summary: message, detail:content, life: 3000});
@@ -121,15 +126,15 @@ export default {
     },
     updateFile() {
         if (this.notValid()) {
-            return
+            return;
         }
         this.uploading = true;
         const fd = new FormData();
-        if (this.file.id === null)
         for (let i=0; i < this.$refs.ufile.files.length; i++) {
-          fd.append('f'+i, this.$refs.ufile.files[i]);  
+          fd.append('f'+i, this.$refs.ufile.files[i]);
         }
-        var fcount = this.file.id !== null ? 0 : this.$refs.ufile.files.length
+        //var fcount = this.file.id !== null ? 0 : this.$refs.ufile.files.length
+        var fcount = this.$refs.ufile.files.length
         fd.append('info', JSON.stringify({directory: this.directory, count: fcount, folderID: this.parentID, fileInfo: this.file}));
         axios.post(smartEnuApi + "/doc/updateFile", fd, {
           headers: getFileHeader()
