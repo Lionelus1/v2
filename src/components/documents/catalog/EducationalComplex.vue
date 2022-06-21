@@ -255,9 +255,11 @@ export default {
                     } else {
                         parent.children = response.data
                         parent.children.map(e => {
-                          e.namekz = e.namekz + ' кафедрасы';
-                          e.nameru = 'Кафедра ' + e.nameru;
-                          e.nameen = 'Department of ' + e.nameen
+                          if (e.depType === 2) {
+                            e.namekz = e.namekz + ' кафедрасы';
+                            e.nameru = 'Кафедра ' + e.nameru;
+                            e.nameen = 'Department of ' + e.nameen
+                          }
                         });
                     }
                     this.loading = false
