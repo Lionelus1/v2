@@ -246,9 +246,19 @@ export default {
             axios.post(smartEnuApi + url, this.lazyParams, { headers: getHeader() })
                 .then(response => {
                     if (parent == null) {
-                        this.catalog = response.data
+                        this.catalog = response.data;
+                        this.catalog.map(e => {
+                          e.namekz = e.namekz + ' факультеті';
+                          e.nameru = e.nameru + ' факультет';
+                          e.nameen = 'Faculty of ' + e.nameen
+                        });
                     } else {
                         parent.children = response.data
+                        parent.children.map(e => {
+                          e.namekz = e.namekz + ' кафедрасы';
+                          e.nameru = 'Кафедра ' + e.nameru;
+                          e.nameen = 'Department of ' + e.nameen
+                        });
                     }
                     this.loading = false
                 })
