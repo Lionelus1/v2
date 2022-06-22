@@ -254,13 +254,15 @@ export default {
                         });
                     } else {
                         parent.children = response.data
-                        parent.children.map(e => {
-                          if (e.depType === 2) {
-                            e.namekz = e.namekz + ' кафедрасы';
-                            e.nameru = 'Кафедра ' + e.nameru;
-                            e.nameen = 'Department of ' + e.nameen
-                          }
-                        });
+                        if (parent.children && parent.children.length > 0) {
+                          parent.children.map(e => {
+                            if (e.depType === 2) {
+                              e.namekz = e.namekz + ' кафедрасы';
+                              e.nameru = 'Кафедра ' + e.nameru;
+                              e.nameen = 'Department of ' + e.nameen
+                            }
+                          });
+                        }
                     }
                     this.loading = false
                 })
