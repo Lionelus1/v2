@@ -33,6 +33,7 @@
              <Button v-if="slotProps.node.path != null" @click="downloadFile(slotProps.node.path)" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-file-arrow-down fa-xl"></i></Button>
              <Button v-if="slotProps.node.key != null && slotProps.node.depType ===3 && slotProps.node.stateID !==4" @click="onNodeSelect(slotProps.node);openDialog('signerInfo')" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-eye fa-xl"></i></Button>
              <Button v-if="slotProps.node.key != null && slotProps.node.depType ===3 &&  slotProps.node.stateID ===4" @click="onNodeSelect(slotProps.node);openDialog('docInfo')" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-eye fa-xl"></i></Button>
+          <Button v-if="slotProps.node.key != null && slotProps.node.depType ===3 &&  slotProps.node.stateID === 1" @click="onNodeSelect(slotProps.node);deleteFile(false)" class="p-button-text p-button-danger p-p-1"><i class="fa-solid fa-trash fa-xl"></i></Button>
         </template>
       </Column>
 
@@ -173,8 +174,9 @@ export default {
                 sendToApprove: false,
                 revision: false,
                 docInfo: false,
-                umkParams: false,
+                umkParams: false
             },
+            parentNode: null
         }
     },
     created() {
@@ -234,7 +236,6 @@ export default {
             this.$toast.add({ severity: msgtype, summary: message, detail: content, life: 3000 });
         },
         getFolders(parent) {
-
             this.loading = true;
             let url = "/doc/getFoldersByType";
             if (parent != null)
@@ -312,6 +313,7 @@ export default {
             this.lazyParams.parentID = Number(node.key)
             this.lazyParams.showDocs = showDocs
             this.selected = node
+            this.parentNode = node
             this.onNodeSelect(node)
             this.getFolders(node)
         },
@@ -355,18 +357,17 @@ export default {
             this.parent = node;
             this.file = node;
         },
-
-
         deleteFile(hide) {
             this.$confirm.require({
                 message: this.$t("common.confirmation"),
                 header: this.$t("common.confirm"),
                 icon: 'pi pi-exclamation-triangle',
                 accept: () => {
-                    let url = "/doc/deleteFile";
+                    let url = "/doc/removeFile";
                     axios.post(smartEnuApi + url, { id: this.file.id, hide: hide }, { headers: getHeader() })
                         .then(_ => {
                                 this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
+                                this.getFolders(this.parentNode)
                                 this.file.hidden = hide
                                 if (!hide) {
                                     this.deleteChild(this.catalog[0])
@@ -461,7 +462,7 @@ export default {
             })
 
             this.dialogOpenState.revision = false;
-        }
+        },
     }
 }
 </script>
