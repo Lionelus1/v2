@@ -238,7 +238,7 @@
   <!-- Просмотр ходатайства -->
   <Dialog v-model:visible="visible.petition" :style="{ width: '1000px' }" :modal="true" :closable="false">
     <div class="card" v-if="signatures">
-      <work-plan-qr-pdf ref="qrToPdf" :signatures="signatures" :title="docInfo.name"></work-plan-qr-pdf>
+      <SignatureQrPdf ref="qrToPdf" :signatures="signatures" :title="docInfo.name"></SignatureQrPdf>
       <div class="p-grid p-formgrid">
         <div class="p-col-12 p-mb-2 p-pb-2 p-lg-3 p-mb-lg-0">
           <Button :label="$t('hr.petition.download')" icon="pi pi-download" :onclick="downloadPDF"/>
@@ -473,16 +473,17 @@
 </template>
 
 <script>
-import WorkPlanQrPdf from "@/components/work_plan/WorkPlanQrPdf";
+//import WorkPlanQrPdf from "@/components/work_plan/WorkPlanQrPdf";
 import {FilterMatchMode, FilterOperator} from "primevue/api";
 import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
 import html2pdf from "html2pdf.js";
 import CandidateDocument from "./CandidateDocument";
+import SignatureQrPdf from "@/components/ncasigner/SignatureQrPdf";
 
 export default {
   name: "CandidateVacancy",
-  components: {WorkPlanQrPdf},
+  components: { SignatureQrPdf},
   data() {
     return {
       count: 200,
