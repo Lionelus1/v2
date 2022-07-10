@@ -7,6 +7,8 @@
     </div>
     <div class="content-section implementation">
       <ProgressBar v-if="signing" mode="indeterminate" style="height: .5em" />
+      <BlockUI :blocked="signing" :fullScreen="true"></BlockUI>
+
       <div class="card p-p-0">
         <TabView ref="templateView" v-model:activeIndex="active" class="p-p-0">
           <TabPanel v-bind:header="$t('doctemplate.templates')" class="p-p-0">
@@ -47,7 +49,7 @@
               </template>
             </Dialog>
 
-            <TreeTable :scrollable="selectMode" :value="templates" class="p-treetable-responsive p-treetable-sm" selectionMode="single" @node-select="onNodeSelect" v-model:selectionKeys="currentNode" style="margin-bottom: 2rem">
+            <TreeTable  :value="templates" class="p-treetable-responsive p-treetable-sm" selectionMode="single" @node-select="onNodeSelect" v-model:selectionKeys="currentNode" style="margin-bottom: 2rem">
               <Column headerStyle="width:6em" :expander="true" bodyStyle="padding: 0">
                 <template #body="slotProps">
                   <i v-if="slotProps.node.data.type===1" class="pi pi-folder"></i>
@@ -106,6 +108,7 @@
                 <Button v-if="selectedNode.data.stateEn == DocState.CREATED.Value || selectedNode.data.stateEn == DocState.REVISION.Value" v-bind:label="$t('common.toapprove')" icon="pi pi-send" @click="openForm('toApproval')" />
                 <Button v-if="selectedNode.data.stateEn == DocState.INAPPROVAL.Value && findRole(null, DocState.roles.LegalServiceHead)" class="p-button-success" :label ="$t('common.approve')" icon="pi pi-check" @click="approve()"/>
                 <Button v-if="selectedNode.data.stateEn == DocState.INAPPROVAL.Value && findRole(null, DocState.roles.LegalServiceHead)" class="p-button-warning" :label ="$t('common.revision')" icon="pi pi-times" @click="openForm('revision')"/>
+                <Button v-if="selectedNode.data.stateEn == DocState.APPROVED.Value" class="p-button-primary" :label ="$t('common.approvalList')" icon="pi pi-user-edit" @click="openForm('signerInfo')"/>
               </span>
 
               <SelectButton v-model="templateLanguage" :options="language" class="p-mb-3">
@@ -116,7 +119,7 @@
                 </template>
               </SelectButton>
             </div>
-            <RichEditor :readonly="selectMode" ref="kzEditor" v-if="templateLanguage =='kz'" v-model="selectedNode.data.mainTextKaz" editorStyle="height:500px;max-width:700px;min-width:500px">
+            <RichEditor ref="kzEditor" v-if="templateLanguage =='kz'" v-model="selectedNode.data.mainTextKaz" editorStyle="height:500px;max-width:700px;min-width:500px">
               <template v-slot:toolbar>
                 <span class="ql-formats">
                   <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
@@ -137,7 +140,7 @@
 
               </template>
             </RichEditor>
-            <RichEditor :readonly="selectMode" ref="kzEditor" v-else v-model="selectedNode.data.mainTextRus" editorStyle="height:500px;max-width:700px;min-width:500px">
+            <RichEditor  ref="ruEditor" v-else v-model="selectedNode.data.mainTextRus" editorStyle="height:500px;max-width:700px;min-width:500px">
               <template v-slot:toolbar>
                 <span class="ql-formats">
                   <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
@@ -186,10 +189,8 @@
                 <Button v-bind:label="$t('common.yes')" icon="pi pi-check" @click="revisionTemplate" autofocus />
               </template>
             </Dialog>
-
             <Dialog :header="$t('common.comment')" v-model:visible="dialogOpenState.dialogComment" :style="{width: '50vw'}">
             <p>{{(selectedNode.data.comment && selectedNode.data.comment != '') ? selectedNode.data.comment : $t('common.noComment')}}</p>
-           
             <template #footer>
               <div style="text-align:right">
                 <Button label="OK" icon="pi pi-check" @click="closeForm('dialogComment')" class="p-button-text"/>
@@ -199,6 +200,14 @@
 
           </TabPanel>
         </TabView>
+         <Sidebar
+              v-model:visible="dialogOpenState.signerInfo"
+              position="right"
+              class="p-sidebar-lg"
+              style="overflow-y: scroll"
+          >
+            <DocSignaturesInfo :docIdParam="selectedNode.data.docID"></DocSignaturesInfo>
+          </Sidebar>
       </div>
 
     </div>
@@ -214,10 +223,10 @@
   import RichEditor from "./editor/RichEditor.vue";
   import FindUser from "@/helpers/FindUser";
   import DocState from "@/enum/docstates/index"
-
+  import DocSignaturesInfo from "@/components/DocSignaturesInfo"
   export default {
     emits: ['onselect'],
-    components: { RichEditor, FindUser },
+    components: { RichEditor, FindUser, DocSignaturesInfo },
     data() {
       return {
         readonly : true,
@@ -237,6 +246,7 @@
           toApproval : false,
           revision :false,
           dialogComment: false,
+          signerInfo: false,
         },
         active: 0,
         templates: null,
@@ -309,8 +319,8 @@
           header: this.$t('common.approve'),
           icon: 'pi pi-exclamation-triangle',
           accept: () => {
-                axios.post(smartEnuApi + "/doctemplate/getbase64",
-                { id: this.selectedNode.id},  
+                axios.post(smartEnuApi + "/downloadFile",
+                { filePath: this.selectedNode.data.filePath},  
                 { headers: getHeader() }).then(
                   response => {
                     runNCaLayer(this.$t, this.$toast, response.data).then(sign=>{
@@ -319,16 +329,17 @@
 
                         var req = {
                           userID : this.$store.state.loginedUser.userID,
-                          id: this.selectedNode.id,
+                          docUUID: this.selectedNode.data.docID,
                           sign: sign
                         };
-                        axios.post(smartEnuApi+"/doctemplate/sign", req, { headers: getHeader() }).then(response=>{
+                        axios.post(smartEnuApi+"/doc/sign", req, { headers: getHeader() }).then(response=>{
                         this.selectedNode.data.stateID = this.DocState.APPROVED.ID;
                         this.selectedNode.data.state =  this.$t('common.states.approved');
                         this.selectedNode.data.stateEn =  this.DocState.APPROVED.Value;
                         this.showMessage('success', this.$t('doctemplate.title'), this.$t('common.message.succesSendToApproval'));
                         this.signing = false;
                       }).catch(error => {
+                          this.signing = false;
                           if (error.response.status == 405) {
                             this.$toast.add({
                               severity: "error",
@@ -384,10 +395,13 @@
         
       },
       sendToApproval() {
+        this.signing = true
+        this.dialogOpenState.toApproval = false;
         let url = "/doctemplate/toapproval";
 
         if (this.selectedNode == null || this.selectedNode.data.type != 0 || this.selectedUsers == null || this.dialogNote == null) {
           this.showMessage('error', this.$t('doctemplate.title'), this.$t('common.message.sendToApprovalError'));
+          this.signing = false
           return;
         }
         var req = {
@@ -403,28 +417,39 @@
         
         if (isLegalHead ===false) {
           this.showMessage('error', this.$t('doctemplate.title'), this.$t('common.message.notPermissionForApprove'));
+          this.signing = false
           return;
         }
-        axios.post(smartEnuApi+url, req, { headers: getHeader() }).then(()=>{
+        this.signing = true
+
+        axios.post(smartEnuApi+url, req, { headers: getHeader() }).then(response=>{
+          this.selectedNode.data.docID = response.data.docUUID
+          this.selectedNode.data.filePath = response.data.filePath
           this.selectedNode.data.stateID = this.DocState.INAPPROVAL;
           this.selectedNode.data.state =  this.$t('common.states.inapproval');
           this.selectedNode.data.stateEn =  "inapproval";
           this.dialogOpenState.toApproval = false;
           this.selectedUsers = null;
           this.showMessage('success', this.$t('doctemplate.title'), this.$t('common.message.succesSendToApproval'));
+          this.signing = false
+
         })
         .catch(error => {
           if (error.response.status == 401) {
             this.$store.dispatch("logLout");
           } else 
           console.log(error);
-        })
+          this.signing = false
 
+        })
       },
 
       downloadDocTemplatePdf() {
+        this.signing = true
+
           if ((this.selectedNode.data == null) || (this.selectedNode.data.type == null) || (this.selectedNode.data.type == 1)) {
           this.showMessage('error', this.$t('doctemplate.download'), this.$t('doctemplate.message.downloadError'));
+          this.signing = false
           return
         }
         let url = "/doctemplate/getpdf";
@@ -439,21 +464,18 @@
         axios.post(smartEnuApi+url, req, { headers: getHeader() })
         .then(response=>{
           let pdf = response.data;
-          // var obj = document.createElement('object');
-          // obj.style.width = '100%';
-          // obj.style.height = '842pt';
-          // obj.type = 'application/pdf';
-          // obj.data = 'data:application/pdf;base64,' + pdf;
-          // document.body.appendChild(obj);
-          // Insert a link that allows the user to download the PDF file
           var link = document.createElement('a');
           link.innerHTML = 'Download PDF file';
           link.download = this.selectedNode.data.name + '.pdf';
           link.href = 'data:application/octet-stream;base64,' + pdf;
           link.click();
+          this.signing = false
+
         })
         .catch(error => {
           console.log(error);
+          this.signing = false
+
         })
       },
       saveDocTemplate() {
@@ -479,10 +501,11 @@
         } else {
           req.textRus = "";
         }
+        this.signing = true
         axios.post(smartEnuApi+url, req, { headers: getHeader() })
         .then(()=>{
           this.showMessage('success', this.$t('doctemplate.updateTemplate'), this.$t('doctemplate.message.succesUpdated'));
-
+          this.signing = false
         })
         .catch(error => {
           console.log(error)
@@ -490,6 +513,7 @@
             this.$store.dispatch("logLout");
           } else 
           console.log(error);
+          this.signing = false
         })
 
       },
@@ -599,6 +623,7 @@
         this.currentNode = node
         this.readonly = this.selectedNode.data.stateEn == DocState.CREATED.Value || this.selectedNode.data.stateEn == DocState.REVISION.Value || (this.selectedNode.data.stateEn == DocState.INAPPROVAL.Value && this.findRole(null, DocState.roles.LegalServiceHead))
         this.$refs.kzEditor.setReadOnly(this.readonly);
+         this.$refs.ruEditor.setReadOnly(this.readonly);
         
       },
       addTemplateNode(nodeDataChildren,node,fkey) {
@@ -612,6 +637,8 @@
           childData.stateEn =  node.History[0].stateEn;
         }
         childData.name= this.$i18n.locale == "ru" ? node.descriptionRus : node.descriptionKaz;
+        childData.docID = node.docID
+        childData.filePath = node.filePath
         childData.createdDate = node.createDate;
         childData.mainTextKaz = node.mainTextKaz
         childData.mainTextRus = node.mainTextRus

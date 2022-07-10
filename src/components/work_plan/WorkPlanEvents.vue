@@ -1,8 +1,9 @@
 <template>
   <div class="p-col-12" v-if="!loading">
-    <Message severity="warn" :closable="false" v-if="plan.reject_history && isRejected && isPlanCreator">{{ plan.reject_history.message }}</Message>
+    <h3 v-if="plan">{{ plan.work_plan_name }}</h3>
+    <Message severity="warn" :closable="false" v-if="plan && plan.reject_history && isRejected && isPlanCreator">{{ plan.reject_history.message }}</Message>
     <div class="card" v-if="plan || data">
-      <work-plan-event-add v-if="(isCreator || isEventsNull) && !isFinish && isPlanCreator" :items="data" :isMain="true"></work-plan-event-add>
+      <work-plan-event-add v-if="(isCreator || isEventsNull) && !isFinish && isPlanCreator" :items="data" :isMain="true" :plan-data="plan"></work-plan-event-add>
       <Button v-if="isPlanCreator && !isFinish" :label="$t('common.complete')" icon="pi pi-check" @click="finish"
               class="p-button p-button-danger p-ml-2"/>
       <work-plan-approve v-if="isPlanCreator && !isPlanSentApproval && isFinish" :plan="plan"
@@ -52,17 +53,37 @@
             {{ data.event_name }}
           </template>
         </Column>
+        <Column field="unit" :header="$t('common.unit')" v-if="plan && plan.is_oper">
+          <template #body="{ data }">
+            {{ data.unit }}
+          </template>
+        </Column>
+        <Column field="plan_number" :header="$t('common.planNumber')" v-if="plan && plan.is_oper">
+          <template #body="{ data }">
+            {{ data.plan_number }}
+          </template>
+        </Column>
         <Column field="quarter" :header="$t('workPlan.quarter')">
           <template #body="{ data }">
             {{ data.quarter ? initQuarterString(data.quarter.String) : "" }}
           </template>
         </Column>
-        <Column field="fullName" :header="$t('workPlan.approvalUsers')">
+        <Column field="responsible_executor" :header="$t('workPlan.respExecutor')" v-if="plan && plan.is_oper">
+          <template #body="{ data }">
+            {{ data.responsible_executor }}
+          </template>
+        </Column>
+        <Column field="fullName" :header="plan && plan.is_oper ? $t('workPlan.summary') : $t('workPlan.approvalUsers')">
           <template #body="{ data }">
             <p v-for="item in data.user" :key="item.id">{{ item.fullName }}</p>
           </template>
         </Column>
-        <Column field="result" :header="$t('common.result')">
+        <Column field="supporting_docs" v-if="plan && plan.is_oper" :header="$t('common.suppDocs')">
+          <template #body="{ data }">
+            {{ data.supporting_docs }}
+          </template>
+        </Column>
+        <Column field="result" :header="plan && plan.is_oper ? $t('common.additionalInfo') : $t('common.result')">
           <template #body="{ data }">
             {{ data.result }}
           </template>
@@ -79,13 +100,17 @@
         <Column field="actions" header="">
           <template #body="slotProps">
             <div>
+<!--              (parseInt(slotProps.data.quarter.String) === currentQuarter || parseInt(slotProps.data.quarter.String) === 5)-->
               <work-plan-execute
-                  v-if="parseInt(slotProps.data.quarter.String) === currentQuarter && isUserApproval(slotProps.data) && isPlanSentApproval && plan.status.work_plan_status_id === 4"
-                  :data="slotProps.data"></work-plan-execute>
-              <work-plan-event-result-modal v-if="slotProps.data.event_result"
-                                            :event-result="slotProps.data.event_result"></work-plan-event-result-modal>
-              <work-plan-event-add v-if="!slotProps.data.is_finish" :data="slotProps.data" :items="slotProps.data.children" :isMain="false"></work-plan-event-add>
+                  v-if="isUserApproval(slotProps.data) && isPlanApproved && isPlanSentApproval && (slotProps.data.status.work_plan_event_status_id === 1 || slotProps.data.status.work_plan_event_status_id === 4 || slotProps.data.status.work_plan_event_status_id === 6)"
+                  :data="slotProps.data" :planData="plan"></work-plan-execute>
+              <work-plan-event-result-modal v-if="(slotProps.data.event_result && plan && !plan.is_oper) || slotProps.data.status.work_plan_event_status_id === 5 || slotProps.data.status.work_plan_event_status_id === 2"
+                                            :event-result="slotProps.data.event_result"
+                                            :eventData="slotProps.data"
+                                            :plan-data="plan"></work-plan-event-result-modal>
+              <work-plan-event-add v-if="!slotProps.data.is_finish" :data="slotProps.data" :items="slotProps.data.children" :isMain="false" :plan-data="plan"></work-plan-event-add>
               <work-plan-event-edit-modal v-if="isPlanCreator && !isPlanSentApproval && !isFinish"
+                                          :planData="plan"
                                           :event="slotProps.data"></work-plan-event-edit-modal>
               <div>
                 <Button v-if="isPlanCreator && !isPlanSentApproval && !isFinish"
@@ -97,7 +122,7 @@
         </Column>
         <template #expansion="slotProps">
           <WorkPlanEventTree :plan-creator="isPlanCreator" :finish="isFinish" :approval-sent="isPlanSentApproval"
-                             :child="slotProps.data.children" :plan="plan" v-if="slotProps.data.children"/>
+                             :child="slotProps.data.children" :plan="plan" v-if="slotProps.data.children" :expanded="slotProps.data.isExpanded"/>
         </template>
       </DataTable>
     </div>
@@ -209,6 +234,20 @@ export default {
         this.getWorkPlanEvents();
       }
     });
+    this.emitter.on('workPlanResultSentToVerify', (data) => {
+      if (data) {
+        this.getPlan();
+        this.initQuarter();
+        this.getWorkPlanEvents();
+      }
+    });
+    this.emitter.on('workPlanResultVerified', (data) => {
+      if (data) {
+        this.getPlan();
+        this.initQuarter();
+        this.getWorkPlanEvents();
+      }
+    });
   },
   created() {
     this.work_plan_id = this.$route.params.id
@@ -276,7 +315,6 @@ export default {
       });
     },
     getPlan() {
-      this.loading = true;
       axios.get(smartEnuApi + `/workPlan/getWorkPlanById/${this.work_plan_id}`, {headers: getHeader()})
           .then(res => {
             this.plan = res.data;
@@ -290,7 +328,6 @@ export default {
               this.isPlanCreator = false;
               //this.$router.push('/work-plan')
             }
-            this.loading = false;
           }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
@@ -301,7 +338,6 @@ export default {
             life: 3000,
           });
         }
-        this.loading = false;
       });
     },
     finish() {
@@ -365,7 +401,7 @@ export default {
           userApproval = true;
         }
       });
-      return userApproval && data.is_finish && !data.event_result;
+      return this.plan && this.plan.is_oper ? userApproval && data.is_finish : userApproval && data.is_finish && !data.event_result;
     },
     initQuarter() {
       let currentDate = new Date();
@@ -446,6 +482,23 @@ export default {
   font-weight: 700;
   font-size: 12px;
   letter-spacing: .3px;
+  display: inline-block;
+  text-align: center;
+
+  &.status-6 {
+    background: #FFCDD2;
+    color: #C63737;
+  }
+
+  &.status-5 {
+    background: #f1c21b;
+    color: #fff;
+  }
+
+  &.status-4 {
+    background: #d9873e;
+    color: #ffffff;
+  }
 
   &.status-3 {
     background: #FFCDD2;

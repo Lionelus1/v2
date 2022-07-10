@@ -15,7 +15,8 @@
           <div class="p-d-flex p-jc-between p-ai-center">
             <h5 class="p-m-0">{{ $t('workPlan.addPlan') }}</h5>
             <span class="p-input-icon-left"><i class="pi pi-search"/>
-              <InputText type="search" v-model="searchText" @keyup.enter="getPlans" :placeholder="$t('common.search')" @search="getPlans"/>
+              <InputText type="search" v-model="searchText" @keyup.enter="getPlans" :placeholder="$t('common.search')"
+                         @search="getPlans"/>
               <Button icon="pi pi-search" class="p-ml-1" @click="getPlans"/>
             </span>
           </div>
@@ -34,16 +35,13 @@
               }}</span>
           </template>
         </Column>
-        <!--        <Column field="actions" header="">
-                  <template #body="{ data }">
-                    <Button type="button" v-if="isCurrentUserApprove && data.status.work_plan_status_id === 2"
-                            icon="pi pi-check" class="p-button-success p-mr-2"
-                            label="Подписать" @click="openAcceptModal(data.id)"></Button>
-                    <Button type="button" v-if="isCurrentUserApprove && data.status.work_plan_status_id === 2"
-                            icon="pi pi-times-circle" class="p-button-danger p-mr-2"
-                            label="Отказать" @click="openRejectModal(data.id)"></Button>
-                  </template>
-                </Column>-->
+        <Column field="actions" header="">
+          <template #body="{ data }">
+            <Button type="button" v-if="data.user.id === loginedUserId"
+                    icon="pi pi-trash" class="p-button-danger p-mr-2"
+                    label="" @click="deleteConfirm(data)"></Button>
+          </template>
+        </Column>
       </DataTable>
     </div>
 
@@ -89,7 +87,8 @@ export default {
       isAcceptModal: false,
       isRejectModal: false,
       comment: null,
-      currentWorkPlanId: 0
+      currentWorkPlanId: 0,
+      loading: false
     }
   },
   mounted() {
@@ -113,18 +112,11 @@ export default {
 
     },
     getPlans() {
+      this.loading = true;
       axios.post(smartEnuApi + `/workPlan/getPlans`, {search_text: this.searchText}, {headers: getHeader()})
           .then(res => {
             this.data = res.data;
-            let localUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
-            /*this.data.forEach(d => {
-              /!*d.approval_users.forEach(e => {
-                console.log(e)
-                if (e.id === localUserId) {
-                  this.isCurrentUserApprove = true
-                }
-              });*!/
-            });*/
+            this.loading = false;
           }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
@@ -135,6 +127,7 @@ export default {
             life: 3000,
           });
         }
+        this.loading = false;
       });
     },
     rejectPlan() {
@@ -151,6 +144,41 @@ export default {
         }
         this.isRejectModal = false;
         this.getPlans();
+      }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+      });
+    },
+    deleteConfirm(event) {
+      this.$confirm.require({
+        message: this.$t('common.doYouWantDelete'),
+        header: this.$t('common.delete'),
+        icon: 'pi pi-info-circle',
+        acceptClass: 'p-button-rounded p-button-success',
+        rejectClass: 'p-button-rounded p-button-danger',
+        accept: () => {
+          this.delete(event);
+        },
+      });
+    },
+    delete(event) {
+      axios.post(smartEnuApi + `/workPlan/deletePlan/${event.work_plan_id}`,null, {headers: getHeader()})
+      .then(response => {
+        if (response.data.is_success) {
+          this.$toast.add({
+            severity: "success",
+            summary: this.$t('common.success'),
+            life: 3000,
+          });
+          this.getPlans();
+        }
       }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");

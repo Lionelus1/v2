@@ -17,6 +17,7 @@ import Card from 'primevue/card';
 import Carousel from 'primevue/carousel';
 import Checkbox from 'primevue/checkbox';
 import Chips from 'primevue/chips';
+import Chip from 'primevue/chip';
 import ColorPicker from 'primevue/colorpicker';
 import Column from 'primevue/column';
 import ContextMenu from 'primevue/contextmenu';
@@ -97,9 +98,12 @@ import './assets/layout/layout.scss';
 import './assets/layout/flags/flags.css';
 import mitt from "mitt";
 import VueElementLoading from "vue-element-loading";
+import Person from '@/components/contragent/Person.vue';
+import Organization from '@/components/contragent/Organization.vue';
 
 import ConfirmationService from 'primevue/confirmationservice';
 import store from "./store/store"
+import SpeedDial from 'primevue/speeddial';
 
 router.beforeEach(function(to, from, next) {
     window.scrollTo(0, 0);
@@ -175,6 +179,8 @@ app.directive('ripple', Ripple);
 app.directive('code', CodeHighlight);
 
 app.component('Accordion', Accordion);
+app.component('Person', Person)
+app.component('Organization', Organization)
 app.component('AccordionTab', AccordionTab);
 app.component('AutoComplete', AutoComplete);
 app.component('Breadcrumb', Breadcrumb);
@@ -187,6 +193,7 @@ app.component('Carousel', Carousel);
 app.component('Chart', Chart)
 app.component('Checkbox', Checkbox);
 app.component('Chips', Chips);
+app.component('Chip', Chip);
 app.component('ColorPicker', ColorPicker);
 app.component('Column', Column);
 app.component('ContextMenu', ContextMenu);
@@ -245,5 +252,5 @@ app.component('TriStateCheckbox', TriStateCheckbox);
 app.component('Editor', Editor);
 app.component("VueElementLoading", VueElementLoading);
 app.component('TreeSelect', TreeSelect);
-
+app.component('SpeedDial ', SpeedDial );
 app.mount('#app');

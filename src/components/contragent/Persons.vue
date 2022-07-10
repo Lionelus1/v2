@@ -1,8 +1,8 @@
 <template>
-  <div :style="orgID ? 'margin:-1em; margin-top:0' : ''">
+  <div :style="organization ? 'margin:-1em; margin-top:0' : ''">
     <div
       class="content-section introduction"
-      :style="orgID ? 'margin-top:-1.5em; margin-bottom:1.5em' : ''"
+      :style="organization ? 'margin-top:-1.5em; margin-bottom:1.5em' : ''"
     >
       <div class="feature-intro p-ml-3">
         <h4 style="display: inline">
@@ -170,7 +170,8 @@
               class="p-sidebar-lg"
               style="overflow-y: scroll"
             >
-              <Person :modelValue="currentPerson" :addMode="addMode" :readonly="true" @userCreated="insertUser"></Person>
+              <Person :modelValue="currentPerson" :organization="organization" :addMode="addMode" :readonly="true" @userCreated="insertUser"></Person>
+              
             </Sidebar>
           </div>
         </div>
@@ -180,14 +181,12 @@
 </template>
 
 <script>
-import { smartEnuApi, getHeader } from "@/config/config";
+import { smartEnuApi, getHeader, findRole } from "@/config/config";
 import axios from "axios";
-import Person from "./Person.vue";
 import Enum from "@/enum/docstates/index";
 import { FilterMatchMode, FilterOperator } from "primevue/api";
 
 export default {
-  components: { Person },
   data() {
     return {
       active: null,
@@ -200,7 +199,7 @@ export default {
         rows: 10,
         userType: Number(this.$route.params.type),
         sortLang: this.$i18n.locale,
-        orgID: this.orgID
+        orgID: this.organization ? this.organization.id : null
       },
       staffDisplay:
         this.personType === Enum.PersonType.IndividualEntrepreneur
@@ -251,12 +250,21 @@ export default {
           label: this.$t("common.contacts"),
           icon: "pi pi-fw pi-user",
         },
+        {
+          label: this.$t("common.createNew"),
+          icon: "pi pi-fw pi-plus",
+          visible: this.insertMode,
+          command: () => {
+              this.addPerson()
+          }
+        }
       ],
       localmenu: [{
           label: this.$t("common.activeList"),
           items:[{
             label: this.$t("common.person"),
             icon: "pi pi-home",
+            disabled: false,
             command: () => {
               this.addPerson()
             }
@@ -267,10 +275,15 @@ export default {
   },
   props: {
     modelValue: null,
-    orgID: Number,
+    organization: null,
     signRight: Number,
     windowOpened: Boolean,
     pagemenu: null,
+    insertMode: {
+      type: Boolean,
+      default: false
+    }
+    
   },
   setup(props, context) {
     function updateValue(currentPerson) {
@@ -289,7 +302,10 @@ export default {
   },
 
   methods: {
+    findRole: findRole,
     initApiCall() {
+      this.isAdmin = this.findRole(null, 'main_administrator')
+      this.localmenu[0].items[0].disabled = !this.isAdmin
       this.$emit("update:pagemenu", this.localmenu)
       let url = "/contragent/persons";
       this.personType = Number(this.$route.params.type);
@@ -318,12 +334,17 @@ export default {
       ) {
         this.lazyParams.page = 0;
       }
-      this.lazyParams.orgID = this.orgID
+     
+      this.lazyParams.orgID = this.organization != null ? this.organization.id : null
       axios
         .post(smartEnuApi + url, this.lazyParams, { headers: getHeader() })
         .then((res) => {
           this.persons = res.data.persons;
           this.count = res.data.count;
+          if (!this.persons) {
+            this.persons= []
+          }
+
         })
         .catch((error) => {
           if (error.response.status == 401) {
@@ -344,8 +365,12 @@ export default {
       this.addMode = false;
       this.currentPerson = data;
       this.selectedPersons = data;
-      if (this.orgID) this.updateValue(data);
+      if (this.organization) {
+        this.updateValue(data);
+        this.$emit("updated",event)
+      }
       else this.sideVisible = true;
+
     },
     onPage(event) {
       this.lazyParams = event;

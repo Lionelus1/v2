@@ -116,12 +116,12 @@ import ApplyActionEdit from "./ApplyActionEdit";
 import html2pdf from "html2pdf.js";
 import axios from "axios";
 import {getHeader, getMultipartHeader, smartEnuApi} from "@/config/config";
-import WorkPlanQrPdf from "@/components/work_plan/WorkPlanQrPdf";
+//import WorkPlanQrPdf from "@/components/work_plan/WorkPlanQrPdf";
 
 
 export default {
   name: "VacancyCandidateView",
-  components: {ApplyActionEdit, DocDownload, ResumeView, WorkPlanQrPdf},
+  components: {ApplyActionEdit, DocDownload, ResumeView},
   data() {
     return {
       sidebar: false,

@@ -3,6 +3,7 @@ export default {
         loginWelcome:"Smart.enu жүйесіне қош келдіңіз.",
         chooseCert:"Сертификатты таңдаңыз",
         activeList: "Белсенді тізім",
+        approvalList: "Келісім парағы",
         newPasswordError:"Құпиясөздер сәйкес келмейді немесе құпиясөз ұзындығы 5 таңбадан кем ",
         changePassword:"Құпиясөзді өзгерту",
         head: "Ұйымдық жетекшісі",
@@ -65,6 +66,7 @@ export default {
         updated: "Өзгертілді",
         type: "Типі",
         reason: "Себебі",
+        registeredDate: "Тіркелген күні",
         state: "Күйі",
         status: "Статус",
         show: "Көру",
@@ -168,6 +170,8 @@ export default {
             notRegistered: "Тіркелмеді",
             notVoted: "Дауыс бермеді",
             voted: "Дауыс берді",
+            signing: "Қол қоюда",
+            signed: "Қол қойылды"
         },
         message: {
             title: {
@@ -195,11 +199,13 @@ export default {
             succesSendToApproval: "Келісімге сәтті жіберілді",
             succesRegistered: "Сәтті тіркелді",
             succesSaved: "Сәтті сақталды",
+            successCompleted: "Сәтті орындалды",
             userSuccessInserted: "Қолданушы сәтті қосылды, авторизациялық мәліметтерді қолданушға жіберу үшін жүктеп алыңыз. ",
             selectRole: "Рөлді таңдаңыз",
             selectVariant: "Керек нұсқаны таңдаңыз",
             userIINExists: "Көрсетілген ЖСН бойынша қолданушы бұрыннан бар",
-            accessDenied: "Бұл құжатты көруге құзіретіңіз жоқ!"
+            accessDenied: "Бұл құжатты көруге құзіретіңіз жоқ!",
+            saveChanges: "Алдымен өззгерістерді сақтаңыз"
         },
         language: {
             kz: "қазақша",
@@ -217,7 +223,13 @@ export default {
         success: "Сәтті",
         successDone: "Сәтті орындалды",
         downloadSignaturesPdf: "Қолтаңбаларды жүктеу",
-        signatures: "Қолтаңбалар"
+        signatures: "Қолтаңбалар",
+        unit: "Өлшем бірлігі",
+        planNumber: "Жоспар",
+        suppDocs: "Растайтын құжаттар",
+        additionalInfo: "Қосымша ақпарат",
+        resultSentToCorrect: "Нәтиже түзетуге жіберілді",
+        toCorrect: "Тексеруге жіберу"
     },
     bank: {
         title: "Банктер",
@@ -248,7 +260,7 @@ export default {
             requisite: "Құжат рекизиттері",
             givenorg: "Берген мекеме",
             givendate: "Берілген күні",
-            expire: "Жарымдылық мерзімі",
+            expire: "Жарамдылық мерзімі",
         }
 
     },
@@ -304,7 +316,7 @@ export default {
         create: "Келісім-шарттарды жылдам жасау",
         list: "Келісім-шарттар реестрі",
         listdesc: "Барлық келісім-шарттар мен келісімдердің тізімі",
-        journal: "Журнал",
+        journal: "Келісім-шарттар журналы",
         orgdesc: "Біз қарым-қатынас орнатқан ұйымдықтар",
         person: "Біз қарым-қатынас орнатқан жеке тұлғалар",
         preliminary: "алдын ала",
@@ -338,6 +350,7 @@ export default {
         loading: "Күтіңіз...",
     },
     ncasigner: {
+        noteMark: "Smart.Enu қызметін пайдалана отырып сіз ҰКО сертификатында (электронды қолтаңба) қамтылған жеке мәліметтеріңізді жинауға, өңдеуге және сақтауға келісіміңізді бересіз.",
         chooseFile: "Файлды таңдаңыз",
         docIdNotExistMessageForFind: "Қол қойылған құжаттың бетін файл арқылы табу үшін файл атауында дұрыс SIGNERAPP идентификаторы болуы керек. Файл атауында дұрыс SIGNERAPP идентификаторы бар екеніне көз жеткізіңіз.",
         docIdNotExistMessageForSign: "Бұрын қол қойылған құжатқа файл арқылы қол қою үшін файл атауында дұрыс SIGNERAPP идентификаторы болуы керек. Файл атауында дұрыс SIGNERAPP идентификаторы бар екеніне көз жеткізіңіз. Әйтпесе, жаңа қолтаңба тізбегін құру үшін SIGNERAPP идентификаторынсыз файл атауын көрсетіңіз.",
@@ -351,6 +364,7 @@ export default {
         IncorrectFileTitle: "{dn} аты бар файл SIGNERAPP жүйесінде қолтаңбаны тексеруден өткен жоқ",
         IncorrectFileContent: "Бұл файл өзгертілді немесе басқа файл берілді. Файлды тексеріңіз.",
         signed: "осы құжатқа қол қойды",
+        signingexpected: "қол қоюы тиіс",
         certTemplate: "Сертификат үлгісі: ",
         IIN: "ЖСН",
         certType: "Қолтаңба түрі:",
@@ -358,6 +372,7 @@ export default {
         //
         signNotFoundById: "Осы ID бойынша қолтаңбаны табу мүмкін емес!",
         //
+        successSentToSign: "Қол қоюға жіберілді",
         successSignTitle: "Файлға {dn} сәтті қол қойылды!",
         successSignContentFirstRow: "Сіздің қолтаңбаңыз тексеріліп, SIGNAPP-қа тіркелді",
         successSignContentSecondRow: "Қол қойылған файлдың көшірмесін <b>SIGNAPP идентификаторымен</b> сақтауды ұсынамыз. Болашақта бұл SIGNAPP қызметінде қол қойылған құжаттың бетін іздеуді жеңілдетеді.",
@@ -501,6 +516,31 @@ export default {
             list: "вакцина тізімі жүктелмеді"
         }
     },
+    queue: {
+        title: "Кезек",
+        secretary:"Қызмет көрсету",
+        queues:"Кезектер",       
+        responsible:"Кезекке жауапты",
+        queueNotFound:"Кезек табылмады",
+        createQueue:"Кезек құру/өзгерту",  
+        next:"Келесі",
+        number: "Кезек нөмірі",
+        terminal:"Терминал",
+        tv:"Теледидар",
+        count: "Сіздің алдыңызда {n} адам бар",
+        operator:"Оператор",
+        ticketCount: "Кезектегі талондар саны:",
+        downtime: "Бос тұру уақыты:",
+        serviceTime: "Қызмет алу уақыты:",
+        called: "Шақырылушы:",
+        dnshowup: "Келмеді",
+        norows: "Кезек табылмады",
+        served: "Қызмет алды",
+        redirect: "Басқа терезеге",
+        selectTicket:"Таңдап шақыру",
+        call: "Шақыру",
+    },
+    
     dissertation: {
         title: "Диссертациялық кеңес",
         council: {
@@ -745,8 +785,13 @@ export default {
         },
         reportTypes: {
             year: "Жылдық",
-            quarter: "Тоқсандық"
+            quarter: "Тоқсандық",
+            halfYear: "Жартыжылдық"
         },
-        quarterYear: "Жыл бойы"
+        quarterYear: "Жыл бойы",
+        resultIndicator: "Нәтиже көрсеткіші",
+        summary: "Жинақтаушы/Растау",
+        respExecutor: "Жауапты орындаушылар",
+        halfYear: "жартыжылдық"
     }
 }

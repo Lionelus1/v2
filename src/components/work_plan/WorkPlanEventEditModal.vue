@@ -6,12 +6,24 @@
   <Dialog :header="$t('workPlan.editEvent')" v-model:visible="showWorkPlanEventEditModal" :style="{width: '450px'}"
           class="p-fluid">
     <div class="p-field">
-      <label>{{ $t('workPlan.eventName') }}</label>
+      <label>{{ plan && plan.is_oper ? $t('workPlan.resultIndicator') : $t('workPlan.eventName') }}</label>
       <InputText v-model="editData.event_name"/>
       <small class="p-error" v-if="submitted && formValid.event_name">{{ $t('workPlan.errors.eventNameError') }}</small>
     </div>
-    <div class="p-field">
+    <div class="p-field" v-if="plan && plan.is_oper">
+      <label>{{ $t('common.unit') }}</label>
+      <InputText v-model="editData.unit" />
+    </div>
+    <div class="p-field" v-if="plan && plan.is_oper">
+      <label>{{ $t('common.planNumber') }}</label>
+      <InputText v-model="editData.plan_number" />
+    </div>
+    <div class="p-field" v-if="plan && plan.is_oper">
       <label>{{ $t('workPlan.approvalUsers') }}</label>
+      <InputText v-model="editData.responsible_executor" />
+    </div>
+    <div class="p-field">
+      <label>{{ plan && plan.is_oper ? $t('workPlan.summary') : $t('workPlan.approvalUsers') }}</label>
       <FindUser v-model="selectedUsers" :editMode="true"></FindUser>
       <small class="p-error" v-if="submitted && formValid.users">{{ $t('workPlan.errors.approvalUserError') }}</small>
     </div>
@@ -21,9 +33,13 @@
                 :placeholder="$t('common.select')"/>
       <small class="p-error" v-if="submitted && formValid.quarter">{{ $t('workPlan.errors.quarterError') }}</small>
     </div>
+    <div class="p-field" v-if="plan && plan.is_oper">
+      <label>{{ $t('common.suppDocs') }}</label>
+      <Textarea v-model="editData.supporting_docs" rows="3" style="resize: vertical" />
+    </div>
     <div class="p-field">
-      <label>{{ $t('common.result') }}</label>
-      <Textarea v-model="editData.event_result" rows="3" style="resize: vertical"/>
+      <label>{{ plan && plan.is_oper ? $t('common.additionalInfo') : $t('common.result') }}</label>
+      <Textarea v-model="editData.result" rows="3" style="resize: vertical"/>
     </div>
     <template #footer>
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
@@ -42,11 +58,12 @@ import {getHeader, smartEnuApi} from "@/config/config";
 export default {
   name: "WorkPlanEventEditModal",
   components: {FindUser},
-  props: ['event'],
+  props: ['event', 'planData'],
   data() {
     return {
       showWorkPlanEventEditModal: false,
       editData: JSON.parse(JSON.stringify(this.event)),
+      plan: this.planData,
       quarters: [
         {
           id: 1,
@@ -86,6 +103,7 @@ export default {
       this.selectedUsers.push(e);
     })
     this.selectedUsers = this.editData.user;
+    console.log(this.editData)
   },
   methods: {
     openBasic() {

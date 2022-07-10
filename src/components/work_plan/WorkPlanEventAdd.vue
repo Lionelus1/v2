@@ -4,15 +4,27 @@
     <Button label="" class="p-button-info p-ml-1" icon="pi pi-plus" @click="openBasic"/>
   </div>
 
-  <Dialog :header="$t('workPlan.addEvent')" v-model:visible="showWorkPlanEventModal" :style="{width: '450px'}"
+  <Dialog :header="$t('workPlan.addEvent')" v-model:visible="showWorkPlanEventModal" :style="{width: '600px'}"
           class="p-fluid">
     <div class="p-field">
-      <label>{{ $t('workPlan.eventName') }}</label>
+      <label>{{ plan && plan.is_oper ? $t('workPlan.resultIndicator') : $t('workPlan.eventName') }}</label>
       <InputText v-model="event_name" />
       <small class="p-error" v-if="submitted && formValid.event_name">{{ $t('workPlan.errors.eventNameError') }}</small>
     </div>
-    <div class="p-field">
+    <div class="p-field" v-if="plan && plan.is_oper">
+      <label>{{ $t('common.unit') }}</label>
+      <InputText v-model="unit" />
+    </div>
+    <div class="p-field" v-if="plan && plan.is_oper">
+      <label>{{ $t('common.planNumber') }}</label>
+      <InputText v-model="plan_number" />
+    </div>
+    <div class="p-field" v-if="plan && plan.is_oper">
       <label>{{ $t('workPlan.approvalUsers') }}</label>
+      <InputText v-model="responsible_executor" />
+    </div>
+    <div class="p-field">
+      <label>{{ plan && plan.is_oper ? $t('workPlan.summary') : $t('workPlan.approvalUsers') }}</label>
       <FindUser v-model="selectedUsers" :editMode="true"></FindUser>
       <small class="p-error" v-if="submitted && formValid.users">{{ $t('workPlan.errors.approvalUserError') }}</small>
     </div>
@@ -21,8 +33,12 @@
       <Dropdown v-model="quarter" :options="quarters" optionLabel="name" optionValue="id" :placeholder="$t('common.select')" />
       <small class="p-error" v-if="submitted && formValid.quarter">{{ $t('workPlan.errors.quarterError') }}</small>
     </div>
+    <div class="p-field" v-if="plan && plan.is_oper">
+      <label>{{ $t('common.suppDocs') }}</label>
+      <Textarea v-model="supporting_docs" rows="3" style="resize: vertical" />
+    </div>
     <div class="p-field">
-      <label>{{ $t('common.result') }}</label>
+      <label>{{ plan && plan.is_oper ? $t('common.additionalInfo') : $t('common.result') }}</label>
       <Textarea v-model="result" rows="3" style="resize: vertical"/>
     </div>
     <template #footer>
@@ -42,7 +58,7 @@ import {getHeader, smartEnuApi} from "@/config/config";
 export default {
   name: 'WorkPlanEventAdd',
   components: {FindUser},
-  props: ['data', 'isMain', 'items'],
+  props: ['data', 'isMain', 'items', 'planData'],
   data() {
     return {
       showWorkPlanEventModal: false,
@@ -53,6 +69,7 @@ export default {
       result: null,
       comment: null,
       parentItems: this.items,
+      plan: this.planData,
       quarters: [
         {
           id: 1,
@@ -81,12 +98,16 @@ export default {
       formValid: {
         event_name: false,
         users: false,
-        quarter: false
+        quarter: false,
       },
       submitted: false,
       newQuarters: [],
       loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID,
-      respUsers: []
+      respUsers: [],
+      unit: null,
+      plan_number: null,
+      supporting_docs: null,
+      responsible_executor: null
     }
   },
   mounted() {
@@ -105,6 +126,7 @@ export default {
   methods: {
     openBasic() {
       this.showWorkPlanEventModal = true;
+      console.log("CREATE EVENT PLAN DATA = ", this.plan)
     },
     closeBasic() {
       this.showWorkPlanEventModal = false;
@@ -123,14 +145,21 @@ export default {
       if (this.parentData) {
         this.parentId = parseInt(this.parentData.work_plan_event_id);
       }
-      axios.post(smartEnuApi + `/workPlan/addEvent`, {
+      let data = {
         work_plan_id: this.work_plan_id,
         event_name: this.event_name,
         parent_id: this.parentId,
         quarter: this.quarter,
         result: this.result,
         resp_person_ids: userIds
-      }, {headers: getHeader()}).then(res => {
+      };
+      if (this.plan && this.plan.is_oper) {
+        data.unit = this.unit;
+        data.plan_number = this.plan_number;
+        data.responsible_executor = this.responsible_executor;
+        data.supporting_docs = this.supporting_docs;
+      }
+      axios.post(smartEnuApi + `/workPlan/addEvent`, data, {headers: getHeader()}).then(res => {
         this.emitter.emit("workPlanEventIsAdded", true);
         this.$toast.add({severity: 'success', detail: this.$t('workPlan.message.eventCreated'), life: 3000});
         this.showWorkPlanEventModal = false;

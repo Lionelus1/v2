@@ -201,7 +201,7 @@ export default {
   components: { TopMenuBar, FindUser },
   data() {
     return {
-      value: this.modelValue,
+      value: JSON.parse(JSON.stringify(this.modelValue)),
       users: [],
       orgforms: [],
       isAdmin: false,
@@ -248,7 +248,7 @@ export default {
   },
   created() {
     this.getOrgForms();
-    this.isAdmin = this.findRole(null, 'main_administrator')
+    this.isAdmin = this.findRole(null, 'main_administrator') || this.findRole(null, "career_administrator")
     this.localReadonly =  this.readonly && !this.isAdmin
   },
   methods: {
@@ -277,9 +277,10 @@ export default {
         !this.value.name || this.value.name == "";
       this.validationErrors.nameInRus =
         !this.value.nameru || this.value.nameru == "";
-      this.validationErrors.orgForm = !this.value.form.id;
+      this.validationErrors.orgForm = this.value.form.name == "" ;
       this.validationErrors.bin = !this.value.iin || this.value.iin == "";
       this.validationErrors.email = !this.value.email || this.value.email == "";
+      console.log(this.value.form.name )
       return (
         !this.validationErrors.nameInQazaq &&
         !this.validationErrors.nameInRus &&

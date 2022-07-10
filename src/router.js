@@ -24,7 +24,7 @@ const ifAuthenticated = (to, from, next) => {
         return
     }else{
         store.dispatch("solveAttemptedUrl",to);
-        next('/public/vacancies')
+        next('/login')
         return
     }
 
@@ -280,7 +280,42 @@ const routes = [
                 name: 'Cabinet',
                 component: load('humanResources/candidate/Cabinet'),
                 beforeEnter: ifAuthenticated,
-            }
+            },
+            {
+                path: '/queue',
+                name: '/queue',
+                component: load('queue/Queue'),
+                beforeEnter: ifAuthenticated,
+                
+            },
+            {
+                path: '/queue/operator/:id/:parentID',
+                name: '/queueOperator',
+                component: load('queue/Operator'),
+                beforeEnter: ifAuthenticated,
+                
+            },
+            {
+                path: '/queueService',
+                name: '/queueService',
+                component: load('queue/QueueService'),
+                beforeEnter: ifAuthenticated,
+                
+            },
+            {
+                path: '/queue/terminal/:id',
+                name: '/queueTerminal',
+                component: load('queue/Terminal'),
+                beforeEnter: ifAuthenticated,
+                
+            },
+            {
+                path: '/queue/tv/:id',
+                name: '/queueTv',
+                component: load('queue/Tv'),
+                beforeEnter: ifAuthenticated,
+                
+            },   
         ]
     }
 
