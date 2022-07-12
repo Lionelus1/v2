@@ -60,41 +60,12 @@
                     :userType="1"
                     @input="correct" @remove="correct"
                   ></FindUser>
-                  <DatePicker
-                    v-else-if="param.name == 'period'"
-                    v-model="param.value"
-                    is-range
-                    @input="correct"
-                    @dayclick="correct"
-                  >
-                    <template v-slot="{ inputValue, inputEvents }">
-                      <div class="flex justify-center items-center">
-                        <input
-                          :value="inputValue.start"
-                          v-on="inputEvents.start"
-                          class="border px-2 py-1 w-32 rounded focus:outline-none focus:border-indigo-300"
-                        />
-                        <svg
-                          class="w-4 h-4 mx-2"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M14 5l7 7m0 0l-7 7m7-7H3"
-                          />
-                        </svg>
-                        <input
-                          :value="inputValue.end"
-                          v-on="inputEvents.end"
-                          class="border px-2 py-1 w-32 rounded focus:outline-none focus:border-indigo-300"
-                        />
-                      </div>
-                    </template>
-                  </DatePicker>
+           
+                  <!-- <PrimeCalendar v-else-if="param.name == 'period'" v-model="param.value" selectionMode="range" :manualInput="false" ></PrimeCalendar> -->
+   
+                  <div v-else-if="param.name == 'period'" >
+                    <PrimeCalendar @date-select	="correct" v-model="param.value" selectionMode="range" :manualInput="false" dateFormat="dd.mm.yy" hideOnDateTimeSelect="true"></PrimeCalendar>
+                  </div>
                   <InputText
                     v-model="contract.number"
                     v-else-if="param.name === 'number'"
@@ -148,10 +119,10 @@
             readonly="true"
             :modelValue="
               this.$i18n.locale === 'kz'
-                ? contract.template.folder.nameKaz
+                ? contract.template.folder.namekz
                 : this.$i18n.locale === 'ru'
-                ? contract.template.folder.nameRus
-                : contract.template.folder.nameEn
+                ? contract.template.folder.nameru
+                : contract.template.folder.nameen
             "
             >
             </InputText
@@ -163,7 +134,7 @@
         <div class="p-col-12 p-mb-2 p-lg-9 p-mb-lg-1 p-pr-2">
           <i
             class="p-mt-2"
-
+            
           >{{(contract.registerDate ? contract.registerDate.split('T')[0] : '')}}</i>
         </div>
         <div class="p-col-12 p-mb-2 p-lg-3 p-mb-lg-0">
@@ -205,10 +176,13 @@
 <script>
 import { smartEnuApi, getHeader, b64toBlob, findRole } from "@/config/config";
 import axios from "axios";
+
 import FindUser from "@/helpers/FindUser";
+
 import ContragentSelect from "../contragent/ContragentSelect.vue";
 import { DatePicker } from "v-calendar";
 import {runNCaLayer} from "@/helpers/SignDocFunctions"
+import moment from 'moment'
 import DocSignaturesInfo from "@/components/DocSignaturesInfo"
 
 import Enum from "@/enum/docstates/index";
@@ -221,10 +195,11 @@ import {
 import { constantizeGenderInRules } from "lvovich/lib/inclineRules";
 export default {
   name: "Contract",
-  components: { FindUser, DatePicker, ContragentSelect, DocSignaturesInfo },
+  components: { FindUser,  ContragentSelect, DocSignaturesInfo },
   data() {
     return {
       contract: null,
+      period: [ new Date("2018-05-01"), new Date("2018-05-01")],
       students: null,
       organization: null,
       users:[],
@@ -330,7 +305,7 @@ export default {
       },
     };
   },
-
+  
   computed: {
     previewText() {
       if (!this.contract) return "";
@@ -353,8 +328,9 @@ export default {
   },
   methods: {
     findRole: findRole,
+    moment: moment,
     correct() {
-
+      
       this.corrected = true
       this.menu[0].disabled = false
     },
@@ -418,10 +394,10 @@ export default {
             this.loading = false;
             if (error.response.status == 401) {
               this.$store.dispatch("logLout");
-            } else
+            } else 
               console.log(error);
           })
-
+                    
         }
       })
     },
@@ -465,6 +441,13 @@ export default {
         .then((res) => {
           this.loading = false
           this.contract = res.data;
+          this.contract.params.forEach((param) => {
+          if (param.name == "period") {
+            param.value  = param.value .map(d => new Date(d));
+          }
+      
+      });
+            
 		      this.reserveNumber = this.contract.number
           if (this.contract.docHistory.stateId >= 6) {
             if (this.contract.docHistory.stateId >=2) {
@@ -472,17 +455,19 @@ export default {
             }
             this.menu[3].items[1].disabled = true
 
-          }
+          } 
           if (this.contract.sourceType == 0) {
             this.contract.text =
               this.contract.lang == this.language.kz
                 ? this.contract.template.mainTextKaz
                 : this.contract.template.mainTextRus;
           }
+          
+
         })
         .catch((error) => {
           this.loading = false
-          if (error.response.status == 401) {
+          if (error.response && error.response.status == 401) {
             this.$store.dispatch("logLout");
           }
         });
@@ -717,7 +702,7 @@ export default {
 
 /* Not Important*/
 img {
-  width: 300px;
+  width: 300px; 
 }
 
 </style>

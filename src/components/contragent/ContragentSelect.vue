@@ -57,7 +57,6 @@ export default {
   },
   computed: {
     selectedContragentName() {
-      console.log(this.value)
       if (!this.value)
         return "";
       switch(this.value.type) {

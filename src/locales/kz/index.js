@@ -1,5 +1,6 @@
 export default {
     common: {
+        attention:"Назар аударыңыз",
         loginWelcome:"Smart.enu жүйесіне қош келдіңіз.",
         chooseCert:"Сертификатты таңдаңыз",
         activeList: "Белсенді тізім",
@@ -72,7 +73,8 @@ export default {
         show: "Көру",
         save: "Cақтау",
         speciality: "Мамандығы",
-        download: "Қотару",
+        download: "Жүктеп алу",
+        doclang: "Құжат тілі",
         lang: 'Тіл',
         learnlang: "Оқу тілі",
         loading: "Жүктеу",
@@ -91,6 +93,7 @@ export default {
         main: "Негізгі", 
         meetingUrl: "Онлайн жиналысқа сілтеме",
         meetingPlace: "Жиналыс өтетін орын",
+        move: "Орнын ауыстыру",
         myData: "Менің мәліметтерім",
         myResume: 'Менің түйіндемем',
         theResume: 'Түйіндемем',
@@ -175,14 +178,14 @@ export default {
         },
         message: {
             title: {
-                downloadError: "Қотару қатесі",
+                downloadError: "Жүктеп алу қатесі",
                 uploadError: "Жүктеу қатесі",
                 saveError: "Сақтау қатесі",
                 docCreation: "Жаңа қалта қосу"
             },
             invalidkey: "Дұрыс кілт енгізбедіңіз",
             notPermissionForApprove: "Таңдалған қолданушының құжатқа келісім беру құзыреті жоқ",
-            downloadError: "Қотару кезінде қате пайда болды",
+            downloadError: "Жүктеп алу кезінде қате пайда болды",
             fillError: "Мәліметтер толық көрсетілмеген. Барлық өрісті толтырыңыз!",
             sendToApprovalError: "Келісімге жіберуде қате пайда болды. Мәліметтердің дұрыстығын тексеріңіз!",
             uploadError: "Жүктеу кезінде қате пайда болды",
@@ -203,9 +206,11 @@ export default {
             userSuccessInserted: "Қолданушы сәтті қосылды, авторизациялық мәліметтерді қолданушға жіберу үшін жүктеп алыңыз. ",
             selectRole: "Рөлді таңдаңыз",
             selectVariant: "Керек нұсқаны таңдаңыз",
+            selectUsers: "Қолданушыларды таңдаңыз",
             userIINExists: "Көрсетілген ЖСН бойынша қолданушы бұрыннан бар",
             accessDenied: "Бұл құжатты көруге құзіретіңіз жоқ!",
-            saveChanges: "Алдымен өззгерістерді сақтаңыз"
+            saveChanges: "Алдымен өззгерістерді сақтаңыз",
+            impossible: "мүмкін емес",
         },
         language: {
             kz: "қазақша",
@@ -330,9 +335,12 @@ export default {
             created: "Келісім-шарт жобасы сәтті құрылды"
         },
         setnumber: "Нөмір тағайындау",
+        assigner: "Тағайындаған",
+
 
     },
     hdfs: {
+        archiveBtn: "Мұрағаттау",
         title: "Файлдар",
         fileName: "Файл атауы",
         download: "Жүктеу",
@@ -348,6 +356,11 @@ export default {
         search: "Іздеу",
         noData: "Ақпарат жоқ",
         loading: "Күтіңіз...",
+        umktitle: "Бағдарлама параметрлерін енгізіңіз",
+        modulname: "Модульдің коды және атауы:",
+        eduprogram: "Білім беру бағдарламасының коды және атауы:",
+        discipline: "Пәннің коды және атауы:",
+
     },
     ncasigner: {
         noteMark: "Smart.Enu қызметін пайдалана отырып сіз ҰКО сертификатында (электронды қолтаңба) қамтылған жеке мәліметтеріңізді жинауға, өңдеуге және сақтауға келісіміңізді бересіз.",
@@ -424,6 +437,14 @@ export default {
 
     },
     smartenu: {
+        NormDoc: "Құжат",
+        uploadNormDoc: "Құжаттарды жүктеу",
+        catalogNormDoc: "Нормативті құжаттар каталогы",
+        chooseCatalogNormDoc: "Нормативті құжатты таңдаңыз",
+        chooseSuperiorCatalogNormDoc: "Жоғарыдағы нормативті құжатты таңдаңыз",
+        createOrEditCatalogNormDoc: "Нормативті құжаттар құру/өзгерту",
+        catalogNormDocNotFound: "Нормативті құжаттар каталогы табылмады",
+        loadingcatalogNormDoc: "Нормативті құжаттар жүктелуде. Өтініш, күте тұрыңыз.",
         categories: "санаттар",
         selectCategories: "Санаттарды таңдаңыз",
         newsList: "Жаңалықтар тізімі",
@@ -625,7 +646,7 @@ export default {
         uploadImage: "Сурет қосу",
         uploadFile: "Құжат қосу",
         answer: "Жауап",
-        noAnswer: "Жауап берілмеді"
+        noAnswer: "Жауап берілмеді",
     },
     hr: {
         action: {
@@ -793,5 +814,9 @@ export default {
         summary: "Жинақтаушы/Растау",
         respExecutor: "Жауапты орындаушылар",
         halfYear: "жартыжылдық"
-    }
+    },
+    educomplex: {
+        title: "Пәннің оқу-әдістемелік кешені",
+        forme: "Маған қатысты"
+    },
 }
