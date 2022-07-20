@@ -163,7 +163,7 @@
         <div class="p-col-12 p-mb-2 p-lg-9 p-mb-lg-1 p-pr-2">
           <i
             class="p-mt-2"
-            
+
           >{{(contract.registerDate ? contract.registerDate.split('T')[0] : '')}}</i>
         </div>
         <div class="p-col-12 p-mb-2 p-lg-3 p-mb-lg-0">
@@ -205,13 +205,7 @@
 <script>
 import { smartEnuApi, getHeader, b64toBlob, findRole } from "@/config/config";
 import axios from "axios";
-<<<<<<< HEAD
 import FindUser from "@/helpers/FindUser";
-=======
-
-import FindUser from "@/helpers/FindUser";
-
->>>>>>> be633d97ce1b158b2186b3d85a5751327ab0bb6a
 import ContragentSelect from "../contragent/ContragentSelect.vue";
 import { DatePicker } from "v-calendar";
 import {runNCaLayer} from "@/helpers/SignDocFunctions"
@@ -227,13 +221,7 @@ import {
 import { constantizeGenderInRules } from "lvovich/lib/inclineRules";
 export default {
   name: "Contract",
-<<<<<<< HEAD
   components: { FindUser, DatePicker, ContragentSelect, DocSignaturesInfo },
-=======
-
-  components: { FindUser, DatePicker, ContragentSelect, DocSignaturesInfo },
-
->>>>>>> be633d97ce1b158b2186b3d85a5751327ab0bb6a
   data() {
     return {
       contract: null,
@@ -342,7 +330,7 @@ export default {
       },
     };
   },
-  
+
   computed: {
     previewText() {
       if (!this.contract) return "";
@@ -366,7 +354,7 @@ export default {
   methods: {
     findRole: findRole,
     correct() {
-      
+
       this.corrected = true
       this.menu[0].disabled = false
     },
@@ -430,10 +418,10 @@ export default {
             this.loading = false;
             if (error.response.status == 401) {
               this.$store.dispatch("logLout");
-            } else 
+            } else
               console.log(error);
           })
-                    
+
         }
       })
     },
@@ -484,7 +472,7 @@ export default {
             }
             this.menu[3].items[1].disabled = true
 
-          } 
+          }
           if (this.contract.sourceType == 0) {
             this.contract.text =
               this.contract.lang == this.language.kz
@@ -729,7 +717,7 @@ export default {
 
 /* Not Important*/
 img {
-  width: 300px; 
+  width: 300px;
 }
 
 </style>

@@ -8,6 +8,11 @@ export const signerApi = "https://smart.enu.kz:6990"
 //export const smartEnuApi = "https://smart.enu.kz:8081"
 //export const smartEnuApi = "http://smart.enu.kz:8090"
 export const smartEnuApi = "http://172.17.157.199:8090"
+<<<<<<< HEAD
+=======
+export const socketApi = "ws://smart.enu.kz:8090" //test server
+//export const socketApi = "ws://smart.enu.kz" //prod server
+>>>>>>> 8bc4a626fa3dd52cb15da093dab41357d67d736b
 export const templateApi = "http://localshost:8082"
 
 export const header  = {
@@ -87,7 +92,7 @@ export const downloadFile = function(filePath) {
     {
       filePath: filePath
     },
-    { 
+    {
       headers: getHeader()
     }
   )
