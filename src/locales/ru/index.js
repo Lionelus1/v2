@@ -225,7 +225,13 @@ export default {
         successDone: "Успешно выполнено",
         success: "Успешно",
         downloadSignaturesPdf: "Скачать подписи",
-        signatures: "Подписи"
+        signatures: "Подписи",
+        unit: "Единица измерения",
+        planNumber: "План (плановое число)",
+        suppDocs: "Подтверждающие документы",
+        additionalInfo: "Дополнительная информация",
+        resultSentToCorrect: "Результат отправлен на доработку",
+        toCorrect: "На проверку"
     },
     bank: {
         title: "Банки",
@@ -777,8 +783,13 @@ export default {
         },
         reportTypes: {
             year: "Годовой",
-            quarter: "Квартальный"
+            quarter: "Квартальный",
+            halfYear: "Полугодовой"
         },
-        quarterYear: "Весь год"
+        quarterYear: "Весь год",
+        resultIndicator: "Показатель прямых результатов",
+        summary: "Свод/Подтверждение",
+        respExecutor: "Ответственные исполнители",
+        halfYear: "полугодие"
     }
 }

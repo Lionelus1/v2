@@ -223,7 +223,13 @@ export default {
         success: "Сәтті",
         successDone: "Сәтті орындалды",
         downloadSignaturesPdf: "Қолтаңбаларды жүктеу",
-        signatures: "Қолтаңбалар"
+        signatures: "Қолтаңбалар",
+        unit: "Өлшем бірлігі",
+        planNumber: "Жоспар",
+        suppDocs: "Растайтын құжаттар",
+        additionalInfo: "Қосымша ақпарат",
+        resultSentToCorrect: "Нәтиже түзетуге жіберілді",
+        toCorrect: "Тексеруге жіберу"
     },
     bank: {
         title: "Банктер",
@@ -779,8 +785,13 @@ export default {
         },
         reportTypes: {
             year: "Жылдық",
-            quarter: "Тоқсандық"
+            quarter: "Тоқсандық",
+            halfYear: "Жартыжылдық"
         },
-        quarterYear: "Жыл бойы"
+        quarterYear: "Жыл бойы",
+        resultIndicator: "Нәтиже көрсеткіші",
+        summary: "Жинақтаушы/Растау",
+        respExecutor: "Жауапты орындаушылар",
+        halfYear: "жартыжылдық"
     }
 }

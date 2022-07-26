@@ -20,12 +20,14 @@
           <template #body="slotProps">
             <span
                 :class="'customer-badge status-' + slotProps.data.status.work_plan_status_id">
-              {{ $i18n.locale === "kz" ? slotProps.data.status.name_kk : $i18n.locale === "ru" ? slotProps.data.status.name_ru : slotProps.data.status.name_en }}</span>
+              {{
+                $i18n.locale === "kz" ? slotProps.data.status.name_kk : $i18n.locale === "ru" ? slotProps.data.status.name_ru : slotProps.data.status.name_en
+              }}</span>
           </template>
         </Column>
         <Column :header="$t('common.type')">
           <template #body="{ data }">
-            {{ initReportType(data.report_type) }}
+            {{ initReportType(data.report_type, data.halfYearType) }}
           </template>
         </Column>
         <Column :header="$t('workPlan.quarter')">
@@ -124,12 +126,14 @@ export default {
           name: data.report_name,
           quarter: data.quarter,
           work_plan_id: data.work_plan_id,
-          doc_id: data.doc_id
+          doc_id: data.doc_id,
+          halfYearType: data.halfYearType,
+          department_id: data.department_id
         }
       });
       //this.$router.push({name: 'WorkPlanReportView', params: {id: data.id}});
     },
-    initReportType(type) {
+    initReportType(type, halfYearType) {
       let result = "";
       switch (type) {
         case 1:
@@ -137,6 +141,9 @@ export default {
           break;
         case 2:
           result = this.$t('workPlan.reportTypes.quarter');
+          break;
+        case 3:
+          result = `${halfYearType} ${this.$t('workPlan.halfYear')}`;
           break;
       }
       return result;

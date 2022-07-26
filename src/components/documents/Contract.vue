@@ -163,7 +163,7 @@
         <div class="p-col-12 p-mb-2 p-lg-9 p-mb-lg-1 p-pr-2">
           <i
             class="p-mt-2"
-            
+
           >{{(contract.registerDate ? contract.registerDate.split('T')[0] : '')}}</i>
         </div>
         <div class="p-col-12 p-mb-2 p-lg-3 p-mb-lg-0">
@@ -205,9 +205,7 @@
 <script>
 import { smartEnuApi, getHeader, b64toBlob, findRole } from "@/config/config";
 import axios from "axios";
-
 import FindUser from "@/helpers/FindUser";
-
 import ContragentSelect from "../contragent/ContragentSelect.vue";
 import { DatePicker } from "v-calendar";
 import {runNCaLayer} from "@/helpers/SignDocFunctions"
@@ -223,9 +221,7 @@ import {
 import { constantizeGenderInRules } from "lvovich/lib/inclineRules";
 export default {
   name: "Contract",
-
   components: { FindUser, DatePicker, ContragentSelect, DocSignaturesInfo },
-
   data() {
     return {
       contract: null,
@@ -334,7 +330,7 @@ export default {
       },
     };
   },
-  
+
   computed: {
     previewText() {
       if (!this.contract) return "";
@@ -358,7 +354,7 @@ export default {
   methods: {
     findRole: findRole,
     correct() {
-      
+
       this.corrected = true
       this.menu[0].disabled = false
     },
@@ -410,6 +406,7 @@ export default {
             this.contract.docUUID = response.data.docUUID
             this.contract.filePath = response.data.filePath
             this.contract.docHistory = response.data.docHistory
+            this.menu[3].items[1].disabled = true
             this.$toast.add({
               severity: "success",
               summary: this.$t("common.tosign"),
@@ -421,10 +418,10 @@ export default {
             this.loading = false;
             if (error.response.status == 401) {
               this.$store.dispatch("logLout");
-            } else 
+            } else
               console.log(error);
           })
-                    
+
         }
       })
     },
@@ -475,7 +472,7 @@ export default {
             }
             this.menu[3].items[1].disabled = true
 
-          } 
+          }
           if (this.contract.sourceType == 0) {
             this.contract.text =
               this.contract.lang == this.language.kz
@@ -705,7 +702,11 @@ export default {
   top: 0;
   left: 0;
   bottom: 0;
+
+
   right: 0;
+
+
   margin-right: 20px;
 }
 
@@ -718,4 +719,5 @@ export default {
 img {
   width: 300px;
 }
+
 </style>

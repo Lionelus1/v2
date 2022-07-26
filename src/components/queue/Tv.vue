@@ -40,9 +40,10 @@
 </template>
 
 <script>
-import { authHeader, getHeader, smartEnuApi, findRole, b64toBlob } from "@/config/config";
+import { authHeader, getHeader, smartEnuApi, socketApi,findRole, b64toBlob } from "@/config/config";
 import axios from "axios";
 import { Socket } from "dgram";
+
 import {Howl, Howler} from 'howler';
 
 export default {
@@ -84,7 +85,7 @@ export default {
     findRole : findRole,
     getAudio(msg)  {
       axios
-      .post(`http://localhost:9090/convert`, msg, {headers: getHeader()})
+      .post(smartEnuApi+`/convert`, msg, {headers: getHeader()})
       .then(res => {
         // while (this.audioSrc!=null) {
           
@@ -122,7 +123,7 @@ export default {
         alert("must declrare to connect queue");
         return 
       }
-      let socket = new WebSocket("ws://localhost:8090/qws");
+      let socket = new WebSocket(socketApi+"/qws");
       
       socket.onopen = function(e) {
         let newTv = new Object();

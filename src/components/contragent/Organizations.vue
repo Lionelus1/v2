@@ -150,7 +150,7 @@ export default {
         rows: 10,
         userType: Number(this.$route.params.type),
         sortLang: this.$i18n.locale,
-        orgID: this.orgID
+        orgID: -1
       },
       count: 0,
       selectedOrganizations: null,

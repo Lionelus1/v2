@@ -7,7 +7,9 @@ export const signerApi = "https://smart.enu.kz:6990"
 //export const signerApi = "http://10.1.1.161:6990"
 //export const smartEnuApi = "https://smart.enu.kz:8081"
 //export const smartEnuApi = "http://smart.enu.kz:8090"
-export const smartEnuApi = "http://smart.enu.kz:8090"
+export const smartEnuApi = "http://172.17.157.199:8090"
+export const socketApi = "ws://smart.enu.kz:8090" //test server
+//export const socketApi = "ws://smart.enu.kz" //prod server
 export const templateApi = "http://localshost:8082"
 
 export const header  = {
@@ -70,7 +72,7 @@ export const testFunction= function(){
 export const findRole = function(user, role) {
   if (user == null) {
     user = this.$store.state.loginedUser;
-  } 
+  }
   if (user.roles)
   for (let i = 0; i < user.roles.length; i++) {
     if (user.roles[i].name === role) {
@@ -87,7 +89,7 @@ export const downloadFile = function(filePath) {
     {
       filePath: filePath
     },
-    { 
+    {
       headers: getHeader()
     }
   )

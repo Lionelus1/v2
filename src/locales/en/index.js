@@ -224,7 +224,13 @@ export default {
         success: "Success",
         successDone: "Successfully completed",
         downloadSignaturesPdf: "Download signatures",
-        signatures: "Signatures"
+        signatures: "Signatures",
+        unit: "Unit",
+        planNumber: "Plan",
+        suppDocs: "Supporting documents",
+        additionalInfo: "Additional Information",
+        resultSentToCorrect: "Result sent for revision",
+        toCorrect: "To check"
     },
     bank: {
         title: "Banks",
@@ -752,32 +758,13 @@ export default {
         },
         reportTypes: {
             year: "Annual",
-            quarter: "Quarterly"
+            quarter: "Quarterly",
+            halfYear: "Semi-annual"
         },
-        quarterYear: "Whole year"
-    },
-    queue: {
-        title: "Queue",
-        secretary:"Maintenance",
-        queues:"Queues",
-        responsible:"responsible",
-        queueNotFound:"Queue not found",
-        createQueue:"Create/Modify Queue",
-        next:"Next",
-        number: "Queue number",
-        terminal:"Terminal",
-        tv:"TV",
-        count: "There are {n} people waiting in front of you",
-        operator:"Operator",
-        ticketCount: "Tickets queued:",
-        downtime: "Downtime:",
-        serviceTime: "Service time:",
-        called: "Called visitor:",
-        dnshowup: "Didn't show up",
-        norows: "Queue not found",
-        served: "Visitor served",
-        redirect: "Redirect",
-        selectTicket:"Select ticket",
-        call: "Call",
-    },
+        quarterYear: "Whole year",
+        resultIndicator: "Indicator of direct results",
+        summary: "Summary/Confirmation",
+        respExecutor: "Responsible performers",
+        halfYear: "semi-annual"
+    }
 }
