@@ -1,7 +1,23 @@
 <template>
-  <div>    
-    <h5 class="p-col-6 p-offset-3 p-text-center p-text-bold">{{ reportTitle }}</h5>
-    <br/>
+  <div>  
+      <div> 
+        <div class="p-col">
+          <PrimeCalendar
+            style="width: 140px"
+            :disabled="disabled"            
+            dateFormat="dd.mm.yy"        
+            v-model="selectDate"           
+            :placeholder="$t('common.date')"
+            :date-select="selectDate"
+            :monthNavigator="true"
+            :yearNavigator="true"
+            yearRange="2000:2030"
+            :showIcon="true"                       
+          />
+        </div>
+        
+      </div>               
+    
     <div class="card">            
       <DataTable :value="reports" responsiveLayout="scroll">
           <Column field="parentName" v-bind:header="$t('queue.title')">  
@@ -14,13 +30,13 @@
               {{slotProps.data.queueOperator.fullName}}
             </template>
           </Column>
-          <Column field="called" header="Шақырылған адам саны" ></Column>
-          <Column field="serviced" header="Қызмет алды"></Column>
+          <Column field="called" v-bind:header="$t('queue.calledcount')" ></Column>
+          <Column field="serviced" v-bind:header="$t('queue.serviced')"></Column>
           <Column field="dontCome" v-bind:header="$t('queue.dnshowup')"></Column>
-          <Column field="redirect" v-bind:header="$t('queue.redirect')"></Column>
-          <Column field="averageTime" header="Орташа қызмет көрсету уақыты">
+          <Column field="redirect" v-bind:header="$t('queue.redirected')"></Column>
+          <Column field="averageTime" v-bind:header="$t('queue.averageTime')">
             <template #body="slotProps">
-              {{slotProps.data.averageTime}}
+              {{convertTime(slotProps.data.averageTime)}}
             </template>
           </Column>
       </DataTable>
@@ -38,6 +54,7 @@ export default {
   data() {
     return {
       reports:[],
+      selectDate: null,
       
       
     }
@@ -45,16 +62,16 @@ export default {
   methods: {   
     findRole : findRole,
 
-    getQueueReport(parentID) {
-        this.loading = true 
-        // alert(parentID)    
+    getQueueReport(queueID) {
+        this.loading = true  
+        // alert(this.selectDate) 
         axios
-        .post(smartEnuApi + "/queue/queueReport", {queueID:parentID},{
+        .post(smartEnuApi + "/queue/queueReport", {queueID:queueID,Date:this.selectDate},{
           headers: getHeader(),
         })
         .then((response) => {
           this.reports = response.data;         
-          this.loading = false;          
+          this.loading = false;                  
         })
         .catch((error) => {
           this.loading = false;
@@ -71,15 +88,28 @@ export default {
 
     padTo2Digits(num) {
       return num.toString().padStart(2, '0');
-    },  
+    },
+    convertTime(secn) {  
+      var sec=Number(secn)
+      var hours = Math.floor(sec/3600);
+      (hours >= 1) ? sec = sec - (hours*3600) : hours = '00';
+      var min = Math.floor(sec/60);
+      (min >= 1) ? sec = sec - (min*60) : min = '00';
+      (sec < 1) ? sec='00' : void 0;
+      (min.toString().length == 1) ? min = '0'+min : void 0;    
+      (sec.toString().length == 1) ? sec = '0'+sec : void 0;    
+      console.log(hours+':'+min+':'+sec);
+      return hours+':'+min+':'+Math.round(sec);
+    }  
    
     
     
   },
   created(){
-    var parentID = parseInt(this.$route.params.key) ;   
-    this.getQueueReport(parentID)
+    var queueID = parseInt(this.$route.params.id) ;   
+    this.getQueueReport(queueID)
   },
+ 
   
  
 };

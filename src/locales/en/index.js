@@ -781,6 +781,10 @@ export default {
         redirect: "Redirect",
         selectTicket:"Select ticket",
         call: "Call",
-        warning:"Take a photo of the coupon or print it by clicking on «Print». If you take a photo, be sure to close the window with the «Close button»!!!"
+        warning:"Take a photo of the coupon or print it by clicking on «Print». If you take a photo, be sure to close the window with the «Close button»!!!",
+        calledcount:"Сalled",        
+        serviced:"Serviced",
+        averageTime:"Average service time",
+        redirected: "Redirected",
     },
 }
