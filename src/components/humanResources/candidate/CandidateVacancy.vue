@@ -236,28 +236,14 @@
 
   </Dialog>
   <!-- Просмотр ходатайства -->
-  <Dialog v-model:visible="visible.petition" :style="{ width: '1000px' }" :modal="true" :closable="false">
-    <div class="card" v-if="signatures">
-      <SignatureQrPdf ref="qrToPdf" :signatures="signatures" :title="docInfo.name"></SignatureQrPdf>
-      <div class="p-grid p-formgrid">
-        <div class="p-col-12 p-mb-2 p-pb-2 p-lg-3 p-mb-lg-0">
-          <Button :label="$t('hr.petition.download')" icon="pi pi-download" :onclick="downloadPDF"/>
-        </div>
-        <div class="p-col-12 p-mb-2 p-pb-2 p-lg-3 p-mb-lg-0">
-          <Button :label="$t('common.downloadSignaturesPdf')" icon="pi pi-download" :disabled="!pdfFile"
-                  :onclick="downloadSignatures"/>
-        </div>
-      </div>
-    </div>
-    <template #footer>
-      <Button
-          v-bind:label="$t('common.close')"
-          icon="pi pi-times"
-          class="p-button p-component p-button-primary"
-          @click="visible.petition = false"
-      />
-    </template>
-  </Dialog>
+  <Sidebar
+      v-model:visible="visible.petition"
+      position="right"
+      class="p-sidebar-lg"
+      style="overflow-y: scroll"
+  >
+    <DocSignaturesInfo :docIdParam="documentUuid"></DocSignaturesInfo>
+  </Sidebar>
   <!-- Загрузка документов -->
   <Dialog v-model:visible="visible.documents" :style="{ width: '800px' }" :modal="true" :closable="true">
     <template #header>
@@ -477,13 +463,13 @@
 import {FilterMatchMode, FilterOperator} from "primevue/api";
 import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
+import DocSignaturesInfo from "@/components/DocSignaturesInfo"
 import html2pdf from "html2pdf.js";
 import CandidateDocument from "./CandidateDocument";
-import SignatureQrPdf from "@/components/ncasigner/SignatureQrPdf";
 
 export default {
   name: "CandidateVacancy",
-  components: { SignatureQrPdf},
+  components: {DocSignaturesInfo},
   data() {
     return {
       count: 200,
@@ -510,9 +496,7 @@ export default {
       },
       vacancies: null,
       vacancy: null,
-      pdfFile: null,
-      docInfo: null,
-      signatures: null,
+      documentUuid: null,
       documents: {
         employmentHistory: null,
         diploma: null,
@@ -569,9 +553,6 @@ export default {
      ******************** GET PETITION
      */
     getPetition(data) {
-      this.pdfFile = null
-      this.docInfo = null
-      this.signatures = null
       axios.post(smartEnuApi + "/vacancy/petition",
           {
             candidateId: data.candidateRelation[0].candidate.id,
@@ -579,29 +560,11 @@ export default {
           },
           {headers: getHeader()}
       ).then(response => {
-        console.log(response.data)
-        this.pdfFile = response.data.fileData
-        this.docInfo = response.data.docInfo
-        this.signatures = this.docInfo.signatures
-        this.signatures.map(e => {
-          e.sign = this.chunkString(e.signature, 1200)
-        });
+        this.documentUuid = response.data
         this.visible.petition = true
       }).catch(error => {
         console.log(error)
       })
-    },
-
-    /**
-     * download pdf
-     */
-    downloadPDF() {
-      let pdf = this.pdfFile;
-      var link = document.createElement('a');
-      link.innerHTML = 'Download PDF file';
-      link.download = this.docInfo.name;
-      link.href = 'data:application/octet-stream;base64,' + pdf;
-      link.click();
     },
 
     /**

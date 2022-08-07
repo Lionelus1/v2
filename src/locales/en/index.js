@@ -696,7 +696,7 @@ export default {
             warn: 'Attention! Before sending the message, it is required to sign the petition by the first head.',
             success: 'The document has been successfully signed! Send a letter to the candidate.',
             info: 'The document has been successfully created. Download the document to check it out. Next, sign the electronic document using the digital signature of the first head of your organization.',
-            error: 'Failed to sign the document!'
+            error: 'The petition was not signed. Please make sure you have created the document and signed it.'
         },
         report: {
             title: 'Report',

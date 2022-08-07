@@ -1,138 +1,158 @@
 <template>
-  <div id="carddiv" class="p-grid">
+  <div :class="'p-grid content-disable ' + view.signing"  >
     <div class="p-col-12">
+      <!--   ЗАГОЛОВОК   -->
       <h3>{{ $t('hr.sendMessage') }}</h3>
+      <!--   СТРОКА МЕНЮ   -->
       <div>
-        <Menubar :model="menu" :key="active"
+        <Menubar :model="menu"
                  style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px">
         </Menubar>
       </div>
     </div>
-    <div v-if="sending" class="p-col-12 p-md-12 p-fluid">
+    <!-- СТРОКА ПРОГРЕСС ПРИ ОТПРАВКИ СООБЩЕНЯ  -->
+    <div v-if="view.sending" class="p-col-12 p-md-12 p-fluid">
       <label>{{ $t('hr.sendingMessage') }}</label>
       <ProgressBar mode="indeterminate" class="p-mt-2" style="height: .5em"/>
     </div>
+    <!--  ОСНОВНОЙ РАЗДЕЛ ИНФОРМАЦИИ О ХОДАТАЙСТВЕ  -->
     <div class="p-col-12 p-md-12 p-fluid">
-      <div class="card">
-        <div v-if="view.petition" class="p-field">
-          <Message :closable="false" severity="warn">{{ $t('hr.petition.warn') }}</Message>
-        </div>
-        <div v-if="view.successSigning" class="p-field">
-          <Message :closable="false" severity="success">{{ $t('hr.petition.success') }}</Message>
-        </div>
-        <div class="p-field">
-          <label>{{ $t('hr.messageTitle') }}</label>
-          <InputText
-              :readonly="readonly"
-              class="p-mt-2"
-              type="text"
-              :placeholder="$t('hr.messageTitle')"
-              v-model="request.subject"
-          ></InputText>
-        </div>
-        <div class="p-field">
-          <label>{{ $t('hr.messageBody') }}</label>
-          <Editor
-              class="p-mt-2"
-              v-model="request.message"
-              editorStyle="height: 200px"/>
-        </div>
-
-        <!-- PETITION -->
-        <hr v-if="view.petition">
-        <div v-if="view.petition" class="p-field">
-          <label>{{ $t('hr.petition.lang') }}</label>
-          <SelectButton v-model="petition.lang"
-                        :options="petitionLangOptions"
-                        class="p-mt-2"
-                        optionValue="value"
-                        optionLabel="name"/>
-        </div>
-        <div v-if="view.petition" class="p-field">
-          <label>{{ $t('hr.petition.number') }}</label>
-          <InputText
-              class="p-mt-2"
-              type="text"
-              :placeholder="$t('hr.petition.number')"
-              :class="{'p-invalid': validation.petition.number}"
-              v-model="petition.number"
-          ></InputText>
-          <small
-              class="p-error"
-              v-if="validation.petition.number"
-          >{{ $t("common.requiredField") }}</small>
-        </div>
-        <div v-if="view.petition" class="p-field">
-          <label>{{$t('common.date')}}</label>
-          <PrimeCalendar class="p-mt-2"
-                         :class="{'p-invalid': validation.petition.date}"
-                         v-model="petition.date"
-                         :placeholder="$t('common.date')"
-                         :dateFormat="'dd.mm.yy'"/>
-          <small
-              class="p-error"
-              v-if="validation.petition.date"
-          >{{ $t("common.requiredField") }}</small>
-        </div>
-        <div v-if="view.petition" class="p-field">
-          <label>{{ $t('common.headIin') }}</label>
-          <InputText
-              class="p-mt-2"
-              :class="{'p-invalid': validation.petition.headIin}"
-              type="text"
-              :placeholder="$t('common.headIin')"
-              v-model="signing.headIin"
-          ></InputText>
-          <small
-              class="p-error"
-              v-if="validation.petition.headIin"
-          >{{ $t("common.requiredField") }}</small>
-        </div>
-        <div v-if="view.petition" class="p-field">
-          <label>{{ $t('common.headFio') }}</label>
-          <InputText
-              class="p-mt-2"
-              :class="{'p-invalid': validation.petition.headFio}"
-              type="text"
-              :placeholder="$t('common.headFio')"
-              v-model="petition.headFio"
-          ></InputText>
-          <small
-              class="p-error"
-              v-if="validation.petition.headFio"
-          >{{ $t("common.requiredField") }}</small>
-        </div>
-        <div v-if="view.petition && pdfFile" class="p-field">
-          <Message :closable="false" severity="info">{{ $t('hr.petition.info') }}</Message>
-        </div>
-        <div v-if="view.petition && view.errorSigning" class="p-field">
-          <Message :closable="false" severity="error">{{ $t('hr.petition.error') }}</Message>
-        </div>
-        <div v-if="view.petition" class="p-grid p-formgrid">
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-4 p-mb-lg-0">
-            <Button :label="$t('common.createDocument')" icon="pi pi-plus" :onclick="createDocument"/>
-          </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-4 p-mb-lg-0">
-            <Button :label="$t('common.download')" icon="pi pi-arrow-down" :disabled="!pdfFile" :onclick="downloadDocument"/>
-          </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-4 p-mb-lg-0">
-            <Button :label="$t('ncasigner.sign')" icon="pi pi-pencil" :disabled="!pdfFile" :onclick="signDocument"/>
-          </div>
-        </div>
+      <!--   ПРЕДУПРЕЖДЕНИЕ О ТОМ, ЧТО НУЖНО ПОДПИСАТЬ ХОДАТВАЙСТВО ЭЦП ПЕРВОГО РУКОВОДИТЕЛЯ   -->
+      <div v-if="view.petition" class="p-field">
+        <Message :closable="false" severity="warn">{{ $t('hr.petition.warn') }}</Message>
+      </div>
+      <!--   СООБЩЕНИЕ О ТОМ, ЧТО ХОДАТАЙСТВО УСПЕШНО ПОДПИСАНО   -->
+      <div v-if="view.successSigning" class="p-field">
+        <Message :closable="false" severity="success">{{ $t('hr.petition.success') }}</Message>
+      </div>
+      <!--   ЗАГОЛОВОК ПИСЬМА   -->
+      <div class="p-field">
+        <label>{{ $t('hr.messageTitle') }}</label>
+        <InputText
+            class="p-mt-2"
+            type="text"
+            :placeholder="$t('hr.messageTitle')"
+            :class="{'p-invalid': validation.request.subject}"
+            v-model="request.subject"
+        ></InputText>
+        <small
+            class="p-error"
+            v-if="validation.request.subject"
+        >{{ $t("common.requiredField") }}</small>
+      </div>
+      <!--   СОДЕРЖАНИЕ ПИСЬМА   -->
+      <div class="p-field">
+        <label>{{ $t('hr.messageBody') }}</label>
+        <Editor
+            class="p-mt-2"
+            v-model="request.message"
+            :class="{'p-invalid': validation.request.message}"
+            editorStyle="height: 200px"/>
+        <small
+            class="p-error"
+            v-if="validation.request.message"
+        >{{ $t("common.requiredField") }}</small>
+      </div>
+      <!-- ХОДАТАЙСТВО -->
+      <hr v-if="view.petition">
+      <!--   ЯЗЫК ХОДАТАЙСТВА   -->
+      <div v-if="view.petition" class="p-field">
+        <label>{{ $t('hr.petition.lang') }}</label>
+        <SelectButton v-model="petition.lang"
+                      :options="petitionLangOptions"
+                      class="p-mt-2"
+                      optionValue="value"
+                      optionLabel="name"/>
+      </div>
+      <!--   НОМЕР ХОДАТАЙСТВА   -->
+      <div v-if="view.petition" class="p-field">
+        <label>{{ $t('hr.petition.number') }}</label>
+        <InputText
+            class="p-mt-2"
+            type="text"
+            :placeholder="$t('hr.petition.number')"
+            :class="{'p-invalid': validation.petition.number}"
+            v-model="petition.number"
+        ></InputText>
+        <small
+            class="p-error"
+            v-if="validation.petition.number"
+        >{{ $t("common.requiredField") }}</small>
+      </div>
+      <!--   ДАТА ХОДАТАЙСТВА   -->
+      <div v-if="view.petition" class="p-field">
+        <label>{{ $t('common.date') }}</label>
+        <PrimeCalendar class="p-mt-2"
+                       :class="{'p-invalid': validation.petition.date}"
+                       v-model="petition.date"
+                       :placeholder="$t('common.date')"
+                       :dateFormat="'dd.mm.yy'"/>
+        <small
+            class="p-error"
+            v-if="validation.petition.date"
+        >{{ $t("common.requiredField") }}</small>
+      </div>
+      <!--   ИИН ПЕРВОГО РУКОВОДИТЕЛЯ   -->
+      <div v-if="view.petition" class="p-field">
+        <label>{{ $t('common.headIin') }}</label>
+        <InputText
+            class="p-mt-2"
+            :class="{'p-invalid': validation.petition.headIin}"
+            type="text"
+            :placeholder="$t('common.headIin')"
+            v-model="petition.headIin"
+        ></InputText>
+        <small
+            class="p-error"
+            v-if="validation.petition.headIin"
+        >{{ $t("common.requiredField") }}</small>
+      </div>
+      <!--   ФИО ПЕРВОГО РУКОВОДИТЕЛЯ   -->
+      <div v-if="view.petition" class="p-field">
+        <label>{{ $t('common.headFio') }}</label>
+        <InputText
+            class="p-mt-2"
+            :class="{'p-invalid': validation.petition.headFio}"
+            type="text"
+            :placeholder="$t('common.headFio')"
+            v-model="petition.headFio"
+        ></InputText>
+        <small
+            class="p-error"
+            v-if="validation.petition.headFio"
+        >{{ $t("common.requiredField") }}</small>
+      </div>
+      <!--   ПОДПИСАНИЕ ХОДАТАЙСТВА   -->
+      <div v-if="view.petition" class="p-field">
+        <ProgressBar mode="indeterminate" style="height: .5em" v-if="view.signing"/>
+      </div>
+      <div v-if="view.petition" class="p-field">
+        <Button :label="$t('common.createDocument')" icon="pi pi-pencil" :onclick="signDocument"/>
       </div>
     </div>
+    <!--  КОМПОНЕНТ ДЛЯ РАБОТЫ С ДОКУМЕНТАМИ И ЭЦП  -->
+    <Sidebar
+        v-model:visible="view.signerInfo"
+        position="right"
+        class="p-sidebar-lg"
+        style="overflow-y: scroll"
+    >
+      <DocSignaturesInfo :docIdParam="documentUuid" :signerIinParam="petition.headIin"></DocSignaturesInfo>
+    </Sidebar>
   </div>
 </template>
 
 <script>
 import VacancyService from "./VacancyService";
-import {NCALayerClient} from "ncalayer-js-client";
+import DocSignaturesInfo from "@/components/DocSignaturesInfo"
+import axios from "axios";
+import {getHeader, smartEnuApi} from "@/config/config";
 
 export default {
   name: "ApplyActionEdit",
+  components: {DocSignaturesInfo},
   props: {
     candidateRelation: null,
-    readonly: Boolean,
     path: null,
     vacancy: null,
   },
@@ -142,19 +162,17 @@ export default {
         {name: 'Қазақша', value: 0},
         {name: 'На русском', value: 1},
       ],
-      pdfFile: null,
-      active: null,
-      sending: false,
+      documentUuid: null,
       request: {},
       petition: {
         lang: 0,
       },
-      signing: {},
       view: {
+        sending: false,
         petition: false,
         successSigning: false,
-        errorSigning: false,
-        errorMessage: null,
+        signerInfo: false,
+        signing: false
       },
       validation: {
         request: {
@@ -185,17 +203,60 @@ export default {
     this.vacancyService = new VacancyService()
   },
   mounted() {
-    this.checkExternalHiring()
+    if (this.path === 'hire') {
+      if (this.vacancy.organization.id !== 1) {
+        this.view.petition = true
+      } else {
+        this.menu[0].disabled = false
+      }
+    } else {
+      this.menu[0].disabled = false
+    }
   },
   methods: {
-
     sendMessage() {
+      if (this.path === 'hire' && this.vacancy.organization.id !== 1) {
+        if (this.documentUuid === null) {
+          this.$toast.add({
+            severity: "error",
+            summary: this.$t('hr.petition.error'),
+            life: 3000,
+          });
+        }
+        axios.post(smartEnuApi + `/workPlan/getSignatures`, {doc_id: this.documentUuid},
+            {headers: getHeader()}).then(res => {
+          if (res.data) {
+            if (res.data.length !== 0) {
+              this.send()
+            } else {
+              this.$toast.add({
+                severity: "error",
+                summary: this.$t('hr.petition.error'),
+                life: 3000,
+              });
+            }
+          }
+        }).catch(error => {
+          this.$toast.add({
+            severity: 'error',
+            summary: error,
+            life: 3000
+          });
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          }
+        })
+      } else {
+        this.send()
+      }
+    },
+    send() {
       if (this.validateRequest()) {
-        this.sending = true
+        this.view.sending = true
         this.request.relId = this.candidateRelation.id
         this.request.to = this.candidateRelation.candidate.user.email
         this.vacancyService.applyAction(this.request, this.path).then(response => {
-          this.sending = false
+          this.view.sending = false
           this.emitter.emit("updateForm", true);
         }).catch(error => {
           this.$toast.add({
@@ -203,18 +264,20 @@ export default {
             summary: error,
             life: 3000,
           });
-          this.sending = false
+          this.view.sending = false
         })
       }
     },
-
-    createDocument() {
+    async signDocument() {
+      this.view.signing = true
       if (this.validatePetition()) {
-        this.pdfFile = null
         this.petition.vacancy = this.vacancy
         this.petition.candidateUserId = this.candidateRelation.candidate.user.userID
         this.vacancyService.generatePetitionPdf(this.petition).then(response => {
-          this.pdfFile = response.data
+          this.documentUuid = response.data
+          this.menu[0].disabled = false
+          this.view.signing = false
+          this.view.signerInfo = true
         }).catch(error => {
           this.$toast.add({
             severity: "error",
@@ -222,73 +285,10 @@ export default {
             life: 3000,
           });
         })
-      }
-    },
-
-    downloadDocument() {
-      let pdf = this.pdfFile;
-      var link = document.createElement('a');
-      link.innerHTML = 'Download PDF file';
-      link.download = this.vacancy.id + '.pdf';
-      link.href = 'data:application/octet-stream;base64,' + pdf;
-      link.click();
-    },
-
-    async signDocument() {
-      let NCALaClient = new NCALayerClient();
-      try {
-        await NCALaClient.connect();
-      } catch (error) {
-        this.$toast.add({
-          severity: 'error',
-          summary: this.$t('ncasigner.failConnectToNcaLayer'),
-          life: 3000
-        });
-        return;
-      }
-      try {
-        this.signing.signature = await NCALaClient.createCAdESFromBase64('PKCS12', this.pdfFile, 'SIGNATURE', false)
-        this.sendSignature();
-      } catch (error) {
-        this.$toast.add({severity: 'error', summary: this.$t('ncasigner.failToSign'), life: 3000});
-      }
-    },
-
-    sendSignature() {
-      this.view.errorSigning = false
-      this.view.errorMessage = null
-      this.signing.vacancyId = this.vacancy.id
-      this.signing.candidateId = this.candidateRelation.candidate.id
-      const fd = new FormData();
-      fd.append("signing", JSON.stringify(this.signing))
-      fd.append("petition", this.pdfFile);
-      this.vacancyService.sendSign(fd).then(response => {
-        this.view.petition = false
-        this.view.successSigning = true
-        this.menu[0].disabled = false
-      }).catch(error => {
-        this.view.errorSigning = true
-        this.view.errorMessage = error.response
-        this.$toast.add({
-          severity: "error",
-          summary: error,
-          life: 3000,
-        });
-      })
-    },
-
-    checkExternalHiring() {
-      if (this.path === 'hire') {
-        if (this.vacancy.organization.id !== 1) {
-          this.view.petition = true
-        } else {
-          this.menu[0].disabled = false
-        }
       } else {
-        this.menu[0].disabled = false
+        this.view.signing = false
       }
     },
-
     validateRequest() {
       this.validation.request.subject = !this.request.subject || this.request.subject == ""
       this.validation.request.message = !this.request.message || this.request.message == ""
@@ -299,7 +299,7 @@ export default {
     validatePetition() {
       this.validation.petition.number = !this.petition.number || this.petition.number == ""
       this.validation.petition.date = !this.petition.date || this.petition.date == ""
-      this.validation.petition.headIin = !this.signing.headIin || this.signing.headIin == ""
+      this.validation.petition.headIin = !this.petition.headIin || this.petition.headIin == ""
       this.validation.petition.headFio = !this.petition.headFio || this.petition.headFio == ""
       return (
           !this.validation.petition.number &&
@@ -312,6 +312,13 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style lang="scss" scoped>
+.content-disable {
+  &.true {
+    pointer-events: none;
+  }
+  &.false {
+    pointer-events: visible;
+  }
+}
 </style>
