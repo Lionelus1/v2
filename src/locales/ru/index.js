@@ -1,5 +1,6 @@
 export default {
     common: {
+        attention:"Внимание",
         loginWelcome:"Добро пожаловать в систему smart.enu",
         chooseCert:"Выбрать сертификат",
         activeList: "Активный список",
@@ -38,6 +39,7 @@ export default {
         error: "Ошибка",
         add: "Добавить",
         edit: "Редактировать",
+        print:"Печать",
         orgname: "Евразийский университет имени Л.Н. Гумилева",
         organizationName: 'Название организации',
         date: "Дата",
@@ -74,6 +76,7 @@ export default {
         speciality: "Специальность",
         download: "Скачать",
         lang: 'Язык',
+        doclang: "Язык документа",
         learnlang: "Язык обучения",
         loading: "загрузка",
         toapprove: "На согласование",
@@ -93,6 +96,7 @@ export default {
         main: "Основные",
         meetingUrl: "Ссылка для онлайн собрания",
         meetingPlace: "Место собрания",
+        move: "Перемещение",
         myData: "Мои данные",
         myResume: 'Моё резюме',
         theResume: 'Резюме',
@@ -161,6 +165,7 @@ export default {
         organizationNameLabel: "Наименование организации",
         departmentNameLabel: "Наименование структурного подразделения",
         headLabel: "Руководитель:",
+        report:"Отчет",
         states: {
             created: "создан",
             inapproval: "на согласовании",
@@ -205,8 +210,10 @@ export default {
             selectRole: "Выберите роль",
             userSuccessInserted: "Пользователь успешно создан, скачайте данные для авторизации для отправки пользователю.",
             selectVariant: "Выберите нужный вариант",
+            selectUsers: "Выберите пользователей",
             userIINExists: "Пользователь с таким же ИИН уже имеется",
             accessDenied: "У вас нет полномочий просматривать этот документ!",
+            impossible: "невозможно",
             saveChanges: "Сохраните изменения"
         },
         language: {
@@ -331,8 +338,10 @@ export default {
             created: "Проект договора успешно создан"
         },
         setnumber: "Присвоить номер",
+        assigner: "Присвоил",
     },
     hdfs: {
+        archiveBtn: "Архивировать",
         title: "Файлы",
         fileName: "Название файла",
         download: "Скачать",
@@ -348,6 +357,10 @@ export default {
         search: "Поиск",
         noData: "Нет данных",
         loading: "Загрузка...",
+        umktitle: "Введите параметры учебной программы",
+        modulname: "Код и наименование модуля:",
+        eduprogram: "Код и наименование образовательной программы:",
+        discipline: "Код и наименование дисциплины:",
     },
     ncasigner: {
         chooseFile: "Выберите файл",
@@ -424,6 +437,17 @@ export default {
 
     },
     smartenu: {
+        NormDoc: "Документ",
+        uploadNormDoc: "Загрузка документов",
+        catalogNormDoc: "Каталог нормативных документов",
+        chooseCatalogNormDoc: "выберите нормативный документ",
+        chooseSuperiorCatalogNormDoc: "Выберите вышестоящую нормативный документ",
+        createOrEditCatalogNormDoc: "Создание/редактирование нормативных документов",
+        catalogNormDocNotFound: "нормативных документы не найдены",
+        loadingcatalogNormDoc: "Загрузка нормативных документов. Пожалуйста, подождите.",
+        addNormDoc:"Добавить документ",
+        editNormDoc: "Редактировать документ",
+        delNormDoc:"Удалить документ",
         categories: "категории",
         selectCategories: "Выберите категории",
         newsList: "Список новостей",
@@ -540,6 +564,7 @@ export default {
         redirect: "Перенаправить",
         selectTicket:"Выбрать талон",
         call: "Вызвать",
+        warning:"Сфотографируйте талон или распечатайте его нажав на «Печать».Если делаете фото, то обязательно закройте окно кнопкой «Закрыть»!!!"
     },
     dissertation: {
         title: "Диссертационный совет",
@@ -779,6 +804,7 @@ export default {
             reportSentToApprove: "Отчет успешно отправлен на согласование",
             planSentToApprove: "План отправлен на корректировку",
             planCreated: "План успешно создан",
+            maxFileUploadSize: "Невозможно загрузить более 5 файлов"
         },
         reportTypes: {
             year: "Годовой",
@@ -790,5 +816,9 @@ export default {
         summary: "Свод/Подтверждение",
         respExecutor: "Ответственные исполнители",
         halfYear: "полугодие"
-    }
+    },
+    educomplex: {
+        title: "Учебно-методический комплекс дисциплины",
+        forme: "Относительно меня"
+    },
 }

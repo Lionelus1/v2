@@ -113,7 +113,7 @@
               @input="correct"
             />
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div v-if="addMode || isAdmin" class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label
               >{{ this.$t("contact.iin")
               }}<span class="p-error" v-if="addMode || !localReadonly">*</span></label
@@ -280,14 +280,14 @@
           </div>
         </div>
       </div>
-      <Accordion style="margin-left: -14px; margin-right: -14px">
+      <Accordion v-if="addMode || isAdmin" style="margin-left: -14px; margin-right: -14px">
         <AccordionTab>
           <template #header>
             <div class="p-text-uppercase">
               {{ this.$t("contact.idcard.requisite") }}
             </div>
           </template>
-          <div class="card">
+          <div v-if="addMode || isAdmin" class="card" >
             <div class="p-grid p-formgrid">
               <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
                 <label>{{ this.$t("common.number") }}</label>
@@ -336,7 +336,7 @@
             </div>
           </div>
         </AccordionTab>
-        <AccordionTab>
+        <AccordionTab v-if="addMode || isAdmin">
           <template #header>
             <div class="p-text-uppercase">{{ this.$t("bank.requisite") }}</div>
           </template>

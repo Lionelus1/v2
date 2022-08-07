@@ -8,7 +8,7 @@
           icon="pi pi-plus"
           class="p-button-success p-mr-2"
           v-on:click="createQueue(null)"
-        />
+        />        
       </template>
     </Toolbar>
     <Toast />
@@ -32,6 +32,7 @@
               <Chip class="p-mr-2 custom-chip" :label="responsible.fullName"/>
             </span>
           </div>
+
         </template>
       </Column>
       <Column>
@@ -52,11 +53,11 @@
             v-if="slotProps.node.createdUserId === loginedUser.userID || isOperator(slotProps.node)"
             icon="pi pi-trash" 
             v-tooltip.bottom="$t('common.delete')"  
-            class="p-button-rounded p-button-danger p-mr-2" 
+            class="p-button-rounded p-button-danger p-mr-4" 
             @click="delQueue(slotProps.node)"/>
           <Button 
             icon="pi pi-user" 
-            v-if="slotProps.node.createdUserId === loginedUser.userID || isOperator(slotProps.node) || findRole(null, 'queue_tv')"
+            v-if="slotProps.node.createdUserId === loginedUser.userID || isOperator(slotProps.node)"
             v-tooltip.bottom="$t('queue.operator')"  
             class="p-button-rounded p-button-info p-mr-2"  
             @click="$router.push('/queue/operator/'+ slotProps.node.key+ '/' +  slotProps.node.parentId)" />
@@ -72,6 +73,12 @@
             v-if="slotProps.node.createdUserId === loginedUser.userID || isOperator(slotProps.node) || findRole(null, 'queue_terminal')"
             class="p-button-rounded p-button-help p-mr-2"  
             @click="$router.push('/queue/terminal/'+ slotProps.node.key )" />
+            <Button 
+            icon="pi pi-chart-line" 
+            v-tooltip.bottom="$t('common.report')"  
+            v-if="slotProps.node.createdUserId === loginedUser.userID || isOperator(slotProps.node)"
+            class="p-button-rounded p-button-help p-mr-2"  
+            @click="$router.push('/queue/queueReport/'+ slotProps.node.key )" />
         </template>
       </Column>              
     </TreeTable> 
@@ -164,7 +171,6 @@
         />
       </template>
     </Dialog>
-
 	</div>
 </template>
 

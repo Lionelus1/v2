@@ -63,6 +63,18 @@ const routes = [
 
             // Менің қосқандарым
             {
+                path: '/documents/catalog/normdoc',
+                name: '/documents/catalog/normdoc',
+                component: load('documents/catalog/CatalogNormDoc'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/documents/catalog/educomplex',
+                name: '/documents/catalog/educomplex',
+                component: load('documents/catalog/EducationalComplex'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
 
                 path: '/documents/doctemplate:',
                 name: '/documents/doctemplate',
@@ -315,7 +327,14 @@ const routes = [
                 component: load('queue/Tv'),
                 beforeEnter: ifAuthenticated,
                 
-            },   
+            },
+            {
+                path: '/queue/QueueReport/:id',
+                name: '/queueReport',
+                component: load('queue/QueueReport'),
+                beforeEnter: ifAuthenticated,
+                
+            },      
         ]
     }
 

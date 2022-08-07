@@ -1,6 +1,6 @@
 <template>
 	<div class="p-grid button-demo">
-		<div class="p-col-12 p-md-6">
+		<div class=" p-md-6">
 			<div class="card">
 				<h5>Default</h5>
 				<Button label="Submit" class="p-mr-2 p-mb-2"></Button>
