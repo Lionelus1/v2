@@ -39,7 +39,7 @@
                 :class="'fa-solid fa-' + (slotProps.node.depType <= 2 ? 'folder' : 'file')"></i>&nbsp;{{ slotProps.node["name" + $i18n.locale] }}</span>
           </template>
         </Column>
-        <Column field="creator" :header="$t('common.developer')">
+        <Column field="creator" :header="$t('common.author')">
           <template #body="slotProps">
             <span v-if="slotProps.node.creator">&nbsp;{{ slotProps.node.creator.fullName }}</span>
           </template>
