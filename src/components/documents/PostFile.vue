@@ -19,7 +19,6 @@
         <div class="p-field">
           <label for="filename" >{{$t('common.nameInRussian')}}</label>
           <InputText id="fodernameru" v-model="file.nameru" type="text" />
-          <small class="p-error" v-if="validation.nameru">{{ $t("common.requiredField") }}</small>
         </div>
         <div class="p-field">
           <label for="filename" >{{$t('common.nameInEnglish')}}</label>
@@ -31,6 +30,27 @@
             <label>{{$t('hdfs.' + param.name)}}</label>
             <InputText  v-model="param.value" type="text" />
             <small class="p-error" v-if="validation.param">{{ $t("common.requiredField") }}</small>
+          </div>
+        </div>
+        <div v-if="approveInfo">
+          <div class="p-field">
+            <label for="filename" >{{$t('common.author')}}</label>
+            <DepartmentList :orgType="2" :parentID="1" :autoLoad="true" class="p-pt-1" ref="departmentList"  v-model="file.author"  :editMode="true" ></DepartmentList>
+            <small class="p-error" v-if="validation.author">{{ $t("common.requiredField") }}</small>
+          </div>
+          <div class="p-field">
+            <label for="filename" >{{$t('common.approvedBy')}}</label>
+            <InputText id="approvedBy" :placeholder="$t('common.councilName')" v-model="file.approvedBy" type="text" />
+            <small class="p-error" v-if="validation.approvedBy">{{ $t("common.requiredField") }}</small>
+          </div>
+          <div class="p-field">
+            <label for="filename" >{{$t('common.approveDate')}}</label>
+             <PrimeCalendar
+              class="p-mt-2"
+              v-model="file.approveDate"
+              dateFormat="dd.mm.yy"
+            />
+            <small class="p-error" v-if="validation.approveDate">{{ $t("common.requiredField") }}</small>
           </div>
         </div>
       <div class="p-field">
@@ -51,13 +71,17 @@
 </template>
 <script>
 import axios from "axios";
+import DepartmentList from "../smartenu/DepartmentList.vue"
+
 import {smartEnuApi, getHeader, getFileHeader} from "@/config/config";
 
 export default {
+    components: {DepartmentList},
     data() {
       return {
         file: this.modelValue,
         state: this.visible,
+        selectedDepartment: null,
         uploading: false,
         showUploader: this.fileUpload,
         languages: [{name:"kz", value: 0}, {name:"ru", value:1},  {name:"en", value:2}],
@@ -69,6 +93,9 @@ export default {
             file: false,
             param: false,
             lang: false,
+            approvedBy: false,
+            approveDate: false,
+            author: false,
         }
       }
     },
@@ -77,6 +104,9 @@ export default {
       directory: null,
       parentID: null,
       fileUpload: Boolean,
+      approveInfo: {
+        default: false
+      },
       accept: {
         default: ".doc,.docx,.pdf"
       }
@@ -105,6 +135,11 @@ export default {
           }
         })
       }
+      if (this.approveInfo) {
+        this.validation.approvedBy = this.file.approvedBy=== null || this.file.approvedBy === '';
+        this.validation.approveDate = this.file.approveDate === null || this.file.approveDate === undefined;
+        this.validation.author =  this.file.author === null || this.file.author === undefined;
+      }
       if (this.showUploader) {
         this.validation.file = this.$refs.ufile.files == undefined || this.$refs.ufile.files.length <=0
       }
@@ -130,11 +165,15 @@ export default {
         }
         this.uploading = true;
         const fd = new FormData();
-        for (let i=0; i < this.$refs.ufile.files.length; i++) {
-          fd.append('f'+i, this.$refs.ufile.files[i]);
-        }
+        var fcount = 0
+        if (this.$refs.ufile !== undefined) {
+          for (let i=0; i < this.$refs.ufile.files.length; i++) {
+            fd.append('f'+i, this.$refs.ufile.files[i]);
+          }
+        
         //var fcount = this.file.id !== null ? 0 : this.$refs.ufile.files.length
-        var fcount = this.$refs.ufile.files.length
+          fcount = this.$refs.ufile.files.length
+        }
         fd.append('info', JSON.stringify({directory: this.directory, count: fcount, folderID: this.parentID, fileInfo: this.file}));
         axios.post(smartEnuApi + "/doc/updateFile", fd, {
           headers: getFileHeader()
