@@ -4,25 +4,60 @@
             <h4 class="p-ml-3">{{ $t("smartenu.catalogNormDoc") }}</h4>
             <Toolbar class="p-m-0 p-p-1" style="position:relative;">
                 <template #start>
-          <div v-if="findRole(null, 'normative_docs_admin')">
-          <Button @click="resetForm();openDialog('addFolder')" :disabled="selected==null || folder.type !=0" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-folder-plus fa-xl"></i></Button>
-          <Button @click="openDialog('addFolder')" :disabled="selected===null|| folder.parentID == null || folder.type !=0" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-square-pen fa-xl"></i></Button>
-          <Button @click="deleteFolder(false)" :disabled="selected===null|| folder.parentID == null" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-folder-minus fa-xl"></i></Button>
-          <Button v-if="!folder.hidden" @click="deleteFolder(true)" :disabled="selected===null|| folder.parentID == null" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-eye-slash fa-xl"></i></Button>
-          <Button v-if="folder.hidden" @click="showFolder()" :disabled="selected===null|| folder.parentID == null" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-eye fa-xl"></i></Button>
-          <Button @click="openDialog('moveFolder')" :disabled="selected===null|| folder.parentID == null" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-right-left fa-xl"></i></Button>
-          </div>
-</template>
-
-<template #end>
-    <Button v-if="findRole(null, 'normative_docs_admin')" :disabled="selected===null || file.type !=0" @click="resetFileInfo();openDialog('fileUpload')" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-file-circle-plus fa-xl"></i></Button>
-    <Button @click="disableFileUpload();openDialog('fileUpload')" :disabled="selected===null || file.type !=1" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-file-pen fa-xl"></i></Button>
-    <Button @click="deleteFile(false)" :disabled="selected===null || file.type !=1" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-file-circle-minus fa-xl"></i></Button>
-    <Button v-if="!file.hidden" @click="deleteFile(true)" :disabled="selected===null || file.type !=1" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-eye-slash fa-xl"></i></Button>
-    <Button v-if="file.hidden" @click="showFile()" :disabled="selected===null || file.type !=1" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-eye fa-xl"></i></Button>
-    <Button @click="downloadFile()" :disabled="selected===null || file.type !=1" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-file-arrow-down fa-xl"></i></Button>
-</template>
-    </Toolbar>
+                    <div v-if="findRole(null, 'normative_docs_admin')">
+                    <Button @click="resetForm();openDialog('addFolder')" :disabled="selected==null || folder.type !=0" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-folder-plus fa-xl"></i></Button>
+                    <Button @click="openDialog('addFolder')" :disabled="selected===null|| folder.parentID == null || folder.type !=0" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-square-pen fa-xl"></i></Button>
+                    <Button @click="deleteFolder(false)" :disabled="selected===null|| folder.parentID == null" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-folder-minus fa-xl"></i></Button>
+                    <Button v-if="!folder.hidden" @click="deleteFolder(true)" :disabled="selected===null|| folder.parentID == null" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-eye-slash fa-xl"></i></Button>
+                    <Button v-if="folder.hidden" @click="showFolder()" :disabled="selected===null|| folder.parentID == null" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-eye fa-xl"></i></Button>
+                    <Button @click="openDialog('moveFolder')" :disabled="selected===null|| folder.parentID == null" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-right-left fa-xl"></i></Button>
+                    </div>
+                </template>
+                <template #end>
+                    <Button v-if="findRole(null, 'normative_docs_admin')" :disabled="selected===null || file.type !=0" @click="resetFileInfo();openDialog('fileUpload')" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-file-circle-plus fa-xl"></i></Button>
+                    <Button v-if="findRole(null, 'normative_docs_admin')" @click="disableFileUpload();openDialog('fileUpload')" :disabled="selected===null || file.type !=1" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-file-pen fa-xl"></i></Button>
+                    <Button v-if="findRole(null, 'normative_docs_admin')" @click="deleteFile(false)" :disabled="selected===null || file.type !=1" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-file-circle-minus fa-xl"></i></Button>
+                    <Button v-if="!file.hidden && findRole(null, 'normative_docs_admin')" @click="deleteFile(true)" :disabled="selected===null || file.type !=1" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-eye-slash fa-xl"></i></Button>
+                    <Button v-if="file.hidden && findRole(null, 'normative_docs_admin')" @click="showFile()" :disabled="selected===null || file.type !=1" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-eye fa-xl"></i></Button>
+                    <Button type="button" icon="pi pi-search" :label="$t('common.search')" @click="toggle" aria:haspopup="true" aria-controls="overlay_panel" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-search fa-xl"></i></Button>
+                    <OverlayPanel ref="op">
+                        <div class="p-fluid">
+                            <div class="p-field">
+                                <label for="filename" >{{$t('common.name')}}</label>
+                                <InputText id="fodernameru" v-model="filters.name.value" type="text" />
+                            </div>
+                            <div class="p-field">
+                                <label for="filename" >{{$t('common.author')}}</label>
+                                <DepartmentList :orgType="2" :parentID="1" :autoLoad="true" class="p-pt-1" ref="departmentList"  v-model="filters.author.value"  :editMode="true" ></DepartmentList>
+                            </div>
+                            <div class="p-field">
+                                <label for="filename" >{{$t('common.approveDate')}}</label>
+                                <Dropdown v-model="filters.year.matchMode" :options="numMatches" optionLabel="value" optionValue="value"  :placeholder="$t('common.select')">
+                                    <template #value="slotProps">
+                                        <span>
+                                            {{$t('common.' +slotProps.value)}}
+                                        </span>
+                                    </template>
+                                    <template #option="slotProps">
+                                        <span>
+                                            {{$t('common.' +slotProps.option.value)}}
+                                        </span>
+                                    </template>
+                                </Dropdown>
+                                <PrimeCalendar
+                                    class="p-mt-2"
+                                    v-model="filters.year.value"
+                                    view="year" dateFormat="yy"
+                                />
+                            </div>
+                            <div class="p-field">
+                                <Button :label="$t('common.search')" @click="getFoldersByFilter" class="mt-2" />
+                            </div>
+                        </div>
+                    </OverlayPanel>
+                    <Button @click="downloadFile()" :disabled="selected===null || file.type !=1" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-file-arrow-down fa-xl"></i></Button>
+                </template>
+            </Toolbar>
     <TreeTable  :scrollable="true" :scrollHeight="windowHeight + 'px'" class="p-treetable-sm" @node-select="onNodeSelect" :value="catalog" :lazy="true" :loading="loading"
       @nodeExpand="onExpand($event, true)"  selectionMode="single" v-model:selectionKeys="selected">
       <Column field="name" :header="$t('common.name')" :expander="true">
@@ -52,7 +87,7 @@
 </template>
     </Dialog>
     <Dialog :header="$t('hdfs.uploadTitle')" v-model:visible="dialogOpenState.fileUpload" :style="{width: '60vw'}" :modal="true"> 
-      <PostFile :fileUpload="fileUpload" :modelValue="file" directory="normativeDocs" :parentID="folder.id" @updated="fileUpdated"></PostFile>
+      <PostFile :approveInfo="true" :fileUpload="fileUpload" :modelValue="file" directory="normativeDocs" :parentID="folder.id" @updated="fileUpdated"></PostFile>
     </Dialog>
 
     <PostFolder style="display:none" ref="postFolder" :modelValue="folder" @updated="folderMoved"></PostFolder>
@@ -65,10 +100,14 @@ import axios from "axios";
 import PostFolder from "../PostFolder.vue"
 import PostFile from "../PostFile.vue"
 import { smartEnuApi, getHeader, findRole } from "@/config/config";
+import { FilterMatchMode, FilterOperator } from "primevue/api";
+
 import Enum from "@/enum/docstates/index"
 
+import DepartmentList from "@/components/smartenu/DepartmentList.vue"
+
 export default {
-    components: { PostFolder, PostFile },
+    components: { PostFolder, PostFile, DepartmentList },
     data() {
         return {
             catalog: [],
@@ -81,6 +120,16 @@ export default {
                 type: 0,
                 showDocs: false,
             },
+            filters: {
+                name: { value: null, matchMode: FilterMatchMode.CONTAINS },
+                author: { value: null, matchMode: FilterMatchMode.EQUALS },
+                year: {value: null, matchMode: FilterMatchMode.EQUALS}
+            },
+            numMatches: [
+                {value: 'lt'},
+                {value: 'gt'},
+                {value: 'equals'}
+            ],
             fileUpload : false,
             loading: false,
             parent: null,
@@ -118,6 +167,9 @@ export default {
                 leaf: null,
                 type: 1,
                 parentId: null,
+                approvedBy: null,
+                approveDate : null,
+                author: null,
             },
             totalRecords: 10,
             dialogOpenState: {
@@ -170,10 +222,17 @@ export default {
         onResize() {
             this.windowHeight = window.innerHeight - 350
         },
-
+        toggle(event) {
+            this.$refs.op.toggle(event);
+        },
         findRole: findRole,
         showMessage(msgtype, message, content) {
             this.$toast.add({ severity: msgtype, summary: message, detail: content, life: 3000 });
+        },
+        getFoldersByFilter() {
+            if (!(this.filters.name.value === null && this.filters.year.value === null && this.filters.author.value === null))
+                this.lazyParams.filters = this.filters;
+            this.getFolders(parent)
         },
         getFolders(parent) {
 
@@ -181,12 +240,13 @@ export default {
             let url = "/doc/getFoldersByType";
             axios.post(smartEnuApi + url, this.lazyParams, { headers: getHeader() })
                 .then(response => {
-                    if (parent == null) {
+                    if (parent == null || this.lazyParams.filters != null)  {
                         this.catalog = response.data
                     } else {
                         parent.children = response.data
                     }
                     this.loading = false
+                  
                 })
                 .catch(error => {
                     console.log(error)
@@ -222,13 +282,20 @@ export default {
                 id: null,
                 key: null,
                 createdDate: null,
-                updatedDate: null
+                updatedDate: null,
+                approvedBy: null,
+                approveDate : null,
+                author: null,
             }
         },
         disableFileUpload() {
             this.fileUpload = false;
         },
         onExpand(node, showDocs = false) {
+            this.filters.name.value = null
+            this.filters.author.value = null
+            this.filters.year.value = null
+            this.lazyParams.filters = null
             this.lazyParams.parentID = Number(node.key)
             this.lazyParams.showDocs = showDocs
             this.getFolders(node)

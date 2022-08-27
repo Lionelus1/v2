@@ -14,11 +14,14 @@ export default {
         newPasswordRe:"Құпиясөзді қайталап енгізіңіз",
         createDocument: 'Құжатты құрастыру',
         createReport: 'Есепті құрастыру',
+        councilName: 'Кеңес аты',
         administration: 'Әкімшілік',
         academicDegree: "Ғылыми дәрежесі",
         academicTitle: "Ғылыми атағы",
         annotation: "Аннотация",
         approve: "Бекіту",
+        approveDate: "Бекітілген күні",
+        approvedBy: "Бекіткен", 
         notUpload: 'Құжат жүктелмеді',
         action: {
             submit: 'Жіберу',
@@ -30,6 +33,9 @@ export default {
             reApprove: 'Қайта бекіту'
         },
         cabinet: 'Жеке кабинет',
+        lt: "Кіші",
+        gt: "Үлкен",
+        equals: "Тең",
         login: "Кіру",
         logout: "Шығу",
         enter: "Теріңіз",
@@ -163,6 +169,7 @@ export default {
         organizationNameLabel: "Мекеменің атауы",
         departmentNameLabel: "Құрылымдық бөлімшенің атауы",
         headLabel: "Жетекші:",
+        author: "Әзірлеуші",
         states: {
             created: "құрылды",
             inapproval: "келісуде",
@@ -770,7 +777,7 @@ export default {
             upSignedResume: 'Қол қойылған түйіндемені жүктеу',
             resumeSuccessSigned: 'Түйіндемеге сәтті қол қойылды',
             digital: 'ЭЦҚ',
-            paper: 'Қағаз бетінде'
+            paper: 'Қағаз бетінде',
         }
     },
     workPlan: {
