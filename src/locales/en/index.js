@@ -236,7 +236,8 @@ export default {
         suppDocs: "Supporting documents",
         additionalInfo: "Additional Information",
         resultSentToCorrect: "Result sent for revision",
-        toCorrect: "To check"
+        toCorrect: "To check",
+        developer: "Developer"
     },
     bank: {
         title: "Banks",

@@ -236,7 +236,8 @@ export default {
         suppDocs: "Подтверждающие документы",
         additionalInfo: "Дополнительная информация",
         resultSentToCorrect: "Результат отправлен на доработку",
-        toCorrect: "На проверку"
+        toCorrect: "На проверку",
+        developer: "Разработчик"
     },
     bank: {
         title: "Банки",

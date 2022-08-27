@@ -234,7 +234,8 @@ export default {
         suppDocs: "Растайтын құжаттар",
         additionalInfo: "Қосымша ақпарат",
         resultSentToCorrect: "Нәтиже түзетуге жіберілді",
-        toCorrect: "Тексеруге жіберу"
+        toCorrect: "Тексеруге жіберу",
+        developer: "Әзірлеуші"
     },
     bank: {
         title: "Банктер",
