@@ -79,6 +79,7 @@ export default {
   created() {
     if (this.autoLoad)
       this.getDepartments();
+    this.value = this.modelValue  
   },
   methods: {
     openDepartment() {
