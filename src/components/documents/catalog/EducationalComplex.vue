@@ -17,13 +17,82 @@
           </Button>
           <Button v-if="loginedUser != null && loginedUser.userID != file.ownerId && file.stateID == 2"
                   :disabled="selected===null || file.depType !=3" @click="openDialog('revision')"
-                  class=" p-button-warning p-p-1 p-mr-2"><i class="fa-solid fa-file-circle-exclamation fa-xl"></i>&nbsp;{{ $t('common.revision') }}
+                  class=" p-button-warning p-p-1 p-mr-2"><i class="fa-solid fa-file-circle-exclamation fa-xl"></i>&nbsp;{{
+              $t('common.revision')
+            }}
           </Button>
           <Button v-if="loginedUser != null && loginedUser.userID == file.ownerId && file.stateID == 4"
                   @click="openDialog('fileUpload')" :disabled="selected===null || file.depType !=3"
                   class="p-button-help p-p-1 p-mr-2"><i
               class="fa-solid fa-file-pen fa-xl"></i>&nbsp;{{ $t('common.edit') }}
           </Button>
+          <Button type="button" icon="pi pi-search" :disabled="selected===null || file.depType !== 2" :label="$t('common.search')" @click="toggle" aria:haspopup="true"
+                  aria-controls="overlay_panel" class="p-button-info p-p-1"><i class="fa-solid fa-filter fa-xl"></i>&nbsp;{{ $t('common.filter') }}</Button>
+          <OverlayPanel ref="op">
+            <div class="p-fluid">
+              <div class="p-field">
+                <label for="search-input">{{ $t('common.name') }}</label>
+                <InputText id="search-input" v-model="filters.name.value" type="search"/>
+              </div>
+              <div class="p-field">
+                <label for="status-filter">{{ $t('common.status') }}</label>
+                <Dropdown v-model="filters.status.value"
+                    :options="statuses"
+                    placeholder="Any"
+                    class="p-column-filter"
+                    :showClear="true"
+                >
+                  <template #value="slotProps">
+                  <span
+                      v-if="slotProps.value"
+                      :class="'customer-badge status-' + slotProps.value.value"
+                  >
+                    {{
+                      $i18n.locale === 'kz'
+                          ? slotProps.value.nameKz
+                          : $i18n.locale === 'ru'
+                              ? slotProps.value.nameRu
+                              : slotProps.value.nameEn
+                    }}</span
+                  >
+                  </template>
+                  <template #option="slotProps">
+                  <span :class="'customer-badge status-' + slotProps.option.value">{{
+                      $i18n.locale === 'kz'
+                          ? slotProps.option.nameKz
+                          : $i18n.locale === 'ru'
+                              ? slotProps.option.nameRu
+                              : slotProps.option.nameEn
+                    }}</span>
+                  </template>
+                </Dropdown>
+              </div>
+              <div class="p-field">
+                <label>{{$t('faq.createDate')}}</label>
+                <Dropdown v-model="filters.createDate.matchMode" :options="numMatches" optionLabel="value" optionValue="value"  :placeholder="$t('common.select')">
+                  <template #value="slotProps">
+                    <span>
+                      {{$t('common.' +slotProps.value)}}
+                    </span>
+                  </template>
+                  <template #option="slotProps">
+                    <span>
+                      {{$t('common.' +slotProps.option.value)}}
+                    </span>
+                  </template>
+                </Dropdown>
+                <PrimeCalendar
+                    class="p-mt-2"
+                    :placeholder="$t('faq.createDate')"
+                    v-model="filters.createDate.value"
+                    dateFormat="dd.mm.yy"/>
+              </div>
+              <div class="p-field">
+                <Button :label="$t('common.clear')" @click="clearFilter" class="p-mb-2 p-button-outlined"/>
+                <Button :label="$t('common.search')" @click="getFoldersByFilter" class="mt-2"/>
+              </div>
+            </div>
+          </OverlayPanel>
           <!--    <Button @click="deleteFile(false)" :disabled="selected===null || file.type !=1" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-file-circle-minus fa-xl"></i></Button>
           <Button v-if="!file.hidden" @click="deleteFile(true)" :disabled="selected===null || file.type !=1" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-eye-slash fa-xl"></i></Button>
           <Button v-if="file.hidden" @click="showFile()" :disabled="selected===null || file.type !=1" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-eye fa-xl"></i></Button>
@@ -36,7 +105,9 @@
         <Column field="name" :header="$t('common.name')" :expander="true">
           <template #body="slotProps">
             <span><i
-                :class="'fa-solid fa-' + (slotProps.node.depType <= 2 ? 'folder' : 'file')"></i>&nbsp;{{ slotProps.node["name" + $i18n.locale] }}</span>
+                :class="'fa-solid fa-' + (slotProps.node.depType <= 2 ? 'folder' : 'file')"></i>&nbsp;{{
+                slotProps.node["name" + $i18n.locale]
+              }}</span>
           </template>
         </Column>
         <Column field="creator" :header="$t('common.author')">
@@ -47,7 +118,9 @@
         <Column field="state" :header="$t('common.state')">
           <template #body="slotProps">
             <span
-                :class="'customer-badge status-' + slotProps.node.stateen">{{ slotProps.node["state" + $i18n.locale] }}</span>
+                :class="'customer-badge status-' + slotProps.node.stateen">{{
+                slotProps.node["state" + $i18n.locale]
+              }}</span>
           </template>
         </Column>
         <Column field="path">
@@ -60,8 +133,9 @@
             <Button v-if="slotProps.node.key != null && slotProps.node.depType ===3 &&  slotProps.node.stateID ===4"
                     @click="onNodeSelect(slotProps.node);openDialog('docInfo')"
                     class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-eye fa-xl"></i></Button>
-            <Button v-if="slotProps.node.key != null && slotProps.node.depType ===3 && (slotProps.node.stateID === 1 || slotProps.node.stateID === 2) && loginedUser.userID === slotProps.node.ownerId"
-                    @click="onNodeSelect(slotProps.node);deleteFile(false)" class="p-button-text p-button-danger p-p-1">
+            <Button
+                v-if="slotProps.node.key != null && slotProps.node.depType ===3 && (slotProps.node.stateID === 1 || slotProps.node.stateID === 2) && loginedUser.userID === slotProps.node.ownerId"
+                @click="onNodeSelect(slotProps.node);deleteFile(false)" class="p-button-text p-button-danger p-p-1">
               <i class="fa-solid fa-trash fa-xl"></i></Button>
           </template>
         </Column>
@@ -70,8 +144,10 @@
     </div>
 
 
-    <Dialog :header="$t('hdfs.uploadTitle')" v-model:visible="dialogOpenState.fileUpload" :style="{width: '60vw'}" :modal="true">
-      <PostFile  :fileUpload="true" :modelValue="file" directory="eduMetComplex" :parentID="parent.id" @updated="fileUpdated" accept=".pdf"></PostFile>
+    <Dialog :header="$t('hdfs.uploadTitle')" v-model:visible="dialogOpenState.fileUpload" :style="{width: '60vw'}"
+            :modal="true">
+      <PostFile :fileUpload="true" :modelValue="file" directory="eduMetComplex" :parentID="parent.id"
+                @updated="fileUpdated" accept=".pdf"></PostFile>
     </Dialog>
     <Sidebar v-model:visible="dialogOpenState.signerInfo" position="right" class="p-sidebar-lg"
              style="overflow-y: scroll">
@@ -134,6 +210,7 @@ import {smartEnuApi, getHeader, findRole} from "@/config/config";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo";
 import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers";
 import DocState from "@/enum/docstates/index"
+import {FilterMatchMode} from "primevue/api";
 
 export default {
   components: {ApprovalUsers, DocInfo, DocSignaturesInfo, PostFile},
@@ -220,7 +297,47 @@ export default {
         docInfo: false,
         umkParams: false
       },
-      parentNode: null
+      parentNode: null,
+      filters: {
+        name: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        status: { value: null, matchMode: FilterMatchMode.EQUALS },
+        createDate: {value: null, matchMode: FilterMatchMode.EQUALS}
+      },
+      statuses: [
+        {
+          id: 1,
+          nameRu: "Создан",
+          nameKz: "Құрылды",
+          nameEn: "Created",
+          value: "created"
+        },
+        {
+          id: 2,
+          nameRu: "На согласовании",
+          nameKz: "Келісуде",
+          nameEn: "In approval",
+          value: "inapproval"
+        },
+        {
+          id: 4,
+          nameRu: "На доработке",
+          nameKz: "Түзетуде",
+          nameEn: "Revision",
+          value: "revision"
+        },
+        {
+          id: 7,
+          nameRu: "Подписан",
+          nameKz: "Қол қойылды",
+          nameEn: "Signed",
+          value: "signed"
+        }
+      ],
+      numMatches: [
+        {value: 'lt'},
+        {value: 'gt'},
+        {value: 'equals'}
+      ],
     }
   },
   created() {
@@ -230,12 +347,21 @@ export default {
   mounted() {
     this.getFolders(null);
     window.addEventListener('resize', this.onResize);
-
   },
   beforeUnmount() {
     window.removeEventListener('resize', this.onResize);
   },
   methods: {
+    toggle(event) {
+      this.$refs.op.toggle(event);
+    },
+    clearFilter() {
+      this.filters.name.value = null
+      this.filters.status.value = null
+      this.filters.createDate.value = null
+      this.lazyParams.filters = null
+      this.getFolders(this.parent)
+    },
     signed(event) {
       this.file.stateID = 7,
           this.file.stateen = "signed"
@@ -281,6 +407,14 @@ export default {
     findRole: findRole,
     showMessage(msgtype, message, content) {
       this.$toast.add({severity: msgtype, summary: message, detail: content, life: 3000});
+    },
+    getFoldersByFilter() {
+      if (!(this.filters.name.value === null && this.filters.status.value === null && this.filters.createDate.value === null)) {
+        this.lazyParams.filters = this.filters;
+        if (this.lazyParams.filters.status.value)
+          this.lazyParams.filters.status.value = this.filters.status.value.id;
+      }
+      this.getFolders(this.parent)
     },
     getFolders(parent) {
       this.loading = true;
@@ -357,6 +491,10 @@ export default {
       }
     },
     onExpand(node, showDocs = false) {
+      this.filters.name.value = null
+      this.filters.status.value = null
+      this.filters.createDate.value = null
+      this.lazyParams.filters = null
       this.lazyParams.parentID = Number(node.key)
       this.lazyParams.showDocs = showDocs
       this.selected = node
@@ -515,7 +653,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 .w2 {
   width: 1.8rem !important;
   height: 1.8rem !important;

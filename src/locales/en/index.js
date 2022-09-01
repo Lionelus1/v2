@@ -245,7 +245,7 @@ export default {
         additionalInfo: "Additional Information",
         resultSentToCorrect: "Result sent for revision",
         toCorrect: "To check",
-        developer: "Developer"
+        clear: "Clear"
     },
     bank: {
         title: "Banks",

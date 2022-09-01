@@ -245,6 +245,7 @@ export default {
         additionalInfo: "Дополнительная информация",
         resultSentToCorrect: "Результат отправлен на доработку",
         toCorrect: "На проверку",
+        clear: "Сбросить"
     },
     bank: {
         title: "Банки",

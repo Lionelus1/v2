@@ -243,7 +243,7 @@ export default {
         additionalInfo: "Қосымша ақпарат",
         resultSentToCorrect: "Нәтиже түзетуге жіберілді",
         toCorrect: "Тексеруге жіберу",
-        developer: "Әзірлеуші"
+        clear: "Тазалау"
     },
     bank: {
         title: "Банктер",
