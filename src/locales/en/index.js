@@ -14,11 +14,14 @@ export default {
         newPasswordRe:"Repeat new password",
         createDocument: 'Generate document',
         createReport: 'Generate report',
+        councilName: 'Council name',
         administration: 'Administration',
         academicDegree: "Academic degree",
         academicTitle: "Academic title",
         annotation: "Annotation",
         approve: "Approve",
+        approveDate: "Approve date",
+        approvedBy: "Approved by", 
         notUpload: 'Document not uploaded',
         action: {
             submit: 'Submit',
@@ -30,6 +33,9 @@ export default {
             reApprove: 'Reapprove'
         },
         cabinet: 'Personal account',
+        lt: "Less than",
+        gt: "Greater than",
+        equals: "Equals",
         login: "login",
         logout: "Logout",
         enter: "Type in",
@@ -164,7 +170,7 @@ export default {
         organizationNameLabel:"Name of company",
         departmentNameLabel: "The name of the structural unit",
         headLabel: "Head:",
-        report:"Report",
+        author: "Author",
         states: {
             created : "created",
             inapproval : "in approval",
@@ -238,7 +244,8 @@ export default {
         suppDocs: "Supporting documents",
         additionalInfo: "Additional Information",
         resultSentToCorrect: "Result sent for revision",
-        toCorrect: "To check"
+        toCorrect: "To check",
+        clear: "Clear"
     },
     bank: {
         title: "Banks",
@@ -743,7 +750,7 @@ export default {
             upSignedResume: 'Upload signed resume',
             resumeSuccessSigned: 'Resume successfully signed',
             digital: 'EDS',
-            paper: 'On paper'
+            paper: 'On paper',
         }
     },
     workPlan: {

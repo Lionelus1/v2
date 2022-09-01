@@ -265,7 +265,7 @@
           namekz: '',
           nameru: '',
           nameen: '',
-          id: -1,
+          id: null,
           createdDate: null,
           updatedDate: null,
           type: Enum.FolderType.Journals
@@ -605,7 +605,7 @@
             namekz: '',
             nameru: '',
             nameen: '',
-            id: -1,
+            id: null,
             createdDate: null,
             updatedDate: null,
           };
@@ -657,7 +657,7 @@
         return child;
       },
       initApiCall(){
-        let url = "/doctemplates?groupID=1";
+        let url = "/doctemplates?groupID=-1";
         var stateFilter = "&stateID=-1"
         if (this.selectMode) {
           stateFilter = "&stateID=" + this.DocState.APPROVED.ID
@@ -665,6 +665,7 @@
         url+= stateFilter
         axios (smartEnuApi+url, { headers: getHeader() })
         .then(res=>{
+          console.log(res)
           let treeData = [];
           res.data.forEach(el => {
             let node = new Object();
