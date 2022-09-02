@@ -1,25 +1,29 @@
 <template>
     <div class="card">
   
-      <Sidebar  v-model:visible="visible" :baseZIndex="10000" :showCloseIcon="!findRole(null, 'queue_terminal')" position="full">
+      <Sidebar  v-model:visible="visible" :baseZIndex="10000" :showCloseIcon="!findRole(null, 'queue_tv')" position="full" style="background-color: grey; overflow: hidden;" >
+      <div>
+        <div class="p-text-center" style="margin-top: 0;margin-bottom: 20px;">          
+          <Logo strokeColor="none" fillColor="#4ce6fa"/>
+        </div>
+      </div>    
         <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em;" />
-        <div class="p-w-100 p-text-center" style="min-height:100%;v-align:middle">
+        <div class="p-w-100 p-text-center" style="min-height:100%;v-align:middle;">
         <audio id="audioq" :src="audioSrc" controls autoplay @ended="audioEnded" style="display:none"></audio>
           <div v-for="row in rowCount" :key="row" class="p-grid" :style="'min-height: ' + height + 'px'">
             <div v-for="col in colCount" :key="col" :class="'p-col-' + 12/colCount ">
-              <div class="info-block" style="border: 1px solid;padding: 10px;box-shadow: 5px 10px red;">
-                <div :class="'info-block-start ' + ((row-1)*colCount + col == 1 ? 'first' : 'simple')">
-                  <span v-if="queues.length>=(row-1)*colCount + col">
+              <div class="info-block" :style="'background-color:' + (queues.length<(row-1)*colCount + col ? 'grey' : 'black')">
+                <div v-if="queues.length>=(row-1)*colCount + col" style="margin:auto;display:inline-flex;">
+                  <div >
                     <span :class="'if-title end-' + ((row-1)*colCount + col == 1 ? 'first' : 'simple')">{{ticket[queues[(row-1)*colCount + col-1].lang]}}</span><br/>
-                    <span :class="'if-number end-'+ ((row-1)*colCount + col == 1 ? 'first' : 'simple')">{{queues[(row-1)*colCount + col-1].ticket}}</span>
-                  </span>
-                </div>
-                <div :class="'info-block-triangle ' + ((row-1)*colCount + col == 1 ? 'first' : 'simple')"></div>
-                <div :class="'info-block-end ' + ((row-1)*colCount + col == 1 ? 'first' : 'simple')">
-                  <span v-if="queues.length>=(row-1)*colCount + col">
-                    <span :class="'if-number start-'+ ((row-1)*colCount + col == 1 ? 'first' : 'simple')">{{queues[(row-1)*colCount + col-1].window}}</span><br/>
-                    <span :class="'if-title start-'+ ((row-1)*colCount + col == 1 ? 'first' : 'simple')">{{window[queues[(row-1)*colCount + col-1].lang]}}</span>
-                  </span>
+                    <span :class="'if-number end-'+ ((row-1)*colCount + col == 1 ? 'first' : 'simple')">{{padTo2Digits(queues[(row-1)*colCount + col-1].ticket)}}</span>
+                  </div>
+                  <div style="margin:inherit"></div>
+                  <div>                    
+                    <span :class="'if-title start-'+ ((row-1)*colCount + col == 1 ? 'first' : 'simple')">{{window[queues[(row-1)*colCount + col-1].lang]}}</span><br/>
+                    <span class="pi pi-chevron-right" style="font-size: 70px;font-weight:bolder;color:aqua;"></span>
+                    <span :class="'if-number start-'+ ((row-1)*colCount + col == 1 ? 'first' : 'simple')">{{queues[(row-1)*colCount + col-1].window}}</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -40,13 +44,13 @@
 </template>
 
 <script>
-import { authHeader, getHeader, smartEnuApi, socketApi,findRole, b64toBlob } from "@/config/config";
+import { authHeader, getHeader, smartEnuApi, socketApi,findRole, b64toBlob ,queueApi, header} from "@/config/config";
 import axios from "axios";
-import { Socket } from "dgram";
-
-import {Howl, Howler} from 'howler';
+import Logo from "@/components/smartenu/Logo.vue"
 
 export default {
+  components: {Logo},
+
  
   data() {
     return {
@@ -57,8 +61,8 @@ export default {
         rows: 100,
         parentID: null,
       },
-      colCount: 4,
-      rowCount: 3,
+      colCount: 3,
+      rowCount: 5,
       height: 100,
       queues: [],
       loading: false,
@@ -83,31 +87,13 @@ export default {
   },
   methods: {   
     findRole : findRole,
-    getAudio(msg)  {
+    getAudio(msg)  {     
       axios
-      .post(smartEnuApi+`/convert`, msg, {headers: getHeader()})
+      .post(queueApi+`/convert`, msg, {headers: getHeader()})
       .then(res => {
-        // while (this.audioSrc!=null) {
-          
-        //   setTimeout(function() {console.log("asasa")}, 1000)
-        // }
-         
         this.audioSrc = `data:audio/mp3;base64,${res.data}`
-        // var sound = new Howl({
-        //   src: [this.audioSrc],
-        //   html5:true
-          
-        // });
-
-        // sound.play();
         var audio = new Audio(this.audioSrc);
         audio.play()
-
-        
-
-
-
-        
       }).catch(error => {
         console.log(error);
       })
@@ -115,6 +101,10 @@ export default {
     audioEnded() {
       this.$refs.audioq.style.display = "none";
       this.source = null;
+    },
+
+    padTo2Digits(num) {
+      return num.toString().padStart(3, '0');
     },
     //@Description : queuid haitken kunde kelu kerek haitalanbaitin socket identifier
     //@Param qId ---default mani 0
@@ -127,7 +117,7 @@ export default {
       
       socket.onopen = function(e) {
         let newTv = new Object();
-        newTv.serviceId = 0;
+        newTv.serviceId =0;
         newTv.windowId = 0;
         newTv.queueId = qId;
         socket.send(JSON.stringify(newTv));
@@ -137,13 +127,17 @@ export default {
         var msg = JSON.parse(event.data)
         if (msg.lang == 'ru') {
           msg.lang = 2
-        } else {
+        } else if(msg.lang=='kz') {
           msg.lang = 1
+        } else {
+          msg.lang=3
         }
         msg.window = Number(msg.window)
-        self.getAudio(msg)
-        
-        queues.unshift(JSON.parse(event.data))
+        self.getAudio(msg)        
+        self.queues.unshift(JSON.parse(event.data))
+        if (self.queues.length() > 15) {
+          self.queues = self.queues.slice(0,15)
+        }
        
       };
 
@@ -175,90 +169,95 @@ export default {
 </script>
 
 <style lang="scss">
+.p-sidebar-content{
+  overflow-y: hidden !important;
+}
 .font-style {    
-    width:300px;
-    height:300px;
-    font-size:220px;
+  width:300px;
+  height:300px;
+  font-size:220px;
 }
 .info-block {
   min-height: 100%;
-  display: contents;
   border-radius: 6px;
+  background-color: black;
+  
+  text-align:center;
   
 }
-.info-block-start {
-    min-height: 50%;
-      background-color:  rgb(48, 126, 192);
-      min-width: 100%;
-      border-start-start-radius: 6px;
-      border-start-end-radius: 6px;
-      &.simple {
-        background-color:  rgb(48, 126, 192);
+// .info-block-start {
+//     min-height: 50%;
+//       background-color:  rgb(48, 126, 192);
+//       min-width: 100%;
+//       border-start-start-radius: 6px;
+//       border-start-end-radius: 6px;
+//       &.simple {
+//         background-color:  rgb(48, 126, 192);
 
-      }
-      &.first {
-        background-color:  rgb(48, 126, 192);
-      }
+//       }
+//       &.first {
+//         background-color:  rgb(48, 126, 192);
+//       }
       
-}
-.info-block-end {
-    min-height: 50%;
+// }
+// .info-block-end {
+//     min-height: 50%;
       
-      min-width: 100%;
-      border-end-start-radius: 6px;
-      border-end-end-radius: 6px;
-      margin-top:-23px;
-      &.simple {
-        background-color: rgb(255, 255, 255);
-        border:solid rgb(48, 126, 192);
+//       min-width: 100%;
+//       border-end-start-radius: 6px;
+//       border-end-end-radius: 6px;
+//       margin-top:-23px;
+//       &.simple {
+//         background-color: rgb(255, 255, 255);
+//         border:solid rgb(48, 126, 192);
 
-      }
-      &.first {
-        background-color: rgb(249, 253, 0);
-        border:solid rgb(48, 126, 192);
+//       }
+//       &.first {
+//         background-color: rgb(249, 253, 0);
+//         border:solid rgb(48, 126, 192);
 
-      }
-}
-.info-block-triangle {
-  min-height: 20px;
-  max-height: 20px;
-  margin:auto;
-  width:40px;
-  &.simple {
-    border: 40px solid transparent; border-top: 23px solid rgb(48, 126, 192);border-bottom: 0;
-  }
-  &.first {
-    border: 40px solid transparent; border-top: 23px solid rgb(48, 126, 192);border-bottom: 0;
-  }
-  position: relative;
+//       }
+// }
+// .info-block-triangle {
+//   min-height: 20px;
+//   max-height: 20px;
+//   margin:auto;
+//   width:40px;
+//   &.simple {
+//     border: 40px solid transparent; border-top: 23px solid rgb(48, 126, 192);border-bottom: 0;
+//   }
+//   &.first {
+//     border: 40px solid transparent; border-top: 23px solid rgb(48, 126, 192);border-bottom: 0;
+//   }
+//   position: relative;
 
-}
+// }
 
 .if-title {
-  font-size: x-large;font-weight: 900;
+  font-size: xx-large;font-weight: 900;
   &.start-simple {
-    color: rgb(48, 126, 192);
+    color: #56fd00
   }
   &.start-first {
-    color: rgb(48, 126, 192);;
+    color: #56fd00
   }
   &.end-simple {
-    color: rgb(255, 255, 255);
+    color: rgb(76, 230, 250);
   }
   &.end-first {
     color: rgb(249, 253, 0);
   }
 }
 .if-number {
-  font-size: 110px;font-weight: 900;line-height:1.0;
+  font-size: 110px;font-weight: 900;line-height:0.75;
  &.start-simple {
-    color: rgb(48, 126, 192);
+    color: #56fd00;
   }
   &.start-first {
-    color: rgb(48, 126, 192);;
+    color: #56fd00;
   }
   &.end-simple {
-    color: rgb(255, 255, 255);
+    color: rgb(76, 230, 250);
   }
   &.end-first {
     color: rgb(249, 253, 0);

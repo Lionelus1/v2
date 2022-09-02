@@ -38,6 +38,7 @@ export default {
         enterPassword: "Құпия сөзді еңгізіңіз",
         add: "Қосу",
         edit: "Өзгерту",
+        print:"Принтерге шығару",
         orgname: "Л.Н. Гумилев атындағы Еуразия ұлттық университеті",
         organizationName: 'Мекеменің атауы',
         date: "Күні",
@@ -160,6 +161,7 @@ export default {
         organizationNameLabel: "Мекеменің атауы",
         departmentNameLabel: "Құрылымдық бөлімшенің атауы",
         headLabel: "Жетекші:",
+        report:"Есеп",
         states: {
             created: "құрылды",
             inapproval: "келісуде",
@@ -539,6 +541,11 @@ export default {
         redirect: "Басқа терезеге",
         selectTicket:"Таңдап шақыру",
         call: "Шақыру",
+        warning:"Талонды фотоға түсіріп алыңыз немесе «Принтерге шығаруды» басып қағазға шығарыңыз.Фотоға түсірсеңіз міндетті түрде «Жабу» батырмасы арқылы терезені жабыңыз!!!",
+        calledcount:"Шақырылды",        
+        serviced:"Қызмет алды",
+        averageTime:"Орташа қызмет көрсету уақыты",
+        redirected: "Бағытталды",
     },
     
     dissertation: {

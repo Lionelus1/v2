@@ -38,6 +38,7 @@ export default {
         error: "Ошибка",
         add: "Добавить",
         edit: "Редактировать",
+        print:"Печать",
         orgname: "Евразийский университет имени Л.Н. Гумилева",
         organizationName: 'Название организации',
         date: "Дата",
@@ -161,6 +162,7 @@ export default {
         organizationNameLabel: "Наименование организации",
         departmentNameLabel: "Наименование структурного подразделения",
         headLabel: "Руководитель:",
+        report:"Отчет",
         states: {
             created: "создан",
             inapproval: "на согласовании",
@@ -519,7 +521,7 @@ export default {
   
     queue: {
         title: "Очередь",
-        secretary:"Обслуживание",
+        secretary:" ",
         queues:"Очереди",       
         responsible:"Ответственный",
         queueNotFound:"Очередь не найден",
@@ -540,6 +542,11 @@ export default {
         redirect: "Перенаправить",
         selectTicket:"Выбрать талон",
         call: "Вызвать",
+        warning:"Сфотографируйте талон или распечатайте его нажав на «Печать».Если делаете фото, то обязательно закройте окно кнопкой «Закрыть»!!!",
+        calledcount:"Вызван",        
+        serviced:"Обслужен",
+        averageTime:"Среднее время обслуживания",
+        redirected: " Перенаправлен",
     },
     dissertation: {
         title: "Диссертационный совет",

@@ -8,7 +8,7 @@
           icon="pi pi-plus"
           class="p-button-success p-mr-2"
           v-on:click="createQueue(null)"
-        />
+        />        
       </template>
     </Toolbar>
     <Toast />
@@ -52,26 +52,32 @@
             v-if="slotProps.node.createdUserId === loginedUser.userID || isOperator(slotProps.node)"
             icon="pi pi-trash" 
             v-tooltip.bottom="$t('common.delete')"  
-            class="p-button-rounded p-button-danger p-mr-2" 
+            class="p-button-rounded p-button-danger p-mr-4" 
             @click="delQueue(slotProps.node)"/>
           <Button 
             icon="pi pi-user" 
-            v-if="slotProps.node.createdUserId === loginedUser.userID || isOperator(slotProps.node) || findRole(null, 'queue_tv')"
+            v-if="slotProps.node.createdUserId === loginedUser.userID || isOperator(slotProps.node)"
             v-tooltip.bottom="$t('queue.operator')"  
             class="p-button-rounded p-button-info p-mr-2"  
             @click="$router.push('/queue/operator/'+ slotProps.node.key+ '/' +  slotProps.node.parentId)" />
           <Button 
             icon="pi pi-desktop" 
-            v-if="slotProps.node.createdUserId === loginedUser.userID || isOperator(slotProps.node) || findRole(null, 'queue_tv')"
+            v-if="findRole(null, 'queue_tv')"
             v-tooltip.bottom="$t('queue.tv')"  
             class="p-button-rounded p-button-help p-mr-2"  
             @click="$router.push('/queue/tv/'+ slotProps.node.key )" />
            <Button 
             icon="pi pi-ticket" 
             v-tooltip.bottom="$t('queue.terminal')"  
-            v-if="slotProps.node.createdUserId === loginedUser.userID || isOperator(slotProps.node) || findRole(null, 'queue_terminal')"
+            v-if="findRole(null, 'queue_terminal')"
             class="p-button-rounded p-button-help p-mr-2"  
             @click="$router.push('/queue/terminal/'+ slotProps.node.key )" />
+            <Button 
+            icon="pi pi-chart-line" 
+            v-tooltip.bottom="$t('common.report')"  
+            v-if="slotProps.node.parentId ===null && slotProps.node.createdUserId === loginedUser.userID "
+            class="p-button-rounded p-button-help p-mr-2"  
+            @click="$router.push('/queue/queueReport/'+ slotProps.node.key )" />
         </template>
       </Column>              
     </TreeTable> 
