@@ -381,13 +381,13 @@
           <div>
             <label for="data-and-time">{{ $t("smartenu.dataAndTime") }}</label>
           </div>
-          <DatePicker
+          <PrimeCalendar
               id="data-and-time"
+              :placeholder="$t('faq.createDate')"
+              :showTime="true"
+              :showSeconds="true"
               v-model="event.eventDate"
-              mode="dateTime"
-              is24hr
-              class="p-invalid"
-          />
+              dateFormat="dd.mm.yy"/>
         </div>
         <div class="p-field">
           <div class="p-grid">
@@ -402,7 +402,7 @@
               ></FileUpload>
             </div>
           </div>
-          <div >
+          <div v-if="event.main_image_base_64 || event.mainImage">
             <img :src="event.main_image_base_64 ? event.main_image_base_64 : event.mainImage" style="width: 50%; height: 50%"/>
           </div>
         </div>
@@ -828,13 +828,13 @@ export default {
       const file = event.files[0];
       this.event.mainImageName = event.files[0].name;
       this.mainImageFile = event.files[0];
-      /*try {
+      try {
         this.convertBase64(file).then((r) => {
           this.event.mainImage = r;
         });
       } catch (err) {
         console.log(err);
-      }*/
+      }
     },
 
     /**
