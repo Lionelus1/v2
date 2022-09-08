@@ -5,7 +5,8 @@
           <PrimeCalendar
             style="width: 140px"
             :disabled="disabled"            
-            dateFormat="dd.mm.yy"        
+            dateFormat="dd.mm.yy"
+            selectionMode="single"        
             v-model="selectDate"           
             :placeholder="$t('common.date')"
             :date-select="selectDate"
@@ -64,7 +65,7 @@ export default {
 
     getQueueReport(queueID) {
         this.loading = true  
-        // alert(this.selectDate) 
+         alert(JSON.stringify(this.selectDate)) 
         axios
         .post(smartEnuApi + "/queue/queueReport", {queueID:queueID,Date:this.selectDate},{
           headers: getHeader(),
