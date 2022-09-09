@@ -1,6 +1,7 @@
 <template>
   <div class="card">
     <BlockUI :blocked="approving" :fullScreen="true"></BlockUI>
+
     <div>
       <h4 class="p-ml-3">{{ $t("educomplex.title") }}</h4>
       <Toolbar class="p-m-0 p-p-1" style="position:relative;">
@@ -26,8 +27,12 @@
                   class="p-button-help p-p-1 p-mr-2"><i
               class="fa-solid fa-file-pen fa-xl"></i>&nbsp;{{ $t('common.edit') }}
           </Button>
-          <Button type="button" icon="pi pi-search" :disabled="selected===null || file.depType !== 2" :label="$t('common.search')" @click="toggle" aria:haspopup="true"
-                  aria-controls="overlay_panel" class="p-button-info p-p-1"><i class="fa-solid fa-filter fa-xl"></i>&nbsp;{{ $t('common.filter') }}</Button>
+          <Button type="button" icon="pi pi-search" :disabled="selected===null || file.depType !== 2"
+                  :label="$t('common.search')" @click="toggle" aria:haspopup="true"
+                  aria-controls="overlay_panel" class="p-button-info p-p-1"><i class="fa-solid fa-filter fa-xl"></i>&nbsp;{{
+              $t('common.filter')
+            }}
+          </Button>
           <OverlayPanel ref="op">
             <div class="p-fluid">
               <div class="p-field">
@@ -37,10 +42,10 @@
               <div class="p-field">
                 <label for="status-filter">{{ $t('common.status') }}</label>
                 <Dropdown v-model="filters.status.value"
-                    :options="statuses"
-                    placeholder="Any"
-                    class="p-column-filter"
-                    :showClear="true"
+                          :options="statuses"
+                          placeholder="Any"
+                          class="p-column-filter"
+                          :showClear="true"
                 >
                   <template #value="slotProps">
                   <span
@@ -68,16 +73,17 @@
                 </Dropdown>
               </div>
               <div class="p-field">
-                <label>{{$t('faq.createDate')}}</label>
-                <Dropdown v-model="filters.createDate.matchMode" :options="numMatches" optionLabel="value" optionValue="value"  :placeholder="$t('common.select')">
+                <label>{{ $t('faq.createDate') }}</label>
+                <Dropdown v-model="filters.createDate.matchMode" :options="numMatches" optionLabel="value"
+                          optionValue="value" :placeholder="$t('common.select')">
                   <template #value="slotProps">
                     <span>
-                      {{$t('common.' +slotProps.value)}}
+                      {{ $t('common.' + slotProps.value) }}
                     </span>
                   </template>
                   <template #option="slotProps">
                     <span>
-                      {{$t('common.' +slotProps.option.value)}}
+                      {{ $t('common.' + slotProps.option.value) }}
                     </span>
                   </template>
                 </Dropdown>
@@ -113,6 +119,12 @@
         <Column field="creator" :header="$t('common.author')">
           <template #body="slotProps">
             <span v-if="slotProps.node.creator">&nbsp;{{ slotProps.node.creator.fullName }}</span>
+          </template>
+        </Column>
+        <Column field="isapproved" header="">
+          <template #body="slotProps">
+            <i v-if="(slotProps.node.isApproved && slotProps.node.isApproved === 1) || slotProps.node.stateID === 7" class="fa-solid fa-square-pen fa-xl approved"></i>
+            <i v-if="slotProps.node.isApproved && slotProps.node.isApproved === 0 && slotProps.node.stateID === 2" class="fa-solid fa-square-pen fa-xl not-approved" ></i>
           </template>
         </Column>
         <Column field="state" :header="$t('common.state')">
@@ -157,11 +169,12 @@
       <DocInfo :ID="file.id"></DocInfo>
     </Sidebar>
     <Dialog :header="$t('common.action.sendToApprove')" v-model:visible="dialogOpenState.sendToApprove"
-            :style="{width: '60vw'}" class="p-fluid">
+            :style="{width: '50vw'}" class="p-fluid">
       <ProgressBar v-if="approving" mode="indeterminate" style="height: .5em"/>
       <div class="p-field">
-        <ApprovalUsers :approving="approving" v-model="selectedUsers" @closed="closeDialog('sendToApprove')"
-                       @approve="approve($event)"></ApprovalUsers>
+        <ApprovalUsers :key="approveComponentKey" :approving="approving" v-model="selectedUsers"
+                       @closed="closeDialog('sendToApprove')"
+                       @approve="approve($event)" :stages="stages"></ApprovalUsers>
       </div>
     </Dialog>
     <Dialog :modal="true" v-bind:header="$t('common.revision')" v-model:visible="dialogOpenState.revision"
@@ -299,8 +312,8 @@ export default {
       },
       parentNode: null,
       filters: {
-        name: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        status: { value: null, matchMode: FilterMatchMode.EQUALS },
+        name: {value: null, matchMode: FilterMatchMode.CONTAINS},
+        status: {value: null, matchMode: FilterMatchMode.EQUALS},
         createDate: {value: null, matchMode: FilterMatchMode.EQUALS}
       },
       statuses: [
@@ -338,6 +351,62 @@ export default {
         {value: 'gt'},
         {value: 'equals'}
       ],
+      stages: null,
+      approvalStages: [
+        {
+          stage: 1,
+          users: [this.$store.state.loginedUser],
+          sertificate: {
+            namekz: "Жеке тұлғаның сертификаты",
+            nameru: "Сертификат физического лица",
+            nameen: "Certificate of an individual",
+            value: "individual"
+          },
+          titleRu: "Преподаватель",
+          titleKz: "Оқытушы",
+          titleEn: "Teacher",
+        },
+        {
+          stage: 2,
+          users: null,
+          titleRu: "Заведующий кафедры",
+          titleKz: "Кафедра меңгерушісі",
+          titleEn: "Head of Department",
+          sertificate: {
+            namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+            nameru: "Для внутреннего документооборота (ГОСТ)",
+            nameen: "For internal document management (GOST)",
+            value: "internal"
+          },
+        },
+        {
+          stage: 3,
+          users: null,
+          titleRu: "Председатель УМК",
+          titleKz: "ОӘК төрағасы",
+          titleEn: "Chairman of the EMC",
+          sertificate: {
+            namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+            nameru: "Для внутреннего документооборота (ГОСТ)",
+            nameen: "For internal document management (GOST)",
+            value: "internal"
+          },
+        },
+        {
+          stage: 4,
+          users: null,
+          titleRu: "Декан",
+          titleKz: "Декан",
+          titleEn: "Dean",
+          sertificate: {
+            namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+            nameru: "Для внутреннего документооборота (ГОСТ)",
+            nameen: "For internal document management (GOST)",
+            value: "internal"
+          },
+        }
+      ],
+      approveComponentKey: 0
     }
   },
   created() {
@@ -363,8 +432,9 @@ export default {
       this.getFolders(this.parent)
     },
     signed(event) {
-      this.file.stateID = 7,
-          this.file.stateen = "signed"
+      this.file.isApproved = 1
+      this.file.stateID = 7
+      this.file.stateen = "signed"
       this.file.stateru = "подписан"
       this.file.statekz = "қол қойылды"
     },
@@ -385,6 +455,7 @@ export default {
         this.file.stateen = "inapproval"
         this.file.statekz = "келісуде"
         this.file.stateru = "на согласовании"
+        this.file.isApproved = 0;
         this.approving = false;
 
       }).catch(error => {
@@ -506,6 +577,11 @@ export default {
       this.$refs[name].style.zIndex = index
     },
     openDialog(dialog) {
+      if (dialog === "sendToApprove") {
+        this.approveComponentKey++;
+        this.stages = JSON.parse(JSON.stringify(this.approvalStages));
+      }
+
       this.dialogOpenState[dialog] = true;
     },
 
@@ -633,7 +709,7 @@ export default {
       axios.post(smartEnuApi + url, req, {headers: getHeader()}).then(() => {
         this.file.stateID = this.DocState.REVISION.ID;
         this.file.statekz = "түзетуге";
-        this.file.stateкг = "на доработку";
+        this.file.stateru = "на доработку";
         this.file.stateen = "revision";
 
         this.file.revision = false;
@@ -658,6 +734,14 @@ export default {
   width: 1.8rem !important;
   height: 1.8rem !important;
   top: 7px;
+}
+
+.approved {
+  color: #42855B;
+}
+
+.not-approved {
+  color: #a6a6a6;
 }
 </style>
 

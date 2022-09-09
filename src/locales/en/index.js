@@ -244,7 +244,8 @@ export default {
         additionalInfo: "Additional Information",
         resultSentToCorrect: "Result sent for revision",
         toCorrect: "To check",
-        clear: "Clear"
+        clear: "Clear",
+        clearApprovalList: "Change the approval stages"
     },
     bank: {
         title: "Banks",

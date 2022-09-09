@@ -244,7 +244,8 @@ export default {
         additionalInfo: "Дополнительная информация",
         resultSentToCorrect: "Результат отправлен на доработку",
         toCorrect: "На проверку",
-        clear: "Сбросить"
+        clear: "Сбросить",
+        clearApprovalList: "Изменить порядок согласования"
     },
     bank: {
         title: "Банки",

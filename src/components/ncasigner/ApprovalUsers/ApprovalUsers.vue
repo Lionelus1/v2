@@ -1,7 +1,7 @@
 <template>
   <div class="p-field">
     <label>{{ $t('common.select') }}</label>
-    <StepComponent v-model="approval_users"></StepComponent>
+    <StepComponent v-model="approval_users" :stages="stages"></StepComponent>
     <Toolbar style="border:none;background:none">
       <template #end>
         <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger p-mr-2" @click="close" />
@@ -20,6 +20,7 @@ export default {
   props: {
     modelValue: null,
     approving: null,
+    stages: null,
   },
   emits: ['closed', 'approve'],
   data() {
@@ -39,9 +40,6 @@ export default {
       updateValue,
     };
   },
-  created() {
-    
-  },
   methods: {
     
     close() {
@@ -58,7 +56,8 @@ export default {
           return
         }
       })
-      this.$emit('approve', this.approval_users)
+      this.$emit('approve', this.approval_users);
+      this.approval_users = null;
     }
   }
 }
