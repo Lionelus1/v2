@@ -10,19 +10,20 @@
             v-for="(step, index) in steps"
             :key="step"
         >
-          <span @click="setActive(index)"> {{ index + 1 }} </span> {{ step.title }}
+          <span @click="setActive(index)"> {{ index + 1 }} </span>
+          <div class="p-pt-2">{{ $i18n.locale === 'kz'? step.titleKz : $i18n.locale === 'en' ? step.titleEn : step.titleRu }}</div>
         </li>
       </ul>
       <div class="steps-content">
         <FindUser @add="updateModel" @remove="updateModel" v-model="selectedUsers"></FindUser>
-        <Dropdown @change="updateModel" class="p-mt-2" v-model="sertificate" :options="sertificates" :optionLabel="'name' + $i18n.locale" :placeholder="$t('ncasigner.certType')" />
+        <Dropdown :disabled="!isNewStage" @change="updateModel" class="p-mt-2" v-model="sertificate" :options="sertificates" :optionLabel="'name' + $i18n.locale" :placeholder="$t('ncasigner.certType')" />
       </div>
 
-      <div v-if="!isStepsFinished">
-        <Button icon="pi pi-plus" class="p-button-rounded p-button-success"
+      <div>
+        <Button v-if="isNewStage" icon="pi pi-plus" class="p-button-rounded p-button-success"
                 @click="addStep"/>
+        <button @click="clearSteps" class="btn danger p-ml-2"> {{ $t('common.clearApprovalList') }} </button>
       </div>
-      <button v-else class="btn" @click="reset">Начать заново</button>
     </div>
   </div>
 </template>
@@ -35,6 +36,7 @@ export default {
   components: {FindUser},
   props: {
     modelValue: null,
+    stages: null
   },
   data() {
     return {
@@ -52,13 +54,15 @@ export default {
       stageValue: this.value,
       activeIndex: 0,
       isStepsFinished: false,
-      steps: [
+      stagesList: this.stages,
+      steps: this.stages != null ? JSON.parse(JSON.stringify(this.stages)) : [
         {
           stage: 1,
           users: null
         }
       ],
-      result: this.modelValue,
+      result: this.stages ? JSON.parse(JSON.stringify(this.stages)) : this.modelValue,
+      isNewStage: !this.stages
     }
   },
   setup(props, context) {
@@ -92,10 +96,8 @@ export default {
     setActive(index) {
       this.activeIndex = index;
       this.stage = index + 1;
-      this.selectedUsers = this.result[index].users;
+      this.selectedUsers = this.result[index].users != null ? this.result[index].users : null;
       this.sertificate = this.result[index].sertificate;
-      
-      
     },
     addStep() {
       this.result.push({stage: this.result.length+1, users: null, sertificate: null})
@@ -121,7 +123,17 @@ export default {
       //  event.preventDefault();
       //}
     },
-    
+    clearSteps() {
+      this.steps = [{
+        stage: 1,
+        users: null
+      }];
+      this.stagesList = null;
+      this.result = [];
+      this.updateModel();
+      this.setActive(0);
+      this.isNewStage = true;
+    }
   },
   created() {
     this.setActive(0);
@@ -203,7 +215,7 @@ h3 {
 }
 
 .danger {
-  color: #e53935;
+  color: #c02929;
 }
 
 .btn {
@@ -212,11 +224,10 @@ h3 {
   place-content: center;
   place-items: center;
   width: fit-content;
-  border-radius: 99px;
+  border-radius: 5px;
   letter-spacing: 0.05em;
   border: 1px solid #42b983;
   text-decoration: none;
-  text-transform: uppercase;
   margin-right: 10px;
   padding: 0.5rem 1.5rem;
   white-space: nowrap;
