@@ -27,18 +27,14 @@
                   class="p-button-help p-p-1 p-mr-2"><i
               class="fa-solid fa-file-pen fa-xl"></i>&nbsp;{{ $t('common.edit') }}
           </Button>
-          <Button type="button" icon="pi pi-search" :disabled="selected===null || file.depType !== 2"
-                  :label="$t('common.search')" @click="toggle" aria:haspopup="true"
+          <Button type="button" icon="pi pi-search"
+                  :label="$t('common.search')" @click="toggle('global-filter', $event)" aria:haspopup="true"
                   aria-controls="overlay_panel" class="p-button-info p-p-1"><i class="fa-solid fa-filter fa-xl"></i>&nbsp;{{
               $t('common.filter')
             }}
           </Button>
-          <OverlayPanel ref="op">
+          <OverlayPanel ref="global-filter">
             <div class="p-fluid">
-              <div class="p-field">
-                <label for="search-input">{{ $t('common.name') }}</label>
-                <InputText id="search-input" v-model="filters.name.value" type="search"/>
-              </div>
               <div class="p-field">
                 <label for="status-filter">{{ $t('common.status') }}</label>
                 <Dropdown v-model="filters.status.value"
@@ -94,8 +90,8 @@
                     dateFormat="dd.mm.yy"/>
               </div>
               <div class="p-field">
-                <Button :label="$t('common.clear')" @click="clearFilter" class="p-mb-2 p-button-outlined"/>
-                <Button :label="$t('common.search')" @click="getFoldersByFilter" class="mt-2"/>
+                <Button :label="$t('common.clear')" @click="clearFilter(true)" class="p-mb-2 p-button-outlined"/>
+                <Button :label="$t('common.search')" @click="getFoldersByGlobalFilter" class="mt-2"/>
               </div>
             </div>
           </OverlayPanel>
@@ -105,7 +101,7 @@
           <Button @click="downloadFile()" :disabled="selected===null || file.type !=1" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-file-arrow-down fa-xl"></i></Button> -->
         </template>
       </Toolbar>
-      <TreeTable :scrollable="true" :scrollHeight="windowHeight + 'px'" class="p-treetable-sm"
+      <TreeTable ref="edutreetable" :scrollable="true" :scrollHeight="windowHeight + 'px'" class="p-treetable-sm"
                  @node-select="onNodeSelect" :value="catalog" :lazy="true" :loading="loading"
                  @nodeExpand="onExpand($event, true)" selectionMode="single" v-model:selectionKeys="selected">
         <Column field="name" :header="$t('common.name')" :expander="true">
@@ -114,6 +110,77 @@
                 :class="'fa-solid fa-' + (slotProps.node.depType <= 2 ? 'folder' : 'file')"></i>&nbsp;{{
                 slotProps.node["name" + $i18n.locale]
               }}</span>
+            <Button type="button" icon="pi pi-search" v-if="slotProps.node.depType === 2"
+                    @click="onNodeSelect(slotProps.node);toggle('op', $event)" aria:haspopup="true" label=""
+                    aria-controls="overlay_panel" class="p-button-link"><i class="fa-solid fa-filter fa-xl"></i>&nbsp;{{
+              }}
+            </Button>
+            <OverlayPanel ref="op">
+              <div class="p-fluid">
+                <div class="p-field">
+                  <label for="search-input">{{ $t('common.name') }}</label>
+                  <InputText id="search-input" v-model="filters.name.value" type="search"/>
+                </div>
+                <div class="p-field">
+                  <label for="status-filter">{{ $t('common.status') }}</label>
+                  <Dropdown v-model="filters.status.value"
+                            :options="statuses"
+                            placeholder="Any"
+                            class="p-column-filter"
+                            :showClear="true"
+                  >
+                    <template #value="slotProps">
+                  <span
+                      v-if="slotProps.value"
+                      :class="'customer-badge status-' + slotProps.value.value"
+                  >
+                    {{
+                      $i18n.locale === 'kz'
+                          ? slotProps.value.nameKz
+                          : $i18n.locale === 'ru'
+                              ? slotProps.value.nameRu
+                              : slotProps.value.nameEn
+                    }}</span
+                  >
+                    </template>
+                    <template #option="slotProps">
+                  <span :class="'customer-badge status-' + slotProps.option.value">{{
+                      $i18n.locale === 'kz'
+                          ? slotProps.option.nameKz
+                          : $i18n.locale === 'ru'
+                              ? slotProps.option.nameRu
+                              : slotProps.option.nameEn
+                    }}</span>
+                    </template>
+                  </Dropdown>
+                </div>
+                <div class="p-field">
+                  <label>{{ $t('faq.createDate') }}</label>
+                  <Dropdown v-model="filters.createDate.matchMode" :options="numMatches" optionLabel="value"
+                            optionValue="value" :placeholder="$t('common.select')">
+                    <template #value="slotProps">
+                    <span>
+                      {{ $t('common.' + slotProps.value) }}
+                    </span>
+                    </template>
+                    <template #option="slotProps">
+                    <span>
+                      {{ $t('common.' + slotProps.option.value) }}
+                    </span>
+                    </template>
+                  </Dropdown>
+                  <PrimeCalendar
+                      class="p-mt-2"
+                      :placeholder="$t('faq.createDate')"
+                      v-model="filters.createDate.value"
+                      dateFormat="dd.mm.yy"/>
+                </div>
+                <div class="p-field">
+                  <Button :label="$t('common.clear')" @click="clearFilter(false)" class="p-mb-2 p-button-outlined"/>
+                  <Button :label="$t('common.search')" @click="getFoldersByFilter" class="mt-2"/>
+                </div>
+              </div>
+            </OverlayPanel>
           </template>
         </Column>
         <Column field="creator" :header="$t('common.author')">
@@ -123,8 +190,10 @@
         </Column>
         <Column field="isapproved" header="">
           <template #body="slotProps">
-            <i v-if="(slotProps.node.isApproved && slotProps.node.isApproved === 1) || slotProps.node.stateID === 7" class="fa-solid fa-square-pen fa-xl approved"></i>
-            <i v-if="slotProps.node.isApproved && slotProps.node.isApproved === 0 && slotProps.node.stateID === 2" class="fa-solid fa-square-pen fa-xl not-approved" ></i>
+            <i v-if="(slotProps.node.isApproved && slotProps.node.isApproved === 1) || slotProps.node.stateID === 7"
+               class="fa-solid fa-square-pen fa-xl approved"></i>
+            <i v-if="slotProps.node.isApproved && slotProps.node.isApproved === 0 && slotProps.node.stateID === 2"
+               class="fa-solid fa-square-pen fa-xl not-approved"></i>
           </template>
         </Column>
         <Column field="state" :header="$t('common.state')">
@@ -406,7 +475,8 @@ export default {
           },
         }
       ],
-      approveComponentKey: 0
+      approveComponentKey: 0,
+      isGlobalFilter: false,
     }
   },
   created() {
@@ -421,15 +491,17 @@ export default {
     window.removeEventListener('resize', this.onResize);
   },
   methods: {
-    toggle(event) {
-      this.$refs.op.toggle(event);
+    toggle(ref, event) {
+      this.$refs[ref].toggle(event);
     },
-    clearFilter() {
+    clearFilter(isGlobal) {
       this.filters.name.value = null
       this.filters.status.value = null
       this.filters.createDate.value = null
       this.lazyParams.filters = null
-      this.getFolders(this.parent)
+      this.isGlobalFilter = false;
+      this.lazyParams.depType = 0
+      this.getFolders(isGlobal ? null : this.parent);
     },
     signed(event) {
       this.file.isApproved = 1
@@ -479,31 +551,50 @@ export default {
     showMessage(msgtype, message, content) {
       this.$toast.add({severity: msgtype, summary: message, detail: content, life: 3000});
     },
+    getFoldersByGlobalFilter() {
+      if (!(this.filters.status.value === null && this.filters.createDate.value === null)) {
+        let filter = JSON.parse(JSON.stringify(this.filters));
+        this.lazyParams.filters = filter;
+        if (this.lazyParams.filters.status.value) {
+          this.lazyParams.filters.status.value = filter.status.value.id;
+        }
+      }
+      this.isGlobalFilter = true;
+      this.getFolders(null)
+    },
     getFoldersByFilter() {
       if (!(this.filters.name.value === null && this.filters.status.value === null && this.filters.createDate.value === null)) {
-        this.lazyParams.filters = this.filters;
+        let filter = JSON.parse(JSON.stringify(this.filters));
+        this.lazyParams.filters = filter;
         if (this.lazyParams.filters.status.value)
-          this.lazyParams.filters.status.value = this.filters.status.value.id;
+          this.lazyParams.filters.status.value = filter.status.value.id;
       }
       this.getFolders(this.parent)
     },
     getFolders(parent) {
       this.loading = true;
       let url = "/doc/getFoldersByType";
-      if (parent != null)
+      if (parent != null) {
         this.lazyParams.depType = parent.depType
-      else {
+      } else if (this.isGlobalFilter) {
+        this.lazyParams.parentID = null
+        this.lazyParams.depType = 3;
+      } else {
         this.lazyParams.parentID = null
         this.lazyParams.depType = 0
       }
       axios.post(smartEnuApi + url, this.lazyParams, {headers: getHeader()})
           .then(response => {
-            if (parent == null) {
+            if (this.isGlobalFilter) {
+              this.catalog = response.data;
+            } else if (parent == null) {
               this.catalog = response.data;
               this.catalog.map(e => {
-                e.namekz = e.namekz + ' факультеті';
-                e.nameru = e.nameru + ' факультет';
-                e.nameen = 'Faculty of ' + e.nameen
+                if (e.depType === 1) {
+                  e.namekz = e.namekz + ' факультеті';
+                  e.nameru = e.nameru + ' факультет';
+                  e.nameen = 'Faculty of ' + e.nameen
+                }
               });
             } else {
               parent.children = response.data
