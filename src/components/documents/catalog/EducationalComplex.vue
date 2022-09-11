@@ -190,9 +190,9 @@
         </Column>
         <Column field="isapproved" header="">
           <template #body="slotProps">
-            <i v-if="(slotProps.node.isApproved && slotProps.node.isApproved === 1) || slotProps.node.stateID === 7"
+            <i v-if="(slotProps.node.isApproved !== null && slotProps.node.isApproved === 1) || slotProps.node.stateID === 7"
                class="fa-solid fa-square-pen fa-xl approved"></i>
-            <i v-if="slotProps.node.isApproved && slotProps.node.isApproved === 0 && slotProps.node.stateID === 2"
+            <i v-if="slotProps.node.isApproved !== null && slotProps.node.isApproved === 0 && slotProps.node.stateID === 2"
                class="fa-solid fa-square-pen fa-xl not-approved"></i>
           </template>
         </Column>
