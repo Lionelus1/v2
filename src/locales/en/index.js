@@ -797,9 +797,33 @@ export default {
         respExecutor: "Responsible performers",
         halfYear: "semi-annual"
     },
-    educomplex: {
-        title: "Educational and methodological complex of the discipline",
-        forme: "Related to me"
-
+    queue: {
+        title: "Queue",
+        secretary:"Maintenance",
+        queues:"Queues",
+        responsible:"responsible",
+        queueNotFound:"Queue not found",
+        createQueue:"Create/Modify Queue",
+        next:"Next",
+        number: "Queue number",
+        terminal:"Terminal",
+        tv:"TV",
+        count: "There are {n} people waiting in front of you",
+        operator:"Operator",
+        ticketCount: "Tickets queued:",
+        downtime: "Downtime:",
+        serviceTime: "Service time:",
+        called: "Called visitor:",
+        dnshowup: "Didn't show up",
+        norows: "Queue not found",
+        served: "Visitor served",
+        redirect: "Redirect",
+        selectTicket:"Select ticket",
+        call: "Call",
+        warning:"Take a photo of the coupon or print it by clicking on «Print». If you take a photo, be sure to close the window with the «Close button»!!!",
+        calledcount:"Сalled",        
+        serviced:"Serviced",
+        averageTime:"Average service time",
+        redirected: "Redirected",
     },
 }

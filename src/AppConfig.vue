@@ -1,6 +1,6 @@
 <template>
 	<div id="layout-config" :class="containerClass">
-		<a href="#" class="layout-config-button" id="layout-config-button" @click="toggleConfigurator">
+		<a href="#" class="layout-config-button no-print" id="layout-config-button" @click="toggleConfigurator">
 			<i class="pi pi-cog"></i>
 		</a>
 		<a href="#" class="layout-config-close" @click="hideConfigurator">
@@ -147,3 +147,22 @@
 		}
 	}
 </script>
+<style scoped>
+
+	@media print
+   {    
+	   .no-print, .no-print *
+	   {
+		   display:none !important;
+	   }
+   }
+	@media print
+   {    
+	   .show-print, .show-print *
+	   {
+		   display: block !important;
+		   width:100% !important;
+	   }
+   }
+
+</style>
