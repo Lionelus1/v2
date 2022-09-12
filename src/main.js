@@ -206,7 +206,7 @@ app.component('Dialog', Dialog);
 app.component('Dropdown', Dropdown);
 app.component('Fieldset', Fieldset);
 app.component('FileUpload', FileUpload);
-app.component('FontAwesomeIcon', FontAwesomeIcon)
+
 app.component('Image', Image);
 app.component('InlineMessage', InlineMessage);
 app.component('Inplace', Inplace);
