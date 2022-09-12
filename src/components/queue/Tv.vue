@@ -61,6 +61,7 @@ export default {
         rows: 100,
         parentID: null,
       },
+      globAudio: null,
       colCount: 3,
       rowCount: 5,
       height: 100,
@@ -92,15 +93,15 @@ export default {
       .post(queueApi+`/convert`, msg, {headers: getHeader()})
       .then(res => {
         this.audioSrc = `data:audio/mp3;base64,${res.data}`
-        var audio = new Audio(this.audioSrc);
-        audio.play()
+        this.globAudio = new Audio(this.audioSrc);
+        this.globAudio.play()
       }).catch(error => {
         console.log(error);
       })
     },
     audioEnded() {
       this.$refs.audioq.style.display = "none";
-      this.source = null;
+      this.audioSrc = null;
     },
 
     padTo2Digits(num) {

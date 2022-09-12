@@ -1,23 +1,33 @@
 <template>
   <div>  
-      <div> 
-        <div class="p-col">
-          <PrimeCalendar
-            style="width: 140px"
-            :disabled="disabled"            
-            dateFormat="dd.mm.yy"
-            selectionMode="single"        
-            v-model="selectDate"           
-            :placeholder="$t('common.date')"
-            :date-select="selectDate"
-            :monthNavigator="true"
-            :yearNavigator="true"
-            yearRange="2000:2030"
-            :showIcon="true"                       
-          />
-        </div>
-        
-      </div>               
+    <div> 
+      <Toolbar class="p-mb-4 "> class="p-col">
+        <template #start>
+        <PrimeCalendar
+          style="width: 140px"
+          :disabled="disabled"            
+          dateFormat="dd.mm.yy"
+          selectionMode="single"        
+          v-model="selectDate"           
+          :placeholder="$t('common.date')"
+          @date-select="getQueueReport"
+          :monthNavigator="true"
+          :yearNavigator="true"
+          yearRange="2000:2030"
+          :showIcon="true"
+                             
+        />
+      </template>
+        <template #end>
+        <Button           
+            icon="pi pi-print " 
+            v-tooltip.bottom="$t('common.add')"            
+            class="p-button-primary p-mr-2 p-mr-4 no-print"  
+            @click="printWindow"/>  
+        </template>          
+      </Toolbar>
+    
+    </div>               
     
     <div class="card">            
       <DataTable :value="reports" responsiveLayout="scroll">
@@ -55,7 +65,7 @@ export default {
   data() {
     return {
       reports:[],
-      selectDate: null,
+      selectDate:null,
       
       
     }
@@ -64,10 +74,13 @@ export default {
     findRole : findRole,
 
     getQueueReport(queueID) {
-        this.loading = true  
-         alert(JSON.stringify(this.selectDate)) 
+        // alert(queueID)
+        var date = new Date(this.selectDate);
+        var day = "" + date.getFullYear() +"-"+((date.getMonth() + 1) > 9 ? '' : '0')+ (date.getMonth() + 1) +"-"+ (date.getDate() > 9 ? '' : '0')+ date.getDate();
+        this.loading = true 
+        //  alert(this.selectDate);
         axios
-        .post(smartEnuApi + "/queue/queueReport", {queueID:queueID,Date:this.selectDate},{
+        .post(smartEnuApi + "/queue/queueReport", {selectedDay:day},{
           headers: getHeader(),
         })
         .then((response) => {
@@ -85,6 +98,10 @@ export default {
             this.$store.dispatch("logLout");
           }
         });
+    },
+
+    printWindow(){		
+	    window.print();
     },
 
     padTo2Digits(num) {
@@ -117,7 +134,21 @@ export default {
 </script>
 
 <style scoped>
-
+ @media print
+    {    
+        .no-print, .no-print *
+        {
+            display:none !important;
+        }
+    }
+     @media print
+    {    
+        .show-print, .show-print *
+        {
+            display: block !important;
+            width:100% !important;
+        }
+    }
 .font-style {    
     width:300px;
     height:300px;
