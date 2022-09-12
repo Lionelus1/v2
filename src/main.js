@@ -105,6 +105,7 @@ import ConfirmationService from 'primevue/confirmationservice';
 import store from "./store/store"
 import SpeedDial from 'primevue/speeddial';
 
+
 router.beforeEach(function(to, from, next) {
     window.scrollTo(0, 0);
     next();
