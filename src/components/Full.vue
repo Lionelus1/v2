@@ -286,6 +286,7 @@ export default {
     },
     isDesktop() {
       return window.innerWidth > 1024;
+      
     },
     isSidebarVisible() {
       if (this.isDesktop()) {
