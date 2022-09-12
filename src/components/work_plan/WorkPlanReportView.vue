@@ -1,4 +1,5 @@
 <template>
+
   <div>
     <div class="p-col-12">
       <div class="card" v-if="isPlanCreator && !isReportSentApproval">
