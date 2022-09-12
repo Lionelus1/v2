@@ -1,5 +1,5 @@
 <template>
-  <div class="w-100">жүктелнуде . . . </div>
+  <div class="w-100">жүктелуде . . . </div>
 </template>
 <script>
 import axios from 'axios';
