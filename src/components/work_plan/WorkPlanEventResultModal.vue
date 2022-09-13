@@ -166,7 +166,7 @@ export default {
 
       axios.post(smartEnuApi + `/workPlan/verifyEventResult`, data, {headers: getHeader()})
       .then(res => {
-        console.log(res);
+        //console.log(res);
         this.toCorrectSidebar = false;
         this.eventResultModal = false;
         this.emitter.emit("workPlanResultVerified", true);

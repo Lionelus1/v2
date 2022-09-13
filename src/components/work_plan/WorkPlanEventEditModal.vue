@@ -27,7 +27,7 @@
       <FindUser v-model="selectedUsers" :editMode="true"></FindUser>
       <small class="p-error" v-if="submitted && formValid.users">{{ $t('workPlan.errors.approvalUserError') }}</small>
     </div>
-    <div class="p-field" v-if="!editData.parent_id">
+    <div class="p-field" v-if="editData.parent_id !== null">
       <label>{{ $t('workPlan.quarter') }}</label>
       <Dropdown v-model="editData.quarter" :options="quarters" optionLabel="name" optionValue="id"
                 :placeholder="$t('common.select')"/>
@@ -97,13 +97,17 @@ export default {
     }
   },
   created() {
-    this.editData.quarter = parseInt(this.editData.quarter.String)
-    this.editData.user.forEach(e => {
-      e.userID = e.id;
-      this.selectedUsers.push(e);
-    })
-    this.selectedUsers = this.editData.user;
-    console.log(this.editData)
+    //console.log(this.editData)
+  },
+  mounted() {
+    if (this.editData !== null) {
+      this.editData.quarter = parseInt(this.editData.quarter.String);
+      this.editData.user.forEach(e => {
+        e.userID = e.id;
+        this.selectedUsers.push(e);
+      });
+      this.selectedUsers = this.editData.user;
+    }
   },
   methods: {
     openBasic() {
@@ -113,6 +117,10 @@ export default {
       this.showWorkPlanEventEditModal = false;
     },
     edit() {
+      this.submitted = true;
+      if (this.notValid()) {
+        return;
+      }
       let userIds = [];
       this.selectedUsers.forEach(e => {
         userIds.push(e.userID)
@@ -127,8 +135,10 @@ export default {
           });
           this.emitter.emit("planEventChanged", true)
           this.closeBasic();
+          this.submitted = false;
         }
       }).catch(error => {
+        this.submitted = false;
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
@@ -139,7 +149,20 @@ export default {
           });
         }
       });
-    }
+    },
+    notValid() {
+      this.formValid.event_name = this.editData.event_name === null || this.editData.event_name === '';
+      this.formValid.users = this.selectedUsers.length === 0;
+      this.formValid.quarter = this.editData.quarter === null;
+
+      let validation = this.formValid;
+      let errors = [];
+      Object.keys(this.formValid).forEach(function(k)
+      {
+        if (validation[k] === true) errors.push(validation[k])
+      });
+      return errors.length > 0
+    },
   }
 }
 </script>

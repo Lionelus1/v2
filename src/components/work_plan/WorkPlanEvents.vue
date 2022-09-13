@@ -121,7 +121,7 @@
           </template>
         </Column>
         <template #expansion="slotProps">
-          <WorkPlanEventTree :plan-creator="isPlanCreator" :finish="isFinish" :approval-sent="isPlanSentApproval"
+          <WorkPlanEventTree :plan-creator="isPlanCreator" :finish="isFinish" :approval-sent="isPlanSentApproval" :isPlanApproved="isPlanApproved"
                              :child="slotProps.data.children" :plan="plan" v-if="slotProps.data.children" :expanded="slotProps.data.isExpanded"/>
         </template>
       </DataTable>
