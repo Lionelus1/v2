@@ -27,7 +27,7 @@
       <FindUser v-model="selectedUsers" :editMode="true"></FindUser>
       <small class="p-error" v-if="submitted && formValid.users">{{ $t('workPlan.errors.approvalUserError') }}</small>
     </div>
-    <div class="p-field" v-if="editData.parent_id !== null">
+    <div class="p-field" v-if="editData.parent_id !== null && editData.quarter === 5">
       <label>{{ $t('workPlan.quarter') }}</label>
       <Dropdown v-model="editData.quarter" :options="quarters" optionLabel="name" optionValue="id"
                 :placeholder="$t('common.select')"/>
