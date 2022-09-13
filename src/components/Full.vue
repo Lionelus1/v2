@@ -188,9 +188,10 @@ export default {
             {
               label:  this.$t('queue.title'), icon: 'pi pi-fw pi-plus-circle', to:'/queue'
             },
-             {
-              label:  this.$t('queue.addService'), icon: 'pi pi-fw pi-th-large', to:'/queueCategories'
-             },
+            
+            //  {
+            //   label:  this.$t('queue.addService'), icon: 'pi pi-fw pi-th-large', to:'/queueCategories'
+            //  },
             // {
             //   label:  this.$t('queue.secretary'), icon: 'pi pi-fw pi-user-edit', to:'/queueService'
             // },
