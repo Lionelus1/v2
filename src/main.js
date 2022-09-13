@@ -105,7 +105,7 @@ import Organization from '@/components/contragent/Organization.vue';
 import ConfirmationService from 'primevue/confirmationservice';
 import store from "./store/store"
 
-import { library, dom } from "@fortawesome/fontawesome-svg-core";
+import { library, dom } from "@fortawesome/fontawesome-svg-core"; // fontawesome
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { fab } from '@fortawesome/free-brands-svg-icons';
