@@ -105,6 +105,13 @@ import Organization from '@/components/contragent/Organization.vue';
 import ConfirmationService from 'primevue/confirmationservice';
 import store from "./store/store"
 
+import { library, dom } from "@fortawesome/fontawesome-svg-core"; // fontawesome
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { fas } from '@fortawesome/free-solid-svg-icons'
+import { fab } from '@fortawesome/free-brands-svg-icons';
+import { far } from '@fortawesome/free-regular-svg-icons';
+library.add(fas, far, fab)
+dom.watch();
 router.beforeEach(function(to, from, next) {
     window.scrollTo(0, 0);
     next();
@@ -206,7 +213,7 @@ app.component('Dialog', Dialog);
 app.component('Dropdown', Dropdown);
 app.component('Fieldset', Fieldset);
 app.component('FileUpload', FileUpload);
-
+app.component('FontAwesomeIcon', FontAwesomeIcon)
 app.component('Image', Image);
 app.component('InlineMessage', InlineMessage);
 app.component('Inplace', Inplace);
