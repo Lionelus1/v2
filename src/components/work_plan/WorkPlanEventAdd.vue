@@ -127,7 +127,6 @@ export default {
   methods: {
     openBasic() {
       this.showWorkPlanEventModal = true;
-      console.log("CREATE EVENT PLAN DATA = ", this.plan)
     },
     closeBasic() {
       this.showWorkPlanEventModal = false;
