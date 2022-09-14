@@ -134,7 +134,8 @@ export default {
           work_plan_id: data.work_plan_id,
           doc_id: data.doc_id,
           halfYearType: data.halfYearType,
-          department_id: data.department_id
+          department_id: data.department_id,
+          respUserId: data.respUserId
         }
       });
       //this.$router.push({name: 'WorkPlanReportView', params: {id: data.id}});
@@ -152,7 +153,7 @@ export default {
       });
     },
     delete(event) {
-      console.log(event)
+      //console.log(event)
       axios.post(smartEnuApi + `/workPlan/deleteReport/${event.id}`,null, {headers: getHeader()})
           .then(response => {
             if (response.data.is_success) {

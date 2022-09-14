@@ -107,7 +107,8 @@ export default {
         report_name: null,
         report_type: null,
         doc_id: null,
-        halfYearType: null
+        halfYearType: null,
+        respUserId: null
       },
       isPlanCreator: false,
       pdfOptions: {
@@ -261,7 +262,8 @@ export default {
         work_plan_id: parseInt(this.report.work_plan_id),
         quarter: this.report.report_type === 2 ? this.report.quarter : null,
         halfYearType: this.report.report_type === 3 ? this.report.halfYearType : null,
-        department_id: this.report.department_id ? this.report.department_id : null
+        department_id: this.report.department_id ? this.report.department_id : null,
+        //eventUserId: this.report.respUserId ? Number(this.report.respUserId) : null
       }, {headers: getHeader()}).then(res => {
         ///// FLATTEN ARRAY
         this.items = treeToList(res.data, 'children', this.plan.lang);
