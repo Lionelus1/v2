@@ -111,7 +111,8 @@
               <work-plan-event-add v-if="!slotProps.data.is_finish" :data="slotProps.data" :items="slotProps.data.children" :isMain="false" :plan-data="plan"></work-plan-event-add>
               <work-plan-event-edit-modal v-if="isPlanCreator && !isPlanSentApproval && !isFinish"
                                           :planData="plan"
-                                          :event="slotProps.data"></work-plan-event-edit-modal>
+                                          :event="slotProps.data"
+              ></work-plan-event-edit-modal>
               <div>
                 <Button v-if="isPlanCreator && !isPlanSentApproval && !isFinish"
                         @click="remove_event(slotProps.data.work_plan_event_id)" icon="pi pi-trash"
@@ -122,7 +123,7 @@
         </Column>
         <template #expansion="slotProps">
           <WorkPlanEventTree :plan-creator="isPlanCreator" :finish="isFinish" :approval-sent="isPlanSentApproval" :isPlanApproved="isPlanApproved"
-                             :child="slotProps.data.children" :plan="plan" v-if="slotProps.data.children" :expanded="slotProps.data.isExpanded"/>
+                             :child="slotProps.data.children" :parent="slotProps.data" :plan="plan" v-if="slotProps.data.children" :expanded="slotProps.data.isExpanded"/>
         </template>
       </DataTable>
     </div>

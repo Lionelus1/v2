@@ -27,7 +27,7 @@
       <FindUser v-model="selectedUsers" :editMode="true"></FindUser>
       <small class="p-error" v-if="submitted && formValid.users">{{ $t('workPlan.errors.approvalUserError') }}</small>
     </div>
-    <div class="p-field" v-if="editData.parent_id !== null && editData.quarter === 5">
+    <div class="p-field" v-if="(editData != null && parentData != null && parentData.quarter.String === '5') || !parentData">
       <label>{{ $t('workPlan.quarter') }}</label>
       <Dropdown v-model="editData.quarter" :options="quarters" optionLabel="name" optionValue="id"
                 :placeholder="$t('common.select')"/>
@@ -58,7 +58,7 @@ import {getHeader, smartEnuApi} from "@/config/config";
 export default {
   name: "WorkPlanEventEditModal",
   components: {FindUser},
-  props: ['event', 'planData'],
+  props: ['event', 'planData', 'parent'],
   data() {
     return {
       showWorkPlanEventEditModal: false,
@@ -86,7 +86,7 @@ export default {
           name: this.$t('workPlan.quarterYear')
         }
       ],
-      parentData: null,
+      parentData: this.parent != null ? JSON.parse(JSON.stringify(this.parent)) : null,
       selectedUsers: [],
       formValid: {
         event_name: false,
@@ -100,18 +100,21 @@ export default {
     //console.log(this.editData)
   },
   mounted() {
-    if (this.editData !== null) {
-      this.editData.quarter = parseInt(this.editData.quarter.String);
-      this.editData.user.forEach(e => {
-        e.userID = e.id;
-        this.selectedUsers.push(e);
-      });
-      this.selectedUsers = this.editData.user;
-    }
+
+  },
+  unmounted() {
   },
   methods: {
     openBasic() {
       this.showWorkPlanEventEditModal = true;
+      if (this.editData !== null) {
+        this.editData.quarter = parseInt(this.editData.quarter.String);
+        this.editData.user.forEach(e => {
+          e.userID = e.id;
+          this.selectedUsers.push(e);
+        });
+        this.selectedUsers = this.editData.user;
+      }
     },
     closeBasic() {
       this.showWorkPlanEventEditModal = false;

@@ -71,7 +71,7 @@
                                       :eventData="slotProps.data"
                                       :plan-data="plan"></work-plan-event-result-modal>
         <work-plan-event-add v-if="!isPlanSentApproval && !slotProps.data.is_finish" :data="slotProps.data" :items="data" :plan-data="plan"></work-plan-event-add>
-        <work-plan-event-edit-modal v-if="(slotProps.data.creator_id === loginedUserId || isPlanCreator) && !isPlanSentApproval && !slotProps.data.is_finish" :planData="plan" :event="slotProps.data"></work-plan-event-edit-modal>
+        <work-plan-event-edit-modal v-if="(slotProps.data.creator_id === loginedUserId || isPlanCreator) && !isPlanSentApproval && !slotProps.data.is_finish" :planData="plan" :event="slotProps.data" :parent="parent"></work-plan-event-edit-modal>
         <div>
           <Button v-if="(slotProps.data.creator_id === loginedUserId || isPlanCreator) && !isPlanSentApproval && !slotProps.data.is_finish" @click="remove_event(slotProps.data.work_plan_event_id)" icon="pi pi-trash" class="p-button-danger p-ml-1 p-mt-1"></Button>
         </div>
@@ -79,7 +79,7 @@
     </Column>
     <template #expansion="slotProps">
       <WorkPlanEventTree :plan-creator="isPlanCreator" :finish="isFinish" :approval-sent="isPlanSentApproval" :isPlanApproved="isPlanApproved"
-                         :child="slotProps.data.children" :plan="plan" v-if="slotProps.data.children" :expanded="slotProps.data.is_expanded"/>
+                         :child="slotProps.data.children" :parent="slotProps.data" :plan="plan" v-if="slotProps.data.children" :expanded="slotProps.data.is_expanded"/>
     </template>
   </DataTable>
 </template>
@@ -95,7 +95,7 @@ import WorkPlanEventEditModal from "@/components/work_plan/WorkPlanEventEditModa
 export default {
   name: "WorkPlanEventTree",
   components: {WorkPlanEventResultModal, WorkPlanEventAdd, WorkPlanExecute, WorkPlanEventEditModal},
-  props: ['child', 'planCreator', 'finish', 'approvalSent', 'plan', 'expanded', 'isPlanApproved'],
+  props: ['child', 'parent', 'planCreator', 'finish', 'approvalSent', 'plan', 'expanded', 'isPlanApproved'],
   data() {
     return {
       data: null,
