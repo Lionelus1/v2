@@ -129,7 +129,7 @@ export default {
         },
 
         {
-          label: this.$t('smartenu.eventsTitle'), icon: 'pi pi-fw pi-folder', to: '/smartenu/admin/events/events'
+          label: this.$t('smartenu.eventsTitle'), icon: 'pi pi-fw pi-folder', to: '/events'
         },
         
   

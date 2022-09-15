@@ -140,9 +140,9 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
-                path: '/smartenu/admin/events/events',
-                name: '/smartenu/admin/events/events',
-                component: load('smartenu/admin/events/Events'),
+                path: '/events',
+                name: 'Events',
+                component: load('events/Events'),
                 beforeEnter: ifAuthenticated,
             },
             {

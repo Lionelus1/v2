@@ -220,7 +220,7 @@ export default {
             accessDenied: "You do not have permission to view this document!",
             saveChanges: "Save changes",
             impossible: "impossible",
-
+            fileError: "Failed to upload file. Maybe the file is corrupted"
         },
         language: {
             kz: "in kazakh",
