@@ -1,6 +1,5 @@
 <template>
     <div class="card">
-        {{lazyParams.filters}}
         <div>
             <h4 class="p-ml-3">{{ $t("smartenu.catalogNormDoc") }}</h4>
             
