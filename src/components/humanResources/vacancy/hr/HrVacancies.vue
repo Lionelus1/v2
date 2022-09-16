@@ -1,14 +1,4 @@
 <template>
-  <!-- Toolbar -->
-  <Toolbar class="p-mb-4" v-if="userId === undefined">
-    <template #end>
-      <Button :label="$t('common.login')" icon="pi pi-user" v-on:click="visible.login = true"/>
-    </template>
-  </Toolbar>
-  <!-- Авторизация -->
-  <Dialog v-model:visible="visible.login" :style="{ width: '500px' }" :modal="true">
-    <Login></Login>
-  </Dialog>
   <!-- DataTable -->
   <div class="card">
     <DataTable :lazy="true"
@@ -323,7 +313,10 @@
               {{ $t('ncasigner.chosenFile', {fn: resumeFile ? resumeFile.name : ""}) }}
             </InlineMessage>
             <div class="p-field">
-              <Message v-if="signature" :closable="false" severity="success">{{ $t('hr.doc.resumeSuccessSigned') }}</Message>
+              <Message v-if="signature" :closable="false" severity="success">{{
+                  $t('hr.doc.resumeSuccessSigned')
+                }}
+              </Message>
             </div>
             <small
                 class="p-error"
@@ -399,7 +392,7 @@
           icon="pi pi-check"
           v-if="signWay === 0 && !resumeFile"
           class="p-button p-component p-button-primary"
-          @click="signResume"
+          @click="signDocument"
       />
     </template>
   </Dialog>
@@ -409,15 +402,16 @@
 import {FilterMatchMode, FilterOperator} from "primevue/api";
 import ResumeView from "../../candidate/ResumeView";
 import axios from "axios";
-import {getHeader, smartEnuApi} from "@/config/config";
+import {b64toBlob, getHeader, smartEnuApi} from "@/config/config";
 import Login from "../../../Login";
 import router from '@/router';
 import html2pdf from "html2pdf.js";
 import {NCALayerClient} from "ncalayer-js-client";
+import {docToByteArray} from "@/helpers/SignDocFunctions";
 
 export default {
   name: "HrVacancies",
-  components: {Login, ResumeView},
+  components: {ResumeView},
   data() {
     return {
       file: null,
@@ -464,8 +458,10 @@ export default {
       agreement: false,
       candidate: null,
       signature: null,
-      resumeBase64: null,
+      resumeBlob: null,
+      document: null,
       resumeFile: null,
+      fileBlob: null
     }
   },
   methods: {
@@ -505,7 +501,7 @@ export default {
       });
     },
 
-    signResume() {
+   async signResume() {
       let pdfOptions = {
         margin: 0.5,
         image: {
@@ -523,9 +519,8 @@ export default {
       }
       const pdfContent = this.$refs.pdf.$refs.htmlToPdf
       const worker = html2pdf().set(pdfOptions).from(pdfContent);
-      worker.toPdf().output("datauristring").then((pdf, item) => {
-        this.resumeBase64 = pdf.replace("data:application/pdf;base64,", "")
-        this.signDocument()
+      await worker.toPdf().output("arraybuffer").then((pdf) => {
+        this.resumeBlob = pdf
       });
     },
 
@@ -542,11 +537,34 @@ export default {
         return;
       }
       try {
-        this.signature = await NCALaClient.createCAdESFromBase64('PKCS12', this.resumeBase64, 'SIGNATURE', false)
+        await this.signResume()
+        console.log("PDF IS ", this.resumeBlob)
+        this.signature = await NCALaClient.createCAdESFromBase64('PKCS12', this.resumeBlob, 'SIGNATURE', false)
         this.visible.resume = false
       } catch (error) {
+        console.log(error)
         this.$toast.add({severity: 'error', summary: this.$t('ncasigner.failToSign'), life: 3000});
       }
+    },
+
+    b64toBlob(b64Data, sliceSize=512) {
+      const byteCharacters = window.atob(b64Data);
+      const byteArrays = [];
+
+      for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+        const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+        const byteNumbers = new Array(slice.length);
+        for (let i = 0; i < slice.length; i++) {
+          byteNumbers[i] = slice.charCodeAt(i);
+        }
+
+        const byteArray = new Uint8Array(byteNumbers);
+        byteArrays.push(byteArray);
+      }
+
+      const blob = new Blob(byteArrays, {type: "application/pdf"});
+      return blob;
     },
 
     upload(event) {
@@ -632,7 +650,9 @@ export default {
       fd.append("rel", JSON.stringify(this.relation))
       fd.append("ml", this.file);
       if (this.signWay === 0) {
-        fd.append("resumeData", this.resumeBase64)
+        const blob = new Blob([this.resumeBlob], {type: "application/pdf"});
+        let pdfF = new File([blob], 'filename.pdf')
+        fd.append("resumeData", pdfF)
         fd.append("signature", this.signature)
       } else {
         fd.append("resumeData", this.resumeFile)

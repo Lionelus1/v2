@@ -671,7 +671,6 @@ import * as imageResizeCompress from "image-resize-compress"; // ES6
 
 export default {
   name: "Events",
- 
   data() {
     return {
       statuses: {

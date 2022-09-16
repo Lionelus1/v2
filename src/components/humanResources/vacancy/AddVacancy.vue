@@ -11,14 +11,11 @@
         <div class="p-grid p-formgrid">
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label>{{ this.$t("common.organizationNameLabel") }}</label>
-            
-            <ContragentSelectOrg 
+            <ContragentSelectOrg
               ref = "contragent"
               v-model="value.organization"
               class="p-mt-2"
-              :disabled="localReadonly && !addMode"
               @selected="getDepartments($event, $refs.departmentList)"
-              :readonly = "organization"
             ></ContragentSelectOrg>
             <small
                 class="p-error"
@@ -41,7 +38,6 @@
           </div>
           <div class="p-field p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label>{{ this.$t("common.headLabel") }}</label>
-            
             <FindUser v-model="head"
                       :max="1"
                       :class="{'p-invalid': validation.head}"
@@ -661,7 +657,6 @@ export default {
   data() {
     return {
       value: this.modelValue,
-      loginedUser: null,
       head: null,
       active: null,
       action: null,
@@ -845,35 +840,6 @@ export default {
     this.vacancyService = new VacancyService()
     this.head = this.modelValue.departmentHead === undefined ? null : [this.modelValue.departmentHead]
     this.checkAction()
-    this.loginedUser = this.$store.state.loginedUser;
-
-    var request = {  
-        page: 0,
-        rows: 1,
-        sortLang: this.$i18n.locale,
-        orgID: this.loginedUser.organization.id
-    }
-    axios
-        .post(smartEnuApi + "/contragent/organizations", request,  {headers: getHeader()})
-        .then((res) => {
-          if (res.data.organizations && res.data.organizations.length >0) {
-            this.$refs.contragent.setValue(res.data.organizations[0])
-            if (res.data.organizations[0].chief)
-            {
-              this.head = []
-              this.head.push(res.data.organizations[0].chief)
-              this.$refs.departmentList.getDepartments(res.data.organizations[0].id);
-
-            }
-          }
-          
-        })
-        .catch((error) => {
-          console.error(error);
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          }
-        });
   },
   mounted() {
     this.emitter.on('changeOrg', (data) => {

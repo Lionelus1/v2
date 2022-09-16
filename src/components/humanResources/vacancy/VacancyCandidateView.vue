@@ -83,28 +83,14 @@
         </div>
       </div>
     </Sidebar>
-    <Dialog v-model:visible="resumeView" :style="{ width: '1000px' }" :modal="true" :closable="false">
-      <div class="card" v-if="signatures">
-        <work-plan-qr-pdf ref="qrToPdf" :signatures="signatures" :title="docInfo.name"></work-plan-qr-pdf>
-        <div class="p-grid p-formgrid">
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-3 p-mb-lg-0">
-            <Button :label="$t('hr.doc.resumeDownload')" icon="pi pi-download" :onclick="downloadPDF"/>
-          </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-3 p-mb-lg-0">
-            <Button :label="$t('common.downloadSignaturesPdf')" icon="pi pi-download" :disabled="!resumeFile"
-                    :onclick="downloadSignatures"/>
-          </div>
-        </div>
-      </div>
-      <template #footer>
-        <Button
-            v-bind:label="$t('common.close')"
-            icon="pi pi-times"
-            class="p-button p-component p-button-primary"
-            @click="resumeView = false"
-        />
-      </template>
-    </Dialog>
+    <Sidebar
+        v-model:visible="resumeView"
+        position="right"
+        class="p-sidebar-lg"
+        style="overflow-y: scroll"
+    >
+      <DocSignaturesInfo :docIdParam="docId"></DocSignaturesInfo>
+    </Sidebar>
   </div>
 </template>
 
@@ -116,12 +102,12 @@ import ApplyActionEdit from "./ApplyActionEdit";
 import html2pdf from "html2pdf.js";
 import axios from "axios";
 import {getHeader, getMultipartHeader, smartEnuApi} from "@/config/config";
-//import WorkPlanQrPdf from "@/components/work_plan/WorkPlanQrPdf";
+import DocSignaturesInfo from "@/components/DocSignaturesInfo"
 
 
 export default {
   name: "VacancyCandidateView",
-  components: {ApplyActionEdit, DocDownload, ResumeView},
+  components: {ApplyActionEdit, DocDownload, ResumeView, DocSignaturesInfo},
   data() {
     return {
       sidebar: false,
@@ -203,8 +189,7 @@ export default {
         },
       ],
       resumeFile: null,
-      docInfo: null,
-      signatures: null,
+      docId: null,
       resumeView: false,
     }
   },
@@ -219,16 +204,10 @@ export default {
           },
           {headers: getHeader()}).then(response => {
         console.log(response.data)
-        if (response.data.docInfo !== null) {
-          this.resumeFile = response.data.fileData
-          this.docInfo = response.data.docInfo
-          this.signatures = this.docInfo.signatures
-          this.signatures.map(e => {
-            e.sign = this.chunkString(e.signature, 1200)
-          });
+        if (response.data.docId !== null) {
+          this.docId = response.data.docId
           this.resumeView = true
         } else {
-          console.log("HI!")
           var link = document.createElement('a');
           link.innerHTML = 'Download file';
           link.download = response.data.fileName;
@@ -243,41 +222,6 @@ export default {
         });
       })
     },
-
-    downloadPDF() {
-      let pdf = this.resumeFile;
-      var link = document.createElement('a');
-      link.innerHTML = 'Download PDF file';
-      link.download = this.docInfo.name + '.pdf';
-      link.href = 'data:application/octet-stream;base64,' + pdf;
-      link.click();
-    },
-
-    downloadSignatures() {
-      let pdfOptions = {
-        margin: 10,
-        image: {
-          type: 'jpeg',
-          quality: 0.95,
-        },
-        html2canvas: {scale: 3, letterRendering: true},
-        jsPDF: {
-          unit: 'mm',
-          format: 'a4',
-          orientation: 'portrait',
-          hotfixes: ["px_scaling"]
-        },
-        pagebreak: {avoid: '#qr'},
-        filename: this.docInfo.name + ".pdf"
-      };
-      const pdfContent = this.$refs.qrToPdf.$refs.qrToPdf;
-      html2pdf().set(pdfOptions).from(pdfContent).save();
-    },
-
-    chunkString(str, length) {
-      return str.match(new RegExp('.{1,' + length + '}', 'g'));
-    },
-
     view(data) {
       this.candidateRelation = data
       this.checkAction(data)
