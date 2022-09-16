@@ -20,7 +20,7 @@
     </div>
   </div>
   <div class="p-fluid p-formgrid p-grid p-jc-center p-pt-2">
-    
+      the qr code gen here
   </div>
 </template>
 

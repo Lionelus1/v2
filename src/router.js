@@ -37,11 +37,11 @@ const routes = [
         name:'Login',
         component: load('Login'),
     },
-    // {
-    //     path:'/login',
-    //     name:'PublicVacancies',
-    //     component: load('humanResources/vacancy/PublicVacancies'),
-    // },
+    {
+        path:'/outqr',
+        name:'OutQr',
+        component: load('OutQr'),
+    },
     {
         path: '/afterauth',
         name: 'AfterAuth',
