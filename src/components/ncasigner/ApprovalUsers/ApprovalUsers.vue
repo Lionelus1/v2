@@ -1,7 +1,7 @@
 <template>
   <div class="p-field">
     <label>{{ $t('common.select') }}</label>
-    <StepComponent v-model="approval_users" :stages="stages"></StepComponent>
+    <StepComponent v-model="approval_users" :stages="stages" @clearStages="clearStages"></StepComponent>
     <Toolbar style="border:none;background:none">
       <template #end>
         <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger p-mr-2" @click="close" />
@@ -26,7 +26,8 @@ export default {
   data() {
     return {
       approval_users: this.modelValue,
-      disabled: this.approving ?? false
+      disabled: this.approving ?? false,
+      stageList: this.stages
     }
   },
   setup(props, context) {
@@ -46,18 +47,32 @@ export default {
       this.$emit('closed', null);
     },
     sendToApprove(){
-      if (this.approval_users.length<1) {
+      let filled = true;
+      if (this.approval_users && this.approval_users.length<1) {
 				this.$toast.add({severity:'warn', summary: this.$t('common.attention'), detail:this.$t('common.message.selectUsers'), life: 3000});
         return
       }
+      if (this.stageList != null && this.approval_users != null && this.stageList.length !== this.approval_users.length) {
+        this.$toast.add({severity:'warn', summary: this.$t('common.attention'), detail:this.$t('common.message.selectUsers'), life: 3000});
+        return;
+      }
       this.approval_users.forEach(apu=>{
         if (apu.users === null || apu.users.length<1 || apu.sertificate === null) {
-          this.$toast.add({severity:'warn', summary: this.$t('common.attention'), detail:this.$t('common.message.fillError'), life: 3000});
-          return
+          filled = false;
+          return;
         }
       })
+      if (!filled) {
+        this.$toast.add({severity:'warn', summary: this.$t('common.attention'), detail:this.$t('common.message.fillError'), life: 3000});
+        return;
+      }
       this.$emit('approve', this.approval_users);
       this.approval_users = null;
+    },
+    clearStages(state) {
+      if (state) {
+        this.stageList = null;
+      }
     }
   }
 }

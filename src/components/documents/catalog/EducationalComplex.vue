@@ -190,9 +190,9 @@
         </Column>
         <Column field="isapproved" header="">
           <template #body="slotProps">
-            <i v-if="(slotProps.node.isApproved && slotProps.node.isApproved === 1) || slotProps.node.stateID === 7"
+            <i v-if="(slotProps.node.isApproved !== null && slotProps.node.isApproved === 1) || slotProps.node.stateID === 7"
                class="fa-solid fa-square-pen fa-xl approved"></i>
-            <i v-if="slotProps.node.isApproved && slotProps.node.isApproved === 0 && slotProps.node.stateID === 2"
+            <i v-if="slotProps.node.isApproved !== null && slotProps.node.isApproved === 0 && slotProps.node.stateID === 2"
                class="fa-solid fa-square-pen fa-xl not-approved"></i>
           </template>
         </Column>
@@ -215,7 +215,7 @@
                     @click="onNodeSelect(slotProps.node);openDialog('docInfo')"
                     class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-eye fa-xl"></i></Button>
             <Button
-                v-if="slotProps.node.key != null && slotProps.node.depType ===3 && (slotProps.node.stateID === 1 || slotProps.node.stateID === 2) && loginedUser.userID === slotProps.node.ownerId"
+                v-if="slotProps.node.key != null && slotProps.node.depType ===3 && slotProps.node.stateID !== 7 && loginedUser.userID === slotProps.node.ownerId"
                 @click="onNodeSelect(slotProps.node);deleteFile(false)" class="p-button-text p-button-danger p-p-1">
               <i class="fa-solid fa-trash fa-xl"></i></Button>
           </template>

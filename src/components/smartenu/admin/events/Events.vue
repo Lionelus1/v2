@@ -665,16 +665,13 @@
 <script>
 import axios from "axios";
 import {getHeader, header, smartEnuApi} from "@/config/config";
-import {DatePicker} from "v-calendar";
 import LoginedUserDetailsService from "@/service/LoginedUserDetailsService";
 import {FilterMatchMode, FilterOperator} from "primevue/api";
 import * as imageResizeCompress from "image-resize-compress"; // ES6
 
 export default {
   name: "Events",
-  components: {
-    DatePicker,
-  },
+ 
   data() {
     return {
       statuses: {
