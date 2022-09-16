@@ -38,6 +38,7 @@ export default {
     modelValue: null,
     stages: null
   },
+  emits: ['clearStages'],
   data() {
     return {
       selectedUsers: null,
@@ -133,6 +134,7 @@ export default {
       this.updateModel();
       this.setActive(0);
       this.isNewStage = true;
+      this.$emit('clearStages', true)
     }
   },
   created() {
