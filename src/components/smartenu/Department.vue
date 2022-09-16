@@ -109,6 +109,7 @@ export default {
     },
     action() {
       if (this.validateForm()) {
+        this.value.orgType = this.orgType
         this.value.orgId = this.orgId
         let path = "/add-department"
         axios

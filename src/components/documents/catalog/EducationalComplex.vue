@@ -215,7 +215,7 @@
                     @click="onNodeSelect(slotProps.node);openDialog('docInfo')"
                     class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-eye fa-xl"></i></Button>
             <Button
-                v-if="slotProps.node.key != null && slotProps.node.depType ===3 && (slotProps.node.stateID === 1 || slotProps.node.stateID === 2) && loginedUser.userID === slotProps.node.ownerId"
+                v-if="slotProps.node.key != null && slotProps.node.depType ===3 && slotProps.node.stateID !== 7 && loginedUser.userID === slotProps.node.ownerId"
                 @click="onNodeSelect(slotProps.node);deleteFile(false)" class="p-button-text p-button-danger p-p-1">
               <i class="fa-solid fa-trash fa-xl"></i></Button>
           </template>
