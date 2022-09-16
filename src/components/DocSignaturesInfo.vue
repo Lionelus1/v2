@@ -24,9 +24,24 @@
       </TabPanel>
       <TabPanel v-if="docInfo.docHistory.stateId==2 ||docInfo.docHistory.stateId==6" :header="$t('ncasigner.sign')"
                 :disabled="!isShow">
-        <InlineMessage severity="info">{{ $t('ncasigner.noteMark') }}</InlineMessage>
         <div class="p-mt-2">
-          <Button icon="pi pi-user-edit" class="p-button-primary" @click="sign" :label="$t('ncasigner.sign')"/>
+          <Panel>
+            <template #header>
+              <InlineMessage severity="info">{{ $t('ncasigner.noteMark') }}</InlineMessage>
+            </template>
+            <div class="p-d-flex p-jc-center">
+              <Button icon="pi pi-user-edit" v-if="signButtonVisibility"
+                      class="p-button-primary p-md-5" @click="sign" :label="$t('ncasigner.sign')"/>
+              <Button icon="pi pi-user-edit" v-if="tspButtonVisibility"
+                      class="p-button-primary" @click="tsp" :label="$t('ncasigner.tsp')"/>
+            </div>
+            <div class="p-mt-2">
+              <InlineMessage severity="error" v-if="tspButtonVisibility">
+                <p>{{ $t('ncasigner.successSignTitle') }}</p>
+                <p>{{ $t('ncasigner.tspDescription') }}</p>
+              </InlineMessage>
+            </div>
+          </Panel>
         </div>
       </TabPanel>
     </TabView>
@@ -35,7 +50,7 @@
 
 <script>
 import SignatureQrPdf from "@/components/ncasigner/SignatureQrPdf";
-import {runNCaLayer} from "@/helpers/SignDocFunctions"
+import {runNCaLayer, makeTimestampForSignature} from "@/helpers/SignDocFunctions"
 
 import axios from "axios";
 import {getHeader, smartEnuApi, b64toBlob} from "@/config/config";
@@ -54,17 +69,30 @@ export default {
     signerIinParam: {
       type: String,
       default: null
+    },
+    /**
+     * Парамер метки времени
+     * default - false. Метка времени отключена.
+     * Для того, чтобы поставить метку времени надо задать значение true.
+     */
+    tspParam: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
     return {
       signatures: null,
+      currentSignature: null,
       plan: null,
       doc_id: this.$route.params.uuid,
+      isTspRequired: Boolean,
       signerIin: null,
       docInfo: null,
       loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID,
       isShow: false,
+      signButtonVisibility: true,
+      tspButtonVisibility: false,
       loading: true,
       signing: false,
       file: null,
@@ -75,6 +103,7 @@ export default {
     if (!this.doc_id) {
       this.doc_id = this.docIdParam
     }
+    this.isTspRequired = this.tspParam
     this.signerIin = this.signerIinParam
     this.getData();
   },
@@ -138,35 +167,13 @@ export default {
                     .then(sign => {
 
                       if (sign != undefined) {
-                        var req = {
-                          userID: this.$store.state.loginedUser.userID,
-                          docUUID: this.docInfo.uuid,
-                          sign: sign,
-                          signerIin: this.signerIin
-                        };
-                        this.signing = true
-
-                        axios.post(smartEnuApi + "/doc/sign", req, {headers: getHeader()})
-                            .then(response => {
-                              this.signing = false
-                              this.getData()
-                              this.showMessage('success', this.$t('ncasigner.signDocTitle'), this.$t('ncasigner.success.signSuccess'));
-                            })
-                            .catch(error => {
-                              this.signing = false
-                              if (error.response.status == 405) {
-                                this.$toast.add({
-                                  severity: "error",
-                                  summary: this.$t(error.response.data),
-                                  life: 3000,
-                                });
-                              }
-                              if (error.response.status == 401) {
-                                this.$store.dispatch("logLout");
-                              } else
-                                this.signing = false;
-                            })
-
+                        if (this.isTspRequired === true) {
+                          this.currentSignature = sign
+                          this.signButtonVisibility = false
+                          this.tspButtonVisibility = true
+                        } else {
+                          this.sendRequest(sign)
+                        }
                       }
                     })
 
@@ -177,6 +184,53 @@ export default {
                 this.$store.dispatch("logLout");
               }
             })
+          })
+    },
+
+    tsp() {
+      makeTimestampForSignature(this.$t, this.$toast, this.currentSignature)
+          .then(signWithTsp => {
+            this.sendRequest(signWithTsp)
+          }).catch(error => {
+        this.signing = false;
+        if (error.response.status == 401) {
+          this.$store.dispatch("logLout");
+        }
+      })
+    },
+
+    sendRequest(signature) {
+      var req = {
+        userID: this.$store.state.loginedUser.userID,
+        docUUID: this.docInfo.uuid,
+        sign: signature,
+        signerIin: this.signerIin,
+        isTspRequired: this.isTspRequired
+      };
+      this.signing = true
+
+      axios.post(smartEnuApi + "/doc/sign", req, {headers: getHeader()})
+          .then(response => {
+            this.signing = false
+            this.getData()
+            this.showMessage('success', this.$t('ncasigner.signDocTitle'), this.$t('ncasigner.success.signSuccess'));
+          })
+          .catch(error => {
+            this.signing = false
+            if (error.response.status == 405) {
+              this.currentSignature = null
+              this.signButtonVisibility = true
+              this.tspButtonVisibility = false
+              this.$toast.add({
+                severity: "error",
+                summary: this.$t(error.response.data),
+                life: 3000,
+              });
+            }
+            if (error.response.status == 401) {
+              this.$store.dispatch("logLout");
+            } else
+              this.signing = false;
           })
     },
     getSignatures() {

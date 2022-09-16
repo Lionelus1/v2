@@ -137,7 +137,7 @@
         class="p-sidebar-lg"
         style="overflow-y: scroll"
     >
-      <DocSignaturesInfo :docIdParam="documentUuid" :signerIinParam="petition.headIin"></DocSignaturesInfo>
+      <DocSignaturesInfo :docIdParam="documentUuid" :signerIinParam="petition.headIin" :tspParam="true"></DocSignaturesInfo>
     </Sidebar>
   </div>
 </template>
