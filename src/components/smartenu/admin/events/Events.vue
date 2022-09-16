@@ -672,9 +672,6 @@ import * as imageResizeCompress from "image-resize-compress"; // ES6
 
 export default {
   name: "Events",
-  components: {
-    DatePicker,
-  },
   data() {
     return {
       statuses: {
