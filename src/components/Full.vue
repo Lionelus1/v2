@@ -67,12 +67,12 @@ export default {
 //
       //  },
         {
-          label: 'Құжаттар', icon: 'pi pi-fw pi-folder',
+          label: this.$t('common.documents'), icon: 'pi pi-fw pi-folder',
           items: [
-            {label: 'Келісім-шарт үлгілері', icon: 'pi pi-fw pi-book', to: '/documents/doctemplate',
+            {label: this.$t('contracts.template'), icon: 'pi pi-fw pi-book', to: '/documents/doctemplate',
             visible: !this.findRole("student")
             },
-            {label: 'Келісім-шарттар', icon: 'pi pi-fw pi-copy', to: '/documents/contracts'},
+            {label: this.$t('contracts.title'), icon: 'pi pi-fw pi-copy', to: '/documents/contracts'},
             {
               label: this.$t('smartenu.catalogNormDoc'), icon: 'pi pi-fw pi-folder', to: '/documents/catalog/normdoc'
             },
@@ -94,19 +94,19 @@ export default {
           ]
         },
         {
-          label: 'Контрагенттер', icon: 'pi pi-fw pi-users',
+          label: this.$t('common.contragents'), icon: 'pi pi-fw pi-users',
           visible: !this.findRole("student"),
 
           items: [
-            {label: 'Ұйымдықтар', icon: 'pi pi-fw pi-home', to: '/contragent/organizations'},
-            {label: 'Банктер', icon: 'pi pi-fw pi-money-bill', to: '/contragent/banks'},
+            {label: this.$t('common.organizations'), icon: 'pi pi-fw pi-home', to: '/contragent/organizations'},
+            //{label: 'Банктер', icon: 'pi pi-fw pi-money-bill', to: '/contragent/banks'},
+            // {
+            //   label: 'Жеке тұлғалар',
+            //   icon: 'pi pi-fw pi-user',
+            //   to: '/contragent/persons/' + Enum.PersonType.IndividualEntrepreneur
+            // },
             {
-              label: 'Жеке тұлғалар',
-              icon: 'pi pi-fw pi-user',
-              to: '/contragent/persons/' + Enum.PersonType.IndividualEntrepreneur
-            },
-            {
-              label: 'Қызметкерлер',
+              label: this.$t('common.personal'),
               icon: 'pi pi-fw pi-user',
               to: '/contragent/persons/' + Enum.PersonType.OrganizationMember
             }
