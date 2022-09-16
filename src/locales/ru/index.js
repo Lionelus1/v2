@@ -14,11 +14,14 @@ export default {
         newPasswordRe: "Повторно введите пароль",
         createDocument: 'Сформировать документ',
         createReport: 'Сформировать отчет',
+        councilName: 'Наименование совета',
         administration: 'Администрирование',
         academicDegree: "Ученая степень",
         academicTitle: "Ученое звание",
         annotation: "Аннотация",
         approve: "Согласовать",
+        approvedBy: "утвердил",
+        approveDate: "Дата утверждения",
         notUpload: 'Документ не загружен',
         action: {
             submit: 'Отправить',
@@ -30,6 +33,9 @@ export default {
             reApprove: 'Переутвердить'
         },
         cabinet: 'Личный кабинет',
+        lt: "Меньше",
+        gt: "Больше",
+        equals: "Равно",
         login: "Вход",
         logout: "Выход",
         enter: "Наберите",
@@ -166,6 +172,7 @@ export default {
         departmentNameLabel: "Наименование структурного подразделения",
         headLabel: "Руководитель:",
         report: "Отчет",
+        author: "Разработчик",
         states: {
             created: "создан",
             inapproval: "на согласовании",
@@ -238,7 +245,9 @@ export default {
         suppDocs: "Подтверждающие документы",
         additionalInfo: "Дополнительная информация",
         resultSentToCorrect: "Результат отправлен на доработку",
-        toCorrect: "На проверку"
+        toCorrect: "На проверку",
+        clear: "Сбросить",
+        clearApprovalList: "Изменить порядок согласования"
     },
     bank: {
         title: "Банки",
@@ -770,6 +779,7 @@ export default {
         },
         sendingMessage: 'Отправка сообщения. Пожалуйста, подождите...',
         petition: {
+            download: 'Скачать ходатайство',
             lang: 'Выберите язык ходатайства',
             number: 'Номер исходящего документа',
             warn: 'Внимание! Перед отправкой сообщения, требуется подписать ходатайство первым руководителем.',
@@ -801,7 +811,7 @@ export default {
             upSignedResume: 'Загрузить подписанное резюме',
             resumeSuccessSigned: 'Резюме успешно подписано',
             digital: 'ЭЦП',
-            paper: 'На бумаге'
+            paper: 'На бумаге',
         }
     },
     workPlan: {

@@ -1,17 +1,25 @@
 import mitt from "mitt";
 import axios from "axios";
-
-export const apiDomain = "https://smart.enu.kz/#";
+export const apiDomain = "https://smart.enu.kz/#"; // TODO: Production салганда коммент шыгару керек
+//export const apiDomain = "http://smart.enu.kz:8082/#";
 export const hdfsApi = "http://localhost:8085";
-// export const signerApi = "https://smart.enu.kz:6990"
+//export const signerApi = "https://smart.enu.kz:6990"
 export const signerApi = "http://10.1.1.161:6990"
-//export const smartEnuApi = "https://smart.enu.kz:8081"
+export const smartEnuApi = "https://smart.enu.kz:8081"
 //export const smartEnuApi = "http://smart.enu.kz:8090"
-export const smartEnuApi = "http://localhost:8090"
-export const socketApi = "ws://smart.enu.kz:8090" //test server
-//export const socketApi = "ws://smart.enu.kz" //prod server
+//export const smartEnuApi = "http://172.17.157.199:8090"
+//export const socketApi = "ws://smart.enu.kz:8090" //test server
+export const socketApi = "wss://smart.enu.kz:8081" //prod server
+//export const smartEnuApi = "http://smart.enu.kz:8090"
+//export const smartEnuApi = "http://localhost:8090"
+//export const socketApi = "ws://localhost:8090" 
+//export const socketApi = "ws://localhost:8090" 
+
 export const templateApi = "http://localshost:8082"
 
+//export const queueApi = "http://localhost:8088"
+//export const queueApi = "http://smart.enu.kz:8088"
+export const queueApi = "https://smart.enu.kz:8088"
 export const header  = {
   "Accept": "application/json",
   "Access-Control-Allow-Origin": "*",
@@ -29,6 +37,22 @@ export const getHeader = function() {
     const headers= {
       'Access-Control-Allow-Credentials':'true',
       'Content-Type': 'application/json',
+      'mode': 'no-cors',
+      'Authorization':'Bearer ' + tokenData.access_token
+    }
+    return headers;
+  }
+  else {
+      return null;
+  }
+}
+export const getFileHeader = function() {
+  const tokenData = JSON.parse(window.localStorage.getItem("authUser"));
+
+  if(tokenData){
+    const headers= {
+      'Access-Control-Allow-Credentials':'true',
+      'Content-Type': 'multipart/form-data',
       'mode': 'no-cors',
       'Authorization':'Bearer ' + tokenData.access_token
     }
