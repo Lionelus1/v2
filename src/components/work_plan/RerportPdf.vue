@@ -145,13 +145,19 @@ export default {
     }
   },
   created() {
-    this.items.map(e => {
-      e.userList = Object.keys(e.user).map(key => `${e.user[key].fullName}`).join(", ");
-    });
     this.year = new Date().getFullYear();
     //this.data.push({index: 1, name: "Test name", resp: 'User Name', quarter: 1, result: '', comment: 'Comment'})
     this.loginedUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
     this.filename = 'flname.pdf'
+  },
+  mounted() {
+    if (this.items) {
+      this.items.map(e => {
+        if (e.user) {
+          e.userList = Object.keys(e.user).map(key => `${e.user[key].fullName.trim()}`).join(", ");
+        }
+      });
+    }
   },
   methods: {},
 }

@@ -44,7 +44,7 @@
         <Button :label="$t('queue.served')" class="p-mb-1 p-button-success" @click="changeState(1, null)"></Button>
         <Inplace :active="false" class="p-inplace-display"  ref="redirect" >
           <template #display>
-            <Button :label="$t('queue.redirect')" class="p-button-primary" style="left: -0.5rem;" :disabled="service.state===-1" ></Button>
+            <Button :label="$t('queue.redirect')" class="p-button-primary" style="left: -0.5rem;" :disabled="service.state===null" ></Button>
           </template>
           <template #content>
             <div class="p-grid p-fluid">
@@ -113,6 +113,7 @@ export default {
     getQueue(parentID) {
         this.loading = true  
         this.lazyParams.parentID = parentID
+         //alert(parentID)
         axios
         .post(smartEnuApi + "/queue/allQueues", this.lazyParams, {
           headers: getHeader(),
@@ -211,11 +212,13 @@ export default {
 
 
     },
+    
+  
     changeState(state, redirectID){
-      
+      var workSecond=this.service.info.second+(this.service.info.minute*60)+(Number(this.service.info.hour*3600));
       this.loading = true
       axios
-        .post(smartEnuApi + "/queue/statusChange", {serviceID: this.service.id, state: state, redirectID: redirectID}, {
+        .post(smartEnuApi + "/queue/statusChange", {serviceID: this.service.id, state: state, redirectID: redirectID,workTime: workSecond}, {
           headers: getHeader(),
         })
         .then((_) => {         

@@ -109,7 +109,8 @@ export default {
       }, {headers: getHeader()}).then(res => {
         this.items = treeToList(res.data, 'children', this.plan.lang);
         this.items.map(e => {
-          e.userList = Object.keys(e.user).map(key => `${e.user[key].fullName}`).join(", ");
+          if (e.user)
+            e.userList = Object.keys(e.user).map(key => `${e.user[key].fullName}`).join(", ");
         });
       }).catch(error => {
         if (error.response && error.response.status === 401) {
@@ -117,7 +118,7 @@ export default {
         } else {
           this.$toast.add({
             severity: "error",
-            summary: error,
+            summary: "ERROR: " + error,
             life: 3000,
           });
         }

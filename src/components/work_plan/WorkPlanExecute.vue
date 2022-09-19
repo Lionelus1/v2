@@ -229,10 +229,18 @@ export default {
     },
     uploadFile(event) {
       /*this.file = event.files[0];*/
+      if (event.files.length > 5) {
+        this.$toast.add({
+          severity: "info",
+          summary: this.$t('workPlan.message.maxFileUploadSize'),
+          life: 3000,
+        });
+        this.clearFiles();
+        return;
+      }
       this.files = [];
       let files = event.files;
       for (let file of files) {
-        console.log(file)
         this.files.push(file);
       }
       this.clearFiles();
@@ -248,7 +256,6 @@ export default {
     removeFile(index) {
       let removedFile = this.files.splice(index, 1)[0];
       this.files = [...this.files];
-      console.log(this.files)
       this.$emit('remove', {
         file: removedFile,
         files: this.files

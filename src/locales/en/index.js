@@ -47,6 +47,7 @@ export default {
         error: "Error",
         add: "Add",
         edit: "edit",
+        print:"Print",
         orgname: "L.N. Gumilyov Eurasian National University",
         organizationName: 'Organization name',
         date: "Date",
@@ -787,6 +788,7 @@ export default {
             reportSentToApprove: "The report was successfully sent for approval",
             planSentToApprove: "Plan sent for revision",
             planCreated: "Plan successfully created",
+            maxFileUploadSize: "Can't upload more than 5 files"
         },
         reportTypes: {
             year: "Annual",
