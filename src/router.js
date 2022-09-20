@@ -128,15 +128,15 @@ const routes = [
             },
 
             {
-                path: '/smartenu/admin/news/newstable',
-                name: '/smartenu/admin/news/newstable',
-                component: load('smartenu/admin/news/NewsTable'),
+                path: '/news',
+                name: 'NewsTable',
+                component: load('news/NewsTable'),
                 beforeEnter: ifAuthenticated,
             },
             {
-                path: '/smartenu/admin/newscategories/cattable',
-                name: '/smartenu/admin/newscategories/cattable',
-                component: load('smartenu/admin/newscategories/CategoriesTable'),
+                path: '/newscategories/cattable',
+                name: 'CategoriesTable',
+                component: load('news/CategoriesTable'),
                 beforeEnter: ifAuthenticated,
             },
             {

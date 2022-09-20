@@ -640,13 +640,13 @@
               @click="downloadFile(selectedEvent)"
           />
           <div>
-            <Accordion v-if="selectedEvent.participants">
+            <Accordion v-if="selectedEvent.participants && selectedEvent.participants.length > 0">
               <AccordionTab :header="$t('smartenu.eventParticipants')">
                 <li
                     v-for="participant in selectedEvent.participants"
                     :key="participant.id"
                 >
-                  {{ participant.name + " " + participant.info }}
+                  {{ participant.user.fullName }}
                 </li>
               </AccordionTab>
             </Accordion>
@@ -1033,7 +1033,6 @@ export default {
       }
     },
     async insertEvent() {
-      console.log(this.event)
       await resizeImages(this.event.contentKz).then(res => {
         this.event.contentKz = res
       });
@@ -1043,8 +1042,6 @@ export default {
       await resizeImages(this.event.contentEn).then(res => {
         this.event.contentEn = res
       });
-      console.log("here")
-      console.log(this.event)
 
       this.event.additionalFile = null;
       this.event.mainImage = null;

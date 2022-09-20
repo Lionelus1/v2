@@ -122,9 +122,9 @@ export default {
             {
               label: this.$t('smartenu.categories'),
               icon: 'pi pi-fw pi-home',
-              to: '/smartenu/admin/newscategories/cattable'
+              to: '/newscategories/cattable'
             },
-            {label: this.$t('smartenu.newsList'), icon: 'pi pi-fw pi-money-bill', to: '/smartenu/admin/news/newstable'},
+            {label: this.$t('smartenu.newsList'), icon: 'pi pi-fw pi-money-bill', to: '/news'},
           ]
         },
 
