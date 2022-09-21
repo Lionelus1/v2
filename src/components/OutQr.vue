@@ -51,7 +51,8 @@
             
 
             this.connection.onmessage = function(data) {
-                t.qrCode = data.data;
+                //alert(JSON.parse(data.data).body)
+                t.qrCode = JSON.parse(data.data).body;
             }
             
             this.connection.onopen = function(event) {
