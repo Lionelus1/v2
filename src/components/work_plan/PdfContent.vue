@@ -35,7 +35,7 @@
           <tbody>
           <tr>
             <td class="header" style="font-weight: bold;">№</td>
-            <td class="header" style="font-weight: bold;">{{ plan.lang === 1 ? 'Нәтиже көрсеткіші' : plan.lang === 2 ? 'Показатель прямых результатов' : 'Indicator of direct results' }}</td>
+            <td class="header" style="font-weight: bold;">{{ plan.lang === 1 ? 'Атауы' : plan.lang === 2 ? 'Наименование' : 'Name' }}</td>
             <td class="header" style="font-weight: bold;">{{ plan.lang === 1 ? 'Өлшем бірлігі' : plan.lang === 2 ? 'Ед. изм.' : 'Unit' }}</td>
             <td class="header" style="font-weight: bold;">{{ plan.lang === 1 ? 'Жоспар' : plan.lang === 2 ? 'План' : 'Plan' }}</td>
             <td class="header" style="font-weight: bold;">{{ plan.lang === 1 ? 'Жауапты орындаушылар' : plan.lang === 2 ? 'Ответственные исполнители' : 'Responsible performers' }}</td>
