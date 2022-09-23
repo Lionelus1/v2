@@ -859,4 +859,7 @@ export default {
         averageTime:"Average service time",
         redirected: "Redirected",
     },
+    ref:{
+        getRef:"Get reference"
+    }
 }

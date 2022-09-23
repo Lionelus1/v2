@@ -118,6 +118,7 @@ router.beforeEach(function(to, from, next) {
 });
 const app = createApp(App);
 const emitter = mitt();
+
 /* eslint-disable */
 app.use(PrimeVue, {
     locale: {
@@ -168,6 +169,7 @@ app.use(PrimeVue, {
 });
 
 app.config.globalProperties.emitter = emitter;
+
 
 
 app.use(i18n);

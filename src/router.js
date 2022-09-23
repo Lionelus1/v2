@@ -42,6 +42,7 @@ const routes = [
         name:'OutQr',
         component: load('OutQr'),
     },
+    
     {
         path: '/afterauth',
         name: 'AfterAuth',
@@ -291,6 +292,12 @@ const routes = [
                 path: '/cabinet',
                 name: 'Cabinet',
                 component: load('humanResources/candidate/Cabinet'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path:'/myref',
+                name:'OutQr',
+                component: load('smartenu/JobDescription'),
                 beforeEnter: ifAuthenticated,
             },
             {
