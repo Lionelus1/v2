@@ -2,7 +2,7 @@
   <div>
     <Button
         type="button"
-        icon="pi pi-eye"
+        icon="fa-solid fa-eye"
         class="p-button p-button-info p-ml-1 p-mb-1"
         label=""
         @click="openModal"
@@ -26,11 +26,10 @@
     </div>
     <div class="p-col p-fluid">
       <div class="p-field" v-if="data.event_result">
-        <Textarea ref="resultContainer" v-model="data.event_result" disabled rows="10"
-                  style="resize: vertical"></textarea>
+        <span v-html="data.event_result"></span>
       </div>
       <div class="p-field" v-if="data.event_result_file">
-        <label>{{ $t('workPlan.attachments') }}</label>
+        <label class="p-text-bold">{{ $t('workPlan.attachments') }}</label>
         <div>
           <Button
               icon="pi pi-download"
@@ -40,7 +39,7 @@
         </div>
       </div>
       <div class="p-field" v-else-if="data.result_files">
-        <label>{{ $t('workPlan.attachments') }}</label>
+        <label class="p-text-bold">{{ $t('workPlan.attachments') }}</label>
         <div >
           <Button
               v-for="(item, index) of data.result_files" :key="index"
@@ -122,11 +121,15 @@ export default {
   },
   methods: {
     openModal() {
-      this.eventResultModal = true;
-      this.$nextTick(() => {
-        const textarea = this.$refs.resultContainer.$el;
-        textarea.style.height = textarea.scrollHeight + 10 + 'px';
-      });
+      if (this.plan && this.plan.is_oper) {
+        this.$router.push({name: 'WorkPlanEventResult', params: {id: this.event.work_plan_event_id}});
+      } else {
+        this.eventResultModal = true;
+        this.$nextTick(() => {
+          const textarea = this.$refs.resultContainer.$el;
+          textarea.style.height = textarea.scrollHeight + 10 + 'px';
+        });
+      }
     },
     closeModal() {
       this.eventResultModal = false;

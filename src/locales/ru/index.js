@@ -251,7 +251,11 @@ export default {
         resultSentToCorrect: "Результат отправлен на доработку",
         toCorrect: "На проверку",
         clear: "Сбросить",
-        clearApprovalList: "Изменить порядок согласования"
+        clearApprovalList: "Изменить порядок согласования",
+        properties: "Свойства",
+        history: "История",
+        user: "Пользователь",
+        fact: "Факт"
     },
     bank: {
         title: "Банки",
