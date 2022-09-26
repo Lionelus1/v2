@@ -250,7 +250,11 @@ export default {
         resultSentToCorrect: "Нәтиже түзетуге жіберілді",
         toCorrect: "Тексеруге жіберу",
         clear: "Тазалау",
-        clearApprovalList: "Келісу ретін өзгерту"
+        clearApprovalList: "Келісу ретін өзгерту",
+        properties: "Қасиеттер",
+        history: "Тарих",
+        user: "Қолданушы",
+        fact: "Факт"
     },
     bank: {
         title: "Банктер",

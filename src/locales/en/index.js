@@ -249,7 +249,11 @@ export default {
         resultSentToCorrect: "Result sent for revision",
         toCorrect: "To check",
         clear: "Clear",
-        clearApprovalList: "Change the approval stages"
+        clearApprovalList: "Change the approval stages",
+        properties: "Properties",
+        history: "History",
+        user: "User",
+        fact: "Fact"
     },
     bank: {
         title: "Banks",

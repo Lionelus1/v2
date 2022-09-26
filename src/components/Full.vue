@@ -13,7 +13,7 @@
           </router-link>
         </div>
         <AppProfile/>
-        <AppMenu :model="menu"  @menuitem-click="onMenuItemClick"/>
+        <AppMenu :model="globalMenu"  @menuitem-click="onMenuItemClick"/>
       </div>
     </transition>
     <div class="layout-main p-pr-0 p-pl-0">
@@ -52,25 +52,38 @@ export default {
       overlayMenuActive: false,
       mobileMenuActive: false,
       localpagemenu: this.pagemenu,
+    }
+  },
+  
+  watch: {
+    $route() {
+      this.menuActive = false;
+      this.$toast.removeAllGroups();
+    }
+  },
+  methods: {
+    getLoginedUser() {
+      this.loginedUser = this.$store.state.loginedUser;
+    },
+    initMenu() {
+      return [
 
-      menu: [
-
-      //  {
-      //    label: this.$t('common.administration'), icon: 'pi pi-fw pi-shield',
-      //    items: [
-      //      {
-      //        label: this.$t('hr.vacancies'),
-      //        icon: 'pi pi-fw pi-user-plus',
-      //        to: '/human-resources/vacancies'
-      //      },
-      //    ]ß
+        //  {
+        //    label: this.$t('common.administration'), icon: 'pi pi-fw pi-shield',
+        //    items: [
+        //      {
+        //        label: this.$t('hr.vacancies'),
+        //        icon: 'pi pi-fw pi-user-plus',
+        //        to: '/human-resources/vacancies'
+        //      },
+        //    ]ß
 //
-      //  },
+        //  },
         {
           label: this.$t('common.documents'), icon: 'pi pi-fw pi-folder',
           items: [
             {label: this.$t('contracts.template'), icon: 'pi pi-fw pi-book', to: '/documents/doctemplate',
-            visible: !this.findRole("student")
+              visible: !this.findRole("student")
             },
             {label: this.$t('contracts.title'), icon: 'pi pi-fw pi-copy', to: '/documents/contracts'},
             {
@@ -131,24 +144,24 @@ export default {
         {
           label: this.$t('smartenu.eventsTitle'), icon: 'pi pi-fw pi-folder', to: '/events'
         },
-        
-  
+
+
         {
           label: this.$t('vaccination.title'), icon: 'pi pi-fw pi-check-circle', to: '/smartenu/vaccination'
         },
-       // {
-       //   label:  this.$t('faq.title'), icon: 'pi pi-fw pi-question-circle', to: '/faq/faqmain'
-       // },
-         {
-                label:  this.$t('dissertation.title'), icon: 'pi pi-fw pi-book',
-                items: [
-                    {
-                        label:  this.$t('dissertation.council.list'), icon: 'pi pi-fw pi-list', to: '/dissertation', visible : this.isDissertationAdmin() || this.findRole("dissertation_council_secretary") 
-                    },
-                    {
-                        label:  this.$t('dissertation.doctoralCard'), icon: 'pi pi-fw pi-users', to: '/dissertation/doctorals', visible : this.isRoleGroupMember("dissertation_council") ||  this.isDissertationAdmin()
-                    }
-                ]
+        // {
+        //   label:  this.$t('faq.title'), icon: 'pi pi-fw pi-question-circle', to: '/faq/faqmain'
+        // },
+        {
+          label:  this.$t('dissertation.title'), icon: 'pi pi-fw pi-book',
+          items: [
+            {
+              label:  this.$t('dissertation.council.list'), icon: 'pi pi-fw pi-list', to: '/dissertation', visible : this.isDissertationAdmin() || this.findRole("dissertation_council_secretary")
+            },
+            {
+              label:  this.$t('dissertation.doctoralCard'), icon: 'pi pi-fw pi-users', to: '/dissertation/doctorals', visible : this.isRoleGroupMember("dissertation_council") ||  this.isDissertationAdmin()
+            }
+          ]
 
         },
         {
@@ -164,54 +177,42 @@ export default {
             },
           ]
         },
-      //  {
+        //  {
 //
- //         label: this.$t('common.forStudentsAndGraduates'), icon: 'pi pi-fw pi-users',
- //         items: [
- //           {
- //             label: this.$t('hr.vacancies'),
- //             icon: 'pi pi-fw pi-user-plus',
- //             to: '/human-resources/public/vacancies'
- //           },
- //         ]
- //       },
+        //         label: this.$t('common.forStudentsAndGraduates'), icon: 'pi pi-fw pi-users',
+        //         items: [
+        //           {
+        //             label: this.$t('hr.vacancies'),
+        //             icon: 'pi pi-fw pi-user-plus',
+        //             to: '/human-resources/public/vacancies'
+        //           },
+        //         ]
+        //       },
 
         {
           label: this.$t('hr.vacancies'),
           icon: 'pi pi-fw pi-user-plus',
           to: '/human-resources/public/vacancies'
         },
-        
+
         {
           label: this.$t('queue.title'), icon: 'pi pi-fw pi-users ',
-           items:[
+          items:[
             {
               label:  this.$t('queue.title'), icon: 'pi pi-fw pi-plus-circle', to:'/queue'
             },
-            
+
             //  {
             //   label:  this.$t('queue.addService'), icon: 'pi pi-fw pi-th-large', to:'/queueCategories'
             //  },
             // {
             //   label:  this.$t('queue.secretary'), icon: 'pi pi-fw pi-user-edit', to:'/queueService'
             // },
-           
+
           ]
-          
+
         },
       ]
-    }
-  },
-  
-  watch: {
-    $route() {
-      this.menuActive = false;
-      this.$toast.removeAllGroups();
-    }
-  },
-  methods: {
-    getLoginedUser() {
-      this.loginedUser = this.$store.state.loginedUser;
     },
     isDissertationAdmin() {
       if (!this.loginedUser)
@@ -343,7 +344,9 @@ export default {
     logo() {
       return (this.layoutColorMode === 'dark') ? "assets/layout/images/logo-white.svg" : "assets/layout/images/logo.svg";
     },
-
+    globalMenu() {
+      return this.initMenu();
+    }
 
   },
   created() {

@@ -250,6 +250,12 @@ const routes = [
                         name: 'WorkPlanReportView',
                         component: load('work_plan/WorkPlanReportView'),
                         beforeEnter: ifAuthenticated,
+                    },
+                    {
+                        path: 'result/:id',
+                        name: 'WorkPlanEventResult',
+                        component: load('work_plan/WorkPlanEventResult'),
+                        beforeEnter: ifAuthenticated,
                     }
                 ]
             },
