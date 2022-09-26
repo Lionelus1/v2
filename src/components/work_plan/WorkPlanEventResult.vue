@@ -1,5 +1,5 @@
 <template>
-  <div class="p-col-12" v-if="plan && event && resultData">
+  <div class="p-col-12" v-if="plan && event">
     <div class="card">
       <div @click="navigateToBack" class="p-d-inline-block"><i class="fa-solid fa-arrow-left p-mr-3"
                                                                style="font-size: 16px;cursor: pointer"></i></div>
@@ -56,7 +56,7 @@
               </div>
               <div class="p-field" v-if="plan && plan.is_oper">
                 <label>{{ $t('common.fact') }}</label>
-                <InputText v-model="resultData.fact" @input="factChange" />
+                <InputText v-model="fact" @input="factChange" />
               </div>
               <div class="p-field">
                 <label>{{ $t('common.result') }}</label>
@@ -280,6 +280,7 @@ export default {
           .then(res => {
             if (res.data) {
               this.resultData = res.data;
+              this.fact = this.resultData.fact;
             }
           }).catch(error => {
         if (error.response && error.response.status === 401) {
@@ -330,7 +331,7 @@ export default {
       fd.append('result', this.plan.is_oper ? this.newResult ? this.newResult : "" : this.result);
       if (this.plan && this.plan.is_oper) {
         fd.append("is_partially", true);
-        fd.append("fact", this.resultData.fact)
+        fd.append("fact", this.fact)
       }
       if (this.plan && this.plan.is_oper && this.resultData)
         fd.append("result_id", this.resultData.event_result_id);

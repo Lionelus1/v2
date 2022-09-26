@@ -41,7 +41,15 @@
     </Column>
     <Column field="fullName" :header="plan && plan.is_oper ? 'Свод/Подтверждение' : $t('workPlan.approvalUsers')">
       <template #body="{ data }">
-        <p v-for="item in data.user" :key="item.id">{{ item.fullName }}</p>
+        <div v-if="data.user && data.user.length > 2">
+          <Button type="button" @click="showRespUsers" class="p-button-rounded" icon="fa-solid fa-eye" label="" />
+          <OverlayPanel ref="op">
+            <p v-for="item in data.user" :key="item.id">{{ item.fullName }}</p>
+          </OverlayPanel>
+        </div>
+        <div v-else>
+          <p v-for="item in data.user" :key="item.id">{{ item.fullName }}</p>
+        </div>
       </template>
     </Column>
     <Column field="supporting_docs" v-if="plan && plan.is_oper" :header="$t('common.suppDocs')">
@@ -189,6 +197,9 @@ export default {
           //callback to execute when user rejects the action
         }
       });
+    },
+    showRespUsers(event) {
+      this.$refs.op.toggle(event);
     },
     remove(event_id) {
       axios.post(smartEnuApi + `/workPlan/removeEvent/${event_id}`, {}, {headers: getHeader()}).then(res => {
