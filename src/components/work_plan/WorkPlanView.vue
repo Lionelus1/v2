@@ -11,12 +11,11 @@
                 @click="viewSignatures"
                 class="p-button p-ml-2"/>
       </div>
-      <div class="card" v-if="isApproval && plan.status.work_plan_status_id === 2">
-        <Button v-if="isApproval"
-                :label="isLast ? $t('common.action.approve') : $t('common.action.approve') " icon="pi pi-check"
+      <div class="card" v-if="!isCurrentUserApproved && plan.status.work_plan_status_id === 2">
+        <Button :label="isLast ? $t('common.action.approve') : $t('common.action.approve') " icon="pi pi-check"
                 @click="openApprovePlan"
                 class="p-button p-button-success p-ml-2"/>
-        <Button v-if="isApproval" :label="$t('workPlan.toCorrect')" icon="pi pi-times"
+        <Button :label="$t('workPlan.toCorrect')" icon="pi pi-times"
                 @click="openRejectPlan"
                 class="p-button p-button-danger p-ml-2"/>
       </div>
@@ -91,7 +90,8 @@ export default {
       isPlanApproved: false,
       signatures: null,
       isPlanCreator: false,
-      sourceb64: null
+      sourceb64: null,
+      isCurrentUserApproved: false
     }
   },
   created() {
@@ -202,8 +202,8 @@ export default {
         if (res.data) {
           this.signatures = res.data;
           const signUser = res.data.find(x => x.userId === this.loginedUserId);
-          if (signUser) {
-            this.isApproved = true;
+          if (signUser.signature && signUser.signature !== '') {
+            this.isCurrentUserApproved = true;
           }
         }
       }).catch(error => {
