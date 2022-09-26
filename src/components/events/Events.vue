@@ -172,11 +172,13 @@
             </div>
             <div class="p-field">
               <label for="kz-content">{{ $t("common.contentInQazaq") }}</label>
-              <Editor
+              <RichEditor
+                  ref="kztext"
                   id="kz-content"
                   v-model="event.contentKz"
                   editorStyle="height: 320px"
-              />
+              >
+              </RichEditor>
               <small
                   v-show="formValid.contentKz && submitted"
                   class="p-error"
@@ -403,7 +405,8 @@
             </div>
           </div>
           <div v-if="event.main_image_base_64 || event.mainImage">
-            <img :src="event.main_image_base_64 ? event.main_image_base_64 : event.mainImage" style="width: 50%; height: 50%"/>
+            <img :src="event.main_image_base_64 ? event.main_image_base_64 : event.mainImage"
+                 style="width: 50%; height: 50%"/>
           </div>
         </div>
         <div class="p-field">
@@ -422,9 +425,9 @@
               <InlineMessage severity="info" show v-if="event.additionalFileName">
                 {{ $t("ncasigner.chosenFile", {fn: event.additionalFileName}) }}
               </InlineMessage>
-<!--              <InlineMessage severity="info" show v-if="file">
-                {{ $t("ncasigner.chosenFile", {fn: file ? file.name : ""}) }}
-              </InlineMessage>-->
+              <!--              <InlineMessage severity="info" show v-if="file">
+                              {{ $t("ncasigner.chosenFile", {fn: file ? file.name : ""}) }}
+                            </InlineMessage>-->
             </div>
           </div>
         </div>
@@ -637,13 +640,13 @@
               @click="downloadFile(selectedEvent)"
           />
           <div>
-            <Accordion v-if="selectedEvent.participants">
+            <Accordion v-if="selectedEvent.participants && selectedEvent.participants.length > 0">
               <AccordionTab :header="$t('smartenu.eventParticipants')">
                 <li
                     v-for="participant in selectedEvent.participants"
                     :key="participant.id"
                 >
-                  {{ participant.name + " " + participant.info }}
+                  {{ participant.user.fullName }}
                 </li>
               </AccordionTab>
             </Accordion>
@@ -664,13 +667,15 @@
 
 <script>
 import axios from "axios";
-import {getHeader, header, smartEnuApi} from "@/config/config";
-import LoginedUserDetailsService from "@/service/LoginedUserDetailsService";
-import {FilterMatchMode, FilterOperator} from "primevue/api";
-import * as imageResizeCompress from "image-resize-compress"; // ES6
+import {getHeader, smartEnuApi} from "@/config/config";
+import {FilterMatchMode} from "primevue/api";
+import * as imageResizeCompress from "image-resize-compress";
+import RichEditor from "../documents/editor/RichEditor";
+import {resizeImages} from "../../helpers/HelperUtil"; // ES6
 
 export default {
   name: "Events",
+  components: {RichEditor},
   data() {
     return {
       statuses: {
@@ -856,9 +861,9 @@ export default {
     downloadFile(event) {
       if (event.additional_file_path) {
         axios.post(smartEnuApi + `/downloadEventFile`, {additional_file_path: event.additional_file_path})
-        .then(res => {
-          this.download(res.data, event.additionalFileName);
-        }).catch(error => {
+            .then(res => {
+              this.download(res.data, event.additionalFileName);
+            }).catch(error => {
           if (error.response.status === 401) {
             this.$store.dispatch("logLout");
           } else {
@@ -904,7 +909,6 @@ export default {
           .then((response) => {
             this.allEvents = response.data;
             this.loading = false;
-            console.log(this.allEvents);
           })
           .catch((error) => {
             if (error.response.status === 401) {
@@ -977,7 +981,6 @@ export default {
       this.deleteVisible = false;
       this.event = {};
     },
-
     /**
      *  ADD EVENT
      */
@@ -1029,8 +1032,17 @@ export default {
         this.insertEvent();
       }
     },
+    async insertEvent() {
+      await resizeImages(this.event.contentKz).then(res => {
+        this.event.contentKz = res
+      });
+      await resizeImages(this.event.contentRu).then(res => {
+        this.event.contentRu = res
+      });
+      await resizeImages(this.event.contentEn).then(res => {
+        this.event.contentEn = res
+      });
 
-    insertEvent() {
       this.event.additionalFile = null;
       this.event.mainImage = null;
       this.event.main_image_base_64 = null;
@@ -1191,7 +1203,6 @@ export default {
             headers: getHeader(),
           })
           .then((response) => {
-            console.log(response.data)
             this.userRoles = response.data;
             this.roles.isAdmin = this.findRole(this.userRoles, "news_administrator");
             this.roles.isPublisher = this.findRole(this.userRoles, "news_publisher");
@@ -1212,7 +1223,6 @@ export default {
     },
     findRole(roles, code) {
       for (let i = 0; i < roles.length; i++) {
-        console.log(roles[i].name)
         if (roles[i].name === code) {
           return true;
         }
@@ -1266,7 +1276,7 @@ export default {
       } else {
         delete this.formValid["eventLocation"];
       }
-      if (!this.mainImageFile) {
+      if (!this.editVisible && !this.mainImageFile) {
         this.formValid.push(this.$t("smartenu.image1Invalid"));
       }
       if (!this.selectedMainCategories) {
