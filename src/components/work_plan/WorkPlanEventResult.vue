@@ -9,27 +9,30 @@
     <div class="card" v-if="resultData && event && resultData.reject_history">
       <div class="p-fluid">
         <div class="p-field">
-          <label>{{$t('common.state')}}:</label>
+          <label>{{ $t('common.state') }}:</label>
           <div>
-            <span v-if="event" :class="'customer-badge status-' + event.status.work_plan_event_status_id">{{ event.status.name_ru }}</span>
+            <span v-if="event" :class="'customer-badge status-' + event.status.work_plan_event_status_id">{{
+                event.status.name_ru
+              }}</span>
           </div>
         </div>
         <div class="p-field" v-if="resultData.reject_history.user">
-          <label>{{$t('contracts.assigner')}}:</label>
+          <label>{{ $t('contracts.assigner') }}:</label>
           <div>
-            <b>{{resultData.reject_history.user.fullName}}</b>
+            <b>{{ resultData.reject_history.user.fullName }}</b>
           </div>
         </div>
         <div class="p-field" v-if="resultData.reject_history.created_date">
-          <label>{{$t('common.date')}}:</label>
+          <label>{{ $t('common.date') }}:</label>
           <div>
             <b>{{ formatDateMoment(resultData.reject_history.created_date) }}</b>
           </div>
         </div>
         <div class="p-field">
-          <label>{{$t('common.comment')}}:</label>
+          <label>{{ $t('common.comment') }}:</label>
           <div>
-            <Message :closable="false" severity="warn"><span v-html="resultData.reject_history.message"></span></Message>
+            <Message :closable="false" severity="warn"><span v-html="resultData.reject_history.message"></span>
+            </Message>
           </div>
         </div>
       </div>
@@ -48,15 +51,16 @@
             <Menubar :model="verifyMenu" :key="active"
                      style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
           </div>
-          <div class="p-grid p-fluid p-mt-3">
-            <div class="p-sm-12 p-md-12 p-lg-6 p-xl-6" v-if="event && (event.status.work_plan_event_status_id !== 5 && event.status.work_plan_event_status_id !== 2)">
+          <div class="p-grid p-mt-3">
+            <div class="p-fluid p-sm-12 p-md-12 p-lg-6 p-xl-6"
+                 v-if="event && (event.status.work_plan_event_status_id !== 5 && event.status.work_plan_event_status_id !== 2)">
               <div class="p-field">
                 <label>{{ $t('workPlan.eventName') }}</label>
                 <InputText v-model="event.event_name" disabled/>
               </div>
               <div class="p-field" v-if="plan && plan.is_oper">
                 <label>{{ $t('common.fact') }}</label>
-                <InputText v-model="fact" @input="factChange" />
+                <InputText v-model="fact" @input="factChange"/>
               </div>
               <div class="p-field">
                 <label>{{ $t('common.result') }}</label>
@@ -96,9 +100,37 @@
               </div>
             </div>
             <div class="p-sm-12 p-md-12 p-lg-6 p-xl-6">
-              <div class="p-field">
+              <div class="p-field" v-if="plan && resultData && plan.is_oper">
                 <label class="p-text-bold">{{ $t('common.result') }}</label>
-                <div v-if="plan && resultData && plan.is_oper" v-html="resultData.event_result" class="p-mb-4"></div>
+                <div v-for="(item, index) of resultData.result_text" :key="index" class="p-mb-2">
+                  <Inplace v-if="item.userId === loginedUserId && event && (event.status.work_plan_event_status_id !== 5 && event.status.work_plan_event_status_id !== 2)" :active="item.isActive" @open="openInplace(item)">
+                    <template #display>
+                      <div >
+                        <span class="p-mr-1" style="float:left;"><i class="fa-solid fa-pen color-success"></i></span>
+                        <p class="p-p-0 p-m-0" v-html="item.text"></p>
+                      </div>
+                    </template>
+                    <template #content>
+                      <div class="p-py-2">
+                        <Button :label="$t('common.save')" icon="pi pi-check" class="p-button p-button-success"
+                                @click="saveEditResult(item)" :loading="loading" />
+                        <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button p-ml-1"
+                                @click="cancelEdit(item)"/>
+                        <Button :label="$t('common.delete')" icon="pi pi-trash" class="p-button p-button-danger p-ml-1"
+                                @click="deleteConfirmItem(item)"/>
+                      </div>
+                      <div class="p-field">
+                        <RichEditor v-model="item.text" editorStyle="height:200px;">
+                        </RichEditor>
+                      </div>
+                    </template>
+                  </Inplace>
+                  <div v-else class="p-p-0">
+                    <small style="color: #a3a3a3;"><i class="fa-solid fa-user p-mr-1"></i>{{item.user.fullName }}</small>
+                    <p v-html="item.text"></p>
+                  </div>
+
+                </div>
               </div>
               <div class="p-field" v-if="resultData && resultData.result_files">
                 <label class="p-text-bold">{{ $t('workPlan.attachments') }}</label>
@@ -107,8 +139,8 @@
                     <div class="p-fileupload-row" v-for="(file, index) of resultData.result_files" :key="index">
                       <span class="p-mr-3" style="cursor: pointer;" @click="downloadFile(file.event_result_file)"><i
                           class="fa-solid fa-file-arrow-down fa-2x color-success"></i></span>
-                      <span @click="downloadFile(file.event_result_file)"
-                            style="cursor: pointer;">{{ file.filename ? file.filename : file.event_result_file }}</span>
+                      <span @click="downloadFile(file)"
+                            style="cursor: pointer;">{{ file.file_name ? file.file_name : file.event_result_file }}</span>
                       <span class="p-ml-5" v-if="file.user_id && file.user_id === loginedUserId"><Button
                           icon="pi pi-times" class="p-button-rounded p-button-text"
                           v-if="event && (event.status.work_plan_event_status_id !== 5 && event.status.work_plan_event_status_id !== 2)"
@@ -124,7 +156,7 @@
           </div>
         </TabPanel>
         <TabPanel :header="$t('common.history')">
-          <DataTable :value="history" class="p-datatable-sm" responsiveLayout="scroll" >
+          <DataTable :value="history" class="p-datatable-sm" responsiveLayout="scroll">
             <Column field="id" header="ID"></Column>
             <Column :header="$t('common.date')">
               <template #body="{ data }">
@@ -134,6 +166,11 @@
             <Column field="user" :header="$t('common.user')">
               <template #body="{ data }">
                 {{ data.modi_user.fullName }}
+              </template>
+            </Column>
+            <Column field="state" :header="$t('common.actionTitle')">
+              <template #body="{ data }">
+                {{ data.state ? $t(`common.states.${data.state}`) : "" }}
               </template>
             </Column>
           </DataTable>
@@ -214,6 +251,9 @@ export default {
       toCorrectSidebar: false,
       rejectComment: null,
       loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID,
+      itemActive: false,
+      isFactChanged: false,
+      loading: false
     }
   },
   computed: {
@@ -280,6 +320,11 @@ export default {
           .then(res => {
             if (res.data) {
               this.resultData = res.data;
+              if (this.resultData.result_text != null) {
+                this.resultData.result_text.map(e => {
+                  e.isActive = false;
+                });
+              }
               this.fact = this.resultData.fact;
             }
           }).catch(error => {
@@ -488,6 +533,7 @@ export default {
     },
     factChange(event) {
       this.isDisabled = false;
+      this.isFactChanged = true;
     },
     removeFile(index) {
       let removedFile = this.files.splice(index, 1)[0];
@@ -497,6 +543,71 @@ export default {
         files: this.files
       });
 
+    },
+    openInplace(item) {
+      item.isActive = true;
+    },
+    saveEditResult(item) {
+      this.loading = true;
+      const fd = new FormData();
+      fd.append("result_id", Number(this.resultData.event_result_id))
+      fd.append("result_text_id", Number(item.id))
+      fd.append("work_plan_event_id", this.event.work_plan_event_id)
+      if (this.isFactChanged)
+        fd.append("fact", this.fact)
+      fd.append("text", item.text)
+      axios.post(smartEnuApi + `/workPlan/editResult`, fd, {headers: getHeader()}).then(res => {
+        if (res.data.is_success) {
+          this.getData();
+          this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
+          item.isActive = false;
+          this.loading = false;
+        }
+      }).catch((error) => {
+        this.loading = false;
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+      });
+    },
+    cancelEdit(item) {
+      item.isActive = false;
+    },
+    deleteConfirmItem(item) {
+      this.$confirm.require({
+        message: this.$t('common.confirmation'),
+        header: this.$t('common.confirm'),
+        icon: 'pi pi-info-circle',
+        acceptClass: 'p-button-rounded p-button-success',
+        rejectClass: 'p-button-rounded p-button-danger',
+        accept: () => {
+          this.deleteItem(item.id);
+        }
+      });
+    },
+    deleteItem(id) {
+      axios.post(smartEnuApi + `/workPlan/deleteResult/${id}`, null, {headers: getHeader()}).then(res => {
+        if (res.data.is_success) {
+          this.getData();
+          this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
+        }
+      }).catch((error) => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+      });
     },
     deleteFileConfirm(id) {
       this.$confirm.require({
@@ -529,7 +640,7 @@ export default {
       });
     },
     formatDateMoment(date) {
-      return moment(date).format("DD.MM.YYYY HH:mm:ss")
+      return moment(new Date(date)).utc().format("DD.MM.YYYY HH:mm:ss")
     },
     formatDate(value) {
       let result = "";
@@ -548,13 +659,13 @@ export default {
       this.$refs.form.clear();
       this.$refs.form.uploadedFileCount = 0;
     },
-    downloadFile(filePath) {
+    downloadFile(file) {
       axios.post(smartEnuApi + `/workPlan/getWorkPlanResultFile`,
-          {file_path: filePath}, {headers: getHeader()}).then(res => {
+          {file_path: file.event_result_file}, {headers: getHeader()}).then(res => {
         const link = document.createElement("a");
         link.href = "data:application/octet-stream;base64," + res.data;
-        link.setAttribute("download", filePath);
-        link.download = filePath;
+        link.setAttribute("download", file.file_name ? file.file_name : file.event_result_file);
+        link.download = file.file_name ? file.file_name : file.event_result_file;
         link.click();
         URL.revokeObjectURL(link.href);
       }).catch((error) => {
@@ -659,5 +770,9 @@ export default {
     background: #B3E5FC;
     color: #23547B;
   }
+}
+
+::v-deep(.p-inplace-display) {
+  padding: 0;
 }
 </style>

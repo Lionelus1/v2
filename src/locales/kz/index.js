@@ -187,7 +187,9 @@ export default {
             notVoted: "Дауыс бермеді",
             voted: "Дауыс берді",
             signing: "Қол қоюда",
-            signed: "Қол қойылды"
+            signed: "Қол қойылды",
+            edited: "Өзгертілді",
+            deleted: "Өшірілді"
         },
         message: {
             title: {
@@ -254,7 +256,8 @@ export default {
         properties: "Қасиеттер",
         history: "Тарих",
         user: "Қолданушы",
-        fact: "Факт"
+        fact: "Факт",
+        actionTitle: "Әрекет"
     },
     bank: {
         title: "Банктер",
