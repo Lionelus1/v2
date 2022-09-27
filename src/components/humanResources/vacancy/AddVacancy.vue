@@ -840,6 +840,35 @@ export default {
     this.vacancyService = new VacancyService()
     this.head = this.modelValue.departmentHead === undefined ? null : [this.modelValue.departmentHead]
     this.checkAction()
+    this.loginedUser = this.$store.state.loginedUser;
+    var request = {
+      page: 0,
+      rows: 1,
+      sortLang: this.$i18n.locale,
+      orgID: this.loginedUser.organization.idz
+    }
+    if (this.modelValue.organization === undefined) {
+      axios
+          .post(smartEnuApi + "/contragent/organizations", request, {headers: getHeader()})
+          .then((res) => {
+            if (res.data.organizations && res.data.organizations.length > 0) {
+              this.$refs.contragent.setValue(res.data.organizations[0])
+              if (res.data.organizations[0].chief) {
+                this.head = []
+                this.head.push(res.data.organizations[0].chief)
+                this.$refs.departmentList.getDepartments(res.data.organizations[0].id);
+
+              }
+            }
+
+          })
+          .catch((error) => {
+            console.error(error);
+            if (error.response.status == 401) {
+              this.$store.dispatch("logLout");
+            }
+          });
+    }
   },
   mounted() {
     this.emitter.on('changeOrg', (data) => {
