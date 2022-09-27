@@ -185,7 +185,9 @@ export default {
             notVoted: "Not voted",
             voted: "Voted",
             signing: "Signing",
-            signed: "Signed"
+            signed: "Signed",
+            edited: "Edited",
+            deleted: "Deleted"
         },
         message: {
             title: {
@@ -253,7 +255,8 @@ export default {
         properties: "Properties",
         history: "History",
         user: "User",
-        fact: "Fact"
+        fact: "Fact",
+        actionTitle: "Action"
     },
     bank: {
         title: "Banks",

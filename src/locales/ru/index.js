@@ -188,7 +188,9 @@ export default {
             notVoted: "Не проголосовал",
             voted: "Проголосовал",
             signing: "На подписи",
-            signed: "Подписан"
+            signed: "Подписан",
+            edited: "Отредактирован",
+            deleted: "Удален"
         },
         message: {
             title: {
@@ -255,7 +257,8 @@ export default {
         properties: "Свойства",
         history: "История",
         user: "Пользователь",
-        fact: "Факт"
+        fact: "Факт",
+        actionTitle: "Действие"
     },
     bank: {
         title: "Банки",
