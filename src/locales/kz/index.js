@@ -223,6 +223,7 @@ export default {
             accessDenied: "Бұл құжатты көруге құзіретіңіз жоқ!",
             saveChanges: "Алдымен өззгерістерді сақтаңыз",
             impossible: "мүмкін емес",
+            noRight: "Сізде бұл амалға құзірет жоқ",
         },
         language: {
             kz: "қазақша",
@@ -788,6 +789,7 @@ export default {
             resumeSuccessSigned: 'Түйіндемеге сәтті қол қойылды',
             digital: 'ЭЦҚ',
             paper: 'Қағаз бетінде',
+            financial: "Қаржы департаментінің келісімін қажет етеді",
         }
     },
     workPlan: {

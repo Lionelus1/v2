@@ -224,7 +224,8 @@ export default {
             userIINExists: "Пользователь с таким же ИИН уже имеется",
             accessDenied: "У вас нет полномочий просматривать этот документ!",
             impossible: "невозможно",
-            saveChanges: "Сохраните изменения"
+            saveChanges: "Сохраните изменения",
+            noRight: "У вас нет соответствующих прав",
         },
         language: {
             kz: "на казахском",
@@ -786,6 +787,7 @@ export default {
             resumeSuccessSigned: 'Резюме успешно подписано',
             digital: 'ЭЦП',
             paper: 'На бумаге',
+            financial: "Требует согласования департамента финансов",
         }
     },
     workPlan: {

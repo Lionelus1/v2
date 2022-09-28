@@ -29,7 +29,9 @@
               </div>
               <div class="user-list-detail p-lg-10  p-md-9 p-sm-12">
                 <h5 class="p-mb-2">{{ slotProps.option.fullName }}</h5>
-                <span class="product-category">{{ slotProps.option.position }}</span>
+                <span class="product-category">{{ slotProps.option.mainPosition.department['name' + $i18n.locale.charAt(0).toUpperCase() + $i18n.locale.slice(1)] }}</span><br>
+                <span class="product-category">{{ slotProps.option.mainPosition['name' + $i18n.locale] }}</span>
+
               </div>
             </div>
           </template>
@@ -70,6 +72,11 @@ export default {
       type: Number,
       default: 2
     },
+    roles: {
+      type: String,
+      default: null
+    },
+
     max: {
       type: Number,
       default: null
@@ -149,6 +156,7 @@ export default {
   },
   methods: {
     userCreated(user) {
+      
     const event = new Event('userCreated');
     this.addItem(event,user,true)
     },
@@ -171,7 +179,8 @@ export default {
       axios.post(
         smartEnuApi + `/getUser`, {
         "dn": inputValue,
-        "userType": this.userType
+        "userType": this.userType,
+        // "roles": this.roles
         },
         {
           headers: getHeader(), cancelToken: this.cancelToken.token 
