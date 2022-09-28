@@ -110,6 +110,7 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { fab } from '@fortawesome/free-brands-svg-icons';
 import { far } from '@fortawesome/free-regular-svg-icons';
+import ScrollPanel from "primevue/scrollpanel";
 library.add(fas, far, fab)
 dom.watch();
 router.beforeEach(function(to, from, next) {
@@ -118,6 +119,7 @@ router.beforeEach(function(to, from, next) {
 });
 const app = createApp(App);
 const emitter = mitt();
+
 /* eslint-disable */
 app.use(PrimeVue, {
     locale: {
@@ -168,6 +170,7 @@ app.use(PrimeVue, {
 });
 
 app.config.globalProperties.emitter = emitter;
+
 
 
 app.use(i18n);
@@ -261,4 +264,5 @@ app.component('TriStateCheckbox', TriStateCheckbox);
 app.component('Editor', Editor);
 app.component("VueElementLoading", VueElementLoading);
 app.component('TreeSelect', TreeSelect);
+app.component('ScrollPanel', ScrollPanel);
 app.mount('#app');

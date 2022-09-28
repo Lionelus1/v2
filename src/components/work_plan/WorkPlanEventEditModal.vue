@@ -27,7 +27,7 @@
       <FindUser v-model="selectedUsers" :editMode="true"></FindUser>
       <small class="p-error" v-if="submitted && formValid.users">{{ $t('workPlan.errors.approvalUserError') }}</small>
     </div>
-    <div class="p-field" v-if="(editData != null && parentData != null && parentData.quarter.String === '5') || !parentData">
+    <div class="p-field" v-if="(editData != null && parentData != null && parentData.quarter === 5) || !parentData">
       <label>{{ $t('workPlan.quarter') }}</label>
       <Dropdown v-model="editData.quarter" :options="quarters" optionLabel="name" optionValue="id"
                 :placeholder="$t('common.select')"/>
@@ -108,7 +108,7 @@ export default {
     openBasic() {
       this.showWorkPlanEventEditModal = true;
       if (this.editData !== null) {
-        this.editData.quarter = parseInt(this.editData.quarter.String);
+        this.editData.quarter = parseInt(this.editData.quarter);
         this.editData.user.forEach(e => {
           e.userID = e.id;
           this.selectedUsers.push(e);

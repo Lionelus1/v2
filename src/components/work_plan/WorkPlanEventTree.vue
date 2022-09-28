@@ -1,7 +1,7 @@
 <template>
   <DataTable :lazy="true" :value="data" dataKey="work_plan_event_id"
              v-model:expandedRows="rows" @rowExpand="onRowExpand" @rowCollapse="onRowCollapse"
-             class="p-datatable-customers" :rows="10" responsiveLayout="scroll">
+             class="p-datatable-customers p-datatable-sm" :rows="10" responsiveLayout="scroll">
     <template #empty> {{ $t('common.noData') }}</template>
     <template #loading> {{ $t('common.loading') }}</template>
     <Column :expander="true" headerStyle="width: 2rem" field="is_expandable">
@@ -31,7 +31,7 @@
     </Column>
     <Column field="quarter" :header="$t('workPlan.quarter')">
       <template #body="{ data }">
-        {{ data.quarter ? initQuarterString(data.quarter.String) : "" }}
+        {{ data.quarter ? initQuarterString(data.quarter) : "" }}
       </template>
     </Column>
     <Column field="responsible_executor" :header="$t('workPlan.respExecutor')" v-if="plan && plan.is_oper">
@@ -41,7 +41,15 @@
     </Column>
     <Column field="fullName" :header="plan && plan.is_oper ? 'Свод/Подтверждение' : $t('workPlan.approvalUsers')">
       <template #body="{ data }">
-        <p v-for="item in data.user" :key="item.id">{{ item.fullName }}</p>
+        <div v-if="data.user && data.user.length > 2">
+          <Button type="button" @click="showRespUsers" class="p-button-rounded" icon="fa-solid fa-eye" label="" />
+          <OverlayPanel ref="op">
+            <p v-for="item in data.user" :key="item.id">{{ item.fullName }}</p>
+          </OverlayPanel>
+        </div>
+        <div v-else>
+          <p v-for="item in data.user" :key="item.id">{{ item.fullName }}</p>
+        </div>
       </template>
     </Column>
     <Column field="supporting_docs" v-if="plan && plan.is_oper" :header="$t('common.suppDocs')">
@@ -157,19 +165,19 @@ export default {
     initQuarterString(quarter) {
       let res = '';
       switch (quarter) {
-        case "1":
+        case 1:
           res = 'I';
           break;
-        case "2":
+        case 2:
           res = 'II';
           break;
-        case "3":
+        case 3:
           res = 'III';
           break;
-        case "4":
+        case 4:
           res = 'IV';
           break;
-        case "5":
+        case 5:
           res = this.$t('workPlan.quarterYear');
           break;
       }
@@ -189,6 +197,9 @@ export default {
           //callback to execute when user rejects the action
         }
       });
+    },
+    showRespUsers(event) {
+      this.$refs.op.toggle(event);
     },
     remove(event_id) {
       axios.post(smartEnuApi + `/workPlan/removeEvent/${event_id}`, {}, {headers: getHeader()}).then(res => {

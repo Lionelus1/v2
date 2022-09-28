@@ -44,13 +44,16 @@
         <Button :label="$t('queue.served')" class="p-mb-1 p-button-success" @click="changeState(1, null)"></Button>
         <Inplace :active="false" class="p-inplace-display"  ref="redirect" >
           <template #display>
-            <Button :label="$t('queue.redirect')" class="p-button-primary" style="left: -0.5rem;" :disabled="service.state===null" ></Button>
+            <Button :label="$t('queue.redirect')" class="p-button-primary" style="left: -0.5rem;" :disabled="service.state===null" @click="getNeigborQueue(parentID)"></Button>
           </template>
           <template #content>
             <div class="p-grid p-fluid">
               <div class="p-col-12 p-lg-6 p-md-6 p-sm-6 p-mb-0">
                 <Dropdown v-model="selectedQueue" :options="neigbors" :optionLabel="'queueName'+$i18n.locale" :placeholder="$t('common.select')" />
               </div>
+              <!-- <div class="p-col-12 p-lg-1 p-md-6 p-sm-6">
+                <Button   icon="pi pi-undo" class="p-mb-6 p-button-primary p-mb-1" @click="getNeigborQueue()"></Button>
+              </div> -->
               <div class="p-col-12 p-lg-6 p-md-6 p-sm-6">
                 <Button :label="$t('queue.redirect')" :disabled="selectedQueue === null" class="p-mb-6 p-button-primary p-mb-2" @click="changeState(2, selectedQueue.key)"></Button>
               </div>
@@ -145,7 +148,7 @@ export default {
         });
     },
     getNeigborQueue(parentID) {
-        this.loading = true  
+        this.loading = true         
         this.lazyParams.id = parentID
         axios
         .post(smartEnuApi + "/queue/getneigbors", this.lazyParams, {
@@ -156,6 +159,7 @@ export default {
           this.loading = false;
         })
         .catch((error) => {
+          console.log(error)
           this.loading = false;
           this.$toast.add({
             severity: "error",
@@ -180,6 +184,7 @@ export default {
         })
         .then((response) => {
           this.service = response.data;
+          // alert(JSON.stringify(this.service))
           this.service.info = {
             start: Date.now(),
             duration: "",
@@ -284,7 +289,7 @@ export default {
    
   },
 
-  created() {
+  mounted() {
       var parentID = parseInt(this.$route.params.parentID) ;
       this.getQueue(parentID); 
       this.counter(this.downInfo);

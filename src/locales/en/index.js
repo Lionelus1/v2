@@ -15,6 +15,8 @@ export default {
         createDocument: 'Generate document',
         createReport: 'Generate report',
         councilName: 'Council name',
+        contragents: 'Contragents',
+        documents: 'Documents',
         administration: 'Administration',
         academicDegree: "Academic degree",
         academicTitle: "Academic title",
@@ -61,6 +63,7 @@ export default {
         name : "Name",
         createNew: "Create",
         created: "Created",
+        filterReset: "Reset filter",
         createdBy: "Author",
         checkMyVoice: "Check my voice",
         yourVoice: "Your vote: ",
@@ -182,7 +185,9 @@ export default {
             notVoted: "Not voted",
             voted: "Voted",
             signing: "Signing",
-            signed: "Signed"
+            signed: "Signed",
+            edited: "Edited",
+            deleted: "Deleted"
         },
         message: {
             title: {
@@ -246,7 +251,12 @@ export default {
         resultSentToCorrect: "Result sent for revision",
         toCorrect: "To check",
         clear: "Clear",
-        clearApprovalList: "Change the approval stages"
+        clearApprovalList: "Change the approval stages",
+        properties: "Properties",
+        history: "History",
+        user: "User",
+        fact: "Fact",
+        actionTitle: "Action"
     },
     bank: {
         title: "Banks",
@@ -329,6 +339,7 @@ export default {
         contract:"Contract",
         documents: "Contract documents",
         create: "Fast creation of contracts, agreements",
+        template: "Contract templates",
         list: "Register of contracts ",
         listdesc: "List of all contracts, agreements",
         journal: "Journal of contracts",
@@ -393,7 +404,7 @@ export default {
         signNotFoundById: "Couldn't find a signature for this ID!",
         //
         successSentToSign: "Sent to sign",
-        successSignTitle: "File {dn} has been successfully signed!",
+        successSignTitle: "File has been successfully signed!",
         successSignContentFirstRow: "Your signature has been verified and has been registered in SIGNAPP",
         successSignContentSecondRow: "We recommend saving a copy of the signed file with the <b>SIGNAPP ID</b>. In the future, this will simplify the search for the signed document page in the SIGNAPP service.",
         saveFileCopyWithId: "Save a copy of the signed file with the ID",
@@ -406,7 +417,8 @@ export default {
         chosenFile: "Selected file: {fn}",
         //
         find: "Find",
-
+        tsp: "Put a timestamp",
+        tspDescription: "Checking the timestamp is carried out for electronic documents of long-term storage. The time stamp is generated at the moment of signing an electronic document when a positive result of the EDS verification is determined, thereby being a proof of signing the document at a specified point in time.",
         signatureListTitle: "List of signatures",
         success: {
             header: "Verification of all signatures registered in the system has been successfully completed!",
@@ -416,18 +428,46 @@ export default {
             //
             signSuccess: "The document has been successfully signed!"
         },
-        signatureError: {
-            extractCertificate: "Failed to get user certificate from CMS signature.",
-            certificateNotForSigning: "The certificate is not intended for signing",
-            extractIin: "Failed to get the IIN from the user certificate",
-            mismatchIin: "The IIN received from the certificate is not equal to the user's IIN",
-            notIndividual: "The certificate does not belong to an individual",
-            notCeo: "The certificate does not belong to the first manager",
-            financialSignRightsRequirement: "The certificate does not have the right to sign financial documents",
-            signRightsRequirement: "The certificate does not have the right to be signed",
-            notHrWorker: "The certificate does not belong to an employee of the HR department",
-            notCompanyEmployee: "The certificate does not belong to an employee of the organization.",
-            noRightsToSign: "The certificate does not have the right to sign documents (required algorithm: GOST)"
+        error: {
+            api: {
+                emptySignerList: "The list of signers is empty.",
+                caCertNotFound: "The Kazakhstan NCA root certificate was not found",
+            },
+            signature: {
+                cms: {
+                    notVerified: "Failed to verify CMS signature.",
+                    process: "Failed to process the CMS signature.",
+                    emptyData: "There are no initial data for verifying the CMS signature.",
+                },
+            },
+            tsp: {
+                process: "Failed to verify the timestamp of the electronic signature.",
+                notFound: "The timestamp on the electronic signature was not found.",
+                notVerified: "The timestamp of the electronic signature did not pass the verification.",
+            },
+            certificate: {
+                process: "Failed to process the certificate that was obtained from the signing CMS.",
+                extract: "Failed to get user certificate from CMS signature.",
+                policy: "Unknown certificate policy.",
+                mismatchIin: "The IIN received from the certificate is not equal to the user's IIN",
+                individual: "The certificate does not belong to an individual",
+                ceo: "The certificate does not belong to the first manager",
+                financialSignRight: "The certificate does not have the right to sign financial documents",
+                signRight: "The certificate does not have the right to be signed",
+                hrWorker: "The certificate does not belong to an employee of the HR department",
+                employee: "The certificate does not belong to an employee of the organization.",
+                expiredOrNotYetValid: "Certificate expired or The validity period of the certificate has not yet arrived",
+                notForSigning: "The certificate is not intended for signing",
+                notForAuth: "The certificate is not intended for authorization.",
+                signRightsNotFound: "The certificate does not have the right to sign documents (required algorithm: GOST)",
+                mismatchBin: "The BIN obtained from the certificate is not equal to the BIN specified in the request.",
+                requiredBin: "Empty value of the BIN of the organization in the request to sign the document."
+            },
+            revocation: {
+                process: "Failed to check the certificate for revocation.",
+                revoked: "The signing certificate you are using has been revoked.",
+            }
+
         },
         verifySignatureTitle: "Check the signature under the document",
         verify: "Verify",
@@ -725,7 +765,7 @@ export default {
             warn: 'Attention! Before sending the message, it is required to sign the petition by the first head.',
             success: 'The document has been successfully signed! Send a letter to the candidate.',
             info: 'The document has been successfully created. Download the document to check it out. Next, sign the electronic document using the digital signature of the first head of your organization.',
-            error: 'Failed to sign the document!'
+            error: 'The petition was not signed. Please make sure you have created the document and signed it.'
         },
         report: {
             title: 'Report',
@@ -797,9 +837,36 @@ export default {
         respExecutor: "Responsible performers",
         halfYear: "semi-annual"
     },
-    educomplex: {
-        title: "Educational and methodological complex of the discipline",
-        forme: "Related to me"
-
+    queue: {
+        title: "Queue",
+        secretary:"Maintenance",
+        queues:"Queues",
+        responsible:"responsible",
+        queueNotFound:"Queue not found",
+        createQueue:"Create/Modify Queue",
+        next:"Next",
+        number: "Queue number",
+        terminal:"Terminal",
+        tv:"TV",
+        count: "There are {n} people waiting in front of you",
+        operator:"Operator",
+        ticketCount: "Tickets queued:",
+        downtime: "Downtime:",
+        serviceTime: "Service time:",
+        called: "Called visitor:",
+        dnshowup: "Didn't show up",
+        norows: "Queue not found",
+        served: "Visitor served",
+        redirect: "Redirect",
+        selectTicket:"Select ticket",
+        call: "Call",
+        warning:"Take a photo of the coupon or print it by clicking on «Print». If you take a photo, be sure to close the window with the «Close button»!!!",
+        calledcount:"Сalled",        
+        serviced:"Serviced",
+        averageTime:"Average service time",
+        redirected: "Redirected",
     },
+    ref:{
+        getRef:"Get reference"
+    }
 }

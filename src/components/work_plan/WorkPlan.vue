@@ -5,8 +5,7 @@
     </div>
 
     <div class="card">
-      <DataTable :lazy="true" :value="data"
-                 class="p-datatable-customers" :rows="10" dataKey="id" :rowHover="true" v-model:filters="filters"
+      <DataTable :lazy="true" :value="data" :rows="10" dataKey="id" :rowHover="true" v-model:filters="filters"
                  filterDisplay="menu"
                  :loading="loading" responsiveLayout="scroll"
                  :globalFilterFields="['question','recipient','status', 'sendDate', 'createDate']"

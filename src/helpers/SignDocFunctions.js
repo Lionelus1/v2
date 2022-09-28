@@ -1,4 +1,6 @@
 import {NCALayerClient} from "ncalayer-js-client"
+import {NCALayerClientExtension} from "@/helpers/ncalayer-client-ext";
+
 export async function docToByteArray(document) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -114,4 +116,23 @@ export async function runNCaLayer(t,toast, document) {
     } catch (error) {
         toast.add({severity: 'error', summary: t('ncasigner.failToSign') + error, life: 3000});
     }
+}
+
+export async function makeTimestampForSignature(t, toast, signature) {
+        let NCALaClient = new NCALayerClientExtension()
+        try {
+            await NCALaClient.connect();
+        } catch (error) {
+            toast.add({
+                severity: 'error',
+                summary: this.$t('ncasigner.failConnectToNcaLayer'),
+                life: 3000
+            });
+
+        }
+        try {
+            return await NCALaClient.applyCAdES("PKCS12", "SIGNATURE", signature)
+        } catch (error) {
+            toast.add({severity: 'error', summary: t('ncasigner.failToSign'), life: 3000});
+        }
 }

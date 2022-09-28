@@ -37,11 +37,12 @@ const routes = [
         name:'Login',
         component: load('Login'),
     },
-    // {
-    //     path:'/login',
-    //     name:'PublicVacancies',
-    //     component: load('humanResources/vacancy/PublicVacancies'),
-    // },
+    {
+        path:'/outqr',
+        name:'OutQr',
+        component: load('OutQr'),
+    },
+    
     {
         path: '/afterauth',
         name: 'AfterAuth',
@@ -249,6 +250,12 @@ const routes = [
                         name: 'WorkPlanReportView',
                         component: load('work_plan/WorkPlanReportView'),
                         beforeEnter: ifAuthenticated,
+                    },
+                    {
+                        path: 'result/:id',
+                        name: 'WorkPlanEventResult',
+                        component: load('work_plan/WorkPlanEventResult'),
+                        beforeEnter: ifAuthenticated,
                     }
                 ]
             },
@@ -291,6 +298,12 @@ const routes = [
                 path: '/cabinet',
                 name: 'Cabinet',
                 component: load('humanResources/candidate/Cabinet'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path:'/myref',
+                name:'OutQr',
+                component: load('smartenu/JobDescription'),
                 beforeEnter: ifAuthenticated,
             },
             {

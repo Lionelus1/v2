@@ -63,7 +63,7 @@
             <tr style="mso-yfti-firstrow:yes;">
               <td class="header" style="font-weight: bold;">№</td>
               <td class="header" style="font-weight: bold;">{{
-                  plan.lang === 1 ? 'Нәтиже көрсеткіші' : plan.lang === 2 ? 'Показатель прямых результатов' : 'Indicator of direct results'
+                  plan.lang === 1 ? 'Атауы' : plan.lang === 2 ? 'Наименование' : 'Name'
                 }}
               </td>
               <td class="header" style="font-weight: bold;">

@@ -11,12 +11,11 @@
                 @click="viewSignatures"
                 class="p-button p-ml-2"/>
       </div>
-      <div class="card" v-if="isApproval && plan.status.work_plan_status_id === 2">
-        <Button v-if="isApproval"
-                :label="isLast ? $t('common.action.approve') : $t('common.action.approve') " icon="pi pi-check"
+      <div class="card" v-if="!isCurrentUserApproved && plan.status.work_plan_status_id === 2">
+        <Button :label="isLast ? $t('common.action.approve') : $t('common.action.approve') " icon="pi pi-check"
                 @click="openApprovePlan"
                 class="p-button p-button-success p-ml-2"/>
-        <Button v-if="isApproval" :label="$t('workPlan.toCorrect')" icon="pi pi-times"
+        <Button :label="$t('workPlan.toCorrect')" icon="pi pi-times"
                 @click="openRejectPlan"
                 class="p-button p-button-danger p-ml-2"/>
       </div>
@@ -39,9 +38,9 @@
         </Timeline>
       </div>
       <div class="card">
-<!--        <object src="#toolbar=0" style="width: 100%; height: 1000px" v-if="source" type="application/pdf"
-                :data="sourceb64"></object>-->
-        <embed :src="sourceb64" style="width: 100%; height: 1000px" v-if="sourceb64" type="application/pdf" />
+        <!--        <object src="#toolbar=0" style="width: 100%; height: 1000px" v-if="source" type="application/pdf"
+                        :data="sourceb64"></object>-->
+        <embed :src="sourceb64" style="width: 100%; height: 1000px" v-if="sourceb64" type="application/pdf"/>
       </div>
     </div>
 
@@ -65,6 +64,7 @@
 import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
 import {NCALayerClient} from "ncalayer-js-client";
+import {runNCaLayer} from "../../helpers/SignDocFunctions";
 
 export default {
   name: "WorkPlanView",
@@ -90,7 +90,8 @@ export default {
       isPlanApproved: false,
       signatures: null,
       isPlanCreator: false,
-      sourceb64: null
+      sourceb64: null,
+      isCurrentUserApproved: false
     }
   },
   created() {
@@ -121,7 +122,7 @@ export default {
         }
       });
     },
-    b64toBlob(b64Data, sliceSize=512) {
+    b64toBlob(b64Data, sliceSize = 512) {
       const byteCharacters = window.atob(b64Data);
       const byteArrays = [];
 
@@ -201,8 +202,8 @@ export default {
         if (res.data) {
           this.signatures = res.data;
           const signUser = res.data.find(x => x.userId === this.loginedUserId);
-          if (signUser) {
-            this.isApproved = true;
+          if (signUser.signature && signUser.signature !== '') {
+            this.isCurrentUserApproved = true;
           }
         }
       }).catch(error => {
@@ -245,25 +246,16 @@ export default {
         return;
       }*/
     },
-    async openApprovePlan() {
-      let NCALaClient = new NCALayerClient();
-
-      try {
-        await NCALaClient.connect();
-      } catch (error) {
-        this.$toast.add({
-          severity: 'error',
-          summary: this.$t('ncasigner.failConnectToNcaLayer'),
-          life: 3000
-        });
-        return;
-      }
-      try {
-        this.CMSSignature = await NCALaClient.createCAdESFromBase64('PKCS12', this.document, 'SIGNATURE', false)
-        this.sendSignature();
-      } catch (error) {
-        this.$toast.add({severity: 'error', summary: this.$t('ncasigner.failToSign'), life: 3000});
-      }
+    openApprovePlan() {
+      runNCaLayer(this.$t, this.$toast, this.document)
+          .then(sign => {
+            if (sign !== undefined) {
+              this.CMSSignature = sign;
+              this.sendSignature();
+            }
+          }).catch(error => {
+        this.$toast.add({severity: 'error', summary: error, life: 3000});
+      });
     },
     rejectPlan() {
       this.loading = true;
@@ -319,6 +311,14 @@ export default {
           this.getWorkPlanApprovalUsers();
         }
       }).catch(error => {
+        if (error.response.status === 405) {
+          this.CMSSignature = null;
+          this.$toast.add({
+            severity: "error",
+            summary: this.$t(error.response.data),
+            life: 3000,
+          });
+        }
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
