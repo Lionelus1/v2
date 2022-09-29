@@ -109,12 +109,14 @@ export async function runNCaLayer(t,toast, document) {
         summary: t('ncasigner.failConnectToNcaLayer'),
         life: 3000
       });
+      return error;
     }
     try {
       var res = await NCALaClient.createCAdESFromBase64('PKCS12', document, 'SIGNATURE', false)
       return res
     } catch (error) {
         toast.add({severity: 'error', summary: t('ncasigner.failToSign') + error, life: 3000});
+        return error;
     }
 }
 

@@ -31,7 +31,7 @@
             </template>
             <div class="p-d-flex p-jc-center">
               <Button icon="pi pi-user-edit" v-if="signButtonVisibility"
-                      class="p-button-primary p-md-5" @click="sign" :label="$t('ncasigner.sign')"/>
+                      class="p-button-primary p-md-5" @click="sign" :label="$t('ncasigner.sign')" :loading="signing"/>
               <Button icon="pi pi-user-edit" v-if="tspButtonVisibility"
                       class="p-button-primary" @click="tsp" :label="$t('ncasigner.tsp')"/>
             </div>
@@ -156,6 +156,7 @@ export default {
       });
     },
     sign() {
+      this.signing = true;
       axios.post(
           smartEnuApi + "/downloadFile", {
             filePath: this.docInfo.filePath
@@ -177,8 +178,10 @@ export default {
                           this.sendRequest(sign)
                         }
                       }
-                    })
-
+                    }).catch(e => {
+                  console.log(e)
+                  this.signing = false;
+                })
             ).catch(error => {
               this.signing = false;
 
