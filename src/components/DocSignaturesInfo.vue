@@ -23,7 +23,7 @@
         </div>
       </TabPanel>
       <TabPanel v-if="docInfo.docHistory.stateId==2 ||docInfo.docHistory.stateId==6" :header="$t('ncasigner.sign')"
-                :disabled="!isShow">
+                :disabled="isSignShow">
         <div class="p-mt-2">
           <Panel>
             <template #header>
@@ -97,6 +97,7 @@ export default {
       signing: false,
       file: null,
       active: 0,
+      isSignShow: false
     }
   },
   created() {
@@ -135,6 +136,7 @@ export default {
               this.docInfo = res.data;
               this.signatures = res.data.signatures;
               this.isShow = this.signatures.some(x => x.userId === this.loginedUserId) || this.docInfo.docHistory.setterId === this.loginedUserId;
+              this.isSignShow = this.signatures.some(x => x.userId === this.loginedUserId && (x.signature || x.signature !== ''));
               this.signatures.map(e => {
                 e.sign = this.chunkString(e.signature, 1200)
               });
