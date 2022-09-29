@@ -147,7 +147,7 @@
                                             :event-result="slotProps.data.event_result"
                                             :eventData="slotProps.data"
                                             :plan-data="plan"></work-plan-event-result-modal>
-              <work-plan-event-add v-if="!slotProps.data.is_finish" :data="slotProps.data" :items="slotProps.data.children" :isMain="false" :plan-data="plan"></work-plan-event-add>
+              <work-plan-event-add v-if="isPlanCreator && !isPlanSentApproval && !isFinish" :data="slotProps.data" :items="slotProps.data.children" :isMain="false" :plan-data="plan"></work-plan-event-add>
               <work-plan-event-edit-modal v-if="isPlanCreator && !isPlanSentApproval && !isFinish"
                                           :planData="plan"
                                           :event="slotProps.data"

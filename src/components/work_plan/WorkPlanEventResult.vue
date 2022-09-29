@@ -344,7 +344,6 @@ export default {
         {
           label: "",
           icon: "pi pi-fw pi-refresh",
-          visible: this.plan && this.plan.is_oper === true,
           command: () => {
             this.getData();
             this.$toast.add({severity: 'success', detail: this.$t('common.success'), life: 3000});
@@ -361,8 +360,7 @@ export default {
         {
           label: this.$t('common.toCorrect'),
           icon: "pi pi-fw pi-send",
-          visible: this.plan && this.plan.is_oper === true && this.resultData !== null && this.resultData.event_result !== null,
-          disabled: this.resultData && !this.resultData.event_result,
+          disabled: !this.resultData,
           command: () => {
             this.sendResultForVerification();
           },
