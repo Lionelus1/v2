@@ -166,6 +166,7 @@ export default {
  //             to: '/human-resources/public/vacancies'
  //           },
  //         ]
+
  //       },
 
         {
@@ -175,8 +176,7 @@ export default {
         },
         
         {
-          label: this.$t('queue.title'), icon: 'pi pi-fw pi-users ',to:'/queue'
-                     
+          label: this.$t('queue.title'), icon: 'pi pi-fw pi-users ',to:'/queue'                    
         },
       ]
     }
