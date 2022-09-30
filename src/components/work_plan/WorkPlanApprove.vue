@@ -156,7 +156,7 @@ export default {
             fd.append('work_plan_id', this.data.work_plan_id)
             this.approvePlan(fd);
           }).catch(error => {
-        console.log(error)
+        //console.log(error)
       })
     },
     b64toBlob(b64Data, sliceSize=512) {

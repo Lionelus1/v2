@@ -32,6 +32,7 @@
               <Chip class="p-mr-2 custom-chip" :label="responsible.fullName"/>
             </span>
           </div>
+
         </template>
       </Column>
       <Column>
@@ -170,7 +171,6 @@
         />
       </template>
     </Dialog>
-
 	</div>
 </template>
 

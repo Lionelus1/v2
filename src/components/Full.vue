@@ -13,7 +13,7 @@
           </router-link>
         </div>
         <AppProfile/>
-        <AppMenu :model="menu"  @menuitem-click="onMenuItemClick"/>
+        <AppMenu :model="globalMenu"  @menuitem-click="onMenuItemClick"/>
       </div>
     </transition>
     <div class="layout-main p-pr-0 p-pl-0">
@@ -52,27 +52,46 @@ export default {
       overlayMenuActive: false,
       mobileMenuActive: false,
       localpagemenu: this.pagemenu,
+    }
+  },
+  
+  watch: {
+    $route() {
+      this.menuActive = false;
+      this.$toast.removeAllGroups();
+    }
+  },
+  methods: {
+    getLoginedUser() {
+      this.loginedUser = this.$store.state.loginedUser;
+    },
+    initMenu() {
+      return [
 
-      menu: [
-
-      //  {
-      //    label: this.$t('common.administration'), icon: 'pi pi-fw pi-shield',
-      //    items: [
-      //      {
-      //        label: this.$t('hr.vacancies'),
-      //        icon: 'pi pi-fw pi-user-plus',
-      //        to: '/human-resources/vacancies'
-      //      },
-      //    ]ß
+        //  {
+        //    label: this.$t('common.administration'), icon: 'pi pi-fw pi-shield',
+        //    items: [
+        //      {
+        //        label: this.$t('hr.vacancies'),
+        //        icon: 'pi pi-fw pi-user-plus',
+        //        to: '/human-resources/vacancies'
+        //      },
+        //    ]ß
 //
-      //  },
+        //  },
         {
-          label: 'Құжаттар', icon: 'pi pi-fw pi-folder',
+          label: this.$t('common.documents'), icon: 'pi pi-fw pi-folder',
           items: [
-            {label: 'Келісім-шарт үлгілері', icon: 'pi pi-fw pi-book', to: '/documents/doctemplate',
-            visible: !this.findRole("student")
+            {label: this.$t('contracts.template'), icon: 'pi pi-fw pi-book', to: '/documents/doctemplate',
+              visible: !this.findRole("student")
             },
-            {label: 'Келісім-шарттар', icon: 'pi pi-fw pi-copy', to: '/documents/contracts'},
+            {label: this.$t('contracts.title'), icon: 'pi pi-fw pi-copy', to: '/documents/contracts'},
+            {
+              label: this.$t('smartenu.catalogNormDoc'), icon: 'pi pi-fw pi-folder', to: '/documents/catalog/normdoc'
+            },
+            {
+              label: this.$t('educomplex.title'), icon: 'pi pi-fw pi-folder', to: '/documents/catalog/educomplex'
+            },
           ]
 
         },
@@ -88,19 +107,19 @@ export default {
           ]
         },
         {
-          label: 'Контрагенттер', icon: 'pi pi-fw pi-users',
+          label: this.$t('common.contragents'), icon: 'pi pi-fw pi-users',
           visible: !this.findRole("student"),
 
           items: [
-            {label: 'Ұйымдықтар', icon: 'pi pi-fw pi-home', to: '/contragent/organizations'},
-            {label: 'Банктер', icon: 'pi pi-fw pi-money-bill', to: '/contragent/banks'},
+            {label: this.$t('common.organizations'), icon: 'pi pi-fw pi-home', to: '/contragent/organizations'},
+            //{label: 'Банктер', icon: 'pi pi-fw pi-money-bill', to: '/contragent/banks'},
+            // {
+            //   label: 'Жеке тұлғалар',
+            //   icon: 'pi pi-fw pi-user',
+            //   to: '/contragent/persons/' + Enum.PersonType.IndividualEntrepreneur
+            // },
             {
-              label: 'Жеке тұлғалар',
-              icon: 'pi pi-fw pi-user',
-              to: '/contragent/persons/' + Enum.PersonType.IndividualEntrepreneur
-            },
-            {
-              label: 'Қызметкерлер',
+              label: this.$t('common.personal'),
               icon: 'pi pi-fw pi-user',
               to: '/contragent/persons/' + Enum.PersonType.OrganizationMember
             }
@@ -116,31 +135,33 @@ export default {
             {
               label: this.$t('smartenu.categories'),
               icon: 'pi pi-fw pi-home',
-              to: '/smartenu/admin/newscategories/cattable'
+              to: '/newscategories/cattable'
             },
-            {label: this.$t('smartenu.newsList'), icon: 'pi pi-fw pi-money-bill', to: '/smartenu/admin/news/newstable'},
+            {label: this.$t('smartenu.newsList'), icon: 'pi pi-fw pi-money-bill', to: '/news'},
           ]
         },
 
         {
-          label: this.$t('smartenu.eventsTitle'), icon: 'pi pi-fw pi-folder', to: '/smartenu/admin/events/events'
+          label: this.$t('smartenu.eventsTitle'), icon: 'pi pi-fw pi-folder', to: '/events'
         },
+
+
         {
           label: this.$t('vaccination.title'), icon: 'pi pi-fw pi-check-circle', to: '/smartenu/vaccination'
         },
-       // {
-       //   label:  this.$t('faq.title'), icon: 'pi pi-fw pi-question-circle', to: '/faq/faqmain'
-       // },
-         {
-                label:  this.$t('dissertation.title'), icon: 'pi pi-fw pi-book',
-                items: [
-                    {
-                        label:  this.$t('dissertation.council.list'), icon: 'pi pi-fw pi-list', to: '/dissertation', visible : this.isDissertationAdmin() || this.findRole("dissertation_council_secretary") 
-                    },
-                    {
-                        label:  this.$t('dissertation.doctoralCard'), icon: 'pi pi-fw pi-users', to: '/dissertation/doctorals', visible : this.isRoleGroupMember("dissertation_council") ||  this.isDissertationAdmin()
-                    }
-                ]
+        // {
+        //   label:  this.$t('faq.title'), icon: 'pi pi-fw pi-question-circle', to: '/faq/faqmain'
+        // },
+        {
+          label:  this.$t('dissertation.title'), icon: 'pi pi-fw pi-book',
+          items: [
+            {
+              label:  this.$t('dissertation.council.list'), icon: 'pi pi-fw pi-list', to: '/dissertation', visible : this.isDissertationAdmin() || this.findRole("dissertation_council_secretary")
+            },
+            {
+              label:  this.$t('dissertation.doctoralCard'), icon: 'pi pi-fw pi-users', to: '/dissertation/doctorals', visible : this.isRoleGroupMember("dissertation_council") ||  this.isDissertationAdmin()
+            }
+          ]
 
         },
         {
@@ -156,41 +177,42 @@ export default {
             },
           ]
         },
-      //  {
+        //  {
 //
- //         label: this.$t('common.forStudentsAndGraduates'), icon: 'pi pi-fw pi-users',
- //         items: [
- //           {
- //             label: this.$t('hr.vacancies'),
- //             icon: 'pi pi-fw pi-user-plus',
- //             to: '/human-resources/public/vacancies'
- //           },
- //         ]
- //       },
+        //         label: this.$t('common.forStudentsAndGraduates'), icon: 'pi pi-fw pi-users',
+        //         items: [
+        //           {
+        //             label: this.$t('hr.vacancies'),
+        //             icon: 'pi pi-fw pi-user-plus',
+        //             to: '/human-resources/public/vacancies'
+        //           },
+        //         ]
+        //       },
 
         {
           label: this.$t('hr.vacancies'),
           icon: 'pi pi-fw pi-user-plus',
           to: '/human-resources/public/vacancies'
         },
-        
+
         {
-          label: this.$t('queue.title'), icon: 'pi pi-fw pi-users ',to:'/queue'
-                     
+          label: this.$t('queue.title'), icon: 'pi pi-fw pi-users ',
+          items:[
+            {
+              label:  this.$t('queue.title'), icon: 'pi pi-fw pi-plus-circle', to:'/queue'
+            },
+
+            //  {
+            //   label:  this.$t('queue.addService'), icon: 'pi pi-fw pi-th-large', to:'/queueCategories'
+            //  },
+            // {
+            //   label:  this.$t('queue.secretary'), icon: 'pi pi-fw pi-user-edit', to:'/queueService'
+            // },
+
+          ]
+
         },
       ]
-    }
-  },
-  
-  watch: {
-    $route() {
-      this.menuActive = false;
-      this.$toast.removeAllGroups();
-    }
-  },
-  methods: {
-    getLoginedUser() {
-      this.loginedUser = this.$store.state.loginedUser;
     },
     isDissertationAdmin() {
       if (!this.loginedUser)
@@ -286,6 +308,7 @@ export default {
     },
     isDesktop() {
       return window.innerWidth > 1024;
+      
     },
     isSidebarVisible() {
       if (this.isDesktop()) {
@@ -321,7 +344,9 @@ export default {
     logo() {
       return (this.layoutColorMode === 'dark') ? "assets/layout/images/logo-white.svg" : "assets/layout/images/logo.svg";
     },
-
+    globalMenu() {
+      return this.initMenu();
+    }
 
   },
   created() {
@@ -400,6 +425,10 @@ export default {
     &.status-approved {
       background: #007bff;
       color: #ffffff;
+    }
+     &.status-revision {
+      background: #ffcdd2;
+      color: #c63737;
     }
     
   }

@@ -28,7 +28,7 @@
       <FindUser v-model="selectedUsers" :editMode="true"></FindUser>
       <small class="p-error" v-if="submitted && formValid.users">{{ $t('workPlan.errors.approvalUserError') }}</small>
     </div>
-    <div class="p-field">
+    <div class="p-field" v-if="!parentData || (parentData && parentData.quarter === 5)">
       <label>{{ $t('workPlan.quarter') }}</label>
       <Dropdown v-model="quarter" :options="quarters" optionLabel="name" optionValue="id" :placeholder="$t('common.select')" />
       <small class="p-error" v-if="submitted && formValid.quarter">{{ $t('workPlan.errors.quarterError') }}</small>
@@ -114,7 +114,8 @@ export default {
     if (this.data)
       this.parentData = this.data;
     if (this.parentData) {
-      this.quarters.length = this.quarters.findIndex(x => x.id === parseInt(this.parentData.quarter.String)) + 1;
+      this.quarters.length = this.quarters.findIndex(x => x.id === this.parentData.quarter) + 1;
+      this.quarter = parseInt(this.parentData.quarter);
       /*let ind = this.quarters.findIndex(x => x.id === parseInt(this.parentData.quarter.String));
       console.log(ind)
       this.quarters = this.quarters.slice(0, ind);*/
@@ -126,7 +127,6 @@ export default {
   methods: {
     openBasic() {
       this.showWorkPlanEventModal = true;
-      console.log("CREATE EVENT PLAN DATA = ", this.plan)
     },
     closeBasic() {
       this.showWorkPlanEventModal = false;

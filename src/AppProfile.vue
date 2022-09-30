@@ -17,6 +17,11 @@
           </button>
         </li>
         <li>
+          <button @click="myRef" class="p-link">
+            <i class="pi pi-fw pi-book"></i><span>{{ $t("ref.getRef") }}</span>
+          </button>
+        </li>
+        <li>
           <button @click="logOutFromSystem" class="p-link">
             <i class="pi pi-fw pi-power-off"></i><span>{{ $t("common.logout") }}</span>
           </button>
@@ -49,6 +54,9 @@ export default {
     },
     myResume() {
       this.$router.push({path: "/cabinet"})
+    },
+    myRef() {
+      this.$router.push({path: "/myref"})
     },
   },
   computed: {

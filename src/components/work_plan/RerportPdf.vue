@@ -63,7 +63,7 @@
             <tr style="mso-yfti-firstrow:yes;">
               <td class="header" style="font-weight: bold;">№</td>
               <td class="header" style="font-weight: bold;">{{
-                  plan.lang === 1 ? 'Нәтиже көрсеткіші' : plan.lang === 2 ? 'Показатель прямых результатов' : 'Indicator of direct results'
+                  plan.lang === 1 ? 'Атауы' : plan.lang === 2 ? 'Наименование' : 'Name'
                 }}
               </td>
               <td class="header" style="font-weight: bold;">
@@ -145,13 +145,19 @@ export default {
     }
   },
   created() {
-    this.items.map(e => {
-      e.userList = Object.keys(e.user).map(key => `${e.user[key].fullName}`).join(", ");
-    });
     this.year = new Date().getFullYear();
     //this.data.push({index: 1, name: "Test name", resp: 'User Name', quarter: 1, result: '', comment: 'Comment'})
     this.loginedUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
     this.filename = 'flname.pdf'
+  },
+  mounted() {
+    if (this.items) {
+      this.items.map(e => {
+        if (e.user) {
+          e.userList = Object.keys(e.user).map(key => `${e.user[key].fullName.trim()}`).join(", ");
+        }
+      });
+    }
   },
   methods: {},
 }

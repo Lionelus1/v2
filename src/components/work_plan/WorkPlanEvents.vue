@@ -18,6 +18,7 @@
     </div>
     <div class="card">
       <DataTable :value="data" dataKey="work_plan_event_id"
+                 class="p-datatable-sm"
                  v-model:expandedRows="rows" @rowExpand="onRowExpand" @rowCollapse="onRowCollapse"
                  :loading="loading" responsiveLayout="scroll">
         <template #header>
@@ -25,11 +26,11 @@
             <h5 class="p-m-0">{{ $t('workPlan.events') }} |
               <router-link tag="a" to="/work-plan">{{ $t('workPlan.plans') }}</router-link>
             </h5>
-            <!--            <span class="p-input-icon-left">
-                          <i class="pi pi-search"/>
-                          <InputText type="search" v-model="searchText" :placeholder="$t('common.search')"/>
-                          <Button icon="pi pi-search" class="p-ml-1" @click="getWorkPlanEvents"/>
-                        </span>-->
+          <!--<span class="p-input-icon-left">
+                <i class="pi pi-search"/>
+                <InputText type="search" v-model="searchText" :placeholder="$t('common.search')"/>
+                <Button icon="pi pi-search" class="p-ml-1" @click="getWorkPlanEvents"/>
+              </span>-->
           </div>
         </template>
         <template #empty> {{ $t('common.noData') }}</template>
@@ -65,7 +66,7 @@
         </Column>
         <Column field="quarter" :header="$t('workPlan.quarter')">
           <template #body="{ data }">
-            {{ data.quarter ? initQuarterString(data.quarter.String) : "" }}
+            {{ data.quarter ? initQuarterString(data.quarter) : "" }}
           </template>
         </Column>
         <Column field="responsible_executor" :header="$t('workPlan.respExecutor')" v-if="plan && plan.is_oper">
@@ -75,7 +76,15 @@
         </Column>
         <Column field="fullName" :header="plan && plan.is_oper ? $t('workPlan.summary') : $t('workPlan.approvalUsers')">
           <template #body="{ data }">
-            <p v-for="item in data.user" :key="item.id">{{ item.fullName }}</p>
+            <div v-if="data.user && data.user.length > 2">
+              <Button type="button" @click="showRespUsers" class="p-button-rounded" icon="fa-solid fa-eye" label="" />
+              <OverlayPanel ref="op">
+                <p v-for="item in data.user" :key="item.id">{{ item.fullName }}</p>
+              </OverlayPanel>
+            </div>
+            <div v-else>
+              <p v-for="item in data.user" :key="item.id">{{ item.fullName }}</p>
+            </div>
           </template>
         </Column>
         <Column field="supporting_docs" v-if="plan && plan.is_oper" :header="$t('common.suppDocs')">
@@ -111,7 +120,8 @@
               <work-plan-event-add v-if="!slotProps.data.is_finish" :data="slotProps.data" :items="slotProps.data.children" :isMain="false" :plan-data="plan"></work-plan-event-add>
               <work-plan-event-edit-modal v-if="isPlanCreator && !isPlanSentApproval && !isFinish"
                                           :planData="plan"
-                                          :event="slotProps.data"></work-plan-event-edit-modal>
+                                          :event="slotProps.data"
+              ></work-plan-event-edit-modal>
               <div>
                 <Button v-if="isPlanCreator && !isPlanSentApproval && !isFinish"
                         @click="remove_event(slotProps.data.work_plan_event_id)" icon="pi pi-trash"
@@ -121,8 +131,8 @@
           </template>
         </Column>
         <template #expansion="slotProps">
-          <WorkPlanEventTree :plan-creator="isPlanCreator" :finish="isFinish" :approval-sent="isPlanSentApproval"
-                             :child="slotProps.data.children" :plan="plan" v-if="slotProps.data.children" :expanded="slotProps.data.isExpanded"/>
+          <WorkPlanEventTree :plan-creator="isPlanCreator" :finish="isFinish" :approval-sent="isPlanSentApproval" :isPlanApproved="isPlanApproved"
+                             :child="slotProps.data.children" :parent="slotProps.data" :plan="plan" v-if="slotProps.data.children" :expanded="slotProps.data.isExpanded"/>
         </template>
       </DataTable>
     </div>
@@ -411,19 +421,19 @@ export default {
     initQuarterString(quarter) {
       let res = '';
       switch (quarter) {
-        case "1":
+        case 1:
           res = 'I';
           break;
-        case "2":
+        case 2:
           res = 'II';
           break;
-        case "3":
+        case 3:
           res = 'III';
           break;
-        case "4":
+        case 4:
           res = 'IV';
           break;
-        case "5":
+        case 5:
           res = this.$t('workPlan.quarterYear');
           break;
       }
@@ -466,7 +476,11 @@ export default {
     },
     navigateToReports() {
       this.$router.push({name: 'WorkPlanReport', params: {id: this.work_plan_id}});
+    },
+    showRespUsers(event) {
+      this.$refs.op.toggle(event);
     }
+
   },
   /*unmounted() {
     localStorage.removeItem("workPlan");

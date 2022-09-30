@@ -35,7 +35,7 @@
           <tbody>
           <tr>
             <td class="header" style="font-weight: bold;">№</td>
-            <td class="header" style="font-weight: bold;">{{ plan.lang === 1 ? 'Нәтиже көрсеткіші' : plan.lang === 2 ? 'Показатель прямых результатов' : 'Indicator of direct results' }}</td>
+            <td class="header" style="font-weight: bold;">{{ plan.lang === 1 ? 'Атауы' : plan.lang === 2 ? 'Наименование' : 'Name' }}</td>
             <td class="header" style="font-weight: bold;">{{ plan.lang === 1 ? 'Өлшем бірлігі' : plan.lang === 2 ? 'Ед. изм.' : 'Unit' }}</td>
             <td class="header" style="font-weight: bold;">{{ plan.lang === 1 ? 'Жоспар' : plan.lang === 2 ? 'План' : 'Plan' }}</td>
             <td class="header" style="font-weight: bold;">{{ plan.lang === 1 ? 'Жауапты орындаушылар' : plan.lang === 2 ? 'Ответственные исполнители' : 'Responsible performers' }}</td>
@@ -109,7 +109,8 @@ export default {
       }, {headers: getHeader()}).then(res => {
         this.items = treeToList(res.data, 'children', this.plan.lang);
         this.items.map(e => {
-          e.userList = Object.keys(e.user).map(key => `${e.user[key].fullName}`).join(", ");
+          if (e.user)
+            e.userList = Object.keys(e.user).map(key => `${e.user[key].fullName}`).join(", ");
         });
       }).catch(error => {
         if (error.response && error.response.status === 401) {
@@ -117,7 +118,7 @@ export default {
         } else {
           this.$toast.add({
             severity: "error",
-            summary: error,
+            summary: "ERROR: " + error,
             life: 3000,
           });
         }

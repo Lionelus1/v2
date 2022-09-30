@@ -1,5 +1,6 @@
 export default {
     common: {
+        attention:"Attention",
         loginWelcome:"Welcome to smart.enu system.",
         chooseCert:"Choose the certificate",
         activeList: "Active list",
@@ -13,11 +14,16 @@ export default {
         newPasswordRe:"Repeat new password",
         createDocument: 'Generate document',
         createReport: 'Generate report',
+        councilName: 'Council name',
+        contragents: 'Contragents',
+        documents: 'Documents',
         administration: 'Administration',
         academicDegree: "Academic degree",
         academicTitle: "Academic title",
         annotation: "Annotation",
         approve: "Approve",
+        approveDate: "Approve date",
+        approvedBy: "Approved by", 
         notUpload: 'Document not uploaded',
         action: {
             submit: 'Submit',
@@ -29,6 +35,9 @@ export default {
             reApprove: 'Reapprove'
         },
         cabinet: 'Personal account',
+        lt: "Less than",
+        gt: "Greater than",
+        equals: "Equals",
         login: "login",
         logout: "Logout",
         enter: "Type in",
@@ -54,6 +63,7 @@ export default {
         name : "Name",
         createNew: "Create",
         created: "Created",
+        filterReset: "Reset filter",
         createdBy: "Author",
         checkMyVoice: "Check my voice",
         yourVoice: "Your vote: ",
@@ -76,6 +86,7 @@ export default {
         save: "Save",
         speciality: "Speciality",
         download: "Download",
+        doclang: "Document language",
         lang: 'Language',
         learnlang: "Teaching language",
         loading: "loadind",
@@ -94,6 +105,7 @@ export default {
         meetingPlace: "Meeting place",
         myData: "My details",
         myResume: 'My resume',
+        move: "Move",
         theResume: 'Resume',
         myVacancy: 'My vacancies',
         nameIn: "Name",
@@ -161,7 +173,7 @@ export default {
         organizationNameLabel:"Name of company",
         departmentNameLabel: "The name of the structural unit",
         headLabel: "Head:",
-        report:"Report",
+        author: "Author",
         states: {
             created : "created",
             inapproval : "in approval",
@@ -173,7 +185,9 @@ export default {
             notVoted: "Not voted",
             voted: "Voted",
             signing: "Signing",
-            signed: "Signed"
+            signed: "Signed",
+            edited: "Edited",
+            deleted: "Deleted"
         },
         message: {
             title: {
@@ -206,9 +220,12 @@ export default {
             selectRole: "Plewse, select a role",
             userSuccessInserted: "The user has been successfully created, download the authorization data to send to the user.",
             selectVariant: "Choose the option you need",
+            selectUsers: "Please, select users",
             userIINExists: "User with same iin already exists",
             accessDenied: "You do not have permission to view this document!",
             saveChanges: "Save changes",
+            impossible: "impossible",
+            fileError: "Failed to upload file. Maybe the file is corrupted"
         },
         language: {
             kz: "in kazakh",
@@ -232,7 +249,14 @@ export default {
         suppDocs: "Supporting documents",
         additionalInfo: "Additional Information",
         resultSentToCorrect: "Result sent for revision",
-        toCorrect: "To check"
+        toCorrect: "To check",
+        clear: "Clear",
+        clearApprovalList: "Change the approval stages",
+        properties: "Properties",
+        history: "History",
+        user: "User",
+        fact: "Fact",
+        actionTitle: "Action"
     },
     bank: {
         title: "Banks",
@@ -315,6 +339,7 @@ export default {
         contract:"Contract",
         documents: "Contract documents",
         create: "Fast creation of contracts, agreements",
+        template: "Contract templates",
         list: "Register of contracts ",
         listdesc: "List of all contracts, agreements",
         journal: "Journal of contracts",
@@ -331,9 +356,10 @@ export default {
             created: "Draft contract has been successfully created"
         },
         setnumber: "Set number",
-
+        assigner: "Assigner",
     },
     hdfs: {
+        archiveBtn: "Аrchive",
         title: "Files",
         fileName: "File name",
         download: "Download",
@@ -349,6 +375,10 @@ export default {
         search: "Search",
         noData: "No data",
         loading: "Loading...",
+        umktitle: "Enter the parameters of the syllabus",
+        modulname: "Module code and name:",
+        eduprogram: "Education program code and name:",
+        discipline: "Discipline code and name:",
     },
     ncasigner: {
         chooseFile: "Select  the file",
@@ -374,7 +404,7 @@ export default {
         signNotFoundById: "Couldn't find a signature for this ID!",
         //
         successSentToSign: "Sent to sign",
-        successSignTitle: "File {dn} has been successfully signed!",
+        successSignTitle: "File has been successfully signed!",
         successSignContentFirstRow: "Your signature has been verified and has been registered in SIGNAPP",
         successSignContentSecondRow: "We recommend saving a copy of the signed file with the <b>SIGNAPP ID</b>. In the future, this will simplify the search for the signed document page in the SIGNAPP service.",
         saveFileCopyWithId: "Save a copy of the signed file with the ID",
@@ -387,7 +417,8 @@ export default {
         chosenFile: "Selected file: {fn}",
         //
         find: "Find",
-
+        tsp: "Put a timestamp",
+        tspDescription: "Checking the timestamp is carried out for electronic documents of long-term storage. The time stamp is generated at the moment of signing an electronic document when a positive result of the EDS verification is determined, thereby being a proof of signing the document at a specified point in time.",
         signatureListTitle: "List of signatures",
         success: {
             header: "Verification of all signatures registered in the system has been successfully completed!",
@@ -397,18 +428,46 @@ export default {
             //
             signSuccess: "The document has been successfully signed!"
         },
-        signatureError: {
-            extractCertificate: "Failed to get user certificate from CMS signature.",
-            certificateNotForSigning: "The certificate is not intended for signing",
-            extractIin: "Failed to get the IIN from the user certificate",
-            mismatchIin: "The IIN received from the certificate is not equal to the user's IIN",
-            notIndividual: "The certificate does not belong to an individual",
-            notCeo: "The certificate does not belong to the first manager",
-            financialSignRightsRequirement: "The certificate does not have the right to sign financial documents",
-            signRightsRequirement: "The certificate does not have the right to be signed",
-            notHrWorker: "The certificate does not belong to an employee of the HR department",
-            notCompanyEmployee: "The certificate does not belong to an employee of the organization.",
-            noRightsToSign: "The certificate does not have the right to sign documents (required algorithm: GOST)"
+        error: {
+            api: {
+                emptySignerList: "The list of signers is empty.",
+                caCertNotFound: "The Kazakhstan NCA root certificate was not found",
+            },
+            signature: {
+                cms: {
+                    notVerified: "Failed to verify CMS signature.",
+                    process: "Failed to process the CMS signature.",
+                    emptyData: "There are no initial data for verifying the CMS signature.",
+                },
+            },
+            tsp: {
+                process: "Failed to verify the timestamp of the electronic signature.",
+                notFound: "The timestamp on the electronic signature was not found.",
+                notVerified: "The timestamp of the electronic signature did not pass the verification.",
+            },
+            certificate: {
+                process: "Failed to process the certificate that was obtained from the signing CMS.",
+                extract: "Failed to get user certificate from CMS signature.",
+                policy: "Unknown certificate policy.",
+                mismatchIin: "The IIN received from the certificate is not equal to the user's IIN",
+                individual: "The certificate does not belong to an individual",
+                ceo: "The certificate does not belong to the first manager",
+                financialSignRight: "The certificate does not have the right to sign financial documents",
+                signRight: "The certificate does not have the right to be signed",
+                hrWorker: "The certificate does not belong to an employee of the HR department",
+                employee: "The certificate does not belong to an employee of the organization.",
+                expiredOrNotYetValid: "Certificate expired or The validity period of the certificate has not yet arrived",
+                notForSigning: "The certificate is not intended for signing",
+                notForAuth: "The certificate is not intended for authorization.",
+                signRightsNotFound: "The certificate does not have the right to sign documents (required algorithm: GOST)",
+                mismatchBin: "The BIN obtained from the certificate is not equal to the BIN specified in the request.",
+                requiredBin: "Empty value of the BIN of the organization in the request to sign the document."
+            },
+            revocation: {
+                process: "Failed to check the certificate for revocation.",
+                revoked: "The signing certificate you are using has been revoked.",
+            }
+
         },
         verifySignatureTitle: "Check the signature under the document",
         verify: "Verify",
@@ -425,6 +484,14 @@ export default {
 
     },
     smartenu: {
+        NormDoc: "Document",
+        uploadNormDoc: "Uploading documents",
+        catalogNormDoc: "Catalog of regulatory documents",
+        chooseCatalogNormDoc: "select a regulatory document",
+        chooseSuperiorCatalogNormDoc: "Select a higher regulatory document",
+        createOrEditCatalogNormDoc: "Create/edit regulatory documents",
+        catalogNormDocNotFound: "Catalog of regulatory documents not found",
+        loadingcatalogNormDoc: "Loading regulatory documents. Please wait.",
         categories: "categories",
         selectCategories: "Select categories",
         newsList: "News list",
@@ -698,7 +765,7 @@ export default {
             warn: 'Attention! Before sending the message, it is required to sign the petition by the first head.',
             success: 'The document has been successfully signed! Send a letter to the candidate.',
             info: 'The document has been successfully created. Download the document to check it out. Next, sign the electronic document using the digital signature of the first head of your organization.',
-            error: 'Failed to sign the document!'
+            error: 'The petition was not signed. Please make sure you have created the document and signed it.'
         },
         report: {
             title: 'Report',
@@ -724,7 +791,7 @@ export default {
             upSignedResume: 'Upload signed resume',
             resumeSuccessSigned: 'Resume successfully signed',
             digital: 'EDS',
-            paper: 'On paper'
+            paper: 'On paper',
         }
     },
     workPlan: {
@@ -757,13 +824,18 @@ export default {
             reportSentToApprove: "The report was successfully sent for approval",
             planSentToApprove: "Plan sent for revision",
             planCreated: "Plan successfully created",
+            maxFileUploadSize: "Can't upload more than 5 files"
         },
         reportTypes: {
             year: "Annual",
             quarter: "Quarterly",
             halfYear: "Semi-annual"
         },
-        quarterYear: "Whole year"
+        quarterYear: "Whole year",
+        resultIndicator: "Indicator of direct results",
+        summary: "Summary/Confirmation",
+        respExecutor: "Responsible performers",
+        halfYear: "semi-annual"
     },
     queue: {
         title: "Queue",
@@ -794,4 +866,7 @@ export default {
         averageTime:"Average service time",
         redirected: "Redirected",
     },
+    ref:{
+        getRef:"Get reference"
+    }
 }

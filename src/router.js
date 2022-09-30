@@ -37,11 +37,12 @@ const routes = [
         name:'Login',
         component: load('Login'),
     },
-    // {
-    //     path:'/login',
-    //     name:'PublicVacancies',
-    //     component: load('humanResources/vacancy/PublicVacancies'),
-    // },
+    {
+        path:'/outqr',
+        name:'OutQr',
+        component: load('OutQr'),
+    },
+    
     {
         path: '/afterauth',
         name: 'AfterAuth',
@@ -62,6 +63,18 @@ const routes = [
 
 
             // Менің қосқандарым
+            {
+                path: '/documents/catalog/normdoc',
+                name: '/documents/catalog/normdoc',
+                component: load('documents/catalog/CatalogNormDoc'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/documents/catalog/educomplex',
+                name: '/documents/catalog/educomplex',
+                component: load('documents/catalog/EducationalComplex'),
+                beforeEnter: ifAuthenticated,
+            },
             {
 
                 path: '/documents/doctemplate:',
@@ -116,21 +129,21 @@ const routes = [
             },
 
             {
-                path: '/smartenu/admin/news/newstable',
-                name: '/smartenu/admin/news/newstable',
-                component: load('smartenu/admin/news/NewsTable'),
+                path: '/news',
+                name: 'NewsTable',
+                component: load('news/NewsTable'),
                 beforeEnter: ifAuthenticated,
             },
             {
-                path: '/smartenu/admin/newscategories/cattable',
-                name: '/smartenu/admin/newscategories/cattable',
-                component: load('smartenu/admin/newscategories/CategoriesTable'),
+                path: '/newscategories/cattable',
+                name: 'CategoriesTable',
+                component: load('news/CategoriesTable'),
                 beforeEnter: ifAuthenticated,
             },
             {
-                path: '/smartenu/admin/events/events',
-                name: '/smartenu/admin/events/events',
-                component: load('smartenu/admin/events/Events'),
+                path: '/events',
+                name: 'Events',
+                component: load('events/Events'),
                 beforeEnter: ifAuthenticated,
             },
             {
@@ -237,6 +250,12 @@ const routes = [
                         name: 'WorkPlanReportView',
                         component: load('work_plan/WorkPlanReportView'),
                         beforeEnter: ifAuthenticated,
+                    },
+                    {
+                        path: 'result/:id',
+                        name: 'WorkPlanEventResult',
+                        component: load('work_plan/WorkPlanEventResult'),
+                        beforeEnter: ifAuthenticated,
                     }
                 ]
             },
@@ -279,6 +298,12 @@ const routes = [
                 path: '/cabinet',
                 name: 'Cabinet',
                 component: load('humanResources/candidate/Cabinet'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path:'/myref',
+                name:'OutQr',
+                component: load('smartenu/JobDescription'),
                 beforeEnter: ifAuthenticated,
             },
             {

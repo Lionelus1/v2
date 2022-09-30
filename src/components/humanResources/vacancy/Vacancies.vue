@@ -66,7 +66,7 @@
         </OverlayPanel>
       </template>
     </Toolbar>
-    <!-- DataTable -->
+    <!-- ОСНОВНАЯ ТАБЛИЦА ДАННЫХ -->
     <DataTable :lazy="true"
                :value="vacancies"
                @page="onPage($event)"
@@ -200,20 +200,21 @@
         </template>
       </Column>
     </DataTable>
-    <!--  ADD VACANCY SIDEBAR  -->
+    <!--  БОКОВАЯ ПАНЕЛЬ ДОБАВЛЕНИЯ И РЕДАКТИРОВАНИЯ ДАННЫХ  -->
     <Sidebar v-model:visible="isView"
              position="right"
              class="p-sidebar-lg"
              style="overflow-y: scroll">
       <AddVacancy :model-value=vacancy :readonly="readonly"/>
     </Sidebar>
-    <!--   VACANCY CANDIDATES VIEW SIDEBAR  -->
+    <!--  ПРОСМОТР КАНДИДАТОВ  -->
     <Sidebar v-model:visible="view.candidates"
              position="right"
              class="p-sidebar-lg"
              style="overflow-y: scroll">
       <VacancyCandidateView :candidates="vacancy.candidateRelation" :vacancy="vacancy"/>
     </Sidebar>
+    <!--  ДИАЛОГОВОК ОКНО ДЛЯ УДАЛЕНИЯ ЗАПИСИ В ТАБЛИЦЕ  -->
     <Dialog
         v-model:visible="view.delete"
         :style="{ width: '450px' }"
@@ -241,7 +242,6 @@
         />
       </template>
     </Dialog>
-
   </div>
 </template>
 

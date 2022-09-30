@@ -15,7 +15,7 @@
                 @click="downloadWord"
                 class="p-button p-button-info p-ml-2"/>
       </div>
-      <div class="card" v-if="isApproval && !isApproved">
+      <div class="card" v-if="!isPlanReportApproved">
         <Button v-if="isApproval && !isRejected" :label="$t('common.action.approve')" icon="pi pi-check"
                 @click="openApprovePlan"
                 class="p-button p-button-success p-ml-2"/>
@@ -78,6 +78,8 @@ import {getHeader, signerApi, smartEnuApi} from "@/config/config";
 import treeToList from "@/service/treeToList";
 import WorkPlanReportApprove from "@/components/work_plan/WorkPlanReportApprove";
 import {NCALayerClient} from "ncalayer-js-client";
+import {runNCaLayer} from "../../helpers/SignDocFunctions";
+import DocSignaturesInfo from "../documents/DocInfo";
 
 export default {
   name: "WorkPlanReportView",
@@ -107,7 +109,8 @@ export default {
         report_name: null,
         report_type: null,
         doc_id: null,
-        halfYearType: null
+        halfYearType: null,
+        respUserId: null
       },
       isPlanCreator: false,
       pdfOptions: {
@@ -261,7 +264,8 @@ export default {
         work_plan_id: parseInt(this.report.work_plan_id),
         quarter: this.report.report_type === 2 ? this.report.quarter : null,
         halfYearType: this.report.report_type === 3 ? this.report.halfYearType : null,
-        department_id: this.report.department_id ? this.report.department_id : null
+        department_id: this.report.department_id ? this.report.department_id : null,
+        //eventUserId: this.report.respUserId ? Number(this.report.respUserId) : null
       }, {headers: getHeader()}).then(res => {
         ///// FLATTEN ARRAY
         this.items = treeToList(res.data, 'children', this.plan.lang);
@@ -365,25 +369,16 @@ export default {
         });
       })
     },
-    async openApprovePlan() {
-      let NCALaClient = new NCALayerClient();
-
-      try {
-        await NCALaClient.connect();
-      } catch (error) {
-        this.$toast.add({
-          severity: 'error',
-          summary: this.$t('ncasigner.failConnectToNcaLayer'),
-          life: 3000
-        });
-        return;
-      }
-      try {
-        this.CMSSignature = await NCALaClient.createCAdESFromBase64('PKCS12', this.document, 'SIGNATURE', false)
-        this.sendSignature();
-      } catch (error) {
-        this.$toast.add({severity: 'error', summary: this.$t('ncasigner.failToSign'), life: 3000});
-      }
+    openApprovePlan() {
+      runNCaLayer(this.$t, this.$toast, this.document)
+          .then(sign => {
+            if (sign !== undefined) {
+              this.CMSSignature = sign;
+              this.sendSignature();
+            }
+          }).catch(error => {
+        this.$toast.add({severity: 'error', summary: error, life: 3000});
+      });
     },
     sendSignature() {
       axios.post(smartEnuApi + '/workPlan/reportSignature', {
@@ -403,12 +398,20 @@ export default {
           this.getReportApprovalUsers();
         }
       }).catch(error => {
+        if (error.response.status === 405) {
+          this.CMSSignature = null;
+          this.$toast.add({
+            severity: "error",
+            summary: this.$t(error.response.data),
+            life: 3000,
+          });
+        }
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
           this.$toast.add({
             severity: "error",
-            summary: error.msg,
+            summary: error,
             life: 3000,
           });
         }

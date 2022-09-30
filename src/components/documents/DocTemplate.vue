@@ -18,15 +18,15 @@
             <Dialog :modal="true"  v-bind:header="$t('common.newCatalog')" :contentStyle="{overflow: 'visible'}" v-model:visible="dialogOpenState.addFolder" :style="{width: '50vw'}">
               <div class="p-fluid">
                   <label for="foldername" >{{$t('common.nameInQazaq')}}</label>
-                  <InputText id="fodernamekaz" v-model="createdFolder.nameKaz" type="text" />
+                  <InputText id="fodernamekaz" v-model="createdFolder.namekz" type="text" />
                   <label for="foldernamerus">{{$t('common.nameInRussian')}}</label>
-                  <InputText id="foldernamerus" v-model="createdFolder.nameRus"  type="text"  />
+                  <InputText id="foldernamerus" v-model="createdFolder.nameru"  type="text"  />
                   <label for="foldernameen">{{$t('common.nameInEnglish')}}</label>
-                  <InputText id="foldernameen" v-model="createdFolder.nameEn"  type="text" />
+                  <InputText id="foldernameen" v-model="createdFolder.nameen"  type="text" />
                   <label for="foldercode">{{$t('common.code')}}</label>
                   <InputText id="foldercode" v-model="createdFolder.code"  type="text" />
                   <label for="foldergroup">{{$t('common.userGroup')}}</label>
-                  <MultiSelect v-model="createdFolder.groups" :options="groupsData" optionLabel="name" v-bind:placeholder="$t('common.selectGroup')" :filter="true" display="chip"/>
+                  <MultiSelect v-model="createdFolder.groups" :options="groupsData" :optionLabel="'name'+$i18n.locale" v-bind:placeholder="$t('common.selectGroup')" :filter="true" display="chip"/>
               </div>
               <template #footer>
                 <Button v-bind:label="$t('common.no')" icon="pi pi-times" @click="closeForm('addFolder')" class="p-button-text"/>
@@ -224,6 +224,8 @@
   import FindUser from "@/helpers/FindUser";
   import DocState from "@/enum/docstates/index"
   import DocSignaturesInfo from "@/components/DocSignaturesInfo"
+  import Enum from "@/enum/docstates/index"
+
   export default {
     emits: ['onselect'],
     components: { RichEditor, FindUser, DocSignaturesInfo },
@@ -251,20 +253,23 @@
         active: 0,
         templates: null,
         groupsData: [
-          {name: 'студент', id: 0},
-          {name: 'кафедра меңгерушісі', id: 1},
-          {name: 'қызметкер', id: 2},
-          {name: 'заңгер', id: 3},
-          ],
+          {namekz: 'білім алушы', nameru: 'обучающиеся', nameen:'students', id: 0},
+          {namekz: 'профессор-оқытушылар құрамы', nameru: 'профессорско-преподавательский состав', nameen:'teaching staff', id: 1},
+          {namekz: 'қызметкерлер', nameru: 'сотрудники', nameen:'staff', id: 2},
+          {namekz: 'заңгер', nameru: 'юрист', nameen:'lawyer', id: 3},
+        ],
+       
         language: ['kz', 'ru'],
         createdFolder: {
           groups: null,
-          nameKaz: '',
-          nameRus: '',
-          nameEn: '',
-          id: -1,
+          namekz: '',
+          nameru: '',
+          nameen: '',
+          id: null,
           createdDate: null,
           updatedDate: null,
+          type: Enum.FolderType.Journals
+          
         },
         createdTemplate: {
           creatorId: 1,
@@ -384,7 +389,7 @@
           this.dialogOpenState.revision = false;
         })
         .catch(error => {
-          if (error.response.status == 401) {
+          if (error.response && error.response.status == 401) {
             this.$store.dispatch("logLout");
           } else 
           console.log(error);
@@ -563,15 +568,15 @@
           this.showMessage('error',this.$t('common.message.catCreateError'),this.$t('common.message.groupsNotSelected'));
           return
         }
-        if (this.createdFolder.nameKaz == null || this.createdFolder.nameKaz == "") {
+        if (this.createdFolder.namekz == null || this.createdFolder.namekz == "") {
           this.showMessage('error',this.$t('common.message.catCreateError'),this.$t('common.message.qazNameNotfilled'));
           return
         }
-        if (this.createdFolder.nameRus == null || this.createdFolder.nameRus == "") {
+        if (this.createdFolder.nameru == null || this.createdFolder.nameru == "") {
           this.showMessage('error',this.$t('common.message.catCreateError'),this.$t('common.message.rusNameNotfilled'));
           return
         }
-        if (this.createdFolder.nameEn == null || this.createdFolder.nameEn == "") {
+        if (this.createdFolder.nameen == null || this.createdFolder.nameen == "") {
           this.showMessage('error',this.$t('common.message.catCreateError'),this.$t('common.message.engNameNotfilled'));
           return
         }
@@ -584,10 +589,9 @@
         .then(response=>{
 
           let node = new Object();
-            console.log(response.data)
             node.key= response.data.id;
             let nodeData = new Object();
-            nodeData.name=response.data.nameKaz;
+            nodeData.name=response.data.namekz;
             nodeData.type= 1;
             nodeData.typeText= this.$t('common.catalog');
             nodeData.createdDate = response.data.createDate;
@@ -598,10 +602,10 @@
             this.templates.push(node)
           this.createdFolder = {
             groups: null,
-            nameKaz: '',
-            nameRus: '',
-            nameEn: '',
-            id: -1,
+            namekz: '',
+            nameru: '',
+            nameen: '',
+            id: null,
             createdDate: null,
             updatedDate: null,
           };
@@ -653,7 +657,7 @@
         return child;
       },
       initApiCall(){
-        let url = "/doctemplates?groupID=1";
+        let url = "/doctemplates?groupID=-1";
         var stateFilter = "&stateID=-1"
         if (this.selectMode) {
           stateFilter = "&stateID=" + this.DocState.APPROVED.ID
@@ -661,12 +665,13 @@
         url+= stateFilter
         axios (smartEnuApi+url, { headers: getHeader() })
         .then(res=>{
+          console.log(res)
           let treeData = [];
           res.data.forEach(el => {
             let node = new Object();
             node.key=el.id;
             let nodeData = new Object();
-            nodeData.name=el.nameKaz;
+            nodeData.name=el.namekz;
             nodeData.type= 1
             nodeData.typeText= this.$t('common.catalog');
             nodeData.createdDate = el.createDate;

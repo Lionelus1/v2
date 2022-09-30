@@ -5,8 +5,7 @@
     </div>
 
     <div class="card">
-      <DataTable :lazy="true" :value="data"
-                 class="p-datatable-customers" :rows="10" dataKey="id" :rowHover="true" v-model:filters="filters"
+      <DataTable :lazy="true" :value="data" :rows="10" dataKey="id" :rowHover="true" v-model:filters="filters"
                  filterDisplay="menu"
                  :loading="loading" responsiveLayout="scroll"
                  :globalFilterFields="['question','recipient','status', 'sendDate', 'createDate']"
@@ -35,9 +34,19 @@
               }}</span>
           </template>
         </Column>
+        <Column field="user" :header="$t('common.created')">
+          <template #body="{ data }">
+            {{ data.user.fullName }}
+          </template>
+        </Column>
+        <Column field="create_date" :header="$t('faq.createDate')">
+          <template #body="{ data }">
+            {{ formatDate(data.create_date) }}
+          </template>
+        </Column>
         <Column field="actions" header="">
           <template #body="{ data }">
-            <Button type="button" v-if="data.user.id === loginedUserId"
+            <Button type="button" v-if="data.user.id === loginedUserId && (data.status.work_plan_status_id === 1 || data.status.work_plan_status_id === 3 || data.status.work_plan_status_id === 5)"
                     icon="pi pi-trash" class="p-button-danger p-mr-2"
                     label="" @click="deleteConfirm(data)"></Button>
           </template>
@@ -74,7 +83,6 @@
 import WorkPlanAdd from "./WorkPlanAdd";
 import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
-import WorkPlanApprove from "@/components/work_plan/WorkPlanApprove";
 
 export default {
   components: {WorkPlanAdd},
@@ -88,7 +96,8 @@ export default {
       isRejectModal: false,
       comment: null,
       currentWorkPlanId: 0,
-      loading: false
+      loading: false,
+      loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID,
     }
   },
   mounted() {
@@ -194,6 +203,19 @@ export default {
     navigateToEvent(event) {
       localStorage.setItem('workPlan', JSON.stringify(event));
       this.$router.push({name: 'WorkPlanEvents', params: {id: event.work_plan_id}});
+    },
+    formatDate(value) {
+      let result = "";
+      if (value == null) {
+        return result;
+      }
+      let date = new Date(value);
+      result = date.toLocaleDateString("kk-KZ", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      });
+      return result == "Invalid Date" ? "" : result;
     },
     openAcceptModal(id) {
       this.isAcceptModal = true;

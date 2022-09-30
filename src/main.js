@@ -61,6 +61,7 @@ import SelectButton from 'primevue/selectbutton';
 import Slider from 'primevue/slider';
 import Sidebar from 'primevue/sidebar';
 import SplitButton from 'primevue/splitbutton';
+import SpeedDial from 'primevue/speeddial';
 import Steps from 'primevue/steps';
 import TabMenu from 'primevue/tabmenu';
 import TieredMenu from 'primevue/tieredmenu';
@@ -103,14 +104,22 @@ import Organization from '@/components/contragent/Organization.vue';
 
 import ConfirmationService from 'primevue/confirmationservice';
 import store from "./store/store"
-import SpeedDial from 'primevue/speeddial';
 
+import { library, dom } from "@fortawesome/fontawesome-svg-core"; // fontawesome
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { fas } from '@fortawesome/free-solid-svg-icons'
+import { fab } from '@fortawesome/free-brands-svg-icons';
+import { far } from '@fortawesome/free-regular-svg-icons';
+import ScrollPanel from "primevue/scrollpanel";
+library.add(fas, far, fab)
+dom.watch();
 router.beforeEach(function(to, from, next) {
     window.scrollTo(0, 0);
     next();
 });
 const app = createApp(App);
 const emitter = mitt();
+
 /* eslint-disable */
 app.use(PrimeVue, {
     locale: {
@@ -163,6 +172,7 @@ app.use(PrimeVue, {
 app.config.globalProperties.emitter = emitter;
 
 
+
 app.use(i18n);
 app.use(ToastService);
 app.use(router);
@@ -206,6 +216,7 @@ app.component('Dialog', Dialog);
 app.component('Dropdown', Dropdown);
 app.component('Fieldset', Fieldset);
 app.component('FileUpload', FileUpload);
+app.component('FontAwesomeIcon', FontAwesomeIcon)
 app.component('Image', Image);
 app.component('InlineMessage', InlineMessage);
 app.component('Inplace', Inplace);
@@ -234,6 +245,7 @@ app.component('Rating', Rating);
 app.component('SelectButton', SelectButton);
 app.component('Slider', Slider);
 app.component('Sidebar', Sidebar);
+app.component('SpeedDial', SpeedDial)
 app.component('SplitButton', SplitButton);
 app.component('Steps', Steps);
 app.component('TabMenu', TabMenu);
@@ -252,5 +264,5 @@ app.component('TriStateCheckbox', TriStateCheckbox);
 app.component('Editor', Editor);
 app.component("VueElementLoading", VueElementLoading);
 app.component('TreeSelect', TreeSelect);
-app.component('SpeedDial ', SpeedDial );
+app.component('ScrollPanel', ScrollPanel);
 app.mount('#app');

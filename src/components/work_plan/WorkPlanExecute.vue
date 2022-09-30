@@ -10,7 +10,7 @@
       style="overflow-y: scroll"
   >
     <div class="p-col-12" v-if="plan && plan.is_oper && resultData && resultData.reject_history">
-      <label>{{ $t('common.resultSentToCorrect') }}</label>
+      <label class="p-text-bold">{{ $t('common.resultSentToCorrect') }}</label>
       <Message severity="warn" :closable="false" title="">{{ resultData.reject_history.message }}</Message>
     </div>
     <div class="p-col-12">
@@ -21,20 +21,19 @@
     </div>
     <div class="p-col-12 p-fluid">
       <div class="p-field">
-        <label>{{ $t('workPlan.eventName') }}</label>
+        <label class="p-text-bold">{{ $t('workPlan.eventName') }}</label>
         <InputText v-model="event.event_name" disabled/>
       </div>
       <div class="p-field">
-        <label>{{ $t('common.result') }}</label>
-        <Textarea ref="resultContainer" v-if="plan && !plan.is_oper" v-model="result" @input="resultInput" rows="10"
-                  style="resize: vertical"/>
-        <Textarea ref="resultContainer" v-if="plan && resultData && plan.is_oper" v-model="resultData.event_result"
-                  @input="resultInput" rows="10" style="resize: vertical"/>
-        <Textarea ref="resultContainer" v-if="plan && !resultData && plan.is_oper" v-model="result" @input="resultInput"
-                  rows="10" style="resize: vertical"/>
+        <label class="p-text-bold">{{ $t('common.result') }}</label>
+        <RichEditor v-if="plan && !plan.is_oper" v-model="result" editorStyle="height:300px;" @text-change="editorChange">
+        </RichEditor>
+        <div v-if="plan && resultData && plan.is_oper" v-html="resultData.event_result" class="p-mb-4"></div>
+        <RichEditor v-if="plan && plan.is_oper" v-model="newResult" editorStyle="height:300px;" @text-change="editorChange">
+        </RichEditor>
       </div>
       <div class="p-field" v-if="resultData && resultData.result_files">
-        <label>{{ $t('workPlan.attachments') }}</label>
+        <label class="p-text-bold">{{ $t('workPlan.attachments') }}</label>
         <div >
           <Button
               v-for="(item, index) of resultData.result_files" :key="index"
@@ -78,9 +77,11 @@
 <script>
 import axios from "axios";
 import {getHeader, getMultipartHeader, smartEnuApi} from "@/config/config";
+import RichEditor from "../documents/editor/RichEditor";
 
 export default {
   name: "WorkPlanExecute",
+  components: {RichEditor},
   props: ['data', 'planData'],
   data() {
     return {
@@ -93,16 +94,19 @@ export default {
       active: null,
       menu: null,
       resultData: null,
-      files: []
+      files: [],
+      newResult: null,
+      fact: null,
     }
   },
   methods: {
     openBasic() {
-      this.showWorkPlanExecuteSidebar = true;
-      if (this.plan && this.plan.is_oper)
-        this.getData();
-      else
+      if (this.plan && this.plan.is_oper) {
+        this.$router.push({name: 'WorkPlanEventResult', params: {id: this.event.work_plan_event_id}});
+      } else {
+        this.showWorkPlanExecuteSidebar = true;
         this.initMenu();
+      }
     },
     closeBasic() {
       this.showWorkPlanExecuteSidebar = false;
@@ -113,10 +117,6 @@ export default {
             if (res.data) {
               this.resultData = res.data;
               this.isDisabled = !this.resultData.event_result;
-              this.$nextTick(() => {
-                const textarea = this.$refs.resultContainer.$el;
-                textarea.style.height = textarea.scrollHeight + 10 + 'px';
-              });
             }
             this.initMenu();
           }).catch(error => {
@@ -134,15 +134,6 @@ export default {
     initMenu() {
       this.menu = [
         {
-          label: "",
-          icon: "pi pi-fw pi-refresh",
-          visible: this.showWorkPlanExecuteSidebar && this.plan && this.plan.is_oper === true,
-          command: () => {
-            this.getData();
-            this.$toast.add({severity: 'success', detail: this.$t('common.success'), life: 3000});
-          },
-        },
-        {
           label: this.$t("common.save"),
           icon: "pi pi-fw pi-save",
           disabled: this.showWorkPlanExecuteSidebar && this.isDisabled,
@@ -150,23 +141,16 @@ export default {
             this.saveResult();
           },
         },
-        {
-          label: this.$t('common.toCorrect'),
-          icon: "pi pi-fw pi-send",
-          visible: this.showWorkPlanExecuteSidebar && this.plan && this.plan.is_oper === true && this.resultData !== null && this.resultData.event_result !== null,
-          disabled: this.showWorkPlanExecuteSidebar && this.resultData && !this.resultData.event_result,
-          command: () => {
-            this.sendResultForVerification();
-          },
-        },
       ];
     },
     saveResult() {
       const fd = new FormData();
       fd.append('work_plan_event_id', this.event.work_plan_event_id);
-      fd.append('result', this.resultData ? this.resultData.event_result : this.result);
-      if (this.plan && this.plan.is_oper)
+      fd.append('result', this.plan.is_oper ? this.newResult : this.result);
+      if (this.plan && this.plan.is_oper) {
         fd.append("is_partially", true);
+        fd.append("fact", this.fact)
+      }
       if (this.plan && this.plan.is_oper && this.resultData)
         fd.append("result_id", this.resultData.event_result_id);
       if (this.files.length > 0) {
@@ -174,7 +158,6 @@ export default {
           fd.append('files', file)
         }
       }
-      fd.append("test", [1,2,3,4,5])
       axios.post(smartEnuApi + `/workPlan/saveResult`, fd, {headers: getMultipartHeader()}).then(res => {
         this.emitter.emit("workPlanEventIsCompleted", true);
         this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
@@ -193,7 +176,7 @@ export default {
       });
     },
     sendResultForVerification() {
-      axios.post(smartEnuApi + `/workPlan/sendEventResultForVerify`, {event_id: parseInt(this.event.work_plan_event_id), result_id: parseInt(this.resultData.event_result)}, {headers: getHeader()})
+      axios.post(smartEnuApi + `/workPlan/sendEventResultForVerify`, {event_id: parseInt(this.event.work_plan_event_id), result_id: parseInt(this.resultData.event_result_id)}, {headers: getHeader()})
           .then(res => {
             if (res.data.is_success) {
               this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
@@ -212,11 +195,18 @@ export default {
         }
       })
     },
+    editorChange() {
+      if ((this.result != null && this.result.length > 0) || (this.newResult != null && this.newResult.length > 0)) {
+        this.menu[0].disabled = false;
+      } else {
+        this.menu[0].disabled = true;
+      }
+    },
     resultInput(e) {
       if (e.target.value.length > 0) {
-        this.menu[1].disabled = false;
+        this.menu[0].disabled = false;
       } else {
-        this.menu[1].disabled = true;
+        this.menu[0].disabled = true;
       }
       this.resizeArea();
     },
@@ -229,10 +219,18 @@ export default {
     },
     uploadFile(event) {
       /*this.file = event.files[0];*/
+      if (event.files.length > 5) {
+        this.$toast.add({
+          severity: "info",
+          summary: this.$t('workPlan.message.maxFileUploadSize'),
+          life: 3000,
+        });
+        this.clearFiles();
+        return;
+      }
       this.files = [];
       let files = event.files;
       for (let file of files) {
-        console.log(file)
         this.files.push(file);
       }
       this.clearFiles();
@@ -248,7 +246,6 @@ export default {
     removeFile(index) {
       let removedFile = this.files.splice(index, 1)[0];
       this.files = [...this.files];
-      console.log(this.files)
       this.$emit('remove', {
         file: removedFile,
         files: this.files
@@ -284,7 +281,8 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+
 .p-fileupload-content {
   position: relative;
 }
@@ -325,4 +323,5 @@ export default {
 .p-fluid .p-fileupload .p-button {
   width: auto;
 }
+
 </style>

@@ -27,9 +27,13 @@
       <Dropdown v-model="selectedHalfYear" :options="halfYearTypes" optionLabel="name" optionValue="id" :placeholder="$t('common.select')" />
     </div>
     <div class="p-field" v-if="plan && plan.is_oper">
-      <label>Департамент</label>
+      <label>{{ $t('common.department') }}</label>
       <Dropdown v-model="selectedDepartment" :options="departments" optionLabel="department_name" optionValue="department_id" :placeholder="$t('common.select')" />
     </div>
+    <!--<div class="p-field" v-if="plan && plan.is_oper">
+      <label>{{ $t('workPlan.respExecutor') }}</label>
+      <Dropdown v-model="selectedRespUser" :options="respUsers" optionLabel="fullName" optionValue="id" :placeholder="$t('common.select')" />
+    </div>-->
     <template #footer>
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
               @click="closeModal"/>
@@ -84,6 +88,7 @@ export default {
       isPdf: false,
       selectedDepartment: null,
       selectedHalfYear: null,
+      selectedRespUser: null,
       halfYearTypes: [
         {
           id: 1,
@@ -94,7 +99,8 @@ export default {
           name: 2
         }
       ],
-      departments: []
+      departments: [],
+      respUsers: [],
     }
   },
   mounted() {
@@ -104,6 +110,7 @@ export default {
         name: this.$t('workPlan.reportTypes.halfYear')
       });
       this.getDepartments();
+      //this.getRespUsers();
     }
   },
   methods: {
@@ -133,6 +140,25 @@ export default {
         }
       });
     },
+    getRespUsers() {
+      this.respUsers = [];
+      axios.post(smartEnuApi + `/workPlan/getRespUsers`, {work_plan_id: parseInt(this.work_plan_id)}, {headers: getHeader()})
+          .then(res => {
+            if (res.data) {
+              this.respUsers = res.data
+            }
+          }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+      });
+    },
     create() {
       //this.$router.push({ name: 'WorkPlanReportView', params: { id: this.work_plan_id, type: this.type, name: this.report_name, quarter: this.quarter }})
       axios.post(smartEnuApi + `/workPlan/createReport`, {
@@ -141,7 +167,8 @@ export default {
         report_type: this.type,
         quarter: this.type === 2 ? this.quarter : null,
         halfYearType: this.type === 3 ? this.selectedHalfYear : null,
-        department_id: this.selectedDepartment ? this.selectedDepartment : null
+        department_id: this.selectedDepartment ? this.selectedDepartment : null,
+        //respUserId: this.selectedRespUser ? Number(this.selectedRespUser) : null
       }, {headers: getHeader()}).then(res => {
         this.emitter.emit("isReportCreated", true);
         this.closeModal();
