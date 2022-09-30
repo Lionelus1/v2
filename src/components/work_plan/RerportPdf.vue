@@ -44,6 +44,11 @@
             <td style="text-align: start;vertical-align: top;"
                 v-bind:style="(item.event_result && item.event_result.length > 150) ? 'font-size: 10pt' : 'font-size:12pt;'">
               {{ item.event_result ? item.event_result.event_result : "" }}
+              <div v-if="item.event_result">
+                <div class="text" v-for="(resItem, resIndex) in item.event_result.result_text" :key="resIndex">
+                  <span v-html="resItem.text"></span>
+                </div>
+              </div>
             </td>
             <td class="td-va">{{ item.event_result ? $t('common.done') : $t('common.notDone') }}</td>
           </tr>
@@ -106,18 +111,19 @@
               </td>
               <td class="td-va">{{ item.unit }}</td>
               <td class="td-va">{{ item.plan_number }}</td>
-              <td class="td-va"></td>
+              <td class="td-va">{{ item.fact }}</td>
               <td class="td-va">{{ item.responsible_executor }}</td>
               <td class="td-va">{{ item.userList }}</td>
               <td class="td-va">{{ item.quarter }}</td>
               <td class="td-va">{{ item.supporting_docs }}</td>
               <td class="td-va">{{ plan.lang === 1 ? item.status.name_kz : plan.lang === 2 ? item.status.name_ru : item.status.name_en }}</td>
               <td style="text-align: left;vertical-align: top;"
-                  v-bind:style="(item.event_result && item.event_result.event_result.length > 200) ? 'font-size: 10pt;min-width: 250px;' : 'font-size:10pt;'">
-                <div style="padding-bottom: 20px">
-                {{
-                  item.event_result ? item.event_result.event_result : ""
-                }}
+                  v-bind:style="(item.event_result) ? 'font-size: 10pt;min-width: 250px;' : 'font-size:10pt;'">
+                <div style="padding-bottom: 20px" v-if="item.event_result">
+                  <div class="text" v-for="(resItem, resIndex) in item.event_result.result_text" :key="resIndex">
+                    <small style="color: #a3a3a3;"><i class="fa-solid fa-user p-mr-1"></i>{{resItem.user.fullName }}</small>
+                    <span v-html="resItem.text"></span>
+                  </div>
                 </div>
               </td>
             </tr>
@@ -185,6 +191,10 @@ table {
 
 .user-item {
   display: block;
+  padding: 0;
+  margin: 0;
+}
+.text p {
   padding: 0;
   margin: 0;
 }

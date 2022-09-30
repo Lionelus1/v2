@@ -45,7 +45,7 @@ const treeToList = function (tree, key, lang) {
                 item[prop] = node[prop];
             }
             if (prop === 'quarter') {
-                item[prop] = initQuarter(item[prop].String, lang)
+                item[prop] = initQuarter(item[prop], lang)
             }
         });
         if (nodeKey) { // object
@@ -66,19 +66,19 @@ const treeToList = function (tree, key, lang) {
 function initQuarter(quarter, lang) {
     let res = '';
     switch (quarter) {
-        case "1":
+        case 1:
             res = 'I';
             break;
-        case "2":
+        case 2:
             res = 'II';
             break;
-        case "3":
+        case 3:
             res = 'III';
             break;
-        case "4":
+        case 4:
             res = 'IV';
             break;
-        case "5":
+        case 5:
             res = lang === 1 ? 'Жыл бойы' : lang === 2 ? 'Весь год' : 'Whole year';
             break;
     }

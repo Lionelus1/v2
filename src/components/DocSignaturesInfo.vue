@@ -23,7 +23,7 @@
         </div>
       </TabPanel>
       <TabPanel v-if="docInfo.docHistory.stateId==2 ||docInfo.docHistory.stateId==6" :header="$t('ncasigner.sign')"
-                :disabled="!isShow">
+                :disabled="isSignShow">
         <div class="p-mt-2">
           <Panel>
             <template #header>
@@ -31,7 +31,7 @@
             </template>
             <div class="p-d-flex p-jc-center">
               <Button icon="pi pi-user-edit" v-if="signButtonVisibility"
-                      class="p-button-primary p-md-5" @click="sign" :label="$t('ncasigner.sign')"/>
+                      class="p-button-primary p-md-5" @click="sign" :label="$t('ncasigner.sign')" :loading="signing"/>
               <Button icon="pi pi-user-edit" v-if="tspButtonVisibility"
                       class="p-button-primary" @click="tsp" :label="$t('ncasigner.tsp')"/>
             </div>
@@ -97,6 +97,7 @@ export default {
       signing: false,
       file: null,
       active: 0,
+      isSignShow: false
     }
   },
   created() {
@@ -135,6 +136,7 @@ export default {
               this.docInfo = res.data;
               this.signatures = res.data.signatures;
               this.isShow = this.signatures.some(x => x.userId === this.loginedUserId) || this.docInfo.docHistory.setterId === this.loginedUserId;
+              this.isSignShow = this.signatures.some(x => x.userId === this.loginedUserId && (x.signature || x.signature !== ''));
               this.signatures.map(e => {
                 e.sign = this.chunkString(e.signature, 1200)
               });
@@ -154,6 +156,7 @@ export default {
       });
     },
     sign() {
+      this.signing = true;
       axios.post(
           smartEnuApi + "/downloadFile", {
             filePath: this.docInfo.filePath
@@ -175,8 +178,10 @@ export default {
                           this.sendRequest(sign)
                         }
                       }
-                    })
-
+                    }).catch(e => {
+                  console.log(e)
+                  this.signing = false;
+                })
             ).catch(error => {
               this.signing = false;
 

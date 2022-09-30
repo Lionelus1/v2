@@ -202,11 +202,12 @@ export default {
         if (res.data) {
           this.signatures = res.data;
           const signUser = res.data.find(x => x.userId === this.loginedUserId);
-          if (signUser.signature && signUser.signature !== '') {
+          if (signUser && signUser.signature && signUser.signature !== '') {
             this.isCurrentUserApproved = true;
           }
         }
       }).catch(error => {
+        console.log(error)
         this.$toast.add({
           severity: 'error',
           summary: error,

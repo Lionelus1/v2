@@ -1,7 +1,37 @@
 <template>
   <div class="p-col-12" v-if="!loading">
     <h3 v-if="plan">{{ plan.work_plan_name }}</h3>
-    <Message severity="warn" :closable="false" v-if="plan && plan.reject_history && isRejected && isPlanCreator">{{ plan.reject_history.message }}</Message>
+    <div class="card" v-if="plan && plan.reject_history && isRejected && isPlanCreator">
+      <div class="p-fluid">
+        <div class="p-field">
+          <label>{{ $t('common.state') }}:</label>
+          <div>
+            <span v-if="plan.status" :class="'customer-badge status-' + plan.status.work_plan_status_id">{{
+                plan.status.name_ru
+              }}</span>
+          </div>
+        </div>
+        <div class="p-field" v-if="plan.reject_history.user">
+          <label>{{ $t('contracts.assigner') }}:</label>
+          <div>
+            <b>{{ plan.reject_history.user.fullName }}</b>
+          </div>
+        </div>
+        <div class="p-field" v-if="plan.reject_history.created_date">
+          <label>{{ $t('common.date') }}:</label>
+          <div>
+            <b>{{ formatDateMoment(plan.reject_history.created_date) }}</b>
+          </div>
+        </div>
+        <div class="p-field">
+          <label>{{ $t('common.comment') }}:</label>
+          <div>
+            <Message :closable="false" severity="warn"><span v-html="plan.reject_history.message"></span>
+            </Message>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="card" v-if="plan || data">
       <work-plan-event-add v-if="(isCreator || isEventsNull) && !isFinish && isPlanCreator" :items="data" :isMain="true" :plan-data="plan"></work-plan-event-add>
       <Button v-if="isPlanCreator && !isFinish" :label="$t('common.complete')" icon="pi pi-check" @click="finish"
@@ -117,7 +147,7 @@
                                             :event-result="slotProps.data.event_result"
                                             :eventData="slotProps.data"
                                             :plan-data="plan"></work-plan-event-result-modal>
-              <work-plan-event-add v-if="!slotProps.data.is_finish" :data="slotProps.data" :items="slotProps.data.children" :isMain="false" :plan-data="plan"></work-plan-event-add>
+              <work-plan-event-add v-if="isPlanCreator && !isPlanSentApproval && !isFinish" :data="slotProps.data" :items="slotProps.data.children" :isMain="false" :plan-data="plan"></work-plan-event-add>
               <work-plan-event-edit-modal v-if="isPlanCreator && !isPlanSentApproval && !isFinish"
                                           :planData="plan"
                                           :event="slotProps.data"
@@ -149,6 +179,7 @@ import WorkPlanExecute from "@/components/work_plan/WorkPlanExecute";
 import WorkPlanReportModal from "@/components/work_plan/WorkPlanReportModal";
 import WorkPlanEventResultModal from "@/components/work_plan/WorkPlanEventResultModal";
 import WorkPlanEventEditModal from "@/components/work_plan/WorkPlanEventEditModal";
+import moment from "moment";
 
 export default {
   components: {
@@ -479,8 +510,10 @@ export default {
     },
     showRespUsers(event) {
       this.$refs.op.toggle(event);
-    }
-
+    },
+    formatDateMoment(date) {
+      return moment(new Date(date)).utc().format("DD.MM.YYYY HH:mm:ss")
+    },
   },
   /*unmounted() {
     localStorage.removeItem("workPlan");

@@ -25,8 +25,10 @@
       </div>
     </div>
     <div class="p-col p-fluid">
-      <div class="p-field" v-if="data.event_result">
-        <span v-html="data.event_result"></span>
+      <div class="p-field" v-if="data.result_text">
+        <div v-for="(item, index) in data.result_text" :key="index">
+          <span v-html="item.text"></span>
+        </div>
       </div>
       <div class="p-field" v-if="data.event_result_file">
         <label class="p-text-bold">{{ $t('workPlan.attachments') }}</label>
@@ -134,13 +136,14 @@ export default {
     closeModal() {
       this.eventResultModal = false;
     },
-    downloadFile(name) {
+    downloadFile(item) {
+      console.log(item)
       axios.post(smartEnuApi + `/workPlan/getWorkPlanResultFile`,
-          {file_path: name ? name : this.data.event_result_file}, {headers: getHeader()}).then(res => {
+          {file_path: item.event_result_file}, {headers: getHeader()}).then(res => {
         const link = document.createElement("a");
         link.href = "data:application/octet-stream;base64," + res.data;
-        link.setAttribute("download", name ? name : this.data.event_result_file);
-        link.download = name ? name : this.data.event_result_file;
+        link.setAttribute("download", item.file_name ? item.file_name : item.event_result_file);
+        link.download = item.file_name ? item.file_name : item.event_result_file;
         link.click();
         URL.revokeObjectURL(link.href);
       }).catch((error) => {

@@ -66,9 +66,23 @@
                 <label>{{ $t('common.result') }}</label>
                 <RichEditor v-if="plan && !plan.is_oper" v-model="result" editorStyle="height:300px;"
                             @text-change="editorChange">
+                  <template v-slot:toolbar>
+                    <span class="ql-formats">
+                      <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
+                      <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
+                      <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
+                    </span>
+                  </template>
                 </RichEditor>
                 <RichEditor v-if="plan && plan.is_oper" v-model="newResult" editorStyle="height:300px;"
                             @text-change="editorChange">
+                  <template v-slot:toolbar>
+                    <span class="ql-formats">
+                      <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
+                      <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
+                      <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
+                    </span>
+                  </template>
                 </RichEditor>
               </div>
               <div class="p-field">
@@ -103,9 +117,11 @@
               <div class="p-field" v-if="plan && resultData && plan.is_oper">
                 <label class="p-text-bold">{{ $t('common.result') }}</label>
                 <div v-for="(item, index) of resultData.result_text" :key="index" class="p-mb-2">
-                  <Inplace v-if="item.userId === loginedUserId && event && (event.status.work_plan_event_status_id !== 5 && event.status.work_plan_event_status_id !== 2)" :active="item.isActive" @open="openInplace(item)">
+                  <Inplace
+                      v-if="item.userId === loginedUserId && event && (event.status.work_plan_event_status_id !== 5 && event.status.work_plan_event_status_id !== 2)"
+                      :active="item.isActive" @open="openInplace(item)">
                     <template #display>
-                      <div >
+                      <div>
                         <span class="p-mr-1" style="float:left;"><i class="fa-solid fa-pen color-success"></i></span>
                         <p class="p-p-0 p-m-0" v-html="item.text"></p>
                       </div>
@@ -113,7 +129,7 @@
                     <template #content>
                       <div class="p-py-2">
                         <Button :label="$t('common.save')" icon="pi pi-check" class="p-button p-button-success"
-                                @click="saveEditResult(item)" :loading="loading" />
+                                @click="saveEditResult(item)" :loading="loading"/>
                         <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button p-ml-1"
                                 @click="cancelEdit(item)"/>
                         <Button :label="$t('common.delete')" icon="pi pi-trash" class="p-button p-button-danger p-ml-1"
@@ -121,12 +137,21 @@
                       </div>
                       <div class="p-field">
                         <RichEditor v-model="item.text" editorStyle="height:200px;">
+                          <template v-slot:toolbar>
+                            <span class="ql-formats">
+                              <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
+                              <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
+                              <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
+                            </span>
+                          </template>
                         </RichEditor>
                       </div>
                     </template>
                   </Inplace>
                   <div v-else class="p-p-0">
-                    <small style="color: #a3a3a3;"><i class="fa-solid fa-user p-mr-1"></i>{{item.user.fullName }}</small>
+                    <small style="color: #a3a3a3;"><i class="fa-solid fa-user p-mr-1"></i>{{
+                        item.user.fullName
+                      }}</small>
                     <p v-html="item.text"></p>
                   </div>
 
@@ -140,7 +165,9 @@
                       <span class="p-mr-3" style="cursor: pointer;" @click="downloadFile(file.event_result_file)"><i
                           class="fa-solid fa-file-arrow-down fa-2x color-success"></i></span>
                       <span @click="downloadFile(file)"
-                            style="cursor: pointer;">{{ file.file_name ? file.file_name : file.event_result_file }}</span>
+                            style="cursor: pointer;">{{
+                          file.file_name ? file.file_name : file.event_result_file
+                        }}</span>
                       <span class="p-ml-5" v-if="file.user_id && file.user_id === loginedUserId"><Button
                           icon="pi pi-times" class="p-button-rounded p-button-text"
                           v-if="event && (event.status.work_plan_event_status_id !== 5 && event.status.work_plan_event_status_id !== 2)"
@@ -182,15 +209,13 @@
   <Sidebar v-model:visible="toCorrectSidebar"
            position="right"
            class="p-sidebar-lg "
-           style="overflow-y: scroll"
-  >
+           style="overflow-y: scroll" >
     <div class="p-col-12">
       <h3>{{ $t('workPlan.toCorrect') }}</h3>
     </div>
     <div class="p-col-12">
       <div>
-        <Menubar :model="rejectMenu" :key="active"
-                 style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
+        <Menubar :model="rejectMenu" :key="active" style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
       </div>
     </div>
     <div class="p-col p-fluid">
@@ -198,23 +223,11 @@
         <label>{{ $t('common.comment') }}</label>
         <RichEditor v-model="rejectComment" editorStyle="height:300px;">
           <template v-slot:toolbar>
-                <span class="ql-formats">
-                  <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
-                  <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
-                  <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
-                  <select class="ql-background" v-tooltip.bottom="'Color'"></select>
-                </span>
             <span class="ql-formats">
-                  <button class="ql-list" value="ordered"></button>
-                  <button class="ql-list" value="bullet"></button>
-                  <select class="ql-align">
-                    <option defaultValue></option>
-                    <option value="center"></option>
-                    <option value="right"></option>
-                    <option value="justify"></option>
-                  </select>
-                </span>
-
+              <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
+              <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
+              <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
+            </span>
           </template>
         </RichEditor>
       </div>
@@ -344,7 +357,6 @@ export default {
         {
           label: "",
           icon: "pi pi-fw pi-refresh",
-          visible: this.plan && this.plan.is_oper === true,
           command: () => {
             this.getData();
             this.$toast.add({severity: 'success', detail: this.$t('common.success'), life: 3000});
@@ -361,8 +373,7 @@ export default {
         {
           label: this.$t('common.toCorrect'),
           icon: "pi pi-fw pi-send",
-          visible: this.plan && this.plan.is_oper === true && this.resultData !== null && this.resultData.event_result !== null,
-          disabled: this.resultData && !this.resultData.event_result,
+          disabled: !this.resultData,
           command: () => {
             this.sendResultForVerification();
           },

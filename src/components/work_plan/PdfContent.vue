@@ -127,19 +127,19 @@ export default {
     initQuarter(quarter) {
       let res = '';
       switch (quarter) {
-        case "1":
+        case 1:
           res = 'I';
           break;
-        case "2":
+        case 2:
           res = 'II';
           break;
-        case "3":
+        case 3:
           res = 'III';
           break;
-        case "4":
+        case 4:
           res = 'IV';
           break;
-        case "5":
+        case 5:
           res = '';
           break;
       }

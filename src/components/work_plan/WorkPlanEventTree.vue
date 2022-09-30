@@ -78,7 +78,7 @@
                                       :event-result="slotProps.data.event_result"
                                       :eventData="slotProps.data"
                                       :plan-data="plan"></work-plan-event-result-modal>
-        <work-plan-event-add v-if="!isPlanSentApproval && !slotProps.data.is_finish" :data="slotProps.data" :items="data" :plan-data="plan"></work-plan-event-add>
+        <work-plan-event-add v-if="(slotProps.data.creator_id === loginedUserId || isPlanCreator) && !isPlanSentApproval && !slotProps.data.is_finish" :data="slotProps.data" :items="data" :plan-data="plan"></work-plan-event-add>
         <work-plan-event-edit-modal v-if="(slotProps.data.creator_id === loginedUserId || isPlanCreator) && !isPlanSentApproval && !slotProps.data.is_finish" :planData="plan" :event="slotProps.data" :parent="parent"></work-plan-event-edit-modal>
         <div>
           <Button v-if="(slotProps.data.creator_id === loginedUserId || isPlanCreator) && !isPlanSentApproval && !slotProps.data.is_finish" @click="remove_event(slotProps.data.work_plan_event_id)" icon="pi pi-trash" class="p-button-danger p-ml-1 p-mt-1"></Button>
