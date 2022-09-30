@@ -189,7 +189,8 @@ export default {
             signing: "Қол қоюда",
             signed: "Қол қойылды",
             edited: "Өзгертілді",
-            deleted: "Өшірілді"
+            deleted: "Өшірілді",
+            replied: "Жауап берілді",
         },
         message: {
             title: {
@@ -276,7 +277,7 @@ export default {
         email: "Эл.пошта",
         postaddress: "Пошталық мекен-жайы",
         locality: "Елді мекен",
-        phone: "Телефон",
+        phone: "Телефон нөмірі",
         iin: "ЖСН",
         mailto: "Хат жазу",
         fname: "Есімі",
@@ -289,8 +290,10 @@ export default {
             givenorg: "Берген мекеме",
             givendate: "Берілген күні",
             expire: "Жарамдылық мерзімі",
+        },
+        message: {
+            validEmail: "Дұрыс email адрес көрсетіңіз",
         }
-
     },
 
     contragent: {
@@ -475,6 +478,7 @@ export default {
             }
 
         },
+       
         signatureError: {
             extractCertificate: "CMS қолтаңбасынан пайдаланушы сертификатын алу мүмкін емес.",
             certificateNotForSigning: "Сертификат қол қоюға арналмаған",
@@ -502,6 +506,9 @@ export default {
         failToSendDoc: "Құжаттың ID-ін серверге жіберу мүмкін емес!",
 
     },
+    publicReception: {
+        title: "Қоғамдық қабылдау",
+    },
     smartenu: {
         NormDoc: "Құжат",
         uploadNormDoc: "Құжаттарды жүктеу",
@@ -511,6 +518,7 @@ export default {
         createOrEditCatalogNormDoc: "Нормативті құжаттар құру/өзгерту",
         catalogNormDocNotFound: "Нормативті құжаттар каталогы табылмады",
         loadingcatalogNormDoc: "Нормативті құжаттар жүктелуде. Өтініш, күте тұрыңыз.",
+        category: "Категория",
         categories: "санаттар",
         selectCategories: "Санаттарды таңдаңыз",
         newsList: "Жаңалықтар тізімі",
