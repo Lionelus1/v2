@@ -228,7 +228,7 @@ export default {
             accessDenied: "У вас нет полномочий просматривать этот документ!",
             impossible: "невозможно",
             saveChanges: "Сохраните изменения",
-            fileError: "Не удалось загрузить файл. Возможно файл поврежден"
+            noRight: "У вас нет соответствующих прав",
         },
         language: {
             kz: "на казахском",
@@ -824,6 +824,7 @@ export default {
             resumeSuccessSigned: 'Резюме успешно подписано',
             digital: 'ЭЦП',
             paper: 'На бумаге',
+            financial: "Требует согласования департамента финансов",
         }
     },
     workPlan: {

@@ -136,6 +136,7 @@ export default {
         recordsNotFound: "Records not found",
         refinf: "Reference information",
         organization: "Organization",
+        organizations: "Organizatios",
         params: "Parameters",
         password: "Password",
         person: "Person",
@@ -225,7 +226,7 @@ export default {
             accessDenied: "You do not have permission to view this document!",
             saveChanges: "Save changes",
             impossible: "impossible",
-            fileError: "Failed to upload file. Maybe the file is corrupted"
+            noRight: "You do not have the appropriate rights",
         },
         language: {
             kz: "in kazakh",
@@ -792,6 +793,7 @@ export default {
             resumeSuccessSigned: 'Resume successfully signed',
             digital: 'EDS',
             paper: 'On paper',
+            financial: "Requires approval from the finance department",
         }
     },
     workPlan: {
