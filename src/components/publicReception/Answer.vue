@@ -141,6 +141,7 @@ import { throwStatement } from "@babel/types";
                 header: this.$t("common.confirm"),
                 icon: 'pi pi-exclamation-triangle',
                 accept: () => {
+
                     if (this.question.answer === null || this.question.answer === "") {
                         this.$toast.add({
                         severity: "error",
@@ -148,13 +149,14 @@ import { throwStatement } from "@babel/types";
                         life: 3000,
                         });
                     }
+                    this.loading = true
                     axios
                     .post(smartEnuApi + "/reception/answer", 
                         { questionID: this.questionID, answer: this.question.answer},
                         { headers: getHeader()}
 
                         )
-                    .then(response=> {
+                    .then(_=> {
                         this.question.state.id = 7;
                         this.question.state.code = "replied";
                         this.loading = false;
@@ -177,8 +179,6 @@ import { throwStatement } from "@babel/types";
                             });
                         }
                     });
-
-                    this.$toast.add({severity:'info', summary:'Confirmed', detail:'You have accepted', life: 3000});
                 },
                 reject: () => {
                     this.$toast.add({severity:'info', summary:'Rejected', detail:this.$t("faq.rejected"), life: 3000});
