@@ -42,6 +42,12 @@ const routes = [
         name:'OutQr',
         component: load('OutQr'),
     },
+    {
+        path: '/reception/request',
+        name: "receptionRequest",
+        component: load('publicReception/Request')
+
+    } ,
     
     {
         path: '/afterauth',
@@ -347,7 +353,8 @@ const routes = [
                 component: load('queue/QueueReport'),
                 beforeEnter: ifAuthenticated,
                 
-            },      
+            },
+                
         ]
     }
 

@@ -188,7 +188,8 @@ export default {
             signing: "Signing",
             signed: "Signed",
             edited: "Edited",
-            deleted: "Deleted"
+            deleted: "Deleted",
+            replied: "Replied",
         },
         message: {
             title: {
@@ -273,7 +274,7 @@ export default {
         address: "Legal address",
         postaddress: "Postal address",
         locality: "Locality",
-        phone: "Phone",
+        phone: "Phone number",
         email: "Email",
         bin: "BIN",
         iin: "IIN",
@@ -289,6 +290,9 @@ export default {
             givenorg: "Issuing authority",
             givendate: "Date of issue",
             expire: "Expiration date",
+        },
+        message: {
+            validEmail: "Please enter a valid email address",
         }
     },
     contragent: {
@@ -484,6 +488,9 @@ export default {
         failToSendDoc: "The document ID could not be sent to the server!",
 
     },
+    publicReception: {
+        title: "Public reception",
+    },
     smartenu: {
         NormDoc: "Document",
         uploadNormDoc: "Uploading documents",
@@ -493,6 +500,7 @@ export default {
         createOrEditCatalogNormDoc: "Create/edit regulatory documents",
         catalogNormDocNotFound: "Catalog of regulatory documents not found",
         loadingcatalogNormDoc: "Loading regulatory documents. Please wait.",
+        categorн: "Сategory",
         categories: "categories",
         selectCategories: "Select categories",
         newsList: "News list",

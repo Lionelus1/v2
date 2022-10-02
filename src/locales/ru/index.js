@@ -190,7 +190,9 @@ export default {
             signing: "На подписи",
             signed: "Подписан",
             edited: "Отредактирован",
-            deleted: "Удален"
+            deleted: "Удален",
+            replied: "Ответили",
+
         },
         message: {
             title: {
@@ -276,11 +278,10 @@ export default {
         address: "Юридический адрес",
         postaddress: "Почтовый адрес",
         locality: "Населенный пункт",
-        phone: "Телефон",
+        phone: "Номер телефона",
         email: "Эл.почта",
         bin: "БСН",
         iin: "ИИН",
-
         mailto: "Написать письмо",
         fname: "Имя",
         lname: "Фамилия",
@@ -293,6 +294,9 @@ export default {
             givenorg: "Орган выдачи",
             givendate: "Дата выдачи",
             expire: "Годен до",
+        },  
+        message: {
+            validEmail: "Введите корректный email адрес",
         }
     },
     contragent: {
@@ -487,6 +491,9 @@ export default {
         failToSendDoc: "Не удалось отправить ID документа на сервер!",
 
     },
+    publicReception: {
+        title: "Общественный прием",
+    },
     smartenu: {
         NormDoc: "Документ",
         uploadNormDoc: "Загрузка документов",
@@ -495,6 +502,7 @@ export default {
         chooseSuperiorCatalogNormDoc: "Выберите вышестоящую нормативный документ",
         createOrEditCatalogNormDoc: "Создание/редактирование нормативных документов",
         catalogNormDocNotFound: "нормативных документы не найдены",
+        category: "Категория",
         loadingcatalogNormDoc: "Загрузка нормативных документов. Пожалуйста, подождите.",
         addNormDoc: "Добавить документ",
         editNormDoc: "Редактировать документ",
