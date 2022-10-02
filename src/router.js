@@ -46,7 +46,6 @@ const routes = [
         path: '/reception/request',
         name: "receptionRequest",
         component: load('publicReception/Request')
-
     } ,
     
     {
@@ -202,6 +201,7 @@ const routes = [
                         component: load('faq/FaqView'),
                         beforeEnter: ifAuthenticated,
                     }
+
                 ]
             },
             {
@@ -354,6 +354,18 @@ const routes = [
                 beforeEnter: ifAuthenticated,
                 
             },
+            {
+                path: '/reception',
+                name: 'reception',
+                component: load('publicReception/Journal'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/reception/question/:id',
+                name: 'ReceptionQuestion',
+                component: load('publicReception/Answer'),
+                beforeEnter: ifAuthenticated,
+            }
                 
         ]
     }

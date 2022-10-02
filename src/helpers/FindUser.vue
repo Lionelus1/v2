@@ -1,7 +1,7 @@
 <template xmlns:aria="http://www.w3.org/1999/xhtml">
   <div>
     <div :class="containerClass" :style="style">
-      <ul :class="['p-inputtext p-chips-multiple-container', {'p-disabled': $attrs.disabled, 'p-focus': focused}]"
+      <ul style="width:100%" :class="['p-inputtext p-chips-multiple-container p-w-100', {'p-disabled': $attrs.disabled, 'p-focus': focused}]"
           @click="onWrapperClick()">
         <li v-for="(val,i) of modelValue" :key="`${i}_${val}`" class="p-chips-token">
           <slot name="chip" :value="val.fullName">
@@ -10,7 +10,7 @@
           </slot>
         </li>
         <li class="p-chips-input-token">
-          <input aria:haspopup="true"  ref="input" type="text" v-bind="$attrs" @focus="onFocus" @blur="onBlur($event)"
+          <input aria:haspopup="true" width="100%"  ref="input" type="text" v-bind="$attrs" @focus="onFocus" @blur="onBlur($event)"
                  @input="onInput" @keydown="onKeyDown($event)" @keyup="onKeyUp($event)" @paste="onPaste($event)"
                  :disabled="$attrs.disabled || maxedOut" aria-controls="overlay_panel">
         </li>
@@ -94,7 +94,7 @@ export default {
       default: true
     },
     class: null,
-    style: null
+    style: null,
   },
   data() {
     return {
@@ -317,7 +317,7 @@ export default {
       return this.max && this.modelValue && this.max === this.modelValue.length;
     },
     containerClass() {
-      return ['p-chips p-component p-inputwrapper', this.class, {
+      return ['p-chips p-component p-inputwrapper p-w-100', this.class, {
         'p-inputwrapper-filled': ((this.modelValue && this.modelValue.length) || (this.inputValue && this.inputValue.length)),
         'p-inputwrapper-focus': this.focused
       }];
