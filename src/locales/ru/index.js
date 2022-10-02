@@ -103,6 +103,7 @@ export default {
         select: "Выберите",
         cancel: "Отмена",
         main: "Основные",
+        more: "Подробнее",
         meetingUrl: "Ссылка для онлайн собрания",
         meetingPlace: "Место собрания",
         move: "Перемещение",
@@ -147,6 +148,7 @@ export default {
         votedFor: "Проголосовали за: {result}",
         search: "Поиск",
         send: "Отправить",
+        sendToResponsible: "Отправить ответственному",
         showingRecordsCount: ' Показаны записи с {first} по {last} из  {totalRecords} ',
         startDate: 'Дата начала',
         endDate: 'Дата окончания',
@@ -192,7 +194,7 @@ export default {
             edited: "Отредактирован",
             deleted: "Удален",
             replied: "Ответили",
-
+            pending: "На рассмотрении",
         },
         message: {
             title: {
@@ -227,10 +229,12 @@ export default {
             selectVariant: "Выберите нужный вариант",
             selectUsers: "Выберите пользователей",
             userIINExists: "Пользователь с таким же ИИН уже имеется",
+            notAllowed: "У Вас нет полномочий для этих действий",
             accessDenied: "У вас нет полномочий просматривать этот документ!",
             impossible: "невозможно",
             saveChanges: "Сохраните изменения",
-            fileError: "Не удалось загрузить файл. Возможно файл поврежден"
+            fileError: "Не удалось загрузить файл. Возможно файл поврежден",
+            mailSendError: "Ошибка при отправке на электронную почту"
         },
         language: {
             kz: "на казахском",
@@ -709,6 +713,8 @@ export default {
         uploadFile: "Добавить файл",
         answer: "Ответ",
         noAnswer: "Ответ не получен",
+        answerConfirm: "Ответ будет отправлен на почту отправителю вопроса. Сохранить и отправить ответ?",
+        rejected: "Отменили выполнение действия"
     },
     hr: {
         action: {

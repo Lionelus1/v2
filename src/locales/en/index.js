@@ -101,6 +101,7 @@ export default {
         cancel: "Cancel",
         code: "Code",
         main: "Main",
+        more: "More",
         meetingUrl: "Link to online meeting",
         meetingPlace: "Meeting place",
         myData: "My details",
@@ -160,6 +161,7 @@ export default {
         startDate: 'Start date',
         endDate: 'End date',
         send: "Send",
+        sendToResponsible: "Send to responsible",
         publish: "Publish",
         reject: "Reject",
         online: "Online",
@@ -189,6 +191,7 @@ export default {
             edited: "Edited",
             deleted: "Deleted",
             replied: "Replied",
+            pending: "Pending",
         },
         message: {
             title: {
@@ -226,7 +229,9 @@ export default {
             accessDenied: "You do not have permission to view this document!",
             saveChanges: "Save changes",
             impossible: "impossible",
-            fileError: "Failed to upload file. Maybe the file is corrupted"
+            notAllowed: "You do not have permission to do this",
+            fileError: "Failed to upload file. Maybe the file is corrupted",
+            mailSendError: "Error sending email"
         },
         language: {
             kz: "in kazakh",
@@ -499,7 +504,7 @@ export default {
         createOrEditCatalogNormDoc: "Create/edit regulatory documents",
         catalogNormDocNotFound: "Catalog of regulatory documents not found",
         loadingcatalogNormDoc: "Loading regulatory documents. Please wait.",
-        categorн: "Сategory",
+        category: "Сategory",
         categories: "categories",
         selectCategories: "Select categories",
         newsList: "News list",
@@ -675,7 +680,10 @@ export default {
         uploadImage: "Add a picture",
         uploadFile: "Add a file",
         answer: "Answer",
-        noAnswer: "No response received"
+        noAnswer: "No response received",
+        answerConfirm: "The answer will be sent to the sender of the question. Save and send the answer?",
+        rejected: "Отменили выполнение действия"
+
     },
     hr: {
         action: {
@@ -849,7 +857,7 @@ export default {
         title: "Queue",
         secretary:"Maintenance",
         queues:"Queues",
-        responsible:"responsible",
+        responsible:"Responsible",
         queueNotFound:"Queue not found",
         createQueue:"Create/Modify Queue",
         next:"Next",

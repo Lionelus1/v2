@@ -34,6 +34,7 @@ import AppFooter from '../AppFooter.vue';
 import {useRoute} from "vue-router"
 import Enum from "@/enum/docstates"
 import {mapState} from "vuex";
+import { throwStatement } from '@babel/types';
 
 export default {
   setup() {
@@ -149,8 +150,11 @@ export default {
         {
           label: this.$t('vaccination.title'), icon: 'pi pi-fw pi-check-circle', to: '/smartenu/vaccination'
         },
+        // {
+        //   label:  this.$t('faq.title'), icon: 'pi pi-fw pi-question-circle', to: '/faq/faqmain'
+        // },
         {
-          label:  this.$t('faq.title'), icon: 'pi pi-fw pi-question-circle', to: '/faq/faqmain'
+          label:  this.$t('publicReception.title'), icon: 'pi pi-fw pi-question-circle', to: '/reception'
         },
         {
           label:  this.$t('dissertation.title'), icon: 'pi pi-fw pi-book',
@@ -232,7 +236,9 @@ export default {
     findRole(roleName) {
       if (!this.loginedUser)
         this.getLoginedUser();
-
+      if (!this.loginedUser.roles) {
+        return false;
+      }
       for (let i = 0; i < this.loginedUser.roles.length; i++) {
         if (this.loginedUser.roles[i].name === roleName) {
           return true;
@@ -243,6 +249,9 @@ export default {
     isRoleGroupMember(groupPrefix) {
       if (!this.loginedUser)
         this.getLoginedUser();
+      if (!this.loginedUser.roles) {
+        return false;
+      }
       for (let i = 0; i < this.loginedUser.roles.length; i++) {
         if (this.loginedUser.roles[i].name.includes(groupPrefix)) {
           return true;
