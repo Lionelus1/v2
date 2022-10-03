@@ -42,6 +42,11 @@ const routes = [
         name:'OutQr',
         component: load('OutQr'),
     },
+    {
+        path: '/reception/request',
+        name: "receptionRequest",
+        component: load('publicReception/Request')
+    } ,
     
     {
         path: '/afterauth',
@@ -196,6 +201,7 @@ const routes = [
                         component: load('faq/FaqView'),
                         beforeEnter: ifAuthenticated,
                     }
+
                 ]
             },
             {
@@ -347,7 +353,20 @@ const routes = [
                 component: load('queue/QueueReport'),
                 beforeEnter: ifAuthenticated,
                 
-            },      
+            },
+            {
+                path: '/reception',
+                name: 'reception',
+                component: load('publicReception/Journal'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/reception/question/:id',
+                name: 'ReceptionQuestion',
+                component: load('publicReception/Answer'),
+                beforeEnter: ifAuthenticated,
+            }
+                
         ]
     }
 

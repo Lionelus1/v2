@@ -101,6 +101,7 @@ export default {
         cancel: "Cancel",
         code: "Code",
         main: "Main",
+        more: "More",
         meetingUrl: "Link to online meeting",
         meetingPlace: "Meeting place",
         myData: "My details",
@@ -160,6 +161,7 @@ export default {
         startDate: 'Start date',
         endDate: 'End date',
         send: "Send",
+        sendToResponsible: "Send to responsible",
         publish: "Publish",
         reject: "Reject",
         online: "Online",
@@ -187,7 +189,9 @@ export default {
             signing: "Signing",
             signed: "Signed",
             edited: "Edited",
-            deleted: "Deleted"
+            deleted: "Deleted",
+            replied: "Replied",
+            pending: "Pending",
         },
         message: {
             title: {
@@ -225,7 +229,9 @@ export default {
             accessDenied: "You do not have permission to view this document!",
             saveChanges: "Save changes",
             impossible: "impossible",
-            fileError: "Failed to upload file. Maybe the file is corrupted"
+            notAllowed: "You do not have permission to do this",
+            fileError: "Failed to upload file. Maybe the file is corrupted",
+            mailSendError: "Error sending email"
         },
         language: {
             kz: "in kazakh",
@@ -272,7 +278,7 @@ export default {
         address: "Legal address",
         postaddress: "Postal address",
         locality: "Locality",
-        phone: "Phone",
+        phone: "Phone number",
         email: "Email",
         bin: "BIN",
         iin: "IIN",
@@ -288,6 +294,9 @@ export default {
             givenorg: "Issuing authority",
             givendate: "Date of issue",
             expire: "Expiration date",
+        },
+        message: {
+            validEmail: "Please enter a valid email address",
         }
     },
     contragent: {
@@ -483,6 +492,9 @@ export default {
         failToSendDoc: "The document ID could not be sent to the server!",
 
     },
+    publicReception: {
+        title: "Public reception",
+    },
     smartenu: {
         NormDoc: "Document",
         uploadNormDoc: "Uploading documents",
@@ -492,6 +504,7 @@ export default {
         createOrEditCatalogNormDoc: "Create/edit regulatory documents",
         catalogNormDocNotFound: "Catalog of regulatory documents not found",
         loadingcatalogNormDoc: "Loading regulatory documents. Please wait.",
+        category: "Сategory",
         categories: "categories",
         selectCategories: "Select categories",
         newsList: "News list",
@@ -667,7 +680,10 @@ export default {
         uploadImage: "Add a picture",
         uploadFile: "Add a file",
         answer: "Answer",
-        noAnswer: "No response received"
+        noAnswer: "No response received",
+        answerConfirm: "The answer will be sent to the sender of the question. Save and send the answer?",
+        rejected: "Отменили выполнение действия"
+
     },
     hr: {
         action: {
@@ -841,7 +857,7 @@ export default {
         title: "Queue",
         secretary:"Maintenance",
         queues:"Queues",
-        responsible:"responsible",
+        responsible:"Responsible",
         queueNotFound:"Queue not found",
         createQueue:"Create/Modify Queue",
         next:"Next",

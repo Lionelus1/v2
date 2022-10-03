@@ -103,6 +103,7 @@ export default {
         select: "Выберите",
         cancel: "Отмена",
         main: "Основные",
+        more: "Подробнее",
         meetingUrl: "Ссылка для онлайн собрания",
         meetingPlace: "Место собрания",
         move: "Перемещение",
@@ -147,6 +148,7 @@ export default {
         votedFor: "Проголосовали за: {result}",
         search: "Поиск",
         send: "Отправить",
+        sendToResponsible: "Отправить ответственному",
         showingRecordsCount: ' Показаны записи с {first} по {last} из  {totalRecords} ',
         startDate: 'Дата начала',
         endDate: 'Дата окончания',
@@ -190,7 +192,9 @@ export default {
             signing: "На подписи",
             signed: "Подписан",
             edited: "Отредактирован",
-            deleted: "Удален"
+            deleted: "Удален",
+            replied: "Ответили",
+            pending: "На рассмотрении",
         },
         message: {
             title: {
@@ -225,10 +229,12 @@ export default {
             selectVariant: "Выберите нужный вариант",
             selectUsers: "Выберите пользователей",
             userIINExists: "Пользователь с таким же ИИН уже имеется",
+            notAllowed: "У Вас нет полномочий для этих действий",
             accessDenied: "У вас нет полномочий просматривать этот документ!",
             impossible: "невозможно",
             saveChanges: "Сохраните изменения",
-            fileError: "Не удалось загрузить файл. Возможно файл поврежден"
+            fileError: "Не удалось загрузить файл. Возможно файл поврежден",
+            mailSendError: "Ошибка при отправке на электронную почту"
         },
         language: {
             kz: "на казахском",
@@ -276,11 +282,10 @@ export default {
         address: "Юридический адрес",
         postaddress: "Почтовый адрес",
         locality: "Населенный пункт",
-        phone: "Телефон",
+        phone: "Номер телефона",
         email: "Эл.почта",
         bin: "БСН",
         iin: "ИИН",
-
         mailto: "Написать письмо",
         fname: "Имя",
         lname: "Фамилия",
@@ -293,6 +298,9 @@ export default {
             givenorg: "Орган выдачи",
             givendate: "Дата выдачи",
             expire: "Годен до",
+        },  
+        message: {
+            validEmail: "Введите корректный email адрес",
         }
     },
     contragent: {
@@ -487,6 +495,9 @@ export default {
         failToSendDoc: "Не удалось отправить ID документа на сервер!",
 
     },
+    publicReception: {
+        title: "Общественная приемная",
+    },
     smartenu: {
         NormDoc: "Документ",
         uploadNormDoc: "Загрузка документов",
@@ -495,6 +506,7 @@ export default {
         chooseSuperiorCatalogNormDoc: "Выберите вышестоящую нормативный документ",
         createOrEditCatalogNormDoc: "Создание/редактирование нормативных документов",
         catalogNormDocNotFound: "нормативных документы не найдены",
+        category: "Категория",
         loadingcatalogNormDoc: "Загрузка нормативных документов. Пожалуйста, подождите.",
         addNormDoc: "Добавить документ",
         editNormDoc: "Редактировать документ",
@@ -701,6 +713,8 @@ export default {
         uploadFile: "Добавить файл",
         answer: "Ответ",
         noAnswer: "Ответ не получен",
+        answerConfirm: "Ответ будет отправлен на почту отправителю вопроса. Сохранить и отправить ответ?",
+        rejected: "Отменили выполнение действия"
     },
     hr: {
         action: {
