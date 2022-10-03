@@ -101,6 +101,7 @@ export default {
         cancel: "Қайтару",
         code: "Коды",
         main: "Негізгі",
+        more: "Толық",
         meetingUrl: "Онлайн жиналысқа сілтеме",
         meetingPlace: "Жиналыс өтетін орын",
         move: "Орнын ауыстыру",
@@ -147,6 +148,7 @@ export default {
         reserve: "Резервтеу",
         search: "Іздеу",
         send: "Жіберу",
+        sendToResponsible: "Жауапты адамға жіберу",
         showingRecordsCount: "{totalRecords} жазбаның {first} - {last} аралығындағы жазбалар көрсетулі",
         startDate: 'Басталуы',
         endDate: 'Аяқталуы',
@@ -189,7 +191,9 @@ export default {
             signing: "Қол қоюда",
             signed: "Қол қойылды",
             edited: "Өзгертілді",
-            deleted: "Өшірілді"
+            deleted: "Өшірілді",
+            replied: "Жауап берілді",
+            pending: "Қарастырылуда",
         },
         message: {
             title: {
@@ -224,9 +228,12 @@ export default {
             selectUsers: "Қолданушыларды таңдаңыз",
             userIINExists: "Көрсетілген ЖСН бойынша қолданушы бұрыннан бар",
             accessDenied: "Бұл құжатты көруге құзіретіңіз жоқ!",
+            notAllowed: "Бұл әрекетті орындауға құзіретіңіз жоқ!",
             saveChanges: "Алдымен өззгерістерді сақтаңыз",
             impossible: "мүмкін емес",
-            fileError: "Файлды жүктеу мүмкін емес. Файл бүлінген болуы мүмкін"
+            fileError: "Файлды жүктеу мүмкін емес. Файл бүлінген болуы мүмкін",
+            mailSendError: "Электронды поштаға хат жіберуде қате пайда болды"
+
         },
         language: {
             kz: "қазақша",
@@ -276,7 +283,7 @@ export default {
         email: "Эл.пошта",
         postaddress: "Пошталық мекен-жайы",
         locality: "Елді мекен",
-        phone: "Телефон",
+        phone: "Телефон нөмірі",
         iin: "ЖСН",
         mailto: "Хат жазу",
         fname: "Есімі",
@@ -289,8 +296,10 @@ export default {
             givenorg: "Берген мекеме",
             givendate: "Берілген күні",
             expire: "Жарамдылық мерзімі",
+        },
+        message: {
+            validEmail: "Дұрыс email адрес көрсетіңіз",
         }
-
     },
 
     contragent: {
@@ -475,6 +484,7 @@ export default {
             }
 
         },
+       
         signatureError: {
             extractCertificate: "CMS қолтаңбасынан пайдаланушы сертификатын алу мүмкін емес.",
             certificateNotForSigning: "Сертификат қол қоюға арналмаған",
@@ -502,6 +512,9 @@ export default {
         failToSendDoc: "Құжаттың ID-ін серверге жіберу мүмкін емес!",
 
     },
+    publicReception: {
+        title: "Қоғамдық қабылдау",
+    },
     smartenu: {
         NormDoc: "Құжат",
         uploadNormDoc: "Құжаттарды жүктеу",
@@ -511,6 +524,7 @@ export default {
         createOrEditCatalogNormDoc: "Нормативті құжаттар құру/өзгерту",
         catalogNormDocNotFound: "Нормативті құжаттар каталогы табылмады",
         loadingcatalogNormDoc: "Нормативті құжаттар жүктелуде. Өтініш, күте тұрыңыз.",
+        category: "Категория",
         categories: "санаттар",
         selectCategories: "Санаттарды таңдаңыз",
         newsList: "Жаңалықтар тізімі",
@@ -607,7 +621,7 @@ export default {
         title: "Кезек",
         secretary: "Қызмет көрсету",
         queues: "Кезектер",
-        responsible: "Кезекке жауапты",
+        responsible: "Жауапты",
         queueNotFound: "Кезек табылмады",
         createQueue: "Кезек құру/өзгерту",
         next: "Келесі",
@@ -715,6 +729,8 @@ export default {
         uploadFile: "Құжат қосу",
         answer: "Жауап",
         noAnswer: "Жауап берілмеді",
+        answerConfirm: "Жауап сұрақ қоюшының поштасына жіберіледі. Жауапты сақтап, жібересіз бе?",
+        rejected: "Амалды орындаудан бас тарттыңыз"
     },
     hr: {
         action: {
