@@ -496,7 +496,7 @@ export default {
 
     },
     publicReception: {
-        title: "Общественный прием",
+        title: "Общественная приемная",
     },
     smartenu: {
         NormDoc: "Документ",

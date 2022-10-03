@@ -17,7 +17,11 @@
                         <small class="product-category">{{question.lastName + " " + question.firstName}}</small>
                         </span>
                     </div>
-                    <div class="p-col-12 p-grid">
+                    <div class="p-lg-2 p-md-2 p-sm-6">
+                        <span>
+                        <small class="product-category">{{question.mobile + " " + question.email}}</small>
+                        </span>
+                    </div>
                     <div class="p-lg-2 p-md-2 p-sm-6">
                         <i class="fa-solid fa-tags product-category-icon"></i>
                         <small class="product-category">{{question.category['name' + $i18n.locale].split("(")[0]}}</small>
@@ -30,10 +34,12 @@
                         <i class="fa-solid fa-calendar-days product-category-icon"></i>
                         <small class="product-category">{{moment(new Date(question.createdDate)).utc().format("DD.MM.YYYY")}}</small>
                     </div>
-                    </div>
                 </div>
                 <div class="product-grid-item-content">
                     <p class="block-with-text">{{question.question}}</p>
+                </div>
+                <div v-if="question.filePath" class="p-w-100 p-text-right">
+                    <Button :label="$t('faq.attachments')" icon="pi pi-download" @click="downloadFile(question.filePath)"></Button>
                 </div>
                 <div v-if="question.state.id ==1 && findRole(null, 'faq_receiption_request_admin')" class="p-w-100 p-text-right">
                      <Button :label="$t('common.send')" @click="sendDialog = true"  class="p-button-info p-mt-2 "></Button>
@@ -66,7 +72,7 @@
                             <Button v-if="question.state.id ==8" :label="$t('faq.toAnswer')"  class="p-button-info p-mt-2" @click="answer"></Button>
                         </div>
                     </div>
-                    <p v-else class="block-with-text">{{question.answer}}</p>
+                    <div v-else class="block-with-text" v-html="question.answer"> </div>
                 </div>
                 
             </div>
@@ -90,7 +96,7 @@
     import { getHeader, smartEnuApi, findRole } from "../../config/config";
     import moment from "moment";
     import FindUser from "@/helpers/FindUser";
-import { throwStatement } from "@babel/types";
+        import { throwStatement } from "@babel/types";
 
     
 
@@ -135,6 +141,34 @@ import { throwStatement } from "@babel/types";
                 });
             });
         },
+        downloadFile(filePath) {
+            this.loading = true;
+            axios.post(
+                smartEnuApi + "/downloadFile", {
+                    filePath: filePath
+                }, {
+                    headers: getHeader()
+                }
+            )
+            .then(response => {
+                const link = document.createElement("a");
+                link.href = "data:application/octet-stream;base64," + response.data;
+                link.setAttribute("download", filePath);
+                link.download = filePath;
+                link.click();
+                URL.revokeObjectURL(link.href);
+                this.loading = false;
+            })
+            .catch((error) => {
+                this.$toast.add({
+                    severity: "error",
+                    summary: "downloadFileError:\n" + error,
+                    life: 3000,
+                });
+                this.loading = false;
+            });
+            
+            },
         answer() {
             this.$confirm.require({
                 message: this.$t("faq.answerConfirm"),
