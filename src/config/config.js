@@ -8,15 +8,15 @@ export const signerApi = "https://smart.enu.kz:6990"
 
 //export const smartEnuApi = "https://smart.enu.kz:8081"
 // export const smartEnuApi = "http://smart.enu.kz:8090"
-export const smartEnuApi = "http://localhost:8081"
+export const smartEnuApi = "http://localhost:8090"
 
-export const socketApi = "wss://smart.enu.kz:8081"
+// export const socketApi = "wss://smart.enu.kz:8081"
 //export const socketApi = "ws://smart.enu.kz:8090" 
-//export const socketApi = "ws://localhost:8090" 
+export const socketApi = "ws://localhost:8090" 
 
-//export const queueApi = "http://localhost:8088"
+export const queueApi = "http://localhost:8088"
 //export const queueApi = "http://smart.enu.kz:8088"
-export const queueApi = "https://smart.enu.kz:8088"
+// export const queueApi = "https://smart.enu.kz:8088"
 
 //export const queueApi = "http://localhost:8088"
 //export const queueApi = "http://smart.enu.kz:8088"
