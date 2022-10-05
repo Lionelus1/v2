@@ -308,7 +308,7 @@ const routes = [
             },
             {
                 path:'/myref',
-                name:'OutQr',
+                name:'OutQr1',
                 component: load('smartenu/JobDescription'),
                 beforeEnter: ifAuthenticated,
             },
