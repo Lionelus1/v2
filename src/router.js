@@ -229,8 +229,8 @@ const routes = [
                     },
                     {
                         path: ':id',
-                        name: 'WorkPlanEvents',
-                        component: load('work_plan/WorkPlanEvents'),
+                        name: 'WorkPlanEvent',
+                        component: load('work_plan/WorkPlanEvent'),
                         beforeEnter: ifAuthenticated,
                     },
                     {

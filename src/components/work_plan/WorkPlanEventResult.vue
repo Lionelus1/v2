@@ -471,7 +471,7 @@ export default {
             //console.log(res);
             if (res.data && res.data.is_success) {
               this.toCorrectSidebar = false;
-              this.$router.push({name: 'WorkPlanEvents', params: {id: this.event.work_plan_id}});
+              this.$router.push({name: 'WorkPlanEvent', params: {id: this.event.work_plan_id}});
             }
           }).catch(error => {
         if (error.response && error.response.status === 401) {
@@ -514,7 +514,7 @@ export default {
       this.selectedUsers = null;
     },
     navigateToBack() {
-      this.$router.push({name: 'WorkPlanEvents', params: {id: this.plan.work_plan_id}});
+      this.$router.push({name: 'WorkPlanEvent', params: {id: this.plan.work_plan_id}});
     },
     uploadFile(event) {
       /*this.file = event.files[0];*/
