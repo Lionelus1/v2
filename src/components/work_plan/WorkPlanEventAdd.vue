@@ -1,8 +1,6 @@
 <template>
   <Button v-if="isMain" :label="$t('workPlan.addEvent')" class="p-button-info p-ml-1" icon="pi pi-plus" @click="openBasic"/>
-  <div v-else>
-    <Button label="" class="p-button-info p-ml-1" icon="pi pi-plus" @click="openBasic"/>
-  </div>
+  <Button v-else label="" class="p-button-info p-ml-1" icon="pi pi-plus" @click="openBasic"/>
 
   <Dialog :header="$t('workPlan.addEvent')" v-model:visible="showWorkPlanEventModal" :style="{width: '600px'}"
           class="p-fluid">
