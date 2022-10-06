@@ -1,17 +1,17 @@
 <template>
-    <div id="print-container">
-        <div class="row" style="background:#fff;">
-            <div class="col-12 col-s-12">
-                <Button
-                    id="printPageButton"
-                    icon="pi pi-print"
-                    class="p-button-success p-mb-0 p-mr-2"
-                    @click="print()"/>
-            </div>
-                
+    <div>
+        <div class="col-12 col-s-12">
+            <Button
+                id="printPageButton"
+                icon="pi pi-print"
+                class="p-button-success p-mb-0 p-mr-2"
+                @click="ref(1)"/>
+        </div>
+        <div id="print-container" >
+            <div class="row" style="background:#fff;">
                 <div class="col-12 col-s-12">
-                    <div class="col-6 col-s-12 ">
-                    <img src="../../assets/layout/images/image1.png"  style="width:85.12px;height:85.12px;float:right">
+                    <div class="col-6 col-s-12 "  style="text-align:right;"  id="qrContainer2" v-show="imgData.length>0">
+                        <img id="img" style="width:85.2px" :src="imgData" alt="QR Code" ref="image" />
                     </div>
                 </div>
                 <div class="col-12 col-s-12">
@@ -23,6 +23,7 @@
                 <div class="col-12 col-s-12" >
                     <div class="col-6 col-s-12" style="text-align:center;">
                         <img src="../../assets/layout/images/image2.jpg"  style="width:160.12px;height:65.12px;">
+                        
                     </div>
                 </div>
                 <div class="col-12 col-s-12" style="padding:0;">
@@ -34,11 +35,11 @@
                 </div>
                 <div class="col-12 col-s-12">
                     <div class="col-6 col-s-12">
-                    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Азамат(ша) <strong>{{reference.fullName}}</strong> , іс жүзінде КЕАҚ Л.Н. Гумилев атындағы Еуразия ұлттық университетінде  жұмыс істейді.</p>
+                    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Азамат(ша) <strong id="fullName">{{reference.fullName}}</strong> , іс жүзінде КЕАҚ Л.Н. Гумилев атындағы Еуразия ұлттық университетінде  жұмыс істейді.</p>
 
                     <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Құрылымдық бөлімше: Цифрлық даму және қашықтықтан оқыту департаменті / цифрлық даму секторы.</p>
 
-                    <p style="padding-left:30px;">Лауазымы: <strong>{{reference.positionKz}}.</strong></p>
+                    <p style="padding-left:30px;">Лауазымы: <strong id="positionName">{{reference.positionKz}}.</strong></p>
 
                     <p style="padding-left:30px;">Анықтама талап етілген жерге ұсыну үшін берілді.</p>
                     </div>
@@ -52,14 +53,23 @@
                         Канагатова Р.Н. Л.Н. Гумилев атындағы Еуразия ұлттық университеті, Нұр-Сұлтан қаласы, тел +7(7172) 709500 ішкі 31-196.
                     </div>
                 </div>
+            </div>
         </div>
-            
+        <!-- <div class="card" v-if="blobSource!=null">
+            <div class="p-grid">
+                <div class="p-col-12">
+
+                </div>
+            </div>
+            <embed :src="blobSource" style="width: 100%; height: 1000px" v-if="blobSource" type="application/pdf" />
+        </div> -->
     </div>
 </template>
 <script>
 import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
 import moment from 'moment'
+import QRCode from "qrcode";
 export default {
     name:"JobDescription",
     data(){
@@ -69,23 +79,15 @@ export default {
                 fullName:"",
                 positionKz:"",
                 positionRu:"",
-                positionEn:""
-            }
-        }
-    },
-    methods:{
-        currentDate(){
-            return moment(new Date(), 'YYYY-MM-DD').format('YYYY-MM-DD hh:ss');
-        },
-        print(){
-            this.popUp(document.getElementById("print-container").innerHTML);
-        },
-        popUp(data) {
-            var mywindow = window.open('', 'new div', 'height=800,width=800');
-            mywindow.document.write('<html><head><title></title>');
-            mywindow.document.write('<style rel="stylesheet" type="text/css" >');
-            mywindow.document.write(`
-            @media print
+                positionEn:"",
+                qrCode:"",
+                html:"",
+                css:""
+            },
+            imgData: "",
+            isHidden:false,
+            blobSource: null,
+            css: `@media print
             {    
                 #printPageButton
                 {
@@ -141,28 +143,83 @@ export default {
             .col-10 {width: 83.33%;}
             .col-11 {width: 91.66%;}
             .col-12 {width: 100%;}
-            }`);
-            mywindow.document.write('</style>');
-            
-            
-            mywindow.document.write('</head><body onload="mywindow.print();mywindow.close()">');
-            mywindow.document.write(data);
-            mywindow.document.write('</body></html>');
-            mywindow.document.close();
-            setTimeout(function(){mywindow.print();mywindow.close();},100);
-            return true;
+            }`
+        }
+    },
+    methods:{
+        currentDate(){
+            return moment(new Date(), 'YYYY-MM-DD').format('YYYY-MM-DD hh:ss');
         },
-        ref(){
-            axios.post(smartEnuApi+"/userref", {}, {headers: getHeader()})
+        print(){
+            
+        },
+        // popUp(data) {
+            
+        // },
+        ref(isBuild=0){
+            
+            this.reference.isBuild = isBuild;
+            axios.post(smartEnuApi+"/userref", this.reference, {headers: getHeader()})
             .then(res => {
                 this.reference=res.data;
+                
+                document.getElementById("fullName").innerHTML=(this.reference.fullName);
+                document.getElementById("positionName").innerHTML=(this.reference.positionKz);
+                let url = res.data.qrCode;
+                const data = {
+                    errorCorrectionLevel: "H",
+                    type: "image/jpeg",
+                    quality: 0.3,
+                    margin: 1,
+                    color: {
+                        dark: "#010599FF",
+                        light: "#FFBF60FF",
+                    },
+                };
+                
+                this.makeQrCode(url, data,this.css,isBuild);
+                
+                
+                
+                
+
+                
+                
+                
             }).catch(error => {
                 alert(error.message);
             });
-        }
+        },
+        viewAsPdf(html,css,isBuild=0){
+            this.reference.html=html;
+            this.reference.css=css;
+            this.reference.isBuild=isBuild;
+            axios.post(smartEnuApi+"/viewuserref", this.reference, {responseType:"blob",headers: getHeader()})
+            .then(res => {
+                console.info("the info ",res.data)
+                this.blobSource = URL.createObjectURL(res.data);
+            }).catch(error => {
+
+                alert(error.message);
+            });
+        },
+        makeQrCode(url, opts,css,isBuild) {
+            QRCode.toDataURL(url, opts, (err, imgData) => {
+                
+                console.log("err", err);
+                this.imgData = imgData;
+                if(url.length > 0)
+                    document.getElementById("img").src=this.imgData;
+                
+                let html=document.getElementById("print-container").innerHTML;
+
+                this.viewAsPdf(html,css,isBuild);
+            });
+        },
     },
     created(){
         this.ref();
+        
     }
 }
 </script>
