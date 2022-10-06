@@ -148,6 +148,7 @@
               v-model="selectedUsers"
               :max="1"
               :editMode="true"
+              :userType="3"
             ></FindUser>
             <small
               class="p-error"
