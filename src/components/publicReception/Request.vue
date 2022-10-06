@@ -16,13 +16,13 @@
 Сұрақты жолдамас бұрын көрсетілген мәліметтердің дұрыстығын тағы бір тексеріп шығуды сұраймыз. 
 
                 </p>
-                <p class="message" v-if="$i18n.locale =='ru'">
+                <p class="message" v-if="$i18n.locale =='ru'" style="text-align:justify">
                     <b>Уважаемые пользователи!</b>
 В целях оказания профессиональной и консультативной помощи, содействия в решении возникающих проблем в оперативном порядке и принятия по ним действенных мер, Некоммерческим акционерным обществом «Евразийский национальный университет имени Л.Н. Гумилева» запущена система, посредством которой можете оставить интересующий Вас вопрос, проблему, замечание и предложение, либо оставить заявку на личный прием с руководителем или членами Общественной приемной Университета. Чтобы задать вопрос, укажите ФИО, номер телефона, e-mail, а затем выберите категорию и изложите суть вопроса. Вопрос будет зарегистрирован после проверки модератором, ответ будет направлен на указанную Вами электронную почту, либо с Вами свяжется ответственное лицо по указанному номеру телефона.
 Перед отправкой убедительно просим перепроверить корректность указанных данных.
 
                 </p>
-                <p class="message" v-if="$i18n.locale =='en'">
+                <p class="message" v-if="$i18n.locale =='en'" style="text-align:justify">
                     <b>Dear users!</b> Non-profit JSC “L.N. Gumilyov Eurasian National University” has launched a system of professional and advisory support, prompt assistance in solving emerging problems and taking effective measures. You can leave a question, comment or suggestion, share a problem, or leave a request for a personal appointment with the head or members of the Public Reception of the University. 
 To ask a question you have to enter your full name, phone number, e-mail, select a category and specify the type of the question. The question will be registered after verification by a moderator. The answer will be sent to your email address or the responsible person will contact you through the phone call.
 Please double-check the entered data before submission.
@@ -126,6 +126,7 @@ Please double-check the entered data before submission.
             }
         },
         validateEmail() {
+            // eslint-disable-next-line
             if (/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(this.request.email)) {
                 this.validation.email = false;
             }

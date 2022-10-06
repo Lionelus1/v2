@@ -4,16 +4,9 @@
     <BlockUI :blocked="loading" :fullScreen="true">
       <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
     </BlockUI>
-    <!--    <h4>Сұрақ-жауап</h4>-->
     <div class="card">
       <DataView :lazy="true" :loading="loading" responsiveLayout="scroll" :value="data" :rows="10" :paginator="true" @page="onPage($event)" :totalRecords="total">
-        <!-- <template #header>
-          <div class="grid grid-nogutter">
-              <div class="col-6" style="text-align: left">
-                  <Dropdown v-model="sortKey" :options="sortOptions" optionLabel="label" placeholder="Sort By Price" @change="onSortChange($event)"/>
-              </div>
-          </div>
-      </template> -->
+       
       <template #list="slotProps">
         <div class="product-grid-item card">
           <div class="product-grid-item-top p-mb-2">
@@ -26,11 +19,15 @@
                 <span v-if="adminMode" :class="'customer-badge status-' + slotProps.data.state.id">{{$t("common.states." + slotProps.data.state.code)}}</span>
               </div>
               <div class="p-lg-3  p-md-3 p-sm-6">
-
-              <small>№&nbsp;{{slotProps.data.id}}</small>
+                <small>№&nbsp;{{slotProps.data.id}}</small>
               </div>
               <div class="p-lg-3  p-md-3 p-sm-6 p-text-right">
-                  <i class="fa-solid fa-calendar-days product-category-icon"></i>
+                  <span v-if="slotProps.data.expired">
+                    <i class="fa-solid fa-calendar-days product-error-icon"></i>
+                  </span>
+                  <span v-else>
+                    <i class="fa-solid fa-calendar-days product-category-icon"></i>
+                  </span>
                   <small class="product-category">{{moment(new Date(slotProps.data.createdDate)).utc().format("DD.MM.YYYY")}}</small>
               </div>
             </div>
@@ -366,6 +363,12 @@ export default {
 	vertical-align: middle;
 	margin-right: .5rem;
   }
+  .product-error-icon {
+	vertical-align: middle;
+	margin-right: .5rem;
+  color:#c63737
+  }
+
   .block-with-text {
     overflow: hidden;
     position: relative;
