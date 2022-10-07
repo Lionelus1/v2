@@ -14,9 +14,9 @@ export const smartEnuApi = "http://localhost:8090"
 //export const socketApi = "ws://smart.enu.kz:8090" //test server
 export const socketApi = "wss://smart.enu.kz:8081" //prod server
 
-export const queueApi = "http://localhost:8088"
-//export const queueApi = "http://smart.enu.kz:8088"
-// export const queueApi = "https://smart.enu.kz:8088"
+//export const queueApi = "http://localhost:8088"
+export const queueApi = "http://smart.enu.kz:8088"
+//export const queueApi = "https://smart.enu.kz:8088"
 
 export const header  = {
   "Accept": "application/json",

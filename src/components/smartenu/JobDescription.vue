@@ -3,10 +3,32 @@
         <div class="col-12 col-s-12">
             <Button
                 id="printPageButton"
-                icon="pi pi-print"
-                class="p-button-success p-mb-0 p-mr-2"
+                icon="pi pi-book"
+                class="p-button-info p-mb-0 p-mr-3"
+                :label="$t('ref.createQr')"
                 @click="ref(1)"/>
+
+            
+            <Button
+            id="printPageButton"
+            icon="pi pi-book"
+            class="p-button-danger p-mb-0 p-mr-3"
+            :label="$t('ref.sendMail')"/>
+
+            <Button
+                v-if="imgData.length>0"
+                id="printPageButton"
+                icon="pi pi-print"
+                class="p-button-success p-mb-0 p-ml-1"
+                @click="ref(1)"/>
+
+            <div class="p-inputgroup p-input-filled p-ml-0 p-pl-0 p-lg-4 p-md-6 p-sm-12" v-if="imgData.length>0">
+                <InputText :disabled="true" :value="apiUrl()+'/openref/'+reference.qrCode"/>
+                <Button v-bind:label="$t('ncasigner.copy')" v-clipboard:copy="apiUrl()+'/openref/'+reference.qrCode" v-clipboard:success="onCopy" v-clipboard:error="onFail" class="p-button-secondary"/>
+            </div>
         </div>
+        
+        
         <div id="print-container" >
             <div class="row" style="background:#fff;">
                 <div class="col-12 col-s-12">
@@ -147,15 +169,25 @@ export default {
         }
     },
     methods:{
+        onCopy() {
+            this.$toast.add({severity: 'success', summary: this.$t('ncasigner.successCopy'), life: 3000});
+        },
+
+        onFail() {
+            this.$toast.add({severity: 'warn', summary: this.$t('ncasigner.failCopy'), life: 3000});
+        },
+        apiUrl(){
+            return smartEnuApi
+        },
         currentDate(){
             return moment(new Date(), 'YYYY-MM-DD').format('YYYY-MM-DD hh:ss');
         },
         print(){
             
         },
-        // popUp(data) {
+        //popUp(data) {
             
-        // },
+        //},
         ref(isBuild=0){
             
             this.reference.isBuild = isBuild;
