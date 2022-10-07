@@ -106,6 +106,7 @@ export default {
     openBasic() {
       this.showWorkPlanEventEditModal = true;
       if (this.editData !== null) {
+        this.selectedUsers = [];
         this.editData.quarter = parseInt(this.editData.quarter);
         this.editData.user.forEach(e => {
           e.userID = e.id;

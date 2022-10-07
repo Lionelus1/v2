@@ -86,12 +86,22 @@
       </div>
     </div>
   </Sidebar>
+
+  <Sidebar
+      v-model:visible="showOperPlanExecute"
+      position="right"
+      style="overflow-y: scroll; width: 50%;"
+      v-if="event"
+  >
+    <WorkPlanEventResult :result-id="event.work_plan_event_id" />
+  </Sidebar>
 </template>
 
 <script>
 import axios from "axios";
 import {getHeader, getMultipartHeader, smartEnuApi} from "@/config/config";
 import RichEditor from "../documents/editor/RichEditor";
+import WorkPlanEventResult from "./WorkPlanEventResult";
 
 export default {
   name: "WorkPlanExecute",
@@ -100,6 +110,7 @@ export default {
   data() {
     return {
       showWorkPlanExecuteSidebar: false,
+      showOperPlanExecute: false,
       event: this.data,
       plan: this.planData,
       result: null,
@@ -116,7 +127,8 @@ export default {
   methods: {
     openBasic() {
       if (this.plan && this.plan.is_oper) {
-        this.$router.push({name: 'WorkPlanEventResult', params: {id: this.event.work_plan_event_id}});
+        //this.$router.push({name: 'WorkPlanEventResult', params: {id: this.event.work_plan_event_id}});
+        this.showOperPlanExecute = true;
       } else {
         this.showWorkPlanExecuteSidebar = true;
         this.initMenu();
@@ -336,6 +348,10 @@ export default {
 
 .p-fluid .p-fileupload .p-button {
   width: auto;
+}
+
+.sidebar-custom {
+  width: 50% !important;
 }
 
 </style>
