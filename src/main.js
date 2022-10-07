@@ -111,6 +111,7 @@ import { fas } from '@fortawesome/free-solid-svg-icons'
 import { fab } from '@fortawesome/free-brands-svg-icons';
 import { far } from '@fortawesome/free-regular-svg-icons';
 import ScrollPanel from "primevue/scrollpanel";
+import WorkPlanEventResult from "./components/work_plan/WorkPlanEventResult";
 library.add(fas, far, fab)
 dom.watch();
 router.beforeEach(function(to, from, next) {
@@ -265,4 +266,5 @@ app.component('Editor', Editor);
 app.component("VueElementLoading", VueElementLoading);
 app.component('TreeSelect', TreeSelect);
 app.component('ScrollPanel', ScrollPanel);
+app.component('WorkPlanEventResult', WorkPlanEventResult)
 app.mount('#app');

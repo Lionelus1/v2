@@ -158,7 +158,7 @@ export default {
         data.supporting_docs = this.supporting_docs;
       }
       axios.post(smartEnuApi + `/workPlan/addEvent`, data, {headers: getHeader()}).then(res => {
-        this.emitter.emit("workPlanEventIsAdded", true);
+        this.emitter.emit("workPlanEventIsAdded", {is_success: true, is_main: this.isMain});
         this.$toast.add({severity: 'success', detail: this.$t('workPlan.message.eventCreated'), life: 3000});
         this.showWorkPlanEventModal = false;
         this.clearModel();

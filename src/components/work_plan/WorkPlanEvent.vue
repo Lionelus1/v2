@@ -225,8 +225,10 @@ export default {
   },
   mounted() {
     this.emitter.on('workPlanEventIsAdded', (data) => {
-      if (data === true) {
+      if (data.is_success && !data.is_main) {
         this.getEventsTree(this.parentNode);
+      } else if (data.is_success && data.is_main) {
+        this.getEventsTree(null)
       }
     });
     this.emitter.on('planRejected', (data) => {

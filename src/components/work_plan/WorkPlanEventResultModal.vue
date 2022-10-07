@@ -73,11 +73,21 @@
       <Textarea inputId="textarea" rows="5" cols="30" v-model="rejectComment"></Textarea>
     </div>
   </Sidebar>
+  <Sidebar
+      v-model:visible="showOperPlanExecute"
+      position="right"
+      class="p-sidebar-lg"
+      style="overflow-y: scroll; width: 50%;"
+      v-if="event"
+  >
+    <WorkPlanEventResult :result-id="event.work_plan_event_id" />
+  </Sidebar>
 </template>
 
 <script>
 import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
+import WorkPlanEventResult from "./WorkPlanEventResult";
 
 export default {
   name: "WorkPlanEventResultModal",
@@ -86,6 +96,7 @@ export default {
     return {
       eventResultModal: false,
       toCorrectSidebar: false,
+      showOperPlanExecute: false,
       data: this.eventResult,
       plan: this.planData,
       event: this.eventData,
@@ -124,7 +135,8 @@ export default {
   methods: {
     openModal() {
       if (this.plan && this.plan.is_oper) {
-        this.$router.push({name: 'WorkPlanEventResult', params: {id: this.event.work_plan_event_id}});
+        //this.$router.push({name: 'WorkPlanEventResult', params: {id: this.event.work_plan_event_id}});
+        this.showOperPlanExecute = true;
       } else {
         this.eventResultModal = true;
         this.$nextTick(() => {
@@ -137,7 +149,6 @@ export default {
       this.eventResultModal = false;
     },
     downloadFile(item) {
-      console.log(item)
       axios.post(smartEnuApi + `/workPlan/getWorkPlanResultFile`,
           {file_path: item.event_result_file}, {headers: getHeader()}).then(res => {
         const link = document.createElement("a");

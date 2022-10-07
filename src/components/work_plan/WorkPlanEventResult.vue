@@ -1,7 +1,7 @@
 <template>
   <div class="p-col-12" v-if="plan && event">
     <div class="card">
-      <div @click="navigateToBack" class="p-d-inline-block"><i class="fa-solid fa-arrow-left p-mr-3"
+      <div v-if="!resultId" @click="navigateToBack" class="p-d-inline-block"><i class="fa-solid fa-arrow-left p-mr-3"
                                                                style="font-size: 16px;cursor: pointer"></i></div>
       <div class="p-mb-0 p-mt-0 p-d-inline-block" style="font-size: 24px"> {{ $t('common.result') }}</div>
     </div>
@@ -113,7 +113,7 @@
                 </div>
               </div>
             </div>
-            <div class="p-sm-12 p-md-12 p-lg-6 p-xl-6">
+            <div class="p-sm-12 p-md-12 p-lg-12 p-xl-6">
               <div class="p-field" v-if="plan && resultData && plan.is_oper">
                 <label class="p-text-bold">{{ $t('common.result') }}</label>
                 <div v-for="(item, index) of resultData.result_text" :key="index" class="p-mb-2">
@@ -245,6 +245,7 @@ import moment from "moment";
 export default {
   name: "WorkPlanEventResult",
   components: {RichEditor},
+  props: ['resultId'],
   data() {
     return {
       event: null,
@@ -258,7 +259,7 @@ export default {
       files: [],
       newResult: null,
       fact: null,
-      event_id: this.$route.params.id,
+      event_id: this.resultId,
       activeIndex: 0,
       history: null,
       toCorrectSidebar: false,
@@ -305,6 +306,9 @@ export default {
     }
   },
   created() {
+    if (!this.event_id) {
+      this.event_id = this.$route.params.id;
+    }
     this.getEvent();
   },
   methods: {
