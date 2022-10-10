@@ -172,7 +172,6 @@ app.use(PrimeVue, {
 });
 
 app.config.globalProperties.emitter = emitter;
-app.config.globalProperties.$toast = useToast()
 
 
 
