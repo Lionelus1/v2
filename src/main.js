@@ -112,6 +112,7 @@ import { fab } from '@fortawesome/free-brands-svg-icons';
 import { far } from '@fortawesome/free-regular-svg-icons';
 import ScrollPanel from "primevue/scrollpanel";
 import WorkPlanEventResult from "./components/work_plan/WorkPlanEventResult";
+import {useToast} from "primevue/usetoast";
 library.add(fas, far, fab)
 dom.watch();
 router.beforeEach(function(to, from, next) {
@@ -171,6 +172,7 @@ app.use(PrimeVue, {
 });
 
 app.config.globalProperties.emitter = emitter;
+app.config.globalProperties.$toast = useToast()
 
 
 
