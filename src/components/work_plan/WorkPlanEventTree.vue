@@ -29,6 +29,11 @@
         {{ data.plan_number }}
       </template>
     </Column>
+    <Column field="fact" :header="$t('common.fact')" v-if="plan && plan.is_oper">
+      <template #body="{ data }">
+        {{ data.fact }}
+      </template>
+    </Column>
     <Column field="quarter" :header="$t('workPlan.quarter')">
       <template #body="{ data }">
         {{ data.quarter ? initQuarterString(data.quarter) : "" }}

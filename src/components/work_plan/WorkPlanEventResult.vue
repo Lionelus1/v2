@@ -1,4 +1,5 @@
 <template>
+  <ConfirmPopup group="deleteResult"></ConfirmPopup>
   <div class="p-col-12" v-if="plan && event">
     <div class="card">
       <div v-if="!resultId" @click="navigateToBack" class="p-d-inline-block"><i class="fa-solid fa-arrow-left p-mr-3"
@@ -114,6 +115,10 @@
               </div>
             </div>
             <div class="p-sm-12 p-md-12 p-lg-12 p-xl-6">
+              <div class="p-field" v-if="event">
+                <label class="p-text-bold">{{ $t('common.fact') }}: </label>
+                <div>{{ event.fact }}</div>
+              </div>
               <div class="p-field" v-if="plan && resultData && plan.is_oper">
                 <label class="p-text-bold">{{ $t('common.result') }}</label>
                 <div v-for="(item, index) of resultData.result_text" :key="index" class="p-mb-2">
@@ -133,7 +138,7 @@
                         <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button p-ml-1"
                                 @click="cancelEdit(item)"/>
                         <Button :label="$t('common.delete')" icon="pi pi-trash" class="p-button p-button-danger p-ml-1"
-                                @click="deleteConfirmItem(item)"/>
+                                @click="deleteConfirmItem($event, item)"/>
                       </div>
                       <div class="p-field">
                         <RichEditor v-model="item.text" editorStyle="height:200px;">
@@ -171,7 +176,7 @@
                       <span class="p-ml-5" v-if="file.user_id && file.user_id === loginedUserId"><Button
                           icon="pi pi-times" class="p-button-rounded p-button-text"
                           v-if="event && (event.status.work_plan_event_status_id !== 5 && event.status.work_plan_event_status_id !== 2)"
-                          @click="deleteFileConfirm(file.id)"/></span>
+                          @click="deleteFileConfirm($event, file.id)"/></span>
                     </div>
                   </div>
                   <div class="p-fileupload-empty" v-if="files.length === 0">
@@ -401,8 +406,11 @@ export default {
         }
       }
       axios.post(smartEnuApi + `/workPlan/saveResult`, fd, {headers: getMultipartHeader()}).then(res => {
-        this.getData();
-        this.clearModel();
+        if (res.data.is_success || res.data.is_fact_success) {
+          this.getData();
+          this.getEvent();
+          this.clearModel();
+        }
         this.files = [];
         this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
       }).catch(error => {
@@ -537,7 +545,6 @@ export default {
         this.files.push(file);
       }
       this.clearFiles();
-      this.isDisabled = false;
 
     },
     resizeArea() {
@@ -594,8 +601,10 @@ export default {
     cancelEdit(item) {
       item.isActive = false;
     },
-    deleteConfirmItem(item) {
+    deleteConfirmItem(event, item) {
       this.$confirm.require({
+        target: event.currentTarget,
+        group: 'deleteResult',
         message: this.$t('common.confirmation'),
         header: this.$t('common.confirm'),
         icon: 'pi pi-info-circle',
@@ -624,10 +633,12 @@ export default {
         }
       });
     },
-    deleteFileConfirm(id) {
+    deleteFileConfirm(event, id) {
       this.$confirm.require({
+        target: event.currentTarget,
         message: this.$t('common.confirmation'),
         header: this.$t('common.confirm'),
+        group: 'deleteResult',
         icon: 'pi pi-info-circle',
         acceptClass: 'p-button-rounded p-button-success',
         rejectClass: 'p-button-rounded p-button-danger',

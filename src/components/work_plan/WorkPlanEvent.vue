@@ -79,6 +79,11 @@
             {{ node.plan_number }}
           </template>
         </Column>
+        <Column field="fact" :header="$t('common.fact')" v-if="plan && plan.is_oper">
+          <template #body="{ node }">
+            <span v-if="node.fact">{{ node.fact }}</span>
+          </template>
+        </Column>
         <Column field="quarter" :header="$t('workPlan.quarter')">
           <template #body="{ node }">
             {{ initQuarter(node.quarter) }}
