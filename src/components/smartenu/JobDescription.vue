@@ -13,19 +13,38 @@
             id="printPageButton"
             icon="pi pi-book"
             class="p-button-danger p-mb-0 p-mr-3"
+            @click="openMail()"
             :label="$t('ref.sendMail')"/>
 
             <Button
                 v-if="imgData.length>0"
                 id="printPageButton"
                 icon="pi pi-print"
-                class="p-button-success p-mb-0 p-ml-1"
-                @click="ref(1)"/>
+                class="p-button-success p-mb-0 p-ml-6"
+                @click="printRef()"/>
 
-            <div class="p-inputgroup p-input-filled p-ml-0 p-pl-0 p-lg-4 p-md-6 p-sm-12" v-if="imgData.length>0">
-                <InputText :disabled="true" :value="apiUrl()+'/openref/'+reference.qrCode"/>
-                <Button v-bind:label="$t('ncasigner.copy')" v-clipboard:copy="apiUrl()+'/openref/'+reference.qrCode" v-clipboard:success="onCopy" v-clipboard:error="onFail" class="p-button-secondary"/>
+            <div class="p-inputgroup p-input-filled p-ml-0 p-pl-0 p-lg-4 p-md-6 p-sm-12" v-if="blobSource!=null">
+                <InputText :disabled="true" :value="apiUrl()+'/serve?path='+blobSource"/>
+                <Button v-bind:label="$t('ncasigner.copy')" v-clipboard:copy="apiUrl()+'/serve?path='+blobSource" v-clipboard:success="onCopy" v-clipboard:error="onFail" class="p-button-secondary"/>
             </div>
+        </div>
+        <div class="col-12 col-s-12" style="margin-left:0 !important;" v-if="writeMail">
+            <BlockUI >
+            <div class="p-lg-4 p-md-6 p-sm-12 p-text-right" style="margin-left:0 !important;">
+                
+                <textarea class="p-col-12 p-mb-2" 
+                style="min-height:130px;"
+                v-model="mailText"
+                :placeholder="$t('ref.correction')"></textarea>
+
+                <Button icon="pi pi-pencil" @click="sendMail()" 
+                v-if="this.mailText.length>0"
+                :loading="sending"
+                :label="!sending ? $t('ref.sendMail1') : $t('ref.sendingMail')" class="p-button-success p-mb-0 "/>
+
+                <Button icon="pi pi-trash" v-if="!sending" @click="clearMail()" class="p-button-danger p-mb-0 p-ml-2"/>
+            </div>
+            </BlockUI>
         </div>
         
         
@@ -48,13 +67,13 @@
                         
                     </div>
                 </div>
-                <div class="col-12 col-s-12" style="padding:0;">
+                <!-- <div class="col-12 col-s-12" style="padding:0;">
                     <div class="col-6 col-s-12" style="text-align:center; padding:0;">
                         <strong>
                             А Н Ы Қ Т А М А
                         </strong>
                     </div>
-                </div>
+                </div> -->
                 <div class="col-12 col-s-12">
                     <div class="col-6 col-s-12">
                     <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Азамат(ша) <strong id="fullName">{{reference.fullName}}</strong> , іс жүзінде КЕАҚ Л.Н. Гумилев атындағы Еуразия ұлттық университетінде  жұмыс істейді.</p>
@@ -96,19 +115,6 @@ export default {
     name:"JobDescription",
     data(){
         return {
-            reference: {
-                userId:0,
-                fullName:"",
-                positionKz:"",
-                positionRu:"",
-                positionEn:"",
-                qrCode:"",
-                html:"",
-                css:""
-            },
-            imgData: "",
-            isHidden:false,
-            blobSource: null,
             css: `@media print
             {    
                 #printPageButton
@@ -128,7 +134,7 @@ export default {
 
             [class*="col-"] {
                 float: left;
-                padding: 15px;
+                padding: 10px;
             }
 
             /* For mobile phones: */
@@ -165,10 +171,70 @@ export default {
             .col-10 {width: 83.33%;}
             .col-11 {width: 91.66%;}
             .col-12 {width: 100%;}
-            }`
+            }`,
+            reference: {
+                userId:0,
+                fullName:"",
+                positionKz:"",
+                positionRu:"",
+                positionEn:"",
+                qrCode:"",
+                html:"",
+                css:"",
+                mailText:"",
+                filePath:""
+            },
+            imgData: "",
+            isHidden:false,
+            blobSource: null,
+            writeMail:false,
+            mailText:"",
+            sending:false
+            
         }
     },
     methods:{
+        printRef(){
+            let data = document.getElementById("print-container").innerHTML;
+            var mywindow = window.open('', 'new div', 'height=500,width=800');
+            mywindow.document.write('<html><head><title></title>');
+            mywindow.document.write('<style type="text/css">');
+            mywindow.document.write(this.css);
+            mywindow.document.write('</style>');
+            mywindow.document.write('</head><body >');
+            mywindow.document.write(data);
+            mywindow.document.write('</body></html>');
+            mywindow.document.close();
+            mywindow.focus();
+            mywindow.print();
+            return false;
+        },
+        clearMail(){
+            this.mailText = "";
+            this.writeMail = false;
+            this.sending=false;
+        },
+        openMail(){
+            this.writeMail = true;
+        },
+        sendMail(){
+            if(this.mailText.length > 0){
+                this.sending = true;
+                this.reference.mailText=this.mailText;
+                axios.post(smartEnuApi+"/sendmail", this.reference, {headers: getHeader()})
+                .then(res => {
+                    if (res.data=="success"){
+                        this.$toast.add({severity: 'success', summary: this.$t('ref.mailSent'), life: 3000});    
+                    }else{
+                        this.$toast.add({severity: 'warn', summary: this.$t('ref.mailFailed'), life: 3000});
+                    }
+                    this.sending=false;
+                }).catch(() => {
+                    this.$toast.add({severity: 'warn', summary: this.$t('ref.mailFailed'), life: 3000});
+                });
+            }
+            
+        },
         onCopy() {
             this.$toast.add({severity: 'success', summary: this.$t('ncasigner.successCopy'), life: 3000});
         },
@@ -189,12 +255,11 @@ export default {
             
         //},
         ref(isBuild=0){
-            
+            this.writeMail = false;
             this.reference.isBuild = isBuild;
             axios.post(smartEnuApi+"/userref", this.reference, {headers: getHeader()})
             .then(res => {
                 this.reference=res.data;
-                
                 document.getElementById("fullName").innerHTML=(this.reference.fullName);
                 document.getElementById("positionName").innerHTML=(this.reference.positionKz);
                 let url = res.data.qrCode;
@@ -208,16 +273,7 @@ export default {
                         light: "#FFBF60FF",
                     },
                 };
-                
                 this.makeQrCode(url, data,this.css,isBuild);
-                
-                
-                
-                
-
-                
-                
-                
             }).catch(error => {
                 alert(error.message);
             });
@@ -226,10 +282,10 @@ export default {
             this.reference.html=html;
             this.reference.css=css;
             this.reference.isBuild=isBuild;
-            axios.post(smartEnuApi+"/viewuserref", this.reference, {responseType:"blob",headers: getHeader()})
+            axios.post(smartEnuApi+"/viewuserref", this.reference, {headers: getHeader()})
             .then(res => {
                 console.info("the info ",res.data)
-                this.blobSource = URL.createObjectURL(res.data);
+                this.blobSource = res.data;
             }).catch(error => {
 
                 alert(error.message);
@@ -237,9 +293,8 @@ export default {
         },
         makeQrCode(url, opts,css,isBuild) {
             QRCode.toDataURL(url, opts, (err, imgData) => {
-                
-                console.log("err", err);
-                this.imgData = imgData;
+                if(imgData)
+                    this.imgData = imgData;
                 if(url.length > 0)
                     document.getElementById("img").src=this.imgData;
                 
@@ -269,7 +324,7 @@ export default {
 
     [class*="col-"] {
         float: left;
-        padding: 15px;
+        padding: 10px;
     }
 
     /* For mobile phones: */
