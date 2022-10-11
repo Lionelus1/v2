@@ -278,6 +278,18 @@ export default {
         this.getEventsTree(this.parentNode);
       }
     });
+    this.emitter.on('workPlanSideBarClosed', (data) => {
+      if (data) {
+        this.getPlan();
+        this.getEventsTree(this.parentNode);
+      }
+    });
+    this.emitter.on('workPlanEventSideBarClosed', (data) => {
+      if (data) {
+        this.getPlan();
+        this.getEventsTree(this.parentNode);
+      }
+    });
   },
   methods: {
     onExpand(node) {

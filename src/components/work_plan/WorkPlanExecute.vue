@@ -92,6 +92,7 @@
       position="right"
       style="overflow-y: scroll; width: 50%;"
       v-if="event"
+      @hide="sideBarClosed"
   >
     <WorkPlanEventResult :result-id="event.work_plan_event_id" />
   </Sidebar>
@@ -136,6 +137,9 @@ export default {
     },
     closeBasic() {
       this.showWorkPlanExecuteSidebar = false;
+    },
+    sideBarClosed() {
+      this.emitter.emit("workPlanSideBarClosed", true);
     },
     getData() {
       axios.get(smartEnuApi + `/workPlan/getWorkPlanEventResult/${this.event.work_plan_event_id}`, {headers: getHeader()})

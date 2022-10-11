@@ -79,6 +79,7 @@
       class="p-sidebar-lg"
       style="overflow-y: scroll; width: 50%;"
       v-if="event"
+      @hide="sideBarClosed"
   >
     <WorkPlanEventResult :result-id="event.work_plan_event_id" />
   </Sidebar>
@@ -171,6 +172,9 @@ export default {
     },
     showToCorrectSidebar() {
       this.toCorrectSidebar = true;
+    },
+    sideBarClosed() {
+      this.emitter.emit("workPlanEventSideBarClosed", true);
     },
     verify(status) {
       const data = {};

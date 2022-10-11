@@ -483,7 +483,14 @@ export default {
             //console.log(res);
             if (res.data && res.data.is_success) {
               this.toCorrectSidebar = false;
-              this.$router.push({name: 'WorkPlanEvent', params: {id: this.event.work_plan_id}});
+              this.$toast.add({
+                severity: 'success',
+                summary: this.$t('common.success'),
+                life: 3000,
+              });
+              this.getData();
+              this.getEvent();
+              //this.$router.push({name: 'WorkPlanEvent', params: {id: this.event.work_plan_id}});
             }
           }).catch(error => {
         if (error.response && error.response.status === 401) {
