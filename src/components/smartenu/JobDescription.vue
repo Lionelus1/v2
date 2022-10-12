@@ -24,8 +24,8 @@
                 @click="printRef()"/>
 
             <div class="p-inputgroup p-input-filled p-ml-0 p-pl-0 p-lg-4 p-md-6 p-sm-12" v-if="blobSource!=null">
-                <InputText :disabled="true" :value="apiUrl()+'/serve?path='+blobSource"/>
-                <Button v-bind:label="$t('ncasigner.copy')" v-clipboard:copy="apiUrl()+'/serve?path='+blobSource" v-clipboard:success="onCopy" v-clipboard:error="onFail" class="p-button-secondary"/>
+                <InputText :disabled="true" :value="blobSource"/>
+                <Button v-bind:label="$t('ncasigner.copy')" v-clipboard:copy="blobSource" v-clipboard:success="onCopy" v-clipboard:error="onFail" class="p-button-secondary"/>
             </div>
         </div>
         <div class="col-12 col-s-12" style="margin-left:0 !important;" v-if="writeMail">
@@ -51,7 +51,7 @@
         <div id="print-container" >
             <div class="row" style="background:#fff;">
                 <div class="col-12 col-s-12">
-                    <div class="col-6 col-s-12 "  style="text-align:right;"  id="qrContainer2" v-show="imgData.length>0">
+                    <div class="col-6 col-s-12 "  style="text-align:right;"  id="qrContainer2" >
                         <img id="img" style="width:85.2px" :src="imgData" alt="QR Code" ref="image" />
                     </div>
                 </div>
@@ -262,45 +262,51 @@ export default {
                 this.reference=res.data;
                 document.getElementById("fullName").innerHTML=(this.reference.fullName);
                 document.getElementById("positionName").innerHTML=(this.reference.positionKz);
-                let url = res.data.qrCode;
-                const data = {
-                    errorCorrectionLevel: "H",
-                    type: "image/jpeg",
-                    quality: 0.3,
-                    margin: 1,
-                    color: {
-                        dark: "#010599FF",
-                        light: "#FFBF60FF",
-                    },
-                };
-                this.makeQrCode(url, data,this.css,isBuild);
-            }).catch(error => {
-                alert(error.message);
-            });
-        },
-        viewAsPdf(html,css,isBuild=0){
-            this.reference.html=html;
-            this.reference.css=css;
-            this.reference.isBuild=isBuild;
-            axios.post(smartEnuApi+"/viewuserref", this.reference, {headers: getHeader()})
-            .then(res => {
-                console.info("the info ",res.data)
-                this.blobSource = res.data;
-            }).catch(error => {
 
-                alert(error.message);
-            });
-        },
-        makeQrCode(url, opts,css,isBuild) {
-            QRCode.toDataURL(url, opts, (err, imgData) => {
-                if(imgData)
-                    this.imgData = imgData;
-                if(url.length > 0)
-                    document.getElementById("img").src=this.imgData;
+                if(isBuild==1){
+                    const data = {
+                        errorCorrectionLevel: "H",
+                        type: "image/jpeg",
+                        quality: 0.3,
+                        margin: 1,
+                        color: {
+                            dark: "#010599FF",
+                            light: "#FFBF60FF",
+                        },
+                    };
+                    if(this.reference.qrCode.length>0){
+                        this.makeQrCode(this.reference.qrCode,data)
+                    }
+                        
+                }
                 
-                let html=document.getElementById("print-container").innerHTML;
+                
 
-                this.viewAsPdf(html,css,isBuild);
+
+            }).catch(error => {
+                alert(error.message);
+            });
+        },
+        buildPdf(html){
+            this.reference.html=html;
+            this.reference.css=this.css;
+            this.reference.isBuild=1;
+            axios.post(smartEnuApi+"/viewuserref", this.reference, {headers: getHeader()})
+            .then(() => {
+                //alert("came");
+            }).catch(error => {
+
+                alert(error.message);
+            });
+        },
+        makeQrCode(url, opts) {
+            url = this.apiUrl()+"/refqr?qrcode="+url;
+            this.blobSource=url;
+            QRCode.toDataURL(url, opts, (err, imgData) => {
+                this.imgData=imgData;
+                document.getElementById("img").src=imgData;
+                let html = document.getElementById("print-container").innerHTML;
+                this.buildPdf(html);
             });
         },
     },
