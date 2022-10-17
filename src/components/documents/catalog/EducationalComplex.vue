@@ -104,17 +104,15 @@
       <TreeTable ref="edutreetable" :scrollable="true" :scrollHeight="windowHeight + 'px'" class="p-treetable-sm"
                  @node-select="onNodeSelect" :value="catalog" :lazy="true" :loading="loading"
                  @nodeExpand="onExpand($event, true)" selectionMode="single" v-model:selectionKeys="selected">
-        <Column field="name" :header="$t('common.name')" :expander="true">
+        <Column field="name" :header="$t('common.name')" :expander="true"  style="min-width: 10rem;">
           <template #body="slotProps">
             <span><i
                 :class="'fa-solid fa-' + (slotProps.node.depType <= 2 ? 'folder' : 'file')"></i>&nbsp;{{
                 slotProps.node["name" + $i18n.locale]
               }}</span>
-            <Button type="button" icon="pi pi-search" v-if="slotProps.node.depType === 2"
+            <Button type="button" icon="fa-solid fa-filter fa-xl" v-if="slotProps.node.depType === 2"
                     @click="onNodeSelect(slotProps.node);toggle('op', $event)" aria:haspopup="true" label=""
-                    aria-controls="overlay_panel" class="p-button-link"><i class="fa-solid fa-filter fa-xl"></i>&nbsp;{{
-              }}
-            </Button>
+                    aria-controls="overlay_panel" class="p-button-link" />
             <OverlayPanel ref="op">
               <div class="p-fluid">
                 <div class="p-field">
@@ -123,61 +121,58 @@
                 </div>
                 <div class="p-field">
                   <label for="status-filter">{{ $t('common.status') }}</label>
-                  <Dropdown v-model="filters.status.value"
-                            :options="statuses"
-                            placeholder="Any"
-                            class="p-column-filter"
-                            :showClear="true"
-                  >
+                  <Dropdown v-model="filters.status.value" :options="statuses" placeholder="Any" class="p-column-filter" :showClear="true">
                     <template #value="slotProps">
-                  <span
-                      v-if="slotProps.value"
-                      :class="'customer-badge status-' + slotProps.value.value"
-                  >
-                    {{
-                      $i18n.locale === 'kz'
-                          ? slotProps.value.nameKz
-                          : $i18n.locale === 'ru'
-                              ? slotProps.value.nameRu
-                              : slotProps.value.nameEn
-                    }}</span
-                  >
+                      <span v-if="slotProps.value" :class="'customer-badge status-' + slotProps.value.value">
+                        {{ $i18n.locale === 'kz' ? slotProps.value.nameKz : $i18n.locale === 'ru' ? slotProps.value.nameRu : slotProps.value.nameEn }}
+                      </span>
                     </template>
                     <template #option="slotProps">
-                  <span :class="'customer-badge status-' + slotProps.option.value">{{
-                      $i18n.locale === 'kz'
-                          ? slotProps.option.nameKz
-                          : $i18n.locale === 'ru'
-                              ? slotProps.option.nameRu
-                              : slotProps.option.nameEn
-                    }}</span>
+                      <span :class="'customer-badge status-' + slotProps.option.value">
+                        {{ $i18n.locale === 'kz' ? slotProps.option.nameKz : $i18n.locale === 'ru' ? slotProps.option.nameRu : slotProps.option.nameEn }}
+                      </span>
                     </template>
                   </Dropdown>
                 </div>
                 <div class="p-field">
                   <label>{{ $t('faq.createDate') }}</label>
-                  <Dropdown v-model="filters.createDate.matchMode" :options="numMatches" optionLabel="value"
-                            optionValue="value" :placeholder="$t('common.select')">
+                  <Dropdown v-model="filters.createDate.matchMode" :options="numMatches" optionLabel="value" optionValue="value" :placeholder="$t('common.select')">
                     <template #value="slotProps">
-                    <span>
-                      {{ $t('common.' + slotProps.value) }}
-                    </span>
+                      <span>
+                        {{ $t('common.' + slotProps.value) }}
+                      </span>
                     </template>
                     <template #option="slotProps">
-                    <span>
-                      {{ $t('common.' + slotProps.option.value) }}
-                    </span>
+                      <span>
+                        {{ $t('common.' + slotProps.option.value) }}
+                      </span>
                     </template>
                   </Dropdown>
-                  <PrimeCalendar
-                      class="p-mt-2"
-                      :placeholder="$t('faq.createDate')"
-                      v-model="filters.createDate.value"
-                      dateFormat="dd.mm.yy"/>
+                  <PrimeCalendar class="p-mt-2" :placeholder="$t('faq.createDate')" v-model="filters.createDate.value" dateFormat="dd.mm.yy"/>
                 </div>
                 <div class="p-field">
                   <Button :label="$t('common.clear')" @click="clearFilter(false)" class="p-mb-2 p-button-outlined"/>
                   <Button :label="$t('common.search')" @click="getFoldersByFilter" class="mt-2"/>
+                </div>
+              </div>
+            </OverlayPanel>
+            <Button type="button" v-if="slotProps.node.depType === 1 || slotProps.node.depType === 2"
+                    @click="onNodeSelect(slotProps.node);toggle('deanOverlay', $event)" :label="slotProps.node.depType === 1 ? 'Декан' : 'Заведующий кафедры'"
+                    aria-haspopup="true" aria-controls="overlay_panel_dean" class="p-button-link" />
+            <OverlayPanel ref="deanOverlay" id="overlay_panel_dean">
+              <div class="p-fluid">
+                <div class="p-field" v-if="parent.depType === 1">
+                  <label>Декан</label>
+                  {{ parent.dean }}
+                  <Dropdown :options="parent.dean" optionLabel="fullName" optionValue="id" :placeholder="$t('common.select')" />
+                </div>
+                <div class="p-field" v-if="parent.depType === 2">
+                  <label>Заведующий кафедры</label>
+                  {{ parent.umr }}
+                  <Dropdown :options="parent.umr" optionLabel="fullName" optionValue="id" :placeholder="$t('common.select')" />
+                </div>
+                <div class="p-field">
+                  <Button :label="$t('common.choose')" class="mt-2"/>
                 </div>
               </div>
             </OverlayPanel>
