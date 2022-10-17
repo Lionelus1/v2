@@ -1,9 +1,11 @@
 <template>
   <ConfirmPopup group="deleteResult"></ConfirmPopup>
+  <BlockUI :blocked="isSave" :fullScreen="true"></BlockUI>
   <div class="p-col-12" v-if="plan && event">
     <div class="card">
       <div v-if="!resultId" @click="navigateToBack" class="p-d-inline-block"><i class="fa-solid fa-arrow-left p-mr-3"
-                                                               style="font-size: 16px;cursor: pointer"></i></div>
+                                                                                style="font-size: 16px;cursor: pointer"></i>
+      </div>
       <div class="p-mb-0 p-mt-0 p-d-inline-block" style="font-size: 24px"> {{ $t('common.result') }}</div>
     </div>
 
@@ -55,6 +57,9 @@
           <div class="p-grid p-mt-3">
             <div class="p-fluid p-sm-12 p-md-12 p-lg-6 p-xl-6"
                  v-if="event && (event.status.work_plan_event_status_id !== 5 && event.status.work_plan_event_status_id !== 2)">
+              <div class="p-field" v-if="isSave">
+                <ProgressBar mode="indeterminate" style="height: .5em" />
+              </div>
               <div class="p-field">
                 <label>{{ $t('workPlan.eventName') }}</label>
                 <InputText v-model="event.event_name" disabled/>
@@ -214,13 +219,14 @@
   <Sidebar v-model:visible="toCorrectSidebar"
            position="right"
            class="p-sidebar-lg "
-           style="overflow-y: scroll" >
+           style="overflow-y: scroll">
     <div class="p-col-12">
       <h3>{{ $t('workPlan.toCorrect') }}</h3>
     </div>
     <div class="p-col-12">
       <div>
-        <Menubar :model="rejectMenu" :key="active" style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
+        <Menubar :model="rejectMenu" :key="active"
+                 style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
       </div>
     </div>
     <div class="p-col p-fluid">
@@ -272,7 +278,9 @@ export default {
       loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID,
       itemActive: false,
       isFactChanged: false,
-      loading: false
+      loading: false,
+      uploadPercent: 0,
+      isSave: false
     }
   },
   computed: {
@@ -391,6 +399,7 @@ export default {
       return menu;
     },
     saveResult() {
+      this.isSave = true;
       const fd = new FormData();
       fd.append('work_plan_event_id', this.event.work_plan_event_id);
       fd.append('result', this.plan.is_oper ? this.newResult ? this.newResult : "" : this.result);
@@ -410,10 +419,12 @@ export default {
           this.getData();
           this.getEvent();
           this.clearModel();
+          this.isSave = false;
         }
         this.files = [];
         this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
       }).catch(error => {
+        this.isSave = false;
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
@@ -429,14 +440,13 @@ export default {
       axios.post(smartEnuApi + `/workPlan/sendEventResultForVerify`, {
         event_id: parseInt(this.event.work_plan_event_id),
         result_id: parseInt(this.resultData.event_result_id)
-      }, {headers: getHeader()})
-          .then(res => {
-            if (res.data.is_success) {
-              this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
-              this.getEvent();
-              this.getData();
-            }
-          }).catch(error => {
+      }, {headers: getHeader()}).then(res => {
+        if (res.data.is_success) {
+          this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
+          this.getEvent();
+          this.getData();
+        }
+      }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
