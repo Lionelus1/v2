@@ -8,7 +8,8 @@
         @click="openModal"
     ></Button>
   </div>
-
+  <vue-element-loading :active="isBlockUI" is-full-screen color="#FFF" size="80" :text="$t('common.loading')"
+                       backgroundColor="rgba(0, 0, 0, 0.4)"/>
   <Sidebar
       v-model:visible="eventResultModal"
       position="right"
@@ -18,7 +19,8 @@
     <div class="p-col-12">
       <h3>{{ $t('common.result') }}</h3>
     </div>
-    <div class="p-col-12" v-if="plan && plan.is_oper && plan.user.id === loginedUserId && event && event.status.work_plan_event_status_id === 5">
+    <div class="p-col-12"
+         v-if="plan && plan.is_oper && plan.user.id === loginedUserId && event && event.status.work_plan_event_status_id === 5">
       <div>
         <Menubar :model="menu" :key="active"
                  style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
@@ -42,7 +44,7 @@
       </div>
       <div class="p-field" v-else-if="data.result_files">
         <label class="p-text-bold">{{ $t('workPlan.attachments') }}</label>
-        <div >
+        <div>
           <Button
               v-for="(item, index) of data.result_files" :key="index"
               icon="pi pi-download"
@@ -58,7 +60,7 @@
            position="right"
            class="p-sidebar-lg "
            style="overflow-y: scroll"
-           >
+  >
     <div class="p-col-12">
       <h3>{{ $t('workPlan.toCorrect') }}</h3>
     </div>
@@ -81,7 +83,7 @@
       v-if="event"
       @hide="sideBarClosed"
   >
-    <WorkPlanEventResult :result-id="event.work_plan_event_id" />
+    <WorkPlanEventResult :result-id="event.work_plan_event_id"/>
   </Sidebar>
 </template>
 
@@ -130,7 +132,8 @@ export default {
         }
       ],
       loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID,
-      rejectComment: null
+      rejectComment: null,
+      isBlockUI: false,
     }
   },
   methods: {
@@ -150,15 +153,21 @@ export default {
       this.eventResultModal = false;
     },
     downloadFile(item) {
-      axios.post(smartEnuApi + `/workPlan/getWorkPlanResultFile`,
-          {file_path: item.event_result_file}, {headers: getHeader()}).then(res => {
-        const link = document.createElement("a");
-        link.href = "data:application/octet-stream;base64," + res.data;
-        link.setAttribute("download", item.file_name ? item.file_name : item.event_result_file);
-        link.download = item.file_name ? item.file_name : item.event_result_file;
-        link.click();
-        URL.revokeObjectURL(link.href);
-      }).catch((error) => {
+      this.isBlockUI = true;
+      fetch(smartEnuApi + `/serve?path=${item.event_result_file}`, {
+        method: 'GET',
+        headers: getHeader()
+      }).then(response => response.blob())
+          .then(blob => {
+            var url = window.URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = item.file_name ? item.file_name : item.event_result_file;
+            document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
+            a.click();
+            a.remove();
+            this.isBlockUI = false;
+          }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
@@ -168,6 +177,7 @@ export default {
             life: 3000,
           });
         }
+        this.isBlockUI = false;
       });
     },
     showToCorrectSidebar() {
@@ -186,12 +196,12 @@ export default {
       }
 
       axios.post(smartEnuApi + `/workPlan/verifyEventResult`, data, {headers: getHeader()})
-      .then(res => {
-        //console.log(res);
-        this.toCorrectSidebar = false;
-        this.eventResultModal = false;
-        this.emitter.emit("workPlanResultVerified", true);
-      }).catch(error => {
+          .then(res => {
+            //console.log(res);
+            this.toCorrectSidebar = false;
+            this.eventResultModal = false;
+            this.emitter.emit("workPlanResultVerified", true);
+          }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {

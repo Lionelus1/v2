@@ -2,7 +2,7 @@
   <div>
     <Button :label="$t('common.perform')" icon="pi pi-check" @click="openBasic" class="p-mr-2"/>
   </div>
-
+  <vue-element-loading :active="isBlockUI" is-full-screen color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)" />
   <Sidebar
       v-model:visible="showWorkPlanExecuteSidebar"
       position="right"
@@ -123,6 +123,7 @@ export default {
       files: [],
       newResult: null,
       fact: null,
+      isBlockUI: false
     }
   },
   methods: {
@@ -287,15 +288,21 @@ export default {
       this.$refs.form.uploadedFileCount = 0;
     },
     downloadFile(filePath) {
-      axios.post(smartEnuApi + `/workPlan/getWorkPlanResultFile`,
-          {file_path: filePath}, {headers: getHeader()}).then(res => {
-        const link = document.createElement("a");
-        link.href = "data:application/octet-stream;base64," + res.data;
-        link.setAttribute("download", filePath);
-        link.download = filePath;
-        link.click();
-        URL.revokeObjectURL(link.href);
-      }).catch((error) => {
+      this.isBlockUI = true;
+      fetch(smartEnuApi + `/serve?path=${filePath}`, {
+        method: 'GET',
+        headers: getHeader()
+      }).then(response => response.blob())
+          .then(blob => {
+            var url = window.URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = filePath;
+            document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
+            a.click();
+            a.remove();
+            this.isBlockUI = false;
+          }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
@@ -305,6 +312,7 @@ export default {
             life: 3000,
           });
         }
+        this.isBlockUI = false;
       });
     },
   }

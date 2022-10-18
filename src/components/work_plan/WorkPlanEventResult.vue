@@ -1,6 +1,6 @@
 <template>
   <ConfirmPopup group="deleteResult"></ConfirmPopup>
-  <BlockUI :blocked="isSave" :fullScreen="true"></BlockUI>
+  <vue-element-loading :active="isBlockUI" is-full-screen color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)" />
   <div class="p-col-12" v-if="plan && event">
     <div class="card">
       <div v-if="!resultId" @click="navigateToBack" class="p-d-inline-block"><i class="fa-solid fa-arrow-left p-mr-3"
@@ -280,7 +280,7 @@ export default {
       isFactChanged: false,
       loading: false,
       uploadPercent: 0,
-      isSave: false
+      isBlockUI: false
     }
   },
   computed: {
@@ -399,7 +399,7 @@ export default {
       return menu;
     },
     saveResult() {
-      this.isSave = true;
+      this.isBlockUI = true;
       const fd = new FormData();
       fd.append('work_plan_event_id', this.event.work_plan_event_id);
       fd.append('result', this.plan.is_oper ? this.newResult ? this.newResult : "" : this.result);
@@ -419,12 +419,12 @@ export default {
           this.getData();
           this.getEvent();
           this.clearModel();
-          this.isSave = false;
+          this.isBlockUI = false;
         }
         this.files = [];
         this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
       }).catch(error => {
-        this.isSave = false;
+        this.isBlockUI = false;
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
@@ -703,15 +703,23 @@ export default {
       this.$refs.form.uploadedFileCount = 0;
     },
     downloadFile(file) {
-      axios.post(smartEnuApi + `/workPlan/getWorkPlanResultFile`,
-          {file_path: file.event_result_file}, {headers: getHeader()}).then(res => {
-        const link = document.createElement("a");
-        link.href = "data:application/octet-stream;base64," + res.data;
-        link.setAttribute("download", file.file_name ? file.file_name : file.event_result_file);
-        link.download = file.file_name ? file.file_name : file.event_result_file;
-        link.click();
-        URL.revokeObjectURL(link.href);
-      }).catch((error) => {
+      this.isBlockUI = true;
+      let url = `${smartEnuApi}/serve?path=${file.event_result_file}`
+      fetch(url, {
+        method: 'GET',
+        headers: getHeader()
+      })
+      .then(response => response.blob())
+      .then(blob => {
+        var url = window.URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = file.file_name;
+        document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
+        a.click();
+        a.remove();
+        this.isBlockUI = false;
+      }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
@@ -721,6 +729,7 @@ export default {
             life: 3000,
           });
         }
+        this.isBlockUI = false;
       });
     },
   }
@@ -817,5 +826,9 @@ export default {
 
 ::v-deep(.p-inplace-display) {
   padding: 0;
+}
+
+::v-deep(.velmld-overlay) {
+  background-color: rgba(0, 0, 0, 0.4) !important;
 }
 </style>
