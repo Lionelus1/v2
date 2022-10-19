@@ -656,7 +656,7 @@
           if (error.response.status == 405) {
               this.$toast.add({
                 severity: "error",
-                summary: this.$t("common.message.noRight"),
+                summary: this.$t("common.message.notAllowed"),
                 life: 3000,
               });
           }
