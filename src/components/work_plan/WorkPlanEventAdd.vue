@@ -1,8 +1,6 @@
 <template>
   <Button v-if="isMain" :label="$t('workPlan.addEvent')" class="p-button-info p-ml-1" icon="pi pi-plus" @click="openBasic"/>
-  <div v-else>
-    <Button label="" class="p-button-info p-ml-1" icon="pi pi-plus" @click="openBasic"/>
-  </div>
+  <Button v-else label="" class="p-button-info p-ml-1" icon="pi pi-plus" @click="openBasic"/>
 
   <Dialog :header="$t('workPlan.addEvent')" v-model:visible="showWorkPlanEventModal" :style="{width: '600px'}"
           class="p-fluid">
@@ -160,7 +158,7 @@ export default {
         data.supporting_docs = this.supporting_docs;
       }
       axios.post(smartEnuApi + `/workPlan/addEvent`, data, {headers: getHeader()}).then(res => {
-        this.emitter.emit("workPlanEventIsAdded", true);
+        this.emitter.emit("workPlanEventIsAdded", {is_success: true, is_main: this.isMain});
         this.$toast.add({severity: 'success', detail: this.$t('workPlan.message.eventCreated'), life: 3000});
         this.showWorkPlanEventModal = false;
         this.clearModel();

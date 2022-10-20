@@ -466,7 +466,7 @@ export default {
       let url = URL.createObjectURL(blob);
       let link = document.createElement('a');
       link.href = url;
-      link.download = this.report.report_name;
+      link.download = this.report.report_name + '.docx';
       link.click();
     },
     getGeneratedPdf() {

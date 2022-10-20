@@ -28,7 +28,7 @@
     </div>
     <div class="p-field" v-if="plan && plan.is_oper">
       <label>{{ $t('common.department') }}</label>
-      <Dropdown v-model="selectedDepartment" :options="departments" optionLabel="department_name" optionValue="department_id" :placeholder="$t('common.select')" />
+      <Dropdown v-model="selectedDepartment" :options="departments" optionLabel="department_name" optionValue="department_id" :filter="true" :show-clear="true" :placeholder="$t('common.select')" />
     </div>
     <!--<div class="p-field" v-if="plan && plan.is_oper">
       <label>{{ $t('workPlan.respExecutor') }}</label>

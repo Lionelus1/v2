@@ -11,13 +11,22 @@
                 <SelectButton class="p-mb-2" v-model="language" :options="languages" optionLabel="name" @change="changeLanguage" />
 		        
                 <p class="message" v-if="$i18n.locale =='kz'" style="text-align:justify">
-                    Құрметті пайдаланушылар! Халықпен кері байланыс университетке байланысты проблемалар бойынша уақытылы әрекет етуге және қабылданатын шаралар мен бастамалардың тиімділігін қадағалап отыруға көмектеседі. Осы сервистің көмегімен Сіз университет атына оның қызмет саласы шегінде өзіңізді қызықтыратын сұрақтарды қоя аласыз. Сұрақ қою үшін ТАӘ, телефоныңыздың нөмірін, e-mail көрсетіңіз, содан кейін қажетті санатты таңдап, сұрақтың мәнін нақты жазыңыз. Жіберер алдында көрсетілген деректердің дұрыстығын қайта тексеріңіз. Сұрақ модератор тексергеннен кейін ғана тіркеледі, ал жауап дәл осы жерде жарияланады. Сонымен қатар, Сіз көрсеткен электрондық поштаға хабарлама келіп түседі.
+                    <b>Құрметті пайдаланушылар!</b>
+Кәсіби және консультациялық көмек көрсету, туындаған мәселелерді жедел тәртіпте шешу және олар бойынша ұтымды шаралар қабылдау мақсатында «Л.Н. Гумилев атындағы Еуразия ұлттық университеті» коммерциялық емес акционерлік қоғамы Smart ENU жүйесін іске қосты, ол арқылы Сіз өзіңізді толғандырған сұрақты, мәселені, ескерту мен ұсынысыңызды жеткізе аласыз, немесе Университеттің Қоғамдық қабылдау бөлмесінің басшысының немесе мүшелерінің жеке қабылдауына өтінім бере аласыз. Сұрақ қою үшін аты-жөніңізді, телефон номерін, e-mail көрсетіңіз, сосын сұрақтың категориясын таңдап, сұрақтың мәнін баяндап беріңіз. Модератор тексергеннен кейін сұрақ тіркеледі, жауап Сіз көрсеткен электронды поштаға жолданады, немесе көрсетілген телефон номері бойынша Сізбен жауапты тұлға хабарласады. 
+Сұрақты жолдамас бұрын көрсетілген мәліметтердің дұрыстығын тағы бір тексеріп шығуды сұраймыз. 
+
                 </p>
-                <p class="message" v-if="$i18n.locale =='ru'">
-                    Уважаемые пользователи! Обратная связь с населением помогает университету своевременно реагировать на проблемы и отслеживать эффективность принимаемых мер и инициатив. С помощью данного сервиса Вы можете задать интересующие Вас вопросы в адрес университета в пределах его сферы деятельности. Чтобы задать вопрос, укажите ФИО, номер телефона, e-mail, а затем выберите категорию и четко изложите суть вопроса. Перед отправкой перепроверьте корректность указанных данных. Вопрос будет зарегистрирован после проверки модератором, а ответ опубликуется здесь же. При этом на указанный Вами e-mail поступит уведомление.
+                <p class="message" v-if="$i18n.locale =='ru'" style="text-align:justify">
+                    <b>Уважаемые пользователи!</b>
+В целях оказания профессиональной и консультативной помощи, содействия в решении возникающих проблем в оперативном порядке и принятия по ним действенных мер, Некоммерческим акционерным обществом «Евразийский национальный университет имени Л.Н. Гумилева» запущена система, посредством которой можете оставить интересующий Вас вопрос, проблему, замечание и предложение, либо оставить заявку на личный прием с руководителем или членами Общественной приемной Университета. Чтобы задать вопрос, укажите ФИО, номер телефона, e-mail, а затем выберите категорию и изложите суть вопроса. Вопрос будет зарегистрирован после проверки модератором, ответ будет направлен на указанную Вами электронную почту, либо с Вами свяжется ответственное лицо по указанному номеру телефона.
+Перед отправкой убедительно просим перепроверить корректность указанных данных.
+
                 </p>
-                <p class="message" v-if="$i18n.locale =='en'">
-                    Dear users! Feedback from the public helps to respond to issues in a timely manner and monitor the effectiveness of measures and initiatives taken. With the help of this service you can ask the questions you are interested in the university within the scope of its activities. To ask a question, specify your name, phone number, e-mail, and then select a category and clearly outline the essence of the question. Before sending, double-check the correctness of these data. The question will be registered after verification by the moderator and the answer will be published here. At the same time, you will receive a notification to the e-mail address you specified.
+                <p class="message" v-if="$i18n.locale =='en'" style="text-align:justify">
+                    <b>Dear users!</b> Non-profit JSC “L.N. Gumilyov Eurasian National University” has launched a system of professional and advisory support, prompt assistance in solving emerging problems and taking effective measures. You can leave a question, comment or suggestion, share a problem, or leave a request for a personal appointment with the head or members of the Public Reception of the University. 
+To ask a question you have to enter your full name, phone number, e-mail, select a category and specify the type of the question. The question will be registered after verification by a moderator. The answer will be sent to your email address or the responsible person will contact you through the phone call.
+Please double-check the entered data before submission.
+
                 </p>
 				<div class="p-field">
 					<label for="lname">{{$t("contact.lname")}}*</label>
@@ -117,7 +126,8 @@
             }
         },
         validateEmail() {
-            if (/^\w+([-]?\w+)*@\w+([-]?\w+)*(\.\w{2,3})+$/.test(this.request.email)) {
+            // eslint-disable-next-line
+            if (/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(this.request.email)) {
                 this.validation.email = false;
             }
             else {
@@ -181,8 +191,8 @@
             const fd = new FormData();
             this.request.count = 0
             this.request.language = this.$i18n.locale
-            if (this.request.document != null) {
-                fd.append("f0", this.request.document);
+            if (this.$refs.form.files.length>0) {
+                fd.append("f0", this.$refs.form.files[0]);
                 this.request.count  = 1
             }
             fd.append('question', JSON.stringify({question: this.request, count: this.request.count}));

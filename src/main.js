@@ -1,7 +1,4 @@
-
-import { createApp } from 'vue';
-
-import { reactive } from 'vue';
+import {createApp} from 'vue';
 import router from './router';
 import App from './App.vue';
 import PrimeVue from 'primevue/config';
@@ -105,12 +102,14 @@ import Organization from '@/components/contragent/Organization.vue';
 import ConfirmationService from 'primevue/confirmationservice';
 import store from "./store/store"
 
-import { library, dom } from "@fortawesome/fontawesome-svg-core"; // fontawesome
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { fas } from '@fortawesome/free-solid-svg-icons'
-import { fab } from '@fortawesome/free-brands-svg-icons';
-import { far } from '@fortawesome/free-regular-svg-icons';
+import {dom, library} from "@fortawesome/fontawesome-svg-core"; // fontawesome
+import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+import {fas} from '@fortawesome/free-solid-svg-icons'
+import {fab} from '@fortawesome/free-brands-svg-icons';
+import {far} from '@fortawesome/free-regular-svg-icons';
 import ScrollPanel from "primevue/scrollpanel";
+import WorkPlanEventResult from "./components/work_plan/WorkPlanEventResult";
+
 library.add(fas, far, fab)
 dom.watch();
 router.beforeEach(function(to, from, next) {
@@ -265,4 +264,5 @@ app.component('Editor', Editor);
 app.component("VueElementLoading", VueElementLoading);
 app.component('TreeSelect', TreeSelect);
 app.component('ScrollPanel', ScrollPanel);
+app.component('WorkPlanEventResult', WorkPlanEventResult)
 app.mount('#app');

@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <Button label="" icon="pi pi-pencil" class="p-button-info p-ml-1 p-mt-1" @click="openBasic"/>
-  </div>
+  <Button label="" icon="pi pi-pencil" class="p-button-info p-ml-1 p-mt-1" @click="openBasic"/>
 
   <Dialog :header="$t('workPlan.editEvent')" v-model:visible="showWorkPlanEventEditModal" :style="{width: '450px'}"
           class="p-fluid">
@@ -108,6 +106,7 @@ export default {
     openBasic() {
       this.showWorkPlanEventEditModal = true;
       if (this.editData !== null) {
+        this.selectedUsers = [];
         this.editData.quarter = parseInt(this.editData.quarter);
         this.editData.user.forEach(e => {
           e.userID = e.id;

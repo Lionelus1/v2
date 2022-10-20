@@ -201,8 +201,8 @@ export default {
       });
     },
     navigateToEvent(event) {
-      localStorage.setItem('workPlan', JSON.stringify(event));
-      this.$router.push({name: 'WorkPlanEvents', params: {id: event.work_plan_id}});
+      //localStorage.setItem('workPlan', JSON.stringify(event));
+      this.$router.push({name: 'WorkPlanEvent', params: {id: event.work_plan_id}});
     },
     formatDate(value) {
       let result = "";

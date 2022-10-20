@@ -1,12 +1,10 @@
-import { createRouter, createWebHashHistory } from 'vue-router';
-import Dashboard from './components/Dashboard.vue';
+import {createRouter, createWebHashHistory} from 'vue-router';
 import Full from './components/Full.vue';
+import store from '@/store/store' // your vuex store
 
 function load(component) {
     return () => import(`./components/${component}.vue`)
 }
-
-import store from '@/store/store' // your vuex store
 
 
 const ifNotAuthenticated = (to, from, next) => {
@@ -235,8 +233,8 @@ const routes = [
                     },
                     {
                         path: ':id',
-                        name: 'WorkPlanEvents',
-                        component: load('work_plan/WorkPlanEvents'),
+                        name: 'WorkPlanEvent',
+                        component: load('work_plan/WorkPlanEvent'),
                         beforeEnter: ifAuthenticated,
                     },
                     {
@@ -308,7 +306,7 @@ const routes = [
             },
             {
                 path:'/myref',
-                name:'OutQr',
+                name:'OutQr1',
                 component: load('smartenu/JobDescription'),
                 beforeEnter: ifAuthenticated,
             },
