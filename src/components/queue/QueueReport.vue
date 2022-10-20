@@ -1,4 +1,5 @@
 <template>
+   <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em;" />
   <div>  
     <div> 
       <Toolbar class="p-mb-4 "> class="p-col">
@@ -47,7 +48,7 @@
           <Column field="redirect" v-bind:header="$t('queue.redirected')"></Column>
           <Column field="averageTime" v-bind:header="$t('queue.averageTime')">
             <template #body="slotProps">
-              {{convertTime(slotProps.data.averageTime)}}
+              {{slotProps.data.averageTime}}
             </template>
           </Column>
       </DataTable>
@@ -74,30 +75,29 @@ export default {
     findRole : findRole,
 
     getQueueReport(queueID) {
-        // alert(queueID)
-        var date = new Date(this.selectDate);
-        var day = "" + date.getFullYear() +"-"+((date.getMonth() + 1) > 9 ? '' : '0')+ (date.getMonth() + 1) +"-"+ (date.getDate() > 9 ? '' : '0')+ date.getDate();
-        this.loading = true 
-        //  alert(this.selectDate);
-        axios
-        .post(smartEnuApi + "/queue/queueReport", {selectedDay:day},{
-          headers: getHeader(),
-        })
-        .then((response) => {
-          this.reports = response.data;         
-          this.loading = false;                  
-        })
-        .catch((error) => {
-          this.loading = false;
-          this.$toast.add({
-            severity: "error",
-            summary: this.$t("smartenu.loadError") + ":\n" + error,
-            life: 3000,
-          });
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          }
+      this.loading = true  
+      // alert(queueID)
+      var date = new Date(this.selectDate);
+      var day = "" + date.getFullYear() +"-"+((date.getMonth() + 1) > 9 ? '' : '0')+ (date.getMonth() + 1) +"-"+ (date.getDate() > 9 ? '' : '0')+ date.getDate();
+      axios
+      .post(smartEnuApi + "/queue/queueReport", {selectedDay:day},{
+        headers: getHeader(),
+      })
+      .then((response) => {
+        this.reports = response.data;         
+        this.loading = false;                  
+      })
+      .catch((error) => {
+        this.loading = false;
+        this.$toast.add({
+          severity: "error",
+          summary: this.$t("smartenu.loadError") + ":\n" + error,
+          life: 3000,
         });
+        if (error.response.status == 401) {
+          this.$store.dispatch("logLout");
+        }
+      });
     },
 
     printWindow(){		
