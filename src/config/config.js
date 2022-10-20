@@ -6,19 +6,6 @@ export const apiDomain = "https://smart.enu.kz/#"; // TODO: Production салг�
 export const signerApi = "https://smart.enu.kz:6990"
 //export const signerApi = "http://10.1.1.161:6990"
 
-<<<<<<< HEAD
-//export const smartEnuApi = "https://smart.enu.kz:8081"
-// export const smartEnuApi = "http://smart.enu.kz:8090"
-export const smartEnuApi = "http://localhost:8090"
-
-// export const socketApi = "wss://smart.enu.kz:8081"
-//export const socketApi = "ws://smart.enu.kz:8090" 
-export const socketApi = "ws://localhost:8090" 
-
-export const queueApi = "http://localhost:8088"
-//export const queueApi = "http://smart.enu.kz:8088"
-// export const queueApi = "https://smart.enu.kz:8088"
-=======
 export const smartEnuApi = "https://smart.enu.kz:8081"
 //export const smartEnuApi = "http://smart.enu.kz:8090"
 //export const smartEnuApi = "http://localhost:8090"
@@ -30,7 +17,6 @@ export const socketApi = "wss://smart.enu.kz:8081" //prod server
 //export const queueApi = "http://localhost:8088"
 export const queueApi = "http://smart.enu.kz:8088"
 //export const queueApi = "https://smart.enu.kz:8088"
->>>>>>> 2b9e801650545d4142d11178bc67777a76489196
 
 //export const queueApi = "http://localhost:8088"
 //export const queueApi = "http://smart.enu.kz:8088"
