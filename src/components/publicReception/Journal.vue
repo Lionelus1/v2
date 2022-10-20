@@ -49,7 +49,7 @@
                 <i class="fa-solid fa-user-tag product-category-icon"></i>
                 <small class="product-category">{{slotProps.data.replier.fullName}}</small>
               </span>
-              <Button v-else :label="$t('common.send')" icon="pi pi-send"  class="p-button-outlined p-button-warning" @click="currentQuestion=slotProps.data.id;sendDialog=true"></Button>
+              <Button v-if="slotProps.data.state.id !=7" :label="$t('common.send')" icon="pi pi-send"  class="p-button-outlined p-button-warning" @click="currentQuestion=slotProps.data.id;sendDialog=true"></Button>
               </div>
             </div>
             <div class="p-lg-3 p-md-3 p-sm-6">
