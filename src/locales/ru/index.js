@@ -838,6 +838,7 @@ export default {
             resumeSuccessSigned: 'Резюме успешно подписано',
             digital: 'ЭЦП',
             paper: 'На бумаге',
+            financial: "Требует согласования департамента финансов",
         }
     },
     workPlan: {

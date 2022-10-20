@@ -41,6 +41,11 @@
                     <InputText id="dtdescriptionkz" class="p-mb-2" v-bind:placeholder="$t('common.description')" v-model="createdTemplate.descriptionKaz" type="text" />
                     <label for="dtdescriptionru">{{$t('doctemplate.description')}}  ({{$t('common.language.ru')}})</label>
                     <InputText id="dtdescriptionru" class="p-mb-2" v-bind:placeholder="$t('common.description')" v-model="createdTemplate.descriptionRus" type="text" />
+                    <div class="field-checkbox">
+                      <Checkbox id="financial" class="p-mr-2" v-model="createdTemplate.financial" :binary="true"/>
+                      <label for="financial">{{$t('hr.doc.financial')}}</label>
+                    </div>
+
                 </div>
               </div>
               <template #footer>
@@ -63,6 +68,7 @@
                   <span v-else>{{slotProps.node.data.name}}</span>
                   <span class="sm-visible"> /{{slotProps.node.data.typeText}}</span>
                   <span  v-if="slotProps.node.data.state!=null" class="sm-visible"> /{{slotProps.node.data.state}}</span>
+                  <span v-if="slotProps.node.data.financial" class="sm-visible">/ <i class="fa-regular fa-money-bill-1"></i></span>
                   <span v-if="slotProps.node.data.updatedDate!=null" class="sm-visible"> /{{slotProps.node.data.updatedDate}}</span>
                 </template>
               </Column>
@@ -72,12 +78,18 @@
                     {{slotProps.node.data.createdDate ? slotProps.node.data.createdDate.replace('Z', '').replace('T', ' '): ''}}
                 </template>
               </Column>
+              <Column field="financial"  headerStyle="width: 2em"  headerClass="sm-invisible" bodyClass="sm-invisible">
+                <template #body="slotProps">
+                  <span v-if="slotProps.node.data.financial"> <i class="fa-solid fa-money-bill fa-xl"></i></span>
+                </template>
+              </Column>
               <Column v-if="!selectMode" field="state" v-bind:header="$t('common.state')" headerClass="sm-invisible" bodyClass="sm-invisible">
                 <template #body="slotProps">
                   <span :class="'template-status ' + slotProps.node.data.stateEn"> {{slotProps.node.data.state}}</span>
                 </template>
 
               </Column>
+              
               <Column field="updatedDate" v-bind:header="$t('common.updated')" headerClass="sm-invisible" bodyClass="sm-invisible">
                <template #body="slotProps">
                     {{slotProps.node.data.updatedDate ? slotProps.node.data.updatedDate.replace('Z', '').replace('T', ' ') : ''}}
@@ -85,10 +97,10 @@
               </Column>
               <Column headerStyle="width: 8em" headerClass="p-text-center" bodyClass="p-text-center">
               <template #header>
-                  <Button v-if="!selectMode" icon="pi pi-plus" class="p-button-blue" @click="openForm('addFolder')" v-tooltip.bottom="$t('common.newCatalog')"  />
+                  <Button v-if="!selectMode" icon="pi pi-plus" class="p-button-blue" @click="openForm('addFolder');clearCreatedFolder();" v-tooltip.bottom="$t('common.newCatalog')"  />
               </template>
               <template #body="slotProps">
-                  <Button v-if="slotProps.node.data.type==1 && !selectMode" type="button" icon="pi pi-plus" @click="openForm('addTemplate',slotProps.node)" class="p-button-success" v-tooltip.bottom="$t('doctemplate.newTemplate')"></Button>
+                  <Button v-if="slotProps.node.data.type==1 && !selectMode" type="button" icon="pi pi-plus" @click="openForm('addTemplate',slotProps.node);clearCreatedTemlate();" class="p-button-success" v-tooltip.bottom="$t('doctemplate.newTemplate')"></Button>
                   <Button v-if="slotProps.node.data.type!=1" type="button" icon="pi pi-search" class="p-button-warning" @click="editDocTemplate(slotProps.node)" v-tooltip.bottom="$t('common.show')"></Button>&nbsp;
                   <Button v-if="slotProps.node.data.type!=1 && slotProps.node.data.stateEn == DocState.REVISION.Value" icon="pi pi-comment" @click="openForm('dialogComment',slotProps.node)" v-tooltip.bottom="$t('common.comment')"></Button>
                   <Button v-if="selectMode && slotProps.node.data.type!=1" icon="pi pi-check-circle" class="p-button-success ml-2" @click="select($event,slotProps.node)" v-tooltip.bottom="$t('common.choose')"></Button>
@@ -118,8 +130,9 @@
                   <div v-else>{{$t('common.language.en')}}</div>
                 </template>
               </SelectButton>
+              <Button v-if="selectMode && selectedNode.data.type!=1" icon="pi pi-check-circle" class="p-button-success ml-2" @click="select($event,selectedNode)" v-tooltip.bottom="$t('common.choose')"></Button>
             </div>
-            <RichEditor ref="kzEditor" v-if="templateLanguage =='kz'" v-model="selectedNode.data.mainTextKaz" editorStyle="height:500px;max-width:700px;min-width:500px">
+            <RichEditor ref="kzEditor" :readonly="editorReadOnly" v-if="templateLanguage =='kz'" v-model="selectedNode.data.mainTextKaz" editorStyle="height:500px;max-width:700px;min-width:500px">
               <template v-slot:toolbar>
                 <span class="ql-formats">
                   <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
@@ -140,7 +153,7 @@
 
               </template>
             </RichEditor>
-            <RichEditor  ref="ruEditor" v-else v-model="selectedNode.data.mainTextRus" editorStyle="height:500px;max-width:700px;min-width:500px">
+            <RichEditor  ref="ruEditor" :readonly="editorReadOnly" v-else v-model="selectedNode.data.mainTextRus" editorStyle="height:500px;max-width:700px;min-width:500px">
               <template v-slot:toolbar>
                 <span class="ql-formats">
                   <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
@@ -168,7 +181,7 @@
                     <label for="dialognote">{{$t('common.comment')}}</label>
                     <InputText id="dialognote" class="p-mb-2" v-bind:placeholder="$t('common.comment')" v-model="dialogNote" type="text" />
                     <label for="approvingusers">{{$t('doctemplate.approvingUsers')}}</label>
-                    <FindUser v-model="selectedUsers" id="approvingusers"></FindUser>
+                    <FindUser v-model="selectedUsers" :userType="2" :roles="'legal_service_head'" id="approvingusers"></FindUser>
                 </div>
               </div>
               <template #footer>
@@ -239,6 +252,7 @@
         selectedNode: {
           data : {},
         },
+        editorReadOnly :false,
         signing : false,
         DocState: DocState,
         templateLanguage: 'kz',
@@ -278,6 +292,7 @@
           descriptionKaz: '',
           descriptionRus: '',
           folderID: -1,
+          financial: false,
         },
       }
     },
@@ -300,6 +315,29 @@
       };
   },
     methods: {
+      clearCreatedTemlate() {
+        this.createdTemplate = {
+          creatorId: 1,
+          mainTextKaz: '',
+          mainTextRus: '',
+          descriptionKaz: '',
+          descriptionRus: '',
+          folderID: -1,
+          financial: false,
+        }
+      },
+      clearCreatedFolder() {
+        this.createdFolder = {
+          groups: null,
+          namekz: '',
+          nameru: '',
+          nameen: '',
+          id: null,
+          createdDate: null,
+          updatedDate: null,
+          type: Enum.FolderType.Journals
+        }
+      },
       select(event, node) {
         this.updateValue(event,node)
       },
@@ -402,6 +440,7 @@
       sendToApproval() {
         this.signing = true
         this.dialogOpenState.toApproval = false;
+        
         let url = "/doctemplate/toapproval";
 
         if (this.selectedNode == null || this.selectedNode.data.type != 0 || this.selectedUsers == null || this.dialogNote == null) {
@@ -417,6 +456,7 @@
         }
         let isLegalHead = false;
         this.selectedUsers.forEach(user => {
+          console.log(user)
           isLegalHead = this.findRole(user, DocState.roles.LegalServiceHead)
         });
         
@@ -611,10 +651,20 @@
           };
           this.showMessage('success', this.$t('common.message.title.docCreation'),this.$t('common.message.catSuccesCreated'));
 
-        },
-        error =>{
-          console.log(error);
-        });
+        })
+        .catch(error =>{
+          if (error.response.status == 405) {
+              this.$toast.add({
+                severity: "error",
+                summary: this.$t("common.message.noRight"),
+                life: 3000,
+              });
+          }
+          else if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          } else 
+            console.error(error)
+        })
       },
       editDocTemplate(node){
         this.active = 1;
@@ -640,6 +690,7 @@
           childData.state =  this.$i18n.locale == "kz" ? node.History[0].stateKaz : this.$i18n.locale == "ru" ?  node.History[0].stateRus : node.History[0].stateEn;
           childData.stateEn =  node.History[0].stateEn;
         }
+        childData.financial = node.financial
         childData.name= this.$i18n.locale == "ru" ? node.descriptionRus : node.descriptionKaz;
         childData.docID = node.docID
         childData.filePath = node.filePath

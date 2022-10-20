@@ -137,6 +137,7 @@ export default {
         recordsNotFound: "Records not found",
         refinf: "Reference information",
         organization: "Organization",
+        organizations: "Organizatios",
         params: "Parameters",
         password: "Password",
         person: "Person",
@@ -808,6 +809,7 @@ export default {
             resumeSuccessSigned: 'Resume successfully signed',
             digital: 'EDS',
             paper: 'On paper',
+            financial: "Requires approval from the finance department",
         }
     },
     workPlan: {

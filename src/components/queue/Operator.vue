@@ -1,4 +1,5 @@
 <template>
+{{service}}
   <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em;" />
   <div class="card summary">
     <h3>{{ (this.queue != null ? this.queue['queueName' + $i18n.locale]:"")}}</h3>

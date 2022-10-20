@@ -334,8 +334,6 @@ export default {
         },
         fileUpdated(event) {
             this.closeDialog('fileUpload');
-           
-
             if (this.file.key !== this.parent.key) {
                 if (this.parent.leaf) {
                     return
@@ -344,6 +342,8 @@ export default {
                     this.parent.children = []
                 }
                 event.ownerId = this.loginedUser.userID
+                event.hidden = 0
+                event.type = 1
                 this.parent.children.push(event)
 
             } else {
