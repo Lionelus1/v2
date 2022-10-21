@@ -67,7 +67,7 @@
               </div>
               <div class="p-field">
                 <label>{{ $t('common.result') }}</label>
-                <RichEditor v-if="plan && !plan.is_oper" v-model="result" editorStyle="height:300px;"
+                <RichEditor v-if="plan && !plan.is_oper" v-model="result" editorStyle="height:300px;" :clearOnPaste="true"
                             @text-change="editorChange">
                   <template v-slot:toolbar>
                     <span class="ql-formats">
@@ -77,7 +77,7 @@
                     </span>
                   </template>
                 </RichEditor>
-                <RichEditor v-if="plan && plan.is_oper" v-model="newResult" editorStyle="height:300px;"
+                <RichEditor ref="planEditor" v-if="plan && plan.is_oper" v-model="newResult" editorStyle="height:300px;" :clearOnPaste="true"
                             @text-change="editorChange">
                   <template v-slot:toolbar>
                     <span class="ql-formats">
@@ -278,7 +278,8 @@ export default {
       loading: false,
       uploadPercent: 0,
       isBlockUI: false,
-      authUser: JSON.parse(localStorage.getItem("loginedUser"))
+      authUser: JSON.parse(localStorage.getItem("loginedUser")),
+      quill: null
     }
   },
   computed: {
@@ -515,7 +516,10 @@ export default {
         this.getResultHistory();
       }
     },
-    editorChange() {
+    resultChange() {
+      console.log(this.result)
+    },
+    editorChange(event) {
       if ((this.result != null && this.result.length > 0) || (this.newResult != null && this.newResult.length > 0)) {
         this.isDisabled = false;
       } else {
