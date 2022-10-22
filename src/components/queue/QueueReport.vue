@@ -31,7 +31,7 @@
     </div>               
     
     <div class="card">            
-      <DataTable :value="reports" responsiveLayout="scroll">
+      <DataTable :value="reports">
           <Column field="parentName" v-bind:header="$t('queue.title')">  
             <template #body="slotProps">
               {{slotProps.data["parentName"+$i18n.locale]}} -> {{slotProps.data["name"+$i18n.locale]}}
@@ -46,9 +46,9 @@
           <Column field="serviced" v-bind:header="$t('queue.serviced')"></Column>
           <Column field="dontCome" v-bind:header="$t('queue.dnshowup')"></Column>
           <Column field="redirect" v-bind:header="$t('queue.redirected')"></Column>
-          <Column field="averageTime" v-bind:header="$t('queue.averageTime')">
+          <Column field="workTime" v-bind:header="$t('queue.averageTime')">
             <template #body="slotProps">
-              {{slotProps.data.averageTime}}
+              {{convertTime(slotProps.data.workTime/slotProps.data.serviced)}}
             </template>
           </Column>
       </DataTable>
@@ -84,7 +84,8 @@ export default {
         headers: getHeader(),
       })
       .then((response) => {
-        this.reports = response.data;         
+        this.reports = response.data; 
+        // alert(JSON.stringify(this.reports));        
         this.loading = false;                  
       })
       .catch((error) => {
