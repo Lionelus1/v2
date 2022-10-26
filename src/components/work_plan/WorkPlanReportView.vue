@@ -1,5 +1,5 @@
 <template>
-
+  <vue-element-loading :active="loading" is-full-screen color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)" />
   <div>
     <div class="p-col-12">
       <div class="card" v-if="isPlanCreator && !isReportSentApproval">
@@ -15,7 +15,7 @@
                 @click="downloadWord"
                 class="p-button p-button-info p-ml-2"/>
       </div>
-      <div class="card" v-if="!isPlanReportApproved">
+      <div class="card" v-if="!isPlanReportApproved && isReportSentApproval">
         <Button v-if="isApproval && !isRejected" :label="$t('common.action.approve')" icon="pi pi-check"
                 @click="openApprovePlan"
                 class="p-button p-button-success p-ml-2"/>
@@ -42,10 +42,10 @@
           </template>
         </Timeline>
       </div>
-      <div class="card">
+      <div class="card" v-if="blobSource">
 <!--        <object src="#toolbar=0" style="width: 100%; height: 1000px" v-if="source" type="application/pdf"
                 :data="source"></object>-->
-        <embed :src="blobSource" style="width: 100%; height: 1000px" v-if="blobSource" type="application/pdf" />
+        <embed :src="blobSource" style="width: 100%; height: 1000px" type="application/pdf" />
       </div>
     </div>
 
@@ -140,7 +140,8 @@ export default {
       },
       isReportSentApproval: false,
       isCurrentUserApproved: false,
-      isPlanReportApproved: false
+      isPlanReportApproved: false,
+      loading: false
     }
   },
   created() {
@@ -166,7 +167,6 @@ export default {
   },
   methods: {
     getPlan() {
-      this.loading = true;
       axios.get(smartEnuApi + `/workPlan/getWorkPlanById/${this.report.work_plan_id}`, {headers: getHeader()})
           .then(res => {
             if (res.data) {
@@ -176,7 +176,6 @@ export default {
               }
               //this.getFile();
             }
-            this.loading = false;
           }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
@@ -187,7 +186,6 @@ export default {
             life: 3000,
           });
         }
-        this.loading = false;
       });
     },
     getReport() {
@@ -218,8 +216,9 @@ export default {
           this.source = `data:application/pdf;base64,${res.data}`;
           this.blobSource = URL.createObjectURL(this.b64toBlob(res.data));
           this.document = res.data;
+        } else {
+          this.getData();
         }
-        this.getData();
       }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
@@ -260,6 +259,7 @@ export default {
       });*/
     },
     getData() {
+      this.loading = true;
       axios.post(smartEnuApi + `/workPlan/getWorkPlanReportData`, {
         work_plan_id: parseInt(this.report.work_plan_id),
         quarter: this.report.report_type === 2 ? this.report.quarter : null,
@@ -273,9 +273,11 @@ export default {
           this.$nextTick(() => {
             this.getGeneratedPdf();
             //this.initReportFile();
+            this.loading = false;
           });
         }
       }).catch(error => {
+        this.loading = false;
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
@@ -418,7 +420,6 @@ export default {
       });
     },
     rejectPlan() {
-      this.loading = true;
       if (this.rejectComment) {
         this.reject.comment = this.rejectComment;
       }
@@ -429,7 +430,6 @@ export default {
           {headers: getHeader()}
       ).then(res => {
         if (res.data.is_success) {
-          this.loading = false;
           this.showRejectPlan = false;
           this.emitter.emit("planRejected", true);
           this.$router.push({name: 'WorkPlanReport', params: {id: this.report.work_plan_id}});
@@ -444,7 +444,6 @@ export default {
             life: 3000,
           });
         }
-        this.loading = false;
       })
     },
     async downloadWord() {
@@ -470,7 +469,8 @@ export default {
       link.click();
     },
     getGeneratedPdf() {
-      const html = this.$refs.report.$refs.toPdf.innerHTML;
+      let html = this.$refs.report.$refs.toPdf.innerHTML;
+      html = html.replace(/<h1[^>]*>/g,'<p>').replace(/<\/h1>/g,'</p>');
       axios.post(smartEnuApi + `/workPlan/generatePdf`, {text: html}, {headers: getHeader()})
       .then(res => {
         const blob = this.b64toBlob(res.data);
