@@ -15,8 +15,7 @@
           :monthNavigator="true"
           :yearNavigator="true"
           yearRange="2000:2030"
-          :showIcon="true"
-                             
+          :showIcon="true"                             
         />
       </template>
         <template #end>
