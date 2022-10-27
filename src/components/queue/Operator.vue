@@ -113,7 +113,8 @@ export default {
      
     }
   },
-  methods: {   
+  methods: {  
+    findRole : findRole, 
     getQueue(parentID) {
         this.loading = true  
         this.lazyParams.parentID = parentID

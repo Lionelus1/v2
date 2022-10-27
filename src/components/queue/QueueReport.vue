@@ -1,29 +1,29 @@
 <template>
-   <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em;" />
+  <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em;" />
   <div>  
     <div> 
-      <Toolbar class="p-mb-4 "> class="p-col">
+      <Toolbar class="p-mb-4 ">
         <template #start>
-        <PrimeCalendar
-          style="width: 140px"
-          :disabled="disabled"            
-          dateFormat="dd.mm.yy"
-          selectionMode="single"        
-          v-model="selectDate"           
-          :placeholder="$t('common.date')"
-          @date-select="getQueueReport"
-          :monthNavigator="true"
-          :yearNavigator="true"
-          yearRange="2000:2030"
-          :showIcon="true"                             
-        />
-      </template>
+          <PrimeCalendar
+            style="width: 140px"
+            :disabled="disabled"            
+            dateFormat="dd.mm.yy"
+            selectionMode="single"        
+            v-model="selectDate"           
+            :placeholder="$t('common.date')"
+            @date-select="getQueueReport"
+            :monthNavigator="true"
+            :yearNavigator="true"
+            yearRange="2000:2030"
+            :showIcon="true"                             
+          />
+        </template>
         <template #end>
         <Button           
-            icon="pi pi-print " 
-            v-tooltip.bottom="$t('common.add')"            
-            class="p-button-primary p-mr-2 p-mr-4 no-print"  
-            @click="printWindow"/>  
+          icon="pi pi-print " 
+          v-tooltip.bottom="$t('common.add')"            
+          class="p-button-primary p-mr-2 p-mr-4 no-print"  
+          @click="printWindow"/>  
         </template>          
       </Toolbar>
     
@@ -58,7 +58,7 @@
 </template>
 
 <script>
-import { authHeader, getHeader, smartEnuApi, findRole, b64toBlob } from "@/config/config";
+import {getHeader, smartEnuApi, findRole } from "@/config/config";
 import axios from "axios";
 export default {
  
