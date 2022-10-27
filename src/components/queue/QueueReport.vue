@@ -47,7 +47,7 @@
           <Column field="redirect" v-bind:header="$t('queue.redirected')"></Column>
           <Column field="workTime" v-bind:header="$t('queue.averageTime')">
             <template #body="slotProps">
-              {{convertTime(slotProps.data.workTime/slotProps.data.serviced)}}
+              {{ convertTime(slotProps.data.workTime>0 && slotProps.data.serviced>0 ? (slotProps.data.workTime/slotProps.data.serviced):" ")}}
             </template>
           </Column>
       </DataTable>
@@ -119,6 +119,17 @@ export default {
       console.log(hours+':'+min+':'+sec);
       return hours+':'+min+':'+Math.round(sec);
     }  
+    // padZero(string){
+    //   return ("00" + string).slice(-2);
+    // },
+
+    // toReadableString(secn) {
+    //   var hrs = ~~(secn / 3600 % 24),
+    //       mins = ~~((secn % 3600) / 60)
+
+    //   return hrs + ":" + this.padZero(mins) ;
+    //}
+
    
     
     
