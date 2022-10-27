@@ -363,6 +363,12 @@ const routes = [
                 name: 'ReceptionQuestion',
                 component: load('publicReception/Answer'),
                 beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/cafedra',
+                name: 'Cafedra',
+                component: load('documents/Cafedra'),
+                beforeEnter: ifAuthenticated,
             }
                 
         ]

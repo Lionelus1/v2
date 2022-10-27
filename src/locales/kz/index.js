@@ -301,7 +301,12 @@ export default {
             validEmail: "Дұрыс email адрес көрсетіңіз",
         }
     },
+    cafedra: {
+        practiceResponsibles: "Практикаға жауаптылар",
+        title: "{name} кафедрасы",
+        responsible: "Жауапты",
 
+    },
     contragent: {
         form: "Ұйымдық формасы",
         active: "Белсенді",

@@ -105,6 +105,12 @@ export default {
               to: '/human-resources/vacancies',
               visible: this.isVacancyRightsValidity()
             },
+            {
+              label: this.$t('common.cafedra'),
+              icon: 'pi pi-fw pi-user-plus',
+              to: '/cafedra',
+              visible: this.findRole("dephead")
+            },
           ]
         },
         {

@@ -270,7 +270,6 @@
           {namekz: 'білім алушы', nameru: 'обучающиеся', nameen:'students', id: 0},
           {namekz: 'профессор-оқытушылар құрамы', nameru: 'профессорско-преподавательский состав', nameen:'teaching staff', id: 1},
           {namekz: 'қызметкерлер', nameru: 'сотрудники', nameen:'staff', id: 2},
-          {namekz: 'заңгер', nameru: 'юрист', nameen:'lawyer', id: 3},
         ],
        
         language: ['kz', 'ru'],
@@ -639,6 +638,10 @@
             nodeData.code = response.data.code;
             node.children = []
             node.data = nodeData;
+            if (this.templates == null)
+            {
+              this.templates = []
+            }
             this.templates.push(node)
           this.createdFolder = {
             groups: null,
@@ -649,10 +652,15 @@
             createdDate: null,
             updatedDate: null,
           };
+          this.closeForm('addFolder')
           this.showMessage('success', this.$t('common.message.title.docCreation'),this.$t('common.message.catSuccesCreated'));
 
         })
         .catch(error =>{
+          console.log(error)
+          if (!error.response) {
+            console.log(error)
+          }
           if (error.response.status == 405) {
               this.$toast.add({
                 severity: "error",

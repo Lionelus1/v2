@@ -303,6 +303,11 @@ export default {
             validEmail: "Введите корректный email адрес",
         }
     },
+    cafedra: {
+        practiceResponsibles: "Ответственные за практику",
+        title: "Кафедра {name}",
+        responsible: "Ответственный"
+    },
     contragent: {
         form: "Форма организации",
         active: "Действующий",

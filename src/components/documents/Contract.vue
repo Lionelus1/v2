@@ -279,7 +279,8 @@ export default {
               icon: "pi pi-check",
               visible: () =>
                 this.contract &&
-                this.contract.sourceType === this.sourceType.uploadedDoc ,
+                this.findRole(null, 'student'),
+                command: ()=> { this.showMessage('success', this.$t('doctemplate.title'), this.$t('common.message.succesSendToApproval'));},
             },
             {
               label: this.$t("common.tosign"),
@@ -328,6 +329,9 @@ export default {
   },
   methods: {
     findRole: findRole,
+    showMessage(msgtype,message,content) {
+        this.$toast.add({severity:msgtype, summary: message, detail:content, life: 3000});
+      },
     moment: moment,
     correct() {
       
@@ -444,6 +448,11 @@ export default {
           this.contract.params.forEach((param) => {
           if (param.name == "period") {
             param.value  = param.value .map(d => new Date(d));
+          }
+          if (param.name == "student" && (param.value.userID == 0 || param.value.userID == null)) {
+            if (this.findRole(null, 'student')) {
+              param.value = this.$store.state.loginedUser
+            }
           }
       
       });

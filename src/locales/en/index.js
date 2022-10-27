@@ -69,7 +69,7 @@ export default {
         yourVoice: "Your vote: ",
         graduate: "Graduate",
         faculty: "Faculty",
-        cafedra: "Кафедра",
+        cafedra: "Academic department",
         choose: "Choose",
         graduationyear: "Start of study",
         admissionyear: "Finish of study",
@@ -299,6 +299,11 @@ export default {
         message: {
             validEmail: "Please enter a valid email address",
         }
+    },
+    cafedra: {
+        practiceResponsibles: "Responsible for the practice",
+        title: "Academic department of {name}",
+        responsible: "Responsible",
     },
     contragent: {
         form: "Organization form",
