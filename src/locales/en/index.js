@@ -175,6 +175,7 @@ export default {
             signing: "Signing",
             signed: "Signed"
         },
+
         message: {
             title: {
                 downloadError: "Download error",
@@ -759,6 +760,7 @@ export default {
         quarterYear: "Whole year"
     },
     queue: {
+        
         title: "Queue",
         secretary:"Maintenance",
         queues:"Queues",
