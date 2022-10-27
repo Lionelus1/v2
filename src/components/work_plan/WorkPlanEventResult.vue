@@ -57,9 +57,6 @@
           <div class="p-grid p-mt-3">
             <div class="p-fluid p-sm-12 p-md-12 p-lg-6 p-xl-6"
                  v-if="event && (event.status.work_plan_event_status_id !== 5 && event.status.work_plan_event_status_id !== 2)">
-              <div class="p-field" v-if="isSave">
-                <ProgressBar mode="indeterminate" style="height: .5em" />
-              </div>
               <div class="p-field">
                 <label>{{ $t('workPlan.eventName') }}</label>
                 <InputText v-model="event.event_name" disabled/>
@@ -70,7 +67,7 @@
               </div>
               <div class="p-field">
                 <label>{{ $t('common.result') }}</label>
-                <RichEditor v-if="plan && !plan.is_oper" v-model="result" editorStyle="height:300px;"
+                <RichEditor v-if="plan && !plan.is_oper" v-model="result" editorStyle="height:300px;" :clearOnPaste="true"
                             @text-change="editorChange">
                   <template v-slot:toolbar>
                     <span class="ql-formats">
@@ -80,7 +77,7 @@
                     </span>
                   </template>
                 </RichEditor>
-                <RichEditor v-if="plan && plan.is_oper" v-model="newResult" editorStyle="height:300px;"
+                <RichEditor ref="planEditor" v-if="plan && plan.is_oper" v-model="newResult" editorStyle="height:300px;" :clearOnPaste="true"
                             @text-change="editorChange">
                   <template v-slot:toolbar>
                     <span class="ql-formats">
@@ -280,7 +277,9 @@ export default {
       isFactChanged: false,
       loading: false,
       uploadPercent: 0,
-      isBlockUI: false
+      isBlockUI: false,
+      authUser: JSON.parse(localStorage.getItem("loginedUser")),
+      quill: null
     }
   },
   computed: {
@@ -375,7 +374,7 @@ export default {
           label: "",
           icon: "pi pi-fw pi-refresh",
           command: () => {
-            this.getData();
+            this.getEvent();
             this.$toast.add({severity: 'success', detail: this.$t('common.success'), life: 3000});
           },
         },
@@ -416,7 +415,7 @@ export default {
       }
       axios.post(smartEnuApi + `/workPlan/saveResult`, fd, {headers: getMultipartHeader()}).then(res => {
         if (res.data.is_success || res.data.is_fact_success) {
-          this.getData();
+          //this.getData();
           this.getEvent();
           this.clearModel();
           this.isBlockUI = false;
@@ -444,7 +443,6 @@ export default {
         if (res.data.is_success) {
           this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
           this.getEvent();
-          this.getData();
         }
       }).catch(error => {
         if (error.response && error.response.status === 401) {
@@ -498,7 +496,6 @@ export default {
                 summary: this.$t('common.success'),
                 life: 3000,
               });
-              this.getData();
               this.getEvent();
               //this.$router.push({name: 'WorkPlanEvent', params: {id: this.event.work_plan_id}});
             }
@@ -519,7 +516,10 @@ export default {
         this.getResultHistory();
       }
     },
-    editorChange() {
+    resultChange() {
+      console.log(this.result)
+    },
+    editorChange(event) {
       if ((this.result != null && this.result.length > 0) || (this.newResult != null && this.newResult.length > 0)) {
         this.isDisabled = false;
       } else {
@@ -597,7 +597,7 @@ export default {
       fd.append("text", item.text)
       axios.post(smartEnuApi + `/workPlan/editResult`, fd, {headers: getHeader()}).then(res => {
         if (res.data.is_success) {
-          this.getData();
+          this.getEvent();
           this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
           item.isActive = false;
           this.loading = false;
@@ -635,7 +635,7 @@ export default {
     deleteItem(id) {
       axios.post(smartEnuApi + `/workPlan/deleteResult/${id}`, null, {headers: getHeader()}).then(res => {
         if (res.data.is_success) {
-          this.getData();
+          this.getEvent();
           this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
         }
       }).catch((error) => {
@@ -667,7 +667,7 @@ export default {
     deleteFile(id) {
       axios.post(smartEnuApi + `/workPlan/deleteResultFile/${id}`, null, {headers: getHeader()}).then(res => {
         if (res.data.is_success) {
-          this.getData();
+          this.getEvent();
           this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
         }
       }).catch((error) => {

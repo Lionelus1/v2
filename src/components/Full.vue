@@ -55,7 +55,7 @@ export default {
       localpagemenu: this.pagemenu,
     }
   },
-  
+
   watch: {
     $route() {
       this.menuActive = false;
@@ -439,6 +439,6 @@ export default {
       background: #ffcdd2;
       color: #c63737;
     }
-    
+
   }
 </style>

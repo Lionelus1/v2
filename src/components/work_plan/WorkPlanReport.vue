@@ -4,7 +4,7 @@
       <WorkPlanReportModal :plan-id="this.work_plan_id" :plan="plan"></WorkPlanReportModal>
     </div>
     <div class="card">
-      <DataTable :lazy="true" :value="data" :rows="10" dataKey="id" :rowHover="true" responsiveLayout="scroll">
+      <DataTable :lazy="true" :loading="loading" :value="data" :rows="10" dataKey="id" :rowHover="true" responsiveLayout="scroll">
         <template #header>
           <div class="p-d-flex p-jc-between p-ai-center">
             <h5 class="p-m-0">{{ $t('workPlan.reports') }}</h5>
@@ -14,6 +14,11 @@
         <Column field="content" :header="$t('workPlan.reportName')">
           <template #body="{ data }">
             <a href="javascript:void(0)" @click="navigate(data)">{{ data.report_name }}</a>
+          </template>
+        </Column>
+        <Column field="department" :header="$t('common.department')">
+          <template #body="{ data }">
+            <span v-if="data.department"> {{ $i18n.locale === "kz" ? data.department.nameKz : $i18n.locale === "ru" ? data.department.nameRu : data.department.nameEn }} </span>
           </template>
         </Column>
         <Column field="status" :header="$t('common.status')">
@@ -67,6 +72,7 @@ export default {
       plan: null,
       isPlanCreator: false,
       loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID,
+      loading: false
     }
   },
   mounted() {
@@ -84,10 +90,12 @@ export default {
   },
   methods: {
     getReports() {
-      axios.get(smartEnuApi + `/workPlan/getWorkPlanReports/${this.work_plan_id}`, {headers: getHeader()})
-          .then(res => {
-            this.data = res.data
-          }).catch(error => {
+      this.loading = true;
+      axios.get(smartEnuApi + `/workPlan/getWorkPlanReports/${this.work_plan_id}`, {headers: getHeader()}).then(res => {
+        this.data = res.data
+        this.loading = false;
+      }).catch(error => {
+        this.loading = false;
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
@@ -100,7 +108,6 @@ export default {
       });
     },
     getPlan() {
-      this.loading = true;
       axios.get(smartEnuApi + `/workPlan/getWorkPlanById/${this.work_plan_id}`, {headers: getHeader()})
           .then(res => {
             if (res.data) {
@@ -109,7 +116,6 @@ export default {
                 this.isPlanCreator = true;
               }
             }
-            this.loading = false;
           }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
@@ -120,7 +126,6 @@ export default {
             life: 3000,
           });
         }
-        this.loading = false;
       });
     },
     navigate(data) {
