@@ -29,8 +29,8 @@
               </div>
               <div class="user-list-detail p-lg-10  p-md-9 p-sm-12">
                 <h5 class="p-mb-2">{{ slotProps.option.fullName }}</h5>
-                <span class="product-category">{{ slotProps.option.mainPosition.department['name' + $i18n.locale.charAt(0).toUpperCase() + $i18n.locale.slice(1)] }}</span><br>
-                <span class="product-category">{{ slotProps.option.mainPosition['name' + $i18n.locale] }}</span>
+                <span class="product-category">{{ slotProps.option.mainPosition['name' + $i18n.locale] }}</span><br/>
+                <span class="product-category">{{ slotProps.option.mainPosition.department['name' + $i18n.locale.charAt(0).toUpperCase() + $i18n.locale.slice(1)] }}</span>
 
               </div>
             </div>
