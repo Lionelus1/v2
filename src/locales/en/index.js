@@ -194,6 +194,7 @@ export default {
             replied: "Replied",
             pending: "Pending",
         },
+
         message: {
             title: {
                 downloadError: "Download error",
@@ -856,6 +857,7 @@ export default {
         halfYear: "semi-annual"
     },
     queue: {
+        
         title: "Queue",
         secretary:"Maintenance",
         queues:"Queues",

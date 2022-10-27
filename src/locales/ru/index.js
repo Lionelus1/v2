@@ -605,6 +605,7 @@ export default {
     },
 
     queue: {
+        
         title: "Очередь",
         secretary: "Обслуживание",
         queues: "Очереди",

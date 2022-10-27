@@ -618,6 +618,7 @@ export default {
         }
     },
     queue: {
+        
         title: "Кезек",
         secretary: "Қызмет көрсету",
         queues: "Кезектер",
