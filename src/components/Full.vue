@@ -55,7 +55,7 @@ export default {
       localpagemenu: this.pagemenu,
     }
   },
-  
+
   watch: {
     $route() {
       this.menuActive = false;
@@ -136,7 +136,7 @@ export default {
             {
               label: this.$t('smartenu.categories'),
               icon: 'pi pi-fw pi-home',
-              to: '/newscategories/cattable'
+              to: '/smartenu/admin/newscategories/cattable'
             },
             {label: this.$t('smartenu.newsList'), icon: 'pi pi-fw pi-money-bill', to: '/news'},
           ]
@@ -439,6 +439,6 @@ export default {
       background: #ffcdd2;
       color: #c63737;
     }
-    
+
   }
 </style>
