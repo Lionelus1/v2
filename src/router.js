@@ -66,6 +66,13 @@ const routes = [
 
 
             // Менің қосқандарым
+
+            {
+                path:'/welcome',
+                name:'Welcome',
+                component: load('Welcome'),
+                beforeEnter: ifAuthenticated,
+            },
             {
                 path: '/documents/catalog/normdoc',
                 name: '/documents/catalog/normdoc',

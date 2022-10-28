@@ -1,6 +1,7 @@
 export default {
     common: {
         attention:"Attention",
+        welcome:"Welcome",
         loginWelcome:"Welcome to smart.enu system.",
         chooseCert:"Choose the certificate",
         activeList: "Active list",
