@@ -193,12 +193,11 @@
 <script>
 import TopMenuBar from "./TopMenuBar.vue";
 import { getHeader, smartEnuApi,findRole } from "@/config/config";
-import FindUser from "@/helpers/FindUser";
 
 import axios from "axios";
 
 export default {
-  components: { TopMenuBar, FindUser },
+  components: { TopMenuBar },
   data() {
     return {
       value: JSON.parse(JSON.stringify(this.modelValue)),

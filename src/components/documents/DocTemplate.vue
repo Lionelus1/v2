@@ -234,14 +234,13 @@
   import {runNCaLayer} from "@/helpers/SignDocFunctions"
   import axios from 'axios';
   import RichEditor from "./editor/RichEditor.vue";
-  import FindUser from "@/helpers/FindUser";
   import DocState from "@/enum/docstates/index"
   import DocSignaturesInfo from "@/components/DocSignaturesInfo"
   import Enum from "@/enum/docstates/index"
 
   export default {
     emits: ['onselect'],
-    components: { RichEditor, FindUser, DocSignaturesInfo },
+    components: { RichEditor, DocSignaturesInfo },
     data() {
       return {
         readonly : true,

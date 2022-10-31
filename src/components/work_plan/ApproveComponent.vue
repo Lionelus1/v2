@@ -26,11 +26,9 @@
 </template>
 
 <script>
-import FindUser from "@/helpers/FindUser";
 
 export default {
   name: "ApproveComponent",
-  components: {FindUser},
   props: ['value', 'modelValue', 'add', 'changeStep', 'stepValue'],
   data() {
     return {

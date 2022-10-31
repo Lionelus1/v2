@@ -109,12 +109,11 @@
 import { mapState} from "vuex";
 import SpecialitySearch from "../smartenu/speciality/specialitysearch/SpecialitySearch.vue";
 import DepartmentList from "../smartenu/DepartmentList.vue"
-import FindUser from "@/helpers/FindUser";
 import Enums from "@/enum/docstates/index";
 import axios from 'axios';
 import {getHeader, findRole, smartEnuApi} from "@/config/config";
 export default {
-  components: { SpecialitySearch, DepartmentList, FindUser },
+  components: { SpecialitySearch, DepartmentList },
  data() {
    return {
     dialog: {
