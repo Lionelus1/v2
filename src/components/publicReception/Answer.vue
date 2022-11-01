@@ -93,13 +93,8 @@
     import axios from "axios";
     import { getHeader, smartEnuApi, findRole } from "../../config/config";
     import moment from "moment";
-    import FindUser from "@/helpers/FindUser";
-        import { throwStatement } from "@babel/types";
-
-    
 
     export default {
-    components: {FindUser}, 
     data() {
       return {
         questionID: null,

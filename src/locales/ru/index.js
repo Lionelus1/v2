@@ -1,5 +1,6 @@
 export default {
     common: {
+        accessDenied: "Доступ запрещен",
         attention: "Внимание",
         loginWelcome: "Добро пожаловать в систему smart.enu",
         chooseCert: "Выбрать сертификат",
@@ -10,6 +11,7 @@ export default {
         head: "Руководитель организации",
         headIin: 'ИИН первого руководителя',
         headFio: 'ФИО первого руководителя',
+        home: 'На главную страницу',
         newPassword: "Введите новый пароль",
         newPasswordRe: "Повторно введите пароль",
         createDocument: 'Сформировать документ',
@@ -231,6 +233,7 @@ export default {
             userIINExists: "Пользователь с таким же ИИН уже имеется",
             notAllowed: "У Вас нет полномочий для этих действий",
             accessDenied: "У вас нет полномочий просматривать этот документ!",
+            accessDeniedAdmin: "У вас нет необходимых разрешений. Пожалуйста, свяжитесь с администраторами",
             impossible: "невозможно",
             saveChanges: "Сохраните изменения",
             fileError: "Не удалось загрузить файл. Возможно файл поврежден",
@@ -302,6 +305,12 @@ export default {
         message: {
             validEmail: "Введите корректный email адрес",
         }
+    },
+    cafedra: {
+        practiceResponsibles: "Ответственные за практику",
+        practiceManager: "Руководитель практики",
+        title: "Кафедра {name}",
+        responsible: "Ответственный"
     },
     contragent: {
         form: "Форма организации",

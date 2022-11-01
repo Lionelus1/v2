@@ -175,13 +175,10 @@
 </template>
 
 <script>
-import FindUser from "@/helpers/FindUser";
 import axios from "axios";
-import { authHeader, getHeader, smartEnuApi, findRole } from "@/config/config";
-import { result } from "lodash";
+import {  getHeader, smartEnuApi, findRole } from "@/config/config";
 export default {
   name: "Queue",
-  components:{FindUser},
   data() {
     return {
       editVisible: false,
