@@ -585,7 +585,6 @@
 </template>
 <script>
 import { mapState } from "vuex";
-import FindUser from "@/helpers/FindUser";
 import Enums from "@/enum/docstates/index";
 import axios from "axios";
 import html2pdf from "html2pdf.js";
@@ -597,7 +596,7 @@ import html2canvas from "html2canvas";
 import * as jsPDF from "jspdf";
 
 export default {
-  components: { FindUser, DepartmentList, SpecialitySearch },
+  components: {  DepartmentList, SpecialitySearch },
   data() {
     return {
       printStyle: 'display:none;text-align:center',

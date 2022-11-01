@@ -1,5 +1,6 @@
 export default {
     common: {
+        accessDenied: "Рұқсат Жоқ",
         attention: "Назар аударыңыз",
         loginWelcome: "Smart.enu жүйесіне қош келдіңіз.",
         chooseCert: "Сертификатты таңдаңыз",
@@ -10,6 +11,7 @@ export default {
         head: "Ұйымдық жетекшісі",
         headIin: 'Бірінші басшының ЖСН-і',
         headFio: 'Бірінші басшының толық аты жөні',
+        home: 'Бас бетке',
         newPassword: "Жаңа құпиясөзді енгізіңіз",
         newPasswordRe: "Құпиясөзді қайталап енгізіңіз",
         createDocument: 'Құжатты құрастыру',
@@ -228,6 +230,7 @@ export default {
             selectUsers: "Қолданушыларды таңдаңыз",
             userIINExists: "Көрсетілген ЖСН бойынша қолданушы бұрыннан бар",
             accessDenied: "Бұл құжатты көруге құзіретіңіз жоқ!",
+            accessDeniedAdmin: "Сіздің бұл бетті көруге құзыретіңіз жоқ. Рұқсат үшін әкімшілерге хабарласыңыз",
             notAllowed: "Бұл әрекетті орындауға құзіретіңіз жоқ!",
             saveChanges: "Алдымен өззгерістерді сақтаңыз",
             impossible: "мүмкін емес",
@@ -301,7 +304,14 @@ export default {
             validEmail: "Дұрыс email адрес көрсетіңіз",
         }
     },
+    cafedra: {
+        practiceResponsibles: "Практикаға жауаптылар",
+        practiceManager: "Практика жетекшісі",
+        title: "{name} кафедрасы",
+        responsible: "Жауапты",
+        
 
+    },
     contragent: {
         form: "Ұйымдық формасы",
         active: "Белсенді",
@@ -906,6 +916,13 @@ export default {
         forme: "Маған қатысты"
     },
     ref:{
-        getRef:"Анықтама алу"
+        getRef:"Анықтама алу",
+        createQr:"QR код меншіктеп құжатпен бөлісу",
+        sendMail:"Құжаттағы қателіктер жайлы хабарлау",
+        sendMail1:"Пошта жіберу",
+        correction:"Түзетуіңізді осында жазыңыз. . .",
+        sendingMail:"Пошта жіберілуде, күте тұрыңыз. . .",
+        mailSent:"Сіздің хатыңыз HR қызметіне сәтті жіберілді.",
+        mailFailed:"Поштаңыз жіберілмеді, қайталап көріңіз."
     }
 }

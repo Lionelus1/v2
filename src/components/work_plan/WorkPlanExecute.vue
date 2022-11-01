@@ -2,7 +2,7 @@
   <div>
     <Button :label="$t('common.perform')" icon="pi pi-check" @click="openBasic" class="p-mr-2"/>
   </div>
-
+  <vue-element-loading :active="isBlockUI" is-full-screen color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)" />
   <Sidebar
       v-model:visible="showWorkPlanExecuteSidebar"
       position="right"
@@ -86,12 +86,23 @@
       </div>
     </div>
   </Sidebar>
+
+  <Sidebar
+      v-model:visible="showOperPlanExecute"
+      position="right"
+      style="overflow-y: scroll; width: 50%;"
+      v-if="event"
+      @hide="sideBarClosed"
+  >
+    <WorkPlanEventResult :result-id="event.work_plan_event_id" />
+  </Sidebar>
 </template>
 
 <script>
 import axios from "axios";
 import {getHeader, getMultipartHeader, smartEnuApi} from "@/config/config";
 import RichEditor from "../documents/editor/RichEditor";
+import WorkPlanEventResult from "./WorkPlanEventResult";
 
 export default {
   name: "WorkPlanExecute",
@@ -100,6 +111,7 @@ export default {
   data() {
     return {
       showWorkPlanExecuteSidebar: false,
+      showOperPlanExecute: false,
       event: this.data,
       plan: this.planData,
       result: null,
@@ -111,12 +123,14 @@ export default {
       files: [],
       newResult: null,
       fact: null,
+      isBlockUI: false
     }
   },
   methods: {
     openBasic() {
       if (this.plan && this.plan.is_oper) {
-        this.$router.push({name: 'WorkPlanEventResult', params: {id: this.event.work_plan_event_id}});
+        //this.$router.push({name: 'WorkPlanEventResult', params: {id: this.event.work_plan_event_id}});
+        this.showOperPlanExecute = true;
       } else {
         this.showWorkPlanExecuteSidebar = true;
         this.initMenu();
@@ -124,6 +138,9 @@ export default {
     },
     closeBasic() {
       this.showWorkPlanExecuteSidebar = false;
+    },
+    sideBarClosed() {
+      this.emitter.emit("workPlanSideBarClosed", true);
     },
     getData() {
       axios.get(smartEnuApi + `/workPlan/getWorkPlanEventResult/${this.event.work_plan_event_id}`, {headers: getHeader()})
@@ -271,15 +288,21 @@ export default {
       this.$refs.form.uploadedFileCount = 0;
     },
     downloadFile(filePath) {
-      axios.post(smartEnuApi + `/workPlan/getWorkPlanResultFile`,
-          {file_path: filePath}, {headers: getHeader()}).then(res => {
-        const link = document.createElement("a");
-        link.href = "data:application/octet-stream;base64," + res.data;
-        link.setAttribute("download", filePath);
-        link.download = filePath;
-        link.click();
-        URL.revokeObjectURL(link.href);
-      }).catch((error) => {
+      this.isBlockUI = true;
+      fetch(smartEnuApi + `/serve?path=${filePath}`, {
+        method: 'GET',
+        headers: getHeader()
+      }).then(response => response.blob())
+          .then(blob => {
+            var url = window.URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = filePath;
+            document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
+            a.click();
+            a.remove();
+            this.isBlockUI = false;
+          }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
@@ -289,6 +312,7 @@ export default {
             life: 3000,
           });
         }
+        this.isBlockUI = false;
       });
     },
   }
@@ -336,6 +360,10 @@ export default {
 
 .p-fluid .p-fileupload .p-button {
   width: auto;
+}
+
+.sidebar-custom {
+  width: 50% !important;
 }
 
 </style>

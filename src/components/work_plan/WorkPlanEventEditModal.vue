@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <Button label="" icon="pi pi-pencil" class="p-button-info p-ml-1 p-mt-1" @click="openBasic"/>
-  </div>
+  <Button label="" icon="pi pi-pencil" class="p-button-info p-ml-1 p-mt-1" @click="openBasic"/>
 
   <Dialog :header="$t('workPlan.editEvent')" v-model:visible="showWorkPlanEventEditModal" :style="{width: '450px'}"
           class="p-fluid">
@@ -51,13 +49,11 @@
 </template>
 
 <script>
-import FindUser from "@/helpers/FindUser";
 import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
 
 export default {
   name: "WorkPlanEventEditModal",
-  components: {FindUser},
   props: ['event', 'planData', 'parent'],
   data() {
     return {
@@ -108,6 +104,7 @@ export default {
     openBasic() {
       this.showWorkPlanEventEditModal = true;
       if (this.editData !== null) {
+        this.selectedUsers = [];
         this.editData.quarter = parseInt(this.editData.quarter);
         this.editData.user.forEach(e => {
           e.userID = e.id;

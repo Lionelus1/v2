@@ -1,8 +1,11 @@
 <template>
+  <ConfirmPopup group="deleteResult"></ConfirmPopup>
+  <vue-element-loading :active="isBlockUI" is-full-screen color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)" />
   <div class="p-col-12" v-if="plan && event">
     <div class="card">
-      <div @click="navigateToBack" class="p-d-inline-block"><i class="fa-solid fa-arrow-left p-mr-3"
-                                                               style="font-size: 16px;cursor: pointer"></i></div>
+      <div v-if="!resultId" @click="navigateToBack" class="p-d-inline-block"><i class="fa-solid fa-arrow-left p-mr-3"
+                                                                                style="font-size: 16px;cursor: pointer"></i>
+      </div>
       <div class="p-mb-0 p-mt-0 p-d-inline-block" style="font-size: 24px"> {{ $t('common.result') }}</div>
     </div>
 
@@ -64,7 +67,7 @@
               </div>
               <div class="p-field">
                 <label>{{ $t('common.result') }}</label>
-                <RichEditor v-if="plan && !plan.is_oper" v-model="result" editorStyle="height:300px;"
+                <RichEditor v-if="plan && !plan.is_oper" v-model="result" editorStyle="height:300px;" :clearOnPaste="true"
                             @text-change="editorChange">
                   <template v-slot:toolbar>
                     <span class="ql-formats">
@@ -74,7 +77,7 @@
                     </span>
                   </template>
                 </RichEditor>
-                <RichEditor v-if="plan && plan.is_oper" v-model="newResult" editorStyle="height:300px;"
+                <RichEditor ref="planEditor" v-if="plan && plan.is_oper" v-model="newResult" editorStyle="height:300px;" :clearOnPaste="true"
                             @text-change="editorChange">
                   <template v-slot:toolbar>
                     <span class="ql-formats">
@@ -113,7 +116,11 @@
                 </div>
               </div>
             </div>
-            <div class="p-sm-12 p-md-12 p-lg-6 p-xl-6">
+            <div class="p-sm-12 p-md-12 p-lg-12 p-xl-6">
+              <div class="p-field" v-if="event">
+                <label class="p-text-bold">{{ $t('common.fact') }}: </label>
+                <div>{{ event.fact }}</div>
+              </div>
               <div class="p-field" v-if="plan && resultData && plan.is_oper">
                 <label class="p-text-bold">{{ $t('common.result') }}</label>
                 <div v-for="(item, index) of resultData.result_text" :key="index" class="p-mb-2">
@@ -133,7 +140,7 @@
                         <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button p-ml-1"
                                 @click="cancelEdit(item)"/>
                         <Button :label="$t('common.delete')" icon="pi pi-trash" class="p-button p-button-danger p-ml-1"
-                                @click="deleteConfirmItem(item)"/>
+                                @click="deleteConfirmItem($event, item)"/>
                       </div>
                       <div class="p-field">
                         <RichEditor v-model="item.text" editorStyle="height:200px;">
@@ -171,7 +178,7 @@
                       <span class="p-ml-5" v-if="file.user_id && file.user_id === loginedUserId"><Button
                           icon="pi pi-times" class="p-button-rounded p-button-text"
                           v-if="event && (event.status.work_plan_event_status_id !== 5 && event.status.work_plan_event_status_id !== 2)"
-                          @click="deleteFileConfirm(file.id)"/></span>
+                          @click="deleteFileConfirm($event, file.id)"/></span>
                     </div>
                   </div>
                   <div class="p-fileupload-empty" v-if="files.length === 0">
@@ -209,13 +216,14 @@
   <Sidebar v-model:visible="toCorrectSidebar"
            position="right"
            class="p-sidebar-lg "
-           style="overflow-y: scroll" >
+           style="overflow-y: scroll">
     <div class="p-col-12">
       <h3>{{ $t('workPlan.toCorrect') }}</h3>
     </div>
     <div class="p-col-12">
       <div>
-        <Menubar :model="rejectMenu" :key="active" style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
+        <Menubar :model="rejectMenu" :key="active"
+                 style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
       </div>
     </div>
     <div class="p-col p-fluid">
@@ -245,6 +253,7 @@ import moment from "moment";
 export default {
   name: "WorkPlanEventResult",
   components: {RichEditor},
+  props: ['resultId'],
   data() {
     return {
       event: null,
@@ -258,7 +267,7 @@ export default {
       files: [],
       newResult: null,
       fact: null,
-      event_id: this.$route.params.id,
+      event_id: this.resultId,
       activeIndex: 0,
       history: null,
       toCorrectSidebar: false,
@@ -266,7 +275,11 @@ export default {
       loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID,
       itemActive: false,
       isFactChanged: false,
-      loading: false
+      loading: false,
+      uploadPercent: 0,
+      isBlockUI: false,
+      authUser: JSON.parse(localStorage.getItem("loginedUser")),
+      quill: null
     }
   },
   computed: {
@@ -305,6 +318,9 @@ export default {
     }
   },
   created() {
+    if (!this.event_id) {
+      this.event_id = this.$route.params.id;
+    }
     this.getEvent();
   },
   methods: {
@@ -358,7 +374,7 @@ export default {
           label: "",
           icon: "pi pi-fw pi-refresh",
           command: () => {
-            this.getData();
+            this.getEvent();
             this.$toast.add({severity: 'success', detail: this.$t('common.success'), life: 3000});
           },
         },
@@ -382,6 +398,7 @@ export default {
       return menu;
     },
     saveResult() {
+      this.isBlockUI = true;
       const fd = new FormData();
       fd.append('work_plan_event_id', this.event.work_plan_event_id);
       fd.append('result', this.plan.is_oper ? this.newResult ? this.newResult : "" : this.result);
@@ -397,11 +414,16 @@ export default {
         }
       }
       axios.post(smartEnuApi + `/workPlan/saveResult`, fd, {headers: getMultipartHeader()}).then(res => {
-        this.getData();
-        this.clearModel();
+        if (res.data.is_success || res.data.is_fact_success) {
+          //this.getData();
+          this.getEvent();
+          this.clearModel();
+          this.isBlockUI = false;
+        }
         this.files = [];
         this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
       }).catch(error => {
+        this.isBlockUI = false;
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
@@ -417,14 +439,12 @@ export default {
       axios.post(smartEnuApi + `/workPlan/sendEventResultForVerify`, {
         event_id: parseInt(this.event.work_plan_event_id),
         result_id: parseInt(this.resultData.event_result_id)
-      }, {headers: getHeader()})
-          .then(res => {
-            if (res.data.is_success) {
-              this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
-              this.getEvent();
-              this.getData();
-            }
-          }).catch(error => {
+      }, {headers: getHeader()}).then(res => {
+        if (res.data.is_success) {
+          this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
+          this.getEvent();
+        }
+      }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
@@ -471,7 +491,13 @@ export default {
             //console.log(res);
             if (res.data && res.data.is_success) {
               this.toCorrectSidebar = false;
-              this.$router.push({name: 'WorkPlanEvents', params: {id: this.event.work_plan_id}});
+              this.$toast.add({
+                severity: 'success',
+                summary: this.$t('common.success'),
+                life: 3000,
+              });
+              this.getEvent();
+              //this.$router.push({name: 'WorkPlanEvent', params: {id: this.event.work_plan_id}});
             }
           }).catch(error => {
         if (error.response && error.response.status === 401) {
@@ -490,7 +516,10 @@ export default {
         this.getResultHistory();
       }
     },
-    editorChange() {
+    resultChange() {
+      console.log(this.result)
+    },
+    editorChange(event) {
       if ((this.result != null && this.result.length > 0) || (this.newResult != null && this.newResult.length > 0)) {
         this.isDisabled = false;
       } else {
@@ -514,7 +543,7 @@ export default {
       this.selectedUsers = null;
     },
     navigateToBack() {
-      this.$router.push({name: 'WorkPlanEvents', params: {id: this.plan.work_plan_id}});
+      this.$router.push({name: 'WorkPlanEvent', params: {id: this.plan.work_plan_id}});
     },
     uploadFile(event) {
       /*this.file = event.files[0];*/
@@ -533,7 +562,6 @@ export default {
         this.files.push(file);
       }
       this.clearFiles();
-      this.isDisabled = false;
 
     },
     resizeArea() {
@@ -569,7 +597,7 @@ export default {
       fd.append("text", item.text)
       axios.post(smartEnuApi + `/workPlan/editResult`, fd, {headers: getHeader()}).then(res => {
         if (res.data.is_success) {
-          this.getData();
+          this.getEvent();
           this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
           item.isActive = false;
           this.loading = false;
@@ -590,8 +618,10 @@ export default {
     cancelEdit(item) {
       item.isActive = false;
     },
-    deleteConfirmItem(item) {
+    deleteConfirmItem(event, item) {
       this.$confirm.require({
+        target: event.currentTarget,
+        group: 'deleteResult',
         message: this.$t('common.confirmation'),
         header: this.$t('common.confirm'),
         icon: 'pi pi-info-circle',
@@ -605,7 +635,7 @@ export default {
     deleteItem(id) {
       axios.post(smartEnuApi + `/workPlan/deleteResult/${id}`, null, {headers: getHeader()}).then(res => {
         if (res.data.is_success) {
-          this.getData();
+          this.getEvent();
           this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
         }
       }).catch((error) => {
@@ -620,10 +650,12 @@ export default {
         }
       });
     },
-    deleteFileConfirm(id) {
+    deleteFileConfirm(event, id) {
       this.$confirm.require({
+        target: event.currentTarget,
         message: this.$t('common.confirmation'),
         header: this.$t('common.confirm'),
+        group: 'deleteResult',
         icon: 'pi pi-info-circle',
         acceptClass: 'p-button-rounded p-button-success',
         rejectClass: 'p-button-rounded p-button-danger',
@@ -635,7 +667,7 @@ export default {
     deleteFile(id) {
       axios.post(smartEnuApi + `/workPlan/deleteResultFile/${id}`, null, {headers: getHeader()}).then(res => {
         if (res.data.is_success) {
-          this.getData();
+          this.getEvent();
           this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
         }
       }).catch((error) => {
@@ -671,15 +703,23 @@ export default {
       this.$refs.form.uploadedFileCount = 0;
     },
     downloadFile(file) {
-      axios.post(smartEnuApi + `/workPlan/getWorkPlanResultFile`,
-          {file_path: file.event_result_file}, {headers: getHeader()}).then(res => {
-        const link = document.createElement("a");
-        link.href = "data:application/octet-stream;base64," + res.data;
-        link.setAttribute("download", file.file_name ? file.file_name : file.event_result_file);
-        link.download = file.file_name ? file.file_name : file.event_result_file;
-        link.click();
-        URL.revokeObjectURL(link.href);
-      }).catch((error) => {
+      this.isBlockUI = true;
+      let url = `${smartEnuApi}/serve?path=${file.event_result_file}`
+      fetch(url, {
+        method: 'GET',
+        headers: getHeader()
+      })
+      .then(response => response.blob())
+      .then(blob => {
+        var url = window.URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = file.file_name;
+        document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
+        a.click();
+        a.remove();
+        this.isBlockUI = false;
+      }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
@@ -689,6 +729,7 @@ export default {
             life: 3000,
           });
         }
+        this.isBlockUI = false;
       });
     },
   }
@@ -785,5 +826,9 @@ export default {
 
 ::v-deep(.p-inplace-display) {
   padding: 0;
+}
+
+::v-deep(.velmld-overlay) {
+  background-color: rgba(0, 0, 0, 0.4) !important;
 }
 </style>

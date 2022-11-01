@@ -234,14 +234,13 @@
   import {runNCaLayer} from "@/helpers/SignDocFunctions"
   import axios from 'axios';
   import RichEditor from "./editor/RichEditor.vue";
-  import FindUser from "@/helpers/FindUser";
   import DocState from "@/enum/docstates/index"
   import DocSignaturesInfo from "@/components/DocSignaturesInfo"
   import Enum from "@/enum/docstates/index"
 
   export default {
     emits: ['onselect'],
-    components: { RichEditor, FindUser, DocSignaturesInfo },
+    components: { RichEditor, DocSignaturesInfo },
     data() {
       return {
         readonly : true,
@@ -270,7 +269,6 @@
           {namekz: 'білім алушы', nameru: 'обучающиеся', nameen:'students', id: 0},
           {namekz: 'профессор-оқытушылар құрамы', nameru: 'профессорско-преподавательский состав', nameen:'teaching staff', id: 1},
           {namekz: 'қызметкерлер', nameru: 'сотрудники', nameen:'staff', id: 2},
-          {namekz: 'заңгер', nameru: 'юрист', nameen:'lawyer', id: 3},
         ],
        
         language: ['kz', 'ru'],
@@ -639,6 +637,10 @@
             nodeData.code = response.data.code;
             node.children = []
             node.data = nodeData;
+            if (this.templates == null)
+            {
+              this.templates = []
+            }
             this.templates.push(node)
           this.createdFolder = {
             groups: null,
@@ -649,14 +651,19 @@
             createdDate: null,
             updatedDate: null,
           };
+          this.closeForm('addFolder')
           this.showMessage('success', this.$t('common.message.title.docCreation'),this.$t('common.message.catSuccesCreated'));
 
         })
         .catch(error =>{
+          console.log(error)
+          if (!error.response) {
+            console.log(error)
+          }
           if (error.response.status == 405) {
               this.$toast.add({
                 severity: "error",
-                summary: this.$t("common.message.noRight"),
+                summary: this.$t("common.message.notAllowed"),
                 life: 3000,
               });
           }

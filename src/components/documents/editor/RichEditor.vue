@@ -76,6 +76,7 @@ export default {
       agreementDesctiption: "",
       agreementElement: "",
       isValid:false,
+      pasteClear: this.clearOnPaste
 		}
 	},
   emits: ["update:modelValue", "text-change"],
@@ -85,6 +86,7 @@ export default {
     readonly: Boolean,
     formats: Array,
     editorStyle: null,
+    clearOnPaste: Boolean,
   },
   quill: null,
   watch: {
@@ -104,8 +106,24 @@ export default {
       readOnly: this.readonly,
       theme: "snow",
       formats: this.formats,
-      placeholder: this.placeholder,
+      placeholder: this.placeholder
     });
+
+    if (this.pasteClear) {
+      this.quill.clipboard.addMatcher(Node.ELEMENT_NODE, (node, delta) => {
+        let ops = []
+        delta.ops.forEach(op => {
+          if (op.insert && typeof op.insert === 'string') {
+            ops.push({
+              insert: op.insert
+            })
+          }
+        })
+        delta.ops = ops
+        return delta
+      })
+    }
+
     // Add a custom DropDown Menu to the Quill Editor's toolbar:
 
     const dropDownItems = {

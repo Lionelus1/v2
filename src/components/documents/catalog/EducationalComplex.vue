@@ -156,7 +156,7 @@
                 </div>
               </div>
             </OverlayPanel>
-            <Button type="button" v-if="slotProps.node.depType === 1 || slotProps.node.depType === 2"
+<!--            <Button type="button" v-if="slotProps.node.depType === 1 || slotProps.node.depType === 2"
                     @click="onNodeSelect(slotProps.node);toggle('deanOverlay', $event)" :label="slotProps.node.depType === 1 ? 'Декан' : 'Заведующий кафедры'"
                     aria-haspopup="true" aria-controls="overlay_panel_dean" class="p-button-link" />
             <OverlayPanel ref="deanOverlay" id="overlay_panel_dean">
@@ -175,7 +175,7 @@
                   <Button :label="$t('common.choose')" class="mt-2"/>
                 </div>
               </div>
-            </OverlayPanel>
+            </OverlayPanel>-->
           </template>
         </Column>
         <Column field="creator" :header="$t('common.author')">
@@ -226,7 +226,7 @@
                 @updated="fileUpdated" accept=".pdf"></PostFile>
     </Dialog>
     <Sidebar v-model:visible="dialogOpenState.signerInfo" position="right" class="p-sidebar-lg"
-             style="overflow-y: scroll">
+             style="overflow-y: scroll" @hide="getFolders(parent)">
       <DocSignaturesInfo :docIdParam="file.key" @signed="signed"></DocSignaturesInfo>
     </Sidebar>
     <Sidebar v-model:visible="dialogOpenState.docInfo" position="right" class="p-sidebar-lg" style="overflow-y: scroll">

@@ -273,7 +273,7 @@ export default {
           this.loading = false;
           this.showRejectPlan = false;
           this.emitter.emit("planRejected", true);
-          this.$router.push({name: 'WorkPlanEvents', params: {id: this.plan.work_plan_id}});
+          this.$router.push({name: 'WorkPlanEvent', params: {id: this.plan.work_plan_id}});
         }
       }).catch(error => {
         if (error.response && error.response.status === 401) {
