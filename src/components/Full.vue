@@ -107,9 +107,9 @@ export default {
             },
             {
               label: this.$t('common.cafedra'),
-              icon: 'pi pi-fw pi-user-plus',
+              icon: 'pi pi-fw pi-briefcase',
               to: '/cafedra',
-              visible: this.findRole("dephead")
+              visible: this.findRole("dephead") || this.findRole("practice_responsible")
             },
           ]
         },
