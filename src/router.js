@@ -58,7 +58,7 @@ const routes = [
       component: load('Privacy')
     },
     {
-        path: '/',
+        path: '/login',
         redirect:'/login',
         name: '/login',
         component: Full,
@@ -68,7 +68,7 @@ const routes = [
             // Менің қосқандарым
 
             {
-                path:'/welcome',
+                path:'/',
                 name:'Welcome',
                 component: load('Welcome'),
                 beforeEnter: ifAuthenticated,

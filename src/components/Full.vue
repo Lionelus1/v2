@@ -7,7 +7,7 @@
     <transition name="layout-sidebar">
       <div :class="sidebarClass" @click="onSidebarClick" v-show="isSidebarVisible()">
         <div class="layout-logo">
-          <router-link to="/welcome">
+          <router-link to="/">
             <h1>SMART ENU</h1>
             <!-- <img alt="Logo" :src="logo" /> -->
           </router-link>
