@@ -82,172 +82,8 @@
                 </TabPanel>
             </TabView>
         </div>
-        <Dialog
-                v-model:visible="newsViewVisible"
-                :style="{ width: '1000px' }"
-                :modal="true"
-                class="p-fluid"
-                :closable="false"
-        >
-            <Card style="box-shadow: none">
-                <template #header>
-                    <div class="dialog_img">
-                        <img :src="selectedNews.image1" style="width: 100%; height: 100%"/>
-                    </div>
-                </template>
-                <template #title>
-                    <div class="card_title">
-                        {{
-                        $i18n.locale === "kz"
-                        ? selectedNews.titleKz
-                        : $i18n.locale === "ru"
-                        ? selectedNews.titleRu
-                        : selectedNews.titleEn
-                        }}
-                    </div>
-                </template>
-                <template #subtitle>
-                    {{ new Date(selectedNews.history.modifyDate).toLocaleString() }}
-                </template>
-                <template #content>
-                    <div
-                            v-html="
-              $i18n.locale === 'kz'
-                ? selectedNews.contentKz
-                : $i18n.locale === 'ru'
-                ? selectedNews.contentRu
-                : selectedNews.contentEn
-            "
-                    ></div>
-                </template>
-                <template #footer>
-                    <div style="padding: 0 100px">
-                        <img :src="selectedNews.image2" v-if="selectedNews.image2" style="width: 100%; height: 100%"/>
-                    </div>
-                </template>
-            </Card>
-            <template #footer>
-                <Button
-                        v-bind:label="$t('common.close')"
-                        icon="pi pi-times"
-                        class="p-button p-component p-button-primary"
-                        @click="newsViewVisible = false"
-                />
-            </template>
-        </Dialog>
-        <Dialog
-                v-model:visible="eventViewVisible"
-                :closable="false"
-                :style="{ width: '1000px' }"
-                :modal="true"
-                class="p-fluid"
-        >
-            <Card style="box-shadow: none">
-                <template #header>
-                    <div class="dialog_img">
-                        <img
-                                :src="selectedEvent.main_image_base_64 ? selectedEvent.main_image_base_64 : selectedEvent.mainImage"
-                                style="width: 100%; height: 100%"
-                        />
-                    </div>
-                </template>
-                <template #title>
-                    <div class="card_title">
-                        {{
-                        $i18n.locale === "kz"
-                        ? selectedEvent.titleKz
-                        : $i18n.locale === "ru"
-                        ? selectedEvent.titleRu
-                        : selectedEvent.titleEn
-                        }}
-                    </div>
-                </template>
-                <template #subtitle>
-                    {{
-                    $t("smartenu.dataAndTime", {
-                    fn: new Date(selectedEvent.eventDate).toLocaleString(),
-                    })
-                    }}<br/>
-                    {{
-                    $t("smartenu.eventFormatView", {
-                    fn: selectedEvent.isOnline
-                    ? $t("common.online")
-                    : $t("common.offline"),
-                    })
-                    }}<br/>
-                    {{ $t("smartenu.meetingLinkView") }}
-                    <a
-                            v-if="selectedEvent.isOnline"
-                            :href="'//' + selectedEvent.eventLink"
-                            target="_blank"
-                    >
-                        {{ selectedEvent.eventLink }}
-                    </a>
-                    <br/>
-                    <p v-if="!selectedEvent.isOnline">
-                        {{
-                        $t("smartenu.meetingLocationView", {
-                        fn: selectedEvent.eventLocation,
-                        })
-                        }}
-                    </p>
-                    <!--{{
-                    $t("smartenu.participantsCategoryView", {
-                    fn: selectedEvent.participantsCategory
-                    .map((category) =>
-                    $i18n.locale === "kz"
-                    ? category.nameKz
-                    : $i18n.locale === "ru"
-                    ? category.nameRu
-                    : category.nameEn
-                    )
-                    .toString()
-                    .replaceAll(",", ", "),
-                    })
-                    }}--><br/>
-                </template>
-                <template #content>
-                    <div
-                            v-html="
-              $i18n.locale === 'kz'
-                ? selectedEvent.contentKz
-                : $i18n.locale === 'ru'
-                ? selectedEvent.contentRu
-                : selectedEvent.contentEn
-            "
-                    ></div>
-                </template>
-                <template #footer>
-                    <Button
-                            v-if="selectedEvent.additionalFile || selectedEvent.additional_file_path"
-                            v-bind:label="$t('common.download')"
-                            icon="pi pi-download"
-                            class="p-button-success p-mb-2"
-                            @click="downloadFile(selectedEvent)"
-                    />
-                    <div>
-                        <Accordion v-if="selectedEvent.participants && selectedEvent.participants.length > 0">
-                            <AccordionTab :header="$t('smartenu.eventParticipants')">
-                                <li
-                                        v-for="participant in selectedEvent.participants"
-                                        :key="participant.id"
-                                >
-                                    {{ participant.user.fullName }}
-                                </li>
-                            </AccordionTab>
-                        </Accordion>
-                    </div>
-                </template>
-            </Card>
-            <template #footer>
-                <Button
-                        v-bind:label="$t('common.close')"
-                        icon="pi pi-times"
-                        class="p-button-rounded p-button-danger"
-                        @click="eventViewVisible = false"
-                />
-            </template>
-        </Dialog>
+        <NewsView v-if="newsViewVisible" :is-visible="newsViewVisible" :selected-news="selectedNews" />
+        <EventsView v-if="eventViewVisible" :is-visible="eventViewVisible" :selectedEvent="selectedEvent" />
     </div>
 </template>
 
@@ -256,9 +92,13 @@
     import axios from "axios";
     import {getHeader, header, smartEnuApi} from "@/config/config";
     import moment from "moment";
+    import NewsView from "./news/NewsView.vue";
+    import {fileRoute} from "../config/config";
+    import EventsView from "./events/EventsView";
 
     export default {
         name: "Welcome",
+        components: {EventsView, NewsView},
         data() {
             return {
                 selectedNews: {},
@@ -283,11 +123,14 @@
                 this.loading = true
                 this.lazyParams.countMode = null;
                 axios
-                    .post(smartEnuApi + "/allNews", this.lazyParams, {
+                    .post(smartEnuApi + "/getNews", this.lazyParams, {
                         headers: getHeader(),
                     })
                     .then((response) => {
                         this.allNews = response.data.news;
+                        this.allNews.map(e => {
+                           e.imageUrl = smartEnuApi + fileRoute + e.image1
+                        });
                         this.newsCount = response.data.total;
                         this.loading = false;
                     })
@@ -306,9 +149,12 @@
             getAllEvents() {
                 this.allEvents = [];
                 axios
-                    .get(smartEnuApi + "/allEvents")
+                    .get(smartEnuApi + "/getPublishEvents")
                     .then((response) => {
                         this.allEvents = response.data;
+                        this.allEvents.map(e => {
+                            e.imageUrl = smartEnuApi + fileRoute + e.main_image_path
+                        });
                         //console.log("ddd", this.allEvents)
                         this.loading = false;
                     })
