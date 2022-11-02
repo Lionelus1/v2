@@ -2,6 +2,7 @@ import axios from "axios";
 export const apiDomain = "https://smart.enu.kz/#"; // TODO: Production салганда коммент шыгару керек
 //export const apiDomain = "http://smart.enu.kz:8082/#";
 
+export const fileRoute = "/serve?path="
 
 export const signerApi = "https://smart.enu.kz:6990"
 //export const signerApi = "http://10.1.1.161:6990"
