@@ -4,7 +4,6 @@ export const apiDomain = "https://smart.enu.kz/#"; // TODO: Production салг�
 
 export const fileRoute = "/serve?path="
 
-
 //export const signerApi = "https://smart.enu.kz:6990"
 export const signerApi = "http://10.1.1.161:6990"
 
