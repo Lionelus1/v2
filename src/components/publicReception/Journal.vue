@@ -89,12 +89,10 @@ import {FilterMatchMode, FilterOperator} from 'primevue/api';
 import {getHeader, smartEnuApi, findRole} from "@/config/config";
 import moment from "moment";
 import { boolean } from "yargs";
-import FindUser from "@/helpers/FindUser";
 
 
 
 export default {
-  components: {FindUser}, 
   props: {
     adminMode: {
       type: boolean,
