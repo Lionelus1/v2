@@ -9,10 +9,7 @@
         <Card style="box-shadow: none">
             <template #header>
                 <div class="dialog_img">
-                    <img
-                            :src="selectedEvent.imageUrl"
-                            style="width: 100%; height: 100%"
-                    />
+                    <img :src="selectedEvent.imageUrl" style="width: 100%; height: 100%"/>
                 </div>
             </template>
             <template #title>
@@ -92,10 +89,8 @@
                 <div>
                     <Accordion v-if="selectedEvent.participants && selectedEvent.participants.length > 0">
                         <AccordionTab :header="$t('smartenu.eventParticipants')">
-                            <li
-                                    v-for="participant in selectedEvent.participants"
-                                    :key="participant.id"
-                            >
+                            <li v-for="participant in selectedEvent.participants"
+                                    :key="participant.id">
                                 {{ participant.user.fullName }}
                             </li>
                         </AccordionTab>
@@ -108,7 +103,7 @@
                     v-bind:label="$t('common.close')"
                     icon="pi pi-times"
                     class="p-button-rounded p-button-danger"
-                    @click="eventViewVisible = false"
+                    @click="closeModal"
             />
         </template>
     </Dialog>
@@ -121,6 +116,11 @@
         data() {
             return {
                 eventViewVisible: this.isVisible
+            }
+        },
+        methods: {
+            closeModal() {
+                this.emitter.emit('eventViewModalClose', false)
             }
         }
     }

@@ -27,14 +27,12 @@
                 {{ new Date(selectedNews.history.modifyDate).toLocaleString() }}
             </template>
             <template #content>
-                <div
-                        v-html="
-              $i18n.locale === 'kz'
-                ? selectedNews.contentKz
-                : $i18n.locale === 'ru'
-                ? selectedNews.contentRu
-                : selectedNews.contentEn
-            "
+                <div v-html="
+                    $i18n.locale === 'kz'
+                    ? selectedNews.contentKz
+                    : $i18n.locale === 'ru'
+                    ? selectedNews.contentRu
+                    : selectedNews.contentEn"
                 ></div>
             </template>
             <template #footer>
@@ -48,7 +46,7 @@
                     v-bind:label="$t('common.close')"
                     icon="pi pi-times"
                     class="p-button p-component p-button-primary"
-                    @click="newsViewVisible = false"
+                    @click="closeModal"
             />
         </template>
     </Dialog>
@@ -61,6 +59,11 @@
         data() {
             return {
                 newsViewVisible: this.isVisible ?? false
+            }
+        },
+        methods: {
+            closeModal() {
+                this.emitter.emit("newsViewModalClose", false);
             }
         }
     }

@@ -6,6 +6,9 @@
         <div class="card card_bottom">
             <TabView ref="templateView" v-model:activeIndex="active">
                 <TabPanel v-bind:header="$t('smartenu.newsTitle')">
+                    <div v-if="allNews===0">
+                        {{ $t("smartenu.newsNotFound") }}
+                    </div>
                     <div v-if="loading" class="skeletons">
                         <div class="skeleton" :key="s" v-for="s of skeletons">
                             <Skeleton class="skeleton_img"></Skeleton>
@@ -15,22 +18,31 @@
                             </div>
                         </div>
                     </div>
-                    <div v-else class="post" :key="p.id" v-for="p of allNews" v-on:click="newsView(p)">
-                        <img class="round" v-if="p.image1 != null && p.image1 !=''"
-                             :src="p.image1"/>
-                        <div class="text">
-                            <strong>
-                                {{
-                                $i18n.locale === "kz"
-                                ? p.titleKz
-                                : $i18n.locale === "ru"
-                                ? p.titleRu
-                                : p.titleEn
-                                }}
-                            </strong>
-                            <div class="date">{{ formatDateMoment(p.history.modifyDate)}}</div>
-                        </div>
-                    </div>
+                    <DataView :lazy="true" :value="allNews" :layout="layout" :paginator="true" :rows="10"
+                              @page="onPage($event)" :totalRecords="total">
+                        <template #empty>{{
+                            this.$t("smartenu.newsNotFound")
+                            }}
+                        </template>
+                        <template #list="{ data }">
+                            <div class="post" v-on:click="newsView(data)">
+                                <img class="round" v-if="data.imageUrl != null && data.imageUrl !=''"
+                                     :src="data.imageUrl"/>
+                                <div class="text">
+                                    <strong>
+                                        {{
+                                        $i18n.locale === "kz"
+                                        ? data.titleKz
+                                        : $i18n.locale === "ru"
+                                        ? data.titleRu
+                                        : data.titleEn
+                                        }}
+                                    </strong>
+                                    <div class="date">{{ formatDateMoment(data.history.modifyDate)}}</div>
+                                </div>
+                            </div>
+                        </template>
+                    </DataView>
                 </TabPanel>
                 <TabPanel v-bind:header="$t('smartenu.eventsTitle')">
                     <DataTable
@@ -55,16 +67,14 @@
           </span>
                             </template>
                         </Column>
-                        <Column
-                                :field="
-          $i18n.locale === 'kz'
-            ? `titleKz`
-            : $i18n.locale === 'ru'
-            ? `titleRu`
-            : `titleEn`
-        "
-                                v-bind:header="$t('common.nameIn')"
-                        >
+                        <Column :field="
+                                     $i18n.locale === 'kz'
+                                     ? `titleKz`
+                                     : $i18n.locale === 'ru'
+                                     ? `titleRu`
+                                     : `titleEn`
+                                     "
+                                v-bind:header="$t('common.nameIn')">
                             <template #body="slotProps">
                                 <a href="javascript:void(0)" @click="eventView(slotProps.data)">
                                     {{
@@ -82,15 +92,15 @@
                 </TabPanel>
             </TabView>
         </div>
-        <NewsView v-if="newsViewVisible" :is-visible="newsViewVisible" :selected-news="selectedNews" />
-        <EventsView v-if="eventViewVisible" :is-visible="eventViewVisible" :selectedEvent="selectedEvent" />
+        <NewsView v-if="newsViewVisible" :is-visible="newsViewVisible" :selected-news="selectedNews"/>
+        <EventsView v-if="eventViewVisible" :is-visible="eventViewVisible" :selectedEvent="selectedEvent"/>
     </div>
 </template>
 
 <script>
     import {mapState} from "vuex";
     import axios from "axios";
-    import {getHeader, header, smartEnuApi} from "@/config/config";
+    import {getHeader, smartEnuApi} from "@/config/config";
     import moment from "moment";
     import NewsView from "./news/NewsView.vue";
     import {fileRoute} from "../config/config";
@@ -101,6 +111,8 @@
         components: {EventsView, NewsView},
         data() {
             return {
+                total: 0,
+                layout: 'list',
                 selectedNews: {},
                 selectedEvent: {},
                 newsViewVisible: false,
@@ -118,6 +130,14 @@
                 allEvents: [],
             };
         },
+        mounted() {
+            this.emitter.on('newsViewModalClose', data => {
+                this.newsViewVisible = data;
+            });
+            this.emitter.on('eventViewModalClose', data => {
+                this.eventViewVisible = data;
+            });
+        },
         methods: {
             getAllNews() {
                 this.loading = true
@@ -129,9 +149,9 @@
                     .then((response) => {
                         this.allNews = response.data.news;
                         this.allNews.map(e => {
-                           e.imageUrl = smartEnuApi + fileRoute + e.image1
+                            e.imageUrl = smartEnuApi + fileRoute + e.image1
                         });
-                        this.newsCount = response.data.total;
+                        this.total = response.data.total;
                         this.loading = false;
                     })
                     .catch((error) => {
@@ -181,6 +201,10 @@
                 this.selectedEvent = item;
                 this.eventViewVisible = true;
             },
+            onPage(event) {
+                this.lazyParams = event
+                this.getAllNews();
+            },
         },
         created() {
             this.getAllNews();
@@ -224,11 +248,10 @@
         cursor: pointer;
         display: flex;
         margin: 15px 0;
-        width: 80%;
+        width: 100%;
         border-radius: 5px;
-        //box-shadow: 1px 1px 3px 0;
         padding: 10px;
-        box-shadow: 0 2px 1px -1px rgb(0 0 0 / 20%), 0 1px 1px 0 rgb(0 0 0 / 14%), 0 1px 3px 0 rgb(0 0 0 / 12%);
+        //box-shadow: 0 2px 1px -1px rgb(0 0 0 / 20%), 0 1px 1px 0 rgb(0 0 0 / 14%), 0 1px 3px 0 rgb(0 0 0 / 12%);
 
         .text {
             position: relative;
@@ -238,12 +261,15 @@
                 position: absolute;
                 bottom: 0;
                 color: #838080;
+                white-space: nowrap;
             }
         }
 
         img {
             width: 120px;
+            height: 80px;
             border-radius: 5px;
+            box-shadow: 0 3px 6px rgb(0 0 0 / 16%), 0 3px 6px rgb(0 0 0 / 23%);
         }
     }
 
@@ -303,7 +329,4 @@
         }
     }
 
-    @media (max-width: 400px) {
-
-    }
 </style>
