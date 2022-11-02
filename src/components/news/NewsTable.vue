@@ -578,6 +578,7 @@ import * as imageResizeCompress from "image-resize-compress"; // ES6
 import {FilterMatchMode, FilterOperator} from "primevue/api";
 import {getHeader, header, smartEnuApi} from "@/config/config";
 import {resizeImages} from "../../helpers/HelperUtil";
+import {fileRoute} from "../../config/config";
 
 export default {
   name: "NewsTable",
@@ -790,6 +791,10 @@ export default {
           })
           .then((response) => {
             this.allNews = response.data.news;
+            this.allNews.map(e => {
+              e.image1 = smartEnuApi + fileRoute + e.image1;
+            });
+            console.log(this.allNews)
             this.newsCount = response.data.total;
             this.loading = false;
           })
