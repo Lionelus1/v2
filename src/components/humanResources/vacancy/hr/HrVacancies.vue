@@ -29,7 +29,7 @@
                :filters="filters"
                filterDisplay="menu"
                :showFilterMatchModes="false"
-               :loading="visible.loading"
+               :loading="loading"
                responsiveLayout="scroll"
                @sort="onSort($event)">
       <!--  HEADER -->
@@ -49,8 +49,6 @@
       </template>
       <!-- EMPTY -->
       <template #empty> {{ $t('common.noData') }}</template>
-      <!-- ON LOADING -->
-      <template #loading> {{ $t('common.loading') }}</template>
       <!-- NAME COLUMN -->
       <Column :field="'name' + ($i18n.locale).charAt(0).toUpperCase() + ($i18n.locale).slice(1)"
               v-bind:header="$t('common.nameIn')"
@@ -461,7 +459,8 @@ export default {
       resumeBlob: null,
       document: null,
       resumeFile: null,
-      fileBlob: null
+      fileBlob: null,
+      loading: false,
     }
   },
   methods: {
@@ -595,6 +594,7 @@ export default {
             life: 3000,
           });
         }
+        this.loading = false;
       });
     },
 

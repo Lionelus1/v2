@@ -2,6 +2,7 @@ export default {
     common: {
         accessDenied: "Access Denied",
         attention:"Attention",
+        welcome:"Welcome",
         loginWelcome:"Welcome to smart.enu system.",
         chooseCert:"Choose the certificate",
         activeList: "Active list",

@@ -2,6 +2,7 @@ export default {
     common: {
         accessDenied: "Рұқсат Жоқ",
         attention: "Назар аударыңыз",
+        welcome: "Қош келдіңіз",
         loginWelcome: "Smart.enu жүйесіне қош келдіңіз.",
         chooseCert: "Сертификатты таңдаңыз",
         activeList: "Белсенді тізім",

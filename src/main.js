@@ -6,6 +6,7 @@ import AutoComplete from 'primevue/autocomplete';
 import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
 import Button from 'primevue/button';
+import Skeleton from "primevue/skeleton";
 import Breadcrumb from 'primevue/breadcrumb';
 import BlockUI from 'primevue/blockui';
 import VCalendar from 'v-calendar';
@@ -112,6 +113,7 @@ import {far} from '@fortawesome/free-regular-svg-icons';
 import ScrollPanel from "primevue/scrollpanel";
 import WorkPlanEventResult from "./components/work_plan/WorkPlanEventResult";
 
+
 library.add(fas, far, fab)
 dom.watch();
 router.beforeEach(function(to, from, next) {
@@ -198,6 +200,7 @@ app.component('AutoComplete', AutoComplete);
 app.component('Breadcrumb', Breadcrumb);
 app.component('BlockUI', BlockUI);
 app.component('Button', Button);
+app.component('Skeleton', Skeleton);
 app.component('VCalendar', VCalendar);
 app.component('PrimeCalendar', Calendar)
 app.component('Card', Card);
@@ -267,5 +270,6 @@ app.component('Editor', Editor);
 app.component("VueElementLoading", VueElementLoading);
 app.component('TreeSelect', TreeSelect);
 app.component('ScrollPanel', ScrollPanel);
+
 app.component('WorkPlanEventResult', WorkPlanEventResult)
 app.mount('#app');
