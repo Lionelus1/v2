@@ -1,5 +1,7 @@
 <template>
   <div>
+    <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
+    <BlockUI :blocked="loading" :fullScreen="true"></BlockUI>
     <div class="content-section introduction">
       <div class="feature-intro p-ml-3">
         <h4 style="display: inline">{{ $t("contragent.title") }}</h4>
@@ -14,8 +16,7 @@
           <Menubar
             :model="menu"
             :key="active"
-            style="
-              height: 36px;
+            style="height: 36px;
               margin-top: 7px;
               margin-right: -7px;
               margin-left: -7px;
@@ -244,7 +245,7 @@ export default {
         value: Enum.ContragentType.Organization,
       },
       orgShowCount: 15,
-      loading: true,
+      loading: false,
       organizationVisible: false,
       personVisible: false,
       bankVisible: false,
@@ -308,12 +309,15 @@ export default {
         count: this.orgShowCount,
         agenttype: this.agentType.value,
       };
+      this.loading = true
       axios
         .post(smartEnuApi + url, req, { headers: getHeader() })
         .then((res) => {
           this.contragents = res.data;
+          this.loading = false;
         })
         .catch((error) => {
+          this.loading = false;
           console.error(error);
         });
     },

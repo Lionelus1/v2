@@ -1,9 +1,9 @@
 <template>
-{{service}}
   <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em;" />
   <div class="card summary">
     <h3>{{ (this.queue != null ? this.queue['queueName' + $i18n.locale]:"")}}</h3>
   </div>
+  <!-- ozgeris -->
   <div class="p-grid p-fluid dashboard">
     <div class="p-col-12 p-lg-6">
       <div class="card summary p-m-0">

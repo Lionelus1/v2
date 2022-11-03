@@ -6,8 +6,7 @@
         <Menubar
           :model="menu"
           :key="active"
-          style="
-            height: 36px;
+          style="height: 36px;
             margin-top: -7px;
             margin-left: -14px;
             margin-right: -14px;
@@ -98,7 +97,7 @@
               @input="correct"
             ></InputText>
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div v-if="!shortMode" class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label
               >{{ this.$t("contact.birthday")
               }}<span class="p-error" v-if="addMode || !localReadonly">*</span></label
@@ -129,7 +128,7 @@
               $t("common.requiredField")
             }}</small>
           </div>
-          <div v-if="addMode || isAdmin" class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div v-if="(addMode || isAdmin) && !shortMode" class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label>{{ this.$t("common.password") }}<span class="p-error" v-if="addMode">*</span></label>
             <span class="p-input-icon-right p-mt-2">
               <Password
@@ -142,12 +141,12 @@
             </span>
              
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div  v-if="!shortMode" class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label>{{ this.$t("common.academicDegree") }}</label>
             <Dropdown  class="p-mt-2"  v-model="value.academicDegree" :options="academicDegreeDictionary" :optionLabel="('name'+$i18n.locale)" :placeholder="$t('common.select')" />
 
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div  v-if="!shortMode" class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label>{{ this.$t("common.academicTitle") }}</label>
             <Dropdown  class="p-mt-2" :disabled="localReadonly && !addMode" v-model="value.academicTitle" :options="academicTitleDictionary" :optionLabel="('name'+$i18n.locale)" :placeholder="$t('common.select')" />
 
@@ -176,7 +175,7 @@
               v-model="value.mainPosition"
             ></PositionsList>
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div  v-if="!shortMode" class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label>{{ this.$t("contact.gender") }}</label>
             <Dropdown
               :disabled="localReadonly && !addMode"
@@ -188,7 +187,7 @@
               :placeholder="$t('contact.gender')"
             />
           </div>
-          <div v-if="!addMode" class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div  v-if="!addMode && !shortMode" class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label>{{ this.$t("common.state") }}</label>
             <SelectButton
               :disabled="localReadonly"
@@ -199,7 +198,7 @@
               optionLabel="name"
             />
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div  v-if="!shortMode" class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label>&nbsp;</label>
             <SelectButton
               :disabled="localReadonly"
@@ -445,10 +444,13 @@ export default {
     readonly: Boolean,
     addMode: Boolean,
     organization: null,
+    shortMode: {
+			type: Boolean,
+			default: false
+		},
   },
   emits: ['userCreated'],
   created() {
-    
     this.getCatalog("academic_degree");
     this.getCatalog("academic_title")
     this.isAdmin = this.findRole(null, 'main_administrator')
@@ -566,8 +568,9 @@ export default {
         !this.value.thirdName || this.value.thirdName == "";
       this.validationErrors.email = !this.value.email || this.value.email == "";
       this.validationErrors.iin = !this.value.IIN || this.value.IIN == "";
-      this.validationErrors.password = !this.password || this.password == ""
-      if (this.addMode)
+      this.validationErrors.password = (!this.password || this.password == "")
+      
+      if (this.addMode && !this.shortMode)
       return (
         !this.validationErrors.firstName &&
         !this.validationErrors.thirdName &&

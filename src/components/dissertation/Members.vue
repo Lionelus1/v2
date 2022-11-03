@@ -88,14 +88,13 @@
 <script>
 import { mapState} from "vuex";
 import RolesByName from "../smartenu/RolesByName.vue"
-import FindUser from "@/helpers/FindUser";
 import Enums from "@/enum/docstates/index";
 import axios from 'axios';
 import {getHeader, smartEnuApi, findRole} from "@/config/config";
 import FindDoctorals from "./FindDoctorals.vue"
 
 export default {
-  components: {  FindUser , RolesByName, FindDoctorals},
+  components: {  RolesByName, FindDoctorals},
  data() {
    return {
     councilID:-1,

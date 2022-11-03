@@ -36,13 +36,13 @@
   <Sidebar v-model:visible="dialogOpenState.createDocDialog" position="right"
   :modal="true" :breakpoints="{'960px': '75vw', '640px': '100vw'}" :style="{width: '760px', overflow:'hidden'}">
   <div class="p-d-flex">
-    <SelectButton v-model="selectedDocSourceType" :options="docSourceType" class="p-mb-3 p-mr-3">
+    <SelectButton disabled="true" v-model="selectedDocSourceType" :options="docSourceType" class="p-mb-3 p-mr-3">
       <template #option="slotProps">
         <div v-if="slotProps.option == DocState.DocSourceType.Template">{{$t('contracts.fromtemplate')}}</div>
         <div v-else>{{$t('contracts.fromdoc')}}</div>
 	    </template>
     </SelectButton>
-    <SelectButton v-model="selectedDocLanguage" :options="languages" class="p-mb-3">
+    <SelectButton  @change="changeLanguage" v-model="selectedDocLanguage" :options="languages" class="p-mb-3">
       <template #option="slotProps">
         <div v-if="slotProps.option == 'kz'">{{$t('common.language.kz')}}</div>
         <div v-else>{{$t('common.language.ru')}}</div>
@@ -94,7 +94,7 @@
               </Column>
              
             </DataTable> -->
-      <DocTemplate @onselect="createDocByTemplate($event)" selectMode="true" v-model:windowOpened="dialogOpenState.createDocDialog" :v-model="selectedTemplate"></DocTemplate>
+      <DocTemplate ref="templateComponent" @languageChanged="templateLanguageChanged" v-model:currentLang="selectedDocLanguage" @onselect="createDocByTemplate($event)" selectMode="true" v-model:windowOpened="dialogOpenState.createDocDialog" :v-model="selectedTemplate"></DocTemplate>
      
  
       </div>
@@ -155,6 +155,12 @@
       }
     },
     methods: {
+      changeLanguage() {
+        this.$refs.templateComponent.changeLanguage(this.selectedDocLanguage)
+      },
+      templateLanguageChanged(lang) {
+        this.selectedDocLanguage = lang
+      },
       openForm(formName,node) {
         this.dialogOpenState[formName] = true;
         if (node != null) {
@@ -176,6 +182,9 @@
           creatorId: 1,
           filePath: "",
           lang: this.selectedDocLanguage == "kz" ? 0 : 1
+        }
+        if (this.selectedTemplate != null) {
+          req.lang = this.selectedTemplate.templateLanguage == "kz" ? 0 : 1
         }
         
         axios.post(smartEnuApi+url, req, { headers: getHeader() }).then(responce=>{

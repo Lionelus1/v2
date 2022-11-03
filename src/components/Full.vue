@@ -1,6 +1,5 @@
 <template>
   <div :class="containerClass" @click="onWrapperClick">
-    <Toast/>
     <ConfirmDialog></ConfirmDialog>
     <AppTopBar @menu-toggle="onMenuToggle" v-model:pagemenu="localpagemenu"/>
 
@@ -55,7 +54,7 @@ export default {
       localpagemenu: this.pagemenu,
     }
   },
-  
+
   watch: {
     $route() {
       this.menuActive = false;
@@ -104,6 +103,12 @@ export default {
               icon: 'pi pi-fw pi-user-plus',
               to: '/human-resources/vacancies',
               visible: this.isVacancyRightsValidity()
+            },
+            {
+              label: this.$t('common.cafedra'),
+              icon: 'pi pi-fw pi-briefcase',
+              to: '/cafedra',
+              visible: this.findRole("dephead") || this.findRole("practice_responsible")
             },
           ]
         },
@@ -439,6 +444,6 @@ export default {
       background: #ffcdd2;
       color: #c63737;
     }
-    
+
   }
 </style>

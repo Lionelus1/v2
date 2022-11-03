@@ -177,11 +177,8 @@
 import { smartEnuApi, getHeader, b64toBlob, findRole } from "@/config/config";
 import axios from "axios";
 
-import FindUser from "@/helpers/FindUser";
 
 import ContragentSelect from "../contragent/ContragentSelect.vue";
-import { DatePicker } from "v-calendar";
-import {runNCaLayer} from "@/helpers/SignDocFunctions"
 import moment from 'moment'
 import DocSignaturesInfo from "@/components/DocSignaturesInfo"
 
@@ -195,7 +192,7 @@ import {
 import { constantizeGenderInRules } from "lvovich/lib/inclineRules";
 export default {
   name: "Contract",
-  components: { FindUser,  ContragentSelect, DocSignaturesInfo },
+  components: {  ContragentSelect, DocSignaturesInfo },
   data() {
     return {
       contract: null,
@@ -279,7 +276,8 @@ export default {
               icon: "pi pi-check",
               visible: () =>
                 this.contract &&
-                this.contract.sourceType === this.sourceType.uploadedDoc ,
+                this.findRole(null, 'student'),
+                command: ()=> { this.showMessage('success', this.$t('doctemplate.title'), this.$t('common.message.succesSendToApproval'));},
             },
             {
               label: this.$t("common.tosign"),
@@ -328,6 +326,9 @@ export default {
   },
   methods: {
     findRole: findRole,
+    showMessage(msgtype,message,content) {
+        this.$toast.add({severity:msgtype, summary: message, detail:content, life: 3000});
+      },
     moment: moment,
     correct() {
       
@@ -445,6 +446,13 @@ export default {
           if (param.name == "period") {
             param.value  = param.value .map(d => new Date(d));
           }
+          if (param.name == "student" && (param.value.userID == 0 || param.value.userID == null)) {
+            if (this.findRole(null, 'student')) {
+              param.value = this.$store.state.loginedUser
+            }
+          }
+          
+       
       
       });
             

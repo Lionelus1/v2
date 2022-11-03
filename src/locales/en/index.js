@@ -1,5 +1,6 @@
 export default {
     common: {
+        accessDenied: "Access Denied",
         attention:"Attention",
         loginWelcome:"Welcome to smart.enu system.",
         chooseCert:"Choose the certificate",
@@ -10,6 +11,7 @@ export default {
         head: "Head of organization",
         headIin: 'Head IIN',
         headFio: 'Head full name',
+        home: 'Home page',
         newPassword:"Enter new password",
         newPasswordRe:"Repeat new password",
         createDocument: 'Generate document',
@@ -69,7 +71,7 @@ export default {
         yourVoice: "Your vote: ",
         graduate: "Graduate",
         faculty: "Faculty",
-        cafedra: "Кафедра",
+        cafedra: "Academic department",
         choose: "Choose",
         graduationyear: "Start of study",
         admissionyear: "Finish of study",
@@ -228,6 +230,7 @@ export default {
             selectUsers: "Please, select users",
             userIINExists: "User with same iin already exists",
             accessDenied: "You do not have permission to view this document!",
+            accessDeniedAdmin: "You do not have the necesary permisions. Please contact admins",
             saveChanges: "Save changes",
             impossible: "impossible",
             notAllowed: "You do not have permission to do this",
@@ -300,6 +303,12 @@ export default {
             validEmail: "Please enter a valid email address",
         }
     },
+    cafedra: {
+        practiceResponsibles: "Responsible for the practice",
+        practiceManager: "Practice manager",
+        title: "Academic department of {name}",
+        responsible: "Responsible",
+    },
     contragent: {
         form: "Organization form",
         active: "Active",
@@ -309,6 +318,7 @@ export default {
         dossier: "Open dossier",
         organization: "Organizations",
         title: "Contragents",
+        missingDetails: "Details of the selected counterparty are not fully indicated (BIN, etc.). Please provide missing details.",
     },
     doctemplate: {
         title : "Document template creation",
@@ -331,7 +341,7 @@ export default {
         editor: {
             contractElements: "Contract elements",
             contragent: "Counterparty",
-            ourside: "Ourside",
+            ourside: "Университет",
             period: "Period",
             number: "Number",
             text: "Text",

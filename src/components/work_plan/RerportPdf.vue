@@ -66,8 +66,8 @@
               style="display: table;width: 100%;font-size: 10.0pt; text-align: center;border-collapse: collapse;border: 1px solid grey;overflow: visible !important;" cellspacing=0 cellpadding=0>
             <tbody>
             <tr style="mso-yfti-firstrow:yes;">
-              <td class="header" style="font-weight: bold;">№</td>
-              <td class="header" style="font-weight: bold;">{{
+              <td class="header" style="font-weight: bold;width: 5%">№</td>
+              <td class="header" style="font-weight: bold;width: 20%">{{
                   plan.lang === 1 ? 'Атауы' : plan.lang === 2 ? 'Наименование' : 'Name'
                 }}
               </td>
@@ -80,18 +80,18 @@
               <td class="header" style="font-weight: bold;">
                 {{ plan.lang === 1 ? 'Факт' : plan.lang === 2 ? 'Факт' : 'Fact' }}
               </td>
-              <td class="header" style="font-weight: bold;">{{
+              <td class="header" style="font-weight: bold;width: 10%">{{
                   plan.lang === 1 ? 'Жауапты орындаушылар' : plan.lang === 2 ? 'Ответственные исполнители' : 'Responsible performers'
                 }}
               </td>
-              <td class="header" style="font-weight: bold;">{{
+              <td class="header" style="font-weight: bold;width: 15%">{{
                   plan.lang === 1 ? 'Жинақтаушы/Растау' : plan.lang === 2 ? 'Свод/подтверждение' : 'Summary/Confirmation'
                 }}
               </td>
               <td class="header" style="font-weight: bold;">
                 {{ plan.lang === 1 ? 'Квартал' : plan.lang === 2 ? 'Квартал' : 'Quarter' }}
               </td>
-              <td class="header" style="font-weight: bold;">{{
+              <td class="header" style="font-weight: bold;width: 10%">{{
                   plan.lang === 1 ? 'Растайтын құжаттар' : plan.lang === 2 ? 'Подтверждающие документы' : 'Supporting documents'
                 }}
               </td>
@@ -99,12 +99,11 @@
                   plan.lang === 1 ? 'Орындалды/Орындалмады' : plan.lang === 2 ? 'Выполнено/Не выполнено' : 'Completed/Not completed'
                 }}
               </td>
-              <td class="header" style="font-weight: bold;">
-                {{ plan.lang === 1 ? 'Есеп' : plan.lang === 2 ? 'Отчет' : 'Report' }}
-              </td>
             </tr>
-            <tr v-for="(item, index) in items" :key="index">
-              <td class="td-va">{{ item.row_number }}</td>
+            </tbody>
+            <tbody v-for="(item, index) in items" :key="index">
+            <tr>
+              <td rowspan="2"  class="td-va">{{ item.row_number }}</td>
               <td class="td-va"
                   style="text-align: left;border-collapse: collapse;vertical-align: top;border: 1px solid grey">
                 {{ item.event_name }}
@@ -117,11 +116,14 @@
               <td class="td-va">{{ item.quarter }}</td>
               <td class="td-va">{{ item.supporting_docs }}</td>
               <td class="td-va">{{ plan.lang === 1 ? item.status.name_kz : plan.lang === 2 ? item.status.name_ru : item.status.name_en }}</td>
-              <td style="text-align: left;vertical-align: top;"
-                  v-bind:style="(item.event_result) ? 'font-size: 10pt;min-width: 250px;' : 'font-size:10pt;'">
-                <div style="padding-bottom: 20px" v-if="item.event_result">
+
+            </tr>
+            <tr>
+              <td colspan="9" style="text-align: left;vertical-align: top; font-size: 10pt;">
+                <div><b>{{ plan.lang === 1 ? 'Есеп' : plan.lang === 2 ? 'Отчет' : 'Report' }}</b></div>
+                <div v-if="item.event_result">
                   <div class="text" v-for="(resItem, resIndex) in item.event_result.result_text" :key="resIndex">
-                    <small style="color: #a3a3a3;"><i class="fa-solid fa-user p-mr-1"></i>{{resItem.user.fullName }}</small>
+                    <small style="color: #a3a3a3;padding-top: 20px"><i class="fa-solid fa-user p-mr-1"></i>{{resItem.user.fullName }}</small>
                     <span v-html="resItem.text"></span>
                   </div>
                 </div>
