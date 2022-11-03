@@ -318,6 +318,7 @@ export default {
         dossier: "Open dossier",
         organization: "Organizations",
         title: "Contragents",
+        missingDetails: "Details of the selected counterparty are not fully indicated (BIN, etc.). Please provide missing details.",
     },
     doctemplate: {
         title : "Document template creation",
@@ -340,7 +341,7 @@ export default {
         editor: {
             contractElements: "Contract elements",
             contragent: "Counterparty",
-            ourside: "Ourside",
+            ourside: "Университет",
             period: "Period",
             number: "Number",
             text: "Text",

@@ -34,6 +34,7 @@
             </template>
           </Menubar>
           <div class="box">
+            <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
             <DataTable
               class="p-datatable-sm"
               v-model:selection="selectedOrganizations"
@@ -140,10 +141,12 @@ export default {
           }
           ]
       }],
+      loading: false,
       isAdmin: false,
       readOnly: true,
       active: null,
       organizations: null,
+      
       total: 10,
       lazyParams: {
         page: 0,
@@ -156,7 +159,6 @@ export default {
       selectedOrganizations: null,
       currentOrganization: {},
       orgShowCount: 15,
-      loading: true,
       sideVisible: false,
       filters: {
         global: {
@@ -184,6 +186,14 @@ export default {
           label: this.$t("common.contacts"),
           icon: "pi pi-fw pi-user",
         },
+        {
+          label: this.$t("common.createNew"),
+          icon: "pi pi-fw pi-plus",
+          visible: this.selectedMode,
+          command: () => {
+              this.addOrganization()
+          }
+        }
       ],
     };
   },
@@ -193,7 +203,8 @@ export default {
     selectedMode: {
       type: Boolean,
       default: false
-    }
+    },
+    
   },
   setup(props, context) {
     function updateValue(currentOrganization) {
@@ -215,19 +226,21 @@ export default {
       this.localmenu[0].items[0].disabled = !this.isAdmin
       this.$emit("update:pagemenu", this.localmenu)
       let url = "/contragent/organizations";
-      
+      this.loading =true;
       this.lazyParams.filters = this.filters
       axios
         .post(smartEnuApi + url, this.lazyParams,  {headers: getHeader()})
         .then((res) => {
           this.organizations = res.data.organizations;
           this.total = res.data.count
+          this.loading = false;
         })
         .catch((error) => {
           console.error(error);
           if (error.response.status == 401) {
             this.$store.dispatch("logLout");
           }
+          this.loading = false;
         });
     },
     onPage(event) {
@@ -303,7 +316,6 @@ export default {
   },
   mounted() {
     this.initApiCall();
-    this.loading = false;
   },
 };
 </script>

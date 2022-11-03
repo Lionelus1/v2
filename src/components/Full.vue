@@ -1,6 +1,5 @@
 <template>
   <div :class="containerClass" @click="onWrapperClick">
-    <Toast/>
     <ConfirmDialog></ConfirmDialog>
     <AppTopBar @menu-toggle="onMenuToggle" v-model:pagemenu="localpagemenu"/>
 
