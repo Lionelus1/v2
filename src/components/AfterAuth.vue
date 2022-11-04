@@ -19,7 +19,7 @@ export default {
         this.setLoginedUser();
         let oldPath = this.$store.state.attemptedUrl;
         if(oldPath.length==0){
-          location.replace('/#/smartenu/vaccination');
+          location.replace('/#/');
         }else{
           this.$store.dispatch("solveAttemptedUrl","");
           location.replace("/#"+oldPath); 

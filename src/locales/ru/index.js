@@ -2,6 +2,7 @@ export default {
     common: {
         accessDenied: "Доступ запрещен",
         attention: "Внимание",
+        welcome: "Добро пожаловать",
         loginWelcome: "Добро пожаловать в систему smart.enu",
         chooseCert: "Выбрать сертификат",
         activeList: "Активный список",
@@ -616,6 +617,7 @@ export default {
     },
 
     queue: {
+        
         title: "Очередь",
         secretary: "Обслуживание",
         queues: "Очереди",
