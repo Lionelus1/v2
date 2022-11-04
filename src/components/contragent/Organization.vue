@@ -9,7 +9,7 @@
         }}
       </h3>
       <TopMenuBar :menu="menu" :readonly="localReadonly"></TopMenuBar>
-      <Message v-if="message != null">{{message}}</Message>
+      <Message severity="warn" v-if="message != null">{{message}}</Message>
 
     </div>
     <div class="p-col-12 p-md-12 p-fluid">
@@ -263,6 +263,7 @@ export default {
     this.localReadonly =  this.readonly && !this.isAdmin
     if (this.message != null) {
       this.validateAddForm();
+    
     }
 
   },
@@ -326,7 +327,7 @@ export default {
           this.value.id = response.data
           
         }
-        this.$emit('inserted', {
+        this.$emit('changed', {
               value: this.value
           });
         this.$toast.add({
@@ -348,6 +349,7 @@ export default {
 
     }
   },
+  emits: ['changed'],
   props: {
     modelValue: null,
     placeholder: String,

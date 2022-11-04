@@ -21,6 +21,8 @@
     <AppConfig :layoutMode="layoutMode" :layoutColorMode="layoutColorMode" @layout-change="onLayoutChange"
                @layout-color-change="onLayoutColorChange"/>
     <AppFooter/>
+  <Toast />
+
   </div>
 </template>
 
