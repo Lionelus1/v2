@@ -90,7 +90,7 @@
                     <Accordion v-if="selectedEvent.participants && selectedEvent.participants.length > 0">
                         <AccordionTab :header="$t('smartenu.eventParticipants')">
                             <li v-for="participant in selectedEvent.participants"
-                                    :key="participant.id">
+                                :key="participant.id">
                                 {{ participant.user.fullName }}
                             </li>
                         </AccordionTab>
@@ -126,6 +126,14 @@
     }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+    .dialog_img {
+        padding: 0 100px;
+    }
 
+    @media (max-width: 780px) {
+        .dialog_img {
+            padding: 0;
+        }
+    }
 </style>
