@@ -21,6 +21,7 @@ export default {
         let oldPath = this.$store.state.attemptedUrl;
         if(oldPath.length==0){
           if(this.findRole(null,"student")){
+
             location.replace('/#/human-resources/career/vacancies');
           }else
           location.replace('/#/');
