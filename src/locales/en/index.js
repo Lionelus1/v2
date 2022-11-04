@@ -2,6 +2,7 @@ export default {
     common: {
         accessDenied: "Access Denied",
         attention:"Attention",
+        welcome:"Welcome",
         loginWelcome:"Welcome to smart.enu system.",
         chooseCert:"Choose the certificate",
         activeList: "Active list",
@@ -196,6 +197,7 @@ export default {
             replied: "Replied",
             pending: "Pending",
         },
+
         message: {
             title: {
                 downloadError: "Download error",
@@ -866,6 +868,7 @@ export default {
         halfYear: "semi-annual"
     },
     queue: {
+        
         title: "Queue",
         secretary:"Maintenance",
         queues:"Queues",

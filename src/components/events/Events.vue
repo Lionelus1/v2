@@ -404,8 +404,12 @@
               ></FileUpload>
             </div>
           </div>
-          <div v-if="event.main_image_base_64 || event.mainImage">
-            <img :src="event.main_image_base_64 ? event.main_image_base_64 : event.mainImage"
+          <div v-if="event.mainImage">
+            <img :src="event.mainImage"
+                 style="width: 50%; height: 50%"/>
+          </div>
+          <div v-else>
+            <img :src="event.main_image_path"
                  style="width: 50%; height: 50%"/>
           </div>
         </div>
@@ -562,7 +566,7 @@
         <template #header>
           <div style="padding: 0 100px">
             <img
-                :src="selectedEvent.main_image_base_64 ? selectedEvent.main_image_base_64 : selectedEvent.mainImage"
+                :src="selectedEvent.main_image_path"
                 style="width: 100%; height: 100%"
             />
           </div>
@@ -671,7 +675,8 @@ import {getHeader, smartEnuApi} from "@/config/config";
 import {FilterMatchMode} from "primevue/api";
 import * as imageResizeCompress from "image-resize-compress";
 import RichEditor from "../documents/editor/RichEditor";
-import {resizeImages} from "../../helpers/HelperUtil"; // ES6
+import {resizeImages} from "../../helpers/HelperUtil";
+import {fileRoute} from "../../config/config"; // ES6
 
 export default {
   name: "Events",
@@ -908,6 +913,9 @@ export default {
           .get(smartEnuApi + "/allEvents")
           .then((response) => {
             this.allEvents = response.data;
+            this.allEvents.map(e => {
+              e.main_image_path = smartEnuApi + fileRoute + e.main_image_path;
+            });
             this.loading = false;
           })
           .catch((error) => {
@@ -1046,6 +1054,7 @@ export default {
       this.event.additionalFile = null;
       this.event.mainImage = null;
       this.event.main_image_base_64 = null;
+      this.event.main_image_path = null;
       const fd = new FormData();
       fd.append("event", JSON.stringify(this.event))
       fd.append("additionalFile", this.file ? this.file : null);
