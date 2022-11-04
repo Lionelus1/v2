@@ -546,7 +546,6 @@ export default {
             if (error.response.status == 401) {
               this.$store.dispatch("logLout");
             } else if (error.response.status == 302) {
-              console.log(error.response.data.error)
               this.$toast.add({
                 severity: "error",
                 summary: "User create error: " + this.$t('common.message.userIINExists'),

@@ -322,6 +322,7 @@ export default {
       
       axios.post(smartEnuApi+"/contragent/updateorg", this.value, {headers: getHeader()})
       .then(response=> {
+        console.log("sasa:", response.data)
         this.menu[0].disabled = true
         if (this.value.id == null) { 
           this.value.id = response.data
@@ -337,12 +338,19 @@ export default {
             });
       })
       .catch((error) => {
+        if (error.response.status == 302) {
+            this.$toast.add({
+            severity: "error",
+            summary: this.$t('common.message.' + error.response.data.error),
+            life: 3000,
+          });
+        } else
         if (error.response.status == 401) {
           this.$store.dispatch("logLout");
-        }
+        } else
         this.$toast.add({
           severity: "error",
-          summary: "updateOrg:\n" + error,
+          summary: error,
           life: 3000,
         });
       });
