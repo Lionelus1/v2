@@ -7,8 +7,8 @@ export const apiDomain = "https://smart.enu.kz/#"; // TODO: Production салг�
 export const signerApi = "http://10.1.1.161:6990"
 
 //export const smartEnuApi = "https://smart.enu.kz:8081"
-//export const smartEnuApi = "http://smart.enu.kz:8090"
-export const smartEnuApi = "http://localhost:8090"
+export const smartEnuApi = "http://smart.enu.kz:8090"
+//export const smartEnuApi = "http://localhost:8090"
 
 export const socketApi = "ws://localhost:8090" // dev server
 //export const socketApi = "ws://smart.enu.kz:8090" //test server
