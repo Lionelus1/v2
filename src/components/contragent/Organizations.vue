@@ -14,8 +14,7 @@
           <Menubar
             :model="menu"
             :key="active"
-            style="
-              height: 36px;
+            style="height: 36px;
               margin-top: -7px;
               margin-right: -7px;
               margin-left: -7px;
@@ -112,7 +111,7 @@
               <Organization id="orgOrgs"
                 :modelValue="currentOrganization"
                 :readonly="readOnly"
-                @inserted="inserted"
+                @changed="changed"
               ></Organization>
             </Sidebar>
           </div>
@@ -204,8 +203,8 @@ export default {
       type: Boolean,
       default: false
     },
-    
   },
+  emits:['changed'],
   setup(props, context) {
     function updateValue(currentOrganization) {
       context.emit("update:modelValue", currentOrganization);
@@ -217,9 +216,10 @@ export default {
   },
   methods: {
     findRole: findRole,
-    inserted(value) {
+    changed(value) {
       this.sideVisible = false;
       this.organizations.push(value.value);
+      this.$emit("changed",value)
     },
     initApiCall() {
       this.isAdmin = this.findRole(null, 'main_administrator') || this.findRole(null, "career_administrator")

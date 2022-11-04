@@ -97,7 +97,7 @@
               @input="correct"
             ></InputText>
           </div>
-          <div v-if="!shortMode" class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div v-if="!shortModeLocal" class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label
               >{{ this.$t("contact.birthday")
               }}<span class="p-error" v-if="addMode || !localReadonly">*</span></label
@@ -128,7 +128,7 @@
               $t("common.requiredField")
             }}</small>
           </div>
-          <div v-if="(addMode || isAdmin) && !shortMode" class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div v-if="(addMode || isAdmin) && !shortModeLocal" class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label>{{ this.$t("common.password") }}<span class="p-error" v-if="addMode">*</span></label>
             <span class="p-input-icon-right p-mt-2">
               <Password
@@ -141,12 +141,12 @@
             </span>
              
           </div>
-          <div  v-if="!shortMode" class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div  v-if="!shortModeLocal" class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label>{{ this.$t("common.academicDegree") }}</label>
             <Dropdown  class="p-mt-2"  v-model="value.academicDegree" :options="academicDegreeDictionary" :optionLabel="('name'+$i18n.locale)" :placeholder="$t('common.select')" />
 
           </div>
-          <div  v-if="!shortMode" class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div  v-if="!shortModeLocal" class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label>{{ this.$t("common.academicTitle") }}</label>
             <Dropdown  class="p-mt-2" :disabled="localReadonly && !addMode" v-model="value.academicTitle" :options="academicTitleDictionary" :optionLabel="('name'+$i18n.locale)" :placeholder="$t('common.select')" />
 
@@ -175,7 +175,7 @@
               v-model="value.mainPosition"
             ></PositionsList>
           </div>
-          <div  v-if="!shortMode" class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div  v-if="!shortModeLocal" class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label>{{ this.$t("contact.gender") }}</label>
             <Dropdown
               :disabled="localReadonly && !addMode"
@@ -187,7 +187,7 @@
               :placeholder="$t('contact.gender')"
             />
           </div>
-          <div  v-if="!addMode && !shortMode" class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div  v-if="!addMode && !shortModeLocal" class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label>{{ this.$t("common.state") }}</label>
             <SelectButton
               :disabled="localReadonly"
@@ -198,7 +198,7 @@
               optionLabel="name"
             />
           </div>
-          <div  v-if="!shortMode" class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div  v-if="!shortModeLocal" class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label>&nbsp;</label>
             <SelectButton
               :disabled="localReadonly"
@@ -387,6 +387,7 @@ export default {
       localReadonly: true,
       isAdmin: false,
       password: "",
+      shortModeLocal: this.shortMode || this.findRole(null, "student"),
       value: this.modelValue,
       states: [
         { id: 1, name: this.$t("contragent.active") },
@@ -446,7 +447,7 @@ export default {
     organization: null,
     shortMode: {
 			type: Boolean,
-			default: false
+			default: false,
 		},
   },
   emits: ['userCreated'],
@@ -570,7 +571,7 @@ export default {
       this.validationErrors.iin = !this.value.IIN || this.value.IIN == "";
       this.validationErrors.password = (!this.password || this.password == "")
       
-      if (this.addMode && !this.shortMode)
+      if (this.addMode && !this.shortModeLocal)
       return (
         !this.validationErrors.firstName &&
         !this.validationErrors.thirdName &&

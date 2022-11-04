@@ -1,7 +1,10 @@
   <template>
   <router-view
     v-model:pagemenu="menu"
-  ></router-view>
+    
+  >
+
+</router-view>
   
 </template>
 <script>
