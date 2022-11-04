@@ -1,7 +1,7 @@
 <template>
   <div class="p-col-12">
     <!-- BEGINNING OF TABLE -->
-    <div class="card">
+    <div class="card" v-if="isAdmin || isModer || selectedEvent" >
       <Button
           v-if="isAdmin || isModer"
           :label="$t('common.add')"
@@ -112,7 +112,7 @@
         >
           <template #body="slotProps">
           <span>
-            {{ slotProps.data.createdBy.name }}
+            {{ slotProps.data.createdBy.fullName }}
           </span>
           </template>
         </Column>
@@ -409,7 +409,7 @@
                  style="width: 50%; height: 50%"/>
           </div>
           <div v-else>
-            <img :src="event.main_image_path"
+            <img :src="event.imageUrl"
                  style="width: 50%; height: 50%"/>
           </div>
         </div>
@@ -467,7 +467,7 @@
                   v-bind:chooseLabel="$t('smartenu.posterImageKk')"
               ></FileUpload>
               <div v-if="poster.imageKk" class="p-mt-3">
-                <img :src="poster.imageKk" style="width: 50%; height: 50%"/>
+                <img :src="poster.imageKkUrl" style="width: 50%; height: 50%"/>
               </div>
             </div>
             <div class="p-col">
@@ -480,7 +480,7 @@
                   v-bind:chooseLabel="$t('smartenu.posterImageRu')"
               ></FileUpload>
               <div v-if="poster.imageRu" class="p-mt-3">
-                <img :src="poster.imageRu" style="width: 50%; height: 50%"/>
+                <img :src="poster.imageRuUrl" style="width: 50%; height: 50%"/>
               </div>
             </div>
             <div class="p-col">
@@ -493,7 +493,7 @@
                   v-bind:chooseLabel="$t('smartenu.posterImageEn')"
               ></FileUpload>
               <div v-if="poster.imageEn" class="p-mt-3">
-                <img :src="poster.imageEn" style="width: 50%; height: 50%"/>
+                <img :src="poster.imageEnUrl" style="width: 50%; height: 50%"/>
               </div>
             </div>
           </div>
@@ -566,7 +566,7 @@
         <template #header>
           <div style="padding: 0 100px">
             <img
-                :src="selectedEvent.main_image_path"
+                :src="selectedEvent.imageUrl"
                 style="width: 100%; height: 100%"
             />
           </div>
@@ -758,6 +758,9 @@ export default {
         imageRu: "",
         imageEn: "",
       },
+      posterImageKk: null,
+      posterImageRu: null,
+      posterImageEn: null,
       mainImageFile: null,
       additionalFile: null
     };
@@ -793,6 +796,7 @@ export default {
      */
     uploadPosterImageKk(event) {
       const file = event.files[0];
+      this.posterImageKk = file;
       imageResizeCompress
           .fromBlob(file, 90, 720, "auto", "jpeg")
           .then((res) => {
@@ -806,6 +810,7 @@ export default {
      */
     uploadPosterImageRu(event) {
       const file = event.files[0];
+      this.posterImageRu = file;
       imageResizeCompress
           .fromBlob(file, 90, 720, "auto", "jpeg")
           .then((res) => {
@@ -819,6 +824,7 @@ export default {
      */
     uploadPosterImageEn(event) {
       const file = event.files[0];
+      this.posterImageEn = file;
       imageResizeCompress
           .fromBlob(file, 90, 720, "auto", "jpeg")
           .then((res) => {
@@ -913,10 +919,17 @@ export default {
           .get(smartEnuApi + "/allEvents")
           .then((response) => {
             this.allEvents = response.data;
-            this.allEvents.map(e => {
-              e.main_image_path = smartEnuApi + fileRoute + e.main_image_path;
-            });
             this.loading = false;
+            this.allEvents.map(e => {
+              e.imageUrl = smartEnuApi + fileRoute + e.main_image_path;
+              if (e.poster) {
+                e.poster.map(p => {
+                  p.imageKkUrl = smartEnuApi + fileRoute + p.imageKk;
+                  p.imageRuUrl = smartEnuApi + fileRoute + p.imageRu;
+                  p.imageEnUrl = smartEnuApi + fileRoute + p.imageEn;
+                });
+              }
+            });
           })
           .catch((error) => {
             if (error.response.status === 401) {
@@ -1027,8 +1040,15 @@ export default {
         if (this.formValid.length > 0) {
           return;
         }
+        const fd = new FormData();
+        fd.append("link", this.poster.link ? this.poster.link : '')
+        fd.append("imageKk", this.posterImageKk)
+        fd.append("imageRu", this.posterImageRu)
+        fd.append("imageEn", this.posterImageEn)
+        fd.append("id", parseInt(this.poster.id))
+
         axios
-            .post(smartEnuApi + "/addPoster", this.poster, {
+            .post(smartEnuApi + "/addPoster", fd, {
               headers: getHeader(),
             })
             .then((res) => {
@@ -1054,11 +1074,11 @@ export default {
       this.event.additionalFile = null;
       this.event.mainImage = null;
       this.event.main_image_base_64 = null;
-      this.event.main_image_path = null;
       const fd = new FormData();
       fd.append("event", JSON.stringify(this.event))
       fd.append("additionalFile", this.file ? this.file : null);
       fd.append("mainImageFile", this.mainImageFile ? this.mainImageFile : null);
+
       axios
           .post(smartEnuApi + "/addEvent", fd, {
             headers: getHeader(),
@@ -1117,15 +1137,16 @@ export default {
      *  NEWS PRE EDITING
      */
     editEvent(event) {
+      console.log(event)
       this.event = event;
       this.editVisible = true;
       this.submitted = false;
       this.isPoster = event.isPoster;
       this.poster.id = event.posterId;
       this.poster.link = event.poster.link;
-      this.poster.imageKk = event.poster.posterKk;
-      this.poster.imageRu = event.poster.posterRu;
-      this.poster.imageEn = event.poster.posterEn;
+      this.poster.imageKk = event.poster.imageKk;
+      this.poster.imageRu = event.poster.imageRu;
+      this.poster.imageEn = event.poster.imageEn;
       this.getMainCategories();
       this.getMasterCourses();
       this.getBachelorCourses();
