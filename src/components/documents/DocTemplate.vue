@@ -45,7 +45,6 @@
                       <Checkbox id="financial" class="p-mr-2" v-model="createdTemplate.financial" :binary="true"/>
                       <label for="financial">{{$t('hr.doc.financial')}}</label>
                     </div>
-
                 </div>
               </div>
               <template #footer>
@@ -54,7 +53,7 @@
               </template>
             </Dialog>
 
-            <TreeTable  :value="templates" class="p-treetable-responsive p-treetable-sm" selectionMode="single" @node-select="onNodeSelect" v-model:selectionKeys="currentNode" style="margin-bottom: 2rem">
+            <TreeTable :loading="loading"  :value="templates" class="p-treetable-responsive p-treetable-sm" selectionMode="single" @node-select="onNodeSelect" v-model:selectionKeys="currentNode" style="margin-bottom: 2rem">
               <Column headerStyle="width:6em" :expander="true" bodyStyle="padding: 0">
                 <template #body="slotProps">
                   <i v-if="slotProps.node.data.type===1" class="pi pi-folder"></i>
@@ -123,7 +122,7 @@
                 <Button v-if="selectedNode.data.stateEn == DocState.APPROVED.Value" class="p-button-primary" :label ="$t('common.approvalList')" icon="pi pi-user-edit" @click="openForm('signerInfo')"/>
               </span>
 
-              <SelectButton v-model="templateLanguage" :options="language" class="p-mb-3">
+              <SelectButton @change="languageChanged" v-model="templateLanguage" :options="language" class="p-mb-3">
                 <template #option="slotProps">
                   <div v-if="slotProps.option == 'kz'">{{$t('common.language.kz')}}</div>
                   <div v-else-if="slotProps.option == 'ru'">{{$t('common.language.ru')}}</div>
@@ -239,7 +238,7 @@
   import Enum from "@/enum/docstates/index"
 
   export default {
-    emits: ['onselect'],
+    emits: ['onselect', 'languageChanged'],
     components: { RichEditor, DocSignaturesInfo },
     data() {
       return {
@@ -254,7 +253,7 @@
         editorReadOnly :false,
         signing : false,
         DocState: DocState,
-        templateLanguage: 'kz',
+        templateLanguage: this.currentLang != null ? this.currentLang : 'kz',
         dialogOpenState: {
           addFolder : false,
           addTemplate : false,
@@ -292,12 +291,15 @@
           folderID: -1,
           financial: false,
         },
+        loading: false,
       }
     },
      props: {
       selectMode: Boolean,
       modelValue: null,
       windowOpened: Boolean,
+      currentLang: null,
+
     },
     setup(props, context) {
       function updateValue(event, node) {
@@ -560,6 +562,12 @@
         })
 
       },
+      changeLanguage(lang) {
+        this.templateLanguage = lang
+      },
+      languageChanged() {
+        this.$emit("languageChanged", this.templateLanguage )
+      },
       createNewDocTemplate() {
         if (this.createdFolder == null || this.createdTemplate.descriptionKaz.length<1) {
           this.showMessage('error',this.$t('doctemplate.newTemplate'), this.$t('doctemplate.message.descriptionNotFilled'));
@@ -720,6 +728,7 @@
         if (this.selectMode) {
           stateFilter = "&stateID=" + this.DocState.APPROVED.ID
         }
+        this.loading = true;
         url+= stateFilter
         axios (smartEnuApi+url, { headers: getHeader() })
         .then(res=>{
@@ -748,9 +757,10 @@
           });
           if(treeData.length>0)
             this.templates=treeData;
-
+          this.loading = false;
         })
         .catch(error => {
+          this.loading = false;
           console.log(error)
           if (error.response.status == 401) {
             this.$store.dispatch("logLout");
@@ -762,6 +772,7 @@
     mounted() {
       this.initApiCall(
       );
+      this.templateLanguage = this.currentLang != null ? this.currentLang : 'kz'
     },
   };
 </script>

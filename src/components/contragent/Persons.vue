@@ -20,12 +20,7 @@
           <Menubar
             :model="menu"
             :key="active"
-            style="
-              height: 36px;
-              margin-top: -7px;
-              margin-right: -7px;
-              margin-left: -7px;
-            "
+            style="height: 36px;margin-top: -7px;margin-right: -7px;margin-left: -7px;"
           >
             <template #end>
               <InputText
@@ -170,7 +165,7 @@
               class="p-sidebar-lg"
               style="overflow-y: scroll"
             >
-              <Person :modelValue="currentPerson" :organization="organization" :addMode="addMode" :readonly="true" @userCreated="insertUser"></Person>
+              <Person :shortMode="shortMode" :modelValue="currentPerson" :organization="organization" :addMode="addMode" :readonly="!shortMode" @userCreated="insertUser"></Person>
               
             </Sidebar>
           </div>
@@ -273,6 +268,7 @@ export default {
       }],
     };
   },
+  emits: ['userCreated'],
   props: {
     modelValue: null,
     organization: null,
@@ -282,7 +278,8 @@ export default {
     insertMode: {
       type: Boolean,
       default: false
-    }
+    },
+    shortMode: Boolean,
     
   },
   setup(props, context) {
@@ -360,6 +357,8 @@ export default {
     },
     insertUser(user) {
       this.persons.push(user)
+      this.$emit("userCreated", user)
+      
     },
     toggle(event, data) {
       this.addMode = false;

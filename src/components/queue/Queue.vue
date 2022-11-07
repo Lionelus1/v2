@@ -11,7 +11,6 @@
         />        
       </template>
     </Toolbar>
-    <Toast />
     <TreeTable :value="queues" :lazy="true" :paginator="true" :rows="lazyParams.rows" :loading="loading"
       @nodeExpand="onExpand" @page="onPage" :totalRecords="totalRecords" selectionMode="single" v-model:selectionKeys="currentNode">
       <template #header>

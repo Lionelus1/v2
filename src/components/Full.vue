@@ -1,7 +1,7 @@
 <template>
   <div :class="containerClass" @click="onWrapperClick">
-    <Toast/>
     <ConfirmDialog></ConfirmDialog>
+    <Toast />
     <AppTopBar @menu-toggle="onMenuToggle" v-model:pagemenu="localpagemenu"/>
 
     <transition name="layout-sidebar">
@@ -22,6 +22,7 @@
     <AppConfig :layoutMode="layoutMode" :layoutColorMode="layoutColorMode" @layout-change="onLayoutChange"
                @layout-color-change="onLayoutColorChange"/>
     <AppFooter/>
+
   </div>
 </template>
 

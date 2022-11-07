@@ -228,7 +228,8 @@ export default {
             userSuccessInserted: "The user has been successfully created, download the authorization data to send to the user.",
             selectVariant: "Choose the option you need",
             selectUsers: "Please, select users",
-            userIINExists: "User with same iin already exists",
+            userIINExists: "User with same IIN already exists",
+            orgBINExists: "Organization with same BIN already exists",
             accessDenied: "You do not have permission to view this document!",
             accessDeniedAdmin: "You do not have the necesary permisions. Please contact admins",
             saveChanges: "Save changes",
@@ -318,6 +319,7 @@ export default {
         dossier: "Open dossier",
         organization: "Organizations",
         title: "Contragents",
+        missingDetails: "Details of the selected counterparty are not fully indicated (BIN, etc.). Please provide missing details.",
     },
     doctemplate: {
         title : "Document template creation",
@@ -340,7 +342,7 @@ export default {
         editor: {
             contractElements: "Contract elements",
             contragent: "Counterparty",
-            ourside: "Ourside",
+            ourside: "Университет",
             period: "Period",
             number: "Number",
             text: "Text",

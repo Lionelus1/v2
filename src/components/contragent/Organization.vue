@@ -9,6 +9,8 @@
         }}
       </h3>
       <TopMenuBar :menu="menu" :readonly="localReadonly"></TopMenuBar>
+      <Message severity="warn" v-if="message != null">{{message}}</Message>
+
     </div>
     <div class="p-col-12 p-md-12 p-fluid">
       <div class="card">
@@ -24,6 +26,7 @@
               v-model="value.name"
               @input="correct"
             ></InputText>
+            <small class="p-error" v-if="this.validationErrors.nameInQazaq">{{$t('common.requiredField')}}</small>
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label for="rusname">{{ this.$t("common.nameInRussian") }}<span class="p-error" v-if="!readonly">*</span></label>
@@ -36,10 +39,12 @@
               v-model="value.nameru"
               @input="correct"
             ></InputText>
+            <small class="p-error" v-if="this.validationErrors.nameInRus">{{$t('common.requiredField')}}</small>
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label>{{ this.$t("contragent.form") }}<span class="p-error" v-if="!readonly">*</span></label>
             <Dropdown  @change="correct" class="p-mt-2" :disabled="localReadonly" v-model="value.form" :options="orgforms" :optionLabel="($i18n.locale == 'ru' ? 'namerus' : 'name')" :placeholder="$t('common.select')" />
+            <small class="p-error" v-if="this.validationErrors.orgForm">{{$t('common.requiredField')}}</small>
           </div>
 
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
@@ -88,6 +93,7 @@
               v-model="value.iin"
               @input="correct"
             ></InputText>
+            <small class="p-error" v-if="this.validationErrors.bin">{{$t('common.requiredField')}}</small>
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label>{{ this.$t("contact.locality") }}</label>
@@ -114,6 +120,7 @@
               @input="correct"
               v-model="value.address"
             ></InputText>
+            <small class="p-error" v-if="this.validationErrors.address">{{$t('common.requiredField')}}</small>
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label
@@ -127,8 +134,9 @@
               type="text"
               :placeholder="$t('contact.address')"
               @input="correct"
-              v-model="value.addressrus"
+              v-model="value.addressru"
             ></InputText>
+            <small class="p-error" v-if="this.validationErrors.addressru">{{$t('common.requiredField')}}</small>
           </div>
           <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
             <label>{{ this.$t("contact.phone") }}</label>
@@ -151,6 +159,7 @@
               @input="correct"
               v-model="value.email"
             ></InputText>
+            <small class="p-error" v-if="this.validationErrors.email">{{$t('common.requiredField')}}</small>
           </div>
         </div>
       </div>
@@ -242,13 +251,21 @@ export default {
         orgForm: false,
         email: false,
         bin: false,
+        address: false,
+        addressru: false,
       },
     };
   },
   created() {
     this.getOrgForms();
     this.isAdmin = this.findRole(null, 'main_administrator') || this.findRole(null, "career_administrator")
+    this.isAdmin = this.message != null
     this.localReadonly =  this.readonly && !this.isAdmin
+    if (this.message != null) {
+      this.validateAddForm();
+    
+    }
+
   },
   methods: {
     findRole: findRole,
@@ -279,17 +296,22 @@ export default {
       this.validationErrors.orgForm = this.value.form.name == "" ;
       this.validationErrors.bin = !this.value.iin || this.value.iin == "";
       this.validationErrors.email = !this.value.email || this.value.email == "";
+      this.validationErrors.address = !this.value.address || this.value.address == "";
+      this.validationErrors.addressru = !this.value.addressru || this.value.addressru == "";
       console.log(this.value.form.name )
       return (
         !this.validationErrors.nameInQazaq &&
         !this.validationErrors.nameInRus &&
         !this.validationErrors.orgForm &&
         !this.validationErrors.email &&
-        !this.validationErrors.bin
+        !this.validationErrors.bin &&
+        !this.validationErrors.address &&
+        !this.validationErrors.addressru
       );
     },
     saveOrganization() {
       if (!this.validateAddForm()) {
+        alert(this.$t('common.message.fillError'));
         this.$toast.add({
                 severity: "error",
                 summary:  this.$t('common.message.fillError'),
@@ -300,13 +322,15 @@ export default {
       
       axios.post(smartEnuApi+"/contragent/updateorg", this.value, {headers: getHeader()})
       .then(response=> {
+        console.log("sasa:", response.data)
         this.menu[0].disabled = true
         if (this.value.id == null) { 
           this.value.id = response.data
-          this.$emit('inserted', {
+          
+        }
+        this.$emit('changed', {
               value: this.value
           });
-        }
         this.$toast.add({
               severity: "success",
               summary:  this.$t('common.successDone'),
@@ -314,22 +338,31 @@ export default {
             });
       })
       .catch((error) => {
+        if (error.response.status == 302) {
+            this.$toast.add({
+            severity: "error",
+            summary: this.$t('common.message.' + error.response.data.error),
+            life: 3000,
+          });
+        } else
         if (error.response.status == 401) {
           this.$store.dispatch("logLout");
-        }
+        } else
         this.$toast.add({
           severity: "error",
-          summary: "updateOrg:\n" + error,
+          summary: error,
           life: 3000,
         });
       });
 
     }
   },
+  emits: ['changed'],
   props: {
     modelValue: null,
     placeholder: String,
     readonly: Boolean,
+    message: null
   },
 };
 </script>
