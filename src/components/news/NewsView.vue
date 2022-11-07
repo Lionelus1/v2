@@ -27,13 +27,13 @@
                 {{ new Date(selectedNews.history.modifyDate).toLocaleString() }}
             </template>
             <template #content>
-                <div v-html="
+                <div class="news_content" v-html="
                     $i18n.locale === 'kz'
                     ? selectedNews.contentKz
                     : $i18n.locale === 'ru'
                     ? selectedNews.contentRu
                     : selectedNews.contentEn"
-                ></div>
+                     ></div>
             </template>
             <template #footer>
                 <div style="padding: 0 100px">
@@ -69,6 +69,35 @@
     }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+    .dialog_img {
+        padding: 0 100px;
+    }
+
+    @media (max-width: 780px) {
+        .dialog_img {
+            padding: 0;
+        }
+    }
+
+    .news_content{
+        p{
+            img {
+                width: auto !important;
+                display: block !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
+            }
+        }
+    }
+    .p-card .p-card-content{
+        font-weight: bold;
+        img {
+            width: auto !important;
+            display: block !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+        }
+    }
 
 </style>
