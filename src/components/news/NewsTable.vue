@@ -1240,7 +1240,7 @@ export default {
       } else {
         delete this.formValid["contentEn"];
       }
-      if (!this.newsData.image1) {
+      if (!this.imageFileMain) {
         this.formValid.push(this.$t("smartenu.image1Invalid"));
       }
       if (this.selectedCatTree.length == 0) {
