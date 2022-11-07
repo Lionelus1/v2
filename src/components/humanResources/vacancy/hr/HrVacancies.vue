@@ -408,6 +408,7 @@ import router from '@/router';
 import html2pdf from "html2pdf.js";
 import {NCALayerClient} from "ncalayer-js-client";
 import {docToByteArray} from "@/helpers/SignDocFunctions";
+import {NCALayerClientExtension} from "@/helpers/ncalayer-client-ext";
 
 export default {
   name: "HrVacancies",
@@ -525,7 +526,7 @@ export default {
     },
 
     async signDocument() {
-      let NCALaClient = new NCALayerClient();
+      let NCALaClient = new NCALayerClientExtension();
       try {
         await NCALaClient.connect();
       } catch (error) {
@@ -539,12 +540,24 @@ export default {
       try {
         await this.signResume()
         console.log("PDF IS ", this.resumeBlob)
-        this.signature = await NCALaClient.createCAdESFromBase64('PKCS12', this.resumeBlob, 'SIGNATURE', false)
+        let dataBase64 = this.arrayBufferToBase64(this.resumeBlob)
+        this.signature = await NCALaClient.sign('cms', {}, dataBase64, 'fl', this.$i18n.locale, true)
+        // this.signature = await NCALaClient.createCAdESFromBase64('PKCS12', this.resumeBlob, 'SIGNATURE', false)
         this.visible.resume = false
       } catch (error) {
         console.log(error)
         this.$toast.add({severity: 'error', summary: this.$t('ncasigner.failToSign'), life: 3000});
       }
+    },
+
+    arrayBufferToBase64(buffer) {
+      var binary = '';
+      var bytes = new Uint8Array(buffer);
+      var len = bytes.byteLength;
+      for (var i = 0; i < len; i++) {
+        binary += String.fromCharCode(bytes[i]);
+      }
+      return window.btoa(binary);
     },
 
     b64toBlob(b64Data, sliceSize=512) {
@@ -652,6 +665,7 @@ export default {
       if (this.signWay === 0) {
         const blob = new Blob([this.resumeBlob], {type: "application/pdf"});
         let pdfF = new File([blob], 'filename.pdf')
+        console.log(pdfF)
         fd.append("resumeData", pdfF)
         fd.append("signature", this.signature)
       } else {

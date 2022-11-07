@@ -79,6 +79,7 @@
   import axios from 'axios';
   import {getHeader,header, smartEnuApi,etspTokenEndPoint} from "../config/config";
   import {NCALayerClient} from "ncalayer-js-client";
+  import {NCALayerClientExtension} from "@/helpers/ncalayer-client-ext";
 
   const authUser = {};
   export default {
@@ -147,7 +148,7 @@
           });  
         },
         async xmlSignature(res) {
-          let NCALaClient = new NCALayerClient();
+          let NCALaClient = new NCALayerClientExtension();
           console.log("nc object ",NCALaClient);
           try {
             await NCALaClient.connect();
@@ -157,8 +158,9 @@
             return
           }
           try {
-            let XMLignature = await  NCALaClient.signXml('PKCS12', res.xml, 'AUTH')
-            this.eloginData.xmlSignature=XMLignature;
+            let XMLignature = await NCALaClient.sign('xml', null,  res.xml, 'auth', this.$i18n.locale, false)
+            // let XMLignature = await  NCALaClient.signXml('PKCS12', res.xml, 'AUTH')
+            this.eloginData.xmlSignature=XMLignature[0];
             this.eloginData.connectionId = res.connectionId;
             this.isSignUp=false;
           } catch (error) {
@@ -179,7 +181,6 @@
           }
         },
         sendLoginData(){
-          
           if(this.eloginData.connectionId.length>4 && this.eloginData.xmlSignature.length>10){
             this.isSignUp=true;
             axios.post(smartEnuApi+"/etspverify",this.eloginData, {headers: getHeader()})

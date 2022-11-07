@@ -98,43 +98,25 @@ export function identifyOIDs(oid) {
 
     return message
 }
-export async function runNCaLayer(t,toast, document) {
-    let NCALaClient = new NCALayerClient();
+export async function runNCaLayer(t,toast, document, signatureType, signerType, tspRequired, locale) {
+    let NCALaClient = new NCALayerClientExtension();
 
     try {
-      await NCALaClient.connect();
+        await NCALaClient.connect();
     } catch (error) {
-      toast.add({
-        severity: 'error',
-        summary: t('ncasigner.failConnectToNcaLayer'),
-        life: 3000
-      });
-      return error;
+        toast.add({
+            severity: 'error',
+            summary: t('ncasigner.failConnectToNcaLayer'),
+            life: 3000
+        });
+        return error;
     }
     try {
-      var res = await NCALaClient.createCAdESFromBase64('PKCS12', document, 'SIGNATURE', false)
-      return res
+        var res = await NCALaClient.sign(signatureType, tspRequired ? {} : null,
+            document, signerType, locale, true)
+        return res
     } catch (error) {
         toast.add({severity: 'error', summary: t('ncasigner.failToSign') + error, life: 3000});
         return error;
     }
-}
-
-export async function makeTimestampForSignature(t, toast, signature) {
-        let NCALaClient = new NCALayerClientExtension()
-        try {
-            await NCALaClient.connect();
-        } catch (error) {
-            toast.add({
-                severity: 'error',
-                summary: this.$t('ncasigner.failConnectToNcaLayer'),
-                life: 3000
-            });
-
-        }
-        try {
-            return await NCALaClient.applyCAdES("PKCS12", "SIGNATURE", signature)
-        } catch (error) {
-            toast.add({severity: 'error', summary: t('ncasigner.failToSign'), life: 3000});
-        }
 }
