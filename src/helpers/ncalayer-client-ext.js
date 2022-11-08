@@ -6,6 +6,10 @@ const {NCALayerClient} = require("ncalayer-js-client");
             super(url);
         }
         async sign(signatureType, tsaProfile, data, signerType, locale, decodeBase64) {
+            let ncaLocale = 'kk'
+            if (locale === 'ru' || locale === 'en') {
+                ncaLocale = locale
+            }
             let decode = decodeBase64
             let encapsulate = false
             let digested = false
@@ -30,7 +34,7 @@ const {NCALayerClient} = require("ncalayer-js-client");
                         "extKeyUsageOids": extKeyUsageOids,
                         "chain": []
                     },
-                    'locale': locale
+                    'locale': ncaLocale
                 }
             };
 
