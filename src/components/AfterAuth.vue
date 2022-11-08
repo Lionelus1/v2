@@ -4,7 +4,7 @@
 <script>
 import axios from 'axios';
 import {mapActions} from 'vuex';
-import {getHeader, smartEnuApi} from "../config/config";
+import {getHeader, smartEnuApi, findRole} from "../config/config";
 
 export default {
   name:"Auth",
@@ -12,6 +12,7 @@ export default {
     ...mapActions([
       'setLoginedUser'
     ]),
+    findRole: findRole,
     getLoginedUser(){
       axios.get(smartEnuApi +'/logineduserinfo',{headers:getHeader()})
       .then(response=>{
@@ -19,6 +20,10 @@ export default {
         this.setLoginedUser();
         let oldPath = this.$store.state.attemptedUrl;
         if(oldPath.length==0){
+          if(this.findRole(null,"student")){
+
+            location.replace('/#/human-resources/career/vacancies');
+          }else
           location.replace('/#/');
         }else{
           this.$store.dispatch("solveAttemptedUrl","");

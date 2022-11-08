@@ -6,6 +6,9 @@
         <div class="card card_bottom">
             <TabView ref="templateView" v-model:activeIndex="active">
                 <TabPanel v-bind:header="$t('smartenu.newsTitle')">
+                    <div v-if="allNews===0">
+                        {{ $t("smartenu.newsNotFound") }}
+                    </div>
                     <div v-if="loading" class="skeletons">
                         <div class="skeleton" :key="s" v-for="s of skeletons">
                             <Skeleton class="skeleton_img"></Skeleton>
@@ -15,22 +18,31 @@
                             </div>
                         </div>
                     </div>
-                    <div v-else class="post" :key="p.id" v-for="p of allNews" v-on:click="newsView(p)">
-                        <img class="round" v-if="p.image1 != null && p.image1 !=''"
-                             :src="p.image1"/>
-                        <div class="text">
-                            <strong>
-                                {{
-                                $i18n.locale === "kz"
-                                ? p.titleKz
-                                : $i18n.locale === "ru"
-                                ? p.titleRu
-                                : p.titleEn
-                                }}
-                            </strong>
-                            <div class="date">{{ formatDateMoment(p.history.modifyDate)}}</div>
-                        </div>
-                    </div>
+                    <DataView :lazy="true" :value="allNews" :layout="layout" :paginator="true" :rows="10"
+                              @page="onPage($event)" :totalRecords="total">
+                        <template #empty>{{
+                            this.$t("smartenu.newsNotFound")
+                            }}
+                        </template>
+                        <template #list="{ data }">
+                            <div class="post" v-on:click="newsView(data)">
+                                <img class="round" v-if="data.imageUrl != null && data.imageUrl !=''"
+                                     :src="data.imageUrl"/>
+                                <div class="text">
+                                    <strong>
+                                        {{
+                                        $i18n.locale === "kz"
+                                        ? data.titleKz
+                                        : $i18n.locale === "ru"
+                                        ? data.titleRu
+                                        : data.titleEn
+                                        }}
+                                    </strong>
+                                    <div class="date">{{ formatDateMoment(data.history.modifyDate)}}</div>
+                                </div>
+                            </div>
+                        </template>
+                    </DataView>
                 </TabPanel>
                 <TabPanel v-bind:header="$t('smartenu.eventsTitle')">
                     <DataTable
@@ -55,16 +67,14 @@
           </span>
                             </template>
                         </Column>
-                        <Column
-                                :field="
-          $i18n.locale === 'kz'
-            ? `titleKz`
-            : $i18n.locale === 'ru'
-            ? `titleRu`
-            : `titleEn`
-        "
-                                v-bind:header="$t('common.nameIn')"
-                        >
+                        <Column :field="
+                                     $i18n.locale === 'kz'
+                                     ? `titleKz`
+                                     : $i18n.locale === 'ru'
+                                     ? `titleRu`
+                                     : `titleEn`
+                                     "
+                                v-bind:header="$t('common.nameIn')">
                             <template #body="slotProps">
                                 <a href="javascript:void(0)" @click="eventView(slotProps.data)">
                                     {{
@@ -82,185 +92,27 @@
                 </TabPanel>
             </TabView>
         </div>
-        <Dialog
-                v-model:visible="newsViewVisible"
-                :style="{ width: '1000px' }"
-                :modal="true"
-                class="p-fluid"
-                :closable="false"
-        >
-            <Card style="box-shadow: none">
-                <template #header>
-                    <div class="dialog_img">
-                        <img :src="selectedNews.image1" style="width: 100%; height: 100%"/>
-                    </div>
-                </template>
-                <template #title>
-                    <div class="card_title">
-                        {{
-                        $i18n.locale === "kz"
-                        ? selectedNews.titleKz
-                        : $i18n.locale === "ru"
-                        ? selectedNews.titleRu
-                        : selectedNews.titleEn
-                        }}
-                    </div>
-                </template>
-                <template #subtitle>
-                    {{ new Date(selectedNews.history.modifyDate).toLocaleString() }}
-                </template>
-                <template #content>
-                    <div
-                            v-html="
-              $i18n.locale === 'kz'
-                ? selectedNews.contentKz
-                : $i18n.locale === 'ru'
-                ? selectedNews.contentRu
-                : selectedNews.contentEn
-            "
-                    ></div>
-                </template>
-                <template #footer>
-                    <div style="padding: 0 100px">
-                        <img :src="selectedNews.image2" v-if="selectedNews.image2" style="width: 100%; height: 100%"/>
-                    </div>
-                </template>
-            </Card>
-            <template #footer>
-                <Button
-                        v-bind:label="$t('common.close')"
-                        icon="pi pi-times"
-                        class="p-button p-component p-button-primary"
-                        @click="newsViewVisible = false"
-                />
-            </template>
-        </Dialog>
-        <Dialog
-                v-model:visible="eventViewVisible"
-                :closable="false"
-                :style="{ width: '1000px' }"
-                :modal="true"
-                class="p-fluid"
-        >
-            <Card style="box-shadow: none">
-                <template #header>
-                    <div class="dialog_img">
-                        <img
-                                :src="selectedEvent.main_image_base_64 ? selectedEvent.main_image_base_64 : selectedEvent.mainImage"
-                                style="width: 100%; height: 100%"
-                        />
-                    </div>
-                </template>
-                <template #title>
-                    <div class="card_title">
-                        {{
-                        $i18n.locale === "kz"
-                        ? selectedEvent.titleKz
-                        : $i18n.locale === "ru"
-                        ? selectedEvent.titleRu
-                        : selectedEvent.titleEn
-                        }}
-                    </div>
-                </template>
-                <template #subtitle>
-                    {{
-                    $t("smartenu.dataAndTime", {
-                    fn: new Date(selectedEvent.eventDate).toLocaleString(),
-                    })
-                    }}<br/>
-                    {{
-                    $t("smartenu.eventFormatView", {
-                    fn: selectedEvent.isOnline
-                    ? $t("common.online")
-                    : $t("common.offline"),
-                    })
-                    }}<br/>
-                    {{ $t("smartenu.meetingLinkView") }}
-                    <a
-                            v-if="selectedEvent.isOnline"
-                            :href="'//' + selectedEvent.eventLink"
-                            target="_blank"
-                    >
-                        {{ selectedEvent.eventLink }}
-                    </a>
-                    <br/>
-                    <p v-if="!selectedEvent.isOnline">
-                        {{
-                        $t("smartenu.meetingLocationView", {
-                        fn: selectedEvent.eventLocation,
-                        })
-                        }}
-                    </p>
-                    <!--{{
-                    $t("smartenu.participantsCategoryView", {
-                    fn: selectedEvent.participantsCategory
-                    .map((category) =>
-                    $i18n.locale === "kz"
-                    ? category.nameKz
-                    : $i18n.locale === "ru"
-                    ? category.nameRu
-                    : category.nameEn
-                    )
-                    .toString()
-                    .replaceAll(",", ", "),
-                    })
-                    }}--><br/>
-                </template>
-                <template #content>
-                    <div
-                            v-html="
-              $i18n.locale === 'kz'
-                ? selectedEvent.contentKz
-                : $i18n.locale === 'ru'
-                ? selectedEvent.contentRu
-                : selectedEvent.contentEn
-            "
-                    ></div>
-                </template>
-                <template #footer>
-                    <Button
-                            v-if="selectedEvent.additionalFile || selectedEvent.additional_file_path"
-                            v-bind:label="$t('common.download')"
-                            icon="pi pi-download"
-                            class="p-button-success p-mb-2"
-                            @click="downloadFile(selectedEvent)"
-                    />
-                    <div>
-                        <Accordion v-if="selectedEvent.participants && selectedEvent.participants.length > 0">
-                            <AccordionTab :header="$t('smartenu.eventParticipants')">
-                                <li
-                                        v-for="participant in selectedEvent.participants"
-                                        :key="participant.id"
-                                >
-                                    {{ participant.user.fullName }}
-                                </li>
-                            </AccordionTab>
-                        </Accordion>
-                    </div>
-                </template>
-            </Card>
-            <template #footer>
-                <Button
-                        v-bind:label="$t('common.close')"
-                        icon="pi pi-times"
-                        class="p-button-rounded p-button-danger"
-                        @click="eventViewVisible = false"
-                />
-            </template>
-        </Dialog>
+        <NewsView v-if="newsViewVisible" :is-visible="newsViewVisible" :selected-news="selectedNews"/>
+        <EventsView v-if="eventViewVisible" :is-visible="eventViewVisible" :selectedEvent="selectedEvent"/>
     </div>
 </template>
 
 <script>
     import {mapState} from "vuex";
     import axios from "axios";
-    import {getHeader, header, smartEnuApi} from "@/config/config";
+    import {getHeader, smartEnuApi} from "@/config/config";
     import moment from "moment";
+    import NewsView from "./news/NewsView.vue";
+    import {fileRoute} from "../config/config";
+    import EventsView from "./events/EventsView";
 
     export default {
         name: "Welcome",
+        components: {EventsView, NewsView},
         data() {
             return {
+                total: 0,
+                layout: 'list',
                 selectedNews: {},
                 selectedEvent: {},
                 newsViewVisible: false,
@@ -278,17 +130,28 @@
                 allEvents: [],
             };
         },
+        mounted() {
+            this.emitter.on('newsViewModalClose', data => {
+                this.newsViewVisible = data;
+            });
+            this.emitter.on('eventViewModalClose', data => {
+                this.eventViewVisible = data;
+            });
+        },
         methods: {
             getAllNews() {
                 this.loading = true
                 this.lazyParams.countMode = null;
                 axios
-                    .post(smartEnuApi + "/allNews", this.lazyParams, {
+                    .post(smartEnuApi + "/getNews", this.lazyParams, {
                         headers: getHeader(),
                     })
                     .then((response) => {
                         this.allNews = response.data.news;
-                        this.newsCount = response.data.total;
+                        this.allNews.map(e => {
+                            e.imageUrl = smartEnuApi + fileRoute + e.image1
+                        });
+                        this.total = response.data.total;
                         this.loading = false;
                     })
                     .catch((error) => {
@@ -306,9 +169,12 @@
             getAllEvents() {
                 this.allEvents = [];
                 axios
-                    .get(smartEnuApi + "/allEvents")
+                    .get(smartEnuApi + "/getPublishEvents")
                     .then((response) => {
                         this.allEvents = response.data;
+                        this.allEvents.map(e => {
+                            e.imageUrl = smartEnuApi + fileRoute + e.main_image_path
+                        });
                         //console.log("ddd", this.allEvents)
                         this.loading = false;
                     })
@@ -334,6 +200,10 @@
             eventView(item) {
                 this.selectedEvent = item;
                 this.eventViewVisible = true;
+            },
+            onPage(event) {
+                this.lazyParams = event
+                this.getAllNews();
             },
         },
         created() {
@@ -378,11 +248,10 @@
         cursor: pointer;
         display: flex;
         margin: 15px 0;
-        width: 80%;
+        width: 100%;
         border-radius: 5px;
-        //box-shadow: 1px 1px 3px 0;
         padding: 10px;
-        box-shadow: 0 2px 1px -1px rgb(0 0 0 / 20%), 0 1px 1px 0 rgb(0 0 0 / 14%), 0 1px 3px 0 rgb(0 0 0 / 12%);
+        //box-shadow: 0 2px 1px -1px rgb(0 0 0 / 20%), 0 1px 1px 0 rgb(0 0 0 / 14%), 0 1px 3px 0 rgb(0 0 0 / 12%);
 
         .text {
             position: relative;
@@ -392,25 +261,21 @@
                 position: absolute;
                 bottom: 0;
                 color: #838080;
+                white-space: nowrap;
             }
         }
 
         img {
             width: 120px;
+            height: 80px;
             border-radius: 5px;
+            box-shadow: 0 3px 6px rgb(0 0 0 / 16%), 0 3px 6px rgb(0 0 0 / 23%);
         }
-    }
-
-    .dialog_img {
-        padding: 0 100px;
     }
 
     @media (max-width: 780px) {
         .skeletons, .post {
             width: 100%;
-        }
-        .dialog_img {
-            padding: 0;
         }
     }
 
@@ -457,7 +322,4 @@
         }
     }
 
-    @media (max-width: 400px) {
-
-    }
 </style>

@@ -8,14 +8,13 @@
                 :label="$t('common.createNew')" @click="toggle" aria-haspopup="true" aria-controls="overlay_menu"/>
         <Menu id="overlay_menu" ref="menu" :model="pagemenu" :popup="true"/>
         <div class="layout-topbar-icons">
-            <!--<router-link to="/guide"><i class="pi pi-question-circle"></i></router-link>-->
             <LanguageDropdown/>
         </div>
     </div>
 </template>
 
 <script>
-    import LanguageDropdown from "./LanguageDropdown";
+    import LanguageDropdown from "../../LanguageDropdown";
 
     export default {
         components: {LanguageDropdown},
@@ -36,7 +35,6 @@
     }
 </script>
 
-
 <style scoped>
     @media print {
         .no-print, .no-print * {
@@ -54,6 +52,5 @@
     .pi-question-circle {
         margin-right: 10px;
         font-size: 20px;
-        color: white;
     }
 </style>

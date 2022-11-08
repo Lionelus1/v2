@@ -608,7 +608,7 @@ export default {
   },
 };
 </script>
-<style>
+<style scoped>
 #carddiv label {
   position: inherit;
 }

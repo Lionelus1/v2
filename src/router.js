@@ -1,6 +1,7 @@
 import {createRouter, createWebHashHistory} from 'vue-router';
 import Full from './components/Full.vue';
-import store from '@/store/store' // your vuex store
+import store from '@/store/store'
+import GuideFull from "./components/guide/GuideFull"; // your vuex store
 
 function load(component) {
     return () => import(`./components/${component}.vue`)
@@ -383,6 +384,19 @@ const routes = [
                 component: () => import('./pages/Access.vue')
             }
                 
+        ]
+    },
+    {
+        path: '/guide',
+        name: '/guide',
+        component: GuideFull,
+        children: [
+            {
+                path:'/main-guide',
+                name:'main-guide',
+                component: load('guide/MainGuide'),
+                beforeEnter: ifAuthenticated,
+            },
         ]
     }
 
