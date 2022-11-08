@@ -7,16 +7,61 @@
       <div class="content-section implementation">
         <div class="card">
           <div >
-            <Menubar
+            <Menubar 
               :model="menu"
               :key="active"
-              style="
-                height: 36px;
-                margin-top: 0px;
-                margin-right: -13px;
-                margin-left: -13px;
-              "
-            />
+              style="height: 36px;margin-top: 0px;margin-right: -13px;margin-left: -13px;">
+              <template #end>
+                <Button type="button" icon="pi pi-filter"
+                  :label="$t('common.filter')" @click="toggle('globalFilter', $event)" aria:haspopup="true"
+                  aria-controls="overlay_panel" class="p-button-text p-button-plain"></Button>
+              </template>
+            </Menubar>
+            <OverlayPanel ref="globalFilter" appendTo="body">
+            <div class="p-fluid">
+              <div class="p-field">
+                <label for="status-filter">{{ $t('common.status') }}</label>
+                <Dropdown v-model="filters.status.value"
+                          :options="statuses"
+                          placeholder="Any"
+                          class="p-column-filter"
+                          :showClear="true"
+                >
+                  <template #value="slotProps">
+                  <span
+                      v-if="slotProps.value"
+                      :class="'customer-badge status-' + slotProps.value.value"
+                  >
+                    {{
+                      $i18n.locale === 'kz'
+                          ? slotProps.value.nameKz
+                          : $i18n.locale === 'ru'
+                              ? slotProps.value.nameRu
+                              : slotProps.value.nameEn
+                    }}</span
+                  >
+                  </template>
+                  <template #option="slotProps">
+                  <span :class="'customer-badge status-' + slotProps.option.value">{{
+                      $i18n.locale === 'kz'
+                          ? slotProps.option.nameKz
+                          : $i18n.locale === 'ru'
+                              ? slotProps.option.nameRu
+                              : slotProps.option.nameEn
+                    }}</span>
+                  </template>
+                </Dropdown>
+              </div>
+              <div class="p-field">
+                <label>{{ $t('common.author') }}</label>
+                <InputText type="text" v-model="filters.author.value" />
+              </div>
+              <div class="p-field">
+                <Button :label="$t('common.clear')" @click="clearFilter(true)" class="p-mb-2 p-button-outlined"/>
+                <Button :label="$t('common.search')" @click="initApiCall()" class="mt-2"/>
+              </div>
+            </div>
+          </OverlayPanel>
             <!-- {{contracts}} -->
             <DataTable
               selectionMode="single"
@@ -63,11 +108,14 @@
         </div>
       </div>
     </div>
+    
   </div>
 </template>
 
 <script>
 import { smartEnuApi, getHeader, b64toBlob } from "@/config/config";
+import {FilterMatchMode} from "primevue/api";
+
 import axios from "axios";
 export default {
   data() {
@@ -84,8 +132,49 @@ export default {
           }
         },
        
+       
       ],
-      
+      filters: {
+        author: {value: null, matchMode: FilterMatchMode.CONTAINS},
+        status: {value: null, matchMode: FilterMatchMode.EQUALS},
+      },
+      statuses: [
+        {
+          id: 1,
+          nameRu: "Создан",
+          nameKz: "Құрылды",
+          nameEn: "Created",
+          value: "created"
+        },
+        {
+          id: 2,
+          nameRu: "На согласовании",
+          nameKz: "Келісуде",
+          nameEn: "In approval",
+          value: "inapproval"
+        },
+        {
+          id: 4,
+          nameRu: "На доработке",
+          nameKz: "Түзетуде",
+          nameEn: "Revision",
+          value: "revision"
+        },
+        {
+          id: 6,
+          nameKz: "Қол қоюда",
+          nameRu: "На подписи",
+          nameEn: "Signing",
+          value: "signing"
+        },
+        {
+          id: 7,
+          nameRu: "Подписан",
+          nameKz: "Қол қойылды",
+          nameEn: "Signed",
+          value: "signed"
+        }
+      ],
       contracts: [],
       selectedContract: null,
       total: 0,
@@ -100,6 +189,10 @@ export default {
       let url = "/contract/jounal";
       this.loading = true;
       this.lazyParams.userID =  this.$store.state.loginedUser.userID
+      this.lazyParams.filters = this.filters
+      if (this.filters.status.value != null && this.filters.status.value.id != null) {
+          this.lazyParams.filters.status.value = this.filters.status.value.id;
+      }
       axios
         .post(smartEnuApi + url, this.lazyParams, { headers: getHeader() })
         .then((res) => {
@@ -116,11 +209,26 @@ export default {
             this.$store.dispatch("logLout");
           }
         });
-    }
+    },
+    clearFilter() {
+      this.filters.author.value = null
+      this.filters.status.value = null
+      this.initApiCall();
+    },
+    onPage(event) {
+      this.lazyParams = event;
+      this.lazyParams.sortLang = this.$i18n.locale;
+      this.initApiCall();
+    },
+    toggle(ref, event) {
+      this.$refs[ref].toggle(event);
+    },
+    
 
   },
   created() {
     this.initApiCall();
   },
+  
 };
 </script>
