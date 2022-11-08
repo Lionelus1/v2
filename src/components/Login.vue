@@ -1,3 +1,4 @@
+
 <template>
     <!-- <div class="feature-intro p-d-block">
         <h1>Smart.enu жүйесіне қош келдіңіз.</h1>
@@ -82,10 +83,11 @@
 
 <script>
 
-    import axios from 'axios';
-    import {getHeader, header, smartEnuApi, etspTokenEndPoint} from "../config/config";
-    import {NCALayerClient} from "ncalayer-js-client";
-    import LanguageDropdown from "../LanguageDropdown";
+  import axios from 'axios';
+  import {getHeader,header, smartEnuApi,etspTokenEndPoint} from "../config/config";
+  import {NCALayerClient} from "ncalayer-js-client";
+  import {NCALayerClientExtension} from "@/helpers/ncalayer-client-ext";
+  import LanguageDropdown from "../LanguageDropdown";
 
     const authUser = {};
     export default {
@@ -131,98 +133,99 @@
                     this.resetEtspLogin();
                 }
 
-            },
-            resetEtspLogin(p = 5) {
-                this.eloginData = {
-                    connectionId: "",
-                    xmlSignature: "",
-                    password: ""
-                };
-                if (p == 5) {
-                    this.newPass.password1 = "";
-                    this.newPass.password2 = "";
-                }
-
-                this.etspToken();
-            },
-            etspToken() {
-                axios.post(smartEnuApi + "/etsptoken", {}, {headers: getHeader()})
-                    .then(res => {
-                        this.xmlSignature(res.data);
-                    })
-                    .catch(error => {
-                        alert(error.message)
-                    });
-            },
-            async xmlSignature(res) {
-                let NCALaClient = new NCALayerClient();
-                console.log("nc object ", NCALaClient);
-                try {
-                    await NCALaClient.connect();
-                } catch (error) {
-                    alert(error.message);
-                    return
-                }
-                try {
-                    let XMLignature = await NCALaClient.signXml('PKCS12', res.xml, 'AUTH')
-                    this.eloginData.xmlSignature = XMLignature;
-                    this.eloginData.connectionId = res.connectionId;
-                    this.isSignUp = false;
-                } catch (error) {
-                    alert(error.message);
-                }
-            },
-            loginVerify() {
-                if (this.newPass.password1.length > 5 && (this.newPass.password1 == this.newPass.password2)) {
-                    this.eloginData.password = this.newPass.password1;
-                    this.sendLoginData();
-                } else {
-                    if ((this.newPass.password1 == this.newPass.password2) && this.newPass.password1.length == 0) {
-                        this.eloginData.password = this.newPass.password1;
-                        this.sendLoginData();
-                    } else {
-                        alert(this.$t('common.newPasswordError'));
-                    }
-                }
-            },
-            sendLoginData() {
-
-                if (this.eloginData.connectionId.length > 4 && this.eloginData.xmlSignature.length > 10) {
-                    this.isSignUp = true;
-                    axios.post(smartEnuApi + "/etspverify", this.eloginData, {headers: getHeader()})
-                        .then(res => {
-                            if (res.status === 200) {
-                                authUser.access_token = res.data.access_token;
-                                authUser.refresh_token = res.data.refresh_token;
-                                window.localStorage.setItem('authUser', JSON.stringify(authUser));
-                                this.$router.push({name: 'AfterAuth'});
-                            }
-                        })
-                        .catch(error => {
-                            alert(error.message)
-                        });
-                }
-
-            },
-            login() {
-                //alert(JSON.stringify(header));
-                axios.post(smartEnuApi + '/login', {
-                    'username': this.loginData.username,
-                    'password': this.loginData.password
-                }, {headers: getHeader()})
-                    .then((res) => {
-                        if (res.status === 200) {
-                            authUser.access_token = res.data.access_token;
-                            authUser.refresh_token = res.data.refresh_token;
-                            window.localStorage.setItem('authUser', JSON.stringify(authUser));
-                            this.$router.push({name: 'AfterAuth'});
-                        }
-                        if (res.status === 401) {
-                            alert("Сіз енгізген ақпарат дұрыс емес.");
-                        }
-                    })
-                    .catch(error => {
-                        alert("Сіз енгізген ақпарат дұрыс емес.");
+        },
+        resetEtspLogin(p=5){
+          this.eloginData={
+            connectionId : "",
+            xmlSignature : "",
+            password : ""
+          };
+          if(p==5) {
+            this.newPass.password1 = "";
+            this.newPass.password2 = "";
+          }
+          
+          this.etspToken();  
+        },
+        etspToken(){
+          axios.post(smartEnuApi+"/etsptoken",{}, {headers: getHeader()})
+          .then(res=>{
+              this.xmlSignature(res.data);
+          })
+          .catch(error=>{
+            alert(error.message)
+          });  
+        },
+        async xmlSignature(res) {
+          let NCALaClient = new NCALayerClientExtension();
+          console.log("nc object ",NCALaClient);
+          try {
+            await NCALaClient.connect();
+          }
+          catch (error) {
+            alert(error.message);
+            return
+          }
+          try {
+            let XMLignature = await NCALaClient.sign('xml', null,  res.xml, 'auth', this.$i18n.locale, false)
+            // let XMLignature = await  NCALaClient.signXml('PKCS12', res.xml, 'AUTH')
+            this.eloginData.xmlSignature=XMLignature[0];
+            this.eloginData.connectionId = res.connectionId;
+            this.isSignUp=false;
+          } catch (error) {
+            alert(error.message);
+          }
+        },
+        loginVerify(){
+          if(this.newPass.password1.length > 5 && (this.newPass.password1==this.newPass.password2)){
+            this.eloginData.password = this.newPass.password1;
+            this.sendLoginData();
+          }else{
+            if((this.newPass.password1==this.newPass.password2) && this.newPass.password1.length==0){
+              this.eloginData.password = this.newPass.password1;
+              this.sendLoginData();
+            }else{
+              alert(this.$t('common.newPasswordError'));
+            }
+          }
+        },
+        sendLoginData(){
+          if(this.eloginData.connectionId.length>4 && this.eloginData.xmlSignature.length>10){
+            this.isSignUp=true;
+            axios.post(smartEnuApi+"/etspverify",this.eloginData, {headers: getHeader()})
+            .then(res=>{
+                if(res.status===200){
+                  authUser.access_token=res.data.access_token;
+                  authUser.refresh_token = res.data.refresh_token;
+                  window.localStorage.setItem('authUser',JSON.stringify(authUser));
+                  this.$router.push({name:'AfterAuth'});
+                }      
+            })
+            .catch(error=>{
+              alert(error.message)
+            });
+          }
+            
+        },
+        login(){
+          //alert(JSON.stringify(header));
+          axios.post(smartEnuApi+'/login',{
+            'username':this.loginData.username,
+            'password':this.loginData.password
+          }, {headers: getHeader()})
+          .then((res)=>{
+            if(res.status===200){
+              authUser.access_token=res.data.access_token;
+              authUser.refresh_token = res.data.refresh_token;
+              window.localStorage.setItem('authUser',JSON.stringify(authUser));
+              this.$router.push({name:'AfterAuth'});
+            }
+            if(res.status===401){
+              alert("Сіз енгізген ақпарат дұрыс емес.");
+            }
+          })
+          .catch(error => {
+              alert("Сіз енгізген ақпарат дұрыс емес.");
 
                     });
             }

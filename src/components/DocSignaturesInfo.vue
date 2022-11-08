@@ -30,16 +30,8 @@
               <InlineMessage severity="info">{{ $t('ncasigner.noteMark') }}</InlineMessage>
             </template>
             <div class="p-d-flex p-jc-center">
-              <Button icon="pi pi-user-edit" v-if="signButtonVisibility"
+              <Button icon="pi pi-user-edit"
                       class="p-button-primary p-md-5" @click="sign" :label="$t('ncasigner.sign')" :loading="signing"/>
-              <Button icon="pi pi-user-edit" v-if="tspButtonVisibility"
-                      class="p-button-primary" @click="tsp" :label="$t('ncasigner.tsp')"/>
-            </div>
-            <div class="p-mt-2">
-              <InlineMessage severity="error" v-if="tspButtonVisibility">
-                <p>{{ $t('ncasigner.successSignTitle') }}</p>
-                <p>{{ $t('ncasigner.tspDescription') }}</p>
-              </InlineMessage>
             </div>
           </Panel>
         </div>
@@ -70,6 +62,10 @@ export default {
       type: String,
       default: null
     },
+    signerTypeParam: {
+      type: String,
+      default: null
+    },
     /**
      * Парамер метки времени
      * default - false. Метка времени отключена.
@@ -83,16 +79,14 @@ export default {
   data() {
     return {
       signatures: null,
-      currentSignature: null,
       plan: null,
       doc_id: this.$route.params.uuid,
       isTspRequired: Boolean,
       signerIin: null,
+      signerType: null,
       docInfo: null,
       loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID,
       isShow: false,
-      signButtonVisibility: true,
-      tspButtonVisibility: false,
       loading: true,
       signing: false,
       file: null,
@@ -106,6 +100,7 @@ export default {
     }
     this.isTspRequired = this.tspParam
     this.signerIin = this.signerIinParam
+    this.signerType = this.signerTypeParam
     this.getData();
   },
   methods: {
@@ -166,17 +161,10 @@ export default {
       )
           .then(response => {
             (
-                runNCaLayer(this.$t, this.$toast, response.data)
+                runNCaLayer(this.$t, this.$toast, response.data, 'cms',this.signerType, this.isTspRequired, this.$i18n.locale)
                     .then(sign => {
-
                       if (sign != undefined) {
-                        if (this.isTspRequired === true) {
-                          this.currentSignature = sign
-                          this.signButtonVisibility = false
-                          this.tspButtonVisibility = true
-                        } else {
                           this.sendRequest(sign)
-                        }
                       }
                     }).catch(e => {
                   console.log(e)
@@ -184,26 +172,12 @@ export default {
                 })
             ).catch(error => {
               this.signing = false;
-
               if (error.response.status == 401) {
                 this.$store.dispatch("logLout");
               }
             })
           })
     },
-
-    tsp() {
-      makeTimestampForSignature(this.$t, this.$toast, this.currentSignature)
-          .then(signWithTsp => {
-            this.sendRequest(signWithTsp)
-          }).catch(error => {
-        this.signing = false;
-        if (error.response.status == 401) {
-          this.$store.dispatch("logLout");
-        }
-      })
-    },
-
     sendRequest(signature) {
       var req = {
         userID: this.$store.state.loginedUser.userID,
@@ -223,9 +197,6 @@ export default {
           .catch(error => {
             this.signing = false
             if (error.response.status == 405) {
-              this.currentSignature = null
-              this.signButtonVisibility = true
-              this.tspButtonVisibility = false
               this.$toast.add({
                 severity: "error",
                 summary: this.$t(error.response.data),
