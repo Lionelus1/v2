@@ -915,6 +915,7 @@ export default {
       await resizeImages(this.newsData.contentEn).then(res => {
         this.newsData.contentEn = res
       });
+      this.newsData.isPoster = this.isPoster;
       const fd = new FormData();
       fd.append("news", JSON.stringify(this.newsData))
       fd.append("imageFileMain", this.imageFileMain);
@@ -983,6 +984,7 @@ export default {
       let newsData = this.allNews.find((x) => x.id === id);
       this.newsData = newsData;
       this.isPoster = this.newsData.isPoster;
+      this.poster = this.newsData.poster;
       this.selectedCatTree = [];
       this.newsData.contentCategoryRelations = [];
       for (let key in this.catTreeElementsList) {
@@ -1240,8 +1242,9 @@ export default {
       } else {
         delete this.formValid["contentEn"];
       }
-      if (!this.imageFileMain) {
-        this.formValid.push(this.$t("smartenu.image1Invalid"));
+      if (!this.newsData.image1) {
+        if (!this.imageFileMain)
+          this.formValid.push(this.$t("smartenu.image1Invalid"));
       }
       if (this.selectedCatTree.length == 0) {
         this.formValid.push(this.$t("smartenu.selectedCatInvalid"));
