@@ -248,7 +248,7 @@ export default {
       }*/
     },
     openApprovePlan() {
-      runNCaLayer(this.$t, this.$toast, this.document)
+      runNCaLayer(this.$t, this.$toast, this.document, 'cms', null, false, this.$i18n.locale)
           .then(sign => {
             if (sign !== undefined) {
               this.CMSSignature = sign;
