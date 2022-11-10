@@ -382,8 +382,16 @@ export default {
       let newsData = this.allNews.find((x) => x.id === id);
       this.newsData = newsData;
       this.selectedCatTree = [];
-      this.newsData.contentCategoryRelations = [];
-
+      for (let key in this.catTreeElementsList) {
+        for (let ixd in newsData.contentCategoryRelations) {
+          if (this.catTreeElementsList[key].data.id === newsData.contentCategoryRelations[ixd].categoryId) {
+            this.selectedCatTree[this.catTreeElementsList[key].key] = {
+              checked: newsData.contentCategoryRelations[ixd].checked,
+              partialChecked: newsData.contentCategoryRelations[ixd].partialChecked
+            }
+          }
+        }
+      }
       this.editVisible = true;
     },
 

@@ -1,20 +1,21 @@
 <template>
-  <Dialog v-if="newsData && editVisible" v-model:visible="editVisible" :style="{ width: '1000px' }" :header="$t('smartenu.createOrEditNews')"
+  <Dialog v-if="editVisible" v-model:visible="editVisible" :style="{ width: '1000px' }"
+          :header="$t('smartenu.createOrEditNews')"
           :modal="true" class="p-fluid">
     <div class="card">
-      <Message v-for="msg of formValid" severity="error" :key="msg">{{ msg }}</Message>
+<!--      <Message v-for="msg of formValid" severity="error" :key="msg">{{ msg }}</Message>-->
       <TabView>
         <TabPanel header="Қазақша">
           <div class="p-field p-mt-3">
             <label for="kz-title">{{ $t("common.nameInQazaq") }}</label>
             <InputText id="kz-title" v-model="newsData.titleKz" rows="3"
-                       :class="{ 'p-invalid': formValid.titleKz && submitted }"/>
-            <small v-show="formValid.titleKz && submitted" class="p-error">{{ $t("smartenu.titleKzInvalid") }}</small>
+                       :class="{ 'p-invalid': !newsData.titleKz && submitted }"/>
+            <small v-show="!newsData.titleKz && submitted" class="p-error">{{ $t("smartenu.titleKzInvalid") }}</small>
           </div>
           <div class="p-field">
             <label for="kz-content">{{ $t("common.contentInQazaq") }}</label>
             <Editor id="kz-content" v-model="newsData.contentKz" editorStyle="height: 320px"/>
-            <small v-show="formValid.contentKz && submitted" class="p-error">{{
+            <small v-show="!newsData.contentKz && submitted" class="p-error">{{
                 $t("smartenu.contentKzInvalid")
               }}</small>
           </div>
@@ -23,13 +24,13 @@
           <div class="p-field p-mt-3">
             <label for="ru-title">{{ $t("common.nameInRussian") }}</label>
             <InputText id="ru-title" v-model="newsData.titleRu"
-                       rows="3" :class="{ 'p-invalid': formValid.titleRu && submitted }"/>
-            <small v-show="formValid.titleRu && submitted" class="p-error">{{ $t("smartenu.titleRuInvalid") }}</small>
+                       rows="3" :class="{ 'p-invalid': !newsData.titleRu && submitted }"/>
+            <small v-show="!newsData.titleRu && submitted" class="p-error">{{ $t("smartenu.titleRuInvalid") }}</small>
           </div>
           <div class="p-field">
             <label for="ru-content">{{ $t("common.contentInRussian") }}</label>
             <Editor id="ru-content" v-model="newsData.contentRu" editorStyle="height: 320px"/>
-            <small v-show="formValid.contentRu && submitted" class="p-error">
+            <small v-show="!newsData.contentRu && submitted" class="p-error">
               {{ $t("smartenu.contentRuInvalid") }}
             </small>
           </div>
@@ -38,8 +39,8 @@
           <div class="p-field p-mt-3">
             <label for="en-title">{{ $t("common.nameInEnglish") }}</label>
             <InputText id="en-title" v-model="newsData.titleEn" rows="3"
-                       :class="{ 'p-invalid': formValid.titleEn && submitted }"/>
-            <small v-show="formValid.titleEn && submitted" class="p-error">
+                       :class="{ 'p-invalid': !newsData.titleEn && submitted }"/>
+            <small v-show="!newsData.titleEn && submitted" class="p-error">
               {{ $t("smartenu.titleEnInvalid") }}
             </small>
           </div>
@@ -47,23 +48,30 @@
           <div class="p-field">
             <label for="en-content">{{ $t("common.contentInEnglish") }}</label>
             <Editor id="en-content" v-model="newsData.contentEn" editorStyle="height: 320px"/>
-            <small v-show="formValid.contentEn && submitted" class="p-error">
+            <small v-show="!newsData.contentEn && submitted" class="p-error">
               {{ $t("smartenu.contentEnInvalid") }}
             </small>
           </div>
         </TabPanel>
       </TabView>
       <div class="p-field">
-        <TreeSelect v-model="selectedCatTree" :options="catTree.root" selectionMode="checkbox"
-                    :placeholder="$t('smartenu.selectCategories')" class="p-mb-3"/>
+        <TreeSelect v-show="selectedCatTree" v-model="selectedCatTree" :options="catTree.root" selectionMode="checkbox"
+                    :placeholder="$t('smartenu.selectCategories')"
+                    :class="{ 'p-invalid': selectedCatTree.length === 0 && submitted }"/>
+        <small v-show="selectedCatTree.length === 0 && submitted" class="p-error">
+          {{ $t("smartenu.selectedCatInvalid") }}
+        </small>
       </div>
       <div class="p-field">
         <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadImage1($event)"
-                    :auto="true" v-bind:chooseLabel="$t('smartenu.chooseImage1')"></FileUpload>
+                    :auto="true" v-bind:chooseLabel="$t('smartenu.chooseImage1')" accept="image/*"/>
+        <small v-show="(!newsData.image1 && !imageFileMain) && submitted" class="p-error">
+          {{ $t("smartenu.image1Invalid") }}
+        </small>
         <div v-if="mainImage" class="p-mt-3">
           <img :src="mainImage" style="width: 50%; height: 50%" alt=""/>
         </div>
-        <div v-else class="p-mt-3">
+        <div v-if="!mainImage && newsData.imageUrl" class="p-mt-3">
           <img :src="newsData.imageUrl" style="width: 50%; height: 50%"/>
         </div>
       </div>
@@ -77,7 +85,7 @@
         <div class="p-grid p-mt-3" v-if="newsData.isPoster">
           <div class="p-col">
             <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadPosterImageKk($event)"
-                        :auto="true" v-bind:chooseLabel="$t('smartenu.posterImageKk')"/>
+                        :auto="true" v-bind:chooseLabel="$t('smartenu.posterImageKk')" accept="image/*"/>
             <div v-if="posterImageKk" class="p-mt-3">
               <img :src="posterImageKk" style="width: 50%; height: 50%"/>
             </div>
@@ -87,7 +95,7 @@
           </div>
           <div class="p-col">
             <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadPosterImageRu($event)"
-                        :auto="true" v-bind:chooseLabel="$t('smartenu.posterImageRu')"/>
+                        :auto="true" v-bind:chooseLabel="$t('smartenu.posterImageRu')" accept="image/*"/>
             <div v-if="posterImageRu" class="p-mt-3">
               <img :src="posterImageRu" style="width: 50%; height: 50%"/>
             </div>
@@ -97,7 +105,7 @@
           </div>
           <div class="p-col">
             <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadPosterImageEn($event)"
-                :auto="true" v-bind:chooseLabel="$t('smartenu.posterImageEn')"/>
+                        :auto="true" v-bind:chooseLabel="$t('smartenu.posterImageEn')" accept="image/*"/>
             <div v-if="posterImageEn" class="p-mt-3">
               <img :src="posterImageEn" style="width: 50%; height: 50%"/>
             </div>
@@ -146,26 +154,42 @@ export default {
       posterImageKk: null,
       posterImageRu: null,
       posterImageEn: null,
+      posterImgKk: null,
+      posterImgRu: null,
+      posterImgEn: null,
       poster: this.selectedNews.poster ? this.selectedNews.poster : {
         link: "",
         imageKk: null,
         imageRu: null,
         imageEn: null,
       },
+      imageFileMain: null,
       newsService: new NewsService(),
       posterService: new PosterService()
     }
   },
   created() {
-    console.log(this.newsData)
+    if (this.editVisible) {
+      this.selectedCatTree = [];
+      for (let key in this.catTreeElementsList) {
+        for (let ixd in this.newsData.contentCategoryRelations) {
+          if (this.catTreeElementsList[key].data.id === this.newsData.contentCategoryRelations[ixd].categoryId) {
+            this.selectedCatTree[this.catTreeElementsList[key].key] = {
+              checked: this.newsData.contentCategoryRelations[ixd].checked,
+              partialChecked: this.newsData.contentCategoryRelations[ixd].partialChecked,
+            };
+          }
+        }
+      }
+    }
   },
   methods: {
     addNews() {
       this.submitted = true;
-      this.validateNews();
-      if (this.formValid.length > 0) {
+      if (this.validateNews().length > 0) {
         return;
       }
+      this.newsData.contentCategoryRelations = [];
       for (let key in this.catTreeElementsList) {
         for (let ixd in this.selectedCatTree) {
           if (this.catTreeElementsList[key].key.toString() === ixd) {
@@ -179,6 +203,7 @@ export default {
           }
         }
       }
+
       if (this.newsData.isPoster) {
         this.validPosterImages();
         if (this.formValid.length > 0) {
@@ -189,6 +214,13 @@ export default {
         fd.append("imageKk", this.poster.imageKk)
         fd.append("imageRu", this.poster.imageRu)
         fd.append("imageEn", this.poster.imageEn)
+        if (this.posterImgKk)
+          fd.append("imgKk", this.posterImgKk)
+        if (this.posterImgRu)
+          fd.append("imgRu", this.posterImgRu)
+        if (this.posterImgEn)
+          fd.append("imgEn", this.posterImgEn)
+
         fd.append("id", this.poster.id ? parseInt(this.poster.id) : 0)
 
         this.posterService.addPoster(fd).then((res) => {
@@ -209,6 +241,8 @@ export default {
       await resizeImages(this.newsData.contentEn).then(res => {
         this.newsData.contentEn = res
       });
+      if (this.newsData.poster)
+        this.newsData.posterId = this.newsData.poster.id;
       const fd = new FormData();
       fd.append("news", JSON.stringify(this.newsData))
       fd.append("imageFileMain", this.imageFileMain);
@@ -216,18 +250,17 @@ export default {
         if (response.data !== null) {
           this.emitter.emit('newsCreated', true);
         }
-      })
-          .catch((error) => {
-            if (error.response.status == 401) {
-              this.$store.dispatch("logLout");
-            } else {
-              this.$toast.add({
-                severity: "error",
-                summary: this.$t("smartenu.saveNewsError") + ":\n" + error,
-                life: 3000,
-              });
-            }
+      }).catch((error) => {
+        if (error.response.status == 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: this.$t("smartenu.saveNewsError") + ":\n" + error,
+            life: 3000,
           });
+        }
+      });
     },
     uploadImage1(event) {
       const file = event.files[0];
@@ -243,7 +276,7 @@ export default {
     },
     uploadPosterImageKk(event) {
       const file = event.files[0];
-      this.poster.imageKk = event.files[0];
+      this.posterImgKk = event.files[0];
       imageResizeCompress
           .fromBlob(file, 90, 720, "auto", "jpeg")
           .then((res) => {
@@ -254,7 +287,7 @@ export default {
     },
     uploadPosterImageRu(event) {
       const file = event.files[0];
-      this.poster.imageRu = event.files[0];
+      this.posterImgRu = event.files[0];
       imageResizeCompress
           .fromBlob(file, 90, 720, "auto", "jpeg")
           .then((res) => {
@@ -265,7 +298,7 @@ export default {
     },
     uploadPosterImageEn(event) {
       const file = event.files[0];
-      this.poster.imageEn = event.files[0];
+      this.posterImgEn = event.files[0];
       imageResizeCompress.fromBlob(file, 90, 720, "auto", "jpeg")
           .then((res) => {
             imageResizeCompress.blobToURL(res).then((resp) => {
@@ -300,51 +333,40 @@ export default {
     validateNews() {
       this.formValid = [];
       if (!this.newsData.titleKz) {
-        this.formValid["titleKz"] = true;
-      } else {
-        delete this.formValid["titleKz"];
+        this.formValid.push({titleKz: true})
       }
       if (!this.newsData.titleRu) {
-        this.formValid["titleRu"] = true;
-      } else {
-        delete this.formValid["titleRu"];
+        this.formValid.push({titleRu: true})
       }
       if (!this.newsData.titleEn) {
-        this.formValid["titleEn"] = true;
-      } else {
-        delete this.formValid["titleEn"];
+        this.formValid.push({titleRu: true})
       }
       if (!this.newsData.contentKz) {
-        this.formValid["contentKz"] = true;
-      } else {
-        delete this.formValid["contentKz"];
+        this.formValid.push({contentKz: true})
       }
       if (!this.newsData.contentRu) {
-        this.formValid["contentRu"] = true;
-      } else {
-        delete this.formValid["contentRu"];
+        this.formValid.push({contentRu: true})
       }
       if (!this.newsData.contentEn) {
-        this.formValid["contentEn"] = true;
-      } else {
-        delete this.formValid["contentEn"];
+        this.formValid.push({contentEn: true})
+      }
+      if (this.selectedCatTree.length === 0) {
+        this.formValid.push({selectedCatTree: true})
       }
       if (!this.newsData.image1) {
         if (!this.imageFileMain)
           this.formValid.push(this.$t("smartenu.image1Invalid"));
       }
-      if (!this.selectedCatTree) {
-        this.formValid.push(this.$t("smartenu.selectedCatInvalid"));
-      }
+      return this.formValid;
     },
     validPosterImages() {
-      if (!this.poster.imageKk) {
+      if (!this.poster.imageKk && !this.posterImgKk) {
         this.formValid.push(this.$t("smartenu.posterImageKkInvalid"));
       }
-      if (!this.poster.imageRu) {
+      if (!this.poster.imageRu && !this.posterImgRu) {
         this.formValid.push(this.$t("smartenu.posterImageRuInvalid"));
       }
-      if (!this.poster.imageEn) {
+      if (!this.poster.imageEn && !this.posterImgEn) {
         this.formValid.push(this.$t("smartenu.posterImageEnInvalid"));
       }
     },
