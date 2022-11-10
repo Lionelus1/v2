@@ -180,6 +180,10 @@ export default {
       if (data)
         this.hideDialog();
     });
+    this.emitter.on('eventCreated', data => {
+      if (data)
+        this.eventSaved();
+    });
   },
   methods: {
     findRole: findRole,
@@ -302,97 +306,16 @@ export default {
       this.deleteVisible = false;
       this.event = {};
     },
-    /**
-     *  ADD EVENT
-     */
-    addEvent() {
-      this.submitted = true;
-      this.validateEvents();
-      if (this.formValid.length > 0) {
-        return;
-      }
-      let main = [];
-      main =
-          this.selectedMainCategories != null
-              ? this.selectedMainCategories.concat(
-                  this.selectedBachelorCourses != null
-                      ? this.selectedBachelorCourses.concat(
-                          this.selectedMasterCourses != null
-                              ? this.selectedMasterCourses
-                              : null
-                      )
-                      : this.selectedMasterCourses != null
-                          ? this.selectedMasterCourses
-                          : null
-              )
-              : null;
-      this.event.participantsCategory = main.concat(
-          this.selectedFaculties !== null
-              ? this.selectedFaculties.concat(
-                  this.selectedDepartments !== null
-                      ? this.selectedDepartments
-                      : null
-              )
-              : null
-      );
-      if (this.isPoster) {
-        this.validPosterImages();
-        if (this.formValid.length > 0) {
-          return;
-        }
-        const fd = new FormData();
-        fd.append("link", this.poster.link ? this.poster.link : '')
-        fd.append("imageKk", this.posterImageKk)
-        fd.append("imageRu", this.posterImageRu)
-        fd.append("imageEn", this.posterImageEn)
-        fd.append("id", parseInt(this.poster.id))
-
-        this.posterService.addPoster(fd).then((res) => {
-          this.event.posterId = res.data.id;
-          this.event.isPoster = this.isPoster;
-          this.insertEvent();
-        });
-      } else {
-        this.insertEvent();
-      }
-    },
-    async insertEvent() {
-      await resizeImages(this.event.contentKz).then(res => {
-        this.event.contentKz = res
-      });
-      await resizeImages(this.event.contentRu).then(res => {
-        this.event.contentRu = res
-      });
-      await resizeImages(this.event.contentEn).then(res => {
-        this.event.contentEn = res
+    eventSaved() {
+      this.$toast.add({
+        severity: "success",
+        summary: this.$t("smartenu.saveSuccess"),
+        life: 3000,
       });
 
-      this.event.additionalFile = null;
-      this.event.mainImage = null;
-      this.event.main_image_base_64 = null;
-      const fd = new FormData();
-      fd.append("event", JSON.stringify(this.event))
-      fd.append("additionalFile", this.file ? this.file : null);
-      fd.append("mainImageFile", this.mainImageFile ? this.mainImageFile : null);
-
-      this.eventService.addEvent(fd).then((response) => {
-        if (response.data !== null) {
-          this.$toast.add({
-            severity: "success",
-            summary: this.$t("smartenu.saveSuccess"),
-            life: 3000,
-          });
-          this.getAllEvents();
-          this.editVisible = false;
-          this.event = {};
-        }
-      }).catch((error) => {
-        this.$toast.add({
-          severity: "error",
-          summary: this.$t("smartenu.saveEventError") + ":\n" + error,
-          life: 3000,
-        });
-      });
+      this.getAllEvents();
+      this.editVisible = false;
+      this.event = {};
     },
 
     /**
@@ -497,73 +420,6 @@ export default {
       this.roles.isPublisher = this.findRole(this.userRoles, "news_publisher");
       this.roles.isStudent = this.findRole(this.userRoles, "student");
       this.roles.isModer = this.findRole(this.userRoles, "news_moderator");
-    },
-    validateEvents() {
-      this.formValid = [];
-      if (!this.event.titleKz) {
-        this.formValid["titleKz"] = true;
-      } else {
-        delete this.formValid["titleKz"];
-      }
-      if (!this.event.titleRu) {
-        this.formValid["titleRu"] = true;
-      } else {
-        delete this.formValid["titleRu"];
-      }
-      if (!this.event.titleEn) {
-        this.formValid["titleEn"] = true;
-      } else {
-        delete this.formValid["titleEn"];
-      }
-      if (!this.event.contentKz) {
-        this.formValid["contentKz"] = true;
-      } else {
-        delete this.formValid["contentKz"];
-      }
-      if (!this.event.contentRu) {
-        this.formValid["contentRu"] = true;
-      } else {
-        delete this.formValid["contentRu"];
-      }
-      if (!this.event.contentEn) {
-        this.formValid["contentEn"] = true;
-      } else {
-        delete this.formValid["contentEn"];
-      }
-      if (this.event.isOnline == null) {
-        this.formValid["isOnline"] = true;
-      } else {
-        delete this.formValid["isOnline"];
-      }
-      if (this.event.isOnline == true && !this.event.eventLink) {
-        this.formValid["eventLink"] = true;
-      } else {
-        delete this.formValid["eventLink"];
-      }
-      if (this.event.isOnline == false && !this.event.eventLocation) {
-        this.formValid["eventLocation"] = true;
-      } else {
-        delete this.formValid["eventLocation"];
-      }
-      if (!this.editVisible && !this.mainImageFile) {
-        this.formValid.push(this.$t("smartenu.image1Invalid"));
-      }
-      if (!this.selectedMainCategories) {
-        this.formValid["selectedMainCategories"] = true;
-      } else {
-        delete this.formValid["selectedMainCategories"];
-      }
-    },
-    validPosterImages() {
-      if (!this.poster.imageKk) {
-        this.formValid.push(this.$t("smartenu.posterImageKkInvalid"));
-      }
-      if (!this.poster.imageRu) {
-        this.formValid.push(this.$t("smartenu.posterImageRuInvalid"));
-      }
-      if (!this.poster.imageEn) {
-        this.formValid.push(this.$t("smartenu.posterImageEnInvalid"));
-      }
     },
   },
 

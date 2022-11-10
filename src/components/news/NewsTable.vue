@@ -246,20 +246,6 @@ export default {
     },
 
     /**
-     *  CONVERT IMAGE TO BASE64
-     */
-    async convertBase64(document) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(document);
-        reader.onload = () => {
-          resolve(reader.result);
-        };
-        reader.onerror = (error) => reject(error);
-      });
-    },
-
-    /**
      *  GET ALL CATEGORIES
      */
     getCategories() {

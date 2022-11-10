@@ -151,25 +151,34 @@
       <div class="p-field p-mt-3" style="margin-bottom: 1.5rem" v-if="isPoster">
         <label for="poster-link">{{ $t("smartenu.posterLink") }}</label>
         <InputText id="poster-link" v-model="poster.link" rows="3" :placeholder="$t('smartenu.posterLink')"/>
-        <div class="p-grid p-mt-3" v-if="isPoster">
+        <div class="p-grid p-mt-3" v-if="event.isPoster">
           <div class="p-col">
             <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadPosterImageKk($event)"
-                        :auto="true" v-bind:chooseLabel="$t('smartenu.posterImageKk')"/>
-            <div v-if="poster.imageKk" class="p-mt-3">
+                        :auto="true" v-bind:chooseLabel="$t('smartenu.posterImageKk')" accept="image/*"/>
+            <div v-if="posterImageKk" class="p-mt-3">
+              <img :src="posterImageKk" style="width: 50%; height: 50%"/>
+            </div>
+            <div v-else class="p-mt-3">
               <img :src="poster.imageKkUrl" style="width: 50%; height: 50%"/>
             </div>
           </div>
           <div class="p-col">
             <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadPosterImageRu($event)"
-                        :auto="true" v-bind:chooseLabel="$t('smartenu.posterImageRu')"/>
-            <div v-if="poster.imageRu" class="p-mt-3">
+                        :auto="true" v-bind:chooseLabel="$t('smartenu.posterImageRu')" accept="image/*"/>
+            <div v-if="posterImageRu" class="p-mt-3">
+              <img :src="posterImageRu" style="width: 50%; height: 50%"/>
+            </div>
+            <div v-else class="p-mt-3">
               <img :src="poster.imageRuUrl" style="width: 50%; height: 50%"/>
             </div>
           </div>
           <div class="p-col">
             <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadPosterImageEn($event)"
-                        :auto="true" v-bind:chooseLabel="$t('smartenu.posterImageEn')"/>
-            <div v-if="poster.imageEn" class="p-mt-3">
+                        :auto="true" v-bind:chooseLabel="$t('smartenu.posterImageEn')" accept="image/*"/>
+            <div v-if="posterImageEn" class="p-mt-3">
+              <img :src="posterImageEn" style="width: 50%; height: 50%"/>
+            </div>
+            <div v-else class="p-mt-3">
               <img :src="poster.imageEnUrl" style="width: 50%; height: 50%"/>
             </div>
           </div>
@@ -190,6 +199,7 @@ import RichEditor from "../documents/editor/RichEditor";
 import {EventsService} from "../../service/event.service";
 import {resizeImages} from "../../helpers/HelperUtil";
 import * as imageResizeCompress from "image-resize-compress";
+import {PosterService} from "../../service/poster.service";
 
 export default {
   name: "AddEditEvent",
@@ -231,6 +241,8 @@ export default {
       selectedFaculties: null,
       departments: null,
       selectedDepartments: null,
+      eventService: new EventsService(),
+      posterService: new PosterService()
     }
   },
   created() {
@@ -334,14 +346,7 @@ export default {
 
       this.eventService.addEvent(fd).then((response) => {
         if (response.data !== null) {
-          this.$toast.add({
-            severity: "success",
-            summary: this.$t("smartenu.saveSuccess"),
-            life: 3000,
-          });
-          this.getAllEvents();
-          this.editVisible = false;
-          this.event = {};
+          this.emitter.emit('eventCreated', true);
         }
       }).catch((error) => {
         this.$toast.add({
@@ -355,6 +360,7 @@ export default {
       const file = event.files[0];
       this.event.mainImageName = event.files[0].name;
       this.mainImageFile = event.files[0];
+      this.event.main_image_path = null;
       try {
         this.convertBase64(file).then((r) => {
           this.event.mainImage = r;
@@ -435,7 +441,84 @@ export default {
     },
     hideDialog() {
       this.emitter.emit('addEditEventDialogHide', true);
-    }
+    },
+    validateEvents() {
+      this.formValid = [];
+      if (!this.event.titleKz) {
+        this.formValid["titleKz"] = true;
+      } else {
+        delete this.formValid["titleKz"];
+      }
+      if (!this.event.titleRu) {
+        this.formValid["titleRu"] = true;
+      } else {
+        delete this.formValid["titleRu"];
+      }
+      if (!this.event.titleEn) {
+        this.formValid["titleEn"] = true;
+      } else {
+        delete this.formValid["titleEn"];
+      }
+      if (!this.event.contentKz) {
+        this.formValid["contentKz"] = true;
+      } else {
+        delete this.formValid["contentKz"];
+      }
+      if (!this.event.contentRu) {
+        this.formValid["contentRu"] = true;
+      } else {
+        delete this.formValid["contentRu"];
+      }
+      if (!this.event.contentEn) {
+        this.formValid["contentEn"] = true;
+      } else {
+        delete this.formValid["contentEn"];
+      }
+      if (this.event.isOnline == null) {
+        this.formValid["isOnline"] = true;
+      } else {
+        delete this.formValid["isOnline"];
+      }
+      if (this.event.isOnline == true && !this.event.eventLink) {
+        this.formValid["eventLink"] = true;
+      } else {
+        delete this.formValid["eventLink"];
+      }
+      if (this.event.isOnline == false && !this.event.eventLocation) {
+        this.formValid["eventLocation"] = true;
+      } else {
+        delete this.formValid["eventLocation"];
+      }
+      if (!this.editVisible && !this.mainImageFile) {
+        this.formValid.push(this.$t("smartenu.image1Invalid"));
+      }
+      if (!this.selectedMainCategories) {
+        this.formValid["selectedMainCategories"] = true;
+      } else {
+        delete this.formValid["selectedMainCategories"];
+      }
+    },
+    validPosterImages() {
+      if (!this.poster.imageKk) {
+        this.formValid.push(this.$t("smartenu.posterImageKkInvalid"));
+      }
+      if (!this.poster.imageRu) {
+        this.formValid.push(this.$t("smartenu.posterImageRuInvalid"));
+      }
+      if (!this.poster.imageEn) {
+        this.formValid.push(this.$t("smartenu.posterImageEnInvalid"));
+      }
+    },
+    async convertBase64(document) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(document);
+        reader.onload = () => {
+          resolve(reader.result);
+        };
+        reader.onerror = (error) => reject(error);
+      });
+    },
   },
   computed: {
     isMaster: function () {
