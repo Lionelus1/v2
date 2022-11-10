@@ -136,11 +136,8 @@
 </template>
 
 <script>
-import axios from "axios";
-import * as imageResizeCompress from "image-resize-compress"; // ES6
 import {FilterMatchMode, FilterOperator} from "primevue/api";
-import {getHeader, header, smartEnuApi} from "@/config/config";
-import {resizeImages} from "../../helpers/HelperUtil";
+import {smartEnuApi} from "@/config/config";
 import {fileRoute, findRole} from "../../config/config";
 import {NewsService} from "../../service/news.service";
 import {PosterService} from "../../service/poster.service";

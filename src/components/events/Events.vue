@@ -65,7 +65,8 @@
     </div>
 
 
-    <EventsView v-if="eventViewVisible" :is-visible="eventViewVisible" :selected-event="event" />
+    <EventsView v-if="eventViewVisible" :is-visible="eventViewVisible" :selected-event="event"/>
+    <AddEditEvent v-if="editVisible" :is-visible="editVisible" :selectedEvent="event" :partCats="participantsCategories" />
   </div>
 </template>
 
@@ -76,12 +77,15 @@ import {FilterMatchMode} from "primevue/api";
 import * as imageResizeCompress from "image-resize-compress";
 import RichEditor from "../documents/editor/RichEditor";
 import {resizeImages} from "../../helpers/HelperUtil";
-import {fileRoute} from "../../config/config";
-import EventsView from "./EventsView"; // ES6
+import {fileRoute, findRole} from "../../config/config";
+import EventsView from "./EventsView";
+import {EventsService} from "../../service/event.service";
+import {PosterService} from "../../service/poster.service";
+import AddEditEvent from "./AddEditEvent";
 
 export default {
   name: "Events",
-  components: {EventsView},
+  components: {AddEditEvent, EventsView},
   data() {
     return {
       statuses: {
@@ -163,15 +167,22 @@ export default {
       posterImageRu: null,
       posterImageEn: null,
       mainImageFile: null,
-      additionalFile: null
+      additionalFile: null,
+      eventService: new EventsService(),
+      posterService: new PosterService()
     };
   },
   mounted() {
     this.emitter.on('eventViewModalClose', data => {
       this.eventViewVisible = data;
     });
+    this.emitter.on('addEditEventDialogHide', data => {
+      if (data)
+        this.hideDialog();
+    });
   },
   methods: {
+    findRole: findRole,
     getMainCategories() {
       this.participantsMainCategories = [];
       this.participantsMainCategories = this.participantsCategories.filter(
@@ -196,104 +207,6 @@ export default {
       this.faculties = this.participantsCategories.filter(
           (category) => category.parentId === 6
       );
-    },
-    /**
-     *  UPLOAD POSTER IMAGEKK
-     */
-    uploadPosterImageKk(event) {
-      const file = event.files[0];
-      this.posterImageKk = file;
-      imageResizeCompress
-          .fromBlob(file, 90, 720, "auto", "jpeg")
-          .then((res) => {
-            imageResizeCompress.blobToURL(res).then((resp) => {
-              this.poster.imageKk = resp;
-            });
-          });
-    },
-    /**
-     *  UPLOAD POSTER IMAGERU
-     */
-    uploadPosterImageRu(event) {
-      const file = event.files[0];
-      this.posterImageRu = file;
-      imageResizeCompress
-          .fromBlob(file, 90, 720, "auto", "jpeg")
-          .then((res) => {
-            imageResizeCompress.blobToURL(res).then((resp) => {
-              this.poster.imageRu = resp;
-            });
-          });
-    },
-    /**
-     *  UPLOAD POSTER IMAGEEN
-     */
-    uploadPosterImageEn(event) {
-      const file = event.files[0];
-      this.posterImageEn = file;
-      imageResizeCompress
-          .fromBlob(file, 90, 720, "auto", "jpeg")
-          .then((res) => {
-            imageResizeCompress.blobToURL(res).then((resp) => {
-              this.poster.imageEn = resp;
-            });
-          });
-    },
-    /**
-     *  UPLOAD MAIN IMAGE
-     */
-    uploadMainImage(event) {
-      const file = event.files[0];
-      this.event.mainImageName = event.files[0].name;
-      this.mainImageFile = event.files[0];
-      try {
-        this.convertBase64(file).then((r) => {
-          this.event.mainImage = r;
-        });
-      } catch (err) {
-        console.log(err);
-      }
-    },
-
-    /**
-     *  UPLOAD ADDITIONAL FILE
-     */
-
-    uploadFile(event) {
-      const file = event.files[0];
-      this.file = event.files[0];
-      this.event.additionalFileName = event.files[0].name;
-      /*try {
-        this.convertBase64(file).then((r) => {
-          this.event.additionalFile = r;
-        });
-      } catch (err) {
-        console.log(err);
-      }*/
-    },
-
-    /**
-     *  DOUNLOAD FILE
-     */
-    downloadFile(event) {
-      if (event.additional_file_path) {
-        axios.post(smartEnuApi + `/downloadEventFile`, {additional_file_path: event.additional_file_path})
-            .then(res => {
-              this.download(res.data, event.additionalFileName);
-            }).catch(error => {
-          if (error.response.status === 401) {
-            this.$store.dispatch("logLout");
-          } else {
-            this.$toast.add({
-              severity: "error",
-              summary: error,
-              life: 3000,
-            });
-          }
-        });
-      } else {
-        this.download(event.additionalFile, event.additionalFileName);
-      }
     },
 
     download(file, filename) {
@@ -321,33 +234,30 @@ export default {
      */
     getAllEvents() {
       this.allNews = [];
-      axios
-          .get(smartEnuApi + "/allEvents")
-          .then((response) => {
-            this.allEvents = response.data;
-            this.loading = false;
-            this.allEvents.map(e => {
-              e.imageUrl = smartEnuApi + fileRoute + e.main_image_path;
-              if (e.poster) {
-                e.poster.map(p => {
-                  p.imageKkUrl = smartEnuApi + fileRoute + p.imageKk;
-                  p.imageRuUrl = smartEnuApi + fileRoute + p.imageRu;
-                  p.imageEnUrl = smartEnuApi + fileRoute + p.imageEn;
-                });
-              }
+      this.eventService.getEvents().then((response) => {
+        this.allEvents = response.data;
+        this.loading = false;
+        this.allEvents.map(e => {
+          e.imageUrl = smartEnuApi + fileRoute + e.main_image_path;
+          if (e.poster) {
+            e.poster.map(p => {
+              p.imageKkUrl = smartEnuApi + fileRoute + p.imageKk;
+              p.imageRuUrl = smartEnuApi + fileRoute + p.imageRu;
+              p.imageEnUrl = smartEnuApi + fileRoute + p.imageEn;
             });
-          })
-          .catch((error) => {
-            if (error.response.status === 401) {
-              this.$store.dispatch("logLout");
-            } else {
-              this.$toast.add({
-                severity: "error",
-                summary: this.$t("smartenu.loadAllEventsError") + ":\n" + error,
-                life: 3000,
-              });
-            }
+          }
+        });
+      }).catch((error) => {
+        if (error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: this.$t("smartenu.loadAllEventsError") + ":\n" + error,
+            life: 3000,
           });
+        }
+      });
     },
 
     /**
@@ -355,56 +265,40 @@ export default {
      */
     getParticipantsCategories() {
       this.participantsCategories = [];
-      axios
-          .get(smartEnuApi + "/getParticipantsCategories", {
-            headers: getHeader(),
-          })
-          .then((response) => {
-            this.participantsCategories = response.data;
-          })
-          .catch((error) => {
-            if (error.response.status == 401) {
-              this.$store.dispatch("logLout");
-            } else {
-              this.$toast.add({
-                severity: "error",
-                summary: this.$t("smartenu.loadAllEventsError") + ":\n" + error,
-                life: 3000,
-              });
-            }
+      this.eventService.getParticipantsCategories().then((response) => {
+        this.participantsCategories = response.data;
+      }).catch((error) => {
+        if (error.response.status == 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: this.$t("smartenu.loadAllEventsError") + ":\n" + error,
+            life: 3000,
           });
+        }
+      });
     },
 
     /**
      *  DELETE EVENT
      */
     deleteEvent(id) {
-      axios
-          .post(
-              smartEnuApi + "/delEvent",
-              {
-                id: id,
-              },
-              {
-                headers: getHeader(),
-              }
-          )
-          .then((response) => {
-            if (response.status === 200) {
-              this.getAllEvents();
-            }
-          })
-          .catch((error) => {
-            if (error.response.status == 401) {
-              this.$store.dispatch("logLout");
-            } else {
-              this.$toast.add({
-                severity: "error",
-                summary: this.$t("smartenu.delEventError") + ":\n" + error,
-                life: 3000,
-              });
-            }
+      this.eventService.deleteEvent(id).then((response) => {
+        if (response.status === 200) {
+          this.getAllEvents();
+        }
+      }).catch((error) => {
+        if (error.response.status == 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: this.$t("smartenu.delEventError") + ":\n" + error,
+            life: 3000,
           });
+        }
+      });
       this.deleteVisible = false;
       this.event = {};
     },
@@ -453,15 +347,11 @@ export default {
         fd.append("imageEn", this.posterImageEn)
         fd.append("id", parseInt(this.poster.id))
 
-        axios
-            .post(smartEnuApi + "/addPoster", fd, {
-              headers: getHeader(),
-            })
-            .then((res) => {
-              this.event.posterId = res.data.id;
-              this.event.isPoster = this.isPoster;
-              this.insertEvent();
-            });
+        this.posterService.addPoster(fd).then((res) => {
+          this.event.posterId = res.data.id;
+          this.event.isPoster = this.isPoster;
+          this.insertEvent();
+        });
       } else {
         this.insertEvent();
       }
@@ -485,29 +375,24 @@ export default {
       fd.append("additionalFile", this.file ? this.file : null);
       fd.append("mainImageFile", this.mainImageFile ? this.mainImageFile : null);
 
-      axios
-          .post(smartEnuApi + "/addEvent", fd, {
-            headers: getHeader(),
-          })
-          .then((response) => {
-            if (response.data !== null) {
-              this.$toast.add({
-                severity: "success",
-                summary: this.$t("smartenu.saveSuccess"),
-                life: 3000,
-              });
-              this.getAllEvents();
-              this.editVisible = false;
-              this.event = {};
-            }
-          })
-          .catch((error) => {
-            this.$toast.add({
-              severity: "error",
-              summary: this.$t("smartenu.saveEventError") + ":\n" + error,
-              life: 3000,
-            });
+      this.eventService.addEvent(fd).then((response) => {
+        if (response.data !== null) {
+          this.$toast.add({
+            severity: "success",
+            summary: this.$t("smartenu.saveSuccess"),
+            life: 3000,
           });
+          this.getAllEvents();
+          this.editVisible = false;
+          this.event = {};
+        }
+      }).catch((error) => {
+        this.$toast.add({
+          severity: "error",
+          summary: this.$t("smartenu.saveEventError") + ":\n" + error,
+          life: 3000,
+        });
+      });
     },
 
     /**
@@ -543,7 +428,6 @@ export default {
      *  NEWS PRE EDITING
      */
     editEvent(event) {
-      console.log(event)
       this.event = event;
       this.editVisible = true;
       this.submitted = false;
@@ -553,29 +437,6 @@ export default {
       this.poster.imageKk = event.poster.imageKk;
       this.poster.imageRu = event.poster.imageRu;
       this.poster.imageEn = event.poster.imageEn;
-      this.getMainCategories();
-      this.getMasterCourses();
-      this.getBachelorCourses();
-      this.getFaculties();
-      this.selectedMainCategories = event.participantsCategory.filter(
-          (category) => category.parentId === null
-      );
-      this.selectedMasterCourses = event.participantsCategory.filter(
-          (category) => category.parentId === 3
-      );
-      this.selectedBachelorCourses = event.participantsCategory.filter(
-          (category) => category.parentId === 4
-      );
-      this.selectedFaculties = event.participantsCategory.filter(
-          (category) => category.parentId === 6
-      );
-      this.selectedDepartments = [];
-      for (let i = 0; i < this.selectedFaculties.length; i++) {
-        let array = this.participantsCategories.filter(
-            (category) => category.parentId === this.selectedFaculties[i].id
-        );
-        this.selectedDepartments = this.selectedDepartments.concat(array);
-      }
     },
 
     /**
@@ -598,38 +459,26 @@ export default {
      * PUBLSIH NEWS ACTION
      */
     publishEvent() {
-      axios
-          .post(
-              smartEnuApi + "/publishEvent",
-              {
-                id: this.selectedEvent.id,
-                userId: this.selectedEvent.history.userId,
-              },
-              {
-                headers: getHeader(),
-              }
-          )
-          .then((response) => {
-            if (response.data !== null) {
-              this.$toast.add({
-                severity: "success",
-                summary: this.$t("smartenu.saveSuccess"),
-                life: 3000,
-              });
-              this.getAllEvents();
-            }
-          })
-          .catch((error) => {
-            if (error.response.status == 401) {
-              this.$store.dispatch("logLout");
-            } else {
-              this.$toast.add({
-                severity: "error",
-                summary: this.$t("smartenu.saveEventError") + ":\n" + error,
-                life: 3000,
-              });
-            }
+      this.eventService.publishEvent(this.selectedEvent.id, this.selectedEvent.history.userId).then((response) => {
+        if (response.data !== null) {
+          this.$toast.add({
+            severity: "success",
+            summary: this.$t("smartenu.saveSuccess"),
+            life: 3000,
           });
+          this.getAllEvents();
+        }
+      }).catch((error) => {
+        if (error.response.status == 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: this.$t("smartenu.saveEventError") + ":\n" + error,
+            life: 3000,
+          });
+        }
+      });
     },
     deleteConfirm(event) {
       this.$confirm.require({
@@ -644,37 +493,10 @@ export default {
       });
     },
     getRoles() {
-      this.userRoles = [];
-      axios
-          .get(smartEnuApi + "/getroles", {
-            headers: getHeader(),
-          })
-          .then((response) => {
-            this.userRoles = response.data;
-            this.roles.isAdmin = this.findRole(this.userRoles, "news_administrator");
-            this.roles.isPublisher = this.findRole(this.userRoles, "news_publisher");
-            this.roles.isStudent = this.findRole(this.userRoles, "student");
-            this.roles.isModer = this.findRole(this.userRoles, "news_moderator");
-          })
-          .catch((error) => {
-            if (error.response.status == 401) {
-              this.$store.dispatch("logLout");
-            } else {
-              this.$toast.add({
-                severity: "error",
-                summary: this.$t("smartenu.loadAllEventsError") + ":\n" + error,
-                life: 3000,
-              });
-            }
-          });
-    },
-    findRole(roles, code) {
-      for (let i = 0; i < roles.length; i++) {
-        if (roles[i].name === code) {
-          return true;
-        }
-      }
-      return false;
+      this.roles.isAdmin = this.findRole(this.userRoles, "news_administrator");
+      this.roles.isPublisher = this.findRole(this.userRoles, "news_publisher");
+      this.roles.isStudent = this.findRole(this.userRoles, "student");
+      this.roles.isModer = this.findRole(this.userRoles, "news_moderator");
     },
     validateEvents() {
       this.formValid = [];
@@ -927,108 +749,5 @@ export default {
 
 .p-progressbar-value.ui-widget-header {
   background: #607d8b;
-}
-
-@media (max-width: 640px) {
-  .p-progressbar {
-    margin-top: 0.5rem;
-  }
-}
-
-.product-image {
-  width: 100px;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-}
-
-.orders-subtable {
-  padding: 1rem;
-}
-
-.product-badge {
-  border-radius: 2px;
-  padding: 0.25em 0.5rem;
-  text-transform: uppercase;
-  font-weight: 700;
-  font-size: 12px;
-  letter-spacing: 0.3px;
-
-  &.status-instock {
-    background: #c8e6c9;
-    color: #256029;
-  }
-
-  &.status-outofstock {
-    background: #ffcdd2;
-    color: #c63737;
-  }
-
-  &.status-lowstock {
-    background: #feedaf;
-    color: #8a5340;
-  }
-}
-
-.order-badge {
-  border-radius: 2px;
-  padding: 0.25em 0.5rem;
-  text-transform: uppercase;
-  font-weight: 700;
-  font-size: 12px;
-  letter-spacing: 0.3px;
-
-  &.order-delivered {
-    background: #c8e6c9;
-    color: #256029;
-  }
-
-  &.order-cancelled {
-    background: #ffcdd2;
-    color: #c63737;
-  }
-
-  &.order-pending {
-    background: #feedaf;
-    color: #8a5340;
-  }
-
-  &.order-returned {
-    background: #eccfff;
-    color: #694382;
-  }
-}
-
-@media screen and (max-width: 960px) {
-  ::v-deep(.p-datatable) {
-    &.p-datatable-customers {
-      .p-datatable-thead > tr > th,
-      .p-datatable-tfoot > tr > td {
-        display: none !important;
-      }
-
-      .p-datatable-tbody > tr {
-        > td {
-          text-align: left;
-          display: block;
-          border: 0 none !important;
-          width: 100% !important;
-          float: left;
-          clear: left;
-          border: 0 none;
-
-          .p-column-title {
-            padding: 0.4rem;
-            min-width: 30%;
-            display: inline-block;
-            margin: -0.4rem 1rem -0.4rem -0.4rem;
-            font-weight: bold;
-          }
-
-          .p-progressbar {
-            margin-top: 0.5rem;
-          }
-        }
-      }
-    }
-  }
 }
 </style>
