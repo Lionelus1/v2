@@ -628,12 +628,19 @@ export default {
           });
         })
         .catch((error) => {
-          alert(error)
           console.log(error)
           if (error.response.status == 401) {
             this.$store.dispatch("logLout");
           }
-        });
+          if (error.response.status == 400) {
+            this.$toast.add({
+              severity: "error",
+              summary: this.$t('common.message.' + error.response.data.error),
+              life: 3000,
+            });
+        }
+      })
+      
     },
     downloadContract(saveFile) {
       if (!this.contract) return;
