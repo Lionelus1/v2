@@ -65,7 +65,7 @@
     </div>
 
 
-    <EventsView v-if="eventViewVisible" :is-visible="eventViewVisible" :selected-event="event"/>
+    <EventsView v-if="eventViewVisible" :is-visible="eventViewVisible" :selected-event="selectedEvent"/>
     <AddEditEvent v-if="editVisible" :is-visible="editVisible" :selectedEvent="event" :partCats="participantsCategories" />
   </div>
 </template>
@@ -244,11 +244,9 @@ export default {
         this.allEvents.map(e => {
           e.imageUrl = smartEnuApi + fileRoute + e.main_image_path;
           if (e.poster) {
-            e.poster.map(p => {
-              p.imageKkUrl = smartEnuApi + fileRoute + p.imageKk;
-              p.imageRuUrl = smartEnuApi + fileRoute + p.imageRu;
-              p.imageEnUrl = smartEnuApi + fileRoute + p.imageEn;
-            });
+            e.poster.imageKkUrl = smartEnuApi + fileRoute + e.poster.imageKk;
+            e.poster.imageRuUrl = smartEnuApi + fileRoute + e.poster.imageRu;
+            e.poster.imageEnUrl = smartEnuApi + fileRoute + e.poster.imageEn;
           }
         });
       }).catch((error) => {
@@ -322,11 +320,8 @@ export default {
      *  CREATE EVENT
      */
     createEvent() {
-      this.event = {};
-      this.editVisible = true;
+      this.event = null;
       this.submitted = false;
-      this.event.id = null;
-      this.event.eventDate = new Date();
       this.getMainCategories();
       this.getMasterCourses();
       this.getBachelorCourses();
@@ -336,6 +331,7 @@ export default {
       this.selectedMasterCourses = null;
       this.selectedBachelorCourses = null;
       this.selectedDepartments = null;
+      this.editVisible = true;
     },
 
     /**

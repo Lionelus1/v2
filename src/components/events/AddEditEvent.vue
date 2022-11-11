@@ -10,13 +10,13 @@
           <div class="p-field p-mt-3">
             <label for="kz-title">{{ $t("common.nameInQazaq") }}</label>
             <InputText id="kz-title" v-model="event.titleKz" rows="3"
-                       :class="{ 'p-invalid': formValid.titleKz && submitted }"/>
-            <small v-show="formValid.titleKz && submitted" class="p-error">{{ $t("smartenu.titleKzInvalid") }}</small>
+                       :class="{ 'p-invalid': !event.titleKz && submitted }"/>
+            <small v-show="!event.titleKz && submitted" class="p-error">{{ $t("smartenu.titleKzInvalid") }}</small>
           </div>
           <div class="p-field">
             <label for="kz-content">{{ $t("common.contentInQazaq") }}</label>
             <RichEditor ref="kztext" id="kz-content" v-model="event.contentKz" editorStyle="height: 320px"></RichEditor>
-            <small v-show="formValid.contentKz && submitted" class="p-error">
+            <small v-show="!event.contentKz && submitted" class="p-error">
               {{ $t("smartenu.contentKzInvalid") }}
             </small>
           </div>
@@ -25,8 +25,8 @@
           <div class="p-field p-mt-3" style="margin-bottom: 1.5rem">
             <label for="ru-title">{{ $t("common.nameInRussian") }}</label>
             <InputText id="ru-title" v-model="event.titleRu" rows="3"
-                       :class="{ 'p-invalid': formValid.titleRu && submitted }"/>
-            <small v-show="formValid.titleRu && submitted" class="p-error">
+                       :class="{ 'p-invalid': !event.titleRu && submitted }"/>
+            <small v-show="!event.titleRu && submitted" class="p-error">
               {{ $t("smartenu.titleRuInvalid") }}
             </small>
           </div>
@@ -145,10 +145,10 @@
         </div>
       </div>
       <div class="p-field-checkbox">
-        <Checkbox id="isPoster" name="isPoster" v-model="isPoster" :binary="true"/>
+        <Checkbox id="isPoster" name="isPoster" v-model="event.isPoster" :binary="true"/>
         <label for="isPoster">{{ $t("smartenu.addPoster") }}</label>
       </div>
-      <div class="p-field p-mt-3" style="margin-bottom: 1.5rem" v-if="isPoster">
+      <div class="p-field p-mt-3" style="margin-bottom: 1.5rem" v-if="event.isPoster">
         <label for="poster-link">{{ $t("smartenu.posterLink") }}</label>
         <InputText id="poster-link" v-model="poster.link" rows="3" :placeholder="$t('smartenu.posterLink')"/>
         <div class="p-grid p-mt-3" v-if="event.isPoster">
@@ -211,10 +211,11 @@ export default {
       event: this.selectedEvent,
       formValid: [],
       isPoster: false,
-      poster: {
-        imageKk: "",
-        imageRu: "",
-        imageEn: "",
+      poster: this.selectedEvent.poster ? this.selectedEvent.poster : {
+        link: "",
+        imageKk: null,
+        imageRu: null,
+        imageEn: null,
       },
       format: [
         {
@@ -229,6 +230,9 @@ export default {
       posterImageKk: null,
       posterImageRu: null,
       posterImageEn: null,
+      posterImgKk: null,
+      posterImgRu: null,
+      posterImgEn: null,
       submitted: false,
       participantsCategories: this.partCats,
       participantsMainCategories: null,
@@ -304,21 +308,27 @@ export default {
               )
               : null
       );
-      if (this.isPoster) {
+      if (this.event.isPoster) {
         this.validPosterImages();
         if (this.formValid.length > 0) {
           return;
         }
         const fd = new FormData();
         fd.append("link", this.poster.link ? this.poster.link : '')
-        fd.append("imageKk", this.posterImageKk)
-        fd.append("imageRu", this.posterImageRu)
-        fd.append("imageEn", this.posterImageEn)
-        fd.append("id", parseInt(this.poster.id))
+        fd.append("imageKk", this.poster.imageKk)
+        fd.append("imageRu", this.poster.imageRu)
+        fd.append("imageEn", this.poster.imageEn)
+        if (this.posterImgKk)
+          fd.append("imgKk", this.posterImgKk)
+        if (this.posterImgRu)
+          fd.append("imgRu", this.posterImgRu)
+        if (this.posterImgEn)
+          fd.append("imgEn", this.posterImgEn)
+
+        fd.append("id", this.poster.id ? parseInt(this.poster.id) : 0)
 
         this.posterService.addPoster(fd).then((res) => {
           this.event.posterId = res.data.id;
-          this.event.isPoster = this.isPoster;
           this.insertEvent();
         });
       } else {
@@ -339,6 +349,8 @@ export default {
       this.event.additionalFile = null;
       this.event.mainImage = null;
       this.event.main_image_base_64 = null;
+      if (this.event.poster)
+        this.event.posterId = this.event.poster.id;
       const fd = new FormData();
       fd.append("event", JSON.stringify(this.event))
       fd.append("additionalFile", this.file ? this.file : null);
@@ -383,34 +395,34 @@ export default {
     },
     uploadPosterImageKk(event) {
       const file = event.files[0];
-      this.posterImageKk = file;
+      this.posterImgKk = file;
       imageResizeCompress
           .fromBlob(file, 90, 720, "auto", "jpeg")
           .then((res) => {
             imageResizeCompress.blobToURL(res).then((resp) => {
-              this.poster.imageKk = resp;
+              this.posterImageKk = resp;
             });
           });
     },
     uploadPosterImageRu(event) {
       const file = event.files[0];
-      this.posterImageRu = file;
+      this.posterImgRu = file;
       imageResizeCompress
           .fromBlob(file, 90, 720, "auto", "jpeg")
           .then((res) => {
             imageResizeCompress.blobToURL(res).then((resp) => {
-              this.poster.imageRu = resp;
+              this.posterImageRu = resp;
             });
           });
     },
     uploadPosterImageEn(event) {
       const file = event.files[0];
-      this.posterImageEn = file;
+      this.posterImgEn = file;
       imageResizeCompress
           .fromBlob(file, 90, 720, "auto", "jpeg")
           .then((res) => {
             imageResizeCompress.blobToURL(res).then((resp) => {
-              this.poster.imageEn = resp;
+              this.posterImageEn = resp;
             });
           });
     },
@@ -445,49 +457,33 @@ export default {
     validateEvents() {
       this.formValid = [];
       if (!this.event.titleKz) {
-        this.formValid["titleKz"] = true;
-      } else {
-        delete this.formValid["titleKz"];
+        this.formValid.push({titleKz: true})
       }
       if (!this.event.titleRu) {
-        this.formValid["titleRu"] = true;
-      } else {
-        delete this.formValid["titleRu"];
+        this.formValid.push({titleRu: true})
       }
       if (!this.event.titleEn) {
-        this.formValid["titleEn"] = true;
-      } else {
-        delete this.formValid["titleEn"];
+        this.formValid.push({titleEn: true})
       }
       if (!this.event.contentKz) {
-        this.formValid["contentKz"] = true;
-      } else {
-        delete this.formValid["contentKz"];
+        this.formValid.push({contentKz: true})
       }
       if (!this.event.contentRu) {
-        this.formValid["contentRu"] = true;
-      } else {
-        delete this.formValid["contentRu"];
+        this.formValid.push({contentRu: true})
       }
       if (!this.event.contentEn) {
-        this.formValid["contentEn"] = true;
-      } else {
-        delete this.formValid["contentEn"];
+        this.formValid.push({contentEn: true})
       }
+
       if (this.event.isOnline == null) {
-        this.formValid["isOnline"] = true;
-      } else {
-        delete this.formValid["isOnline"];
+        this.formValid.push({isOnline: true})
       }
       if (this.event.isOnline == true && !this.event.eventLink) {
-        this.formValid["eventLink"] = true;
-      } else {
-        delete this.formValid["eventLink"];
+        this.formValid.push({eventLink: true})
       }
+
       if (this.event.isOnline == false && !this.event.eventLocation) {
-        this.formValid["eventLocation"] = true;
-      } else {
-        delete this.formValid["eventLocation"];
+        this.formValid.push({eventLocation: true})
       }
       if (!this.editVisible && !this.mainImageFile) {
         this.formValid.push(this.$t("smartenu.image1Invalid"));
@@ -499,13 +495,13 @@ export default {
       }
     },
     validPosterImages() {
-      if (!this.poster.imageKk) {
+      if (!this.poster.imageKk && !this.posterImgKk) {
         this.formValid.push(this.$t("smartenu.posterImageKkInvalid"));
       }
-      if (!this.poster.imageRu) {
+      if (!this.poster.imageRu && !this.posterImgRu) {
         this.formValid.push(this.$t("smartenu.posterImageRuInvalid"));
       }
-      if (!this.poster.imageEn) {
+      if (!this.poster.imageEn && !this.posterImgEn) {
         this.formValid.push(this.$t("smartenu.posterImageEnInvalid"));
       }
     },
