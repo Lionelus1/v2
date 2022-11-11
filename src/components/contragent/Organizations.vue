@@ -110,7 +110,7 @@
             >
               <Organization id="orgOrgs"
                 :modelValue="currentOrganization"
-                :readonly="readOnly"
+                :readonly="readOnly && !isAdmin"
                 @changed="changed"
               ></Organization>
             </Sidebar>
@@ -317,5 +317,8 @@ export default {
   mounted() {
     this.initApiCall();
   },
+  computed() {
+    
+  }
 };
 </script>
