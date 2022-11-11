@@ -249,8 +249,12 @@ export default {
       const pdfContent = this.$refs.qrToPdf.$refs.qrToPdf;
       html2pdf().set(pdfOptions).from(pdfContent).save();
     },
-    chunkString(str, length) {
-      return str.match(new RegExp('.{1,' + length + '}', 'g'));
+    chunkString(str, n) {
+      const arr = [];
+      for (let index = 0; index < str.length; index += n) {
+        arr.push(str.slice(index, index + n));
+      }
+      return arr;
     }
   }
 }

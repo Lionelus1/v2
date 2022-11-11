@@ -301,7 +301,7 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
-                path: 'sign/:uuid',
+                path: '/sign/:uuid',
                 name: 'DocSignaturesInfo',
                 component: load('DocSignaturesInfo'),
                 beforeEnter: ifAuthenticated,

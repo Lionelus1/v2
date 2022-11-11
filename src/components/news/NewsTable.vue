@@ -2,593 +2,151 @@
   <div class="p-col-12">
     <div class="card">
       <Button :label="$t('common.add')" icon="pi pi-plus" class="p-button-success p-mr-2" v-on:click="createNews"/>
-      <Button
-          :label="$t('common.send')"
-          v-if="
-            selectedNews &&
-            selectedNews.history.status.id === statuses.created &&
-            (!isModer || !isPublisher || !isAdmin)
-          "
-          icon="pi pi-send"
-          class="p-mr-2"
-          v-on:click="sendNews"
-      />
-      <Button
-          :label="$t('common.publish')"
-          v-if="
-            selectedNews &&
-            (selectedNews.history.status.id === statuses.sent ||
-              selectedNews.history.status.id === statuses.created) &&
-            (isModer || isPublisher || isAdmin)
-          "
-          icon="pi pi-check"
-          class="p-button-help p-mr-2"
-          v-on:click="publishNews"
-      />
-      <Button
-          :label="$t('common.reject')"
-          v-if="
-            selectedNews &&
-            selectedNews.history.status.id === statuses.sent &&
-            (isModer || isPublisher || isAdmin)
-          "
-          icon="pi pi-check"
-          class="p-button-danger p-mr-2"
-          v-on:click="rejectReason"
-      />
-      <Button
-          :label="$t('common.show')"
-          v-if="selectedNews"
-          icon="pi pi-eye"
-          class="p-button-secondary p-mr-2"
-          v-on:click="newsView"
-      />
+      <Button :label="$t('common.send')" icon="pi pi-send" class="p-mr-2" v-on:click="sendNews"
+              v-if="selectedNews && selectedNews.history.status.id === statuses.created && (!isModer || !isPublisher || !isAdmin)"/>
+      <Button :label="$t('common.publish')"
+              v-if="selectedNews && (selectedNews.history.status.id === statuses.sent || selectedNews.history.status.id === statuses.created) &&
+            (isModer || isPublisher || isAdmin)"
+              icon="pi pi-check" class="p-button-help p-mr-2" v-on:click="publishNews"/>
+      <Button :label="$t('common.reject')"
+              v-if="selectedNews && selectedNews.history.status.id === statuses.sent && (isModer || isPublisher || isAdmin)"
+              icon="pi pi-check" class="p-button-danger p-mr-2" v-on:click="rejectReason"/>
+      <Button :label="$t('common.show')" v-if="selectedNews" icon="pi pi-eye"
+              class="p-button-secondary p-mr-2" v-on:click="newsView"/>
     </div>
     <div class="card">
-      <DataTable
-          :lazy="true"
-          :value="allNews"
-          @page="onPage($event)"
-          :totalRecords="newsCount"
-          :paginator="true"
-          paginatorTemplate="FirstPageLink
-        PrevPageLink
-        PageLinks
-        NextPageLink
-        LastPageLink
-        CurrentPageReport
-        RowsPerPageDropdown"
-          :rowsPerPageOptions="[10, 25, 50]"
-          :currentPageReportTemplate="$t('common.showingRecordsCount', {
-              first: '{first}',
-              last: '{last}',
-              totalRecords: '{totalRecords}',
-            })"
-          class="p-datatable-customers"
-          :rows="10"
-          dataKey="id"
-          :rowHover="true"
-          v-model:selection="selectedNews"
-          :filters="filters"
-          filterDisplay="menu"
-          :showFilterMatchModes="false"
-          :loading="loading"
-          responsiveLayout="scroll"
-          @sort="onSort($event)">
+      <DataTable :lazy="true" :value="allNews" @page="onPage($event)" :totalRecords="newsCount" :paginator="true"
+                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+                 :rowsPerPageOptions="[10, 25, 50]"
+                 :currentPageReportTemplate="$t('common.showingRecordsCount', {first: '{first}', last: '{last}', totalRecords: '{totalRecords}'})"
+                 class="p-datatable-customers" :rows="10" dataKey="id" :rowHover="true" v-model:selection="selectedNews"
+                 :filters="filters" filterDisplay="menu" :showFilterMatchModes="false" :loading="loading"
+                 responsiveLayout="scroll" @sort="onSort($event)" selectionMode="single">
         <template #header>
           <div class="table-header">
             {{ $t("smartenu.newsTitle") }}
-            <span class="p-input-icon-left">
-            <i class="pi pi-search"/>
-            <InputText type="search" v-model="lazyParams.searchText" :placeholder="$t('common.search')"
-                       @keyup.enter="getAllNews" @click="clearData"/>
+            <span class="p-input-icon-left"><i class="pi pi-search"/>
+              <InputText type="search" v-model="lazyParams.searchText" :placeholder="$t('common.search')"
+                         @keyup.enter="getAllNews" @click="clearData"/>
               <Button icon="pi pi-search" class="p-ml-1" @click="getAllNews"/>
-          </span>
+            </span>
           </div>
         </template>
-        <template #empty>
-          {{ $t("smartenu.newsNotFound") }}
-        </template>
-        <template #loading>
-          {{ $t("smartenu.loadingNews") }}
-        </template>
-        <Column selectionMode="single" headerStyle="width: 3em"></Column>
-        <Column
-            :field="
-          $i18n.locale === 'kz'
-            ? `titleKz`
-            : $i18n.locale === 'ru'
-            ? `titleRu`
-            : `titleEn`
-        "
-            v-bind:header="$t('common.nameIn')"
-            :sortable="true"
-        >
+        <template #empty>{{ $t("smartenu.newsNotFound") }}</template>
+        <template #loading>{{ $t("smartenu.loadingNews") }}</template>
+        <Column field="titleKz" v-bind:header="$t('common.nameIn')" :sortable="true">
           <template #body="slotProps">
           <span>
             {{
-              $i18n.locale === "kz"
-                  ? slotProps.data.titleKz
-                  : $i18n.locale === "ru"
-                      ? slotProps.data.titleRu
-                      : slotProps.data.titleEn
+              $i18n.locale === "kz" ? slotProps.data.titleKz : $i18n.locale === "ru" ? slotProps.data.titleRu : slotProps.data.titleEn
             }}
           </span>
           </template>
         </Column>
-        <Column
-            :field="
-          $i18n.locale === 'kz'
-            ? `history.status.nameKz`
-            : $i18n.locale === 'ru'
-            ? `history.status.nameRu`
-            : `history.status.nameEn`
-        "
-            v-bind:header="$t('common.status')"
-            :sortable="true"
-        >
+        <Column :field="$i18n.locale === 'kz' ? `history.status.nameKz` : $i18n.locale === 'ru'
+        ? `history.status.nameRu` : `history.status.nameEn`" v-bind:header="$t('common.status')" :sortable="true">
           <template #body="slotProps">
-          <span
-              :class="'customer-badge status-' + slotProps.data.history.status.id"
-          >
+          <span :class="'customer-badge status-' + slotProps.data.history.status.id">
             {{
-              $i18n.locale === "kz"
-                  ? slotProps.data.history.status.nameKz
-                  : $i18n.locale === "ru"
-                      ? slotProps.data.history.status.nameRu
-                      : slotProps.data.history.status.nameEn
+              $i18n.locale === "kz" ? slotProps.data.history.status.nameKz : $i18n.locale === "ru" ? slotProps.data.history.status.nameRu : slotProps.data.history.status.nameEn
             }}
           </span>
           </template>
         </Column>
-        <Column
-            field="categories"
-            v-bind:header="$t('smartenu.categories')"
-            :sortable="false"
-        >
+        <Column field="categories" v-bind:header="$t('smartenu.categories')" :sortable="false">
           <template #body="slotProps">
           <span>
-            {{
-              slotProps.data.categories
-                  .map((cat) => cat.nameKz)
-                  .toString()
-                  .replaceAll(",", ", ")
-            }}
+            {{ slotProps.data.categories.map((cat) => cat.nameKz).toString().replaceAll(",", ", ") }}
           </span>
           </template>
         </Column>
-        <Column
-            field="createdBy"
-            v-bind:header="$t('common.createdBy')"
-            :sortable="true"
-        >
+        <Column field="createdBy" v-bind:header="$t('common.createdBy')" :sortable="true">
           <template #body="slotProps">
-          <span>
             {{ slotProps.data.createdBy.fullName }}
-          </span>
           </template>
         </Column>
         <Column>
           <template #body="slotProps">
-            <Button
-                icon="pi pi-pencil"
-                class="p-button-rounded p-button-success p-mr-2"
-                @click="editNews(slotProps.data.id)"
-                v-if="
-              slotProps.data.history.status.id === statuses.created ||
-              isAdmin ||
-              isModer
-            "
-            />
-            <Button
-                icon="pi pi-trash"
-                class="p-button-rounded p-button-warning"
-                v-if="
-              slotProps.data.history.status.id === statuses.created || isAdmin
-            "
-                @click="delNews(slotProps.data.id)"
-            />
+            <Button icon="pi pi-pencil" class="p-button-rounded p-button-success p-mr-2"
+                    @click="editNews(slotProps.data.id)"
+                    v-if="slotProps.data.history.status.id === statuses.created || isAdmin || isModer"/>
+            <Button icon="pi pi-trash" class="p-button-rounded p-button-warning" @click="delNews(slotProps.data.id)"
+                    v-if="slotProps.data.history.status.id === statuses.created || isAdmin"/>
           </template>
         </Column>
       </DataTable>
     </div>
   </div>
 
-
-  <!--    BEGINNING OF ADD/EDIT DIALOG-->
-
-  <Dialog
-      v-model:visible="editVisible"
-      :style="{ width: '1000px' }"
-      :header="$t('smartenu.createOrEditNews')"
-      :modal="true"
-      class="p-fluid"
-  >
-    <div class="card">
-      <Message v-for="msg of formValid" severity="error" :key="msg">{{
-          msg
-        }}
-      </Message>
-      <TabView>
-        <TabPanel header="Қазақша">
-          <div class="p-field p-mt-3">
-            <label for="kz-title">{{ $t("common.nameInQazaq") }}</label>
-            <InputText
-                id="kz-title"
-                v-model="newsData.titleKz"
-                rows="3"
-                :class="{ 'p-invalid': formValid.titleKz && submitted }"
-            />
-            <small v-show="formValid.titleKz && submitted" class="p-error">{{
-                $t("smartenu.titleKzInvalid")
-              }}</small>
-          </div>
-          <div class="p-field">
-            <label for="kz-content">{{ $t("common.contentInQazaq") }}</label>
-            <Editor
-                id="kz-content"
-                v-model="newsData.contentKz"
-                editorStyle="height: 320px"
-            />
-            <small
-                v-show="formValid.contentKz && submitted"
-                class="p-error"
-            >{{ $t("smartenu.contentKzInvalid") }}</small
-            >
-          </div>
-        </TabPanel>
-        <TabPanel header="Русский">
-          <div class="p-field p-mt-3">
-            <label for="ru-title">{{ $t("common.nameInRussian") }}</label>
-            <InputText
-                id="ru-title"
-                v-model="newsData.titleRu"
-                rows="3"
-                :class="{ 'p-invalid': formValid.titleRu && submitted }"
-            />
-            <small v-show="formValid.titleRu && submitted" class="p-error">{{
-                $t("smartenu.titleRuInvalid")
-              }}</small>
-          </div>
-          <div class="p-field">
-            <label for="ru-content">{{
-                $t("common.contentInRussian")
-              }}</label>
-            <Editor
-                id="ru-content"
-                v-model="newsData.contentRu"
-                editorStyle="height: 320px"
-            />
-            <small
-                v-show="formValid.contentRu && submitted"
-                class="p-error"
-            >{{ $t("smartenu.contentRuInvalid") }}</small
-            >
-          </div>
-        </TabPanel>
-        <TabPanel header="English">
-          <div class="p-field p-mt-3">
-            <label for="en-title">{{ $t("common.nameInEnglish") }}</label>
-            <InputText
-                id="en-title"
-                v-model="newsData.titleEn"
-                rows="3"
-                :class="{ 'p-invalid': formValid.titleEn && submitted }"
-            />
-            <small v-show="formValid.titleEn && submitted" class="p-error">{{
-                $t("smartenu.titleEnInvalid")
-              }}</small>
-          </div>
-
-          <div class="p-field">
-            <label for="en-content">{{
-                $t("common.contentInEnglish")
-              }}</label>
-            <Editor
-                id="en-content"
-                v-model="newsData.contentEn"
-                editorStyle="height: 320px"
-            />
-            <small
-                v-show="formValid.contentEn && submitted"
-                class="p-error"
-            >{{ $t("smartenu.contentEnInvalid") }}</small
-            >
-          </div>
-        </TabPanel>
-      </TabView>
-      <!-- <label for="cat-tree">{{ $t('smartenu.selectCategories') }}</label> -->
-      <!-- <Tree :value="catTree.root" selectionMode="checkbox" v-model:selectionKeys="selectedCatTree" style="margin-bottom: 1.5rem" /> -->
-      <div class="p-field">
-        <TreeSelect
-            v-model="selectedCatTree"
-            :options="catTree.root"
-            selectionMode="checkbox"
-            :placeholder="$t('smartenu.selectCategories')"
-            class="p-mb-3"
-        />
-      </div>
-      <div class="p-field">
-        <FileUpload
-            ref="form"
-            mode="basic"
-            :customUpload="true"
-            @uploader="uploadImage1($event)"
-            :auto="true"
-            v-bind:chooseLabel="$t('smartenu.chooseImage1')"
-        ></FileUpload>
-        <div v-if="mainImage" class="p-mt-3">
-          <img :src="mainImage" style="width: 50%; height: 50%"/>
-        </div>
-        <div v-else class="p-mt-3">
-          <img :src="newsData.imageUrl" style="width: 50%; height: 50%"/>
-        </div>
-        <!-- <div class="p-field p-col">
-                  <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadImage2($event)" :auto="true" v-bind:chooseLabel="$t('smartenu.chooseImage2')"></FileUpload>
-                  <div v-if="newsData.image2" class="p-mt-3">
-                      <img :src="newsData.image2" style="width: 50%; height: 50%;" />
-                  </div>
-              </div> -->
-      </div>
-      <div class="p-field-checkbox">
-        <Checkbox
-            id="isPoster"
-            name="isPoster"
-            v-model="isPoster"
-            :binary="true"
-        />
-        <label for="isPoster">{{ $t("smartenu.addPoster") }}</label>
-      </div>
-      <div
-          class="p-field p-mt-3"
-          style="margin-bottom: 1.5rem"
-          v-if="isPoster"
-      >
-        <label for="poster-link">{{ $t("smartenu.posterLink") }}</label>
-        <InputText
-            id="poster-link"
-            v-model="poster.link"
-            rows="3"
-            :placeholder="$t('smartenu.posterLink')"
-        />
-        <div class="p-grid p-mt-3" v-if="isPoster">
-          <div class="p-col">
-            <FileUpload
-                ref="form"
-                mode="basic"
-                :customUpload="true"
-                @uploader="uploadPosterImageKk($event)"
-                :auto="true"
-                v-bind:chooseLabel="$t('smartenu.posterImageKk')"
-            ></FileUpload>
-            <div v-if="posterImageKk" class="p-mt-3">
-              <img :src="posterImageKk" style="width: 50%; height: 50%"/>
-            </div>
-            <div v-else class="p-mt-3">
-              <img :src="poster.imageKkUrl" style="width: 50%; height: 50%"/>
-            </div>
-          </div>
-          <div class="p-col">
-            <FileUpload
-                ref="form"
-                mode="basic"
-                :customUpload="true"
-                @uploader="uploadPosterImageRu($event)"
-                :auto="true"
-                v-bind:chooseLabel="$t('smartenu.posterImageRu')"
-            ></FileUpload>
-            <div v-if="posterImageRu" class="p-mt-3">
-              <img :src="posterImageRu" style="width: 50%; height: 50%"/>
-            </div>
-            <div v-else class="p-mt-3">
-              <img :src="poster.imageRuUrl" style="width: 50%; height: 50%"/>
-            </div>
-          </div>
-          <div class="p-col">
-            <FileUpload
-                ref="form"
-                mode="basic"
-                :customUpload="true"
-                @uploader="uploadPosterImageEn($event)"
-                :auto="true"
-                v-bind:chooseLabel="$t('smartenu.posterImageEn')"
-            ></FileUpload>
-            <div v-if="posterImageEn" class="p-mt-3">
-              <img :src="posterImageEn" style="width: 50%; height: 50%"/>
-            </div>
-            <div v-else class="p-mt-3">
-              <img :src="poster.imageEnUrl" style="width: 50%; height: 50%"/>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <template #footer>
-      <Button
-          v-bind:label="$t('common.save')"
-          icon="pi pi-check"
-          class="p-button p-component p-button-success p-mr-2"
-          v-on:click="addNews"
-      />
-      <Button
-          v-bind:label="$t('common.cancel')"
-          icon="pi pi-times"
-          class="p-button p-component p-button-danger"
-          @click="hideDialog"
-      />
-    </template>
-  </Dialog>
-
   <!--    BEGINNING OF REJECT DIALOG-->
 
-  <Dialog
-      v-model:visible="rejectVisible"
-      :style="{ width: '600px' }"
-      :header="$t('smartenu.createOrEditNews')"
-      :modal="true"
-      class="p-fluid"
-  >
+  <Dialog v-model:visible="rejectVisible" :style="{ width: '600px' }" :header="$t('smartenu.createOrEditNews')"
+          :modal="true" class="p-fluid">
     <div class="card">
       <div class="p-field p-mt-3" style="margin-bottom: 1.5rem">
           <span class="p-float-label">
-            <InputText
-                id="kz-title"
-                v-model="selectedNews.history.rejectReasonKz"
-                rows="3"
-            />
+            <InputText id="kz-title" v-model="selectedNews.history.rejectReasonKz" rows="3"/>
             <label for="kz-title">{{ $t("common.nameInQazaq") }}</label>
           </span>
       </div>
       <div class="p-field p-mt-3" style="margin-bottom: 1.5rem">
           <span class="p-float-label">
-            <InputText
-                id="ru-title"
-                v-model="selectedNews.history.rejectReasonRu"
-                rows="3"
-            />
+            <InputText id="ru-title" v-model="selectedNews.history.rejectReasonRu" rows="3"/>
             <label for="ru-title">{{ $t("common.nameInRussian") }}</label>
           </span>
       </div>
       <div class="p-field p-mt-3">
           <span class="p-float-label">
-            <InputText
-                id="en-title"
-                v-model="selectedNews.history.rejectReasonEn"
-                rows="3"
-            />
+            <InputText id="en-title" v-model="selectedNews.history.rejectReasonEn" rows="3"/>
             <label for="en-title">{{ $t("common.nameInEnglish") }}</label>
           </span>
       </div>
     </div>
     <template #footer>
-      <Button
-          v-bind:label="$t('common.save')"
-          icon="pi pi-check"
-          class="p-button-text"
-          v-on:click="rejectNews"
-      />
-      <Button
-          v-bind:label="$t('common.cancel')"
-          icon="pi pi-times"
-          class="p-button-text"
-          @click="rejectVisible = false"
-      />
+      <Button v-bind:label="$t('common.save')" icon="pi pi-check" class="p-button-text" v-on:click="rejectNews"/>
+      <Button v-bind:label="$t('common.cancel')" icon="pi pi-times" class="p-button-text"
+              @click="rejectVisible = false"/>
     </template>
   </Dialog>
 
   <!--    BEGINNING OF DELETE DIALOG-->
 
-  <Dialog
-      v-model:visible="deleteVisible"
-      :style="{ width: '450px' }"
-      :modal="true"
-  >
+  <Dialog v-model:visible="deleteVisible" :style="{ width: '450px' }" :modal="true">
     <div class="confirmation-content">
       <i class="pi pi-exclamation-triangle p-mr-3" style="font-size: 2rem"/>
-      <span v-if="newsData"
-      >{{ $t("common.doYouWantDelete") }}
-          <b>{{
-              $i18n.locale === "kz"
-                  ? newsData.titleKz
-                  : $i18n.locale === "ru"
-                      ? newsData.titleRu
-                      : newsData.titleEn
-            }}</b
-          >?
+      <span v-if="newsData">{{ $t("common.doYouWantDelete") }}
+          <b>
+            {{
+              $i18n.locale === "kz" ? newsData.titleKz : $i18n.locale === "ru" ? newsData.titleRu : newsData.titleEn
+            }}
+          </b>?
         </span>
     </div>
     <template #footer>
-      <Button
-          :label="$t('common.yes')"
-          icon="pi pi-check"
-          class="p-button p-component p-button-success p-mr-2"
-          @click="deleteNews(newsData.id)"
-      />
-      <Button
-          :label="$t('common.no')"
-          icon="pi pi-times"
-          class="p-button p-component p-button-danger p-mr-2"
-          @click="deleteVisible = false"
-      />
+      <Button :label="$t('common.yes')" icon="pi pi-check" class="p-button p-component p-button-success p-mr-2"
+              @click="deleteNews(newsData.id)"/>
+      <Button :label="$t('common.no')" icon="pi pi-times" class="p-button p-component p-button-danger p-mr-2"
+              @click="deleteVisible = false"/>
     </template>
   </Dialog>
 
-  <!--    BEGINNING OF VIEW DIALOG-->
+  <NewsView v-if="newsViewVisible" :is-visible="newsViewVisible" :selected-news="selectedNews"/>
+  <AddEditNews v-if="editVisible" :is-visible="editVisible" :selected-news="newsData" :cat-tree="catTree" :catTreeList="catTreeElementsList"/>
 
-  <Dialog
-      v-model:visible="newsViewVisible"
-      :style="{ width: '1000px' }"
-      :modal="true"
-      class="p-fluid"
-  >
-    <Card style="box-shadow: none">
-      <template #header>
-        <InlineMessage
-            severity="error"
-            show
-            v-if="selectedNews.history.status.id === statuses.rejected"
-            style="margin-bottom: 1.5rem"
-        >
-          {{
-            $t("smartenu.rejectReason", {
-              fn:
-                  $i18n.locale === "kz"
-                      ? selectedNews.history.rejectReasonKz
-                      : $i18n.locale === "ru"
-                          ? selectedNews.history.rejectReasonRu
-                          : selectedNews.history.rejectReasonEn,
-            })
-          }}
-        </InlineMessage>
-        <div style="padding: 0 100px">
-          <img :src="selectedNews.imageUrl" style="width: 100%; height: 100%"/>
-        </div>
-      </template>
-      <template #title>
-        {{
-          $i18n.locale === "kz"
-              ? selectedNews.titleKz
-              : $i18n.locale === "ru"
-                  ? selectedNews.titleRu
-                  : selectedNews.titleEn
-        }}
-      </template>
-      <template #subtitle>
-        {{ new Date(selectedNews.history.modifyDate).toLocaleString() }}
-      </template>
-      <template #content>
-        <div
-            v-html="
-              $i18n.locale === 'kz'
-                ? selectedNews.contentKz
-                : $i18n.locale === 'ru'
-                ? selectedNews.contentRu
-                : selectedNews.contentEn
-            "
-        ></div>
-      </template>
-    </Card>
-    <template #footer>
-      <Button
-          v-bind:label="$t('common.close')"
-          icon="pi pi-times"
-          class="p-button p-component p-button-primary"
-          @click="newsViewVisible = false"
-      />
-    </template>
-  </Dialog>
 </template>
 
 <script>
-import axios from "axios";
-import * as imageResizeCompress from "image-resize-compress"; // ES6
 import {FilterMatchMode, FilterOperator} from "primevue/api";
-import {getHeader, header, smartEnuApi} from "@/config/config";
-import {resizeImages} from "../../helpers/HelperUtil";
-import {fileRoute} from "../../config/config";
+import {smartEnuApi} from "@/config/config";
+import {fileRoute, findRole} from "../../config/config";
+import {NewsService} from "../../service/news.service";
+import {PosterService} from "../../service/poster.service";
+import NewsView from "./NewsView";
+import AddEditNews from "./AddEditNews";
 
 export default {
   name: "NewsTable",
+  components: {AddEditNews, NewsView},
   data() {
     return {
       lazyParams: {
@@ -649,12 +207,26 @@ export default {
       },
       imageFileMain: null,
       imageFileAdd: null,
-      posterImageKk: null,
-      posterImageRu: null,
-      posterImageEn: null
-    };
+      newsService: new NewsService(),
+      posterService: new PosterService()
+    }
+  },
+  mounted() {
+    this.emitter.on('newsViewModalClose', data => {
+      this.newsViewVisible = data;
+    });
+    this.emitter.on('addEditNewsDialogHide', data => {
+      if (data)
+        this.hideDialog();
+    });
+    this.emitter.on('newsCreated', data => {
+      if (data) {
+        this.newsCreated();
+      }
+    });
   },
   methods: {
+    findRole: findRole,
     clearData() {
       if (!this.lazyParams.searchText) {
         return;
@@ -674,117 +246,24 @@ export default {
     },
 
     /**
-     *  UPLOAD POSTER IMAGEKK
-     */
-    uploadPosterImageKk(event) {
-      const file = event.files[0];
-      this.poster.imageKk = event.files[0];
-      imageResizeCompress
-          .fromBlob(file, 90, 720, "auto", "jpeg")
-          .then((res) => {
-            imageResizeCompress.blobToURL(res).then((resp) => {
-              this.posterImageKk = resp;
-            });
-          });
-    },
-    /**
-     *  UPLOAD POSTER IMAGERU
-     */
-    uploadPosterImageRu(event) {
-      const file = event.files[0];
-      this.poster.imageRu = event.files[0];
-      imageResizeCompress
-          .fromBlob(file, 90, 720, "auto", "jpeg")
-          .then((res) => {
-            imageResizeCompress.blobToURL(res).then((resp) => {
-              this.posterImageRu = resp;
-            });
-          });
-    },
-    /**
-     *  UPLOAD POSTER IMAGEEN
-     */
-    uploadPosterImageEn(event) {
-      const file = event.files[0];
-      this.poster.imageEn = event.files[0];
-      imageResizeCompress
-          .fromBlob(file, 90, 720, "auto", "jpeg")
-          .then((res) => {
-            imageResizeCompress.blobToURL(res).then((resp) => {
-              this.posterImageEn = resp;
-            });
-          });
-    },
-    /**
-     *  UPLOAD IMAGE1 (MainImage)
-     */
-    uploadImage1(event) {
-      const file = event.files[0];
-      this.imageFileMain = event.files[0];
-      this.newsData.image1 = null;
-      imageResizeCompress
-          .fromBlob(file, 90, 720, "auto", "jpeg")
-          .then((res) => {
-            imageResizeCompress.blobToURL(res).then((resp) => {
-              this.mainImage = resp;
-            });
-          });
-    },
-
-    /**
-     *  UPLOAD IMAGE2
-     */
-    uploadImage2(event) {
-      const file = event.files[0];
-      imageResizeCompress
-          .fromBlob(file, 90, 720, "auto", "jpeg")
-          .then((res) => {
-            imageResizeCompress.blobToURL(res).then((resp) => {
-              this.newsData.image2 = resp;
-            });
-          });
-    },
-
-    /**
-     *  CONVERT IMAGE TO BASE64
-     */
-    async convertBase64(document) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(document);
-        reader.onload = () => {
-          resolve(reader.result);
-        };
-        reader.onerror = (error) => reject(error);
-      });
-    },
-
-    /**
      *  GET ALL CATEGORIES
      */
-
     getCategories() {
       this.categories = [];
-      axios
-          .get(smartEnuApi + "/allCategories", {
-            headers: getHeader(),
-          })
-          .then((response) => {
-            this.categories = response.data;
-            this.categories = this.categories.reverse();
-          })
-          .catch((error) => {
-            if (error.response.status == 401) {
-              this.$store.dispatch("logLout");
-            } else {
-              this.$toast.add({
-                severity: "error",
-                summary:
-                    this.$t("smartenu.loadAllCategoriesError") + ":\n" + error,
-                life: 3000,
-              });
-            }
+      this.newsService.getCategories().then((response) => {
+        this.categories = response.data;
+        this.categories = this.categories.reverse();
+      }).catch((error) => {
+        if (error.response.status == 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: this.$t("smartenu.loadAllCategoriesError") + ":\n" + error,
+            life: 3000,
           });
+        }
+      });
     },
 
     /**
@@ -794,23 +273,19 @@ export default {
       this.loading = true
       // this.allNews = [];
       this.lazyParams.countMode = null;
-      axios
-          .post(smartEnuApi + "/allNews", this.lazyParams, {
-            headers: getHeader(),
-          })
-          .then((response) => {
-            this.allNews = response.data.news;
-            this.allNews.map(e => {
-              e.imageUrl = smartEnuApi + fileRoute + e.image1;
-              if (e.isPoster === true) {
-                e.poster.imageKkUrl = smartEnuApi + fileRoute + e.poster.imageKk;
-                e.poster.imageRuUrl = smartEnuApi + fileRoute + e.poster.imageRu;
-                e.poster.imageEnUrl = smartEnuApi + fileRoute + e.poster.imageEn;
-              }
-            });
-            this.newsCount = response.data.total;
-            this.loading = false;
-          })
+      this.newsService.getNews(this.lazyParams).then((response) => {
+        this.allNews = response.data.news;
+        this.allNews.map(e => {
+          e.imageUrl = smartEnuApi + fileRoute + e.image1;
+          if (e.poster) {
+            e.poster.imageKkUrl = smartEnuApi + fileRoute + e.poster.imageKk;
+            e.poster.imageRuUrl = smartEnuApi + fileRoute + e.poster.imageRu;
+            e.poster.imageEnUrl = smartEnuApi + fileRoute + e.poster.imageEn;
+          }
+        });
+        this.newsCount = response.data.total;
+        this.loading = false;
+      })
           .catch((error) => {
             if (error.response.status == 401) {
               this.$store.dispatch("logLout");
@@ -828,124 +303,23 @@ export default {
      *  DELETE NEWS
      */
     deleteNews(id) {
-      axios
-          .post(
-              smartEnuApi + "/delNews",
-              {
-                id: id,
-              },
-              {
-                headers: getHeader(),
-              }
-          )
-          .then((response) => {
-            if (response.status === 200) {
-              this.getAllNews();
-            }
-          })
-          .catch((error) => {
-            if (error.response.status == 401) {
-              this.$store.dispatch("logLout");
-            } else {
-              this.$toast.add({
-                severity: "error",
-                summary: this.$t("smartenu.delNewsError") + ":\n" + error,
-                life: 3000,
-              });
-            }
+      this.newsService.deleteNews(id).then((response) => {
+        if (response.status === 200) {
+          this.getAllNews();
+        }
+      }).catch((error) => {
+        if (error.response.status == 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: this.$t("smartenu.delNewsError") + ":\n" + error,
+            life: 3000,
           });
+        }
+      });
       this.deleteVisible = false;
       this.newsData = {};
-    },
-
-    /**
-     *  ADD NEWS
-     */
-    addNews() {
-      this.submitted = true;
-      this.validateNews();
-      if (this.formValid.length > 0) {
-        return;
-      }
-      for (let key in this.catTreeElementsList) {
-        for (let ixd in this.selectedCatTree) {
-          if (this.catTreeElementsList[key].key.toString() === ixd) {
-            this.newsData.contentCategoryRelations.push({
-              id: 0,
-              contentId: 0,
-              categoryId: this.catTreeElementsList[key].data.id,
-              checked: this.selectedCatTree[ixd].checked,
-              partialChecked: this.selectedCatTree[ixd].partialChecked,
-            });
-          }
-        }
-      }
-      if (this.isPoster) {
-        this.validPosterImages();
-        if (this.formValid.length > 0) {
-          return;
-        }
-        const fd = new FormData();
-        fd.append("link", this.poster.link ? this.poster.link : '')
-        fd.append("imageKk", this.poster.imageKk)
-        fd.append("imageRu", this.poster.imageRu)
-        fd.append("imageEn", this.poster.imageEn)
-        fd.append("id", this.poster.id ? parseInt(this.poster.id) : 0)
-
-        axios
-            .post(smartEnuApi + "/addPoster", fd, {
-              headers: getHeader(),
-            })
-            .then((res) => {
-              this.newsData.posterId = res.data.id;
-              this.newsData.isPoster = this.isPoster;
-              this.insertNews();
-            });
-      } else {
-        this.insertNews();
-      }
-    },
-    async insertNews() {
-      await resizeImages(this.newsData.contentKz).then(res => {
-        this.newsData.contentKz = res
-      });
-      await resizeImages(this.newsData.contentRu).then(res => {
-        this.newsData.contentRu = res
-      });
-      await resizeImages(this.newsData.contentEn).then(res => {
-        this.newsData.contentEn = res
-      });
-      const fd = new FormData();
-      fd.append("news", JSON.stringify(this.newsData))
-      fd.append("imageFileMain", this.imageFileMain);
-      axios
-          .post(smartEnuApi + "/addNews", fd, {
-            headers: getHeader(),
-          })
-          .then((response) => {
-            if (response.data !== null) {
-              this.$toast.add({
-                severity: "success",
-                summary: this.$t("smartenu.saveSuccess"),
-                life: 3000,
-              });
-              this.getAllNews();
-              this.editVisible = false;
-              this.newsData = {};
-              this.selectedCatTree = null;
-            }
-          })
-          .catch((error) => {
-            if (error.response.status == 401) {
-              this.$store.dispatch("logLout");
-            } else {
-              this.$toast.add({
-                severity: "error",
-                summary: this.$t("smartenu.saveNewsError") + ":\n" + error,
-                life: 3000,
-              });
-            }
-          });
     },
     /**
      *  CREATE NEWS
@@ -960,7 +334,17 @@ export default {
       this.newsData.contentCategoryRelations = [];
       this.selectedCatTree = [];
     },
-
+    newsCreated() {
+      this.$toast.add({
+        severity: "success",
+        summary: this.$t("smartenu.saveSuccess"),
+        life: 3000,
+      });
+      this.getAllNews();
+      this.editVisible = false;
+      this.newsData = {};
+      this.selectedCatTree = null;
+    },
     /**
      *  NEWS PRE DELETE
      */
@@ -974,31 +358,24 @@ export default {
      *  NEWS PRE EDITING
      */
     editNews(id) {
-
       this.catTreeElementsList = [];
       this.catTree.root = this.createCatTree(null, null);
       this.newsData = {};
-      this.editVisible = true;
       this.submitted = false;
       let newsData = this.allNews.find((x) => x.id === id);
       this.newsData = newsData;
-      this.isPoster = this.newsData.isPoster;
       this.selectedCatTree = [];
-      this.newsData.contentCategoryRelations = [];
       for (let key in this.catTreeElementsList) {
         for (let ixd in newsData.contentCategoryRelations) {
-          if (
-              this.catTreeElementsList[key].data.id ===
-              newsData.contentCategoryRelations[ixd].categoryId
-          ) {
+          if (this.catTreeElementsList[key].data.id === newsData.contentCategoryRelations[ixd].categoryId) {
             this.selectedCatTree[this.catTreeElementsList[key].key] = {
               checked: newsData.contentCategoryRelations[ixd].checked,
-              partialChecked:
-              newsData.contentCategoryRelations[ixd].partialChecked,
-            };
+              partialChecked: newsData.contentCategoryRelations[ixd].partialChecked
+            }
           }
         }
       }
+      this.editVisible = true;
     },
 
     /**
@@ -1031,27 +408,16 @@ export default {
      * SEND NEWS TO MODERATOR ACTION
      */
     sendNews() {
-      axios
-          .post(
-              smartEnuApi + "/send",
-              {
-                id: this.selectedNews.id,
-                userId: this.selectedNews.history.userId,
-              },
-              {
-                headers: getHeader(),
-              }
-          )
-          .then((response) => {
-            if (response.data !== null) {
-              this.$toast.add({
-                severity: "success",
-                summary: this.$t("smartenu.saveSuccess"),
-                life: 3000,
-              });
-              this.getAllNews();
-            }
-          })
+      this.newsService.sendNews(this.selectedNews.id, this.selectedNews.history.userId).then((response) => {
+        if (response.data !== null) {
+          this.$toast.add({
+            severity: "success",
+            summary: this.$t("smartenu.saveSuccess"),
+            life: 3000,
+          });
+          this.getAllNews();
+        }
+      })
           .catch((error) => {
             if (error.response.status == 401) {
               this.$store.dispatch("logLout");
@@ -1069,80 +435,60 @@ export default {
      * PUBLSIH NEWS ACTION
      */
     publishNews() {
-      axios
-          .post(
-              smartEnuApi + "/publish",
-              {
-                id: this.selectedNews.id,
-                userId: this.selectedNews.history.userId,
-              },
-              {
-                headers: getHeader(),
-              }
-          )
-          .then((response) => {
-            if (response.data !== null) {
-              this.$toast.add({
-                severity: "success",
-                summary: this.$t("smartenu.saveSuccess"),
-                life: 3000,
-              });
-              this.getAllNews();
-            }
-          })
-          .catch((error) => {
-            if (error.response.status == 401) {
-              this.$store.dispatch("logLout");
-            } else {
-              this.$toast.add({
-                severity: "error",
-                summary: this.$t("smartenu.saveNewsError") + ":\n" + error,
-                life: 3000,
-              });
-            }
+      this.newsService.publishNews(this.selectedNews.id, this.selectedNews.history.userId).then((response) => {
+        if (response.data !== null) {
+          this.$toast.add({
+            severity: "success",
+            summary: this.$t("smartenu.saveSuccess"),
+            life: 3000,
           });
+          this.getAllNews();
+        }
+      }).catch((error) => {
+        if (error.response.status == 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: this.$t("smartenu.saveNewsError") + ":\n" + error,
+            life: 3000,
+          });
+        }
+      });
     },
 
     /**
      * REJECT NEWS ACTION
      */
     rejectNews() {
-      axios
-          .post(
-              smartEnuApi + "/reject",
-              {
-                id: this.selectedNews.id,
-                userId: this.selectedNews.history.userId,
-                rejectReasonKz: this.selectedNews.history.rejectReasonKz,
-                rejectReasonRu: this.selectedNews.history.rejectReasonRu,
-                rejectReasonEn: this.selectedNews.history.rejectReasonEn,
-              },
-              {
-                headers: getHeader(),
-              }
-          )
-          .then((response) => {
-            if (response.data !== null) {
-              this.$toast.add({
-                severity: "success",
-                summary: this.$t("smartenu.saveSuccess"),
-                life: 3000,
-              });
-              this.rejectVisible = false;
-              this.getAllNews();
-            }
-          })
-          .catch((error) => {
-            if (error.response.status == 401) {
-              this.$store.dispatch("logLout");
-            } else {
-              this.$toast.add({
-                severity: "error",
-                summary: this.$t("smartenu.saveNewsError") + ":\n" + error,
-                life: 3000,
-              });
-            }
+      let data = {
+        id: this.selectedNews.id,
+        userId: this.selectedNews.history.userId,
+        rejectReasonKz: this.selectedNews.history.rejectReasonKz,
+        rejectReasonRu: this.selectedNews.history.rejectReasonRu,
+        rejectReasonEn: this.selectedNews.history.rejectReasonEn,
+      }
+      this.newsService.rejectNews(data).then((response) => {
+        if (response.data !== null) {
+          this.$toast.add({
+            severity: "success",
+            summary: this.$t("smartenu.saveSuccess"),
+            life: 3000,
           });
+          this.rejectVisible = false;
+          this.getAllNews();
+        }
+      }).catch((error) => {
+        if (error.response.status == 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: this.$t("smartenu.saveNewsError") + ":\n" + error,
+            life: 3000,
+          });
+        }
+      });
     },
 
     /**
@@ -1176,87 +522,10 @@ export default {
       return array;
     },
     getRoles() {
-      this.userRoles = [];
-      axios
-          .get(smartEnuApi + "/getroles", {
-            headers: getHeader(),
-          })
-          .then((response) => {
-            this.userRoles = response.data;
-            this.roles.isAdmin = this.findRole(this.userRoles, "news_administrator");
-            this.roles.isPublisher = this.findRole(this.userRoles, "news_publisher");
-            this.roles.isStudent = this.findRole(this.userRoles, "student");
-            this.roles.isModer = this.findRole(this.userRoles, "news_moderator");
-          })
-          .catch((error) => {
-            if (error.response.status == 401) {
-              this.$store.dispatch("logLout");
-            } else {
-              this.$toast.add({
-                severity: "error",
-                summary: this.$t("smartenu.loadAllEventsError") + ":\n" + error,
-                life: 3000,
-              });
-            }
-          });
-    },
-    findRole(roles, code) {
-      for (let i = 0; i < roles.length; i++) {
-        if (roles[i].name === code) {
-          return true;
-        }
-      }
-      return false;
-    },
-    validateNews() {
-      this.formValid = [];
-      if (!this.newsData.titleKz) {
-        this.formValid["titleKz"] = true;
-      } else {
-        delete this.formValid["titleKz"];
-      }
-      if (!this.newsData.titleRu) {
-        this.formValid["titleRu"] = true;
-      } else {
-        delete this.formValid["titleRu"];
-      }
-      if (!this.newsData.titleEn) {
-        this.formValid["titleEn"] = true;
-      } else {
-        delete this.formValid["titleEn"];
-      }
-      if (!this.newsData.contentKz) {
-        this.formValid["contentKz"] = true;
-      } else {
-        delete this.formValid["contentKz"];
-      }
-      if (!this.newsData.contentRu) {
-        this.formValid["contentRu"] = true;
-      } else {
-        delete this.formValid["contentRu"];
-      }
-      if (!this.newsData.contentEn) {
-        this.formValid["contentEn"] = true;
-      } else {
-        delete this.formValid["contentEn"];
-      }
-      if (!this.imageFileMain) {
-        this.formValid.push(this.$t("smartenu.image1Invalid"));
-      }
-      if (this.selectedCatTree.length == 0) {
-        this.formValid.push(this.$t("smartenu.selectedCatInvalid"));
-      }
-    },
-    validPosterImages() {
-      if (!this.poster.imageKk) {
-        this.formValid.push(this.$t("smartenu.posterImageKkInvalid"));
-      }
-      if (!this.poster.imageRu) {
-        this.formValid.push(this.$t("smartenu.posterImageRuInvalid"));
-      }
-      if (!this.poster.imageEn) {
-        this.formValid.push(this.$t("smartenu.posterImageEnInvalid"));
-      }
+      this.roles.isAdmin = this.findRole(null, "news_administrator");
+      this.roles.isPublisher = this.findRole(null, "news_publisher");
+      this.roles.isStudent = this.findRole(null, "student");
+      this.roles.isModer = this.findRole(null, "news_moderator");
     },
   },
 
@@ -1367,113 +636,6 @@ export default {
   &.status-proposal {
     background: #ffd8b2;
     color: #805b36;
-  }
-}
-
-.p-progressbar-value.ui-widget-header {
-  background: #607d8b;
-}
-
-@media (max-width: 640px) {
-  .p-progressbar {
-    margin-top: 0.5rem;
-  }
-}
-
-.product-image {
-  width: 100px;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-}
-
-.orders-subtable {
-  padding: 1rem;
-}
-
-.product-badge {
-  border-radius: 2px;
-  padding: 0.25em 0.5rem;
-  text-transform: uppercase;
-  font-weight: 700;
-  font-size: 12px;
-  letter-spacing: 0.3px;
-
-  &.status-instock {
-    background: #c8e6c9;
-    color: #256029;
-  }
-
-  &.status-outofstock {
-    background: #ffcdd2;
-    color: #c63737;
-  }
-
-  &.status-lowstock {
-    background: #feedaf;
-    color: #8a5340;
-  }
-}
-
-.order-badge {
-  border-radius: 2px;
-  padding: 0.25em 0.5rem;
-  text-transform: uppercase;
-  font-weight: 700;
-  font-size: 12px;
-  letter-spacing: 0.3px;
-
-  &.order-delivered {
-    background: #c8e6c9;
-    color: #256029;
-  }
-
-  &.order-cancelled {
-    background: #ffcdd2;
-    color: #c63737;
-  }
-
-  &.order-pending {
-    background: #feedaf;
-    color: #8a5340;
-  }
-
-  &.order-returned {
-    background: #eccfff;
-    color: #694382;
-  }
-}
-
-@media screen and (max-width: 960px) {
-  ::v-deep(.p-datatable) {
-    &.p-datatable-customers {
-      .p-datatable-thead > tr > th,
-      .p-datatable-tfoot > tr > td {
-        display: none !important;
-      }
-
-      .p-datatable-tbody > tr {
-        > td {
-          text-align: left;
-          display: block;
-          border: 0 none !important;
-          width: 100% !important;
-          float: left;
-          clear: left;
-          border: 0 none;
-
-          .p-column-title {
-            padding: 0.4rem;
-            min-width: 30%;
-            display: inline-block;
-            margin: -0.4rem 1rem -0.4rem -0.4rem;
-            font-weight: bold;
-          }
-
-          .p-progressbar {
-            margin-top: 0.5rem;
-          }
-        }
-      }
-    }
   }
 }
 </style>
