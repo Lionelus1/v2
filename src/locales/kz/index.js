@@ -1,6 +1,8 @@
 export default {
     common: {
+        accessDenied: "Рұқсат Жоқ",
         attention: "Назар аударыңыз",
+        welcome: "Қош келдіңіз",
         loginWelcome: "Smart.enu жүйесіне қош келдіңіз.",
         chooseCert: "Сертификатты таңдаңыз",
         activeList: "Белсенді тізім",
@@ -10,6 +12,7 @@ export default {
         head: "Ұйымдық жетекшісі",
         headIin: 'Бірінші басшының ЖСН-і',
         headFio: 'Бірінші басшының толық аты жөні',
+        home: 'Бас бетке',
         newPassword: "Жаңа құпиясөзді енгізіңіз",
         newPasswordRe: "Құпиясөзді қайталап енгізіңіз",
         createDocument: 'Құжатты құрастыру',
@@ -227,7 +230,9 @@ export default {
             selectVariant: "Керек нұсқаны таңдаңыз",
             selectUsers: "Қолданушыларды таңдаңыз",
             userIINExists: "Көрсетілген ЖСН бойынша қолданушы бұрыннан бар",
+            orgBINExists: "Көрсетілген БСН бойынша ұйымдық бұрыннан бар",
             accessDenied: "Бұл құжатты көруге құзіретіңіз жоқ!",
+            accessDeniedAdmin: "Сіздің бұл бетті көруге құзыретіңіз жоқ. Рұқсат үшін әкімшілерге хабарласыңыз",
             notAllowed: "Бұл әрекетті орындауға құзіретіңіз жоқ!",
             saveChanges: "Алдымен өззгерістерді сақтаңыз",
             impossible: "мүмкін емес",
@@ -301,7 +306,14 @@ export default {
             validEmail: "Дұрыс email адрес көрсетіңіз",
         }
     },
+    cafedra: {
+        practiceResponsibles: "Практикаға жауаптылар",
+        practiceManager: "Практика жетекшісі",
+        title: "{name} кафедрасы",
+        responsible: "Жауапты",
+        
 
+    },
     contragent: {
         form: "Ұйымдық формасы",
         active: "Белсенді",
@@ -311,7 +323,7 @@ export default {
         dossier: "Дерекнамасын қарау",
         organization: "Ұйымдықтар",
         title: "Контрагенттер",
-
+        missingDetails: "Таңдалған контрагент реквизиттері толық көрсетілмеген (БСН т.с.с.). Жетіспейтін реквизиттерді көрсетуіңзді сұраймыз.",
     },
     doctemplate: {
         title: "Құжат үлгісін жасау",
@@ -618,6 +630,7 @@ export default {
         }
     },
     queue: {
+        
         title: "Кезек",
         secretary: "Қызмет көрсету",
         queues: "Кезектер",

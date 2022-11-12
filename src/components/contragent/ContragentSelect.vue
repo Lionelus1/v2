@@ -4,12 +4,12 @@
       <span class="p-float-label p-ibutoon-right">
         <i v-if="value" class="pi pi-id-card ibutton" style="margin-right:35px;height:30px;margin-top: 2px;" @click="showcard()"/>
         <i class="pi pi-ellipsis-h ibutton" style="height:30px;margin-top: 2px;margin-right: 2px;" @click="showside()"/>
-        <InputText id="inputtext-right" readonly="true" type="text" v-model="selectedContragentName"/>
+        <InputText ref="input"  id="inputtext-right" readonly="true" type="text" v-model="selectedContragentName"/>
         <Sidebar @hide="updateValue(value)" v-model:visible="contragentVisible" position="right" class="p-sidebar-lg p-m-0 p-p-0 p-pt-7" style="overflow-y:scroll">
-          <Organizations @selected="updated" v-model="value" :selectedMode="true" v-model:windowOpened="contragentVisible"></Organizations>
+          <Organizations @selected="updated" @changed="changed" v-model="value" :selectedMode="true" v-model:windowOpened="contragentVisible"></Organizations>
         </Sidebar>
-        <Sidebar v-model:visible="cardVisible" position="right" class="p-sidebar-lg" style="overflow-y:scroll">
-          <Organization v-if="value.type == ContragentType.Organization" :readonly="true" :modelValue="value"></Organization>
+        <Sidebar v-model:visible="cardVisible" position="right"  @hide="message=null" class="p-sidebar-lg" style="overflow-y:scroll">
+          <Organization ref="orgSide" @inserted="orgupdated" v-model:message="message" v-if="value.type == ContragentType.Organization" :readonly="true" :modelValue="value"></Organization>
           <Person v-if="value.type == ContragentType.Person" :modelValue="value" :readonly="true"></Person>
           <Bank v-if="value.type == ContragentType.Bank" :modelValue="value" :readonly="true"></Bank>
         </Sidebar>
@@ -24,7 +24,7 @@
         <InputText id="inputtext-right" readonly="true" type="text" v-model="selectedPersonName"/>
         <Sidebar v-model:visible="personsVisible" position="right" class="p-sidebar-lg" style="overflow-y:scroll">
         <br/>
-          <Persons @updated="updated($event)" v-model="value.signer" style="padding:-1em" v-model:orgID="value.id" :organization="value" v-model:signRight="signRight" :insertMode="true" v-model:windowOpened="personsVisible"></Persons>
+          <Persons :shortMode="true" @userCreated="userCreated" @updated="updated($event)" v-model="value.signer" style="padding:-1em"  v-model:orgID="value.id" :organization="value" v-model:signRight="signRight" :insertMode="true" v-model:windowOpened="personsVisible"></Persons>
         </Sidebar>
         <Sidebar v-model:visible="personVisible" position="right" class="p-sidebar-lg" style="overflow-y:scroll;">
           <Person :modelValue="value.signer" :organization="JSON.parse(JSON.stringify(value))" class="p-mt-10" style="padding:-1rem" :readonly="true"></Person>
@@ -53,6 +53,7 @@ export default {
       cardVisible: false,
       personVisible: false,
       ContragentType : Enum.ContragentType,
+      message:null,
     }
   },
   computed: {
@@ -89,8 +90,26 @@ export default {
       else
         this.contragentVisible = true;
     },
+    orgupdated(org) {
+      this.value = org.value
+    },
     updated(event) {
-      this.$emit("updated",event)
+      if (this.value.iin == null || this.value.address == null || 
+      this.value.addressru == null || this.value.email == null ||
+      this.value.name == null || this.value.nameru == null || this.value.form == null) {
+        this.cardVisible = true
+        this.message = this.$t("contragent.missingDetails")
+        
+      }
+      this.$emit("updated",event);
+    },
+    changed(event) {
+      this.value = event.value
+      this.contragentVisible = false;
+    },
+    userCreated(user) {
+      this.value.signer = user;
+      this.personsVisible = false;
     },
     showcard(cardname) {
       if (cardname == 'person')

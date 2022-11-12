@@ -643,12 +643,11 @@
 <script>
 import ContragentSelectOrg from "../../contragent/ContragentSelectOrg";
 import DepartmentList from "../../smartenu/DepartmentList";
-import FindUser from "../../../helpers/FindUser";
 import VacancyService from "./VacancyService";
 import axios from 'axios';
 import {smartEnuApi, getHeader } from "@/config/config";
 export default {
-  components: {DepartmentList, FindUser, ContragentSelectOrg},
+  components: {DepartmentList, ContragentSelectOrg},
   props: {
     modelValue: null,
     placeholder: String,

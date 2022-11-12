@@ -164,7 +164,7 @@
         >
           <template #body="slotProps">
           <span>
-            {{ slotProps.data.createdBy.name }}
+            {{ slotProps.data.createdBy.fullName }}
           </span>
           </template>
         </Column>
@@ -317,8 +317,11 @@
             :auto="true"
             v-bind:chooseLabel="$t('smartenu.chooseImage1')"
         ></FileUpload>
-        <div v-if="newsData.image1" class="p-mt-3">
-          <img :src="newsData.image1" style="width: 50%; height: 50%"/>
+        <div v-if="mainImage" class="p-mt-3">
+          <img :src="mainImage" style="width: 50%; height: 50%"/>
+        </div>
+        <div v-else class="p-mt-3">
+          <img :src="newsData.imageUrl" style="width: 50%; height: 50%"/>
         </div>
         <!-- <div class="p-field p-col">
                   <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadImage2($event)" :auto="true" v-bind:chooseLabel="$t('smartenu.chooseImage2')"></FileUpload>
@@ -361,6 +364,9 @@
             <div v-if="posterImageKk" class="p-mt-3">
               <img :src="posterImageKk" style="width: 50%; height: 50%"/>
             </div>
+            <div v-else class="p-mt-3">
+              <img :src="poster.imageKkUrl" style="width: 50%; height: 50%"/>
+            </div>
           </div>
           <div class="p-col">
             <FileUpload
@@ -374,6 +380,9 @@
             <div v-if="posterImageRu" class="p-mt-3">
               <img :src="posterImageRu" style="width: 50%; height: 50%"/>
             </div>
+            <div v-else class="p-mt-3">
+              <img :src="poster.imageRuUrl" style="width: 50%; height: 50%"/>
+            </div>
           </div>
           <div class="p-col">
             <FileUpload
@@ -386,6 +395,9 @@
             ></FileUpload>
             <div v-if="posterImageEn" class="p-mt-3">
               <img :src="posterImageEn" style="width: 50%; height: 50%"/>
+            </div>
+            <div v-else class="p-mt-3">
+              <img :src="poster.imageEnUrl" style="width: 50%; height: 50%"/>
             </div>
           </div>
         </div>
@@ -529,7 +541,7 @@
           }}
         </InlineMessage>
         <div style="padding: 0 100px">
-          <img :src="selectedNews.image1" style="width: 100%; height: 100%"/>
+          <img :src="selectedNews.imageUrl" style="width: 100%; height: 100%"/>
         </div>
       </template>
       <template #title>
@@ -555,11 +567,6 @@
             "
         ></div>
       </template>
-      <template #footer>
-        <div style="padding: 0 100px">
-          <img :src="selectedNews.image2" style="width: 100%; height: 100%"/>
-        </div>
-      </template>
     </Card>
     <template #footer>
       <Button
@@ -578,6 +585,7 @@ import * as imageResizeCompress from "image-resize-compress"; // ES6
 import {FilterMatchMode, FilterOperator} from "primevue/api";
 import {getHeader, header, smartEnuApi} from "@/config/config";
 import {resizeImages} from "../../helpers/HelperUtil";
+import {fileRoute} from "../../config/config";
 
 export default {
   name: "NewsTable",
@@ -590,6 +598,7 @@ export default {
         sortField: "",
         sortOrder: 0
       },
+      mainImage: null,
       statuses: {
         created: 1,
         sent: 2,
@@ -712,11 +721,12 @@ export default {
     uploadImage1(event) {
       const file = event.files[0];
       this.imageFileMain = event.files[0];
+      this.newsData.image1 = null;
       imageResizeCompress
           .fromBlob(file, 90, 720, "auto", "jpeg")
           .then((res) => {
             imageResizeCompress.blobToURL(res).then((resp) => {
-              this.newsData.image1 = resp;
+              this.mainImage = resp;
             });
           });
     },
@@ -790,6 +800,14 @@ export default {
           })
           .then((response) => {
             this.allNews = response.data.news;
+            this.allNews.map(e => {
+              e.imageUrl = smartEnuApi + fileRoute + e.image1;
+              if (e.isPoster === true) {
+                e.poster.imageKkUrl = smartEnuApi + fileRoute + e.poster.imageKk;
+                e.poster.imageRuUrl = smartEnuApi + fileRoute + e.poster.imageRu;
+                e.poster.imageEnUrl = smartEnuApi + fileRoute + e.poster.imageEn;
+              }
+            });
             this.newsCount = response.data.total;
             this.loading = false;
           })
@@ -868,12 +886,11 @@ export default {
           return;
         }
         const fd = new FormData();
-        fd.append("link", this.poster.link)
+        fd.append("link", this.poster.link ? this.poster.link : '')
         fd.append("imageKk", this.poster.imageKk)
         fd.append("imageRu", this.poster.imageRu)
         fd.append("imageEn", this.poster.imageEn)
-        if (this.poster.id)
-          fd.append("id", this.poster.id)
+        fd.append("id", this.poster.id ? parseInt(this.poster.id) : 0)
 
         axios
             .post(smartEnuApi + "/addPoster", fd, {
@@ -964,23 +981,8 @@ export default {
       this.editVisible = true;
       this.submitted = false;
       let newsData = this.allNews.find((x) => x.id === id);
-      this.newsData.id = newsData.id;
-      this.newsData.titleKz = newsData.titleKz;
-      this.newsData.titleRu = newsData.titleRu;
-      this.newsData.titleEn = newsData.titleEn;
-      this.newsData.image1 = newsData.image1;
-      this.newsData.image2 = newsData.image2;
-      this.newsData.contentKz = newsData.contentKz;
-      this.newsData.contentRu = newsData.contentRu;
-      this.newsData.contentEn = newsData.contentEn;
-      this.newsData.history = newsData.history;
-      this.newsData.createdBy = newsData.createdBy;
-      this.isPoster = newsData.isPoster;
-      this.poster.id = newsData.posterId;
-      this.poster.link = newsData.poster.link;
-      this.poster.imageKk = newsData.poster.posterKk;
-      this.poster.imageRu = newsData.poster.posterRu;
-      this.poster.imageEn = newsData.poster.posterEn;
+      this.newsData = newsData;
+      this.isPoster = this.newsData.isPoster;
       this.selectedCatTree = [];
       this.newsData.contentCategoryRelations = [];
       for (let key in this.catTreeElementsList) {

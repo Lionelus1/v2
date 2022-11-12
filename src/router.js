@@ -1,6 +1,7 @@
 import {createRouter, createWebHashHistory} from 'vue-router';
 import Full from './components/Full.vue';
-import store from '@/store/store' // your vuex store
+import store from '@/store/store'
+import GuideFull from "./components/guide/GuideFull"; // your vuex store
 
 function load(component) {
     return () => import(`./components/${component}.vue`)
@@ -58,7 +59,7 @@ const routes = [
       component: load('Privacy')
     },
     {
-        path: '/',
+        path: '/login',
         redirect:'/login',
         name: '/login',
         component: Full,
@@ -66,6 +67,13 @@ const routes = [
 
 
             // Менің қосқандарым
+
+            {
+                path:'/',
+                name:'Welcome',
+                component: load('Welcome'),
+                beforeEnter: ifAuthenticated,
+            },
             {
                 path: '/documents/catalog/normdoc',
                 name: '/documents/catalog/normdoc',
@@ -363,8 +371,32 @@ const routes = [
                 name: 'ReceptionQuestion',
                 component: load('publicReception/Answer'),
                 beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/cafedra',
+                name: 'Cafedra',
+                component: load('documents/Cafedra'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/access',
+                name: 'access',
+                component: () => import('./pages/Access.vue')
             }
                 
+        ]
+    },
+    {
+        path: '/guide',
+        name: '/guide',
+        component: GuideFull,
+        children: [
+            {
+                path:'/main-guide',
+                name:'main-guide',
+                component: load('guide/MainGuide'),
+                beforeEnter: ifAuthenticated,
+            },
         ]
     }
 

@@ -177,11 +177,8 @@
 import { smartEnuApi, getHeader, b64toBlob, findRole } from "@/config/config";
 import axios from "axios";
 
-import FindUser from "@/helpers/FindUser";
 
 import ContragentSelect from "../contragent/ContragentSelect.vue";
-import { DatePicker } from "v-calendar";
-import {runNCaLayer} from "@/helpers/SignDocFunctions"
 import moment from 'moment'
 import DocSignaturesInfo from "@/components/DocSignaturesInfo"
 
@@ -195,7 +192,7 @@ import {
 import { constantizeGenderInRules } from "lvovich/lib/inclineRules";
 export default {
   name: "Contract",
-  components: { FindUser,  ContragentSelect, DocSignaturesInfo },
+  components: {  ContragentSelect, DocSignaturesInfo },
   data() {
     return {
       contract: null,
@@ -233,8 +230,9 @@ export default {
         {
           label: this.$t("common.save"),
           icon: "pi pi-fw pi-save",
-          disabled: !this.corrected,
+          disabled: !this.corrected ,
           command: () => {
+           
             this.saveContract();
           },
         },
@@ -252,14 +250,7 @@ export default {
           disabled: this.readonly,
 
           items: [
-            // {
-            //   label: this.$t("common.registration"),
-            //   icon: "pi pi-fw pi-paperclip",
-            //   command: () => {
-            //     this.temp = false;
-            //     this.openForm("setNumber");
-            //   },
-            // },
+          
             {
               label: this.$t("contracts.setnumber"),
               icon: "pi pi-fw pi-list",
@@ -279,7 +270,8 @@ export default {
               icon: "pi pi-check",
               visible: () =>
                 this.contract &&
-                this.contract.sourceType === this.sourceType.uploadedDoc ,
+                this.findRole(null, 'student'),
+                command: () => {this.sendToApprove()}
             },
             {
               label: this.$t("common.tosign"),
@@ -328,11 +320,16 @@ export default {
   },
   methods: {
     findRole: findRole,
+    showMessage(msgtype,message,content) {
+        this.$toast.add({severity:msgtype, summary: message, detail:content, life: 3000});
+      },
     moment: moment,
     correct() {
-      
+      if (this.contract.docHistory.stateId == 1 || !this.findRole(null, "student"))
+      {
       this.corrected = true
       this.menu[0].disabled = false
+      }
     },
     openForm(formName) {
       this.dialog[formName] = true;
@@ -401,6 +398,62 @@ export default {
         }
       })
     },
+    sendToApprove() {
+      if (!this.formsValidate())
+      {
+        this.$toast.add({
+          severity: "error",
+          summary: this.$t("common.approve"),
+          detail: this.$t("common.message.fillError"),
+          life: 3000,
+        });
+        return
+      }
+      if (this.corrected) {
+        this.$toast.add({
+          severity: "warn",
+          summary: this.$t("common.approve"),
+          detail: this.$t("common.message.saveChanges"),
+          life: 3000,
+        });
+        return
+      }
+      this.$confirm.require({
+        message: this.$t('common.confirmation'),
+        header: this.$t('common.approve'),
+        icon: 'pi pi-exclamation-triangle',
+        accept: () => {
+          var req = { id: this.contract.id, userID: this.$store.state.loginedUser.userID };
+          req.lang = "kaz";
+          if (this.contract.lang != 0) {
+            req.lang = "rus";
+          }
+          this.loading = true
+          axios.post(smartEnuApi + "/contract/sendtoapprove", req, { headers: getHeader() })
+          .then(response => {
+            this.loading = false
+            this.contract.docUUID = response.data.docUUID
+            this.contract.filePath = response.data.filePath
+            this.contract.docHistory = response.data.docHistory
+            this.menu[3].items[1].disabled = true
+            this.$toast.add({
+              severity: "success",
+              summary: this.$t("common.tosign"),
+              detail: this.$t('common.message.succesSendToApproval'),
+              life: 3000,
+            });
+          }).
+          catch(error => {
+            this.loading = false;
+            if (error.response.status == 401) {
+              this.$store.dispatch("logLout");
+            } else 
+              console.log(error);
+          })
+                    
+        }
+      })
+    },
     formsValidate() {
       var result = true
       if (this.contract == null) {
@@ -445,6 +498,13 @@ export default {
           if (param.name == "period") {
             param.value  = param.value .map(d => new Date(d));
           }
+          if (param.name == "student" && (param.value.userID == 0 || param.value.userID == null)) {
+            if (this.findRole(null, 'student')) {
+              param.value = this.$store.state.loginedUser
+            }
+          }
+          
+       
       
       });
             

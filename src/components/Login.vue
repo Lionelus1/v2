@@ -80,6 +80,7 @@
   import {getHeader,header, smartEnuApi,etspTokenEndPoint} from "../config/config";
   import {NCALayerClient} from "ncalayer-js-client";
   import {NCALayerClientExtension} from "@/helpers/ncalayer-client-ext";
+  import LanguageDropdown from "../LanguageDropdown";
 
   const authUser = {};
   export default {
@@ -152,7 +153,7 @@
           console.log("nc object ",NCALaClient);
           try {
             await NCALaClient.connect();
-          } 
+          }
           catch (error) {
             alert(error.message);
             return
@@ -225,18 +226,48 @@
 </script>
 
 <style lang="scss">
-  .flexgrid-demo {
-      .vertical-container {
-          margin: 0;
-          border-radius: 4px;
-      }
-  }
-  .pi-eye {
-    transform:scale(1.6);
-    margin-right: 1rem;
-  }
-  .pi-eye-slash {
-      transform:scale(1.6);
-      margin-right: 1rem;
-  }
+    .welcome_text_block{
+        height: 63px;
+    }
+    .lang_dropdown {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        width: fit-content;
+        border: 1px solid #d1d1d1;
+    }
+
+    .flexgrid-demo {
+        .vertical-container {
+            margin: 0;
+            border-radius: 4px;
+        }
+    }
+
+    .pi-eye {
+        transform: scale(1.6);
+        margin-right: 1rem;
+    }
+
+    .pi-eye-slash {
+        transform: scale(1.6);
+        margin-right: 1rem;
+    }
+
+    @media (max-width: 740px) {
+        h5 {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+        }
+        h5.p-text-center {
+            text-align: left!important;
+        }
+    }
+    @media (max-width: 525px) {
+        h5 {
+            width: 165px;
+           font-size: 15px;
+        }
+    }
 </style>

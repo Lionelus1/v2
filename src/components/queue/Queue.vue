@@ -11,7 +11,6 @@
         />        
       </template>
     </Toolbar>
-    <Toast />
     <TreeTable :value="queues" :lazy="true" :paginator="true" :rows="lazyParams.rows" :loading="loading"
       @nodeExpand="onExpand" @page="onPage" :totalRecords="totalRecords" selectionMode="single" v-model:selectionKeys="currentNode">
       <template #header>
@@ -175,13 +174,10 @@
 </template>
 
 <script>
-import FindUser from "@/helpers/FindUser";
 import axios from "axios";
-import { authHeader, getHeader, smartEnuApi, findRole } from "@/config/config";
-import { result } from "lodash";
+import {  getHeader, smartEnuApi, findRole } from "@/config/config";
 export default {
   name: "Queue",
-  components:{FindUser},
   data() {
     return {
       editVisible: false,

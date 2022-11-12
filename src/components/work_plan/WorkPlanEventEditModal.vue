@@ -49,13 +49,11 @@
 </template>
 
 <script>
-import FindUser from "@/helpers/FindUser";
 import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
 
 export default {
   name: "WorkPlanEventEditModal",
-  components: {FindUser},
   props: ['event', 'planData', 'parent'],
   data() {
     return {
