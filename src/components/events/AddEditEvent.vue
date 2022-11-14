@@ -211,7 +211,7 @@ export default {
       event: this.selectedEvent,
       formValid: [],
       isPoster: false,
-      poster: this.selectedEvent.poster ? this.selectedEvent.poster : {
+      poster: this.selectedEvent && this.selectedEvent.poster ? this.selectedEvent.poster : {
         link: "",
         imageKk: null,
         imageRu: null,
