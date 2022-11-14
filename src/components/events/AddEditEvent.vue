@@ -1,16 +1,14 @@
 <template>
-  <!--    BEGINNING OF ADD/EDIT DIALOG-->
-
-  <Dialog v-model:visible="editVisible" :closable="false" :style="{ width: '1000px' }"
+  <Dialog v-if="editVisible" v-model:visible="editVisible" :closable="false" :style="{ width: '1000px' }"
           :header="$t('smartenu.createOrEditEvents')" :modal="true" class="p-fluid">
     <div class="card">
-      <Message v-for="msg of formValid" severity="error" :key="msg">{{ msg }}</Message>
+<!--      <Message v-for="msg of formValid" severity="error" :key="msg">{{ msg }}</Message>-->
       <TabView>
         <TabPanel header="Қазақша">
           <div class="p-field p-mt-3">
             <label for="kz-title">{{ $t("common.nameInQazaq") }}</label>
             <InputText id="kz-title" v-model="event.titleKz" rows="3"
-                       :class="{ 'p-invalid': !event.titleKz && submitted }"/>
+                       :class="{ 'p-invalid': event.titleKz && submitted }"/>
             <small v-show="!event.titleKz && submitted" class="p-error">{{ $t("smartenu.titleKzInvalid") }}</small>
           </div>
           <div class="p-field">
@@ -33,7 +31,7 @@
           <div class="p-field">
             <label for="ru-content">{{ $t("common.contentInRussian") }}</label>
             <Editor id="ru-content" v-model="event.contentRu" editorStyle="height: 320px"/>
-            <small v-show="formValid.contentRu && submitted" class="p-error">
+            <small v-show="!event.contentRu && submitted" class="p-error">
               {{ $t("smartenu.contentRuInvalid") }}
             </small>
           </div>
@@ -42,15 +40,15 @@
           <div class="p-field p-mt-3" style="margin-bottom: 1.5rem">
             <label for="en-title">{{ $t("common.nameInEnglish") }}</label>
             <InputText id="en-title" v-model="event.titleEn" rows="3"
-                       :class="{ 'p-invalid': formValid.titleEn && submitted }"/>
-            <small v-show="formValid.titleEn && submitted" class="p-error">
+                       :class="{ 'p-invalid': !event.titleEn && submitted }"/>
+            <small v-show="!event.titleEn && submitted" class="p-error">
               {{ $t("smartenu.titleEnInvalid") }}
             </small>
           </div>
           <div class="p-field">
             <label for="en-content">{{ $t("common.contentInEnglish") }}</label>
             <Editor id="en-content" v-model="event.contentEn" editorStyle="height: 320px"/>
-            <small v-show="formValid.contentEn && submitted" class="p-error">
+            <small v-show="!event.contentEn && submitted" class="p-error">
               {{ $t("smartenu.contentEnInvalid") }}
             </small>
           </div>
@@ -59,16 +57,16 @@
       <div class="p-field">
         <label for="is-online">{{ $t("smartenu.eventFormat") }}</label>
         <Dropdown id="is-online" v-model="event.isOnline" :options="format" optionLabel="name" optionValue="value"
-                  :placeholder="$t('smartenu.eventFormat')" :class="{ 'p-invalid': formValid.isOnline && submitted }"/>
-        <small v-show="formValid.isOnline && submitted" class="p-error">
+                  :placeholder="$t('smartenu.eventFormat')" :class="{ 'p-invalid': !event.isOnline && submitted }"/>
+        <small v-show="!event.isOnline && submitted" class="p-error">
           {{ $t("smartenu.isOnlineInvalid") }}
         </small>
       </div>
       <div class="p-field" style="margin-top: 1.5rem" v-if="event.isOnline == true">
         <label for="event-link">{{ $t("smartenu.meetingLink") }}</label>
         <InputText id="event-link" v-model="event.eventLink" rows="3"
-                   :class="{ 'p-invalid': formValid.eventLink && submitted }"/>
-        <small v-show="formValid.eventLink && submitted" class="p-error">
+                   :class="{ 'p-invalid': !event.eventLink && submitted }"/>
+        <small v-show="!event.eventLink && submitted" class="p-error">
           {{ $t("smartenu.eventLinkInvalid") }}
         </small>
       </div>
@@ -77,8 +75,8 @@
           {{ $t("smartenu.meetingLocation") }}
         </label>
         <InputText id="event-location" v-model="event.eventLocation" rows="3"
-                   :class="{ 'p-invalid': formValid.eventLocation && submitted }"/>
-        <small v-show="formValid.eventLocation && submitted" class="p-error">
+                   :class="{ 'p-invalid': !event.eventLocation && submitted }"/>
+        <small v-show="!event.eventLocation && submitted" class="p-error">
           {{ $t("smartenu.eventLocationInvalid") }}
         </small>
       </div>
@@ -87,8 +85,8 @@
         <MultiSelect v-model="selectedMainCategories" :options="participantsMainCategories"
                      :optionLabel="$i18n.locale === 'kz' ? `nameKz` : $i18n.locale === 'ru' ? `nameRu` : `nameEn`"
                      :placeholder="$t('smartenu.selectMainCategory')"
-                     :class="{'p-invalid': formValid.selectedMainCategories && submitted}"/>
-        <small v-show="formValid.selectedMainCategories && submitted" class="p-error">
+                     :class="{'p-invalid': !selectedMainCategories && submitted}"/>
+        <small v-show="!selectedMainCategories && submitted" class="p-error">
           {{ $t("smartenu.selectedCatInvalid") }}
         </small>
       </div>
@@ -255,7 +253,7 @@ export default {
     this.getMasterCourses();
     this.getBachelorCourses();
     this.getFaculties();
-    if (this.event) {
+    if (this.event && this.event.id) {
       this.selectedMainCategories = this.event.participantsCategory.filter(
           (category) => category.parentId === null
       );

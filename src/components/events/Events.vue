@@ -320,8 +320,11 @@ export default {
      *  CREATE EVENT
      */
     createEvent() {
-      this.event = null;
+      this.event = {}
+      this.editVisible = true
       this.submitted = false;
+      this.event.id = null
+      this.event.eventDate = new Date()
       this.getMainCategories();
       this.getMasterCourses();
       this.getBachelorCourses();
