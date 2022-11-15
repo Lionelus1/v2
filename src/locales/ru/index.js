@@ -766,6 +766,7 @@ export default {
         languageLevelLabel: "Уровень знаний языков",
         certificateRequirementsLabel: "Наличие сертификатов, дипломов",
         personalQualitiesLabel: "Личные качества",
+        workConditionLabel: "Условия работы",
         title: {
             general: 'Общая информация',
             degreeAndTitle: 'Наличие ученой степени и ученого звания',

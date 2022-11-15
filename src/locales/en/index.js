@@ -735,6 +735,7 @@ export default {
         languageLevelLabel: "The level of knowledge of languages",
         certificateRequirementsLabel: "Availability of certificates, diplomas",
         personalQualitiesLabel: "Personal qualities",
+        workConditionLabel: "Working conditions",
         title: {
             general: 'General information',
             degreeAndTitle: 'The presence of a scientific degree and academic title',
