@@ -388,6 +388,7 @@ export default {
             summary: this.$t("smartenu.saveSuccess"),
             life: 3000,
           });
+          this.selectedEvent = null;
           this.getAllEvents();
         }
       }).catch((error) => {
@@ -485,21 +486,6 @@ export default {
     },
     isStudent: function () {
       return this.roles.isStudent;
-    },
-  },
-  watch: {
-    selectedFaculties: function () {
-      if (this.selectedFaculties === null) {
-        return null;
-      } else {
-        this.departments = [];
-        for (let i = 0; i < this.selectedFaculties.length; i++) {
-          let array = this.participantsCategories.filter(
-              (category) => category.parentId === this.selectedFaculties[i].id
-          );
-          this.departments = this.departments.concat(array);
-        }
-      }
     },
   },
 };

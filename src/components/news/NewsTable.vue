@@ -131,7 +131,8 @@
   </Dialog>
 
   <NewsView v-if="newsViewVisible" :is-visible="newsViewVisible" :selected-news="selectedNews"/>
-  <AddEditNews v-if="editVisible" :is-visible="editVisible" :selected-news="newsData" :cat-tree="catTree" :catTreeList="catTreeElementsList"/>
+  <AddEditNews v-if="editVisible" :is-visible="editVisible" :selected-news="newsData" :cat-tree="catTree"
+               :catTreeList="catTreeElementsList"/>
 
 </template>
 
@@ -285,18 +286,17 @@ export default {
         });
         this.newsCount = response.data.total;
         this.loading = false;
-      })
-          .catch((error) => {
-            if (error.response.status == 401) {
-              this.$store.dispatch("logLout");
-            } else {
-              this.$toast.add({
-                severity: "error",
-                summary: this.$t("smartenu.loadAllNewsError") + ":\n" + error,
-                life: 3000,
-              });
-            }
+      }).catch((error) => {
+        if (error.response.status == 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: this.$t("smartenu.loadAllNewsError") + ":\n" + error,
+            life: 3000,
           });
+        }
+      });
     },
 
     /**
@@ -415,20 +415,20 @@ export default {
             summary: this.$t("smartenu.saveSuccess"),
             life: 3000,
           });
+          this.selectedNews = null;
           this.getAllNews();
         }
-      })
-          .catch((error) => {
-            if (error.response.status == 401) {
-              this.$store.dispatch("logLout");
-            } else {
-              this.$toast.add({
-                severity: "error",
-                summary: this.$t("smartenu.saveNewsError") + ":\n" + error,
-                life: 3000,
-              });
-            }
+      }).catch((error) => {
+        if (error.response.status == 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: this.$t("smartenu.saveNewsError") + ":\n" + error,
+            life: 3000,
           });
+        }
+      });
     },
 
     /**
@@ -442,6 +442,7 @@ export default {
             summary: this.$t("smartenu.saveSuccess"),
             life: 3000,
           });
+          this.selectedNews = null;
           this.getAllNews();
         }
       }).catch((error) => {
