@@ -198,6 +198,11 @@
              v-html='$i18n.locale === "kz" ? vacancy.personalQualitiesKz :
                   $i18n.locale === "ru" ? vacancy.personalQualitiesRu : vacancy.personalQualitiesEn'
         />
+        <p><b>{{ $t('hr.workConditionLabel') }}</b></p>
+        <div class="p-field def-padding"
+             v-html='$i18n.locale === "kz" ? vacancy.workConditionKz :
+                  $i18n.locale === "ru" ? vacancy.workConditionRu : vacancy.workConditionEn'
+        />
       </template>
     </Card>
 

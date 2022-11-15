@@ -780,6 +780,7 @@ export default {
         languageLevelLabel: "Тілдерді меңгеру деңгейі",
         certificateRequirementsLabel: "Сертификаттардың, дипломдардың болуы",
         personalQualitiesLabel: "Жеке қасиеттері",
+        workConditionLabel: "Жұмыс шарты",
         title: {
             general: 'Жалпы ақпарат',
             degreeAndTitle: 'Ғылыми дәреже және ғылыми атақ',

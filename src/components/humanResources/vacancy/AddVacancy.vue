@@ -234,7 +234,7 @@
               <label for="kazname">Жеке қасиеттері</label>
               <Editor v-model="value.personalQualitiesKz"
                       :readonly="readonly"
-                      :class="{'p-invalid': validation.personalQualitiesRu}"
+                      :class="{'p-invalid': validation.personalQualitiesKz}"
                       editorStyle="height: 120px">
                 <template v-slot:toolbar>
                 <span class="ql-formats">
@@ -252,7 +252,32 @@
               </Editor>
               <small
                   class="p-error"
-                  v-if="validation.personalQualitiesRu"
+                  v-if="validation.personalQualitiesKz"
+              >{{ $t("common.requiredField") }}</small>
+            </div>
+            <div class="p-field">
+              <label for="kazname">Жұмыс шарты</label>
+              <Editor v-model="value.workConditionKz"
+                      :readonly="readonly"
+                      :class="{'p-invalid': validation.workConditionKz}"
+                      editorStyle="height: 120px">
+                <template v-slot:toolbar>
+                <span class="ql-formats">
+                    <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
+                    <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
+                    <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
+                  <select class="ql-align">
+                    <option defaultValue></option>ß
+                    <option value="center"></option>
+                    <option value="right"></option>
+                    <option value="justify"></option>
+                  </select>
+                </span>
+                </template>
+              </Editor>
+              <small
+                  class="p-error"
+                  v-if="validation.workConditionKz"
               >{{ $t("common.requiredField") }}</small>
             </div>
           </TabPanel>
@@ -448,6 +473,31 @@
                   v-if="validation.personalQualitiesRu"
               >{{ $t("common.requiredField") }}</small>
             </div>
+            <div class="p-field">
+              <label for="kazname">Условия работы</label>
+              <Editor v-model="value.workConditionRu"
+                      :readonly="readonly"
+                      :class="{'p-invalid': validation.workConditionRu}"
+                      editorStyle="height: 120px">
+                <template v-slot:toolbar>
+                <span class="ql-formats">
+                    <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
+                    <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
+                    <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
+                  <select class="ql-align">
+                    <option defaultValue></option>ß
+                    <option value="center"></option>
+                    <option value="right"></option>
+                    <option value="justify"></option>
+                  </select>
+                </span>
+                </template>
+              </Editor>
+              <small
+                  class="p-error"
+                  v-if="validation.workConditionRu"
+              >{{ $t("common.requiredField") }}</small>
+            </div>
           </TabPanel>
           <TabPanel header="English">
             <div class="p-field">
@@ -634,6 +684,30 @@
                   v-if="validation.personalQualitiesEn"
               >{{ $t("common.requiredField") }}</small>
             </div>
+            <div class="p-field">
+              <label for="kazname">Working conditions</label>
+              <Editor v-model="value.workConditionEn"
+                      :class="{'p-invalid': validation.workConditionEn}"
+                      editorStyle="height: 120px">
+                <template v-slot:toolbar>
+                <span class="ql-formats">
+                    <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
+                    <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
+                    <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
+                  <select class="ql-align">
+                    <option defaultValue></option>ß
+                    <option value="center"></option>
+                    <option value="right"></option>
+                    <option value="justify"></option>
+                  </select>
+                </span>
+                </template>
+              </Editor>
+              <small
+                  class="p-error"
+                  v-if="validation.workConditionEn"
+              >{{ $t("common.requiredField") }}</small>
+            </div>
           </TabPanel>
         </TabView>
       </div>
@@ -673,6 +747,7 @@ export default {
         languageLevelKz: false,
         certificateRequirementsKz: false,
         personalQualitiesKz: false,
+        workConditionKz: false,
         nameRu: false,
         responsibilitiesRu: false,
         educationRu: false,
@@ -681,6 +756,7 @@ export default {
         languageLevelRu: false,
         certificateRequirementsRu: false,
         personalQualitiesRu: false,
+        workConditionRu: false,
         nameEn: false,
         responsibilitiesEn: false,
         educationEn: false,
@@ -689,6 +765,7 @@ export default {
         languageLevelEn: false,
         certificateRequirementsEn: false,
         personalQualitiesEn: false,
+        workConditionEn: false
       },
       menu: [
         {
@@ -797,6 +874,8 @@ export default {
       this.validation.languageLevelKz = !this.value.languageLevelKz || this.value.languageLevelKz === ""
       this.validation.certificateRequirementsKz = !this.value.certificateRequirementsKz || this.value.certificateRequirementsKz === ""
       this.validation.personalQualitiesKz = !this.value.personalQualitiesKz || this.value.personalQualitiesKz === ""
+      this.validation.workConditionKz = !this.value.workConditionKz || this.value.workConditionKz === ""
+
 
       this.validation.nameRu = !this.value.nameRu || this.value.nameRu === ""
       this.validation.responsibilitiesRu = !this.value.responsibilitiesRu || this.value.responsibilitiesRu === ""
@@ -806,6 +885,8 @@ export default {
       this.validation.languageLevelRu = !this.value.languageLevelRu || this.value.languageLevelRu === ""
       this.validation.certificateRequirementsRu = !this.value.certificateRequirementsRu || this.value.certificateRequirementsRu === ""
       this.validation.personalQualitiesRu = !this.value.personalQualitiesRu || this.value.personalQualitiesRu === ""
+      this.validation.workConditionRu = !this.value.workConditionRu || this.value.workConditionRu === ""
+
 
       this.validation.nameEn = !this.value.nameEn || this.value.nameEn === ""
       this.validation.responsibilitiesEn = !this.value.responsibilitiesEn || this.value.responsibilitiesEn === ""
@@ -815,6 +896,8 @@ export default {
       this.validation.languageLevelEn = !this.value.languageLevelEn || this.value.languageLevelEn === ""
       this.validation.certificateRequirementsEn = !this.value.certificateRequirementsEn || this.value.certificateRequirementsEn === ""
       this.validation.personalQualitiesEn = !this.value.personalQualitiesEn || this.value.personalQualitiesEn === ""
+      this.validation.workConditionEn = !this.value.workConditionEn || this.value.workConditionEn === ""
+
 
       return (
           !this.validation.organization && !this.validation.department &&
@@ -823,14 +906,17 @@ export default {
           !this.validation.educationKz && !this.validation.qualificationKz &&
           !this.validation.experienceKz && !this.validation.languageLevelKz &&
           !this.validation.certificateRequirementsKz && !this.validation.personalQualitiesKz &&
+          !this.validation.workConditionKz &&
           !this.validation.nameRu && !this.validation.responsibilitiesRu &&
           !this.validation.educationRu && !this.validation.qualificationRu &&
           !this.validation.experienceRu && !this.validation.languageLevelRu &&
           !this.validation.certificateRequirementsRu && !this.validation.personalQualitiesRu &&
+          !this.validation.workConditionRu &&
           !this.validation.nameEn && !this.validation.responsibilitiesEn &&
           !this.validation.educationEn && !this.validation.qualificationEn &&
           !this.validation.experienceEn && !this.validation.languageLevelEn &&
-          !this.validation.certificateRequirementsEn && !this.validation.personalQualitiesEn
+          !this.validation.certificateRequirementsEn && !this.validation.personalQualitiesEn &&
+          !this.validation.workConditionEn
       )
     },
 
