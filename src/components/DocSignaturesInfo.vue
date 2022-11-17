@@ -66,6 +66,10 @@ export default {
       type: String,
       default: null
     },
+    showAllSignsParam: {
+      type: Boolean,
+      default: false
+    },
     /**
      * Парамер метки времени
      * default - false. Метка времени отключена.
@@ -87,6 +91,7 @@ export default {
       docInfo: null,
       loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID,
       isShow: false,
+      showAllSigns: false,
       loading: true,
       signing: false,
       file: null,
@@ -101,6 +106,7 @@ export default {
     this.isTspRequired = this.tspParam
     this.signerIin = this.signerIinParam
     this.signerType = this.signerTypeParam
+    this.showAllSigns = this.showAllSignsParam
     this.getData();
   },
   methods: {
@@ -130,7 +136,8 @@ export default {
             if (res.data) {
               this.docInfo = res.data;
               this.signatures = res.data.signatures;
-              this.isShow = this.signatures.some(x => x.userId === this.loginedUserId) || this.docInfo.docHistory.setterId === this.loginedUserId;
+              this.showAllSignsParam ? this.isShow = true :
+                  this.isShow = this.signatures.some(x => x.userId === this.loginedUserId) || this.docInfo.docHistory.setterId === this.loginedUserId;
               this.isSignShow = this.signatures.some(x => x.userId === this.loginedUserId && (x.signature || x.signature !== ''));
               this.signatures.map(e => {
                 e.sign = this.chunkString(e.signature, 1200)
