@@ -1,5 +1,7 @@
 <template>
     <div :class="containerClass" @click="onWrapperClick">
+        <ConfirmDialog></ConfirmDialog>
+        <Toast/>
         <GuideTopBar @menu-toggle="onMenuToggle" v-model:pagemenu="localpagemenu"/>
 
         <transition name="layout-sidebar">
@@ -9,15 +11,12 @@
                         <h1>SMART ENU</h1>
                     </router-link>
                     <AddGuide/>
-                    <AppMenu :model="globalMenu" @menuitem-click="onMenuItemClick"/>
+                    <MenuGuide/>
                 </div>
             </div>
         </transition>
         <div class="layout-main p-pr-0 p-pl-0">
             <div class="p-col-12">
-                <div class="card">
-                    <div class="title">Шаблоны документов</div>
-                </div>
                 <router-view v-model:pagemenu="localpagemenu"/>
             </div>
         </div>
@@ -30,9 +29,10 @@
     import GuideTopBar from "./GuideTopBar";
     import AddGuide from "./AddGuide";
     import AppFooter from '../../AppFooter.vue';
-    import AppMenu from "../../AppMenu";
+    import MenuGuide from './MenuGuide.vue';
 
     export default {
+        name: "Guide",
         setup() {
             useRoute();
         },
@@ -58,46 +58,6 @@
             }
         },
         methods: {
-            initMenu() {
-                return [
-                    {
-                        label: this.$t('common.documents'), icon: 'pi pi-fw pi-folder',
-                        items: [
-                            {
-                                label: this.$t('contracts.template'), icon: 'pi pi-fw pi-book', to: '/main-guide',
-                            },
-                            {label: this.$t('contracts.title'), icon: 'pi pi-fw pi-copy', to: '/documents/contracts'},
-                            {
-                                label: this.$t('smartenu.catalogNormDoc'),
-                                icon: 'pi pi-fw pi-folder',
-                                to: '/documents/catalog/normdoc'
-                            },
-                            {
-                                label: this.$t('educomplex.title'),
-                                icon: 'pi pi-fw pi-folder',
-                                to: '/documents/catalog/educomplex'
-                            },
-                        ]
-
-                    },
-                    {
-                        label: this.$t('common.administration'), icon: 'pi pi-fw pi-shield',
-                        items: [
-                            {
-                                label: this.$t('hr.vacancies'),
-                                icon: 'pi pi-fw pi-user-plus',
-                                to: '/human-resources/vacancies',
-                            },
-                            {
-                                label: this.$t('common.cafedra'),
-                                icon: 'pi pi-fw pi-briefcase',
-                                to: '/cafedra',
-                            },
-                        ]
-                    },
-
-                ]
-            },
             onWrapperClick() {
                 if (!this.menuClick) {
                     this.overlayMenuActive = false;
@@ -191,15 +151,8 @@
             logo() {
                 return (this.layoutColorMode === 'dark') ? "assets/layout/images/logo-white.svg" : "assets/layout/images/logo.svg";
             },
-            globalMenu() {
-                return this.initMenu();
-            }
-
-        },
-        created() {
         },
         beforeUpdate() {
-
             if (this.mobileMenuActive)
                 this.addClass(document.body, 'body-overflow-hidden');
             else
@@ -208,90 +161,17 @@
         components: {
             'AddGuide': AddGuide,
             'GuideTopBar': GuideTopBar,
-            'AppMenu': AppMenu,
+            'MenuGuide': MenuGuide,
             'AppFooter': AppFooter,
         }
     }
 </script>
 
 <style lang="scss" scoped>
-    .title {
-        font-size: 20px;
-        font-weight: 500;
-    }
 
     .p-toast.p-toast-topright {
         z-index: 1000;
         top: 70px;
     }
 
-    .customer-badge {
-        border-radius: 2px;
-        padding: 0.25em 0.5rem;
-        text-transform: uppercase;
-        font-weight: 700;
-        font-size: 12px;
-        letter-spacing: 0.3px;
-
-        &.status-vaccinated {
-            background: #c8e6c9;
-            color: #256029;
-        }
-
-        &.status-firstcomponent {
-            background: #b3e5fc;
-            color: #23547b;
-        }
-
-        &.status-noData {
-            background: #ffcdd2;
-            color: #c63737;
-        }
-
-        &.status-rejected {
-            background: #feedaf;
-            color: #ff0000;
-        }
-
-        &.status-planned {
-            background: #eccfff;
-            color: #694382;
-        }
-
-        &.status-minor {
-            background: #a2fcfc;
-            color: #00f7f7;
-        }
-
-        &.status-created {
-            background: #6c757d;
-            color: #fff;
-        }
-
-        &.status-signing {
-            background: #17a2b8;
-            color: #fff;
-        }
-
-        &.status-signed {
-            background: #28a745;
-            color: #fff;
-        }
-
-        &.status-inapproval {
-            background: #9317b8;
-            color: #ffffff;
-        }
-
-        &.status-approved {
-            background: #007bff;
-            color: #ffffff;
-        }
-
-        &.status-revision {
-            background: #ffcdd2;
-            color: #c63737;
-        }
-
-    }
 </style>

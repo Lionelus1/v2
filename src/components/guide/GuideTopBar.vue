@@ -49,8 +49,4 @@
         }
     }
 
-    .pi-question-circle {
-        margin-right: 10px;
-        font-size: 20px;
-    }
 </style>
