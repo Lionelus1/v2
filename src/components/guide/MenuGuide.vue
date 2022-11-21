@@ -145,17 +145,15 @@
                 });
             },
             delete(event) {
-                //console.log(event)
-                axios.post(smartEnuApi + `/manual/delManual/${event.manualId}`, null, {headers: getHeader()})
+                axios.post(smartEnuApi + `/manual/delManual`, {manualId: event.manualId}, {headers: getHeader()})
                     .then(response => {
-                        if (response.data.is_success) {
                             this.$toast.add({
                                 severity: "success",
                                 summary: this.$t('common.success'),
                                 life: 3000,
                             });
-                            this.getGuides();
-                        }
+                            this.getGuides(null, null);
+                            this.$router.push({ path: '/guide'});
                     }).catch(error => {
                     if (error.response && error.response.status === 401) {
                         this.$store.dispatch("logLout");
