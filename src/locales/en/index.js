@@ -902,5 +902,11 @@ export default {
     },
     ref:{
         getRef:"Get reference"
+    },
+    guide:{
+        pathName: 'Path name',
+        guideName: 'Guide name',
+        addGuide: 'Creating a guide',
+        editGuide: 'Editing a guide'
     }
 }

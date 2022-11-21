@@ -1,5 +1,5 @@
 <template>
-    <Dialog :header="$t('guide.addGuide')" :closable="false" v-model:visible="addViewVisible" :style="{width: '450px'}"
+    <Dialog :header="$t('guide.editGuide')" :closable="false" v-model:visible="editViewVisible" :style="{width: '450px'}"
             class="p-fluid">
         <div class="p-field">
             <label>{{$t('guide.pathName') }}</label>
@@ -42,57 +42,50 @@
     import {getHeader, smartEnuApi} from "@/config/config";
 
     export default {
-        name: "AddGuide",
+        name: "EditGuide",
         props: ['isVisible', 'selectedGuide'],
         data() {
             return {
-                addViewVisible: this.isVisible ?? false,
+                editViewVisible: this.isVisible ?? false,
                 formValid: [],
-                error: [],
                 guide: null,
                 submitted: false,
-                bodyParams: {
+                bodyParams: this.selectedGuide ? this.selectedGuide : {
                     parentId: null,
-                    pageLink: '',
-                    name: '',
-                    nameRu: '',
-                    nameEn: '',
+                    pageLink: null,
+                    name: null,
+                    nameRu: null,
+                    nameEn: null,
                 }
             }
         },
         methods: {
-            insertGuide() {
+            async insertGuide() {
                 this.submitted = true;
-                if (!this.validateGuides()){
-                    return;
-                }
+                this.validateGuides();
                 if (this.formValid.length > 0) {
                     return;
                 }
-                if (this.selectedGuide){
-                    this.bodyParams.parentId = this.selectedGuide.manualId
-                }
-                console.log('hoppa:  ', this.bodyParams)
-                /* axios.post(smartEnuApi + "/manual/save", this.bodyParams, {
-                     headers: getHeader(),
-                 }).then((response) => {
-                     if (response.data !== null) {
-                         this.$toast.add({
-                             severity: "success",
-                             summary: this.$t("smartenu.saveSuccess"),
-                             life: 3000,
-                         });
-                         this.closeBasic();
-                         this.guide = {};
-                     }
-                 })
-                     .catch((error) => {
-                         this.$toast.add({
-                             severity: "error",
-                             summary: this.$t("smartenu.saveEventError") + ":\n" + error,
-                             life: 3000,
-                         });
-                     });*/
+                axios.post(smartEnuApi + "/manual/save", this.bodyParams, {
+                    headers: getHeader(),
+                }).then((response) => {
+                    if (response.data !== null) {
+                        this.$toast.add({
+                            severity: "success",
+                            summary: this.$t("smartenu.saveSuccess"),
+                            life: 3000,
+                        });
+                        this.closeBasic();
+                        this.guide = {};
+                    }
+                })
+                    .catch((error) => {
+                        this.$toast.add({
+                            severity: "error",
+                            summary: this.$t("smartenu.saveEventError") + ":\n" + error,
+                            life: 3000,
+                        });
+                    });
             },
             validateGuides() {
                 this.formValid = [];
@@ -118,7 +111,7 @@
                 }
             },
             closeBasic() {
-                this.emitter.emit("addViewModalClose", false);
+                this.emitter.emit("editViewModalClose", false);
                 this.bodyParams = null
             },
         },
@@ -129,4 +122,5 @@
     .add_guide {
         margin-bottom: 10px;
     }
+
 </style>

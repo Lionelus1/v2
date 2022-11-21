@@ -1,7 +1,6 @@
 import {createRouter, createWebHashHistory} from 'vue-router';
 import Full from './components/Full.vue';
 import store from '@/store/store'
-import GuideFull from "./components/guide/GuideFull"; // your vuex store
 
 function load(component) {
     return () => import(`./components/${component}.vue`)
@@ -388,12 +387,13 @@ const routes = [
     },
     {
         path: '/guide',
-        name: '/guide',
-        component: GuideFull,
+        name: 'Guide',
+        component: load('guide/GuideFull'),
+        beforeEnter: ifAuthenticated,
         children: [
             {
-                path:'/main-guide',
-                name:'main-guide',
+                path:':id',
+                name:'MainGuide',
                 component: load('guide/MainGuide'),
                 beforeEnter: ifAuthenticated,
             },
