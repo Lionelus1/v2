@@ -92,6 +92,7 @@
   const authUser = {};
   export default {
        name : "Login",
+      components: {LanguageDropdown},
        data(){
         return {
           loginData:{

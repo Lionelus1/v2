@@ -180,7 +180,7 @@
             },
         },
         created() {
-            this.role = this.findRole(null, "personal");
+            this.role = this.findRole(null, "manual_moderator");
             this.getGuides(null, null);
         },
         mounted() {

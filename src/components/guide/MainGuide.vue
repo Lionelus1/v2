@@ -195,13 +195,13 @@
         },
         created() {
             this.getGuide();
-            this.role = this.findRole(null, "personal")
+            this.role = this.findRole(null, "manual_moderator")
         },
         watch: {
             $route(to, from) {
                 this.pageLink = to.params.id;
                 this.getGuide();
-                this.role = this.findRole(null, "personal")
+                this.role = this.findRole(null, "manual_moderator")
             }
         }
 
