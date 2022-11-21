@@ -310,7 +310,7 @@ export default {
         practiceManager: "Практика жетекшісі",
         title: "{name} кафедрасы",
         responsible: "Жауапты",
-        
+
 
     },
     contragent: {
@@ -495,7 +495,7 @@ export default {
             }
 
         },
-       
+
         signatureError: {
             extractCertificate: "CMS қолтаңбасынан пайдаланушы сертификатын алу мүмкін емес.",
             certificateNotForSigning: "Сертификат қол қоюға арналмаған",
@@ -629,7 +629,7 @@ export default {
         }
     },
     queue: {
-        
+
         title: "Кезек",
         secretary: "Қызмет көрсету",
         queues: "Кезектер",
@@ -926,5 +926,11 @@ export default {
         sendingMail:"Пошта жіберілуде, күте тұрыңыз. . .",
         mailSent:"Сіздің хатыңыз HR қызметіне сәтті жіберілді.",
         mailFailed:"Поштаңыз жіберілмеді, қайталап көріңіз."
+    },
+    guide:{
+        pathName: 'Жолдың атауы',
+        guideName: 'Анықтаманың атауы',
+        addGuide: 'Анықтаманы қосу',
+        editGuide: 'Анықтаманы өзгерту'
     }
 }

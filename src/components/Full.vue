@@ -66,6 +66,7 @@ export default {
     getLoginedUser() {
       this.loginedUser = this.$store.state.loginedUser;
     },
+
     initMenu() {
       return [
 
