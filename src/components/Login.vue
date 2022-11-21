@@ -5,6 +5,7 @@
     <div class="lang_dropdown">
         <LanguageDropdown/>
     </div>
+    <div></div>
     <div class="grid">
         <div class="col-12">
             <div class="card welcome_text_block">
