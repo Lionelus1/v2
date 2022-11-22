@@ -13,7 +13,6 @@
                 </div>
             </template>
             <template #title>
-                {{selectedNews}}
                 <div class="card_title">
                     {{
                     $i18n.locale === "kz"
