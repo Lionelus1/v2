@@ -5,6 +5,7 @@
             :style="{ width: '1000px' }"
             :modal="true"
             class="p-fluid"
+            :breakpoints="{'960px': '75vw', '640px': '90vw'}"
     >
         <Card style="box-shadow: none">
             <template #header>

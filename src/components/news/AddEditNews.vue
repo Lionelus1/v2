@@ -1,5 +1,5 @@
 <template>
-  <Dialog v-if="editVisible" v-model:visible="editVisible" :style="{ width: '1000px' }"
+  <Dialog v-if="editVisible" v-model:visible="editVisible" :style="{ width: '1000px' }" :breakpoints="{'960px': '75vw', '640px': '90vw'}"
           :header="$t('smartenu.createOrEditNews')"
           :modal="true" class="p-fluid">
     <div class="card">
