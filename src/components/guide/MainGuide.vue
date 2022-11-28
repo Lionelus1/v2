@@ -200,6 +200,7 @@
         watch: {
             $route(to, from) {
                 this.pageLink = to.params.id;
+                this.formValid = [];
                 this.getGuide();
                 this.role = this.findRole(null, "manual_moderator")
             }
