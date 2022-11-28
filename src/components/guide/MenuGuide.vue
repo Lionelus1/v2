@@ -100,9 +100,9 @@
                         } else {
                             this.guides = response.data.manuals;
                         }
-                        this.guides.map(e => {
+                        /*this.guides.map(e => {
                             e.leaf = false;
-                        })
+                        })*/
                         this.loading = false;
                     })
                     .catch((error) => {
