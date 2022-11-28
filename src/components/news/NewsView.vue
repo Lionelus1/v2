@@ -81,24 +81,4 @@
         }
     }
 
-    .news_content{
-        p{
-            img {
-                width: auto !important;
-                display: block !important;
-                margin-left: auto !important;
-                margin-right: auto !important;
-            }
-        }
-    }
-    .p-card .p-card-content{
-        font-weight: bold;
-        img {
-            width: auto !important;
-            display: block !important;
-            margin-left: auto !important;
-            margin-right: auto !important;
-        }
-    }
-
 </style>
