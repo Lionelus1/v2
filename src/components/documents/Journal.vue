@@ -100,6 +100,7 @@
             <Column field="state" :header="$t('common.state')">
               <template #body="slotProps">
                 <span :class="'customer-badge status-' + slotProps.data.docHistory.stateEn">{{$t("common.states." + slotProps.data.docHistory.stateEn)}}</span>
+                &nbsp;<i style="color:green" v-if="slotProps.data.signedByMe" class="fa-solid fa-square-check fa-xl not-approved"></i>
               </template>
             </Column>
 
@@ -173,6 +174,13 @@ export default {
           nameKz: "Қол қойылды",
           nameEn: "Signed",
           value: "signed"
+        },
+        {
+          id: 10,
+          nameRu: "Подписан мною",
+          nameKz: "Мен қол қойған",
+          nameEn: "Signed by me",
+          value: "signedByMe"
         }
       ],
       contracts: [],

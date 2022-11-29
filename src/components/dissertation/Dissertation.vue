@@ -254,12 +254,13 @@ export default {
         })
         .catch((error) => {
           if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
+            this.$store.dispatch("logLout"); 
           } 
           else {
+            console.log(error.response.data)
             this.$toast.add({
             severity: "error",
-            summary: "dissertationNewCouncilError\n" + error,
+            summary:  this.$t('common.message.' + error.response.data.error),
             life: 3000
             })
           }

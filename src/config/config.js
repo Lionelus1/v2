@@ -1,23 +1,23 @@
 import axios from "axios";
-export const apiDomain = "https://smart.enu.kz/#"; // TODO: Production салганда коммент шыгару керек
-//export const apiDomain = "http://smart.enu.kz:8082/#";
+//export const apiDomain = "https://smart.enu.kz/#"; // TODO: Production салганда коммент шыгару керек
+export const apiDomain = "http://smart.enu.kz:8082/#";
 
 export const fileRoute = "/serve?path="
 
-export const signerApi = "https://smart.enu.kz:6990"
-//export const signerApi = "http://10.1.1.161:6990"
+//export const signerApi = "https://smart.enu.kz:6990"
+export const signerApi = "http://10.1.1.161:6990"
 
-export const smartEnuApi = "https://smart.enu.kz:8081"
+//export const smartEnuApi = "https://smart.enu.kz:8081"
 //export const smartEnuApi = "http://smart.enu.kz:8090"
-//export const smartEnuApi = "http://localhost:8090"
+export const smartEnuApi = "http://localhost:8090"
 
-//export const socketApi = "ws://localhost:8090" // dev server
+export const socketApi = "ws://localhost:8090" // dev server
 //export const socketApi = "ws://smart.enu.kz:8090" //test server
-export const socketApi = "wss://smart.enu.kz:8081" //prod server
+//export const socketApi = "wss://smart.enu.kz:8081" //prod server
 
-//export const queueApi = "http://localhost:8088"
+export const queueApi = "http://localhost:8088"
 //export const queueApi = "http://smart.enu.kz:8088"
-export const queueApi = "https://smart.enu.kz:8088"
+//export const queueApi = "https://smart.enu.kz:8088"
 
 export const header  = {
   "Accept": "application/json",
