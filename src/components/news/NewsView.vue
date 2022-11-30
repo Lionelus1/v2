@@ -5,6 +5,7 @@
             :modal="true"
             class="p-fluid"
             :closable="false"
+            :breakpoints="{'960px': '75vw', '640px': '90vw'}"
     >
         <Card style="box-shadow: none">
             <template #header>
@@ -13,7 +14,6 @@
                 </div>
             </template>
             <template #title>
-                {{selectedNews}}
                 <div class="card_title">
                     {{
                     $i18n.locale === "kz"
@@ -78,26 +78,6 @@
     @media (max-width: 780px) {
         .dialog_img {
             padding: 0;
-        }
-    }
-
-    .news_content{
-        p{
-            img {
-                width: auto !important;
-                display: block !important;
-                margin-left: auto !important;
-                margin-right: auto !important;
-            }
-        }
-    }
-    .p-card .p-card-content{
-        font-weight: bold;
-        img {
-            width: auto !important;
-            display: block !important;
-            margin-left: auto !important;
-            margin-right: auto !important;
         }
     }
 

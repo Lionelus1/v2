@@ -7,7 +7,7 @@ export const fileRoute = "/serve?path="
 
 
 //export const signerApi = "https://smart.enu.kz:6990"
-export const signerApi = "http://10.1.1.161:6990"
+export const signerApi = "http://10.255.140.4:6990"
 
 //export const smartEnuApi = "https://smart.enu.kz:8081"
 export const smartEnuApi = "http://smart.enu.kz:8090"

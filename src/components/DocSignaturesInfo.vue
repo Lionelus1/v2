@@ -45,7 +45,7 @@ import SignatureQrPdf from "@/components/ncasigner/SignatureQrPdf";
 import {runNCaLayer, makeTimestampForSignature} from "@/helpers/SignDocFunctions"
 
 import axios from "axios";
-import {getHeader, smartEnuApi, b64toBlob} from "@/config/config";
+import {getHeader, smartEnuApi, b64toBlob, findRole} from "@/config/config";
 import html2pdf from "html2pdf.js";
 import DocInfo from "@/components/ncasigner/DocInfo";
 
@@ -110,6 +110,7 @@ export default {
     this.getData();
   },
   methods: {
+    findRole: findRole,
     b64toBlob: b64toBlob,
     showMessage(msgtype, message, content) {
       this.$toast.add({severity: msgtype, summary: message, detail: content, life: 3000});
@@ -137,7 +138,7 @@ export default {
               this.docInfo = res.data;
               this.signatures = res.data.signatures;
               this.showAllSignsParam ? this.isShow = true :
-                  this.isShow = this.signatures.some(x => x.userId === this.loginedUserId) || this.docInfo.docHistory.setterId === this.loginedUserId;
+                  this.isShow = this.findRole(null, "career_moderator") || this.signatures.some(x => x.userId === this.loginedUserId) || this.docInfo.docHistory.setterId === this.loginedUserId;
               this.isSignShow = this.signatures.some(x => x.userId === this.loginedUserId && (x.signature || x.signature !== ''));
               this.signatures.map(e => {
                 e.sign = this.chunkString(e.signature, 1200)
