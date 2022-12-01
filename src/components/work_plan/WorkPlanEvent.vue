@@ -49,7 +49,7 @@
     <div class="card">
 
       <TreeTable ref="workplantreetable" class="p-treetable-sm" :value="data" :lazy="true" :loading="loading"
-                 @nodeExpand="onExpand" :scrollable="true" scrollHeight="flex" responsiveLayout="scroll">
+                 @nodeExpand="onExpand" :scrollable="true" scrollHeight="flex" responsiveLayout="scroll" showGridlines>
         <template #header>
           <div class="p-d-flex p-jc-between p-ai-center">
             <h5 class="p-m-0">{{ $t('workPlan.events') }} |
