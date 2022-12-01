@@ -61,7 +61,7 @@
                 <label>{{ $t('workPlan.eventName') }}</label>
                 <InputText v-model="event.event_name" disabled/>
               </div>
-              <div class="p-field" v-if="plan && plan.is_oper">
+              <div class="p-field" v-if="plan && plan.is_oper && !authUser.mainPosition.department.isFaculty">
                 <label>{{ $t('common.fact') }}</label>
                 <InputText v-model="fact" @input="factChange"/>
               </div>
@@ -390,6 +390,7 @@ export default {
           label: this.$t('common.toCorrect'),
           icon: "pi pi-fw pi-send",
           disabled: !this.resultData,
+          visible: !this.authUser.mainPosition.department.isFaculty,
           command: () => {
             this.sendResultForVerification();
           },

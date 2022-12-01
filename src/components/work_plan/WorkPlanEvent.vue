@@ -121,7 +121,7 @@
           <template #body="{node}">
             <span
                 :class="'customer-badge status-' + node.status.work_plan_event_status_id">{{
-                $i18n.locale === "kz" ? slotProps.node.status.name_kz : $i18n.locale === "ru" ? node.status.name_ru : node.status.name_en
+                $i18n.locale === "kz" ? node.status.name_kz : $i18n.locale === "ru" ? node.status.name_ru : node.status.name_en
               }}</span>
           </template>
         </Column>
