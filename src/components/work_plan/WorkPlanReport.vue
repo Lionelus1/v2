@@ -45,6 +45,11 @@
             <p v-if="data.reject_history"> {{ data.reject_history.message }} </p>
           </template>
         </Column>
+        <Column :header="$t('faq.createDate')">
+          <template #body="{ data }">
+            <p v-if="data.created_date"> {{ formatDateMoment(data.created_date) }} </p>
+          </template>
+        </Column>
         <Column>
           <template #body="{ data }">
             <Button type="button" v-if="data.creator_id === loginedUserId && data.status.work_plan_status_id === 1"
@@ -61,6 +66,7 @@
 import WorkPlanReportModal from "@/components/work_plan/WorkPlanReportModal";
 import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
+import moment from "moment/moment";
 
 export default {
   name: "WorkPlanReport",
@@ -180,6 +186,9 @@ export default {
           });
         }
       });
+    },
+    formatDateMoment(date) {
+      return moment(new Date(date)).utc().format("DD.MM.YYYY HH:mm:ss")
     },
     initReportType(type, halfYearType) {
       let result = "";
