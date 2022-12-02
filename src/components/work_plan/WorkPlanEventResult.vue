@@ -1,6 +1,7 @@
 <template>
   <ConfirmPopup group="deleteResult"></ConfirmPopup>
-  <vue-element-loading :active="isBlockUI" is-full-screen color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)" />
+  <vue-element-loading :active="isBlockUI" is-full-screen color="#FFF" size="80" :text="$t('common.loading')"
+                       backgroundColor="rgba(0, 0, 0, 0.4)"/>
   <div class="p-col-12" v-if="plan && event">
     <div class="card">
       <div v-if="!resultId" @click="navigateToBack" class="p-d-inline-block"><i class="fa-solid fa-arrow-left p-mr-3"
@@ -45,7 +46,9 @@
       <TabView v-model:activeIndex="activeIndex" @tab-change="changeTab">
         <TabPanel :header="$t('common.properties')">
           <div
-              v-if="event && (event.status.work_plan_event_status_id === 1 || event.status.work_plan_event_status_id === 4 || event.status.work_plan_event_status_id === 6)">
+              v-if="event &&
+              !isPlanCreator &&
+              (event.status.work_plan_event_status_id === 1 || event.status.work_plan_event_status_id === 4 || event.status.work_plan_event_status_id === 6)">
             <Menubar :model="userMenuItems" :key="active"
                      style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
           </div>
@@ -54,9 +57,13 @@
             <Menubar :model="verifyMenu" :key="active"
                      style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
           </div>
+          {{
+            ((!isPlanCreator && isCurrentUserApproval && event.status.work_plan_event_status_id !== 5 && event.status.work_plan_event_status_id !== 2) && (isCurrentUserApproval && event.status.work_plan_event_status_id !== 5 && event.status.work_plan_event_status_id !== 2))
+          }}
           <div class="p-grid p-mt-3">
+
             <div class="p-fluid p-sm-12 p-md-12 p-lg-6 p-xl-6"
-                 v-if="event && (event.status.work_plan_event_status_id !== 5 && event.status.work_plan_event_status_id !== 2)">
+                 v-if="((!isPlanCreator && isCurrentUserApproval && event.status.work_plan_event_status_id !== 5 && event.status.work_plan_event_status_id !== 2) && (isCurrentUserApproval && event.status.work_plan_event_status_id !== 5 && event.status.work_plan_event_status_id !== 2))">
               <div class="p-field">
                 <label>{{ $t('workPlan.eventName') }}</label>
                 <InputText v-model="event.event_name" disabled/>
@@ -67,7 +74,8 @@
               </div>
               <div class="p-field">
                 <label>{{ $t('common.result') }}</label>
-                <RichEditor v-if="plan && !plan.is_oper" v-model="result" editorStyle="height:300px;" :clearOnPaste="true"
+                <RichEditor v-if="plan && !plan.is_oper" v-model="result" editorStyle="height:300px;"
+                            :clearOnPaste="true"
                             @text-change="editorChange">
                   <template v-slot:toolbar>
                     <span class="ql-formats">
@@ -77,7 +85,8 @@
                     </span>
                   </template>
                 </RichEditor>
-                <RichEditor ref="planEditor" v-if="plan && plan.is_oper" v-model="newResult" editorStyle="height:300px;" :clearOnPaste="true"
+                <RichEditor ref="planEditor" v-if="plan && plan.is_oper" v-model="newResult" editorStyle="height:300px;"
+                            :clearOnPaste="true"
                             @text-change="editorChange">
                   <template v-slot:toolbar>
                     <span class="ql-formats">
@@ -249,6 +258,7 @@ import {getHeader, smartEnuApi} from "@/config/config";
 import {getMultipartHeader} from "../../config/config";
 import RichEditor from "../documents/editor/RichEditor";
 import moment from "moment";
+import {WorkPlanService} from '../../service/work.plan.service'
 
 export default {
   name: "WorkPlanEventResult",
@@ -279,7 +289,10 @@ export default {
       uploadPercent: 0,
       isBlockUI: false,
       authUser: JSON.parse(localStorage.getItem("loginedUser")),
-      quill: null
+      quill: null,
+      isPlanCreator: false,
+      isCurrentUserApproval: false,
+      planService: new WorkPlanService()
     }
   },
   computed: {
@@ -325,14 +338,21 @@ export default {
   },
   methods: {
     getEvent() {
-      axios.get(smartEnuApi + `/workPlan/getWorkPlanEventById/${this.event_id}`, {headers: getHeader()})
-          .then(res => {
-            if (res.data) {
-              this.event = res.data.event;
-              this.plan = res.data.plan;
-              this.getData();
-            }
-          }).catch(error => {
+      this.planService.getEventById(this.event_id).then(res => {
+        if (res.data) {
+          this.event = res.data.event;
+          this.plan = res.data.plan;
+          if (this.plan && this.plan.user.id === this.loginedUserId) {
+            this.isPlanCreator = true;
+          } else {
+            this.isPlanCreator = false;
+            //this.$router.push('/work-plan')
+          }
+          if (this.event && this.event.user)
+            this.isCurrentUserApproval = this.event.user.find(e => e.id === this.loginedUserId) !== null;
+          this.getData();
+        }
+      }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
@@ -345,18 +365,17 @@ export default {
       });
     },
     getData() {
-      axios.get(smartEnuApi + `/workPlan/getWorkPlanEventResult/${this.event.work_plan_event_id}`, {headers: getHeader()})
-          .then(res => {
-            if (res.data) {
-              this.resultData = res.data;
-              if (this.resultData.result_text != null) {
-                this.resultData.result_text.map(e => {
-                  e.isActive = false;
-                });
-              }
-              this.fact = this.resultData.fact;
-            }
-          }).catch(error => {
+      this.planService.getEventResult(this.event.work_plan_event_id).then(res => {
+        if (res.data) {
+          this.resultData = res.data;
+          if (this.resultData.result_text != null) {
+            this.resultData.result_text.map(e => {
+              e.isActive = false;
+            });
+          }
+          this.fact = this.resultData.fact;
+        }
+      }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
@@ -405,8 +424,11 @@ export default {
       fd.append('result', this.plan.is_oper ? this.newResult ? this.newResult : "" : this.result);
       if (this.plan && this.plan.is_oper) {
         fd.append("is_partially", true);
-        fd.append("fact", this.fact)
       }
+
+      if (!this.authUser.mainPosition.department.isFaculty)
+        fd.append("fact", this.fact)
+
       if (this.plan && this.plan.is_oper && this.resultData)
         fd.append("result_id", this.resultData.event_result_id);
       if (this.files.length > 0) {
@@ -414,7 +436,7 @@ export default {
           fd.append('files', file)
         }
       }
-      axios.post(smartEnuApi + `/workPlan/saveResult`, fd, {headers: getMultipartHeader()}).then(res => {
+      this.planService.saveEventResult(fd).then(res => {
         if (res.data.is_success || res.data.is_fact_success) {
           //this.getData();
           this.getEvent();
@@ -437,10 +459,11 @@ export default {
       });
     },
     sendResultForVerification() {
-      axios.post(smartEnuApi + `/workPlan/sendEventResultForVerify`, {
+      let data = {
         event_id: parseInt(this.event.work_plan_event_id),
         result_id: parseInt(this.resultData.event_result_id)
-      }, {headers: getHeader()}).then(res => {
+      }
+      this.planService.sendResultToVerify(data).then(res => {
         if (res.data.is_success) {
           this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
           this.getEvent();
@@ -458,12 +481,11 @@ export default {
       });
     },
     getResultHistory() {
-      axios.get(smartEnuApi + `/workPlan/getWorkPlanEventResultHistory/${this.resultData.event_result_id}`, {headers: getHeader()})
-          .then(res => {
-            if (res.data) {
-              this.history = res.data;
-            }
-          }).catch(error => {
+      this.planService.getEventResultHistory(this.resultData.event_result_id).then(res => {
+        if (res.data) {
+          this.history = res.data;
+        }
+      }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
@@ -487,20 +509,19 @@ export default {
         data.result_id = this.resultData.event_result_id;
       }
 
-      axios.post(smartEnuApi + `/workPlan/verifyEventResult`, data, {headers: getHeader()})
-          .then(res => {
-            //console.log(res);
-            if (res.data && res.data.is_success) {
-              this.toCorrectSidebar = false;
-              this.$toast.add({
-                severity: 'success',
-                summary: this.$t('common.success'),
-                life: 3000,
-              });
-              this.getEvent();
-              //this.$router.push({name: 'WorkPlanEvent', params: {id: this.event.work_plan_id}});
-            }
-          }).catch(error => {
+      this.planService.verifyEventResult(data).then(res => {
+        //console.log(res);
+        if (res.data && res.data.is_success) {
+          this.toCorrectSidebar = false;
+          this.$toast.add({
+            severity: 'success',
+            summary: this.$t('common.success'),
+            life: 3000,
+          });
+          this.getEvent();
+          //this.$router.push({name: 'WorkPlanEvent', params: {id: this.event.work_plan_id}});
+        }
+      }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
@@ -596,7 +617,7 @@ export default {
       if (this.isFactChanged)
         fd.append("fact", this.fact)
       fd.append("text", item.text)
-      axios.post(smartEnuApi + `/workPlan/editResult`, fd, {headers: getHeader()}).then(res => {
+      this.planService.editEventResult(fd).then(res => {
         if (res.data.is_success) {
           this.getEvent();
           this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
@@ -634,7 +655,7 @@ export default {
       });
     },
     deleteItem(id) {
-      axios.post(smartEnuApi + `/workPlan/deleteResult/${id}`, null, {headers: getHeader()}).then(res => {
+      this.planService.deleteEventResult(id).then(res => {
         if (res.data.is_success) {
           this.getEvent();
           this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
@@ -666,7 +687,7 @@ export default {
       });
     },
     deleteFile(id) {
-      axios.post(smartEnuApi + `/workPlan/deleteResultFile/${id}`, null, {headers: getHeader()}).then(res => {
+      this.planService.deleteResultFile(id).then(res => {
         if (res.data.is_success) {
           this.getEvent();
           this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
@@ -710,17 +731,17 @@ export default {
         method: 'GET',
         headers: getHeader()
       })
-      .then(response => response.blob())
-      .then(blob => {
-        var url = window.URL.createObjectURL(blob);
-        var a = document.createElement('a');
-        a.href = url;
-        a.download = file.file_name;
-        document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
-        a.click();
-        a.remove();
-        this.isBlockUI = false;
-      }).catch(error => {
+          .then(response => response.blob())
+          .then(blob => {
+            var url = window.URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = file.file_name;
+            document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
+            a.click();
+            a.remove();
+            this.isBlockUI = false;
+          }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
