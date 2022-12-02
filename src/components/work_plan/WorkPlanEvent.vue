@@ -623,7 +623,7 @@ export default {
     clearFilter() {
       this.filters.name.value = null
       this.filters.status.value = null
-      this.filters.department.value = null
+      this.filters.author.value = null
       delete this.lazyParams.filters
       this.getEventsTree();
     },
