@@ -3,10 +3,6 @@
         <button class="p-link layout-menu-button" @click="onMenuToggle">
             <span class="pi pi-bars"></span>
         </button>
-        <Button v-if="($route.name=='organizations') || ($route.name=='persons')" class="p-ml-5 p-button"
-                style="height:27px;background-color: #e3f2fd;color: #495057;" icon="pi pi-plus"
-                :label="$t('common.createNew')" @click="toggle" aria-haspopup="true" aria-controls="overlay_menu"/>
-        <Menu id="overlay_menu" ref="menu" :model="pagemenu" :popup="true"/>
         <div class="layout-topbar-icons">
             <LanguageDropdown/>
         </div>

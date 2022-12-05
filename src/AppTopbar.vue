@@ -8,7 +8,7 @@
                 :label="$t('common.createNew')" @click="toggle" aria-haspopup="true" aria-controls="overlay_menu"/>
         <Menu id="overlay_menu" ref="menu" :model="pagemenu" :popup="true"/>
         <div class="layout-topbar-icons">
-            <!--<router-link to="/guide"><i class="pi pi-question-circle"></i></router-link>-->
+            <i @click="navigate()" class="pi pi-question-circle guide"></i>
             <LanguageDropdown/>
         </div>
     </div>
@@ -32,12 +32,20 @@
             onMenuToggle(event) {
                 this.$emit('menu-toggle', event);
             },
+            navigate() {
+               this.$router.push({name: 'MainGuide', params: {id: this.$route.path}});
+            },
         }
     }
 </script>
 
 
 <style scoped>
+
+    .guide{
+            cursor: pointer;
+    }
+
     @media print {
         .no-print, .no-print * {
             display: none !important;

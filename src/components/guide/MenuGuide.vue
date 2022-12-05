@@ -1,36 +1,22 @@
 <template>
-    <Button v-show="role"
-            :label="$t('common.add')"
-            icon="pi pi-plus"
-            class="p-button-success p-mr-2 add_guide"
-            @click="createGuide()"
-    />
-    <TreeTable class="p-treetable-sm" :value="guides" :loading="loading" :lazy="true"
-               @nodeExpand="onExpand" @page="onPage"
-               selectionMode="single" v-model:selectionKeys="currentNode">
-        <Column field="queueName" :expander="true">
-        </Column>
-        <Column field="responsibles">
+    <TreeTable class="tree_table p-treetable-sm" :value="guides" :loading="loading" :lazy="true"
+               @nodeExpand="onExpand" @page="onPage" :expandedKeys="expandedKeys"
+               selectionMode="single" v-model:selectionKeys="currentNode" @nodeSelect="navigateToEvent">
+        <Column :expander="true">
             <template #body="slotProps">
-                <div>
-                    <div v-for="i in slotProps" :key="i">
-                        <!--<a @click="navigateToEvent(i)"></a>-->
-                        <div @click="navigateToEvent(i)">
+                    <span v-for="i in slotProps" :key="i" class="menu_text" :class="[{'active': currentNode === i}]">
                             {{$i18n.locale === 'kz'
                             ? i.name
                             : $i18n.locale === 'ru'
                             ? i.nameRu
                             : i.nameEn}}
-                        </div>
-                    </div>
-                </div>
-
+                </span>
             </template>
         </Column>
         <Column>
             <template #body="slotProps">
                 <div v-show="role">
-                    <Button type="button" icon="fa-solid fa-cog"
+                    <Button type="button" icon="pi pi-fw pi-cog"
                             @click="onNodeSelect(slotProps.node),toggle('op', $event)"
                             aria-controls="overlay_panel" class="p-button-link"/>
                     <OverlayPanel ref="op">
@@ -72,6 +58,7 @@
         data() {
             return {
                 role: {},
+                bg: "color: black",
                 currentNode: null,
                 findRole: findRole,
                 selectedGuide: {},
@@ -83,39 +70,57 @@
                     parentId: null,
                 },
                 guides: [],
-                parent: null
+                parent: null,
+                routePath: this.$route.params.id,
+                parentGuideId: null
             }
         },
         methods: {
             getGuides(parentId, parent) {
                 this.lazyParams.parentId = parentId
                 this.loading = true
-                axios
-                    .post(smartEnuApi + "/manual/getManuals", this.lazyParams, {
-                        headers: getHeader(),
-                    })
-                    .then((response) => {
-                        if (parentId !== null) {
-                            parent.children = response.data.manuals;
-                        } else {
-                            this.guides = response.data.manuals;
+                axios.post(smartEnuApi + "/manual/getManuals", this.lazyParams, {
+                    headers: getHeader(),
+                }).then((response) => {
+                    if (parentId !== null) {
+                        parent.children = response.data.manuals;
+                        parent.children.map(e => {
+                            e.leaf = !e.children;
+                            if (e.pageLink === this.routePath) {
+                                this.currentNode = e;
+                            }
+                        })
+                    } else {
+                        this.guides = response.data.manuals;
+                        this.guides.map(e => {
+                            e.leaf = !e.children;
+                            if (e.pageLink === this.routePath) {
+                                this.currentNode = e;
+                            }
+                        });
+                    }
+
+                    if (this.parentGuideId) {
+                        let parentGuide = this.guides.find(x => x.key === this.parentGuideId);
+                        if (parentGuide) {
+                            this.parentGuideId = null;
+                            this.onExpand(parentGuide)
+                            this.expandedKeys[parentGuide.key] = true;
                         }
-                        /*this.guides.map(e => {
-                            e.leaf = false;
-                        })*/
-                        this.loading = false;
-                    })
-                    .catch((error) => {
-                        if (error.response.status === 401) {
-                            this.$store.dispatch("logLout");
-                        } else {
-                            this.$toast.add({
-                                severity: "error",
-                                summary: this.$t("smartenu.loadAllNewsError") + ":\n" + error,
-                                life: 3000,
-                            });
-                        }
-                    });
+                    }
+
+                    this.loading = false;
+                }).catch((error) => {
+                    if (error.response.status === 401) {
+                        this.$store.dispatch("logLout");
+                    } else {
+                        this.$toast.add({
+                            severity: "error",
+                            summary: this.$t("smartenu.loadAllNewsError") + ":\n" + error,
+                            life: 3000,
+                        });
+                    }
+                });
             },
             toggle(ref, event) {
                 this.$refs[ref].toggle(event);
@@ -132,7 +137,6 @@
                 this.editViewVisible = true;
             },
             delGuide(event) {
-                console.log('rr', event.manualId)
                 this.$confirm.require({
                     message: this.$t('common.doYouWantDelete'),
                     header: this.$t('common.delete'),
@@ -147,13 +151,13 @@
             delete(event) {
                 axios.post(smartEnuApi + `/manual/delManual`, {manualId: event.manualId}, {headers: getHeader()})
                     .then(response => {
-                            this.$toast.add({
-                                severity: "success",
-                                summary: this.$t('common.success'),
-                                life: 3000,
-                            });
-                            this.getGuides(null, null);
-                            this.$router.push({ path: '/guide'});
+                        this.$toast.add({
+                            severity: "success",
+                            summary: this.$t('common.success'),
+                            life: 3000,
+                        });
+                        this.getGuides(null, null);
+                        this.$router.push({path: '/guide'});
                     }).catch(error => {
                     if (error.response && error.response.status === 401) {
                         this.$store.dispatch("logLout");
@@ -167,7 +171,8 @@
                 });
             },
             navigateToEvent(event) {
-                this.$router.push({name: 'MainGuide', params: {id: event.pageLink}});
+                if (!event.children)
+                    this.$router.push({name: 'MainGuide', params: {id: event.pageLink}});
             },
             onExpand(node) {
                 this.getGuides(node.key, node)
@@ -179,22 +184,40 @@
         },
         created() {
             this.role = this.findRole(null, "manual_moderator");
-            this.getGuides(null, null);
         },
         mounted() {
+            this.getGuides(null, null);
             this.emitter.on('addViewModalClose', data => {
-                this.addViewVisible = data;
-                this.getGuides(null, null);
+                if (data) {
+                    this.addViewVisible = false;
+                    this.getGuides(null, null);
+                }
             });
             this.emitter.on('editViewModalClose', data => {
-                this.editViewVisible = data;
-                this.getGuides(null, null);
+                if (data) {
+                    this.editViewVisible = false;
+                    this.getGuides(null, null);
+                }
+            });
+            this.emitter.on('expandParentGuide', data => {
+                if (data) {
+                    this.expandedKeys = {};
+                    this.parentGuideId = data;
+
+                }
             });
         },
     }
 </script>
 
 <style lang="scss" scoped>
+    .bg {
+        background: red;
+    }
+
+    .menu_text.active {
+        color: #007bff;
+    }
 
     .overlay_buttons {
         width: 120px;

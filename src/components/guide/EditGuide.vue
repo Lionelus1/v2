@@ -48,7 +48,6 @@
             return {
                 editViewVisible: this.isVisible ?? false,
                 formValid: [],
-                guide: null,
                 submitted: false,
                 bodyParams: this.selectedGuide ? this.selectedGuide : {
                     parentId: null,
@@ -56,7 +55,10 @@
                     name: null,
                     nameRu: null,
                     nameEn: null,
-                }
+                },
+                lazyParams: {
+                    parentId: null,
+                },
             }
         },
         methods: {
@@ -76,7 +78,6 @@
                             life: 3000,
                         });
                         this.closeBasic();
-                        this.guide = {};
                     }
                 })
                     .catch((error) => {
@@ -85,6 +86,40 @@
                             summary: this.$t("smartenu.saveEventError") + ":\n" + error,
                             life: 3000,
                         });
+                    });
+            },
+            getGuides(parentId, parent) {
+                this.lazyParams.parentId = parentId
+                axios.post(smartEnuApi + "/manual/getManuals", this.lazyParams, {
+                        headers: getHeader()}).then((response) => {
+                        if (parentId !== null) {
+                            parent.children = response.data.manuals;
+                            parent.children.map(e => {
+                                e.leaf = !e.children;
+                                e.label = e.name;
+                                delete e.children
+                            })
+                        } else {
+                            this.categories = response.data.manuals;
+                            this.categories.map(e => {
+                                e.leaf = !e.children;
+                                e.label = e.name;
+                                delete e.children
+                            })
+                        }
+
+                        this.loading = false;
+                    })
+                    .catch((error) => {
+                        if (error.response.status === 401) {
+                            this.$store.dispatch("logLout");
+                        } else {
+                            this.$toast.add({
+                                severity: "error",
+                                summary: this.$t("smartenu.loadAllNewsError") + ":\n" + error,
+                                life: 3000,
+                            });
+                        }
                     });
             },
             validateGuides() {
@@ -111,10 +146,13 @@
                 }
             },
             closeBasic() {
-                this.emitter.emit("editViewModalClose", false);
+                this.emitter.emit("editViewModalClose", true);
                 this.bodyParams = null
             },
         },
+        created() {
+            this.getGuides(null, null);
+        }
     }
 </script>
 

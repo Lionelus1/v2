@@ -907,6 +907,7 @@ export default {
         pathName: 'Path name',
         guideName: 'Guide name',
         addGuide: 'Creating a guide',
-        editGuide: 'Editing a guide'
+        editGuide: 'Editing a guide',
+        notGuide: 'There is no guide for this page yet!',
     }
 }
