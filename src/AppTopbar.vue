@@ -8,7 +8,7 @@
                 :label="$t('common.createNew')" @click="toggle" aria-haspopup="true" aria-controls="overlay_menu"/>
         <Menu id="overlay_menu" ref="menu" :model="pagemenu" :popup="true"/>
         <div class="layout-topbar-icons">
-            <i @click="navigate()" class="pi pi-question-circle guide"></i>
+            <!--<i @click="navigate()" class="pi pi-question-circle guide"></i>-->
             <LanguageDropdown/>
         </div>
     </div>
