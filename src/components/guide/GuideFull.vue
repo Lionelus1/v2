@@ -8,7 +8,7 @@
             <div :class="sidebarClass" @click="onSidebarClick" v-show="isSidebarVisible()">
                 <div class="layout-logo">
                     <router-link to="/">
-                        <h1>SMART ENU</h1>
+                        <h3>SMART ENU</h3>
                     </router-link>
                     <AddGuide/>
                     <MenuGuide/>
@@ -172,6 +172,12 @@
     .p-toast.p-toast-topright {
         z-index: 1000;
         top: 70px;
+    }
+    .layout-logo{
+        margin: 0;
+        h3{
+            margin: 10px 0;
+        }
     }
 
 </style>

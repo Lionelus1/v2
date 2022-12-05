@@ -33,9 +33,7 @@ import AppMenu from '../AppMenu.vue';
 import AppConfig from '../AppConfig.vue';
 import AppFooter from '../AppFooter.vue';
 import {useRoute} from "vue-router"
-import Enum from "@/enum/docstates"
-import {mapState} from "vuex";
-import { throwStatement } from '@babel/types';
+import {MenuService} from "../service/menu.service";
 
 export default {
   setup() {
@@ -54,6 +52,7 @@ export default {
       overlayMenuActive: false,
       mobileMenuActive: false,
       localpagemenu: this.pagemenu,
+      menuService: new MenuService()
     }
   },
 
@@ -69,162 +68,8 @@ export default {
     },
 
     initMenu() {
-      return [
-
-        //  {
-        //    label: this.$t('common.administration'), icon: 'pi pi-fw pi-shield',
-        //    items: [
-        //      {
-        //        label: this.$t('hr.vacancies'),
-        //        icon: 'pi pi-fw pi-user-plus',
-        //        to: '/human-resources/vacancies'
-        //      },
-        //    ]ß
-//
-        //  },
-        {
-          label: this.$t('common.documents'), icon: 'pi pi-fw pi-folder',
-          items: [
-            {label: this.$t('contracts.template'), icon: 'pi pi-fw pi-book', to: '/documents/doctemplate',
-              visible: !this.findRole("student")
-            },
-            {label: this.$t('contracts.title'), icon: 'pi pi-fw pi-copy', to: '/documents/contracts'},
-            {
-              label: this.$t('smartenu.catalogNormDoc'), icon: 'pi pi-fw pi-folder', to: '/documents/catalog/normdoc'
-            },
-            {
-              label: this.$t('educomplex.title'), icon: 'pi pi-fw pi-folder', to: '/documents/catalog/educomplex'
-            },
-          ]
-
-        },
-        {
-          label: this.$t('common.administration'), icon: 'pi pi-fw pi-shield',
-          items: [
-            {
-              label: this.$t('hr.vacancies'),
-              icon: 'pi pi-fw pi-user-plus',
-              to: '/human-resources/vacancies',
-              visible: this.isVacancyRightsValidity()
-            },
-            {
-              label: this.$t('common.cafedra'),
-              icon: 'pi pi-fw pi-briefcase',
-              to: '/cafedra',
-              visible: this.findRole("dephead") || this.findRole("practice_responsible")
-            },
-          ]
-        },
-        {
-          label: this.$t('common.contragents'), icon: 'pi pi-fw pi-users',
-          visible: !this.findRole("student"),
-
-          items: [
-            {label: this.$t('common.organizations'), icon: 'pi pi-fw pi-home', to: '/contragent/organizations'},
-            //{label: 'Банктер', icon: 'pi pi-fw pi-money-bill', to: '/contragent/banks'},
-            // {
-            //   label: 'Жеке тұлғалар',
-            //   icon: 'pi pi-fw pi-user',
-            //   to: '/contragent/persons/' + Enum.PersonType.IndividualEntrepreneur
-            // },
-            {
-              label: this.$t('common.personal'),
-              icon: 'pi pi-fw pi-user',
-              to: '/contragent/persons/' + Enum.PersonType.OrganizationMember
-            }
-          ]
-        },
-        // {
-        //     label: 'HDFS', icon: 'pi pi-fw pi-folder', to: '/hdfs/hdfsmain'
-        // },
-        {
-
-          label: this.$t('smartenu.newsTitle'), icon: 'pi pi-fw pi-users',
-          items: [
-            {
-              label: this.$t('smartenu.categories'),
-              icon: 'pi pi-fw pi-home',
-              to: '/newscategories/cattable'
-            },
-            {label: this.$t('smartenu.newsList'), icon: 'pi pi-fw pi-money-bill', to: '/news'},
-          ]
-        },
-
-        {
-          label: this.$t('smartenu.eventsTitle'), icon: 'pi pi-fw pi-folder', to: '/events'
-        },
-
-
-        {
-          label: this.$t('vaccination.title'), icon: 'pi pi-fw pi-check-circle', to: '/smartenu/vaccination'
-        },
-        // {
-        //   label:  this.$t('faq.title'), icon: 'pi pi-fw pi-question-circle', to: '/faq/faqmain'
-        // },
-        {
-          label:  this.$t('publicReception.title'), icon: 'pi pi-fw pi-question-circle', to: '/reception'
-        },
-        {
-          label:  this.$t('dissertation.title'), icon: 'pi pi-fw pi-book',
-          items: [
-            {
-              label:  this.$t('dissertation.council.list'), icon: 'pi pi-fw pi-list', to: '/dissertation', visible : this.isDissertationAdmin() || this.findRole("dissertation_council_secretary")
-            },
-            {
-              label:  this.$t('dissertation.doctoralCard'), icon: 'pi pi-fw pi-users', to: '/dissertation/doctorals', visible : this.isRoleGroupMember("dissertation_council") ||  this.isDissertationAdmin()
-            }
-          ]
-
-        },
-        {
-          label: this.$t('workPlan.plans'), icon: 'pi pi-fw pi-folder', to: '/work-plan'
-        },
-        {
-          label: this.$t('common.forStudentsAndGraduates'), icon: 'pi pi-fw pi-users',
-          items: [
-            {
-              label: this.$t('hr.vacancies'),
-              icon: 'pi pi-fw pi-user-plus',
-              to: '/human-resources/career/vacancies'
-            },
-          ]
-        },
-        //  {
-//
-        //         label: this.$t('common.forStudentsAndGraduates'), icon: 'pi pi-fw pi-users',
-        //         items: [
-        //           {
-        //             label: this.$t('hr.vacancies'),
-        //             icon: 'pi pi-fw pi-user-plus',
-        //             to: '/human-resources/public/vacancies'
-        //           },
-        //         ]
-        //       },
-
-        {
-          label: this.$t('hr.vacancies'),
-          icon: 'pi pi-fw pi-user-plus',
-          to: '/human-resources/public/vacancies'
-        },
-
-        {
-          label: this.$t('queue.title'), icon: 'pi pi-fw pi-users ',
-          items:[
-            {
-              label:  this.$t('queue.title'), icon: 'pi pi-fw pi-plus-circle', to:'/queue'
-            },
-
-            //  {
-            //   label:  this.$t('queue.addService'), icon: 'pi pi-fw pi-th-large', to:'/queueCategories'
-            //  },
-            // {
-            //   label:  this.$t('queue.secretary'), icon: 'pi pi-fw pi-user-edit', to:'/queueService'
-            // },
-
-          ]
-
-        },
-      ]
+      let menus = this.menuService.getGlobalMenu(this.$t);
+      return menus;
     },
     isDissertationAdmin() {
       if (!this.loginedUser)

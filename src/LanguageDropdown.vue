@@ -1,5 +1,5 @@
 <template>
-    <Dropdown class="p-link" v-model="language" :options="languages" optionLabel="name" @change="changeLanguage" />
+    <Dropdown class="lang p-link" v-model="language" :options="languages" optionLabel="name" @change="changeLanguage" />
 </template>
 
 <script>
@@ -166,5 +166,7 @@
 </script>
 
 <style scoped>
-
+.lang{
+    margin-top: -5px;
+}
 </style>

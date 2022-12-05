@@ -1,40 +1,39 @@
 <template>
-    <!-- <div class="feature-intro p-d-block">
-        <h1>Smart.enu жүйесіне қош келдіңіз.</h1>
-    </div> -->
-    <div class="lang_dropdown">
-        <LanguageDropdown/>
-    </div>
-    <div></div>
-    <div class="grid">
-        <div class="col-12">
-            <div class="card welcome_text_block">
-                <h5 class="p-text-center p-text-uppercase">{{ $t("common.loginWelcome")}}</h5>
-                <Avatar icon="pi pi-user" class="mr-2" size="xlarge"/>
-                <Avatar icon="pi pi-user" class="mr-2" size="large" style="background-color:#2196F3; color: #ffffff"/>
-                <Avatar icon="pi pi-user" class="mr-2" style="background-color:#9c27b0; color: #ffffff"/>
-
+    <div style="overflow-x: hidden">
+        <!-- <div class="feature-intro p-d-block">
+      <h1>Smart.enu жүйесіне қош келдіңіз.</h1>
+  </div> -->
+        <div class="lang_dropdown">
+            <LanguageDropdown/>
+        </div>
+        <div class="grid">
+            <div class="col-12">
+                <div class="card welcome_text_block">
+                    <h5 class="p-text-center p-text-uppercase">{{ $t("common.loginWelcome")}}</h5>
+                    <Avatar icon="pi pi-user" class="mr-2" size="xlarge"/>
+                    <Avatar icon="pi pi-user" class="mr-2" size="large" style="background-color:#2196F3; color: #ffffff"/>
+                    <Avatar icon="pi pi-user" class="mr-2" style="background-color:#9c27b0; color: #ffffff"/>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="grid">
-        <div class="col-12 p-text-center">
-            <img src="/assets/layout/images/logo_eng.png" alt="Image" width="250"/>
+        <div class="grid">
+            <div class="col-12 p-text-center">
+                <img src="/assets/layout/images/logo_eng.png" alt="Image" width="250"/>
+            </div>
         </div>
-    </div>
-    <div class="p-fluid p-formgrid p-grid p-jc-center p-pt-2">
+        <div class="p-fluid p-formgrid p-grid p-jc-center p-pt-2">
 
-        <TabView class="tabview-custom p-xl-6 p-md-8 p-sm-12 p-lg-6 p-col-12">
-            <TabPanel>
-                <template #header>
-                    <span>Login System</span>
-                    <i class="pi pi-key p-ml-1"></i>
-                </template>
-                <div class="p-fluid text-center">
-                    <div class="p-field p-col-12">
-                        <label for="inputtext">{{ $t('common.enterLogin') }}</label>
-                        <InputText id="inputtext" type="text" v-model="loginData.username"/>
+            <TabView class="tabview-custom p-xl-6 p-md-8 p-sm-12 p-lg-6 p-col-12">
+                <TabPanel>
+                    <template #header>
+                        <span>Login System</span>
+                        <i class="pi pi-key p-ml-1"></i>
+                    </template>
+                    <div class="p-fluid text-center">
+                        <div class="p-field p-col-12">
+                            <label for="inputtext">{{ $t('common.enterLogin') }}</label>
+                            <InputText id="inputtext" type="text" v-model="loginData.username"/>
 
 
                     </div>
