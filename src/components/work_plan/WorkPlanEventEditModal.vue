@@ -51,6 +51,7 @@
 <script>
 import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
+import {WorkPlanService} from "@/service/work.plan.service";
 
 export default {
   name: "WorkPlanEventEditModal",
@@ -90,6 +91,7 @@ export default {
         quarter: false
       },
       submitted: false,
+      planService: new WorkPlanService()
     }
   },
   created() {
@@ -126,7 +128,7 @@ export default {
         userIds.push(e.userID)
       });
       this.editData.resp_person_ids = userIds;
-      axios.post(smartEnuApi + `/workPlan/editEvent`, this.editData, {headers: getHeader()}).then(res => {
+      this.planService.editEvent(this.editData).then(res => {
         if (res.data.is_success) {
           this.$toast.add({
             severity: "success",

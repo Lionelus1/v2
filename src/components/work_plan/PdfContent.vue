@@ -1,23 +1,38 @@
 <template>
   <div>
     <div ref="htmlToPdf" class="p-grid" v-if="plan && !plan.is_oper">
-      <h5 style="width: 100%;text-align: center;font-size: 14.0pt;text-transform: uppercase;font-weight: bold;">{{ plan.work_plan_name }}</h5>
+      <h5 style="width: 100%;text-align: center;font-size: 14.0pt;text-transform: uppercase;font-weight: bold;">
+        {{ plan.work_plan_name }}</h5>
       <br/>
       <div class="p-col-12">
-        <table style="width: 100%; font-size: 12.0pt; text-align: center;border-collapse: collapse;border: 1px solid grey">
+        <table
+            style="width: 100%; font-size: 12.0pt; text-align: center;border-collapse: collapse;border: 1px solid grey">
           <tbody>
           <tr>
             <td class="header" style="font-weight: bold;">№</td>
-            <td class="header" style="font-weight: bold;">{{ plan.lang === 1 ? 'Іс-шараның атауы' : plan.lang === 2 ? 'Наименование мероприятия' : 'Name of the event' }}</td>
-            <td class="header" style="font-weight: bold;">{{ plan.lang === 1 ? 'Жауапты орындаушы' : plan.lang === 2 ? 'Ответственный исполнитель' : 'Responsible executor' }}</td>
-            <td class="header" style="font-weight: bold;">{{ plan.lang === 1 ? 'Квартал' : plan.lang === 2 ? 'Квартал' : 'Quarter' }}</td>
-            <td class="header" style="font-weight: bold;">{{ plan.lang === 1 ? 'Жоспарланған нәтиже' : plan.lang === 2 ? 'Планируемый результат' : 'Planned result' }}</td>
-            <td class="header" style="font-weight: bold;">{{ plan.lang === 1 ? 'Ескерту' : plan.lang === 2 ? 'Примечание' : 'Note' }}</td>
+            <td class="header" style="font-weight: bold;">{{
+                plan.lang === 1 ? 'Іс-шараның атауы' : plan.lang === 2 ? 'Наименование мероприятия' : 'Name of the event'
+              }}
+            </td>
+            <td class="header" style="font-weight: bold;">{{
+                plan.lang === 1 ? 'Жауапты орындаушы' : plan.lang === 2 ? 'Ответственный исполнитель' : 'Responsible executor'
+              }}
+            </td>
+            <td class="header" style="font-weight: bold;">
+              {{ plan.lang === 1 ? 'Квартал' : plan.lang === 2 ? 'Квартал' : 'Quarter' }}
+            </td>
+            <td class="header" style="font-weight: bold;">{{
+                plan.lang === 1 ? 'Жоспарланған нәтиже' : plan.lang === 2 ? 'Планируемый результат' : 'Planned result'
+              }}
+            </td>
+            <td class="header" style="font-weight: bold;">
+              {{ plan.lang === 1 ? 'Ескерту' : plan.lang === 2 ? 'Примечание' : 'Note' }}
+            </td>
           </tr>
           <tr v-for="(item, index) in items" :key="index">
             <td class="td-va text-center">{{ item.row_number }}</td>
             <td class="td-va" style="text-align: start;">{{ item.event_name }}</td>
-<!--            <td class="td-va"><p v-for="(userItem, userIndex) in item.user" :key="userIndex"> {{ userItem.fullName }} </p></td>-->
+            <!--            <td class="td-va"><p v-for="(userItem, userIndex) in item.user" :key="userIndex"> {{ userItem.fullName }} </p></td>-->
             <td class="td-va text-center">{{ item.userList }}</td>
             <td class="td-va text-center">{{ item.quarter }}</td>
             <td class="td-va text-center">{{ item.result }}</td>
@@ -28,21 +43,42 @@
       </div>
     </div>
     <div ref="htmlToPdf" class="p-grid" v-if="plan && plan.is_oper">
-      <h5 style="width: 100%;text-align: center;font-size: 14.0pt;text-transform: uppercase;font-weight: bold;">{{ plan.work_plan_name }}</h5>
+      <h5 style="width: 100%;text-align: center;font-size: 14.0pt;text-transform: uppercase;font-weight: bold;">
+        {{ plan.work_plan_name }}</h5>
       <br/>
       <div class="p-col-12">
         <table>
           <tbody>
           <tr>
             <td class="header" style="font-weight: bold;">№</td>
-            <td class="header" style="font-weight: bold;">{{ plan.lang === 1 ? 'Атауы' : plan.lang === 2 ? 'Наименование' : 'Name' }}</td>
-            <td class="header" style="font-weight: bold;">{{ plan.lang === 1 ? 'Өлшем бірлігі' : plan.lang === 2 ? 'Ед. изм.' : 'Unit' }}</td>
-            <td class="header" style="font-weight: bold;">{{ plan.lang === 1 ? 'Жоспар' : plan.lang === 2 ? 'План' : 'Plan' }}</td>
-            <td class="header" style="font-weight: bold;">{{ plan.lang === 1 ? 'Жауапты орындаушылар' : plan.lang === 2 ? 'Ответственные исполнители' : 'Responsible performers' }}</td>
-            <td class="header" style="font-weight: bold;">{{ plan.lang === 1 ? 'Жинақтаушы/Растау' : plan.lang === 2 ? 'Свод/подтверждение' : 'Summary/Confirmation' }}</td>
-            <td class="header" style="font-weight: bold;">{{ plan.lang === 1 ? 'Квартал' : plan.lang === 2 ? 'Квартал' : 'Quarter' }}</td>
-            <td class="header" style="font-weight: bold;">{{ plan.lang === 1 ? 'Растайтын құжаттар' : plan.lang === 2 ? 'Подтверждающие документы' : 'Supporting documents' }}</td>
-            <td class="header" style="font-weight: bold;">{{ plan.lang === 1 ? 'Қосымша ақпарат' : plan.lang === 2 ? 'Дополнительная информация ' : 'Additional Information' }}</td>
+            <td class="header" style="font-weight: bold;">
+              {{ plan.lang === 1 ? 'Атауы' : plan.lang === 2 ? 'Наименование' : 'Name' }}
+            </td>
+            <td class="header" style="font-weight: bold;">
+              {{ plan.lang === 1 ? 'Өлшем бірлігі' : plan.lang === 2 ? 'Ед. изм.' : 'Unit' }}
+            </td>
+            <td class="header" style="font-weight: bold;">
+              {{ plan.lang === 1 ? 'Жоспар' : plan.lang === 2 ? 'План' : 'Plan' }}
+            </td>
+            <td class="header" style="font-weight: bold;">{{
+                plan.lang === 1 ? 'Жауапты орындаушылар' : plan.lang === 2 ? 'Ответственные исполнители' : 'Responsible performers'
+              }}
+            </td>
+            <td class="header" style="font-weight: bold;">{{
+                plan.lang === 1 ? 'Жинақтаушы/Растау' : plan.lang === 2 ? 'Свод/подтверждение' : 'Summary/Confirmation'
+              }}
+            </td>
+            <td class="header" style="font-weight: bold;">
+              {{ plan.lang === 1 ? 'Квартал' : plan.lang === 2 ? 'Квартал' : 'Quarter' }}
+            </td>
+            <td class="header" style="font-weight: bold;">{{
+                plan.lang === 1 ? 'Растайтын құжаттар' : plan.lang === 2 ? 'Подтверждающие документы' : 'Supporting documents'
+              }}
+            </td>
+            <td class="header" style="font-weight: bold;">{{
+                plan.lang === 1 ? 'Қосымша ақпарат' : plan.lang === 2 ? 'Дополнительная информация ' : 'Additional Information'
+              }}
+            </td>
           </tr>
           <tr v-for="(item, index) in items" :key="index">
             <td class="td-va text-center">{{ item.row_number }}</td>
@@ -67,6 +103,7 @@
 import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
 import treeToList from "@/service/treeToList";
+import {WorkPlanService} from "@/service/work.plan.service";
 
 export default {
   name: "PdfContent",
@@ -92,7 +129,8 @@ export default {
         },
         pagebreak: {avoid: 'tr'},
       },
-      loginedUserId: 0
+      loginedUserId: 0,
+      planService: new WorkPlanService()
     }
   },
   created() {
@@ -104,9 +142,10 @@ export default {
   },
   methods: {
     getData() {
-      axios.post(smartEnuApi + `/workPlan/getWorkPlanReportData`, {
+      let data = {
         work_plan_id: this.work_plan_id
-      }, {headers: getHeader()}).then(res => {
+      }
+      this.planService.getWorkPlanData(data).then(res => {
         this.items = treeToList(res.data, 'children', this.plan.lang);
         this.items.map(e => {
           if (e.user)
@@ -166,6 +205,7 @@ table {
     padding: 8px;
     border: 1px solid black;
   }
+
   td {
     text-align: center;
     border-collapse: collapse;

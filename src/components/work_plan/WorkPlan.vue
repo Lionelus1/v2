@@ -46,7 +46,8 @@
         </Column>
         <Column field="actions" header="">
           <template #body="{ data }">
-            <Button type="button" v-if="data.user.id === loginedUserId && (data.status.work_plan_status_id === 1 || data.status.work_plan_status_id === 3 || data.status.work_plan_status_id === 5)"
+            <Button type="button"
+                    v-if="data.user.id === loginedUserId && (data.status.work_plan_status_id === 1 || data.status.work_plan_status_id === 3 || data.status.work_plan_status_id === 5)"
                     icon="pi pi-trash" class="p-button-danger p-mr-2"
                     label="" @click="deleteConfirm(data)"></Button>
           </template>
@@ -83,6 +84,7 @@
 import WorkPlanAdd from "./WorkPlanAdd";
 import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
+import {WorkPlanService} from "@/service/work.plan.service";
 
 export default {
   components: {WorkPlanAdd},
@@ -98,6 +100,7 @@ export default {
       currentWorkPlanId: 0,
       loading: false,
       loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID,
+      planService: new WorkPlanService()
     }
   },
   mounted() {
@@ -122,11 +125,10 @@ export default {
     },
     getPlans() {
       this.loading = true;
-      axios.post(smartEnuApi + `/workPlan/getPlans`, {search_text: this.searchText}, {headers: getHeader()})
-          .then(res => {
-            this.data = res.data;
-            this.loading = false;
-          }).catch(error => {
+      this.planService.getPlans(this.searchText).then(res => {
+        this.data = res.data;
+        this.loading = false;
+      }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
@@ -140,10 +142,11 @@ export default {
       });
     },
     rejectPlan() {
-      axios.post(smartEnuApi + `/workPlan/reject`, {
+      let data = {
         work_plan_id: this.currentWorkPlanId,
         comment: this.comment
-      }, {headers: getHeader()}).then(res => {
+      }
+      this.planService.rejectPlan(data).then(res => {
         if (res.data.is_success) {
           this.$toast.add({
             severity: "success",
@@ -178,8 +181,7 @@ export default {
       });
     },
     delete(event) {
-      axios.post(smartEnuApi + `/workPlan/deletePlan/${event.work_plan_id}`,null, {headers: getHeader()})
-      .then(response => {
+      this.planService.deletePlan(event.work_plan_id).then(response => {
         if (response.data.is_success) {
           this.$toast.add({
             severity: "success",

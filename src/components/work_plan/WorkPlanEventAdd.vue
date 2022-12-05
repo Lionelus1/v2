@@ -51,6 +51,7 @@
 <script>
 import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
+import {WorkPlanService} from "@/service/work.plan.service";
 
 export default {
   name: 'WorkPlanEventAdd',
@@ -103,7 +104,8 @@ export default {
       unit: null,
       plan_number: null,
       supporting_docs: null,
-      responsible_executor: null
+      responsible_executor: null,
+      planService: new WorkPlanService()
     }
   },
   mounted() {
@@ -155,7 +157,7 @@ export default {
         data.responsible_executor = this.responsible_executor;
         data.supporting_docs = this.supporting_docs;
       }
-      axios.post(smartEnuApi + `/workPlan/addEvent`, data, {headers: getHeader()}).then(res => {
+      this.planService.createEvent(data).then(res => {
         this.emitter.emit("workPlanEventIsAdded", {is_success: true, is_main: this.isMain});
         this.$toast.add({severity: 'success', detail: this.$t('workPlan.message.eventCreated'), life: 3000});
         this.showWorkPlanEventModal = false;

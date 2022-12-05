@@ -5,7 +5,7 @@
     <div class="p-col-12">
       <div id="qr" v-for="(item, index) of signatures" :key="index"
            style="border: 1px solid #000; padding: 5px; margin: 5px;display: block;">
-        <p v-if="item.user"><b>{{ item.user.fullName }}</b> ({{ $t('ncasigner.IIN') }} <em>{{ item.user.IIN }}</em>)
+        <p v-if="item.user"><b>{{ item.user.fullName }}</b> <!--({{ $t('ncasigner.IIN') }} <em>{{ item.user.IIN }}</em>)-->
           <br/> {{ item.sign && item.sign.length > 0 ? $t('ncasigner.signed') + ": " + new Date(item.signDate).toLocaleDateString() + ", " + new Date(item.signDate).toLocaleTimeString()  : $t('ncasigner.signingexpected') }}
         </p>
         <div style="width: 100%;text-align: left;">

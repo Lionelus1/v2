@@ -91,6 +91,7 @@
 import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
 import WorkPlanEventResult from "./WorkPlanEventResult";
+import {WorkPlanService} from "@/service/work.plan.service";
 
 export default {
   name: "WorkPlanEventResultModal",
@@ -134,6 +135,7 @@ export default {
       loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID,
       rejectComment: null,
       isBlockUI: false,
+      planService: new WorkPlanService()
     }
   },
   methods: {
@@ -201,13 +203,12 @@ export default {
         data.result_id = this.data.event_result_id;
       }
 
-      axios.post(smartEnuApi + `/workPlan/verifyEventResult`, data, {headers: getHeader()})
-          .then(res => {
-            //console.log(res);
-            this.toCorrectSidebar = false;
-            this.eventResultModal = false;
-            this.emitter.emit("workPlanResultVerified", true);
-          }).catch(error => {
+      this.planService.verifyEventResult(data).then(res => {
+        //console.log(res);
+        this.toCorrectSidebar = false;
+        this.eventResultModal = false;
+        this.emitter.emit("workPlanResultVerified", true);
+      }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
