@@ -40,11 +40,7 @@ export class WorkPlanService {
     }
 
     createPlan(planName, lang, isOper) {
-        return axios.post(smartEnuApi + `/workPlan/addPlan`,
-            {
-                work_plan_name: planName,
-                lang: lang, is_oper: isOper
-            }, {headers: getHeader()});
+        return axios.post(smartEnuApi + `/workPlan/addPlan`, {work_plan_name: planName, lang: lang, is_oper: isOper}, {headers: getHeader()});
     }
 
     savePlanFile(fd) {
@@ -60,7 +56,7 @@ export class WorkPlanService {
     }
 
     editEvent(editData) {
-        return  axios.post(smartEnuApi + `/workPlan/editEvent`, editData, {headers: getHeader()})
+        return axios.post(smartEnuApi + `/workPlan/editEvent`, editData, {headers: getHeader()})
     }
 
     getEventById(id) {
@@ -104,7 +100,7 @@ export class WorkPlanService {
     }
 
     deletePlanReport(id) {
-        return axios.post(smartEnuApi + `/workPlan/deleteReport/${id}`,null, {headers: getHeader()});
+        return axios.post(smartEnuApi + `/workPlan/deleteReport/${id}`, null, {headers: getHeader()});
     }
 
     approvePlan(fd) {
