@@ -61,10 +61,8 @@
 </template>
 
 <script>
-import axios from "axios";
-import {getHeader, smartEnuApi} from "@/config/config";
-import {NCALayerClient} from "ncalayer-js-client";
 import {runNCaLayer} from "../../helpers/SignDocFunctions";
+import {WorkPlanService} from "@/service/work.plan.service";
 
 export default {
   name: "WorkPlanView",
@@ -91,7 +89,8 @@ export default {
       signatures: null,
       isPlanCreator: false,
       sourceb64: null,
-      isCurrentUserApproved: false
+      isCurrentUserApproved: false,
+      planService: new WorkPlanService()
     }
   },
   created() {
@@ -102,9 +101,7 @@ export default {
   },
   methods: {
     getFile() {
-      axios.post(smartEnuApi + `/workPlan/getWorkPlanFile`,
-          {doc_id: this.plan.doc_id},
-          {headers: getHeader()}).then(res => {
+      this.planService.getPlanFile(this.plan.doc_id).then(res => {
         if (res.data) {
           this.source = `data:application/pdf;base64,${res.data}`;
           this.sourceb64 = this.b64toBlob(res.data);
@@ -143,19 +140,18 @@ export default {
     },
     getPlan() {
       this.loading = true;
-      axios.get(smartEnuApi + `/workPlan/getWorkPlanById/${this.work_plan_id}`, {headers: getHeader()})
-          .then(res => {
-            if (res.data) {
-              this.plan = res.data;
-              if (this.plan && this.plan.user.id === this.loginedUserId) {
-                this.isPlanCreator = true;
-              }
-              this.getFile();
-              this.getSignatures();
-              this.getWorkPlanApprovalUsers();
-            }
-            this.loading = false;
-          }).catch(error => {
+      this.planService.getPlanById(this.work_plan_id).then(res => {
+        if (res.data) {
+          this.plan = res.data;
+          if (this.plan && this.plan.user.id === this.loginedUserId) {
+            this.isPlanCreator = true;
+          }
+          this.getFile();
+          this.getSignatures();
+          this.getWorkPlanApprovalUsers();
+        }
+        this.loading = false;
+      }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
@@ -169,21 +165,20 @@ export default {
       });
     },
     getWorkPlanApprovalUsers() {
-      axios.get(smartEnuApi + `/workPlan/getApprovalUsers/${parseInt(this.work_plan_id)}`)
-          .then(res => {
-            if (res.data) {
-              this.approvals = [];
-              const d = res.data;
-              this.isPlanApproved = d.every(x => x.is_success);
-              const unique = [...new Set(d.map(item => item.stage))];
-              unique.forEach(r => {
-                let f = d.filter(x => x.stage === r);
-                this.approvals.push(f);
-              });
-              this.approval_users = res.data;
-              this.init();
-            }
-          }).catch(error => {
+      this.planService.getWorkPlanApprovalUsers(parseInt(this.work_plan_id)).then(res => {
+        if (res.data) {
+          this.approvals = [];
+          const d = res.data;
+          this.isPlanApproved = d.every(x => x.is_success);
+          const unique = [...new Set(d.map(item => item.stage))];
+          unique.forEach(r => {
+            let f = d.filter(x => x.stage === r);
+            this.approvals.push(f);
+          });
+          this.approval_users = res.data;
+          this.init();
+        }
+      }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
@@ -196,9 +191,8 @@ export default {
       });
     },
     getSignatures() {
-      axios.post(smartEnuApi + `/workPlan/getSignatures`,
-          {doc_id: this.plan.doc_id},
-          {headers: getHeader()}).then(res => {
+      let data = {doc_id: this.plan.doc_id}
+      this.planService.getSignatures(data).then(res => {
         if (res.data) {
           this.signatures = res.data;
           const signUser = res.data.find(x => x.userId === this.loginedUserId);
@@ -260,15 +254,13 @@ export default {
     },
     rejectPlan() {
       this.loading = true;
-      axios.post(smartEnuApi + '/workPlan/reject',
-          {
-            comment: this.rejectComment,
-            work_plan_id: parseInt(this.work_plan_id),
-            doc_id: this.plan.doc_id,
-            work_plan_name: this.plan.work_plan_name
-          },
-          {headers: getHeader()}
-      ).then(res => {
+      let data = {
+        comment: this.rejectComment,
+        work_plan_id: parseInt(this.work_plan_id),
+        doc_id: this.plan.doc_id,
+        work_plan_name: this.plan.work_plan_name
+      };
+      this.planService.rejectPlan(data).then(res => {
         if (res.data.is_success) {
           this.loading = false;
           this.showRejectPlan = false;
@@ -295,12 +287,13 @@ export default {
       this.showRejectPlan = false;
     },
     sendSignature() {
-      axios.post(smartEnuApi + '/workPlan/signature', {
+      let data = {
         uuid: this.plan.doc_id,
         sign: this.CMSSignature,
         work_plan_id: parseInt(this.work_plan_id),
         is_last: this.isLast
-      }, {headers: getHeader()}).then((response) => {
+      };
+      this.planService.signPlan(data).then((response) => {
         if (response.data.is_success) {
           this.$toast.add({
             severity: "success",
@@ -344,11 +337,12 @@ export default {
       });
     },
     reapprove() {
-      axios.post(smartEnuApi + '/workPlan/reapprove', {
+      let data = {
         work_plan_id: parseInt(this.work_plan_id),
         doc_id: this.plan.doc_id,
         work_plan_name: this.plan.work_plan_name
-      }, {headers: getHeader()}).then((response) => {
+      };
+      this.planService.reApprovePlan(data).then((response) => {
         if (response.data.is_success) {
           this.emitter.emit("planSentToReapprove", true);
           this.$router.push({name: 'WorkPlan'});

@@ -11,7 +11,7 @@
           class="p-fluid">
     <div class="p-field">
       <label>{{ $t('workPlan.reportName') }}</label>
-      <InputText v-model="report_name" />
+      <InputText v-model="report_name"/>
     </div>
     <div class="p-field">
       <label>{{ $t('common.type') }}</label>
@@ -20,15 +20,16 @@
     </div>
     <div class="p-field" v-if="type === 2">
       <label>{{ $t('workPlan.quarter') }}</label>
-      <Dropdown v-model="quarter" :options="reportQuarters" optionLabel="name" optionValue="id" :placeholder="$t('common.select')" />
+      <Dropdown v-model="quarter" :options="reportQuarters" optionLabel="name" optionValue="id" :placeholder="$t('common.select')"/>
     </div>
     <div class="p-field" v-if="type === 3">
       <label>{{ $t('workPlan.reportTypes.halfYear') }}</label>
-      <Dropdown v-model="selectedHalfYear" :options="halfYearTypes" optionLabel="name" optionValue="id" :placeholder="$t('common.select')" />
+      <Dropdown v-model="selectedHalfYear" :options="halfYearTypes" optionLabel="name" optionValue="id" :placeholder="$t('common.select')"/>
     </div>
     <div class="p-field" v-if="plan && plan.is_oper">
       <label>{{ $t('common.department') }}</label>
-      <Dropdown v-model="selectedDepartment" :options="departments" optionLabel="department_name" optionValue="department_id" :filter="true" :show-clear="true" :placeholder="$t('common.select')" />
+      <Dropdown v-model="selectedDepartment" :options="departments" optionLabel="department_name" optionValue="department_id" :filter="true"
+                :show-clear="true" :placeholder="$t('common.select')"/>
     </div>
     <!--<div class="p-field" v-if="plan && plan.is_oper">
       <label>{{ $t('workPlan.respExecutor') }}</label>
@@ -46,6 +47,7 @@
 <script>
 import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
+import {WorkPlanService} from "@/service/work.plan.service";
 
 export default {
   name: "WorkPlanReportModal",
@@ -101,6 +103,7 @@ export default {
       ],
       departments: [],
       respUsers: [],
+      planService: new WorkPlanService()
     }
   },
   mounted() {
@@ -123,8 +126,7 @@ export default {
     },
     getDepartments() {
       this.departments = [];
-      axios.post(smartEnuApi + `/workPlan/getDepartments`, {work_plan_id: parseInt(this.work_plan_id)}, {headers: getHeader()})
-      .then(res => {
+      this.planService.getDepartments(parseInt(this.work_plan_id)).then(res => {
         if (res.data) {
           this.departments = res.data
         }
@@ -142,12 +144,11 @@ export default {
     },
     getRespUsers() {
       this.respUsers = [];
-      axios.post(smartEnuApi + `/workPlan/getRespUsers`, {work_plan_id: parseInt(this.work_plan_id)}, {headers: getHeader()})
-          .then(res => {
-            if (res.data) {
-              this.respUsers = res.data
-            }
-          }).catch(error => {
+      this.planService.getRespUsers(parseInt(this.work_plan_id)).then(res => {
+        if (res.data) {
+          this.respUsers = res.data
+        }
+      }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
@@ -161,7 +162,7 @@ export default {
     },
     create() {
       //this.$router.push({ name: 'WorkPlanReportView', params: { id: this.work_plan_id, type: this.type, name: this.report_name, quarter: this.quarter }})
-      axios.post(smartEnuApi + `/workPlan/createReport`, {
+      let data = {
         work_plan_id: parseInt(this.work_plan_id),
         report_name: this.report_name,
         report_type: this.type,
@@ -169,7 +170,8 @@ export default {
         halfYearType: this.type === 3 ? this.selectedHalfYear : null,
         department_id: this.selectedDepartment ? this.selectedDepartment : null,
         //respUserId: this.selectedRespUser ? Number(this.selectedRespUser) : null
-      }, {headers: getHeader()}).then(res => {
+      };
+      this.planService.createWorkPlanReport(data).then(res => {
         this.emitter.emit("isReportCreated", true);
         this.closeModal();
       }).catch(error => {
