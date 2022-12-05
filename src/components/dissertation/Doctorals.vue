@@ -147,8 +147,7 @@
             <FindUser class="p-pt-1" 
               v-model="selectedUsers"
               :max="1"
-              :editMode="true"
-              
+              :editMode="true" :user-type="0"
             ></FindUser>
             <small
               class="p-error"

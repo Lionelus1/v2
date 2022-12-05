@@ -16,7 +16,7 @@
             <i class="pi pi-fw pi-id-card"></i><span>{{ $t("common.cabinet") }}</span>
           </button>
         </li>
-        <li>
+        <li v-if="loginedUser.organization.id === 1">
           <button @click="myRef" class="p-link">
             <i class="pi pi-fw pi-book"></i><span>{{ $t("ref.getRef") }}</span>
           </button>

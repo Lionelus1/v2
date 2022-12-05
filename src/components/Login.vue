@@ -54,7 +54,10 @@
                     <i class="pi pi-folder p-ml-1"></i>
                 </template>
                 <div class="p-fluid text-center">
-                    <div class="p-field p-col-12">
+                  <div class="p-field p-mb-3">
+                    <InlineMessage severity="info">{{ $t('ncasigner.noteMark') }}</InlineMessage>
+                  </div>
+                    <div class="p-field p-col-12 p-pb-2">
                         <Inplace :closable="true" @close="resetPassword">
                             <template #display>
                                 {{ text || $t('common.changePassword')}}
