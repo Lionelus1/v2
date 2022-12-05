@@ -1,284 +1,285 @@
 <template>
+  <div style="overflow-x: hidden">
     <!-- <div class="feature-intro p-d-block">
-        <h1>Smart.enu жүйесіне қош келдіңіз.</h1>
-    </div> -->
+  <h1>Smart.enu жүйесіне қош келдіңіз.</h1>
+</div> -->
     <div class="lang_dropdown">
-        <LanguageDropdown/>
+      <LanguageDropdown/>
     </div>
-    <div></div>
     <div class="grid">
-        <div class="col-12">
-            <div class="card welcome_text_block">
-                <h5 class="p-text-center p-text-uppercase">{{ $t("common.loginWelcome")}}</h5>
-                <Avatar icon="pi pi-user" class="mr-2" size="xlarge"/>
-                <Avatar icon="pi pi-user" class="mr-2" size="large" style="background-color:#2196F3; color: #ffffff"/>
-                <Avatar icon="pi pi-user" class="mr-2" style="background-color:#9c27b0; color: #ffffff"/>
-
-            </div>
+      <div class="col-12">
+        <div class="card welcome_text_block">
+          <h5 class="p-text-center p-text-uppercase">{{ $t("common.loginWelcome") }}</h5>
+          <Avatar icon="pi pi-user" class="mr-2" size="xlarge"/>
+          <Avatar icon="pi pi-user" class="mr-2" size="large" style="background-color:#2196F3; color: #ffffff"/>
+          <Avatar icon="pi pi-user" class="mr-2" style="background-color:#9c27b0; color: #ffffff"/>
         </div>
+      </div>
     </div>
 
     <div class="grid">
-        <div class="col-12 p-text-center">
-            <img src="/assets/layout/images/logo_eng.png" alt="Image" width="250"/>
-        </div>
+      <div class="col-12 p-text-center">
+        <img src="/assets/layout/images/logo_eng.png" alt="Image" width="250"/>
+      </div>
     </div>
     <div class="p-fluid p-formgrid p-grid p-jc-center p-pt-2">
 
-        <TabView class="tabview-custom p-xl-6 p-md-8 p-sm-12 p-lg-6 p-col-12">
-            <TabPanel>
-                <template #header>
-                    <span>Login System</span>
-                    <i class="pi pi-key p-ml-1"></i>
-                </template>
-                <div class="p-fluid text-center">
-                    <div class="p-field p-col-12">
-                        <label for="inputtext">{{ $t('common.enterLogin') }}</label>
-                        <InputText id="inputtext" type="text" v-model="loginData.username"/>
+      <TabView class="tabview-custom p-xl-6 p-md-8 p-sm-12 p-lg-6 p-col-12">
+        <TabPanel>
+          <template #header>
+            <span>Login System</span>
+            <i class="pi pi-key p-ml-1"></i>
+          </template>
+          <div class="p-fluid text-center">
+            <div class="p-field p-col-12">
+              <label for="inputtext">{{ $t('common.enterLogin') }}</label>
+              <InputText id="inputtext" type="text" v-model="loginData.username"/>
 
 
-                    </div>
-                    <div class="p-field p-col-12">
-                        <label for="inputpassword">{{$t('common.enterPassword')}}</label>
-                        <Password :feedback="false" toggleMask v-model="loginData.password"
-                                  @keyup.enter="login"></Password>
-                    </div>
-                </div>
-                <div class="p-w-100 p-text-right">
-                    <Button :label="$t('common.login')" icon="pi pi-check" @click="login" iconPos="right"/>
-                </div>
-            </TabPanel>
-            <TabPanel>
-                <template #header>
-                    <span>ЭЦП</span>
-                    <i class="pi pi-folder p-ml-1"></i>
+            </div>
+            <div class="p-field p-col-12">
+              <label for="inputpassword">{{ $t('common.enterPassword') }}</label>
+              <Password :feedback="false" toggleMask v-model="loginData.password"
+                        @keyup.enter="login"></Password>
+            </div>
+          </div>
+          <div class="p-w-100 p-text-right">
+            <Button :label="$t('common.login')" icon="pi pi-check" @click="login" iconPos="right"/>
+          </div>
+        </TabPanel>
+        <TabPanel>
+          <template #header>
+            <span>ЭЦП</span>
+            <i class="pi pi-folder p-ml-1"></i>
+          </template>
+          <div class="p-fluid text-center">
+            <div class="p-field p-mb-3">
+              <InlineMessage severity="info">{{ $t('ncasigner.noteMark') }}</InlineMessage>
+            </div>
+            <div class="p-field p-col-12 p-pb-2">
+              <Inplace :closable="true" @close="resetPassword">
+                <template #display>
+                  {{ text || $t('common.changePassword') }}
                 </template>
-                <div class="p-fluid text-center">
-                  <div class="p-field p-mb-3">
-                    <InlineMessage severity="info">{{ $t('ncasigner.noteMark') }}</InlineMessage>
-                  </div>
-                    <div class="p-field p-col-12 p-pb-2">
-                        <Inplace :closable="true" @close="resetPassword">
-                            <template #display>
-                                {{ text || $t('common.changePassword')}}
-                            </template>
-                            <template #content>
-                                <Password :feedback="false" toggleMask v-model="newPass.password1" autoFocus></Password>
-                                <Password :feedback="false" toggleMask v-model="newPass.password2"></Password>
-                            </template>
-                        </Inplace>
-                    </div>
-                    <div class="p-grid">
-                        <div class="p-col-8">
-                            <Button icon="pi pi-upload " :label="$t('common.chooseCert')" class="p-button-danger"
-                                    @click="resetEtspLogin(-1)" iconPos="right"/>
-                        </div>
-                        <div class="p-col-4">
-                            <Button :label="$t('common.login')" :disabled="isSignUp" icon="p-w-6 pi pi-check"
-                                    @click="loginVerify" iconPos="right"/>
-                        </div>
-                    </div>
-                </div>
-            </TabPanel>
-        </TabView>
+                <template #content>
+                  <Password :feedback="false" toggleMask v-model="newPass.password1" autoFocus></Password>
+                  <Password :feedback="false" toggleMask v-model="newPass.password2"></Password>
+                </template>
+              </Inplace>
+            </div>
+            <div class="p-grid">
+              <div class="p-col-8">
+                <Button icon="pi pi-upload " :label="$t('common.chooseCert')" class="p-button-danger"
+                        @click="resetEtspLogin(-1)" iconPos="right"/>
+              </div>
+              <div class="p-col-4">
+                <Button :label="$t('common.login')" :disabled="isSignUp" icon="p-w-6 pi pi-check"
+                        @click="loginVerify" iconPos="right"/>
+              </div>
+            </div>
+          </div>
+        </TabPanel>
+      </TabView>
     </div>
+  </div>
 </template>
 
 <script>
 
-  import axios from 'axios';
-  import {getHeader,header, smartEnuApi,etspTokenEndPoint} from "../config/config";
-  import {NCALayerClient} from "ncalayer-js-client";
-  import {NCALayerClientExtension} from "@/helpers/ncalayer-client-ext";
-  import LanguageDropdown from "../LanguageDropdown";
+import axios from 'axios';
+import {getHeader, header, smartEnuApi, etspTokenEndPoint} from "../config/config";
+import {NCALayerClient} from "ncalayer-js-client";
+import {NCALayerClientExtension} from "@/helpers/ncalayer-client-ext";
+import LanguageDropdown from "../LanguageDropdown";
 
-  const authUser = {};
-  export default {
-       name : "Login",
-      components: {LanguageDropdown},
-       data(){
-        return {
-          loginData:{
-            username:'',
-            password:''
-          },
-
-          newPass:{
-            password1:"",
-            password2:""
-          },
-
-          eloginData:{
-            connectionId : "",
-            xmlSignature : "",
-            password : ""
-          },
-          isSignUp:true
-        }
+const authUser = {};
+export default {
+  name: "Login",
+  components: {LanguageDropdown},
+  data() {
+    return {
+      loginData: {
+        username: '',
+        password: ''
       },
-      created() {
-        //alert("came");
-        this.$store.dispatch("logLout");
+
+      newPass: {
+        password1: "",
+        password2: ""
       },
-      methods:{
-        resetPassword(){
-          this.newPass = {
-            password1:"",
-            password2:""
-          }
-        },
+
+      eloginData: {
+        connectionId: "",
+        xmlSignature: "",
+        password: ""
+      },
+      isSignUp: true
+    }
+  },
+  created() {
+    //alert("came");
+    this.$store.dispatch("logLout");
+  },
+  methods: {
+    resetPassword() {
+      this.newPass = {
+        password1: "",
+        password2: ""
+      }
+    },
 
 
-        etspLogin(event){
-          var tabIndex = Number(event.index);
-          if(tabIndex==1){
-            //alert("i will do more thing");
-            this.resetEtspLogin();
-          }
+    etspLogin(event) {
+      var tabIndex = Number(event.index);
+      if (tabIndex == 1) {
+        //alert("i will do more thing");
+        this.resetEtspLogin();
+      }
 
-        },
-        resetEtspLogin(p=5){
-          this.eloginData={
-            connectionId : "",
-            xmlSignature : "",
-            password : ""
-          };
-          if(p==5) {
-            this.newPass.password1 = "";
-            this.newPass.password2 = "";
-          }
+    },
+    resetEtspLogin(p = 5) {
+      this.eloginData = {
+        connectionId: "",
+        xmlSignature: "",
+        password: ""
+      };
+      if (p == 5) {
+        this.newPass.password1 = "";
+        this.newPass.password2 = "";
+      }
 
-          this.etspToken();
-        },
-        etspToken(){
-          axios.post(smartEnuApi+"/etsptoken",{}, {headers: getHeader()})
-          .then(res=>{
-              this.xmlSignature(res.data);
+      this.etspToken();
+    },
+    etspToken() {
+      axios.post(smartEnuApi + "/etsptoken", {}, {headers: getHeader()})
+          .then(res => {
+            this.xmlSignature(res.data);
           })
-          .catch(error=>{
+          .catch(error => {
             alert(error.message)
           });
-        },
-        async xmlSignature(res) {
-          let NCALaClient = new NCALayerClientExtension();
-          console.log("nc object ",NCALaClient);
-          try {
-            await NCALaClient.connect();
-          }
-          catch (error) {
-            alert(error.message);
-            return
-          }
-          try {
-            let XMLignature = await NCALaClient.sign('xml', null,  res.xml, 'auth', this.$i18n.locale, false)
-            // let XMLignature = await  NCALaClient.signXml('PKCS12', res.xml, 'AUTH')
-            this.eloginData.xmlSignature=XMLignature[0];
-            this.eloginData.connectionId = res.connectionId;
-            this.isSignUp=false;
-          } catch (error) {
-            alert(error.message);
-          }
-        },
-        loginVerify(){
-          if(this.newPass.password1.length > 5 && (this.newPass.password1==this.newPass.password2)){
-            this.eloginData.password = this.newPass.password1;
-            this.sendLoginData();
-          }else{
-            if((this.newPass.password1==this.newPass.password2) && this.newPass.password1.length==0){
-              this.eloginData.password = this.newPass.password1;
-              this.sendLoginData();
-            }else{
-              alert(this.$t('common.newPasswordError'));
-            }
-          }
-        },
-        sendLoginData(){
-          if(this.eloginData.connectionId.length>4 && this.eloginData.xmlSignature.length>10){
-            this.isSignUp=true;
-            axios.post(smartEnuApi+"/etspverify",this.eloginData, {headers: getHeader()})
-            .then(res=>{
-                if(res.status===200){
-                  authUser.access_token=res.data.access_token;
-                  authUser.refresh_token = res.data.refresh_token;
-                  window.localStorage.setItem('authUser',JSON.stringify(authUser));
-                  this.$router.push({name:'AfterAuth'});
-                }
+    },
+    async xmlSignature(res) {
+      let NCALaClient = new NCALayerClientExtension();
+      console.log("nc object ", NCALaClient);
+      try {
+        await NCALaClient.connect();
+      } catch (error) {
+        alert(error.message);
+        return
+      }
+      try {
+        let XMLignature = await NCALaClient.sign('xml', null, res.xml, 'auth', this.$i18n.locale, false)
+        // let XMLignature = await  NCALaClient.signXml('PKCS12', res.xml, 'AUTH')
+        this.eloginData.xmlSignature = XMLignature[0];
+        this.eloginData.connectionId = res.connectionId;
+        this.isSignUp = false;
+      } catch (error) {
+        alert(error.message);
+      }
+    },
+    loginVerify() {
+      if (this.newPass.password1.length > 5 && (this.newPass.password1 == this.newPass.password2)) {
+        this.eloginData.password = this.newPass.password1;
+        this.sendLoginData();
+      } else {
+        if ((this.newPass.password1 == this.newPass.password2) && this.newPass.password1.length == 0) {
+          this.eloginData.password = this.newPass.password1;
+          this.sendLoginData();
+        } else {
+          alert(this.$t('common.newPasswordError'));
+        }
+      }
+    },
+    sendLoginData() {
+      if (this.eloginData.connectionId.length > 4 && this.eloginData.xmlSignature.length > 10) {
+        this.isSignUp = true;
+        axios.post(smartEnuApi + "/etspverify", this.eloginData, {headers: getHeader()})
+            .then(res => {
+              if (res.status === 200) {
+                authUser.access_token = res.data.access_token;
+                authUser.refresh_token = res.data.refresh_token;
+                window.localStorage.setItem('authUser', JSON.stringify(authUser));
+                this.$router.push({name: 'AfterAuth'});
+              }
             })
-            .catch(error=>{
+            .catch(error => {
               alert(error.message)
             });
-          }
+      }
 
-        },
-        login(){
-          //alert(JSON.stringify(header));
-          axios.post(smartEnuApi+'/login',{
-            'username':this.loginData.username,
-            'password':this.loginData.password
-          }, {headers: getHeader()})
-          .then((res)=>{
-            if(res.status===200){
-              authUser.access_token=res.data.access_token;
+    },
+    login() {
+      //alert(JSON.stringify(header));
+      axios.post(smartEnuApi + '/login', {
+        'username': this.loginData.username,
+        'password': this.loginData.password
+      }, {headers: getHeader()})
+          .then((res) => {
+            if (res.status === 200) {
+              authUser.access_token = res.data.access_token;
               authUser.refresh_token = res.data.refresh_token;
-              window.localStorage.setItem('authUser',JSON.stringify(authUser));
-              this.$router.push({name:'AfterAuth'});
+              window.localStorage.setItem('authUser', JSON.stringify(authUser));
+              this.$router.push({name: 'AfterAuth'});
             }
-            if(res.status===401){
+            if (res.status === 401) {
               alert("Сіз енгізген ақпарат дұрыс емес.");
             }
           })
           .catch(error => {
-              alert("Сіз енгізген ақпарат дұрыс емес.");
+            alert("Сіз енгізген ақпарат дұрыс емес.");
 
           });
-        }
-      }
+    }
   }
+}
 </script>
 
 <style lang="scss">
-    .welcome_text_block{
-        height: 63px;
-    }
-    .lang_dropdown {
-        position: absolute;
-        top: 15px;
-        right: 15px;
-        width: fit-content;
-        border: 1px solid #d1d1d1;
-    }
+.welcome_text_block {
+  height: 63px;
+}
 
-    .flexgrid-demo {
-        .vertical-container {
-            margin: 0;
-            border-radius: 4px;
-        }
-    }
+.lang_dropdown {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: fit-content;
+  border: 1px solid #d1d1d1;
+}
 
-    .pi-eye {
-        transform: scale(1.6);
-        margin-right: 1rem;
-    }
+.flexgrid-demo {
+  .vertical-container {
+    margin: 0;
+    border-radius: 4px;
+  }
+}
 
-    .pi-eye-slash {
-        transform: scale(1.6);
-        margin-right: 1rem;
-    }
+.pi-eye {
+  transform: scale(1.6);
+  margin-right: 1rem;
+}
 
-    @media (max-width: 740px) {
-        h5 {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-        }
-        h5.p-text-center {
-            text-align: left!important;
-        }
-    }
-    @media (max-width: 525px) {
-        h5 {
-            width: 165px;
-           font-size: 15px;
-        }
-    }
+.pi-eye-slash {
+  transform: scale(1.6);
+  margin-right: 1rem;
+}
+
+@media (max-width: 740px) {
+  h5 {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+  }
+  h5.p-text-center {
+    text-align: left !important;
+  }
+}
+
+@media (max-width: 525px) {
+  h5 {
+    width: 165px;
+    font-size: 15px;
+  }
+}
 </style>
