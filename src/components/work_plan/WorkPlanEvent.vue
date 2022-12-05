@@ -191,7 +191,7 @@
                   v-if="isUserApproval(slotProps.node) && isPlanApproved && isPlanSentApproval && (slotProps.node.status.work_plan_event_status_id === 1 || slotProps.node.status.work_plan_event_status_id === 4 || slotProps.node.status.work_plan_event_status_id === 6)"
                   :data="slotProps.node" :planData="plan"></work-plan-execute>
               <work-plan-event-result-modal v-if="(isPlanCreator && !isUserResp(slotProps.node.user) &&
-              (slotProps.node.status.work_plan_event_status_id !== 5 || slotProps.node.status.work_plan_event_status_id !== 2)) || (slotProps.node.event_result && plan && !plan.is_oper) || slotProps.node.status.work_plan_event_status_id === 5 || slotProps.node.status.work_plan_event_status_id === 2"
+              (slotProps.node.status.work_plan_event_status_id === 4 || slotProps.node.status.work_plan_event_status_id === 6)) || (slotProps.node.event_result && plan && !plan.is_oper) || slotProps.node.status.work_plan_event_status_id === 5 || slotProps.node.status.work_plan_event_status_id === 2"
                                             :event-result="slotProps.node.event_result"
                                             :eventData="slotProps.node"
                                             :plan-data="plan"></work-plan-event-result-modal>

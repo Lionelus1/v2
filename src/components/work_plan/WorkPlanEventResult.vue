@@ -47,23 +47,19 @@
         <TabPanel :header="$t('common.properties')">
           <div
               v-if="event &&
-              !isPlanCreator &&
-              (event.status.work_plan_event_status_id === 1 || event.status.work_plan_event_status_id === 4 || event.status.work_plan_event_status_id === 6)">
+              (isPlanCreatorApproval && (event.status.work_plan_event_status_id === 1 || event.status.work_plan_event_status_id === 4 || event.status.work_plan_event_status_id === 6))">
             <Menubar :model="userMenuItems" :key="active"
                      style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
           </div>
           <div
-              v-if="plan && plan.is_oper && plan.user.id === loginedUserId && event && event.status.work_plan_event_status_id === 5">
+              v-if="plan && plan.is_oper && (!isPlanCreatorApproval || isPlanCreator) && event && event.status.work_plan_event_status_id === 5">
             <Menubar :model="verifyMenu" :key="active"
                      style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
           </div>
-          {{
-            ((!isPlanCreator && isCurrentUserApproval && event.status.work_plan_event_status_id !== 5 && event.status.work_plan_event_status_id !== 2) && (isCurrentUserApproval && event.status.work_plan_event_status_id !== 5 && event.status.work_plan_event_status_id !== 2))
-          }}
           <div class="p-grid p-mt-3">
-
             <div class="p-fluid p-sm-12 p-md-12 p-lg-6 p-xl-6"
-                 v-if="((!isPlanCreator && isCurrentUserApproval && event.status.work_plan_event_status_id !== 5 && event.status.work_plan_event_status_id !== 2) && (isCurrentUserApproval && event.status.work_plan_event_status_id !== 5 && event.status.work_plan_event_status_id !== 2))">
+                 v-if="(isPlanCreatorApproval || !isPlanCreator) && event.status.work_plan_event_status_id !== 5 &&
+                 event.status.work_plan_event_status_id !== 2">
               <div class="p-field">
                 <label>{{ $t('workPlan.eventName') }}</label>
                 <InputText v-model="event.event_name" disabled/>
@@ -291,7 +287,7 @@ export default {
       authUser: JSON.parse(localStorage.getItem("loginedUser")),
       quill: null,
       isPlanCreator: false,
-      isCurrentUserApproval: false,
+      isPlanCreatorApproval: false,
       planService: new WorkPlanService()
     }
   },
@@ -349,7 +345,7 @@ export default {
             //this.$router.push('/work-plan')
           }
           if (this.event && this.event.user)
-            this.isCurrentUserApproval = this.event.user.find(e => e.id === this.loginedUserId) !== null;
+            this.isPlanCreatorApproval = this.event.user.find(e => e.id === this.loginedUserId) && this.isPlanCreator;
           this.getData();
         }
       }).catch(error => {
