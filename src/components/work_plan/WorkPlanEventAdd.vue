@@ -198,6 +198,10 @@ export default {
       this.parentId = null;
       this.quarter = null;
       this.result = null;
+      this.unit = null;
+      this.plan_number = null;
+      this.responsible_executor = null;
+      this.supporting_docs = null;
       this.selectedUsers = [];
     }
   },
