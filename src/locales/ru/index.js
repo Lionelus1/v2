@@ -240,7 +240,8 @@ export default {
             impossible: "невозможно",
             saveChanges: "Сохраните изменения",
             fileError: "Не удалось загрузить файл. Возможно файл поврежден",
-            mailSendError: "Ошибка при отправке на электронную почту"
+            mailSendError: "Ошибка при отправке на электронную почту",
+            ConsulAlwaysHasSameMember: "Указанное лицо уже состоит в другом совете",
         },
         language: {
             kz: "на казахском",
