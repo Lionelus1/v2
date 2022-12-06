@@ -77,6 +77,7 @@ import Tree from 'primevue/tree';
 import TreeTable from 'primevue/treetable';
 import TriStateCheckbox from 'primevue/tristatecheckbox';
 import Editor from 'primevue/editor';
+import Divider from 'primevue/divider';
 import VueClipboard from 'vue3-clipboard'
 import TreeSelect from 'primevue/treeselect';
 import Vue3SimpleHtml2pdf from "vue3-simple-html2pdf";
@@ -270,6 +271,7 @@ app.component('Editor', Editor);
 app.component("VueElementLoading", VueElementLoading);
 app.component('TreeSelect', TreeSelect);
 app.component('ScrollPanel', ScrollPanel);
+app.component('Divider', Divider);
 
 app.component('WorkPlanEventResult', WorkPlanEventResult)
 app.mount('#app');

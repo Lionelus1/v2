@@ -47,7 +47,7 @@
         <TabPanel :header="$t('common.properties')">
           <div
               v-if="event &&
-              (isPlanCreatorApproval || (event.status.work_plan_event_status_id === 1 || event.status.work_plan_event_status_id === 4 || event.status.work_plan_event_status_id === 6))">
+              (isCurrentUserApproval && (event.status.work_plan_event_status_id === 1 || event.status.work_plan_event_status_id === 4 || event.status.work_plan_event_status_id === 6))">
             <Menubar :model="userMenuItems" :key="active"
                      style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
           </div>
@@ -161,9 +161,9 @@
                     </template>
                   </Inplace>
                   <div v-else class="p-p-0">
-                    <small style="color: #a3a3a3;"><i class="fa-solid fa-user p-mr-1"></i>{{
-                        item.user.fullName
-                      }}</small>
+                    <Divider align="left">
+                      <i class="fa-solid fa-user p-mr-1"></i><b>{{ item.user.fullName }}</b>
+                    </Divider>
                     <p v-html="item.text"></p>
                   </div>
 
@@ -288,6 +288,7 @@ export default {
       quill: null,
       isPlanCreator: false,
       isPlanCreatorApproval: false,
+      isCurrentUserApproval: false,
       planService: new WorkPlanService()
     }
   },
@@ -344,8 +345,11 @@ export default {
             this.isPlanCreator = false;
             //this.$router.push('/work-plan')
           }
-          if (this.event && this.event.user)
+          if (this.event && this.event.user) {
             this.isPlanCreatorApproval = this.event.user.find(e => e.id === this.loginedUserId) && this.isPlanCreator;
+            console.log(this.event.user.find(e => e.id === this.loginedUserId))
+            this.isCurrentUserApproval = this.event.user.find(e => e.id === this.loginedUserId);
+          }
           this.getData();
         }
       }).catch(error => {
@@ -848,5 +852,9 @@ export default {
 
 ::v-deep(.velmld-overlay) {
   background-color: rgba(0, 0, 0, 0.4) !important;
+}
+
+::v-deep(.p-divider-solid.p-divider-horizontal:before) {
+  border-top-style: solid !important;
 }
 </style>
