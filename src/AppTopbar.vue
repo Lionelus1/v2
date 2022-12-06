@@ -8,9 +8,9 @@
                 :label="$t('common.createNew')" @click="toggle" aria-haspopup="true" aria-controls="overlay_menu"/>
         <Menu id="overlay_menu" ref="menu" :model="pagemenu" :popup="true"/>
         <div class="layout-topbar-icons">
-            <button v-tooltip.bottom="$t('guide.guide')" class="guide" @click="navigate()">
+            <!--<button v-tooltip.bottom="$t('guide.guide')" class="guide" @click="navigate()">
                 <i class="pi pi-question-circle"></i>
-            </button>
+            </button>-->
             <LanguageDropdown/>
         </div>
     </div>
