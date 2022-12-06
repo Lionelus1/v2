@@ -1,6 +1,6 @@
 {
-	"name": "sigma-vue",
-	"version": "3.0.0",
+	"name": "smartenu",
+	"version": "1.0.0",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/primefaces/sigma-vue.git"
@@ -10,7 +10,8 @@
 		"serve": "vue-cli-service serve",
 		"build": "vue-cli-service build",
 		"lint": "vue-cli-service lint",
-		"test:unit": "vue-cli-service test:unit"
+		"test:unit": "vue-cli-service test:unit",
+		"build:stage": "vue-cli-service build --mode development"
 	},
 	"devDependencies": {
 		"@fullcalendar/core": "4.0.2",
