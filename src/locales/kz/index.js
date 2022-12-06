@@ -932,6 +932,7 @@ export default {
         mailFailed:"Поштаңыз жіберілмеді, қайталап көріңіз."
     },
     guide:{
+        guide: 'Анықтама',
         pathName: 'Жолдың атауы',
         guideName: 'Анықтаманың атауы',
         addGuide: 'Анықтаманы қосу',

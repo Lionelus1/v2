@@ -50,7 +50,7 @@
     <div class="card">
 
       <TreeTable ref="workplantreetable" class="p-treetable-sm" :value="data" :lazy="true" :loading="loading"
-                 @nodeExpand="onExpand" :scrollable="true" scrollHeight="flex" responsiveLayout="scroll"
+                 @nodeExpand="onExpand" scrollHeight="flex" responsiveLayout="scroll"
                  :resizableColumns="true" columnResizeMode="fit" showGridlines
                  :paginator="true" :rows="10" :total-records="total" @page="onPage($event)">
         <template #header>
@@ -115,7 +115,7 @@
             <span><i class="fa-solid fa-folder"></i>&nbsp;{{ node.event_name }}</span>
           </template>
         </Column>
-        <Column field="unit" :header="$t('common.unit')" v-if="plan && plan.is_oper">
+        <Column field="unit" :header="$t('common.unit')" v-if="plan && plan.is_oper" style="max-width: 100px">
           <template #body="{ node }">
             {{ node.unit }}
           </template>
@@ -435,7 +435,7 @@ export default {
           this.total = res.data.total;
         } else {
           parent.children = res.data.items;
-          this.total = res.data.total;
+          this.total = 0;
         }
         this.getWorkPlanApprovalUsers();
         this.loading = false;

@@ -1,6 +1,6 @@
 <template>
     <TreeTable class="tree_table p-treetable-sm" :value="guides" :loading="loading" :lazy="true"
-               @nodeExpand="onExpand" @page="onPage" :expandedKeys="expandedKeys"
+               @nodeExpand="onExpand" @page="onPage" :expandedKeys="expandedKeys" responsiveLayout="scroll"
                selectionMode="single" v-model:selectionKeys="currentNode" @nodeSelect="navigateToEvent">
         <Column :expander="true">
             <template #body="slotProps">

@@ -47,7 +47,7 @@
         <TabPanel :header="$t('common.properties')">
           <div
               v-if="event &&
-              (isPlanCreatorApproval && (event.status.work_plan_event_status_id === 1 || event.status.work_plan_event_status_id === 4 || event.status.work_plan_event_status_id === 6))">
+              (isPlanCreatorApproval || (event.status.work_plan_event_status_id === 1 || event.status.work_plan_event_status_id === 4 || event.status.work_plan_event_status_id === 6))">
             <Menubar :model="userMenuItems" :key="active"
                      style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
           </div>
@@ -429,7 +429,7 @@ export default {
         fd.append("result_id", this.resultData.event_result_id);
       if (this.files.length > 0) {
         for (let file of this.files) {
-          fd.append('files', file)
+          fd.append('files', file, this.authUser.fullName.replace(/ /g, '_') + "_" + file.name)
         }
       }
       this.planService.saveEventResult(fd).then(res => {
