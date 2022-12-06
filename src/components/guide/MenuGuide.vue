@@ -21,11 +21,11 @@
                             aria-controls="overlay_panel" class="p-button-link"/>
                     <OverlayPanel ref="op">
                         <div class="overlay_buttons">
-                            <Button
+                            <!--<Button
                                     icon="pi pi-plus"
                                     v-tooltip.bottom="$t('common.add')"
                                     class="p-button-success"
-                                    @click="createGuide(parent)"/>
+                                    @click="createGuide(parent)"/>-->
                             <Button
                                     icon="pi pi-pencil"
                                     v-tooltip.bottom="$t('common.edit')"
@@ -220,7 +220,7 @@
     }
 
     .overlay_buttons {
-        width: 120px;
+        width: 80px;
         display: flex;
         justify-content: space-between;
     }
