@@ -904,6 +904,7 @@ export default {
         getRef:"Get reference"
     },
     guide:{
+        guide: 'Guide',
         pathName: 'Path name',
         guideName: 'Guide name',
         addGuide: 'Creating a guide',

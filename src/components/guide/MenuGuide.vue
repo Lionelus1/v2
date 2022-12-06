@@ -15,7 +15,7 @@
         </Column>
         <Column>
             <template #body="slotProps">
-                <div v-show="role">
+                <div v-show="role" style="width: 48px;height: 30px;">
                     <Button type="button" icon="pi pi-fw pi-cog"
                             @click="onNodeSelect(slotProps.node),toggle('op', $event)"
                             aria-controls="overlay_panel" class="p-button-link"/>

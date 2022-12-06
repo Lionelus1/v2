@@ -8,7 +8,9 @@
                 :label="$t('common.createNew')" @click="toggle" aria-haspopup="true" aria-controls="overlay_menu"/>
         <Menu id="overlay_menu" ref="menu" :model="pagemenu" :popup="true"/>
         <div class="layout-topbar-icons">
-            <!--<i @click="navigate()" class="pi pi-question-circle guide"></i>-->
+            <button v-tooltip.bottom="$t('guide.guide')" class="guide" @click="navigate()">
+                <i class="pi pi-question-circle"></i>
+            </button>
             <LanguageDropdown/>
         </div>
     </div>
@@ -40,10 +42,18 @@
 </script>
 
 
-<style scoped>
+<style lang="scss" scoped>
 
     .guide{
-            cursor: pointer;
+        border: none;
+        cursor: pointer;
+        background: transparent;
+        font-size: 15px;
+        margin-left: 0;
+        margin-right: 15px;
+        i{
+            margin: 0!important;
+        }
     }
 
     @media print {
