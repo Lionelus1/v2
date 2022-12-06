@@ -2,7 +2,7 @@
   <div>
     <Button :label="$t('common.perform')" icon="pi pi-check" @click="openBasic" class="p-mr-2"/>
   </div>
-  <vue-element-loading :active="isBlockUI" is-full-screen color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)" />
+  <vue-element-loading :active="isBlockUI" is-full-screen color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)"/>
   <Sidebar
       v-model:visible="showWorkPlanExecuteSidebar"
       position="right"
@@ -48,7 +48,7 @@
       </div>
       <div class="p-field" v-if="resultData && resultData.result_files">
         <label class="p-text-bold">{{ $t('workPlan.attachments') }}</label>
-        <div >
+        <div>
           <Button
               v-for="(item, index) of resultData.result_files" :key="index"
               icon="pi pi-download"
@@ -73,9 +73,9 @@
           <div class="p-fileupload-files">
             <div class="p-fileupload-row" v-for="(file, index) of files" :key="index">
               <span class="p-mr-3"><i class="pi pi-paperclip"></i></span>
-              <span>{{file.name}}</span>
+              <span>{{ file.name }}</span>
               <span class="p-ml-5">
-                <Button icon="pi pi-times" class="p-button-rounded p-button-text" @click="removeFile(index)" />
+                <Button icon="pi pi-times" class="p-button-rounded p-button-text" @click="removeFile(index)"/>
               </span>
             </div>
           </div>
@@ -94,7 +94,7 @@
       v-if="event"
       @hide="sideBarClosed"
   >
-    <WorkPlanEventResult :result-id="event.work_plan_event_id" />
+    <WorkPlanEventResult :result-id="event.work_plan_event_id"/>
   </Sidebar>
 </template>
 
@@ -102,7 +102,7 @@
 import axios from "axios";
 import {getHeader, getMultipartHeader, smartEnuApi} from "@/config/config";
 import RichEditor from "../documents/editor/RichEditor";
-import WorkPlanEventResult from "./WorkPlanEventResult";
+import {WorkPlanService} from '../../service/work.plan.service'
 
 export default {
   name: "WorkPlanExecute",
@@ -123,7 +123,8 @@ export default {
       files: [],
       newResult: null,
       fact: null,
-      isBlockUI: false
+      isBlockUI: false,
+      planService: new WorkPlanService()
     }
   },
   methods: {
@@ -143,14 +144,13 @@ export default {
       this.emitter.emit("workPlanSideBarClosed", true);
     },
     getData() {
-      axios.get(smartEnuApi + `/workPlan/getWorkPlanEventResult/${this.event.work_plan_event_id}`, {headers: getHeader()})
-          .then(res => {
-            if (res.data) {
-              this.resultData = res.data;
-              this.isDisabled = !this.resultData.event_result;
-            }
-            this.initMenu();
-          }).catch(error => {
+      this.planService.getEventResult(this.event.work_plan_event_id).then(res => {
+        if (res.data) {
+          this.resultData = res.data;
+          this.isDisabled = !this.resultData.event_result;
+        }
+        this.initMenu();
+      }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
@@ -189,7 +189,7 @@ export default {
           fd.append('files', file)
         }
       }
-      axios.post(smartEnuApi + `/workPlan/saveResult`, fd, {headers: getMultipartHeader()}).then(res => {
+      this.planService.saveEventResult(fd).then(res => {
         this.emitter.emit("workPlanEventIsCompleted", true);
         this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
         this.showWorkPlanExecuteSidebar = false;
@@ -207,14 +207,17 @@ export default {
       });
     },
     sendResultForVerification() {
-      axios.post(smartEnuApi + `/workPlan/sendEventResultForVerify`, {event_id: parseInt(this.event.work_plan_event_id), result_id: parseInt(this.resultData.event_result_id)}, {headers: getHeader()})
-          .then(res => {
-            if (res.data.is_success) {
-              this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
-              this.showWorkPlanExecuteSidebar = false;
-              this.emitter.emit("workPlanResultSentToVerify", true);
-            }
-          }).catch(error => {
+      let data = {
+        event_id: parseInt(this.event.work_plan_event_id),
+        result_id: parseInt(this.resultData.event_result_id)
+      };
+      this.planService.sendResultToVerify(data).then(res => {
+        if (res.data.is_success) {
+          this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
+          this.showWorkPlanExecuteSidebar = false;
+          this.emitter.emit("workPlanResultSentToVerify", true);
+        }
+      }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {

@@ -38,7 +38,7 @@
           <Button
               icon="pi pi-download"
               class="p-button-rounded p-button-success p-mr-2"
-              @click="downloadFile()"
+              @click="downloadFile(data.event_result_file)"
           />
         </div>
       </div>
@@ -91,6 +91,7 @@
 import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
 import WorkPlanEventResult from "./WorkPlanEventResult";
+import {WorkPlanService} from "@/service/work.plan.service";
 
 export default {
   name: "WorkPlanEventResultModal",
@@ -134,6 +135,7 @@ export default {
       loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID,
       rejectComment: null,
       isBlockUI: false,
+      planService: new WorkPlanService()
     }
   },
   methods: {
@@ -153,16 +155,22 @@ export default {
       this.eventResultModal = false;
     },
     downloadFile(item) {
+      let filePath = ""
+      if (item && typeof item === 'string') {
+        filePath = item;
+      } else {
+        filePath = item.event_result_file;
+      }
       this.isBlockUI = true;
-      fetch(smartEnuApi + `/serve?path=${item.event_result_file}`, {
+      fetch(smartEnuApi + `/serve?path=${filePath}`, {
         method: 'GET',
         headers: getHeader()
       }).then(response => response.blob())
           .then(blob => {
-            var url = window.URL.createObjectURL(blob);
-            var a = document.createElement('a');
+            let url = window.URL.createObjectURL(blob);
+            let a = document.createElement('a');
             a.href = url;
-            a.download = item.file_name ? item.file_name : item.event_result_file;
+            a.download = item && item.file_name ? item.file_name : filePath;
             document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
             a.click();
             a.remove();
@@ -195,13 +203,12 @@ export default {
         data.result_id = this.data.event_result_id;
       }
 
-      axios.post(smartEnuApi + `/workPlan/verifyEventResult`, data, {headers: getHeader()})
-          .then(res => {
-            //console.log(res);
-            this.toCorrectSidebar = false;
-            this.eventResultModal = false;
-            this.emitter.emit("workPlanResultVerified", true);
-          }).catch(error => {
+      this.planService.verifyEventResult(data).then(res => {
+        //console.log(res);
+        this.toCorrectSidebar = false;
+        this.eventResultModal = false;
+        this.emitter.emit("workPlanResultVerified", true);
+      }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {

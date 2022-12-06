@@ -100,6 +100,12 @@
             <Column field="state" :header="$t('common.state')">
               <template #body="slotProps">
                 <span :class="'customer-badge status-' + slotProps.data.docHistory.stateEn">{{$t("common.states." + slotProps.data.docHistory.stateEn)}}</span>
+                &nbsp;<i style="color:green" v-if="slotProps.data.signedByMe" class="fa-solid fa-square-check fa-xl not-approved"></i>
+              </template>
+            </Column>
+            <Column>
+              <template #body="slotProps">
+                <Button @click="deleteFile(slotProps.data.id)" v-if="slotProps.data.owner.userID == loginedUser.userID && slotProps.data.docHistory.state != 7" type="button" icon="pi pi-trash" class="p-button-danger"></Button>
               </template>
             </Column>
 
@@ -120,6 +126,7 @@ import axios from "axios";
 export default {
   data() {
     return {
+      loginedUser: null,
       menu: [
         
         {
@@ -173,6 +180,13 @@ export default {
           nameKz: "Қол қойылды",
           nameEn: "Signed",
           value: "signed"
+        },
+        {
+          id: 10,
+          nameRu: "Подписан мною",
+          nameKz: "Мен қол қойған",
+          nameEn: "Signed by me",
+          value: "signedByMe"
         }
       ],
       contracts: [],
@@ -223,11 +237,39 @@ export default {
     toggle(ref, event) {
       this.$refs[ref].toggle(event);
     },
-    
+    getLoginedUser() {
+      this.loginedUser = this.$store.state.loginedUser;
+    },
+    deleteFile(fileID) {
+      this.$confirm.require({
+        message: this.$t("common.doYouWantDelete"),
+        header: this.$t("common.confirm"),
+        icon: 'pi pi-exclamation-triangle',
+        acceptClass: 'p-button p-button-success',
+        rejectClass: 'p-button p-button-danger',
+        accept: () => {
+          let url = "/doc/removeFile";
+          axios.post(smartEnuApi + url, {id: fileID, hide: false}, {headers: getHeader()})
+              .then(_ => {
+                    this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
+                    this.initApiCall();
+                    
+                  },
+                  error => {
+                    console.log(error);
+                  });
+        },
+      });
+    },
+    showMessage(msgtype, message, content) {
+      this.$toast.add({severity: msgtype, summary: message, detail: content, life: 3000});
+    },
+
 
   },
   created() {
     this.initApiCall();
+    this.getLoginedUser();
   },
   
 };

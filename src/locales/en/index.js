@@ -239,7 +239,8 @@ export default {
             notAllowed: "You do not have permission to do this",
             CantModifyInCurrentState: "You can't modify document in current state",
             fileError: "Failed to upload file. Maybe the file is corrupted",
-            mailSendError: "Error sending email"
+            mailSendError: "Error sending email",
+            ConsulAlwaysHasSameMember: "The named person is already a member of another council",
         },
         language: {
             kz: "in kazakh",

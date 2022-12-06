@@ -8,11 +8,11 @@
     </div>
     <div class="p-field">
       <label>{{ $t('common.lang') }}</label>
-      <Dropdown v-model="lang" :options="languages" optionLabel="name" optionValue="id" :placeholder="$t('common.select')" />
+      <Dropdown v-model="lang" :options="languages" optionLabel="name" optionValue="id" :placeholder="$t('common.select')"/>
       <small class="p-error" v-if="submitted && !lang">{{ $t('workPlan.errors.langError') }}</small>
     </div>
     <div class="field-checkbox p-mt-4">
-      <Checkbox v-model="isOper" id="oper" :binary="true" />
+      <Checkbox v-model="isOper" id="oper" :binary="true"/>
       <label class="p-ml-2" for="oper">Операционный план</label>
     </div>
     <template #footer>
@@ -28,6 +28,7 @@
 <script>
 import axios from "axios";
 import {getHeader, signerApi, smartEnuApi} from "@/config/config";
+import {WorkPlanService} from "@/service/work.plan.service";
 
 export default {
   name: 'WorkPlanAdd',
@@ -55,7 +56,8 @@ export default {
         }
       ],
       submitted: false,
-      isOper: false
+      isOper: false,
+      planService: new WorkPlanService()
     }
   },
   props: ['isAdded', 'isSub'],
@@ -70,9 +72,7 @@ export default {
       this.submitted = true;
       if (!this.validate())
         return
-      axios.post(smartEnuApi + `/workPlan/addPlan`, {work_plan_name: this.work_plan_name, lang: this.lang, is_oper: this.isOper}, {
-        headers: getHeader(),
-      }).then(res => {
+      this.planService.createPlan(this.work_plan_name, this.lang, this.isOper).then(res => {
         if (res.data.is_success) {
           this.emitter.emit("workPlanIsAdded", true);
           this.$toast.add({severity: 'info', summary: this.$t('common.success'), detail: this.$t('workPlan.message.planCreated'), life: 3000});

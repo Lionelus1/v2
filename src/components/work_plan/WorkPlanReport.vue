@@ -18,7 +18,9 @@
         </Column>
         <Column field="department" :header="$t('common.department')">
           <template #body="{ data }">
-            <span v-if="data.department"> {{ $i18n.locale === "kz" ? data.department.nameKz : $i18n.locale === "ru" ? data.department.nameRu : data.department.nameEn }} </span>
+            <span v-if="data.department"> {{
+                $i18n.locale === "kz" ? data.department.nameKz : $i18n.locale === "ru" ? data.department.nameRu : data.department.nameEn
+              }} </span>
           </template>
         </Column>
         <Column field="status" :header="$t('common.status')">
@@ -45,6 +47,11 @@
             <p v-if="data.reject_history"> {{ data.reject_history.message }} </p>
           </template>
         </Column>
+        <Column :header="$t('faq.createDate')">
+          <template #body="{ data }">
+            <p v-if="data.created_date"> {{ formatDateMoment(data.created_date) }} </p>
+          </template>
+        </Column>
         <Column>
           <template #body="{ data }">
             <Button type="button" v-if="data.creator_id === loginedUserId && data.status.work_plan_status_id === 1"
@@ -61,6 +68,8 @@
 import WorkPlanReportModal from "@/components/work_plan/WorkPlanReportModal";
 import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
+import moment from "moment/moment";
+import {WorkPlanService} from "@/service/work.plan.service";
 
 export default {
   name: "WorkPlanReport",
@@ -72,7 +81,8 @@ export default {
       plan: null,
       isPlanCreator: false,
       loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID,
-      loading: false
+      loading: false,
+      planService: new WorkPlanService()
     }
   },
   mounted() {
@@ -91,7 +101,7 @@ export default {
   methods: {
     getReports() {
       this.loading = true;
-      axios.get(smartEnuApi + `/workPlan/getWorkPlanReports/${this.work_plan_id}`, {headers: getHeader()}).then(res => {
+      this.planService.getWorkPlanReports(this.work_plan_id).then(res => {
         this.data = res.data
         this.loading = false;
       }).catch(error => {
@@ -108,15 +118,14 @@ export default {
       });
     },
     getPlan() {
-      axios.get(smartEnuApi + `/workPlan/getWorkPlanById/${this.work_plan_id}`, {headers: getHeader()})
-          .then(res => {
-            if (res.data) {
-              this.plan = res.data;
-              if (res.data.user.id === this.loginedUserId) {
-                this.isPlanCreator = true;
-              }
-            }
-          }).catch(error => {
+      this.planService.getPlanById(this.work_plan_id).then(res => {
+        if (res.data) {
+          this.plan = res.data;
+          if (res.data.user.id === this.loginedUserId) {
+            this.isPlanCreator = true;
+          }
+        }
+      }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
@@ -159,17 +168,16 @@ export default {
     },
     delete(event) {
       //console.log(event)
-      axios.post(smartEnuApi + `/workPlan/deleteReport/${event.id}`,null, {headers: getHeader()})
-          .then(response => {
-            if (response.data.is_success) {
-              this.$toast.add({
-                severity: "success",
-                summary: this.$t('common.success'),
-                life: 3000,
-              });
-              this.getReports();
-            }
-          }).catch(error => {
+      this.planService.deletePlanReport(event.id).then(response => {
+        if (response.data.is_success) {
+          this.$toast.add({
+            severity: "success",
+            summary: this.$t('common.success'),
+            life: 3000,
+          });
+          this.getReports();
+        }
+      }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
@@ -180,6 +188,9 @@ export default {
           });
         }
       });
+    },
+    formatDateMoment(date) {
+      return moment(new Date(date)).utc().format("DD.MM.YYYY HH:mm:ss")
     },
     initReportType(type, halfYearType) {
       let result = "";

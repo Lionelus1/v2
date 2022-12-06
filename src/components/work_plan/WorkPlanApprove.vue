@@ -17,7 +17,8 @@
     <template #footer>
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
               @click="closeModal"/>
-      <Button ref="approveBtn" :disabled="submitted" :label="$t('common.send')" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2" @click="getGeneratedPdf"/>
+      <Button ref="approveBtn" :disabled="submitted" :label="$t('common.send')" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2"
+              @click="getGeneratedPdf"/>
     </template>
   </Dialog>
 </template>
@@ -28,6 +29,7 @@ import PdfContent from "@/components/work_plan/PdfContent";
 import html2pdf from "html2pdf.js";
 import axios from "axios";
 import {getHeader, getMultipartHeader, signerApi, smartEnuApi} from "@/config/config";
+import {WorkPlanService} from "@/service/work.plan.service";
 
 export default {
   name: "WorkPlanApprove",
@@ -46,7 +48,8 @@ export default {
       prevStage: 0,
       loginedUserId: 0,
       fd: null,
-      submitted: false
+      submitted: false,
+      planService: new WorkPlanService()
     }
   },
   created() {
@@ -92,7 +95,7 @@ export default {
     approvePlan(fd) {
       fd.append("doc_id", this.plan.doc_id)
       fd.append("approval_users", JSON.stringify(this.approval_users))
-      axios.post(smartEnuApi + `/workPlan/savePlanFile`, fd, {headers: getMultipartHeader()}).then(res => {
+      this.planService.savePlanFile(fd).then(res => {
         if (res.data && res.data.is_success) {
           this.$toast.add({
             severity: "success",
@@ -146,20 +149,19 @@ export default {
     getGeneratedPdf() {
       this.submitted = true
       const pdfContent = this.$refs.pdf.$refs.htmlToPdf.innerHTML;
-      axios.post(smartEnuApi + `/workPlan/generatePdf`, {text: pdfContent}, {headers: getHeader()})
-          .then(res => {
-            let blob = this.b64toBlob(res.data)
-            this.source = "data:application/pdf;base64," + res.data;
-            const fd = new FormData();
-            fd.append('wpfile', blob);
-            fd.append('fname', "file.pdf")
-            fd.append('work_plan_id', this.data.work_plan_id)
-            this.approvePlan(fd);
-          }).catch(error => {
+      this.planService.generatePdf(pdfContent).then(res => {
+        let blob = this.b64toBlob(res.data)
+        this.source = "data:application/pdf;base64," + res.data;
+        const fd = new FormData();
+        fd.append('wpfile', blob);
+        fd.append('fname', "file.pdf")
+        fd.append('work_plan_id', this.data.work_plan_id)
+        this.approvePlan(fd);
+      }).catch(error => {
         //console.log(error)
       })
     },
-    b64toBlob(b64Data, sliceSize=512) {
+    b64toBlob(b64Data, sliceSize = 512) {
       const byteCharacters = window.atob(b64Data);
       const byteArrays = [];
 

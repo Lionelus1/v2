@@ -18,7 +18,8 @@
     <template #footer>
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
               @click="closeModal"/>
-      <Button :label="$t('common.send')" :disabled="submitted" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2" @click="approvePlan"/>
+      <Button :label="$t('common.send')" :disabled="submitted" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2"
+              @click="approvePlan"/>
     </template>
   </Dialog>
 </template>
@@ -29,6 +30,7 @@ import PdfContent from "@/components/work_plan/PdfContent";
 import html2pdf from "html2pdf.js";
 import axios from "axios";
 import {getHeader, getMultipartHeader, signerApi, smartEnuApi} from "@/config/config";
+import {WorkPlanService} from "@/service/work.plan.service";
 
 export default {
   name: "WorkPlanReportApprove",
@@ -51,7 +53,8 @@ export default {
         approvals: false
       },
       doc_id: this.docId,
-      report_id: this.report
+      report_id: this.report,
+      planService: new WorkPlanService()
     }
   },
   created() {
@@ -83,7 +86,7 @@ export default {
       this.fd.append("approval_users", JSON.stringify(this.approval_users));
       this.fd.append("doc_id", this.doc_id);
       this.fd.append("report_id", this.report_id)
-      axios.post(smartEnuApi + `/workPlan/savePlanReportFile`, this.fd, {headers: getMultipartHeader()}).then(res => {
+      this.planService.approvePlan(this.fd).then(res => {
         if (res.data.is_success) {
           this.$toast.add({
             severity: "success",

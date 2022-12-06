@@ -366,7 +366,7 @@
                 { filePath: this.selectedNode.data.filePath},  
                 { headers: getHeader() }).then(
                   response => {
-                    runNCaLayer(this.$t, this.$toast, response.data).then(sign=>{
+                    runNCaLayer(this.$t, this.$toast, response.data, 'cms', 'ul', false, this.$i18n.locale).then(sign=>{
                       this.signing = true
                       if (sign != undefined) {
 
