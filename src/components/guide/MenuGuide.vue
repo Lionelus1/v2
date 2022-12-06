@@ -1,6 +1,6 @@
 <template>
     <TreeTable class="tree_table p-treetable-sm" :value="guides" :loading="loading" :lazy="true"
-               @nodeExpand="onExpand" @page="onPage" :expandedKeys="expandedKeys"
+               @nodeExpand="onExpand" @page="onPage" :expandedKeys="expandedKeys" responsiveLayout="scroll"
                selectionMode="single" v-model:selectionKeys="currentNode" @nodeSelect="navigateToEvent">
         <Column :expander="true">
             <template #body="slotProps">
@@ -15,7 +15,7 @@
         </Column>
         <Column>
             <template #body="slotProps">
-                <div v-show="role" style="width: 48px;height: 30px;">
+                <div v-show="role">
                     <Button type="button" icon="pi pi-fw pi-cog"
                             @click="onNodeSelect(slotProps.node),toggle('op', $event)"
                             aria-controls="overlay_panel" class="p-button-link"/>
