@@ -31,6 +31,7 @@ const store = createStore({
                 .then(() => {
                     localStorage.removeItem('authUser');
                     localStorage.removeItem('loginedUser');
+                    localStorage.removeItem('journalCurrentPage');
                     router.push({ "name": "PublicVacancies" })
                 })
                 .catch((err) => {

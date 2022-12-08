@@ -71,11 +71,12 @@
               :value="contracts"
               @page="onPage($event)"
               :paginator="true"
+              :first="lazyParams.first"
               :rows="lazyParams.rows"
               dataKey="id"
               :rowHover="true"
               :loading="loading"
-              paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+              paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink JumpToPageDropdown CurrentPageReport RowsPerPageDropdown"
               :rowsPerPageOptions="[10, 25, 50]"
               :currentPageReportTemplate="
                 $t('common.showingRecordsCount', {
@@ -191,10 +192,12 @@ export default {
       ],
       contracts: [],
       selectedContract: null,
+      localPageData: JSON.parse(localStorage.getItem("journalCurrentPage")),
       total: 0,
       lazyParams: {
       page: 0,
       rows: 10,
+      first: JSON.parse(localStorage.getItem("journalCurrentPage")) ? JSON.parse(localStorage.getItem("journalCurrentPage")).first : 0
     },
     };
   },
@@ -202,6 +205,8 @@ export default {
     initApiCall() {
       let url = "/contract/jounal";
       this.loading = true;
+      if (this.localPageData && this.localPageData.page)
+        this.lazyParams.page = parseInt(this.localPageData.page)
       this.lazyParams.userID =  this.$store.state.loginedUser.userID
       this.lazyParams.filters = this.filters
       if (this.filters.status.value != null && this.filters.status.value.id != null) {
@@ -213,8 +218,6 @@ export default {
           this.loading = false
           this.total = res.data.total
           this.contracts = res.data.docs
-        
-          
         })
         .catch((error) => {
           console.log(error)
@@ -230,6 +233,7 @@ export default {
       this.initApiCall();
     },
     onPage(event) {
+      localStorage.setItem("journalCurrentPage", JSON.stringify({first: event.first, page: event.page}));
       this.lazyParams = event;
       this.lazyParams.sortLang = this.$i18n.locale;
       this.initApiCall();
