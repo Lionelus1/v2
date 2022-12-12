@@ -43,6 +43,10 @@
                   <InputText type="text" v-model="filters.author.value"/>
                 </div>
                 <div class="p-field">
+                  <label>{{ $t('common.department') }}</label>
+                  <InputText type="text" v-model="filters.department.value"/>
+                </div>
+                <div class="p-field">
                   <Button :label="$t('common.clear')" @click="clearFilter(true)" class="p-mb-2 p-button-outlined"/>
                   <Button :label="$t('common.search')" @click="initApiCall()" class="mt-2"/>
                 </div>
@@ -77,6 +81,11 @@
             >
               <Column field="createDate" :header="$t('faq.createDate')"></Column>
               <Column field="owner.fullName" :header="$t('common.createdBy')"></Column>
+              <Column field="owner.mainPosition.department" header="Кафедра/Группа">
+                <template #body="{ data }">
+                  {{ initDepartment(data) }}
+                </template>
+              </Column>
               <Column field="number" :header="$t('common.number')"></Column>
               <Column field="registerDateS" :header="$t('common.registeredDate')"></Column>
               <Column field="template" :header="$t('common.description')">
@@ -138,6 +147,7 @@ export default {
       filters: {
         author: {value: null, matchMode: FilterMatchMode.CONTAINS},
         status: {value: null, matchMode: FilterMatchMode.EQUALS},
+        department: {value: null, matchMode: FilterMatchMode.CONTAINS},
       },
       statuses: [
         {
@@ -225,6 +235,7 @@ export default {
       this.isFilterActive = false;
       this.filters.author.value = null
       this.filters.status.value = null
+      this.filters.department.value = null
       this.initApiCall();
     },
     onPage(event) {
@@ -262,7 +273,20 @@ export default {
     showMessage(msgtype, message, content) {
       this.$toast.add({severity: msgtype, summary: message, detail: content, life: 3000});
     },
-
+    initDepartment(data) {
+      let result = ""
+      if (this.$i18n.locale === "kz") {
+        result = data.owner.mainPosition.department.cafedra ? data.owner.mainPosition.department.cafedra.nameKz + "/" : "";
+        result += data.owner.mainPosition.department.name;
+      } else if (this.$i18n.locale === "ru") {
+        result = data.owner.mainPosition.department.cafedra ? data.owner.mainPosition.department.cafedra.name + "/" : "";
+        result += data.owner.mainPosition.department.name;
+      } else {
+        result = data.owner.mainPosition.department.cafedra ? data.owner.mainPosition.department.cafedra.nameEn + "/" : "";
+        result += data.owner.mainPosition.department.name;
+      }
+      return result
+    }
 
   },
   created() {
