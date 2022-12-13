@@ -1,6 +1,9 @@
 <template>
   <div class="ontent-section">
-    <h4 class="p-ml-3">{{ $t("contracts.contract") }}</h4>
+    <div @click="$router.back()" class="p-d-inline-block">
+      <i class="fa-solid fa-arrow-left p-ml-2" style="font-size: 16px;cursor: pointer"></i>
+    </div>
+    <h4 class="p-ml-3 p-d-inline-block"> {{ $t("contracts.contract") }}</h4>
     <Menubar
       :model="menu"
       :key="active"
