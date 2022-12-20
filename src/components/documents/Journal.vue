@@ -43,8 +43,8 @@
                   <InputText type="text" v-model="filters.author.value" :placeholder="$t('common.author')" />
                 </div>
                 <div class="p-field">
-                  <label>{{ $t('contracts.cafedraGroup') }}</label>
-                  <InputText type="text" v-model="filters.department.value" :placeholder="$t('contracts.cafedraGroup')" />
+                  <label>{{ $t('contract.cafedraGroup') }}</label>
+                  <InputText type="text" v-model="filters.department.value" :placeholder="$t('contract.cafedraGroup')" />
                 </div>
                 <div class="p-field">
                   <Button :label="$t('common.clear')" @click="clearFilter(true)" class="p-mb-2 p-button-outlined"/>
