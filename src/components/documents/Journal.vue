@@ -80,7 +80,7 @@
                 @filter="onFilter($event)">
               <Column field="createDate" :header="$t('faq.createDate')"></Column>
               <Column field="owner.fullName" :header="$t('common.createdBy')"></Column>
-              <Column field="owner.mainPosition.department" :header="$t('contracts.cafedraGroup')">
+              <Column field="owner.mainPosition.department" :header="$t('contract.cafedraGroup')">
                 <template #body="{ data }">
                   {{ initDepartment(data) }}
                 </template>
