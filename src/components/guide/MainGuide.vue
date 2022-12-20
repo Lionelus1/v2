@@ -62,7 +62,7 @@
                         @click="insertGuide"
                 />
             </div>
-            <div style="text-align: center" v-show="!role" v-html=
+            <div class="text_guide" v-show="!role" v-html=
                     "$i18n.locale === 'kz'
                     ? guide.content
                     : $i18n.locale === 'ru'
@@ -349,7 +349,10 @@
     }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+    .text_guide{
+        text-align: center;
+    }
     .title {
         font-size: 20px;
         font-weight: 500;
