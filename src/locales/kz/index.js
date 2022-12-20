@@ -306,7 +306,8 @@ export default {
         },
         message: {
             validEmail: "Дұрыс email адрес көрсетіңіз",
-        }
+        },
+        cafedraGroup: 'Кафедра/Топ'
     },
     cafedra: {
         practiceResponsibles: "Практикаға жауаптылар",

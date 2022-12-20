@@ -384,6 +384,7 @@ export default {
         },
         setnumber: "Присвоить номер",
         assigner: "Присвоил",
+        cafedraGroup: 'Кафедра/Группа'
     },
     hdfs: {
         archiveBtn: "Архивировать",
