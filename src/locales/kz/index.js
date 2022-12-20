@@ -307,7 +307,6 @@ export default {
         message: {
             validEmail: "Дұрыс email адрес көрсетіңіз",
         },
-        cafedraGroup: 'Кафедра/Топ'
     },
     cafedra: {
         practiceResponsibles: "Практикаға жауаптылар",
@@ -384,7 +383,7 @@ export default {
         },
         setnumber: "Нөмір тағайындау",
         assigner: "Тағайындаған",
-
+        cafedraGroup: 'Кафедра/Топ'
 
     },
     hdfs: {

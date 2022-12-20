@@ -309,7 +309,6 @@ export default {
         message: {
             validEmail: "Введите корректный email адрес",
         },
-        cafedraGroup: 'Кафедра/Группа'
     },
     cafedra: {
         practiceResponsibles: "Ответственные за практику",
@@ -385,6 +384,7 @@ export default {
         },
         setnumber: "Присвоить номер",
         assigner: "Присвоил",
+        cafedraGroup: 'Кафедра/Группа'
     },
     hdfs: {
         archiveBtn: "Архивировать",

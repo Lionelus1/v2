@@ -307,7 +307,6 @@ export default {
         message: {
             validEmail: "Please enter a valid email address",
         },
-        cafedraGroup: 'Department/Group'
     },
     cafedra: {
         practiceResponsibles: "Responsible for the practice",
@@ -383,6 +382,7 @@ export default {
         },
         setnumber: "Set number",
         assigner: "Assigner",
+        cafedraGroup: 'Department/Group'
     },
     hdfs: {
         archiveBtn: "Аrchive",

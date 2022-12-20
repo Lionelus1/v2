@@ -43,8 +43,8 @@
                   <InputText type="text" v-model="filters.author.value" :placeholder="$t('common.author')" />
                 </div>
                 <div class="p-field">
-                  <label>{{ $t('contract.cafedraGroup') }}</label>
-                  <InputText type="text" v-model="filters.department.value" :placeholder="$t('contract.cafedraGroup')" />
+                  <label>{{ $t('contracts.cafedraGroup') }}</label>
+                  <InputText type="text" v-model="filters.department.value" :placeholder="$t('contracts.cafedraGroup')" />
                 </div>
                 <div class="p-field">
                   <Button :label="$t('common.clear')" @click="clearFilter(true)" class="p-mb-2 p-button-outlined"/>
@@ -80,7 +80,7 @@
                 @filter="onFilter($event)">
               <Column field="createDate" :header="$t('faq.createDate')"></Column>
               <Column field="owner.fullName" :header="$t('common.createdBy')"></Column>
-              <Column field="owner.mainPosition.department" :header="$t('contract.cafedraGroup')">
+              <Column field="owner.mainPosition.department" :header="$t('contracts.cafedraGroup')">
                 <template #body="{ data }">
                   {{ initDepartment(data) }}
                 </template>
