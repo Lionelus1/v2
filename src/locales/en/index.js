@@ -20,6 +20,7 @@ export default {
         councilName: 'Council name',
         contragents: 'Contragents',
         documents: 'Documents',
+        sertificates: 'Sertificates',
         administration: 'Administration',
         academicDegree: "Academic degree",
         academicTitle: "Academic title",

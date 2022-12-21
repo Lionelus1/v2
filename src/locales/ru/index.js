@@ -20,6 +20,7 @@ export default {
         councilName: 'Наименование совета',
         contragents: 'Контрагенты',
         documents: 'Документы',
+        sertificates: 'Свидетельства',
         administration: 'Администрирование',
         academicDegree: "Ученая степень",
         academicTitle: "Ученое звание",

@@ -20,6 +20,7 @@ export default {
         councilName: 'Кеңес аты',
         contragents: 'Контрагенттер',
         documents: 'Құжаттар',
+        sertificates: 'Куәліктер',
         administration: 'Әкімшілік',
         academicDegree: "Ғылыми дәрежесі",
         academicTitle: "Ғылыми атағы",
