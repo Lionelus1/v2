@@ -37,7 +37,8 @@
                 this.$emit('menu-toggle', event);
             },
             navigate() {
-               this.$router.push({name: 'MainGuide', params: {id: this.$route.path}});
+                let routeData = this.$router.resolve({name: 'MainGuide', params: {id: this.$route.path}});
+                window.open(routeData.href, '_blank');
             },
         }
     }
