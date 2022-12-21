@@ -1,5 +1,5 @@
 import axios from "axios";
-import {getHeader, getMultipartHeader, smartEnuApi} from "@/config/config";
+import {getHeader, getFileHeader, smartEnuApi} from "@/config/config";
 
 export class WorkPlanService {
 
@@ -44,7 +44,7 @@ export class WorkPlanService {
     }
 
     savePlanFile(fd) {
-        return axios.post(smartEnuApi + `/workPlan/savePlanFile`, fd, {headers: getMultipartHeader()});
+        return axios.post(smartEnuApi + `/workPlan/savePlanFile`, fd, {headers: getFileHeader()});
     }
 
     generatePdf(pdfContent) {
@@ -68,7 +68,7 @@ export class WorkPlanService {
     }
 
     saveEventResult(fd) {
-        return axios.post(smartEnuApi + `/workPlan/saveResult`, fd, {headers: getMultipartHeader()});
+        return axios.post(smartEnuApi + `/workPlan/saveResult`, fd, {headers: getFileHeader()});
     }
 
     sendResultToVerify(data) {
@@ -104,7 +104,7 @@ export class WorkPlanService {
     }
 
     approvePlan(fd) {
-        return axios.post(smartEnuApi + `/workPlan/savePlanReportFile`, this.fd, {headers: getMultipartHeader()});
+        return axios.post(smartEnuApi + `/workPlan/savePlanReportFile`, fd, {headers: getFileHeader()});
     }
 
     getDepartments(planId) {
