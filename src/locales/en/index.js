@@ -307,7 +307,7 @@ export default {
         },
         message: {
             validEmail: "Please enter a valid email address",
-        }
+        },
     },
     cafedra: {
         practiceResponsibles: "Responsible for the practice",
@@ -383,6 +383,7 @@ export default {
         },
         setnumber: "Set number",
         assigner: "Assigner",
+        cafedraGroup: 'Department/Group'
     },
     hdfs: {
         archiveBtn: "Аrchive",
@@ -901,6 +902,10 @@ export default {
         serviced:"Serviced",
         averageTime:"Average service time",
         redirected: "Redirected",
+    },
+    educomplex: {
+        title: "Пәннің оқу-әдістемелік кешені",
+        forme: "Маған қатысты"
     },
     ref:{
         getRef:"Get reference"

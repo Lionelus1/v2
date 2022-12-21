@@ -8,7 +8,7 @@
         <div class="card">
           <div>
             <Menubar
-                :model="menu"
+                :model="initMenu"
                 :key="active"
                 style="height: 36px;margin-top: 0px;margin-right: -13px;margin-left: -13px;">
               <template #end>
@@ -40,7 +40,11 @@
                 </div>
                 <div class="p-field">
                   <label>{{ $t('common.author') }}</label>
-                  <InputText type="text" v-model="filters.author.value"/>
+                  <InputText type="text" v-model="filters.author.value" :placeholder="$t('common.author')" />
+                </div>
+                <div class="p-field">
+                  <label>{{ $t('contracts.cafedraGroup') }}</label>
+                  <InputText type="text" v-model="filters.department.value" :placeholder="$t('contracts.cafedraGroup')" />
                 </div>
                 <div class="p-field">
                   <Button :label="$t('common.clear')" @click="clearFilter(true)" class="p-mb-2 p-button-outlined"/>
@@ -50,6 +54,7 @@
             </OverlayPanel>
             <!-- {{contracts}} -->
             <DataTable
+                v-if="contracts"
                 selectionMode="single"
                 v-model:selection="selectedContract"
                 :lazy="true"
@@ -69,27 +74,31 @@
                   first: '{first}',
                   last: '{last}',
                   totalRecords: '{totalRecords}',
-                })
-              "
+                })"
                 responsiveLayout="scroll"
                 @sort="onSort($event)"
-                @filter="onFilter($event)"
-            >
+                @filter="onFilter($event)">
               <Column field="createDate" :header="$t('faq.createDate')"></Column>
               <Column field="owner.fullName" :header="$t('common.createdBy')"></Column>
+              <Column field="owner.mainPosition.department" :header="$t('contracts.cafedraGroup')">
+                <template #body="{ data }">
+                  {{ initDepartment(data) }}
+                </template>
+              </Column>
               <Column field="number" :header="$t('common.number')"></Column>
               <Column field="registerDateS" :header="$t('common.registeredDate')"></Column>
               <Column field="template" :header="$t('common.description')">
-                <template #body="slotProps">
-                  {{ $i18n.locale === 'ru' ? slotProps.data.template.descriptionRus : slotProps.data.template.descriptionKaz }}
+                <template #body="{ data }">
+                  <div v-if="data.template">
+                    {{ $i18n.locale === 'ru' ? data.template.descriptionRus : data.template.descriptionKaz }}
+                  </div>
                 </template>
               </Column>
               <Column field="state" :header="$t('common.state')">
                 <template #body="slotProps">
-                  <span
-                      :class="'customer-badge status-' + slotProps.data.docHistory.stateEn">{{
-                      $t("common.states." + slotProps.data.docHistory.stateEn)
-                    }}</span>
+                  <span :class="'customer-badge status-' + slotProps.data.docHistory.stateEn">
+                    {{ $t("common.states." + slotProps.data.docHistory.stateEn) }}
+                  </span>
                   &nbsp;<i style="color:green" v-if="slotProps.data.signedByMe" class="fa-solid fa-square-check fa-xl not-approved"></i>
                 </template>
               </Column>
@@ -121,23 +130,10 @@ export default {
     return {
       loginedUser: null,
       loading: false,
-      menu: [
-
-        {
-          label: this.$t("bank.card"),
-          icon: "pi pi-fw pi-id-card",
-          command: () => {
-            if (this.selectedContract != null) {
-              this.$router.push('/documents/contract/' + this.selectedContract.id)
-            }
-          }
-        },
-
-
-      ],
       filters: {
         author: {value: null, matchMode: FilterMatchMode.CONTAINS},
         status: {value: null, matchMode: FilterMatchMode.EQUALS},
+        department: {value: null, matchMode: FilterMatchMode.CONTAINS},
       },
       statuses: [
         {
@@ -194,6 +190,21 @@ export default {
       isFilterActive: false
     }
   },
+  computed: {
+    initMenu() {
+      return [
+        {
+          label: this.$t("bank.card"),
+          icon: "pi pi-fw pi-id-card",
+          command: () => {
+            if (this.selectedContract != null) {
+              this.$router.push('/documents/contract/' + this.selectedContract.id)
+            }
+          }
+        }
+      ];
+    }
+  },
   methods: {
     initApiCall() {
       if (this.filters.author.value || this.filters.status.value) {
@@ -225,6 +236,7 @@ export default {
       this.isFilterActive = false;
       this.filters.author.value = null
       this.filters.status.value = null
+      this.filters.department.value = null
       this.initApiCall();
     },
     onPage(event) {
@@ -262,7 +274,26 @@ export default {
     showMessage(msgtype, message, content) {
       this.$toast.add({severity: msgtype, summary: message, detail: content, life: 3000});
     },
+    initDepartment(data) {
+      try {
+        let result = ""
+        if (this.$i18n.locale === "kz") {
+          result = data.owner.mainPosition.department.cafedra ? data.owner.mainPosition.department.cafedra.nameKz + "/" : "";
+          result += data.owner.mainPosition.department.name;
+        } else if (this.$i18n.locale === "ru") {
+          result = data.owner.mainPosition.department.cafedra ? data.owner.mainPosition.department.cafedra.name + "/" : "";
+          result += data.owner.mainPosition.department.name;
+        } else {
+          result = data.owner.mainPosition.department.cafedra ? data.owner.mainPosition.department.cafedra.nameEn + "/" : "";
+          result += data.owner.mainPosition.department.name;
+        }
+        return result
+      } catch (ex) {
+        console.log(ex)
+        return null;
+      }
 
+    }
 
   },
   created() {

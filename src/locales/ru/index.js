@@ -309,7 +309,7 @@ export default {
         },  
         message: {
             validEmail: "Введите корректный email адрес",
-        }
+        },
     },
     cafedra: {
         practiceResponsibles: "Ответственные за практику",
@@ -385,6 +385,7 @@ export default {
         },
         setnumber: "Присвоить номер",
         assigner: "Присвоил",
+        cafedraGroup: 'Кафедра/Группа'
     },
     hdfs: {
         archiveBtn: "Архивировать",
@@ -903,8 +904,8 @@ export default {
         halfYear: "полугодие"
     },
     educomplex: {
-        title: "Учебно-методический комплекс дисциплины",
-        forme: "Относительно меня"
+        title: "Educational-methodical complex of the discipline",
+        forme: "Concerning me"
     },
     ref:{
         getRef:"Получить справку",
