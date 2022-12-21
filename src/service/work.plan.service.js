@@ -104,7 +104,7 @@ export class WorkPlanService {
     }
 
     approvePlan(fd) {
-        return axios.post(smartEnuApi + `/workPlan/savePlanReportFile`, this.fd, {headers: getMultipartHeader()});
+        return axios.post(smartEnuApi + `/workPlan/savePlanReportFile`, fd, {headers: getMultipartHeader()});
     }
 
     getDepartments(planId) {
