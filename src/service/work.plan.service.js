@@ -1,10 +1,5 @@
-<<<<<<< HEAD
 import api from "./api";
 import {getHeader, getMultipartHeader, smartEnuApi} from "@/config/config";
-=======
-import axios from "axios";
-import {getHeader, getFileHeader, smartEnuApi} from "@/config/config";
->>>>>>> 41177381f26cf89f0dc8ba685cbb18d1068530b2
 
 export class WorkPlanService {
 
@@ -49,11 +44,7 @@ export class WorkPlanService {
     }
 
     savePlanFile(fd) {
-<<<<<<< HEAD
         return api.post(`/workPlan/savePlanFile`, fd, {headers: getMultipartHeader()});
-=======
-        return axios.post(smartEnuApi + `/workPlan/savePlanFile`, fd, {headers: getFileHeader()});
->>>>>>> 41177381f26cf89f0dc8ba685cbb18d1068530b2
     }
 
     generatePdf(pdfContent) {
@@ -77,11 +68,7 @@ export class WorkPlanService {
     }
 
     saveEventResult(fd) {
-<<<<<<< HEAD
         return api.post(`/workPlan/saveResult`, fd, {headers: getMultipartHeader()});
-=======
-        return axios.post(smartEnuApi + `/workPlan/saveResult`, fd, {headers: getFileHeader()});
->>>>>>> 41177381f26cf89f0dc8ba685cbb18d1068530b2
     }
 
     sendResultToVerify(data) {
@@ -117,11 +104,7 @@ export class WorkPlanService {
     }
 
     approvePlan(fd) {
-<<<<<<< HEAD
         return api.post(`/workPlan/savePlanReportFile`, this.fd, {headers: getMultipartHeader()});
-=======
-        return axios.post(smartEnuApi + `/workPlan/savePlanReportFile`, fd, {headers: getFileHeader()});
->>>>>>> 41177381f26cf89f0dc8ba685cbb18d1068530b2
     }
 
     getDepartments(planId) {

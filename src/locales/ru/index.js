@@ -20,6 +20,7 @@ export default {
         councilName: 'Наименование совета',
         contragents: 'Контрагенты',
         documents: 'Документы',
+        sertificates: 'Свидетельства',
         administration: 'Администрирование',
         academicDegree: "Ученая степень",
         academicTitle: "Ученое звание",
@@ -903,8 +904,8 @@ export default {
         halfYear: "полугодие"
     },
     educomplex: {
-        title: "Учебно-методический комплекс дисциплины",
-        forme: "Относительно меня"
+        title: "Educational-methodical complex of the discipline",
+        forme: "Concerning me"
     },
     ref:{
         getRef:"Получить справку",

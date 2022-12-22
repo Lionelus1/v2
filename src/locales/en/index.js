@@ -20,6 +20,7 @@ export default {
         councilName: 'Council name',
         contragents: 'Contragents',
         documents: 'Documents',
+        sertificates: 'Sertificates',
         administration: 'Administration',
         academicDegree: "Academic degree",
         academicTitle: "Academic title",
@@ -901,6 +902,10 @@ export default {
         serviced:"Serviced",
         averageTime:"Average service time",
         redirected: "Redirected",
+    },
+    educomplex: {
+        title: "Пәннің оқу-әдістемелік кешені",
+        forme: "Маған қатысты"
     },
     ref:{
         getRef:"Get reference"
