@@ -1,10 +1,10 @@
-import axios from "axios";
-import {getHeader, smartEnuApi} from "../config/config";
+import { getHeader, smartEnuApi } from "../config/config";
+import api from "./api";
 
 export class PosterService {
 
     addPoster(data) {
-        return axios.post(smartEnuApi + "/addPoster", data, {headers: getHeader()})
+        return api.post(smartEnuApi + "/addPoster", data, {headers: getHeader()})
     }
 
 }
