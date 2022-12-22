@@ -104,7 +104,7 @@ export class WorkPlanService {
     }
 
     approvePlan(fd) {
-        return api.post(`/workPlan/savePlanReportFile`, this.fd, {headers: getMultipartHeader()});
+        return api.post(`/workPlan/savePlanReportFile`, fd, {headers: getMultipartHeader()});
     }
 
     getDepartments(planId) {
