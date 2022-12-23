@@ -36,7 +36,7 @@ export class WorkPlanService {
     }
 
     deletePlan(planId) {
-        return api.post(`/workPlan/deletePlan/${event.work_plan_id}`, null, {headers: getHeader()});
+        return api.post(`/workPlan/deletePlan/${planId}`, null, {headers: getHeader()});
     }
 
     createPlan(planName, lang, isOper) {
