@@ -34,6 +34,16 @@
                       class="p-button-primary p-md-5" @click="sign" :label="$t('ncasigner.sign')" :loading="signing"/>
             </div>
           </Panel>
+          <Panel>
+            <template #header>
+            </template>
+            <div class="p-d-flex p-jc-center">
+              {{mgovSignUri}}
+            </div>
+            <div class="p-d-flex p-jc-center">
+              <qrcode-vue size="300" render-as="svg" margin="2" :value="mgovSignUri"></qrcode-vue>
+            </div>
+          </Panel>
         </div>
       </TabPanel>
     </TabView>
@@ -48,11 +58,12 @@ import axios from "axios";
 import {getHeader, smartEnuApi, b64toBlob, findRole} from "@/config/config";
 import html2pdf from "html2pdf.js";
 import DocInfo from "@/components/ncasigner/DocInfo";
+import QrcodeVue from "qrcode.vue";
 
 
 export default {
   name: "DocSignaturesInfo",
-  components: {SignatureQrPdf, DocInfo},
+  components: {SignatureQrPdf, DocInfo, QrcodeVue},
   props: {
     docIdParam: {
       type: String,
@@ -96,13 +107,16 @@ export default {
       signing: false,
       file: null,
       active: 0,
-      isSignShow: false
+      isSignShow: false,
+      mgovSignUri: null
     }
   },
   created() {
     if (!this.doc_id) {
       this.doc_id = this.docIdParam
     }
+    this.mgovSignUri = 'mobileSign:'+ smartEnuApi +'/mobileSignParams?docUuid=' + this.doc_id
+    console.log(this.mgovSignUri)
     this.isTspRequired = this.tspParam
     this.signerIin = this.signerIinParam
     this.signerType = this.signerTypeParam
