@@ -88,14 +88,13 @@ import axios from "axios";
 import {FilterMatchMode, FilterOperator} from 'primevue/api';
 import {getHeader, smartEnuApi, findRole} from "@/config/config";
 import moment from "moment";
-import { boolean } from "yargs";
 
 
 
 export default {
   props: {
     adminMode: {
-      type: boolean,
+      type: Boolean,
       default: true
     }
   },
