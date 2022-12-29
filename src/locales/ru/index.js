@@ -904,8 +904,8 @@ export default {
         halfYear: "полугодие"
     },
     educomplex: {
-        title: "Educational-methodical complex of the discipline",
-        forme: "Concerning me"
+        title: "Учебно-методический комплекс дисциплины",
+        forme: "Относительно меня"
     },
     ref:{
         getRef:"Получить справку",

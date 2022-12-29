@@ -171,13 +171,7 @@ export default {
           nameEn: "Signed",
           value: "signed"
         },
-        {
-          id: 10,
-          nameRu: "Подписан мною",
-          nameKz: "Мен қол қойған",
-          nameEn: "Signed by me",
-          value: "signedByMe"
-        }
+        
       ],
       contracts: [],
       selectedContract: null,

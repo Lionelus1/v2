@@ -904,8 +904,8 @@ export default {
         redirected: "Redirected",
     },
     educomplex: {
-        title: "Пәннің оқу-әдістемелік кешені",
-        forme: "Маған қатысты"
+        title: "Educational-methodical complex of the discipline",
+        forme: "Concerning me"
     },
     ref:{
         getRef:"Get reference"
