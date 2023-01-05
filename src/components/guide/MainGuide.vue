@@ -351,10 +351,13 @@
 
 <style lang="scss" scoped>
     .text_guide{
+      ::v-deep .ql-align-center{
         text-align: center;
+      }
     }
     .title {
         font-size: 20px;
         font-weight: 500;
     }
+
 </style>
