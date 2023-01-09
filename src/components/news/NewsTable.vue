@@ -275,17 +275,19 @@ export default {
       // this.allNews = [];
       this.lazyParams.countMode = null;
       this.newsService.getNews(this.lazyParams).then((response) => {
-        this.allNews = response.data.news;
-        this.allNews.map(e => {
-          e.imageUrl = smartEnuApi + fileRoute + e.image1;
-          if (e.poster) {
-            e.poster.imageKkUrl = smartEnuApi + fileRoute + e.poster.imageKk;
-            e.poster.imageRuUrl = smartEnuApi + fileRoute + e.poster.imageRu;
-            e.poster.imageEnUrl = smartEnuApi + fileRoute + e.poster.imageEn;
-          }
-        });
-        this.newsCount = response.data.total;
-        this.loading = false;
+        if (response.data) {
+          this.allNews = response.data.news;
+          this.allNews.map(e => {
+            e.imageUrl = smartEnuApi + fileRoute + e.image1;
+            if (e.poster) {
+              e.poster.imageKkUrl = smartEnuApi + fileRoute + e.poster.imageKk;
+              e.poster.imageRuUrl = smartEnuApi + fileRoute + e.poster.imageRu;
+              e.poster.imageEnUrl = smartEnuApi + fileRoute + e.poster.imageEn;
+            }
+          });
+          this.newsCount = response.data.total;
+          this.loading = false;
+        }
       }).catch((error) => {
         if (error.response.status == 401) {
           this.$store.dispatch("logLout");
