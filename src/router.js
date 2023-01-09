@@ -381,7 +381,21 @@ const routes = [
                 path: '/access',
                 name: 'access',
                 component: () => import('./pages/Access.vue')
-            }
+            },
+            //Associations of Clubs
+            {
+                path: '/student/clubs',
+                name: 'ClubView',
+                component: load('student/clubs/ClubView'),
+                beforeEnter: ifAuthenticated,
+            },
+            //Associations of Clubs
+            {
+                path: '/enuwebsite',
+                name: 'EnuWebView',
+                component: load('enuwebsite/EnuWebView'),
+                beforeEnter: ifAuthenticated,
+            }            
                 
         ]
     },

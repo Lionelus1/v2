@@ -703,6 +703,18 @@ export default {
         rejected: "Отменили выполнение действия"
 
     },
+    // ENU New WebPaga
+    enuNewSite: {
+        mainMenuTitle: "ENU Website",
+        menuPage: "Menus"
+    
+    },
+    //Student locale
+    student: {
+        clubs: "ENU Clubs",
+        pageTitle: "ENU Clubs"
+    
+    },
     hr: {
         action: {
             interview: 'Invite to interview',

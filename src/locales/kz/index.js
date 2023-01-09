@@ -748,6 +748,19 @@ export default {
         answerConfirm: "Жауап сұрақ қоюшының поштасына жіберіледі. Жауапты сақтап, жібересіз бе?",
         rejected: "Амалды орындаудан бас тарттыңыз"
     },
+    // ENU New WebPaga
+    enuNewSite: {
+        mainMenuTitle: "ЕНУ Сайт",
+        menuPage: "Мәзірлер",
+        
+    
+    },
+    //Student locale
+    student: {
+        clubs: "Клубтар қауымдастығы",
+        pageTitle: "Университет қауымдастықтар"
+
+    },
     hr: {
         action: {
             interview: 'Сұхбатқа шақыру',

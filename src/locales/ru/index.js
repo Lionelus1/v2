@@ -734,6 +734,18 @@ export default {
         answerConfirm: "Ответ будет отправлен на почту отправителю вопроса. Сохранить и отправить ответ?",
         rejected: "Отменили выполнение действия"
     },
+    // ENU New WebPaga
+    enuNewSite: {
+        mainMenuTitle: "ЕНУ Сайт",
+        menuPage: "Меню"
+    
+    },
+
+    student: {
+        clubs: "Студенческие клубы",
+        pageTitle: "Университетские клубы"
+
+    },
     hr: {
         action: {
             interview: 'Пригласить на собеседование',
