@@ -172,7 +172,7 @@ export default {
       categories: null,
       newsData: null,
       allNews: [],
-      newsCount: 200,
+      newsCount: 0,
       selectedNews: null,
       filters: {
         'global': {value: null, matchMode: FilterMatchMode.CONTAINS},
