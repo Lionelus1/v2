@@ -275,7 +275,7 @@ export default {
       // this.allNews = [];
       this.lazyParams.countMode = null;
       this.newsService.getNews(this.lazyParams).then((response) => {
-        if (response.data) {
+        if (response.data && response.data.news) {
           this.allNews = response.data.news;
           this.allNews.map(e => {
             e.imageUrl = smartEnuApi + fileRoute + e.image1;
