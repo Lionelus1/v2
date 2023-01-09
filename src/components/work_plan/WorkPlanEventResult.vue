@@ -52,7 +52,7 @@
                      style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
           </div>
           <div
-              v-if="plan && plan.is_oper && (!isPlanCreatorApproval || isPlanCreator) && event && event.status.work_plan_event_status_id === 5">
+              v-if="plan && plan.is_oper && isPlanCreator && event && event.status.work_plan_event_status_id === 5">
             <Menubar :model="verifyMenu" :key="active"
                      style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
           </div>
@@ -339,6 +339,7 @@ export default {
         if (res.data) {
           this.event = res.data.event;
           this.plan = res.data.plan;
+          console.log(this.plan)
           if (this.plan && this.plan.user.id === this.loginedUserId) {
             this.isPlanCreator = true;
           } else {
@@ -346,8 +347,8 @@ export default {
             //this.$router.push('/work-plan')
           }
           if (this.event && this.event.user) {
-            this.isPlanCreatorApproval = this.event.user.find(e => e.id === this.loginedUserId) && this.isPlanCreator;
-            console.log(this.event.user.find(e => e.id === this.loginedUserId))
+            this.isPlanCreatorApproval = this.event.user.find(e => e.id === this.loginedUserId) !== null && this.isPlanCreator;
+            console.log(this.isPlanCreator)
             this.isCurrentUserApproval = this.event.user.find(e => e.id === this.loginedUserId);
           }
           this.getData();

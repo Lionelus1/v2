@@ -36,7 +36,7 @@ export class WorkPlanService {
     }
 
     deletePlan(planId) {
-        return api.post(`/workPlan/deletePlan/${event.work_plan_id}`, null, {headers: getHeader()});
+        return api.post(`/workPlan/deletePlan/${planId}`, null, {headers: getHeader()});
     }
 
     createPlan(planName, lang, isOper) {
@@ -104,7 +104,7 @@ export class WorkPlanService {
     }
 
     approvePlan(fd) {
-        return api.post(`/workPlan/savePlanReportFile`, this.fd, {headers: getMultipartHeader()});
+        return api.post(`/workPlan/savePlanReportFile`, fd, {headers: getMultipartHeader()});
     }
 
     getDepartments(planId) {
