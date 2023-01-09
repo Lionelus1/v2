@@ -286,10 +286,11 @@ export default {
             }
           });
           this.newsCount = response.data.total;
-          this.loading = false;
         }
+        this.loading = false;
       }).catch((error) => {
-        if (error.response.status == 401) {
+        this.loading = false;
+        if (error && error.response.status == 401) {
           this.$store.dispatch("logLout");
         } else {
           this.$toast.add({
