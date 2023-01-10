@@ -97,6 +97,7 @@ import '@fullcalendar/timegrid/main.min.css';
 import './assets/layout/layout.scss';
 import './assets/layout/flags/flags.css';
 import mitt from "mitt";
+import interceptor from "./service/interceptor";
 import VueElementLoading from "vue-element-loading";
 import Person from '@/components/contragent/Person.vue';
 import Organization from '@/components/contragent/Organization.vue';
@@ -123,6 +124,8 @@ router.beforeEach(function(to, from, next) {
 });
 const app = createApp(App);
 const emitter = mitt();
+
+interceptor(store);
 
 /* eslint-disable */
 app.use(PrimeVue, {
