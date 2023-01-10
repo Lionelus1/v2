@@ -737,7 +737,12 @@ export default {
     // ENU New WebPaga
     enuNewSite: {
         mainMenuTitle: "ЕНУ Сайт",
-        menuPage: "Меню"
+        menuPage: "Меню",
+        menuMainPage: "Страница",
+        menuOrder: "Ордер",
+        menuParent: "Родитель",
+        addMenu: "Добавить меню",
+        isMainMenu: "Главное меню"
     
     },
 

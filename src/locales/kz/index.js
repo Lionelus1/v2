@@ -752,7 +752,11 @@ export default {
     enuNewSite: {
         mainMenuTitle: "ЕНУ Сайт",
         menuPage: "Мәзірлер",
-        
+        menuMainPage: "Парақшасы",
+        menuOrder: "Реті",
+        menuParent: "Аталық",
+        addMenu: "Мәзір қосу",
+        isMainMenu: "Негізгі мәзір"   
     
     },
     //Student locale

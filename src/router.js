@@ -389,12 +389,11 @@ const routes = [
                 component: load('student/clubs/ClubView'),
                 beforeEnter: ifAuthenticated,
             },
-            //Associations of Clubs
+            //ENU New WebSite
             {
-                path: '/enuwebsite',
+                path: '/enuwebsitemenu',
                 name: 'EnuWebView',
-                component: load('enuwebsite/EnuWebView'),
-                beforeEnter: ifAuthenticated,
+                component: load('enuwebsite/EnuWebView')
             }            
                 
         ]

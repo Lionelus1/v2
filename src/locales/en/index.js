@@ -706,7 +706,12 @@ export default {
     // ENU New WebPaga
     enuNewSite: {
         mainMenuTitle: "ENU Website",
-        menuPage: "Menus"
+        menuPage: "Menus",
+        menuMainPage: "Page",
+        menuOrder: "Order",
+        menuParent: "Parent",
+        addMenu: "Add Menu",
+        isMainMenu: "Main Menu"
     
     },
     //Student locale

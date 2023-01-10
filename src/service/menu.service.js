@@ -178,7 +178,7 @@ export class MenuService {
                 label: $t('enuNewSite.mainMenuTitle'), icon: 'pi pi-fw pi-box ',
                 items: [
                     {
-                        label: $t('enuNewSite.menuPage'), icon: 'pi pi-fw pi-bars', to: '/enuwebsite'
+                        label: $t('enuNewSite.menuPage'), icon: 'pi pi-fw pi-bars', to: '/enuwebsitemenu'
                     },
 
                     /* {
