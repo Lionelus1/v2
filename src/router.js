@@ -114,6 +114,17 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
+                path: '/documents/sertificates',
+                name: 'sertificates',
+                component: load('documents/sertificates/Journal'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/documents/sertificate/:uuid',
+                name: 'sertificate',
+                component: load('documents/sertificates/Sertificate'),
+            },
+            {
                 path: '/contragent/banks',
                 name: '/contragent/banks',
                 component: load('contragent/Banks'),

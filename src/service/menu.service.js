@@ -23,7 +23,9 @@ export class MenuService {
                         label: $t('contracts.template'), icon: 'pi pi-fw pi-book', to: '/documents/doctemplate',
                         visible: !this.findRole("student")
                     },
-                    {label: $t('contracts.title'), icon: 'pi pi-fw pi-copy', to: '/documents/contracts'},
+                    {
+                        label: $t('contracts.title'), icon: 'pi pi-fw pi-copy', to: '/documents/contracts'
+                    },
                     {
                         label: $t('smartenu.catalogNormDoc'),
                         icon: 'pi pi-fw pi-folder',
@@ -31,6 +33,9 @@ export class MenuService {
                     },
                     {
                         label: $t('educomplex.title'), icon: 'pi pi-fw pi-folder', to: '/documents/catalog/educomplex'
+                    },
+                    {
+                        label: $t('common.sertificates'), icon: 'pi pi-fw pi-book', to: '/documents/sertificates'
                     },
                 ]
 

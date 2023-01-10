@@ -174,6 +174,7 @@ export default {
                 approvedBy: null,
                 approveDate : null,
                 author: null,
+                docType: 6,
             },
             totalRecords: 10,
             dialogOpenState: {
@@ -290,6 +291,7 @@ export default {
                 nameen: "",
                 id: null,
                 key: null,
+                docType: 6,
                 createdDate: null,
                 updatedDate: null,
                 approvedBy: null,
