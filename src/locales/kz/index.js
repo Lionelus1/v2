@@ -756,7 +756,9 @@ export default {
         menuOrder: "Реті",
         menuParent: "Аталық",
         addMenu: "Мәзір қосу",
-        isMainMenu: "Негізгі мәзір"   
+        isMainMenu: "Негізгі мәзір",
+        pageLink: "Парақшалар",
+        addPage: "Парақша қосу"   
     
     },
     //Student locale

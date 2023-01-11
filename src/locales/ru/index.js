@@ -742,7 +742,9 @@ export default {
         menuOrder: "Ордер",
         menuParent: "Родитель",
         addMenu: "Добавить меню",
-        isMainMenu: "Главное меню"
+        isMainMenu: "Главное меню",
+        pageLink: "Страницы",
+        addPage: "Добавить страницу" 
     
     },
 

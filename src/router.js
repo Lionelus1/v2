@@ -394,7 +394,12 @@ const routes = [
                 path: '/enuwebsitemenu',
                 name: 'EnuWebView',
                 component: load('enuwebsite/EnuWebView')
-            }            
+            }, 
+            {
+                path: '/enuwebsitepage',
+                name: 'EnuWebPageView',
+                component: load('enuwebsite/EnuWebPageView')
+            }           
                 
         ]
     },

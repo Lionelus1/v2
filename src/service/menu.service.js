@@ -180,6 +180,9 @@ export class MenuService {
                     {
                         label: $t('enuNewSite.menuPage'), icon: 'pi pi-fw pi-bars', to: '/enuwebsitemenu'
                     },
+                    {
+                        label: $t('enuNewSite.pageLink'), icon: 'pi pi-fw pi-external-link', to: '/enuwebsitepage'
+                    },
 
                     /* {
                       label:  $t('queue.addService'), icon: 'pi pi-fw pi-th-large', to:'/queueCategories'

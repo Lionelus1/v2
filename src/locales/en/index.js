@@ -711,7 +711,9 @@ export default {
         menuOrder: "Order",
         menuParent: "Parent",
         addMenu: "Add Menu",
-        isMainMenu: "Main Menu"
+        isMainMenu: "Main Menu",
+        pageLink: "Pages",
+        addPage: "Add Page"
     
     },
     //Student locale
