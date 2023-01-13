@@ -758,7 +758,16 @@ export default {
         addMenu: "Мәзір қосу",
         isMainMenu: "Негізгі мәзір",
         pageLink: "Парақшалар",
-        addPage: "Парақша қосу"   
+        addPage: "Парақша қосу",
+        addEditMenuPageTitle: "Мәзірлерді құру/өзгерту",
+        selectParentMenu: "Бас мәзірді таңдау",
+        selectMenu: "Мәзір таңдау",
+        selectPage: "Парақша таңдау",
+        selectMainPage: "Парақша таңдау",
+        addCustomLink: "Арнаулы сілтеме",
+        giveCustomLink: "Сыртқы сілтеме беру",
+        createNewPageButton: "Жаңа парақша құру",
+        menuOrderLabel: "Мәзір тәртібі"
     
     },
     //Student locale

@@ -713,7 +713,16 @@ export default {
         addMenu: "Add Menu",
         isMainMenu: "Main Menu",
         pageLink: "Pages",
-        addPage: "Add Page"
+        addPage: "Add Page",
+        addEditMenuPageTitle: "Create/Edit Menus",
+        selectParentMenu: "Choose Parent Menu",
+        selectMenu: "Select Menu",
+        selectPage: "Select Page",
+        selectMainPage: "Choose Page",
+        addCustomLink: "Custom Link",
+        giveCustomLink: "Setup External Link",
+        createNewPageButton: "Create New Page",
+        menuOrderLabel: "Menu Order"
     
     },
     //Student locale

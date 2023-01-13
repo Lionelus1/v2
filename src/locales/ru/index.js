@@ -744,7 +744,17 @@ export default {
         addMenu: "Добавить меню",
         isMainMenu: "Главное меню",
         pageLink: "Страницы",
-        addPage: "Добавить страницу" 
+        addPage: "Добавить страницу",
+        addEditMenuPageTitle: "Создать/изменить меню",
+        selectParentMenu: "Выберите главное меню",
+        selectMenu: "Выберите меню",
+        selectPage: "Выберите страницу",
+        selectMainPage: "Выберите страницу",
+        addCustomLink: "Пользовательская ссылка",
+        giveCustomLink: "Создать внешнюю ссылку",
+        createNewPageButton: "Создать новую страницу",
+        menuOrderLabel: "Заказ меню" 
+
     
     },
 
