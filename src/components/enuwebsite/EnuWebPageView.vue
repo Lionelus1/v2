@@ -12,10 +12,10 @@
             </table>
          </div>
          <div class="card">
-        <DataTable :value="pages" dataKey="pageId" :paginator="true" :rows="10" sortMode="single" :rowHover="true">
-            <Column field="titleKz"  :header="$t('common.nameInQazaq')" :expander="true" :sortable="true">
+        <DataTable :value="pages" dataKey="enu_page_id" :paginator="true" :rows="10" sortMode="single" :rowHover="true">
+            <Column field="title_kz"  :header="$t('common.nameInQazaq')" :expander="true" :sortable="true">
                <template #body="{ data }">
-                 {{ $i18n.locale === 'kz' ? data.titleKz : $i18n.locale === 'ru' ? data.titleRu : data.titleEn }}
+                 {{ $i18n.locale === 'kz' ? data.title_kz : $i18n.locale === 'ru' ? data.title_ru : data.title_en }}
                </template>      
             </Column>
             <Column headerStyle="width: 8em" bodyStyle="text-align: center">
@@ -23,7 +23,7 @@
                     <Button type="button" icon="pi pi-pencil" class="p-button-warning"></Button>
                 </template>
            
-            <Column v-for="page of pages" :key="page.pageId" :field="page.titleKz" header="Edit" :expander="true" :sortable="true">
+            <Column v-for="page of pages" :key="page.enu_page_id" :field="page.title_kz" header="Edit" :expander="true" :sortable="true">
                <template #body="">
                  <Button type="button" icon="pi pi-pencil" class="p-button-warning"></Button>
                </template>      

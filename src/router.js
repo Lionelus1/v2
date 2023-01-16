@@ -393,12 +393,14 @@ const routes = [
             {
                 path: '/enuwebsitemenu',
                 name: 'EnuWebView',
-                component: load('enuwebsite/EnuWebView')
+                component: load('enuwebsite/EnuWebView'),
+                beforeEnter: ifAuthenticated,
             }, 
             {
                 path: '/enuwebsitepage',
                 name: 'EnuWebPageView',
-                component: load('enuwebsite/EnuWebPageView')
+                component: load('enuwebsite/EnuWebPageView'),
+                beforeEnter: ifAuthenticated,
             }           
                 
         ]

@@ -12,27 +12,27 @@
             </table>
          </div>
          <div class="card">
-        <DataTable :value="menus" dataKey="menuId" :paginator="true" :rows="10" sortMode="single" :rowHover="true">
-            <Column field="titleKz"  :header="$t('common.nameInQazaq')" :expander="true" :sortable="true">
+        <DataTable :value="menus" dataKey="menu_id" :paginator="true" :rows="10" sortMode="single" :rowHover="true">
+            <Column field="menu_title_kz"  :header="$t('common.nameInQazaq')" :expander="true" :sortable="true">
                <template #body="{ data }">
-                 {{ $i18n.locale === 'kz' ? data.titleKz : $i18n.locale === 'ru' ? data.titleRu : data.titleEn }}
+                 {{ $i18n.locale === 'kz' ? data.menu_title_kz : $i18n.locale === 'ru' ? data.menu_title_ru : data.menu_title_en }}
                </template>      
             </Column>
-            <Column field="orderId" :header="$t('enuNewSite.menuOrder')" :sortable="true">
+            <Column field="order_id" :header="$t('enuNewSite.menuOrder')" :sortable="true">
                 <template #body="{ data }">
-                 {{ data.orderId }}
+                 {{ data.order_id }}
                </template>
             </Column>
-            <Column field="isMain" :header="$t('enuNewSite.isMainMenu')" :sortable="true">
+            <Column field="is_main" :header="$t('enuNewSite.isMainMenu')" :sortable="true">
                 <template #body="{ data }">
-                 {{ data.isMain }}
+                 {{ data.is_main }}
                </template>
             </Column>
             <Column headerStyle="width: 8em" bodyStyle="text-align: center">
         <template #header>
             <Button type="button" icon="pi pi-cog"></Button>
         </template>
-        <Column v-for="menu of menus" :key="menu.menuId" :field="menu.titleKz"></Column>
+        <Column v-for="menu of menus" :key="menu.menu_id" :field="menu.menu_title_kz"></Column>
         <template #body="">
                     <Button type="button" icon="pi pi-pencil" class="p-button-warning"></Button>
                 </template>
@@ -44,33 +44,35 @@
    
 </div>
 <!-- Add Menu Modal Pop Up -->
-<Dialog v-if="display" v-model:visible="display" :style="{ width: '1000px' }" :breakpoints="{'960px': '75vw', '640px': '90vw'}" :header="$t('enuNewSite.addEditMenuPageTitle')"
+<Dialog v-model:visible="display" :style="{ width: '1000px' }" :breakpoints="{'960px': '75vw', '640px': '90vw'}" :header="$t('enuNewSite.addEditMenuPageTitle')"
           :modal="true" class="p-fluid">
     
         <TabView>
         <TabPanel header="Қазақша">
           <div class="p-field p-mt-3">
             <label for="kz-title">{{ $t("common.nameInQazaq") }}</label>
-            <InputText id="kz-title" v-model="formData.titleKz"  rows="3"
+            <InputText id="kz-title" v-model="formData.menu_title_kz"  rows="3" modelValue=""
+            :class="{ 'p-invalid': !menus.menu_title_kz && submitted }"
                        />
             <!-- <small class="p-error">{{ $t("smartenu.titleKzInvalid") }}</small> -->
+            <small v-show="!menus.menu_title_kz && submitted" class="p-error">{{ $t("smartenu.titleKzInvalid") }}</small>
           </div>
                    
         </TabPanel>
         <TabPanel header="Русский">
           <div class="p-field p-mt-3">
             <label for="ru-title">{{ $t("common.nameInRussian") }}</label>
-            <InputText id="ru-title" v-model="formData.titleRu"
+            <InputText id="ru-title" v-model="formData.menu_title_ru"
                        rows="3" />
-            <!-- <small  class="p-error">{{ $t("smartenu.titleRuInvalid") }}</small> -->
+            <small v-show="!menus.menu_title_ru && submitted" class="p-error">{{ $t("smartenu.titleRuInvalid") }}</small>
           </div>
          
         </TabPanel>
         <TabPanel header="English">
           <div class="p-field p-mt-3">
             <label for="en-title">{{ $t("common.nameInEnglish") }}</label>
-            <InputText id="en-title" v-model="formData.titleEn"  rows="3"/>
-            <!-- <small  class="p-error">{{ $t("smartenu.titleEnInvalid") }}</small> -->
+            <InputText id="en-title" v-model="formData.menu_title_en"  rows="3"/>
+            <small v-show="!menus.menu_title_en && submitted" class="p-error">{{ $t("smartenu.titleEnInvalid") }}</small>
           </div>    
         </TabPanel>
       </TabView>
@@ -79,7 +81,7 @@
       <div class="card" v-if="menus.length > 0" v-show="selectMenuVisible">
         <div class="p-field">
             <label for="menuorder-label">{{ $t('enuNewSite.menuOrderLabel') }}</label>
-            <InputText id="menu-order"  rows="3" mode="decimal" v-model="formData.orderId"/>
+            <InputText id="menu-order"  rows="3" mode="decimal" v-model="formData.order_id"/>
           </div>  
          
       </div>
@@ -92,6 +94,12 @@
           </div>  
          
       </div> -->
+      <div class="p-fluid">
+        <div class="p-field">
+           
+
+        </div>
+      </div>
 
       <!-- Select Menu -->
       <div class="card" v-if="menus.length > 0" v-show="selectMenuVisible">
@@ -100,14 +108,12 @@
             <!-- <small  class="p-error">{{ $t("smartenu.titleEnInvalid") }}</small> -->
             <!-- osy jerge page selector block keledi -->
             {{ selectedMenu  }}
-            <Dropdown v-model="selectedMenu"  optionDisabled="true" :options="menus" optionLabel="titleKz" optionValue="menuId" :placeholder="$t('enuNewSite.selectMenu')" />
+            <Dropdown v-model="selectedMenu"  optionDisabled="true" :options="menus" optionLabel="menu_title_kz" optionValue="menu_id" :placeholder="$t('enuNewSite.selectMenu')" />
             
           </div>  
          
       </div>
 
-
-    
      <!-- Select Page -->
       <div class="card" v-if="pages.length > 0" v-show="selectPageVisible">
         <div class="p-field">
@@ -115,7 +121,7 @@
             <!-- <small  class="p-error">{{ $t("smartenu.titleEnInvalid") }}</small> -->
             <!-- osy jerge page selector block keledi -->
             {{ selectedPage  }}
-            <Dropdown v-model="selectedPage" optionDisabled="true"  :options="pages" optionLabel="titleKz" optionValue="pageId" :placeholder="$t('enuNewSite.selectPage')" />
+            <Dropdown v-model="selectedPage" optionDisabled="true"  :options="pages" optionLabel="title_kz" optionValue="enu_page_id" :placeholder="$t('enuNewSite.selectPage')" />
           </div>  
           <div class="p-field p-mt-1">
             
@@ -129,7 +135,7 @@
             <!-- <small  class="p-error">{{ $t("smartenu.titleEnInvalid") }}</small> -->
             <!-- osy jerge page selector block keledi -->
             {{ selectedMenu  }}
-            <InputText id="en-title"  rows="3"/>
+            <InputText id="en-title" v-model="formData.link"  rows="3"/>
             
           </div>  
          
@@ -149,8 +155,11 @@
             :label="$t('enuNewSite.createNewPageButton')"
             icon="pi pi-plus"
             class="p-button p-component p-mr-2"
-            v-on:click="addNews"
+            
         />
+        
+        <input v-model="checked" type="checkbox" name="check" />
+<label for="check">Main Menu: {{checked}}</label>
     </div>
     <div class="right" style="float:right;">
       <Button
@@ -180,11 +189,12 @@
         props: ['parentId'],
         data(){
             return {
+            display: this.isVisible ?? false,
             menus: [],
             pages: [],
             menu:[],
             menuTitle: "",
-            display: false,
+            //display: false,
             submitted: false,
             selectMenuVisible: true,
             selectPageVisible: true,
@@ -194,16 +204,18 @@
             menuService: new EnuWebService(),
             pageService: new EnuWebService(),
             formData: {
-              titleKz: "",
-              titleRu: "",
-              titleEn: "",
-              parentId: this.parentId ? this.parentId : null,
-              pageId: this.pageId ? this.pageId : null,
-              menuLink: null,
-              isMain: false,
-              orderId: 0,
-              directionId: null
-            }
+                menu_title_kz: null,
+                menu_title_ru: null,
+                menu_title_en: null,
+                parent_id: this.menu_id ? this.menu_id : null,
+                page_id: null, //this.pageId ? this.pageId : null,
+                link: null,
+                is_main: false,
+                order_id: null,
+                direction_id: null
+            },
+            formValid: [],
+            checked: this.is_main ? this.is_main : null,
             };
         },
         async created(){
@@ -250,21 +262,18 @@
                 });
             },
             createMenu() {
-                // this.catTreeElementsList = [];
-                // this.catTree.root = this.createCatTree(null, null);
-                // this.newsData = {};
+               
                 this.display = true;
-                // this.submitted = false;
-                // this.newsData.id = null;
-                // this.newsData.contentCategoryRelations = [];
-                // this.selectedCatTree = [];
-                //alert("Worked");
+                
+              
             },
             hideDialog() {
-            this.display = false;
-            this.selectedMenu=null;
-            this.selectedPage=null;
-            this.submitted = false;
+                this.emitter.emit('addEditNewsDialogHide', true);
+                this.display = false;
+                this.selectedMenu=null;
+                this.selectedPage=null;
+                this.submitted = false;
+
             },
             hideSelectMenus(){
 
@@ -285,10 +294,23 @@
             },
             addMenu(){
               this.submitted = true;
+            //   if (this.validateMenus().length > 0) {
+            //         return;
+            //   }
               if (this.selectedPage) {
-                this.formData.pageId = this.selectedPage;
+                this.formData.page_id = this.selectedPage;
               }
-              //if (this.sele)
+              
+              if(this.selectedMenu) {
+                this.formData.parent_id = this.selectedMenu;
+              }
+
+            //   if(this.checked){
+            //     this.formData.is_main = this.checked;
+
+            //   }
+
+              
               this.menuService.addMenu(this.formData).then(res =>{
                     if(res.data.is_success){
                       this.$toast.add({
@@ -296,7 +318,13 @@
                             summary: 'Success',
                             life: 3000,
                         });
+                        console.log("Successfully added");
                         this.display = false;
+                        this.menu_title_kz = null;
+                        this.formData.menu_title_kz = "";
+                        this.menu_title_en = null;
+                        this.menu_title_ru = null;
+                        this.hideDialog();
                     }
                 }).catch(error => {
                     if (error.response && error.response.status === 401) {
@@ -312,10 +340,40 @@
 
 
             },
-            async insertMenu(){
-              
+            validateMenus() {
+                this.formValid = [];
+                if(!this.menus.titleKz){
+                    this.formValid.push({titleKz: true})
+                }
+                if(!this.menus.titleRu){
+                    this.formValid.push({titleRu: true})
+                }
+                if(!this.menus.titleEn){
+                    this.formValid.push({titleEu: true})
+                }
+                // if(!this.menus.parentId){
+                //     this.formValid.push({parentId: true})
+                // }
+                // if(!this.menus.pageId){
+                //     this.formValid.push({pageId: true})
+                // }
+                // if(!this.menus.menuLink){
+                //     this.formValid.push({menuLink: true})
+                // }
+                // if(!this.menus.isMain){
+                //     this.formValid.push({isMain: true})
+                // }
+                // if(!this.menus.orderId){
+                //     this.formValid.push({orderId: true})
+                // }
+                // if(!this.menus.directionId){
+                //     this.formValid.push({directionId: true})
 
-            }
+                // }
+                return this.formValid;
+            },
+           
+
         }
     }
 </script>
