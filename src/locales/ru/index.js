@@ -273,7 +273,10 @@ export default {
         history: "История",
         user: "Пользователь",
         fact: "Факт",
-        actionTitle: "Действие"
+        actionTitle: "Действие",
+        style: "Стиль",
+        bgColor: "Фоновый цвет",
+        textColor: "Цвет текста"
     },
     bank: {
         title: "Банки",
