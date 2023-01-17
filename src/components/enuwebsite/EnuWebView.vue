@@ -159,7 +159,7 @@
         />
         
         <input v-model="checked" type="checkbox" name="check" />
-<label for="check">Main Menu: {{checked}}</label>
+        <label for="check">Main Menu: {{checked}}</label>
     </div>
     <div class="right" style="float:right;">
       <Button

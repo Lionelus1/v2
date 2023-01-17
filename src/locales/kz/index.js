@@ -760,6 +760,7 @@ export default {
         pageLink: "Парақшалар",
         addPage: "Парақша қосу",
         addEditMenuPageTitle: "Мәзірлерді құру/өзгерту",
+        addEditPageTitle: "Парақшаларды құру/өзгерту",
         selectParentMenu: "Бас мәзірді таңдау",
         selectMenu: "Мәзір таңдау",
         selectPage: "Парақша таңдау",

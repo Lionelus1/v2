@@ -715,6 +715,7 @@ export default {
         pageLink: "Pages",
         addPage: "Add Page",
         addEditMenuPageTitle: "Create/Edit Menus",
+        addEditPageTitle: "Create/Edit Pages",
         selectParentMenu: "Choose Parent Menu",
         selectMenu: "Select Menu",
         selectPage: "Select Page",

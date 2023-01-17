@@ -746,6 +746,7 @@ export default {
         pageLink: "Страницы",
         addPage: "Добавить страницу",
         addEditMenuPageTitle: "Создать/изменить меню",
+        addEditPageTitle: "Создать/изменить страницы",
         selectParentMenu: "Выберите главное меню",
         selectMenu: "Выберите меню",
         selectPage: "Выберите страницу",
