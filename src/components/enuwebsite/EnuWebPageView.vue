@@ -47,9 +47,7 @@
           <div class="p-field">
             <label for="kz-content">{{ $t("common.contentInQazaq") }}</label>
             <Editor id="content_kz" v-model="formData.content_kz"  editorStyle="height: 320px"/>
-            <small  class="p-error">{{
-                $t("smartenu.contentKzInvalid")
-              }}</small>
+            <small v-show="!formData.content_kz && submitted"  class="p-error">{{$t("smartenu.contentKzInvalid")}}</small>
           </div>
                    
         </TabPanel>
@@ -59,17 +57,14 @@
         <TabPanel header="Русский">
           <div class="p-field p-mt-3">
             <label for="ru-title">{{ $t("common.nameInRussian") }}</label>
-            <InputText id="title_ru" v-model="formData.title_ru"
-                       rows="3" />
-            <small  class="p-error">{{ $t("smartenu.titleRuInvalid") }}</small>
+            <InputText id="title_ru" v-model="formData.title_ru" rows="3" />
+            <small v-show="!formData.title_ru && submitted"  class="p-error">{{ $t("smartenu.titleRuInvalid") }}</small>
           </div>
 
           <div class="p-field">
-            <label for="kz-content">{{ $t("common.contentInQazaq") }}</label>
+            <label for="kz-content">{{ $t("common.contentInRussian") }}</label>
             <Editor id="content_ru" v-model="formData.content_ru"  editorStyle="height: 320px"/>
-            <small  class="p-error">{{
-                $t("smartenu.contentKzInvalid")
-              }}</small>
+            <small v-show="!formData.content_ru && submitted"  class="p-error">{{$t("smartenu.contentKzInvalid")}}</small>
           </div>
          
          
@@ -81,12 +76,12 @@
           <div class="p-field p-mt-3">
             <label for="en-title">{{ $t("common.nameInEnglish") }}</label>
             <InputText id="title_en" v-model="formData.title_en"  rows="3"/>
-            <small  class="p-error">{{ $t("smartenu.titleEnInvalid") }}</small>
+            <small v-show="!formData.title_en && submitted"  class="p-error">{{ $t("smartenu.titleEnInvalid") }}</small>
           </div>  
           <div class="p-field">
-            <label for="kz-content">{{ $t("common.contentInQazaq") }}</label>
-            <Editor id="content_en" v-model="formData.content_en" editorStyle="height: 320px"/>
-            <small  class="p-error">{{
+            <label for="kz-content">{{ $t("common.contentInEnglish") }}</label>
+            <Editor  id="content_en" v-model="formData.content_en" editorStyle="height: 320px"/>
+            <small v-show="!formData.content_en && submitted"  class="p-error">{{
                 $t("smartenu.contentKzInvalid")
               }}</small>
           </div>  
@@ -187,10 +182,11 @@
                     return;
                 }
                 this.pageService.addPage(this.formData).then(res => {
-                    if(res.data.is_success){
+                    if(res.data !== null){
                       this.$toast.add({
                             severity: "success",
-                            summary: 'Success',
+                            // {{ $i18n.locale === 'kz' ? data.menu_title_kz : $i18n.locale === 'ru' ? data.menu_title_ru : data.menu_title_en }}
+                            summary: this.$t("enuNewSite.createdPageSuccessMsg"),
                             life: 3000,
                         });
                         console.log("Successfully added");

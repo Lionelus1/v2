@@ -768,7 +768,10 @@ export default {
         addCustomLink: "Арнаулы сілтеме",
         giveCustomLink: "Сыртқы сілтеме беру",
         createNewPageButton: "Жаңа парақша құру",
-        menuOrderLabel: "Мәзір тәртібі"
+        menuOrderLabel: "Мәзір тәртібі",
+        customLinkInvalid: "Сілтеме толтырылмаған",
+        createdMenuSuccessMsg: "Мәзір сәтті құрылды",
+        createdPageSuccessMsg: "Парақша сәтті құрылды"
     
     },
     //Student locale

@@ -51,37 +51,36 @@
         <TabPanel header="Қазақша">
           <div class="p-field p-mt-3">
             <label for="kz-title">{{ $t("common.nameInQazaq") }}</label>
-            <InputText id="kz-title" v-model="formData.menu_title_kz"  rows="3" modelValue=""
-            :class="{ 'p-invalid': !menus.menu_title_kz && submitted }"
-                       />
-            <!-- <small class="p-error">{{ $t("smartenu.titleKzInvalid") }}</small> -->
-            <small v-show="!menus.menu_title_kz && submitted" class="p-error">{{ $t("smartenu.titleKzInvalid") }}</small>
+            <InputText id="kz-title" v-model="formData.menu_title_kz"  rows="3"
+            :class="{ 'p-invalid': !formData.menu_title_kz && submitted }" />
+            <small v-show="!formData.menu_title_kz && submitted" class="p-error">{{ $t("smartenu.titleKzInvalid") }}</small>
           </div>
                    
         </TabPanel>
         <TabPanel header="Русский">
           <div class="p-field p-mt-3">
             <label for="ru-title">{{ $t("common.nameInRussian") }}</label>
-            <InputText id="ru-title" v-model="formData.menu_title_ru"
-                       rows="3" />
-            <small v-show="!menus.menu_title_ru && submitted" class="p-error">{{ $t("smartenu.titleRuInvalid") }}</small>
+            <InputText id="ru-title" v-model="formData.menu_title_ru" rows="3" 
+            :class="{ 'p-invalid': !formData.menu_title_ru && submitted }" />
+            <small v-show="!formData.menu_title_ru && submitted" class="p-error">{{ $t("smartenu.titleRuInvalid") }}</small>
           </div>
          
         </TabPanel>
         <TabPanel header="English">
           <div class="p-field p-mt-3">
             <label for="en-title">{{ $t("common.nameInEnglish") }}</label>
-            <InputText id="en-title" v-model="formData.menu_title_en"  rows="3"/>
-            <small v-show="!menus.menu_title_en && submitted" class="p-error">{{ $t("smartenu.titleEnInvalid") }}</small>
+            <InputText id="en-title" v-model="formData.menu_title_en"  rows="3"
+            :class="{ 'p-invalid': !formData.menu_title_en && submitted }" />
+            <small v-show="!formData.menu_title_en && submitted" class="p-error">{{ $t("smartenu.titleEnInvalid") }}</small>
           </div>    
         </TabPanel>
       </TabView>
 
       <!-- Menu Order -->
-      <div class="card" v-if="menus.length > 0" v-show="selectMenuVisible">
+      <div class="card">
         <div class="p-field">
             <label for="menuorder-label">{{ $t('enuNewSite.menuOrderLabel') }}</label>
-            <InputText id="menu-order"  rows="3" mode="decimal" v-model="formData.order_id"/>
+            <InputNumber id="order_id"  rows="3"  v-model="formData.order_id"/>
           </div>  
          
       </div>
@@ -107,7 +106,7 @@
             <label for="choose-parent-ment">{{ $t('enuNewSite.selectParentMenu') }}</label>
             <!-- <small  class="p-error">{{ $t("smartenu.titleEnInvalid") }}</small> -->
             <!-- osy jerge page selector block keledi -->
-            {{ selectedMenu  }}
+            <!-- {{ selectedMenu  }} -->
             <Dropdown v-model="selectedMenu"  optionDisabled="true" :options="menus" optionLabel="menu_title_kz" optionValue="menu_id" :placeholder="$t('enuNewSite.selectMenu')" />
             
           </div>  
@@ -136,6 +135,7 @@
             <!-- osy jerge page selector block keledi -->
             {{ selectedMenu  }}
             <InputText id="en-title" v-model="formData.link"  rows="3"/>
+            <!-- <small v-show="!formData.link && submitted" class="p-error">{{ $t("enuNewSite.customLinkInvalid") }}</small> -->
             
           </div>  
          
@@ -155,10 +155,11 @@
             :label="$t('enuNewSite.createNewPageButton')"
             icon="pi pi-plus"
             class="p-button p-component p-mr-2"
+            @click="visibleRight = true"
             
         />
         
-        <input v-model="checked" type="checkbox" name="check" />
+        <input v-model="checked" type="checkbox" name="check" v-on:click="setMainMenu" />
         <label for="check">Main Menu: {{checked}}</label>
     </div>
     <div class="right" style="float:right;">
@@ -179,6 +180,11 @@
        
 	</template>
 </Dialog>
+
+<!-- Add Page Right Sidebar
+<Sidebar v-model:visible="visibleRight" position="right" class="p-sidebar-sm">
+	Content
+</Sidebar> -->
 </template>
 
 <script>
@@ -208,9 +214,9 @@
                 menu_title_ru: null,
                 menu_title_en: null,
                 parent_id: this.menu_id ? this.menu_id : null,
-                page_id: null, //this.pageId ? this.pageId : null,
+                page_id: null,
                 link: null,
-                is_main: false,
+                is_main: null,
                 order_id: null,
                 direction_id: null
             },
@@ -273,6 +279,13 @@
                 this.selectedMenu=null;
                 this.selectedPage=null;
                 this.submitted = false;
+                this.formData.menu_title_kz = null;
+                this.formData.menu_title_ru = null;
+                this.formData.menu_title_en = null;
+                this.formData.direction_id = null;
+                this.formData.is_main = null;
+                this.formData.order_id = null;
+                this.formData.parent_id = null;
 
             },
             hideSelectMenus(){
@@ -294,36 +307,31 @@
             },
             addMenu(){
               this.submitted = true;
-            //   if (this.validateMenus().length > 0) {
-            //         return;
-            //   }
-              if (this.selectedPage) {
+              if (this.validateMenus().length > 0) {
+                    return;
+              }
+              if (this.selectedPage != null) {
                 this.formData.page_id = this.selectedPage;
               }
               
-              if(this.selectedMenu) {
+              if(this.selectedMenu != null) {
                 this.formData.parent_id = this.selectedMenu;
               }
 
-            //   if(this.checked){
-            //     this.formData.is_main = this.checked;
-
-            //   }
-
-              
               this.menuService.addMenu(this.formData).then(res =>{
                     if(res.data.is_success){
                       this.$toast.add({
                             severity: "success",
-                            summary: 'Success',
+                            summary: this.$t("enuNewSite.createdMenuSuccessMsg"),
                             life: 3000,
                         });
                         console.log("Successfully added");
                         this.display = false;
-                        this.menu_title_kz = null;
                         this.formData.menu_title_kz = "";
-                        this.menu_title_en = null;
-                        this.menu_title_ru = null;
+                        this.formData.menu_title_en = null;
+                        this.formData.menu_title_ru = null;
+                        this.formData.is_main = null;
+                        this.checked = null;
                         this.hideDialog();
                     }
                 }).catch(error => {
@@ -342,36 +350,43 @@
             },
             validateMenus() {
                 this.formValid = [];
-                if(!this.menus.titleKz){
-                    this.formValid.push({titleKz: true})
+                if(!this.formData.menu_title_kz){
+                    this.formValid.push({menu_title_kz: true})
                 }
-                if(!this.menus.titleRu){
-                    this.formValid.push({titleRu: true})
+                if(!this.formData.menu_title_ru){
+                    this.formValid.push({menu_title_ru: true})
                 }
-                if(!this.menus.titleEn){
-                    this.formValid.push({titleEu: true})
+                if(!this.formData.menu_title_en){
+                    this.formValid.push({menu_title_en: true})
                 }
-                // if(!this.menus.parentId){
-                //     this.formValid.push({parentId: true})
+                // if(!this.formData.parent_id){
+                //     this.formValid.push({parent_id: true})
                 // }
-                // if(!this.menus.pageId){
-                //     this.formValid.push({pageId: true})
+                // if(!this.formData.page_id){
+                //     this.formValid.push({page_id: true})
                 // }
-                // if(!this.menus.menuLink){
-                //     this.formValid.push({menuLink: true})
+                // if(!this.formData.link){
+                //     this.formValid.push({link: true})
                 // }
-                // if(!this.menus.isMain){
-                //     this.formValid.push({isMain: true})
+                // if(!this.formData.is_main){
+                //     this.formValid.push({is_main: true})
                 // }
-                // if(!this.menus.orderId){
-                //     this.formValid.push({orderId: true})
+                // if(!this.formData.order_id){
+                //     this.formValid.push({order_id: true})
                 // }
-                // if(!this.menus.directionId){
-                //     this.formValid.push({directionId: true})
+                // if(!this.formData.direction_id){
+                //     this.formValid.push({direction_id: true})
 
                 // }
                 return this.formValid;
             },
+            setMainMenu(){
+                if(this.formData.is_main === null){
+                    this.formData.is_main = true;
+                }else{
+                    this.formData.is_main = null;
+                }
+            }
            
 
         }

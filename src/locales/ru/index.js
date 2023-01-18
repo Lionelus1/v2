@@ -754,7 +754,10 @@ export default {
         addCustomLink: "Пользовательская ссылка",
         giveCustomLink: "Создать внешнюю ссылку",
         createNewPageButton: "Создать новую страницу",
-        menuOrderLabel: "Заказ меню" 
+        menuOrderLabel: "Заказ меню",
+        customLinkInvalid: "Ссылка не заполнена",
+        createdMenuSuccessMsg: "Меню успешно создано",
+        createdPageSuccessMsg: "Страница успешно создана"
 
     
     },
