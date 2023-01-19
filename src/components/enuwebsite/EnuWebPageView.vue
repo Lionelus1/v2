@@ -12,13 +12,18 @@
             </table>
          </div>
          <div class="card">
-        <DataTable :value="pages" dataKey="enu_page_id" :paginator="true" :rows="10" sortMode="single" :rowHover="true">
+        <DataTable :value="pages" responsiveLayout="scroll" dataKey="enu_page_id" :paginator="true" :rows="10" sortMode="single" :rowHover="true">
             <Column field="title_kz"  :header="$t('common.nameInQazaq')" :expander="true" :sortable="true">
                <template #body="{ data }">
                  {{ $i18n.locale === 'kz' ? data.title_kz : $i18n.locale === 'ru' ? data.title_ru : data.title_en }}
                </template>      
             </Column>
-            <Column field="enu_page_id"  :header="$t('common.nameInQazaq')" :expander="true" :sortable="true" style="text-align: right;">
+            <Column field="page_view"  :header="$t('common.nameInQazaq')" :expander="true" :sortable="true" style="text-align: right;">
+               <template #body="{ data }">
+                <Button type="button" icon="pi pi-eye" class="p-button-warning" @click="onView(data)"></Button>
+               </template>      
+            </Column>
+            <Column field="page_edit"  :header="$t('common.nameInQazaq')" :expander="true" :sortable="true" style="text-align: right;">
                <template #body="{ data }">
                 <Button type="button" icon="pi pi-pencil" class="p-button-warning" @click="onEditPage(data)"></Button>
                </template>      
@@ -29,6 +34,11 @@
     </div>
 
 </div>
+<Dialog v-model:visible="pageView" :style="{ width: '1000px' }" :breakpoints="{'960px': '75vw', '640px': '90vw'}" header="#"
+          :modal="true" class="p-fluid">
+    <h3>{{ selectedPage.title_kz }}</h3><hr/>
+	{{ selectedPage.content_kz }}
+</Dialog>
 <!-- =============Add Page Dialog Popup=============== -->
 <Dialog v-model:visible="display" :style="{ width: '1000px' }" :breakpoints="{'960px': '75vw', '640px': '90vw'}" :header="$t('enuNewSite.addEditPageTitle')"
           :modal="true" class="p-fluid">
@@ -95,7 +105,7 @@
             v-bind:label="$t('common.save')"
             icon="pi pi-check"
             class="p-button p-component p-button-success p-mr-2"
-            v-on:click="addPage"
+            v-on:click="addButtonName"
         />
         <Button
             v-bind:label="$t('common.cancel')"
@@ -118,10 +128,23 @@
             enuPageID: null,
             pageTitle: "",
             display: false,
+            pageView: false,
+            //editPageDisplay: false,
+            addButtonName: this.addPage,
             submitted: false,
             pageService: new EnuWebService(),
             formValid: [],
             formData: {
+                enu_page_id: null,
+                title_kz: null,
+                title_ru: null,
+                title_en: null,
+                content_kz: null,
+                content_ru: null,
+                content_en: null,
+
+            },
+            selectedPage: {
                 title_kz: null,
                 title_ru: null,
                 title_en: null,
@@ -129,6 +152,7 @@
                 content_ru: null,
                 content_en: null,
             },
+
             };
         },
         async created(){
@@ -158,12 +182,14 @@
             },
             hideDialog() {
                 this.display = false;
+                //this.editPageDisplay = false;
                 this.formData.title_kz = "";
                 this.formData.title_ru = "";
                 this.formData.title_en = "";
                 this.formData.content_kz = "";
                 this.formData.content_ru = "";
                 this.formData.content_en = "";
+                this.addButtonName = this.addPage;
             },
             isDelete(){
                 if (this.isDeletable === false){
@@ -174,9 +200,7 @@
             },
             addPage(){
                 this.submitted = true;
-                //   if (this.validateMenus().length > 0) {
-            //         return;
-            //   }
+                
 
                 if (this.validatePage().length > 0){
                     return;
@@ -185,14 +209,10 @@
                     if(res.data !== null){
                       this.$toast.add({
                             severity: "success",
-                            // {{ $i18n.locale === 'kz' ? data.menu_title_kz : $i18n.locale === 'ru' ? data.menu_title_ru : data.menu_title_en }}
                             summary: this.$t("enuNewSite.createdPageSuccessMsg"),
                             life: 3000,
                         });
                         console.log("Successfully added");
-                       
-                        
-                        
                     }
                     console.log("Successfully added");
                 }).catch(error => {
@@ -230,16 +250,55 @@
                 }
                 return this.formValid;
             },
+            onView(data){
+                alert(data);
+                this.selectedPage.content_kz = data.content_kz;
+                this.selectedPage.title_kz = data.title_kz;
+                this.pageView = true;
+            },
             onEditPage(data){
                 
-                //alert(data);
+                //alert(data.enu_page_id);
+                this.addButtonName = this.onSavePage;
                 this.display = true;
+                this.formData.enu_page_id = data.enu_page_id;
                 this.formData.title_kz = data.title_kz;
                 this.formData.title_ru = data.title_ru;
                 this.formData.title_en = data.title_en
                 this.formData.content_kz = data.content_kz;
                 this.formData.content_ru = data.content_ru;
                 this.formData.content_en = data.content_en;
+                
+                console.log(data.enu_page_id);
+            },
+            onSavePage(){
+                alert(this.formData.enu_page_id);
+                console.log(this.formData);
+                this.pageService.editPage(this.formData).then(res => {
+                    if(res.data !== null){
+                      this.$toast.add({
+                            severity: "success",
+                            summary: this.$t("enuNewSite.createdPageSuccessMsg"),
+                            life: 3000,
+                        });
+                        console.log("Successfully added");
+                        
+                    }
+                    console.log("Successfully added");
+                }).catch(error => {
+                    if (error.response && error.response.status === 401) {
+                        this.$store.dispatch("logLout");
+                        } else {
+                        this.$toast.add({
+                            severity: "error",
+                            summary: error,
+                            life: 3000,
+                        });
+                        }
+                        console.log(error);
+                });
+                this.display = false;
+
             }
         }
     }

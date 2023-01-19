@@ -24,7 +24,9 @@ export const getHeader = function() {
     const headers= {
       'Access-Control-Allow-Credentials':'true',
       'Content-Type': 'application/json',
-      'mode': 'no-cors',
+      'Accept':"*/*",
+
+      
       'Authorization':'Bearer ' + tokenData.access_token
     }
     return headers;
