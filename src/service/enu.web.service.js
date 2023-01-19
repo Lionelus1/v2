@@ -23,8 +23,8 @@ export class EnuWebService {
         return axios.post(smartEnuApi + "/web/addPage", data, {headers: getHeader()})
     }
 
-    editPage(data){
-        return axios.post(smartEnuApi + "/web/editPage", data, {headers: getHeader()})
+    editPage(editData){
+        return axios.post(smartEnuApi + "/web/editPage", editData, {headers: getHeader()})
     }
 
 

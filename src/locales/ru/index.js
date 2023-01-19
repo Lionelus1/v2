@@ -757,7 +757,8 @@ export default {
         menuOrderLabel: "Заказ меню",
         customLinkInvalid: "Ссылка не заполнена",
         createdMenuSuccessMsg: "Меню успешно создано",
-        createdPageSuccessMsg: "Страница успешно создана"
+        createdPageSuccessMsg: "Страница успешно создана",
+        updatedPageSuccessMsg: "Страница успешно изменена"
 
     
     },

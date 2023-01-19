@@ -771,7 +771,8 @@ export default {
         menuOrderLabel: "Мәзір тәртібі",
         customLinkInvalid: "Сілтеме толтырылмаған",
         createdMenuSuccessMsg: "Мәзір сәтті құрылды",
-        createdPageSuccessMsg: "Парақша сәтті құрылды"
+        createdPageSuccessMsg: "Парақша сәтті құрылды",
+        updatedPageSuccessMsg: "Парақша сәтті жаңаланды"
     
     },
     //Student locale

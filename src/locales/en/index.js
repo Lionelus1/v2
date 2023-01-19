@@ -726,7 +726,8 @@ export default {
         menuOrderLabel: "Menu Order",
         customLinkInvalid: "Custom Link Required",
         createdMenuSuccessMsg: "The menu has been created successfully",
-        createdPageSuccessMsg: "The page has been created successfully"
+        createdPageSuccessMsg: "The page has been created successfully",
+        updatedPageSuccessMsg: "The page has been updated successfully"
     
     },
     //Student locale
