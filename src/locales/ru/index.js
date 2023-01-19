@@ -273,7 +273,8 @@ export default {
         history: "История",
         user: "Пользователь",
         fact: "Факт",
-        actionTitle: "Действие"
+        actionTitle: "Действие",
+        link: "Ссылка",
     },
     bank: {
         title: "Банки",
@@ -751,7 +752,6 @@ export default {
         selectMenu: "Выберите меню",
         selectPage: "Выберите страницу",
         selectMainPage: "Выберите страницу",
-        addCustomLink: "Пользовательская ссылка",
         giveCustomLink: "Создать внешнюю ссылку",
         createNewPageButton: "Создать новую страницу",
         menuOrderLabel: "Заказ меню",

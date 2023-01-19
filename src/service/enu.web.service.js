@@ -2,11 +2,8 @@ import axios from "axios";
 import {getHeader, smartEnuApi} from "../config/config";
 
 export class EnuWebService {
-
-    //=============Menu methods===================
-  
-    getAllMenus(data) {
-        return axios.get(smartEnuApi + "/web/getMenus", data, {headers: getHeader()});
+    getAllMenus() {
+        return axios.get(smartEnuApi + "/web/getMenus", {headers: getHeader()});
         
     }
 
@@ -17,10 +14,9 @@ export class EnuWebService {
     editMenu(data){
         return axios.post(smartEnuApi + "/web/editMenu", data, {headers: getHeader()});
     }
-    
-    //==============Page methods====================
-    getAllPages(data){
-        return axios.get(smartEnuApi + "/web/getPages", data, {headers: getHeader()});
+
+    getAllPages(){
+        return axios.get(smartEnuApi + "/web/getPages", {headers: getHeader()});
     }
 
     addPage(data){

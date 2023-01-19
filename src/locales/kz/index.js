@@ -272,7 +272,8 @@ export default {
         history: "Тарих",
         user: "Қолданушы",
         fact: "Факт",
-        actionTitle: "Әрекет"
+        actionTitle: "Әрекет",
+        link: "Сілтеме",
     },
     bank: {
         title: "Банктер",
@@ -765,7 +766,6 @@ export default {
         selectMenu: "Мәзір таңдау",
         selectPage: "Парақша таңдау",
         selectMainPage: "Парақша таңдау",
-        addCustomLink: "Арнаулы сілтеме",
         giveCustomLink: "Сыртқы сілтеме беру",
         createNewPageButton: "Жаңа парақша құру",
         menuOrderLabel: "Мәзір тәртібі",

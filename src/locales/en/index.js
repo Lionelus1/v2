@@ -272,7 +272,8 @@ export default {
         history: "History",
         user: "User",
         fact: "Fact",
-        actionTitle: "Action"
+        actionTitle: "Action",
+        link: "Link",
     },
     bank: {
         title: "Banks",
@@ -720,7 +721,6 @@ export default {
         selectMenu: "Select Menu",
         selectPage: "Select Page",
         selectMainPage: "Choose Page",
-        addCustomLink: "Custom Link",
         giveCustomLink: "Setup External Link",
         createNewPageButton: "Create New Page",
         menuOrderLabel: "Menu Order",
