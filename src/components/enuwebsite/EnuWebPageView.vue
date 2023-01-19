@@ -36,8 +36,8 @@
 </div>
 <Dialog v-model:visible="pageView" :style="{ width: '1000px' }" :breakpoints="{'960px': '75vw', '640px': '90vw'}" header="#"
           :modal="true" class="p-fluid">
-    <h3>{{ selectedPage.title_kz }}</h3><hr/>
-	{{ selectedPage.content_kz }}
+    <h3 v-html="selectedPage.title_kz"></h3><hr/>
+    <div v-html="$i18n.locale === 'kz' ? selectedPage.content_kz : $i18n.locale === 'ru' ? selectedPage.content_ru : selectedPage.content_en"></div>
 </Dialog>
 <!-- =============Add Page Dialog Popup=============== -->
 <Dialog v-model:visible="display" :style="{ width: '1000px' }" :breakpoints="{'960px': '75vw', '640px': '90vw'}" :header="$t('enuNewSite.addEditPageTitle')"
@@ -251,8 +251,10 @@
                 return this.formValid;
             },
             onView(data){
-                alert(data);
+                //alert(data);
                 this.selectedPage.content_kz = data.content_kz;
+                this.selectedPage.content_ru = data.content_ru;
+                this.selectedPage.content_en = data.content_en;
                 this.selectedPage.title_kz = data.title_kz;
                 this.pageView = true;
             },
