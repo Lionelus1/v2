@@ -274,6 +274,9 @@ export default {
         user: "Пользователь",
         fact: "Факт",
         actionTitle: "Действие",
+        style: "Стиль",
+        bgColor: "Фоновый цвет",
+        textColor: "Цвет текста",
         link: "Ссылка",
     },
     bank: {
@@ -760,7 +763,7 @@ export default {
         createdPageSuccessMsg: "Страница успешно создана",
         updatedPageSuccessMsg: "Страница успешно изменена"
 
-    
+
     },
 
     student: {

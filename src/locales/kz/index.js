@@ -273,6 +273,10 @@ export default {
         user: "Қолданушы",
         fact: "Факт",
         actionTitle: "Әрекет",
+        style: "Стиль",
+        bgColor: "Фон түсі",
+        textColor: "Мәтін түсі"
+        actionTitle: "Әрекет",
         link: "Сілтеме",
     },
     bank: {
@@ -773,7 +777,7 @@ export default {
         createdMenuSuccessMsg: "Мәзір сәтті құрылды",
         createdPageSuccessMsg: "Парақша сәтті құрылды",
         updatedPageSuccessMsg: "Парақша сәтті жаңаланды"
-    
+
     },
     //Student locale
     student: {

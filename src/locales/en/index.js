@@ -273,6 +273,9 @@ export default {
         user: "User",
         fact: "Fact",
         actionTitle: "Action",
+        style: "Style",
+        bgColor: "Background color",
+        textColor: "Text color",
         link: "Link",
     },
     bank: {
@@ -728,13 +731,13 @@ export default {
         createdMenuSuccessMsg: "The menu has been created successfully",
         createdPageSuccessMsg: "The page has been created successfully",
         updatedPageSuccessMsg: "The page has been updated successfully"
-    
+
     },
     //Student locale
     student: {
         clubs: "ENU Clubs",
         pageTitle: "ENU Clubs"
-    
+
     },
     hr: {
         action: {
