@@ -275,8 +275,7 @@ export default {
         actionTitle: "Әрекет",
         style: "Стиль",
         bgColor: "Фон түсі",
-        textColor: "Мәтін түсі"
-        actionTitle: "Әрекет",
+        textColor: "Мәтін түсі",
         link: "Сілтеме",
     },
     bank: {
