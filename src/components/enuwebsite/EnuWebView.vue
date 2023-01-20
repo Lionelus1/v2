@@ -200,7 +200,6 @@
             pages: [],
             menu:[],
             menuTitle: "",
-            //display: false,
             submitted: false,
             selectMenuVisible: true,
             selectPageVisible: true,
@@ -279,13 +278,7 @@
                 this.selectedMenu=null;
                 this.selectedPage=null;
                 this.submitted = false;
-                this.formData.menu_title_kz = null;
-                this.formData.menu_title_ru = null;
-                this.formData.menu_title_en = null;
-                this.formData.direction_id = null;
-                this.formData.is_main = null;
-                this.formData.order_id = null;
-                this.formData.parent_id = null;
+                this.formData = {};
 
             },
             hideSelectMenus(){
@@ -327,10 +320,7 @@
                         });
                         console.log("Successfully added");
                         this.display = false;
-                        this.formData.menu_title_kz = "";
-                        this.formData.menu_title_en = null;
-                        this.formData.menu_title_ru = null;
-                        this.formData.is_main = null;
+                        this.formData = {};
                         this.checked = null;
                         this.hideDialog();
                     }
@@ -359,25 +349,7 @@
                 if(!this.formData.menu_title_en){
                     this.formValid.push({menu_title_en: true})
                 }
-                // if(!this.formData.parent_id){
-                //     this.formValid.push({parent_id: true})
-                // }
-                // if(!this.formData.page_id){
-                //     this.formValid.push({page_id: true})
-                // }
-                // if(!this.formData.link){
-                //     this.formValid.push({link: true})
-                // }
-                // if(!this.formData.is_main){
-                //     this.formValid.push({is_main: true})
-                // }
-                // if(!this.formData.order_id){
-                //     this.formValid.push({order_id: true})
-                // }
-                // if(!this.formData.direction_id){
-                //     this.formValid.push({direction_id: true})
-
-                // }
+               
                 return this.formValid;
             },
             setMainMenu(){

@@ -31,6 +31,10 @@ export class EnuWebService {
         return axios.post(smartEnuApi + "/web/editPage", editData, {headers: getHeader()})
     }
 
+    deletePage(data){
+        return axios.post("http://localhost:8090/web/deletePage", data, {headers: getHeader()})
+    }
+
 
 
 

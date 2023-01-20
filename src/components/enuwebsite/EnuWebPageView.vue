@@ -11,6 +11,27 @@
                 </tbody>
             </table>
          </div>
+<!-- Delete Confirmation Dialog Box Begin -->
+    <Dialog v-model:visible="deleteVisible" :style="{ width: '450px' }" :modal="true">
+    <div class="confirmation-content">
+      <i class="pi pi-exclamation-triangle p-mr-3" style="font-size: 2rem"/>
+      <span v-if="pageData">{{ $t("common.doYouWantDelete") }}
+          <b>
+            {{
+              $i18n.locale === "kz" ? pageData.title_kz : $i18n.locale === "ru" ? pageData.title_ru : pageData.title_en
+            }}
+            
+          </b>?
+        </span>
+    </div>
+    <template #footer>
+      <Button :label="$t('common.yes')" icon="pi pi-check" class="p-button p-component p-button-success p-mr-2"
+              @click="onDeletePage(pageData)"/>
+      <Button :label="$t('common.no')" icon="pi pi-times" class="p-button p-component p-button-danger p-mr-2"
+              @click="deleteVisible = false"/>
+    </template>
+  </Dialog>
+  <!-- Delete Confirmation Dialog Box End -->
          <div class="card">
         <DataTable :value="pages" responsiveLayout="scroll" dataKey="enu_page_id" :paginator="true" :rows="10" sortMode="single" :rowHover="true">
             <Column field="title_kz"  :header="$t('common.nameInQazaq')" :expander="true" :sortable="true">
@@ -26,6 +47,13 @@
             <Column field="page_edit"  :header="$t('common.nameInQazaq')" :expander="true" :sortable="true" style="text-align: right;">
                <template #body="{ data }">
                 <Button type="button" icon="pi pi-pencil" class="p-button-warning" @click="onEditPage(data)"></Button>
+               </template>      
+            </Column>
+
+            <Column field="page_delete"  :header="$t('common.nameInQazaq')" :expander="true" :sortable="true" style="text-align: right;">
+               <template #body="{ data }">
+                <ConfirmDialog></ConfirmDialog>
+                <Button type="button"  icon="pi pi-trash" class="p-button-danger" @click="delPage(data.enu_page_id)"></Button>
                </template>      
             </Column>
             
@@ -119,6 +147,7 @@
 
 <script>
     import {EnuWebService} from "@/service/enuWeb.service"; 
+import { throwStatement } from "@babel/types";
     export default {
         name: "EnuWebPageView",
         data(){
@@ -129,7 +158,9 @@
             pageTitle: "",
             display: false,
             pageView: false,
-            //editPageDisplay: false,
+            deleteVisible: false,
+            allPage: [],
+            pageData: null,
             addButtonName: this.addPage,
             submitted: false,
             pageService: new EnuWebService(),
@@ -145,6 +176,7 @@
 
             },
             selectedPage: {
+                enu_page_id: null,
                 title_kz: null,
                 title_ru: null,
                 title_en: null,
@@ -163,6 +195,7 @@
                 this.pageService.getAllPages().then(res =>{
                     if(res.data){
                         this.pages = res.data;
+                        this.allPage = res.data;
 
                     }
                 }).catch(error => {
@@ -182,13 +215,7 @@
             },
             hideDialog() {
                 this.display = false;
-                //this.editPageDisplay = false;
-                this.formData.title_kz = "";
-                this.formData.title_ru = "";
-                this.formData.title_en = "";
-                this.formData.content_kz = "";
-                this.formData.content_ru = "";
-                this.formData.content_en = "";
+                this.formData = {};
                 this.addButtonName = this.addPage;
             },
             isDelete(){
@@ -198,6 +225,12 @@
                     this.isDeletable = false;
                 }
             },
+            delPage(id) {
+                this.pageData = {};
+                this.pageData = this.allPage.find((x) => x.enu_page_id === id);
+                this.deleteVisible = true;
+                
+            },  
             addPage(){
                 this.submitted = true;
                 
@@ -249,6 +282,35 @@
                     this.formValid.push({content_en: true});
                 }
                 return this.formValid;
+            },
+            onDeletePage(data){
+               
+                this.selectedPage = data;
+                this.pageService.deletePage(data).then(res => {
+                    if(res.data !== null){
+                      this.$toast.add({
+                            severity: "success",
+                            summary: "Successfully deleted",
+                            life: 3000,
+                        });
+                        console.log("Successfully added");
+                        
+                    }
+                    console.log("Successfully deleted");
+                }).catch(error => {
+                    if (error.response && error.response.status === 401) {
+                        this.$store.dispatch("logLout");
+                        } else {
+                        this.$toast.add({
+                            severity: "error",
+                            summary: error,
+                            life: 3000,
+                        });
+                        }
+                        console.log(error);
+                });
+                this.deleteVisible = false;
+
             },
             onView(data){
                 //alert(data);
