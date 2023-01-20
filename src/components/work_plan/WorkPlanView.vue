@@ -11,12 +11,12 @@
                 @click="viewSignatures"
                 class="p-button p-ml-2"/>
       </div>
-      <div class="card" v-if="!isCurrentUserApproved && plan.status.work_plan_status_id === 2">
+      <div class="card" v-if="isApproval && plan.status.work_plan_status_id === 2">
         <Button :label="isLast ? $t('common.action.approve') : $t('common.action.approve') " icon="pi pi-check"
-                @click="openApprovePlan"
+                v-if="isApproval" @click="openApprovePlan"
                 class="p-button p-button-success p-ml-2"/>
         <Button :label="$t('workPlan.toCorrect')" icon="pi pi-times"
-                @click="openRejectPlan"
+                @click="openRejectPlan" v-if="isApproval"
                 class="p-button p-button-danger p-ml-2"/>
       </div>
 
