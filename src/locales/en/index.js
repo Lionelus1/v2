@@ -718,7 +718,7 @@ export default {
         isMainMenu: "Main Menu",
         pageLink: "Pages",
         addPage: "Add Page",
-        addEditMenuPageTitle: "Create/Edit Menus",
+        editMenu: "Edit menu",
         addEditPageTitle: "Create/Edit Pages",
         selectParentMenu: "Choose Parent Menu",
         selectMenu: "Select Menu",
@@ -730,8 +730,9 @@ export default {
         customLinkInvalid: "Custom Link Required",
         createdMenuSuccessMsg: "The menu has been created successfully",
         createdPageSuccessMsg: "The page has been created successfully",
-        updatedPageSuccessMsg: "The page has been updated successfully"
-
+        updatedPageSuccessMsg: "The page has been updated successfully",
+        createPage: 'Create page',
+        editPage: 'Edit page'
     },
     //Student locale
     student: {

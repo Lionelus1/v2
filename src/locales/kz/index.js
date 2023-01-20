@@ -763,7 +763,7 @@ export default {
         isMainMenu: "Негізгі мәзір",
         pageLink: "Парақшалар",
         addPage: "Парақша қосу",
-        addEditMenuPageTitle: "Мәзірлерді құру/өзгерту",
+        editMenu: "Мәзірді өзгерту",
         addEditPageTitle: "Парақшаларды құру/өзгерту",
         selectParentMenu: "Бас мәзірді таңдау",
         selectMenu: "Мәзір таңдау",
@@ -775,8 +775,9 @@ export default {
         customLinkInvalid: "Сілтеме толтырылмаған",
         createdMenuSuccessMsg: "Мәзір сәтті құрылды",
         createdPageSuccessMsg: "Парақша сәтті құрылды",
-        updatedPageSuccessMsg: "Парақша сәтті жаңаланды"
-
+        updatedPageSuccessMsg: "Парақша сәтті жаңаланды",
+        createPage: 'Бет қосу',
+        editPage: 'Бетті өзгерту'
     },
     //Student locale
     student: {

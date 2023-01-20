@@ -749,7 +749,7 @@ export default {
         isMainMenu: "Главное меню",
         pageLink: "Страницы",
         addPage: "Добавить страницу",
-        addEditMenuPageTitle: "Создать/изменить меню",
+        editMenu: "Изменить меню",
         addEditPageTitle: "Создать/изменить страницы",
         selectParentMenu: "Выберите главное меню",
         selectMenu: "Выберите меню",
@@ -761,9 +761,9 @@ export default {
         customLinkInvalid: "Ссылка не заполнена",
         createdMenuSuccessMsg: "Меню успешно создано",
         createdPageSuccessMsg: "Страница успешно создана",
-        updatedPageSuccessMsg: "Страница успешно изменена"
-
-
+        updatedPageSuccessMsg: "Страница успешно изменена",
+        createPage: 'Создать страницу',
+        editPage: 'Редактировать страницу'
     },
 
     student: {

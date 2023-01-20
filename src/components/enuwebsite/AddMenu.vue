@@ -1,6 +1,6 @@
 <template>
   <Dialog v-model:visible="editMenuVisible" :style="{ width: '1000px' }" :breakpoints="{'960px': '75vw', '640px': '90vw'}"
-          :header="$t('enuNewSite.addEditMenuPageTitle')" :modal="true" class="p-fluid" @hide="hideDialog">
+          :header="currentMenu ? $t('enuNewSite.editMenu') : $t('enuNewSite.addMenu') " :modal="true" class="p-fluid" @hide="hideDialog">
     <div class="p-field">
       <label>{{ $t("common.nameInQazaq") }}</label>
       <InputText v-model="formData.menu_title_kz" rows="3" :class="{ 'p-invalid': !formData.menu_title_kz && submitted }" />
@@ -35,29 +35,22 @@
       <label for="choose-page">{{ $t("enuNewSite.selectMainPage") }}
         <a href="javascript:void(0)" @click="showAddPage" class="p-ml-2 text-underline">{{ $t('common.createNew') }}</a>
       </label>
-      {{ selectedPage  }}
-      <Dropdown v-model="selectedPage" optionDisabled="true" :options="pages" optionLabel="title_kz" optionValue="enu_page_id"
+      <Dropdown v-model="this.formData.page_id" optionDisabled="true" :options="pages" optionLabel="title_kz" optionValue="enu_page_id"
                 :filter="true" :showClear="true" :placeholder="$t('enuNewSite.selectPage')" />
     </div>
     <div class="p-field" v-if="menuType === 2">
       <label>{{ $t('common.link') }}</label>
-      {{ selectedMenu  }}
       <InputText id="en-title" v-model="formData.link" :placeholder="$t('common.link')" />
     </div>
     <template #footer>
-      <Button v-bind:label="$t('common.save')" icon="pi pi-check" class="p-button p-component p-button-success p-mr-2"
-          v-on:click="addMenu"/>
-      <Button v-bind:label="$t('common.cancel')" icon="pi pi-times" class="p-button p-component p-button-danger"
+      <Button v-if="currentMenu" :label="$t('common.save')" icon="pi pi-check" class="p-button p-component p-button-success p-mr-2" @click="editMenu"/>
+      <Button v-if="!currentMenu" :label="$t('common.add')" icon="pi pi-check" class="p-button p-component p-button-success p-mr-2" @click="addMenu"/>
+      <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button p-component p-button-danger"
           @click="hideDialog"/>
     </template>
   </Dialog>
 
-  <Sidebar
-      v-model:visible="addPageVisible"
-      position="right"
-      class="p-sidebar-lg "
-      style="overflow-y: scroll"
-  >
+  <Sidebar v-model:visible="addPageVisible" position="right" class="p-sidebar-lg " style="overflow-y: scroll">
     <AddPage></AddPage>
   </Sidebar>
 </template>
@@ -68,7 +61,7 @@ import AddPage from "@/components/enuwebsite/AddPage.vue";
 
 export default {
   name: "AddMenu",
-  props: ['isVisible', 'allPages'],
+  props: ['isVisible', 'allPages', 'menu_id', 'currentMenu'],
   components: {AddPage},
   data(){
     return {
@@ -83,80 +76,88 @@ export default {
       selectPageVisible: true,
       customMenuLink: false,
       selectedPage: null,
-      selectedMenu: null,
-      menuService: new EnuWebService(),
-      pageService: new EnuWebService(),
-      formData: {
+      selectedMenu: this.currentMenu,
+      enuService: new EnuWebService(),
+      formData: this.currentMenu ? this.currentMenu : {
         menu_title_kz: null,
         menu_title_ru: null,
         menu_title_en: null,
         parent_id: this.menu_id ? this.menu_id : null,
         page_id: null,
         link: null,
-        is_main: null,
-        order_id: null,
-        direction_id: null
       },
       formValid: [],
-      menuType: 1,
+      menuType: !this.currentMenu ? 1 : this.currentMenu && this.currentMenu.page_id ? 1 : 2,
       checked: this.is_main ? this.is_main : null,
     };
   },
-  methods: {
-    hideSelectMenus() {
-
-      if (this.selectMenuVisible == true && this.selectPageVisible == true && this.customMenuLink == false) {
-        this.selectMenuVisible = false;
-        this.selectPageVisible = false;
-        this.customMenuLink = true;
-        this.selectedMenu = null;
-        this.selectedPage = null;
-
-      } else {
-        this.selectMenuVisible = true;
-        this.selectPageVisible = true;
-        this.customMenuLink = false;
-        this.selectedMenu = null;
-        this.selectedPage = null;
+  mounted() {
+    this.emitter.on('pageCreated', data => {
+      if (data) {
+        this.getPages(data);
       }
-    },
+    });
+  },
+  methods: {
     addMenu() {
       this.submitted = true;
-      if (this.validateMenus().length > 0) {
+      if (!this.validateMenus()) {
         return;
       }
-      if (this.selectedPage != null) {
-        this.formData.page_id = this.selectedPage;
-      }
 
-      if (this.selectedMenu != null) {
-        this.formData.parent_id = this.selectedMenu;
-      }
-
-      this.menuService.addMenu(this.formData).then(res => {
+      this.enuService.addMenu(this.formData).then(res => {
         if (res.data.is_success) {
+          this.formData = {};
+          this.hideDialog();
           this.$toast.add({
             severity: "success",
             summary: this.$t("enuNewSite.createdMenuSuccessMsg"),
             life: 3000,
           });
-          this.formData.menu_title_kz = "";
-          this.formData.menu_title_en = null;
-          this.formData.menu_title_ru = null;
-          this.formData.is_main = null;
-          this.checked = null;
-          this.hideDialog();
         }
       }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
+      });
+    },
+    editMenu() {
+      this.submitted = true;
+      if (!this.validateMenus()) {
+        return;
+      }
+
+      this.enuService.editMenu(this.formData).then(res => {
+        if (res.data.is_success) {
+          this.formData = {};
+          this.hideDialog();
           this.$toast.add({
-            severity: "error",
-            summary: error,
+            severity: "success",
+            summary: this.$t("common.success"),
             life: 3000,
           });
         }
+      }).catch(error => {
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
+      });
+    },
+    getPages(data) {
+      this.enuService.getAllPages().then(res => {
+        this.pages = res.data;
+        this.formData.page_id = data.enu_page_id;
+        this.addPageVisible = false;
+      }).catch(error => {
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
       });
     },
     hideDialog() {
@@ -174,7 +175,45 @@ export default {
     },
     showAddPage() {
       this.addPageVisible = true;
-    }
+    },
+    validateMenus() {
+      let errors = [];
+      if (!this.formData.menu_title_kz) {
+        errors.push(1)
+      }
+      if (!this.formData.menu_title_ru) {
+        errors.push(1)
+      }
+      if (!this.formData.menu_title_en) {
+        errors.push(1)
+      }
+      if (this.menuType === 1 && !this.formData.page_id) {
+        errors.push(1)
+      }
+      if (this.menuType === 2 && !this.formData.link) {
+        errors.push(1)
+      }
+      // if(!this.formData.parent_id){
+      //     this.formValid.push({parent_id: true})
+      // }
+      // if(!this.formData.page_id){
+      //     this.formValid.push({page_id: true})
+      // }
+      // if(!this.formData.link){
+      //     this.formValid.push({link: true})
+      // }
+      // if(!this.formData.is_main){
+      //     this.formValid.push({is_main: true})
+      // }
+      // if(!this.formData.order_id){
+      //     this.formValid.push({order_id: true})
+      // }
+      // if(!this.formData.direction_id){
+      //     this.formValid.push({direction_id: true})
+
+      // }
+      return errors.length === 0;
+    },
   }
 }
 </script>
