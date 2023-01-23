@@ -64,7 +64,8 @@
                             this.$primevue.config.locale.strong = 'Күшті',
                             this.$primevue.config.locale.passwordPrompt = 'Кілт сөзді енгізіңіз',
                             this.$primevue.config.locale.emptyFilterMessage = 'Еш нәтиже табылмады',
-                            this.$primevue.config.locale.emptyMessage  = 'Қол жетімді опциялар жоқ'
+                            this.$primevue.config.locale.emptyMessage  = 'Қол жетімді опциялар жоқ',
+                            this.$primevue.config.locale.pending  = 'Жүктеуге дайын'
                         break;
                     case "ru":
                         this.$primevue.config.locale.startsWith = 'Начинается с',
@@ -107,7 +108,8 @@
                             this.$primevue.config.locale.strong = 'Сильный',
                             this.$primevue.config.locale.passwordPrompt = 'Введите пароль',
                             this.$primevue.config.locale.emptyFilterMessage = 'Записей не найдено',
-                            this.$primevue.config.locale.emptyMessage  = 'Нет доступных опций'
+                            this.$primevue.config.locale.emptyMessage  = 'Нет доступных опций',
+                            this.$primevue.config.locale.pending  = 'В ожидании'
                         break;
                     case "en":
                         this.$primevue.config.locale.startsWith = 'Starts with',
@@ -150,7 +152,8 @@
                             this.$primevue.config.locale.strong =  'Strong',
                             this.$primevue.config.locale.passwordPrompt =  'Enter a password',
                             this.$primevue.config.locale.emptyFilterMessage =  'No results found',
-                            this.$primevue.config.locale.emptyMessage =  'No available options'
+                            this.$primevue.config.locale.emptyMessage =  'No available options',
+                            this.$primevue.config.locale.pending  = 'Pending'
                         break;
                 }
             },
