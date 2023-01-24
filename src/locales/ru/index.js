@@ -276,7 +276,8 @@ export default {
         actionTitle: "Действие",
         style: "Стиль",
         bgColor: "Фоновый цвет",
-        textColor: "Цвет текста"
+        textColor: "Цвет текста",
+        link: "Ссылка",
     },
     bank: {
         title: "Банки",
@@ -736,6 +737,39 @@ export default {
         noAnswer: "Ответ не получен",
         answerConfirm: "Ответ будет отправлен на почту отправителю вопроса. Сохранить и отправить ответ?",
         rejected: "Отменили выполнение действия"
+    },
+    // ENU New WebPaga
+    enuNewSite: {
+        mainMenuTitle: "ЕНУ Сайт",
+        menuPage: "Меню",
+        menuMainPage: "Страница",
+        menuOrder: "Ордер",
+        menuParent: "Родитель",
+        addMenu: "Добавить меню",
+        isMainMenu: "Главное меню",
+        pageLink: "Страницы",
+        addPage: "Добавить страницу",
+        editMenu: "Изменить меню",
+        addEditPageTitle: "Создать/изменить страницы",
+        selectParentMenu: "Выберите главное меню",
+        selectMenu: "Выберите меню",
+        selectPage: "Выберите страницу",
+        selectMainPage: "Выберите страницу",
+        giveCustomLink: "Создать внешнюю ссылку",
+        createNewPageButton: "Создать новую страницу",
+        menuOrderLabel: "Заказ меню",
+        customLinkInvalid: "Ссылка не заполнена",
+        createdMenuSuccessMsg: "Меню успешно создано",
+        createdPageSuccessMsg: "Страница успешно создана",
+        updatedPageSuccessMsg: "Страница успешно изменена",
+        createPage: 'Создать страницу',
+        editPage: 'Редактировать страницу'
+    },
+
+    student: {
+        clubs: "Студенческие клубы",
+        pageTitle: "Университетские клубы"
+
     },
     hr: {
         action: {

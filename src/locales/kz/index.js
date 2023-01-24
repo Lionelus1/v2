@@ -275,7 +275,8 @@ export default {
         actionTitle: "Әрекет",
         style: "Стиль",
         bgColor: "Фон түсі",
-        textColor: "Мәтін түсі"
+        textColor: "Мәтін түсі",
+        link: "Сілтеме",
     },
     bank: {
         title: "Банктер",
@@ -750,6 +751,39 @@ export default {
         noAnswer: "Жауап берілмеді",
         answerConfirm: "Жауап сұрақ қоюшының поштасына жіберіледі. Жауапты сақтап, жібересіз бе?",
         rejected: "Амалды орындаудан бас тарттыңыз"
+    },
+    // ENU New WebPaga
+    enuNewSite: {
+        mainMenuTitle: "ЕНУ Сайт",
+        menuPage: "Мәзірлер",
+        menuMainPage: "Парақшасы",
+        menuOrder: "Реті",
+        menuParent: "Аталық",
+        addMenu: "Мәзір қосу",
+        isMainMenu: "Негізгі мәзір",
+        pageLink: "Парақшалар",
+        addPage: "Парақша қосу",
+        editMenu: "Мәзірді өзгерту",
+        addEditPageTitle: "Парақшаларды құру/өзгерту",
+        selectParentMenu: "Бас мәзірді таңдау",
+        selectMenu: "Мәзір таңдау",
+        selectPage: "Парақша таңдау",
+        selectMainPage: "Парақша таңдау",
+        giveCustomLink: "Сыртқы сілтеме беру",
+        createNewPageButton: "Жаңа парақша құру",
+        menuOrderLabel: "Мәзір тәртібі",
+        customLinkInvalid: "Сілтеме толтырылмаған",
+        createdMenuSuccessMsg: "Мәзір сәтті құрылды",
+        createdPageSuccessMsg: "Парақша сәтті құрылды",
+        updatedPageSuccessMsg: "Парақша сәтті жаңаланды",
+        createPage: 'Бет қосу',
+        editPage: 'Бетті өзгерту'
+    },
+    //Student locale
+    student: {
+        clubs: "Клубтар қауымдастығы",
+        pageTitle: "Университет қауымдастықтар"
+
     },
     hr: {
         action: {

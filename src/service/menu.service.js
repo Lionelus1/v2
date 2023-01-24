@@ -130,6 +130,12 @@ export class MenuService {
                         icon: 'pi pi-fw pi-user-plus',
                         to: '/human-resources/career/vacancies'
                     },
+                    //Student clubs - menu
+                    {
+                        label: $t('student.clubs'),
+                        icon: 'pi pi-fw pi-user-plus',
+                        to: '/student/clubs'
+                    },
                 ]
             },
             /*{
@@ -155,6 +161,27 @@ export class MenuService {
                 items: [
                     {
                         label: $t('queue.title'), icon: 'pi pi-fw pi-plus-circle', to: '/queue'
+                    },
+
+                    /* {
+                      label:  $t('queue.addService'), icon: 'pi pi-fw pi-th-large', to:'/queueCategories'
+                     },
+                    {
+                      label:  $t('queue.secretary'), icon: 'pi pi-fw pi-user-edit', to:'/queueService'
+                    },*/
+
+                ]
+
+            },
+
+            {
+                label: $t('enuNewSite.mainMenuTitle'), icon: 'pi pi-fw pi-box ',
+                items: [
+                    {
+                        label: $t('enuNewSite.menuPage'), icon: 'pi pi-fw pi-bars', to: '/enuwebsitemenu'
+                    },
+                    {
+                        label: $t('enuNewSite.pageLink'), icon: 'pi pi-fw pi-external-link', to: '/enuwebsitepage'
                     },
 
                     /* {

@@ -275,7 +275,8 @@ export default {
         actionTitle: "Action",
         style: "Style",
         bgColor: "Background color",
-        textColor: "Text color"
+        textColor: "Text color",
+        link: "Link",
     },
     bank: {
         title: "Banks",
@@ -704,6 +705,39 @@ export default {
         noAnswer: "No response received",
         answerConfirm: "The answer will be sent to the sender of the question. Save and send the answer?",
         rejected: "Отменили выполнение действия"
+
+    },
+    // ENU New WebPaga
+    enuNewSite: {
+        mainMenuTitle: "ENU Website",
+        menuPage: "Menus",
+        menuMainPage: "Page",
+        menuOrder: "Order",
+        menuParent: "Parent",
+        addMenu: "Add Menu",
+        isMainMenu: "Main Menu",
+        pageLink: "Pages",
+        addPage: "Add Page",
+        editMenu: "Edit menu",
+        addEditPageTitle: "Create/Edit Pages",
+        selectParentMenu: "Choose Parent Menu",
+        selectMenu: "Select Menu",
+        selectPage: "Select Page",
+        selectMainPage: "Choose Page",
+        giveCustomLink: "Setup External Link",
+        createNewPageButton: "Create New Page",
+        menuOrderLabel: "Menu Order",
+        customLinkInvalid: "Custom Link Required",
+        createdMenuSuccessMsg: "The menu has been created successfully",
+        createdPageSuccessMsg: "The page has been created successfully",
+        updatedPageSuccessMsg: "The page has been updated successfully",
+        createPage: 'Create page',
+        editPage: 'Edit page'
+    },
+    //Student locale
+    student: {
+        clubs: "ENU Clubs",
+        pageTitle: "ENU Clubs"
 
     },
     hr: {

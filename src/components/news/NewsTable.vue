@@ -216,6 +216,7 @@ export default {
     this.emitter.on('newsViewModalClose', data => {
       this.newsViewVisible = data;
     });
+    
     this.emitter.on('addEditNewsDialogHide', data => {
       if (data)
         this.hideDialog();

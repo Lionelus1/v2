@@ -12,7 +12,7 @@
                  @sort="onSort($event)">
         <template #header>
           <div class="p-d-flex p-jc-between p-ai-center">
-            <h5 class="p-m-0">{{ $t('workPlan.addPlan') }}</h5>
+            <h5 class="p-m-0">{{ $t('workPlan.plans') }}</h5>
             <span class="p-input-icon-left"><i class="pi pi-search"/>
               <InputText type="search" v-model="searchText" @keyup.enter="getPlans" :placeholder="$t('common.search')"
                          @search="getPlans"/>
