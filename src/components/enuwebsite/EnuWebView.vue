@@ -5,41 +5,52 @@
       <Button :label="$t('enuNewSite.addMenu')" icon="pi pi-plus" class="p-ml-2" v-on:click="createMenu"/>
     </div>
     <div class="card">
-      <DataTable :value="menus" dataKey="menu_id" :paginator="true" :rows="10" :rowHover="true"
-                 :loading="loading" responsiveLayout="scroll">
-        <Column field="menu_title_kz" :header="$t('common.nameIn')" :expander="true">
-          <template #body="{ data }">
-            {{
-              $i18n.locale === 'kz' ? data.menu_title_kz : $i18n.locale === 'ru' ? data.menu_title_ru : data.menu_title_en
-            }}
+      <TreeTable class="p-treetable-sm" :value="menus" :lazy="true" :loading="loading"
+                 @nodeExpand="onExpand" scrollHeight="flex" responsiveLayout="scroll"
+                 :resizableColumns="true" columnResizeMode="fit" :paginator="true" :rows="10" :total-records="total" @page="onPage($event)">
+        <template #header>
+          <div class="p-text-right">
+            <div class="p-input-icon-left">
+              <i class="pi pi-search"/>
+              <InputText type="search" v-model="filter.search_text" :placeholder="$t('common.search')"
+                         @search="getMenus(null)"/>
+              <Button icon="pi pi-search" class="p-ml-1" @click="getMenus(null)"/>
+            </div>
+          </div>
+        </template>
+        <template #empty> {{ $t('common.noData') }}</template>
+        <template #loading> {{ $t('common.loading') }}</template>
+        <Column field="menu_title_kz" :header="$t('common.nameIn')" :expander="true" style="min-width:300px">
+          <template #body="{ node }">
+            <span><i class="fa-solid fa-folder"></i>&nbsp;{{ $i18n.locale === 'kz' ? node.menu_title_kz : $i18n.locale === 'ru' ? node.menu_title_ru : node.menu_title_en }}</span>
           </template>
         </Column>
         <Column field="page" :header="$t('enuNewSite.menuMainPage')">
-          <template #body="{ data }">
-            <a href="javascript:void(0)" @click="viewPage(data)">{{ showPage(data) }}</a>
+          <template #body="{ node }">
+            <a href="javascript:void(0)" @click="viewPage(node)">{{ showPage(node) }}</a>
           </template>
         </Column>
         <Column field="link" :header="$t('common.link')">
-          <template #body="{ data }">
-            <a v-if="data.link" :href="data.link" target="_blank">{{ data.link }}</a>
+          <template #body="{ node }">
+            <a v-if="node.link" :href="node.link" target="_blank">{{ node.link }}</a>
           </template>
         </Column>
-<!--        <Column field="order_id" :header="$t('enuNewSite.menuOrder')" :sortable="true">
-          <template #body="{ data }">
-            {{ data.order_id }}
-          </template>
-        </Column>
-        <Column field="is_main" :header="$t('enuNewSite.isMainMenu')" :sortable="true">
-          <template #body="{ data }">
-            {{ data.is_main }}
-          </template>
-        </Column>-->
+        <!--        <Column field="order_id" :header="$t('enuNewSite.menuOrder')" :sortable="true">
+                  <template #body="{ data }">
+                    {{ data.order_id }}
+                  </template>
+                </Column>
+                <Column field="is_main" :header="$t('enuNewSite.isMainMenu')" :sortable="true">
+                  <template #body="{ data }">
+                    {{ data.is_main }}
+                  </template>
+                </Column>-->
         <Column field="actions" header="">
-          <template #body="slotProps">
-            <Button type="button" icon="pi pi-pencil" class="p-button-warning" @click="createMenu($event, slotProps.data)"></Button>
+          <template #body="{ node }">
+            <Button type="button" icon="pi pi-pencil" class="p-button-warning" @click="createMenu($event, node)"></Button>
           </template>
         </Column>
-      </DataTable>
+      </TreeTable>
     </div>
   </div>
 
@@ -59,13 +70,23 @@ export default {
     return {
       addMenuVisible: false,
       viewPageVisible: false,
-      menus: [],
+      menus: null,
       pages: [],
       submitted: false,
       selectedMenu: null,
       selectedViewMenu: null,
       enuService: new EnuWebService(),
-      loading: false
+      loading: false,
+      total: 0,
+      parentNode: null,
+      filter: {
+        search_text: null
+      },
+      lazyParams: {
+        page: 1,
+        rows: 10,
+        parent_id: null,
+      }
     };
   },
   created() {
@@ -81,13 +102,25 @@ export default {
     });
   },
   methods: {
-    getMenus() {
+    onExpand(node) {
+      this.lazyParams.parent_id = Number(node.menu_id)
+      this.parentNode = node
+      this.getMenus(node)
+    },
+    getMenus(parentData) {
       this.loading = true;
-      this.enuService.getAllMenus().then(res => {
-        if (res.data) {
-          this.menus = res.data;
-          this.loading = false;
+      if (parentData == null) {
+        this.lazyParams.parent_id = null;
+      }
+      if (this.filter.search_text) this.lazyParams.filter = this.filter;
+      this.enuService.getMenusTree(this.lazyParams).then(res => {
+        if (parentData == null) {
+          this.menus = res.data.menus;
+          this.total = res.data.total;
+        } else {
+          parentData.children = res.data.menus;
         }
+        this.loading = false;
       }).catch(error => {
         this.loading = false;
         this.$toast.add({
@@ -115,13 +148,17 @@ export default {
         }
       });
     },
+    onPage(event) {
+      this.lazyParams.page = event.page + 1;
+      this.lazyParams.rows = event.rows
+      this.getMenus(null);
+    },
     createMenu(event, data) {
       this.selectedMenu = data;
       this.addMenuVisible = true;
     },
     viewPage(data) {
       this.selectedViewMenu = data.page;
-      console.log(this.selectedViewMenu)
       this.viewPageVisible = true;
     },
     showPage(data) {

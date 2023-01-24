@@ -28,13 +28,8 @@ export class EnuWebService {
         return api.post("/web/editPage", editData, {headers: getHeader()})
     }
 
-
-
-
-
-
+    getMenusTree(data) {
+        return api.post('/web/getMenusTree', data, {headers: getHeader()});
+    }
 
 }
-
-//const baseURL = "http://localhost:8090/getAllMenus"
-//return axios.post(smartEnuApi + "/getAllMenus", data, {headers: getHeader()});
