@@ -61,13 +61,13 @@ import AddPage from "@/components/enuwebsite/AddPage.vue";
 
 export default {
   name: "AddMenu",
-  props: ['isVisible', 'allPages', 'menu_id', 'currentMenu'],
+  props: ['isVisible', 'allPages', 'menu_id', 'currentMenu', 'allMenus'],
   components: {AddPage},
   data(){
     return {
       editMenuVisible: this.isVisible ?? false,
       addPageVisible: false,
-      menus: [],
+      menus: this.allMenus,
       pages: this.allPages ? this.allPages : [],
       menu:[],
       menuTitle: "",
