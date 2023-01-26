@@ -130,12 +130,6 @@ export class MenuService {
                         icon: 'pi pi-fw pi-user-plus',
                         to: '/human-resources/career/vacancies'
                     },
-                    //Student clubs - menu
-                    {
-                        label: $t('student.clubs'),
-                        icon: 'pi pi-fw pi-user-plus',
-                        to: '/student/clubs'
-                    },
                 ]
             },
             /*{

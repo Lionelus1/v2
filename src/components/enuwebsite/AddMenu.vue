@@ -27,10 +27,6 @@
         <label for="menuType2">Ссылка</label>
       </div>
     </div>
-<!--    <div class="p-field">
-      <label>{{ $t('enuNewSite.selectParentMenu') }}</label>
-      <Dropdown v-model="selectedMenu" optionDisabled="true" :options="menus" optionLabel="menu_title_kz" optionValue="menu_id" :placeholder="$t('enuNewSite.selectMenu')" />
-    </div>-->
     <div class="p-field" v-if="menuType === 1">
       <label for="choose-page">{{ $t("enuNewSite.selectMainPage") }}
         <a href="javascript:void(0)" @click="showAddPage" class="p-ml-2 text-underline">{{ $t('common.createNew') }}</a>
@@ -41,6 +37,13 @@
     <div class="p-field" v-if="menuType === 2">
       <label>{{ $t('common.link') }}</label>
       <InputText id="en-title" v-model="formData.link" :placeholder="$t('common.link')" />
+    </div>
+    <div class="p-field">
+      <label>На главной</label>
+      <div>
+        <Checkbox inputId="is_main" v-model="formData.is_main" :binary="true" />
+        <label class="p-ml-2" for="is_main">Да</label>
+      </div>
     </div>
     <template #footer>
       <Button v-if="currentMenu" :label="$t('common.save')" icon="pi pi-check" class="p-button p-component p-button-success p-mr-2" @click="editMenu"/>

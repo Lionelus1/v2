@@ -42,8 +42,8 @@
         </Column>
         <Column field="actions" header="">
           <template #body="{ node }">
-            <Button type="button" icon="pi pi-plus" class="p-button p-button-rounded p-mr-2" @click="createMenu($event)"></Button>
-            <Button type="button" icon="pi pi-pencil" class="p-button p-button-rounded" @click="createMenu($event, node)"></Button>
+            <Button type="button" icon="pi pi-plus" class="p-button p-button-rounded p-mr-2" @click="createMenu(node)"></Button>
+            <Button type="button" icon="pi pi-pencil" class="p-button p-button-rounded" @click="editMenu($event, node)"></Button>
           </template>
         </Column>
       </TreeTable>
@@ -150,7 +150,7 @@ export default {
       this.lazyParams.rows = event.rows
       this.getMenus(null);
     },
-    createMenu(event, data) {
+    createMenu(data) {
       if (data) this.parentId = data.menu_id;
       this.addMenuVisible = true;
     },
