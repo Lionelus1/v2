@@ -35,26 +35,22 @@
             <a v-if="node.link" :href="node.link" target="_blank">{{ node.link }}</a>
           </template>
         </Column>
-        <!--        <Column field="order_id" :header="$t('enuNewSite.menuOrder')" :sortable="true">
-                  <template #body="{ data }">
-                    {{ data.order_id }}
-                  </template>
-                </Column>
-                <Column field="is_main" :header="$t('enuNewSite.isMainMenu')" :sortable="true">
-                  <template #body="{ data }">
-                    {{ data.is_main }}
-                  </template>
-                </Column>-->
+        <Column field="is_main" :header="$t('enuNewSite.isMainMenu')" :sortable="true">
+          <template #body="{ node }">
+            {{ node.is_main ? 'На главной' : '' }}
+          </template>
+        </Column>
         <Column field="actions" header="">
           <template #body="{ node }">
-            <Button type="button" icon="pi pi-pencil" class="p-button-warning" @click="createMenu($event, node)"></Button>
+            <Button type="button" icon="pi pi-plus" class="p-button p-button-rounded p-mr-2" @click="createMenu(node)"></Button>
+            <Button type="button" icon="pi pi-pencil" class="p-button p-button-rounded" @click="editMenu($event, node)"></Button>
           </template>
         </Column>
       </TreeTable>
     </div>
   </div>
 
-  <AddMenu v-if="addMenuVisible" :is-visible="addMenuVisible" :all-pages="pages" :current-menu="selectedMenu"></AddMenu>
+  <AddMenu v-if="addMenuVisible" :is-visible="addMenuVisible" :all-pages="pages" :all-menus="menus" :current-menu="selectedMenu" :menu_id="parentId"></AddMenu>
   <PageView v-if="viewPageVisible" :is-visible="viewPageVisible" :selectedPage="selectedViewMenu"></PageView>
 </template>
 
@@ -86,7 +82,8 @@ export default {
         page: 1,
         rows: 10,
         parent_id: null,
-      }
+      },
+      parentId: null
     };
   },
   created() {
@@ -153,7 +150,11 @@ export default {
       this.lazyParams.rows = event.rows
       this.getMenus(null);
     },
-    createMenu(event, data) {
+    createMenu(data) {
+      if (data) this.parentId = data.menu_id;
+      this.addMenuVisible = true;
+    },
+    editMenu(event, data) {
       this.selectedMenu = data;
       this.addMenuVisible = true;
     },
