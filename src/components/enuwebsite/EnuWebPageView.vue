@@ -14,7 +14,6 @@
         </Column>
         <Column header="" style="text-align: right;">
           <template #body="{ data }">
-            <ConfirmDialog></ConfirmDialog>
             <Button type="button" icon="pi pi-eye" class="p-mr-2" @click="onView(data)"></Button>
             <Button type="button" icon="pi pi-pencil" class="p-mr-2" @click="onEditPage(data)"></Button>
             <Button type="button" icon="pi pi-trash" class="p-button-danger" @click="delPage(data.enu_page_id)"></Button>
@@ -72,7 +71,7 @@
     </template>
   </Dialog>
 
-  <AddPage v-if="pageView" :is-visible="pageView" :all-pages="pages" :all-menus="menus" :current-menu="selectedMenu" :menu_id="parentId"></AddPage>
+  <PageView v-if="pageView" :is-visible="pageView" :selectedPage="selectedPage"></PageView>
 </template>
 
 <script>
@@ -80,10 +79,11 @@ import {EnuWebService} from "@/service/enu.web.service";
 import {throwStatement} from "@babel/types";
 import AddMenu from "@/components/enuwebsite/AddMenu.vue";
 import AddPage from "@/components/enuwebsite/AddPage.vue";
+import PageView from "@/components/enuwebsite/PageView.vue";
 
 export default {
   name: "EnuWebPageView",
-  components: {AddPage},
+  components: {PageView},
   data() {
     return {
       pages: [],
@@ -97,7 +97,7 @@ export default {
       pageData: null,
       addButtonName: this.addPage,
       submitted: false,
-      pageService: new EnuWebService(),
+      enuService: new EnuWebService(),
       formValid: [],
       formData: {
         enu_page_id: null,
@@ -124,24 +124,20 @@ export default {
   created() {
     this.getPages();
   },
+  mounted() {
+    this.emitter.on('pageViewModalClose', data => {
+      this.pageView = data;
+    });
+  },
   methods: {
     getPages() {
-      this.pageService.getAllPages().then(res => {
+      this.enuService.getAllPages().then(res => {
         if (res.data) {
           this.pages = res.data;
           this.allPage = res.data;
-
         }
       }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
+        this.$toast.add({severity: "error", summary: error, life: 3000});
       });
     },
     createPage() {
@@ -160,38 +156,28 @@ export default {
       }
     },
     delPage(id) {
-      this.pageData = {};
-      this.pageData = this.allPage.find((x) => x.enu_page_id === id);
-      this.deleteVisible = true;
-
+      this.$confirm.require({
+        message: this.$t('common.doYouWantDelete'),
+        header: this.$t('common.delete'),
+        icon: 'pi pi-info-circle',
+        acceptClass: 'p-button-rounded p-button-success',
+        rejectClass: 'p-button-rounded p-button-danger',
+        accept: () => {
+          this.onDeletePage(id);
+        },
+      });
     },
     addPage() {
       this.submitted = true;
-
-
       if (this.validatePage().length > 0) {
         return;
       }
-      this.pageService.addPage(this.formData).then(res => {
+      this.enuService.addPage(this.formData).then(res => {
         if (res.data !== null) {
-          this.$toast.add({
-            severity: "success",
-            summary: this.$t("enuNewSite.createdPageSuccessMsg"),
-            life: 3000,
-          });
-          console.log("Successfully added");
+          this.$toast.add({severity: "success", summary: this.$t("enuNewSite.createdPageSuccessMsg"), life: 3000});
         }
-        console.log("Successfully added");
       }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
+        this.$toast.add({severity: "error", summary: error, life: 3000});
       });
       this.display = false;
     },
@@ -217,86 +203,39 @@ export default {
       }
       return this.formValid;
     },
-    onDeletePage(data) {
-
-      this.selectedPage = data;
-      this.pageService.deletePage(data).then(res => {
+    onDeletePage(id) {
+      this.enuService.deletePage(id).then(res => {
         if (res.data !== null) {
           this.$toast.add({
             severity: "success",
             summary: "Successfully deleted",
             life: 3000,
           });
-          console.log("Successfully added");
-
         }
-        console.log("Successfully deleted");
       }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
-        console.log(error);
+        this.$toast.add({severity: "error", summary: error, life: 3000});
       });
       this.deleteVisible = false;
 
     },
     onView(data) {
-      //alert(data);
-      this.selectedPage.content_kz = data.content_kz;
-      this.selectedPage.content_ru = data.content_ru;
-      this.selectedPage.content_en = data.content_en;
-      this.selectedPage.title_kz = data.title_kz;
+      this.selectedPage = data;
       this.pageView = true;
     },
     onEditPage(data) {
-
-      //alert(data.enu_page_id);
       this.addButtonName = this.onSavePage;
       this.display = true;
-      this.formData.enu_page_id = data.enu_page_id;
-      this.formData.title_kz = data.title_kz;
-      this.formData.title_ru = data.title_ru;
-      this.formData.title_en = data.title_en
-      this.formData.content_kz = data.content_kz;
-      this.formData.content_ru = data.content_ru;
-      this.formData.content_en = data.content_en;
-
-      console.log(data.enu_page_id);
+      this.formData = data;
     },
     onSavePage() {
-      alert(this.formData.enu_page_id);
-      console.log(this.formData);
-      this.pageService.editPage(this.formData).then(res => {
+      this.enuService.editPage(this.formData).then(res => {
         if (res.data !== null) {
-          this.$toast.add({
-            severity: "success",
-            summary: this.$t("enuNewSite.createdPageSuccessMsg"),
-            life: 3000,
-          });
-          console.log("Successfully added");
-
+          this.$toast.add({severity: "success", summary: this.$t("enuNewSite.createdPageSuccessMsg"), life: 3000});
         }
-        console.log("Successfully added");
       }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
-        console.log(error);
+        this.$toast.add({severity: "error", summary: error, life: 3000});
       });
       this.display = false;
-
     }
   }
 }
