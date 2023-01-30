@@ -50,6 +50,12 @@ export class MenuService {
                         to: '/cafedra',
                         visible: this.findRole("dephead") || this.findRole("practice_responsible")
                     },
+                    {
+                        label: $t('roleControl.menuTitle'),
+                        icon: 'pi pi-fw pi-user-edit',
+                        to: '/role-control',
+                        visible: this.findRole("main_administrator") || this.findRole("head_of_company")
+                    },
                 ]
             },
             {

@@ -381,6 +381,12 @@ const routes = [
                 path: '/access',
                 name: 'access',
                 component: () => import('./pages/Access.vue')
+            },
+            {
+                path: '/role-control',
+                name: 'RoleControl',
+                component: load('roleControl/RoleControl'),
+                beforeEnter: ifAuthenticated,
             }
                 
         ]

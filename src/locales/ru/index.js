@@ -924,5 +924,20 @@ export default {
         addGuide: 'Создание справочника',
         editGuide: 'Редактирование справочника',
         notGuide: 'На эту страницу пока не создана справочник!',
+    },
+    roleControl:{
+        menuTitle: 'Управление ролями',
+        giveRole: 'Дать новую роль',
+        selectOrg: 'Выберите организацию',
+        selectRole: 'Выберите роль',
+        selectEmployee: 'Выберите сотрудника',
+        employeeIIN: 'ИИН',
+        employeeName: 'Имя сотрудника',
+        employeeLabel: 'Сотрудник',
+        employeeNotFound: 'Сотрудник с таким ИИН не найдено',
+        roleName: 'Имя роля',
+        roleLabel: 'Роль',
+        noResult: 'Не найдено записей',
+        cantDelete: 'Невозможно удалить запись',
     }
 }

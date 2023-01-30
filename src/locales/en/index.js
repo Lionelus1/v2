@@ -917,5 +917,20 @@ export default {
         addGuide: 'Creating a guide',
         editGuide: 'Editing a guide',
         notGuide: 'There is no guide for this page yet!',
+    },
+    roleControl:{
+        menuTitle: 'Role control',
+        giveRole: 'Give new role',
+        selectOrg: 'Select organization',
+        selectRole: 'Select role',
+        selectEmployee: 'Select employee',
+        employeeIIN: 'IIN',
+        employeeName: 'Employee name',
+        employeeLabel: 'Employee',
+        employeeNotFound: 'Employee with such IIN does not found',
+        roleName: 'Role name',
+        roleLabel: 'Role',
+        noResult: 'No records found',
+        cantDelete: 'Cant delete the record',
     }
 }
