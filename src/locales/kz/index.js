@@ -20,6 +20,7 @@ export default {
         councilName: 'Кеңес аты',
         contragents: 'Контрагенттер',
         documents: 'Құжаттар',
+        sertificates: 'Куәліктер',
         administration: 'Әкімшілік',
         academicDegree: "Ғылыми дәрежесі",
         academicTitle: "Ғылыми атағы",
@@ -271,7 +272,10 @@ export default {
         history: "Тарих",
         user: "Қолданушы",
         fact: "Факт",
-        actionTitle: "Әрекет"
+        actionTitle: "Әрекет",
+        style: "Стиль",
+        bgColor: "Фон түсі",
+        textColor: "Мәтін түсі"
     },
     bank: {
         title: "Банктер",

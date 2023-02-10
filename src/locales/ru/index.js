@@ -20,6 +20,7 @@ export default {
         councilName: 'Наименование совета',
         contragents: 'Контрагенты',
         documents: 'Документы',
+        sertificates: 'Свидетельства',
         administration: 'Администрирование',
         academicDegree: "Ученая степень",
         academicTitle: "Ученое звание",
@@ -272,7 +273,10 @@ export default {
         history: "История",
         user: "Пользователь",
         fact: "Факт",
-        actionTitle: "Действие"
+        actionTitle: "Действие",
+        style: "Стиль",
+        bgColor: "Фоновый цвет",
+        textColor: "Цвет текста"
     },
     bank: {
         title: "Банки",

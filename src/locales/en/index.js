@@ -20,6 +20,7 @@ export default {
         councilName: 'Council name',
         contragents: 'Contragents',
         documents: 'Documents',
+        sertificates: 'Sertificates',
         administration: 'Administration',
         academicDegree: "Academic degree",
         academicTitle: "Academic title",
@@ -271,7 +272,10 @@ export default {
         history: "History",
         user: "User",
         fact: "Fact",
-        actionTitle: "Action"
+        actionTitle: "Action",
+        style: "Style",
+        bgColor: "Background color",
+        textColor: "Text color"
     },
     bank: {
         title: "Banks",
@@ -901,6 +905,10 @@ export default {
         serviced:"Serviced",
         averageTime:"Average service time",
         redirected: "Redirected",
+    },
+    educomplex: {
+        title: "Educational-methodical complex of the discipline",
+        forme: "Concerning me"
     },
     ref:{
         getRef:"Get reference"

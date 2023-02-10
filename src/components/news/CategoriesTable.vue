@@ -160,6 +160,19 @@
         </template>
       </Dropdown>
     </div>
+    <Fieldset :legend="$t('common.style')">
+      <div>
+        <label class="p-mr-2">{{ $t('common.bgColor') }}</label>
+        <ColorPicker v-model="category.bgColor"/>
+      </div>
+      <div class="p-mt-2">
+        <label class="p-mr-2">{{ $t('common.textColor') }}</label>
+        <ColorPicker v-model="category.textColor"/>
+      </div>
+      <div>
+        <div class="p-mt-3" :style="catButtonStyle">{{ category.nameKz }}</div>
+      </div>
+    </Fieldset>
     <template #footer>
       <Button
           v-bind:label="$t('common.save')"
@@ -263,63 +276,50 @@ export default {
         isUser: true,
         isStudent: false,
       },
+      bgColor: '0062ff',
+      textColor: 'ffffff'
     };
   },
   methods: {
     getCategories() {
       this.categories = [];
-      axios
-          .get(smartEnuApi + "/allCategories", {
-            headers: getHeader(),
-          })
-          .then((response) => {
-            this.categories = response.data;
-            this.categories = this.categories.reverse();
-            this.loading = false;
-          })
-          .catch((error) => {
-            this.$toast.add({
-              severity: "error",
-              summary: this.$t("smartenu.loadAllCategoriesError") + ":\n" + error,
-              life: 3000,
-            });
-            if (error.response.status == 401) {
-              this.$store.dispatch("logLout");
-            }
-          });
+      axios.get(smartEnuApi + "/allCategories", {headers: getHeader()}).then((response) => {
+        this.categories = response.data;
+        this.categories = this.categories.reverse();
+        this.loading = false;
+      }).catch((error) => {
+        this.$toast.add({
+          severity: "error",
+          summary: this.$t("smartenu.loadAllCategoriesError") + ":\n" + error,
+          life: 3000,
+        });
+        if (error.response.status == 401) {
+          this.$store.dispatch("logLout");
+        }
+      });
     },
     deleteNewsCategory(id) {
-      axios
-          .post(
-              smartEnuApi + "/delNewsCat",
-              {
-                id: id,
-              },
-              {
-                headers: getHeader(),
-              }
-          )
-          .then((response) => {
-            if (response.status === 200) {
-              this.getCategories();
-            }
-          })
-          .catch((error) => {
-            this.$toast.add({
-              severity: "error",
-              summary: this.$t("smartenu.delNewsCategoryError") + ":\n" + error,
-              life: 3000,
-            });
-          });
+      axios.post(smartEnuApi + "/delNewsCat", {id: id}, {headers: getHeader()}).then((response) => {
+        if (response.status === 200) {
+          this.getCategories();
+        }
+      }).catch((error) => {
+        this.$toast.add({
+          severity: "error",
+          summary: this.$t("smartenu.delNewsCategoryError") + ":\n" + error,
+          life: 3000,
+        });
+      });
       this.deleteVisible = false;
       this.category = {};
     },
     addCategory() {
       this.submitted = true;
-      axios
-          .post(smartEnuApi + "/categories", this.category, {
-            headers: getHeader(),
-          })
+      if (!this.category.bgColor)
+        this.category.bgColor = this.bgColor;
+      if (!this.category.textColor)
+        this.category.textColor = this.textColor;
+      axios.post(smartEnuApi + "/categories", this.category, {headers: getHeader()})
           .then((response) => {
             if (response.data !== null) {
               this.$toast.add({
@@ -329,15 +329,14 @@ export default {
               });
               this.getCategories();
             }
-          })
-          .catch((error) => {
-            alert(JSON.stringify(error));
-            this.$toast.add({
-              severity: "error",
-              summary: this.$t("smartenu.saveCategoryError") + ":\n" + error,
-              life: 3000,
-            });
-          });
+          }).catch((error) => {
+        alert(JSON.stringify(error));
+        this.$toast.add({
+          severity: "error",
+          summary: this.$t("smartenu.saveCategoryError") + ":\n" + error,
+          life: 3000,
+        });
+      });
       this.editVisible = false;
       this.category = {};
     },
@@ -377,6 +376,8 @@ export default {
       this.category.nameKz = category.nameKz;
       this.category.nameRu = category.nameRu;
       this.category.nameEn = category.nameEn;
+      this.category.bgColor = category.bgColor;
+      this.category.textColor = category.textColor;
       this.category.parent = this.categories.find(
           (x) => x.id === category.parentId
       );
@@ -434,6 +435,9 @@ export default {
     isStudent: function () {
       return this.roles.isStudent;
     },
+    catButtonStyle() {
+      return `background: #${this.category.bgColor ? this.category.bgColor : this.bgColor};color:#${this.category.textColor ? this.category.textColor : this.textColor};padding: 8px;width:fit-content;`
+    }
   },
 };
 </script>
