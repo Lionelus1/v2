@@ -382,27 +382,42 @@ const routes = [
                 name: 'access',
                 component: () => import('./pages/Access.vue')
             },
-            //Associations of Clubs
             {
-                path: '/student/clubs',
-                name: 'ClubView',
-                component: load('student/clubs/ClubView'),
-                beforeEnter: ifAuthenticated,
-            },
-            //ENU New WebSite
-            {
-                path: '/enuwebsitemenu',
+                path: '/enu/menus',
                 name: 'EnuWebView',
                 component: load('enuwebsite/EnuWebView'),
                 beforeEnter: ifAuthenticated,
             }, 
             {
-                path: '/enuwebsitepage',
+                path: '/enu/pages',
                 name: 'EnuWebPageView',
                 component: load('enuwebsite/EnuWebPageView'),
                 beforeEnter: ifAuthenticated,
-            }           
-                
+            },
+            {
+                path: '/enu/page/:id',
+                name: 'LandingPageView',
+                component: load('enuwebsite/LandingPageView'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/enu/blocks',
+                name: 'BlockComponent',
+                component: load('enuwebsite/blocks/BlockComponent'),
+                beforeEnter: ifAuthenticated,
+                children: [
+                    {
+                        path: '',
+                        name: 'BlockList',
+                        component: load('enuwebsite/blocks/BlockList')
+                    },
+                    {
+                        path: 'view/:id',
+                        name: 'BlockView',
+                        component: load('enuwebsite/blocks/BlockView')
+                    }
+                ]
+            }
         ]
     },
     {

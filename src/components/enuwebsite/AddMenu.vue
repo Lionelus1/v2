@@ -88,6 +88,9 @@ export default {
         parent_id: this.menu_id ? this.menu_id : null,
         page_id: null,
         link: null,
+        is_header: false,
+        is_middle: false,
+        menu_icon: ""
       },
       formValid: [],
       menuType: !this.currentMenu ? 1 : this.currentMenu && this.currentMenu.page_id ? 1 : 2,

@@ -159,8 +159,12 @@ export default {
       this.addMenuVisible = true;
     },
     viewPage(data) {
-      this.selectedViewMenu = data.page;
-      this.viewPageVisible = true;
+      if (data.page && data.page.is_landing) {
+        this.$router.push({name: 'LandingPageView', params: {id: data.page.enu_page_id}})
+      } else {
+        this.selectedViewMenu = data.page;
+        this.viewPageVisible = true;
+      }
     },
     showPage(data) {
       let title = ""

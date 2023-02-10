@@ -15,5 +15,6 @@ const messages = {
 export default new createI18n({
     locale: localStorage.getItem("lang") || "kz",
     messages,
-    fallbackLocale: 'en'
+    fallbackLocale: 'en',
+    legacy: false
 })

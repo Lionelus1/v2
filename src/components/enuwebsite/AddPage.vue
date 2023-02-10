@@ -6,7 +6,31 @@
     <div class="p-col-12 p-fluid">
       <Menubar :model="initMenu" :key="active"
                style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
-      <TabView>
+
+      <div class="p-field-checkbox p-mt-3">
+        <Checkbox id="landing" name="landing" v-model="formData.is_landing" :binary="true"/>
+        <label for="landing">Landing page</label>
+      </div>
+
+      <div v-if="formData.is_landing">
+        <div class="p-field">
+          <label>{{ $t('common.nameInQazaq') }}</label>
+          <InputText type="text" v-model="formData.title_kz"  />
+          <small class="p-error" v-if="!formData.title_kz && submitted">{{ $t("common.requiredField") }}</small>
+        </div>
+        <div class="p-field">
+          <label>{{ $t('common.nameInRussian')}}</label>
+          <InputText type="text" v-model="formData.title_ru"  />
+          <small class="p-error" v-if="!formData.title_ru && submitted">{{ $t("common.requiredField") }}</small>
+        </div>
+        <div class="p-field">
+          <label>{{ $t('common.nameInEnglish') }}</label>
+          <InputText type="text" v-model="formData.title_en"  />
+          <small class="p-error" v-if="!formData.title_en && submitted">{{ $t("common.requiredField") }}</small>
+        </div>
+      </div>
+
+      <TabView v-if="!formData.is_landing">
         <TabPanel header="Қазақша">
           <div class="p-field p-mt-3">
             <label for="kz-title">{{ $t("common.nameInQazaq") }}</label>
@@ -112,11 +136,11 @@ export default {
         errors.push(1);
       if (!this.formData.title_en)
         errors.push(1);
-      if (!this.formData.content_kz)
+      if (!this.formData.is_landing && !this.formData.content_kz)
         errors.push(1);
-      if (!this.formData.content_ru)
+      if (!this.formData.is_landing && !this.formData.content_ru)
         errors.push(1);
-      if (!this.formData.content_en)
+      if (!this.formData.is_landing && !this.formData.content_en)
         errors.push(1);
 
       return errors.length === 0

@@ -25,7 +25,30 @@
   <Dialog v-model:visible="display" :style="{ width: '1000px' }" :breakpoints="{'960px': '75vw', '640px': '90vw'}"
           :header="$t('enuNewSite.addEditPageTitle')"
           :modal="true" class="p-fluid">
-    <TabView>
+    <div class="p-field-checkbox p-mt-3">
+      <Checkbox id="landing" name="landing" v-model="formData.is_landing" :binary="true"/>
+      <label for="landing">Landing page</label>
+    </div>
+
+    <div v-if="formData.is_landing">
+      <div class="p-field">
+        <label>{{ $t('common.nameInQazaq') }}</label>
+        <InputText type="text" v-model="formData.title_kz"  />
+        <small class="p-error" v-if="!formData.title_kz && submitted">{{ $t("common.requiredField") }}</small>
+      </div>
+      <div class="p-field">
+        <label>{{ $t('common.nameInRussian')}}</label>
+        <InputText type="text" v-model="formData.title_ru"  />
+        <small class="p-error" v-if="!formData.title_ru && submitted">{{ $t("common.requiredField") }}</small>
+      </div>
+      <div class="p-field">
+        <label>{{ $t('common.nameInEnglish') }}</label>
+        <InputText type="text" v-model="formData.title_en"  />
+        <small class="p-error" v-if="!formData.title_en && submitted">{{ $t("common.requiredField") }}</small>
+      </div>
+    </div>
+
+    <TabView v-if="!formData.is_landing">
       <TabPanel header="Қазақша">
         <div class="p-field p-mt-3">
           <label for="kz-title">{{ $t("common.nameInQazaq") }}</label>
@@ -34,7 +57,8 @@
         </div>
         <div class="p-field">
           <label for="kz-content">{{ $t("common.contentInQazaq") }}</label>
-          <Editor id="content_kz" v-model="formData.content_kz" editorStyle="height: 320px"/>
+<!--          <RichEditor id="content_kz" v-model="formData.content_kz" editorStyle="height: 320px"/>-->
+          <ckeditor :editor="editor" v-model="editorData" :config="editorConfig"></ckeditor>
           <small v-show="!formData.content_kz && submitted" class="p-error">{{ $t("smartenu.contentKzInvalid") }}</small>
         </div>
       </TabPanel>
@@ -46,7 +70,8 @@
         </div>
         <div class="p-field">
           <label for="kz-content">{{ $t("common.contentInRussian") }}</label>
-          <Editor id="content_ru" v-model="formData.content_ru" editorStyle="height: 320px"/>
+<!--          <RichEditor id="content_ru" v-model="formData.content_ru" editorStyle="height: 320px"/>-->
+          <ckeditor :editor="editor" v-model="editorData" :config="editorConfig"></ckeditor>
           <small v-show="!formData.content_ru && submitted" class="p-error">{{ $t("smartenu.contentKzInvalid") }}</small>
         </div>
       </TabPanel>
@@ -58,7 +83,8 @@
         </div>
         <div class="p-field">
           <label for="kz-content">{{ $t("common.contentInEnglish") }}</label>
-          <Editor id="content_en" v-model="formData.content_en" editorStyle="height: 320px"/>
+<!--          <RichEditor id="content_en" v-model="formData.content_en" editorStyle="height: 320px"/>-->
+          <ckeditor :editor="editor" v-model="editorData" :config="editorConfig"></ckeditor>
           <small v-show="!formData.content_en && submitted" class="p-error">{{ $t("smartenu.contentKzInvalid") }}</small>
         </div>
       </TabPanel>
@@ -80,6 +106,8 @@ import {throwStatement} from "@babel/types";
 import AddMenu from "@/components/enuwebsite/AddMenu.vue";
 import AddPage from "@/components/enuwebsite/AddPage.vue";
 import PageView from "@/components/enuwebsite/PageView.vue";
+import RichEditor from "@/components/documents/editor/RichEditor.vue";
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 export default {
   name: "EnuWebPageView",
@@ -118,7 +146,11 @@ export default {
         content_ru: null,
         content_en: null,
       },
-
+      editor: ClassicEditor,
+      editorData: '',
+      editorConfig: {
+        height: '320'
+      }
     };
   },
   created() {
@@ -192,13 +224,13 @@ export default {
       if (!this.formData.title_en) {
         this.formValid.push({title_en: true});
       }
-      if (!this.formData.content_kz) {
+      if (!this.formData.is_landing && !this.formData.content_kz) {
         this.formValid.push({content_kz: true});
       }
-      if (!this.formData.content_ru) {
+      if (!this.formData.is_landing && !this.formData.content_ru) {
         this.formValid.push({content_ru: true});
       }
-      if (!this.formData.content_en) {
+      if (!this.formData.is_landing && !this.formData.content_en) {
         this.formValid.push({content_en: true});
       }
       return this.formValid;
@@ -219,8 +251,12 @@ export default {
 
     },
     onView(data) {
-      this.selectedPage = data;
-      this.pageView = true;
+      if (data.is_landing) {
+        this.$router.push({name: 'LandingPageView', params: {id: data.enu_page_id}})
+      } else {
+        this.selectedPage = data;
+        this.pageView = true;
+      }
     },
     onEditPage(data) {
       this.addButtonName = this.onSavePage;
@@ -250,6 +286,10 @@ export default {
   .dialog_img {
     padding: 0;
   }
+}
+
+::v-deep(.ck-editor__editable) {
+  height: 320px;
 }
 
 </style>
