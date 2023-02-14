@@ -141,7 +141,7 @@ export default {
 }
 
 .v-step-warp-horizontal .v-step-list {
-  justify-content: space-around;
+  flex-order-: space-around;
   text-align: center;
 }
 

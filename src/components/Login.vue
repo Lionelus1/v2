@@ -22,7 +22,7 @@
         <img src="/assets/layout/images/logo_eng.png" alt="Image" width="250"/>
       </div>
     </div>
-    <div class="p-fluid p-formgrid grid p-jc-center p-pt-2">
+    <div class="p-fluid p-formgrid grid justify-content-center p-pt-2">
 
       <TabView class="tabview-custom p-xl-6 md:col-8 p-sm-12 lg:col-6 col-12">
         <TabPanel>

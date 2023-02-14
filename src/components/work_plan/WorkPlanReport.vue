@@ -6,7 +6,7 @@
     <div class="card">
       <DataTable :lazy="true" :loading="loading" :value="data" :rows="10" dataKey="id" :rowHover="true" responsiveLayout="scroll">
         <template #header>
-          <div class="flex p-jc-between p-ai-center">
+          <div class="flex justify-content-between align-items-center">
             <h5 class="p-m-0">{{ $t('workPlan.reports') }}</h5>
           </div>
         </template>

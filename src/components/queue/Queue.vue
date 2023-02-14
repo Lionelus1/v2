@@ -418,7 +418,7 @@ export default {
 }
 .table-header {
   display: flex;
-  justify-content: space-between;
+  flex-order-: space-between;
 }
 ::v-deep(.p-datatable.p-datatable-customers) {
   .p-datatable-header {

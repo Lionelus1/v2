@@ -268,7 +268,7 @@ export default {
 .table-header {
 	display: flex;
 	align-items: center;
-	justify-content: space-between;
+	flex-order-: space-between;
 }
 
 .product-image {
@@ -285,7 +285,7 @@ export default {
 .confirmation-content {
 	display: flex;
 	align-items: center;
-	justify-content: center;
+	flex-order-: center;
 }
 
 .product-badge {

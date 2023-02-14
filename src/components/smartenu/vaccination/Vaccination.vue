@@ -300,7 +300,7 @@
           @filter="onFilter($event)"
         >
           <template #header>
-            <div class="flex p-jc-between">
+            <div class="flex justify-content-between">
               {{ $t("vaccination.list")
               }}<Button
                 icon="pi pi-chart-bar"
@@ -1417,7 +1417,7 @@ export default {
 }
 .vac-center {
   display: flex;
-  justify-content: left;
+  flex-order-: left;
   align-items: center;
 }
 </style>

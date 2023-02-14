@@ -75,7 +75,7 @@ export default {
   overflow-x: auto;
   padding: 10px;
   width: 100%;
-  /*justify-content: center;*/
+  /*flex-order-: center;*/
 }
 
 .step-header {
@@ -87,7 +87,7 @@ export default {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: center;
+  flex-order-: center;
   margin-bottom: 10px;
 }
 
@@ -110,7 +110,7 @@ export default {
   background-color: grey;
   color: white;
   align-items: center;
-  justify-content: center;
+  flex-order-: center;
   cursor: pointer;
 }
 
@@ -126,7 +126,7 @@ export default {
   /*width: 100px;*/
   position: relative;
   right: -10%;
-  justify-content: center;
+  flex-order-: center;
   margin-top: 3px;
 }
 

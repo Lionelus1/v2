@@ -29,7 +29,7 @@
             <template #header>
               <InlineMessage severity="info">{{ $t('ncasigner.noteMark') }}</InlineMessage>
             </template>
-            <div class="flex p-jc-center">
+            <div class="flex justify-content-center">
               <Button icon="pi pi-user-edit"
                       class="p-button-primary md:col-5" @click="sign" :label="$t('ncasigner.sign')" :loading="signing"/>
             </div>

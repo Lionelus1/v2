@@ -100,7 +100,7 @@
                @sort="onSort($event)">
       <!--  HEADER -->
       <template #header>
-        <div class="table-header flex p-flex-column p-flex-md-row p-jc-md-between">
+        <div class="table-header flex flex-column flex-md-row justify-content-md-between">
           <h4 class="p-mb-2 p-m-md-0 align-self-md-center">{{ $t("hr.vacancies") }}</h4>
           <span class="p-input-icon-left">
             <i class="pi pi-search"/>
