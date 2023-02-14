@@ -2,7 +2,7 @@
   <ConfirmPopup group="deleteResult"></ConfirmPopup>
   <vue-element-loading :active="isBlockUI" is-full-screen color="#FFF" size="80" :text="$t('common.loading')"
                        backgroundColor="rgba(0, 0, 0, 0.4)"/>
-  <div class="p-col-12" v-if="plan && event">
+  <div class="col-12" v-if="plan && event">
     <div class="card">
       <div v-if="!resultId" @click="navigateToBack" class="p-d-inline-block"><i class="fa-solid fa-arrow-left p-mr-3"
                                                                                 style="font-size: 16px;cursor: pointer"></i>
@@ -56,8 +56,8 @@
             <Menubar :model="verifyMenu" :key="active"
                      style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
           </div>
-          <div class="p-grid p-mt-3">
-            <div class="p-fluid p-sm-12 p-md-12 p-lg-6 p-xl-6"
+          <div class="grid p-mt-3">
+            <div class="p-fluid p-sm-12 md:col-12 lg:col-6 p-xl-6"
                  v-if="(isPlanCreatorApproval || !isPlanCreator) && event.status.work_plan_event_status_id !== 5 &&
                  event.status.work_plan_event_status_id !== 2">
               <div class="p-field">
@@ -121,7 +121,7 @@
                 </div>
               </div>
             </div>
-            <div class="p-sm-12 p-md-12 p-lg-12 p-xl-6">
+            <div class="p-sm-12 md:col-12 lg:col-12 p-xl-6">
               <div class="p-field" v-if="event">
                 <label class="p-text-bold">{{ $t('common.fact') }}: </label>
                 <div>{{ event.fact }}</div>
@@ -222,10 +222,10 @@
            position="right"
            class="p-sidebar-lg "
            style="overflow-y: scroll">
-    <div class="p-col-12">
+    <div class="col-12">
       <h3>{{ $t('workPlan.toCorrect') }}</h3>
     </div>
-    <div class="p-col-12">
+    <div class="col-12">
       <div>
         <Menubar :model="rejectMenu" :key="active"
                  style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>

@@ -9,17 +9,17 @@
       class="p-sidebar-lg"
       style="overflow-y: scroll"
   >
-    <div class="p-col-12" v-if="plan && plan.is_oper && resultData && resultData.reject_history">
+    <div class="col-12" v-if="plan && plan.is_oper && resultData && resultData.reject_history">
       <label class="p-text-bold">{{ $t('common.resultSentToCorrect') }}</label>
       <Message severity="warn" :closable="false" title="">{{ resultData.reject_history.message }}</Message>
     </div>
-    <div class="p-col-12">
+    <div class="col-12">
       <div>
         <Menubar :model="menu" :key="active"
                  style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
       </div>
     </div>
-    <div class="p-col-12 p-fluid">
+    <div class="col-12 p-fluid">
       <div class="p-field">
         <label class="p-text-bold">{{ $t('workPlan.eventName') }}</label>
         <InputText v-model="event.event_name" disabled/>

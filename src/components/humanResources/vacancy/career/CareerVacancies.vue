@@ -232,10 +232,10 @@
       <h5>{{ $t('hr.action.apply').toUpperCase() }}</h5>
     </template>
 
-    <div class="p-col-12 p-md-12 p-fluid">
+    <div class="col-12 md:col-12 p-fluid">
       <div class="card">
-        <div class="p-fluid p-grid p-formgrid">
-          <div class="p-field p-col-12">
+        <div class="p-fluid grid p-formgrid">
+          <div class="p-field col-12">
             <Label>{{ $t('hr.vacancySource') }}: </Label>
             <Dropdown class="p-mt-2" v-model="relation.vacancySource"
                       :options="vacancySources"
@@ -247,7 +247,7 @@
                 v-if="validation.source"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="p-field p-col-12">
+          <div class="p-field col-12">
             <Label>{{ $t('hr.motivationLetter') }}: </Label>
             <FileUpload
                 class="p-mt-2"
@@ -268,10 +268,10 @@
                 v-if="validation.ml"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="p-field p-col-12">
+          <div class="p-field col-12">
             <hr>
           </div>
-          <div class="p-field p-col-12">
+          <div class="p-field col-12">
             <p><b><em>{{ $t('hr.sp.header') }}:</em></b></p>
             <p style="text-align: justify">
               <em>
@@ -289,10 +289,10 @@
               </em>
             </p>
           </div>
-          <div class="p-field p-col-12">
+          <div class="p-field col-12">
             <hr>
           </div>
-          <div class="p-field p-col-12">
+          <div class="p-field col-12">
             <div class="p-field-checkbox">
               <Checkbox id="binary" v-model="agreement" :binary="true"/>
               <label for="binary" style="font-size: 15px; text-align: justify">

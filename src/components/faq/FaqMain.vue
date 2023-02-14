@@ -1,5 +1,5 @@
 <template>
-  <div class="p-col-12">
+  <div class="col-12">
     <!--    <h4>Сұрақ-жауап</h4>-->
     <div class="card" v-if="userData.userType === 'student'">
       <Button icon="pi pi-plus" :label="$t('faq.addFaq')" @click="createFaq"/>

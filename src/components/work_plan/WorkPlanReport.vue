@@ -1,5 +1,5 @@
 <template>
-  <div class="p-col-12">
+  <div class="col-12">
     <div class="card" v-if="isPlanCreator">
       <WorkPlanReportModal :plan-id="this.work_plan_id" :plan="plan"></WorkPlanReportModal>
     </div>

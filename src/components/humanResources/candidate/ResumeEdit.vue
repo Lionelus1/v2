@@ -4,13 +4,13 @@
       <EducationView v-for="education in educations" :key="education.id" :model-value="education"/>
       <Button icon="pi pi-plus" class="p-button-link" label="Добавить" :onclick="educationEdit"></Button>
     </div>
-    <div class="p-grid p-formgrid" v-if="section === chapter.degreeAndTitle">
-      <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+    <div class="grid p-formgrid" v-if="section === chapter.degreeAndTitle">
+      <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
         <AcademicDegreeView v-for="academicDegree in academicDegrees" :key="academicDegree.id"
                             :model-value="academicDegree"/>
         <Button icon="pi pi-plus" class="p-button-link" label="Добавить" :onclick="academicDegreeEdit"></Button>
       </div>
-      <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+      <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
         <AcademicTitleView v-for="academicTitle in academicTitles" :key="academicTitle.id"
                            :model-value="academicTitle"/>
         <Button icon="pi pi-plus" class="p-button-link" label="Добавить" :onclick="academicTitleEdit"></Button>

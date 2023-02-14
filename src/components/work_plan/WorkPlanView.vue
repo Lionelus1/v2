@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="p-col-12" v-if="!loading">
+    <div class="col-12" v-if="!loading">
       <div class="card"
            v-if="isPlanApproved && (isPlanCreator || (isApproval || isApproved)) && plan.status.work_plan_status_id === 4">
         <Button v-if="isPlanCreator && plan && !plan.is_oper" :label="$t('common.action.reApprove')" icon="pi pi-check"

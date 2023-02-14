@@ -1,6 +1,6 @@
 <template>
-  <div class="p-field p-grid">
-    <div class="p-col-12 p-md-12 p-mb-2">
+  <div class="p-field grid">
+    <div class="col-12 md:col-12 p-mb-2">
       <span class="p-float-label p-ibutoon-right">
         <i v-if="value && !readonly" class="pi pi-id-card ibutton" :style="(!editVisible ? 'height:30px;margin-top: 2px;margin-right: 2px;' : 'margin-right:35px;height:30px;margin-top: 2px;')" @click="showcard()"/>
         <i v-if="editVisible && !readonly" class="pi pi-ellipsis-h ibutton" style="height:30px;margin-top: 2px;margin-right: 2px;" @click="showside()"/>

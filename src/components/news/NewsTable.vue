@@ -1,5 +1,5 @@
 <template>
-  <div class="p-col-12">
+  <div class="col-12">
     <div class="card">
       <Button :label="$t('common.add')" icon="pi pi-plus" class="p-button-success p-mr-2" v-on:click="createNews"/>
       <Button :label="$t('common.send')" icon="pi pi-send" class="p-mr-2" v-on:click="sendNews"

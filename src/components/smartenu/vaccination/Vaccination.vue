@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="p-col-12">
+    <div class="col-12">
       <h4>{{ $t("vaccination.title") }}</h4>
 
 
@@ -22,13 +22,13 @@
       </Sidebar>
       <div class="card">
         <div class="p-field">
-          <div class="p-grid p-formgrid">
-            <div class="p-col-10 p-mb-2 p-lg-2 p-mb-lg-0 vac-center">
+          <div class="grid p-formgrid">
+            <div class="col-10 p-mb-2 lg:col-2 p-mb-lg-0 vac-center">
               <label class="p-text-bold p-text-uppercase">{{
                 $t("common.myData")
               }}</label>
             </div>
-            <div class="p-col-10 p-mb-2 p-lg-3 p-mb-lg-0">
+            <div class="col-10 p-mb-2 lg:col-3 p-mb-lg-0">
               <ToggleButton
                 style="width: 210px"
                 @change="saveMyDetails"
@@ -40,7 +40,7 @@
                 onIcon="pi pi-pencil"
               />
             </div>
-            <div class="p-col-10 p-mb-2 p-lg-3 p-mb-lg-0">
+            <div class="col-10 p-mb-2 lg:col-3 p-mb-lg-0">
               <Button
                 style="width: 210px"
                 v-if="
@@ -65,9 +65,9 @@
           </div>
         </div>
         <div>
-          <div class="p-grid p-formgrid">
-            <div class="p-col-12 p-mb-2 p-lg-3 p-mb-lg-0 p-field p-grid">
-              <label class="p-col-fixed" style="width: 60px">{{
+          <div class="grid p-formgrid">
+            <div class="col-12 p-mb-2 lg:col-3 p-mb-lg-0 p-field grid">
+              <label class="col-fixed" style="width: 60px">{{
                 $t("common.status")
               }}</label>
               <div class="p-col vac-center">
@@ -96,9 +96,9 @@
                 myDetails.status == VS_FirstComponent ||
                 myDetails.status == VS_Vaccinated
               "
-              class="p-col-12 p-mb-2 p-lg-3 p-mb-lg-0 p-field p-grid"
+              class="col-12 p-mb-2 lg:col-3 p-mb-lg-0 p-field grid"
             >
-              <label class="p-col-fixed" style="width: 60px">{{
+              <label class="col-fixed" style="width: 60px">{{
                 $t("vaccination.vaccine")
               }}</label>
               <div class="p-col">
@@ -135,9 +135,9 @@
             </div>
             <div
               v-if="myDetails.status == VS_FirstComponent"
-              class="p-col-12 p-mb-2 p-lg-3 p-mb-lg-0 p-field p-grid"
+              class="col-12 p-mb-2 lg:col-3 p-mb-lg-0 p-field grid"
             >
-              <label class="p-col-fixed" style="width: 60px"
+              <label class="col-fixed" style="width: 60px"
                 >{{ $t("common.date") }}
               </label>
               <div class="p-col">
@@ -155,9 +155,9 @@
             </div>
             <div
               v-if="myDetails.status == VS_Vaccinated"
-              class="p-col-12 p-mb-2 p-lg-3 p-mb-lg-0 p-field p-grid"
+              class="col-12 p-mb-2 lg:col-3 p-mb-lg-0 p-field grid"
             >
-              <label class="p-col-fixed" style="width: 60px"
+              <label class="col-fixed" style="width: 60px"
                 >{{ $t("common.date") }}
               </label>
               <div class="p-col">
@@ -175,9 +175,9 @@
             </div>
             <div
               v-if="myDetails.status == VS_Planned"
-              class="p-col-12 p-mb-2 p-lg-3 p-mb-lg-0 p-field p-grid"
+              class="col-12 p-mb-2 lg:col-3 p-mb-lg-0 p-field grid"
             >
-              <label class="p-col-fixed" style="width: 60px"
+              <label class="col-fixed" style="width: 60px"
                 >{{ $t("common.date") }}
               </label>
               <div class="p-col">
@@ -198,9 +198,9 @@
                 myDetails.status == VS_Vaccinated ||
                 myDetails.status == VS_FirstComponent
               "
-              class="p-col-12 p-mb-2 p-lg-3 p-mb-lg-0 p-field p-grid"
+              class="col-12 p-mb-2 lg:col-3 p-mb-lg-0 p-field grid"
             >
-              <label class="p-col-fixed" style="width: 60px"
+              <label class="col-fixed" style="width: 60px"
                 >{{ $t("vaccination.clinic") }}
               </label>
               <div class="p-col">
@@ -214,9 +214,9 @@
             </div>
             <div
               v-if="myDetails.status == VS_Rejected"
-              class="p-col-12 p-mb-2 p-lg-4 p-mb-lg-0 p-field p-grid"
+              class="col-12 p-mb-2 lg:col-4 p-mb-lg-0 p-field grid"
             >
-              <label class="p-col-fixed" style="width: 60px"
+              <label class="col-fixed" style="width: 60px"
                 >{{ $t("common.reason") }}
               </label>
               <div class="p-col">

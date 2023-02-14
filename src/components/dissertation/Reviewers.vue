@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="p-col-12">
+    <div class="col-12">
 
       <Toolbar class="p-mb-4">
         <template #end>

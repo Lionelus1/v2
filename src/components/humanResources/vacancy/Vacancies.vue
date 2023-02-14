@@ -24,7 +24,7 @@
                       id="overlay_panel"
                       style="width: 450px"
                       :breakpoints="{'960px': '75vw'}">
-          <div class="p-col-12 p-md-12 p-fluid">
+          <div class="col-12 md:col-12 p-fluid">
             <div class="card">
               <div class="p-field">
                 <label>{{ $t('common.startDate') }}</label>

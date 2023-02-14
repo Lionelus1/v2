@@ -3,32 +3,32 @@
     <BlockUI :blocked="loading" :fullScreen="true">
       <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
     </BlockUI>
-    <div v-if="question" class="p-grid">
+    <div v-if="question" class="grid">
       <div class="product-grid-item card">
         <h5>{{ $t("faq.question") }}</h5>
 
         <div class="product-grid-item-top p-mb-2 grid">
-          <div class="p-lg-2 p-md-6 p-sm-6">
+          <div class="lg:col-2 md:col-6 p-sm-6">
                         <span>
                         <i class="fa-solid fa-at product-category-icon"></i>
                         <small>№&nbsp;{{ question.id }} </small><br/>
                         <small class="product-category">{{ question.lastName + " " + question.firstName }}</small>
                         </span>
           </div>
-          <div class="p-lg-2 p-md-6 p-sm-6">
+          <div class="lg:col-2 md:col-6 p-sm-6">
                         <span>
                         <small class="product-category">{{ question.mobile + " " + question.email }}</small>
                         </span>
           </div>
-          <div class="p-lg-2 p-md-6 p-sm-6">
+          <div class="lg:col-2 md:col-6 p-sm-6">
             <i class="fa-solid fa-tags product-category-icon"></i>
             <small class="product-category">{{ question.category['name' + $i18n.locale].split("(")[0] }}</small>
           </div>
-          <div class="p-lg-3 p-md-6 p-sm-6">
+          <div class="lg:col-3 md:col-6 p-sm-6">
             <span v-if="loginedUser" :class="'customer-badge status-' + question.state.id">{{ $t("common.states." + question.state.code) }}</span>
           </div>
 
-          <div class="p-lg-3 p-md-6 p-sm-12 p-text-right">
+          <div class="lg:col-3 md:col-6 p-sm-12 p-text-right">
             <i class="fa-solid fa-calendar-days product-category-icon"></i>
             <small class="product-category">{{ moment(new Date(question.createdDate)).utc().format("DD.MM.YYYY") }}</small>
           </div>
@@ -50,14 +50,14 @@
         <h5>{{ $t("faq.answer") }}</h5>
 
         <div class="product-grid-item-top p-mb-2">
-          <div class="p-col-12 p-grid">
-            <div v-if="loginedUser" class="p-lg-6  p-md-6 p-sm-6">
+          <div class="col-12 grid">
+            <div v-if="loginedUser" class="lg:col-6  md:col-6 p-sm-6">
                             <span v-if="question.replier != null">
                                 <i class="fa-solid fa-user-tag product-category-icon"></i>
                                 <small class="product-category">{{ question.replier.fullName }}</small>
                             </span>
             </div>
-            <div v-if="question.replyDate" class="p-lg-6  p-md-6 p-sm-6 p-text-right">
+            <div v-if="question.replyDate" class="lg:col-6  md:col-6 p-sm-6 p-text-right">
               <i class="fa-solid fa-calendar-days product-category-icon"></i>
               <small class="product-category">{{ moment(new Date(question.replyDate)).utc().format("DD.MM.YYYY") }}</small>
             </div>

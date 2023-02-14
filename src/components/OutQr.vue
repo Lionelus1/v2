@@ -20,7 +20,7 @@
   <div class="car p-text-center">
         
     </div>
-  <div class="p-fluid p-formgrid p-grid p-jc-center p-pt-2">
+  <div class="p-fluid p-formgrid grid p-jc-center p-pt-2">
       
       <qrcode-vue size="500" render-as="svg" margin="2" :value="qrCode"></qrcode-vue>
   </div>

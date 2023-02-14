@@ -1,16 +1,16 @@
 <template>
-  <div id="carddiv" class="p-grid">
-    <div class="p-col-12">
+  <div id="carddiv" class="grid">
+    <div class="col-12">
       <h3>{{ $t('hr.title.id') }}</h3>
       <div>
         <Menubar :model="menu" :key="active"
                  style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px"></Menubar>
       </div>
     </div>
-    <div class="p-col-12 p-md-12 p-fluid">
+    <div class="col-12 md:col-12 p-fluid">
       <div class="card">
-        <div class="p-grid p-formgrid">
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+        <div class="grid p-formgrid">
+          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label>{{ $t('common.number') }}</label>
             <InputText
                 :readonly="readonly"
@@ -25,7 +25,7 @@
                 v-if="validation.number"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label>{{ $t('hr.id.startDate') }}</label>
             <PrimeCalendar
                 :readonly="readonly"
@@ -39,7 +39,7 @@
                 v-if="validation.startDate"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label>{{ $t('hr.id.issuedBy') }}</label>
             <InputText
                 :readonly="readonly"
@@ -54,7 +54,7 @@
                 v-if="validation.issuedBy"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label>{{ $t('contact.iin') }}</label>
             <InputText
                 :readonly="readonly"
@@ -69,7 +69,7 @@
                 v-if="validation.iin"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label>{{ $t('hr.title.id') }}</label>
             <FileUpload ref="form" mode="basic"
                         class="p-mt-2"

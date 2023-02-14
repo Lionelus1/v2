@@ -1,15 +1,15 @@
 <template>
-  <div id="carddiv" class="p-grid">
-    <div class="p-col-12">
+  <div id="carddiv" class="grid">
+    <div class="col-12">
       <h3>{{ this.$t("common.departmentNameLabel")}}</h3>
       <div>
         <Menubar :model="menu" :key="active" style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px"></Menubar>
       </div>
     </div>
-    <div class="p-col-12 p-md-12 p-fluid">
+    <div class="col-12 md:col-12 p-fluid">
       <div class="card">
-        <div class="p-grid p-formgrid">
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+        <div class="grid p-formgrid">
+          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label>{{ this.$t("common.organizationNameLabel") }}</label>
             <ContragentSelectOrg
               ref = "contragent"
@@ -22,7 +22,7 @@
                 v-if="validation.organization"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label>{{ this.$t("common.departmentNameLabel") }}</label>
             <DepartmentList :readonly="readonly" class="p-mt-2"
                             :autoLoad="false"
@@ -36,7 +36,7 @@
                 v-if="validation.department"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="p-field p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="p-field col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label>{{ this.$t("common.headLabel") }}</label>
             <FindUser v-model="head"
                       :max="1"
@@ -48,7 +48,7 @@
                 v-if="validation.head"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label>{{ this.$t("common.deadlineDate") }}</label>
             <PrimeCalendar
                 :readonly="readonly"

@@ -1,5 +1,5 @@
 <template>
-  <div class="p-col-12">
+  <div class="col-12">
     <!-- BEGINNING OF TABLE -->
     <div class="card" v-if="isAdmin || isModer || selectedEvent">
       <Button v-if="isAdmin || isModer" :label="$t('common.add')" icon="pi pi-plus"

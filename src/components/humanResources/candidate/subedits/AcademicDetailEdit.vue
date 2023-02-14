@@ -1,6 +1,6 @@
 <template>
-  <div id="carddiv" class="p-grid">
-    <div class="p-col-12">
+  <div id="carddiv" class="grid">
+    <div class="col-12">
       <h3>{{ $t('hr.title.academicDetail') }}</h3>
       <div>
         <Menubar :model="menu" :key="active"

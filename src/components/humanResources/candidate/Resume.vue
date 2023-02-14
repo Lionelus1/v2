@@ -16,8 +16,8 @@
   <!-- РЕЗЮМЕ  -->
   <div class="card" v-if="candidate !== null && candidate !== {}">
     <div class="card">
-      <div class="p-grid p-formgrid">
-        <div class="p-col-12 p-lg-9 card-border">
+      <div class="grid p-formgrid">
+        <div class="col-12 lg:col-9 card-border">
           <ResumeView  v-if="view" :value="candidate" :readonly="false"/>
         </div>
       </div>

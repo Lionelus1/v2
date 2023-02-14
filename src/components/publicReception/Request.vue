@@ -1,6 +1,6 @@
 <template>
-    <div class="p-grid">
-        <div class="p-col-12">
+    <div class="grid">
+        <div class="col-12">
         <BlockUI :blocked="uploading" :fullScreen="true">
             <ProgressBar v-if="uploading" mode="indeterminate" style="height: .5em" />
         </BlockUI>

@@ -1,16 +1,16 @@
 <template>
-  <div id="carddiv" class="p-grid">
-    <div class="p-col-12">
+  <div id="carddiv" class="grid">
+    <div class="col-12">
       <h3>{{ $t('hr.title.referee') }}</h3>
       <div>
         <Menubar :model="menu" :key="active"
                  style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px"></Menubar>
       </div>
     </div>
-    <div class="p-col-12 p-md-12 p-fluid">
+    <div class="col-12 md:col-12 p-fluid">
       <div class="card">
-        <div class="p-grid p-formgrid">
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+        <div class="grid p-formgrid">
+          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label>{{ $t('common.fullName') }}</label>
             <InputText
                 :readonly="readonly"
@@ -25,7 +25,7 @@
                 v-if="validation.fullName"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label>{{ $t('contact.position') }}</label>
             <InputText
                 :readonly="readonly"
@@ -40,7 +40,7 @@
                 v-if="validation.position"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label>{{ $t('contact.phone') }}</label>
             <InputText
                 :readonly="readonly"

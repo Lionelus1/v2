@@ -1,10 +1,10 @@
 <template>
     <div >
-        <div class="p-fluid p-formgrid p-grid p-jc-center p-pt-2" style="min-width:80%">
-            <div class="p-col-12 p-mt-5 p-xl:mt-0 p-text-center">
+        <div class="p-fluid p-formgrid grid p-jc-center p-pt-2" style="min-width:80%">
+            <div class="col-12 p-mt-5 p-xl:mt-0 p-text-center">
                 <img src="assets/layout/images/logo.svg" class="p-mb-5" style="width:140px; ">
             </div>
-            <div class="p-col-12 p-xl:col-6" >
+            <div class="col-12 p-xl:col-6" >
                 <div class="p-h-100 p-w-100 p-m-0 py-7 px-4" >
                     <div class="grid p-jc-center p-text-center">
                         

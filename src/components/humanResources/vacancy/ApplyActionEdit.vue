@@ -1,6 +1,6 @@
 <template>
-  <div :class="'p-grid content-disable ' + view.signing"  >
-    <div class="p-col-12">
+  <div :class="'grid content-disable ' + view.signing"  >
+    <div class="col-12">
       <!--   ЗАГОЛОВОК   -->
       <h3>{{ $t('hr.sendMessage') }}</h3>
       <!--   СТРОКА МЕНЮ   -->
@@ -11,12 +11,12 @@
       </div>
     </div>
     <!-- СТРОКА ПРОГРЕСС ПРИ ОТПРАВКИ СООБЩЕНЯ  -->
-    <div v-if="view.sending" class="p-col-12 p-md-12 p-fluid">
+    <div v-if="view.sending" class="col-12 md:col-12 p-fluid">
       <label>{{ $t('hr.sendingMessage') }}</label>
       <ProgressBar mode="indeterminate" class="p-mt-2" style="height: .5em"/>
     </div>
     <!--  ОСНОВНОЙ РАЗДЕЛ ИНФОРМАЦИИ О ХОДАТАЙСТВЕ  -->
-    <div class="p-col-12 p-md-12 p-fluid">
+    <div class="col-12 md:col-12 p-fluid">
       <!--   ПРЕДУПРЕЖДЕНИЕ О ТОМ, ЧТО НУЖНО ПОДПИСАТЬ ХОДАТВАЙСТВО ЭЦП ПЕРВОГО РУКОВОДИТЕЛЯ   -->
       <div v-if="view.petition" class="p-field">
         <Message :closable="false" severity="warn">{{ $t('hr.petition.warn') }}</Message>

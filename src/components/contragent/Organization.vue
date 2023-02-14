@@ -1,6 +1,6 @@
 <template>
-  <div id="carddiv" class="p-grid">
-    <div class="p-col-12">
+  <div id="carddiv" class="grid">
+    <div class="col-12">
       <h3>
         {{
           this.$i18n.locale != "ru"
@@ -12,10 +12,10 @@
       <Message severity="warn" v-if="message != null">{{message}}</Message>
 
     </div>
-    <div class="p-col-12 p-md-12 p-fluid">
+    <div class="col-12 md:col-12 p-fluid">
       <div class="card">
-        <div class="p-grid p-formgrid">
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+        <div class="grid p-formgrid">
+          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label for="kazname">{{ this.$t("common.nameInQazaq") }}<span class="p-error" v-if="!readonly">*</span></label>
             <InputText
               id="kazname"
@@ -28,7 +28,7 @@
             ></InputText>
             <small class="p-error" v-if="this.validationErrors.nameInQazaq">{{$t('common.requiredField')}}</small>
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label for="rusname">{{ this.$t("common.nameInRussian") }}<span class="p-error" v-if="!readonly">*</span></label>
             <InputText
               id="rusname"
@@ -41,18 +41,18 @@
             ></InputText>
             <small class="p-error" v-if="this.validationErrors.nameInRus">{{$t('common.requiredField')}}</small>
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label>{{ this.$t("contragent.form") }}<span class="p-error" v-if="!readonly">*</span></label>
             <Dropdown  @change="correct" class="p-mt-2" :disabled="localReadonly" v-model="value.form" :options="orgforms" :optionLabel="($i18n.locale == 'ru' ? 'namerus' : 'name')" :placeholder="$t('common.select')" />
             <small class="p-error" v-if="this.validationErrors.orgForm">{{$t('common.requiredField')}}</small>
           </div>
 
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label>{{ this.$t("common.head") }}</label>
             <FindUser @input="correct" @remove="correct" class="p-mt-2" :disabled="localReadonly" :editMode="true" v-model="users"  v-model:first="value.chief" :max="1"/>
           </div>
           
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label>{{ this.$t("common.state") }}</label>
             <SelectButton
               :disabled="localReadonly"
@@ -64,7 +64,7 @@
               optionLabel="name"
             />
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label>&nbsp;</label>
             <SelectButton
               :disabled="localReadonly"
@@ -82,8 +82,8 @@
         <div class="p-text-uppercase p-mb-2">
           {{ this.$t("contact.title") }}
         </div>
-        <div class="p-grid p-formgrid">
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+        <div class="grid p-formgrid">
+          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label>{{ this.$t("contact.bin") }}<span class="p-error" v-if="!readonly">*</span></label>
             <InputText
               :readonly="localReadonly"
@@ -95,7 +95,7 @@
             ></InputText>
             <small class="p-error" v-if="this.validationErrors.bin">{{$t('common.requiredField')}}</small>
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label>{{ this.$t("contact.locality") }}</label>
             <InputText
               :readonly="localReadonly"
@@ -106,7 +106,7 @@
               @input="correct"
             ></InputText>
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label
               >{{ this.$t("contact.address") }} ({{
                 this.$t("common.language.kz")
@@ -122,7 +122,7 @@
             ></InputText>
             <small class="p-error" v-if="this.validationErrors.address">{{$t('common.requiredField')}}</small>
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label
               >{{ this.$t("contact.address") }} ({{
                 this.$t("common.language.ru")
@@ -138,7 +138,7 @@
             ></InputText>
             <small class="p-error" v-if="this.validationErrors.addressru">{{$t('common.requiredField')}}</small>
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label>{{ this.$t("contact.phone") }}</label>
             <InputText
               :readonly="localReadonly"
@@ -149,7 +149,7 @@
               v-model="value.phone"
             ></InputText>
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label>{{ this.$t("contact.email") }}<span class="p-error" v-if="!readonly">*</span></label>
             <InputText
               :readonly="localReadonly"
@@ -169,8 +169,8 @@
             <div class="p-text-uppercase">{{ this.$t("bank.requisite") }}</div>
           </template>
           <div class="card">
-            <div class="p-grid p-formgrid">
-              <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+            <div class="grid p-formgrid">
+              <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
                 <label>{{ this.$t("bank.accnumber") }}</label>
                 <InputText
                   :readonly="localReadonly"
@@ -181,7 +181,7 @@
                   v-model="value.bankaccount"
                 ></InputText>
               </div>
-              <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+              <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
                 <label>{{ this.$t("bank.title2") }}</label>
                 <InputText
                   :readonly="localReadonly"

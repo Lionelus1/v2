@@ -1,5 +1,5 @@
 <template>
-  <div class="p-col-12">
+  <div class="col-12">
     <h5>{{ $t("publicReception.title") }}</h5>
     <BlockUI :blocked="loading" :fullScreen="true">
       <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
@@ -11,19 +11,19 @@
         <template #list="slotProps">
           <div class="product-grid-item card">
             <div class="product-grid-item-top p-mb-2">
-              <div class="p-col-12 p-grid">
-                <div class="p-lg-3 p-md-3 p-sm-6">
+              <div class="col-12 grid">
+                <div class="lg:col-3 md:col-3 p-sm-6">
                   <i class="fa-solid fa-tags product-category-icon"></i>
                   <small class="product-category">{{ slotProps.data.category['name' + $i18n.locale].split("(")[0] }}</small>
                 </div>
-                <div class="p-lg-3  p-md-3 p-sm-6  p-text-right">
+                <div class="lg:col-3  md:col-3 p-sm-6  p-text-right">
                   <span v-if="adminMode"
                         :class="'customer-badge status-' + slotProps.data.state.id">{{ $t("common.states." + slotProps.data.state.code) }}</span>
                 </div>
-                <div class="p-lg-3  p-md-3 p-sm-6">
+                <div class="lg:col-3  md:col-3 p-sm-6">
                   <small>№&nbsp;{{ slotProps.data.id }}</small>
                 </div>
-                <div class="p-lg-3  p-md-3 p-sm-6 p-text-right">
+                <div class="lg:col-3  md:col-3 p-sm-6 p-text-right">
                   <span v-if="slotProps.data.expired">
                     <i class="fa-solid fa-calendar-days product-error-icon"></i>
                   </span>
@@ -38,14 +38,14 @@
               <p class="block-with-text">{{ slotProps.data.question }}</p>
             </div>
             <div class="product-grid-item-bottom">
-              <div class="p-col-12 p-grid">
-                <div class="p-lg-3 p-md-3 p-sm-6">
+              <div class="col-12 grid">
+                <div class="lg:col-3 md:col-3 p-sm-6">
                 <span>
                   <i class="fa-solid fa-at product-category-icon"></i>
                   <small class="product-category">{{ slotProps.data.lastName + " " + slotProps.data.firstName }}</small>
                 </span>
                 </div>
-                <div class="p-lg-3 p-md-3 p-sm-6 p-text-right">
+                <div class="lg:col-3 md:col-3 p-sm-6 p-text-right">
                   <div v-if="adminMode">
               <span v-if="slotProps.data.replier">
                 <i class="fa-solid fa-user-tag product-category-icon"></i>
@@ -55,11 +55,11 @@
                             @click="currentQuestion=slotProps.data.id;sendDialog=true"></Button>
                   </div>
                 </div>
-                <div class="p-lg-3 p-md-3 p-sm-6">
+                <div class="lg:col-3 md:col-3 p-sm-6">
                   <Button v-if="slotProps.data.filePath" :label="$t('faq.attachments')" icon="pi pi-download"
                           @click="downloadFile(slotProps.data.filePath)"></Button>
                 </div>
-                <div class="p-lg-3 p-md-3 p-sm-6  p-text-right">
+                <div class="lg:col-3 md:col-3 p-sm-6  p-text-right">
                   <router-link :to="{ name: 'ReceptionQuestion', params: { id: slotProps.data.id } }" tag="a">
                     <Button :label="$t('common.more')" class="p-button-outlined p-button-info"></Button>
                   </router-link>

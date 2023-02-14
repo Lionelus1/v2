@@ -10,8 +10,8 @@
         <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em;" />
         <div class="p-w-100 p-text-center" style="min-height:100%;v-align:middle;">
         <audio id="audioq" :src="audioSrc" controls autoplay @ended="audioEnded" style="display:none"></audio>
-          <div v-for="row in rowCount" :key="row" class="p-grid" :style="'min-height: ' + height + 'px'">
-            <div v-for="col in colCount" :key="col" :class="'p-col-' + 12/colCount ">
+          <div v-for="row in rowCount" :key="row" class="grid" :style="'min-height: ' + height + 'px'">
+            <div v-for="col in colCount" :key="col" :class="'col-' + 12/colCount ">
               <div class="info-block" :style="'background-color:' + (queues.length<(row-1)*colCount + col ? 'grey' : 'black')">
                 <div v-if="queues.length>=(row-1)*colCount + col" style="margin:auto;display:inline-flex;">
                   <div >

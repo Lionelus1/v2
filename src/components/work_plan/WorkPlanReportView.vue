@@ -1,7 +1,7 @@
 <template>
   <vue-element-loading :active="loading" is-full-screen color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)"/>
   <div>
-    <div class="p-col-12">
+    <div class="col-12">
       <div class="card" v-if="isPlanCreator && !isReportSentApproval">
         <WorkPlanReportApprove :doc-id="report.doc_id" :report="report_id"></WorkPlanReportApprove>
         <!--        <Button label="" icon="pi pi-download" @click="download"

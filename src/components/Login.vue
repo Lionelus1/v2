@@ -22,22 +22,22 @@
         <img src="/assets/layout/images/logo_eng.png" alt="Image" width="250"/>
       </div>
     </div>
-    <div class="p-fluid p-formgrid p-grid p-jc-center p-pt-2">
+    <div class="p-fluid p-formgrid grid p-jc-center p-pt-2">
 
-      <TabView class="tabview-custom p-xl-6 p-md-8 p-sm-12 p-lg-6 p-col-12">
+      <TabView class="tabview-custom p-xl-6 md:col-8 p-sm-12 lg:col-6 col-12">
         <TabPanel>
           <template #header>
             <span>Login System</span>
             <i class="pi pi-key p-ml-1"></i>
           </template>
           <div class="p-fluid text-center">
-            <div class="p-field p-col-12">
+            <div class="p-field col-12">
               <label for="inputtext">{{ $t('common.enterLogin') }}</label>
               <InputText id="inputtext" type="text" v-model="loginData.username"/>
 
 
             </div>
-            <div class="p-field p-col-12">
+            <div class="p-field col-12">
               <label for="inputpassword">{{ $t('common.enterPassword') }}</label>
               <Password :feedback="false" toggleMask v-model="loginData.password"
                         @keyup.enter="login"></Password>
@@ -56,7 +56,7 @@
             <div class="p-field p-mb-3">
               <InlineMessage severity="info">{{ $t('ncasigner.noteMark') }}</InlineMessage>
             </div>
-            <div class="p-field p-col-12 p-pb-2">
+            <div class="p-field col-12 p-pb-2">
               <Inplace :closable="true" @close="resetPassword">
                 <template #display>
                   {{ text || $t('common.changePassword') }}
@@ -67,12 +67,12 @@
                 </template>
               </Inplace>
             </div>
-            <div class="p-grid">
-              <div class="p-col-8">
+            <div class="grid">
+              <div class="col-8">
                 <Button icon="pi pi-upload " :label="$t('common.chooseCert')" class="p-button-danger"
                         @click="resetEtspLogin(-1)" iconPos="right"/>
               </div>
-              <div class="p-col-4">
+              <div class="col-4">
                 <Button :label="$t('common.login')" :disabled="isSignUp" icon="p-w-6 pi pi-check"
                         @click="loginVerify" iconPos="right"/>
               </div>

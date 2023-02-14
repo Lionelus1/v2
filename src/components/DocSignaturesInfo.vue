@@ -5,12 +5,12 @@
     <BlockUI :blocked="signing" :fullScreen="true"></BlockUI>
     <TabView v-model:activeIndex="active" @tab-change="showFile">
       <TabPanel v-bind:header="$t('ncasigner.signatureListTitle')">
-        <div class="p-col-12" v-if="isShow">
+        <div class="col-12" v-if="isShow">
           <Button :label="$t('common.downloadSignaturesPdf')" icon="pi pi-download" @click="downloadSignatures"
                   class="p-button p-ml-2"/>
           <SignatureQrPdf ref="qrToPdf" :signatures="signatures" :title="docInfo.name"></SignatureQrPdf>
         </div>
-        <div class="p-col-12" v-else>
+        <div class="col-12" v-else>
           <div class="card">
             <Message severity="error">{{ $t('common.message.accessDenied') }}</Message>
           </div>
@@ -31,7 +31,7 @@
             </template>
             <div class="p-d-flex p-jc-center">
               <Button icon="pi pi-user-edit"
-                      class="p-button-primary p-md-5" @click="sign" :label="$t('ncasigner.sign')" :loading="signing"/>
+                      class="p-button-primary md:col-5" @click="sign" :label="$t('ncasigner.sign')" :loading="signing"/>
             </div>
           </Panel>
         </div>

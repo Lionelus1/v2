@@ -3,7 +3,7 @@
     <!--  Трудовая книжка  -->
     <div class="p-field">
       <Label>{{ $t('hr.doc.eh') }}: </Label>
-      <div class="p-col-12 p-mb-2 p-pb-2 p-lg-3 p-mb-lg-0">
+      <div class="col-12 p-mb-2 p-pb-2 lg:col-3 p-mb-lg-0">
         <Button :label="$t('common.download')"
                 icon="pi pi-download"
                 :disabled="disabled"
@@ -16,7 +16,7 @@
     <!--   дипломы   -->
     <div class="p-field">
       <Label>{{ $t('hr.doc.diploma') }}: </Label>
-      <div class="p-col-12 p-mb-2 p-pb-2 p-lg-3 p-mb-lg-0">
+      <div class="col-12 p-mb-2 p-pb-2 lg:col-3 p-mb-lg-0">
         <Button :label="$t('common.download')"
                 icon="pi pi-download"
                 :disabled="disabled"
@@ -29,7 +29,7 @@
     <!--   сертификаты   -->
     <div class="p-field">
       <Label>{{ $t('hr.doc.certs') }}: </Label>
-      <div class="p-col-12 p-mb-2 p-pb-2 p-lg-3 p-mb-lg-0">
+      <div class="col-12 p-mb-2 p-pb-2 lg:col-3 p-mb-lg-0">
         <Button :label="$t('common.download')"
                 icon="pi pi-download"
                 :disabled="disabled"
@@ -42,7 +42,7 @@
     <!--   пенсионный   -->
     <div class="p-field">
       <Label>{{ $t('hr.doc.pension') }}: </Label>
-      <div class="p-col-12 p-mb-2 p-pb-2 p-lg-3 p-mb-lg-0">
+      <div class="col-12 p-mb-2 p-pb-2 lg:col-3 p-mb-lg-0">
         <Button :label="$t('common.download')"
                 icon="pi pi-download"
                 :disabled="disabled"
@@ -55,7 +55,7 @@
     <!--   075   -->
     <div class="p-field">
       <Label>{{ $t('hr.doc.medCert') }}: </Label>
-      <div class="p-col-12 p-mb-2 p-pb-2 p-lg-3 p-mb-lg-0">
+      <div class="col-12 p-mb-2 p-pb-2 lg:col-3 p-mb-lg-0">
         <Button :label="$t('common.download')"
                 icon="pi pi-download"
                 :disabled="disabled"
@@ -68,7 +68,7 @@
     <!--   нарко   -->
     <div class="p-field">
       <Label>{{ $t('hr.doc.narcoCert') }}: </Label>
-      <div class="p-col-12 p-mb-2 p-pb-2 p-lg-3 p-mb-lg-0">
+      <div class="col-12 p-mb-2 p-pb-2 lg:col-3 p-mb-lg-0">
         <Button :label="$t('common.download')"
                 icon="pi pi-download"
                 :disabled="disabled"
@@ -81,7 +81,7 @@
     <!--   ппсихо   -->
     <div class="p-field">
       <Label>{{ $t('hr.doc.psychoCert') }}: </Label>
-      <div class="p-col-12 p-mb-2 p-pb-2 p-lg-3 p-mb-lg-0">
+      <div class="col-12 p-mb-2 p-pb-2 lg:col-3 p-mb-lg-0">
         <Button :label="$t('common.download')"
                 icon="pi pi-download"
                 :disabled="disabled"
@@ -94,7 +94,7 @@
     <!--   судимость   -->
     <div class="p-field">
       <Label>{{ $t('hr.doc.gcCert') }}: </Label>
-      <div class="p-col-12 p-mb-2 p-pb-2 p-lg-3 p-mb-lg-0">
+      <div class="col-12 p-mb-2 p-pb-2 lg:col-3 p-mb-lg-0">
         <Button :label="$t('common.download')"
                 icon="pi pi-download"
                 :disabled="disabled"
@@ -107,7 +107,7 @@
     <!--   военный билет   -->
     <div class="p-field">
       <Label>{{ $t('hr.doc.mId') }}: </Label>
-      <div class="p-col-12 p-mb-2 p-pb-2 p-lg-3 p-mb-lg-0">
+      <div class="col-12 p-mb-2 p-pb-2 lg:col-3 p-mb-lg-0">
         <Button :label="$t('common.download')"
                 icon="pi pi-download"
                 :disabled="disabled"

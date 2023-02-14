@@ -1,6 +1,6 @@
 <template>
-    <div class="p-grid">
-        <div class="p-col-12">
+    <div class="grid">
+        <div class="col-12">
             <DocInfo :document="currentDocument" v-if="!incorrect"/>
             <div class="p-card" v-if="!incorrect">
                 <div class="p-card-body">
@@ -23,14 +23,14 @@
                                         :signature="signature"/>
                         </TabPanel>
                         <TabPanel v-bind:header="$t('ncasigner.verifySignatureTitle')">
-                            <div class="p-grid">
-                                <div class="p-col-12 p-md-2">
+                            <div class="grid">
+                                <div class="col-12 md:col-2">
                                     <FileUpload ref="form" mode="basic"
                                                 :customUpload="true"
                                                 @uploader="uploadToVerify($event)" :auto="true"
                                                 v-bind:chooseLabel="$t('ncasigner.chooseFile')"></FileUpload>
                                 </div>
-                                <div class="p-col-12 p-md-5">
+                                <div class="col-12 md:col-5">
                                     <InlineMessage show v-if="documentToVerify" severity="info">
                                         {{$t('ncasigner.chosenFile' ,{fn: documentToVerify ?
                                         documentToVerify.name : '' })}}
@@ -42,14 +42,14 @@
                                     v-on:click="verifyDocumentSignature(documentToVerify, false)"/>
                         </TabPanel>
                         <TabPanel v-bind:header="$t('ncasigner.signDocTitle')">
-                            <div class="p-grid">
-                                <div class="p-col-12 p-md-2">
+                            <div class="grid">
+                                <div class="col-12 md:col-2">
                                     <FileUpload ref="form" mode="basic"
                                                 :customUpload="true"
                                                 @uploader="uploadToSign($event)" :auto="true"
                                                 v-bind:chooseLabel="$t('ncasigner.chooseFile')"></FileUpload>
                                 </div>
-                                <div class="p-col-12 p-md-5">
+                                <div class="col-12 md:col-5">
                                     <InlineMessage show v-if="documentToSign" severity="info">
                                         {{$t('ncasigner.chosenFile', {fn:
                                         documentToSign ? documentToSign.name : '' })}}

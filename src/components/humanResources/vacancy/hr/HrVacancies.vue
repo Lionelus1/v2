@@ -223,10 +223,10 @@
       <h5>{{ $t('hr.action.apply').toUpperCase() }}</h5>
     </template>
 
-    <div class="p-col-12 p-md-12 p-fluid">
+    <div class="col-12 md:col-12 p-fluid">
       <div class="card">
-        <div class="p-fluid p-grid p-formgrid">
-          <div class="p-field p-col-12">
+        <div class="p-fluid grid p-formgrid">
+          <div class="p-field col-12">
             <Label>{{ $t('hr.vacancySource') }}: </Label>
             <Dropdown class="p-mt-2" v-model="relation.vacancySource"
                       :options="vacancySources"
@@ -238,7 +238,7 @@
                 v-if="validation.source"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="p-field p-col-12">
+          <div class="p-field col-12">
             <Label>{{ $t('hr.motivationLetter') }}: </Label>
             <FileUpload
                 class="p-mt-2"
@@ -259,10 +259,10 @@
                 v-if="validation.ml"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="p-field p-col-12">
+          <div class="p-field col-12">
             <hr>
           </div>
-          <div class="p-field p-col-12">
+          <div class="p-field col-12">
             <p><b><em>{{ $t('hr.sp.header') }}:</em></b></p>
             <p style="text-align: justify">
               <em>
@@ -280,10 +280,10 @@
               </em>
             </p>
           </div>
-          <div class="p-field p-col-12">
+          <div class="p-field col-12">
             <hr>
           </div>
-          <div class="p-field p-col-12">
+          <div class="p-field col-12">
             <Label>{{ $t('hr.doc.chooseSignWay') }}</Label>
             <SelectButton v-model="signWay"
                           :options="signWayOption"
@@ -291,15 +291,15 @@
                           optionValue="value"
                           optionLabel="name"/>
           </div>
-          <div class="p-field p-col-12">
+          <div class="p-field col-12">
             <hr>
           </div>
-          <div class="p-field p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="p-field col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <Button class="p-mt-2"
                     :label="$t('hr.doc.resumeView')"
                     icon="pi pi-plus" :onclick="openResume"/>
           </div>
-          <div class="p-field p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="p-field col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <FileUpload
                 class="p-mt-2"
                 mode="basic"
@@ -309,7 +309,7 @@
                 :auto="true"
                 v-bind:chooseLabel="$t('hr.doc.upSignedResume')"/>
           </div>
-          <div class="p-field p-col-12">
+          <div class="p-field col-12">
             <InlineMessage severity="info"
                            class="p-mt-2"
                            show v-if="resumeFile">
@@ -327,7 +327,7 @@
             >{{ $t("common.requiredField") }}</small>
             <hr>
           </div>
-          <div class="p-field p-col-12">
+          <div class="p-field col-12">
             <div class="p-field-checkbox">
               <Checkbox id="binary" v-model="agreement" :binary="true"/>
               <label for="binary" style="font-size: 15px; text-align: justify">

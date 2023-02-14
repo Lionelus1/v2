@@ -1,5 +1,5 @@
 <template>
-  <div class="p-col-12">
+  <div class="col-12">
 
     <h3 v-if="plan">{{ plan.work_plan_name }}</h3>
     <div class="card" v-if="plan && plan.reject_history && isRejected && isPlanCreator">

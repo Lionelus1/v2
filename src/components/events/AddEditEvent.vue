@@ -116,8 +116,8 @@
                        :showSeconds="true" v-model="event.eventDate" dateFormat="dd.mm.yy"/>
       </div>
       <div class="p-field">
-        <div class="p-grid">
-          <div class="p-col-12 p-md-5">
+        <div class="grid">
+          <div class="col-12 md:col-5">
             <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadMainImage($event)"
                         :auto="true" v-bind:chooseLabel="$t('smartenu.chooseMainImage')"/>
           </div>
@@ -130,12 +130,12 @@
         </div>
       </div>
       <div class="p-field">
-        <div class="p-grid">
-          <div class="p-col-12 p-md-3">
+        <div class="grid">
+          <div class="col-12 md:col-3">
             <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadFile($event)" :auto="true"
                         v-bind:chooseLabel="$t('smartenu.chooseAdditionalFile')"/>
           </div>
-          <div class="p-col-12 p-md-5">
+          <div class="col-12 md:col-5">
             <InlineMessage severity="info" show v-if="event.additionalFileName">
               {{ $t("ncasigner.chosenFile", {fn: event.additionalFileName}) }}
             </InlineMessage>
@@ -149,7 +149,7 @@
       <div class="p-field p-mt-3" style="margin-bottom: 1.5rem" v-if="event.isPoster">
         <label for="poster-link">{{ $t("smartenu.posterLink") }}</label>
         <InputText id="poster-link" v-model="poster.link" rows="3" :placeholder="$t('smartenu.posterLink')"/>
-        <div class="p-grid p-mt-3" v-if="event.isPoster">
+        <div class="grid p-mt-3" v-if="event.isPoster">
           <div class="p-col">
             <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadPosterImageKk($event)"
                         :auto="true" v-bind:chooseLabel="$t('smartenu.posterImageKk')" accept="image/*"/>

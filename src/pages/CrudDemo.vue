@@ -1,6 +1,6 @@
 <template>
-	<div class="p-grid crud-demo">
-		<div class="p-col-12">
+	<div class="grid crud-demo">
+		<div class="col-12">
 			<div class="card">
 				<Toast/>
 				<Toolbar class="p-mb-4">
@@ -93,27 +93,27 @@
 
 					<div class="p-field">
 						<label class="p-mb-3">Category</label>
-						<div class="p-formgrid p-grid">
-							<div class="p-field-radiobutton p-col-6">
+						<div class="p-formgrid grid">
+							<div class="p-field-radiobutton col-6">
 								<RadioButton id="category1" name="category" value="Accessories" v-model="product.category" />
 								<label for="category1">Accessories</label>
 							</div>
-							<div class="p-field-radiobutton p-col-6">
+							<div class="p-field-radiobutton col-6">
 								<RadioButton id="category2" name="category" value="Clothing" v-model="product.category" />
 								<label for="category2">Clothing</label>
 							</div>
-							<div class="p-field-radiobutton p-col-6">
+							<div class="p-field-radiobutton col-6">
 								<RadioButton id="category3" name="category" value="Electronics" v-model="product.category" />
 								<label for="category3">Electronics</label>
 							</div>
-							<div class="p-field-radiobutton p-col-6">
+							<div class="p-field-radiobutton col-6">
 								<RadioButton id="category4" name="category" value="Fitness" v-model="product.category" />
 								<label for="category4">Fitness</label>
 							</div>
 						</div>
 					</div>
 
-					<div class="p-formgrid p-grid">
+					<div class="p-formgrid grid">
 						<div class="p-field p-col">
 							<label for="price">Price</label>
 							<InputNumber id="price" v-model="product.price" mode="currency" currency="USD" locale="en-US" />

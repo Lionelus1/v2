@@ -5,8 +5,8 @@
       <div class="card summary">
         <h3>{{ (this.queue != null ? this.queue['queueName' + $i18n.locale]:"")}}</h3>
       </div>
-      <div class="p-grid p-fluid dashboard">
-        <div class="p-col-12 p-lg-6">
+      <div class="grid p-fluid dashboard">
+        <div class="col-12 lg:col-6">
           <div class="card summary p-m-0">
             <span class="title">{{$t('queue.ticketCount')}}</span>
             <span class="count visitors">{{service.count}}</span>
@@ -21,11 +21,11 @@
                 <Button :label="$t('queue.selectTicket')" class="p-button-warning" style="left: -0.5rem;" :disabled="service.state===0" ></Button>
               </template>
               <template #content>
-                <div class="p-grid p-fluid">
-                  <div class="p-col-12 p-lg-6 p-md-6 p-sm-6 p-mb-0">
+                <div class="grid p-fluid">
+                  <div class="col-12 lg:col-6 md:col-6 p-sm-6 p-mb-0">
                     <InputText  :placeholder="$t('common.number')" autoFocus v-model="number" />
                   </div>
-                  <div class="p-col-12 p-lg-6 p-md-6 p-sm-6">
+                  <div class="col-12 lg:col-6 md:col-6 p-sm-6">
                     <Button :label="$t('queue.call')" :disabled="service.state===0" class="p-mb-6 p-button-warning p-mb-2" @click="callNextCustomer(true, number)"></Button>
                   </div>
                 </div>
@@ -33,7 +33,7 @@
             </Inplace>
           </div>
         </div>
-        <div class="p-col-12 p-lg-6">
+        <div class="col-12 lg:col-6">
           <div class="card summary p-m-0">
             <span class="title">{{$t('queue.called')}}</span>   
             <span class="count revenue">{{service.number>0 ? service.number : "-"}}</span>
@@ -49,14 +49,14 @@
                 <Button :label="$t('queue.redirect')" class="p-button-primary" style="left: -0.5rem;" :disabled="service.state===null" @click="getNeigborQueue(parentID)"></Button>
               </template>
               <template #content>
-                <div class="p-grid p-fluid">
-                  <div class="p-col-12 p-lg-6 p-md-6 p-sm-6 p-mb-0">
+                <div class="grid p-fluid">
+                  <div class="col-12 lg:col-6 md:col-6 p-sm-6 p-mb-0">
                     <Dropdown v-model="selectedQueue" :options="neigbors" :optionLabel="'queueName'+$i18n.locale" :placeholder="$t('common.select')" />
                   </div>
-                  <!-- <div class="p-col-12 p-lg-1 p-md-6 p-sm-6">
+                  <!-- <div class="col-12 lg:col-1 md:col-6 p-sm-6">
                     <Button   icon="pi pi-undo" class="p-mb-6 p-button-primary p-mb-1" @click="getNeigborQueue()"></Button>
                   </div> -->
-                  <div class="p-col-12 p-lg-6 p-md-6 p-sm-6">
+                  <div class="col-12 lg:col-6 md:col-6 p-sm-6">
                     <Button :label="$t('queue.redirect')" :disabled="selectedQueue === null" class="p-mb-6 p-button-primary p-mb-2" @click="changeState(2, selectedQueue.key)"></Button>
                   </div>
                 </div>

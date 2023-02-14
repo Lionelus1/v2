@@ -82,7 +82,7 @@
       <div class="p-field p-mt-3" style="margin-bottom: 1.5rem" v-if="newsData.isPoster">
         <label for="poster-link">{{ $t("smartenu.posterLink") }}</label>
         <InputText id="poster-link" v-model="poster.link" rows="3" :placeholder="$t('smartenu.posterLink')"/>
-        <div class="p-grid p-mt-3" v-if="newsData.isPoster">
+        <div class="grid p-mt-3" v-if="newsData.isPoster">
           <div class="p-col">
             <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadPosterImageKk($event)"
                         :auto="true" v-bind:chooseLabel="$t('smartenu.posterImageKk')" accept="image/*"/>

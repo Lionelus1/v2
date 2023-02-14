@@ -16,10 +16,10 @@
       class="p-sidebar-lg "
       style="overflow-y: scroll"
   >
-    <div class="p-col-12">
+    <div class="col-12">
       <h3>{{ $t('common.result') }}</h3>
     </div>
-    <div class="p-col-12"
+    <div class="col-12"
          v-if="plan && plan.is_oper && plan.user.id === loginedUserId && event && event.status.work_plan_event_status_id === 5">
       <div>
         <Menubar :model="menu" :key="active"
@@ -61,10 +61,10 @@
            class="p-sidebar-lg "
            style="overflow-y: scroll"
   >
-    <div class="p-col-12">
+    <div class="col-12">
       <h3>{{ $t('workPlan.toCorrect') }}</h3>
     </div>
-    <div class="p-col-12">
+    <div class="col-12">
       <div>
         <Menubar :model="rejectMenu" :key="active"
                  style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>

@@ -1,16 +1,16 @@
 <template>
-  <div id="carddiv" class="p-grid">
-    <div class="p-col-12">
+  <div id="carddiv" class="grid">
+    <div class="col-12">
       <h3>{{ $t('hr.title.language') }}</h3>
       <div>
         <Menubar :model="menu" :key="active"
                  style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px"></Menubar>
       </div>
     </div>
-    <div class="p-col-12 p-md-12 p-fluid">
+    <div class="col-12 md:col-12 p-fluid">
       <div class="card">
-        <div class="p-grid p-formgrid">
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+        <div class="grid p-formgrid">
+          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label>{{ $t('common.lang') }}</label>
             <DicLanguage class="p-mt-2"
                          v-model="value.language"
@@ -22,7 +22,7 @@
                 v-if="validation.language"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label>{{$t('hr.lang.pl')}}</label>
             <SelectButton
                 :disabled="readonly"
@@ -33,7 +33,7 @@
                 optionLabel="name"
             />
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label>{{ $t('hr.lang.rl') }}</label>
             <Dropdown class="p-mt-2"
                       :class="{'p-invalid': validation.readingLevel}"
@@ -46,7 +46,7 @@
                 v-if="validation.readingLevel"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label>{{ $t('hr.lang.sl') }}</label>
             <Dropdown class="p-mt-2"
                       :class="{'p-invalid': validation.speakingLevel}"
@@ -59,7 +59,7 @@
                 v-if="validation.speakingLevel"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label>{{ $t('hr.lang.wl') }}</label>
             <Dropdown class="p-mt-2"
                       :class="{'p-invalid': validation.writingLevel}"
@@ -72,7 +72,7 @@
                 v-if="validation.writingLevel"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label>{{ $t('hr.lang.cs') }}</label>
             <Textarea v-model="value.certificate"
                       class="p-mt-2"
@@ -81,7 +81,7 @@
                       type="text"
                       rows="3" cols="30"/>
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label>{{ $t('hr.lang.c') }}</label>
             <FileUpload ref="form" mode="basic"
                         class="p-mt-2"

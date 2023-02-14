@@ -23,16 +23,16 @@
                 class="p-button-success p-mb-0 p-ml-6"
                 @click="printRef()"/>
 
-            <div class="p-inputgroup p-input-filled p-ml-0 p-pl-0 p-lg-4 p-md-6 p-sm-12" v-if="blobSource!=null">
+            <div class="p-inputgroup p-input-filled p-ml-0 p-pl-0 lg:col-4 md:col-6 p-sm-12" v-if="blobSource!=null">
                 <InputText :disabled="true" :value="blobSource"/>
                 <Button v-bind:label="$t('ncasigner.copy')" v-clipboard:copy="blobSource" v-clipboard:success="onCopy" v-clipboard:error="onFail" class="p-button-secondary"/>
             </div>
         </div>
         <div class="col-12 col-s-12" style="margin-left:0 !important;" v-if="writeMail">
             <BlockUI >
-            <div class="p-lg-4 p-md-6 p-sm-12 p-text-right" style="margin-left:0 !important;">
+            <div class="lg:col-4 md:col-6 p-sm-12 p-text-right" style="margin-left:0 !important;">
                 
-                <textarea class="p-col-12 p-mb-2" 
+                <textarea class="col-12 p-mb-2" 
                 style="min-height:130px;"
                 v-model="mailText"
                 :placeholder="$t('ref.correction')"></textarea>
@@ -97,8 +97,8 @@
             </div>
         </div>
         <!-- <div class="card" v-if="blobSource!=null">
-            <div class="p-grid">
-                <div class="p-col-12">
+            <div class="grid">
+                <div class="col-12">
 
                 </div>
             </div>

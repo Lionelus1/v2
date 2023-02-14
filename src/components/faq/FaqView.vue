@@ -1,5 +1,5 @@
 <template>
-  <div class="p-col-12">
+  <div class="col-12">
     <Card v-if="!loading">
       <template #content>
         <h5 class="card-title p-mb-2" v-html="faq.content"></h5>

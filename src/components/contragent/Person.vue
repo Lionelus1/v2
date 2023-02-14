@@ -1,6 +1,6 @@
 <template>
-  <div id="carddiv" class="p-grid">
-    <div class="p-col-12">
+  <div id="carddiv" class="grid">
+    <div class="col-12">
       <h3>{{ $t("common.userDetail") }}</h3>
       <div>
         <Menubar
@@ -17,7 +17,7 @@
     <div
       v-if="userDetailSaved"
       id="contentcnv"
-      class="p-col-12"
+      class="col-12"
       :style="backcolor"
       ref="content"
     >
@@ -47,10 +47,10 @@
       :label="$t('common.download')"
       class="p-button-link"
     />
-    <div class="p-col-12 p-md-12 p-fluid">
+    <div class="col-12 md:col-12 p-fluid">
       <div class="card">
-        <div class="p-grid p-formgrid">
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+        <div class="grid p-formgrid">
+          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label
               >{{ this.$t("contact.lname")
               }}<span class="p-error" v-if="addMode || !localReadonly">*</span></label
@@ -69,7 +69,7 @@
               >{{ $t("common.requiredField") }}</small
             >
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label
               >{{ this.$t("contact.fname")
               }}<span class="p-error" v-if="addMode || !localReadonly">*</span></label
@@ -87,7 +87,7 @@
               >{{ $t("common.requiredField") }}</small
             >
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label>{{ this.$t("contact.sname") }}</label>
             <InputText
               :readonly="localReadonly"
@@ -97,7 +97,7 @@
               @input="correct"
             ></InputText>
           </div>
-          <div v-if="!shortModeLocal" class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div v-if="!shortModeLocal" class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label
               >{{ this.$t("contact.birthday")
               }}<span class="p-error" v-if="addMode || !localReadonly">*</span></label
@@ -112,7 +112,7 @@
               @input="correct"
             />
           </div>
-          <div v-if="addMode || isAdmin" class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div v-if="addMode || isAdmin" class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label
               >{{ this.$t("contact.iin")
               }}<span class="p-error" v-if="addMode || !localReadonly">*</span></label
@@ -128,7 +128,7 @@
               $t("common.requiredField")
             }}</small>
           </div>
-          <div v-if="(addMode || isAdmin) && !shortModeLocal" class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div v-if="(addMode || isAdmin) && !shortModeLocal" class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label>{{ this.$t("common.password") }}<span class="p-error" v-if="addMode">*</span></label>
             <span class="p-input-icon-right p-mt-2">
               <Password
@@ -141,17 +141,17 @@
             </span>
              
           </div>
-          <div  v-if="!shortModeLocal" class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div  v-if="!shortModeLocal" class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label>{{ this.$t("common.academicDegree") }}</label>
             <Dropdown  class="p-mt-2"  v-model="value.academicDegree" :options="academicDegreeDictionary" :optionLabel="('name'+$i18n.locale)" :placeholder="$t('common.select')" />
 
           </div>
-          <div  v-if="!shortModeLocal" class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div  v-if="!shortModeLocal" class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label>{{ this.$t("common.academicTitle") }}</label>
             <Dropdown  class="p-mt-2" :disabled="localReadonly && !addMode" v-model="value.academicTitle" :options="academicTitleDictionary" :optionLabel="('name'+$i18n.locale)" :placeholder="$t('common.select')" />
 
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label
               >{{ this.$t("common.workPlace")
               }}</label
@@ -164,7 +164,7 @@
               :readonly = "organization"
             ></ContragentSelectOrg>
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label
               >{{ this.$t("contact.position")
               }}</label
@@ -175,7 +175,7 @@
               v-model="value.mainPosition"
             ></PositionsList>
           </div>
-          <div  v-if="!shortModeLocal" class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div  v-if="!shortModeLocal" class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label>{{ this.$t("contact.gender") }}</label>
             <Dropdown
               :disabled="localReadonly && !addMode"
@@ -187,7 +187,7 @@
               :placeholder="$t('contact.gender')"
             />
           </div>
-          <div  v-if="!addMode && !shortModeLocal" class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div  v-if="!addMode && !shortModeLocal" class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label>{{ this.$t("common.state") }}</label>
             <SelectButton
               :disabled="localReadonly"
@@ -198,7 +198,7 @@
               optionLabel="name"
             />
           </div>
-          <div  v-if="!shortModeLocal" class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div  v-if="!shortModeLocal" class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label>&nbsp;</label>
             <SelectButton
               :disabled="localReadonly"
@@ -215,8 +215,8 @@
         <div class="p-text-uppercase p-mb-2">
           {{ this.$t("contact.title") }}
         </div>
-        <div class="p-grid p-formgrid">
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+        <div class="grid p-formgrid">
+          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label>{{ this.$t("contact.email") }}<span class="p-error" v-if="addMode || !localReadonly">*</span></label>
             <InputText
               :readonly="localReadonly"
@@ -229,7 +229,7 @@
               $t("common.requiredField")
             }}</small>
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label>{{ this.$t("contact.locality") }}</label>
             <InputText
               :readonly="localReadonly"
@@ -239,7 +239,7 @@
               v-model="value.locality.name"
             ></InputText>
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label
               >{{ this.$t("contact.address") }} ({{
                 this.$t("common.language.kz")
@@ -253,7 +253,7 @@
               v-model="value.address"
             ></InputText>
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label
               >{{ this.$t("contact.address") }} ({{
                 this.$t("common.language.ru")
@@ -267,7 +267,7 @@
               v-model="value.addressrus"
             ></InputText>
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
             <label>{{ this.$t("contact.phone") }}</label>
             <InputText
               :readonly="localReadonly"
@@ -287,8 +287,8 @@
             </div>
           </template>
           <div v-if="addMode || isAdmin" class="card" >
-            <div class="p-grid p-formgrid">
-              <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+            <div class="grid p-formgrid">
+              <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
                 <label>{{ this.$t("common.number") }}</label>
                 <InputText
                   :readonly="localReadonly"
@@ -298,7 +298,7 @@
                   v-model="value.idnumber"
                     ></InputText>
               </div>
-              <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+              <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
                 <label>{{ this.$t("contact.idcard.givenorg") }}</label>
                 <Dropdown
                   :disabled="localReadonly"
@@ -310,7 +310,7 @@
                   :placeholder="$t('contact.idcard.givenorg')"
                     />
               </div>
-              <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+              <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
                 <label>{{ this.$t("contact.idcard.givendate") }}</label>
                 <PrimeCalendar
                   v-model="value.iddate"
@@ -321,7 +321,7 @@
                   yearRange="1990:2050"
                     />
               </div>
-              <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+              <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
                 <label>{{ this.$t("contact.idcard.expire") }}</label>
                 <PrimeCalendar
                   v-model="value.idexpire"
@@ -340,8 +340,8 @@
             <div class="p-text-uppercase">{{ this.$t("bank.requisite") }}</div>
           </template>
           <div class="card">
-            <div class="p-grid p-formgrid">
-              <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+            <div class="grid p-formgrid">
+              <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
                 <label>{{ this.$t("bank.accnumber") }}</label>
                 <InputText
                   :readonly="localReadonly"
@@ -351,7 +351,7 @@
                   v-model="value.bankaccount"
                     ></InputText>
               </div>
-              <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+              <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
                 <label>{{ this.$t("bank.title2") }}</label>
                 <InputText
                   :readonly="localReadonly"
