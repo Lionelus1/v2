@@ -23,7 +23,7 @@
                                     <img class="round" v-if="!(slotProps.option.photo != null && slotProps.option.photo !='')" src="assets/layout/images/default-user.jpg"/>
 								</div>
 								<div class="user-list-detail lg:col-10  md:col-9 p-sm-12">
-									<h5 class="p-mb-2">{{slotProps.option.name}}</h5>
+									<h5 class="mb-2">{{slotProps.option.name}}</h5>
 									<span class="product-category">{{slotProps.option.position}}</span>
 								</div>
 							</div>

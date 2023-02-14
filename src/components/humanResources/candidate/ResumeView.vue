@@ -4,7 +4,7 @@
     <ProgressBar :value="progress"/>
   </div>
   <div ref="htmlToPdf" class="card" v-if="progressed">
-    <div class="grid p-formgrid">
+    <div class="grid formgrid">
       <div class="col-12 lg:col-9">
         <p style="text-align: center">
           <b><em>{{ $t('hr.title.general')}} </em></b>

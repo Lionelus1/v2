@@ -16,12 +16,12 @@
                  @sort="onSort($event)">
         <template #header>
           <div class="flex justify-content-between align-items-center">
-            <h5 class="p-m-0">{{ $t('faq.title') }}</h5>
+            <h5 class="m-0">{{ $t('faq.title') }}</h5>
             <span class="p-input-icon-left">
               <i class="pi pi-search"/>
               <InputText type="search" v-model="userData.searchText" :placeholder="$t('common.search')"
                          @keyup.enter="getData" @click="clearData"/>
-              <Button icon="pi pi-search" class="p-ml-1" @click="getData"/>
+              <Button icon="pi pi-search" class="ml-1" @click="getData"/>
             </span>
           </div>
         </template>
@@ -85,7 +85,7 @@
                 type="button"
                 icon="pi pi-image"
                 @click="downloadFile(data.image, 0)"
-                class="p-button-rounded p-button-success p-mr-2"
+                class="p-button-rounded p-button-success mr-2"
                 v-if="data.image != null"
             ></Button>
             <Button
@@ -131,12 +131,12 @@
                  @sort="onSort($event)">
         <template #header>
           <div class="flex justify-content-between align-items-center">
-            <h5 class="p-m-0">{{ $t('faq.title') }}</h5>
+            <h5 class="m-0">{{ $t('faq.title') }}</h5>
             <span class="p-input-icon-left">
               <i class="pi pi-search"/>
               <InputText type="search" v-model="userData.searchText" :placeholder="$t('common.search')"
                          @keyup.enter="getData" @click="clearData"/>
-              <Button icon="pi pi-search" class="p-ml-1" @click="getData"/>
+              <Button icon="pi pi-search" class="ml-1" @click="getData"/>
             </span>
           </div>
         </template>
@@ -233,7 +233,7 @@
                 type="button"
                 icon="pi pi-image"
                 @click="downloadFile(data.image, 0)"
-                class="p-button-rounded p-button-success p-mr-2"
+                class="p-button-rounded p-button-success mr-2"
                 v-if="data.image != null"
             ></Button>
             <Button
@@ -256,8 +256,8 @@
         :modal="true"
         class="p-fluid"
     >
-      <div class="p-field">
-        <label for="dep" class="p-mb-3">{{ $t('faq.recipient') }}</label>
+      <div class="field">
+        <label for="dep" class="mb-3">{{ $t('faq.recipient') }}</label>
         <Dropdown
             id="dep"
             v-model="faq.departmentId"
@@ -275,12 +275,12 @@
         </Dropdown>
       </div>
 
-      <div class="p-field">
+      <div class="field">
         <label for="content">{{ $t('faq.question') }}</label>
         <Textarea id="content" v-model="faq.content" rows="3" cols="20"/>
       </div>
 
-      <div class="p-field">
+      <div class="field">
         <FileUpload
             ref="form"
             mode="basic"
@@ -291,7 +291,7 @@
             accept="image/*"
         ></FileUpload>
       </div>
-      <div class="p-field">
+      <div class="field">
         <FileUpload
             ref="form"
             mode="basic"
@@ -305,7 +305,7 @@
         <Button
             :label="$t('faq.addFaq')"
             icon="pi pi-check"
-            class="p-button-rounded p-button-success p-mr-2"
+            class="p-button-rounded p-button-success mr-2"
             @click="saveFaq"
         />
         <Button
@@ -326,30 +326,30 @@
         :modal="true"
         class="p-fluid"
     >
-      <div class="p-field">
+      <div class="field">
         <label for="content"><b>{{ $t('faq.question') }}</b></label>
         <p id="content">{{ selectedFaq.content }}</p>
       </div>
 
-      <div class="p-field" v-if="selectedFaq.image || selectedFaq.filepath">
+      <div class="field" v-if="selectedFaq.image || selectedFaq.filepath">
         <label><b>{{ $t('faq.attachments') }}</b></label>
         <div>
           <Button
               icon="pi pi-image"
               iconPos="left"
-              class="p-button-rounded p-button-success p-m-2"
+              class="p-button-rounded p-button-success m-2"
               @click="downloadFile(selectedFaq.image, 0)"
           />
           <Button
               icon="pi pi-file"
               iconPos="left"
-              class="p-button-rounded p-button-success p-m-2"
+              class="p-button-rounded p-button-success m-2"
               v-if="selectedFaq.filePath != null"
               @click="downloadFile(selectedFaq.filePath, 1)"
           />
         </div>
       </div>
-      <div class="p-field">
+      <div class="field">
         <label for="faqAnswer"><b>{{ $t('faq.answer') }}</b></label>
         <Editor
             id="faqAnswer"
@@ -357,7 +357,7 @@
             editorStyle="height: 320px"
         />
       </div>
-      <div class="p-field">
+      <div class="field">
         <FileUpload
             id="uploadFileToAnswer"
             ref="form"
@@ -372,7 +372,7 @@
         <Button
             :label="$t('faq.toAnswer')"
             icon="pi pi-check"
-            class="p-button-rounded p-button-success p-mr-2"
+            class="p-button-rounded p-button-success mr-2"
             @click="addAnswer"
         />
         <Button
@@ -390,13 +390,13 @@
         class="p-fluid"
         :style="{ width: '500px' }"
     >
-      <div class="p-field">
+      <div class="field">
         <h2>{{ selectedFaq.content }}</h2>
       </div>
-      <small class="p-field">
+      <small class="field">
         {{ formatDate(selectedFaq.sendDate) }}
       </small>
-      <small class="p-field">
+      <small class="field">
         {{
           $i18n.locale === "kz"
               ? selectedFaq.category.nameKz
@@ -405,21 +405,21 @@
                   : selectedFaq.category.nameEn
         }}
       </small>
-      <div class="p-field">
+      <div class="field">
         <label><b>{{ $t('faq.answer') }}:</b></label>
         <div v-if="selectedFaq.answer">
           <p v-html="selectedFaq.answer.answer"></p>
         </div>
         <div v-if="!selectedFaq.answer">{{ $t('faq.noAnswer') }}</div>
       </div>
-      <div class="p-field" v-if="selectedFaq.image || selectedFaq.filepath">
+      <div class="field" v-if="selectedFaq.image || selectedFaq.filepath">
         <label><b>{{ $t('faq.attachments') }}</b></label>
         <div>
           <Button
               :label="selectedFaq.image"
               icon="pi pi-image"
               iconPos="left"
-              class="p-mb-2"
+              class="mb-2"
               @click="downloadFile(selectedFaq.image, 0)"
           />
           <Button
@@ -435,7 +435,7 @@
         <!-- <Button
           :label="$t('common.save')"
           icon="pi pi-check"
-          class="p-button-rounded p-button-success p-mr-2"
+          class="p-button-rounded p-button-success mr-2"
           @click="saveFaq"
         /> -->
         <Button
@@ -454,10 +454,10 @@
         class="p-fluid"
         :style="{ width: '550px' }"
     >
-      <div class="p-field">
+      <div class="field">
         {{ selectedFaq.content }}
       </div>
-      <div class="p-field mt-3">
+      <div class="fieldmt-3">
         <label for="forwardDep">{{ $t('faq.recipient') }}</label>
         <Dropdown id="forwardDep" v-model="selectedForwardDep" :options="forwardDepartmentList"
                   :optionLabel="$i18n.locale === 'kz' ? 'nameKz' : $i18n.locale === 'ru' ? 'nameRu' : 'nameEn'"
@@ -467,7 +467,7 @@
         <Button
             :label="$t('faq.forward')"
             icon="pi pi-check"
-            class="p-button-rounded p-button-success p-mr-2"
+            class="p-button-rounded p-button-success mr-2"
             @click="forwardFaq"
         />
         <Button

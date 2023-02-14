@@ -5,10 +5,10 @@
     </template>
     <div class="card">
       <!--  Трудовая книжка  -->
-      <div class="p-field">
+      <div class="field">
         <Label>{{ $t('hr.doc.eh') }}: </Label>
         <FileUpload
-            class="p-mt-2"
+            class="mt-2"
             mode="basic"
             :customUpload="true"
             :class="{'p-invalid': validation.employmentHistory}"
@@ -17,7 +17,7 @@
             v-bind:chooseLabel="$t('hdfs.chooseFile')"
         ></FileUpload>
         <InlineMessage severity="info"
-                       class="p-mt-2"
+                       class="mt-2"
                        show v-if="documents.employmentHistory">
           {{ $t('ncasigner.chosenFile', {fn: documents.employmentHistory ? documents.employmentHistory.name : ""}) }}
         </InlineMessage>
@@ -28,10 +28,10 @@
       </div>
       <hr>
       <!--   дипломы   -->
-      <div class="p-field">
+      <div class="field">
         <Label>{{ $t('hr.doc.diploma') }}: </Label>
         <FileUpload
-            class="p-mt-2"
+            class="mt-2"
             mode="basic"
             :customUpload="true"
             :class="{'p-invalid': validation.diploma}"
@@ -40,7 +40,7 @@
             v-bind:chooseLabel="$t('hdfs.chooseFile')"
         ></FileUpload>
         <InlineMessage severity="info"
-                       class="p-mt-2"
+                       class="mt-2"
                        show v-if="documents.diploma">
           {{ $t('ncasigner.chosenFile', {fn: documents.diploma ? documents.diploma.name : ""}) }}
         </InlineMessage>
@@ -51,10 +51,10 @@
       </div>
       <hr>
       <!--   сертификаты   -->
-      <div class="p-field">
+      <div class="field">
         <Label>{{ $t('hr.doc.certs') }}: </Label>
         <FileUpload
-            class="p-mt-2"
+            class="mt-2"
             mode="basic"
             :customUpload="true"
             :class="{'p-invalid': validation.certs}"
@@ -63,7 +63,7 @@
             v-bind:chooseLabel="$t('hdfs.chooseFile')"
         ></FileUpload>
         <InlineMessage severity="info"
-                       class="p-mt-2"
+                       class="mt-2"
                        show v-if="documents.certs">
           {{ $t('ncasigner.chosenFile', {fn: documents.certs ? documents.certs.name : ""}) }}
         </InlineMessage>
@@ -74,10 +74,10 @@
       </div>
       <hr>
       <!--   пенсионный   -->
-      <div class="p-field">
+      <div class="field">
         <Label>{{ $t('hr.doc.pension') }}: </Label>
         <FileUpload
-            class="p-mt-2"
+            class="mt-2"
             mode="basic"
             :customUpload="true"
             :class="{'p-invalid': validation.pension}"
@@ -86,7 +86,7 @@
             v-bind:chooseLabel="$t('hdfs.chooseFile')"
         ></FileUpload>
         <InlineMessage severity="info"
-                       class="p-mt-2"
+                       class="mt-2"
                        show v-if="documents.pension">
           {{ $t('ncasigner.chosenFile', {fn: documents.pension ? documents.pension.name : ""}) }}
         </InlineMessage>
@@ -97,10 +97,10 @@
       </div>
       <hr>
       <!--   075   -->
-      <div class="p-field">
+      <div class="field">
         <Label>{{ $t('hr.doc.medCert') }}: </Label>
         <FileUpload
-            class="p-mt-2"
+            class="mt-2"
             mode="basic"
             :customUpload="true"
             :class="{'p-invalid': validation.medCert}"
@@ -109,7 +109,7 @@
             v-bind:chooseLabel="$t('hdfs.chooseFile')"
         ></FileUpload>
         <InlineMessage severity="info"
-                       class="p-mt-2"
+                       class="mt-2"
                        show v-if="documents.medCert">
           {{ $t('ncasigner.chosenFile', {fn: documents.medCert ? documents.medCert.name : ""}) }}
         </InlineMessage>
@@ -120,10 +120,10 @@
       </div>
       <hr>
       <!--   нарко   -->
-      <div class="p-field">
+      <div class="field">
         <Label>{{ $t('hr.doc.narcoCert') }}: </Label>
         <FileUpload
-            class="p-mt-2"
+            class="mt-2"
             mode="basic"
             :customUpload="true"
             :class="{'p-invalid': validation.narcoCert}"
@@ -132,7 +132,7 @@
             v-bind:chooseLabel="$t('hdfs.chooseFile')"
         ></FileUpload>
         <InlineMessage severity="info"
-                       class="p-mt-2"
+                       class="mt-2"
                        show v-if="documents.narcoCert">
           {{ $t('ncasigner.chosenFile', {fn: documents.narcoCert ? documents.narcoCert.name : ""}) }}
         </InlineMessage>
@@ -143,10 +143,10 @@
       </div>
       <hr>
       <!--   ппсихо   -->
-      <div class="p-field">
+      <div class="field">
         <Label>{{ $t('hr.doc.psychoCert') }}: </Label>
         <FileUpload
-            class="p-mt-2"
+            class="mt-2"
             mode="basic"
             :customUpload="true"
             :class="{'p-invalid': validation.psychoCert}"
@@ -155,7 +155,7 @@
             v-bind:chooseLabel="$t('hdfs.chooseFile')"
         ></FileUpload>
         <InlineMessage severity="info"
-                       class="p-mt-2"
+                       class="mt-2"
                        show v-if="documents.psychoCert">
           {{ $t('ncasigner.chosenFile', {fn: documents.psychoCert ? documents.psychoCert.name : ""}) }}
         </InlineMessage>
@@ -166,10 +166,10 @@
       </div>
       <hr>
       <!--   судимость   -->
-      <div class="p-field">
+      <div class="field">
         <Label>{{ $t('hr.doc.gcCert') }}: </Label>
         <FileUpload
-            class="p-mt-2"
+            class="mt-2"
             mode="basic"
             :customUpload="true"
             :class="{'p-invalid': validation.gcCert}"
@@ -178,7 +178,7 @@
             v-bind:chooseLabel="$t('hdfs.chooseFile')"
         ></FileUpload>
         <InlineMessage severity="info"
-                       class="p-mt-2"
+                       class="mt-2"
                        show v-if="documents.gcCert">
           {{ $t('ncasigner.chosenFile', {fn: documents.gcCert ? documents.gcCert.name : ""}) }}
         </InlineMessage>
@@ -189,10 +189,10 @@
       </div>
       <hr>
       <!--   военный билет   -->
-      <div class="p-field">
+      <div class="field">
         <Label>{{ $t('hr.doc.mId') }}: </Label>
         <FileUpload
-            class="p-mt-2"
+            class="mt-2"
             mode="basic"
             :customUpload="true"
             :class="{'p-invalid': validation.mId}"
@@ -201,7 +201,7 @@
             v-bind:chooseLabel="$t('hdfs.chooseFile')"
         ></FileUpload>
         <InlineMessage severity="info"
-                       class="p-mt-2"
+                       class="mt-2"
                        show v-if="documents.mId">
           {{ $t('ncasigner.chosenFile', {fn: documents.mId ? documents.mId.name : ""}) }}
         </InlineMessage>

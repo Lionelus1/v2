@@ -10,7 +10,7 @@
 
         <template #list="slotProps">
           <div class="product-grid-item card">
-            <div class="product-grid-item-top p-mb-2">
+            <div class="product-grid-item-top mb-2">
               <div class="col-12 grid">
                 <div class="lg:col-3 md:col-3 p-sm-6">
                   <i class="fa-solid fa-tags product-category-icon"></i>
@@ -75,7 +75,7 @@
     </div>
     <Dialog @hide="currentQuestion=-1;responsible=null" :header="$t('common.sendToResponsible')" v-model:visible="sendDialog" :modal="true"
             :style="{width: '75vw'}">
-      <div class="p-field">
+      <div class="field">
         <label>{{ this.$t("queue.responsible") }}</label>
         <FindUser v-model="responsible" :max="1" :editMode="false" style="width:100%"/>
       </div>

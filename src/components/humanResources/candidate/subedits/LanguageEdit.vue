@@ -9,10 +9,10 @@
     </div>
     <div class="col-12 md:col-12 p-fluid">
       <div class="card">
-        <div class="grid p-formgrid">
-          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
+        <div class="grid formgrid">
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ $t('common.lang') }}</label>
-            <DicLanguage class="p-mt-2"
+            <DicLanguage class="mt-2"
                          v-model="value.language"
                          :validation="validation.language"
                          :autoLoad="true"
@@ -22,20 +22,20 @@
                 v-if="validation.language"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{$t('hr.lang.pl')}}</label>
             <SelectButton
                 :disabled="readonly"
-                class="p-mt-2"
+                class="mt-2"
                 v-model="value.isNative"
                 :options="states"
                 optionValue="id"
                 optionLabel="name"
             />
           </div>
-          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ $t('hr.lang.rl') }}</label>
-            <Dropdown class="p-mt-2"
+            <Dropdown class="mt-2"
                       :class="{'p-invalid': validation.readingLevel}"
                       v-model="value.readingLevel"
                       :options="knowledgeLevels"
@@ -46,9 +46,9 @@
                 v-if="validation.readingLevel"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ $t('hr.lang.sl') }}</label>
-            <Dropdown class="p-mt-2"
+            <Dropdown class="mt-2"
                       :class="{'p-invalid': validation.speakingLevel}"
                       v-model="value.speakingLevel"
                       :options="knowledgeLevels"
@@ -59,9 +59,9 @@
                 v-if="validation.speakingLevel"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ $t('hr.lang.wl') }}</label>
-            <Dropdown class="p-mt-2"
+            <Dropdown class="mt-2"
                       :class="{'p-invalid': validation.writingLevel}"
                       v-model="value.writingLevel"
                       :options="knowledgeLevels"
@@ -72,25 +72,25 @@
                 v-if="validation.writingLevel"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ $t('hr.lang.cs') }}</label>
             <Textarea v-model="value.certificate"
-                      class="p-mt-2"
+                      class="mt-2"
                       :readonly="readonly"
                       :autoResize="true"
                       type="text"
                       rows="3" cols="30"/>
           </div>
-          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ $t('hr.lang.c') }}</label>
             <FileUpload ref="form" mode="basic"
-                        class="p-mt-2"
+                        class="mt-2"
                         :customUpload="true"
                         accept="image/*"
                         @uploader="upload($event)" :auto="true"
                         v-bind:chooseLabel="$t('ncasigner.chooseFile')"/>
             <InlineMessage severity="info"
-                           class="p-mt-2"
+                           class="mt-2"
                            show v-if="file">
               {{ $t('ncasigner.chosenFile', {fn: file ? file.name : ""}) }}
             </InlineMessage>

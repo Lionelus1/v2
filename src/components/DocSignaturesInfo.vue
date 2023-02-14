@@ -7,7 +7,7 @@
       <TabPanel v-bind:header="$t('ncasigner.signatureListTitle')">
         <div class="col-12" v-if="isShow">
           <Button :label="$t('common.downloadSignaturesPdf')" icon="pi pi-download" @click="downloadSignatures"
-                  class="p-button p-ml-2"/>
+                  class="p-button ml-2"/>
           <SignatureQrPdf ref="qrToPdf" :signatures="signatures" :title="docInfo.name"></SignatureQrPdf>
         </div>
         <div class="col-12" v-else>
@@ -24,7 +24,7 @@
       </TabPanel>
       <TabPanel v-if="docInfo.docHistory.stateId==2 ||docInfo.docHistory.stateId==6" :header="$t('ncasigner.sign')"
                 :disabled="isSignShow">
-        <div class="p-mt-2">
+        <div class="mt-2">
           <Panel>
             <template #header>
               <InlineMessage severity="info">{{ $t('ncasigner.noteMark') }}</InlineMessage>

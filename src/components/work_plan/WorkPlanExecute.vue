@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Button :label="$t('common.perform')" icon="pi pi-check" @click="openBasic" class="p-mr-2"/>
+    <Button :label="$t('common.perform')" icon="pi pi-check" @click="openBasic" class="mr-2"/>
   </div>
   <vue-element-loading :active="isBlockUI" is-full-screen color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)"/>
   <Sidebar
@@ -20,11 +20,11 @@
       </div>
     </div>
     <div class="col-12 p-fluid">
-      <div class="p-field">
+      <div class="field">
         <label class="bold">{{ $t('workPlan.eventName') }}</label>
         <InputText v-model="event.event_name" disabled/>
       </div>
-      <div class="p-field">
+      <div class="field">
         <label class="bold">{{ $t('common.result') }}</label>
         <RichEditor v-if="plan && !plan.is_oper" v-model="result" editorStyle="height:300px;" @text-change="editorChange">
           <template v-slot:toolbar>
@@ -35,7 +35,7 @@
             </span>
           </template>
         </RichEditor>
-        <div v-if="plan && resultData && plan.is_oper" v-html="resultData.event_result" class="p-mb-4"></div>
+        <div v-if="plan && resultData && plan.is_oper" v-html="resultData.event_result" class="mb-4"></div>
         <RichEditor v-if="plan && plan.is_oper" v-model="newResult" editorStyle="height:300px;" @text-change="editorChange">
           <template v-slot:toolbar>
             <span class="ql-formats">
@@ -46,18 +46,18 @@
           </template>
         </RichEditor>
       </div>
-      <div class="p-field" v-if="resultData && resultData.result_files">
+      <div class="field" v-if="resultData && resultData.result_files">
         <label class="bold">{{ $t('workPlan.attachments') }}</label>
         <div>
           <Button
               v-for="(item, index) of resultData.result_files" :key="index"
               icon="pi pi-download"
-              class="p-button-rounded p-button-success p-mr-2"
+              class="p-button-rounded p-button-success mr-2"
               @click="downloadFile(item)"
           />
         </div>
       </div>
-      <div class="p-field">
+      <div class="field">
         <FileUpload
             ref="form"
             mode="basic"
@@ -68,13 +68,13 @@
             :chooseLabel="$t('smartenu.chooseAdditionalFile')"
         ></FileUpload>
       </div>
-      <div class="p-field">
+      <div class="field">
         <div ref="content" class="p-fileupload-content">
           <div class="p-fileupload-files">
             <div class="p-fileupload-row" v-for="(file, index) of files" :key="index">
-              <span class="p-mr-3"><i class="pi pi-paperclip"></i></span>
+              <span class="mr-3"><i class="pi pi-paperclip"></i></span>
               <span>{{ file.name }}</span>
-              <span class="p-ml-5">
+              <span class="ml-5">
                 <Button icon="pi pi-times" class="p-button-rounded p-button-text" @click="removeFile(index)"/>
               </span>
             </div>

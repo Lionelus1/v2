@@ -1,12 +1,12 @@
 <template>
   <div class="card">
-    <Toolbar class="p-mb-4">
+      <Toolbar class="mb-4">
       <template #start>
         <Button
             v-if="view.modifier"
             :label="$t('common.add')"
             icon="pi pi-plus"
-            class="p-button-success p-mr-2"
+            class="p-button-success mr-2"
             v-on:click="add"
         />
       </template>
@@ -15,7 +15,7 @@
             v-if="view.modifier && isCareerAdmin"
             :label="$t('hr.report.title')"
             icon="pi pi-list"
-            class="p-button-secondary p-mr-2"
+            class="p-button-secondary mr-2"
             @click="toggle"
             aria:haspopup="true" aria-controls="overlay_panel"
         />
@@ -26,35 +26,35 @@
                       :breakpoints="{'960px': '75vw'}">
           <div class="col-12 md:col-12 p-fluid">
             <div class="card">
-              <div class="p-field">
+              <div class="field">
                 <label>{{ $t('common.startDate') }}</label>
                 <PrimeCalendar
-                    class="p-mt-2"
+                    class="mt-2"
                     :class="{'p-invalid': reportValidation.startDate}"
                     v-model="report.startDate"
                     :placeholder="$t('common.startDate')"
                     dateFormat="dd.mm.yy"/>
               </div>
-              <div class="p-field">
+              <div class="field">
                 <label>{{ $t('common.endDate') }}</label>
                 <PrimeCalendar
-                    class="p-mt-2"
+                    class="mt-2"
                     :class="{'p-invalid': reportValidation.endDate}"
                     v-model="report.endDate"
                     :placeholder="$t('common.endDate')"
                     dateFormat="dd.mm.yy"/>
               </div>
-              <div class="p-field">
-                <div v-if="reportResponse" class="p-field">
+              <div class="field">
+                <div v-if="reportResponse" class="field">
                   <Message :closable="false" severity="success">{{ $t('hr.report.success') }}</Message>
                 </div>
               </div>
-              <div class="p-field">
+              <div class="field">
                 <Button :label="$t('common.createReport')"
                         icon="pi pi-history"
                         :onclick="generateReport"/>
               </div>
-              <div class="p-field">
+              <div class="field">
                 <Button :label="$t('common.download')"
                         :disabled="!reportResponse"
                         icon="pi pi-history"
@@ -100,8 +100,8 @@
                @sort="onSort($event)">
       <!--  HEADER -->
       <template #header>
-        <div class="table-header flex flex-column flex-md-row justify-content-md-between">
-          <h4 class="p-mb-2 p-m-md-0 align-self-md-center">{{ $t("hr.vacancies") }}</h4>
+        <div class="table-header flex flex-column md:flex-row justify-content-between">
+          <h4 class="mb-2 md:m-0 p-as-md-center">{{ $t("hr.vacancies") }}</h4>
           <span class="p-input-icon-left">
             <i class="pi pi-search"/>
             <InputText type="search"
@@ -109,7 +109,7 @@
                        :placeholder="$t('common.search')"
                        @keyup.enter="getVacancies"
                        @click="clearData"/>
-              <Button icon="pi pi-search" class="p-ml-1" @click="getVacancies"/>
+              <Button icon="pi pi-search" class="ml-1" @click="getVacancies"/>
           </span>
         </div>
       </template>
@@ -222,7 +222,7 @@
         :closable="false"
     >
       <div class="confirmation-content">
-        <i class="pi pi-exclamation-triangle p-mr-3" style="font-size: 2rem"/>
+        <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"/>
         <span v-if="vacancy"
         >{{ $t("common.doYouWantDelete") }}?
         </span>
@@ -231,13 +231,13 @@
         <Button
             :label="$t('common.yes')"
             icon="pi pi-check"
-            class="p-button p-component p-button-success p-mr-2"
+            class="p-button p-component p-button-success mr-2"
             @click="deleteVacancy(vacancy.id)"
         />
         <Button
             :label="$t('common.no')"
             icon="pi pi-times"
-            class="p-button p-component p-button-danger p-mr-2"
+            class="p-button p-component p-button-danger mr-2"
             @click="closeDelete"
         />
       </template>

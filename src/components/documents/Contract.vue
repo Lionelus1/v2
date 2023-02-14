@@ -1,9 +1,9 @@
 <template>
   <div class="ontent-section">
     <div @click="$router.back()" class="inline-block">
-      <i class="fa-solid fa-arrow-left p-ml-2" style="font-size: 16px;cursor: pointer"></i>
+      <i class="fa-solid fa-arrow-left ml-2" style="font-size: 16px;cursor: pointer"></i>
     </div>
-    <h4 class="p-ml-3 inline-block"> {{ $t("contracts.contract") }}</h4>
+    <h4 class="ml-3 inline-block"> {{ $t("contracts.contract") }}</h4>
     <Menubar
       :model="menu"
       :key="active"
@@ -26,24 +26,24 @@
               <div
                 v-for="param in contract.params"
                 :key="param.id"
-                class="p-field grid"
+                class="fieldgrid"
               >
                 <label
                   v-if="param.name == 'contragent' || param.name == 'ourside'"
                   :for="param.name + param.id"
-                  class="col-12 p-mb-12 md:col-12 p-mb-md-0 uppercase"
+                  class="col-12 mb-12 md:col-12 mb-md-0 uppercase"
                   >{{ $t("doctemplate.editor." + param.name) }}</label
                 >
                 <label
                   v-else-if="param.name !== 'text'"
                   :for="param.name + param.id"
-                  class="col-12 p-mb-2 md:col-2 p-mb-md-0"
+                  class="col-12 mb-2 md:col-2 mb-md-0"
                   >{{ $t("doctemplate.editor." + param.name) }}</label
                 >
                 <label
                   v-else
                   :for="param.name + param.id"
-                  class="col-12 p-mb-2 md:col-2 p-mb-md-0"
+                  class="col-12 mb-2 md:col-2 mb-md-0"
                   >{{ param.description }}</label
                 >
 
@@ -113,11 +113,11 @@
       modal="true"
       v-model:visible="dialog.setNumber"
     >
-      <div class="grid p-formgrid">
-        <div class="col-12 p-mb-2 lg:col-3 p-mb-lg-1">
+      <div class="grid formgrid">
+        <div class="col-12 mb-2 lg:col-3 mb-lg-1">
           <label for="catalog">{{ $t("contracts.journal") }}</label>
         </div>
-        <div class="col-12 p-mb-2 lg:col-9 p-mb-lg-1 p-pr-2">
+        <div class="col-12 mb-2 lg:col-9 mb-lg-1 pr-2">
           <InputText
             readonly="true"
             :modelValue="
@@ -131,19 +131,19 @@
             </InputText
           >
         </div>
-        <div class="col-12 p-mb-2 lg:col-3 p-mb-lg-1">
+        <div class="col-12 mb-2 lg:col-3 mb-lg-1">
           <label for="catalog">{{ $t("common.date") }}</label>
         </div>
-        <div class="col-12 p-mb-2 lg:col-9 p-mb-lg-1 p-pr-2">
+        <div class="col-12 mb-2 lg:col-9 mb-lg-1 pr-2">
           <i
-            class="p-mt-2"
+            class="mt-2"
             
           >{{(contract.registerDate ? contract.registerDate.split('T')[0] : '')}}</i>
         </div>
-        <div class="col-12 p-mb-2 lg:col-3 p-mb-lg-0">
+        <div class="col-12 mb-2 lg:col-3 mb-lg-0">
           <label for="regnum">{{ $t("contracts.regnum") }}</label>
         </div>
-        <div class="col-6 p-mb-2 lg:col-4 p-mb-lg-2 p-pr-2">
+        <div class="col-6 mb-2 lg:col-4 mb-lg-2 pr-2">
           <InputText
             v-model="reserveNumber"
             readonly="true"
@@ -152,7 +152,7 @@
             style="width: 100%"
           ></InputText>
         </div>
-        <div class="col-3 p-mb-2 lg:col-5 p-mb-lg-0">
+        <div class="col-3 mb-2 lg:col-5 mb-lg-0">
           <i v-if="!(this.contract.number && this.contract.number !== '')">-{{ $t("contracts.preliminary") }}</i>
         </div>
       </div>

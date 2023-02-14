@@ -11,8 +11,8 @@
         </span>
       </template>
       <template #emptyfilter>
-        <div class="p-field grid">
-          <label class="col-fixed p-mt-2">{{$primevue.config.locale.emptyFilterMessage}}</label>
+        <div class="fieldgrid">
+          <label class="col-fixed mt-2">{{$primevue.config.locale.emptyFilterMessage}}</label>
           <div class="p-col">
             <Button v-if="editMode" :label="$t('common.createNew')" class="p-button-link" />
           </div>

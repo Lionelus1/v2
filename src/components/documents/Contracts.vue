@@ -1,32 +1,32 @@
 <template>
 <div>
   <div class="content-section">
-    <div class="feature-intro p-ml-3">
+    <div class="feature-intro ml-3">
       <h3>{{$t('contracts.title')}}</h3>
     </div>
     <div class="card">
       <div class="p-col">
         <div class="box">
           <span><i class="pi pi-copy subtitle">&nbsp;{{$t('contracts.documents')}}</i></span>
-          <div class="p-field menu-item p-pb-3">
+          <div class="fieldmenu-item pb-3">
             <Button :label="$t('common.newDoc')" @click="openForm('createDocDialog')" class="p-button-link" /><br>
-            <i class="p-mx-3">{{$t('contracts.create')}}</i>
+            <i class="mx-3">{{$t('contracts.create')}}</i>
           </div>
-          <div class="p-field menu-item p-pb-3">
+          <div class="fieldmenu-item pb-3">
             <router-link to="/documents/journal"  class="p-button p-button-link">{{$t('contracts.list')}}</router-link><br>
-            <i class="p-mx-3">{{$t('contracts.listdesc')}}</i>
+            <i class="mx-3">{{$t('contracts.listdesc')}}</i>
           </div>
         </div>
 
         <div class="box">
           <span><i class="pi pi-id-card subtitle" >&nbsp;{{$t('common.refinf')}}</i></span>
-          <div class="p-field menu-item p-pb-3">
+          <div class="fieldmenu-item pb-3">
             <Button :label="$t('common.organization')" class="p-button-link" /><br>
-            <i class="p-mx-3">{{$t('contracts.orgdesc')}}</i>
+            <i class="mx-3">{{$t('contracts.orgdesc')}}</i>
           </div>
-          <div class="p-field menu-item p-pb-3">
+          <div class="fieldmenu-item pb-3">
            <Button :label="$t('common.person')" class="p-button-link" /><br>
-            <i class="p-mx-3">{{$t('contracts.person')}}</i>
+            <i class="mx-3">{{$t('contracts.person')}}</i>
           </div>
         </div>
       </div>
@@ -36,13 +36,13 @@
   <Sidebar v-model:visible="dialogOpenState.createDocDialog" position="right"
   :modal="true" :breakpoints="{'960px': '75vw', '640px': '100vw'}" :style="{width: '760px', overflow:'hidden'}">
   <div class="flex">
-    <SelectButton disabled="true" v-model="selectedDocSourceType" :options="docSourceType" class="p-mb-3 p-mr-3">
+    <SelectButton disabled="true" v-model="selectedDocSourceType" :options="docSourceType" class="mb-3 mr-3">
       <template #option="slotProps">
         <div v-if="slotProps.option == DocState.DocSourceType.Template">{{$t('contracts.fromtemplate')}}</div>
         <div v-else>{{$t('contracts.fromdoc')}}</div>
 	    </template>
     </SelectButton>
-    <SelectButton  @change="changeLanguage" v-model="selectedDocLanguage" :options="languages" class="p-mb-3">
+    <SelectButton  @change="changeLanguage" v-model="selectedDocLanguage" :options="languages" class="mb-3">
       <template #option="slotProps">
         <div v-if="slotProps.option == 'kz'">{{$t('common.language.kz')}}</div>
         <div v-else>{{$t('common.language.ru')}}</div>

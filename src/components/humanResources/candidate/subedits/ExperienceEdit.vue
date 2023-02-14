@@ -9,12 +9,12 @@
     </div>
     <div class="col-12 md:col-12 p-fluid">
       <div class="card">
-        <div class="grid p-formgrid">
-          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
+        <div class="grid formgrid">
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ $t('common.startDate') }}</label>
             <PrimeCalendar
                 :readonly="readonly"
-                class="p-mt-2"
+                class="mt-2"
                 :class="{'p-invalid': validation.startDate}"
                 v-model="value.startDate"
                 :placeholder="$t('common.startDate')"
@@ -24,18 +24,18 @@
                 v-if="validation.startDate"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ $t('common.endDate') }}</label>
             <div class="p-inputgroup">
               <PrimeCalendar
                   :readonly="readonly"
-                  class="p-mt-2"
+                  class="mt-2"
                   :class="{'p-invalid': validation.endDate}"
                   v-model="value.endDate"
                   :disabled="value.isStillWorking"
                   :placeholder="$t('common.endDate')"
                   dateFormat="dd.mm.yy"/>
-              <span class="p-inputgroup-addon p-mt-2">
+              <span class="p-inputgroup-addon mt-2">
                         <Checkbox id="binary" v-model="value.isStillWorking" :binary="true"/>
                         <label for="binary" style="padding-left: 5px">{{ $t('hr.we.untilNow') }}</label>
                     </span>
@@ -45,11 +45,11 @@
                 v-if="validation.endDate"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ $t('common.organizationName') }}</label>
             <InputText
                 :readonly="readonly"
-                class="p-mt-2"
+                class="mt-2"
                 :class="{'p-invalid': validation.organizationName}"
                 type="text"
                 :placeholder="$t('common.organizationName')"
@@ -60,11 +60,11 @@
                 v-if="validation.organizationName"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ $t('contact.position') }}</label>
             <InputText
                 :readonly="readonly"
-                class="p-mt-2"
+                class="mt-2"
                 :class="{'p-invalid': validation.position}"
                 type="text"
                 :placeholder="$t('contact.position')"
@@ -75,10 +75,10 @@
                 v-if="validation.position"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ $t('hr.we.responsibilities') }}</label>
             <Textarea v-model="value.responsibilities"
-                      class="p-mt-2"
+                      class="mt-2"
                       :class="{'p-invalid': validation.responsibilities}"
                       :readonly="readonly"
                       :autoResize="true"

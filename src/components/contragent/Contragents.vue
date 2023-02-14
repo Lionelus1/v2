@@ -3,7 +3,7 @@
     <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
     <BlockUI :blocked="loading" :fullScreen="true"></BlockUI>
     <div class="content-section introduction">
-      <div class="feature-intro p-ml-3">
+      <div class="feature-intro ml-3">
         <h4 style="display: inline">{{ $t("contragent.title") }}</h4>
         <label style="color: grey"
           >&nbsp;{{ this.$t("common.records") }}: {{ this.count }}</label
@@ -11,7 +11,7 @@
       </div>
     </div>
     <div class="content-section implementation">
-      <div class="card p-p-0">
+      <div class="card p-0">
         <div class="p-col">
           <Menubar
             :model="menu"

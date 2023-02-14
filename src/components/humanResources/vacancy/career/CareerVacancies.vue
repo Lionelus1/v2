@@ -1,6 +1,6 @@
 <template>
   <!-- Toolbar -->
-  <Toolbar class="p-mb-4" v-if="userId === undefined">
+  <Toolbar class="mb-4" v-if="userId === undefined">
     <template #end>
       <Button :label="$t('common.login')" icon="pi pi-user" v-on:click="visible.login = true"/>
     </template>
@@ -44,8 +44,8 @@
                @sort="onSort($event)">
       <!--  HEADER -->
       <template #header>
-        <div class="table-header flex flex-column flex-md-row justify-content-md-between">
-          <h4 class="p-mb-2 p-m-md-0 align-self-md-center">{{ $t("hr.vacancies") }}</h4>
+        <div class="table-header flex flex-column md:flex-row md:justify-content-between">
+          <h4 class="mb-2 m-md-0 align-self-md-center">{{ $t("hr.vacancies") }}</h4>
           <span class="p-input-icon-left">
             <i class="pi pi-search"/>
             <InputText type="search"
@@ -53,7 +53,7 @@
                        :placeholder="$t('common.search')"
                        @keyup.enter="getVacancies"
                        @click="clearData"/>
-              <Button icon="pi pi-search" class="p-ml-1" @click="getVacancies"/>
+              <Button icon="pi pi-search" class="ml-1" @click="getVacancies"/>
           </span>
         </div>
       </template>
@@ -166,49 +166,49 @@
         </p>
 
         <p><b>{{ $t('hr.responsibilitiesLabel') }}</b></p>
-        <div class="p-field def-padding"
+        <div class="fielddef-padding"
              v-html='
               $i18n.locale === "kz" ? vacancy.responsibilitiesKz :
                   $i18n.locale === "ru" ? vacancy.responsibilitiesRu : vacancy.responsibilitiesEn'
         />
 
         <p><b>{{ $t('hr.educationLabel') }}</b></p>
-        <div class="p-field def-padding"
+        <div class="fielddef-padding"
              v-html='$i18n.locale === "kz" ? vacancy.educationKz :
                   $i18n.locale === "ru" ? vacancy.educationRu : vacancy.educationEn'
         />
 
         <p><b>{{ $t('hr.qualificationLabel') }}</b></p>
-        <div class="p-field def-padding"
+        <div class="fielddef-padding"
              v-html='$i18n.locale === "kz" ? vacancy.qualificationKz :
                   $i18n.locale === "ru" ? vacancy.qualificationRu : vacancy.qualificationEn'
         />
 
         <p><b>{{ $t('hr.experienceLabel') }}</b></p>
-        <div class="p-field def-padding"
+        <div class="fielddef-padding"
              v-html='$i18n.locale === "kz" ? vacancy.experienceKz :
                   $i18n.locale === "ru" ? vacancy.experienceRu : vacancy.experienceEn'
         />
 
         <p><b>{{ $t('hr.languageLevelLabel') }}</b></p>
-        <div class="p-field def-padding"
+        <div class="fielddef-padding"
              v-html='$i18n.locale === "kz" ? vacancy.languageLevelKz :
                   $i18n.locale === "ru" ? vacancy.languageLevelRu : vacancy.languageLevelEn'
         />
 
         <p><b>{{ $t('hr.certificateRequirementsLabel') }}</b></p>
-        <div class="p-field def-padding"
+        <div class="fielddef-padding"
              v-html='$i18n.locale === "kz" ? vacancy.certificateRequirementsKz :
                   $i18n.locale === "ru" ? vacancy.certificateRequirementsRu : vacancy.certificateRequirementsEn'
         />
 
         <p><b>{{ $t('hr.personalQualitiesLabel') }}</b></p>
-        <div class="p-field def-padding"
+        <div class="fielddef-padding"
              v-html='$i18n.locale === "kz" ? vacancy.personalQualitiesKz :
                   $i18n.locale === "ru" ? vacancy.personalQualitiesRu : vacancy.personalQualitiesEn'
         />
         <p><b>{{ $t('hr.workConditionLabel') }}</b></p>
-        <div class="p-field def-padding"
+        <div class="fielddef-padding"
              v-html='$i18n.locale === "kz" ? vacancy.workConditionKz :
                   $i18n.locale === "ru" ? vacancy.workConditionRu : vacancy.workConditionEn'
         />
@@ -234,10 +234,10 @@
 
     <div class="col-12 md:col-12 p-fluid">
       <div class="card">
-        <div class="p-fluid grid p-formgrid">
-          <div class="p-field col-12">
+        <div class="p-fluid grid formgrid">
+          <div class="field col-12">
             <Label>{{ $t('hr.vacancySource') }}: </Label>
-            <Dropdown class="p-mt-2" v-model="relation.vacancySource"
+            <Dropdown class="mt-2" v-model="relation.vacancySource"
                       :options="vacancySources"
                       :class="{'p-invalid': validation.source}"
                       :optionLabel="('name' + ($i18n.locale).charAt(0).toUpperCase() + ($i18n.locale).slice(1))"
@@ -247,10 +247,10 @@
                 v-if="validation.source"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="p-field col-12">
+          <div class="field col-12">
             <Label>{{ $t('hr.motivationLetter') }}: </Label>
             <FileUpload
-                class="p-mt-2"
+                class="mt-2"
                 mode="basic"
                 :customUpload="true"
                 :class="{'p-invalid': validation.ml}"
@@ -259,7 +259,7 @@
                 v-bind:chooseLabel="$t('hdfs.chooseFile')"
             ></FileUpload>
             <InlineMessage severity="info"
-                           class="p-mt-2"
+                           class="mt-2"
                            show v-if="file">
               {{ $t('ncasigner.chosenFile', {fn: file ? file.name : ""}) }}
             </InlineMessage>
@@ -268,10 +268,10 @@
                 v-if="validation.ml"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="p-field col-12">
+          <div class="field col-12">
             <hr>
           </div>
-          <div class="p-field col-12">
+          <div class="field col-12">
             <p><b><em>{{ $t('hr.sp.header') }}:</em></b></p>
             <p style="text-align: justify">
               <em>
@@ -289,11 +289,11 @@
               </em>
             </p>
           </div>
-          <div class="p-field col-12">
+          <div class="field col-12">
             <hr>
           </div>
-          <div class="p-field col-12">
-            <div class="p-field-checkbox">
+          <div class="field col-12">
+            <div class="field-checkbox">
               <Checkbox id="binary" v-model="agreement" :binary="true"/>
               <label for="binary" style="font-size: 15px; text-align: justify">
                 <b>
@@ -323,7 +323,7 @@
       :closable="false">
 
     <div class="confirmation-content">
-      <i class="pi pi-exclamation-circle p-mr-3" style="font-size: 2rem"/>
+      <i class="pi pi-exclamation-circle mr-3" style="font-size: 2rem"/>
       <span>
         <b>{{$t('hr.resumeNorFound')}}</b>
         </span>

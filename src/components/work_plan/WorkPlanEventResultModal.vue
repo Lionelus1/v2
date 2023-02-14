@@ -3,7 +3,7 @@
     <Button
         type="button"
         icon="fa-solid fa-eye"
-        class="p-button p-button-info p-ml-1 p-mb-1"
+        class="p-button p-button-info ml-1 mb-1"
         label=""
         @click="openModal"
     ></Button>
@@ -27,28 +27,28 @@
       </div>
     </div>
     <div class="p-col p-fluid">
-      <div class="p-field" v-if="data.result_text">
+      <div class="field" v-if="data.result_text">
         <div v-for="(item, index) in data.result_text" :key="index">
           <span v-html="item.text"></span>
         </div>
       </div>
-      <div class="p-field" v-if="data.event_result_file">
+      <div class="field" v-if="data.event_result_file">
         <label class="bold">{{ $t('workPlan.attachments') }}</label>
         <div>
           <Button
               icon="pi pi-download"
-              class="p-button-rounded p-button-success p-mr-2"
+              class="p-button-rounded p-button-success mr-2"
               @click="downloadFile(data.event_result_file)"
           />
         </div>
       </div>
-      <div class="p-field" v-else-if="data.result_files">
+      <div class="field" v-else-if="data.result_files">
         <label class="bold">{{ $t('workPlan.attachments') }}</label>
         <div>
           <Button
               v-for="(item, index) of data.result_files" :key="index"
               icon="pi pi-download"
-              class="p-button-rounded p-button-success p-mr-2"
+              class="p-button-rounded p-button-success mr-2"
               @click="downloadFile(item)"
           />
         </div>

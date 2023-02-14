@@ -4,7 +4,7 @@
             <Button
                 id="printPageButton"
                 icon="pi pi-book"
-                class="p-button-info p-mb-0 p-mr-3"
+                class="p-button-info mb-0 mr-3"
                 :label="$t('ref.createQr')"
                 @click="ref(1)"/>
 
@@ -12,7 +12,7 @@
             <Button
             id="printPageButton"
             icon="pi pi-book"
-            class="p-button-danger p-mb-0 p-mr-3"
+            class="p-button-danger mb-0 mr-3"
             @click="openMail()"
             :label="$t('ref.sendMail')"/>
 
@@ -20,10 +20,10 @@
                 v-if="imgData.length>0"
                 id="printPageButton"
                 icon="pi pi-print"
-                class="p-button-success p-mb-0 p-ml-6"
+                class="p-button-success mb-0 ml-6"
                 @click="printRef()"/>
 
-            <div class="p-inputgroup p-input-filled p-ml-0 p-pl-0 lg:col-4 md:col-6 p-sm-12" v-if="blobSource!=null">
+            <div class="p-inputgroup p-input-filled ml-0 pl-0 lg:col-4 md:col-6 p-sm-12" v-if="blobSource!=null">
                 <InputText :disabled="true" :value="blobSource"/>
                 <Button v-bind:label="$t('ncasigner.copy')" v-clipboard:copy="blobSource" v-clipboard:success="onCopy" v-clipboard:error="onFail" class="p-button-secondary"/>
             </div>
@@ -32,7 +32,7 @@
             <BlockUI >
             <div class="lg:col-4 md:col-6 p-sm-12 text-right" style="margin-left:0 !important;">
                 
-                <textarea class="col-12 p-mb-2" 
+                <textarea class="col-12 mb-2" 
                 style="min-height:130px;"
                 v-model="mailText"
                 :placeholder="$t('ref.correction')"></textarea>
@@ -40,9 +40,9 @@
                 <Button icon="pi pi-pencil" @click="sendMail()" 
                 v-if="this.mailText.length>0"
                 :loading="sending"
-                :label="!sending ? $t('ref.sendMail1') : $t('ref.sendingMail')" class="p-button-success p-mb-0 "/>
+                :label="!sending ? $t('ref.sendMail1') : $t('ref.sendingMail')" class="p-button-success mb-0 "/>
 
-                <Button icon="pi pi-trash" v-if="!sending" @click="clearMail()" class="p-button-danger p-mb-0 p-ml-2"/>
+                <Button icon="pi pi-trash" v-if="!sending" @click="clearMail()" class="p-button-danger mb-0 ml-2"/>
             </div>
             </BlockUI>
         </div>

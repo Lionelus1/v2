@@ -22,22 +22,22 @@
         <img src="/assets/layout/images/logo_eng.png" alt="Image" width="250"/>
       </div>
     </div>
-    <div class="p-fluid p-formgrid grid justify-content-center p-pt-2">
+    <div class="p-fluid formgrid grid justify-content-center pt-2">
 
       <TabView class="tabview-custom p-xl-6 md:col-8 p-sm-12 lg:col-6 col-12">
         <TabPanel>
           <template #header>
             <span>Login System</span>
-            <i class="pi pi-key p-ml-1"></i>
+            <i class="pi pi-key ml-1"></i>
           </template>
-          <div class="p-fluid text-center">
-            <div class="p-field col-12">
+          <div class="p-fluid text-left">
+            <div class="field col-12">
               <label for="inputtext">{{ $t('common.enterLogin') }}</label>
               <InputText id="inputtext" type="text" v-model="loginData.username"/>
 
 
             </div>
-            <div class="p-field col-12">
+            <div class="field col-12">
               <label for="inputpassword">{{ $t('common.enterPassword') }}</label>
               <Password :feedback="false" toggleMask v-model="loginData.password"
                         @keyup.enter="login"></Password>
@@ -50,13 +50,13 @@
         <TabPanel>
           <template #header>
             <span>ЭЦП</span>
-            <i class="pi pi-folder p-ml-1"></i>
+            <i class="pi pi-folder ml-1"></i>
           </template>
           <div class="p-fluid text-center">
-            <div class="p-field p-mb-3">
+            <div class="field mb-3">
               <InlineMessage severity="info">{{ $t('ncasigner.noteMark') }}</InlineMessage>
             </div>
-            <div class="p-field col-12 p-pb-2">
+            <div class="field col-12 pb-2">
               <Inplace :closable="true" @close="resetPassword">
                 <template #display>
                   {{ text || $t('common.changePassword') }}

@@ -13,23 +13,23 @@
     <!-- СТРОКА ПРОГРЕСС ПРИ ОТПРАВКИ СООБЩЕНЯ  -->
     <div v-if="view.sending" class="col-12 md:col-12 p-fluid">
       <label>{{ $t('hr.sendingMessage') }}</label>
-      <ProgressBar mode="indeterminate" class="p-mt-2" style="height: .5em"/>
+      <ProgressBar mode="indeterminate" class="mt-2" style="height: .5em"/>
     </div>
     <!--  ОСНОВНОЙ РАЗДЕЛ ИНФОРМАЦИИ О ХОДАТАЙСТВЕ  -->
     <div class="col-12 md:col-12 p-fluid">
       <!--   ПРЕДУПРЕЖДЕНИЕ О ТОМ, ЧТО НУЖНО ПОДПИСАТЬ ХОДАТВАЙСТВО ЭЦП ПЕРВОГО РУКОВОДИТЕЛЯ   -->
-      <div v-if="view.petition" class="p-field">
+      <div v-if="view.petition" class="field">
         <Message :closable="false" severity="warn">{{ $t('hr.petition.warn') }}</Message>
       </div>
       <!--   СООБЩЕНИЕ О ТОМ, ЧТО ХОДАТАЙСТВО УСПЕШНО ПОДПИСАНО   -->
-      <div v-if="view.successSigning" class="p-field">
+      <div v-if="view.successSigning" class="field">
         <Message :closable="false" severity="success">{{ $t('hr.petition.success') }}</Message>
       </div>
       <!--   ЗАГОЛОВОК ПИСЬМА   -->
-      <div class="p-field">
+      <div class="field">
         <label>{{ $t('hr.messageTitle') }}</label>
         <InputText
-            class="p-mt-2"
+            class="mt-2"
             type="text"
             :placeholder="$t('hr.messageTitle')"
             :class="{'p-invalid': validation.request.subject}"
@@ -41,10 +41,10 @@
         >{{ $t("common.requiredField") }}</small>
       </div>
       <!--   СОДЕРЖАНИЕ ПИСЬМА   -->
-      <div class="p-field">
+      <div class="field">
         <label>{{ $t('hr.messageBody') }}</label>
         <Editor
-            class="p-mt-2"
+            class="mt-2"
             v-model="request.message"
             :class="{'p-invalid': validation.request.message}"
             editorStyle="height: 200px"/>
@@ -56,19 +56,19 @@
       <!-- ХОДАТАЙСТВО -->
       <hr v-if="view.petition">
       <!--   ЯЗЫК ХОДАТАЙСТВА   -->
-      <div v-if="view.petition" class="p-field">
+      <div v-if="view.petition" class="field">
         <label>{{ $t('hr.petition.lang') }}</label>
         <SelectButton v-model="petition.lang"
                       :options="petitionLangOptions"
-                      class="p-mt-2"
+                      class="mt-2"
                       optionValue="value"
                       optionLabel="name"/>
       </div>
       <!--   НОМЕР ХОДАТАЙСТВА   -->
-      <div v-if="view.petition" class="p-field">
+      <div v-if="view.petition" class="field">
         <label>{{ $t('hr.petition.number') }}</label>
         <InputText
-            class="p-mt-2"
+            class="mt-2"
             type="text"
             :placeholder="$t('hr.petition.number')"
             :class="{'p-invalid': validation.petition.number}"
@@ -80,9 +80,9 @@
         >{{ $t("common.requiredField") }}</small>
       </div>
       <!--   ДАТА ХОДАТАЙСТВА   -->
-      <div v-if="view.petition" class="p-field">
+      <div v-if="view.petition" class="field">
         <label>{{ $t('common.date') }}</label>
-        <PrimeCalendar class="p-mt-2"
+        <PrimeCalendar class="mt-2"
                        :class="{'p-invalid': validation.petition.date}"
                        v-model="petition.date"
                        :placeholder="$t('common.date')"
@@ -93,10 +93,10 @@
         >{{ $t("common.requiredField") }}</small>
       </div>
       <!--   ИИН ПЕРВОГО РУКОВОДИТЕЛЯ   -->
-      <div v-if="view.petition" class="p-field">
+      <div v-if="view.petition" class="field">
         <label>{{ $t('common.headIin') }}</label>
         <InputText
-            class="p-mt-2"
+            class="mt-2"
             :class="{'p-invalid': validation.petition.headIin}"
             type="text"
             :placeholder="$t('common.headIin')"
@@ -108,10 +108,10 @@
         >{{ $t("common.requiredField") }}</small>
       </div>
       <!--   ФИО ПЕРВОГО РУКОВОДИТЕЛЯ   -->
-      <div v-if="view.petition" class="p-field">
+      <div v-if="view.petition" class="field">
         <label>{{ $t('common.headFio') }}</label>
         <InputText
-            class="p-mt-2"
+            class="mt-2"
             :class="{'p-invalid': validation.petition.headFio}"
             type="text"
             :placeholder="$t('common.headFio')"
@@ -123,10 +123,10 @@
         >{{ $t("common.requiredField") }}</small>
       </div>
       <!--   ПОДПИСАНИЕ ХОДАТАЙСТВА   -->
-      <div v-if="view.petition" class="p-field">
+      <div v-if="view.petition" class="field">
         <ProgressBar mode="indeterminate" style="height: .5em" v-if="view.signing"/>
       </div>
-      <div v-if="view.petition" class="p-field">
+      <div v-if="view.petition" class="field">
         <Button :label="$t('common.createDocument')" icon="pi pi-pencil" :onclick="signDocument"/>
       </div>
     </div>

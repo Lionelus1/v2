@@ -7,14 +7,14 @@
       </div>
       <div class="grid p-fluid dashboard">
         <div class="col-12 lg:col-6">
-          <div class="card summary p-m-0">
+          <div class="card summary m-0">
             <span class="title">{{$t('queue.ticketCount')}}</span>
             <span class="count visitors">{{service.count}}</span>
           </div>
           <div class="card summary">
             <span class="title">{{$t('queue.downtime')}}</span>
             <span class="count visitors">{{downInfo.duration}}</span>
-            <Button :label="$t('queue.next')" :disabled="service.state===0" class="p-mt-2 p-mb-1" @click="callNextCustomer(true, null)"></Button>
+            <Button :label="$t('queue.next')" :disabled="service.state===0" class="mt-2 mb-1" @click="callNextCustomer(true, null)"></Button>
             
             <Inplace :active="false" class="p-inplace-display"  ref="selectTicket">
               <template #display>
@@ -22,11 +22,11 @@
               </template>
               <template #content>
                 <div class="grid p-fluid">
-                  <div class="col-12 lg:col-6 md:col-6 p-sm-6 p-mb-0">
+                  <div class="col-12 lg:col-6 md:col-6 p-sm-6 mb-0">
                     <InputText  :placeholder="$t('common.number')" autoFocus v-model="number" />
                   </div>
                   <div class="col-12 lg:col-6 md:col-6 p-sm-6">
-                    <Button :label="$t('queue.call')" :disabled="service.state===0" class="p-mb-6 p-button-warning p-mb-2" @click="callNextCustomer(true, number)"></Button>
+                    <Button :label="$t('queue.call')" :disabled="service.state===0" class="mb-6 p-button-warning mb-2" @click="callNextCustomer(true, number)"></Button>
                   </div>
                 </div>
               </template>
@@ -34,7 +34,7 @@
           </div>
         </div>
         <div class="col-12 lg:col-6">
-          <div class="card summary p-m-0">
+          <div class="card summary m-0">
             <span class="title">{{$t('queue.called')}}</span>   
             <span class="count revenue">{{service.number>0 ? service.number : "-"}}</span>
           </div>
@@ -42,22 +42,22 @@
             <span class="title">{{$t('queue.serviceTime')}}</span>
             <span class="count revenue">{{service.info.duration}}</span>
             <!-- :disabled="service.info.hour<1 && service.info.minute<1 && service.info.second<=59" -->
-            <Button :disabled="service.info.hour<1 && service.info.minute<1 && service.info.second<=59" :label="$t('queue.dnshowup')"  class="p-mb-1 p-mt-2 p-button-danger" @click="changeState(3, null)" ></Button>
-            <Button :label="$t('queue.served')" class="p-mb-1 p-button-success" @click="changeState(1, null)"></Button>
+            <Button :disabled="service.info.hour<1 && service.info.minute<1 && service.info.second<=59" :label="$t('queue.dnshowup')"  class="mb-1 mt-2 p-button-danger" @click="changeState(3, null)" ></Button>
+            <Button :label="$t('queue.served')" class="mb-1 p-button-success" @click="changeState(1, null)"></Button>
             <Inplace :active="false" class="p-inplace-display"  ref="redirect" >
               <template #display>
                 <Button :label="$t('queue.redirect')" class="p-button-primary" style="left: -0.5rem;" :disabled="service.state===null" @click="getNeigborQueue(parentID)"></Button>
               </template>
               <template #content>
                 <div class="grid p-fluid">
-                  <div class="col-12 lg:col-6 md:col-6 p-sm-6 p-mb-0">
+                  <div class="col-12 lg:col-6 md:col-6 p-sm-6 mb-0">
                     <Dropdown v-model="selectedQueue" :options="neigbors" :optionLabel="'queueName'+$i18n.locale" :placeholder="$t('common.select')" />
                   </div>
                   <!-- <div class="col-12 lg:col-1 md:col-6 p-sm-6">
-                    <Button   icon="pi pi-undo" class="p-mb-6 p-button-primary p-mb-1" @click="getNeigborQueue()"></Button>
+                    <Button   icon="pi pi-undo" class="mb-6 p-button-primary mb-1" @click="getNeigborQueue()"></Button>
                   </div> -->
                   <div class="col-12 lg:col-6 md:col-6 p-sm-6">
-                    <Button :label="$t('queue.redirect')" :disabled="selectedQueue === null" class="p-mb-6 p-button-primary p-mb-2" @click="changeState(2, selectedQueue.key)"></Button>
+                    <Button :label="$t('queue.redirect')" :disabled="selectedQueue === null" class="mb-6 p-button-primary mb-2" @click="changeState(2, selectedQueue.key)"></Button>
                   </div>
                 </div>
               </template>

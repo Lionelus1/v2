@@ -4,15 +4,15 @@
                        backgroundColor="rgba(0, 0, 0, 0.4)"/>
   <div class="col-12" v-if="plan && event">
     <div class="card">
-      <div v-if="!resultId" @click="navigateToBack" class="inline-block"><i class="fa-solid fa-arrow-left p-mr-3"
+      <div v-if="!resultId" @click="navigateToBack" class="inline-block"><i class="fa-solid fa-arrow-left mr-3"
                                                                                 style="font-size: 16px;cursor: pointer"></i>
       </div>
-      <div class="p-mb-0 p-mt-0 inline-block" style="font-size: 24px"> {{ $t('common.result') }}</div>
+      <div class="mb-0 mt-0 inline-block" style="font-size: 24px"> {{ $t('common.result') }}</div>
     </div>
 
     <div class="card" v-if="resultData && event && resultData.reject_history">
       <div class="p-fluid">
-        <div class="p-field">
+        <div class="field">
           <label>{{ $t('common.state') }}:</label>
           <div>
             <span v-if="event" :class="'customer-badge status-' + event.status.work_plan_event_status_id">{{
@@ -20,19 +20,19 @@
               }}</span>
           </div>
         </div>
-        <div class="p-field" v-if="resultData.reject_history.user">
+        <div class="field" v-if="resultData.reject_history.user">
           <label>{{ $t('contracts.assigner') }}:</label>
           <div>
             <b>{{ resultData.reject_history.user.fullName }}</b>
           </div>
         </div>
-        <div class="p-field" v-if="resultData.reject_history.created_date">
+        <div class="field" v-if="resultData.reject_history.created_date">
           <label>{{ $t('common.date') }}:</label>
           <div>
             <b>{{ formatDateMoment(resultData.reject_history.created_date) }}</b>
           </div>
         </div>
-        <div class="p-field">
+        <div class="field">
           <label>{{ $t('common.comment') }}:</label>
           <div>
             <Message :closable="false" severity="warn"><span v-html="resultData.reject_history.message"></span>
@@ -56,19 +56,19 @@
             <Menubar :model="verifyMenu" :key="active"
                      style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
           </div>
-          <div class="grid p-mt-3">
+          <div class="grid mt-3">
             <div class="p-fluid p-sm-12 md:col-12 lg:col-6 p-xl-6"
                  v-if="(isPlanCreatorApproval || !isPlanCreator) && event.status.work_plan_event_status_id !== 5 &&
                  event.status.work_plan_event_status_id !== 2">
-              <div class="p-field">
+              <div class="field">
                 <label>{{ $t('workPlan.eventName') }}</label>
                 <InputText v-model="event.event_name" disabled/>
               </div>
-              <div class="p-field" v-if="plan && plan.is_oper && !authUser.mainPosition.department.isFaculty">
+              <div class="field" v-if="plan && plan.is_oper && !authUser.mainPosition.department.isFaculty">
                 <label>{{ $t('common.fact') }}</label>
                 <InputText v-model="fact" @input="factChange"/>
               </div>
-              <div class="p-field">
+              <div class="field">
                 <label>{{ $t('common.result') }}</label>
                 <RichEditor v-if="plan && !plan.is_oper" v-model="result" editorStyle="height:300px;"
                             :clearOnPaste="true"
@@ -93,7 +93,7 @@
                   </template>
                 </RichEditor>
               </div>
-              <div class="p-field">
+              <div class="field">
                 <FileUpload
                     ref="form"
                     mode="basic"
@@ -104,13 +104,13 @@
                     :chooseLabel="$t('smartenu.chooseAdditionalFile')"
                 ></FileUpload>
               </div>
-              <div class="p-field">
+              <div class="field">
                 <div ref="content" class="p-fileupload-content">
                   <div class="p-fileupload-files">
                     <div class="p-fileupload-row" v-for="(file, index) of files" :key="index">
-                      <span class="p-mr-3"><i class="pi pi-paperclip"></i></span>
+                      <span class="mr-3"><i class="pi pi-paperclip"></i></span>
                       <span>{{ file.name }}</span>
-                      <span class="p-ml-5">
+                      <span class="ml-5">
                 <Button icon="pi pi-times" class="p-button-rounded p-button-text" @click="removeFile(index)"/>
               </span>
                     </div>
@@ -122,32 +122,32 @@
               </div>
             </div>
             <div class="p-sm-12 md:col-12 lg:col-12 p-xl-6">
-              <div class="p-field" v-if="event">
+              <div class="field" v-if="event">
                 <label class="bold">{{ $t('common.fact') }}: </label>
                 <div>{{ event.fact }}</div>
               </div>
-              <div class="p-field" v-if="plan && resultData && plan.is_oper">
+              <div class="field" v-if="plan && resultData && plan.is_oper">
                 <label class="bold">{{ $t('common.result') }}</label>
-                <div v-for="(item, index) of resultData.result_text" :key="index" class="p-mb-2">
+                <div v-for="(item, index) of resultData.result_text" :key="index" class="mb-2">
                   <Inplace
                       v-if="item.userId === loginedUserId && event && (event.status.work_plan_event_status_id !== 5 && event.status.work_plan_event_status_id !== 2)"
                       :active="item.isActive" @open="openInplace(item)">
                     <template #display>
                       <div>
-                        <span class="p-mr-1" style="float:left;"><i class="fa-solid fa-pen color-success"></i></span>
-                        <p class="p-p-0 p-m-0" v-html="item.text"></p>
+                        <span class="mr-1" style="float:left;"><i class="fa-solid fa-pen color-success"></i></span>
+                        <p class="p-0 m-0" v-html="item.text"></p>
                       </div>
                     </template>
                     <template #content>
                       <div class="p-py-2">
                         <Button :label="$t('common.save')" icon="pi pi-check" class="p-button p-button-success"
                                 @click="saveEditResult(item)" :loading="loading"/>
-                        <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button p-ml-1"
+                        <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button ml-1"
                                 @click="cancelEdit(item)"/>
-                        <Button :label="$t('common.delete')" icon="pi pi-trash" class="p-button p-button-danger p-ml-1"
+                        <Button :label="$t('common.delete')" icon="pi pi-trash" class="p-button p-button-danger ml-1"
                                 @click="deleteConfirmItem($event, item)"/>
                       </div>
-                      <div class="p-field">
+                      <div class="field">
                         <RichEditor v-model="item.text" editorStyle="height:200px;">
                           <template v-slot:toolbar>
                             <span class="ql-formats">
@@ -160,27 +160,27 @@
                       </div>
                     </template>
                   </Inplace>
-                  <div v-else class="p-p-0">
+                  <div v-else class="p-0">
                     <Divider align="left">
-                      <i class="fa-solid fa-user p-mr-1"></i><b>{{ item.user.fullName }}</b>
+                      <i class="fa-solid fa-user mr-1"></i><b>{{ item.user.fullName }}</b>
                     </Divider>
                     <p v-html="item.text"></p>
                   </div>
 
                 </div>
               </div>
-              <div class="p-field" v-if="resultData && resultData.result_files">
+              <div class="field" v-if="resultData && resultData.result_files">
                 <label class="bold">{{ $t('workPlan.attachments') }}</label>
                 <div ref="content" class="p-fileupload-content">
                   <div class="p-fileupload-files">
                     <div class="p-fileupload-row" v-for="(file, index) of resultData.result_files" :key="index">
-                      <span class="p-mr-3" style="cursor: pointer;" @click="downloadFile(file.event_result_file)"><i
+                      <span class="mr-3" style="cursor: pointer;" @click="downloadFile(file.event_result_file)"><i
                           class="fa-solid fa-file-arrow-down fa-2x color-success"></i></span>
                       <span @click="downloadFile(file)"
                             style="cursor: pointer;">{{
                           file.file_name ? file.file_name : file.event_result_file
                         }}</span>
-                      <span class="p-ml-5" v-if="file.user_id && file.user_id === loginedUserId"><Button
+                      <span class="ml-5" v-if="file.user_id && file.user_id === loginedUserId"><Button
                           icon="pi pi-times" class="p-button-rounded p-button-text"
                           v-if="event && (event.status.work_plan_event_status_id !== 5 && event.status.work_plan_event_status_id !== 2)"
                           @click="deleteFileConfirm($event, file.id)"/></span>
@@ -232,7 +232,7 @@
       </div>
     </div>
     <div class="p-col p-fluid">
-      <div class="p-field">
+      <div class="field">
         <label>{{ $t('common.comment') }}</label>
         <RichEditor v-model="rejectComment" editorStyle="height:300px;">
           <template v-slot:toolbar>

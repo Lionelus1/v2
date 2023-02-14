@@ -51,7 +51,7 @@
     ></div>
     <Dialog v-bind:header="$t('doctemplate.editor.addElement')" v-model:visible="displayModal" :style="{width: '50vw'}" :modal="true">
     <div class="p-fluid">
-      <div class="p-field">
+      <div class="field">
         <label for="fieldId">{{$t('common.description')}}</label>
         <InputText id="fieldId" :class="(agreementDesctiption=='')?'p-invalid':''" v-model="agreementDesctiption"  type="text" />
       </div>

@@ -1,9 +1,9 @@
 <template>
   <div class="card">
     <!--  Трудовая книжка  -->
-    <div class="p-field">
+    <div class="field">
       <Label>{{ $t('hr.doc.eh') }}: </Label>
-      <div class="col-12 p-mb-2 p-pb-2 lg:col-3 p-mb-lg-0">
+      <div class="col-12 mb-2 pb-2 lg:col-3 mb-lg-0">
         <Button :label="$t('common.download')"
                 icon="pi pi-download"
                 :disabled="disabled"
@@ -14,9 +14,9 @@
     </div>
     <hr>
     <!--   дипломы   -->
-    <div class="p-field">
+    <div class="field">
       <Label>{{ $t('hr.doc.diploma') }}: </Label>
-      <div class="col-12 p-mb-2 p-pb-2 lg:col-3 p-mb-lg-0">
+      <div class="col-12 mb-2 pb-2 lg:col-3 mb-lg-0">
         <Button :label="$t('common.download')"
                 icon="pi pi-download"
                 :disabled="disabled"
@@ -27,9 +27,9 @@
     </div>
     <hr>
     <!--   сертификаты   -->
-    <div class="p-field">
+    <div class="field">
       <Label>{{ $t('hr.doc.certs') }}: </Label>
-      <div class="col-12 p-mb-2 p-pb-2 lg:col-3 p-mb-lg-0">
+      <div class="col-12 mb-2 pb-2 lg:col-3 mb-lg-0">
         <Button :label="$t('common.download')"
                 icon="pi pi-download"
                 :disabled="disabled"
@@ -40,9 +40,9 @@
     </div>
     <hr>
     <!--   пенсионный   -->
-    <div class="p-field">
+    <div class="field">
       <Label>{{ $t('hr.doc.pension') }}: </Label>
-      <div class="col-12 p-mb-2 p-pb-2 lg:col-3 p-mb-lg-0">
+      <div class="col-12 mb-2 pb-2 lg:col-3 mb-lg-0">
         <Button :label="$t('common.download')"
                 icon="pi pi-download"
                 :disabled="disabled"
@@ -53,9 +53,9 @@
     </div>
     <hr>
     <!--   075   -->
-    <div class="p-field">
+    <div class="field">
       <Label>{{ $t('hr.doc.medCert') }}: </Label>
-      <div class="col-12 p-mb-2 p-pb-2 lg:col-3 p-mb-lg-0">
+      <div class="col-12 mb-2 pb-2 lg:col-3 mb-lg-0">
         <Button :label="$t('common.download')"
                 icon="pi pi-download"
                 :disabled="disabled"
@@ -66,9 +66,9 @@
     </div>
     <hr>
     <!--   нарко   -->
-    <div class="p-field">
+    <div class="field">
       <Label>{{ $t('hr.doc.narcoCert') }}: </Label>
-      <div class="col-12 p-mb-2 p-pb-2 lg:col-3 p-mb-lg-0">
+      <div class="col-12 mb-2 pb-2 lg:col-3 mb-lg-0">
         <Button :label="$t('common.download')"
                 icon="pi pi-download"
                 :disabled="disabled"
@@ -79,9 +79,9 @@
     </div>
     <hr>
     <!--   ппсихо   -->
-    <div class="p-field">
+    <div class="field">
       <Label>{{ $t('hr.doc.psychoCert') }}: </Label>
-      <div class="col-12 p-mb-2 p-pb-2 lg:col-3 p-mb-lg-0">
+      <div class="col-12 mb-2 pb-2 lg:col-3 mb-lg-0">
         <Button :label="$t('common.download')"
                 icon="pi pi-download"
                 :disabled="disabled"
@@ -92,9 +92,9 @@
     </div>
     <hr>
     <!--   судимость   -->
-    <div class="p-field">
+    <div class="field">
       <Label>{{ $t('hr.doc.gcCert') }}: </Label>
-      <div class="col-12 p-mb-2 p-pb-2 lg:col-3 p-mb-lg-0">
+      <div class="col-12 mb-2 pb-2 lg:col-3 mb-lg-0">
         <Button :label="$t('common.download')"
                 icon="pi pi-download"
                 :disabled="disabled"
@@ -105,9 +105,9 @@
     </div>
     <hr>
     <!--   военный билет   -->
-    <div class="p-field">
+    <div class="field">
       <Label>{{ $t('hr.doc.mId') }}: </Label>
-      <div class="col-12 p-mb-2 p-pb-2 lg:col-3 p-mb-lg-0">
+      <div class="col-12 mb-2 pb-2 lg:col-3 mb-lg-0">
         <Button :label="$t('common.download')"
                 icon="pi pi-download"
                 :disabled="disabled"

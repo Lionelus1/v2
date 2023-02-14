@@ -4,7 +4,7 @@
     <h3 v-if="plan">{{ plan.work_plan_name }}</h3>
     <div class="card" v-if="plan && plan.reject_history && isRejected && isPlanCreator">
       <div class="p-fluid">
-        <div class="p-field">
+        <div class="field">
           <label>{{ $t('common.state') }}:</label>
           <div>
             <span v-if="plan.status" :class="'customer-badge status-' + plan.status.work_plan_status_id">{{
@@ -12,19 +12,19 @@
               }}</span>
           </div>
         </div>
-        <div class="p-field" v-if="plan.reject_history.user">
+        <div class="field" v-if="plan.reject_history.user">
           <label>{{ $t('contracts.assigner') }}:</label>
           <div>
             <b>{{ plan.reject_history.user.fullName }}</b>
           </div>
         </div>
-        <div class="p-field" v-if="plan.reject_history.created_date">
+        <div class="field" v-if="plan.reject_history.created_date">
           <label>{{ $t('common.date') }}:</label>
           <div>
             <b>{{ formatDateMoment(plan.reject_history.created_date) }}</b>
           </div>
         </div>
-        <div class="p-field">
+        <div class="field">
           <label>{{ $t('common.comment') }}:</label>
           <div>
             <Message :closable="false" severity="warn"><span v-html="plan.reject_history.message"></span>
@@ -38,14 +38,14 @@
       <work-plan-event-add v-if="(isPlanCreator || isCreator || isEventsNull) && !isFinish" :items="data" :isMain="true"
                            :plan-data="plan"></work-plan-event-add>
       <Button v-if="isPlanCreator && !isFinish" :label="$t('common.complete')" icon="pi pi-check" @click="finish"
-              class="p-button p-button-danger p-ml-2"/>
+              class="p-button p-button-danger ml-2"/>
       <work-plan-approve v-if="isPlanCreator && !isPlanSentApproval && isFinish" :plan="plan"
                          :events="data"></work-plan-approve>
       <Button v-if="isFinish && (isApproval || isPlanCreator) && isPlanSentApproval" :label="$t('workPlan.viewPlan')"
               icon="pi pi-eye" @click="viewDoc"
-              class="p-button p-button-info p-ml-2"/>
+              class="p-button p-button-info ml-2"/>
       <Button v-if="isFinish && (isApproval || isPlanCreator) && isPlanApproved" :label="$t('workPlan.reports')"
-              @click="navigateToReports" class="p-button p-button-info p-ml-2"/>
+              @click="navigateToReports" class="p-button p-button-info ml-2"/>
     </div>
     <div class="card">
 
@@ -55,7 +55,7 @@
                  :paginator="true" :rows="10" :total-records="total" @page="onPage($event)">
         <template #header>
           <div class="flex justify-content-between align-items-center">
-            <h5 class="p-m-0">{{ $t('workPlan.events') }} |
+            <h5 class="m-0">{{ $t('workPlan.events') }} |
               <router-link tag="a" to="/work-plan">{{ $t('workPlan.plans') }}</router-link>
             </h5>
             <Button type="button" icon="pi pi-search" :label="$t('common.search')"
@@ -65,12 +65,12 @@
             </Button>
             <OverlayPanel ref="global-filter">
               <div class="p-fluid">
-                <div class="p-field">
+                <div class="field">
                   <label>{{ $t('workPlan.eventName') }}</label>
-                  <InputText class="p-mt-2" type="text" :placeholder="$t('workPlan.eventName')"
+                  <InputText class="mt-2" type="text" :placeholder="$t('workPlan.eventName')"
                              v-model="filters.name.value"/>
                 </div>
-                <div class="p-field">
+                <div class="field">
                   <label for="status-filter">{{ $t('common.status') }}</label>
                   <Dropdown v-model="filters.status.value" optionValue=""
                             :options="statuses" :placeholder="$t('common.select')" class="p-column-filter"
@@ -93,15 +93,15 @@
                     </template>
                   </Dropdown>
                 </div>
-                <div class="p-field">
+                <div class="field">
                   <label>{{ $t('cafedra.responsible') }}</label>
                   <FindUser v-model="filters.author.value" :max="1" :editMode="false"/>
                   <!--                  <Dropdown v-model="filters.department.value" :options="departments" optionLabel="department_name"
                                               optionValue="department_id" :filter="true" :show-clear="true"
                                               :placeholder="$t('common.select')" />-->
                 </div>
-                <div class="p-field">
-                  <Button :label="$t('common.clear')" @click="clearFilter" class="p-mb-2 p-button-outlined"/>
+                <div class="field">
+                  <Button :label="$t('common.clear')" @click="clearFilter" class="mb-2 p-button-outlined"/>
                   <Button :label="$t('common.search')" @click="initFilter" class="mt-2"/>
                 </div>
               </div>
@@ -204,7 +204,7 @@
               ></work-plan-event-edit-modal>
               <Button v-if="isPlanCreator && !isPlanSentApproval && !isFinish"
                       @click="remove_event(slotProps.node.work_plan_event_id)" icon="pi pi-trash"
-                      class="p-button-danger p-ml-1 p-mt-1" label=""></Button>
+                      class="p-button-danger ml-1 mt-1" label=""></Button>
             </div>
           </template>
         </Column>

@@ -3,11 +3,11 @@
     <!-- BEGINNING OF TABLE -->
     <div class="card" v-if="isAdmin || isModer || selectedEvent">
       <Button v-if="isAdmin || isModer" :label="$t('common.add')" icon="pi pi-plus"
-              class="p-button-success p-mr-2" v-on:click="createEvent"/>
+              class="p-button-success mr-2" v-on:click="createEvent"/>
       <Button :label="$t('common.publish')" v-if="isCreated && (isAdmin || isPublisher)" icon="pi pi-check"
-              class="p-button-help p-mr-2" v-on:click="publishEvent"/>
+              class="p-button-help mr-2" v-on:click="publishEvent"/>
       <Button :label="$t('common.show')" v-if="selectedEvent" icon="pi pi-eye"
-              class="p-button-secondary p-mr-2" v-on:click="eventView"/>
+              class="p-button-secondary mr-2" v-on:click="eventView"/>
     </div>
 
     <!-- BEGINNING OF TABLE -->
@@ -53,11 +53,11 @@
           </span>
           </template>
         </Column>
-        <Column>
+        <Column headerStyle="width:120px">
           <template #body="{ data }">
             <Button icon="pi pi-pencil" class="p-button-rounded p-button-success" @click="editEvent(data)"
                     v-if="data.history.status.id === statuses.created || isAdmin || isModer "/>
-            <Button icon="pi pi-trash" class="p-button-rounded p-button-warning p-ml-2" @click="deleteConfirm(data)"
+            <Button icon="pi pi-trash" class="p-button-rounded p-button-warning ml-2" @click="deleteConfirm(data)"
                     v-if="data.history.status.id === statuses.created || isAdmin"/>
           </template>
         </Column>

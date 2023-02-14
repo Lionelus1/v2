@@ -1,10 +1,10 @@
 <template>
   <div :style="organization ? 'margin:-1em; margin-top:0' : ''">
     <div
-      class="content-section introduction"
+      class="introduction"
       :style="organization ? 'margin-top:-1.5em; margin-bottom:1.5em' : ''"
     >
-      <div class="feature-intro p-ml-3">
+      <div class="feature-intro ml-3">
         <h4 style="display: inline">
           {{
             personType === PersonType.IndividualEntrepreneur
@@ -14,8 +14,8 @@
         </h4>
       </div>
     </div>
-    <div class="content-section implementation">
-      <div class="card p-p-0">
+    <div class="card implementation">
+      <div class="card p-0">
         <div class="p-col">
           <Menubar
             :model="menu"
@@ -33,7 +33,7 @@
               <Button
                 icon="pi pi-search"
                 style="height: 30px"
-                class="p-ml-1"
+                class="ml-1"
                 @click="initApiCall"
               />
             </template>

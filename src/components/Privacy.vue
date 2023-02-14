@@ -1,6 +1,6 @@
 <template>
-  <div class="col-6 p-my-5 p-mx-auto">
-    <div class="card p-mt-5 p-mb-5">
+  <div class="col-6 my-5 mx-auto">
+    <div class="card mt-5 mb-5">
       <div data-hook="blocks-collection-content-node" data-tilda-project-id="3182786" data-tilda-page-id="17096721"
            data-tilda-page-alias="privacy" data-tilda-formskey="8032001afef4205199d6ea902415e785" data-tilda-lazy="yes">
         <h5 class="card-title text-center"><b>Мобильное приложение Smart.ENU</b></h5>

@@ -7,7 +7,7 @@
       <div class="product-grid-item card">
         <h5>{{ $t("faq.question") }}</h5>
 
-        <div class="product-grid-item-top p-mb-2 grid">
+        <div class="product-grid-item-top mb-2 grid">
           <div class="lg:col-2 md:col-6 p-sm-6">
                         <span>
                         <i class="fa-solid fa-at product-category-icon"></i>
@@ -40,7 +40,7 @@
           <Button :label="$t('faq.attachments')" icon="pi pi-download" @click="downloadFile(question.filePath)"></Button>
         </div>
         <div v-if="question.state.id ==1 && findRole(null, 'faq_receiption_request_admin')" class="p-w-100 text-right">
-          <Button :label="$t('common.send')" @click="sendDialog = true" class="p-button-info p-mt-2 "></Button>
+          <Button :label="$t('common.send')" @click="sendDialog = true" class="p-button-info mt-2 "></Button>
         </div>
 
 
@@ -49,7 +49,7 @@
       <div v-if="question.replier" class="product-grid-item card">
         <h5>{{ $t("faq.answer") }}</h5>
 
-        <div class="product-grid-item-top p-mb-2">
+        <div class="product-grid-item-top mb-2">
           <div class="col-12 grid">
             <div v-if="loginedUser" class="lg:col-6  md:col-6 p-sm-6">
                             <span v-if="question.replier != null">
@@ -67,7 +67,7 @@
           <div v-if="loginedUser && question.replier.userID && loginedUser.userID == question.replier.userID">
             <Editor :readonly="question.state.id !=8" v-model="question.answer" editorStyle="height: 200px"/>
             <div class="p-w-100 text-right">
-              <Button v-if="question.state.id ==8" :label="$t('faq.toAnswer')" class="p-button-info p-mt-2" @click="answer"></Button>
+              <Button v-if="question.state.id ==8" :label="$t('faq.toAnswer')" class="p-button-info mt-2" @click="answer"></Button>
             </div>
           </div>
           <div v-else class="block-with-text" v-html="question.answer"></div>
@@ -76,7 +76,7 @@
       </div>
     </div>
     <Dialog @hide="responsible=null" :header="$t('common.sendToResponsible')" v-model:visible="sendDialog" :modal="true" :style="{width: '75vw'}">
-      <div class="p-field">
+      <div class="field">
         <label>{{ this.$t("queue.responsible") }}</label>
         <FindUser v-model="responsible" :max="1" style="width:100%" :editMode="false"/>
       </div>

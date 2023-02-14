@@ -23,13 +23,13 @@
           <template #option="slotProps">
             <div class="user-item grid">
               <div class="user-list-detail lg:col-10  md:col-9 p-sm-12">
-                <h5 class="p-mb-2">{{ slotProps.option.user != null ? slotProps.option.user.fullName : ""  }}</h5>
+                <h5 class="mb-2">{{ slotProps.option.user != null ? slotProps.option.user.fullName : ""  }}</h5>
                 <span class="product-category">{{ slotProps.option.dissertation != null ? slotProps.option.dissertation['name'+$i18n.locale] :""}}</span>
               </div>
             </div>
           </template>
         </Listbox>
-        <div v-else class="p-field grid">
+        <div v-else class="fieldgrid">
           <label for="firstname" style="height:33px;" class="col-fixed">{{ $t('common.message.recordNotFound') }}</label>
           <div v-if="editMode" class="p-col">
               <Button class="p-button-link"  @click="showUserDialog()">{{$t('common.createNew')}}</Button>

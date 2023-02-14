@@ -123,7 +123,7 @@
                 <div><b>{{ plan.lang === 1 ? 'Есеп' : plan.lang === 2 ? 'Отчет' : 'Report' }}</b></div>
                 <div v-if="item.event_result">
                   <div class="text" v-for="(resItem, resIndex) in item.event_result.result_text" :key="resIndex">
-                    <p style="color: #a3a3a3;padding-top: 20px; font-size: 11pt;font-weight: 600;"><i class="fa-solid fa-user p-mr-1"></i>{{resItem.user.fullName }}</p>
+                    <p style="color: #a3a3a3;padding-top: 20px; font-size: 11pt;font-weight: 600;"><i class="fa-solid fa-user mr-1"></i>{{resItem.user.fullName }}</p>
                     <span v-html="resItem.text"></span>
                   </div>
                 </div>

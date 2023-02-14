@@ -21,14 +21,14 @@
         </div>
       </Sidebar>
       <div class="card">
-        <div class="p-field">
-          <div class="grid p-formgrid">
-            <div class="col-10 p-mb-2 lg:col-2 p-mb-lg-0 vac-center">
+        <div class="field">
+          <div class="grid formgrid">
+            <div class="col-10 mb-2 lg:col-2 mb-lg-0 vac-center">
               <label class="bold uppercase">{{
                 $t("common.myData")
               }}</label>
             </div>
-            <div class="col-10 p-mb-2 lg:col-3 p-mb-lg-0">
+            <div class="col-10 mb-2 lg:col-3 mb-lg-0">
               <ToggleButton
                 style="width: 210px"
                 @change="saveMyDetails"
@@ -40,7 +40,7 @@
                 onIcon="pi pi-pencil"
               />
             </div>
-            <div class="col-10 p-mb-2 lg:col-3 p-mb-lg-0">
+            <div class="col-10 mb-2 lg:col-3 mb-lg-0">
               <Button
                 style="width: 210px"
                 v-if="
@@ -65,8 +65,8 @@
           </div>
         </div>
         <div>
-          <div class="grid p-formgrid">
-            <div class="col-12 p-mb-2 lg:col-3 p-mb-lg-0 p-field grid">
+          <div class="grid formgrid">
+            <div class="col-12 mb-2 lg:col-3 mb-lg-0 fieldgrid">
               <label class="col-fixed" style="width: 60px">{{
                 $t("common.status")
               }}</label>
@@ -96,7 +96,7 @@
                 myDetails.status == VS_FirstComponent ||
                 myDetails.status == VS_Vaccinated
               "
-              class="col-12 p-mb-2 lg:col-3 p-mb-lg-0 p-field grid"
+              class="col-12 mb-2 lg:col-3 mb-lg-0 fieldgrid"
             >
               <label class="col-fixed" style="width: 60px">{{
                 $t("vaccination.vaccine")
@@ -135,7 +135,7 @@
             </div>
             <div
               v-if="myDetails.status == VS_FirstComponent"
-              class="col-12 p-mb-2 lg:col-3 p-mb-lg-0 p-field grid"
+              class="col-12 mb-2 lg:col-3 mb-lg-0 fieldgrid"
             >
               <label class="col-fixed" style="width: 60px"
                 >{{ $t("common.date") }}
@@ -155,7 +155,7 @@
             </div>
             <div
               v-if="myDetails.status == VS_Vaccinated"
-              class="col-12 p-mb-2 lg:col-3 p-mb-lg-0 p-field grid"
+              class="col-12 mb-2 lg:col-3 mb-lg-0 fieldgrid"
             >
               <label class="col-fixed" style="width: 60px"
                 >{{ $t("common.date") }}
@@ -175,7 +175,7 @@
             </div>
             <div
               v-if="myDetails.status == VS_Planned"
-              class="col-12 p-mb-2 lg:col-3 p-mb-lg-0 p-field grid"
+              class="col-12 mb-2 lg:col-3 mb-lg-0 fieldgrid"
             >
               <label class="col-fixed" style="width: 60px"
                 >{{ $t("common.date") }}
@@ -198,7 +198,7 @@
                 myDetails.status == VS_Vaccinated ||
                 myDetails.status == VS_FirstComponent
               "
-              class="col-12 p-mb-2 lg:col-3 p-mb-lg-0 p-field grid"
+              class="col-12 mb-2 lg:col-3 mb-lg-0 fieldgrid"
             >
               <label class="col-fixed" style="width: 60px"
                 >{{ $t("vaccination.clinic") }}
@@ -214,7 +214,7 @@
             </div>
             <div
               v-if="myDetails.status == VS_Rejected"
-              class="col-12 p-mb-2 lg:col-4 p-mb-lg-0 p-field grid"
+              class="col-12 mb-2 lg:col-4 mb-lg-0 fieldgrid"
             >
               <label class="col-fixed" style="width: 60px"
                 >{{ $t("common.reason") }}
@@ -244,7 +244,7 @@
                 :chooseLabel="$t('vaccination.doctorsNote')"
               ></FileUpload>
             </div>
-            <div class="p-mt-2 p-col vac-center"></div>
+            <div class="mt-2 p-col vac-center"></div>
           </div>
         </div>
         <br />
@@ -487,13 +487,13 @@
               <Button
                 v-if="slotProps.data.status == VS_Vaccinated"
                 icon="pi pi-download"
-                class="p-button-rounded p-button-success p-mr-2"
+                class="p-button-rounded p-button-success mr-2"
                 @click="downloadFile(slotProps.data.pasportPath, VS_Vaccinated)"
               />
               <Button
                 v-else-if="slotProps.data.status == VS_Rejected"
                 icon="pi pi-download"
-                class="p-button-rounded p-button-success p-mr-2"
+                class="p-button-rounded p-button-success mr-2"
                 @click="
                   downloadFile(slotProps.data.doctorsNotePath, VS_Rejected)
                 "

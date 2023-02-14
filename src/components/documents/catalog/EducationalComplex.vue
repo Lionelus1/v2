@@ -3,39 +3,39 @@
     <BlockUI :blocked="approving" :fullScreen="true"></BlockUI>
 
     <div>
-      <h4 class="p-ml-3">{{ $t("educomplex.title") }}</h4>
-      <Toolbar class="p-m-0 p-p-1" style="position:relative;">
+      <h4 class="ml-3">{{ $t("educomplex.title") }}</h4>
+      <Toolbar class="m-0 p-1" style="position:relative;">
 
         <template #start>
           <Button :disabled="selected===null || file.depType !=2" @click="resetFileInfo();openDialog('fileUpload')"
-                  class="p-button-info p-p-1 p-mr-2"><i
+                  class="p-button-info p-1 mr-2"><i
               class="fa-solid fa-file-circle-plus fa-xl"></i>&nbsp;{{ $t('common.add') }}
           </Button>
           <Button v-if="loginedUser != null && loginedUser.userID == file.ownerId && file.stateID == 1"
                   :disabled="selected===null || file.depType !=3" @click="openDialog('sendToApprove')"
-                  class=" p-button-info p-p-1 p-mr-2"><i
+                  class=" p-button-info p-1 mr-2"><i
               class="fa-solid fa-file-contract fa-xl"></i>&nbsp;{{ $t('common.toapprove') }}
           </Button>
           <Button v-if="loginedUser != null && loginedUser.userID != file.ownerId && file.stateID == 2"
                   :disabled="selected===null || file.depType !=3" @click="openDialog('revision')"
-                  class=" p-button-warning p-p-1 p-mr-2"><i class="fa-solid fa-file-circle-exclamation fa-xl"></i>&nbsp;{{
+                  class=" p-button-warning p-1 mr-2"><i class="fa-solid fa-file-circle-exclamation fa-xl"></i>&nbsp;{{
               $t('common.revision')
             }}
           </Button>
           <Button v-if="loginedUser != null && loginedUser.userID == file.ownerId && file.stateID == 4"
                   @click="openDialog('fileUpload')" :disabled="selected===null || file.depType !=3"
-                  class="p-button-help p-p-1 p-mr-2"><i
+                  class="p-button-help p-1 mr-2"><i
               class="fa-solid fa-file-pen fa-xl"></i>&nbsp;{{ $t('common.edit') }}
           </Button>
           <Button type="button" icon="pi pi-search"
                   :label="$t('common.search')" @click="toggle('global-filter', $event)" aria:haspopup="true"
-                  aria-controls="overlay_panel" class="p-button-info p-p-1"><i class="fa-solid fa-filter fa-xl"></i>&nbsp;{{
+                  aria-controls="overlay_panel" class="p-button-info p-1"><i class="fa-solid fa-filter fa-xl"></i>&nbsp;{{
               $t('common.filter')
             }}
           </Button>
           <OverlayPanel ref="global-filter">
             <div class="p-fluid">
-              <div class="p-field">
+              <div class="field">
                 <label for="status-filter">{{ $t('common.status') }}</label>
                 <Dropdown v-model="filters.status.value"
                           :options="statuses"
@@ -68,7 +68,7 @@
                   </template>
                 </Dropdown>
               </div>
-              <div class="p-field">
+              <div class="field">
                 <label>{{ $t('faq.createDate') }}</label>
                 <Dropdown v-model="filters.createDate.matchMode" :options="numMatches" optionLabel="value"
                           optionValue="value" :placeholder="$t('common.select')">
@@ -84,21 +84,21 @@
                   </template>
                 </Dropdown>
                 <PrimeCalendar
-                    class="p-mt-2"
+                    class="mt-2"
                     :placeholder="$t('faq.createDate')"
                     v-model="filters.createDate.value"
                     dateFormat="dd.mm.yy"/>
               </div>
-              <div class="p-field">
-                <Button :label="$t('common.clear')" @click="clearFilter(true)" class="p-mb-2 p-button-outlined"/>
+              <div class="field">
+                <Button :label="$t('common.clear')" @click="clearFilter(true)" class="mb-2 p-button-outlined"/>
                 <Button :label="$t('common.search')" @click="getFoldersByGlobalFilter" class="mt-2"/>
               </div>
             </div>
           </OverlayPanel>
-          <!--    <Button @click="deleteFile(false)" :disabled="selected===null || file.type !=1" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-file-circle-minus fa-xl"></i></Button>
-          <Button v-if="!file.hidden" @click="deleteFile(true)" :disabled="selected===null || file.type !=1" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-eye-slash fa-xl"></i></Button>
-          <Button v-if="file.hidden" @click="showFile()" :disabled="selected===null || file.type !=1" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-eye fa-xl"></i></Button>
-          <Button @click="downloadFile()" :disabled="selected===null || file.type !=1" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-file-arrow-down fa-xl"></i></Button> -->
+          <!--    <Button @click="deleteFile(false)" :disabled="selected===null || file.type !=1" class="p-button-text p-button-info p-1"><i class="fa-solid fa-file-circle-minus fa-xl"></i></Button>
+          <Button v-if="!file.hidden" @click="deleteFile(true)" :disabled="selected===null || file.type !=1" class="p-button-text p-button-info p-1"><i class="fa-solid fa-eye-slash fa-xl"></i></Button>
+          <Button v-if="file.hidden" @click="showFile()" :disabled="selected===null || file.type !=1" class="p-button-text p-button-info p-1"><i class="fa-solid fa-eye fa-xl"></i></Button>
+          <Button @click="downloadFile()" :disabled="selected===null || file.type !=1" class="p-button-text p-button-info p-1"><i class="fa-solid fa-file-arrow-down fa-xl"></i></Button> -->
         </template>
       </Toolbar>
       <TreeTable ref="edutreetable" :scrollable="true" :scrollHeight="windowHeight + 'px'" class="p-treetable-sm"
@@ -115,11 +115,11 @@
                     aria-controls="overlay_panel" class="p-button-link" />
             <OverlayPanel ref="op">
               <div class="p-fluid">
-                <div class="p-field">
+                <div class="field">
                   <label for="search-input">{{ $t('common.name') }}</label>
                   <InputText id="search-input" v-model="filters.name.value" type="search"/>
                 </div>
-                <div class="p-field">
+                <div class="field">
                   <label for="status-filter">{{ $t('common.status') }}</label>
                   <Dropdown v-model="filters.status.value" :options="statuses" placeholder="Any" class="p-column-filter" :showClear="true">
                     <template #value="slotProps">
@@ -134,7 +134,7 @@
                     </template>
                   </Dropdown>
                 </div>
-                <div class="p-field">
+                <div class="field">
                   <label>{{ $t('faq.createDate') }}</label>
                   <Dropdown v-model="filters.createDate.matchMode" :options="numMatches" optionLabel="value" optionValue="value" :placeholder="$t('common.select')">
                     <template #value="slotProps">
@@ -148,10 +148,10 @@
                       </span>
                     </template>
                   </Dropdown>
-                  <PrimeCalendar class="p-mt-2" :placeholder="$t('faq.createDate')" v-model="filters.createDate.value" dateFormat="dd.mm.yy"/>
+                  <PrimeCalendar class="mt-2" :placeholder="$t('faq.createDate')" v-model="filters.createDate.value" dateFormat="dd.mm.yy"/>
                 </div>
-                <div class="p-field">
-                  <Button :label="$t('common.clear')" @click="clearFilter(false)" class="p-mb-2 p-button-outlined"/>
+                <div class="field">
+                  <Button :label="$t('common.clear')" @click="clearFilter(false)" class="mb-2 p-button-outlined"/>
                   <Button :label="$t('common.search')" @click="getFoldersByFilter" class="mt-2"/>
                 </div>
               </div>
@@ -161,17 +161,17 @@
                     aria-haspopup="true" aria-controls="overlay_panel_dean" class="p-button-link" />
             <OverlayPanel ref="deanOverlay" id="overlay_panel_dean">
               <div class="p-fluid">
-                <div class="p-field" v-if="parent.depType === 1">
+                <div class="field" v-if="parent.depType === 1">
                   <label>Декан</label>
                   {{ parent.dean }}
                   <Dropdown :options="parent.dean" optionLabel="fullName" optionValue="id" :placeholder="$t('common.select')" />
                 </div>
-                <div class="p-field" v-if="parent.depType === 2">
+                <div class="field" v-if="parent.depType === 2">
                   <label>Заведующий кафедры</label>
                   {{ parent.umr }}
                   <Dropdown :options="parent.umr" optionLabel="fullName" optionValue="id" :placeholder="$t('common.select')" />
                 </div>
-                <div class="p-field">
+                <div class="field">
                   <Button :label="$t('common.choose')" class="mt-2"/>
                 </div>
               </div>
@@ -202,16 +202,16 @@
         <Column field="path">
           <template #body="slotProps">
             <Button v-if="slotProps.node.path != null" @click="downloadFile(slotProps.node.path)"
-                    class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-file-arrow-down fa-xl"></i></Button>
+                    class="p-button-text p-button-info p-1"><i class="fa-solid fa-file-arrow-down fa-xl"></i></Button>
             <Button v-if="slotProps.node.key != null && slotProps.node.depType ===3 && slotProps.node.stateID !==4"
                     @click="onNodeSelect(slotProps.node);openDialog('signerInfo')"
-                    class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-eye fa-xl"></i></Button>
+                    class="p-button-text p-button-info p-1"><i class="fa-solid fa-eye fa-xl"></i></Button>
             <Button v-if="slotProps.node.key != null && slotProps.node.depType ===3 &&  slotProps.node.stateID ===4"
                     @click="onNodeSelect(slotProps.node);openDialog('docInfo')"
-                    class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-eye fa-xl"></i></Button>
+                    class="p-button-text p-button-info p-1"><i class="fa-solid fa-eye fa-xl"></i></Button>
             <Button
                 v-if="slotProps.node.key != null && slotProps.node.depType ===3 && slotProps.node.stateID !== 7 && loginedUser.userID === slotProps.node.ownerId"
-                @click="onNodeSelect(slotProps.node);deleteFile(false)" class="p-button-text p-button-danger p-p-1">
+                @click="onNodeSelect(slotProps.node);deleteFile(false)" class="p-button-text p-button-danger p-1">
               <i class="fa-solid fa-trash fa-xl"></i></Button>
           </template>
         </Column>
@@ -235,7 +235,7 @@
     <Dialog :header="$t('common.action.sendToApprove')" v-model:visible="dialogOpenState.sendToApprove"
             :style="{width: '50vw'}" class="p-fluid">
       <ProgressBar v-if="approving" mode="indeterminate" style="height: .5em"/>
-      <div class="p-field">
+      <div class="field">
         <ApprovalUsers :key="approveComponentKey" :approving="approving" v-model="selectedUsers"
                        @closed="closeDialog('sendToApprove')"
                        @approve="approve($event)" :stages="stages"></ApprovalUsers>
@@ -244,9 +244,9 @@
     <Dialog :modal="true" v-bind:header="$t('common.revision')" v-model:visible="dialogOpenState.revision"
             :style="{width: '50vw'}">
       <div class="p-fluid">
-        <div class="p-field">
+        <div class="field">
           <label for="dialognote">{{ $t('common.comment') }}</label>
-          <InputText id="dialognote" class="p-mb-2" v-bind:placeholder="$t('common.comment')" v-model="revisionComment"
+          <InputText id="dialognote" class="mb-2" v-bind:placeholder="$t('common.comment')" v-model="revisionComment"
                      type="text"/>
         </div>
       </div>
@@ -258,17 +258,17 @@
     </Dialog>
     <!-- <Dialog :modal="true" v-bind:header="$t('hdfs.umktitle')" v-model:visible="dialogOpenState.umkParams" :style="{width: '60vw'}" class="p-fluid">
     <div class="p-fluid">
-        <div class="p-field">
+        <div class="field">
             <label for="module">{{$t('hdfs.modulname')}}</label>
-            <InputText id="module" class="p-mb-2" v-bind:placeholder="$t('hdfs.modulname')" v-model="revisionComment" type="text" />
+            <InputText id="module" class="mb-2" v-bind:placeholder="$t('hdfs.modulname')" v-model="revisionComment" type="text" />
         </div>
-        <div class="p-field">
+        <div class="field">
             <label for="eduprogram">{{$t('hdfs.eduprogram')}}</label>
-            <InputText id="eduprogram" class="p-mb-2" v-bind:placeholder="$t('hdfs.eduprogram')" v-model="revisionComment" type="text" />
+            <InputText id="eduprogram" class="mb-2" v-bind:placeholder="$t('hdfs.eduprogram')" v-model="revisionComment" type="text" />
         </div>
-        <div class="p-field">
+        <div class="field">
             <label for="discipline">{{$t('hdfs.discipline')}}</label>
-            <InputText id="discipline" class="p-mb-2" v-bind:placeholder="$t('hdfs.discipline')" v-model="revisionComment" type="text" />
+            <InputText id="discipline" class="mb-2" v-bind:placeholder="$t('hdfs.discipline')" v-model="revisionComment" type="text" />
         </div>
         </div>
         <template #footer>

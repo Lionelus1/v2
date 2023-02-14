@@ -7,7 +7,7 @@
       <DataTable :lazy="true" :loading="loading" :value="data" :rows="10" dataKey="id" :rowHover="true" responsiveLayout="scroll">
         <template #header>
           <div class="flex justify-content-between align-items-center">
-            <h5 class="p-m-0">{{ $t('workPlan.reports') }}</h5>
+            <h5 class="m-0">{{ $t('workPlan.reports') }}</h5>
           </div>
         </template>
         <template #empty> {{ $t('common.noData') }}</template>
@@ -55,7 +55,7 @@
         <Column>
           <template #body="{ data }">
             <Button type="button" v-if="data.creator_id === loginedUserId && data.status.work_plan_status_id === 1"
-                    icon="pi pi-trash" class="p-button-danger p-mr-2"
+                    icon="pi pi-trash" class="p-button-danger mr-2"
                     label="" @click="deleteConfirm(data)"></Button>
           </template>
         </Column>

@@ -2,10 +2,10 @@
   <div>
     <div class="col-12">
 
-      <Toolbar class="p-mb-4">
+      <Toolbar class="mb-4">
         <template #end>
-          <Button v-if="isDissertationAdmin" icon="pi pi-plus" class="p-button-success p-mr-2" @click="showAddCouncilDialog()" />
-          <Button v-if="isDissertationAdmin" icon="pi pi-print" class="p-button-info p-mr-2" @click="openNew" />
+          <Button v-if="isDissertationAdmin" icon="pi pi-plus" class="p-button-success mr-2" @click="showAddCouncilDialog()" />
+          <Button v-if="isDissertationAdmin" icon="pi pi-print" class="p-button-info mr-2" @click="openNew" />
           <Button v-if="isDissertationAdmin"  icon="pi pi-trash" class="p-button-danger" @click="deleteCouncil()" :disabled="!selectedCouncil"/>
         </template>
         <template #start>
@@ -67,22 +67,22 @@
           </DataTable>
           <Dialog v-model:visible="dialog.addCouncil.state" :style="{width: '450px'}" :header="$t('dissertation.title')" :modal="true" class="p-fluid">
             <div class="p-fluid">
-                <div class="p-field">
+                <div class="field">
                   <label for="name">{{$t('dissertation.specialityCode')}}</label>
                   <SpecialitySearch :educationLevel="Enums.EducationLevel.Doctorate"  v-model="newCouncil.specialities" id="name"></SpecialitySearch>
                   <small class="p-error" v-if="(submitted && validationErrors.speciality)">{{$t('dissertation.validationErrors.selectSpeciality')}}</small>
                 </div>
-                <div class="p-field">
+                <div class="field">
                   <label for="name">{{$t('common.faculty')}}</label>
                   <DepartmentList :autoLoad="true" v-model="newCouncil.department" :placeHolder="$t('smartenu.selectFaculty')"></DepartmentList>
                   <small class="p-error" v-if="submitted && validationErrors.faculty">{{$t('dissertation.validationErrors.selectDepartment')}}</small>
                 </div>
-                <div class="p-field">
+                <div class="field">
                   <label for="name">{{$t('dissertation.secretary')}}</label>
                   <FindUser v-model="newCouncil.members" :max="1"></FindUser>
                   <small class="p-error" v-if="submitted && validationErrors.members">{{$t('dissertation.validationErrors.selectSecretary')}}</small>
                 </div>
-                <div class="p-field">
+                <div class="field">
                   <label for="name">{{$t('faq.createDate')}}</label>
                   <PrimeCalendar 
                   style="width: 150px"

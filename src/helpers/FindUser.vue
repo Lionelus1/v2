@@ -28,7 +28,7 @@
                      src="assets/layout/images/default-user.jpg"/>
               </div>
               <div class="user-list-detail lg:col-10  md:col-9 p-sm-12">
-                <h5 class="p-mb-2">{{ slotProps.option.fullName }}</h5>
+                <h5 class="mb-2">{{ slotProps.option.fullName }}</h5>
                 <span class="product-category">{{ slotProps.option.mainPosition['name' + $i18n.locale] }}</span><br/>
                 <span class="product-category">{{ slotProps.option.mainPosition.department['name' + $i18n.locale.charAt(0).toUpperCase() + $i18n.locale.slice(1)] }}</span>
 
@@ -36,7 +36,7 @@
             </div>
           </template>
         </Listbox>
-        <div v-else class="p-field grid">
+        <div v-else class="fieldgrid">
           <label for="firstname" style="height:33px;" class="col-fixed">{{ $t('common.message.recordNotFound') }}</label>
           <div v-if="editMode" class="p-col">
               <Button class="p-button-link"  @click="showUserDialog()">{{$t('common.createNew')}}</Button>

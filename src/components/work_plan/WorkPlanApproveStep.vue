@@ -17,9 +17,9 @@
         <label class="v-step-item-label">
            <span v-for="(it, ind) of label" :key="ind">
              {{ it.user.fullName }}
-             <i v-if="it.is_success" class="pi pi-check-circle p-ml-2 p-message-success"
+             <i v-if="it.is_success" class="pi pi-check-circle ml-2 p-message-success"
                 style="font-size: 1.2rem;color: #3eaf7c"></i>
-          <i v-if="!it.is_success" class="pi pi-spinner p-ml-2" style="font-size: 1.2rem;color: #c63737"></i> <br/>
+          <i v-if="!it.is_success" class="pi pi-spinner ml-2" style="font-size: 1.2rem;color: #c63737"></i> <br/>
            </span>
         </label>
         <div
