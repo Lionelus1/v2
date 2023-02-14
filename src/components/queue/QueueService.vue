@@ -2,7 +2,7 @@
     <div class="card">
         <Toolbar class="p-mb-4 font-style p-jc-center">        
         <template #start>
-            <div class="p-d-flex p-flex-wrap-reverse">
+            <div class="flex p-flex-wrap-reverse">
             <div class="p-mr-2 p-mb-2" :label="$t('smartenu.newsList')">5</div> 
             </div>
         </template>

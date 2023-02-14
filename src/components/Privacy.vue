@@ -3,8 +3,8 @@
     <div class="card p-mt-5 p-mb-5">
       <div data-hook="blocks-collection-content-node" data-tilda-project-id="3182786" data-tilda-page-id="17096721"
            data-tilda-page-alias="privacy" data-tilda-formskey="8032001afef4205199d6ea902415e785" data-tilda-lazy="yes">
-        <h5 class="card-title p-text-center"><b>Мобильное приложение Smart.ENU</b></h5>
-        <h3 class="p-text-center"><strong>Пользовательское соглашение для использования мобильного приложения Smart.ENU</strong></h3>
+        <h5 class="card-title text-center"><b>Мобильное приложение Smart.ENU</b></h5>
+        <h3 class="text-center"><strong>Пользовательское соглашение для использования мобильного приложения Smart.ENU</strong></h3>
         <div data-record-type="106">
           <div>
             <div>

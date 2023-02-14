@@ -18,7 +18,7 @@
                       </span>
                   </div>
               </div>
-              <div class="p-w-100 p-text-right p-pr-2">
+              <div class="p-w-100 text-right p-pr-2">
                   <Button :label="$t('common.login')" icon="pi pi-check" @click="login" iconPos="right" />
               </div>
             </TabPanel>

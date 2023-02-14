@@ -10,7 +10,7 @@
 					</template>
 
 					<template v-slot:right>
-						<FileUpload mode="basic" accept="image/*" :maxFileSize="1000000" label="Import" chooseLabel="Import" class="p-mr-2 p-mb-2 p-d-inline-block" />
+						<FileUpload mode="basic" accept="image/*" :maxFileSize="1000000" label="Import" chooseLabel="Import" class="p-mr-2 p-mb-2 inline-block" />
 						<Button label="Export" icon="pi pi-upload" class="p-button-help p-mb-2" @click="exportCSV($event)"  />
 					</template>
 				</Toolbar>

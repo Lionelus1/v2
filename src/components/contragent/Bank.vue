@@ -49,7 +49,7 @@
 				</div>
 			</div>
 			<div class="card">
-				<div class="p-text-uppercase p-mb-2">{{this.$t('contact.title')}}</div>
+				<div class="uppercase p-mb-2">{{this.$t('contact.title')}}</div>
 				<div class="grid p-formgrid">
 					<div class="col-12 p-mb-2 p-pb-2 lg:col-6 p-mb-lg-0">
 						<label>{{this.$t('contact.bin')}}</label>

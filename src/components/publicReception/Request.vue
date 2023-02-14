@@ -6,7 +6,7 @@
         </BlockUI>
 
 			<div class="card p-fluid">
-				<h5 class="p-text-center p-text-uppercase">{{$t("publicReception.title")}}</h5>
+				<h5 class="text-center uppercase">{{$t("publicReception.title")}}</h5>
                 
                 <SelectButton class="p-mb-2" v-model="language" :options="languages" optionLabel="name" @change="changeLanguage" />
 		        

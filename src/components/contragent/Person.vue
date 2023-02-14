@@ -212,7 +212,7 @@
         </div>
       </div>
       <div class="card">
-        <div class="p-text-uppercase p-mb-2">
+        <div class="uppercase p-mb-2">
           {{ this.$t("contact.title") }}
         </div>
         <div class="grid p-formgrid">
@@ -282,7 +282,7 @@
       <Accordion v-if="addMode || isAdmin" style="margin-left: -14px; margin-right: -14px">
         <AccordionTab>
           <template #header>
-            <div class="p-text-uppercase">
+            <div class="uppercase">
               {{ this.$t("contact.idcard.requisite") }}
             </div>
           </template>
@@ -337,7 +337,7 @@
         </AccordionTab>
         <AccordionTab v-if="addMode || isAdmin">
           <template #header>
-            <div class="p-text-uppercase">{{ this.$t("bank.requisite") }}</div>
+            <div class="uppercase">{{ this.$t("bank.requisite") }}</div>
           </template>
           <div class="card">
             <div class="grid p-formgrid">

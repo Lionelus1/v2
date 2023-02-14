@@ -93,7 +93,7 @@
               >
                 <template #body="slotProps">
                   <Button
-                    class="p-button-link p-text-left"
+                    class="p-button-link text-left"
                     @click="toggle($event, slotProps.data)"
                     >{{
                       slotProps.data.thirdName +

@@ -30,7 +30,7 @@
         </div>
         <div class="col-12 col-s-12" style="margin-left:0 !important;" v-if="writeMail">
             <BlockUI >
-            <div class="lg:col-4 md:col-6 p-sm-12 p-text-right" style="margin-left:0 !important;">
+            <div class="lg:col-4 md:col-6 p-sm-12 text-right" style="margin-left:0 !important;">
                 
                 <textarea class="col-12 p-mb-2" 
                 style="min-height:130px;"

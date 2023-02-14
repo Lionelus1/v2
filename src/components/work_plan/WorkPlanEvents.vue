@@ -52,7 +52,7 @@
                  v-model:expandedRows="rows" @rowExpand="onRowExpand" @rowCollapse="onRowCollapse"
                  :loading="loading" responsiveLayout="scroll">
         <template #header>
-          <div class="p-d-flex p-jc-between p-ai-center">
+          <div class="flex p-jc-between p-ai-center">
             <h5 class="p-m-0">{{ $t('workPlan.events') }} |
               <router-link tag="a" to="/work-plan">{{ $t('workPlan.plans') }}</router-link>
             </h5>

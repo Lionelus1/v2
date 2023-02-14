@@ -1,6 +1,6 @@
 <template>
   <div ref="qrToPdf" class="grid">
-    <h5 class="col-6 p-offset-3 p-text-center p-text-bold">{{ title }}</h5>
+    <h5 class="col-6 p-offset-3 text-center bold">{{ title }}</h5>
     <br/>
     <div class="col-12">
       <div id="qr" v-for="(item, index) of signatures" :key="index"

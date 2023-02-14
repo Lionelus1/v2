@@ -54,7 +54,7 @@
                  :resizableColumns="true" columnResizeMode="fit" showGridlines
                  :paginator="true" :rows="10" :total-records="total" @page="onPage($event)">
         <template #header>
-          <div class="p-d-flex p-jc-between p-ai-center">
+          <div class="flex p-jc-between p-ai-center">
             <h5 class="p-m-0">{{ $t('workPlan.events') }} |
               <router-link tag="a" to="/work-plan">{{ $t('workPlan.plans') }}</router-link>
             </h5>

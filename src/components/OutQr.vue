@@ -1,12 +1,12 @@
 
 <template>
-  <!-- <div class="feature-intro p-d-block">
+  <!-- <div class="feature-intro block">
       <h1>Smart.enu жүйесіне қош келдіңіз.</h1>
   </div> -->
   <div class="grid">
     
     <div class="col-6">
-      <div class="card p-text-center p-text-info">      
+      <div class="card text-center info">      
         <h5>SMART.ENU қосымшасы арқылы QR сканерлеңіз!</h5>
         <h5>Используйте QR сканер приложения SMART.ENU!</h5>
         <h5>Use the QR scanner of the SMART.ENU app!</h5>
@@ -17,7 +17,7 @@
       </div>
     </div>
   </div>
-  <div class="car p-text-center">
+  <div class="car text-center">
         
     </div>
   <div class="p-fluid p-formgrid grid p-jc-center p-pt-2">

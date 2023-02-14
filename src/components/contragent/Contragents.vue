@@ -101,7 +101,7 @@
                 <template #body="slotProps">
                   <Button
                     v-if="slotProps.data.type == ContragentType.Organization"
-                    class="p-button-link p-text-left"
+                    class="p-button-link text-left"
                     @click="toggle($event, slotProps.data)"
                     >{{
                       this.$i18n.locale != "ru"
@@ -117,7 +117,7 @@
                   >
                   <Button
                     v-if="slotProps.data.type == ContragentType.Person"
-                    class="p-button-link p-text-left"
+                    class="p-button-link text-left"
                     @click="toggle($event, slotProps.data)"
                     >{{
                       slotProps.data.data.lname +
@@ -130,7 +130,7 @@
                   <Button
                     v-if="slotProps.data.type == ContragentType.Bank"
                     @click="toggle($event, slotProps.data)"
-                    class="p-button-link p-text-left"
+                    class="p-button-link text-left"
                     >{{
                       this.$i18n.locale != "ru"
                         ? '"' +

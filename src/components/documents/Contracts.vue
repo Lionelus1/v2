@@ -35,7 +35,7 @@
   </div>
   <Sidebar v-model:visible="dialogOpenState.createDocDialog" position="right"
   :modal="true" :breakpoints="{'960px': '75vw', '640px': '100vw'}" :style="{width: '760px', overflow:'hidden'}">
-  <div class="p-d-flex">
+  <div class="flex">
     <SelectButton disabled="true" v-model="selectedDocSourceType" :options="docSourceType" class="p-mb-3 p-mr-3">
       <template #option="slotProps">
         <div v-if="slotProps.option == DocState.DocSourceType.Template">{{$t('contracts.fromtemplate')}}</div>
@@ -50,7 +50,7 @@
     </SelectButton>
   </div>
     <div v-if="selectedDocSourceType == DocState.DocSourceType.Template" style="overflow-y:hidden" >
-      <div class="p-d-flex">
+      <div class="flex">
 <!-- <DataTable
               class="p-datatable-sm"
               v-model:selection="selectedTemplate"

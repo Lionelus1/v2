@@ -1,9 +1,9 @@
 <template>
   <div class="ontent-section">
-    <div @click="$router.back()" class="p-d-inline-block">
+    <div @click="$router.back()" class="inline-block">
       <i class="fa-solid fa-arrow-left p-ml-2" style="font-size: 16px;cursor: pointer"></i>
     </div>
-    <h4 class="p-ml-3 p-d-inline-block"> {{ $t("contracts.contract") }}</h4>
+    <h4 class="p-ml-3 inline-block"> {{ $t("contracts.contract") }}</h4>
     <Menubar
       :model="menu"
       :key="active"
@@ -31,7 +31,7 @@
                 <label
                   v-if="param.name == 'contragent' || param.name == 'ourside'"
                   :for="param.name + param.id"
-                  class="col-12 p-mb-12 md:col-12 p-mb-md-0 p-text-uppercase"
+                  class="col-12 p-mb-12 md:col-12 p-mb-md-0 uppercase"
                   >{{ $t("doctemplate.editor." + param.name) }}</label
                 >
                 <label

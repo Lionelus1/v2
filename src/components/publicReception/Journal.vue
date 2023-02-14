@@ -16,14 +16,14 @@
                   <i class="fa-solid fa-tags product-category-icon"></i>
                   <small class="product-category">{{ slotProps.data.category['name' + $i18n.locale].split("(")[0] }}</small>
                 </div>
-                <div class="lg:col-3  md:col-3 p-sm-6  p-text-right">
+                <div class="lg:col-3  md:col-3 p-sm-6  text-right">
                   <span v-if="adminMode"
                         :class="'customer-badge status-' + slotProps.data.state.id">{{ $t("common.states." + slotProps.data.state.code) }}</span>
                 </div>
                 <div class="lg:col-3  md:col-3 p-sm-6">
                   <small>№&nbsp;{{ slotProps.data.id }}</small>
                 </div>
-                <div class="lg:col-3  md:col-3 p-sm-6 p-text-right">
+                <div class="lg:col-3  md:col-3 p-sm-6 text-right">
                   <span v-if="slotProps.data.expired">
                     <i class="fa-solid fa-calendar-days product-error-icon"></i>
                   </span>
@@ -45,7 +45,7 @@
                   <small class="product-category">{{ slotProps.data.lastName + " " + slotProps.data.firstName }}</small>
                 </span>
                 </div>
-                <div class="lg:col-3 md:col-3 p-sm-6 p-text-right">
+                <div class="lg:col-3 md:col-3 p-sm-6 text-right">
                   <div v-if="adminMode">
               <span v-if="slotProps.data.replier">
                 <i class="fa-solid fa-user-tag product-category-icon"></i>
@@ -59,7 +59,7 @@
                   <Button v-if="slotProps.data.filePath" :label="$t('faq.attachments')" icon="pi pi-download"
                           @click="downloadFile(slotProps.data.filePath)"></Button>
                 </div>
-                <div class="lg:col-3 md:col-3 p-sm-6  p-text-right">
+                <div class="lg:col-3 md:col-3 p-sm-6  text-right">
                   <router-link :to="{ name: 'ReceptionQuestion', params: { id: slotProps.data.id } }" tag="a">
                     <Button :label="$t('common.more')" class="p-button-outlined p-button-info"></Button>
                   </router-link>

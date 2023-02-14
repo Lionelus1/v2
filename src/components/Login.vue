@@ -1,6 +1,6 @@
 <template>
   <div style="overflow-x: hidden">
-    <!-- <div class="feature-intro p-d-block">
+    <!-- <div class="feature-intro block">
   <h1>Smart.enu жүйесіне қош келдіңіз.</h1>
 </div> -->
     <div class="lang_dropdown">
@@ -9,7 +9,7 @@
     <div class="grid">
       <div class="col-12">
         <div class="card welcome_text_block">
-          <h5 class="p-text-center p-text-uppercase">{{ $t("common.loginWelcome") }}</h5>
+          <h5 class="text-center uppercase">{{ $t("common.loginWelcome") }}</h5>
           <Avatar icon="pi pi-user" class="mr-2" size="xlarge"/>
           <Avatar icon="pi pi-user" class="mr-2" size="large" style="background-color:#2196F3; color: #ffffff"/>
           <Avatar icon="pi pi-user" class="mr-2" style="background-color:#9c27b0; color: #ffffff"/>
@@ -18,7 +18,7 @@
     </div>
 
     <div class="grid">
-      <div class="col-12 p-text-center">
+      <div class="col-12 text-center">
         <img src="/assets/layout/images/logo_eng.png" alt="Image" width="250"/>
       </div>
     </div>
@@ -43,7 +43,7 @@
                         @keyup.enter="login"></Password>
             </div>
           </div>
-          <div class="p-w-100 p-text-right">
+          <div class="p-w-100 text-right">
             <Button :label="$t('common.login')" icon="pi pi-check" @click="login" iconPos="right"/>
           </div>
         </TabPanel>
@@ -271,7 +271,7 @@ export default {
     top: 15px;
     left: 15px;
   }
-  h5.p-text-center {
+  h5.text-center {
     text-align: left !important;
   }
 }

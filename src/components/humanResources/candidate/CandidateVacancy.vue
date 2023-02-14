@@ -32,8 +32,8 @@
              @sort="onSort($event)">
     <!--  HEADER -->
     <template #header>
-      <div class="table-header p-d-flex p-flex-column p-flex-md-row p-jc-md-between">
-        <h4 class="p-mb-2 p-m-md-0 p-as-md-center">{{ $t("hr.vacancies") }}</h4>
+      <div class="table-header flex p-flex-column p-flex-md-row p-jc-md-between">
+        <h4 class="p-mb-2 p-m-md-0 align-self-md-center">{{ $t("hr.vacancies") }}</h4>
         <span class="p-input-icon-left">
             <i class="pi pi-search"/>
             <InputText type="search"

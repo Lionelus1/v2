@@ -33,7 +33,7 @@
         </div>
       </div>
       <div class="p-field" v-if="data.event_result_file">
-        <label class="p-text-bold">{{ $t('workPlan.attachments') }}</label>
+        <label class="bold">{{ $t('workPlan.attachments') }}</label>
         <div>
           <Button
               icon="pi pi-download"
@@ -43,7 +43,7 @@
         </div>
       </div>
       <div class="p-field" v-else-if="data.result_files">
-        <label class="p-text-bold">{{ $t('workPlan.attachments') }}</label>
+        <label class="bold">{{ $t('workPlan.attachments') }}</label>
         <div>
           <Button
               v-for="(item, index) of data.result_files" :key="index"

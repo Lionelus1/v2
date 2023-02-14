@@ -94,7 +94,7 @@
                     {{slotProps.node.data.updatedDate ? slotProps.node.data.updatedDate.replace('Z', '').replace('T', ' ') : ''}}
                 </template>
               </Column>
-              <Column headerStyle="width: 8em" headerClass="p-text-center" bodyClass="p-text-center">
+              <Column headerStyle="width: 8em" headerClass="text-center" bodyClass="text-center">
               <template #header>
                   <Button v-if="!selectMode" icon="pi pi-plus" class="p-button-blue" @click="openForm('addFolder');clearCreatedFolder();" v-tooltip.bottom="$t('common.newCatalog')"  />
               </template>

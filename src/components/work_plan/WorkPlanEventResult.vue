@@ -4,10 +4,10 @@
                        backgroundColor="rgba(0, 0, 0, 0.4)"/>
   <div class="col-12" v-if="plan && event">
     <div class="card">
-      <div v-if="!resultId" @click="navigateToBack" class="p-d-inline-block"><i class="fa-solid fa-arrow-left p-mr-3"
+      <div v-if="!resultId" @click="navigateToBack" class="inline-block"><i class="fa-solid fa-arrow-left p-mr-3"
                                                                                 style="font-size: 16px;cursor: pointer"></i>
       </div>
-      <div class="p-mb-0 p-mt-0 p-d-inline-block" style="font-size: 24px"> {{ $t('common.result') }}</div>
+      <div class="p-mb-0 p-mt-0 inline-block" style="font-size: 24px"> {{ $t('common.result') }}</div>
     </div>
 
     <div class="card" v-if="resultData && event && resultData.reject_history">
@@ -123,11 +123,11 @@
             </div>
             <div class="p-sm-12 md:col-12 lg:col-12 p-xl-6">
               <div class="p-field" v-if="event">
-                <label class="p-text-bold">{{ $t('common.fact') }}: </label>
+                <label class="bold">{{ $t('common.fact') }}: </label>
                 <div>{{ event.fact }}</div>
               </div>
               <div class="p-field" v-if="plan && resultData && plan.is_oper">
-                <label class="p-text-bold">{{ $t('common.result') }}</label>
+                <label class="bold">{{ $t('common.result') }}</label>
                 <div v-for="(item, index) of resultData.result_text" :key="index" class="p-mb-2">
                   <Inplace
                       v-if="item.userId === loginedUserId && event && (event.status.work_plan_event_status_id !== 5 && event.status.work_plan_event_status_id !== 2)"
@@ -170,7 +170,7 @@
                 </div>
               </div>
               <div class="p-field" v-if="resultData && resultData.result_files">
-                <label class="p-text-bold">{{ $t('workPlan.attachments') }}</label>
+                <label class="bold">{{ $t('workPlan.attachments') }}</label>
                 <div ref="content" class="p-fileupload-content">
                   <div class="p-fileupload-files">
                     <div class="p-fileupload-row" v-for="(file, index) of resultData.result_files" :key="index">

@@ -3,7 +3,7 @@
     <div class="card">       
       <Sidebar  v-model:visible="visible" :baseZIndex="10000" :showCloseIcon="!findRole(null, 'queue_terminal')" position="full">
         <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em;" />
-        <div class="p-w-100 p-text-center" style="min-height:100%;v-align:middle">
+        <div class="p-w-100 text-center" style="min-height:100%;v-align:middle">
           <SelectButton v-model="selectedlanguage" :options="languages" optionLabel="name" @click="selected" /><br>          
           <div >
             <div :class="'card primary-box p-ripple p-w-100'+' '+ (queues.length>6 ? 'col2':'col1')" v-for="queue of queues" :key="queue.key"  style=" margin-top:auto">           

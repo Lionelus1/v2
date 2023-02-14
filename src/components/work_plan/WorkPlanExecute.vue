@@ -10,7 +10,7 @@
       style="overflow-y: scroll"
   >
     <div class="col-12" v-if="plan && plan.is_oper && resultData && resultData.reject_history">
-      <label class="p-text-bold">{{ $t('common.resultSentToCorrect') }}</label>
+      <label class="bold">{{ $t('common.resultSentToCorrect') }}</label>
       <Message severity="warn" :closable="false" title="">{{ resultData.reject_history.message }}</Message>
     </div>
     <div class="col-12">
@@ -21,11 +21,11 @@
     </div>
     <div class="col-12 p-fluid">
       <div class="p-field">
-        <label class="p-text-bold">{{ $t('workPlan.eventName') }}</label>
+        <label class="bold">{{ $t('workPlan.eventName') }}</label>
         <InputText v-model="event.event_name" disabled/>
       </div>
       <div class="p-field">
-        <label class="p-text-bold">{{ $t('common.result') }}</label>
+        <label class="bold">{{ $t('common.result') }}</label>
         <RichEditor v-if="plan && !plan.is_oper" v-model="result" editorStyle="height:300px;" @text-change="editorChange">
           <template v-slot:toolbar>
             <span class="ql-formats">
@@ -47,7 +47,7 @@
         </RichEditor>
       </div>
       <div class="p-field" v-if="resultData && resultData.result_files">
-        <label class="p-text-bold">{{ $t('workPlan.attachments') }}</label>
+        <label class="bold">{{ $t('workPlan.attachments') }}</label>
         <div>
           <Button
               v-for="(item, index) of resultData.result_files" :key="index"

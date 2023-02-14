@@ -15,7 +15,7 @@
                  :globalFilterFields="['question','recipient','status', 'sendDate', 'createDate']"
                  @sort="onSort($event)">
         <template #header>
-          <div class="p-d-flex p-jc-between p-ai-center">
+          <div class="flex p-jc-between p-ai-center">
             <h5 class="p-m-0">{{ $t('faq.title') }}</h5>
             <span class="p-input-icon-left">
               <i class="pi pi-search"/>
@@ -130,7 +130,7 @@
                  :globalFilterFields="['question','recipient','status', 'sendDate', 'createDate']"
                  @sort="onSort($event)">
         <template #header>
-          <div class="p-d-flex p-jc-between p-ai-center">
+          <div class="flex p-jc-between p-ai-center">
             <h5 class="p-m-0">{{ $t('faq.title') }}</h5>
             <span class="p-input-icon-left">
               <i class="pi pi-search"/>

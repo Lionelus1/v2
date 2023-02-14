@@ -28,7 +28,7 @@
             <span v-if="loginedUser" :class="'customer-badge status-' + question.state.id">{{ $t("common.states." + question.state.code) }}</span>
           </div>
 
-          <div class="lg:col-3 md:col-6 p-sm-12 p-text-right">
+          <div class="lg:col-3 md:col-6 p-sm-12 text-right">
             <i class="fa-solid fa-calendar-days product-category-icon"></i>
             <small class="product-category">{{ moment(new Date(question.createdDate)).utc().format("DD.MM.YYYY") }}</small>
           </div>
@@ -36,10 +36,10 @@
         <div class="product-grid-item-content">
           <p class="block-with-text">{{ question.question }}</p>
         </div>
-        <div v-if="question.filePath" class="p-w-100 p-text-right">
+        <div v-if="question.filePath" class="p-w-100 text-right">
           <Button :label="$t('faq.attachments')" icon="pi pi-download" @click="downloadFile(question.filePath)"></Button>
         </div>
-        <div v-if="question.state.id ==1 && findRole(null, 'faq_receiption_request_admin')" class="p-w-100 p-text-right">
+        <div v-if="question.state.id ==1 && findRole(null, 'faq_receiption_request_admin')" class="p-w-100 text-right">
           <Button :label="$t('common.send')" @click="sendDialog = true" class="p-button-info p-mt-2 "></Button>
         </div>
 
@@ -57,16 +57,16 @@
                                 <small class="product-category">{{ question.replier.fullName }}</small>
                             </span>
             </div>
-            <div v-if="question.replyDate" class="lg:col-6  md:col-6 p-sm-6 p-text-right">
+            <div v-if="question.replyDate" class="lg:col-6  md:col-6 p-sm-6 text-right">
               <i class="fa-solid fa-calendar-days product-category-icon"></i>
               <small class="product-category">{{ moment(new Date(question.replyDate)).utc().format("DD.MM.YYYY") }}</small>
             </div>
           </div>
         </div>
-        <div class="product-grid-item-content p-text-left">
+        <div class="product-grid-item-content text-left">
           <div v-if="loginedUser && question.replier.userID && loginedUser.userID == question.replier.userID">
             <Editor :readonly="question.state.id !=8" v-model="question.answer" editorStyle="height: 200px"/>
-            <div class="p-w-100 p-text-right">
+            <div class="p-w-100 text-right">
               <Button v-if="question.state.id ==8" :label="$t('faq.toAnswer')" class="p-button-info p-mt-2" @click="answer"></Button>
             </div>
           </div>

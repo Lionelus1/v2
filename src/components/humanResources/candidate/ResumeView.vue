@@ -46,7 +46,7 @@
         <hr>
         <Timeline style="align-content: flex-start" :value="educations">
           <template #opposite="slotProps">
-            <div class="p-text-secondary">
+            <div class="secondary">
               <em>{{ new Date(slotProps.item.receiptDate).getFullYear() }} -
                 {{ new Date(slotProps.item.expirationDate).getFullYear() }}</em>
             </div>
@@ -80,7 +80,7 @@
       <div class="col-12 lg:col-6 card-border">
         <Timeline style="align-content: flex-start" :value="academicDegrees">
           <template #opposite="slotProps">
-            <div class="p-text-secondary">
+            <div class="secondary">
               <em>{{ new Date(slotProps.item.defenseDate).toLocaleDateString() }}</em>
             </div>
           </template>
@@ -106,7 +106,7 @@
       <div class="col-12 lg:col-6">
         <Timeline style="align-content: flex-start" :value="academicTitles">
           <template #opposite="slotProps">
-            <div class="p-text-secondary">
+            <div class="secondary">
               <em>{{ new Date(slotProps.item.defenseDate).toLocaleDateString() }}</em>
             </div>
           </template>
@@ -152,7 +152,7 @@
         <hr>
         <Timeline style="align-content: flex-start" :value="experiences">
           <template #opposite="slotProps">
-            <div class="p-text-secondary">
+            <div class="secondary">
               <em>{{ new Date(slotProps.item.startDate).toLocaleDateString() }} -
                 {{ !slotProps.item.isStillWorking ? new Date(slotProps.item.endDate).toLocaleDateString() : $t('hr.we.untilNow') }}</em>
             </div>
@@ -185,7 +185,7 @@
         <hr>
         <Timeline style="align-content: flex-start" :value="languages">
           <template #opposite="slotProps">
-            <div class="p-text-secondary">
+            <div class="secondary">
               <em>{{ slotProps.item.language['name' + ($i18n.locale).charAt(0).toUpperCase() + ($i18n.locale).slice(1)] }}</em>
             </div>
           </template>
@@ -220,7 +220,7 @@
         <hr>
         <Timeline style="align-content: flex-start" :value="refresherCourses">
           <template #opposite="slotProps">
-            <div class="p-text-secondary">
+            <div class="secondary">
               <em>{{ new Date(slotProps.item.startDate).toLocaleDateString() }} -
                 {{ new Date(slotProps.item.endDate).toLocaleDateString() }}</em>
             </div>
@@ -250,7 +250,7 @@
         <hr>
         <Timeline style="align-content: flex-start" :value="referees">
           <template #opposite="slotProps">
-            <div class="p-text-secondary">
+            <div class="secondary">
               <em>{{ slotProps.item.fullName }}</em>
             </div>
           </template>

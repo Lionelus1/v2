@@ -24,7 +24,7 @@
         <div class="p-field">
           <div class="grid p-formgrid">
             <div class="col-10 p-mb-2 lg:col-2 p-mb-lg-0 vac-center">
-              <label class="p-text-bold p-text-uppercase">{{
+              <label class="bold uppercase">{{
                 $t("common.myData")
               }}</label>
             </div>
@@ -300,7 +300,7 @@
           @filter="onFilter($event)"
         >
           <template #header>
-            <div class="p-d-flex p-jc-between">
+            <div class="flex p-jc-between">
               {{ $t("vaccination.list")
               }}<Button
                 icon="pi pi-chart-bar"
