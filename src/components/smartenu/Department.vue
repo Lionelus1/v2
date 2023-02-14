@@ -1,20 +1,20 @@
 <template>
-  <div id="carddiv" class="p-grid">
-    <div class="p-col-12">
+  <div id="carddiv" class="grid">
+    <div class="col-12">
       <h3>{{ $t('common.structuralUnit') }}</h3>
       <div>
         <Menubar :model="menu" :key="active"
                  style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px"></Menubar>
       </div>
     </div>
-    <div class="p-col-12 p-md-12 p-fluid">
+    <div class="col-12 md:col-12 p-fluid">
       <div class="card">
         <div>
-          <div class="p-field">
+          <div class="field">
             <label>{{ $t('common.nameInQazaq') }}</label>
             <InputText
                 :readonly="readonly"
-                class="p-mt-2"
+                class="mt-2"
                 :class="{'p-invalid': validation.nameKz}"
                 type="text"
                 :placeholder="$t('common.nameInQazaq')"
@@ -25,11 +25,11 @@
                 v-if="validation.nameKz"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="p-field">
+          <div class="field">
             <label>{{ $t('common.nameInRussian') }}</label>
             <InputText
                 :readonly="readonly"
-                class="p-mt-2"
+                class="mt-2"
                 :class="{'p-invalid': validation.name}"
                 type="text"
                 :placeholder="$t('common.nameInRussian')"
@@ -40,11 +40,11 @@
                 v-if="validation.name"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="p-field">
+          <div class="field">
             <label>{{ $t('common.nameInEnglish') }}</label>
             <InputText
                 :readonly="readonly"
-                class="p-mt-2"
+                class="mt-2"
                 :class="{'p-invalid': validation.nameEn}"
                 type="text"
                 :placeholder="$t('common.nameInEnglish')"

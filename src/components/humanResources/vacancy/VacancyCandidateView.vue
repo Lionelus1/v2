@@ -37,8 +37,8 @@
         class="p-sidebar-lg"
         style="overflow-y: scroll"
     >
-      <div id="carddiv" class="p-grid">
-        <div class="p-col-12">
+      <div id="carddiv" class="grid">
+        <div class="col-12">
           <h3>{{ $t('hr.candidateResume') }}</h3>
           <div>
             <Menubar :model="menu" :key="active"
@@ -46,13 +46,13 @@
             </Menubar>
           </div>
         </div>
-        <div class="p-col-12 p-md-12 p-fluid"
+        <div class="col-12 md:col-12 p-fluid"
              v-if="vacancy.organization.id === 1">
           <Button :label="$t('hr.doc.signedResumeDownload')"
                   class="p-button-secondary"
                   :onclick="downloadSignedResume"/>
         </div>
-        <div class="p-col-12 p-md-12 p-fluid">
+        <div class="col-12 md:col-12 p-fluid">
           <ResumeView ref="pdf" :value="candidateRelation.candidate" :readonly="true"/>
         </div>
       </div>
@@ -71,14 +71,14 @@
         class="p-sidebar-lg"
         style="overflow-y: scroll"
     >
-      <div class="p-grid">
-        <div class="p-col-12">
+      <div class="grid">
+        <div class="col-12">
           <h3>{{ $t('hr.doc.up') }}</h3>
           <div>
             <Menubar style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px"/>
           </div>
         </div>
-        <div class="p-col-12 p-md-12 p-fluid">
+        <div class="col-12 md:col-12 p-fluid">
           <DocDownload :paths="documentsPath"/>
         </div>
       </div>

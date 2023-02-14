@@ -1,11 +1,11 @@
 <template>
   <div>
-    <div class="p-col-12">
+    <div class="col-12">
 
-      <Toolbar class="p-mb-4">
+      <Toolbar class="mb-4">
         <template #end>
-          <Button icon="pi pi-plus" class="p-button-success p-mr-2" @click="showAddCouncilDialog()" />
-          <Button icon="pi pi-print" class="p-button-info p-mr-2" @click="openNew" />
+          <Button icon="pi pi-plus" class="p-button-success mr-2" @click="showAddCouncilDialog()" />
+          <Button icon="pi pi-print" class="p-button-info mr-2" @click="openNew" />
           <Button icon="pi pi-trash" class="p-button-danger" @click="deleteMember()" :disabled="!selectedMember"/>
         </template>
         <template #start>
@@ -58,18 +58,18 @@
           </DataTable>
           <Dialog v-model:visible="dialog.addMember.state" :style="{width: '450px'}" :header="$t('dissertation.members')" :modal="true" class="p-fluid">
             <div class="p-fluid">
-              <div class="p-field">
+              <div class="field">
                 <label for="name">{{$t('common.fullName')}}</label>
                 <FindUser v-model="selectedMembers" :max="1" :editMode="true"></FindUser>
                 <small class="p-error" v-if="submitted && validationErrors.members">{{$t('dissertation.validationErrors.selectSecretary')}}</small>
               </div>
-              <div class="p-field">
+              <div class="field">
                 <label for="name">{{$t('common.role')}}</label>
                 <RolesByName v-model="selectedRole" roleGroupName="dissertation_council"></RolesByName>
                 <small class="p-error" v-if="submitted && validationErrors.role">{{$t('common.message.selectRole')}}</small>
               </div>
-              <div v-if="selectedRole != null && (selectedRole.name=== 'dissertation_council_reviewer' || selectedRole.name=== 'dissertation_council_temporary_member')" class="p-field">
-              <!-- <div v-if="selectedRole != null && (selectedRole.name=== 'dissertation_council_reviewer')" class="p-field"> -->
+              <div v-if="selectedRole != null && (selectedRole.name=== 'dissertation_council_reviewer' || selectedRole.name=== 'dissertation_council_temporary_member')" class="field">
+              <!-- <div v-if="selectedRole != null && (selectedRole.name=== 'dissertation_council_reviewer')" class="field"> -->
                 <label for="name">{{$t('dissertation.doctorals')}}</label>
                 <FindDoctorals :max="2" v-model="selectedDoctorals"></FindDoctorals>
                 <small class="p-error" v-if="submitted && validationErrors.doctorals">{{$t('dissertation.validationErrors.selectDoctorals')}}</small>

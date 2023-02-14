@@ -11,16 +11,16 @@
         </span>
       </template>
       <template v-if="orgId !== null" #empty>
-        <div class="p-field p-grid">
-          <label for="firstname" class="p-col-fixed p-mt-2">{{$primevue.config.locale.emptyFilterMessage}}</label>
+        <div class="fieldgrid">
+          <label for="firstname" class="col-fixed mt-2">{{$primevue.config.locale.emptyFilterMessage}}</label>
           <div class="p-col">
             <Button v-if="editMode" :label="$t('common.createNew')" class="p-button-link" @click="openDepartment()"/>
           </div>
         </div>
       </template>
       <template #emptyfilter>
-        <div class="p-field p-grid">
-          <label for="firstname" class="p-col-fixed p-mt-2">{{$primevue.config.locale.emptyFilterMessage}}</label>
+        <div class="fieldgrid">
+          <label for="firstname" class="col-fixed mt-2">{{$primevue.config.locale.emptyFilterMessage}}</label>
           <div class="p-col">
             <Button v-if="editMode" :label="$t('common.createNew')" class="p-button-link"  @click="openDepartment()"/>
           </div>

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="p-col-12">
+        <div class="col-12">
             <h3>{{$t('cafedra.title', {name: loginedUser.mainPosition.department['name'+$i18n.locale[0].toUpperCase() + $i18n.locale.slice(1)]})}}</h3>
             <Accordion   :activeIndex="0">
                 <AccordionTab v-if="findRole(loginedUser, 'dephead')" :header="$t('cafedra.practiceResponsibles')">

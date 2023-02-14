@@ -4,8 +4,8 @@
     <ProgressBar :value="progress"/>
   </div>
   <div ref="htmlToPdf" class="card" v-if="progressed">
-    <div class="p-grid p-formgrid">
-      <div class="p-col-12 p-lg-9">
+    <div class="grid formgrid">
+      <div class="col-12 lg:col-9">
         <p style="text-align: center">
           <b><em>{{ $t('hr.title.general')}} </em></b>
         </p>
@@ -31,12 +31,12 @@
         </span>
         <em v-if="!identificationDetail">{{ $t('common.noData') }}</em>
       </div>
-      <div class="p-col-12 p-lg-2">
+      <div class="col-12 lg:col-2">
         <div class="card">
 <!--          <img :src="'data:image/jpeg;base64,' + candidate.user.photo" style="width: 150px"/>-->
         </div>
       </div>
-      <div class="p-col-12">
+      <div class="col-12">
         <hr>
         <p style="text-align: center">
           <b><em>{{ $t('hr.title.education') + ' ' }} </em></b>
@@ -46,7 +46,7 @@
         <hr>
         <Timeline style="align-content: flex-start" :value="educations">
           <template #opposite="slotProps">
-            <div class="p-text-secondary">
+            <div class="secondary">
               <em>{{ new Date(slotProps.item.receiptDate).getFullYear() }} -
                 {{ new Date(slotProps.item.expirationDate).getFullYear() }}</em>
             </div>
@@ -77,10 +77,10 @@
         </p>
         <hr>
       </div>
-      <div class="p-col-12 p-lg-6 card-border">
+      <div class="col-12 lg:col-6 card-border">
         <Timeline style="align-content: flex-start" :value="academicDegrees">
           <template #opposite="slotProps">
-            <div class="p-text-secondary">
+            <div class="secondary">
               <em>{{ new Date(slotProps.item.defenseDate).toLocaleDateString() }}</em>
             </div>
           </template>
@@ -103,10 +103,10 @@
         </Timeline>
         <em v-if="!academicDegrees">{{ $t('common.noData') }}</em>
       </div>
-      <div class="p-col-12 p-lg-6">
+      <div class="col-12 lg:col-6">
         <Timeline style="align-content: flex-start" :value="academicTitles">
           <template #opposite="slotProps">
-            <div class="p-text-secondary">
+            <div class="secondary">
               <em>{{ new Date(slotProps.item.defenseDate).toLocaleDateString() }}</em>
             </div>
           </template>
@@ -129,7 +129,7 @@
         </Timeline>
         <em v-if="!academicTitles">{{ $t('common.noData') }}</em>
       </div>
-      <div class="p-col-12">
+      <div class="col-12">
         <hr>
         <p style="text-align: center">
           <b><em>{{ $t('hr.title.academicDetail') + ' '}} </em></b>
@@ -142,7 +142,7 @@
         </span>
         <em v-if="!academicDetail">{{ $t('common.noData') }}</em>
       </div>
-      <div class="p-col-12">
+      <div class="col-12">
         <hr>
         <p style="text-align: center">
           <b><em>{{ $t('hr.title.experience') + ' '}}</em></b>
@@ -152,7 +152,7 @@
         <hr>
         <Timeline style="align-content: flex-start" :value="experiences">
           <template #opposite="slotProps">
-            <div class="p-text-secondary">
+            <div class="secondary">
               <em>{{ new Date(slotProps.item.startDate).toLocaleDateString() }} -
                 {{ !slotProps.item.isStillWorking ? new Date(slotProps.item.endDate).toLocaleDateString() : $t('hr.we.untilNow') }}</em>
             </div>
@@ -175,7 +175,7 @@
         </Timeline>
         <em v-if="!experiences">{{ $t('common.noData') }}</em>
       </div>
-      <div class="p-col-12">
+      <div class="col-12">
         <hr>
         <p style="text-align: center">
           <b><em>{{ $t('hr.title.language') + ' ' }} </em></b>
@@ -185,7 +185,7 @@
         <hr>
         <Timeline style="align-content: flex-start" :value="languages">
           <template #opposite="slotProps">
-            <div class="p-text-secondary">
+            <div class="secondary">
               <em>{{ slotProps.item.language['name' + ($i18n.locale).charAt(0).toUpperCase() + ($i18n.locale).slice(1)] }}</em>
             </div>
           </template>
@@ -210,7 +210,7 @@
         </Timeline>
         <em v-if="!languages">{{ $t('common.noData') }}</em>
       </div>
-      <div class="p-col-12">
+      <div class="col-12">
         <hr>
         <p style="text-align: center">
           <b><em>{{ $t('hr.title.refresherCourse') + ' ' }} </em></b>
@@ -220,7 +220,7 @@
         <hr>
         <Timeline style="align-content: flex-start" :value="refresherCourses">
           <template #opposite="slotProps">
-            <div class="p-text-secondary">
+            <div class="secondary">
               <em>{{ new Date(slotProps.item.startDate).toLocaleDateString() }} -
                 {{ new Date(slotProps.item.endDate).toLocaleDateString() }}</em>
             </div>
@@ -240,7 +240,7 @@
         </Timeline>
         <em v-if="!refresherCourses">{{ $t('common.noData') }}</em>
       </div>
-      <div class="p-col-12">
+      <div class="col-12">
         <hr>
         <p style="text-align: center">
           <b><em>{{ $t('hr.title.referee') + ' ' }} </em></b>
@@ -250,7 +250,7 @@
         <hr>
         <Timeline style="align-content: flex-start" :value="referees">
           <template #opposite="slotProps">
-            <div class="p-text-secondary">
+            <div class="secondary">
               <em>{{ slotProps.item.fullName }}</em>
             </div>
           </template>
@@ -269,7 +269,7 @@
         </Timeline>
         <em v-if="!referees">{{ $t('common.noData') }}</em>
       </div>
-      <div class="p-col-12">
+      <div class="col-12">
         <hr>
         <p style="text-align: center">
           <b><em>{{ $t('hr.title.info') + ' '}}</em></b>

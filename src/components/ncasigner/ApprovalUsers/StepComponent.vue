@@ -11,18 +11,18 @@
             :key="step"
         >
           <span @click="setActive(index)"> {{ index + 1 }} </span>
-          <div class="p-pt-2">{{ $i18n.locale === 'kz'? step.titleKz : $i18n.locale === 'en' ? step.titleEn : step.titleRu }}</div>
+          <div class="pt-2">{{ $i18n.locale === 'kz'? step.titleKz : $i18n.locale === 'en' ? step.titleEn : step.titleRu }}</div>
         </li>
       </ul>
       <div class="steps-content">
         <FindUser @add="updateModel" @remove="updateModel" v-model="selectedUsers"></FindUser>
-        <Dropdown :disabled="!isNewStage" @change="updateModel" class="p-mt-2" v-model="sertificate" :options="sertificates" :optionLabel="'name' + $i18n.locale" :placeholder="$t('ncasigner.certType')" />
+        <Dropdown :disabled="!isNewStage" @change="updateModel" class="mt-2" v-model="sertificate" :options="sertificates" :optionLabel="'name' + $i18n.locale" :placeholder="$t('ncasigner.certType')" />
       </div>
 
       <div>
         <Button v-if="isNewStage" icon="pi pi-plus" class="p-button-rounded p-button-success"
                 @click="addStep"/>
-        <button @click="clearSteps" class="btn danger p-ml-2"> {{ $t('common.clearApprovalList') }} </button>
+        <button @click="clearSteps" class="btn danger ml-2"> {{ $t('common.clearApprovalList') }} </button>
       </div>
     </div>
   </div>
@@ -324,7 +324,7 @@ h3 {
 .list-item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  flex-order-: space-between;
   padding: 0.5rem 0;
 }
 
@@ -338,7 +338,7 @@ h3 {
   margin-bottom: 1rem;
   padding: 0;
   display: flex;
-  justify-content: space-between;
+  flex-order-: space-between;
 }
 
 .steps-item span {

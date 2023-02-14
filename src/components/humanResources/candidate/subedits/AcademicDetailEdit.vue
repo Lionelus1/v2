@@ -1,15 +1,15 @@
 <template>
-  <div id="carddiv" class="p-grid">
-    <div class="p-col-12">
+  <div id="carddiv" class="grid">
+    <div class="col-12">
       <h3>{{ $t('hr.title.academicDetail') }}</h3>
       <div>
         <Menubar :model="menu" :key="active"
                  style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px"></Menubar>
       </div>
     </div>
-    <div class="p-mb-2">
+    <div class="mb-2">
       <Textarea v-model="value.detailValue"
-                class="p-mt-2"
+                class="mt-2"
                 :class="{'p-invalid': validation}"
                 :readonly="readonly"
                 :autoResize="true"

@@ -1,5 +1,5 @@
 <template>
-  <div class="p-col-12">
+  <div class="col-12">
     <div class="card">
       <WorkPlanAdd v-model="isAdded"/>
     </div>
@@ -11,12 +11,12 @@
                  :globalFilterFields="['question','recipient','status', 'sendDate', 'createDate']"
                  @sort="onSort($event)">
         <template #header>
-          <div class="p-d-flex p-jc-between p-ai-center">
-            <h5 class="p-m-0">{{ $t('workPlan.addPlan') }}</h5>
+          <div class="flex justify-content-between align-items-center">
+            <h5 class="m-0">{{ $t('workPlan.addPlan') }}</h5>
             <span class="p-input-icon-left"><i class="pi pi-search"/>
               <InputText type="search" v-model="searchText" @keyup.enter="getPlans" :placeholder="$t('common.search')"
                          @search="getPlans"/>
-              <Button icon="pi pi-search" class="p-ml-1" @click="getPlans"/>
+              <Button icon="pi pi-search" class="ml-1" @click="getPlans"/>
             </span>
           </div>
         </template>
@@ -48,7 +48,7 @@
           <template #body="{ data }">
             <Button type="button"
                     v-if="data.user.id === loginedUserId && (data.status.work_plan_status_id === 1 || data.status.work_plan_status_id === 3 || data.status.work_plan_status_id === 5)"
-                    icon="pi pi-trash" class="p-button-danger p-mr-2"
+                    icon="pi pi-trash" class="p-button-danger mr-2"
                     label="" @click="deleteConfirm(data)"></Button>
           </template>
         </Column>
@@ -56,24 +56,24 @@
     </div>
 
     <!--    <Dialog :header="$t('common.action.accept')" v-model:visible="isAcceptModal" :style="{width: '450px'}" class="p-fluid">
-          <div class="p-field">
+          <div class="field">
           </div>
           <template #footer>
             <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
                     @click="closeModal"/>
-            <Button :label="$t('ncasigner.sign')" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2" @click="approve"/>
+            <Button :label="$t('ncasigner.sign')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2" @click="approve"/>
           </template>
         </Dialog>
 
         <Dialog header="На доработку" v-model:visible="isRejectModal" :style="{width: '450px'}" class="p-fluid">
-          <div class="p-field">
+          <div class="field">
             <label>Комментарий</label>
             <Textarea v-model="comment" rows="3" style="resize: vertical"/>
           </div>
           <template #footer>
             <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
                     @click="closeModal"/>
-            <Button label="Отправить" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2"
+            <Button label="Отправить" icon="pi pi-check" class="p-button-rounded p-button-success mr-2"
                     @click="rejectPlan"/>
           </template>
         </Dialog>-->

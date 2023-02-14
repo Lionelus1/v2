@@ -2,59 +2,59 @@
     <div>
     <ProgressBar v-if="uploading" mode="indeterminate" style="height: .5em" />
       <div class="p-fluid">
-         <div class="p-field">
+         <div class="field">
           <label for="language" >{{$t('common.doclang')}}</label>
-          <SelectButton v-model="file.lang" optionLabel="name" :options="languages" dataKey="value" class="p-mb-3">
+          <SelectButton v-model="file.lang" optionLabel="name" :options="languages" dataKey="value" class="mb-3">
             <template #option="slotProps">
               <div>{{$t('common.language.' + slotProps.option.name)}}</div>
             </template>
           </SelectButton>
           <small class="p-error" v-if="validation.lang">{{ $t("common.requiredField") }}</small>
         </div>
-        <div class="p-field">
+        <div class="field">
           <label for="filename" >{{$t('common.nameInQazaq')}}</label>
           <InputText id="fodernamekaz" v-model="file.namekz" type="text" />
           <small class="p-error" v-if="validation.namekz">{{ $t("common.requiredField") }}</small>
         </div>
-        <div class="p-field">
+        <div class="field">
           <label for="filename" >{{$t('common.nameInRussian')}}</label>
           <InputText id="fodernameru" v-model="file.nameru" type="text" />
         </div>
-        <div class="p-field">
+        <div class="field">
           <label for="filename" >{{$t('common.nameInEnglish')}}</label>
           <InputText id="fodernameen" v-model="file.nameen" type="text" />
           <small class="p-error" v-if="validation.nameen">{{ $t("common.requiredField") }}</small>
         </div>
         <div  v-if="file.params != null && file.params != undefined ">
-          <div class="p-field" v-for="(param,i) of file.params" :key="`${i}`" >
+          <div class="field" v-for="(param,i) of file.params" :key="`${i}`" >
             <label>{{$t('hdfs.' + param.name)}}</label>
             <InputText  v-model="param.value" type="text" />
             <small class="p-error" v-if="validation.param">{{ $t("common.requiredField") }}</small>
           </div>
         </div>
         <div v-if="approveInfo">
-          <div class="p-field">
+          <div class="field">
             <label for="filename" >{{$t('common.author')}}</label>
-            <DepartmentList :orgType="2" :parentID="1" :autoLoad="true" class="p-pt-1" ref="departmentList"  v-model="file.author"  :editMode="true" ></DepartmentList>
+            <DepartmentList :orgType="2" :parentID="1" :autoLoad="true" class="pt-1" ref="departmentList"  v-model="file.author"  :editMode="true" ></DepartmentList>
             <small class="p-error" v-if="validation.author">{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="p-field">
+          <div class="field">
             <label for="filename" >{{$t('common.approvedBy')}}</label>
             <InputText id="approvedBy" :placeholder="$t('common.councilName')" v-model="file.approvedBy" type="text" />
             <small class="p-error" v-if="validation.approvedBy">{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="p-field">
+          <div class="field">
             <label for="filename" >{{$t('common.approveDate')}}</label>
              <PrimeCalendar
-              class="p-mt-2"
+              class="mt-2"
               v-model="file.approveDate"
               dateFormat="dd.mm.yy"
             />
             <small class="p-error" v-if="validation.approveDate">{{ $t("common.requiredField") }}</small>
           </div>
         </div>
-      <div class="p-field">
-        <FileUpload v-if="showUploader" :showUploadButton="false" :showCancelButton="true" ref="ufile" :multiple="false"  class= "p-mt-1"  fileLimit="1" :accept="accept">
+      <div class="field">
+        <FileUpload v-if="showUploader" :showUploadButton="false" :showCancelButton="true" ref="ufile" :multiple="false"  class= "mt-1"  fileLimit="1" :accept="accept">
           <template #empty>
             <p>{{$t('hdfs.dragMsg')}}</p>
           </template>

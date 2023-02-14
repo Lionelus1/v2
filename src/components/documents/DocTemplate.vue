@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="!selectMode" class="content-section introduction">
-      <div class="feature-intro p-ml-3">
+      <div class="feature-intro ml-3">
         <h3>{{$t('doctemplate.title')}}</h3> 
       </div>
     </div>
@@ -9,9 +9,9 @@
       <ProgressBar v-if="signing" mode="indeterminate" style="height: .5em" />
       <BlockUI :blocked="signing" :fullScreen="true"></BlockUI>
 
-      <div class="card p-p-0">
-        <TabView ref="templateView" v-model:activeIndex="active" class="p-p-0">
-          <TabPanel v-bind:header="$t('doctemplate.templates')" class="p-p-0">
+      <div class="card p-0">
+        <TabView ref="templateView" v-model:activeIndex="active" class="p-0">
+          <TabPanel v-bind:header="$t('doctemplate.templates')" class="p-0">
             <template #left>
             </template>
             <!-- Жаңа қалта құру диалогы -->
@@ -36,13 +36,13 @@
             <!-- Жаңа үлгі құру диалогы -->
             <Dialog :modal="true"  v-bind:header="$t('doctemplate.newTemplate')" v-model:visible="dialogOpenState.addTemplate" :style="{width: '50vw'}">
               <div class="p-fluid">
-                <div class="p-field">
+                <div class="field">
                     <label for="dtdescriptionkz">{{$t('doctemplate.description')}} ({{$t('common.language.kz')}})</label>
-                    <InputText id="dtdescriptionkz" class="p-mb-2" v-bind:placeholder="$t('common.description')" v-model="createdTemplate.descriptionKaz" type="text" />
+                    <InputText id="dtdescriptionkz" class="mb-2" v-bind:placeholder="$t('common.description')" v-model="createdTemplate.descriptionKaz" type="text" />
                     <label for="dtdescriptionru">{{$t('doctemplate.description')}}  ({{$t('common.language.ru')}})</label>
-                    <InputText id="dtdescriptionru" class="p-mb-2" v-bind:placeholder="$t('common.description')" v-model="createdTemplate.descriptionRus" type="text" />
+                    <InputText id="dtdescriptionru" class="mb-2" v-bind:placeholder="$t('common.description')" v-model="createdTemplate.descriptionRus" type="text" />
                     <div class="field-checkbox">
-                      <Checkbox id="financial" class="p-mr-2" v-model="createdTemplate.financial" :binary="true"/>
+                      <Checkbox id="financial" class="mr-2" v-model="createdTemplate.financial" :binary="true"/>
                       <label for="financial">{{$t('hr.doc.financial')}}</label>
                     </div>
                 </div>
@@ -94,7 +94,7 @@
                     {{slotProps.node.data.updatedDate ? slotProps.node.data.updatedDate.replace('Z', '').replace('T', ' ') : ''}}
                 </template>
               </Column>
-              <Column headerStyle="width: 8em" headerClass="p-text-center" bodyClass="p-text-center">
+              <Column headerStyle="width: 8em" headerClass="text-center" bodyClass="text-center">
               <template #header>
                   <Button v-if="!selectMode" icon="pi pi-plus" class="p-button-blue" @click="openForm('addFolder');clearCreatedFolder();" v-tooltip.bottom="$t('common.newCatalog')"  />
               </template>
@@ -122,7 +122,7 @@
                 <Button v-if="selectedNode.data.stateEn == DocState.APPROVED.Value" class="p-button-primary" :label ="$t('common.approvalList')" icon="pi pi-user-edit" @click="openForm('signerInfo')"/>
               </span>
 
-              <SelectButton @change="languageChanged" v-model="templateLanguage" :options="language" class="p-mb-3">
+              <SelectButton @change="languageChanged" v-model="templateLanguage" :options="language" class="mb-3">
                 <template #option="slotProps">
                   <div v-if="slotProps.option == 'kz'">{{$t('common.language.kz')}}</div>
                   <div v-else-if="slotProps.option == 'ru'">{{$t('common.language.ru')}}</div>
@@ -176,9 +176,9 @@
             <!-- Келісімге жіберу диалогы -->
             <Dialog :modal="true"  v-bind:header="$t('common.toapprove')" v-model:visible="dialogOpenState.toApproval" :style="{width: '50vw'}">
               <div class="p-fluid">
-                <div class="p-field">
+                <div class="field">
                     <label for="dialognote">{{$t('common.comment')}}</label>
-                    <InputText id="dialognote" class="p-mb-2" v-bind:placeholder="$t('common.comment')" v-model="dialogNote" type="text" />
+                    <InputText id="dialognote" class="mb-2" v-bind:placeholder="$t('common.comment')" v-model="dialogNote" type="text" />
                     <label for="approvingusers">{{$t('doctemplate.approvingUsers')}}</label>
                     <FindUser v-model="selectedUsers" :userType="2" :roles="'legal_service_head'" id="approvingusers"></FindUser>
                 </div>
@@ -191,9 +191,9 @@
             <!-- Қайтару диалогы -->
             <Dialog :modal="true"  v-bind:header="$t('common.revision')" v-model:visible="dialogOpenState.revision" :style="{width: '50vw'}">
               <div class="p-fluid">
-                <div class="p-field">
+                <div class="field">
                     <label for="dialognote">{{$t('common.comment')}}</label>
-                    <InputText id="dialognote" class="p-mb-2" v-bind:placeholder="$t('common.comment')" v-model="revisionComment" type="text" />
+                    <InputText id="dialognote" class="mb-2" v-bind:placeholder="$t('common.comment')" v-model="revisionComment" type="text" />
                 </div>
               </div>
               <template #footer>
