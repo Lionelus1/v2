@@ -1,24 +1,24 @@
 <template>
-  <Button :label="$t('workPlan.addPlan')" icon="pi pi-plus" @click="openBasic" class="p-ml-2"/>
+  <Button :label="$t('workPlan.addPlan')" icon="pi pi-plus" @click="openBasic" class="ml-2"/>
 
   <Dialog :header="$t('workPlan.addPlan')" v-model:visible="showModal" :style="{width: '450px'}" class="p-fluid">
-    <div class="p-field">
+    <div class="field">
       <label>{{ $t('workPlan.planName') }}</label>
       <InputText v-model="work_plan_name" @input="input" v-on:keyup.enter="createPlan"/>
     </div>
-    <div class="p-field">
+    <div class="field">
       <label>{{ $t('common.lang') }}</label>
       <Dropdown v-model="lang" :options="languages" optionLabel="name" optionValue="id" :placeholder="$t('common.select')"/>
       <small class="p-error" v-if="submitted && !lang">{{ $t('workPlan.errors.langError') }}</small>
     </div>
-    <div class="field-checkbox p-mt-4">
+    <div class="field-checkbox mt-4">
       <Checkbox v-model="isOper" id="oper" :binary="true"/>
-      <label class="p-ml-2" for="oper">Операционный план</label>
+      <label class="ml-2" for="oper">Операционный план</label>
     </div>
     <template #footer>
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
               @click="closeBasic"/>
-      <Button :label="$t('common.add')" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2"
+      <Button :label="$t('common.add')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2"
               :disabled="isDisabled && lang" @click="createPlan"/>
     </template>
   </Dialog>

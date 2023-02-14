@@ -1,14 +1,14 @@
 <template>
-    <div class="p-grid">
-        <div class="p-col-12">
+    <div class="grid">
+        <div class="col-12">
         <BlockUI :blocked="uploading" :fullScreen="true">
             <ProgressBar v-if="uploading" mode="indeterminate" style="height: .5em" />
         </BlockUI>
 
 			<div class="card p-fluid">
-				<h5 class="p-text-center p-text-uppercase">{{$t("publicReception.title")}}</h5>
+				<h5 class="text-center uppercase">{{$t("publicReception.title")}}</h5>
                 
-                <SelectButton class="p-mb-2" v-model="language" :options="languages" optionLabel="name" @change="changeLanguage" />
+                <SelectButton class="mb-2" v-model="language" :options="languages" optionLabel="name" @change="changeLanguage" />
 		        
                 <p class="message" v-if="$i18n.locale =='kz'" style="text-align:justify">
                     <b>Құрметті пайдаланушылар!</b>
@@ -28,40 +28,40 @@ To ask a question you have to enter your full name, phone number, e-mail, select
 Please double-check the entered data before submission.
 
                 </p>
-				<div class="p-field">
+				<div class="field">
 					<label for="lname">{{$t("contact.lname")}}*</label>
 					<InputText v-model="request.lastName" id="lname" type="text" />
                     <small class="p-error" v-if="validation.lastName">{{$t("common.requiredField")}}</small>				
 				</div>
-				<div class="p-field">
+				<div class="field">
 					<label for="fname">{{$t("contact.fname")}}*</label>
 					<InputText id="fname" v-model="request.firstName" type="text" />
                     <small class="p-error" v-if="validation.firstName">{{$t("common.requiredField")}}</small>				
 				</div>
-                <div class="p-field">
+                <div class="field">
 					<label for="email">{{$t("contact.email")}}*</label>
 					<InputText v-model="request.email" id="email" type="email" @blur="validateEmail"/>
                     <small class="p-error" v-if="validation.email">{{$t("contact.message.validEmail")}}</small>				
                 </div>
-				<div class="p-field">
+				<div class="field">
 					<label for="mobile">{{$t("contact.phone")}}*</label>
                     <InputMask id="mobile" v-model="request.mobile" mask="+7-(999)-999-99-99" />
                     <small class="p-error" v-if="validation.mobile">{{$t("common.requiredField")}}</small>				
 				</div>
-                <div class="p-field">
+                <div class="field">
 					<label for="category">{{$t("smartenu.category")}}*</label>
                     <Dropdown v-model="request.category" :options="categories" :optionLabel="'name'+$i18n.locale" :placeholder="$t('smartenu.chooseCategory')" />
                     <small class="p-error" v-if="validation.mobile">{{$t("smartenu.selectedCatInvalid")}}</small>				
 				</div>
-                <div class="p-field">
+                <div class="field">
 					<label for="question">{{$t("faq.question")}}*</label>
                     <Textarea id="question" :autoResize="true" v-model="request.question"/>
                     <small class="p-error" v-if="validation.question">{{$t("common.requiredField")}}</small>				
 				</div>
-                <div class="p-field">
+                <div class="field">
                     <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="upload($event)" v-bind:chooseLabel="$t('faq.uploadFile')"></FileUpload>
 				</div>
-                <div class="p-field">
+                <div class="field">
                     <Button :label="$t('common.action.submit')" @click="sendQuestion" />
                 </div>
 		        <span class="footer-text no-print" style="margin-right: 5px">@ {{$t("common.orgname")}}</span>

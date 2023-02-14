@@ -2,7 +2,7 @@
   <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em;" />
   <div>  
     <div> 
-      <Toolbar class="p-mb-4 ">
+      <Toolbar class="mb-4 ">
         <template #start>
           <PrimeCalendar
             style="width: 140px"
@@ -22,7 +22,7 @@
         <Button           
           icon="pi pi-print " 
           v-tooltip.bottom="$t('common.add')"            
-          class="p-button-primary p-mr-2 p-mr-4 no-print"  
+          class="p-button-primary mr-2 mr-4 no-print"  
           @click="printWindow"/>  
         </template>          
       </Toolbar>

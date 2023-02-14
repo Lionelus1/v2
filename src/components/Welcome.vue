@@ -1,5 +1,5 @@
 <template>
-    <div class="p-col-12">
+    <div class="col-12">
         <div class="card">
             <h4>{{ $t("common.welcome") }}, {{ loginedUser.fullName }} !</h4>
         </div>

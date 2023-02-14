@@ -1,11 +1,11 @@
 <template>
-  <div class="p-field p-grid">
-    <div class="p-col-12 p-md-10 p-mb-2">
+  <div class="fieldgrid">
+    <div class="col-12 md:col-10 mb-2">
       <span class="p-float-label p-ibutoon-right">
         <i v-if="value" class="pi pi-id-card ibutton" style="margin-right:35px;height:30px;margin-top: 2px;" @click="showcard()"/>
         <i class="pi pi-ellipsis-h ibutton" style="height:30px;margin-top: 2px;margin-right: 2px;" @click="showside()"/>
         <InputText ref="input"  id="inputtext-right" readonly="true" type="text" v-model="selectedContragentName"/>
-        <Sidebar @hide="updateValue(value)" v-model:visible="contragentVisible" position="right" class="p-sidebar-lg p-m-0 p-p-0 p-pt-7" style="overflow-y:scroll">
+        <Sidebar @hide="updateValue(value)" v-model:visible="contragentVisible" position="right" class="p-sidebar-lg m-0 p-0 pt-7" style="overflow-y:scroll">
           <Organizations @selected="updated" @changed="changed" v-model="value" :selectedMode="true" v-model:windowOpened="contragentVisible"></Organizations>
         </Sidebar>
         <Sidebar v-model:visible="cardVisible" position="right"  @hide="message=null" class="p-sidebar-lg" style="overflow-y:scroll">
@@ -17,7 +17,7 @@
     </div>
 
 
-    <div v-if="value && value.type != ContragentType.Person" class="p-col-12 p-md-10">
+    <div v-if="value && value.type != ContragentType.Person" class="col-12 md:col-10">
       <span class="p-float-label p-ibutoon-right">
         <i v-if="value && value.signer" class="pi pi-id-card ibutton" style="margin-right:35px;height:30px;margin-top: 2px;" @click="showcard('person')"/>
         <i v-if="value" class="pi pi-ellipsis-h ibutton" style="height:30px;margin-top: 2px;margin-right: 2px;" @click="showside('person')"/>
@@ -27,7 +27,7 @@
           <Persons :shortMode="true" @userCreated="userCreated" @updated="updated($event)" v-model="value.signer" style="padding:-1em"  v-model:orgID="value.id" :organization="value" v-model:signRight="signRight" :insertMode="true" v-model:windowOpened="personsVisible"></Persons>
         </Sidebar>
         <Sidebar v-model:visible="personVisible" position="right" class="p-sidebar-lg" style="overflow-y:scroll;">
-          <Person :modelValue="value.signer" :organization="JSON.parse(JSON.stringify(value))" class="p-mt-10" style="padding:-1rem" :readonly="true"></Person>
+          <Person :modelValue="value.signer" :organization="JSON.parse(JSON.stringify(value))" class="mt-10" style="padding:-1rem" :readonly="true"></Person>
         </Sidebar>
       </span>
     </div>

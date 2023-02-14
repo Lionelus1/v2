@@ -5,26 +5,26 @@
           <TabView  scrollable>
             <TabPanel header="Login System">
               <div class="p-fluid text-center">
-                  <div class="p-field p-col-12">
+                  <div class="field col-12">
                       <span class="p-float-label">
                           <InputText id="inputtext" type="text" v-model="loginData.username" />
                           <label for="inputtext">{{ $t('common.enterLogin') }}</label>
                       </span>
                   </div>
-                  <div class="p-field p-col-12">
+                  <div class="field col-12">
                       <span class="p-float-label">
                         <Password :feedback="false" toggleMask v-model="loginData.password" @keyup.enter="login"></Password>
                           <label for="inputpassword">{{$t('common.enterPassword')}}</label>
                       </span>
                   </div>
               </div>
-              <div class="p-w-100 p-text-right p-pr-2">
+              <div class="p-w-100 text-right pr-2">
                   <Button :label="$t('common.login')" icon="pi pi-check" @click="login" iconPos="right" />
               </div>
             </TabPanel>
             <TabPanel header="ЭЦП">
                <div class="p-fluid text-center">
-                  <div class="p-field p-col-12">
+                  <div class="field col-12">
                       <!-- <span class="p-float-label">
                           <Password :feedback="false" toggleMask v-model="newPass.password1"></Password>
                           <label for="inputtext">{{ $t('common.newPassword') }}</label>
@@ -42,11 +42,11 @@
                  
 
                  
-                  <div class="p-grid">
-                    <div class="p-col-8">
+                  <div class="grid">
+                    <div class="col-8">
                       <Button icon="pi pi-upload " :label="$t('common.chooseCert')" class="p-button-danger"  @click="resetEtspLogin(-1)" iconPos="right" />
                     </div>
-                    <div class="p-col-4">
+                    <div class="col-4">
                       <Button :label="$t('common.login')" :disabled="isSignUp"  icon="p-w-6 pi pi-check" @click="loginVerify" iconPos="right" />  
                     </div>
                     

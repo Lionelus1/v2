@@ -1,13 +1,13 @@
 <template>
 <div>
   <div class="content-section introduction">
-	<div class="feature-intro p-ml-3" >
+	<div class="feature-intro ml-3" >
     <h4 style="display:inline">{{$t('bank.title')}}</h4>
 		<label style="color:grey">&nbsp;{{this.$t('common.records')}}: {{this.count}}</label>
 	</div>
 	</div>
 	<div class="content-section implementation">
-	<div class="card p-p-0">
+	<div class="card p-0">
 	 	<div class="p-col">
 			<Menubar :model="menu" :key="active" style="height:36px;margin-top:-7px; margin-right: -7px;margin-left: -7px;">
 				<template #end>

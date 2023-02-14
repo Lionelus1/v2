@@ -17,8 +17,8 @@
 					<p v-if="searchInProgres">{{$t('common.loading')}}...</p>
 					<Listbox v-else-if="(foundSpecialists != null)" v-model="selectedEntity" :options="foundSpecialists" listStyle="max-height:250px" @change="addItemMouseExt($event)">
 						<template #option="slotProps">
-							<div class="user-item p-grid">
-								<div class="user-list-detail p-lg-10  p-md-9 p-sm-12">
+							<div class="user-item grid">
+								<div class="user-list-detail lg:col-10  md:col-9 p-sm-12">
 									<span class="product-category">{{slotProps.option.code}} {{$i18n.locale === "ru" ? slotProps.option.nameInRu : slotProps.option.nameInKz}}</span>
 								</div>
 							</div>

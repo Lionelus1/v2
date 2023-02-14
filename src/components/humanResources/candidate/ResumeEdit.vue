@@ -1,48 +1,48 @@
 <template>
   <div class="card">
-    <div class="p-field" v-if="section === chapter.education">
+    <div class="field" v-if="section === chapter.education">
       <EducationView v-for="education in educations" :key="education.id" :model-value="education"/>
       <Button icon="pi pi-plus" class="p-button-link" label="Добавить" :onclick="educationEdit"></Button>
     </div>
-    <div class="p-grid p-formgrid" v-if="section === chapter.degreeAndTitle">
-      <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+    <div class="grid formgrid" v-if="section === chapter.degreeAndTitle">
+      <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
         <AcademicDegreeView v-for="academicDegree in academicDegrees" :key="academicDegree.id"
                             :model-value="academicDegree"/>
         <Button icon="pi pi-plus" class="p-button-link" label="Добавить" :onclick="academicDegreeEdit"></Button>
       </div>
-      <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+      <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
         <AcademicTitleView v-for="academicTitle in academicTitles" :key="academicTitle.id"
                            :model-value="academicTitle"/>
         <Button icon="pi pi-plus" class="p-button-link" label="Добавить" :onclick="academicTitleEdit"></Button>
       </div>
     </div>
-    <div class="p-field" v-if="section === chapter.language">
+    <div class="field" v-if="section === chapter.language">
       <LanguageView v-for="language in languages" :key="language.id" :model-value="language"/>
       <Button icon="pi pi-plus" class="p-button-link" label="Добавить" :onclick="languageEdit"></Button>
     </div>
-    <div class="p-field" v-if="section === chapter.experience">
+    <div class="field" v-if="section === chapter.experience">
       <WorkExperienceView v-for="experience in experiences" :key="experience.id" :model-value="experience"/>
       <Button icon="pi pi-plus" class="p-button-link" label="Добавить" :onclick="experienceEdit"></Button>
     </div>
-    <div class="p-field" v-if="section === chapter.refresherCourse">
+    <div class="field" v-if="section === chapter.refresherCourse">
       <RefresherCourseView v-for="course in refresherCourses" :key="course.id" :model-value="course"/>
       <Button icon="pi pi-plus" class="p-button-link" label="Добавить" :onclick="refresherCourseEdit"></Button>
     </div>
-    <div class="p-field" v-if="section === chapter.referee">
+    <div class="field" v-if="section === chapter.referee">
       <RefereeView v-for="referee in referees" :key="referee.id" :model-value="referee"/>
       <Button icon="pi pi-plus" class="p-button-link" label="Добавить" :onclick="refereeEdit"></Button>
     </div>
-    <div class="p-field" v-if="section === chapter.id">
+    <div class="field" v-if="section === chapter.id">
       <IdentificationDetailView v-if="identificationDetail && identificationDetail.iin !== undefined" :model-value="identificationDetail"/>
       <Button icon="pi pi-plus" class="p-button-link" label="Добавить"
               v-if="!identificationDetail || identificationDetail.iin === undefined" :onclick="idEdit"></Button>
     </div>
-    <div class="p-field" v-if="section === chapter.academicDetail">
+    <div class="field" v-if="section === chapter.academicDetail">
       <AcademicDetailView v-if="academicDetail !== null" :model-value="academicDetail"/>
       <Button icon="pi pi-plus" class="p-button-link" label="Добавить"
               v-if="academicDetail === null" :onclick="academicDetailEdit"></Button>
     </div>
-    <div class="p-field" v-if="section === chapter.info">
+    <div class="field" v-if="section === chapter.info">
       <InfoView v-if="candidate.info" :model-value="candidate"/>
       <Button icon="pi pi-plus" class="p-button-link" label="Добавить"
               v-if="candidate.info === null" :onclick="infoEdit"></Button>

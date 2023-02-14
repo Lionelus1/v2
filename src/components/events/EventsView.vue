@@ -84,7 +84,7 @@
                         v-if="selectedEvent.additionalFile || selectedEvent.additional_file_path"
                         v-bind:label="$t('common.download')"
                         icon="pi pi-download"
-                        class="p-button-success p-mb-2"
+                        class="p-button-success mb-2"
                         @click="downloadFile(selectedEvent)"
                 />
                 <div>

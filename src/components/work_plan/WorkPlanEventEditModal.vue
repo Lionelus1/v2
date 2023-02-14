@@ -1,48 +1,48 @@
 <template>
-  <Button label="" icon="pi pi-pencil" class="p-button-info p-ml-1 p-mt-1" @click="openBasic"/>
+  <Button label="" icon="pi pi-pencil" class="p-button-info ml-1 mt-1" @click="openBasic"/>
 
   <Dialog :header="$t('workPlan.editEvent')" v-model:visible="showWorkPlanEventEditModal" :style="{width: '450px'}"
           class="p-fluid">
-    <div class="p-field">
+    <div class="field">
       <label>{{ plan && plan.is_oper ? $t('workPlan.resultIndicator') : $t('workPlan.eventName') }}</label>
       <InputText v-model="editData.event_name"/>
       <small class="p-error" v-if="submitted && formValid.event_name">{{ $t('workPlan.errors.eventNameError') }}</small>
     </div>
-    <div class="p-field" v-if="plan && plan.is_oper">
+    <div class="field" v-if="plan && plan.is_oper">
       <label>{{ $t('common.unit') }}</label>
       <InputText v-model="editData.unit" />
     </div>
-    <div class="p-field" v-if="plan && plan.is_oper">
+    <div class="field" v-if="plan && plan.is_oper">
       <label>{{ $t('common.planNumber') }}</label>
       <InputText v-model="editData.plan_number" />
     </div>
-    <div class="p-field" v-if="plan && plan.is_oper">
+    <div class="field" v-if="plan && plan.is_oper">
       <label>{{ $t('workPlan.approvalUsers') }}</label>
       <InputText v-model="editData.responsible_executor" />
     </div>
-    <div class="p-field">
+    <div class="field">
       <label>{{ plan && plan.is_oper ? $t('workPlan.summary') : $t('workPlan.approvalUsers') }}</label>
       <FindUser v-model="selectedUsers" :editMode="true"></FindUser>
       <small class="p-error" v-if="submitted && formValid.users">{{ $t('workPlan.errors.approvalUserError') }}</small>
     </div>
-    <div class="p-field" v-if="(editData != null && parentData != null && parentData.quarter === 5) || !parentData">
+    <div class="field" v-if="(editData != null && parentData != null && parentData.quarter === 5) || !parentData">
       <label>{{ $t('workPlan.quarter') }}</label>
       <Dropdown v-model="editData.quarter" :options="quarters" optionLabel="name" optionValue="id"
                 :placeholder="$t('common.select')"/>
       <small class="p-error" v-if="submitted && formValid.quarter">{{ $t('workPlan.errors.quarterError') }}</small>
     </div>
-    <div class="p-field" v-if="plan && plan.is_oper">
+    <div class="field" v-if="plan && plan.is_oper">
       <label>{{ $t('common.suppDocs') }}</label>
       <Textarea v-model="editData.supporting_docs" rows="3" style="resize: vertical" />
     </div>
-    <div class="p-field">
+    <div class="field">
       <label>{{ plan && plan.is_oper ? $t('common.additionalInfo') : $t('common.result') }}</label>
       <Textarea v-model="editData.result" rows="3" style="resize: vertical"/>
     </div>
     <template #footer>
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
               @click="closeBasic"/>
-      <Button :label="$t('common.save')" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2"
+      <Button :label="$t('common.save')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2"
               @click="edit"/>
     </template>
   </Dialog>

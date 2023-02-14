@@ -32,8 +32,8 @@
              @sort="onSort($event)">
     <!--  HEADER -->
     <template #header>
-      <div class="table-header p-d-flex p-flex-column p-flex-md-row p-jc-md-between">
-        <h4 class="p-mb-2 p-m-md-0 p-as-md-center">{{ $t("hr.vacancies") }}</h4>
+      <div class="table-header flex flex-column md:flex-row md:justify-content-between">
+        <h4 class="mb-2 m-md-0 align-self-md-center">{{ $t("hr.vacancies") }}</h4>
         <span class="p-input-icon-left">
             <i class="pi pi-search"/>
             <InputText type="search"
@@ -41,7 +41,7 @@
                        :placeholder="$t('common.search')"
                        @keyup.enter="getVacancies"
                        @click="clearData"/>
-              <Button icon="pi pi-search" class="p-ml-1" @click="getVacancies"/>
+              <Button icon="pi pi-search" class="ml-1" @click="getVacancies"/>
           </span>
       </div>
     </template>
@@ -181,44 +181,44 @@
         </p>
 
         <p><b>{{ $t('hr.responsibilitiesLabel') }}</b></p>
-        <div class="p-field def-padding"
+        <div class="fielddef-padding"
              v-html='
               $i18n.locale === "kz" ? vacancy.responsibilitiesKz :
                   $i18n.locale === "ru" ? vacancy.responsibilitiesRu : vacancy.responsibilitiesEn'
         />
 
         <p><b>{{ $t('hr.educationLabel') }}</b></p>
-        <div class="p-field def-padding"
+        <div class="fielddef-padding"
              v-html='$i18n.locale === "kz" ? vacancy.educationKz :
                   $i18n.locale === "ru" ? vacancy.educationRu : vacancy.educationEn'
         />
 
         <p><b>{{ $t('hr.qualificationLabel') }}</b></p>
-        <div class="p-field def-padding"
+        <div class="fielddef-padding"
              v-html='$i18n.locale === "kz" ? vacancy.qualificationKz :
                   $i18n.locale === "ru" ? vacancy.qualificationRu : vacancy.qualificationEn'
         />
 
         <p><b>{{ $t('hr.experienceLabel') }}</b></p>
-        <div class="p-field def-padding"
+        <div class="fielddef-padding"
              v-html='$i18n.locale === "kz" ? vacancy.experienceKz :
                   $i18n.locale === "ru" ? vacancy.experienceRu : vacancy.experienceEn'
         />
 
         <p><b>{{ $t('hr.languageLevelLabel') }}</b></p>
-        <div class="p-field def-padding"
+        <div class="fielddef-padding"
              v-html='$i18n.locale === "kz" ? vacancy.languageLevelKz :
                   $i18n.locale === "ru" ? vacancy.languageLevelRu : vacancy.languageLevelEn'
         />
 
         <p><b>{{ $t('hr.certificateRequirementsLabel') }}</b></p>
-        <div class="p-field def-padding"
+        <div class="fielddef-padding"
              v-html='$i18n.locale === "kz" ? vacancy.certificateRequirementsKz :
                   $i18n.locale === "ru" ? vacancy.certificateRequirementsRu : vacancy.certificateRequirementsEn'
         />
 
         <p><b>{{ $t('hr.personalQualitiesLabel') }}</b></p>
-        <div class="p-field def-padding"
+        <div class="fielddef-padding"
              v-html='$i18n.locale === "kz" ? vacancy.personalQualitiesKz :
                   $i18n.locale === "ru" ? vacancy.personalQualitiesRu : vacancy.personalQualitiesEn'
         />
@@ -251,10 +251,10 @@
     </template>
     <div class="card">
       <!--  Трудовая книжка  -->
-      <div class="p-field">
+      <div class="field">
         <Label>{{ $t('hr.doc.eh') }}: </Label>
         <FileUpload
-            class="p-mt-2"
+            class="mt-2"
             mode="basic"
             :customUpload="true"
             :class="{'p-invalid': validation.employmentHistory}"
@@ -263,7 +263,7 @@
             v-bind:chooseLabel="$t('hdfs.chooseFile')"
         ></FileUpload>
         <InlineMessage severity="info"
-                       class="p-mt-2"
+                       class="mt-2"
                        show v-if="documents.employmentHistory">
           {{ $t('ncasigner.chosenFile', {fn: documents.employmentHistory ? documents.employmentHistory.name : ""}) }}
         </InlineMessage>
@@ -274,10 +274,10 @@
       </div>
       <hr>
       <!--   дипломы   -->
-      <div class="p-field">
+      <div class="field">
         <Label>{{ $t('hr.doc.diploma') + " " + $t('hr.doc.upInOne')}}: </Label>
         <FileUpload
-            class="p-mt-2"
+            class="mt-2"
             mode="basic"
             :customUpload="true"
             :class="{'p-invalid': validation.diploma}"
@@ -286,7 +286,7 @@
             v-bind:chooseLabel="$t('hdfs.chooseFile')"
         ></FileUpload>
         <InlineMessage severity="info"
-                       class="p-mt-2"
+                       class="mt-2"
                        show v-if="documents.diploma">
           {{ $t('ncasigner.chosenFile', {fn: documents.diploma ? documents.diploma.name : ""}) }}
         </InlineMessage>
@@ -297,10 +297,10 @@
       </div>
       <hr>
       <!--   сертификаты   -->
-      <div class="p-field">
+      <div class="field">
         <Label>{{ $t('hr.doc.certs')  + " " + $t('hr.doc.upInOne')}}: </Label>
         <FileUpload
-            class="p-mt-2"
+            class="mt-2"
             mode="basic"
             :customUpload="true"
             @uploader="uploadCerts($event)"
@@ -308,17 +308,17 @@
             v-bind:chooseLabel="$t('hdfs.chooseFile')"
         ></FileUpload>
         <InlineMessage severity="info"
-                       class="p-mt-2"
+                       class="mt-2"
                        show v-if="documents.certs">
           {{ $t('ncasigner.chosenFile', {fn: documents.certs ? documents.certs.name : ""}) }}
         </InlineMessage>
       </div>
       <hr>
       <!--   пенсионный   -->
-      <div class="p-field">
+      <div class="field">
         <Label>{{ $t('hr.doc.pension') }}: </Label>
         <FileUpload
-            class="p-mt-2"
+            class="mt-2"
             mode="basic"
             :customUpload="true"
             :class="{'p-invalid': validation.pension}"
@@ -327,7 +327,7 @@
             v-bind:chooseLabel="$t('hdfs.chooseFile')"
         ></FileUpload>
         <InlineMessage severity="info"
-                       class="p-mt-2"
+                       class="mt-2"
                        show v-if="documents.pension">
           {{ $t('ncasigner.chosenFile', {fn: documents.pension ? documents.pension.name : ""}) }}
         </InlineMessage>
@@ -338,10 +338,10 @@
       </div>
       <hr>
       <!--   075   -->
-      <div class="p-field">
+      <div class="field">
         <Label>{{ $t('hr.doc.medCert')  + " " + $t('hr.doc.upInOne')}}: </Label>
         <FileUpload
-            class="p-mt-2"
+            class="mt-2"
             mode="basic"
             :customUpload="true"
             :class="{'p-invalid': validation.medCert}"
@@ -350,7 +350,7 @@
             v-bind:chooseLabel="$t('hdfs.chooseFile')"
         ></FileUpload>
         <InlineMessage severity="info"
-                       class="p-mt-2"
+                       class="mt-2"
                        show v-if="documents.medCert">
           {{ $t('ncasigner.chosenFile', {fn: documents.medCert ? documents.medCert.name : ""}) }}
         </InlineMessage>
@@ -361,10 +361,10 @@
       </div>
       <hr>
       <!--   нарко   -->
-      <div class="p-field">
+      <div class="field">
         <Label>{{ $t('hr.doc.narcoCert') }}: </Label>
         <FileUpload
-            class="p-mt-2"
+            class="mt-2"
             mode="basic"
             :customUpload="true"
             :class="{'p-invalid': validation.narcoCert}"
@@ -373,7 +373,7 @@
             v-bind:chooseLabel="$t('hdfs.chooseFile')"
         ></FileUpload>
         <InlineMessage severity="info"
-                       class="p-mt-2"
+                       class="mt-2"
                        show v-if="documents.narcoCert">
           {{ $t('ncasigner.chosenFile', {fn: documents.narcoCert ? documents.narcoCert.name : ""}) }}
         </InlineMessage>
@@ -384,10 +384,10 @@
       </div>
       <hr>
       <!--   ппсихо   -->
-      <div class="p-field">
+      <div class="field">
         <Label>{{ $t('hr.doc.psychoCert') }}: </Label>
         <FileUpload
-            class="p-mt-2"
+            class="mt-2"
             mode="basic"
             :customUpload="true"
             :class="{'p-invalid': validation.psychoCert}"
@@ -396,7 +396,7 @@
             v-bind:chooseLabel="$t('hdfs.chooseFile')"
         ></FileUpload>
         <InlineMessage severity="info"
-                       class="p-mt-2"
+                       class="mt-2"
                        show v-if="documents.psychoCert">
           {{ $t('ncasigner.chosenFile', {fn: documents.psychoCert ? documents.psychoCert.name : ""}) }}
         </InlineMessage>
@@ -407,10 +407,10 @@
       </div>
       <hr>
       <!--   судимость   -->
-      <div class="p-field">
+      <div class="field">
         <Label>{{ $t('hr.doc.gcCert') }}: </Label>
         <FileUpload
-            class="p-mt-2"
+            class="mt-2"
             mode="basic"
             :customUpload="true"
             :class="{'p-invalid': validation.gcCert}"
@@ -419,7 +419,7 @@
             v-bind:chooseLabel="$t('hdfs.chooseFile')"
         ></FileUpload>
         <InlineMessage severity="info"
-                       class="p-mt-2"
+                       class="mt-2"
                        show v-if="documents.gcCert">
           {{ $t('ncasigner.chosenFile', {fn: documents.gcCert ? documents.gcCert.name : ""}) }}
         </InlineMessage>
@@ -430,10 +430,10 @@
       </div>
       <hr>
       <!--   военный билет   -->
-      <div class="p-field">
+      <div class="field">
         <Label>{{ $t('hr.doc.mId') }}: </Label>
         <FileUpload
-            class="p-mt-2"
+            class="mt-2"
             mode="basic"
             :customUpload="true"
             @uploader="uploadMilitaryId($event)"
@@ -441,7 +441,7 @@
             v-bind:chooseLabel="$t('hdfs.chooseFile')"
         ></FileUpload>
         <InlineMessage severity="info"
-                       class="p-mt-2"
+                       class="mt-2"
                        show v-if="documents.mId">
           {{ $t('ncasigner.chosenFile', {fn: documents.mId ? documents.mId.name : ""}) }}
         </InlineMessage>

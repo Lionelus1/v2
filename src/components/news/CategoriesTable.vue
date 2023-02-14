@@ -1,11 +1,11 @@
 <template>
-  <div class="p-col-12">
+  <div class="col-12">
     <div class="card">
       <Button
           :label="$t('common.add')"
           v-if="isAdmin"
           icon="pi pi-plus"
-          class="p-button-success p-mr-2"
+          class="p-button-success mr-2"
           v-on:click="createNewsCategory"
       />
     </div>
@@ -76,7 +76,7 @@
           <template #body="slotProps">
             <Button
                 icon="pi pi-pencil"
-                class="p-button-rounded p-button-success p-mr-2"
+                class="p-button-rounded p-button-success mr-2"
                 v-if="isAdmin"
                 @click="editNewsCategory(slotProps.data.id)"
             />
@@ -100,19 +100,19 @@
       :modal="true"
       class="p-fluid"
   >
-    <div class="p-field">
+    <div class="field">
       <label for="kz-title">{{ $t("common.nameInQazaq") }}</label>
       <InputText id="kz-title" v-model="category.nameKz"/>
     </div>
-    <div class="p-field">
+    <div class="field">
       <label for="ru-title">{{ $t("common.nameInRussian") }}</label>
       <InputText id="ru-title" v-model="category.nameRu"/>
     </div>
-    <div class="p-field">
+    <div class="field">
       <label for="en-title">{{ $t("common.nameInEnglish") }}</label>
       <InputText id="en-title" v-model="category.nameEn"/>
     </div>
-    <div class="p-field">
+    <div class="field">
       <label for="cats">{{ $t("smartenu.chooseSuperiorCategory") }}</label>
       <Dropdown
           id="cats"
@@ -160,11 +160,24 @@
         </template>
       </Dropdown>
     </div>
+    <Fieldset :legend="$t('common.style')">
+      <div>
+        <label class="mr-2">{{ $t('common.bgColor') }}</label>
+        <ColorPicker v-model="category.bgColor"/>
+      </div>
+      <div class="mt-2">
+        <label class="mr-2">{{ $t('common.textColor') }}</label>
+        <ColorPicker v-model="category.textColor"/>
+      </div>
+      <div>
+        <div class="mt-3" :style="catButtonStyle">{{ category.nameKz }}</div>
+      </div>
+    </Fieldset>
     <template #footer>
       <Button
           v-bind:label="$t('common.save')"
           icon="pi pi-check"
-          class="p-button p-component p-button-success p-mr-2"
+          class="p-button p-component p-button-success mr-2"
           v-on:click="addCategory"
       />
       <Button
@@ -183,7 +196,7 @@
       :modal="true"
   >
     <div class="confirmation-content">
-      <i class="pi pi-exclamation-triangle p-mr-3" style="font-size: 2rem"/>
+      <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"/>
       <span v-if="category"
       >{{ $t("common.doYouWantDelete") }}
           <b>{{
@@ -200,7 +213,7 @@
       <Button
           :label="$t('common.yes')"
           icon="pi pi-check"
-          class="p-button p-component p-button-success p-mr-2"
+          class="p-button p-component p-button-success mr-2"
           @click="deleteNewsCategory(category.id)"
       />
       <Button
@@ -263,63 +276,50 @@ export default {
         isUser: true,
         isStudent: false,
       },
+      bgColor: '0062ff',
+      textColor: 'ffffff'
     };
   },
   methods: {
     getCategories() {
       this.categories = [];
-      axios
-          .get(smartEnuApi + "/allCategories", {
-            headers: getHeader(),
-          })
-          .then((response) => {
-            this.categories = response.data;
-            this.categories = this.categories.reverse();
-            this.loading = false;
-          })
-          .catch((error) => {
-            this.$toast.add({
-              severity: "error",
-              summary: this.$t("smartenu.loadAllCategoriesError") + ":\n" + error,
-              life: 3000,
-            });
-            if (error.response.status == 401) {
-              this.$store.dispatch("logLout");
-            }
-          });
+      axios.get(smartEnuApi + "/allCategories", {headers: getHeader()}).then((response) => {
+        this.categories = response.data;
+        this.categories = this.categories.reverse();
+        this.loading = false;
+      }).catch((error) => {
+        this.$toast.add({
+          severity: "error",
+          summary: this.$t("smartenu.loadAllCategoriesError") + ":\n" + error,
+          life: 3000,
+        });
+        if (error.response.status == 401) {
+          this.$store.dispatch("logLout");
+        }
+      });
     },
     deleteNewsCategory(id) {
-      axios
-          .post(
-              smartEnuApi + "/delNewsCat",
-              {
-                id: id,
-              },
-              {
-                headers: getHeader(),
-              }
-          )
-          .then((response) => {
-            if (response.status === 200) {
-              this.getCategories();
-            }
-          })
-          .catch((error) => {
-            this.$toast.add({
-              severity: "error",
-              summary: this.$t("smartenu.delNewsCategoryError") + ":\n" + error,
-              life: 3000,
-            });
-          });
+      axios.post(smartEnuApi + "/delNewsCat", {id: id}, {headers: getHeader()}).then((response) => {
+        if (response.status === 200) {
+          this.getCategories();
+        }
+      }).catch((error) => {
+        this.$toast.add({
+          severity: "error",
+          summary: this.$t("smartenu.delNewsCategoryError") + ":\n" + error,
+          life: 3000,
+        });
+      });
       this.deleteVisible = false;
       this.category = {};
     },
     addCategory() {
       this.submitted = true;
-      axios
-          .post(smartEnuApi + "/categories", this.category, {
-            headers: getHeader(),
-          })
+      if (!this.category.bgColor)
+        this.category.bgColor = this.bgColor;
+      if (!this.category.textColor)
+        this.category.textColor = this.textColor;
+      axios.post(smartEnuApi + "/categories", this.category, {headers: getHeader()})
           .then((response) => {
             if (response.data !== null) {
               this.$toast.add({
@@ -329,15 +329,14 @@ export default {
               });
               this.getCategories();
             }
-          })
-          .catch((error) => {
-            alert(JSON.stringify(error));
-            this.$toast.add({
-              severity: "error",
-              summary: this.$t("smartenu.saveCategoryError") + ":\n" + error,
-              life: 3000,
-            });
-          });
+          }).catch((error) => {
+        alert(JSON.stringify(error));
+        this.$toast.add({
+          severity: "error",
+          summary: this.$t("smartenu.saveCategoryError") + ":\n" + error,
+          life: 3000,
+        });
+      });
       this.editVisible = false;
       this.category = {};
     },
@@ -377,6 +376,8 @@ export default {
       this.category.nameKz = category.nameKz;
       this.category.nameRu = category.nameRu;
       this.category.nameEn = category.nameEn;
+      this.category.bgColor = category.bgColor;
+      this.category.textColor = category.textColor;
       this.category.parent = this.categories.find(
           (x) => x.id === category.parentId
       );
@@ -434,6 +435,9 @@ export default {
     isStudent: function () {
       return this.roles.isStudent;
     },
+    catButtonStyle() {
+      return `background: #${this.category.bgColor ? this.category.bgColor : this.bgColor};color:#${this.category.textColor ? this.category.textColor : this.textColor};padding: 8px;width:fit-content;`
+    }
   },
 };
 </script>
@@ -454,7 +458,7 @@ export default {
 
 .table-header {
   display: flex;
-  justify-content: space-between;
+  flex-order-: space-between;
 }
 
 ::v-deep(.p-datatable.p-datatable-customers) {

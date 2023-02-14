@@ -20,15 +20,15 @@
         <Listbox v-else-if="(foundEntities != null)" v-model="selectedEntity" :options="foundEntities"
                  listStyle="max-height:250px" @change="addItemMouseExt($event)">
           <template #option="slotProps">
-            <div class="user-item p-grid">
-              <div class="image-container p-lg-2  p-md-3 p-sm-12">
+            <div class="user-item grid">
+              <div class="image-container lg:col-2  md:col-3 p-sm-12">
                 <img class="round" v-if="slotProps.option.photo != null && slotProps.option.photo !==''"
                      :src="'data:image/jpeg;base64,' + slotProps.option.photo "/>
                 <img class="round" v-if="!(slotProps.option.photo != null && slotProps.option.photo !=='')"
                      src="assets/layout/images/default-user.jpg"/>
               </div>
-              <div class="user-list-detail p-lg-10  p-md-9 p-sm-12">
-                <h5 class="p-mb-2">{{ slotProps.option.fullName }}</h5>
+              <div class="user-list-detail lg:col-10  md:col-9 p-sm-12">
+                <h5 class="mb-2">{{ slotProps.option.fullName }}</h5>
                 <span class="product-category">{{ slotProps.option.mainPosition['name' + $i18n.locale] }}</span><br/>
                 <span class="product-category">{{ slotProps.option.mainPosition.department['name' + $i18n.locale.charAt(0).toUpperCase() + $i18n.locale.slice(1)] }}</span>
 
@@ -36,8 +36,8 @@
             </div>
           </template>
         </Listbox>
-        <div v-else class="p-field p-grid">
-          <label for="firstname" style="height:33px;" class="p-col-fixed">{{ $t('common.message.recordNotFound') }}</label>
+        <div v-else class="fieldgrid">
+          <label for="firstname" style="height:33px;" class="col-fixed">{{ $t('common.message.recordNotFound') }}</label>
           <div v-if="editMode" class="p-col">
               <Button class="p-button-link"  @click="showUserDialog()">{{$t('common.createNew')}}</Button>
           </div>

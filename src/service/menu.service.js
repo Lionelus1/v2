@@ -57,7 +57,7 @@ export class MenuService {
             },
             {
                 label: $t('common.contragents'), icon: 'pi pi-fw pi-users',
-                visible: !this.findRole("student"),
+                visible: !this.findRole("student") && (this.getLoginedUser().organization && this.getLoginedUser().organization.id === 1),
 
                 items: [
                     {label: $t('common.organizations'), icon: 'fa-solid fa-building', to: '/contragent/organizations'},

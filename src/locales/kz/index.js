@@ -279,7 +279,10 @@ export default {
         history: "Тарих",
         user: "Қолданушы",
         fact: "Факт",
-        actionTitle: "Әрекет"
+        actionTitle: "Әрекет",
+        style: "Стиль",
+        bgColor: "Фон түсі",
+        textColor: "Мәтін түсі"
     },
     bank: {
         title: "Банктер",

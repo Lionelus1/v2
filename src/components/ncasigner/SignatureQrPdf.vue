@@ -1,8 +1,8 @@
 <template>
-  <div ref="qrToPdf" class="p-grid">
-    <h5 class="p-col-6 p-offset-3 p-text-center p-text-bold">{{ title }}</h5>
+  <div ref="qrToPdf" class="grid">
+    <h5 class="col-6 p-offset-3 text-center bold">{{ title }}</h5>
     <br/>
-    <div class="p-col-12">
+    <div class="col-12">
       <div id="qr" v-for="(item, index) of signatures" :key="index"
            style="border: 1px solid #000; padding: 5px; margin: 5px;display: block;">
         <p v-if="item.user"><b>{{ item.user.fullName }}</b> <!--({{ $t('ncasigner.IIN') }} <em>{{ item.user.IIN }}</em>)-->

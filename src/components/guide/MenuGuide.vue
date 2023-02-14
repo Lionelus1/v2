@@ -222,6 +222,6 @@
     .overlay_buttons {
         width: 80px;
         display: flex;
-        justify-content: space-between;
+        flex-order-: space-between;
     }
 </style>
