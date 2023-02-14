@@ -1,6 +1,7 @@
 import instance from "./api";
 
-const setup = (store) => {
+const setup = (store, app) => {
+var configG = app.config.globalProperties
     instance.interceptors.request.use(
         (config) => {
             return config;
@@ -9,7 +10,7 @@ const setup = (store) => {
             return Promise.reject(error);
         }
     );
-
+    
     instance.interceptors.response.use((response) => {
         if(response.status === 401) {
             store.dispatch('logLout')
@@ -19,7 +20,17 @@ const setup = (store) => {
         if (error.response && error.response.data) {
             if (error.response.status === 401) {
                 store.dispatch('logLout')
-            } else {
+            } else 
+            if (error.response.status === 405) {
+                console.log(error.response)
+                configG.$toast.add({
+                    severity: "error",
+                    summary:  configG.$t('common.message.notAllowed'),
+                    life: 3000,
+                  });
+            }
+            else {
+                console.log(error)
                 return Promise.reject(error.response.data);
             }
         }

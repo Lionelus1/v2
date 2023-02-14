@@ -34,14 +34,12 @@ export class MenuService {
                     {
                         label: $t('educomplex.title'), icon: 'pi pi-fw pi-folder', to: '/documents/catalog/educomplex'
                     },
-                    {
-                        label: $t('common.sertificates'), icon: 'pi pi-fw pi-book', to: '/documents/sertificates'
-                    },
+              
                 ]
 
             },
             {
-                label: $t('common.administration'), icon: 'pi pi-fw pi-shield',
+                label: $t('common.administration'), icon: 'fa-solid fa-user-shield',
                 items: [
                     {
                         label: $t('hr.vacancies'),
@@ -62,7 +60,7 @@ export class MenuService {
                 visible: !this.findRole("student"),
 
                 items: [
-                    {label: $t('common.organizations'), icon: 'pi pi-fw pi-home', to: '/contragent/organizations'},
+                    {label: $t('common.organizations'), icon: 'fa-solid fa-building', to: '/contragent/organizations'},
                     /*{label: 'Банктер', icon: 'pi pi-fw pi-money-bill', to: '/contragent/banks'},
                     {
                       label: 'Жеке тұлғалар',
@@ -71,7 +69,7 @@ export class MenuService {
                     },*/
                     {
                         label: $t('common.personal'),
-                        icon: 'pi pi-fw pi-user',
+                        icon: 'fa-solid fa-person-shelter',
                         to: '/contragent/persons/' + Enum.PersonType.OrganizationMember
                     }
                 ]
@@ -81,19 +79,19 @@ export class MenuService {
             },*/
             {
 
-                label: $t('smartenu.newsTitle'), icon: 'pi pi-fw pi-users',
+                label: $t('smartenu.newsTitle'), icon: 'fa-solid fa-newspaper',
                 items: [
                     {
                         label: $t('smartenu.categories'),
-                        icon: 'pi pi-fw pi-home',
+                        icon: 'fa-solid fa-tags',
                         to: '/newscategories/cattable'
                     },
-                    {label: $t('smartenu.newsList'), icon: 'pi pi-fw pi-money-bill', to: '/news'},
+                    {label: $t('smartenu.newsList'), icon: 'fa-solid fa-rss', to: '/news'},
                 ]
             },
 
             {
-                label: $t('smartenu.eventsTitle'), icon: 'pi pi-fw pi-folder', to: '/events'
+                label: $t('smartenu.eventsTitle'), icon: 'fa-solid fa-calendar-days', to: '/events'
             },
 
 
@@ -104,10 +102,10 @@ export class MenuService {
               label:  $t('faq.title'), icon: 'pi pi-fw pi-question-circle', to: '/faq/faqmain'
             },*/
             {
-                label: $t('publicReception.title'), icon: 'pi pi-fw pi-question-circle', to: '/reception'
+                label: $t('publicReception.title'), icon: 'fa-solid fa-person-circle-question', to: '/reception'
             },
             {
-                label: $t('dissertation.title'), icon: 'pi pi-fw pi-book',
+                label: $t('dissertation.title'), icon: 'fa-solid fa-school-circle-check',
                 items: [
                     {
                         label: $t('dissertation.council.list'),
@@ -117,7 +115,7 @@ export class MenuService {
                     },
                     {
                         label: $t('dissertation.doctoralCard'),
-                        icon: 'pi pi-fw pi-users',
+                        icon: 'fa-solid fa-graduation-cap',
                         to: '/dissertation/doctorals',
                         visible: this.isRoleGroupMember("dissertation_council") || this.isDissertationAdmin()
                     }
@@ -128,7 +126,7 @@ export class MenuService {
                 label: $t('workPlan.plans'), icon: 'pi pi-fw pi-folder', to: '/work-plan'
             },
             {
-                label: $t('common.forStudentsAndGraduates'), icon: 'pi pi-fw pi-users',
+                label: $t('common.forStudentsAndGraduates'), icon: 'fa-solid fa-user-graduate',
                 items: [
                     {
                         label: $t('hr.vacancies'),
@@ -156,7 +154,7 @@ export class MenuService {
             },
 
             {
-                label: $t('queue.title'), icon: 'pi pi-fw pi-users ',
+                label: $t('queue.title'), icon: 'fa-solid fa-people-line',
                 items: [
                     {
                         label: $t('queue.title'), icon: 'pi pi-fw pi-plus-circle', to: '/queue'
@@ -171,6 +169,14 @@ export class MenuService {
 
                 ]
 
+            },
+            {
+                label: $t('course.title'), icon: 'fa-solid fa-chalkboard-user',
+                items: [ 
+                    {
+                        label: $t('course.sertificate.template'), icon: 'fa-solid fa-certificate', to: '/course/sertificate/templates'
+                    }
+                ]
             },
         ]
     }

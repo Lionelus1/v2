@@ -44,6 +44,11 @@ export default {
         equals: "Равно",
         login: "Вход",
         logout: "Выход",
+        letterSpacing: {
+            expanded: "Разреженный",
+            condensed: "Уплотненный",
+            normal: "Обычный",
+        },
         enter: "Наберите",
         enterLogin: "Введите ИИН или почту platonus",
         enterPassword: "Введите пароль",
@@ -243,6 +248,9 @@ export default {
             fileError: "Не удалось загрузить файл. Возможно файл поврежден",
             mailSendError: "Ошибка при отправке на электронную почту",
             ConsulAlwaysHasSameMember: "Указанное лицо уже состоит в другом совете",
+            saveChangesWarning: "Хотите сохранить внесенные изменения?",
+            unsaveOutcome: "Если изменения не сохранить, они будут утрачены.",
+            addPicture: "Добавить картинку"
         },
         language: {
             kz: "на казахском",
@@ -924,5 +932,15 @@ export default {
         addGuide: 'Создание справочника',
         editGuide: 'Редактирование справочника',
         notGuide: 'На эту страницу пока не создана справочник!',
+    },
+    course: {
+        title: 'Онлайн курсы',
+        sertificate: {
+            template: 'Шаблоны сертфиката',
+            element: 'Элемент',
+            elements: 'Элементы',
+            designer: 'Дизайнер шаблона',
+        }
     }
+
 }

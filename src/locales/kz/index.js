@@ -44,6 +44,11 @@ export default {
         equals: "Тең",
         login: "Кіру",
         logout: "Шығу",
+        letterSpacing: {
+            expanded: "Кең",
+            condensed: "Сығыңқы",
+            normal: "Әдепкі",
+        },
         enter: "Теріңіз",
         enterLogin: "ЖСН немесе platonus почтасын енгізіңіз",
         export: "Экспорт",
@@ -241,7 +246,9 @@ export default {
             fileError: "Файлды жүктеу мүмкін емес. Файл бүлінген болуы мүмкін",
             mailSendError: "Электронды поштаға хат жіберуде қате пайда болды",
             ConsulAlwaysHasSameMember: "Көрсетілген тұлға басқа кеңестің мүшесі",
-
+            saveChangesWarning: "Жасаған өзгерістерді сақтайсыз ба?",
+            unsaveOutcome: "Өзгерістерді сақтамасаңыз, біржола жоғалтасыз.",
+            addPicture: "Сурет қосу"
         },
         language: {
             kz: "қазақша",
@@ -939,5 +946,14 @@ export default {
         addGuide: 'Анықтаманы қосу',
         editGuide: 'Анықтаманы өзгерту',
         notGuide: 'Бұл бетке әзірге анқтыма құрылған жоқ!',
+    },
+    course: {
+        title: 'Онлайн курстар',
+        sertificate: {
+            template: 'Сертификат үлгілері',
+            element: 'Элемент',
+            elements: 'Элементтер',
+            designer: 'Үлгі дизайнері',
+        }
     }
 }

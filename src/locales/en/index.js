@@ -40,6 +40,11 @@ export default {
         },
         cabinet: 'Personal account',
         lt: "Less than",
+        letterSpacing: {
+            expanded: "Expanded",
+            condensed: "Condensed",
+            normal: "Normal",
+        },
         gt: "Greater than",
         equals: "Equals",
         login: "login",
@@ -242,6 +247,9 @@ export default {
             fileError: "Failed to upload file. Maybe the file is corrupted",
             mailSendError: "Error sending email",
             ConsulAlwaysHasSameMember: "The named person is already a member of another council",
+            saveChangesWarning: "Would you like to save your changes?",
+            unsaveOutcome: "If changes are not saved, they will be lost.",
+            addPicture: "Add image"
         },
         language: {
             kz: "in kazakh",
@@ -917,5 +925,14 @@ export default {
         addGuide: 'Creating a guide',
         editGuide: 'Editing a guide',
         notGuide: 'There is no guide for this page yet!',
+    },
+    course: {
+        title: 'Online courses',
+        sertificate: {
+            template: 'Sertificate templates',
+            element: 'Element',
+            elements: 'Elements',
+            designer: 'Template designer',
+        }
     }
 }

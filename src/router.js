@@ -387,15 +387,22 @@ const routes = [
                 name: 'Cafedra',
                 component: load('documents/Cafedra'),
                 beforeEnter: ifAuthenticated,
+                
             },
             {
                 path: '/access',
                 name: 'access',
-                component: () => import('./pages/Access.vue')
-            }
-                
+                component: () => import('./pages/Access.vue'),
+            },
+            {
+                path: '/course/sertificate/templates',
+                name: 'SertificateTemplate',
+                component: load('documents/sertificates/Template'),
+                beforeEnter: ifAuthenticated,
+            },
         ]
     },
+   
     {
         path: '/guide',
         name: 'Guide',
