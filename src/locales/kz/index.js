@@ -161,6 +161,7 @@ export default {
         params: "Параметрлер",
         password: "Құпия сөз",
         person: "Жеке тұлға",
+        individualEntrepreneur: "Жеке тұлғалар",
         personal: "Қызметкерлер",
         revision: "Түзетуге",
         requiredField: "Міндетті түрде толтыру керек",

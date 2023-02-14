@@ -588,8 +588,9 @@
           this.templates.forEach(folder=>{
             if (folder.key == response.data.folderID) {
                 var newNode = this.addTemplateNode(folder.children, response.data, folder.key);
-                this.editDocTemplate(newNode);
                 this.closeForm('addTemplate');
+                this.editDocTemplate(newNode);
+                // this.dialogOpenState['addTemplate'] = false;
                 this.createdTemplate = {
                 creatorId: 1,
                 mainTextKaz: '',

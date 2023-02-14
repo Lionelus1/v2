@@ -88,7 +88,7 @@ export default {
     save() {
       this.params.orgId = this.selectedOrganization.id;
       this.params.roleId = this.role.id;
-      this.params.userId = this.employee.id;
+      this.params.userId = this.employee.userID;
       this.roleControlService.addRoleRelation(this.params).then(result => {
         this.emitter.emit("roleRelationAdded", true);
       }).catch(error => {

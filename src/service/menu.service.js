@@ -64,12 +64,12 @@ export class MenuService {
 
                 items: [
                     {label: $t('common.organizations'), icon: 'pi pi-fw pi-home', to: '/contragent/organizations'},
-                    /*{label: 'Банктер', icon: 'pi pi-fw pi-money-bill', to: '/contragent/banks'},
+                    //label: 'Банктер', icon: 'pi pi-fw pi-money-bill', to: '/contragent/banks'},
                     {
-                      label: 'Жеке тұлғалар',
+                      label: $t('common.individualEntrepreneur'),
                       icon: 'pi pi-fw pi-user',
                       to: '/contragent/persons/' + Enum.PersonType.IndividualEntrepreneur
-                    },*/
+                    },
                     {
                         label: $t('common.personal'),
                         icon: 'pi pi-fw pi-user',

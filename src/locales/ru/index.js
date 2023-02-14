@@ -161,6 +161,7 @@ export default {
         params: "Параметры",
         password: "Пароль",
         person: "Персона",
+        individualEntrepreneur: "Индивидуальные предприниматели",
         personal: "Сотрудники",
         phoneNumber: '',
         requiredField: "Обязательное поле",

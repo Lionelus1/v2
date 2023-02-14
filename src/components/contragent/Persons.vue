@@ -216,7 +216,7 @@ export default {
             Number(this.$route.params.type) ===
             Enum.PersonType.OrganizationMember
               ? "student"
-              : "INDIVIDUALENTREPRENEUR",
+              : "individual_entrepreneur",
           matchMode:
             Number(this.$route.params.type) ===
             Enum.PersonType.OrganizationMember
@@ -313,7 +313,7 @@ export default {
       this.filters.userType.value =
         this.personType  === Enum.PersonType.OrganizationMember
           ? "student"
-          : "INDIVIDUALENTREPRENEUR";
+          : "individual_entrepreneur";
       
       this.filters.userType.matchMode =
         this.personType  === Enum.PersonType.OrganizationMember
