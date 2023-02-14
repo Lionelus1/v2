@@ -547,6 +547,7 @@ export default {
       this.$toast.add({severity: msgtype, summary: message, detail: content, life: 3000});
     },
     getFoldersByGlobalFilter() {
+      this.selected = null;
       if (!(this.filters.status.value === null && this.filters.createDate.value === null)) {
         let filter = JSON.parse(JSON.stringify(this.filters));
         this.lazyParams.filters = filter;

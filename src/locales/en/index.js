@@ -273,7 +273,10 @@ export default {
         history: "History",
         user: "User",
         fact: "Fact",
-        actionTitle: "Action"
+        actionTitle: "Action",
+        style: "Style",
+        bgColor: "Background color",
+        textColor: "Text color"
     },
     bank: {
         title: "Banks",
