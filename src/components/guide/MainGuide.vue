@@ -17,7 +17,7 @@
                 </Message>
                 <TabView>
                     <TabPanel header="Қазақша">
-                        <div class="p-field">
+                        <div class="field">
                             <label for="kz-content">{{ $t("common.contentInQazaq") }}</label>
                             <Editor v-model="guide.content"
                                     id="kz-content"
@@ -29,7 +29,7 @@
                         </div>
                     </TabPanel>
                     <TabPanel header="Русский">
-                        <div class="p-field">
+                        <div class="field">
                             <label for="ru-content">{{$t("common.contentInRussian")}}</label>
                             <Editor v-model="guide.contentRu"
                                     id="ru-content"
@@ -41,7 +41,7 @@
                         </div>
                     </TabPanel>
                     <TabPanel header="English">
-                        <div class="p-field">
+                        <div class="field">
                             <label for="en-content">{{
                                 $t("common.contentInEnglish")
                                 }}</label>
@@ -58,7 +58,7 @@
                 <Button
                         v-bind:label="$t('common.save')"
                         icon="pi pi-check"
-                        class="p-button p-component p-button-success p-mr-2"
+                        class="p-button p-component p-button-success mr-2"
                         @click="insertGuide"
                 />
             </div>

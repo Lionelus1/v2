@@ -1,10 +1,10 @@
 <template>
   <div>
-    <div ref="toPdf" class="WordSection1 p-grid" v-if="plan && !plan.is_oper">
+    <div ref="toPdf" class="WordSection1 grid" v-if="plan && !plan.is_oper">
       <h5 style="width: 100%;text-align: center;font-size: 14.0pt;text-transform: uppercase;font-weight: bold;">
         {{ reportTitle }}</h5>
       <br/>
-      <div class="p-col-12">
+      <div class="col-12">
         <table
             style="width: 100%; font-size: 12.0pt; text-align: center;border-collapse: collapse;border: 1px solid grey">
           <tbody>
@@ -56,12 +56,12 @@
         </table>
       </div>
     </div>
-    <div ref="toPdf" class="p-grid" v-if="plan && plan.is_oper">
+    <div ref="toPdf" class="grid" v-if="plan && plan.is_oper">
       <div class="WordSection1">
         <h5 style="width: 100%;text-align: center;font-size: 14.0pt;text-transform: uppercase;font-weight: 700;">
           {{ reportTitle }}</h5>
         <br/>
-        <div class="p-col-12">
+        <div class="col-12">
           <table
               style="display: table;width: 100%;font-size: 10.0pt; text-align: center;border-collapse: collapse;border: 1px solid grey;overflow: visible !important;" cellspacing=0 cellpadding=0>
             <tbody>
@@ -123,7 +123,7 @@
                 <div><b>{{ plan.lang === 1 ? 'Есеп' : plan.lang === 2 ? 'Отчет' : 'Report' }}</b></div>
                 <div v-if="item.event_result">
                   <div class="text" v-for="(resItem, resIndex) in item.event_result.result_text" :key="resIndex">
-                    <p style="color: #a3a3a3;padding-top: 20px; font-size: 11pt;font-weight: 600;"><i class="fa-solid fa-user p-mr-1"></i>{{resItem.user.fullName }}</p>
+                    <p style="color: #a3a3a3;padding-top: 20px; font-size: 11pt;font-weight: 600;"><i class="fa-solid fa-user mr-1"></i>{{resItem.user.fullName }}</p>
                     <span v-html="resItem.text"></span>
                   </div>
                 </div>

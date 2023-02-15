@@ -3,32 +3,32 @@
     <BlockUI :blocked="loading" :fullScreen="true">
       <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
     </BlockUI>
-    <div v-if="question" class="p-grid">
+    <div v-if="question" class="grid">
       <div class="product-grid-item card">
         <h5>{{ $t("faq.question") }}</h5>
 
-        <div class="product-grid-item-top p-mb-2 grid">
-          <div class="p-lg-2 p-md-6 p-sm-6">
+        <div class="product-grid-item-top mb-2 grid">
+          <div class="lg:col-2 md:col-6 p-sm-6">
                         <span>
                         <i class="fa-solid fa-at product-category-icon"></i>
                         <small>№&nbsp;{{ question.id }} </small><br/>
                         <small class="product-category">{{ question.lastName + " " + question.firstName }}</small>
                         </span>
           </div>
-          <div class="p-lg-2 p-md-6 p-sm-6">
+          <div class="lg:col-2 md:col-6 p-sm-6">
                         <span>
                         <small class="product-category">{{ question.mobile + " " + question.email }}</small>
                         </span>
           </div>
-          <div class="p-lg-2 p-md-6 p-sm-6">
+          <div class="lg:col-2 md:col-6 p-sm-6">
             <i class="fa-solid fa-tags product-category-icon"></i>
             <small class="product-category">{{ question.category['name' + $i18n.locale].split("(")[0] }}</small>
           </div>
-          <div class="p-lg-3 p-md-6 p-sm-6">
+          <div class="lg:col-3 md:col-6 p-sm-6">
             <span v-if="loginedUser" :class="'customer-badge status-' + question.state.id">{{ $t("common.states." + question.state.code) }}</span>
           </div>
 
-          <div class="p-lg-3 p-md-6 p-sm-12 p-text-right">
+          <div class="lg:col-3 md:col-6 p-sm-12 text-right">
             <i class="fa-solid fa-calendar-days product-category-icon"></i>
             <small class="product-category">{{ moment(new Date(question.createdDate)).utc().format("DD.MM.YYYY") }}</small>
           </div>
@@ -36,11 +36,11 @@
         <div class="product-grid-item-content">
           <p class="block-with-text">{{ question.question }}</p>
         </div>
-        <div v-if="question.filePath" class="p-w-100 p-text-right">
+        <div v-if="question.filePath" class="p-w-100 text-right">
           <Button :label="$t('faq.attachments')" icon="pi pi-download" @click="downloadFile(question.filePath)"></Button>
         </div>
-        <div v-if="question.state.id ==1 && findRole(null, 'faq_receiption_request_admin')" class="p-w-100 p-text-right">
-          <Button :label="$t('common.send')" @click="sendDialog = true" class="p-button-info p-mt-2 "></Button>
+        <div v-if="question.state.id ==1 && findRole(null, 'faq_receiption_request_admin')" class="p-w-100 text-right">
+          <Button :label="$t('common.send')" @click="sendDialog = true" class="p-button-info mt-2 "></Button>
         </div>
 
 
@@ -49,25 +49,25 @@
       <div v-if="question.replier" class="product-grid-item card">
         <h5>{{ $t("faq.answer") }}</h5>
 
-        <div class="product-grid-item-top p-mb-2">
-          <div class="p-col-12 p-grid">
-            <div v-if="loginedUser" class="p-lg-6  p-md-6 p-sm-6">
+        <div class="product-grid-item-top mb-2">
+          <div class="col-12 grid">
+            <div v-if="loginedUser" class="lg:col-6  md:col-6 p-sm-6">
                             <span v-if="question.replier != null">
                                 <i class="fa-solid fa-user-tag product-category-icon"></i>
                                 <small class="product-category">{{ question.replier.fullName }}</small>
                             </span>
             </div>
-            <div v-if="question.replyDate" class="p-lg-6  p-md-6 p-sm-6 p-text-right">
+            <div v-if="question.replyDate" class="lg:col-6  md:col-6 p-sm-6 text-right">
               <i class="fa-solid fa-calendar-days product-category-icon"></i>
               <small class="product-category">{{ moment(new Date(question.replyDate)).utc().format("DD.MM.YYYY") }}</small>
             </div>
           </div>
         </div>
-        <div class="product-grid-item-content p-text-left">
+        <div class="product-grid-item-content text-left">
           <div v-if="loginedUser && question.replier.userID && loginedUser.userID == question.replier.userID">
             <Editor :readonly="question.state.id !=8" v-model="question.answer" editorStyle="height: 200px"/>
-            <div class="p-w-100 p-text-right">
-              <Button v-if="question.state.id ==8" :label="$t('faq.toAnswer')" class="p-button-info p-mt-2" @click="answer"></Button>
+            <div class="p-w-100 text-right">
+              <Button v-if="question.state.id ==8" :label="$t('faq.toAnswer')" class="p-button-info mt-2" @click="answer"></Button>
             </div>
           </div>
           <div v-else class="block-with-text" v-html="question.answer"></div>
@@ -76,7 +76,7 @@
       </div>
     </div>
     <Dialog @hide="responsible=null" :header="$t('common.sendToResponsible')" v-model:visible="sendDialog" :modal="true" :style="{width: '75vw'}">
-      <div class="p-field">
+      <div class="field">
         <label>{{ this.$t("queue.responsible") }}</label>
         <FindUser v-model="responsible" :max="1" style="width:100%" :editMode="false"/>
       </div>
@@ -339,7 +339,7 @@ export default {
   .product-grid-item-bottom {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    flex-order-: space-between;
   }
 
 

@@ -1,48 +1,48 @@
 <template>
-  <Button v-if="isMain" :label="$t('workPlan.addEvent')" class="p-button-info p-ml-1" icon="pi pi-plus" @click="openBasic"/>
-  <Button v-else label="" class="p-button-info p-ml-1" icon="pi pi-plus" @click="openBasic"/>
+  <Button v-if="isMain" :label="$t('workPlan.addEvent')" class="p-button-info ml-1" icon="pi pi-plus" @click="openBasic"/>
+  <Button v-else label="" class="p-button-info ml-1" icon="pi pi-plus" @click="openBasic"/>
 
   <Dialog :header="$t('workPlan.addEvent')" v-model:visible="showWorkPlanEventModal" :style="{width: '600px'}"
           class="p-fluid">
-    <div class="p-field">
+    <div class="field">
       <label>{{ plan && plan.is_oper ? $t('workPlan.resultIndicator') : $t('workPlan.eventName') }}</label>
       <InputText v-model="event_name" />
       <small class="p-error" v-if="submitted && formValid.event_name">{{ $t('workPlan.errors.eventNameError') }}</small>
     </div>
-    <div class="p-field" v-if="plan && plan.is_oper">
+    <div class="field" v-if="plan && plan.is_oper">
       <label>{{ $t('common.unit') }}</label>
       <InputText v-model="unit" />
     </div>
-    <div class="p-field" v-if="plan && plan.is_oper">
+    <div class="field" v-if="plan && plan.is_oper">
       <label>{{ $t('common.planNumber') }}</label>
       <InputText v-model="plan_number" />
     </div>
-    <div class="p-field" v-if="plan && plan.is_oper">
+    <div class="field" v-if="plan && plan.is_oper">
       <label>{{ $t('workPlan.approvalUsers') }}</label>
       <InputText v-model="responsible_executor" />
     </div>
-    <div class="p-field">
+    <div class="field">
       <label>{{ plan && plan.is_oper ? $t('workPlan.summary') : $t('workPlan.approvalUsers') }}</label>
       <FindUser v-model="selectedUsers" :editMode="true"></FindUser>
       <small class="p-error" v-if="submitted && formValid.users">{{ $t('workPlan.errors.approvalUserError') }}</small>
     </div>
-    <div class="p-field" v-if="!parentData || (parentData && parentData.quarter === 5)">
+    <div class="field" v-if="!parentData || (parentData && parentData.quarter === 5)">
       <label>{{ $t('workPlan.quarter') }}</label>
       <Dropdown v-model="quarter" :options="quarters" optionLabel="name" optionValue="id" :placeholder="$t('common.select')" />
       <small class="p-error" v-if="submitted && formValid.quarter">{{ $t('workPlan.errors.quarterError') }}</small>
     </div>
-    <div class="p-field" v-if="plan && plan.is_oper">
+    <div class="field" v-if="plan && plan.is_oper">
       <label>{{ $t('common.suppDocs') }}</label>
       <Textarea v-model="supporting_docs" rows="3" style="resize: vertical" />
     </div>
-    <div class="p-field">
+    <div class="field">
       <label>{{ plan && plan.is_oper ? $t('common.additionalInfo') : $t('common.result') }}</label>
       <Textarea v-model="result" rows="3" style="resize: vertical"/>
     </div>
     <template #footer>
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
               @click="closeBasic"/>
-      <Button :label="$t('common.add')" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2"
+      <Button :label="$t('common.add')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2"
               @click="createEvent"/>
     </template>
   </Dialog>

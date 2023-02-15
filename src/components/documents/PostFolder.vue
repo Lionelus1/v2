@@ -1,26 +1,26 @@
 <template>
     <div class="p-fluid">
-        <div class="p-field">
+        <div class="field">
             <label for="foldername" >{{$t('common.nameInQazaq')}}</label>
             <InputText id="fodernamekaz" v-model="folder.namekz" type="text" />
             <small class="p-error" v-if="validation.namekz">{{ $t("common.requiredField") }}</small>
         </div>
-        <div class="p-field">
+        <div class="field">
             <label for="foldernamerus">{{$t('common.nameInRussian')}}</label>
             <InputText id="foldernamerus" v-model="folder.nameru"  type="text"  />
             <small class="p-error" v-if="validation.nameru">{{ $t("common.requiredField") }}</small>
         </div>
-        <div class="p-field">
+        <div class="field">
             <label for="foldernameen">{{$t('common.nameInEnglish')}}</label>
             <InputText id="foldernameen" v-model="folder.nameen"  type="text" />
             <small class="p-error" v-if="validation.nameen">{{ $t("common.requiredField") }}</small>
         </div>
-        <div class="p-field">
+        <div class="field">
             <label for="foldercode">{{$t('common.code')}}</label>
             <InputText id="foldercode" v-model="folder.code"  type="text" />
             <small class="p-error" v-if="validation.code">{{ $t("common.requiredField") }}</small>
         </div>
-        <div class="p-field">
+        <div class="field">
             <label for="foldergroup">{{$t('common.userGroup')}}</label>
             <MultiSelect v-model="folder.groups" :options="groupsData" :optionLabel="'name' + $i18n.locale" v-bind:placeholder="$t('common.selectGroup')"  display="chip"/>
             <small class="p-error" v-if="validation.groups">{{ $t("common.requiredField") }}</small>

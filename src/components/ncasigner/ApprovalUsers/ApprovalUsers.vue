@@ -1,10 +1,10 @@
 <template>
-  <div class="p-field">
+  <div class="field">
     <label>{{ $t('common.select') }}</label>
     <StepComponent v-model="approval_users" :stages="stages" @clearStages="clearStages"></StepComponent>
     <Toolbar style="border:none;background:none">
       <template #end>
-        <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger p-mr-2" @click="close" />
+        <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger mr-2" @click="close" />
         <Button :disabled="disabled" :label="$t('common.send')" icon="pi pi-check" class="p-button-rounded" @click="sendToApprove" />
       </template>
     </Toolbar>

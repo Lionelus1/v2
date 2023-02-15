@@ -1,11 +1,11 @@
 <template>
-  <div class="p-col-12">
+  <div class="col-12">
     <Card v-if="!loading">
       <template #content>
-        <h5 class="card-title p-mb-2" v-html="faq.content"></h5>
-        <div class="p-mt-2">
+        <h5 class="card-title mb-2" v-html="faq.content"></h5>
+        <div class="mt-2">
           <span>{{ formatDate(faq.sendDate) }}</span>
-          <span :class="'p-ml-5 customer-badge status-' + faq.status.id">
+          <span :class="'ml-5 customer-badge status-' + faq.status.id">
             {{
               $i18n.locale === "kz"
                 ? faq.status.nameKz
@@ -21,7 +21,7 @@
           type="button"
           icon="pi pi-image"
           @click="downloadFile(faq.image, 0)"
-          class="p-button-rounded p-button-success p-mr-2"
+          class="p-button-rounded p-button-success mr-2"
           v-if="faq.image != null"
         ></Button>
         <Button
@@ -33,7 +33,7 @@
         ></Button>
       </template>
     </Card>
-    <Card class="p-mt-3" v-if="!loading">
+    <Card class="mt-3" v-if="!loading">
       <template #title> <h5 class="card-title">{{ $t('faq.answer') }}</h5> </template>
       <template #content>
         <div v-html="faq.answer.answer"></div>

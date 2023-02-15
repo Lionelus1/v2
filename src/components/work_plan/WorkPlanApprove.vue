@@ -2,7 +2,7 @@
   <Button
       type="button"
       icon="pi pi-send"
-      class="p-button-success p-ml-2"
+      class="p-button-success ml-2"
       :label="$t('common.action.sendToApprove')"
       @click="openModal"
   ></Button>
@@ -10,14 +10,14 @@
   <PdfContent ref="pdf" v-if="data" :data="data" :planId="data.work_plan_id" style="display: none;"></PdfContent>
 
   <Dialog :header="$t('common.action.sendToApprove')" v-model:visible="showModal" :style="{width: '450px'}" class="p-fluid">
-    <div class="p-field">
+    <div class="field">
       <label>{{ $t('common.select') }}</label>
       <ApproveComponent @add="approveChange" :stepValue="selectedUsers" v-model="selectedUsers" @changeStep="changeStep"></ApproveComponent>
     </div>
     <template #footer>
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
               @click="closeModal"/>
-      <Button ref="approveBtn" :disabled="submitted" :label="$t('common.send')" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2"
+      <Button ref="approveBtn" :disabled="submitted" :label="$t('common.send')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2"
               @click="getGeneratedPdf"/>
     </template>
   </Dialog>

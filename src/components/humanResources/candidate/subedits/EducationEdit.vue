@@ -1,20 +1,20 @@
 <template>
-  <div id="carddiv" class="p-grid">
-    <div class="p-col-12">
+  <div id="carddiv" class="grid">
+    <div class="col-12">
       <h3>Создание и редактирование образования</h3>
       <div>
         <Menubar :model="menu" :key="active"
                  style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px"></Menubar>
       </div>
     </div>
-    <div class="p-col-12 p-md-12 p-fluid">
+    <div class="col-12 md:col-12 p-fluid">
       <div class="card">
-        <div class="p-grid p-formgrid">
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+        <div class="grid formgrid">
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ $t('hr.edu.institution') }}</label>
             <InputText
                 :readonly="readonly"
-                class="p-mt-2"
+                class="mt-2"
                 :class="{'p-invalid': validation.institution}"
                 type="text"
                 :placeholder="$t('hr.edu.institution')"
@@ -25,11 +25,11 @@
                 v-if="validation.institution"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ $t('hr.edu.institutionAddress') }}</label>
             <InputText
                 :readonly="readonly"
-                class="p-mt-2"
+                class="mt-2"
                 :class="{'p-invalid': validation.institutionAddress}"
                 type="text"
                 :placeholder="$t('hr.edu.institutionAddress')"
@@ -40,11 +40,11 @@
                 v-if="validation.institutionAddress"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ $t('common.faculty') }}</label>
             <InputText
                 :readonly="readonly"
-                class="p-mt-2"
+                class="mt-2"
                 :class="{'p-invalid': validation.faculty}"
                 type="text"
                 :placeholder="$t('common.faculty')"
@@ -55,11 +55,11 @@
                 v-if="validation.faculty"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ $t('common.speciality') }}</label>
             <InputText
                 :readonly="readonly"
-                class="p-mt-2"
+                class="mt-2"
                 :class="{'p-invalid': validation.speciality}"
                 type="text"
                 :placeholder="$t('common.speciality')"
@@ -70,11 +70,11 @@
                 v-if="validation.speciality"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ $t('hr.ad.diplomaNumber') }}</label>
             <InputText
                 :readonly="readonly"
-                class="p-mt-2"
+                class="mt-2"
                 :class="{'p-invalid': validation.diplomaNumber}"
                 type="text"
                 :placeholder="$t('hr.ad.diplomaNumber')"
@@ -85,12 +85,12 @@
                 v-if="validation.diplomaNumber"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ $t('hr.edu.receiptDate') }}</label>
             <PrimeCalendar
                 :readonly="readonly"
                 view="year"
-                class="p-mt-2"
+                class="mt-2"
                 :class="{'p-invalid': validation.receiptDate}"
                 v-model="value.receiptDate"
                 :placeholder="$t('hr.edu.receiptDate')"
@@ -100,12 +100,12 @@
                 v-if="validation.receiptDate"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{$t('hr.edu.expirationDate')}}</label>
             <PrimeCalendar
                 :readonly="readonly"
                 view="year"
-                class="p-mt-2"
+                class="mt-2"
                 :class="{'p-invalid': validation.expirationDate}"
                 v-model="value.expirationDate"
                 :placeholder="$t('hr.edu.expirationDate')"

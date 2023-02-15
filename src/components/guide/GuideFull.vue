@@ -15,8 +15,8 @@
                 </div>
             </div>
         </transition>
-        <div class="layout-main p-pr-0 p-pl-0">
-            <div class="p-col-12">
+        <div class="layout-main pr-0 pl-0">
+            <div class="col-12">
                 <router-view v-model:pagemenu="localpagemenu"/>
             </div>
         </div>

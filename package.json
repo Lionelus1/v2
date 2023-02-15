@@ -35,7 +35,7 @@
 		"eslint-plugin-vue": "^7.0.0-0",
 		"mitt": "^2.1.0",
 		"node-sass": "npm:sass@^1.57.1",
-		"primeflex": "2.0.0",
+		"primeflex": "^3.3.0",
 		"primeicons": "6.0.1",
 		"primevue": "^3.21.0",
 		"prismjs": "^1.15.0",
