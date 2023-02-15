@@ -1,5 +1,5 @@
 <template>
-  <div class="p-col-12">
+  <div class="col-12">
     <TitleBlock :showBackButton="true" :title="$t('enuNewSite.menuMainPage') + ' | ' + ($i18n.locale === 'kz' ? pageData.title_kz : $i18n.locale === 'ru' ? pageData.title_ru : pageData.title_en)"/>
     <div class="card">
       <Button label="Добавить блок" @click="toggle" />
@@ -33,13 +33,13 @@
   <OverlayPanel ref="op" appendTo="body" :showCloseIcon="true" id="overlay_panel"
                 style="width: 450px" :breakpoints="{'960px': '75vw'}" >
     <div class="p-fluid">
-      <div class="p-field">
+      <div class="field">
         <label>Блоки</label>
         <Dropdown v-model="selectedBlock" :options="blocks" :optionLabel="('title_' + $i18n.locale)"
                   :filter="true" :show-clear="true"/>
       </div>
     </div>
-    <div class="p-field">
+    <div class="field">
       <Button :label="$t('common.add')" @click="addBlockToPage" class="mt-2"/>
     </div>
   </OverlayPanel>

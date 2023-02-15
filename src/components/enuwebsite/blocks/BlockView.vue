@@ -1,15 +1,15 @@
 <template>
-  <div class="p-col-12">
+  <div class="col-12">
     <TitleBlock :title="'Блоки | ' + ($i18n.locale === 'kz' ? block.title_kz : $i18n.locale === 'ru' ? block.title_ru : block.title_en)" :showBackButton="true" />
     <div class="card" v-if="block && content && !block.is_list">
       <TabView class="p-fluid">
         <TabPanel header="Қазақша">
-          <div class="p-field p-mt-3">
+          <div class="field mt-3">
             <label for="kz-title">{{ $t("common.nameInQazaq") }}</label>
             <InputText v-model="content.title_kz" rows="3" :class="{ 'p-invalid': !content.title_kz && submitted }"/>
             <small v-show="!content.title_kz && submitted" class="p-error">{{ $t("smartenu.titleKzInvalid") }}</small>
           </div>
-          <div class="p-field">
+          <div class="field">
             <label>{{ $t("common.contentInQazaq") }}</label>
             <RichEditor ref="kztext" v-model="content.content_kz" editorStyle="height: 320px"></RichEditor>
             <small v-show="!content.content_kz && submitted" class="p-error">
@@ -18,14 +18,14 @@
           </div>
         </TabPanel>
         <TabPanel header="Русский">
-          <div class="p-field p-mt-3" style="margin-bottom: 1.5rem">
+          <div class="field mt-3" style="margin-bottom: 1.5rem">
             <label>{{ $t("common.nameInRussian") }}</label>
             <InputText v-model="content.title_ru" rows="3" :class="{ 'p-invalid': !content.title_ru && submitted }"/>
             <small v-show="!content.title_ru && submitted" class="p-error">
               {{ $t("smartenu.titleRuInvalid") }}
             </small>
           </div>
-          <div class="p-field">
+          <div class="field">
             <label for="ru-content">{{ $t("common.contentInRussian") }}</label>
             <RichEditor id="ru-content" v-model="content.content_ru" editorStyle="height: 320px"/>
             <small v-show="!content.content_ru && submitted" class="p-error">
@@ -34,14 +34,14 @@
           </div>
         </TabPanel>
         <TabPanel header="English">
-          <div class="p-field p-mt-3" style="margin-bottom: 1.5rem">
+          <div class="field mt-3" style="margin-bottom: 1.5rem">
             <label>{{ $t("common.nameInEnglish") }}</label>
             <InputText v-model="content.title_en" rows="3" :class="{ 'p-invalid': !content.title_en && submitted }"/>
             <small v-show="!content.title_en && submitted" class="p-error">
               {{ $t("smartenu.titleEnInvalid") }}
             </small>
           </div>
-          <div class="p-field">
+          <div class="field">
             <label>{{ $t("common.contentInEnglish") }}</label>
             <RichEditor v-model="content.content_en" editorStyle="height: 320px"/>
             <small v-show="!content.content_en && submitted" class="p-error">
@@ -50,7 +50,7 @@
           </div>
         </TabPanel>
       </TabView>
-      <Button :label="$t('common.save')" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2" @click="saveBlocContent"/>
+      <Button :label="$t('common.save')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2" @click="saveBlocContent"/>
     </div>
     <BlockElementsList v-if="block.is_list" />
   </div>

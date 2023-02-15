@@ -1,22 +1,22 @@
 <template>
   <Dialog v-model:visible="editMenuVisible" :style="{ width: '1000px' }" :breakpoints="{'960px': '75vw', '640px': '90vw'}"
           :header="currentMenu ? $t('enuNewSite.editMenu') : $t('enuNewSite.addMenu') " :modal="true" class="p-fluid" @hide="hideDialog">
-    <div class="p-field">
+    <div class="field">
       <label>{{ $t("common.nameInQazaq") }}</label>
       <InputText v-model="formData.menu_title_kz" rows="3" :class="{ 'p-invalid': !formData.menu_title_kz && submitted }" />
       <small v-show="!formData.menu_title_kz && submitted" class="p-error">{{ $t("smartenu.titleKzInvalid") }}</small>
     </div>
-    <div class="p-field">
+    <div class="field">
       <label>{{ $t("common.nameInRussian") }}</label>
       <InputText v-model="formData.menu_title_ru" rows="3" :class="{ 'p-invalid': !formData.menu_title_ru && submitted }" />
       <small v-show="!formData.menu_title_ru && submitted" class="p-error">{{ $t("smartenu.titleRuInvalid") }}</small>
     </div>
-    <div class="p-field">
+    <div class="field">
       <label>{{ $t("common.nameInEnglish") }}</label>
       <InputText v-model="formData.menu_title_en" rows="3" :class="{ 'p-invalid': !formData.menu_title_en && submitted }" />
       <small v-show="!formData.menu_title_en && submitted" class="p-error">{{ $t("smartenu.titleEnInvalid") }}</small>
     </div>
-    <div class="p-field">
+    <div class="field">
       <label>Тип меню</label>
       <div class="field-radiobutton">
         <RadioButton inputId="menuType1" name="menuType" :value="1" v-model="menuType" />
@@ -27,27 +27,27 @@
         <label for="menuType2">Ссылка</label>
       </div>
     </div>
-    <div class="p-field" v-if="menuType === 1">
+    <div class="field" v-if="menuType === 1">
       <label for="choose-page">{{ $t("enuNewSite.selectMainPage") }}
-        <a href="javascript:void(0)" @click="showAddPage" class="p-ml-2 text-underline">{{ $t('common.createNew') }}</a>
+        <a href="javascript:void(0)" @click="showAddPage" class="ml-2 text-underline">{{ $t('common.createNew') }}</a>
       </label>
       <Dropdown v-model="this.formData.page_id" optionDisabled="true" :options="pages" optionLabel="title_kz" optionValue="enu_page_id"
                 :filter="true" :showClear="true" :placeholder="$t('enuNewSite.selectPage')" />
     </div>
-    <div class="p-field" v-if="menuType === 2">
+    <div class="field" v-if="menuType === 2">
       <label>{{ $t('common.link') }}</label>
       <InputText id="en-title" v-model="formData.link" :placeholder="$t('common.link')" />
     </div>
-    <div class="p-field">
+    <div class="field">
       <label>На главной</label>
       <div>
         <Checkbox inputId="is_main" v-model="formData.is_main" :binary="true" />
-        <label class="p-ml-2" for="is_main">Да</label>
+        <label class="ml-2" for="is_main">Да</label>
       </div>
     </div>
     <template #footer>
-      <Button v-if="currentMenu" :label="$t('common.save')" icon="pi pi-check" class="p-button p-component p-button-success p-mr-2" @click="editMenu"/>
-      <Button v-if="!currentMenu" :label="$t('common.add')" icon="pi pi-check" class="p-button p-component p-button-success p-mr-2" @click="addMenu"/>
+      <Button v-if="currentMenu" :label="$t('common.save')" icon="pi pi-check" class="p-button p-component p-button-success mr-2" @click="editMenu"/>
+      <Button v-if="!currentMenu" :label="$t('common.add')" icon="pi pi-check" class="p-button p-component p-button-success mr-2" @click="addMenu"/>
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button p-component p-button-danger"
           @click="hideDialog"/>
     </template>

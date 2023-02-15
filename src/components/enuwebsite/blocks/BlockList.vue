@@ -1,5 +1,5 @@
 <template>
-  <div class="p-col-12">
+  <div class="col-12">
     <h3>Блоки</h3>
     <div class="card">
       <Button label="Добавить блок" @click="openDialog" />
@@ -15,7 +15,7 @@
         </Column>
         <Column>
           <template #body="{data}">
-            <Button icon="pi pi-pencil" class="p-button-rounded p-button-success p-mr-2"
+            <Button icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2"
                     @click="openEdit(data)" />
             <Button icon="pi pi-trash" class="p-button-rounded p-button-warning" @click="deleteConfirm(data)" />
           </template>
@@ -26,22 +26,22 @@
 
   <Dialog v-model:visible="isCreateModal" :style="{ width: '1000px' }" :breakpoints="{'960px': '75vw', '640px': '90vw'}"
           :header="formData ? 'Редактировать блок' : 'Добавить блок' " :modal="true" class="p-fluid" @hide="hideDialog">
-    <div class="p-field">
+    <div class="field">
       <label>{{ $t('common.nameInQazaq') }}</label>
       <InputText type="text" v-model="formData.title_kz"  />
       <small class="p-error" v-if="!formData.title_kz && submitted">{{ $t("common.requiredField") }}</small>
     </div>
-    <div class="p-field">
+    <div class="field">
       <label>{{ $t('common.nameInRussian')}}</label>
       <InputText type="text" v-model="formData.title_ru"  />
       <small class="p-error" v-if="!formData.title_ru && submitted">{{ $t("common.requiredField") }}</small>
     </div>
-    <div class="p-field">
+    <div class="field">
       <label>{{ $t('common.nameInEnglish') }}</label>
       <InputText type="text" v-model="formData.title_en"  />
       <small class="p-error" v-if="!formData.title_en && submitted">{{ $t("common.requiredField") }}</small>
     </div>
-    <div class="p-field">
+    <div class="field">
       <label>{{ $t('common.type') }}</label>
       <div class="field-radiobutton">
         <RadioButton inputId="blockType1" name="blockType" :value="true" v-model="formData.is_list" />
@@ -52,7 +52,7 @@
         <label for="blockType2">Контент</label>
       </div>
     </div>
-    <div class="p-field" v-if="formData.is_list">
+    <div class="field" v-if="formData.is_list">
       <label>Отображение</label>
       <div class="field-radiobutton">
         <RadioButton inputId="listType1" name="listType" :value="false" v-model="formData.is_grid" />
@@ -64,7 +64,7 @@
       </div>
     </div>
     <template #footer>
-      <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button p-component p-button-danger p-mr-2" @click="hideDialog"/>
+      <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button p-component p-button-danger mr-2" @click="hideDialog"/>
       <Button v-if="selectedBlock" :label="$t('common.save')" icon="pi pi-check" class="p-button p-component p-button-success" @click="save" />
       <Button v-if="!selectedBlock" :label="$t('common.add')" icon="pi pi-check" class="p-button p-component p-button-success" @click="addBlock" />
     </template>

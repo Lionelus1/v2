@@ -102,7 +102,6 @@ import VueElementLoading from "vue-element-loading";
 import Person from '@/components/contragent/Person.vue';
 import Organization from '@/components/contragent/Organization.vue';
 import FindUser from "@/helpers/FindUser";
-import CKEditor from '@ckeditor/ckeditor5-vue';
 
 
 import ConfirmationService from 'primevue/confirmationservice';
@@ -266,7 +265,6 @@ app.use(ConfirmationService);
 app.use(store)
 app.use(Vue3SimpleHtml2pdf);
 app.use(VuePdfEmbed);
-app.use(CKEditor);
 
 app.directive('tooltip', Tooltip);
 app.directive('ripple', Ripple);

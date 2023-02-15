@@ -62,11 +62,11 @@ Please double-check the entered data before submission.
                 <div class="field">
                     <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="upload($event)" v-bind:chooseLabel="$t('faq.uploadFile')"></FileUpload>
 				</div>
-                <div class="p-field">
+                <div class="field">
                     <vue-recaptcha ref="captcha" sitekey="6LfSS5MjAAAAAAmSxN43yiDEQJdFRhoF5Ctc8uPj" @verify="isCaptchaSuccess = true"></vue-recaptcha>
                     <small class="p-error" v-if="validation.captcha">{{$t("common.requiredField")}}</small>
                 </div>
-                <div class="p-field">
+                <div class="field">
                     <Button :label="$t('common.action.submit')" @click="sendQuestion" />
                 </div>
 		        <span class="footer-text no-print" style="margin-right: 5px">@ {{$t("common.orgname")}}</span>

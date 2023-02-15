@@ -1,20 +1,20 @@
 <template>
-  <div class="p-col-12">
+  <div class="col-12">
     <h3>{{ $t("enuNewSite.menuPage") }}</h3>
     <div class="card">
-      <Button :label="$t('enuNewSite.addMenu')" icon="pi pi-plus" class="p-ml-2" v-on:click="createMenu"/>
+      <Button :label="$t('enuNewSite.addMenu')" icon="pi pi-plus" class="ml-2" v-on:click="createMenu"/>
     </div>
     <div class="card">
       <TreeTable class="p-treetable-sm" :value="menus" :lazy="true" :loading="loading"
                  @nodeExpand="onExpand" scrollHeight="flex" responsiveLayout="scroll"
                  :resizableColumns="true" columnResizeMode="fit" :paginator="true" :rows="10" :total-records="total" @page="onPage($event)">
         <template #header>
-          <div class="p-text-right">
+          <div class="text-right">
             <div class="p-input-icon-left">
               <i class="pi pi-search"/>
               <InputText type="search" v-model="filter.search_text" :placeholder="$t('common.search')"
                          @search="getMenus(null)"/>
-              <Button icon="pi pi-search" class="p-ml-1" @click="getMenus(null)"/>
+              <Button icon="pi pi-search" class="ml-1" @click="getMenus(null)"/>
             </div>
           </div>
         </template>
@@ -42,7 +42,7 @@
         </Column>
         <Column field="actions" header="">
           <template #body="{ node }">
-            <Button type="button" icon="pi pi-plus" class="p-button p-button-rounded p-mr-2" @click="createMenu(node)"></Button>
+            <Button type="button" icon="pi pi-plus" class="p-button p-button-rounded mr-2" @click="createMenu(node)"></Button>
             <Button type="button" icon="pi pi-pencil" class="p-button p-button-rounded" @click="editMenu($event, node)"></Button>
           </template>
         </Column>

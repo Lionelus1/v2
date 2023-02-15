@@ -1,8 +1,8 @@
 <template>
-  <div class="p-col-12">
+  <div class="col-12">
     <h3>{{ $t("enuNewSite.pageLink") }}</h3>
     <div class="card">
-      <Button :label="$t('enuNewSite.addPage')" icon="pi pi-plus" class="p-ml-2" @click="createPage"/>
+      <Button :label="$t('enuNewSite.addPage')" icon="pi pi-plus" class="ml-2" @click="createPage"/>
     </div>
 
     <div class="card">
@@ -19,8 +19,8 @@
         </Column>
         <Column header="" style="text-align: right;">
           <template #body="{ data }">
-            <Button type="button" icon="pi pi-eye" class="p-mr-2" @click="onView(data)"></Button>
-            <Button type="button" icon="pi pi-pencil" class="p-mr-2" @click="onEditPage(data)"></Button>
+            <Button type="button" icon="pi pi-eye" class="mr-2" @click="onView(data)"></Button>
+            <Button type="button" icon="pi pi-pencil" class="mr-2" @click="onEditPage(data)"></Button>
             <Button type="button" icon="pi pi-trash" class="p-button-danger" @click="delPage(data.enu_page_id)"></Button>
           </template>
         </Column>
@@ -30,23 +30,23 @@
   <Dialog v-model:visible="display" :style="{ width: '1000px' }" :breakpoints="{'960px': '75vw', '640px': '90vw'}"
           :header="$t('enuNewSite.addEditPageTitle')"
           :modal="true" class="p-fluid">
-    <div class="p-field-checkbox p-mt-3">
+    <div class="field-checkbox mt-3">
       <Checkbox id="landing" name="landing" v-model="formData.is_landing" :binary="true"/>
       <label for="landing">Landing page</label>
     </div>
 
     <div v-if="formData.is_landing">
-      <div class="p-field">
+      <div class="field">
         <label>{{ $t('common.nameInQazaq') }}</label>
         <InputText type="text" v-model="formData.title_kz"  />
         <small class="p-error" v-if="!formData.title_kz && submitted">{{ $t("common.requiredField") }}</small>
       </div>
-      <div class="p-field">
+      <div class="field">
         <label>{{ $t('common.nameInRussian')}}</label>
         <InputText type="text" v-model="formData.title_ru"  />
         <small class="p-error" v-if="!formData.title_ru && submitted">{{ $t("common.requiredField") }}</small>
       </div>
-      <div class="p-field">
+      <div class="field">
         <label>{{ $t('common.nameInEnglish') }}</label>
         <InputText type="text" v-model="formData.title_en"  />
         <small class="p-error" v-if="!formData.title_en && submitted">{{ $t("common.requiredField") }}</small>
@@ -55,48 +55,45 @@
 
     <TabView v-if="!formData.is_landing">
       <TabPanel header="Қазақша">
-        <div class="p-field p-mt-3">
+        <div class="field mt-3">
           <label for="kz-title">{{ $t("common.nameInQazaq") }}</label>
           <InputText id="title_kz" v-model="formData.title_kz" rows="3"/>
           <small v-show="!formData.title_kz && submitted" class="p-error">{{ $t("smartenu.titleKzInvalid") }}</small>
         </div>
-        <div class="p-field">
+        <div class="field">
           <label for="kz-content">{{ $t("common.contentInQazaq") }}</label>
-<!--          <RichEditor id="content_kz" v-model="formData.content_kz" editorStyle="height: 320px"/>-->
-          <ckeditor :editor="editor" v-model="formData.content_kz" :config="editorConfig"></ckeditor>
+          <RichEditor id="content_kz" v-model="formData.content_kz" editorStyle="height: 320px"/>
           <small v-show="!formData.content_kz && submitted" class="p-error">{{ $t("smartenu.contentKzInvalid") }}</small>
         </div>
       </TabPanel>
       <TabPanel header="Русский">
-        <div class="p-field p-mt-3">
+        <div class="field mt-3">
           <label for="ru-title">{{ $t("common.nameInRussian") }}</label>
           <InputText id="title_ru" v-model="formData.title_ru" rows="3"/>
           <small v-show="!formData.title_ru && submitted" class="p-error">{{ $t("smartenu.titleRuInvalid") }}</small>
         </div>
-        <div class="p-field">
+        <div class="field">
           <label for="kz-content">{{ $t("common.contentInRussian") }}</label>
-<!--          <RichEditor id="content_ru" v-model="formData.content_ru" editorStyle="height: 320px"/>-->
-          <ckeditor :editor="editor" v-model="formData.content_ru" :config="editorConfig"></ckeditor>
+          <RichEditor id="content_ru" v-model="formData.content_ru" editorStyle="height: 320px"/>
           <small v-show="!formData.content_ru && submitted" class="p-error">{{ $t("smartenu.contentKzInvalid") }}</small>
         </div>
       </TabPanel>
       <TabPanel header="English">
-        <div class="p-field p-mt-3">
+        <div class="field mt-3">
           <label for="en-title">{{ $t("common.nameInEnglish") }}</label>
           <InputText id="title_en" v-model="formData.title_en" rows="3"/>
           <small v-show="!formData.title_en && submitted" class="p-error">{{ $t("smartenu.titleEnInvalid") }}</small>
         </div>
-        <div class="p-field">
+        <div class="field">
           <label for="kz-content">{{ $t("common.contentInEnglish") }}</label>
-<!--          <RichEditor id="content_en" v-model="formData.content_en" editorStyle="height: 320px"/>-->
-          <ckeditor :editor="editor" v-model="formData.content_en" :config="editorConfig"></ckeditor>
+          <RichEditor id="content_en" v-model="formData.content_en" editorStyle="height: 320px"/>
           <small v-show="!formData.content_en && submitted" class="p-error">{{ $t("smartenu.contentKzInvalid") }}</small>
         </div>
       </TabPanel>
     </TabView>
     <template #footer>
       <Button v-bind:label="$t('common.save')" icon="pi pi-check"
-          class="p-button p-component p-button-success p-mr-2" v-on:click="addButtonName"/>
+          class="p-button p-component p-button-success mr-2" v-on:click="addButtonName"/>
       <Button v-bind:label="$t('common.cancel')" icon="pi pi-times"
           class="p-button p-component p-button-danger" @click="hideDialog"/>
     </template>
@@ -107,16 +104,12 @@
 
 <script>
 import {EnuWebService} from "@/service/enu.web.service";
-import {throwStatement} from "@babel/types";
-import AddMenu from "@/components/enuwebsite/AddMenu.vue";
-import AddPage from "@/components/enuwebsite/AddPage.vue";
 import PageView from "@/components/enuwebsite/PageView.vue";
 import RichEditor from "@/components/documents/editor/RichEditor.vue";
-import ClassicEditor from "@ckeditor/ckeditor5-editor-classic/src/classiceditor";
 
 export default {
   name: "EnuWebPageView",
-  components: {PageView},
+  components: {PageView, RichEditor},
   data() {
     return {
       pages: [],
@@ -151,10 +144,6 @@ export default {
         content_ru: null,
         content_en: null,
       },
-      editor: ClassicEditor,
-      editorData: '',
-      editorConfig: {
-      }
     };
   },
   created() {

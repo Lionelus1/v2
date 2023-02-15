@@ -15,7 +15,7 @@
       </Column>
       <Column>
         <template #body="{data}">
-          <Button icon="pi pi-pencil" class="p-button-rounded p-button-success p-mr-2" @click="openEdit(data)" />
+          <Button icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" @click="openEdit(data)" />
           <Button icon="pi pi-trash" class="p-button-rounded p-button-warning" @click="confirmRemove(data)" />
         </template>
       </Column>
@@ -24,29 +24,29 @@
 
   <Dialog v-model:visible="isCreateModal" :style="{ width: '1000px' }" :breakpoints="{'960px': '75vw', '640px': '90vw'}"
           :header="formData ? 'Редактировать элемент' : 'Добавить элемент' " :modal="true" class="p-fluid" @hide="hideDialog">
-    <div class="p-field">
+    <div class="field">
       <label>{{ $t('common.nameInQazaq') }}</label>
       <InputText type="text" v-model="formData.title_kz"  />
       <small class="p-error" v-if="!formData.title_kz && submitted">{{ $t("common.requiredField") }}</small>
     </div>
-    <div class="p-field">
+    <div class="field">
       <label>{{ $t('common.nameInRussian')}}</label>
       <InputText type="text" v-model="formData.title_ru"  />
       <small class="p-error" v-if="!formData.title_ru && submitted">{{ $t("common.requiredField") }}</small>
     </div>
-    <div class="p-field">
+    <div class="field">
       <label>{{ $t('common.nameInEnglish') }}</label>
       <InputText type="text" v-model="formData.title_en"  />
       <small class="p-error" v-if="!formData.title_en && submitted">{{ $t("common.requiredField") }}</small>
     </div>
-    <div class="p-field">
+    <div class="field">
       <label>Картинка</label>
       <FileUpload mode="basic" :customUpload="true" @uploader="uploadFile($event)" :auto="true"
                   v-bind:chooseLabel="$t('faq.uploadImage')" accept="image/svg+xml"/>
       <div style="width: 100px;padding:10px;" v-html="formData.block_list_image"></div>
     </div>
     <template #footer>
-      <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button p-component p-button-danger p-mr-2" @click="hideDialog"/>
+      <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button p-component p-button-danger mr-2" @click="hideDialog"/>
       <Button v-if="!selectedData" :label="$t('common.add')" icon="pi pi-check" class="p-button p-component p-button-success" @click="add" />
       <Button v-if="selectedData" :label="$t('common.save')" icon="pi pi-check" class="p-button p-component p-button-success" @click="edit" />
     </template>
