@@ -7,9 +7,14 @@
 
     <div class="card">
       <DataTable :value="pages" responsiveLayout="scroll" dataKey="enu_page_id" :paginator="true" :rows="10" sortMode="single" :rowHover="true">
-        <Column field="title_kz" :header="$t('common.nameInQazaq')">
+        <Column field="title_kz" :header="$t('common.nameIn')">
           <template #body="{ data }">
             {{ $i18n.locale === 'kz' ? data.title_kz : $i18n.locale === 'ru' ? data.title_ru : data.title_en }}
+          </template>
+        </Column>
+        <Column field="is_main" header="Landing page">
+          <template #body="{ data }">
+            {{ data.is_landing ? 'Landing page' : '' }}
           </template>
         </Column>
         <Column header="" style="text-align: right;">
@@ -58,7 +63,7 @@
         <div class="p-field">
           <label for="kz-content">{{ $t("common.contentInQazaq") }}</label>
 <!--          <RichEditor id="content_kz" v-model="formData.content_kz" editorStyle="height: 320px"/>-->
-          <ckeditor :editor="editor" v-model="editorData" :config="editorConfig"></ckeditor>
+          <ckeditor :editor="editor" v-model="formData.content_kz" :config="editorConfig"></ckeditor>
           <small v-show="!formData.content_kz && submitted" class="p-error">{{ $t("smartenu.contentKzInvalid") }}</small>
         </div>
       </TabPanel>
@@ -71,7 +76,7 @@
         <div class="p-field">
           <label for="kz-content">{{ $t("common.contentInRussian") }}</label>
 <!--          <RichEditor id="content_ru" v-model="formData.content_ru" editorStyle="height: 320px"/>-->
-          <ckeditor :editor="editor" v-model="editorData" :config="editorConfig"></ckeditor>
+          <ckeditor :editor="editor" v-model="formData.content_ru" :config="editorConfig"></ckeditor>
           <small v-show="!formData.content_ru && submitted" class="p-error">{{ $t("smartenu.contentKzInvalid") }}</small>
         </div>
       </TabPanel>
@@ -84,7 +89,7 @@
         <div class="p-field">
           <label for="kz-content">{{ $t("common.contentInEnglish") }}</label>
 <!--          <RichEditor id="content_en" v-model="formData.content_en" editorStyle="height: 320px"/>-->
-          <ckeditor :editor="editor" v-model="editorData" :config="editorConfig"></ckeditor>
+          <ckeditor :editor="editor" v-model="formData.content_en" :config="editorConfig"></ckeditor>
           <small v-show="!formData.content_en && submitted" class="p-error">{{ $t("smartenu.contentKzInvalid") }}</small>
         </div>
       </TabPanel>
@@ -107,7 +112,7 @@ import AddMenu from "@/components/enuwebsite/AddMenu.vue";
 import AddPage from "@/components/enuwebsite/AddPage.vue";
 import PageView from "@/components/enuwebsite/PageView.vue";
 import RichEditor from "@/components/documents/editor/RichEditor.vue";
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import ClassicEditor from "@ckeditor/ckeditor5-editor-classic/src/classiceditor";
 
 export default {
   name: "EnuWebPageView",
@@ -149,7 +154,6 @@ export default {
       editor: ClassicEditor,
       editorData: '',
       editorConfig: {
-        height: '320'
       }
     };
   },

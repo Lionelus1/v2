@@ -39,7 +39,8 @@
           </div>
           <div class="p-field">
             <label>{{ $t("common.contentInQazaq") }}</label>
-            <RichEditor ref="kztext" v-model="formData.content_kz" editorStyle="height: 320px"></RichEditor>
+<!--            <RichEditor ref="kztext" v-model="formData.content_kz" editorStyle="height: 320px"></RichEditor>-->
+            <ckeditor :editor="editor" v-model="formData.content_kz" :config="editorConfig"></ckeditor>
             <small v-show="!formData.content_kz && submitted" class="p-error">
               {{ $t("smartenu.contentKzInvalid") }}
             </small>
@@ -55,8 +56,10 @@
           </div>
           <div class="p-field">
             <label for="ru-content">{{ $t("common.contentInRussian") }}</label>
-            <RichEditor id="ru-content" v-model="formData.content_ru" editorStyle="height: 320px"/>
+<!--            <RichEditor id="ru-content" v-model="formData.content_ru" editorStyle="height: 320px"/>-->
+            <ckeditor :editor="editor" v-model="formData.content_ru" :config="editorConfig"></ckeditor>
             <small v-show="!formData.content_ru && submitted" class="p-error">
+
               {{ $t("smartenu.contentRuInvalid") }}
             </small>
           </div>
@@ -71,7 +74,8 @@
           </div>
           <div class="p-field">
             <label>{{ $t("common.contentInEnglish") }}</label>
-            <RichEditor v-model="formData.content_en" editorStyle="height: 320px"/>
+<!--            <RichEditor v-model="formData.content_en" editorStyle="height: 320px"/>-->
+            <ckeditor :editor="editor" v-model="formData.content_en" :config="editorConfig"></ckeditor>
             <small v-show="!formData.content_en && submitted" class="p-error">
               {{ $t("smartenu.contentEnInvalid") }}
             </small>
@@ -85,15 +89,19 @@
 <script>
 import RichEditor from "@/components/documents/editor/RichEditor.vue";
 import {EnuWebService} from "@/service/enu.web.service";
+import ClassicEditor from "@ckeditor/ckeditor5-editor-classic/src/classiceditor";
 
 export default {
   name: "AddPage",
-  components: {RichEditor},
   data() {
     return {
       formData: {},
       submitted: false,
-      enuService: new EnuWebService()
+      enuService: new EnuWebService(),
+      editor: ClassicEditor,
+      editorData: '',
+      editorConfig: {
+      }
     }
   },
   computed: {
@@ -150,5 +158,8 @@ export default {
 </script>
 
 <style scoped>
+::v-deep(.ck-editor__editable) {
+  height: 320px;
+}
 
 </style>

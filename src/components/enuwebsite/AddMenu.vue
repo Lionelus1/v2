@@ -90,7 +90,7 @@ export default {
         link: null,
         is_header: false,
         is_middle: false,
-        menu_icon: ""
+        icon: ""
       },
       formValid: [],
       menuType: !this.currentMenu ? 1 : this.currentMenu && this.currentMenu.page_id ? 1 : 2,
