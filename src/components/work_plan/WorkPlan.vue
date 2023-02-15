@@ -1,9 +1,9 @@
 <template>
   <div class="col-12">
+    <h3>{{ $t('workPlan.plans') }}</h3>
     <div class="card">
       <WorkPlanAdd v-model="isAdded"/>
     </div>
-
     <div class="card">
       <DataTable :lazy="true" :value="data" :rows="10" dataKey="id" :rowHover="true" v-model:filters="filters"
                  filterDisplay="menu"
@@ -11,8 +11,7 @@
                  :globalFilterFields="['question','recipient','status', 'sendDate', 'createDate']"
                  @sort="onSort($event)">
         <template #header>
-          <div class="flex justify-content-between align-items-center">
-            <h5 class="m-0">{{ $t('workPlan.addPlan') }}</h5>
+          <div class="table-header flex justify-content-end align-items-center">
             <span class="p-input-icon-left"><i class="pi pi-search"/>
               <InputText type="search" v-model="searchText" @keyup.enter="getPlans" :placeholder="$t('common.search')"
                          @search="getPlans"/>

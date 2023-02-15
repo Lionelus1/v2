@@ -1,5 +1,6 @@
 <template>
   <div class="col-12">
+    <h3>{{ $t("smartenu.eventsTitle") }}</h3>
     <!-- BEGINNING OF TABLE -->
     <div class="card" v-if="isAdmin || isModer || selectedEvent">
       <Button v-if="isAdmin || isModer" :label="$t('common.add')" icon="pi pi-plus"
@@ -14,10 +15,9 @@
     <div class="card">
       <DataTable :value="allEvents" :paginator="true" class="p-datatable-customers" :rows="10" dataKey="id"
                  selectionMode="single" :rowHover="true" v-model:selection="selectedEvent" :filters="filters"
-                 :loading="loading">
+                 :loading="loading" responsive-layout="scroll">
         <template #header>
-          <div class="table-header">
-            {{ $t("smartenu.eventsTitle") }}
+          <div class="table-header flex justify-content-end align-items-center">
             <span class="p-input-icon-left">
               <i class="pi pi-search"/>
               <InputText v-model="filters['global'].value" v-bind:placeholder="$t('hdfs.search')"/>

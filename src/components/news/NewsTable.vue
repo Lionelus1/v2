@@ -1,5 +1,6 @@
 <template>
   <div class="col-12">
+    <h3>{{ $t("smartenu.newsTitle") }}</h3>
     <div class="card">
       <Button :label="$t('common.add')" icon="pi pi-plus" class="p-button-success mr-2" v-on:click="createNews"/>
       <Button :label="$t('common.send')" icon="pi pi-send" class="mr-2" v-on:click="sendNews"
@@ -23,8 +24,7 @@
                  :filters="filters" filterDisplay="menu" :showFilterMatchModes="false" :loading="loading"
                  responsiveLayout="scroll" @sort="onSort($event)" selectionMode="single">
         <template #header>
-          <div class="table-header">
-            {{ $t("smartenu.newsTitle") }}
+          <div class="table-header flex justify-content-end align-items-center">
             <span class="p-input-icon-left"><i class="pi pi-search"/>
               <InputText type="search" v-model="lazyParams.searchText" :placeholder="$t('common.search')"
                          @keyup.enter="getAllNews" @click="clearData"/>
