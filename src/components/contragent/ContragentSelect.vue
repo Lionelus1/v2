@@ -109,9 +109,9 @@ export default {
     },
     updated(event) {
       if (this.value.type == Enum.ContragentType.Person) {
-        if (this.value.iin == null || this.value.lastName == null || 
+        if (this.value.IIN == null || this.value.lastName == null || 
         this.value.firstName == null || this.value.email == null) {
-          this.contragentVisible = true
+          this.contragentCardVisible = true
           this.message = this.$t("contragent.missingDetails")
         }
       } else {
