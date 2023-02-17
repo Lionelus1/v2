@@ -278,6 +278,7 @@ export default {
         bgColor: "Фоновый цвет",
         textColor: "Цвет текста",
         link: "Ссылка",
+        image: 'Картинка'
     },
     bank: {
         title: "Банки",
@@ -739,7 +740,7 @@ export default {
         rejected: "Отменили выполнение действия"
     },
     // ENU New WebPaga
-    enuNewSite: {
+    web: {
         mainMenuTitle: "ЕНУ Сайт",
         menuPage: "Меню",
         menuMainPage: "Страница",
@@ -763,7 +764,21 @@ export default {
         createdPageSuccessMsg: "Страница успешно создана",
         updatedPageSuccessMsg: "Страница успешно изменена",
         createPage: 'Создать страницу',
-        editPage: 'Редактировать страницу'
+        editPage: 'Редактировать страницу',
+        menuType: 'Тип меню',
+        page: 'Страница',
+        onMain: 'На главной',
+        addBlock: 'Добавить блок',
+        editBlock: 'Редактировать блок',
+        blockName: 'Название блока',
+        blockType: 'Тип блока',
+        content: 'Контент',
+        list: 'Список',
+        blocks: 'Блоки',
+        createElement: 'Добавить элемент',
+        editElement: 'Редактировать элемент',
+        view: 'Отображение',
+        grid: 'Плитка'
     },
 
     student: {

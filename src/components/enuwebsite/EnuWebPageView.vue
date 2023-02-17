@@ -1,8 +1,8 @@
 <template>
   <div class="col-12">
-    <h3>{{ $t("enuNewSite.pageLink") }}</h3>
+    <h3>{{ $t("web.pageLink") }}</h3>
     <div class="card">
-      <Button :label="$t('enuNewSite.addPage')" icon="pi pi-plus" class="ml-2" @click="createPage"/>
+      <Button :label="$t('web.addPage')" icon="pi pi-plus" class="ml-2" @click="createPage"/>
     </div>
 
     <div class="card">
@@ -28,7 +28,7 @@
     </div>
   </div>
   <Dialog v-model:visible="display" :style="{ width: '1000px' }" :breakpoints="{'960px': '75vw', '640px': '90vw'}"
-          :header="$t('enuNewSite.addEditPageTitle')"
+          :header="$t('web.addEditPageTitle')"
           :modal="true" class="p-fluid">
     <div class="field-checkbox mt-3">
       <Checkbox id="landing" name="landing" v-model="formData.is_landing" :binary="true"/>
@@ -199,7 +199,7 @@ export default {
       }
       this.enuService.addPage(this.formData).then(res => {
         if (res.data !== null) {
-          this.$toast.add({severity: "success", summary: this.$t("enuNewSite.createdPageSuccessMsg"), life: 3000});
+          this.$toast.add({severity: "success", summary: this.$t("web.createdPageSuccessMsg"), life: 3000});
         }
       }).catch(error => {
         this.$toast.add({severity: "error", summary: error, life: 3000});
@@ -259,7 +259,7 @@ export default {
     onSavePage() {
       this.enuService.editPage(this.formData).then(res => {
         if (res.data !== null) {
-          this.$toast.add({severity: "success", summary: this.$t("enuNewSite.createdPageSuccessMsg"), life: 3000});
+          this.$toast.add({severity: "success", summary: this.$t("web.createdPageSuccessMsg"), life: 3000});
         }
       }).catch(error => {
         this.$toast.add({severity: "error", summary: error, life: 3000});

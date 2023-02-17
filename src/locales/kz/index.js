@@ -277,6 +277,7 @@ export default {
         bgColor: "Фон түсі",
         textColor: "Мәтін түсі",
         link: "Сілтеме",
+        image: 'Сурет'
     },
     bank: {
         title: "Банктер",
@@ -753,7 +754,7 @@ export default {
         rejected: "Амалды орындаудан бас тарттыңыз"
     },
     // ENU New WebPaga
-    enuNewSite: {
+    web: {
         mainMenuTitle: "ЕНУ Сайт",
         menuPage: "Мәзірлер",
         menuMainPage: "Парақшасы",
@@ -777,7 +778,21 @@ export default {
         createdPageSuccessMsg: "Парақша сәтті құрылды",
         updatedPageSuccessMsg: "Парақша сәтті жаңаланды",
         createPage: 'Бет қосу',
-        editPage: 'Бетті өзгерту'
+        editPage: 'Бетті өзгерту',
+        menuType: 'Мәзір типі',
+        page: 'Бет',
+        onMain: 'Бастты бетте',
+        addBlock: 'Блок қосу',
+        editBlock: 'Блокты өзгерту',
+        blockName: 'Блок атауы',
+        blockType: 'Блок типі',
+        content: 'Контент',
+        list: 'Тізім',
+        blocks: 'Блоктар',
+        createElement: 'Элемент қосу',
+        editElement: 'Элементті өзгерту',
+        view: 'Көрсету түрі',
+        grid: 'Плитка'
     },
     //Student locale
     student: {

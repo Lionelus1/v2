@@ -1,7 +1,7 @@
 <template>
   <div class="grid">
     <div class="col-12">
-      <h3>{{ $t('enuNewSite.createPage') }}</h3>
+      <h3>{{ $t('web.createPage') }}</h3>
     </div>
     <div class="col-12 p-fluid">
       <Menubar :model="initMenu" :key="active"
@@ -57,7 +57,6 @@
             <label for="ru-content">{{ $t("common.contentInRussian") }}</label>
             <RichEditor id="ru-content" v-model="formData.content_ru" editorStyle="height: 320px"/>
             <small v-show="!formData.content_ru && submitted" class="p-error">
-
               {{ $t("smartenu.contentRuInvalid") }}
             </small>
           </div>

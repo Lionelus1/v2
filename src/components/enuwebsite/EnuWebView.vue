@@ -1,8 +1,8 @@
 <template>
   <div class="col-12">
-    <h3>{{ $t("enuNewSite.menuPage") }}</h3>
+    <h3>{{ $t("web.menuPage") }}</h3>
     <div class="card">
-      <Button :label="$t('enuNewSite.addMenu')" icon="pi pi-plus" class="ml-2" v-on:click="createMenu"/>
+      <Button :label="$t('web.addMenu')" icon="pi pi-plus" class="ml-2" v-on:click="createMenu"/>
     </div>
     <div class="card">
       <TreeTable class="p-treetable-sm" :value="menus" :lazy="true" :loading="loading"
@@ -25,7 +25,7 @@
             <span><i class="fa-solid fa-folder"></i>&nbsp;{{ $i18n.locale === 'kz' ? node.menu_title_kz : $i18n.locale === 'ru' ? node.menu_title_ru : node.menu_title_en }}</span>
           </template>
         </Column>
-        <Column field="page" :header="$t('enuNewSite.menuMainPage')">
+        <Column field="page" :header="$t('web.menuMainPage')">
           <template #body="{ node }">
             <a href="javascript:void(0)" @click="viewPage(node)">{{ showPage(node) }}</a>
           </template>
@@ -35,9 +35,9 @@
             <a v-if="node.link" :href="node.link" target="_blank">{{ node.link }}</a>
           </template>
         </Column>
-        <Column field="is_main" :header="$t('enuNewSite.isMainMenu')" :sortable="true">
+        <Column field="is_main" :header="$t('web.isMainMenu')" :sortable="true">
           <template #body="{ node }">
-            {{ node.is_main ? 'На главной' : '' }}
+            {{ node.is_main ? $t('web.onMain') : '' }}
           </template>
         </Column>
         <Column field="actions" header="">
@@ -173,7 +173,7 @@ export default {
       return title;
     },
     hideDialog() {
-      this.getMenus();
+      this.getMenus(this.parentNode);
       this.addMenuVisible = false;
       this.selectedMenu=null;
     },
