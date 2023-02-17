@@ -1,6 +1,6 @@
 <template>
   <div class="col-12">
-    <TitleBlock :title="'Блоки | ' + ($i18n.locale === 'kz' ? block.title_kz : $i18n.locale === 'ru' ? block.title_ru : block.title_en)" :showBackButton="true" />
+    <TitleBlock :title="$t('web.blocks') + ' | ' + ($i18n.locale === 'kz' ? block.title_kz : $i18n.locale === 'ru' ? block.title_ru : block.title_en)" :showBackButton="true" />
     <div class="card" v-if="block && content && !block.is_list">
       <TabView class="p-fluid">
         <TabPanel header="Қазақша">

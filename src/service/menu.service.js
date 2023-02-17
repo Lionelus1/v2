@@ -175,14 +175,14 @@ export class MenuService {
             },
 
             {
-                label: $t('enuNewSite.mainMenuTitle'), icon: 'pi pi-fw pi-box ',
+                label: $t('web.mainMenuTitle'), icon: 'pi pi-fw pi-box ',
                 visible: this.findRole('enu_web_admin'),
                 items: [
                     {
-                        label: $t('enuNewSite.menuPage'), icon: 'pi pi-fw pi-bars', to: '/enu/menus'
+                        label: $t('web.menuPage'), icon: 'pi pi-fw pi-bars', to: '/enu/menus'
                     },
                     {
-                        label: $t('enuNewSite.pageLink'), icon: 'pi pi-fw pi-external-link', to: '/enu/pages'
+                        label: $t('web.pageLink'), icon: 'pi pi-fw pi-external-link', to: '/enu/pages'
                     },
                     {
                         label: 'Блоки', icon: 'fa-solid fa-cube', to: '/enu/blocks'

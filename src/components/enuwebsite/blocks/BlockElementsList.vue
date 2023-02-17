@@ -1,6 +1,6 @@
 <template>
   <div class="card">
-    <Button label="Добавить элемент" @click="openDialog" />
+    <Button :label="$t('web.createElement')" @click="openDialog" />
   </div>
   <div class="card">
     <DataTable :lazy="true" :value="blockElements" dataKey="id" :rowHover="true" :loading="loading" responsiveLayout="scroll">
@@ -23,7 +23,7 @@
   </div>
 
   <Dialog v-model:visible="isCreateModal" :style="{ width: '1000px' }" :breakpoints="{'960px': '75vw', '640px': '90vw'}"
-          :header="formData ? 'Редактировать элемент' : 'Добавить элемент' " :modal="true" class="p-fluid" @hide="hideDialog">
+          :header="formData ? $t('web.editElement') : $t('web.createElement') " :modal="true" class="p-fluid" @hide="hideDialog">
     <div class="field">
       <label>{{ $t('common.nameInQazaq') }}</label>
       <InputText type="text" v-model="formData.title_kz"  />
@@ -40,7 +40,7 @@
       <small class="p-error" v-if="!formData.title_en && submitted">{{ $t("common.requiredField") }}</small>
     </div>
     <div class="field">
-      <label>Картинка</label>
+      <label>{{ $t('common.image') }}</label>
       <FileUpload mode="basic" :customUpload="true" @uploader="uploadFile($event)" :auto="true"
                   v-bind:chooseLabel="$t('faq.uploadImage')" accept="image/svg+xml"/>
       <div style="width: 100px;padding:10px;" v-html="formData.block_list_image"></div>

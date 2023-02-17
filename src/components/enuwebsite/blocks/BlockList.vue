@@ -1,8 +1,8 @@
 <template>
   <div class="col-12">
-    <h3>Блоки</h3>
+    <h3>{{ $t('web.blocks') }}</h3>
     <div class="card">
-      <Button label="Добавить блок" @click="openDialog" />
+      <Button :label="$t('web.addBlock')" @click="openDialog" />
     </div>
     <div class="card">
       <DataTable :lazy="true" :value="blockList" dataKey="id" :rowHover="true" :loading="loading" responsiveLayout="scroll">
@@ -25,7 +25,7 @@
   </div>
 
   <Dialog v-model:visible="isCreateModal" :style="{ width: '1000px' }" :breakpoints="{'960px': '75vw', '640px': '90vw'}"
-          :header="formData ? 'Редактировать блок' : 'Добавить блок' " :modal="true" class="p-fluid" @hide="hideDialog">
+          :header="formData ? $t('web.editBlock') : $t('web.addBlock') " :modal="true" class="p-fluid" @hide="hideDialog">
     <div class="field">
       <label>{{ $t('common.nameInQazaq') }}</label>
       <InputText type="text" v-model="formData.title_kz"  />
@@ -45,22 +45,22 @@
       <label>{{ $t('common.type') }}</label>
       <div class="field-radiobutton">
         <RadioButton inputId="blockType1" name="blockType" :value="true" v-model="formData.is_list" />
-        <label for="blockType1">Список</label>
+        <label for="blockType1">{{ $t('web.list') }}</label>
       </div>
       <div class="field-radiobutton">
         <RadioButton inputId="blockType2" name="blockType" :value="false" @change="formData.is_grid = false" v-model="formData.is_list" />
-        <label for="blockType2">Контент</label>
+        <label for="blockType2">{{ $t('web.content') }}</label>
       </div>
     </div>
     <div class="field" v-if="formData.is_list">
-      <label>Отображение</label>
+      <label>{{ $t('web.view') }}</label>
       <div class="field-radiobutton">
         <RadioButton inputId="listType1" name="listType" :value="false" v-model="formData.is_grid" />
-        <label for="listType1">Список</label>
+        <label for="listType1">{{ $t('web.list') }}</label>
       </div>
       <div class="field-radiobutton">
         <RadioButton inputId="listType2" name="listType" :value="true" v-model="formData.is_grid" />
-        <label for="listType2">Плитка</label>
+        <label for="listType2">{{ $t('web.grid') }}</label>
       </div>
     </div>
     <template #footer>

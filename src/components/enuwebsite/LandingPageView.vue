@@ -1,24 +1,24 @@
 <template>
   <div class="col-12">
-    <TitleBlock :showBackButton="true" :title="$t('enuNewSite.menuMainPage') + ' | ' + ($i18n.locale === 'kz' ? pageData.title_kz : $i18n.locale === 'ru' ? pageData.title_ru : pageData.title_en)"/>
+    <TitleBlock :showBackButton="true" :title="$t('web.menuMainPage') + ' | ' + ($i18n.locale === 'kz' ? pageData.title_kz : $i18n.locale === 'ru' ? pageData.title_ru : pageData.title_en)"/>
     <div class="card">
-      <Button label="Добавить блок" @click="toggle" />
+      <Button :label="$t('web.addBlock')" @click="toggle" />
     </div>
     <div class="card">
       <DataTable :lazy="true" :value="pageBlocks" :rows="10" dataKey="id" :rowHover="true" :loading="loading" @rowReorder="onRowReorder" responsiveLayout="scroll">
         <template #empty> {{ $t('common.noData') }}</template>
         <template #loading> {{ $t('common.loading') }}</template>
         <Column :rowReorder="true" headerStyle="width: 3rem" :reorderableColumn="false" />
-        <Column field="block_title" header="Название блока">
+        <Column field="block_title" :header="$t('web.blockName')">
           <template #body="{ data }">
             <a href="javascript:void(0)" @click="navigateToBlock(data)">
               {{ $i18n.locale === "kz" ? data.block.title_kz : $i18n.locale === "ru" ? data.block.title_ru : data.block.title_en }}
             </a>
           </template>
         </Column>
-        <Column field="block_type" header="Тип блока">
+        <Column field="block_type" :header="$t('web.blockType')">
           <template #body="{ data }">
-            {{ data.block.is_list ? 'Список' : 'Контент' }}
+            {{ data.block.is_list ? $t('web.list') : $t('web.content') }}
           </template>
         </Column>
         <Column field="actions" header="">
@@ -34,7 +34,7 @@
                 style="width: 450px" :breakpoints="{'960px': '75vw'}" >
     <div class="p-fluid">
       <div class="field">
-        <label>Блоки</label>
+        <label>{{ $t('web.blocks') }}</label>
         <Dropdown v-model="selectedBlock" :options="blocks" :optionLabel="('title_' + $i18n.locale)"
                   :filter="true" :show-clear="true"/>
       </div>

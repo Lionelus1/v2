@@ -278,6 +278,7 @@ export default {
         bgColor: "Background color",
         textColor: "Text color",
         link: "Link",
+        image: 'Image'
     },
     bank: {
         title: "Banks",
@@ -709,7 +710,7 @@ export default {
 
     },
     // ENU New WebPaga
-    enuNewSite: {
+    web: {
         mainMenuTitle: "ENU Website",
         menuPage: "Menus",
         menuMainPage: "Page",
@@ -733,7 +734,21 @@ export default {
         createdPageSuccessMsg: "The page has been created successfully",
         updatedPageSuccessMsg: "The page has been updated successfully",
         createPage: 'Create page',
-        editPage: 'Edit page'
+        editPage: 'Edit page',
+        menuType: 'Menu type',
+        page: 'Page',
+        onMain: 'On the main',
+        addBlock: 'Add block',
+        editBlock: 'Edit block',
+        blockName: 'Block name',
+        blockType: 'Block type',
+        content: 'Content',
+        list: 'List',
+        blocks: 'Blocks',
+        createElement: 'Add element',
+        editElement: 'Edit element',
+        view: 'Display',
+        grid: 'Tile'
     },
     //Student locale
     student: {

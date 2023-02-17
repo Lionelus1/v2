@@ -1,6 +1,6 @@
 <template>
   <Dialog v-model:visible="editMenuVisible" :style="{ width: '1000px' }" :breakpoints="{'960px': '75vw', '640px': '90vw'}"
-          :header="currentMenu ? $t('enuNewSite.editMenu') : $t('enuNewSite.addMenu') " :modal="true" class="p-fluid" @hide="hideDialog">
+          :header="currentMenu ? $t('web.editMenu') : $t('web.addMenu') " :modal="true" class="p-fluid" @hide="hideDialog">
     <div class="field">
       <label>{{ $t("common.nameInQazaq") }}</label>
       <InputText v-model="formData.menu_title_kz" rows="3" :class="{ 'p-invalid': !formData.menu_title_kz && submitted }" />
@@ -17,32 +17,32 @@
       <small v-show="!formData.menu_title_en && submitted" class="p-error">{{ $t("smartenu.titleEnInvalid") }}</small>
     </div>
     <div class="field">
-      <label>Тип меню</label>
+      <label>{{ $t('web.menuType') }}</label>
       <div class="field-radiobutton">
         <RadioButton inputId="menuType1" name="menuType" :value="1" v-model="menuType" />
-        <label for="menuType1">Страница</label>
+        <label for="menuType1">{{ $t('web.page') }}</label>
       </div>
       <div class="field-radiobutton">
         <RadioButton inputId="menuType2" name="menuType" :value="2" v-model="menuType" />
-        <label for="menuType2">Ссылка</label>
+        <label for="menuType2">{{ $t('common.link') }}</label>
       </div>
     </div>
     <div class="field" v-if="menuType === 1">
-      <label for="choose-page">{{ $t("enuNewSite.selectMainPage") }}
+      <label for="choose-page">{{ $t("web.selectMainPage") }}
         <a href="javascript:void(0)" @click="showAddPage" class="ml-2 text-underline">{{ $t('common.createNew') }}</a>
       </label>
       <Dropdown v-model="this.formData.page_id" optionDisabled="true" :options="pages" optionLabel="title_kz" optionValue="enu_page_id"
-                :filter="true" :showClear="true" :placeholder="$t('enuNewSite.selectPage')" />
+                :filter="true" :showClear="true" :placeholder="$t('web.selectPage')" />
     </div>
     <div class="field" v-if="menuType === 2">
       <label>{{ $t('common.link') }}</label>
       <InputText id="en-title" v-model="formData.link" :placeholder="$t('common.link')" />
     </div>
     <div class="field">
-      <label>На главной</label>
+      <label>{{ $t('web.onMain') }}</label>
       <div>
         <Checkbox inputId="is_main" v-model="formData.is_main" :binary="true" />
-        <label class="ml-2" for="is_main">Да</label>
+        <label class="ml-2" for="is_main">{{ $t('common.yes') }}</label>
       </div>
     </div>
     <template #footer>
@@ -117,7 +117,7 @@ export default {
           this.hideDialog();
           this.$toast.add({
             severity: "success",
-            summary: this.$t("enuNewSite.createdMenuSuccessMsg"),
+            summary: this.$t("web.createdMenuSuccessMsg"),
             life: 3000,
           });
         }
