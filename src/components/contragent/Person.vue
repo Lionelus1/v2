@@ -1,16 +1,16 @@
 <template>
   <div id="carddiv" class="grid">
     <div class="col-12">
-      <h3>{{ $t("common.userDetail") }}</h3>
+      <h3>
+        {{ personType === PersonType.IndividualEntrepreneur
+              ? $t("common.userDetail") + ' (' + $t("common.individualEntrepreneur") + ')'
+              : $t("common.userDetail") + ' (' + $t("common.personal") + ')' }}
+      </h3>
       <div>
         <Menubar
           :model="menu"
           :key="active"
-          style="height: 36px;
-            margin-top: -7px;
-            margin-left: -14px;
-            margin-right: -14px;
-          "
+          style="height: 36px; margin-top: -7px; margin-left: -14px; margin-right: -14px;"
         ></Menubar>
       </div>
     </div>
@@ -373,6 +373,7 @@ import ContragentSelectOrg from "../contragent/ContragentSelectOrg.vue";
 import PositionsList from "../smartenu/PositionsList.vue";
 import axios from "axios";
 import { getHeader, smartEnuApi, findRole } from "@/config/config";
+import Enum from "@/enum/docstates/index";
 import html2canvas from "html2canvas";
 import * as jsPDF from "jspdf";
 export default {
@@ -389,6 +390,7 @@ export default {
       password: "",
       shortModeLocal: this.shortMode || this.findRole(null, "student"),
       value: this.modelValue,
+      PersonType: Enum.PersonType,
       states: [
         { id: 1, name: this.$t("contragent.active") },
         { id: -1, name: this.$t("contragent.inactive") },
@@ -449,6 +451,7 @@ export default {
 			type: Boolean,
 			default: false,
 		},
+    personType: Number,
   },
   emits: ['userCreated'],
   created() {
@@ -459,7 +462,6 @@ export default {
     if (this.organization) {
       this.value.organization = this.organization
     }
-
   },
   methods: {
     findRole: findRole,
@@ -532,6 +534,9 @@ export default {
                this.value.fullName =  this.value.fullName + " " +  this.value.lastName
             }
             if (this.addMode) {
+              if (this.personType === this.PersonType.IndividualEntrepreneur) {
+                this.insertIndividualEntrepreneur()
+              }
               this.$emit("userCreated", this.value);
             }
             this.menu[0].disabled = true
@@ -560,6 +565,29 @@ export default {
             }
           });
       }
+    },
+    insertIndividualEntrepreneur() {
+      console.log(this.value.id)
+      axios.post(
+        smartEnuApi + "/roleControl/add",
+        {
+          roleName: this.PersonType.IndividualEntrepreneur,
+          userId: this.value.id,
+        },
+        {headers: getHeader()}
+      ).then((res) => {
+        this.$toast.add({
+          severity: "success",
+          summary:  this.$t('common.successDone'),
+          life: 3000,
+        });
+      }).catch((error) => {
+        this.$toast.add({
+          severity: "error",
+          summary: "Individual entrepreneur create error\n" + error,
+          life: 3000,
+        });
+      })
     },
     validateAddForm() {
       this.validationErrors.firstName =

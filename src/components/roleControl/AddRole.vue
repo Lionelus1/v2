@@ -8,11 +8,11 @@
     </div>
     <div class="p-col-12 p-md-12 p-fluid">
       <div class="card">
-        <div class="p-field">
+        <div class="p-field pb-3">
           <label>{{ this.$t("common.organizationNameLabel") }}</label>
           <InputText type="text" v-model="selectedOrganizationText" disabled />
         </div>
-        <div class="p-field">
+        <div class="p-field pb-3">
           <label>{{ this.$t("roleControl.employeeLabel") }}</label>
           <div class="p-inputgroup">
             <InputMask v-model="iin" :placeholder="this.$t('roleControl.employeeIIN')" mask="999999999999"/>
@@ -53,7 +53,7 @@ export default {
       params: {
         roleId: 0,
         userId: 0,
-        orgId: 0,
+        orgId: null,
       },
       menu: [
         {
@@ -71,7 +71,7 @@ export default {
   },
   mounted() {
     this.selectedOrganizationText = this.selectedOrganization ? this.selectedOrganization.bin + ' - ' + this.selectedOrganization['name' + this.$i18n.locale] : this.$t('roleControl.selectOrg')
-    this.roleControlService.getRoles().then(response => {
+    this.roleControlService.getRoles(this.selectedOrganization.id).then(response => {
       this.roles = response.data
     }).catch(error => {
       if (error.response.status == 401) {

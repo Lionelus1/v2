@@ -63,11 +63,14 @@ export class MenuService {
                 visible: !this.findRole("student") && (this.getLoginedUser().organization && this.getLoginedUser().organization.id === 1),
 
                 items: [
-                    {label: $t('common.organizations'), icon: 'pi pi-fw pi-home', to: '/contragent/organizations'},
+                    {
+                        label: $t('common.organizations'), 
+                        icon: 'pi pi-fw pi-home', 
+                        to: '/contragent/organizations'},
                     //label: 'Банктер', icon: 'pi pi-fw pi-money-bill', to: '/contragent/banks'},
                     {
                       label: $t('common.individualEntrepreneur'),
-                      icon: 'pi pi-fw pi-user',
+                      icon: 'pi pi-fw pi-briefcase',
                       to: '/contragent/persons/' + Enum.PersonType.IndividualEntrepreneur
                     },
                     {

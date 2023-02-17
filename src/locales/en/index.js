@@ -356,6 +356,7 @@ export default {
             number: "Number",
             text: "Text",
             student: "Student",
+            individualEntrepreneur: "Individual entrepreneur",
             place: "Place of contract",
             date: "Date of contract",
             addElement: "Adding a contract element",

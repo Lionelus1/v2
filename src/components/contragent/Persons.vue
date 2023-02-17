@@ -8,7 +8,7 @@
         <h4 style="display: inline">
           {{
             personType === PersonType.IndividualEntrepreneur
-              ? $t("common.person")
+              ? $t("common.individualEntrepreneur")
               : $t("common.personal")
           }}
         </h4>
@@ -165,7 +165,7 @@
               class="p-sidebar-lg"
               style="overflow-y: scroll"
             >
-              <Person :shortMode="shortMode" :modelValue="currentPerson" :organization="organization" :addMode="addMode" :readonly="!shortMode" @userCreated="insertUser"></Person>
+              <Person :shortMode="shortMode" :modelValue="currentPerson" :organization="organization" :addMode="addMode" :personType="newPersonType" :readonly="!shortMode" @userCreated="insertUser"></Person>
               
             </Sidebar>
           </div>
@@ -187,6 +187,7 @@ export default {
       active: null,
       persons: null,
       addMode: false,
+      newPersonType: Number,
       personType: Number(this.$route.params.type),
       PersonType: Enum.PersonType,
       lazyParams: {
@@ -256,12 +257,19 @@ export default {
       ],
       localmenu: [{
           label: this.$t("common.activeList"),
-          items:[{
-            label: this.$t("common.person"),
-            icon: "pi pi-home",
-            disabled: false,
+          items:[
+            {
+              label: this.$t("common.individualEntrepreneur"),
+              icon: "pi pi-user-plus",
+              command: () => {
+                this.addPerson(Enum.PersonType.IndividualEntrepreneur)
+              }
+            }, 
+          {
+            label: this.$t("common.personal"),
+            icon: "pi pi-user-plus",
             command: () => {
-              this.addPerson()
+              this.addPerson(Enum.PersonType.OrganizationMember)
             }
           }
           ]
@@ -280,7 +288,7 @@ export default {
       default: false
     },
     shortMode: Boolean,
-    
+    contragentPersonType: Number,
   },
   setup(props, context) {
     function updateValue(currentPerson) {
@@ -293,7 +301,6 @@ export default {
   },
   watch: {
     "$route.params.type": function (id) {
-      this.personType = Number(this.$route.params.type);
       this.initApiCall();
     },
   },
@@ -306,8 +313,12 @@ export default {
       this.$emit("update:pagemenu", this.localmenu)
       let url = "/contragent/persons";
       this.personType = Number(this.$route.params.type);
-       if (this.$route.params.type === undefined) {
-        this.personType = 2
+      if (this.$route.params.type === undefined) {
+        if (this.contragentPersonType === undefined) {
+          this.personType = 2
+        } else {
+          this.personType = this.contragentPersonType
+        }
       }
 
       this.filters.userType.value =
@@ -364,11 +375,13 @@ export default {
       this.addMode = false;
       this.currentPerson = data;
       this.selectedPersons = data;
-      if (this.organization) {
+      if (this.organization || this.contragentPersonType !== undefined) {
         this.updateValue(data);
         this.$emit("updated",event)
+      } else {
+        this.newPersonType = this.personType  === Enum.PersonType.OrganizationMember ? Enum.PersonType.OrganizationMember : Enum.PersonType.IndividualEntrepreneur
+        this.sideVisible = true;
       }
-      else this.sideVisible = true;
 
     },
     onPage(event) {
@@ -387,7 +400,11 @@ export default {
       this.lazyParams.sortLang = this.$i18n.locale;
       this.initApiCall();
     },
-    addPerson(){
+    addPerson(type){
+      if (type === null) {
+        type = Enum.PersonType.OrganizationMember
+      }
+      this.newPersonType = type
       this.currentPerson = {
         IIN: null,
         name: null,

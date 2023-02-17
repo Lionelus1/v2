@@ -357,6 +357,7 @@ export default {
             period: "Кезең",
             text: "Мәтін",
             student: "Білім алушы",
+            individualEntrepreneur: "Жеке тұлға",
             number: "Нөмір",
             place: "Келісім-шарт жасалған орын",
             date: "Келісім-шарт жасалған күн",

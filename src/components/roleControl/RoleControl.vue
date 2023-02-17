@@ -47,8 +47,8 @@
               @sort="onSort($event)">
       <!--  HEADER -->
       <template #header>
-        <div class="table-header p-d-flex p-flex-column p-flex-md-row p-jc-md-between">
-          <h4 class="p-mb-2 p-m-md-0 p-as-md-center" v-if="selectedOrganization">{{ selectedOrganization['name'+$i18n.locale] }}</h4>
+        <div class="flex justify-content-between align-items-center">
+          <h5 class="m-0" v-if="selectedOrganization">{{ selectedOrganization['name'+$i18n.locale] }}</h5>
           <span class="p-input-icon-left" v-if="selectedOrganization">
             <i class="pi pi-search"/>
             <InputText type="search"
@@ -192,7 +192,6 @@ export default {
   },
   methods: {
     giveNewRole() {
-      this.vacancy = {}
       this.isView = true
     },
     deleteRoleRelation() {
