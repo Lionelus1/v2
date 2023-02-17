@@ -75,15 +75,10 @@
             <InputText
                 :readonly="readonly"
                 class="mt-2"
-                :class="{'p-invalid': validation.diplomaNumber}"
                 type="text"
                 :placeholder="$t('hr.ad.diplomaNumber')"
                 v-model="value.diplomaNumber"
             ></InputText>
-            <small
-                class="p-error"
-                v-if="validation.diplomaNumber"
-            >{{ $t("common.requiredField") }}</small>
           </div>
           <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ $t('hr.edu.receiptDate') }}</label>
@@ -145,7 +140,6 @@ export default {
         institutionAddress: false,
         faculty: false,
         speciality: false,
-        diplomaNumber: false,
         receiptDate: false,
         expirationDate: false
       }
@@ -157,7 +151,6 @@ export default {
       this.validation.institutionAddress = !this.value.institutionAddress || this.value.institutionAddress == ""
       this.validation.faculty = !this.value.faculty || this.value.faculty == ""
       this.validation.speciality = !this.value.speciality || this.value.speciality == ""
-      this.validation.diplomaNumber = !this.value.diplomaNumber || this.value.diplomaNumber == ""
       this.validation.receiptDate = !this.value.receiptDate || this.value.receiptDate == ""
       this.validation.expirationDate = !this.value.expirationDate || this.value.expirationDate == ""
       return (
@@ -165,7 +158,6 @@ export default {
           !this.validation.institutionAddress &&
           !this.validation.faculty &&
           !this.validation.speciality &&
-          !this.validation.diplomaNumber &&
           !this.validation.receiptDate &&
           !this.validation.expirationDate
       )

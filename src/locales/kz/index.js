@@ -161,6 +161,7 @@ export default {
         params: "Параметрлер",
         password: "Құпия сөз",
         person: "Жеке тұлға",
+        individualEntrepreneur: "Жеке тұлғалар",
         personal: "Қызметкерлер",
         revision: "Түзетуге",
         requiredField: "Міндетті түрде толтыру керек",
@@ -976,5 +977,20 @@ export default {
         addGuide: 'Анықтаманы қосу',
         editGuide: 'Анықтаманы өзгерту',
         notGuide: 'Бұл бетке әзірге анқтыма құрылған жоқ!',
+    },
+    roleControl:{
+        menuTitle: 'Рольдерді басқару',
+        giveRole: 'Жаңа роль беру',
+        selectOrg: 'Ұйымды таңдаңыз',
+        selectRole: 'Рольді таңдаңыз',
+        selectEmployee: 'Қызметкерді таңдаңыз',
+        employeeIIN: 'ЖСН',
+        employeeName: 'Қызметкер аты',
+        employeeLabel: 'Қызметкер',
+        employeeNotFound: 'Мұндай ЖСН-мен қызметкер табылмады',
+        roleName: 'Роль аты',
+        roleLabel: 'Роль',
+        noResult: 'Жазбалар табылмады',
+        cantDelete: 'Жазбаны өшіру мүмкін емес',
     }
 }

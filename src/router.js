@@ -387,7 +387,7 @@ const routes = [
                 name: 'EnuWebView',
                 component: load('enuwebsite/EnuWebView'),
                 beforeEnter: ifAuthenticated,
-            }, 
+            },
             {
                 path: '/enu/pages',
                 name: 'EnuWebPageView',
@@ -417,6 +417,12 @@ const routes = [
                         component: load('enuwebsite/blocks/BlockView')
                     }
                 ]
+            },
+            {
+                path: '/role-control',
+                name: 'RoleControl',
+                component: load('roleControl/RoleControl'),
+                beforeEnter: ifAuthenticated,
             }
         ]
     },
