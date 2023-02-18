@@ -57,7 +57,7 @@ export default {
         return;
       }
       this.approval_users.forEach(apu=>{
-        if (apu.users === null || apu.users.length<1 || apu.sertificate === null) {
+        if (apu.users === null || apu.users.length<1 || apu.certificate === null) {
           filled = false;
           return;
         }

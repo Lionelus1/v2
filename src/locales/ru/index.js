@@ -20,7 +20,7 @@ export default {
         councilName: 'Наименование совета',
         contragents: 'Контрагенты',
         documents: 'Документы',
-        sertificates: 'Свидетельства',
+        certificates: 'Свидетельства',
         administration: 'Администрирование',
         academicDegree: "Ученая степень",
         academicTitle: "Ученое звание",
@@ -167,7 +167,9 @@ export default {
         password: "Пароль",
         person: "Персона",
         personal: "Сотрудники",
-        phoneNumber: '',
+        pending: "В ожидании",
+        uploaded: "Загруженные",
+        phoneNumber: 'Phone number',
         requiredField: "Обязательное поле",
         revision: "На доработку",
         teacher: "ППС",
@@ -938,12 +940,20 @@ export default {
     },
     course: {
         title: 'Онлайн курсы',
-        sertificate: {
+        courses: 'Курсы',
+        categories: 'Категории курсов',
+        certificate: {
             template: 'Шаблоны сертфиката',
             element: 'Элемент',
             elements: 'Элементы',
             designer: 'Дизайнер шаблона',
-        }
+            issue: "Выдать сертификат",
+
+        },
+        user: 'Участник',
+        users: "Участники курса",
+        organizers: 'Организаторы курсов',
+        lnum: 'Последний номер',
     }
 
 }

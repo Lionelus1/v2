@@ -1,5 +1,5 @@
 <template>
     <div>
-        Sertificate
+        Journal
     </div>
 </template>

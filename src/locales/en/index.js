@@ -20,7 +20,7 @@ export default {
         councilName: 'Council name',
         contragents: 'Contragents',
         documents: 'Documents',
-        sertificates: 'Sertificates',
+        certificates: 'Certificates',
         administration: 'Administration',
         academicDegree: "Academic degree",
         academicTitle: "Academic title",
@@ -168,6 +168,8 @@ export default {
         showingRecordsCount: "Showing {first} to {last} of {totalRecords} entries",
         votedFor: "Voted for: {result}",
         doYouWantDelete: "Are you sure to delete this item?",
+        pending: "Pending",
+        uploaded: "Uploaded",
         startDate: 'Start date',
         endDate: 'End date',
         send: "Send",
@@ -931,11 +933,19 @@ export default {
     },
     course: {
         title: 'Online courses',
-        sertificate: {
-            template: 'Sertificate templates',
+        categories: 'Course categories',
+        courses: 'Сourses',
+        certificate: {
+            template: 'Certificate templates',
             element: 'Element',
             elements: 'Elements',
             designer: 'Template designer',
-        }
+            issue: "Issue a certificate",
+        },
+        users: 'Сourse participants',
+        user: 'Participant',
+        organizers: 'Course organizers',
+        lnum: 'last number',
+
     }
 }

@@ -174,8 +174,22 @@ export class MenuService {
                 label: $t('course.title'), icon: 'fa-solid fa-chalkboard-user',
                 items: [ 
                     {
-                        label: $t('course.sertificate.template'), icon: 'fa-solid fa-certificate', to: '/course/sertificate/templates'
-                    }
+                        label: $t('course.certificate.template'), icon: 'fa-solid fa-certificate', to: '/course/certificate/templates',
+                        visible: this.findRole("main_administrator") || this.findRole("online_course_administrator")
+                    },
+                    {
+                        label: $t('course.organizers'), icon: 'fa-solid fa-person-chalkboard', to: '/course/organizers',
+                        visible: this.findRole("main_administrator") || this.findRole("online_course_administrator")
+                    },
+                    {
+                        label: $t('course.categories'), icon: 'fa-solid fa-tags', to: '/course/categories',
+                        visible: this.findRole("main_administrator") || this.findRole("online_course_administrator")
+                    },
+                    {
+                        label: $t('course.courses'), icon: 'fa-solid fa-chalkboard', to: '/courses',
+                        
+                    },
+                   
                 ]
             },
         ]

@@ -20,7 +20,7 @@ export default {
         councilName: 'Кеңес аты',
         contragents: 'Контрагенттер',
         documents: 'Құжаттар',
-        sertificates: 'Куәліктер',
+        certificates: 'Куәліктер',
         administration: 'Әкімшілік',
         academicDegree: "Ғылыми дәрежесі",
         academicTitle: "Ғылыми атағы",
@@ -167,6 +167,8 @@ export default {
         password: "Құпия сөз",
         person: "Жеке тұлға",
         personal: "Қызметкерлер",
+        pending: "Жүктеуді күтуде",
+        uploaded: "Жүктелген",
         revision: "Түзетуге",
         requiredField: "Міндетті түрде толтыру керек",
         teacher: "ПОҚ",
@@ -952,11 +954,18 @@ export default {
     },
     course: {
         title: 'Онлайн курстар',
-        sertificate: {
+        courses: 'Курстар',
+        categories: 'Курс категориялары',
+        certificate: {
             template: 'Сертификат үлгілері',
             element: 'Элемент',
             elements: 'Элементтер',
             designer: 'Үлгі дизайнері',
-        }
+            issue: "Сертификат беру",
+        },
+        users: 'Курсқа қатысушылар',
+        user: 'Қатысушы',
+        organizers: 'Курс ұйымдастырушылар',
+        lnum: 'Соңғы нөмір',
     }
 }
