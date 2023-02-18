@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="content-section introduction">
+    <div class="content-section introduction pb-3">
       <div class="feature-intro ml-3">
         <h4 style="display: inline">{{ $t("contragent.organization") }}</h4>
         <label style="color: grey"

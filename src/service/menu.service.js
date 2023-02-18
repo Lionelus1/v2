@@ -53,6 +53,12 @@ export class MenuService {
                         to: '/cafedra',
                         visible: this.findRole("dephead") || this.findRole("practice_responsible")
                     },
+                    {
+                        label: $t('roleControl.menuTitle'),
+                        icon: 'pi pi-fw pi-user-edit',
+                        to: '/role-control',
+                        visible: this.findRole("main_administrator") || this.findRole("head_of_company")
+                    },
                 ]
             },
             {
@@ -60,13 +66,16 @@ export class MenuService {
                 visible: !this.findRole("student") && (this.getLoginedUser().organization && this.getLoginedUser().organization.id === 1),
 
                 items: [
-                    {label: $t('common.organizations'), icon: 'fa-solid fa-building', to: '/contragent/organizations'},
-                    /*{label: 'Банктер', icon: 'pi pi-fw pi-money-bill', to: '/contragent/banks'},
                     {
-                      label: 'Жеке тұлғалар',
-                      icon: 'pi pi-fw pi-user',
+                        label: $t('common.organizations'), 
+                        icon: 'pi pi-fw pi-home', 
+                        to: '/contragent/organizations'},
+                    //label: 'Банктер', icon: 'pi pi-fw pi-money-bill', to: '/contragent/banks'},
+                    {
+                      label: $t('common.individualEntrepreneur'),
+                      icon: 'pi pi-fw pi-briefcase',
                       to: '/contragent/persons/' + Enum.PersonType.IndividualEntrepreneur
-                    },*/
+                    },
                     {
                         label: $t('common.personal'),
                         icon: 'fa-solid fa-person-shelter',

@@ -166,6 +166,7 @@ export default {
         params: "Параметры",
         password: "Пароль",
         person: "Персона",
+        individualEntrepreneur: "Индивидуальные предприниматели",
         personal: "Сотрудники",
         pending: "В ожидании",
         uploaded: "Загруженные",
@@ -368,6 +369,7 @@ export default {
             period: "Период",
             text: "Текст",
             student: "Обучающийся",
+            individualEntrepreneur: "Индивидуальный предприниматель",
             place: "Место заключения договора",
             date: "Дата заключения договора",
             addElement: "Добавление элемента договора",
@@ -954,6 +956,21 @@ export default {
         users: "Участники курса",
         organizers: 'Организаторы курсов',
         lnum: 'Последний номер',
+    },
+    roleControl:{
+        menuTitle: 'Управление ролями',
+        giveRole: 'Дать новую роль',
+        selectOrg: 'Выберите организацию',
+        selectRole: 'Выберите роль',
+        selectEmployee: 'Выберите сотрудника',
+        employeeIIN: 'ИИН',
+        employeeName: 'Имя сотрудника',
+        employeeLabel: 'Сотрудник',
+        employeeNotFound: 'Сотрудник с таким ИИН не найдено',
+        roleName: 'Имя роля',
+        roleLabel: 'Роль',
+        noResult: 'Не найдено записей',
+        cantDelete: 'Невозможно удалить запись',
     }
 
 }

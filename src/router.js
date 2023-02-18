@@ -430,6 +430,13 @@ const routes = [
                 component: load('documents/certificates/Template'),
                 beforeEnter: ifAuthenticated,
             },
+            {
+                path: '/role-control',
+                name: 'RoleControl',
+                component: load('roleControl/RoleControl'),
+                beforeEnter: ifAuthenticated,
+            }
+                
         ]
     },
    
