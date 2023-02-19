@@ -1,10 +1,12 @@
 <template>
    <div>
-    <BlockUI :blocked="saving" :fullScreen="true">
+    <BlockUI :blocked="loading" :fullScreen="true">
     </BlockUI>
 		<div class="col-12">
 			<div class="card">
         <div class="text-2xl font-medium text-900 mb-3">{{$t("course.certificate.template")}}</div>
+        <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
+
         <Toolbar>
           <template #end>
             <Button :label="$t('common.add')" @click="this.inittialNewTemplate();templateEditorVisilble=true;newTemplateDialogVisible=true;" icon="pi pi-plus" />
@@ -304,13 +306,17 @@ export default {
     methods: {
         getJournal() {
           this.loading = true;
+          this.lazyParams.docType = 7
           this.service.getCertificateTemplateJournal(this.lazyParams).then(response =>{
             this.journal = response.data.templates;
             this.count = response.data.count;
             this.loading = false;
+
+
           })
           .catch(_=> {
             this.loading = false;
+
           })
         },
         imageSelected(event) {

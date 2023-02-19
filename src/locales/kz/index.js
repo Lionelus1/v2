@@ -959,6 +959,7 @@ export default {
         courses: 'Курстар',
         categories: 'Курс категориялары',
         certificate: {
+            title: 'Сертификаттар',
             template: 'Сертификат үлгілері',
             element: 'Элемент',
             elements: 'Элементтер',

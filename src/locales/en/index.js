@@ -938,6 +938,7 @@ export default {
         categories: 'Course categories',
         courses: 'Сourses',
         certificate: {
+            title: "Certificates",
             template: 'Certificate templates',
             element: 'Element',
             elements: 'Elements',

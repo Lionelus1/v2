@@ -34,6 +34,9 @@ export class MenuService {
                     {
                         label: $t('educomplex.title'), icon: 'pi pi-fw pi-folder', to: '/documents/catalog/educomplex'
                     },
+                    {
+                        label: $t('course.certificate.title'), icon: 'fa-solid fa-award', to: '/documents/certificates'
+                    },
               
                 ]
 

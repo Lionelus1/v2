@@ -114,9 +114,9 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
-                path: '/documents/onlinecourse',
-                name: 'onlinecoursejournal',
-                component: load('documents/onlinecourse/Journal'),
+                path: '/documents/certificates',
+                name: 'certificateJournal',
+                component: load('documents/certificates/Journal'),
                 beforeEnter: ifAuthenticated,
             },
             {

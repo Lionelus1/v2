@@ -945,6 +945,7 @@ export default {
         courses: 'Курсы',
         categories: 'Категории курсов',
         certificate: {
+            title: 'Сертификаты',
             template: 'Шаблоны сертфиката',
             element: 'Элемент',
             elements: 'Элементы',
