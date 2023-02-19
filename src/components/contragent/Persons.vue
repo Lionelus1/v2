@@ -23,19 +23,15 @@
             style="height: 36px;margin-top: -7px;margin-right: -7px;margin-left: -7px;"
           >
             <template #end>
-              <InputText
-                @keyup.enter="initApiCall"
-                style="height: 30px"
-                v-model="filters['global'].value"
-                placeholder="іздеу"
-              />
-
-              <Button
-                icon="pi pi-search"
-                style="height: 30px"
-                class="ml-1"
-                @click="initApiCall"
-              />
+              <span class="p-input-icon-left">
+                <i class="pi pi-search" />
+                <InputText
+                  @keyup.enter="initApiCall"
+                  style="height: 30px"
+                  v-model="filters['global'].value"
+                  :placeholder="$t('common.search')"
+                />
+              </span>
             </template>
           </Menubar>
           <div class="box">
@@ -63,7 +59,7 @@
                   totalRecords: '{totalRecords}',
                 })
               "
-              responsiveLayout="scroll"
+              responsiveLayout="stack"
             >
               <template #empty>
                 {{ this.$t("common.recordsNotFound") }}

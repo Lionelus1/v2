@@ -27,7 +27,7 @@
                   @keyup.enter="initApiCall"
                   style="height: 30px"
                   v-model="filters['global'].value"
-                  placeholder="іздеу"
+                  :placeholder="$t('common.search')"
                 />
               </span>
             </template>
