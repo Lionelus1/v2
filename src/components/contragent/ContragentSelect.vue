@@ -30,9 +30,11 @@
         <Sidebar v-model:visible="signerCardVisible" position="right" class="p-sidebar-lg" style="overflow-y:scroll;">
           <Person :modelValue="value.signer" :organization="JSON.parse(JSON.stringify(value))" class="mt-10" style="padding:-1rem" :readonly="true"></Person>
         </Sidebar>
+        <label v-if="value">{{$t('contracts.signer')}}</label>
       </span>
+      
     </div>
-    <label v-if="value">{{$t('contracts.signer')}}</label>
+    
 
   </div>
 </template>

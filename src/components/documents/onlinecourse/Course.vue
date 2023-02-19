@@ -8,6 +8,7 @@
         <div class="surface-card shadow-2 flex h-4rem items-align-center">
             <Button :label="$t('course.users')" class="ml-3 p-button-text p-button-secondary" />
         </div>
+        <ProgressBar v-if="saving" mode="indeterminate" style="height: .5em"/>
         <div class="surface-card shadow-2 p-4 ">
             <!-- курсқа қатысушылар -->
             <div v-if="course && course.students">
@@ -115,19 +116,14 @@ export default({
                 users: null,
                 courseID: this.course.id,
                 comment: ""
-            }).then(response=>{
+            }).then(_=>{
                 this.saving = false;
                 this.submitted = false;
-               
-                // const blob = new Blob([response.data], )
-                const link = document.createElement("a");
-                link.href = "data:application/octet-stream;base64," + response.data;
-                let filename = "file.pdf";
-                link.setAttribute("download", filename);
-                link.download = filename;
-                link.click();
-                URL.revokeObjectURL(link.href);
-        
+                this.$toast.add({
+                    severity: "success",
+                    summary: this.$t('common.successDone'),
+                    life: 3000,
+                });
                 this.getCourseStudents()
 
                 

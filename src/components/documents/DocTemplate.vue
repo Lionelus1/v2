@@ -96,13 +96,13 @@
               </Column>
               <Column headerStyle="width: 8em" headerClass="text-center" bodyClass="text-center">
               <template #header>
-                  <Button v-if="!selectMode" icon="pi pi-plus" class="button-blue" @click="openForm('addFolder');clearCreatedFolder();" v-tooltip.bottom="$t('common.newCatalog')"  />
+                  <Button v-if="!selectMode" icon="pi pi-plus" class="p-button-blue" @click="openForm('addFolder');clearCreatedFolder();" v-tooltip.bottom="$t('common.newCatalog')"  />
               </template>
               <template #body="slotProps">
-                  <Button v-if="slotProps.node.data.type==1 && !selectMode" type="button" icon="pi pi-plus" @click="openForm('addTemplate',slotProps.node);clearCreatedTemlate();" class="button-success" v-tooltip.bottom="$t('doctemplate.newTemplate')"></Button>
-                  <Button v-if="slotProps.node.data.type!=1" type="button" icon="pi pi-search" class="button-warning" @click="editDocTemplate(slotProps.node)" v-tooltip.bottom="$t('common.show')"></Button>&nbsp;
+                  <Button v-if="slotProps.node.data.type==1 && !selectMode" type="button" icon="pi pi-plus" @click="openForm('addTemplate',slotProps.node);clearCreatedTemlate();" class="p-button-success" v-tooltip.bottom="$t('doctemplate.newTemplate')"></Button>
+                  <Button v-if="slotProps.node.data.type!=1" type="button" icon="pi pi-search" class="p-button-warning" @click="editDocTemplate(slotProps.node)" v-tooltip.bottom="$t('common.show')"></Button>&nbsp;
                   <Button v-if="slotProps.node.data.type!=1 && slotProps.node.data.stateEn == DocState.REVISION.Value" icon="pi pi-comment" @click="openForm('dialogComment',slotProps.node)" v-tooltip.bottom="$t('common.comment')"></Button>
-                  <Button v-if="selectMode && slotProps.node.data.type!=1" icon="pi pi-check-circle" class="button-success ml-2" @click="select($event,slotProps.node)" v-tooltip.bottom="$t('common.choose')"></Button>
+                  <Button v-if="selectMode && slotProps.node.data.type!=1" icon="pi pi-check-circle" class="p-button-success ml-2" @click="select($event,slotProps.node)" v-tooltip.bottom="$t('common.choose')"></Button>
                   
               </template>
             </Column>
@@ -117,9 +117,9 @@
                 <Button v-if="(selectedNode.data.stateEn == DocState.CREATED.Value || selectedNode.data.stateEn == DocState.REVISION.Value)" v-bind:label="$t('common.save')" icon="pi pi-save" @click="saveDocTemplate"/>
                 <Button v-bind:label="$t('common.download')" icon="pi pi-file-pdf" @click="downloadDocTemplatePdf" />
                 <Button v-if="selectedNode.data.stateEn == DocState.CREATED.Value || selectedNode.data.stateEn == DocState.REVISION.Value" v-bind:label="$t('common.toapprove')" icon="pi pi-send" @click="openForm('toApproval')" />
-                <Button v-if="selectedNode.data.stateEn == DocState.INAPPROVAL.Value && findRole(null, DocState.roles.LegalServiceHead)" class="button-success" :label ="$t('common.approve')" icon="pi pi-check" @click="approve()"/>
-                <Button v-if="selectedNode.data.stateEn == DocState.INAPPROVAL.Value && findRole(null, DocState.roles.LegalServiceHead)" class="button-warning" :label ="$t('common.revision')" icon="pi pi-times" @click="openForm('revision')"/>
-                <Button v-if="selectedNode.data.stateEn == DocState.APPROVED.Value" class="button-primary" :label ="$t('common.approvalList')" icon="pi pi-user-edit" @click="openForm('signerInfo')"/>
+                <Button v-if="selectedNode.data.stateEn == DocState.INAPPROVAL.Value && findRole(null, DocState.roles.LegalServiceHead)" class="p-button-success" :label ="$t('common.approve')" icon="pi pi-check" @click="approve()"/>
+                <Button v-if="selectedNode.data.stateEn == DocState.INAPPROVAL.Value && findRole(null, DocState.roles.LegalServiceHead)" class="p-button-warning" :label ="$t('common.revision')" icon="pi pi-times" @click="openForm('revision')"/>
+                <Button v-if="selectedNode.data.stateEn == DocState.APPROVED.Value" class="p-button-primary" :label ="$t('common.approvalList')" icon="pi pi-user-edit" @click="openForm('signerInfo')"/>
               </span>
 
               <SelectButton @change="languageChanged" v-model="templateLanguage" :options="language" class="mb-3">
@@ -129,7 +129,7 @@
                   <div v-else>{{$t('common.language.en')}}</div>
                 </template>
               </SelectButton>
-              <Button v-if="selectMode && selectedNode.data.type!=1" icon="pi pi-check-circle" class="button-success ml-2" @click="select($event,selectedNode)" v-tooltip.bottom="$t('common.choose')"></Button>
+              <Button v-if="selectMode && selectedNode.data.type!=1" icon="pi pi-check-circle" class="p-button-success ml-2" @click="select($event,selectedNode)" v-tooltip.bottom="$t('common.choose')"></Button>
             </div>
             <RichEditor ref="kzEditor" :readonly="editorReadOnly" v-if="templateLanguage =='kz'" v-model="selectedNode.data.mainTextKaz" editorStyle="height:500px;max-width:700px;min-width:500px">
               <template v-slot:toolbar>

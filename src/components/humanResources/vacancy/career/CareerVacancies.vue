@@ -60,7 +60,7 @@
       <!-- EMPTY -->
       <template #empty> {{ $t('common.noData') }}</template>
       <!-- NAME COLUMN -->
-      <Column :field="'name' + ($i18n.locale).charAt(0).toUpperCase() + ($i18n.locale).slice(1)"
+      <Column :field="'name' + c"
               v-bind:header="$t('common.nameIn')"
               :sortable="true">
         <template #body="slotProps">

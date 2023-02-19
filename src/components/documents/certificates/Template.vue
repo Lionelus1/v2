@@ -173,6 +173,7 @@ import {OnlineCourseService} from "@/service/onlinecourse.service";
 import Files from "@/components/documents/Files.vue"
 import { smartEnuApi, fileRoute } from '../../../config/config';
 import { thisExpression } from '@babel/types';
+import { smart } from '@babel/template';
 export default {
     name: "CertificateTemplate",
     components: {
@@ -191,6 +192,8 @@ export default {
             saving: false,
             changed: false,
             service: new OnlineCourseService(),
+            smartEnuApi: smartEnuApi,
+            fileRoute: fileRoute,
             activeIndex: 0,
             languages: ["kz", "ru", "en"],
             savedRange: null,
@@ -273,10 +276,10 @@ export default {
                   {id: -1, name: "img", description:"common", active: false, isDeleted:false, value: {url: "enu_logo/qr.png", name: "qr", rectelement: {z:3, x:643,y:380, w:70, h:70}}},
                   {id: -1, name: "img", description:"common", active: false, isDeleted:false, value: {url: "enu_logo/build.png", name: "build", rectelement: {z:4, x:585,y:470, w:170, h:70}}},
                   {id: -1, name: "txt", description:"common", active: false, isDeleted:false, value: { name: "mainText", title: "mainInfo", 
-                  titlekz: "Тыңдаушы @тыңдаушыныңТолықАтыЖөні <br>@курстыңТолықАтауы онлайн курсын <br> @сағатСаны сағат көлемінде @оқығанКезеңі аралығында сәтті өтті.", 
-                  titleru: "Слушатель @полноеИмяСлушателя <br> усепшно прошел(а) <br> онлайн курс @полноеНаименованиеКурса <br> @периодОбучения в объеме @количествоЧасов часов.", 
-                  titleen: "Listener @listenerFullName <br> has succesfully completed the online course @fullNameOfCourse <br> @studyPeriod for @hoursCount hours.", 
-                  rectelement: {z:5, x:90,y:190, w:660, h:180}, style:"text-align:center;font-size:22px;color:#000000;letter-spacing:0px"}},
+                  titlekz: "Тыңдаушы @тыңдаушыныңТолықАтыЖөні <br>«@курстыңТолықАтауы онлайн курсын» <br> @сағатСаны сағат көлемінде @оқығанКезеңі аралығында <br> сәтті өтті.", 
+                  titleru: "Слушатель @полноеИмяСлушателя <br> усепшно прошел(а) <br> онлайн курс «@полноеНаименованиеКурса» <br> @периодОбучения в объеме @количествоЧасов часов.", 
+                  titleen: "Listener @listenerFullName <br> has succesfully completed <br>the online course «@fullNameOfCourse» <br> @studyPeriod for @hoursCount hours.", 
+                  rectelement: {z:5, x:90,y:190, w:660, h:180}, style:"text-align:center;font-size:24px;color:#000000;letter-spacing:0px"}},
                   {id: -1, name: "txt", description:"common",  value: { name: "number", title: "details", 
                   titlekz: "№ @sertficateNumber<br> @certificateDate <br> Астана қаласы", 
                   titleru: "№ @sertficateNumber<br> @certificateDate <br> город Астана", 
@@ -286,8 +289,8 @@ export default {
                   {id: -1, name: "img", description:"ru", active: false, isDeleted:false,  value:{url:  "enu_logo/logo-en.png", title: "logo", rectelement: {z:8, x:349,y:15, w:144, h:60}}},
                   {id: -1, name: "img", description:"en", active: false, isDeleted:false,  value: {url: "enu_logo/logo-en.png", title: "logo", rectelement: {z:9,x:349,y:15, w:144, h:60}}},
                   {id: -1, name: "text", description:"kz", active: false, isDeleted:false,  value: ""},
-                  {id: -1, name: "text", description:"ru", active: false, isDeleted:false,  value: ""},
                   {id: -1, name: "text", description:"en", active: false, isDeleted:false,  value: ""},
+                  {id: -1, name: "text", description:"ru", active: false, isDeleted:false,  value: ""},
             ],
             },  
             activeElement: null,
@@ -330,7 +333,7 @@ export default {
           for (let i=0;i<this.template.params.length; i++) {
             if (this.template.params[i].name === 'text') {
               let divHtml = this.$refs["template" + this.template.params[i].description].innerHTML;
-              divHtml = divHtml.replace(this.smartEnuApi + this.fileRoute, "@fileservice")
+              divHtml = divHtml.replaceAll(this.smartEnuApi + this.fileRoute, "@fileservice")
               this.template.params[i].value = divHtml
             } 
           }
@@ -338,7 +341,7 @@ export default {
             this.template = response.data;
             this.$toast.add({
               severity: "success",
-              summary: this.$t('common.success'),
+              summary: this.$t('common.successDone'),
               life: 3000,
             });
             if (this.closeDialogVisible) {
@@ -366,10 +369,10 @@ export default {
                   {id: -1, name: "img", description:"common", active: false, isDeleted:false, value: {url: "enu_logo/qr.png", name: "qr", rectelement: {z:3, x:643,y:380, w:70, h:70}}},
                   {id: -1, name: "img", description:"common", active: false, isDeleted:false, value: {url: "enu_logo/build.png", name: "build", rectelement: {z:4, x:585,y:470, w:170, h:70}}},
                   {id: -1, name: "txt", description:"common", active: false, isDeleted:false, value: { name: "mainText", title: "mainInfo", 
-                  titlekz: "Тыңдаушы @тыңдаушыныңТолықАтыЖөні <br>@курстыңТолықАтауы онлайн курсын <br> @сағатСаны сағат көлемінде @оқығанКезеңі аралығында сәтті өтті.", 
-                  titleru: "Слушатель @полноеИмяСлушателя <br> усепшно прошел(а) <br> онлайн курс @полноеНаименованиеКурса <br> @периодОбучения в объеме @количествоЧасов часов.", 
-                  titleen: "Listener @listenerFullName <br> has succesfully completed the online course @fullNameOfCourse <br> @studyPeriod for @hoursCount hours.", 
-                  rectelement: {z:5, x:90,y:190, w:660, h:180}, style:"text-align:center;font-size:22px;color:#000000;letter-spacing:0px"}},
+                  titlekz: "Тыңдаушы @тыңдаушыныңТолықАтыЖөні <br>«@курстыңТолықАтауы» онлайн курсын <br> @сағатСаны сағат көлемінде @оқығанКезеңі аралығында<br> сәтті өтті.", 
+                  titleru: "Слушатель @полноеИмяСлушателя <br> усепшно прошел(а) <br> онлайн курс «@полноеНаименованиеКурса» <br> @периодОбучения в объеме @количествоЧасов часов.", 
+                  titleen: "Listener @listenerFullName <br> has succesfully completed<br> the online course «@fullNameOfCourse» <br> @studyPeriod for @hoursCount hours.", 
+                  rectelement: {z:5, x:90,y:190, w:660, h:180}, style:"text-align:center;font-size:24px;color:#000000;letter-spacing:0px"}},
                   {id: -1, name: "txt", description:"common",  value: { name: "number", title: "details", 
                   titlekz: "№ @sertficateNumber<br> @certificateDate <br> Астана қаласы", 
                   titleru: "№ @sertficateNumber<br> @certificateDate <br> город Астана", 
@@ -379,8 +382,8 @@ export default {
                   {id: -1, name: "img", description:"ru", active: false, isDeleted:false,  value:{url:  "enu_logo/logo-en.png", title: "logo", rectelement: {z:8, x:349,y:15, w:144, h:60}}},
                   {id: -1, name: "img", description:"en", active: false, isDeleted:false,  value: {url: "enu_logo/logo-en.png", title: "logo", rectelement: {z:9,x:349,y:15, w:144, h:60}}},
                   {id: -1, name: "text", description:"kz", active: false, isDeleted:false,  value: ""},
-                  {id: -1, name: "text", description:"ru", active: false, isDeleted:false,  value: ""},
                   {id: -1, name: "text", description:"en", active: false, isDeleted:false,  value: ""},
+                  {id: -1, name: "text", description:"ru", active: false, isDeleted:false,  value: ""},
                   
             ],
             };  
