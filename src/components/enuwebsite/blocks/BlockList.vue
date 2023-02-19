@@ -51,6 +51,10 @@
         <RadioButton inputId="blockType2" name="blockType" :value="false" @change="formData.is_grid = false" v-model="formData.is_list" />
         <label for="blockType2">{{ $t('web.content') }}</label>
       </div>
+      <div class="field-radiobutton">
+        <RadioButton inputId="blockType3" name="blockType" :value="false" v-model="formData.is_plugin" />
+        <label for="blockType2">{{ $t('web.plugin') }}</label>
+      </div>
     </div>
     <div class="field" v-if="formData.is_list">
       <label>{{ $t('web.view') }}</label>
