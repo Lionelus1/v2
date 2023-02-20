@@ -1,6 +1,9 @@
 <template>
     <div class="p-col-12">
         <div class="card">
+            <div class="p-col-12">
+                {{ notifications }}
+            </div>
             <h4>{{ $t("common.welcome") }}, {{ loginedUser.fullName }} !</h4>
         </div>
         <div class="card card_bottom">
@@ -128,16 +131,10 @@
                 },
                 allNews: [],
                 allEvents: [],
+                notifications:[]
             };
         },
-        mounted() {
-            this.emitter.on('newsViewModalClose', data => {
-                this.newsViewVisible = data;
-            });
-            this.emitter.on('eventViewModalClose', data => {
-                this.eventViewVisible = data;
-            });
-        },
+       
         methods: {
             getAllNews() {
                 this.loading = true
@@ -209,6 +206,16 @@
         created() {
             this.getAllNews();
             this.getAllEvents();
+        },
+        mounted(){
+            this.emitter.on('newsViewModalClose', data => {
+                this.newsViewVisible = data;
+            });
+            this.emitter.on('eventViewModalClose', data => {
+                this.eventViewVisible = data;
+            });
+
+           
         },
         computed: {
             ...mapState(["loginedUser"]),

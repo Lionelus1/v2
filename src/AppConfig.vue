@@ -149,20 +149,17 @@
 </script>
 <style scoped>
 
-	@media print
-   {    
+	@media print{    
 	   .no-print, .no-print *
 	   {
 		   display:none !important;
 	   }
    }
-	@media print
-   {    
+	@media print{    
 	   .show-print, .show-print *
 	   {
 		   display: block !important;
 		   width:100% !important;
 	   }
    }
-
 </style>
