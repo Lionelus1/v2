@@ -39,9 +39,10 @@ export default class RoleControlService {
         )
     }
 
-    getRoles() {
-        return axios.get(
+    getRoles(orgId) {
+        return axios.post(
             smartEnuApi + "/roleControl/roles",
+            {orgId: orgId},
             {headers: getHeader()}
         )
     }

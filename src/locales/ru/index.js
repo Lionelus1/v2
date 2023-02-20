@@ -20,7 +20,7 @@ export default {
         councilName: 'Наименование совета',
         contragents: 'Контрагенты',
         documents: 'Документы',
-        sertificates: 'Свидетельства',
+        certificates: 'Свидетельства',
         administration: 'Администрирование',
         academicDegree: "Ученая степень",
         academicTitle: "Ученое звание",
@@ -44,6 +44,11 @@ export default {
         equals: "Равно",
         login: "Вход",
         logout: "Выход",
+        letterSpacing: {
+            expanded: "Разреженный",
+            condensed: "Уплотненный",
+            normal: "Обычный",
+        },
         enter: "Наберите",
         enterLogin: "Введите ИИН или почту platonus",
         enterPassword: "Введите пароль",
@@ -161,9 +166,11 @@ export default {
         params: "Параметры",
         password: "Пароль",
         person: "Персона",
-        individualEntrepreneur: "Индивидуальные предприниматели",
+        individualEntrepreneur: "Частные лица",
         personal: "Сотрудники",
-        phoneNumber: '',
+        pending: "В ожидании",
+        uploaded: "Загруженные",
+        phoneNumber: 'Phone number',
         requiredField: "Обязательное поле",
         revision: "На доработку",
         teacher: "ППС",
@@ -244,6 +251,9 @@ export default {
             fileError: "Не удалось загрузить файл. Возможно файл поврежден",
             mailSendError: "Ошибка при отправке на электронную почту",
             ConsulAlwaysHasSameMember: "Указанное лицо уже состоит в другом совете",
+            saveChangesWarning: "Хотите сохранить внесенные изменения?",
+            unsaveOutcome: "Если изменения не сохранить, они будут утрачены.",
+            addPicture: "Добавить картинку"
         },
         language: {
             kz: "на казахском",
@@ -361,6 +371,7 @@ export default {
             period: "Период",
             text: "Текст",
             student: "Обучающийся",
+            individualEntrepreneur: "Индивидуальный предприниматель",
             place: "Место заключения договора",
             date: "Дата заключения договора",
             addElement: "Добавление элемента договора",
@@ -978,6 +989,24 @@ export default {
         editGuide: 'Редактирование справочника',
         notGuide: 'На эту страницу пока не создана справочник!',
     },
+    course: {
+        title: 'Онлайн курсы',
+        courses: 'Курсы',
+        categories: 'Категории курсов',
+        certificate: {
+            title: 'Сертификаты',
+            template: 'Шаблоны сертфиката',
+            element: 'Элемент',
+            elements: 'Элементы',
+            designer: 'Дизайнер шаблона',
+            issue: "Выдать сертификат",
+
+        },
+        user: 'Участник',
+        users: "Участники курса",
+        organizers: 'Организаторы курсов',
+        lnum: 'Последний номер',
+    },
     roleControl:{
         menuTitle: 'Управление ролями',
         giveRole: 'Дать новую роль',
@@ -993,4 +1022,5 @@ export default {
         noResult: 'Не найдено записей',
         cantDelete: 'Невозможно удалить запись',
     }
+
 }

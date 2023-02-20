@@ -112,8 +112,8 @@
           </TreeTable>
           </TabPanel>
           <TabPanel v-bind:header="$t('doctemplate.selected')" :disabled="(selectedNode.data.type == null || selectedNode.data.type == 1)">
-            <div class="p-formgroup-inline">
-              <span class="p-buttonset">
+            <div class="formgroup-inline">
+              <span class="buttonset">
                 <Button v-if="(selectedNode.data.stateEn == DocState.CREATED.Value || selectedNode.data.stateEn == DocState.REVISION.Value)" v-bind:label="$t('common.save')" icon="pi pi-save" @click="saveDocTemplate"/>
                 <Button v-bind:label="$t('common.download')" icon="pi pi-file-pdf" @click="downloadDocTemplatePdf" />
                 <Button v-if="selectedNode.data.stateEn == DocState.CREATED.Value || selectedNode.data.stateEn == DocState.REVISION.Value" v-bind:label="$t('common.toapprove')" icon="pi pi-send" @click="openForm('toApproval')" />

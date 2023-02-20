@@ -163,6 +163,7 @@ export default {
       "date": this.$t('doctemplate.editor.date'),
       "period": this.$t('doctemplate.editor.period'),
       "student": this.$t('doctemplate.editor.student'),
+      "individualEntrepreneur": this.$t('doctemplate.editor.individualEntrepreneur'),
       "text": this.$t('doctemplate.editor.text'),
       "number": this.$t('common.number'),
     };

@@ -313,7 +313,7 @@ export default {
         {
           stage: 1,
           users: [this.$store.state.loginedUser],
-          sertificate: {
+          certificate: {
             namekz: "Жеке тұлғаның сертификаты",
             nameru: "Сертификат физического лица",
             nameen: "Certificate of an individual",
@@ -420,7 +420,7 @@ export default {
         {
           stage: 1,
           users: [this.$store.state.loginedUser],
-          sertificate: {
+          certificate: {
             namekz: "Жеке тұлғаның сертификаты",
             nameru: "Сертификат физического лица",
             nameen: "Certificate of an individual",
@@ -436,7 +436,7 @@ export default {
           titleRu: "Заведующий кафедры",
           titleKz: "Кафедра меңгерушісі",
           titleEn: "Head of Department",
-          sertificate: {
+          certificate: {
             namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
             nameru: "Для внутреннего документооборота (ГОСТ)",
             nameen: "For internal document management (GOST)",
@@ -449,7 +449,7 @@ export default {
           titleRu: "Председатель УМК",
           titleKz: "ОӘК төрағасы",
           titleEn: "Chairman of the EMC",
-          sertificate: {
+          certificate: {
             namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
             nameru: "Для внутреннего документооборота (ГОСТ)",
             nameen: "For internal document management (GOST)",
@@ -462,7 +462,7 @@ export default {
           titleRu: "Декан",
           titleKz: "Декан",
           titleEn: "Dean",
-          sertificate: {
+          certificate: {
             namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
             nameru: "Для внутреннего документооборота (ГОСТ)",
             nameen: "For internal document management (GOST)",

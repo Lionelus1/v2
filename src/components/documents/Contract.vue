@@ -29,7 +29,7 @@
                 class="fieldgrid"
               >
                 <label
-                  v-if="param.name == 'contragent' || param.name == 'ourside'"
+                  v-if="param.name == 'contragent' || param.name == 'ourside' || param.name == 'individualEntrepreneur'"
                   :for="param.name + param.id"
                   class="col-12 mb-12 md:col-12 mb-md-0 uppercase"
                   >{{ $t("doctemplate.editor." + param.name) }}</label
@@ -48,11 +48,14 @@
                 >
 
                 <div
-                  v-if="param.name == 'contragent' || param.name == 'ourside'"
+                  v-if="param.name == 'contragent' || param.name == 'ourside' || param.name == 'individualEntrepreneur'"
                   class="col-12 md:col-12"
                 >
                   <ContragentSelect @updated="correct" v-model="param.value"></ContragentSelect>
                 </div>
+                <!-- <div v-else-if="param.name == 'individualEntrepreneur'" class="col-12 md:col-12"> -->
+                  <!-- here -->
+                <!-- </div> -->
                 <div v-else class="col-12 md:col-10">
                    <!-- студент болса -->
                   <FindUser
@@ -469,7 +472,7 @@ export default {
           result = false
           return result
         }
-        if ((param.name == "contragent" || param.name == "ourside") && (param.value.signer == null) ) {
+        if ((param.name == "contragent" || param.name == "ourside" || param.name == "individualEntrepreneur") && (param.value.signer == null) ) {
             result = false
             return result
         }
@@ -552,6 +555,9 @@ export default {
         case "contragent":
           result =
             result + this.getContragentName(param.value, this.contract.lang);
+          break;
+        case "individualEntrepreneur":
+          // here
           break;
         default:
           result = param.name;

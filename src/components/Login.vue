@@ -255,12 +255,12 @@ export default {
   }
 }
 
-.pi-eye {
+.p-password > .pi-eye {
   transform: scale(1.6);
   margin-right: 1rem;
 }
 
-.pi-eye-slash {
+.p-password > .pi-eye-slash {
   transform: scale(1.6);
   margin-right: 1rem;
 }
