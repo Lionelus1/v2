@@ -150,7 +150,7 @@ export default {
         params: "Parameters",
         password: "Password",
         person: "Person",
-        individualEntrepreneur: "Individual entrepreneurs",
+        individualEntrepreneur: "Persons",
         personal: "Staff",
         protocol: "Protocol",
         requiredField: "Required field",
