@@ -290,10 +290,15 @@ export default {
             summary: response.errorMessage,
             life: 3000
           });
-        }
-        if (response.result === 'success') {
+        } else if (response.result === 'success') {
           this.getData()
-          t.showMessage('success', this.$t('ncasigner.signDocTitle'), this.$t('ncasigner.success.signSuccess'));
+          t.showMessage('success', t.$t('ncasigner.signDocTitle'), t.$t('ncasigner.success.signSuccess'));
+        } else if (response.response === 'unsigned') {
+          this.$toast.add({
+            severity: "error",
+            summary: t.$t(response.errorMessage),
+            life: 3000,
+          });
         }
       }
       this.connection.onopen = function(event) {
