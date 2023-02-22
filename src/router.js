@@ -1,6 +1,7 @@
 import {createRouter, createWebHashHistory} from 'vue-router';
 import Full from './components/Full.vue';
 import store from '@/store/store'
+import AdmissionInfoList from "@/components/enuwebsite/blocks/admission.info/AdmissionInfoList.vue";
 
 function load(component) {
     return () => import(`./components/${component}.vue`)
@@ -415,6 +416,11 @@ const routes = [
                         path: 'view/:id',
                         name: 'BlockView',
                         component: load('enuwebsite/blocks/BlockView')
+                    },
+                    {
+                        path: 'admission-info',
+                        name: 'AdmissionInfoList',
+                        component: load('enuwebsite/blocks/admission.info/AdmissionInfoList')
                     }
                 ]
             }
