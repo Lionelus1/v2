@@ -292,12 +292,12 @@ export default {
             life: 3000
           });
         } else if (response.result === 'success') {
-          this.getData()
-          t.showMessage('success', this.$t('ncasigner.signDocTitle'), this.$t('ncasigner.success.signSuccess'));
+          t.getData()
+          t.showMessage('success', t.$t('ncasigner.signDocTitle'), t.$t('ncasigner.success.signSuccess'));
         } else if (response.result === 'unsigned') {
           this.$toast.add({
             severity: "error",
-            summary: this.$t(response.errorMessage),
+            summary: t.$t(response.errorMessage),
             life: 3000,
           });
         }
