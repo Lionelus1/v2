@@ -284,6 +284,7 @@ export default {
       this.connection =new WebSocket(socketApi+'/mgovws');
       this.connection.onmessage = function(data) {
         let response = JSON.parse(data.data)
+        console.log(response)
         if (response.result === 'error') {
           t.$toast.add({
             severity: 'error',
@@ -292,11 +293,11 @@ export default {
           });
         } else if (response.result === 'success') {
           this.getData()
-          t.showMessage('success', t.$t('ncasigner.signDocTitle'), t.$t('ncasigner.success.signSuccess'));
-        } else if (response.response === 'unsigned') {
+          t.showMessage('success', this.$t('ncasigner.signDocTitle'), this.$t('ncasigner.success.signSuccess'));
+        } else if (response.result === 'unsigned') {
           this.$toast.add({
             severity: "error",
-            summary: t.$t(response.errorMessage),
+            summary: this.$t(response.errorMessage),
             life: 3000,
           });
         }
