@@ -2,7 +2,7 @@
   <div class="col-12">
     <h3>Модуль Какие документы нужны для поступления?</h3>
     <div class="card">
-
+      <Button :label="$t('common.add')" @click="openDialog" />
     </div>
     <div class="card">
       <DataTable :lazy="true" :value="data" dataKey="id" :rowHover="true" :loading="loading" responsiveLayout="scroll">
