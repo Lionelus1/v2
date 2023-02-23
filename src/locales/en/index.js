@@ -412,6 +412,7 @@ export default {
     },
     ncasigner: {
         chooseFile: "Select  the file",
+        qrSinging: "You can also sign the document using the mobile application \"eGov mobile\" by scanning this QR code:",
         noteMark: "By continuing to use the Smart.ENU service, you consent to the collection, processing and storage of your personal data to the extent contained in the certificate (electronic digital signature) of the NCA for the purpose of displaying electronic signature data.",
         docIdNotExistMessageForFind: "In order to find the signed document page by file, the correct SIGNERAPP identifier must be present in the file name. Make sure that the correct SIGNERAPP ID is specified in your file name.",
         docIdNotExistMessageForSign: "In order to sign a previously signed document by file, the correct SIGNERAPP identifier must be present in the file name. Make sure that the correct SIGNERAPP ID is specified in your file name. Otherwise, specify the file name without the SIGNERAPP identifier to create a new signature chain.",
