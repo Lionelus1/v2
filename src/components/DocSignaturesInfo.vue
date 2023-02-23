@@ -34,9 +34,6 @@
                       class="p-button-primary md:col-5" @click="sign" :label="$t('ncasigner.sign')" :loading="signing"/>
             </div>
           </Panel>
-            <div v-if="signerType==='fl'" class="p-d-flex p-jc-center">
-              {{mgovSignUri}}
-            </div>
             <div v-if="signerType === 'fl'" class="p-d-flex p-jc-center p-mt-2">
               <qrcode-vue size="300" render-as="svg" margin="2" :value="mgovSignUri"></qrcode-vue>
             </div>
@@ -284,7 +281,6 @@ export default {
       this.connection =new WebSocket(socketApi+'/mgovws');
       this.connection.onmessage = function(data) {
         let response = JSON.parse(data.data)
-        console.log(response)
         if (response.result === 'error') {
           t.$toast.add({
             severity: 'error',
