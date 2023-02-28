@@ -124,6 +124,7 @@ router.beforeEach(function(to, from, next) {
 });
 const app = createApp(App);
 const emitter = mitt();
+app.provide('emitter', emitter);
 
 interceptor(store);
 

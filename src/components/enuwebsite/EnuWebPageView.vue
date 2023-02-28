@@ -19,9 +19,9 @@
         </Column>
         <Column header="" style="text-align: right;">
           <template #body="{ data }">
-            <Button type="button" icon="pi pi-eye" class="mr-2" @click="onView(data)"></Button>
-            <Button type="button" icon="pi pi-pencil" class="mr-2" @click="onEditPage(data)"></Button>
-            <Button type="button" icon="pi pi-trash" class="p-button-danger" @click="delPage(data.enu_page_id)"></Button>
+            <Button type="button" icon="fa-solid fa-eye" class="mr-2" @click="onView(data)"></Button>
+            <Button type="button" icon="fa-solid fa-pen" class="mr-2" @click="onEditPage(data)"></Button>
+            <Button type="button" icon="fa-solid fa-trash" class="p-button-danger" @click="delPage(data.enu_page_id)"></Button>
           </template>
         </Column>
       </DataTable>

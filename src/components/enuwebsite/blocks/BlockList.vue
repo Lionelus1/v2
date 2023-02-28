@@ -10,14 +10,19 @@
         <template #loading>{{ $t("common.loading") }}</template>
         <Column field="title" :header="$t('common.nameIn')">
           <template #body="{data}">
-            <a href="javascript:void(0)" @click="navigateToView(data)">{{ $i18n.locale === "kz" ? data.title_kz : $i18n.locale === "ru" ? data.title_ru : data.title_en }}</a>
+            <a href="javascript:void(0)" @click="navigateToView(data)" v-if="!data.is_plugin">
+              {{ $i18n.locale === "kz" ? data.title_kz : $i18n.locale === "ru" ? data.title_ru : data.title_en }}
+            </a>
+            <span v-else>
+              {{ data["title_" + $i18n.locale] }}
+            </span>
           </template>
         </Column>
-        <Column>
+        <Column class="text-right">
           <template #body="{data}">
-            <Button icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2"
+            <Button icon="fa-solid fa-pen" class="p-button mr-2"
                     @click="openEdit(data)" />
-            <Button icon="pi pi-trash" class="p-button-rounded p-button-warning" @click="deleteConfirm(data)" />
+            <Button icon="fa-solid fa-trash" class="p-button-danger" @click="deleteConfirm(data)" />
           </template>
         </Column>
       </DataTable>
@@ -50,10 +55,6 @@
       <div class="field-radiobutton">
         <RadioButton inputId="blockType2" name="blockType" :value="false" @change="formData.is_grid = false" v-model="formData.is_list" />
         <label for="blockType2">{{ $t('web.content') }}</label>
-      </div>
-      <div class="field-radiobutton">
-        <RadioButton inputId="blockType3" name="blockType" :value="false" v-model="formData.is_plugin" />
-        <label for="blockType2">{{ $t('web.plugin') }}</label>
       </div>
     </div>
     <div class="field" v-if="formData.is_list">

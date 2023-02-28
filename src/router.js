@@ -410,17 +410,34 @@ const routes = [
                     {
                         path: '',
                         name: 'BlockList',
-                        component: load('enuwebsite/blocks/BlockList')
+                        component: load('enuwebsite/blocks/BlockList'),
+                        beforeEnter: ifAuthenticated,
                     },
                     {
                         path: 'view/:id',
                         name: 'BlockView',
-                        component: load('enuwebsite/blocks/BlockView')
+                        component: load('enuwebsite/blocks/BlockView'),
+                        beforeEnter: ifAuthenticated,
                     },
                     {
                         path: 'admission-info',
-                        name: 'AdmissionInfoList',
-                        component: load('enuwebsite/blocks/admission.info/AdmissionInfoList')
+                        name: 'AdmissionInfoComponent',
+                        component: load('enuwebsite/blocks/admission.info/AdmissionInfoComponent'),
+                        beforeEnter: ifAuthenticated,
+                        children: [
+                            {
+                                path: '',
+                                name: 'AdmissionInfoList',
+                                component: load('enuwebsite/blocks/admission.info/AdmissionInfoList'),
+                                beforeEnter: ifAuthenticated,
+                            },
+                            {
+                                path: 'categories',
+                                name: 'AdmissionInfoCategory',
+                                component: load('enuwebsite/blocks/admission.info/AdmissionInfoCategory'),
+                                beforeEnter: ifAuthenticated,
+                            }
+                        ]
                     }
                 ]
             }

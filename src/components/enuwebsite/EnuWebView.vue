@@ -40,10 +40,10 @@
             {{ node.is_main ? $t('web.onMain') : '' }}
           </template>
         </Column>
-        <Column field="actions" header="">
+        <Column field="actions" header="" class="text-right">
           <template #body="{ node }">
-            <Button type="button" icon="pi pi-plus" class="p-button p-button-rounded mr-2" @click="createMenu(node)"></Button>
-            <Button type="button" icon="pi pi-pencil" class="p-button p-button-rounded" @click="editMenu($event, node)"></Button>
+            <Button type="button" icon="fa-solid fa-plus" class="p-button mr-2" @click="createMenu(node)"></Button>
+            <Button type="button" icon="fa-solid fa-pen" class="p-button" @click="editMenu($event, node)"></Button>
           </template>
         </Column>
       </TreeTable>

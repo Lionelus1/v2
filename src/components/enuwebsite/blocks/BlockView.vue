@@ -114,7 +114,6 @@ export default {
 
     const saveBlocContent = () => {
       submitted.value = true;
-      console.log(content.value)
       if (!isValid()) return;
       if (content.value.block_content_id != null) {
         enuService.editBlockContent(content.value).then(res => {
