@@ -10,14 +10,19 @@
         <template #loading>{{ $t("common.loading") }}</template>
         <Column field="title" :header="$t('common.nameIn')">
           <template #body="{data}">
-            <a href="javascript:void(0)" @click="navigateToView(data)">{{ $i18n.locale === "kz" ? data.title_kz : $i18n.locale === "ru" ? data.title_ru : data.title_en }}</a>
+            <a href="javascript:void(0)" @click="navigateToView(data)" v-if="!data.is_plugin">
+              {{ $i18n.locale === "kz" ? data.title_kz : $i18n.locale === "ru" ? data.title_ru : data.title_en }}
+            </a>
+            <span v-else>
+              {{ data["title_" + $i18n.locale] }}
+            </span>
           </template>
         </Column>
-        <Column>
+        <Column class="text-right">
           <template #body="{data}">
-            <Button icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2"
+            <Button icon="fa-solid fa-pen" class="p-button mr-2"
                     @click="openEdit(data)" />
-            <Button icon="pi pi-trash" class="p-button-rounded p-button-warning" @click="deleteConfirm(data)" />
+            <Button icon="fa-solid fa-trash" class="p-button-danger" @click="deleteConfirm(data)" />
           </template>
         </Column>
       </DataTable>

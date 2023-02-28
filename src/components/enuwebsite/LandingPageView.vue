@@ -36,7 +36,15 @@
       <div class="field">
         <label>{{ $t('web.blocks') }}</label>
         <Dropdown v-model="selectedBlock" :options="blocks" :optionLabel="('title_' + $i18n.locale)"
-                  :filter="true" :show-clear="true"/>
+                  :filter="true" :show-clear="true" @change="initSelect"/>
+      </div>
+      <div v-if="selectedBlock.is_plugin && selectedBlock.is_plugin === true">
+        {{ selectedBlock }}
+        <div class="field" v-for="param in selectedBlock.params" :key="param.id">
+          <label>{{ param["name_" + $i18n.locale] }}</label>
+          <Dropdown v-model="param.value" :options="param.options" :optionLabel="('title_' + $i18n.locale)"
+                    :filter="true" :show-clear="true" />
+        </div>
       </div>
     </div>
     <div class="field">
@@ -161,6 +169,16 @@ export default {
       });
     }
 
+    const initSelect = () => {
+      if (selectedBlock.value.is_plugin) {
+        getBlockParams()
+      }
+    }
+
+    const getBlockParams = () => {
+
+    }
+
     const navigateToBlock = (data) => {
       router.push({name: 'BlockView', params: {id: data.block_id}})
     }
@@ -172,7 +190,7 @@ export default {
     return {
       loading, pageData, blocks, selectedBlock, op, pageBlocks,
       onRowReorder, toggle, getBlockTitle, addBlockToPage, deleteConfirm,
-      navigateToBlock
+      navigateToBlock, initSelect
     }
   }
 }
