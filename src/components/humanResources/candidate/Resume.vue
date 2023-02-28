@@ -66,7 +66,7 @@ export default {
       });
     },
     deleteCandidate() {
-      this.resumeService.deleteCandidate(this.candidate.id).then(response => {
+      this.resumeService.deleteCandidate().then(response => {
         this.candidate = null
         this.toolbar.start = true
         this.toolbar.end = false
