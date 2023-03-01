@@ -770,7 +770,7 @@ export default {
         menuPage: "Мәзірлер",
         menuMainPage: "Парақшасы",
         menuOrder: "Реті",
-        menuParent: "Аталық",
+        menuParent: "Аталық мәзір",
         addMenu: "Мәзір қосу",
         isMainMenu: "Негізгі мәзір",
         pageLink: "Парақшалар",

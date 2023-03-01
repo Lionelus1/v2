@@ -726,7 +726,7 @@ export default {
         menuPage: "Menus",
         menuMainPage: "Page",
         menuOrder: "Order",
-        menuParent: "Parent",
+        menuParent: "Parent menu",
         addMenu: "Add Menu",
         isMainMenu: "Main Menu",
         pageLink: "Pages",

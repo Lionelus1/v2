@@ -18,7 +18,7 @@
         </Column>
         <Column field="block_type" :header="$t('web.blockType')">
           <template #body="{ data }">
-            {{ data.block.is_list ? $t('web.list') : $t('web.content') }}
+            {{ data.block.is_list ? $t('web.list') : !data.block.is_plugin ? $t('web.content') : 'Плагин' }}
           </template>
         </Column>
         <Column field="actions" header="">
@@ -39,11 +39,10 @@
                   :filter="true" :show-clear="true" @change="initSelect"/>
       </div>
       <div v-if="selectedBlock.is_plugin && selectedBlock.is_plugin === true">
-        {{ selectedBlock }}
         <div class="field" v-for="param in selectedBlock.params" :key="param.id">
           <label>{{ param["name_" + $i18n.locale] }}</label>
-          <Dropdown v-model="param.value" :options="param.options" :optionLabel="('title_' + $i18n.locale)"
-                    :filter="true" :show-clear="true" />
+          <Dropdown v-model="param.value" :options="param.options" :optionLabel="'name_' + $i18n.locale"
+                    :filter="true" :show-clear="true" @change="initParamSelect($event, param)" />
         </div>
       </div>
     </div>
@@ -80,6 +79,7 @@ export default {
     const pageId = route.params.id
     const selectedBlock = ref({})
     const op = ref();
+    const selectedParams = ref()
 
     const getPageData = () => {
       enuService.getPageById(pageId).then(res => {
@@ -144,6 +144,7 @@ export default {
     }
 
     const deleteConfirm = (data) => {
+      console.log(data)
       confirm.require({
         message: i18n.t('common.doYouWantDelete'),
         header: i18n.t('common.delete'),
@@ -176,11 +177,30 @@ export default {
     }
 
     const getBlockParams = () => {
+      console.log(selectedBlock.value)
+      enuService.getBlockParamsByBlockId(selectedBlock.value.block_id).then(res => {
+        if (res.data) {
+          selectedBlock.value.params = res.data;
+        }
+      }).catch(error => {
+        toast.add({severity: "error", summary: error, life: 3000});
+      });
+    }
 
+    const initParamSelect = (event, param) => {
+      console.log("value: ", event)
+      console.log("param: ", param)
     }
 
     const navigateToBlock = (data) => {
-      router.push({name: 'BlockView', params: {id: data.block_id}})
+      console.log(data)
+      if (!data.block.is_plugin)
+        router.push({name: 'BlockView', params: {id: data.block_id}})
+      if (data.block && data.block.block_plugin) {
+        const compName = enuService.navigateToPlugin(data.block.block_plugin.component_name)
+
+        router.push({name: compName});
+      }
     }
 
     onMounted(() => {
@@ -190,7 +210,7 @@ export default {
     return {
       loading, pageData, blocks, selectedBlock, op, pageBlocks,
       onRowReorder, toggle, getBlockTitle, addBlockToPage, deleteConfirm,
-      navigateToBlock, initSelect
+      navigateToBlock, initSelect, initParamSelect
     }
   }
 }

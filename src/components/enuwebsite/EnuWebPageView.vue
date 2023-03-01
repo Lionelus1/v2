@@ -21,7 +21,7 @@
           <template #body="{ data }">
             <Button type="button" icon="fa-solid fa-eye" class="mr-2" @click="onView(data)"></Button>
             <Button type="button" icon="fa-solid fa-pen" class="mr-2" @click="onEditPage(data)"></Button>
-            <Button type="button" icon="fa-solid fa-trash" class="p-button-danger" @click="delPage(data.enu_page_id)"></Button>
+            <Button type="button" icon="fa-solid fa-trash" class="p-button-danger" @click="delPage(data)"></Button>
           </template>
         </Column>
       </DataTable>
@@ -180,7 +180,8 @@ export default {
         this.isDeletable = false;
       }
     },
-    delPage(id) {
+    delPage(data) {
+      console.log(data)
       this.$confirm.require({
         message: this.$t('common.doYouWantDelete'),
         header: this.$t('common.delete'),
@@ -188,7 +189,7 @@ export default {
         acceptClass: 'p-button-rounded p-button-success',
         rejectClass: 'p-button-rounded p-button-danger',
         accept: () => {
-          this.onDeletePage(id);
+          this.onDeletePage(data.enu_page_id);
         },
       });
     },
@@ -237,6 +238,7 @@ export default {
             life: 3000,
           });
         }
+        this.getPages();
       }).catch(error => {
         this.$toast.add({severity: "error", summary: error, life: 3000});
       });

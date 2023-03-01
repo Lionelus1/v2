@@ -17,6 +17,10 @@
       <small v-show="!formData.menu_title_en && submitted" class="p-error">{{ $t("smartenu.titleEnInvalid") }}</small>
     </div>
     <div class="field">
+      <label>{{ $t('web.menuParent') }}</label>
+      <TreeSelect v-model="selectedTreeMenu" :options="menus" :placeholder="$t('common.choose')" @node-expand="expandMenuTreeSelect" @nodeSelect="menuTreeSelect"></TreeSelect>
+    </div>
+    <div class="field">
       <label>{{ $t('web.menuType') }}</label>
       <div class="field-radiobutton">
         <RadioButton inputId="menuType1" name="menuType" :value="1" v-model="menuType" />
@@ -31,7 +35,7 @@
       <label for="choose-page">{{ $t("web.selectMainPage") }}
         <a href="javascript:void(0)" @click="showAddPage" class="ml-2 text-underline">{{ $t('common.createNew') }}</a>
       </label>
-      <Dropdown v-model="this.formData.page_id" optionDisabled="true" :options="pages" optionLabel="title_kz" optionValue="enu_page_id"
+      <Dropdown v-model="formData.page_id" optionDisabled="true" :options="pages" optionLabel="title_kz" optionValue="enu_page_id"
                 :filter="true" :showClear="true" :placeholder="$t('web.selectPage')" />
     </div>
     <div class="field" v-if="menuType === 2">
@@ -95,7 +99,17 @@ export default {
       formValid: [],
       menuType: !this.currentMenu ? 1 : this.currentMenu && this.currentMenu.page_id ? 1 : 2,
       checked: this.is_main ? this.is_main : null,
+      menuTree: null,
+      selectedTreeMenu: null,
+      lazyParams: {
+        page: 1,
+        rows: 10,
+        parent_id: this.currentMenu ? this.currentMenu.menu_id : null,
+      },
     };
+  },
+  created() {
+    this.getMenus(null)
   },
   mounted() {
     this.emitter.on('pageCreated', data => {
@@ -105,6 +119,46 @@ export default {
     });
   },
   methods: {
+    expandMenuTreeSelect(node) {
+      this.lazyParams.parent_id = Number(node.menu_id)
+      this.parentNode = node
+      this.getMenus(node)
+    },
+    getMenus(parentData) {
+      console.log(parentData)
+      this.loading = true;
+      if (parentData == null) {
+        this.lazyParams.parent_id = null;
+      }
+      this.enuService.getMenusTree(this.lazyParams).then(res => {
+        if (parentData == null) {
+          this.mapMenu(res.data.menus)
+          this.menus = res.data.menus;
+          this.total = res.data.total;
+        } else {
+          this.mapMenu(res.data.menus)
+          parentData.children = res.data.menus;
+        }
+        this.loading = false;
+      }).catch(error => {
+        this.loading = false;
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
+      });
+    },
+    mapMenu(menus) {
+      menus.map(e => {
+        e.label = e['menu_title_' + this.$i18n.locale];
+        e.children = e.sub_menu;
+      });
+    },
+    menuTreeSelect(node) {
+      console.log(node)
+      this.formData.parent_id = node.menu_id;
+    },
     addMenu() {
       this.submitted = true;
       if (!this.validateMenus()) {

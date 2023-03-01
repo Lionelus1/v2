@@ -1,8 +1,9 @@
 import axios from "axios";
 import {getHeader, smartEnuApi} from "../config/config";
 import api from "@/service/api";
-
+import {useRouter} from "vue-router";
 export class EnuWebService {
+
     getAllMenus() {
         return api.get("/web/getMenus", {headers: getHeader()});
         
@@ -37,7 +38,7 @@ export class EnuWebService {
     }
 
     deletePage(id) {
-        return api.post(`/web/deletePage/${id}`, {}, {headers: getHeader()});
+        return api.post(`/web/deleteMenuPage`, {id: id}, {headers: getHeader()});
     }
 
     getBlockList() {
@@ -98,5 +99,17 @@ export class EnuWebService {
 
     orderBlockIntoPage(data) {
         return api.post(`/web/swapPageBlockPosition`, data,  {headers: getHeader()});
+    }
+
+    getBlockParamsByBlockId(id) {
+        return api.post(`/web/getBlockParamValuesByBlockID`, {block_id: id}, {headers: getHeader()});
+    }
+
+    navigateToPlugin(componentName) {
+        if (componentName === "DocsListBlock") {
+           return "AdmissionInfoList";
+        }
+
+        return "";
     }
 }
