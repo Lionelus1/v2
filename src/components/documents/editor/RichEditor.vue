@@ -51,7 +51,7 @@
     ></div>
     <Dialog v-bind:header="$t('doctemplate.editor.addElement')" v-model:visible="displayModal" :style="{width: '50vw'}" :modal="true">
     <div class="p-fluid">
-      <div class="p-field">
+      <div class="field">
         <label for="fieldId">{{$t('common.description')}}</label>
         <InputText id="fieldId" :class="(agreementDesctiption=='')?'p-invalid':''" v-model="agreementDesctiption"  type="text" />
       </div>
@@ -69,6 +69,15 @@
 <script>
 import Quill from "quill";
 import QuillToolbarDropDown from "./QuillToolbarDropDown";
+import BlotFormatter from "quill-blot-formatter";
+import ImageUploader from "quill-image-uploader";
+import {FileService} from "@/service/file.service";
+import {fileRoute, smartEnuApi} from "@/config/config";
+
+
+Quill.register("modules/blotFormatter", BlotFormatter);
+Quill.register("modules/imageUploader", ImageUploader);
+
 export default {
   data() {
 		return {
@@ -76,7 +85,8 @@ export default {
       agreementDesctiption: "",
       agreementElement: "",
       isValid:false,
-      pasteClear: this.clearOnPaste
+      pasteClear: this.clearOnPaste,
+      fileService: new FileService()
 		}
 	},
   emits: ["update:modelValue", "text-change"],
@@ -101,7 +111,27 @@ export default {
     this.quill = new Quill(this.$refs.editorElement, {
       modules: {
         toolbar: this.$refs.toolbarElement,
-
+        blotFormatter: {},
+        imageUploader: {
+          upload: (file) => {
+            return new Promise((resolve, reject) => {
+              const fd = new FormData();
+              fd.append("files", file);
+              this.fileService.uploadFile(fd).then(res => {
+                if (res.data) {
+                  res.data.map(e => {
+                    e.filePath = smartEnuApi + fileRoute + e.filePath;
+                  });
+                  res.data.forEach(e => {
+                    resolve(e.filePath)
+                  });
+                }
+              }).catch(error => {
+                reject(error)
+              });
+            });
+          },
+        }
       },
       readOnly: this.readonly,
       theme: "snow",
@@ -133,6 +163,7 @@ export default {
       "date": this.$t('doctemplate.editor.date'),
       "period": this.$t('doctemplate.editor.period'),
       "student": this.$t('doctemplate.editor.student'),
+      "individualEntrepreneur": this.$t('doctemplate.editor.individualEntrepreneur'),
       "text": this.$t('doctemplate.editor.text'),
       "number": this.$t('common.number'),
     };

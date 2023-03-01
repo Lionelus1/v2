@@ -1,0 +1,102 @@
+import axios from "axios";
+import {getHeader, smartEnuApi} from "../config/config";
+import api from "@/service/api";
+
+export class EnuWebService {
+    getAllMenus() {
+        return api.get("/web/getMenus", {headers: getHeader()});
+        
+    }
+
+    addMenu(data){
+        return api.post("/web/addMenu", data, {headers: getHeader()});
+    }
+
+    editMenu(data){
+        return api.post("/web/editMenu", data, {headers: getHeader()});
+    }
+
+    getAllPages(){
+        return api.get("/web/getPages", {headers: getHeader()});
+    }
+
+    getPageById(pageId) {
+        return api.get(`/web/getPage/${pageId}`, {headers: getHeader()});
+    }
+
+    addPage(data){
+        return api.post("/web/addPage", data, {headers: getHeader()})
+    }
+
+    editPage(editData){
+        return api.post("/web/editPage", editData, {headers: getHeader()})
+    }
+
+    getMenusTree(data) {
+        return api.post('/web/getMenusTree', data, {headers: getHeader()});
+    }
+
+    deletePage(id) {
+        return api.post(`/web/deletePage/${id}`, {}, {headers: getHeader()});
+    }
+
+    getBlockList() {
+        return api.get(`/web/getBlocks`, {headers: getHeader()});
+    }
+
+    getBlockById(id) {
+        return api.get(`/web/getBlock/${id}`, {headers: getHeader()});
+    }
+
+    getBlockContentByBlockId(blockId) {
+        return api.get(`/web/getBlockContentsByBlockId/${blockId}`, {headers: getHeader()});
+    }
+
+    getBlockListByBlockId(blockId) {
+        return api.get(`/web/getBlockListsByBlockId/${blockId}`, {headers: getHeader()});
+    }
+
+    addBlock(data) {
+        return api.post(`/web/addBlock`, data, {headers: getHeader()});
+    }
+
+    addBlockContent(data) {
+        return api.post(`/web/addBlockContent`, data, {headers: getHeader()});
+    }
+
+    addBlockContentListElement(data) {
+        return api.post(`/web/addBlockList`, data, {headers: getHeader()});
+    }
+
+    addBlockToPage(data) {
+        return api.post(`/web/addPageBlock`, data, {headers: getHeader()});
+    }
+
+    deleteBlockListElement(id) {
+        return api.post(`/web/deleteBlockList`, {id: id}, {headers: getHeader()});
+    }
+
+    deleteBlock(id) {
+        return api.post(`/web/deleteBlock`, {id: id}, {headers: getHeader()});
+    }
+
+    editBlock(data) {
+        return api.post(`/web/editBlock`, data, {headers: getHeader()});
+    }
+
+    editBlockListElement(data) {
+        return api.post(`/web/editBlockList`, data, {headers: getHeader()});
+    }
+
+    editBlockContent(data) {
+        return api.post(`/web/editBlockContent`, data, {headers: getHeader()});
+    }
+
+    deleteBlockFromPage(id) {
+        return api.post(`/web/deletePageBlock`, {id: id}, {headers: getHeader()});
+    }
+
+    orderBlockIntoPage(data) {
+        return api.post(`/web/swapPageBlockPosition`, data,  {headers: getHeader()});
+    }
+}

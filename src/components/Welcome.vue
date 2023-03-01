@@ -1,5 +1,5 @@
 <template>
-    <div class="p-col-12">
+    <div class="col-12">
         <div class="card">
             <div class="p-col-12">
                 {{ notifications }}

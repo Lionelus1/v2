@@ -20,7 +20,7 @@ export default {
         councilName: 'Наименование совета',
         contragents: 'Контрагенты',
         documents: 'Документы',
-        sertificates: 'Свидетельства',
+        certificates: 'Свидетельства',
         administration: 'Администрирование',
         academicDegree: "Ученая степень",
         academicTitle: "Ученое звание",
@@ -44,6 +44,11 @@ export default {
         equals: "Равно",
         login: "Вход",
         logout: "Выход",
+        letterSpacing: {
+            expanded: "Разреженный",
+            condensed: "Уплотненный",
+            normal: "Обычный",
+        },
         enter: "Наберите",
         enterLogin: "Введите ИИН или почту platonus",
         enterPassword: "Введите пароль",
@@ -161,8 +166,11 @@ export default {
         params: "Параметры",
         password: "Пароль",
         person: "Персона",
+        individualEntrepreneur: "Частные лица",
         personal: "Сотрудники",
-        phoneNumber: '',
+        pending: "В ожидании",
+        uploaded: "Загруженные",
+        phoneNumber: 'Phone number',
         requiredField: "Обязательное поле",
         revision: "На доработку",
         teacher: "ППС",
@@ -243,6 +251,9 @@ export default {
             fileError: "Не удалось загрузить файл. Возможно файл поврежден",
             mailSendError: "Ошибка при отправке на электронную почту",
             ConsulAlwaysHasSameMember: "Указанное лицо уже состоит в другом совете",
+            saveChangesWarning: "Хотите сохранить внесенные изменения?",
+            unsaveOutcome: "Если изменения не сохранить, они будут утрачены.",
+            addPicture: "Добавить картинку"
         },
         language: {
             kz: "на казахском",
@@ -276,7 +287,9 @@ export default {
         actionTitle: "Действие",
         style: "Стиль",
         bgColor: "Фоновый цвет",
-        textColor: "Цвет текста"
+        textColor: "Цвет текста",
+        link: "Ссылка",
+        image: 'Картинка'
     },
     bank: {
         title: "Банки",
@@ -358,6 +371,7 @@ export default {
             period: "Период",
             text: "Текст",
             student: "Обучающийся",
+            individualEntrepreneur: "Индивидуальный предприниматель",
             place: "Место заключения договора",
             date: "Дата заключения договора",
             addElement: "Добавление элемента договора",
@@ -737,6 +751,53 @@ export default {
         answerConfirm: "Ответ будет отправлен на почту отправителю вопроса. Сохранить и отправить ответ?",
         rejected: "Отменили выполнение действия"
     },
+    // ENU New WebPaga
+    web: {
+        mainMenuTitle: "ЕНУ Сайт",
+        menuPage: "Меню",
+        menuMainPage: "Страница",
+        menuOrder: "Ордер",
+        menuParent: "Родитель",
+        addMenu: "Добавить меню",
+        isMainMenu: "Главное меню",
+        pageLink: "Страницы",
+        addPage: "Добавить страницу",
+        editMenu: "Изменить меню",
+        addEditPageTitle: "Создать/изменить страницы",
+        selectParentMenu: "Выберите главное меню",
+        selectMenu: "Выберите меню",
+        selectPage: "Выберите страницу",
+        selectMainPage: "Выберите страницу",
+        giveCustomLink: "Создать внешнюю ссылку",
+        createNewPageButton: "Создать новую страницу",
+        menuOrderLabel: "Заказ меню",
+        customLinkInvalid: "Ссылка не заполнена",
+        createdMenuSuccessMsg: "Меню успешно создано",
+        createdPageSuccessMsg: "Страница успешно создана",
+        updatedPageSuccessMsg: "Страница успешно изменена",
+        createPage: 'Создать страницу',
+        editPage: 'Редактировать страницу',
+        menuType: 'Тип меню',
+        page: 'Страница',
+        onMain: 'На главной',
+        addBlock: 'Добавить блок',
+        editBlock: 'Редактировать блок',
+        blockName: 'Название блока',
+        blockType: 'Тип блока',
+        content: 'Контент',
+        list: 'Список',
+        blocks: 'Блоки',
+        createElement: 'Добавить элемент',
+        editElement: 'Редактировать элемент',
+        view: 'Отображение',
+        grid: 'Плитка'
+    },
+
+    student: {
+        clubs: "Студенческие клубы",
+        pageTitle: "Университетские клубы"
+
+    },
     hr: {
         action: {
             interview: 'Пригласить на собеседование',
@@ -927,5 +988,39 @@ export default {
         addGuide: 'Создание справочника',
         editGuide: 'Редактирование справочника',
         notGuide: 'На эту страницу пока не создана справочник!',
+    },
+    course: {
+        title: 'Онлайн курсы',
+        courses: 'Курсы',
+        categories: 'Категории курсов',
+        certificate: {
+            title: 'Сертификаты',
+            template: 'Шаблоны сертфиката',
+            element: 'Элемент',
+            elements: 'Элементы',
+            designer: 'Дизайнер шаблона',
+            issue: "Выдать сертификат",
+
+        },
+        user: 'Участник',
+        users: "Участники курса",
+        organizers: 'Организаторы курсов',
+        lnum: 'Последний номер',
+    },
+    roleControl:{
+        menuTitle: 'Управление ролями',
+        giveRole: 'Дать новую роль',
+        selectOrg: 'Выберите организацию',
+        selectRole: 'Выберите роль',
+        selectEmployee: 'Выберите сотрудника',
+        employeeIIN: 'ИИН',
+        employeeName: 'Имя сотрудника',
+        employeeLabel: 'Сотрудник',
+        employeeNotFound: 'Сотрудник с таким ИИН не найдено',
+        roleName: 'Имя роля',
+        roleLabel: 'Роль',
+        noResult: 'Не найдено записей',
+        cantDelete: 'Невозможно удалить запись',
     }
+
 }

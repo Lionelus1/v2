@@ -20,7 +20,7 @@ export default {
         councilName: 'Council name',
         contragents: 'Contragents',
         documents: 'Documents',
-        sertificates: 'Sertificates',
+        certificates: 'Certificates',
         administration: 'Administration',
         academicDegree: "Academic degree",
         academicTitle: "Academic title",
@@ -40,6 +40,11 @@ export default {
         },
         cabinet: 'Personal account',
         lt: "Less than",
+        letterSpacing: {
+            expanded: "Expanded",
+            condensed: "Condensed",
+            normal: "Normal",
+        },
         gt: "Greater than",
         equals: "Equals",
         login: "login",
@@ -145,6 +150,7 @@ export default {
         params: "Parameters",
         password: "Password",
         person: "Person",
+        individualEntrepreneur: "Persons",
         personal: "Staff",
         protocol: "Protocol",
         requiredField: "Required field",
@@ -163,6 +169,8 @@ export default {
         showingRecordsCount: "Showing {first} to {last} of {totalRecords} entries",
         votedFor: "Voted for: {result}",
         doYouWantDelete: "Are you sure to delete this item?",
+        pending: "Pending",
+        uploaded: "Uploaded",
         startDate: 'Start date',
         endDate: 'End date',
         send: "Send",
@@ -242,6 +250,9 @@ export default {
             fileError: "Failed to upload file. Maybe the file is corrupted",
             mailSendError: "Error sending email",
             ConsulAlwaysHasSameMember: "The named person is already a member of another council",
+            saveChangesWarning: "Would you like to save your changes?",
+            unsaveOutcome: "If changes are not saved, they will be lost.",
+            addPicture: "Add image"
         },
         language: {
             kz: "in kazakh",
@@ -275,7 +286,9 @@ export default {
         actionTitle: "Action",
         style: "Style",
         bgColor: "Background color",
-        textColor: "Text color"
+        textColor: "Text color",
+        link: "Link",
+        image: 'Image'
     },
     bank: {
         title: "Banks",
@@ -355,6 +368,7 @@ export default {
             number: "Number",
             text: "Text",
             student: "Student",
+            individualEntrepreneur: "Individual entrepreneur",
             place: "Place of contract",
             date: "Date of contract",
             addElement: "Adding a contract element",
@@ -706,6 +720,53 @@ export default {
         rejected: "Отменили выполнение действия"
 
     },
+    // ENU New WebPaga
+    web: {
+        mainMenuTitle: "ENU Website",
+        menuPage: "Menus",
+        menuMainPage: "Page",
+        menuOrder: "Order",
+        menuParent: "Parent",
+        addMenu: "Add Menu",
+        isMainMenu: "Main Menu",
+        pageLink: "Pages",
+        addPage: "Add Page",
+        editMenu: "Edit menu",
+        addEditPageTitle: "Create/Edit Pages",
+        selectParentMenu: "Choose Parent Menu",
+        selectMenu: "Select Menu",
+        selectPage: "Select Page",
+        selectMainPage: "Choose Page",
+        giveCustomLink: "Setup External Link",
+        createNewPageButton: "Create New Page",
+        menuOrderLabel: "Menu Order",
+        customLinkInvalid: "Custom Link Required",
+        createdMenuSuccessMsg: "The menu has been created successfully",
+        createdPageSuccessMsg: "The page has been created successfully",
+        updatedPageSuccessMsg: "The page has been updated successfully",
+        createPage: 'Create page',
+        editPage: 'Edit page',
+        menuType: 'Menu type',
+        page: 'Page',
+        onMain: 'On the main',
+        addBlock: 'Add block',
+        editBlock: 'Edit block',
+        blockName: 'Block name',
+        blockType: 'Block type',
+        content: 'Content',
+        list: 'List',
+        blocks: 'Blocks',
+        createElement: 'Add element',
+        editElement: 'Edit element',
+        view: 'Display',
+        grid: 'Tile'
+    },
+    //Student locale
+    student: {
+        clubs: "ENU Clubs",
+        pageTitle: "ENU Clubs"
+
+    },
     hr: {
         action: {
             interview: 'Invite to interview',
@@ -920,5 +981,37 @@ export default {
         addGuide: 'Creating a guide',
         editGuide: 'Editing a guide',
         notGuide: 'There is no guide for this page yet!',
+    },
+    course: {
+        title: 'Online courses',
+        categories: 'Course categories',
+        courses: 'Сourses',
+        certificate: {
+            title: "Certificates",
+            template: 'Certificate templates',
+            element: 'Element',
+            elements: 'Elements',
+            designer: 'Template designer',
+            issue: "Issue a certificate",
+        },
+        users: 'Сourse participants',
+        user: 'Participant',
+        organizers: 'Course organizers',
+        lnum: 'last number',
+    },
+    roleControl:{
+        menuTitle: 'Role control',
+        giveRole: 'Give new role',
+        selectOrg: 'Select organization',
+        selectRole: 'Select role',
+        selectEmployee: 'Select employee',
+        employeeIIN: 'IIN',
+        employeeName: 'Employee name',
+        employeeLabel: 'Employee',
+        employeeNotFound: 'Employee with such IIN does not found',
+        roleName: 'Role name',
+        roleLabel: 'Role',
+        noResult: 'No records found',
+        cantDelete: 'Cant delete the record',
     }
 }

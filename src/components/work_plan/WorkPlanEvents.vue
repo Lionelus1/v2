@@ -1,9 +1,9 @@
 <template>
-  <div class="p-col-12" v-if="!loading">
+  <div class="col-12" v-if="!loading">
     <h3 v-if="plan">{{ plan.work_plan_name }}</h3>
     <div class="card" v-if="plan && plan.reject_history && isRejected && isPlanCreator">
       <div class="p-fluid">
-        <div class="p-field">
+        <div class="field">
           <label>{{ $t('common.state') }}:</label>
           <div>
             <span v-if="plan.status" :class="'customer-badge status-' + plan.status.work_plan_status_id">{{
@@ -11,19 +11,19 @@
               }}</span>
           </div>
         </div>
-        <div class="p-field" v-if="plan.reject_history.user">
+        <div class="field" v-if="plan.reject_history.user">
           <label>{{ $t('contracts.assigner') }}:</label>
           <div>
             <b>{{ plan.reject_history.user.fullName }}</b>
           </div>
         </div>
-        <div class="p-field" v-if="plan.reject_history.created_date">
+        <div class="field" v-if="plan.reject_history.created_date">
           <label>{{ $t('common.date') }}:</label>
           <div>
             <b>{{ formatDateMoment(plan.reject_history.created_date) }}</b>
           </div>
         </div>
-        <div class="p-field">
+        <div class="field">
           <label>{{ $t('common.comment') }}:</label>
           <div>
             <Message :closable="false" severity="warn"><span v-html="plan.reject_history.message"></span>
@@ -35,14 +35,14 @@
     <div class="card" v-if="plan || data">
       <work-plan-event-add v-if="(isCreator || isEventsNull) && !isFinish && isPlanCreator" :items="data" :isMain="true" :plan-data="plan"></work-plan-event-add>
       <Button v-if="isPlanCreator && !isFinish" :label="$t('common.complete')" icon="pi pi-check" @click="finish"
-              class="p-button p-button-danger p-ml-2"/>
+              class="p-button p-button-danger ml-2"/>
       <work-plan-approve v-if="isPlanCreator && !isPlanSentApproval && isFinish" :plan="plan"
                          :events="data"></work-plan-approve>
       <Button v-if="isFinish && (isApproval || isPlanCreator) && isPlanSentApproval" :label="$t('workPlan.viewPlan')"
               icon="pi pi-eye" @click="viewDoc"
-              class="p-button p-button-info p-ml-2"/>
+              class="p-button p-button-info ml-2"/>
       <Button v-if="isFinish && (isApproval || isPlanCreator) && isPlanApproved" :label="$t('workPlan.reports')"
-              @click="navigateToReports" class="p-button p-button-info p-ml-2"/>
+              @click="navigateToReports" class="p-button p-button-info ml-2"/>
       <!--      <WorkPlanReportModal v-if="isFinish && (isApproval || isPlanCreator) && isPlanSentApproval" :planId="work_plan_id"
                                  :plan="plan"></WorkPlanReportModal>-->
     </div>
@@ -52,14 +52,14 @@
                  v-model:expandedRows="rows" @rowExpand="onRowExpand" @rowCollapse="onRowCollapse"
                  :loading="loading" responsiveLayout="scroll">
         <template #header>
-          <div class="p-d-flex p-jc-between p-ai-center">
-            <h5 class="p-m-0">{{ $t('workPlan.events') }} |
+          <div class="flex justify-content-between align-items-center">
+            <h5 class="m-0">{{ $t('workPlan.events') }} |
               <router-link tag="a" to="/work-plan">{{ $t('workPlan.plans') }}</router-link>
             </h5>
           <!--<span class="p-input-icon-left">
                 <i class="pi pi-search"/>
                 <InputText type="search" v-model="searchText" :placeholder="$t('common.search')"/>
-                <Button icon="pi pi-search" class="p-ml-1" @click="getWorkPlanEvents"/>
+                <Button icon="pi pi-search" class="ml-1" @click="getWorkPlanEvents"/>
               </span>-->
           </div>
         </template>
@@ -155,7 +155,7 @@
               <div>
                 <Button v-if="isPlanCreator && !isPlanSentApproval && !isFinish"
                         @click="remove_event(slotProps.data.work_plan_event_id)" icon="pi pi-trash"
-                        class="p-button-danger p-ml-1 p-mt-1" label=""></Button>
+                        class="p-button-danger ml-1 mt-1" label=""></Button>
               </div>
             </div>
           </template>

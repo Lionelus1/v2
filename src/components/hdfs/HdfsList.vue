@@ -3,7 +3,7 @@
     <h4>{{ $t('hdfs.title') }}</h4>
     <DataTable :value="tableData" :paginator="true" :rows="10" v-model:filters="filter" filterDisplay="menu" :showFilterMatchModes="false">
       <template #header>
-        <div class="p-d-flex p-jc-between">
+        <div class="flex justify-content-between">
           <select v-model="selected" @change="selectDir($event)">
             <option>/</option>
             <option v-for="(item, index) in dirs" v-bind:key="index">{{ item.dirName }}</option>

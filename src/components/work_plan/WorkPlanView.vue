@@ -1,23 +1,23 @@
 <template>
   <div>
-    <div class="p-col-12" v-if="!loading">
+    <div class="col-12" v-if="!loading">
       <div class="card"
            v-if="isPlanApproved && (isPlanCreator || (isApproval || isApproved)) && plan.status.work_plan_status_id === 4">
         <Button v-if="isPlanCreator && plan && !plan.is_oper" :label="$t('common.action.reApprove')" icon="pi pi-check"
                 @click="reapproveConfirmDialog"
-                class="p-button p-ml-2"/>
+                class="p-button ml-2"/>
         <Button :label="$t('common.signatures')" icon="pi pi-file"
                 v-if="isPlanApproved && isPlanCreator || (isApproval || isApproved)"
                 @click="viewSignatures"
-                class="p-button p-ml-2"/>
+                class="p-button ml-2"/>
       </div>
       <div class="card" v-if="isApproval && plan.status.work_plan_status_id === 2">
         <Button :label="isLast ? $t('common.action.approve') : $t('common.action.approve') " icon="pi pi-check"
                 v-if="isApproval" @click="openApprovePlan"
-                class="p-button p-button-success p-ml-2"/>
+                class="p-button p-button-success ml-2"/>
         <Button :label="$t('workPlan.toCorrect')" icon="pi pi-times"
                 @click="openRejectPlan" v-if="isApproval"
-                class="p-button p-button-danger p-ml-2"/>
+                class="p-button p-button-danger ml-2"/>
       </div>
 
       <div class="card">
@@ -30,9 +30,9 @@
           <template #content="slotProps">
             <div v-for="(item, index) of slotProps.item" :key="index">
               {{ item.user.fullName }}
-              <i v-if="item.is_success" class="pi pi-check-circle p-ml-2 p-message-success"
+              <i v-if="item.is_success" class="pi pi-check-circle ml-2 p-message-success"
                  style="font-size: 1.2rem;color: #3eaf7c"></i>
-              <i v-if="!item.is_success" class="pi pi-spinner p-ml-2" style="font-size: 1.2rem;color: #c63737"></i>
+              <i v-if="!item.is_success" class="pi pi-spinner ml-2" style="font-size: 1.2rem;color: #c63737"></i>
             </div>
           </template>
         </Timeline>
@@ -46,14 +46,14 @@
 
     <Dialog :header="$t('workPlan.toCorrect')" v-model:visible="showRejectPlan" :style="{width: '450px'}"
             class="p-fluid">
-      <div class="p-field">
+      <div class="field">
         <label>{{ $t('common.comment') }}</label>
         <Textarea inputId="textarea" rows="3" cols="30" v-model="rejectComment"></Textarea>
       </div>
       <template #footer>
         <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
                 @click="closeModal"/>
-        <Button :label="$t('common.send')" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2"
+        <Button :label="$t('common.send')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2"
                 @click="rejectPlan"/>
       </template>
     </Dialog>

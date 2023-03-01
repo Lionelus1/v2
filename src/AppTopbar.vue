@@ -4,7 +4,7 @@
         <button class="p-link layout-menu-button" @click="onMenuToggle">
             <span class="pi pi-bars"></span>
         </button>
-        <Button v-if="($route.name=='organizations') || ($route.name=='persons')" class="p-ml-5 p-button"
+        <Button v-if="($route.name=='organizations') || ($route.name=='persons')" class="ml-5 p-button"
                 style="height:27px;background-color: #e3f2fd;color: #495057;" icon="pi pi-plus"
                 :label="$t('common.createNew')" @click="toggle" aria-haspopup="true" aria-controls="overlay_menu"/>
         <Menu id="overlay_menu" ref="menu" :model="pagemenu" :popup="true"/>
@@ -93,7 +93,8 @@
                 this.$emit('menu-toggle', event);
             },
             navigate() {
-               this.$router.push({name: 'MainGuide', params: {id: this.$route.path}});
+                let routeData = this.$router.resolve({name: 'MainGuide', params: {id: this.$route.path}});
+                window.open(routeData.href, '_blank');
             },
             ViewNotification(nots){
                 axios.post(smartEnuApi+"/viewnotifications",{views:nots},{headers: getHeader()})
@@ -201,35 +202,35 @@
                 alert(error.message)
             })
         },
-        async created(){
+        // async created(){
             
-            let v = this;
-            this.socket = await new WebSocket(socketApi+"/notificationws"); 
-            this.socket.onopen = () => {
-                this.socket.send(JSON.stringify(this.loginedUser));
-            }
+        //     let v = this;
+        //     this.socket = await new WebSocket(socketApi+"/notificationws"); 
+        //     this.socket.onopen = () => {
+        //         this.socket.send(JSON.stringify(this.loginedUser));
+        //     }
 
-            this.socket.onmessage = (event) => {
-                let parsed = JSON.parse(event.data);
-                this.$toast.add({
-                    severity:'success', 
-                    summary: parsed.description, 
-                    detail:JSON.parse(parsed.senderJSON).fullName, 
-                    life: 3000}
-                );
-                this.newCount=this.newCount+1;
-                // v.notifications.unshift({
-                //     uniqueName:parsed.uniqueName,
-                //     isSeen:parsed.isSeen,
-                //     notificationId:parsed.notificationId,
-                //     senderId:parsed.senderId,
-                //     senderObject:JSON.parse(parsed.senderJSON),
-                //     description:parsed.description,
-                //     link:parsed.link,
-                //     jsMethod:parsed.jsMethod,
-                // });
-            }
-        }
+        //     this.socket.onmessage = (event) => {
+        //         let parsed = JSON.parse(event.data);
+        //         this.$toast.add({
+        //             severity:'success', 
+        //             summary: parsed.description, 
+        //             detail:JSON.parse(parsed.senderJSON).fullName, 
+        //             life: 3000}
+        //         );
+        //         this.newCount=this.newCount+1;
+        //         // v.notifications.unshift({
+        //         //     uniqueName:parsed.uniqueName,
+        //         //     isSeen:parsed.isSeen,
+        //         //     notificationId:parsed.notificationId,
+        //         //     senderId:parsed.senderId,
+        //         //     senderObject:JSON.parse(parsed.senderJSON),
+        //         //     description:parsed.description,
+        //         //     link:parsed.link,
+        //         //     jsMethod:parsed.jsMethod,
+        //         // });
+        //     }
+        // }
     }
 </script>
 

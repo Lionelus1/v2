@@ -2,43 +2,43 @@
   <Button
       type="button"
       icon="pi pi-document"
-      class="p-button p-button-info p-ml-2"
+      class="p-button p-button-info ml-2"
       :label="$t('workPlan.createReport')"
       @click="openModal"
   ></Button>
 
   <Dialog :header="$t('workPlan.reports')" v-model:visible="selectQuarterModal" :style="{width: '450px'}"
           class="p-fluid">
-    <div class="p-field">
+    <div class="field">
       <label>{{ $t('workPlan.reportName') }}</label>
       <InputText v-model="report_name"/>
     </div>
-    <div class="p-field">
+    <div class="field">
       <label>{{ $t('common.type') }}</label>
       <Dropdown v-model="type" :options="reportTypes" optionLabel="name" optionValue="id" :placeholder="$t('common.select')"
                 @select="selectReportType"/>
     </div>
-    <div class="p-field" v-if="type === 2">
+    <div class="field" v-if="type === 2">
       <label>{{ $t('workPlan.quarter') }}</label>
       <Dropdown v-model="quarter" :options="reportQuarters" optionLabel="name" optionValue="id" :placeholder="$t('common.select')"/>
     </div>
-    <div class="p-field" v-if="type === 3">
+    <div class="field" v-if="type === 3">
       <label>{{ $t('workPlan.reportTypes.halfYear') }}</label>
       <Dropdown v-model="selectedHalfYear" :options="halfYearTypes" optionLabel="name" optionValue="id" :placeholder="$t('common.select')"/>
     </div>
-    <div class="p-field" v-if="plan && plan.is_oper">
+    <div class="field" v-if="plan && plan.is_oper">
       <label>{{ $t('common.department') }}</label>
       <Dropdown v-model="selectedDepartment" :options="departments" optionLabel="department_name" optionValue="department_id" :filter="true"
                 :show-clear="true" :placeholder="$t('common.select')"/>
     </div>
-    <!--<div class="p-field" v-if="plan && plan.is_oper">
+    <!--<div class="field" v-if="plan && plan.is_oper">
       <label>{{ $t('workPlan.respExecutor') }}</label>
       <Dropdown v-model="selectedRespUser" :options="respUsers" optionLabel="fullName" optionValue="id" :placeholder="$t('common.select')" />
     </div>-->
     <template #footer>
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
               @click="closeModal"/>
-      <Button label="Ок" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2"
+      <Button label="Ок" icon="pi pi-check" class="p-button-rounded p-button-success mr-2"
               @click="create"/>
     </template>
   </Dialog>

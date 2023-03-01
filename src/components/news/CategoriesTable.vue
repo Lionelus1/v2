@@ -1,11 +1,12 @@
 <template>
-  <div class="p-col-12">
+  <div class="col-12">
+    <h3>{{ $t("smartenu.newsCategoriesTitle") }}</h3>
     <div class="card">
       <Button
           :label="$t('common.add')"
           v-if="isAdmin"
           icon="pi pi-plus"
-          class="p-button-success p-mr-2"
+          class="p-button-success mr-2"
           v-on:click="createNewsCategory"
       />
     </div>
@@ -13,17 +14,16 @@
       <DataTable
           :value="categories"
           :paginator="true"
-          class="p-datatable-customers"
           :rows="10"
           dataKey="id"
           :rowHover="true"
           v-model:selection="selectedCategory"
           :filters="filters"
           :loading="loading"
+          responsive-layout="scroll"
       >
         <template #header>
-          <div class="table-header">
-            {{ $t("smartenu.newsCategoriesTitle") }}
+          <div class="table-header flex justify-content-end align-items-center">
             <span class="p-input-icon-left">
             <i class="pi pi-search"/>
             <InputText
@@ -76,7 +76,7 @@
           <template #body="slotProps">
             <Button
                 icon="pi pi-pencil"
-                class="p-button-rounded p-button-success p-mr-2"
+                class="p-button-rounded p-button-success mr-2"
                 v-if="isAdmin"
                 @click="editNewsCategory(slotProps.data.id)"
             />
@@ -100,19 +100,19 @@
       :modal="true"
       class="p-fluid"
   >
-    <div class="p-field">
+    <div class="field">
       <label for="kz-title">{{ $t("common.nameInQazaq") }}</label>
       <InputText id="kz-title" v-model="category.nameKz"/>
     </div>
-    <div class="p-field">
+    <div class="field">
       <label for="ru-title">{{ $t("common.nameInRussian") }}</label>
       <InputText id="ru-title" v-model="category.nameRu"/>
     </div>
-    <div class="p-field">
+    <div class="field">
       <label for="en-title">{{ $t("common.nameInEnglish") }}</label>
       <InputText id="en-title" v-model="category.nameEn"/>
     </div>
-    <div class="p-field">
+    <div class="field">
       <label for="cats">{{ $t("smartenu.chooseSuperiorCategory") }}</label>
       <Dropdown
           id="cats"
@@ -162,22 +162,22 @@
     </div>
     <Fieldset :legend="$t('common.style')">
       <div>
-        <label class="p-mr-2">{{ $t('common.bgColor') }}</label>
+        <label class="mr-2">{{ $t('common.bgColor') }}</label>
         <ColorPicker v-model="category.bgColor"/>
       </div>
-      <div class="p-mt-2">
-        <label class="p-mr-2">{{ $t('common.textColor') }}</label>
+      <div class="mt-2">
+        <label class="mr-2">{{ $t('common.textColor') }}</label>
         <ColorPicker v-model="category.textColor"/>
       </div>
       <div>
-        <div class="p-mt-3" :style="catButtonStyle">{{ category.nameKz }}</div>
+        <div class="mt-3" :style="catButtonStyle">{{ category.nameKz }}</div>
       </div>
     </Fieldset>
     <template #footer>
       <Button
           v-bind:label="$t('common.save')"
           icon="pi pi-check"
-          class="p-button p-component p-button-success p-mr-2"
+          class="p-button p-component p-button-success mr-2"
           v-on:click="addCategory"
       />
       <Button
@@ -196,7 +196,7 @@
       :modal="true"
   >
     <div class="confirmation-content">
-      <i class="pi pi-exclamation-triangle p-mr-3" style="font-size: 2rem"/>
+      <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"/>
       <span v-if="category"
       >{{ $t("common.doYouWantDelete") }}
           <b>{{
@@ -213,7 +213,7 @@
       <Button
           :label="$t('common.yes')"
           icon="pi pi-check"
-          class="p-button p-component p-button-success p-mr-2"
+          class="p-button p-component p-button-success mr-2"
           @click="deleteNewsCategory(category.id)"
       />
       <Button
@@ -458,7 +458,7 @@ export default {
 
 .table-header {
   display: flex;
-  justify-content: space-between;
+  flex-order-: space-between;
 }
 
 ::v-deep(.p-datatable.p-datatable-customers) {

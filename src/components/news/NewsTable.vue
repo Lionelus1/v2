@@ -1,18 +1,19 @@
 <template>
-  <div class="p-col-12">
+  <div class="col-12">
+    <h3>{{ $t("smartenu.newsTitle") }}</h3>
     <div class="card">
-      <Button :label="$t('common.add')" icon="pi pi-plus" class="p-button-success p-mr-2" v-on:click="createNews"/>
-      <Button :label="$t('common.send')" icon="pi pi-send" class="p-mr-2" v-on:click="sendNews"
+      <Button :label="$t('common.add')" icon="pi pi-plus" class="p-button-success mr-2" v-on:click="createNews"/>
+      <Button :label="$t('common.send')" icon="pi pi-send" class="mr-2" v-on:click="sendNews"
               v-if="selectedNews && selectedNews.history.status.id === statuses.created && (!isModer || !isPublisher || !isAdmin)"/>
       <Button :label="$t('common.publish')"
               v-if="selectedNews && (selectedNews.history.status.id === statuses.sent || selectedNews.history.status.id === statuses.created) &&
             (isModer || isPublisher || isAdmin)"
-              icon="pi pi-check" class="p-button-help p-mr-2" v-on:click="publishNews"/>
+              icon="pi pi-check" class="p-button-help mr-2" v-on:click="publishNews"/>
       <Button :label="$t('common.reject')"
               v-if="selectedNews && selectedNews.history.status.id === statuses.sent && (isModer || isPublisher || isAdmin)"
-              icon="pi pi-check" class="p-button-danger p-mr-2" v-on:click="rejectReason"/>
+              icon="pi pi-check" class="p-button-danger mr-2" v-on:click="rejectReason"/>
       <Button :label="$t('common.show')" v-if="selectedNews" icon="pi pi-eye"
-              class="p-button-secondary p-mr-2" v-on:click="newsView"/>
+              class="p-button-secondary mr-2" v-on:click="newsView"/>
     </div>
     <div class="card">
       <DataTable :lazy="true" :value="allNews" @page="onPage($event)" :totalRecords="newsCount" :paginator="true"
@@ -23,12 +24,11 @@
                  :filters="filters" filterDisplay="menu" :showFilterMatchModes="false" :loading="loading"
                  responsiveLayout="scroll" @sort="onSort($event)" selectionMode="single">
         <template #header>
-          <div class="table-header">
-            {{ $t("smartenu.newsTitle") }}
+          <div class="table-header flex justify-content-end align-items-center">
             <span class="p-input-icon-left"><i class="pi pi-search"/>
               <InputText type="search" v-model="lazyParams.searchText" :placeholder="$t('common.search')"
                          @keyup.enter="getAllNews" @click="clearData"/>
-              <Button icon="pi pi-search" class="p-ml-1" @click="getAllNews"/>
+              <Button icon="pi pi-search" class="ml-1" @click="getAllNews"/>
             </span>
           </div>
         </template>
@@ -67,7 +67,7 @@
         </Column>
         <Column>
           <template #body="slotProps">
-            <Button icon="pi pi-pencil" class="p-button-rounded p-button-success p-mr-2"
+            <Button icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2"
                     @click="editNews(slotProps.data.id)"
                     v-if="slotProps.data.history.status.id === statuses.created || isAdmin || isModer"/>
             <Button icon="pi pi-trash" class="p-button-rounded p-button-warning" @click="delNews(slotProps.data.id)"
@@ -83,19 +83,19 @@
   <Dialog v-model:visible="rejectVisible" :style="{ width: '600px' }" :header="$t('smartenu.createOrEditNews')"
           :modal="true" class="p-fluid">
     <div class="card">
-      <div class="p-field p-mt-3" style="margin-bottom: 1.5rem">
+      <div class="fieldmt-3" style="margin-bottom: 1.5rem">
           <span class="p-float-label">
             <InputText id="kz-title" v-model="selectedNews.history.rejectReasonKz" rows="3"/>
             <label for="kz-title">{{ $t("common.nameInQazaq") }}</label>
           </span>
       </div>
-      <div class="p-field p-mt-3" style="margin-bottom: 1.5rem">
+      <div class="fieldmt-3" style="margin-bottom: 1.5rem">
           <span class="p-float-label">
             <InputText id="ru-title" v-model="selectedNews.history.rejectReasonRu" rows="3"/>
             <label for="ru-title">{{ $t("common.nameInRussian") }}</label>
           </span>
       </div>
-      <div class="p-field p-mt-3">
+      <div class="fieldmt-3">
           <span class="p-float-label">
             <InputText id="en-title" v-model="selectedNews.history.rejectReasonEn" rows="3"/>
             <label for="en-title">{{ $t("common.nameInEnglish") }}</label>
@@ -113,7 +113,7 @@
 
   <Dialog v-model:visible="deleteVisible" :style="{ width: '450px' }" :modal="true">
     <div class="confirmation-content">
-      <i class="pi pi-exclamation-triangle p-mr-3" style="font-size: 2rem"/>
+      <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"/>
       <span v-if="newsData">{{ $t("common.doYouWantDelete") }}
           <b>
             {{
@@ -123,9 +123,9 @@
         </span>
     </div>
     <template #footer>
-      <Button :label="$t('common.yes')" icon="pi pi-check" class="p-button p-component p-button-success p-mr-2"
+      <Button :label="$t('common.yes')" icon="pi pi-check" class="p-button p-component p-button-success mr-2"
               @click="deleteNews(newsData.id)"/>
-      <Button :label="$t('common.no')" icon="pi pi-times" class="p-button p-component p-button-danger p-mr-2"
+      <Button :label="$t('common.no')" icon="pi pi-times" class="p-button p-component p-button-danger mr-2"
               @click="deleteVisible = false"/>
     </template>
   </Dialog>
@@ -216,6 +216,7 @@ export default {
     this.emitter.on('newsViewModalClose', data => {
       this.newsViewVisible = data;
     });
+    
     this.emitter.on('addEditNewsDialogHide', data => {
       if (data)
         this.hideDialog();
@@ -572,7 +573,7 @@ export default {
 
 .table-header {
   display: flex;
-  justify-content: space-between;
+  flex-order-: space-between;
 }
 
 ::v-deep(.p-datatable.p-datatable-customers) {

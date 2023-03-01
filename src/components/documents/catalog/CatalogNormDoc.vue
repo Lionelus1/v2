@@ -1,37 +1,37 @@
 <template>
     <div class="card">
         <div>
-            <h4 class="p-ml-3">{{ $t("smartenu.catalogNormDoc") }}</h4>
+            <h4 class="ml-3">{{ $t("smartenu.catalogNormDoc") }}</h4>
             
-            <Toolbar class="p-m-0 p-p-1" style="position:relative;">
+            <Toolbar class="m-0 p-1" style="position:relative;">
                 <template #start>
                     <div v-if="findRole(null, 'normative_docs_admin')">
-                    <Button @click="resetForm();openDialog('addFolder')" :disabled="selected==null || folder.type !=0" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-folder-plus fa-xl"></i></Button>
-                    <Button @click="openDialog('addFolder')" :disabled="(selected===null|| folder.parentID == null || folder.type !=0) ||  loginedUser.userID !== folder.ownerId" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-square-pen fa-xl"></i></Button>
-                    <Button @click="deleteFolder(false)" :disabled="(selected===null|| folder.parentID == null)  || loginedUser.userID !== folder.ownerId" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-folder-minus fa-xl"></i></Button>
-                    <Button v-if="!folder.hidden && folder.ownerId === loginedUser.userID" @click="deleteFolder(true)" :disabled="selected===null|| folder.parentID == null" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-eye-slash fa-xl"></i></Button>
-                    <Button v-if="folder.hidden && folder.ownerId === loginedUser.userID" @click="showFolder()" :disabled="selected===null || folder.parentID == null" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-eye fa-xl"></i></Button>
-                    <Button @click="openDialog('moveFolder')" :disabled="(selected===null|| folder.parentID == null)  || loginedUser.userID !== folder.ownerId" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-right-left fa-xl"></i></Button>
+                    <Button @click="resetForm();openDialog('addFolder')" :disabled="selected==null || folder.type !=0" class="p-button-text p-button-info p-1"><i class="fa-solid fa-folder-plus fa-xl"></i></Button>
+                    <Button @click="openDialog('addFolder')" :disabled="(selected===null|| folder.parentID == null || folder.type !=0) ||  loginedUser.userID !== folder.ownerId" class="p-button-text p-button-info p-1"><i class="fa-solid fa-square-pen fa-xl"></i></Button>
+                    <Button @click="deleteFolder(false)" :disabled="(selected===null|| folder.parentID == null)  || loginedUser.userID !== folder.ownerId" class="p-button-text p-button-info p-1"><i class="fa-solid fa-folder-minus fa-xl"></i></Button>
+                    <Button v-if="!folder.hidden && folder.ownerId === loginedUser.userID" @click="deleteFolder(true)" :disabled="selected===null|| folder.parentID == null" class="p-button-text p-button-info p-1"><i class="fa-solid fa-eye-slash fa-xl"></i></Button>
+                    <Button v-if="folder.hidden && folder.ownerId === loginedUser.userID" @click="showFolder()" :disabled="selected===null || folder.parentID == null" class="p-button-text p-button-info p-1"><i class="fa-solid fa-eye fa-xl"></i></Button>
+                    <Button @click="openDialog('moveFolder')" :disabled="(selected===null|| folder.parentID == null)  || loginedUser.userID !== folder.ownerId" class="p-button-text p-button-info p-1"><i class="fa-solid fa-right-left fa-xl"></i></Button>
                     </div>
                 </template>
                 <template #end>
-                    <Button v-if="findRole(null, 'normative_docs_admin')" :disabled="selected===null || file.type !=0" @click="resetFileInfo();openDialog('fileUpload')" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-file-circle-plus fa-xl"></i></Button>
-                    <Button v-if="findRole(null, 'normative_docs_admin')" @click="disableFileUpload();openDialog('fileUpload')" :disabled="(selected===null || file.type !=1) || loginedUser.userID !== file.ownerId" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-file-pen fa-xl"></i></Button>
-                    <Button v-if="findRole(null, 'normative_docs_admin')" @click="deleteFile(false)" :disabled="(selected===null || file.type !=1) || loginedUser.userID !== file.ownerId" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-file-circle-minus fa-xl"></i></Button>
-                    <Button v-if="!file.hidden && findRole(null, 'normative_docs_admin') && loginedUser.userID === file.ownerId" @click="deleteFile(true)" :disabled="selected===null || file.type !=1" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-eye-slash fa-xl"></i></Button>
-                    <Button v-if="file.hidden && findRole(null, 'normative_docs_admin') && loginedUser.userID === file.ownerId" @click="showFile()" :disabled="selected===null || file.type !=1" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-eye fa-xl"></i></Button>
-                    <Button type="button" icon="pi pi-search" :label="$t('common.search')" @click="toggle" aria:haspopup="true" aria-controls="overlay_panel" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-search fa-xl"></i></Button>
+                    <Button v-if="findRole(null, 'normative_docs_admin')" :disabled="selected===null || file.type !=0" @click="resetFileInfo();openDialog('fileUpload')" class="p-button-text p-button-info p-1"><i class="fa-solid fa-file-circle-plus fa-xl"></i></Button>
+                    <Button v-if="findRole(null, 'normative_docs_admin')" @click="disableFileUpload();openDialog('fileUpload')" :disabled="(selected===null || file.type !=1) || loginedUser.userID !== file.ownerId" class="p-button-text p-button-info p-1"><i class="fa-solid fa-file-pen fa-xl"></i></Button>
+                    <Button v-if="findRole(null, 'normative_docs_admin')" @click="deleteFile(false)" :disabled="(selected===null || file.type !=1) || loginedUser.userID !== file.ownerId" class="p-button-text p-button-info p-1"><i class="fa-solid fa-file-circle-minus fa-xl"></i></Button>
+                    <Button v-if="!file.hidden && findRole(null, 'normative_docs_admin') && loginedUser.userID === file.ownerId" @click="deleteFile(true)" :disabled="selected===null || file.type !=1" class="p-button-text p-button-info p-1"><i class="fa-solid fa-eye-slash fa-xl"></i></Button>
+                    <Button v-if="file.hidden && findRole(null, 'normative_docs_admin') && loginedUser.userID === file.ownerId" @click="showFile()" :disabled="selected===null || file.type !=1" class="p-button-text p-button-info p-1"><i class="fa-solid fa-eye fa-xl"></i></Button>
+                    <Button type="button" icon="pi pi-search" :label="$t('common.search')" @click="toggle" aria:haspopup="true" aria-controls="overlay_panel" class="p-button-text p-button-info p-1"><i class="fa-solid fa-search fa-xl"></i></Button>
                     <OverlayPanel ref="op">
                         <div class="p-fluid">
-                            <div class="p-field">
+                            <div class="field">
                                 <label for="filename" >{{$t('common.name')}}</label>
                                 <InputText id="fodernameru" v-model="filters.name.value" type="text" />
                             </div>
-                            <div class="p-field">
+                            <div class="field">
                                 <label for="filename" >{{$t('common.author')}}</label>
-                                <DepartmentList :orgType="2" :parentID="1" :autoLoad="true" class="p-pt-1" ref="departmentList"  v-model="filters.author.value"  :editMode="true" ></DepartmentList>
+                                <DepartmentList :orgType="2" :parentID="1" :autoLoad="true" class="pt-1" ref="departmentList"  v-model="filters.author.value"  :editMode="true" ></DepartmentList>
                             </div>
-                            <div class="p-field">
+                            <div class="field">
                                 <label for="filename" >{{$t('common.approveDate')}}</label>
                                 <Dropdown v-model="filters.year.matchMode" :options="numMatches" optionLabel="value" optionValue="value"  :placeholder="$t('common.select')">
                                     <template #value="slotProps">
@@ -46,18 +46,18 @@
                                     </template>
                                 </Dropdown>
                                 <PrimeCalendar
-                                    class="p-mt-2"
+                                    class="mt-2"
                                     v-model="filters.year.value"
                                     view="year" dateFormat="yy"
                                 />
                             </div>
-                            <div class="p-field">
+                            <div class="field">
                                 <Button :label="$t('common.search')" @click="getFoldersByFilter" class="mt-2" />
-                                <Button v-if="lazyParams.filters != null" :label="$t('common.filterReset')" @click="lazyParams.parentID = null,lazyParams.filters = null;getFolders(null);" class="p-mt-2 p-button-warning" />
+                                <Button v-if="lazyParams.filters != null" :label="$t('common.filterReset')" @click="lazyParams.parentID = null,lazyParams.filters = null;getFolders(null);" class="mt-2 p-button-warning" />
                             </div>
                         </div>
                     </OverlayPanel>
-                    <Button @click="downloadFile()" :disabled="selected===null || file.type !=1" class="p-button-text p-button-info p-p-1"><i class="fa-solid fa-file-arrow-down fa-xl"></i></Button>
+                    <Button @click="downloadFile()" :disabled="selected===null || file.type !=1" class="p-button-text p-button-info p-1"><i class="fa-solid fa-file-arrow-down fa-xl"></i></Button>
                 </template>
             </Toolbar>
     <TreeTable  :scrollable="true" :expandedKeys="expandedKeys" :scrollHeight="windowHeight + 'px'" class="p-treetable-sm" @node-select="onNodeSelect" :value="catalog" :lazy="true" :loading="loading"
@@ -174,6 +174,7 @@ export default {
                 approvedBy: null,
                 approveDate : null,
                 author: null,
+                docType: 6,
             },
             totalRecords: 10,
             dialogOpenState: {
@@ -290,6 +291,7 @@ export default {
                 nameen: "",
                 id: null,
                 key: null,
+                docType: 6,
                 createdDate: null,
                 updatedDate: null,
                 approvedBy: null,

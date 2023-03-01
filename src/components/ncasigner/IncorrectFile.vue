@@ -9,7 +9,7 @@
             </template>
             <template #footer>
                 <div>
-                    <Button class="p-button-danger p-md-4" type="submit" v-on:click="reload"
+                    <Button class="p-button-danger md:col-4" type="submit" v-on:click="reload"
                             v-bind:label="$t('ncasigner.reload')"/>
                 </div>
             </template>

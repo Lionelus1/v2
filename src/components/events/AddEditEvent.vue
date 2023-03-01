@@ -5,13 +5,13 @@
 <!--      <Message v-for="msg of formValid" severity="error" :key="msg">{{ msg }}</Message>-->
       <TabView>
         <TabPanel header="Қазақша">
-          <div class="p-field p-mt-3">
+          <div class="fieldmt-3">
             <label for="kz-title">{{ $t("common.nameInQazaq") }}</label>
             <InputText id="kz-title" v-model="event.titleKz" rows="3"
                        :class="{ 'p-invalid': event.titleKz && submitted }"/>
             <small v-show="!event.titleKz && submitted" class="p-error">{{ $t("smartenu.titleKzInvalid") }}</small>
           </div>
-          <div class="p-field">
+          <div class="field">
             <label for="kz-content">{{ $t("common.contentInQazaq") }}</label>
             <RichEditor ref="kztext" id="kz-content" v-model="event.contentKz" editorStyle="height: 320px"></RichEditor>
             <small v-show="!event.contentKz && submitted" class="p-error">
@@ -20,7 +20,7 @@
           </div>
         </TabPanel>
         <TabPanel header="Русский">
-          <div class="p-field p-mt-3" style="margin-bottom: 1.5rem">
+          <div class="fieldmt-3" style="margin-bottom: 1.5rem">
             <label for="ru-title">{{ $t("common.nameInRussian") }}</label>
             <InputText id="ru-title" v-model="event.titleRu" rows="3"
                        :class="{ 'p-invalid': !event.titleRu && submitted }"/>
@@ -28,7 +28,7 @@
               {{ $t("smartenu.titleRuInvalid") }}
             </small>
           </div>
-          <div class="p-field">
+          <div class="field">
             <label for="ru-content">{{ $t("common.contentInRussian") }}</label>
             <Editor id="ru-content" v-model="event.contentRu" editorStyle="height: 320px"/>
             <small v-show="!event.contentRu && submitted" class="p-error">
@@ -37,7 +37,7 @@
           </div>
         </TabPanel>
         <TabPanel header="English">
-          <div class="p-field p-mt-3" style="margin-bottom: 1.5rem">
+          <div class="fieldmt-3" style="margin-bottom: 1.5rem">
             <label for="en-title">{{ $t("common.nameInEnglish") }}</label>
             <InputText id="en-title" v-model="event.titleEn" rows="3"
                        :class="{ 'p-invalid': !event.titleEn && submitted }"/>
@@ -45,7 +45,7 @@
               {{ $t("smartenu.titleEnInvalid") }}
             </small>
           </div>
-          <div class="p-field">
+          <div class="field">
             <label for="en-content">{{ $t("common.contentInEnglish") }}</label>
             <Editor id="en-content" v-model="event.contentEn" editorStyle="height: 320px"/>
             <small v-show="!event.contentEn && submitted" class="p-error">
@@ -54,7 +54,7 @@
           </div>
         </TabPanel>
       </TabView>
-      <div class="p-field">
+      <div class="field">
         <label for="is-online">{{ $t("smartenu.eventFormat") }}</label>
         <Dropdown id="is-online" v-model="event.isOnline" :options="format" optionLabel="name" optionValue="value"
                   :placeholder="$t('smartenu.eventFormat')" :class="{ 'p-invalid': !event.isOnline && submitted }"/>
@@ -62,7 +62,7 @@
           {{ $t("smartenu.isOnlineInvalid") }}
         </small>
       </div>
-      <div class="p-field" style="margin-top: 1.5rem" v-if="event.isOnline == true">
+      <div class="field" style="margin-top: 1.5rem" v-if="event.isOnline == true">
         <label for="event-link">{{ $t("smartenu.meetingLink") }}</label>
         <InputText id="event-link" v-model="event.eventLink" rows="3"
                    :class="{ 'p-invalid': !event.eventLink && submitted }"/>
@@ -70,7 +70,7 @@
           {{ $t("smartenu.eventLinkInvalid") }}
         </small>
       </div>
-      <div class="p-field" style="margin-top: 1.5rem" v-if="event.isOnline == false">
+      <div class="field" style="margin-top: 1.5rem" v-if="event.isOnline == false">
         <label for="event-location">
           {{ $t("smartenu.meetingLocation") }}
         </label>
@@ -80,7 +80,7 @@
           {{ $t("smartenu.eventLocationInvalid") }}
         </small>
       </div>
-      <div class="p-field">
+      <div class="field">
         <label for="p-cat">{{ $t("smartenu.participantsCategory") }}</label>
         <MultiSelect v-model="selectedMainCategories" :options="participantsMainCategories"
                      :optionLabel="$i18n.locale === 'kz' ? `nameKz` : $i18n.locale === 'ru' ? `nameRu` : `nameEn`"
@@ -90,34 +90,34 @@
           {{ $t("smartenu.selectedCatInvalid") }}
         </small>
       </div>
-      <div class="p-field">
+      <div class="field">
         <MultiSelect v-if="isBachelor" v-model="selectedBachelorCourses" :options="bachelorCourses"
                      :optionLabel="$i18n.locale === 'kz' ? `nameKz` : $i18n.locale === 'ru' ? `nameRu` : `nameEn`"
                      :placeholder="$t('smartenu.selectBachelor')"/>
       </div>
-      <div class="p-field">
+      <div class="field">
         <MultiSelect v-if="isMaster" v-model="selectedMasterCourses" :options="masterCourses"
                      :optionLabel="$i18n.locale === 'kz' ? `nameKz` : $i18n.locale === 'ru' ? `nameRu` : `nameEn`"
                      :placeholder="$t('smartenu.selectMaster')"/>
       </div>
-      <div class="p-field">
+      <div class="field">
         <MultiSelect v-if="isFaculty" v-model="selectedFaculties" :options="faculties"
                      :optionLabel="$i18n.locale === 'kz' ? `nameKz` : $i18n.locale === 'ru' ? `nameRu` : `nameEn`"
                      :placeholder="$t('smartenu.selectFaculty')"/>
       </div>
-      <div class="p-field">
+      <div class="field">
         <MultiSelect v-if="isFacultySelected" v-model="selectedDepartments" :options="departments"
                      :optionLabel="$i18n.locale === 'kz' ? `nameKz` : $i18n.locale === 'ru' ? `nameRu` : `nameEn`"
                      :placeholder="$t('smartenu.selectDepartment')"/>
       </div>
-      <div class="p-field">
+      <div class="field">
         <div><label for="data-and-time">{{ $t("smartenu.dataAndTime") }}</label></div>
         <PrimeCalendar id="data-and-time" :placeholder="$t('faq.createDate')" :showTime="true"
                        :showSeconds="true" v-model="event.eventDate" dateFormat="dd.mm.yy"/>
       </div>
-      <div class="p-field">
-        <div class="p-grid">
-          <div class="p-col-12 p-md-5">
+      <div class="field">
+        <div class="grid">
+          <div class="col-12 md:col-5">
             <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadMainImage($event)"
                         :auto="true" v-bind:chooseLabel="$t('smartenu.chooseMainImage')"/>
           </div>
@@ -129,54 +129,54 @@
           <img :src="event.imageUrl" style="width: 50%; height: 50%"/>
         </div>
       </div>
-      <div class="p-field">
-        <div class="p-grid">
-          <div class="p-col-12 p-md-3">
+      <div class="field">
+        <div class="grid">
+          <div class="col-12 md:col-3">
             <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadFile($event)" :auto="true"
                         v-bind:chooseLabel="$t('smartenu.chooseAdditionalFile')"/>
           </div>
-          <div class="p-col-12 p-md-5">
+          <div class="col-12 md:col-5">
             <InlineMessage severity="info" show v-if="event.additionalFileName">
               {{ $t("ncasigner.chosenFile", {fn: event.additionalFileName}) }}
             </InlineMessage>
           </div>
         </div>
       </div>
-      <div class="p-field-checkbox">
+      <div class="field-checkbox">
         <Checkbox id="isPoster" name="isPoster" v-model="event.isPoster" :binary="true"/>
         <label for="isPoster">{{ $t("smartenu.addPoster") }}</label>
       </div>
-      <div class="p-field p-mt-3" style="margin-bottom: 1.5rem" v-if="event.isPoster">
+      <div class="fieldmt-3" style="margin-bottom: 1.5rem" v-if="event.isPoster">
         <label for="poster-link">{{ $t("smartenu.posterLink") }}</label>
         <InputText id="poster-link" v-model="poster.link" rows="3" :placeholder="$t('smartenu.posterLink')"/>
-        <div class="p-grid p-mt-3" v-if="event.isPoster">
+        <div class="grid mt-3" v-if="event.isPoster">
           <div class="p-col">
             <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadPosterImageKk($event)"
                         :auto="true" v-bind:chooseLabel="$t('smartenu.posterImageKk')" accept="image/*"/>
-            <div v-if="posterImageKk" class="p-mt-3">
+            <div v-if="posterImageKk" class="mt-3">
               <img :src="posterImageKk" style="width: 50%; height: 50%"/>
             </div>
-            <div v-else class="p-mt-3">
+            <div v-else class="mt-3">
               <img :src="poster.imageKkUrl" style="width: 50%; height: 50%"/>
             </div>
           </div>
           <div class="p-col">
             <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadPosterImageRu($event)"
                         :auto="true" v-bind:chooseLabel="$t('smartenu.posterImageRu')" accept="image/*"/>
-            <div v-if="posterImageRu" class="p-mt-3">
+            <div v-if="posterImageRu" class="mt-3">
               <img :src="posterImageRu" style="width: 50%; height: 50%"/>
             </div>
-            <div v-else class="p-mt-3">
+            <div v-else class="mt-3">
               <img :src="poster.imageRuUrl" style="width: 50%; height: 50%"/>
             </div>
           </div>
           <div class="p-col">
             <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadPosterImageEn($event)"
                         :auto="true" v-bind:chooseLabel="$t('smartenu.posterImageEn')" accept="image/*"/>
-            <div v-if="posterImageEn" class="p-mt-3">
+            <div v-if="posterImageEn" class="mt-3">
               <img :src="posterImageEn" style="width: 50%; height: 50%"/>
             </div>
-            <div v-else class="p-mt-3">
+            <div v-else class="mt-3">
               <img :src="poster.imageEnUrl" style="width: 50%; height: 50%"/>
             </div>
           </div>
@@ -186,7 +186,7 @@
     <template #footer>
       <Button v-bind:label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
               @click="hideDialog"/>
-      <Button v-bind:label="$t('common.save')" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2"
+      <Button v-bind:label="$t('common.save')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2"
               v-on:click="addEvent"/>
     </template>
   </Dialog>

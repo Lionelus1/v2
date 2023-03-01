@@ -11,18 +11,18 @@
             :key="step"
         >
           <span @click="setActive(index)"> {{ index + 1 }} </span>
-          <div class="p-pt-2">{{ $i18n.locale === 'kz'? step.titleKz : $i18n.locale === 'en' ? step.titleEn : step.titleRu }}</div>
+          <div class="pt-2">{{ $i18n.locale === 'kz'? step.titleKz : $i18n.locale === 'en' ? step.titleEn : step.titleRu }}</div>
         </li>
       </ul>
       <div class="steps-content">
         <FindUser @add="updateModel" @remove="updateModel" v-model="selectedUsers"></FindUser>
-        <Dropdown :disabled="!isNewStage" @change="updateModel" class="p-mt-2" v-model="sertificate" :options="sertificates" :optionLabel="'name' + $i18n.locale" :placeholder="$t('ncasigner.certType')" />
+        <Dropdown :disabled="!isNewStage" @change="updateModel" class="mt-2" v-model="certificate" :options="certificates" :optionLabel="'name' + $i18n.locale" :placeholder="$t('ncasigner.certType')" />
       </div>
 
       <div>
         <Button v-if="isNewStage" icon="pi pi-plus" class="p-button-rounded p-button-success"
                 @click="addStep"/>
-        <button @click="clearSteps" class="btn danger p-ml-2"> {{ $t('common.clearApprovalList') }} </button>
+        <button @click="clearSteps" class="btn danger ml-2"> {{ $t('common.clearApprovalList') }} </button>
       </div>
     </div>
   </div>
@@ -40,7 +40,7 @@ export default {
   data() {
     return {
       selectedUsers: null,
-      sertificates: [
+      certificates: [
         {namekz: "Жеке тұлғаның сертификаты", nameru: "Сертификат физического лица", nameen: "Certificate of an individual", value: "individual"},
         {namekz: "Ішкі құжат айналымы үшін (ГОСТ)", nameru: "Для внутреннего документооборота (ГОСТ)", nameen: "For internal document management (GOST)", value: "internal"},
         {namekz: "Бірінші басшының сертификаты", nameru: "Сертификат первого руководителя", nameen: "Certificate of the CEO", value: "ceo"},
@@ -48,7 +48,7 @@ export default {
         {namekz: "Қол қою құқығы бар қызметкер сертификаты", nameru: "Сертификат сотрудника с правом подписи", nameen: "Certificate of the employee with the right to sign", value: "sign_right"},
         {namekz: "Қаржы құжаттарына қол қою құқығы бар қызметкер сертификаты", nameru: "Сертификат сотрудника с правом подписи финансовых документов", nameen: "Certificate of the employee with the right to sign financial docs", value: "financial_sign_right"},
       ],
-      sertificate: null,
+      certificate: null,
       stage: this.modelValue.length +1,
       stageValue: this.value,
       activeIndex: 0,
@@ -96,27 +96,27 @@ export default {
       this.activeIndex = index;
       this.stage = index + 1;
       this.selectedUsers = this.result[index].users != null ? this.result[index].users : null;
-      this.sertificate = this.result[index].sertificate;
+      this.certificate = this.result[index].certificate;
     },
     addStep() {
-      this.result.push({stage: this.result.length+1, users: null, sertificate: null})
+      this.result.push({stage: this.result.length+1, users: null, certificate: null})
       this.stage += 1;
       this.activeIndex += 1;
       this.steps.push({stage: this.stage})
       this.selectedUsers = null;
-      this.sertificate = null;
+      this.certificate = null;
       //this.$emit('changeStep', this.stage);
     },
     updateModel() {
       if (this.result.length ===0) {
-        this.result.push({stage: this.stage, users: this.selectedUsers, sertificate: this.sertificate})
+        this.result.push({stage: this.stage, users: this.selectedUsers, certificate: this.certificate})
       } else {
         this.result[this.activeIndex].users= this.selectedUsers
-        this.result[this.activeIndex].sertificate = this.sertificate
+        this.result[this.activeIndex].certificate = this.certificate
       }
       //this.initResult()
       this.$emit('update:modelValue', this.result);
-      //this.$emit('add', {stage: this.stage, users: this.selectedUsers, sertificate: this.sertificate});
+      //this.$emit('add', {stage: this.stage, users: this.selectedUsers, certificate: this.certificate});
 
       //if (preventDefault) {
       //  event.preventDefault();
@@ -324,7 +324,7 @@ h3 {
 .list-item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  flex-order-: space-between;
   padding: 0.5rem 0;
 }
 
@@ -338,7 +338,7 @@ h3 {
   margin-bottom: 1rem;
   padding: 0;
   display: flex;
-  justify-content: space-between;
+  flex-order-: space-between;
 }
 
 .steps-item span {

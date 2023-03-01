@@ -1,23 +1,23 @@
 <template>
-  <div class="p-col-12">
+  <div class="col-12">
+    <h3>{{ $t("smartenu.eventsTitle") }}</h3>
     <!-- BEGINNING OF TABLE -->
     <div class="card" v-if="isAdmin || isModer || selectedEvent">
       <Button v-if="isAdmin || isModer" :label="$t('common.add')" icon="pi pi-plus"
-              class="p-button-success p-mr-2" v-on:click="createEvent"/>
+              class="p-button-success mr-2" v-on:click="createEvent"/>
       <Button :label="$t('common.publish')" v-if="isCreated && (isAdmin || isPublisher)" icon="pi pi-check"
-              class="p-button-help p-mr-2" v-on:click="publishEvent"/>
+              class="p-button-help mr-2" v-on:click="publishEvent"/>
       <Button :label="$t('common.show')" v-if="selectedEvent" icon="pi pi-eye"
-              class="p-button-secondary p-mr-2" v-on:click="eventView"/>
+              class="p-button-secondary mr-2" v-on:click="eventView"/>
     </div>
 
     <!-- BEGINNING OF TABLE -->
     <div class="card">
       <DataTable :value="allEvents" :paginator="true" class="p-datatable-customers" :rows="10" dataKey="id"
                  selectionMode="single" :rowHover="true" v-model:selection="selectedEvent" :filters="filters"
-                 :loading="loading">
+                 :loading="loading" responsive-layout="scroll">
         <template #header>
-          <div class="table-header">
-            {{ $t("smartenu.eventsTitle") }}
+          <div class="table-header flex justify-content-end align-items-center">
             <span class="p-input-icon-left">
               <i class="pi pi-search"/>
               <InputText v-model="filters['global'].value" v-bind:placeholder="$t('hdfs.search')"/>
@@ -53,11 +53,11 @@
           </span>
           </template>
         </Column>
-        <Column>
+        <Column headerStyle="width:120px">
           <template #body="{ data }">
             <Button icon="pi pi-pencil" class="p-button-rounded p-button-success" @click="editEvent(data)"
                     v-if="data.history.status.id === statuses.created || isAdmin || isModer "/>
-            <Button icon="pi pi-trash" class="p-button-rounded p-button-warning p-ml-2" @click="deleteConfirm(data)"
+            <Button icon="pi pi-trash" class="p-button-rounded p-button-warning ml-2" @click="deleteConfirm(data)"
                     v-if="data.history.status.id === statuses.created || isAdmin"/>
           </template>
         </Column>
@@ -507,7 +507,7 @@ export default {
 
 .table-header {
   display: flex;
-  justify-content: space-between;
+  flex-order-: space-between;
 }
 
 ::v-deep(.p-datatable.p-datatable-customers) {

@@ -1,4 +1,4 @@
-import axios from 'axios';
+    import axios from 'axios';
 
 export default class EventService {
 
@@ -7,3 +7,4 @@ export default class EventService {
         return axios.get('assets/layout/data/events.json').then(res => res.data.data);
     }
 }
+    

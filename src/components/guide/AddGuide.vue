@@ -1,27 +1,27 @@
 <template>
     <Dialog :header="$t('guide.addGuide')" :closable="false" v-model:visible="addViewVisible" :style="{width: '450px'}"
             class="p-fluid">
-        <div class="p-field">
+        <div class="field">
             <label>{{$t('guide.pathName') }}</label>
             <InputText v-model="bodyParams.pageLink"/>
             <small class="p-error" v-show="!bodyParams.pageLink && submitted">{{ $t("common.requiredField") }}</small>
         </div>
         <label>{{$t('guide.guideName') }}</label>
-        <div class="p-field" style="margin: 1.5rem 0 1.5rem 0">
+        <div class="field" style="margin: 1.5rem 0 1.5rem 0">
         <span class="p-float-label">
           <InputText id="kz-title" v-model="bodyParams.name"/>
           <label for="kz-title">{{ $t("common.nameInQazaq") }}</label>
         </span>
             <small class="p-error" v-show="!bodyParams.name && submitted">{{ $t("common.requiredField") }}</small>
         </div>
-        <div class="p-field" style="margin-bottom: 1.5rem">
+        <div class="field" style="margin-bottom: 1.5rem">
         <span class="p-float-label">
           <InputText id="ru-title" v-model="bodyParams.nameRu"/>
           <label for="ru-title">{{ $t("common.nameInRussian") }}</label>
         </span>
             <small class="p-error" v-show="!bodyParams.nameRu && submitted">{{ $t("common.requiredField") }}</small>
         </div>
-        <div class="p-field" style="margin-bottom: 1.5rem">
+        <div class="field" style="margin-bottom: 1.5rem">
         <span class="p-float-label">
           <InputText id="en-title" v-model="bodyParams.nameEn"/>
           <label for="en-title">{{ $t("common.nameInEnglish") }}</label>
@@ -32,7 +32,7 @@
             <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
                     @click="closeBasic"/>
             <Button @click="insertGuide" :label="$t('common.add')" icon="pi pi-check"
-                    class="p-button-rounded p-button-success p-mr-2"/>
+                    class="p-button-rounded p-button-success mr-2"/>
         </template>
     </Dialog>
 </template>

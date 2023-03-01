@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="content-section">
-      <div class="feature-intro p-ml-3">
+      <div class="feature-intro ml-3">
         <h4>{{ $t("contracts.journal") }}</h4>
       </div>
       <div class="content-section implementation">
@@ -19,7 +19,7 @@
             </Menubar>
             <OverlayPanel ref="globalFilter" appendTo="body">
               <div class="p-fluid">
-                <div class="p-field">
+                <div class="field">
                   <label for="status-filter">{{ $t('common.status') }}</label>
                   <Dropdown v-model="filters.status.value" :options="statuses" :placeholder="$t('common.select')" class="p-column-filter" :showClear="true">
                     <template #value="slotProps">
@@ -38,16 +38,16 @@
                     </template>
                   </Dropdown>
                 </div>
-                <div class="p-field">
+                <div class="field">
                   <label>{{ $t('common.author') }}</label>
                   <InputText type="text" v-model="filters.author.value" :placeholder="$t('common.author')" />
                 </div>
-                <div class="p-field">
+                <div class="field">
                   <label>{{ $t('contracts.cafedraGroup') }}</label>
                   <InputText type="text" v-model="filters.department.value" :placeholder="$t('contracts.cafedraGroup')" />
                 </div>
-                <div class="p-field">
-                  <Button :label="$t('common.clear')" @click="clearFilter(true)" class="p-mb-2 p-button-outlined"/>
+                <div class="field">
+                  <Button :label="$t('common.clear')" @click="clearFilter(true)" class="mb-2 p-button-outlined"/>
                   <Button :label="$t('common.search')" @click="initApiCall()" class="mt-2"/>
                 </div>
               </div>

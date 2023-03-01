@@ -5,14 +5,14 @@
                 {{$t('ncasigner.findDocTitle')}}
             </template>
             <template #content>
-                <div class="p-grid">
-                    <div class="p-col-12 p-md-2">
+                <div class="grid">
+                    <div class="col-12 md:col-2">
                         <FileUpload ref="form" mode="basic"
                                     :customUpload="true"
                                     @uploader="upload($event)" :auto="true"
                                     v-bind:chooseLabel="$t('ncasigner.chooseFile')"></FileUpload>
                     </div>
-                    <div class="p-col-12 p-md-5">
+                    <div class="col-12 md:col-5">
                         <InlineMessage severity="info" show v-if="document">{{$t('ncasigner.chosenFile', {fn: document ? document.name : ''})}}</InlineMessage>
                     </div>
                 </div>

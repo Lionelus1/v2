@@ -1,14 +1,15 @@
 <template>
-    <div class="p-grid">
-        <div class="p-col-12">
+    <div class="request_card">
+    <div class="grid">
+        <div class="col-12">
         <BlockUI :blocked="uploading" :fullScreen="true">
             <ProgressBar v-if="uploading" mode="indeterminate" style="height: .5em" />
         </BlockUI>
 
 			<div class="card p-fluid">
-				<h5 class="p-text-center p-text-uppercase">{{$t("publicReception.title")}}</h5>
+				<h5 class="text-center uppercase">{{$t("publicReception.title")}}</h5>
                 
-                <SelectButton class="p-mb-2" v-model="language" :options="languages" optionLabel="name" @change="changeLanguage" />
+                <SelectButton class="mb-2" v-model="language" :options="languages" optionLabel="name" @change="changeLanguage" />
 		        
                 <p class="message" v-if="$i18n.locale =='kz'" style="text-align:justify">
                     <b>Құрметті пайдаланушылар!</b>
@@ -28,40 +29,44 @@ To ask a question you have to enter your full name, phone number, e-mail, select
 Please double-check the entered data before submission.
 
                 </p>
-				<div class="p-field">
+				<div class="field">
 					<label for="lname">{{$t("contact.lname")}}*</label>
 					<InputText v-model="request.lastName" id="lname" type="text" />
                     <small class="p-error" v-if="validation.lastName">{{$t("common.requiredField")}}</small>				
 				</div>
-				<div class="p-field">
+				<div class="field">
 					<label for="fname">{{$t("contact.fname")}}*</label>
 					<InputText id="fname" v-model="request.firstName" type="text" />
                     <small class="p-error" v-if="validation.firstName">{{$t("common.requiredField")}}</small>				
 				</div>
-                <div class="p-field">
+                <div class="field">
 					<label for="email">{{$t("contact.email")}}*</label>
 					<InputText v-model="request.email" id="email" type="email" @blur="validateEmail"/>
                     <small class="p-error" v-if="validation.email">{{$t("contact.message.validEmail")}}</small>				
                 </div>
-				<div class="p-field">
+				<div class="field">
 					<label for="mobile">{{$t("contact.phone")}}*</label>
                     <InputMask id="mobile" v-model="request.mobile" mask="+7-(999)-999-99-99" />
                     <small class="p-error" v-if="validation.mobile">{{$t("common.requiredField")}}</small>				
 				</div>
-                <div class="p-field">
+                <div class="field">
 					<label for="category">{{$t("smartenu.category")}}*</label>
                     <Dropdown v-model="request.category" :options="categories" :optionLabel="'name'+$i18n.locale" :placeholder="$t('smartenu.chooseCategory')" />
                     <small class="p-error" v-if="validation.mobile">{{$t("smartenu.selectedCatInvalid")}}</small>				
 				</div>
-                <div class="p-field">
+                <div class="field">
 					<label for="question">{{$t("faq.question")}}*</label>
                     <Textarea id="question" :autoResize="true" v-model="request.question"/>
                     <small class="p-error" v-if="validation.question">{{$t("common.requiredField")}}</small>				
 				</div>
-                <div class="p-field">
+                <div class="field">
                     <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="upload($event)" v-bind:chooseLabel="$t('faq.uploadFile')"></FileUpload>
 				</div>
-                <div class="p-field">
+                <div class="field">
+                    <vue-recaptcha ref="captcha" sitekey="6LfSS5MjAAAAAAmSxN43yiDEQJdFRhoF5Ctc8uPj" @verify="isCaptchaSuccess = true"></vue-recaptcha>
+                    <small class="p-error" v-if="validation.captcha">{{$t("common.requiredField")}}</small>
+                </div>
+                <div class="field">
                     <Button :label="$t('common.action.submit')" @click="sendQuestion" />
                 </div>
 		        <span class="footer-text no-print" style="margin-right: 5px">@ {{$t("common.orgname")}}</span>
@@ -77,12 +82,15 @@ Please double-check the entered data before submission.
            
         </Dialog>
     </div>
+    </div>
 </template>
 <script>
     import axios from "axios";
-    import {getHeader, smartEnuApi} from "@/config/config";
+    import {smartEnuApi} from "@/config/config";
+    import {VueRecaptcha} from "vue-recaptcha";
 
     export default {
+        components: {VueRecaptcha},
     props: {
         pagemenu: null,
     },
@@ -114,8 +122,10 @@ Please double-check the entered data before submission.
                 mobile: false,
                 question: false,
                 category: false,
+                captcha: false
             },
             categories : null,
+            isCaptchaSuccess: false,
         };
     },
     methods: {
@@ -175,8 +185,9 @@ Please double-check the entered data before submission.
             this.validation.mobile = this.request.mobile === null || this.request.mobile === ''
             this.validation.question = this.request.question === null || this.request.question === '' 
             this.validation.category = this.request.category === null
+            this.validation.captcha = !this.isCaptchaSuccess;
             var errors = [];
-            var validation = this.validation
+            var validation = this.validation;
             Object.keys(this.validation).forEach(function(k)
             {
                 if (validation[k] === true) errors.push(validation[k])
@@ -201,9 +212,13 @@ Please double-check the entered data before submission.
                 this.request.number = resp.data
                 this.uploading = false;
                 this.uploaded = true;
+                this.$refs.captcha.reset()
+                this.isCaptchaSuccess = false;
             })
             .catch(error => {
                 this.uploading = false;
+                this.isCaptchaSuccess = false;
+                this.$refs.captcha.reset()
                 this.$toast.add({severity: 'error', summary: 'Error', detail: error.message, life: 3000});
                 if (error.response.status == 401) {
                     this.$store.dispatch("logLout");
@@ -221,7 +236,16 @@ Please double-check the entered data before submission.
     },
 }
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
+    .request_card{
+        overflow-x: hidden;
+        padding: 2% 10%;
+    }
+    @media (max-width: 800px) {
+        .request_card{
+            padding: 0;
+        }
+    }
     .message {
         background: #B3E5FC;
         border-width: 0 0 0 6px;

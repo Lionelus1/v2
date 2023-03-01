@@ -20,7 +20,7 @@ export default {
         councilName: 'Кеңес аты',
         contragents: 'Контрагенттер',
         documents: 'Құжаттар',
-        sertificates: 'Куәліктер',
+        certificates: 'Куәліктер',
         administration: 'Әкімшілік',
         academicDegree: "Ғылыми дәрежесі",
         academicTitle: "Ғылыми атағы",
@@ -44,6 +44,11 @@ export default {
         equals: "Тең",
         login: "Кіру",
         logout: "Шығу",
+        letterSpacing: {
+            expanded: "Кең",
+            condensed: "Сығыңқы",
+            normal: "Әдепкі",
+        },
         enter: "Теріңіз",
         enterLogin: "ЖСН немесе platonus почтасын енгізіңіз",
         export: "Экспорт",
@@ -161,7 +166,10 @@ export default {
         params: "Параметрлер",
         password: "Құпия сөз",
         person: "Жеке тұлға",
+        individualEntrepreneur: "Жеке тұлғалар",
         personal: "Қызметкерлер",
+        pending: "Жүктеуді күтуде",
+        uploaded: "Жүктелген",
         revision: "Түзетуге",
         requiredField: "Міндетті түрде толтыру керек",
         teacher: "ПОҚ",
@@ -241,7 +249,9 @@ export default {
             fileError: "Файлды жүктеу мүмкін емес. Файл бүлінген болуы мүмкін",
             mailSendError: "Электронды поштаға хат жіберуде қате пайда болды",
             ConsulAlwaysHasSameMember: "Көрсетілген тұлға басқа кеңестің мүшесі",
-
+            saveChangesWarning: "Жасаған өзгерістерді сақтайсыз ба?",
+            unsaveOutcome: "Өзгерістерді сақтамасаңыз, біржола жоғалтасыз.",
+            addPicture: "Сурет қосу"
         },
         language: {
             kz: "қазақша",
@@ -275,7 +285,9 @@ export default {
         actionTitle: "Әрекет",
         style: "Стиль",
         bgColor: "Фон түсі",
-        textColor: "Мәтін түсі"
+        textColor: "Мәтін түсі",
+        link: "Сілтеме",
+        image: 'Сурет'
     },
     bank: {
         title: "Банктер",
@@ -356,6 +368,7 @@ export default {
             period: "Кезең",
             text: "Мәтін",
             student: "Білім алушы",
+            individualEntrepreneur: "Жеке тұлға",
             number: "Нөмір",
             place: "Келісім-шарт жасалған орын",
             date: "Келісім-шарт жасалған күн",
@@ -751,6 +764,53 @@ export default {
         answerConfirm: "Жауап сұрақ қоюшының поштасына жіберіледі. Жауапты сақтап, жібересіз бе?",
         rejected: "Амалды орындаудан бас тарттыңыз"
     },
+    // ENU New WebPaga
+    web: {
+        mainMenuTitle: "ЕНУ Сайт",
+        menuPage: "Мәзірлер",
+        menuMainPage: "Парақшасы",
+        menuOrder: "Реті",
+        menuParent: "Аталық",
+        addMenu: "Мәзір қосу",
+        isMainMenu: "Негізгі мәзір",
+        pageLink: "Парақшалар",
+        addPage: "Парақша қосу",
+        editMenu: "Мәзірді өзгерту",
+        addEditPageTitle: "Парақшаларды құру/өзгерту",
+        selectParentMenu: "Бас мәзірді таңдау",
+        selectMenu: "Мәзір таңдау",
+        selectPage: "Парақша таңдау",
+        selectMainPage: "Парақша таңдау",
+        giveCustomLink: "Сыртқы сілтеме беру",
+        createNewPageButton: "Жаңа парақша құру",
+        menuOrderLabel: "Мәзір тәртібі",
+        customLinkInvalid: "Сілтеме толтырылмаған",
+        createdMenuSuccessMsg: "Мәзір сәтті құрылды",
+        createdPageSuccessMsg: "Парақша сәтті құрылды",
+        updatedPageSuccessMsg: "Парақша сәтті жаңаланды",
+        createPage: 'Бет қосу',
+        editPage: 'Бетті өзгерту',
+        menuType: 'Мәзір типі',
+        page: 'Бет',
+        onMain: 'Бастты бетте',
+        addBlock: 'Блок қосу',
+        editBlock: 'Блокты өзгерту',
+        blockName: 'Блок атауы',
+        blockType: 'Блок типі',
+        content: 'Контент',
+        list: 'Тізім',
+        blocks: 'Блоктар',
+        createElement: 'Элемент қосу',
+        editElement: 'Элементті өзгерту',
+        view: 'Көрсету түрі',
+        grid: 'Плитка'
+    },
+    //Student locale
+    student: {
+        clubs: "Клубтар қауымдастығы",
+        pageTitle: "Университет қауымдастықтар"
+
+    },
     hr: {
         action: {
             interview: 'Сұхбатқа шақыру',
@@ -942,5 +1002,37 @@ export default {
         addGuide: 'Анықтаманы қосу',
         editGuide: 'Анықтаманы өзгерту',
         notGuide: 'Бұл бетке әзірге анқтыма құрылған жоқ!',
+    },
+    course: {
+        title: 'Онлайн курстар',
+        courses: 'Курстар',
+        categories: 'Курс категориялары',
+        certificate: {
+            title: 'Сертификаттар',
+            template: 'Сертификат үлгілері',
+            element: 'Элемент',
+            elements: 'Элементтер',
+            designer: 'Үлгі дизайнері',
+            issue: "Сертификат беру",
+        },
+        users: 'Курсқа қатысушылар',
+        user: 'Қатысушы',
+        organizers: 'Курс ұйымдастырушылар',
+        lnum: 'Соңғы нөмір',
+    },
+    roleControl:{
+        menuTitle: 'Рольдерді басқару',
+        giveRole: 'Жаңа роль беру',
+        selectOrg: 'Ұйымды таңдаңыз',
+        selectRole: 'Рольді таңдаңыз',
+        selectEmployee: 'Қызметкерді таңдаңыз',
+        employeeIIN: 'ЖСН',
+        employeeName: 'Қызметкер аты',
+        employeeLabel: 'Қызметкер',
+        employeeNotFound: 'Мұндай ЖСН-мен қызметкер табылмады',
+        roleName: 'Роль аты',
+        roleLabel: 'Роль',
+        noResult: 'Жазбалар табылмады',
+        cantDelete: 'Жазбаны өшіру мүмкін емес',
     }
 }
