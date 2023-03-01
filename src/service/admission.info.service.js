@@ -47,8 +47,4 @@ export class AdmissionInfoService {
         return api.post(`/web/deleteAdmissionCategory`, {id: id}, {headers: getHeader()});
     }
 
-    getBlockParamsByBlockId(id) {
-        return api.post(`/web/getBlockParamValuesByBlockID`, {block_id: id}, {headers: getHeader()});
-    }
-
 }

@@ -4,7 +4,7 @@
     <div class="field" v-if="degrees">
       <label>{{ degrees[0]['name_' + $i18n.locale] }}</label>
       <Dropdown v-model="formData.level_id" :options="degrees[0].options"
-                optionLabel="name" optionValue="value" :placeholder="$t('common.select')" />
+                :optionLabel="'name_' + $i18n.locale" optionValue="value" :placeholder="$t('common.select')" />
     </div>
     <div class="field" v-if="formData.level_id">
       <label>Выберите категорию</label>
@@ -71,6 +71,7 @@ import mitt from "mitt";
 import {AdmissionInfoService} from "@/service/admission.info.service";
 import {useToast} from "primevue/usetoast";
 import {useI18n} from "vue-i18n";
+import {EnuWebService} from "@/service/enu.web.service";
 
 export default {
   name: "AdmissionInfoAdd",
@@ -84,6 +85,7 @@ export default {
     const showModal = ref(props.isShow)
     const submitted = ref(false)
     const admissionInfoService = new AdmissionInfoService()
+    const enuService = new EnuWebService()
     const currentData = ref(props.selectedData ? props.selectedData : null)
     const categories = ref()
     const degrees = ref()
@@ -91,7 +93,7 @@ export default {
     console.log(blockInfo)
 
     const getAcademicDegrees = () => {
-      admissionInfoService.getBlockParamsByBlockId(blockInfo.value.block_id).then(res => {
+      enuService.getBlockParamsByBlockId(blockInfo.value.block_id).then(res => {
         if (res.data) {
           degrees.value = res.data
         }

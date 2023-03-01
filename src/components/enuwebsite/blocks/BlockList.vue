@@ -10,12 +10,9 @@
         <template #loading>{{ $t("common.loading") }}</template>
         <Column field="title" :header="$t('common.nameIn')">
           <template #body="{data}">
-            <a href="javascript:void(0)" @click="navigateToView(data)" v-if="!data.is_plugin">
+            <a href="javascript:void(0)" @click="navigateToView(data)">
               {{ $i18n.locale === "kz" ? data.title_kz : $i18n.locale === "ru" ? data.title_ru : data.title_en }}
             </a>
-            <span v-else>
-              {{ data["title_" + $i18n.locale] }}
-            </span>
           </template>
         </Column>
         <Column class="text-right">
@@ -101,7 +98,8 @@ export default {
     const options = ref([true, false]);
 
     const navigateToView = (data) => {
-      router.push({name: 'BlockView', params: {id: data.block_id}})
+      console.log(data)
+      if (!data.is_plugin) router.push({name: 'BlockView', params: {id: data.block_id}})
     };
 
     const getBlockList = () => {
