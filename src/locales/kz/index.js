@@ -803,7 +803,10 @@ export default {
         createElement: 'Элемент қосу',
         editElement: 'Элементті өзгерту',
         view: 'Көрсету түрі',
-        grid: 'Плитка'
+        grid: 'Плитка',
+        addToUsefulLink: 'Пайдалы сілтемелерге қосу',
+        usefulLinkDesc: 'Пайдалы сілтеменің қысқаша сипаттамасы',
+        bgImg: 'Фонның суреті'
     },
     //Student locale
     student: {

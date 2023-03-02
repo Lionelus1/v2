@@ -49,6 +49,21 @@
         <label class="ml-2" for="is_main">{{ $t('common.yes') }}</label>
       </div>
     </div>
+    <div class="field">
+      <label>{{ $t('web.addToUsefulLink') }}</label>
+      <div>
+        <Checkbox inputId="is_main" v-model="formData.is_usefull_link" :binary="true" />
+        <label class="ml-2" for="is_main">{{ $t('common.yes') }}</label>
+      </div>
+    </div>
+    <div class="field" v-if="formData.is_usefull_link">
+      <label>{{ $t('web.usefulLinkDesc') }}</label>
+      <Textarea :placeholder="$t('common.enter')" class="pt-1" type="text" v-model="formData.description" maxlength="80"></Textarea>
+    </div>
+    <div class="field">
+      <label>{{ $t('web.bgImg') }}</label>
+      <CustomFileUpload @upload="uploadFile" :accept="'image/*'" :files="bgImg" :multiple="false" :preview="formData.background_image"></CustomFileUpload>
+    </div>
     <template #footer>
       <Button v-if="currentMenu" :label="$t('common.save')" icon="pi pi-check" class="p-button p-component p-button-success mr-2" @click="editMenu"/>
       <Button v-if="!currentMenu" :label="$t('common.add')" icon="pi pi-check" class="p-button p-component p-button-success mr-2" @click="addMenu"/>
@@ -65,11 +80,12 @@
 <script>
 import {EnuWebService} from "@/service/enu.web.service";
 import AddPage from "@/components/enuwebsite/AddPage.vue";
+import CustomFileUpload from "@/components/CustomFileUpload.vue";
 
 export default {
   name: "AddMenu",
   props: ['isVisible', 'allPages', 'menu_id', 'currentMenu', 'allMenus'],
-  components: {AddPage},
+  components: {AddPage, CustomFileUpload},
   data(){
     return {
       editMenuVisible: this.isVisible ?? false,
@@ -96,6 +112,7 @@ export default {
         is_middle: false,
         icon: ""
       },
+      bgImg: null,
       formValid: [],
       menuType: !this.currentMenu ? 1 : this.currentMenu && this.currentMenu.page_id ? 1 : 2,
       checked: this.is_main ? this.is_main : null,
@@ -125,7 +142,6 @@ export default {
       this.getMenus(node)
     },
     getMenus(parentData) {
-      console.log(parentData)
       this.loading = true;
       if (parentData == null) {
         this.lazyParams.parent_id = null;
@@ -156,8 +172,10 @@ export default {
       });
     },
     menuTreeSelect(node) {
-      console.log(node)
       this.formData.parent_id = node.menu_id;
+    },
+    uploadFile(event) {
+      this.bgImg = event.files
     },
     addMenu() {
       this.submitted = true;
@@ -165,7 +183,11 @@ export default {
         return;
       }
 
-      this.enuService.addMenu(this.formData).then(res => {
+      const fd = new FormData();
+      fd.append('menu', JSON.stringify(this.formData))
+      fd.append('background_image', this.bgImg[0]);
+
+      this.enuService.addMenu(fd).then(res => {
         if (res.data.is_success) {
           this.formData = {};
           this.hideDialog();
@@ -189,7 +211,11 @@ export default {
         return;
       }
 
-      this.enuService.editMenu(this.formData).then(res => {
+      const fd = new FormData();
+      fd.append('menu', JSON.stringify(this.formData))
+      if (this.bgImg) fd.append('background_image', this.bgImg[0]);
+
+      this.enuService.editMenu(fd).then(res => {
         if (res.data.is_success) {
           this.formData = {};
           this.hideDialog();

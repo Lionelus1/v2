@@ -759,7 +759,10 @@ export default {
         createElement: 'Add element',
         editElement: 'Edit element',
         view: 'Display',
-        grid: 'Tile'
+        grid: 'Tile',
+        addToUsefulLink: 'Add to useful links',
+        usefulLinkDesc: 'Brief description of the useful link',
+        bgImg: 'Background image'
     },
     //Student locale
     student: {
