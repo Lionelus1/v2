@@ -778,7 +778,9 @@ export default {
         createElement: 'Добавить элемент',
         editElement: 'Редактировать элемент',
         view: 'Отображение',
-        grid: 'Плитка'
+        grid: 'Плитка',
+        addToUsefulLink: 'Добавить в полезные ссылки',
+        usefulLinkDesc: 'Краткое описание полезной ссылки'
     },
 
     student: {

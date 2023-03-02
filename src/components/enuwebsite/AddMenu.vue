@@ -49,6 +49,17 @@
         <label class="ml-2" for="is_main">{{ $t('common.yes') }}</label>
       </div>
     </div>
+    <div class="field">
+      <label>{{ $t('web.addToUsefulLink') }}</label>
+      <div>
+        <Checkbox inputId="is_main" v-model="formData.is_usefull_link" :binary="true" />
+        <label class="ml-2" for="is_main">{{ $t('common.yes') }}</label>
+      </div>
+    </div>
+    <div class="field" v-if="formData.is_usefull_link">
+      <label>{{ $t('web.usefulLinkDesc') }}</label>
+      <Textarea :placeholder="$t('common.enter')" class="pt-1" type="text" v-model="formData.description" maxlength="80"></Textarea>
+    </div>
     <template #footer>
       <Button v-if="currentMenu" :label="$t('common.save')" icon="pi pi-check" class="p-button p-component p-button-success mr-2" @click="editMenu"/>
       <Button v-if="!currentMenu" :label="$t('common.add')" icon="pi pi-check" class="p-button p-component p-button-success mr-2" @click="addMenu"/>
