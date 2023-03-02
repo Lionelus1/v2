@@ -34,9 +34,18 @@
                       class="p-button-primary md:col-5" @click="sign" :label="$t('ncasigner.sign')" :loading="signing"/>
             </div>
           </Panel>
-            <div v-if="signerType === 'fl'" class="p-d-flex p-jc-center p-mt-2">
-              <qrcode-vue size="300" render-as="svg" margin="2" :value="mgovSignUri"></qrcode-vue>
-            </div>
+          <div v-if="signerType === 'fl'" class="p-mt-2">
+            <Panel>
+              <template #header>
+                <div class="p-d-flex p-jc-center">
+                  <InlineMessage class="" severity="info">{{ $t('ncasigner.qrSinging') }}</InlineMessage>
+                </div>
+              </template>
+              <div class="p-d-flex p-jc-center">
+                <qrcode-vue size="350" render-as="svg" margin="2" :value="mgovSignUri"></qrcode-vue>
+              </div>
+            </Panel>
+          </div>
         </div>
       </TabPanel>
     </TabView>
