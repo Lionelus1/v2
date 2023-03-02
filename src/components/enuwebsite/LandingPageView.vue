@@ -79,7 +79,7 @@ export default {
     const pageId = route.params.id
     const selectedBlock = ref({})
     const op = ref();
-    const selectedParams = ref()
+    const selectedParams = ref([])
 
     const getPageData = () => {
       enuService.getPageById(pageId).then(res => {
@@ -125,7 +125,8 @@ export default {
       let data = {
         block_id: selectedBlock.value.block_id,
         page_id: pageData.value.enu_page_id,
-        position: pageBlocks.value ? pageBlocks.value[pageBlocks.value.length - 1].position + 1 : 0
+        position: pageBlocks.value ? pageBlocks.value[pageBlocks.value.length - 1].position + 1 : 0,
+        params: selectedParams.value
       }
       enuService.addBlockToPage(data).then(res => {
         if (res.data && res.data.is_success) {
@@ -177,7 +178,6 @@ export default {
     }
 
     const getBlockParams = () => {
-      console.log(selectedBlock.value)
       enuService.getBlockParamsByBlockId(selectedBlock.value.block_id).then(res => {
         if (res.data) {
           selectedBlock.value.params = res.data;
@@ -188,12 +188,10 @@ export default {
     }
 
     const initParamSelect = (event, param) => {
-      console.log("value: ", event)
-      console.log("param: ", param)
+      selectedParams.value.push({parameter_id: event.value.parameter_id, catalog_value_id: event.value.id})
     }
 
     const navigateToBlock = (data) => {
-      console.log(data)
       if (!data.block.is_plugin)
         router.push({name: 'BlockView', params: {id: data.block_id}})
       if (data.block && data.block.block_plugin) {
