@@ -780,7 +780,8 @@ export default {
         view: 'Отображение',
         grid: 'Плитка',
         addToUsefulLink: 'Добавить в полезные ссылки',
-        usefulLinkDesc: 'Краткое описание полезной ссылки'
+        usefulLinkDesc: 'Краткое описание полезной ссылки',
+        bgImg: 'Фоновое изображение'
     },
 
     student: {

@@ -749,7 +749,8 @@ export default {
         view: 'Display',
         grid: 'Tile',
         addToUsefulLink: 'Add to useful links',
-        usefulLinkDesc: 'Brief description of the useful link'
+        usefulLinkDesc: 'Brief description of the useful link',
+        bgImg: 'Background image'
     },
     //Student locale
     student: {

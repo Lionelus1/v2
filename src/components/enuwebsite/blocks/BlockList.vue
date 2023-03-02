@@ -98,8 +98,12 @@ export default {
     const options = ref([true, false]);
 
     const navigateToView = (data) => {
-      console.log(data)
       if (!data.is_plugin) router.push({name: 'BlockView', params: {id: data.block_id}})
+
+      if (data.block_plugin) {
+        const compName = enuService.navigateToPlugin(data.block_plugin.component_name)
+        router.push({name: compName});
+      }
     };
 
     const getBlockList = () => {
