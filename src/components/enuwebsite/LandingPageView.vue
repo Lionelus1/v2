@@ -18,7 +18,7 @@
         </Column>
         <Column field="block_type" :header="$t('web.blockType')">
           <template #body="{ data }">
-            {{ data.block.is_list ? $t('web.list') : !data.block.is_plugin ? $t('web.content') : 'Плагин' }}
+            {{ data.block.is_list ? $t('web.list') : !data.block.is_plugin ? $t('web.content') : $t('web.plugin') }}
           </template>
         </Column>
         <Column field="actions" header="">

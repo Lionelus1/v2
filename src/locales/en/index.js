@@ -763,7 +763,8 @@ export default {
         grid: 'Tile',
         addToUsefulLink: 'Add to useful links',
         usefulLinkDesc: 'Brief description of the useful link',
-        bgImg: 'Background image'
+        bgImg: 'Background image',
+        plugin: 'Plugin'
     },
     //Student locale
     student: {

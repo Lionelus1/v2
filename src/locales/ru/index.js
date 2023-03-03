@@ -794,7 +794,8 @@ export default {
         grid: 'Плитка',
         addToUsefulLink: 'Добавить в полезные ссылки',
         usefulLinkDesc: 'Краткое описание полезной ссылки',
-        bgImg: 'Фоновое изображение'
+        bgImg: 'Фоновое изображение',
+        plugin: 'Плагин'
     },
 
     student: {

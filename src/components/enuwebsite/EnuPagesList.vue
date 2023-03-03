@@ -5,16 +5,34 @@
       <Button :label="$t('web.addPage')" icon="pi pi-plus" class="ml-2" @click="createPage"/>
     </div>
 
-    <div class="card">
-      <DataTable :value="pages" responsiveLayout="scroll" dataKey="enu_page_id" :paginator="true" :rows="10" sortMode="single" :rowHover="true">
-        <Column field="title_kz" :header="$t('common.nameIn')">
+    <div class="card" v-if="pages">
+      <DataTable :value="pages" responsiveLayout="scroll" :lazy="true" dataKey="enu_page_id" :loading="loading" :rows="10" :rowHover="true"
+                 :paginator="true" :totalRecords="total" @page="onPage" @sort="onSort">
+        <template #header>
+          <div class="text-right">
+            <div class="p-input-icon-left">
+              <i class="pi pi-search"/>
+              <InputText type="search" v-model="lazyParams.searchText" :placeholder="$t('common.search')"
+                         @search="getPages"/>
+              <Button icon="pi pi-search" class="ml-1" @click="getPages"/>
+            </div>
+          </div>
+        </template>
+        <template #empty>{{this.$t("common.recordsNotFound") }}</template>
+        <template #loading>{{this.$t("common.recordsLoading") }}</template>
+        <Column :field="'title_' + $i18n.locale" :header="$t('common.nameIn')" sortable>
           <template #body="{ data }">
             {{ $i18n.locale === 'kz' ? data.title_kz : $i18n.locale === 'ru' ? data.title_ru : data.title_en }}
           </template>
         </Column>
-        <Column field="is_main" header="Landing page">
+        <Column field="is_landing" header="Landing page" sortable>
           <template #body="{ data }">
             {{ data.is_landing ? 'Landing page' : '' }}
+          </template>
+        </Column>
+        <Column field="create_date" :header="$t('faq.createDate')" sortable>
+          <template #body="{ data }">
+            {{ formatDate(data.create_date) }}
           </template>
         </Column>
         <Column header="" style="text-align: right;">
@@ -106,9 +124,10 @@
 import {EnuWebService} from "@/service/enu.web.service";
 import PageView from "@/components/enuwebsite/PageView.vue";
 import RichEditor from "@/components/documents/editor/RichEditor.vue";
+import {formatDate} from "@/helpers/HelperUtil";
 
 export default {
-  name: "EnuWebPageView",
+  name: "EnuPagesList",
   components: {PageView, RichEditor},
   data() {
     return {
@@ -119,10 +138,10 @@ export default {
       display: false,
       pageView: false,
       deleteVisible: false,
-      allPage: [],
       pageData: null,
       addButtonName: this.addPage,
       submitted: false,
+      loading: false,
       enuService: new EnuWebService(),
       formValid: [],
       formData: {
@@ -144,7 +163,15 @@ export default {
         content_ru: null,
         content_en: null,
       },
-    };
+      lazyParams: {
+        page: 1,
+        rows: 10,
+        searchText: null,
+        sortField: null,
+        sortOrder: 0
+      },
+      total: 0
+    }
   },
   created() {
     this.getPages();
@@ -155,15 +182,30 @@ export default {
     });
   },
   methods: {
+    formatDate,
     getPages() {
-      this.enuService.getAllPages().then(res => {
+      this.loading = true;
+      this.enuService.getAllPages(this.lazyParams).then(res => {
         if (res.data) {
-          this.pages = res.data;
-          this.allPage = res.data;
+          this.pages = res.data.pages;
+          this.total = res.data.total;
         }
+        console.log(this.total)
+        this.loading = false;
       }).catch(error => {
+        this.loading = false;
         this.$toast.add({severity: "error", summary: error, life: 3000});
       });
+    },
+    onPage(event) {
+      this.lazyParams.page = event.page
+      this.lazyParams.rows = event.rows
+      this.getPages();
+    },
+    onSort(event) {
+      this.lazyParams.sortField = event.sortField;
+      this.lazyParams.sortOrder = event.sortOrder;
+      this.getPages();
     },
     createPage() {
       this.display = true;

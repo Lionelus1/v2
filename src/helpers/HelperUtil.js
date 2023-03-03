@@ -1,4 +1,5 @@
 import * as imageResizeCompress from "image-resize-compress";
+import moment from "moment/moment";
 
 export function upFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1)
@@ -23,4 +24,8 @@ export async function resizeImages(content) {
             });
     }
     return content;
+}
+
+export function formatDate(date) {
+    return moment(new Date(date)).utc().format("DD.MM.YYYY HH:mm")
 }
