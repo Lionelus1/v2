@@ -28,6 +28,7 @@
         <Column field="page" :header="$t('web.menuMainPage')">
           <template #body="{ node }">
             <a href="javascript:void(0)" @click="viewPage(node)">{{ showPage(node) }}</a>
+            <span>{{ node.page && node.page.is_plugin ? ' (Landing page)' : '' }}</span>
           </template>
         </Column>
         <Column field="link" :header="$t('common.link')">
@@ -38,6 +39,11 @@
         <Column field="is_main" :header="$t('web.isMainMenu')" :sortable="true">
           <template #body="{ node }">
             {{ node.is_main ? $t('web.onMain') : '' }}
+          </template>
+        </Column>
+        <Column field="create_date" :header="$t('faq.createDate')" :sortable="true">
+          <template #body="{ node }">
+            {{ formatDate(node.create_date) }}
           </template>
         </Column>
         <Column field="actions" header="" class="text-right">
@@ -58,9 +64,10 @@
 import {EnuWebService} from "@/service/enu.web.service";
 import AddMenu from "@/components/enuwebsite/AddMenu.vue";
 import PageView from "@/components/enuwebsite/PageView.vue";
+import {formatDate} from "@/helpers/HelperUtil";
 
 export default {
-  name: "EnuWebView",
+  name: "EnuMenuList",
   components: { AddMenu, PageView },
   data() {
     return {
@@ -99,6 +106,7 @@ export default {
     });
   },
   methods: {
+    formatDate,
     onExpand(node) {
       this.lazyParams.parent_id = Number(node.menu_id)
       this.parentNode = node
@@ -129,7 +137,7 @@ export default {
     },
     getPages() {
       this.pages = [];
-      this.enuService.getAllPages().then(res => {
+      this.enuService.getAllPages({}).then(res => {
         if (res.data) {
           this.pages = res.data;
         }
@@ -168,8 +176,9 @@ export default {
     },
     showPage(data) {
       let title = ""
-      if (data && data.page)
+      if (data && data.page) {
         title = this.$i18n.locale === 'kz' ? data.page.title_kz : this.$i18n.locale === 'ru' ? data.page.title_ru : data.page.title_en;
+      }
       return title;
     },
     hideDialog() {

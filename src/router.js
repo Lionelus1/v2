@@ -385,14 +385,14 @@ const routes = [
             },
             {
                 path: '/enu/menus',
-                name: 'EnuWebView',
-                component: load('enuwebsite/EnuWebView'),
+                name: 'EnuMenuList',
+                component: load('enuwebsite/EnuMenuList'),
                 beforeEnter: ifAuthenticated,
             }, 
             {
                 path: '/enu/pages',
-                name: 'EnuWebPageView',
-                component: load('enuwebsite/EnuWebPageView'),
+                name: 'EnuPagesList',
+                component: load('enuwebsite/EnuPagesList'),
                 beforeEnter: ifAuthenticated,
             },
             {

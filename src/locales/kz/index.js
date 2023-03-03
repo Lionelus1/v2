@@ -795,7 +795,8 @@ export default {
         grid: 'Плитка',
         addToUsefulLink: 'Пайдалы сілтемелерге қосу',
         usefulLinkDesc: 'Пайдалы сілтеменің қысқаша сипаттамасы',
-        bgImg: 'Фонның суреті'
+        bgImg: 'Фонның суреті',
+        plugin: 'Плагин'
     },
     //Student locale
     student: {

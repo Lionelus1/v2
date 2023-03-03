@@ -17,8 +17,8 @@ export class EnuWebService {
         return api.post("/web/editMenu", data, {headers: getHeader()});
     }
 
-    getAllPages(){
-        return api.get("/web/getPages", {headers: getHeader()});
+    getAllPages(params){
+        return api.post("/web/getPages", params, {headers: getHeader()});
     }
 
     getPageById(pageId) {

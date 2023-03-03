@@ -15,6 +15,16 @@
             </a>
           </template>
         </Column>
+        <Column :header="$t('web.blockType')">
+          <template #body="{data}">
+            {{ data.is_list ? $t('web.list') : !data.is_plugin ? $t('web.content') : $t('web.plugin') }}
+          </template>
+        </Column>
+        <Column :header="$t('faq.createDate')">
+          <template #body="{data}">
+            {{ formatDate(data.create_date) }}
+          </template>
+        </Column>
         <Column class="text-right">
           <template #body="{data}">
             <Button icon="fa-solid fa-pen" class="p-button mr-2"
@@ -76,6 +86,7 @@
 <script>
 import {onMounted, ref, reactive, toRefs} from "vue";
 import {EnuWebService} from "@/service/enu.web.service";
+import { formatDate } from "@/helpers/HelperUtil";
 import {useRouter} from "vue-router";
 import {useI18n} from "vue-i18n";
 import {useToast} from "primevue/usetoast";
@@ -204,7 +215,7 @@ export default {
     return {
       blockList, isCreateModal, formData,
       loading, selectedBlock, submitted, options,
-      navigateToView, openDialog, hideDialog, addBlock, save, deleteConfirm, openEdit
+      navigateToView, openDialog, hideDialog, addBlock, save, deleteConfirm, openEdit, formatDate
     }
   }
 }
