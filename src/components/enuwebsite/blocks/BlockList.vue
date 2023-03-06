@@ -190,7 +190,7 @@ export default {
         acceptClass: 'p-button-rounded p-button-success',
         rejectClass: 'p-button-rounded p-button-danger',
         accept: () => {
-          remove(data.block_id)
+          remove(data.id)
         },
       });
     }
