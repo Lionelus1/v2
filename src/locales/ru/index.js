@@ -166,7 +166,7 @@ export default {
         params: "Параметры",
         password: "Пароль",
         person: "Персона",
-        individualEntrepreneur: "Частное лицо",
+        individualEntrepreneur: "Частные лица",
         personal: "Сотрудники",
         pending: "В ожидании",
         uploaded: "Загруженные",

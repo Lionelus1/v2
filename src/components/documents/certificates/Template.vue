@@ -283,9 +283,9 @@ export default {
                   titleen: "Listener @listenerFullName <br> has succesfully completed <br>the online course «@fullNameOfCourse» <br> @studyPeriod for @hoursCount hours.", 
                   rectelement: {z:5, x:90,y:190, w:660, h:180}, style:"text-align:center;font-size:24px;color:#000000;letter-spacing:0px"}},
                   {id: -1, name: "txt", description:"common",  value: { name: "number", title: "details", 
-                  titlekz: "№ @sertficateNumber<br> @certificateDate <br> Астана қаласы", 
-                  titleru: "№ @sertficateNumber<br> @certificateDate <br> город Астана", 
-                  titleen: "№ @sertficateNumber<br> @certificateDate <br> Astana city", 
+                  titlekz: "№ @certificateNumber<br> @certificateDate <br> Астана қаласы", 
+                  titleru: "№ @certificateNumber<br> @certificateDate <br> город Астана", 
+                  titleen: "№ @certificateNumber<br> @certificateDate <br> Astana city", 
                   rectelement: {z:6, x:90,y:490, w:160, h:60}, style:"font-size:10px;color:#000000;letter-spacing:0px"}},
                   {id: -1, name: "img", description:"kz", active: false, isDeleted:false,  value: {url:  "enu_logo/logo-kz.png", title: "logo", rectelement: {z:7, x:340,y:15, w:163, h:60}}},
                   {id: -1, name: "img", description:"ru", active: false, isDeleted:false,  value:{url:  "enu_logo/logo-en.png", title: "logo", rectelement: {z:8, x:349,y:15, w:144, h:60}}},
@@ -380,9 +380,9 @@ export default {
                   titleen: "Listener @listenerFullName <br> has succesfully completed<br> the online course «@fullNameOfCourse» <br> @studyPeriod for @hoursCount hours.", 
                   rectelement: {z:5, x:90,y:190, w:660, h:180}, style:"text-align:center;font-size:24px;color:#000000;letter-spacing:0px"}},
                   {id: -1, name: "txt", description:"common",  value: { name: "number", title: "details", 
-                  titlekz: "№ @sertficateNumber<br> @certificateDate <br> Астана қаласы", 
-                  titleru: "№ @sertficateNumber<br> @certificateDate <br> город Астана", 
-                  titleen: "№ @sertficateNumber<br> @certificateDate <br> Astana city", 
+                  titlekz: "№ @certificateNumber<br> @certificateDate <br> Астана қаласы", 
+                  titleru: "№ @certificateNumber<br> @certificateDate <br> город Астана", 
+                  titleen: "№ @certificateNumber<br> @certificateDate <br> Astana city", 
                   rectelement: {z:6, x:90,y:490, w:160, h:60}, style:"font-size:10px;color:#000000;letter-spacing:0px"}},
                   {id: -1, name: "img", description:"kz", active: false, isDeleted:false,  value: {url:  "enu_logo/logo-kz.png", title: "logo", rectelement: {z:7, x:340,y:15, w:163, h:60}}},
                   {id: -1, name: "img", description:"ru", active: false, isDeleted:false,  value:{url:  "enu_logo/logo-en.png", title: "logo", rectelement: {z:8, x:349,y:15, w:144, h:60}}},
@@ -467,7 +467,7 @@ export default {
         getZ() {
           let max = 0;
           this.template.params.forEach(elem => {
-              if (elem.value.rectelement.z > max) {
+              if (elem.value && elem.value.rectelement &&elem.value.rectelement && elem.value.rectelement.z > max) {
                 max = elem.value.rectelement.z
               }
           });
