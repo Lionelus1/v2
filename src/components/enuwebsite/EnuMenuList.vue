@@ -139,7 +139,7 @@ export default {
       this.pages = [];
       this.enuService.getAllPages({}).then(res => {
         if (res.data) {
-          this.pages = res.data;
+          this.pages = res.data.pages;
         }
       }).catch(error => {
         if (error.response && error.response.status === 401) {

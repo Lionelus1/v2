@@ -235,7 +235,7 @@ export default {
     },
     getPages(data) {
       this.enuService.getAllPages().then(res => {
-        this.pages = res.data;
+        this.pages = res.data.pages;
         this.formData.page_id = data.enu_page_id;
         this.addPageVisible = false;
       }).catch(error => {
