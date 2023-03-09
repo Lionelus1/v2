@@ -8,7 +8,7 @@
         <div class="col-12" v-if="isShow">
           <Button :label="$t('common.downloadSignaturesPdf')" icon="pi pi-download" @click="downloadSignatures"
                   class="p-button ml-2"/>
-          <SignatureQrPdf ref="qrToPdf" :signatures="signatures" :title="docInfo.name"></SignatureQrPdf>
+          <SignatureQrPdf ref="qrToPdf" :signatures="signatures" :title="docInfo.name" :approvalStages="approvalStages"></SignatureQrPdf>
         </div>
         <div class="col-12" v-else>
           <div class="card">
@@ -83,6 +83,7 @@ export default {
   data() {
     return {
       signatures: null,
+      approvalStages: null,
       plan: null,
       doc_id: this.$route.params.uuid,
       isTspRequired: Boolean,
@@ -132,20 +133,61 @@ export default {
       }
     },
     getData() {
-      axios.get(smartEnuApi + `/getDocInfo/${this.doc_id}`, {headers: getHeader()})
-          .then(res => {
-            if (res.data) {
-              this.docInfo = res.data;
-              this.signatures = res.data.signatures;
-              this.showAllSignsParam ? this.isShow = true :
-                  this.isShow = this.findRole(null, "career_moderator") || this.signatures.some(x => x.userId === this.loginedUserId) || this.docInfo.docHistory.setterId === this.loginedUserId;
-              this.isSignShow = this.signatures.some(x => x.userId === this.loginedUserId && (x.signature || x.signature !== ''));
-              this.signatures.map(e => {
-                e.sign = this.chunkString(e.signature, 1200)
+      axios.post(smartEnuApi + `/agreement/getSignInfo`, {
+        doc_uuid: this.doc_id,
+      }, {
+        headers: getHeader(),
+      }).then(res => {
+        if (res.data) {
+          this.docInfo = res.data;
+          this.signatures = res.data.signatures;
+
+          if (this.showAllSignsParam) {
+            this.isShow = true;
+          } else {
+            this.isShow = this.findRole(null, "career_moderator") || (this.signatures && this.signatures.some(x => x.userId === this.loginedUserId)) || 
+              this.docInfo.docHistory.setterId === this.loginedUserId;
+          }
+
+          this.isSignShow = this.signatures && this.signatures.some(x => x.userId === this.loginedUserId && (x.signature || x.signature !== ''));  
+
+          if (this.signatures)
+            this.signatures.map(e => {
+              e.sign = this.chunkString(e.signature, 1200)
+            });
+
+          if (this.docInfo.needApproval) {
+            this.approvalStages = res.data.approvalStages;
+
+            if (!this.showAllSignsParam && !this.isShow && this.approvalStages) {
+              this.approvalStages.forEach(element => {
+                this.isShow = this.isShow || (element.users && element.users.some(x => x.userID === this.loginedUserId));
+                if (this.isShow) {
+                  return
+                }
               });
             }
-            this.loading = false;
-          }).catch(error => {
+
+            if (!this.isSignShow && this.approvalStages) {
+              this.approvalStages.forEach(element => {
+                this.isSignShow = element.signatures && element.signatures.some(x => x.userId === this.loginedUserId && (x.signature || x.signature !== ''));
+                if (this.isSignShow) {
+                  return
+                }
+              });
+            }
+
+            if (this.approvalStages)
+              this.approvalStages.map(stage => {
+                stage.signatures.map(e => {
+                  e.sign = this.chunkString(e.signature, 1200)
+                })
+              });
+          }
+        }
+
+        this.loading = false;
+      }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
@@ -160,35 +202,28 @@ export default {
     },
     sign() {
       this.signing = true;
-      axios.post(
-          smartEnuApi + "/downloadFile", {
-            filePath: this.docInfo.filePath
-          }, {
-            headers: getHeader()
+      axios.post(smartEnuApi + "/downloadFile", {
+        filePath: this.docInfo.filePath
+      }, {
+        headers: getHeader()
+      }).then(response => {
+        runNCaLayer(this.$t, this.$toast, response.data, 'cms',this.signerType, this.isTspRequired, this.$i18n.locale).then(sign => {
+          if (sign != undefined) {
+              this.sendRequest(sign)
           }
-      )
-          .then(response => {
-            (
-                runNCaLayer(this.$t, this.$toast, response.data, 'cms',this.signerType, this.isTspRequired, this.$i18n.locale)
-                    .then(sign => {
-                      if (sign != undefined) {
-                          this.sendRequest(sign)
-                      }
-                    }).catch(e => {
-                  console.log(e)
-                  this.signing = false;
-                })
-            ).catch(error => {
-              this.signing = false;
-              if (error.response.status == 401) {
-                this.$store.dispatch("logLout");
-              }
-            })
-          })
+        }).catch(e => {
+          console.log(e)
+          this.signing = false;
+        })
+      }).catch(error => {
+        this.signing = false;
+        if (error.response.status == 401) {
+          this.$store.dispatch("logLout");
+        }
+      })
     },
     sendRequest(signature) {
       var req = {
-        userID: this.$store.state.loginedUser.userID,
         docUUID: this.docInfo.uuid,
         sign: signature,
         signerIin: this.signerIin,
@@ -251,7 +286,7 @@ export default {
           orientation: 'portrait',
           hotfixes: ["px_scaling"]
         },
-        pagebreak: {avoid: '#qr'},
+        pagebreak: {avoid: ['#qr']},
         filename: this.docInfo.name + ".pdf"
       };
       const pdfContent = this.$refs.qrToPdf.$refs.qrToPdf;

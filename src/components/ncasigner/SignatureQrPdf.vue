@@ -3,6 +3,9 @@
     <h5 class="col-6 p-offset-3 text-center bold">{{ title }}</h5>
     <br/>
     <div class="col-12">
+      <h5 v-if="signatures">
+        {{ $t('common.signers') }}
+      </h5>
       <div id="qr" v-for="(item, index) of signatures" :key="index"
            style="border: 1px solid #000; padding: 5px; margin: 5px;display: block;">
         <p v-if="item.user"><b>{{ item.user.fullName }}</b> <!--({{ $t('ncasigner.IIN') }} <em>{{ item.user.IIN }}</em>)-->
@@ -10,12 +13,25 @@
         </p>
         <div style="width: 100%;text-align: left;">
           <qrcode-vue v-for="(i, ind) of item.sign" :key="ind" size="300" render-as="svg" margin="2" :value="i"></qrcode-vue>
-        </div>
-        
+        </div>   
       </div>
-      
+      <h5 v-if="approvalStages">
+        {{ $t('common.approvals') }}
+      </h5>
+      <div id="stage" v-for="(stage, stageInd) of approvalStages" :key="stageInd">
+        <h5> {{ stage.stage.toString() + '. ' + stage['title'+$i18n.locale[0].toUpperCase() + $i18n.locale.slice(1)]}} </h5>
+        <div id="qr" v-for="(user, userInd) of stage.users" :key="userInd"
+           style="border: 1px solid #000; padding: 5px; margin: 5px;display: block;">
+          <p>
+            <b> {{ user.fullName }} </b>
+            <br/> {{ stage[stageInd].usersApproved[userInd] == 1 ? $t('ncasigner.approved') + ": " + new Date(stage[stageInd].signatures[userInd].signDate).toLocaleDateString() + ", " + new Date(stage[stageInd].signatures[userInd].signDate).toLocaleTimeString()  : $t('ncasigner.approvingExpected') }}
+          </p>
+          <div v-if="stage[stageInd].signatures" style="width: 100%;text-align: left;">
+            <qrcode-vue v-for="(i, ind) of stage[stageInd].signatures[userInd].sign" :key="ind" size="300" render-as="svg" margin="2" :value="i"></qrcode-vue>
+          </div>
+        </div>
+      </div>
     </div>
-    
   </div>
 </template>
 
@@ -25,7 +41,11 @@ import QrcodeVue from "qrcode.vue";
 export default {
   name: "SignatureQrPdf",
   components: {QrcodeVue},
-  props: ['title', 'signatures']
+  props: {
+    title: null,
+    signatures: null,
+    approvalStages: null,
+  }
 }
 </script>
 

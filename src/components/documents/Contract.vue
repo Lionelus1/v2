@@ -232,6 +232,8 @@ export default {
         ru: 1,
         en: 2,
       },
+      approvalStages: null,
+      approvalStagesLoading: true,
       menu: [
         {
           label: this.$t("common.save"),
@@ -274,19 +276,37 @@ export default {
             {
               label: this.$t("common.toapprove"),
               icon: "pi pi-check",
-              visible: () =>
+              visible: () => 
                 this.contract &&
                 this.findRole(null, 'student'),
-                command: () => {this.sendToApprove()}
+              command: () => {
+                this.sendToApprove(1)
+              },
+            },
+            {
+              label: this.$t("common.toapprove"),
+              icon: "fa-regular fa-handshake",
+              visible: () => 
+                this.contract && (this.contract.needApproval &&
+                !this.approvalStages && !this.approvalStagesLoading &&
+                !this.contract.docHistory.stateEn == Enum.APPROVED.Value) &&
+                this.contract.sourceType === this.sourceType.template && 
+                !this.findRole(null, 'student'),
+              command: () => {
+                this.sendToApprove(2)
+              },
             },
             {
               label: this.$t("common.tosign"),
               icon: "pi pi-user-edit",
-              visible: () =>
-                this.contract &&
+              visible: () => 
+                this.contract && (!this.contract.needApproval ||
+                this.contract.docHistory.stateEn == Enum.APPROVED.Value) &&
                 this.contract.sourceType === this.sourceType.template &&
                 !this.findRole(null, 'student'),
-              command: ()=> { this.sendToSign()},
+              command: ()=> {
+                this.sendToSign()
+              },
             },
           ],
         },
@@ -331,10 +351,9 @@ export default {
       },
     moment: moment,
     correct() {
-      if (this.contract.docHistory.stateId == 1 || !this.findRole(null, "student"))
-      {
-      this.corrected = true
-      this.menu[0].disabled = false
+      if (this.contract.docHistory.stateId == 1 || !this.findRole(null, "student")) {
+        this.corrected = true
+        this.menu[0].disabled = false
       }
     },
     openForm(formName) {
@@ -349,8 +368,7 @@ export default {
     },
     //Қол қою
     sendToSign() {
-      if (!this.formsValidate())
-      {
+      if (!this.formsValidate()) {
         this.$toast.add({
           severity: "error",
           summary: this.$t("common.tosign"),
@@ -359,6 +377,7 @@ export default {
         });
         return
       }
+
       if (this.corrected) {
         this.$toast.add({
           severity: "warn",
@@ -368,45 +387,48 @@ export default {
         });
         return
       }
+
       this.$confirm.require({
         message: this.$t('common.confirmation'),
         header: this.$t('common.approve'),
         icon: 'pi pi-exclamation-triangle',
         accept: () => {
-          var req = { id: this.contract.id, userID: this.$store.state.loginedUser.userID };
-          req.lang = "kaz";
+          var req = { 
+            id: this.contract.id, 
+            lang: 'kaz',
+          };
+
           if (this.contract.lang != 0) {
-            req.lang = "rus";
+            req.lang = 'rus';
           }
+
           this.loading = true
-          axios.post(smartEnuApi + "/contract/sendtosign", req, { headers: getHeader() })
-          .then(response => {
+          axios.post(smartEnuApi + "/agreement/sendtosign", req, { 
+            headers: getHeader(),
+          }).then(response => {
             this.loading = false
             this.contract.docUUID = response.data.docUUID
             this.contract.filePath = response.data.filePath
             this.contract.docHistory = response.data.docHistory
-            this.menu[3].items[1].disabled = true
+            this.menu[3].items[2].disabled = true
             this.$toast.add({
               severity: "success",
               summary: this.$t("common.tosign"),
               detail: this.$t("ncasigner.successSentToSign"),
               life: 3000,
             });
-          }).
-          catch(error => {
+          }).catch(error => {
             this.loading = false;
             if (error.response.status == 401) {
               this.$store.dispatch("logLout");
             } else 
               console.log(error);
           })
-                    
         }
       })
     },
-    sendToApprove() {
-      if (!this.formsValidate())
-      {
+    sendToApprove(type) {
+      if (!this.formsValidate()) {
         this.$toast.add({
           severity: "error",
           summary: this.$t("common.approve"),
@@ -415,6 +437,7 @@ export default {
         });
         return
       }
+
       if (this.corrected) {
         this.$toast.add({
           severity: "warn",
@@ -424,39 +447,46 @@ export default {
         });
         return
       }
+
       this.$confirm.require({
         message: this.$t('common.confirmation'),
         header: this.$t('common.approve'),
         icon: 'pi pi-exclamation-triangle',
         accept: () => {
-          var req = { id: this.contract.id, userID: this.$store.state.loginedUser.userID };
-          req.lang = "kaz";
+          var req = { 
+            id: this.contract.id, 
+            type: type,
+            lang: 'kaz',
+          };
           if (this.contract.lang != 0) {
-            req.lang = "rus";
+            req.lang = 'rus';
           }
           this.loading = true
-          axios.post(smartEnuApi + "/contract/sendtoapprove", req, { headers: getHeader() })
-          .then(response => {
+          axios.post(smartEnuApi + "/agreement/sendtoapprove", req, { 
+            headers: getHeader() 
+          }).then(response => {
             this.loading = false
+            if (type === 1) {
+              this.menu[3].items[0].disabled = true
+            } else {
+              this.menu[3].items[1].disabled = true
+            }
             this.contract.docUUID = response.data.docUUID
             this.contract.filePath = response.data.filePath
             this.contract.docHistory = response.data.docHistory
-            this.menu[3].items[1].disabled = true
             this.$toast.add({
               severity: "success",
               summary: this.$t("common.tosign"),
               detail: this.$t('common.message.succesSendToApproval'),
               life: 3000,
             });
-          }).
-          catch(error => {
+          }).catch(error => {
             this.loading = false;
             if (error.response.status == 401) {
               this.$store.dispatch("logLout");
             } else 
               console.log(error);
           })
-                    
         }
       })
     },
@@ -501,26 +531,21 @@ export default {
           this.loading = false
           this.contract = res.data;
           this.contract.params.forEach((param) => {
-          if (param.name == "period") {
-            param.value  = param.value .map(d => new Date(d));
-          }
-          if (param.name == "student" && (param.value.userID == 0 || param.value.userID == null)) {
-            if (this.findRole(null, 'student')) {
-              param.value = this.$store.state.loginedUser
+            if (param.name == "period") {
+              param.value  = param.value .map(d => new Date(d));
             }
-          }
-          
-       
-      
-      });
-            
+            if (param.name == "student" && (param.value.userID == 0 || param.value.userID == null)) {
+              if (this.findRole(null, 'student')) {
+                param.value = this.$store.state.loginedUser
+              }
+            }
+          });
 		      this.reserveNumber = this.contract.number
           if (this.contract.docHistory.stateId >= 6) {
             if (this.contract.docHistory.stateId >=2) {
               this.menu[3].items[0].disabled = true
             }
-            this.menu[3].items[1].disabled = true
-
+            this.menu[3].items[2].disabled = true
           } 
           if (this.contract.sourceType == 0) {
             this.contract.text =
@@ -528,15 +553,33 @@ export default {
                 ? this.contract.template.mainTextKaz
                 : this.contract.template.mainTextRus;
           }
-          
-
-        })
-        .catch((error) => {
+          this.initApprovalStages();
+        }).catch((error) => {
           this.loading = false
           if (error.response && error.response.status == 401) {
             this.$store.dispatch("logLout");
           }
         });
+    },
+    initApprovalStages() {
+      if (!this.contract.needApproval) {
+        return
+      }
+      
+      axios.post(smartEnuApi + "/agreement/getApprovalStages", {
+        docId: this.contract.id,
+      }, {
+        headers: getHeader(),
+      }).then(response => {
+        this.approvalStages = response
+        this.approvalStagesLoading = false
+      }).catch((error) => {
+        if (error.response && error.response.status == 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          console.log(error)
+        }
+      });
     },
     paramToString(param) {
       var result = "";
@@ -653,7 +696,7 @@ export default {
     },
     downloadContract(saveFile) {
       if (!this.contract) return;
-      let url = "/contract/getpdf";
+      let url = "/agreement/getpdf";
       var req = { id: this.contract.id };
       req.lang = "kaz";
       if (this.contract.lang != 0) {
@@ -682,7 +725,7 @@ export default {
     },
     registrateContract(next = false) {
       if (!this.contract) return;
-      let url = "/contract/setnumber";
+      let url = "/agreement/setnumber";
       var req = {
         id: this.contract.id,
         temp: this.temp,

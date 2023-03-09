@@ -42,8 +42,14 @@
                     <label for="dtdescriptionru">{{$t('doctemplate.description')}}  ({{$t('common.language.ru')}})</label>
                     <InputText id="dtdescriptionru" class="mb-2" v-bind:placeholder="$t('common.description')" v-model="createdTemplate.descriptionRus" type="text" />
                     <div class="field-checkbox">
-                      <Checkbox id="financial" class="mr-2" v-model="createdTemplate.financial" :binary="true"/>
-                      <label for="financial">{{$t('hr.doc.financial')}}</label>
+                      <!-- <Checkbox id="financial" class="mr-2" v-model="createdTemplate.financial" :binary="true"/>
+                      <label for="financial">{{$t('hr.doc.financial')}}</label> -->
+                      <Checkbox id="needApproval" class="mr-2" v-model="createdTemplate.needApproval" :binary="true"/>
+                      <label for="needApproval">{{$t('doctemplate.needsApproval')}}</label>
+                    </div>
+                    <div class="field" v-if="createdTemplate.needApproval">
+                      <ApprovalUsers :mode="'doc_template_creating'" v-model="initialApprovalStages"
+                        @update:modelValue="updateModel($event)"></ApprovalUsers>
                     </div>
                 </div>
               </div>
@@ -61,27 +67,33 @@
                 </template>
               </Column>
               
-              <Column field="name" v-bind:header="$t('common.name')">
+               <Column field="name" v-bind:header="$t('common.name')">
                 <template #body="slotProps">
                   <Button class="p-button-link" style="text-align:left" v-if="selectMode && slotProps.node.data.type===0" @click="select($event,slotProps.node)" v-tooltip.bottom="$t('common.choose')">{{slotProps.node.data.name}}</Button>
                   <span v-else>{{slotProps.node.data.name}}</span>
-                  <span class="sm-visible"> /{{slotProps.node.data.typeText}}</span>
-                  <span  v-if="slotProps.node.data.state!=null" class="sm-visible"> /{{slotProps.node.data.state}}</span>
-                  <span v-if="slotProps.node.data.financial" class="sm-visible">/ <i class="fa-regular fa-money-bill-1"></i></span>
-                  <span v-if="slotProps.node.data.updatedDate!=null" class="sm-visible"> /{{slotProps.node.data.updatedDate}}</span>
+                  <!-- <span class="sm-visible"> /{{slotProps.node.data.typeText}}</span> -->
+                  <!-- <span  v-if="slotProps.node.data.state!=null" class="sm-visible"> /{{slotProps.node.data.state}}</span> -->
+                  <!-- <span v-if="slotProps.node.data.financial" class="sm-visible">/ <i class="fa-regular fa-money-bill-1"></i></span>  -->
+                  <!-- <span v-if="slotProps.node.data.needApproval" class="sm-visible">/ <i class="fa-solid fa-list-check"></i></span> -->
+                  <!-- <span v-if="slotProps.node.data.updatedDate!=null" class="sm-visible"> /{{slotProps.node.data.updatedDate}}</span> -->
                 </template>
-              </Column>
+              </Column> 
               <Column field="code" v-bind:header="$t('common.code')" headerClass="sm-invisible" bodyClass="sm-invisible"></Column>
               <Column v-if="!selectMode" field="createdDate" v-bind:header="$t('common.created')"  headerClass="sm-invisible" bodyClass="sm-invisible">
                 <template #body="slotProps">
                     {{slotProps.node.data.createdDate ? slotProps.node.data.createdDate.replace('Z', '').replace('T', ' '): ''}}
                 </template>
               </Column>
-              <Column field="financial"  headerStyle="width: 2em"  headerClass="sm-invisible" bodyClass="sm-invisible">
+              <!-- <Column field="financial"  headerStyle="width: 2em"  headerClass="sm-invisible" bodyClass="sm-invisible">
                 <template #body="slotProps">
                   <span v-if="slotProps.node.data.financial"> <i class="fa-solid fa-money-bill fa-xl"></i></span>
                 </template>
-              </Column>
+              </Column> -->
+              <!-- <Column field="needApproval"  headerStyle="width: 2em"  headerClass="sm-invisible" bodyClass="sm-invisible">
+                <template #body="slotProps">
+                  <span v-if="slotProps.node.data.needApproval"> <i class="fa-solid fa-list-check fa-xl"></i></span>
+                </template>
+              </Column> -->
               <Column v-if="!selectMode" field="state" v-bind:header="$t('common.state')" headerClass="sm-invisible" bodyClass="sm-invisible">
                 <template #body="slotProps">
                   <span :class="'template-status ' + slotProps.node.data.stateEn"> {{slotProps.node.data.state}}</span>
@@ -89,17 +101,17 @@
 
               </Column>
               
-              <Column field="updatedDate" v-bind:header="$t('common.updated')" headerClass="sm-invisible" bodyClass="sm-invisible">
+              <!-- <Column field="updatedDate" v-bind:header="$t('common.updated')" headerClass="sm-invisible" bodyClass="sm-invisible">
                <template #body="slotProps">
                     {{slotProps.node.data.updatedDate ? slotProps.node.data.updatedDate.replace('Z', '').replace('T', ' ') : ''}}
                 </template>
-              </Column>
+              </Column> -->
               <Column headerStyle="width: 8em" headerClass="text-center" bodyClass="text-center">
               <template #header>
                   <Button v-if="!selectMode" icon="pi pi-plus" class="p-button-blue" @click="openForm('addFolder');clearCreatedFolder();" v-tooltip.bottom="$t('common.newCatalog')"  />
               </template>
               <template #body="slotProps">
-                  <Button v-if="slotProps.node.data.type==1 && !selectMode" type="button" icon="pi pi-plus" @click="openForm('addTemplate',slotProps.node);clearCreatedTemlate();" class="p-button-success" v-tooltip.bottom="$t('doctemplate.newTemplate')"></Button>
+                  <Button v-if="slotProps.node.data.type==1 && !selectMode" type="button" icon="pi pi-plus" @click="clearCreatedTemplate();initTemplateApprovalInfo(true, slotProps.node);" class="p-button-success" v-tooltip.bottom="$t('doctemplate.newTemplate')"></Button>
                   <Button v-if="slotProps.node.data.type!=1" type="button" icon="pi pi-search" class="p-button-warning" @click="editDocTemplate(slotProps.node)" v-tooltip.bottom="$t('common.show')"></Button>&nbsp;
                   <Button v-if="slotProps.node.data.type!=1 && slotProps.node.data.stateEn == DocState.REVISION.Value" icon="pi pi-comment" @click="openForm('dialogComment',slotProps.node)" v-tooltip.bottom="$t('common.comment')"></Button>
                   <Button v-if="selectMode && slotProps.node.data.type!=1" icon="pi pi-check-circle" class="p-button-success ml-2" @click="select($event,slotProps.node)" v-tooltip.bottom="$t('common.choose')"></Button>
@@ -114,12 +126,14 @@
           <TabPanel v-bind:header="$t('doctemplate.selected')" :disabled="(selectedNode.data.type == null || selectedNode.data.type == 1)">
             <div class="formgroup-inline">
               <span class="buttonset">
-                <Button v-if="(selectedNode.data.stateEn == DocState.CREATED.Value || selectedNode.data.stateEn == DocState.REVISION.Value)" v-bind:label="$t('common.save')" icon="pi pi-save" @click="saveDocTemplate"/>
-                <Button v-bind:label="$t('common.download')" icon="pi pi-file-pdf" @click="downloadDocTemplatePdf" />
-                <Button v-if="selectedNode.data.stateEn == DocState.CREATED.Value || selectedNode.data.stateEn == DocState.REVISION.Value" v-bind:label="$t('common.toapprove')" icon="pi pi-send" @click="openForm('toApproval')" />
-                <Button v-if="selectedNode.data.stateEn == DocState.INAPPROVAL.Value && findRole(null, DocState.roles.LegalServiceHead)" class="p-button-success" :label ="$t('common.approve')" icon="pi pi-check" @click="approve()"/>
-                <Button v-if="selectedNode.data.stateEn == DocState.INAPPROVAL.Value && findRole(null, DocState.roles.LegalServiceHead)" class="p-button-warning" :label ="$t('common.revision')" icon="pi pi-times" @click="openForm('revision')"/>
-                <Button v-if="selectedNode.data.stateEn == DocState.APPROVED.Value" class="p-button-primary" :label ="$t('common.approvalList')" icon="pi pi-user-edit" @click="openForm('signerInfo')"/>
+                <Button style="margin-right: 0.5rem;" v-if="(selectedNode.data.stateEn == DocState.CREATED.Value || selectedNode.data.stateEn == DocState.REVISION.Value)" :label="$t('common.save')" icon="pi pi-save" @click="saveDocTemplate"/>
+                <Button style="margin-right: 0.5rem;" v-bind:label="$t('common.download')" icon="pi pi-file-pdf" @click="downloadDocTemplatePdf" />
+                <Button style="margin-right: 0.5rem;" v-if="selectedNode.data.needApproval && ((selectedNode.data.stateEn == DocState.INAPPROVAL.Value && findRole(null, DocState.roles.LegalServiceHead)) || selectedNode.data.stateEn == DocState.REVISION.Value || selectedNode.data.stateEn == DocState.APPROVED.Value)" 
+                  class="p-button-warning" :label="$t('doctemplate.approvalUsers')" icon="fa-solid fa-users-gear" @click="initApprovalInfo(true);"></Button>
+                <Button style="margin-right: 0.5rem;" v-if="selectedNode.data.stateEn == DocState.CREATED.Value || selectedNode.data.stateEn == DocState.REVISION.Value" :label="$t('common.toapprove')" icon="pi pi-send" @click="openForm('toApproval')" />
+                <Button style="margin-right: 0.5rem;" v-if="selectedNode.data.stateEn == DocState.INAPPROVAL.Value && findRole(null, DocState.roles.LegalServiceHead)" class="p-button-success" :label ="$t('common.approve')" icon="pi pi-check" @click="approve()"/>
+                <Button style="margin-right: 0.5rem;" v-if="selectedNode.data.stateEn == DocState.INAPPROVAL.Value && findRole(null, DocState.roles.LegalServiceHead)" class="p-button-warning" :label ="$t('common.revision')" icon="pi pi-times" @click="openForm('revision')"/>
+                <Button style="margin-right: 0.5rem;" v-if="selectedNode.data.stateEn == DocState.APPROVED.Value" class="p-button-primary" :label ="$t('common.approvalList')" icon="pi pi-user-edit" @click="openForm('signerInfo')"/>
               </span>
 
               <SelectButton @change="languageChanged" v-model="templateLanguage" :options="language" class="mb-3">
@@ -201,15 +215,23 @@
                 <Button v-bind:label="$t('common.yes')" icon="pi pi-check" @click="revisionTemplate" autofocus />
               </template>
             </Dialog>
-            <Dialog :header="$t('common.comment')" v-model:visible="dialogOpenState.dialogComment" :style="{width: '50vw'}">
-            <p>{{(selectedNode.data.comment && selectedNode.data.comment != '') ? selectedNode.data.comment : $t('common.noComment')}}</p>
-            <template #footer>
-              <div style="text-align:right">
-                <Button label="OK" icon="pi pi-check" @click="closeForm('dialogComment')" class="p-button-text"/>
+            <!-- Список согласующих лиц -->
+            <Dialog :header="$t('doctemplate.approvalUsers')" v-model:visible="dialogOpenState.approvalUsers"
+                    :style="{width: '50vw'}" class="p-fluid">
+              <ProgressBar v-if="approving" mode="indeterminate" style="height: .5em"/>
+              <div class="field">
+                <ApprovalUsers :approving="approving" :mode="'doc_template'" v-model="currentApprovalStages" :readonly="selectedNode.data.stateEn == DocState.INAPPROVAL.Value || selectedNode.data.stateEn == DocState.APPROVED.Value"
+                              @closed="closeForm('approvalUsers')" @save="saveApprovalUser($event)"></ApprovalUsers>
               </div>
-            </template>
-        </Dialog>
-
+            </Dialog>
+            <Dialog :header="$t('common.comment')" v-model:visible="dialogOpenState.dialogComment" :style="{width: '50vw'}">
+              <p>{{(selectedNode.data.comment && selectedNode.data.comment != '') ? selectedNode.data.comment : $t('common.noComment')}}</p>
+              <template #footer>
+                <div style="text-align:right">
+                  <Button label="OK" icon="pi pi-check" @click="closeForm('dialogComment')" class="p-button-text"/>
+                </div>
+              </template>
+            </Dialog>
           </TabPanel>
         </TabView>
          <Sidebar
@@ -236,10 +258,11 @@
   import DocState from "@/enum/docstates/index"
   import DocSignaturesInfo from "@/components/DocSignaturesInfo"
   import Enum from "@/enum/docstates/index"
+  import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers";
 
   export default {
     emits: ['onselect', 'languageChanged'],
-    components: { RichEditor, DocSignaturesInfo },
+    components: { RichEditor, DocSignaturesInfo, ApprovalUsers },
     data() {
       return {
         readonly : true,
@@ -261,6 +284,7 @@
           revision :false,
           dialogComment: false,
           signerInfo: false,
+          approvalUsers: false,
         },
         active: 0,
         templates: null,
@@ -289,9 +313,14 @@
           descriptionKaz: '',
           descriptionRus: '',
           folderID: -1,
-          financial: false,
+          // financial: false,
+          needApproval: false,
+          approvalStages: null,
         },
         loading: false,
+        approving: false,
+        initialApprovalStages: null,
+        currentApprovalStages: null,
       }
     },
      props: {
@@ -313,9 +342,9 @@
       return {
         updateValue,
       };
-  },
+    },
     methods: {
-      clearCreatedTemlate() {
+      clearCreatedTemplate() {
         this.createdTemplate = {
           creatorId: 1,
           mainTextKaz: '',
@@ -323,7 +352,9 @@
           descriptionKaz: '',
           descriptionRus: '',
           folderID: -1,
-          financial: false,
+          // financial: false,
+          needApproval: false,
+          approvalStages: null,
         }
       },
       clearCreatedFolder() {
@@ -344,10 +375,9 @@
       showMessage(msgtype,message,content) {
         this.$toast.add({severity:msgtype, summary: message, detail:content, life: 3000});
       },
-     
+      
       findRole: findRole,
       openForm(formName,node) {
-
         this.dialogOpenState[formName] = true;
         if (node != null) {
           this.selectedNode = node;
@@ -371,7 +401,6 @@
                       if (sign != undefined) {
 
                         var req = {
-                          userID : this.$store.state.loginedUser.userID,
                           docUUID: this.selectedNode.data.docID,
                           sign: sign
                         };
@@ -402,10 +431,8 @@
                 ).catch(error => {
                     if (error.response.status == 401) {
                       this.$store.dispatch("logLout");
-                    } else 
+                    }
                     console.log(error);
-                          console.log(error);
-
                 })
                 
               }
@@ -414,7 +441,7 @@
       revisionTemplate() {
         this.saveDocTemplate();
         let url ="/doctemplate/updatedoсtemplatestate"
-         var req = {
+          var req = {
           userID : this.$store.state.loginedUser.userID,
           id: this.selectedNode.id,
           state: this.DocState.REVISION.ID,
@@ -434,7 +461,7 @@
         })
 
         this.dialogOpenState.revision = false;
-       
+        
         
       },
       sendToApproval() {
@@ -520,7 +547,6 @@
         .catch(error => {
           console.log(error);
           this.signing = false
-
         })
       },
       saveDocTemplate() {
@@ -553,7 +579,6 @@
           this.signing = false
         })
         .catch(error => {
-          console.log(error)
           if (error.response.status == 401) {
             this.$store.dispatch("logLout");
           } else 
@@ -581,30 +606,45 @@
           this.showMessage('error',this.$t('doctemplate.newTemplate'), this.$t('common.message.serverError'));
           return
         }
+        // check approval users
+        if (this.createdTemplate.needApproval) {
+          if (!this.initialApprovalStages || this.initialApprovalStages.length < 1) {
+            this.$toast.add({severity:'warn', summary: this.$t('common.attention'), detail:this.$t('common.message.selectUsers'), life: 3000});
+            return
+          }
+
+          let filled = true;
+          this.initialApprovalStages.forEach(au => {
+            if (au.users === null || au.users.length < 1 || au.certificate === null) {
+              filled = false;
+              return;
+            }
+          })
+
+          if (!filled) {
+            this.$toast.add({severity:'warn', summary: this.$t('common.attention'), detail:this.$t('common.message.fillError'), life: 3000});
+            return;
+          }
+        }
+
         this.createdTemplate.folderID = this.selectedNode.key;
+        this.createdTemplate.approvalStages = [...this.initialApprovalStages]
         let url = "/doctemplate/create";
         axios.post(smartEnuApi+url, this.createdTemplate, { headers: getHeader() })
         .then(response=>{
           this.templates.forEach(folder=>{
             if (folder.key == response.data.folderID) {
-                var newNode = this.addTemplateNode(folder.children, response.data, folder.key);
-                this.closeForm('addTemplate');
-                this.editDocTemplate(newNode);
-                // this.dialogOpenState['addTemplate'] = false;
-                this.createdTemplate = {
-                creatorId: 1,
-                mainTextKaz: '',
-                mainTextRus: '',
-                descriptionKaz: '',
-                descriptionRus: '',
-                folderID: -1,
-              }
+              var newNode = this.addTemplateNode(folder.children, response.data, folder.key);
+              this.closeForm('addTemplate');
+              this.editDocTemplate(newNode);
+              // this.dialogOpenState['addTemplate'] = false;
+              this.clearCreatedTemplate();
               this.showMessage('success', this.$t('doctemplate.newTemplate'), this.$t('doctemplate.message.succesFilled'));
             }
           })
         })
         .catch(error => {
-          if (error.response.status == 401) {
+          if (error.response && error.response.status == 401) {
             this.$store.dispatch("logLout");
           } else 
             console.error(error)
@@ -665,10 +705,6 @@
 
         })
         .catch(error =>{
-          console.log(error)
-          if (!error.response) {
-            console.log(error)
-          }
           if (error.response.status == 405) {
               this.$toast.add({
                 severity: "error",
@@ -693,7 +729,7 @@
         this.currentNode = node
         this.readonly = this.selectedNode.data.stateEn == DocState.CREATED.Value || this.selectedNode.data.stateEn == DocState.REVISION.Value || (this.selectedNode.data.stateEn == DocState.INAPPROVAL.Value && this.findRole(null, DocState.roles.LegalServiceHead))
         this.$refs.kzEditor.setReadOnly(this.readonly);
-         this.$refs.ruEditor.setReadOnly(this.readonly);
+          this.$refs.ruEditor.setReadOnly(this.readonly);
         
       },
       addTemplateNode(nodeDataChildren,node,fkey) {
@@ -706,11 +742,12 @@
           childData.state =  this.$i18n.locale == "kz" ? node.History[0].stateKaz : this.$i18n.locale == "ru" ?  node.History[0].stateRus : node.History[0].stateEn;
           childData.stateEn =  node.History[0].stateEn;
         }
-        childData.financial = node.financial
+        // childData.financial = node.financial
+        childData.needApproval = node.needApproval
         childData.name= this.$i18n.locale == "ru" ? node.descriptionRus : node.descriptionKaz;
         childData.docID = node.docID
         childData.filePath = node.filePath
-        childData.createdDate = node.createDate;
+        childData.createdDate = node.createDate
         childData.mainTextKaz = node.mainTextKaz
         childData.mainTextRus = node.mainTextRus
         if (node.History && node.History.length > 0) {
@@ -733,7 +770,6 @@
         url+= stateFilter
         axios (smartEnuApi+url, { headers: getHeader() })
         .then(res=>{
-          console.log(res)
           let treeData = [];
           res.data.forEach(el => {
             let node = new Object();
@@ -759,20 +795,96 @@
           if(treeData.length>0)
             this.templates=treeData;
           this.loading = false;
-        })
-        .catch(error => {
+        }).catch(error => {
           this.loading = false;
-          console.log(error)
           if (error.response.status == 401) {
             this.$store.dispatch("logLout");
           } else 
             console.error(error)
         })
+
+        this.initTemplateApprovalInfo();
+      },
+      initTemplateApprovalInfo(openForm, node) {
+        axios.post(smartEnuApi + "/doctemplate/getDefaultApprovalStages", {}, {
+          headers: getHeader(),
+        }).then(response => {
+          this.initialApprovalStages = []
+          response.data.forEach((res) => {
+            this.initialApprovalStages.push(res)
+          })
+
+          if (openForm) {
+            this.openForm('addTemplate', node);
+          }
+        }).catch(error => {
+          if (error.response && error.response.status === 401) {
+            this.$store.dispatch("logLout");
+          } else {
+            this.$toast.add({
+              severity: "error",
+              summary: error,
+              life: 3000,
+            });
+          }
+        })
+      },
+      initApprovalInfo(openForm) {
+        axios.post(smartEnuApi + "/doctemplate/getApprovalStages", {
+          docTemplateId: this.selectedNode.id,
+        }, {
+          headers: getHeader(),
+        }).then(response => {
+          this.currentApprovalStages = response.data
+
+          if (openForm) {
+            this.openForm('approvalUsers')
+          }
+        }).catch(error => {
+          if (error.response && error.response.status === 401) {
+            this.$store.dispatch("logLout");
+          } else {
+            this.$toast.add({
+              severity: "error",
+              summary: error,
+              life: 3000,
+            });
+          }
+        })
+      },
+      updateModel(event) {
+        this.initialApprovalStages = event
+      },
+      saveApprovalUser(event) {
+        axios.post(smartEnuApi + "/doctemplate/updateApprovalStages", {
+          docTemplateId: this.selectedNode.id,
+          approvalStages: event,
+        }, {
+          headers: getHeader(),
+        }).then(response => {
+          this.$toast.add({
+            severity: "success",
+            summary: this.$t("common.save"),
+            detail: this.$t("common.message.succesSaved"),
+            life: 3000,
+          });
+
+          this.closeForm('approvalUsers');
+        }).catch(error => {
+          if (error.response && error.response.status === 401) {
+            this.$store.dispatch("logLout");
+          } else {
+            this.$toast.add({
+              severity: "error",
+              summary: error,
+              life: 3000,
+            });
+          }
+        })
       }
     },
     mounted() {
-      this.initApiCall(
-      );
+      this.initApiCall();
       this.templateLanguage = this.currentLang != null ? this.currentLang : 'kz'
     },
   };

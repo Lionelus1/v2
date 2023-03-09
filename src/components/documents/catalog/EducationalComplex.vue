@@ -238,7 +238,7 @@
       <div class="field">
         <ApprovalUsers :key="approveComponentKey" :approving="approving" v-model="selectedUsers"
                        @closed="closeDialog('sendToApprove')"
-                       @approve="approve($event)" :stages="stages"></ApprovalUsers>
+                       @approve="approve($event)" :stages="stages" :mode="'standard'"></ApprovalUsers>
       </div>
     </Dialog>
     <Dialog :modal="true" v-bind:header="$t('common.revision')" v-model:visible="dialogOpenState.revision"
@@ -396,18 +396,18 @@ export default {
           value: "inapproval"
         },
         {
+          id: 3,
+          nameRu: "Согласован",
+          nameKz: "Келісілді",
+          nameEn: "Approved",
+          value: "approved"
+        },
+        {
           id: 4,
           nameRu: "На доработке",
           nameKz: "Түзетуде",
           nameEn: "Revision",
           value: "revision"
-        },
-        {
-          id: 7,
-          nameRu: "Подписан",
-          nameKz: "Қол қойылды",
-          nameEn: "Signed",
-          value: "signed"
         }
       ],
       numMatches: [
@@ -500,10 +500,10 @@ export default {
     },
     signed(event) {
       this.file.isApproved = 1
-      this.file.stateID = 7
-      this.file.stateen = "signed"
-      this.file.stateru = "подписан"
-      this.file.statekz = "қол қойылды"
+      this.file.stateID = 3
+      this.file.stateen = "approved"
+      this.file.stateru = "согласован"
+      this.file.statekz = "келісілді"
     },
     approve(event) {
       this.approving = true;
@@ -786,10 +786,9 @@ export default {
       }
     },
     toRevision() {
-      let url = "/doc/changestate"
+      let url = "/doc/sendtorevision"
       var req = {
         docID: this.file.id,
-        state: this.DocState.REVISION.ID,
         comment: this.revisionComment,
       }
       this.approving = true

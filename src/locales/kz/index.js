@@ -285,7 +285,9 @@ export default {
         actionTitle: "Әрекет",
         style: "Стиль",
         bgColor: "Фон түсі",
-        textColor: "Мәтін түсі"
+        textColor: "Мәтін түсі",
+        signers: "Қол қоюшы тараптар",
+        approvals: "Бекітетін тұлғалар",
     },
     bank: {
         title: "Банктер",
@@ -373,6 +375,9 @@ export default {
             addElement: "Келісім-шарт элементін қосу",
             message: {}
         },
+        needsApproval: "Үлгі бойынша жасалған құжат келісуді қажет етеді",
+        approvalUsers: "Келісім беруі тиіс тұлғалар тізімі",
+        approvalListPlaceholder: "Инстанция",
     },
     contracts: {
         title: "Келісім-шарттар",
@@ -439,7 +444,9 @@ export default {
         IncorrectFileTitle: "{dn} аты бар файл SIGNERAPP жүйесінде қолтаңбаны тексеруден өткен жоқ",
         IncorrectFileContent: "Бұл файл өзгертілді немесе басқа файл берілді. Файлды тексеріңіз.",
         signed: "осы құжатқа қол қойды",
+        approved: "осы құжатқа келісім берді",
         signingexpected: "қол қоюы тиіс",
+        approvingExpected: "келісім беруі тиіс",
         certTemplate: "Сертификат үлгісі: ",
         IIN: "ЖСН",
         certType: "Қолтаңба түрі:",
@@ -930,7 +937,7 @@ export default {
         resultIndicator: "Нәтиже көрсеткіші",
         summary: "Жинақтаушы/Растау",
         respExecutor: "Жауапты орындаушылар",
-        halfYear: "жартыжылдық"
+        halfYear: "жартыжылдық",
     },
     educomplex: {
         title: "Пәннің оқу-әдістемелік кешені",
