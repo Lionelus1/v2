@@ -49,7 +49,7 @@
         <Column field="actions" header="" class="text-right">
           <template #body="{ node }">
             <Button type="button" icon="fa-solid fa-plus" class="p-button mr-2" @click="createMenu(node)"></Button>
-            <Button type="button" icon="fa-solid fa-pen" class="p-button" @click="editMenu($event, node)"></Button>
+            <Button type="button" icon="fa-solid fa-pen" class="p-button" @click="editMenu(node)"></Button>
           </template>
         </Column>
       </TreeTable>
@@ -162,7 +162,7 @@ export default {
       if (data) this.parentId = data.menu_id;
       this.addMenuVisible = true;
     },
-    editMenu(event, data) {
+    editMenu(data) {
       this.selectedMenu = data;
       this.addMenuVisible = true;
     },
