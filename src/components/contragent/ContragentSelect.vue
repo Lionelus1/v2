@@ -61,9 +61,6 @@ export default {
       message:null,
     }
   },
-  mounted() {
-    console.log(this.value)
-  },
   computed: {
     selectedContragentName() {
       if (!this.value)

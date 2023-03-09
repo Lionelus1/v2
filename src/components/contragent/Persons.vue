@@ -397,9 +397,14 @@ export default {
       this.initApiCall();
     },
     addPerson(type){
-      if (type === null) {
-        type = Enum.PersonType.OrganizationMember
+      if (type === undefined) {
+        if (this.contragentPersonType === undefined) {
+          type = Enum.PersonType.OrganizationMember
+        } else {
+          type = this.contragentPersonType
+        }
       }
+
       this.newPersonType = type
       this.currentPerson = {
         IIN: null,

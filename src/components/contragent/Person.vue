@@ -535,6 +535,7 @@ export default {
             }
             if (this.addMode) {
               if (this.personType === this.PersonType.IndividualEntrepreneur) {
+                this.value.type = Enum.ContragentType.Person
                 this.insertIndividualEntrepreneur()
               }
               this.$emit("userCreated", this.value);
@@ -567,12 +568,11 @@ export default {
       }
     },
     insertIndividualEntrepreneur() {
-      console.log(this.value.id)
       axios.post(
         smartEnuApi + "/roleControl/add",
         {
-          roleName: this.PersonType.IndividualEntrepreneur,
-          userId: this.value.id,
+          roleName: "individual_entrepreneur",
+          userId: this.value.userID ? this.value.userID : this.value.id,
         },
         {headers: getHeader()}
       ).then((res) => {
