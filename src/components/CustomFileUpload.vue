@@ -36,10 +36,8 @@ export default {
     const uploadedFiles = computed(() =>  props.files);
 
     const imgPreview = ref(props.preview)
-    console.log(imgPreview.value)
     if (imgPreview.value)
       imgPreview.value = smartEnuApi + fileRoute + imgPreview.value;
-    console.log(imgPreview.value)
     const removeFile = (index) => {
       uploadedFiles.value.splice(index, 1)[0];
       uploadedFiles.value = [...uploadedFiles.value];
