@@ -2,7 +2,10 @@
     <div>
         <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em" />
         <BlockUI :blocked="loading" :fullScreen="true"></BlockUI>
-        <div class="p-fluid">
+        <div v-if="accessDenied" class="p-fluid">
+            <h5>{{$t('common.message.accessDenied')}}</h5>
+        </div>
+        <div v-if="!accessDenied" class="p-fluid">
             <h5>{{$t('common.doc')}}</h5>
             <div class="field">
                 <label for="state">{{$t('common.state')}}:</label>
@@ -50,6 +53,7 @@ export default {
             doc: null,
             loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID,
             loading: false,
+            accessDenied: false,
         }
     },
     created() {
@@ -70,10 +74,12 @@ export default {
                 this.doc = res.data;
             })
             .catch((error) => {
-            this.loading = false
-            if (error.response && error.response.status == 401) {
-                this.$store.dispatch("logLout");
-            }
+                this.loading = false
+                if (error.response && error.response.status == 401) {
+                    this.$store.dispatch("logLout");
+                } else if (error.response && error.response.status == 405 && error.response.data && error.response.data.error === 'accessDenied') {
+                    this.accessDenied = true
+                }
             });
         }
     }

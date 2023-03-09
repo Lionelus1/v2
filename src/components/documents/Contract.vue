@@ -288,8 +288,7 @@ export default {
               icon: "fa-regular fa-handshake",
               visible: () => 
                 this.contract && (this.contract.needApproval &&
-                !this.approvalStages && !this.approvalStagesLoading &&
-                !this.contract.docHistory.stateEn == Enum.APPROVED.Value) &&
+                this.contract.docHistory.stateId < Enum.APPROVED.ID) &&
                 this.contract.sourceType === this.sourceType.template && 
                 !this.findRole(null, 'student'),
               command: () => {
@@ -502,9 +501,13 @@ export default {
           result = false
           return result
         }
-        if ((param.name == "contragent" || param.name == "ourside" || param.name == "individualEntrepreneur") && (param.value.signer == null) ) {
-            result = false
-            return result
+        if ((param.name == "contragent" || param.name == "ourside") && (param.value.signer == null) ) {
+          result = false
+          return result
+        }
+        if (param.name == "individualEntrepreneur" && param.value == null) {
+          result = false
+          return result
         }
       });
       return result
