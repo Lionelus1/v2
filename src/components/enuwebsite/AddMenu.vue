@@ -185,7 +185,7 @@ export default {
 
       const fd = new FormData();
       fd.append('menu', JSON.stringify(this.formData))
-      fd.append('background_image', this.bgImg[0]);
+      if (this.bgImg) fd.append('background_image', this.bgImg[0]);
 
       this.enuService.addMenu(fd).then(res => {
         if (res.data.is_success) {
