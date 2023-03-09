@@ -34,7 +34,7 @@
                       class="p-button-primary p-md-5" @click="sign" :label="$t('ncasigner.sign')" :loading="signing"/>
             </div>
           </Panel>
-          <div v-if="signerType === 'fl'" class="p-mt-2">
+          <div v-if="isIndivid" class="p-mt-2">
             <Panel>
               <template #header>
                 <div class="p-d-flex p-jc-center">
@@ -75,10 +75,6 @@ export default {
       type: String,
       default: null
     },
-    signerTypeParam: {
-      type: String,
-      default: null
-    },
     showAllSignsParam: {
       type: Boolean,
       default: false
@@ -100,7 +96,6 @@ export default {
       doc_id: this.$route.params.uuid,
       isTspRequired: Boolean,
       signerIin: null,
-      signerType: null,
       docInfo: null,
       loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID,
       loginedUserForMgovws: JSON.parse(localStorage.getItem("loginedUser")),
@@ -111,6 +106,7 @@ export default {
       file: null,
       active: 0,
       isSignShow: false,
+      isIndivid: false,
       mgovSignUri: null
     }
   },
@@ -123,7 +119,6 @@ export default {
         "&token=" + tokenData.access_token
     this.isTspRequired = this.tspParam
     this.signerIin = this.signerIinParam
-    this.signerType = this.signerTypeParam
     this.showAllSigns = this.showAllSignsParam
     this.getData();
   },
@@ -161,6 +156,7 @@ export default {
               this.showAllSignsParam ? this.isShow = true :
                   this.isShow = this.findRole(null, "career_moderator") || this.signatures.some(x => x.userId === this.loginedUserId) || this.docInfo.docHistory.setterId === this.loginedUserId;
               this.isSignShow = this.signatures.some(x => x.userId === this.loginedUserId && (x.signature || x.signature !== ''));
+              this.isIndivid = this.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === '') && (x.signRight && x.signRight !== '') && x.signRight === 'individual');
               this.signatures.map(e => {
                 e.sign = this.chunkString(e.signature, 1200)
               });
@@ -190,7 +186,7 @@ export default {
       )
           .then(response => {
             (
-                runNCaLayer(this.$t, this.$toast, response.data, 'cms',this.signerType, this.isTspRequired, this.$i18n.locale)
+                runNCaLayer(this.$t, this.$toast, response.data, 'cms', this.isIndivid === true ? 'fl' : 'ul', this.isTspRequired, this.$i18n.locale)
                     .then(sign => {
                       if (sign != undefined) {
                           this.sendRequest(sign)
