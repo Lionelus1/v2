@@ -123,6 +123,9 @@ export default {
       }
     };
   },
+  created() {
+    this.value.isStillWorking = false
+  },
   methods: {
     validateForm() {
       this.validation.startDate = !this.value.startDate || this.value.startDate == ""

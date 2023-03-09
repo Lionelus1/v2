@@ -319,7 +319,7 @@ export default {
     },
     deleteCandidate() {
       axios
-          .post(smartEnuApi + "/candidate/delete", {id: this.candidate.id}, {headers: getHeader(),})
+          .post(smartEnuApi + "/candidate/delete", {}, {headers: getHeader(),})
           .then(res => {
             this.$toast.add({severity: 'success', summary: 'Success', detail: 'Резюме успешно удалено', life: 3000});
             this.candidate = null
