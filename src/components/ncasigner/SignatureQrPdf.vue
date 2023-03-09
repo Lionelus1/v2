@@ -3,7 +3,7 @@
     <h5 class="col-6 p-offset-3 text-center bold">{{ title }}</h5>
     <br/>
     <div class="col-12">
-      <h5 v-if="signatures">
+      <h5 v-if="signatures && signatures.length > 0">
         {{ $t('common.signers') }}
       </h5>
       <div id="qr" v-for="(item, index) of signatures" :key="index"
@@ -24,10 +24,10 @@
            style="border: 1px solid #000; padding: 5px; margin: 5px;display: block;">
           <p>
             <b> {{ user.fullName }} </b>
-            <br/> {{ stage[stageInd].usersApproved[userInd] == 1 ? $t('ncasigner.approved') + ": " + new Date(stage[stageInd].signatures[userInd].signDate).toLocaleDateString() + ", " + new Date(stage[stageInd].signatures[userInd].signDate).toLocaleTimeString()  : $t('ncasigner.approvingExpected') }}
+            <br/> {{ stage.usersApproved && stage.usersApproved[userInd] == 1 ? $t('ncasigner.approved') + ": " + new Date(stage.signatures[userInd].signDate).toLocaleDateString() + ", " + new Date(stage.signatures[userInd].signDate).toLocaleTimeString()  : $t('ncasigner.approvingExpected') }}
           </p>
-          <div v-if="stage[stageInd].signatures" style="width: 100%;text-align: left;">
-            <qrcode-vue v-for="(i, ind) of stage[stageInd].signatures[userInd].sign" :key="ind" size="300" render-as="svg" margin="2" :value="i"></qrcode-vue>
+          <div v-if="stage.signatures" style="width: 100%;text-align: left;">
+            <qrcode-vue v-for="(i, ind) of stage.signatures[userInd].sign" :key="ind" size="300" render-as="svg" margin="2" :value="i"></qrcode-vue>
           </div>
         </div>
       </div>

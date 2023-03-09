@@ -6,7 +6,7 @@
     <TabView v-model:activeIndex="active" @tab-change="showFile">
       <TabPanel v-bind:header="$t('ncasigner.signatureListTitle')">
         <div class="col-12" v-if="isShow">
-          <Button :label="$t('common.downloadSignaturesPdf')" icon="pi pi-download" @click="downloadSignatures"
+          <Button v-if="signatures && signatures.length > 0 || approvalStages" :label="$t('common.downloadSignaturesPdf')" icon="pi pi-download" @click="downloadSignatures"
                   class="p-button ml-2"/>
           <SignatureQrPdf ref="qrToPdf" :signatures="signatures" :title="docInfo.name" :approvalStages="approvalStages"></SignatureQrPdf>
         </div>
@@ -179,9 +179,10 @@ export default {
 
             if (this.approvalStages)
               this.approvalStages.map(stage => {
-                stage.signatures.map(e => {
-                  e.sign = this.chunkString(e.signature, 1200)
-                })
+                if (stage.signatures)
+                  stage.signatures.map(e => {
+                    e.sign = this.chunkString(e.signature, 1200)
+                  })
               });
           }
         }
