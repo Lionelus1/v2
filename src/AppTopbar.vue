@@ -141,7 +141,7 @@
                    
                 })
                 .catch(error => {
-                    alert(error.message)
+                    console.log(error)
                 })
             },
             timeDifference(givenDate) {
@@ -202,35 +202,35 @@
                 alert(error.message)
             })
         },
-        // async created(){
+        async created(){
             
-        //     let v = this;
-        //     this.socket = await new WebSocket(socketApi+"/notificationws"); 
-        //     this.socket.onopen = () => {
-        //         this.socket.send(JSON.stringify(this.loginedUser));
-        //     }
+            let v = this;
+            this.socket = await new WebSocket(socketApi+"/notificationws"); 
+            this.socket.onopen = () => {
+                this.socket.send(JSON.stringify(this.loginedUser));
+            }
 
-        //     this.socket.onmessage = (event) => {
-        //         let parsed = JSON.parse(event.data);
-        //         this.$toast.add({
-        //             severity:'success', 
-        //             summary: parsed.description, 
-        //             detail:JSON.parse(parsed.senderJSON).fullName, 
-        //             life: 3000}
-        //         );
-        //         this.newCount=this.newCount+1;
-        //         // v.notifications.unshift({
-        //         //     uniqueName:parsed.uniqueName,
-        //         //     isSeen:parsed.isSeen,
-        //         //     notificationId:parsed.notificationId,
-        //         //     senderId:parsed.senderId,
-        //         //     senderObject:JSON.parse(parsed.senderJSON),
-        //         //     description:parsed.description,
-        //         //     link:parsed.link,
-        //         //     jsMethod:parsed.jsMethod,
-        //         // });
-        //     }
-        // }
+            this.socket.onmessage = (event) => {
+                let parsed = JSON.parse(event.data);
+                this.$toast.add({
+                    severity:'success', 
+                    summary: parsed.description, 
+                    detail:JSON.parse(parsed.senderJSON).fullName, 
+                    life: 3000}
+                );
+                this.newCount=this.newCount+1;
+                // v.notifications.unshift({
+                //     uniqueName:parsed.uniqueName,
+                //     isSeen:parsed.isSeen,
+                //     notificationId:parsed.notificationId,
+                //     senderId:parsed.senderId,
+                //     senderObject:JSON.parse(parsed.senderJSON),
+                //     description:parsed.description,
+                //     link:parsed.link,
+                //     jsMethod:parsed.jsMethod,
+                // });
+            }
+        }
     }
 </script>
 

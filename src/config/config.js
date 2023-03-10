@@ -21,12 +21,9 @@ export const getHeader = function() {
   const tokenData = JSON.parse(window.localStorage.getItem("authUser"));
   if(tokenData){
     const headers= {
-      // 'Access-Control-Allow-Credentials':'true',
+      //'Access-Control-Allow-Credentials':'true',
       'Content-Type': 'application/json',
-      //'Access-Control-Allow-Origin':'http://localhost:8082',
-      //'Accept':"*/*",
-      'withCredentials': 'true',
-      'Access-Control-Allow-Origin': 'http://localhost:8082',
+      'mode': 'no-cors',
       'Authorization':'Bearer ' + tokenData.access_token
     }
     return headers;
