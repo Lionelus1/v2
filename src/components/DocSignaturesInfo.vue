@@ -10,7 +10,7 @@
     <TabView v-model:activeIndex="active" @tab-change="showFile">
       <TabPanel v-bind:header="$t('ncasigner.signatureListTitle')">
         <div class="col-12" v-if="isShow">
-          <Button v-if="signatures && signatures.length > 0 || approvalStages" :label="$t('common.downloadSignaturesPdf')" icon="pi pi-download" @click="downloadSignatures"
+          <Button v-if="signatures && signatures.length > 0 || approvalStages && showSign()" :label="$t('common.downloadSignaturesPdf')" icon="pi pi-download" @click="downloadSignatures"
                   class="p-button ml-2"/>
           <SignatureQrPdf ref="qrToPdf" :showSign="showSign()" :signatures="signatures" :title="docInfo.name" :approvalStages="approvalStages"></SignatureQrPdf>
         </div>
@@ -38,7 +38,7 @@
                       class="p-button-primary md:col-5" @click="sign" :label="$t('ncasigner.sign')" :loading="signing"/>
             </div>
           </Panel>
-          <div v-if="signerType === 'fl'" class="p-mt-2">
+          <div v-if="isIndivid" class="p-mt-2">
             <Panel>
               <template #header>
                 <div class="p-d-flex p-jc-center">
@@ -79,10 +79,6 @@ export default {
       type: String,
       default: null
     },
-    signerTypeParam: {
-      type: String,
-      default: null
-    },
     showAllSignsParam: {
       type: Boolean,
       default: false
@@ -105,7 +101,6 @@ export default {
       doc_id: this.$route.params.uuid,
       isTspRequired: Boolean,
       signerIin: null,
-      signerType: null,
       docInfo: null,
       loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID,
       loginedUserForMgovws: JSON.parse(localStorage.getItem("loginedUser")),
@@ -116,6 +111,7 @@ export default {
       file: null,
       active: 0,
       isSignShow: false,
+      isIndivid: false,
       mgovSignUri: null,
       enum: Enum
     }
@@ -129,7 +125,6 @@ export default {
         "&token=" + tokenData.access_token
     this.isTspRequired = this.tspParam
     this.signerIin = this.signerIinParam
-    this.signerType = this.signerTypeParam
     this.showAllSigns = this.showAllSignsParam
     this.getData();
   },
@@ -177,11 +172,14 @@ export default {
           }
 
           this.isSignShow = this.signatures && this.signatures.some(x => x.userId === this.loginedUserId && (x.signature || x.signature !== ''));  
-
-          if (this.signatures)
+          
+          if (this.signatures) {
+            this.isIndivid = this.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === '') && (x.signRight && x.signRight !== '') && x.signRight === 'individual');
+            
             this.signatures.map(e => {
               e.sign = this.chunkString(e.signature, 1200)
             });
+          }
 
           if (this.docInfo.needApproval) {
             this.approvalStages = res.data.approvalStages;
