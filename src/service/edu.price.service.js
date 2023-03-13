@@ -32,6 +32,10 @@ export class EduPriceService {
     }
 
     getPriceCategories() {
-        return api.post(`/web/getEduPriceCategories`, {}, {headers: getHeader()});
+        return api.post(`/web/getEduPriceCategoriesAdmin`, {}, {headers: getHeader()});
+    }
+
+    getPricesByCategoryId(id) {
+        return api.post(`/web/getEduPriceById/${id}`, {headers: getHeader()});
     }
 }

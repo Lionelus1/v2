@@ -8,16 +8,22 @@
       <DataTable :lazy="true" :value="data" dataKey="id" :loading="loading" responsiveLayout="scroll">
         <template #empty>{{ $t("common.noData") }}</template>
         <template #loading>{{ $t("common.loading") }}</template>
-        <Column field="" header="Академиялық дәреже">
+        <template #header>
+          <h4 class="mb-2 m-md-0 align-self-md-center">Категории</h4>
+        </template>
+        <Column :header="$t('common.nameIn')">
           <template #body="{ data }">
-            <div v-if="data.admission_level">{{ data.admission_level[0]['name_ru'] }}</div>
+            <a href="javascript:void(0)" @click="navigateToPrice(data.id)">{{ data['name_' + $i18n.locale] }}</a>
           </template>
         </Column>
-        <Column field="title" :header="$t('common.nameIn')">
+        <Column :header="'Академиялық дәреже'">
           <template #body="{data}">
-            <a href="javascript:void(0)" @click="navigateToAdmissionCategories">
-              {{ $i18n.locale === "kz" ? data.admission_category.name_kz : $i18n.locale === "ru" ? data.admission_category.name_ru : data.admission_category.name_en }}
-            </a>
+            <div v-if="data.degree">{{ data.degree['name_' + $i18n.locale] }}</div>
+          </template>
+        </Column>
+        <Column :header="'Сипаттама'">
+          <template #body="{data}">
+            {{ data.desc ? data.desc : '' }}
           </template>
         </Column>
         <Column header="" class="text-right">
@@ -29,8 +35,6 @@
       </DataTable>
     </div>
   </div>
-
-  <EduPriceAdd v-if="showModal" :selected-data="null" :is-show="showModal" :block="block" />
 </template>
 
 <script>
@@ -46,10 +50,9 @@ import {EnuWebService} from "@/service/enu.web.service";
 
 export default {
   name: "EduPriceCategoryList",
-  components: {TitleBlock, EduPriceAdd},
+  components: {TitleBlock},
   setup() {
     const eduPriceService = new EduPriceService()
-    const enuService = new EnuWebService()
     const toast = useToast()
     const i18n = useI18n()
     const confirm = useConfirm()
@@ -73,18 +76,6 @@ export default {
     }
     getCategories();
 
-    const getBlock = () => {
-      loading.value = true;
-      enuService.getBlockById(58).then(res => {
-        if (res.data) block.value = res.data;
-        loading.value = false;
-      }).catch(error => {
-        loading.value = false;
-        toast.add({severity: "error", summary: error, life: 3000});
-      });
-    }
-    getBlock();
-
     const openDialog = () => {
       showModal.value = true;
     }
@@ -93,9 +84,11 @@ export default {
 
     }
 
+    const navigateToPrice = (id) => router.push({name: 'EduPriceList', params: {id: id}})
+
     return {
       data, loading, showModal, block,
-      openDialog, hideDialog
+      openDialog, hideDialog, navigateToPrice
     }
 
   }

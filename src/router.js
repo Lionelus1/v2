@@ -453,6 +453,12 @@ const routes = [
                                 component: load('enuwebsite/blocks/edu.price/EduPriceCategoryList'),
                                 beforeEnter: ifAuthenticated,
                             },
+                            {
+                                path: 'prices/:id',
+                                name: 'EduPriceList',
+                                component: load('enuwebsite/blocks/edu.price/EduPriceList'),
+                                beforeEnter: ifAuthenticated,
+                            }
                         ]
                     }
                 ]
