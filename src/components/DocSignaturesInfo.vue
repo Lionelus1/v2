@@ -1,4 +1,8 @@
 <template>
+  <div>
+    <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
+    <BlockUI :blocked="loading" :fullScreen="true"></BlockUI>
+  </div>
   <div v-if="!loading">
     <DocInfo :document="docInfo" v-if="!incorrect" :docID="doc_id"/>
     <ProgressBar v-if="signing" mode="indeterminate" style="height: .5em"/>
@@ -8,7 +12,7 @@
         <div class="col-12" v-if="isShow">
           <Button v-if="signatures && signatures.length > 0 || approvalStages" :label="$t('common.downloadSignaturesPdf')" icon="pi pi-download" @click="downloadSignatures"
                   class="p-button ml-2"/>
-          <SignatureQrPdf ref="qrToPdf" :signatures="signatures" :title="docInfo.name" :approvalStages="approvalStages"></SignatureQrPdf>
+          <SignatureQrPdf ref="qrToPdf" :showSign="showSign()" :signatures="signatures" :title="docInfo.name" :approvalStages="approvalStages"></SignatureQrPdf>
         </div>
         <div class="col-12" v-else>
           <div class="card">
@@ -62,6 +66,7 @@ import html2pdf from "html2pdf.js";
 import DocInfo from "@/components/ncasigner/DocInfo";
 import QrcodeVue from "qrcode.vue";
 
+import Enum from "@/enum/docstates/index";
 
 export default {
   name: "DocSignaturesInfo",
@@ -102,13 +107,14 @@ export default {
       loginedUserForMgovws: JSON.parse(localStorage.getItem("loginedUser")),
       isShow: false,
       showAllSigns: false,
-      loading: true,
+      loading: false,
       signing: false,
       file: null,
       active: 0,
       isSignShow: false,
       isIndivid: false,
-      mgovSignUri: null
+      mgovSignUri: null,
+      enum: Enum
     }
   },
   created() {
@@ -149,6 +155,7 @@ export default {
       }
     },
     getData() {
+      this.loading = true
       axios.post(smartEnuApi + `/agreement/getSignInfo`, {
         doc_uuid: this.doc_id,
       }, {
@@ -215,8 +222,18 @@ export default {
             life: 3000,
           });
         }
+
         this.loading = false;
       });
+    },
+    showSign() {
+      let showSign = false
+
+      if (this.docInfo && this.docInfo.docHistory && this.docInfo.docHistory.stateId && this.docInfo.docHistory.stateId > this.enum.APPROVED.ID) {
+        showSign = true
+      }
+
+      return showSign
     },
     sign() {
       this.signing = true;
