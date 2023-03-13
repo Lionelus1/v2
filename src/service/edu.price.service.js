@@ -3,8 +3,8 @@ import {getHeader} from "@/config/config";
 
 export class EduPriceService {
 
-    getPrices() {
-        return api.post(`/web/getEduPrices`, {}, {headers: getHeader()})
+    getPrices(categoryId) {
+        return api.post(`/web/getEduPrices`, {category_id: categoryId}, {headers: getHeader()})
     }
 
     addPrice(data) {
@@ -31,8 +31,8 @@ export class EduPriceService {
         return api.post(`/web/getEduPriceCategories`, data, {headers: getHeader()});
     }
 
-    getPriceCategories() {
-        return api.post(`/web/getEduPriceCategoriesAdmin`, {}, {headers: getHeader()});
+    getPriceCategories(params) {
+        return api.post(`/web/getEduPriceCategoriesAdmin`, params, {headers: getHeader()});
     }
 
     getPricesByCategoryId(id) {

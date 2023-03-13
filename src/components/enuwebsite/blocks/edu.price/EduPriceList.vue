@@ -73,7 +73,7 @@ export default {
 
     const getPrices = () => {
       loading.value = true;
-      eduPriceService.getPrices().then(res => {
+      eduPriceService.getPrices(parseInt(categoryId.value)).then(res => {
         if (res.data) data.value = res.data
         loading.value = false;
       }).catch(error => {
