@@ -534,10 +534,10 @@ export default {
                this.value.fullName =  this.value.fullName + " " +  this.value.lastName
             }
             if (this.addMode) {
-              if (this.personType === this.PersonType.IndividualEntrepreneur) {
-                this.value.type = Enum.ContragentType.Person
-                this.insertIndividualEntrepreneur()
-              }
+              // if (this.personType === this.PersonType.IndividualEntrepreneur) {
+              //   this.value.type = Enum.ContragentType.Person
+              //   this.insertIndividualEntrepreneur()
+              // }
               this.$emit("userCreated", this.value);
             }
             this.menu[0].disabled = true

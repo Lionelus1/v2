@@ -233,14 +233,12 @@ export default {
         en: 2,
       },
       approvalStages: null,
-      approvalStagesLoading: true,
       menu: [
         {
           label: this.$t("common.save"),
           icon: "pi pi-fw pi-save",
           disabled: !this.corrected ,
           command: () => {
-           
             this.saveContract();
           },
         },
@@ -574,8 +572,13 @@ export default {
       }, {
         headers: getHeader(),
       }).then(response => {
-        this.approvalStages = response
-        this.approvalStagesLoading = false
+        if (response.status === 200) {
+          this.approvalStages = response.data
+          
+          if (this.approvalStages) {
+            this.menu[3].items[1].disabled = true
+          }
+        }
       }).catch((error) => {
         if (error.response && error.response.status == 401) {
           this.$store.dispatch("logLout");
