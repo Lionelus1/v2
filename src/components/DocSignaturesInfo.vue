@@ -164,7 +164,6 @@ export default {
         if (res.data) {
           this.docInfo = res.data;
           this.signatures = res.data.signatures;
-          this.isIndivid = this.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === '') && (x.signRight && x.signRight !== '') && x.signRight === 'individual');
 
           if (this.showAllSignsParam) {
             this.isShow = true;
