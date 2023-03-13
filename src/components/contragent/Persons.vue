@@ -338,6 +338,10 @@ export default {
       ) {
         this.lazyParams.page = 0;
       }
+
+      if (this.insertMode && this.personType === Enum.PersonType.IndividualEntrepreneur) {
+        this.lazyParams.filters.userType.value = null
+      }
      
       this.lazyParams.orgID = this.organization != null ? this.organization.id : null
       axios
