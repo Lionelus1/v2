@@ -2,7 +2,7 @@
   <div ref="qrToPdf" class="grid">
     <h5 class="col-6 p-offset-3 text-center bold">{{ title }}</h5>
     <br/>
-    <div class="col-12">
+    <div class="col-12" v-if="showSign">
       <h5 v-if="signatures && signatures.length > 0">
         {{ $t('common.signers') }}
       </h5>
@@ -45,6 +45,7 @@ export default {
     title: null,
     signatures: null,
     approvalStages: null,
+    showSign: null,
   }
 }
 </script>
