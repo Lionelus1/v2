@@ -10,7 +10,7 @@
     <TabView v-model:activeIndex="active" @tab-change="showFile">
       <TabPanel v-bind:header="$t('ncasigner.signatureListTitle')">
         <div class="col-12" v-if="isShow">
-          <Button v-if="signatures && signatures.length > 0 || approvalStages" :label="$t('common.downloadSignaturesPdf')" icon="pi pi-download" @click="downloadSignatures"
+          <Button v-if="signatures && signatures.length > 0 || approvalStages && showSign()" :label="$t('common.downloadSignaturesPdf')" icon="pi pi-download" @click="downloadSignatures"
                   class="p-button ml-2"/>
           <SignatureQrPdf ref="qrToPdf" :showSign="showSign()" :signatures="signatures" :title="docInfo.name" :approvalStages="approvalStages"></SignatureQrPdf>
         </div>
@@ -173,12 +173,15 @@ export default {
               this.docInfo.docHistory.setterId === this.loginedUserId;
           }
 
-          this.isSignShow = this.signatures && this.signatures.some(x => x.userId === this.loginedUserId && (x.signature || x.signature !== ''));
+          this.isSignShow = this.signatures && this.signatures.some(x => x.userId === this.loginedUserId && (x.signature || x.signature !== ''));  
 
-          if (this.signatures)
+          if (this.signatures) {
+            this.isIndivid = this.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === '') && (x.signRight && x.signRight !== '') && x.signRight === 'individual');
+
             this.signatures.map(e => {
               e.sign = this.chunkString(e.signature, 1200)
             });
+          }
 
           if (this.docInfo.needApproval) {
             this.approvalStages = res.data.approvalStages;
