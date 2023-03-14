@@ -63,7 +63,6 @@ export default {
 
     const getAdmissionInfoList = () => {
       admissionInfoService.getAdmissionInfoList().then(res => {
-        console.log(res.data)
           data.value = res.data.items;
           block.value = res.data.block;
 

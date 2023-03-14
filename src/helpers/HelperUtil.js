@@ -29,3 +29,12 @@ export async function resizeImages(content) {
 export function formatDate(date) {
     return moment(new Date(date)).utc().format("DD.MM.YYYY HH:mm")
 }
+
+export function generateYears(startYear = 1979) {
+    let years = [];
+    let max = new Date().getFullYear();
+    for (let i = max; i >= startYear; i--) {
+        years.push(i);
+    }
+    return years;
+}

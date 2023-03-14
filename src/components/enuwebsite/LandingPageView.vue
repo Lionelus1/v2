@@ -145,7 +145,6 @@ export default {
     }
 
     const deleteConfirm = (data) => {
-      console.log(data)
       confirm.require({
         message: i18n.t('common.doYouWantDelete'),
         header: i18n.t('common.delete'),

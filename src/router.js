@@ -2,6 +2,8 @@ import {createRouter, createWebHashHistory} from 'vue-router';
 import Full from './components/Full.vue';
 import store from '@/store/store'
 import AdmissionInfoList from "@/components/enuwebsite/blocks/admission.info/AdmissionInfoList.vue";
+import EduPriceCategoryList from "@/components/enuwebsite/blocks/edu.price/EduPriceCategoryList.vue";
+import EduPriceComponent from "@/components/enuwebsite/blocks/edu.price/EduPriceComponent.vue";
 
 function load(component) {
     return () => import(`./components/${component}.vue`)
@@ -483,6 +485,26 @@ const routes = [
                                 path: 'categories',
                                 name: 'AdmissionInfoCategory',
                                 component: load('enuwebsite/blocks/admission.info/AdmissionInfoCategory'),
+                                beforeEnter: ifAuthenticated,
+                            }
+                        ]
+                    },
+                    {
+                        path: 'edu-price',
+                        name: 'EduPriceComponent',
+                        component: load('enuwebsite/blocks/edu.price/EduPriceComponent'),
+                        beforeEnter: ifAuthenticated,
+                        children: [
+                            {
+                                path: '',
+                                name: 'EduPriceCategoryList',
+                                component: load('enuwebsite/blocks/edu.price/EduPriceCategoryList'),
+                                beforeEnter: ifAuthenticated,
+                            },
+                            {
+                                path: 'prices/:id',
+                                name: 'EduPriceList',
+                                component: load('enuwebsite/blocks/edu.price/EduPriceList'),
                                 beforeEnter: ifAuthenticated,
                             }
                         ]
