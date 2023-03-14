@@ -1,26 +1,33 @@
 <template>
   <Dialog v-model:visible="showModal" :style="{ width: '1000px' }" :breakpoints="{'960px': '75vw', '640px': '90vw'}"
           :header="currentData ? $t('common.edit') : $t('common.add') " :modal="true" class="p-fluid" @hide="hideDialog">
-    <div class="field">
-      <label>Выберите академическую степень</label>
-      <Dropdown v-model="selectedDegree" :options="eduFields" @change="selectDegree"
+    <div class="field" v-if="degrees">
+      <label>{{ degrees['name_' + $i18n.locale] }}</label>
+      <Dropdown v-model="selectedDegree" :options="degrees.options" @change="onSelect"
                 :optionLabel="'name_' + $i18n.locale" :placeholder="$t('common.select')" />
     </div>
-    <div class="field" v-if="fields">
-      <label>Выберите образовательную программу</label>
-      <Dropdown v-model="formData.edu_field_id" :options="fields"
-                :optionLabel="'name_' + $i18n.locale" optionValue="id" :placeholder="$t('common.select')" />
-    </div>
-    <div v-if="formData.edu_field_id">
+    <div>
       <div class="field">
-        <label>Выберите год</label>
-        <Dropdown v-model="formData.year" :options="years" :placeholder="$t('common.select')" />
+        <label>{{ $t('common.nameInQazaq') }}</label>
+        <InputText type="text" v-model="formData.name_kz"  />
+        <small class="p-error" v-if="!formData.name_kz && submitted">{{ $t("common.requiredField") }}</small>
       </div>
       <div class="field">
-        <label>Цена</label>
-        <InputNumber v-model="formData.price" mode="currency" currency="KZT" />
+        <label>{{ $t('common.nameInRussian')}}</label>
+        <InputText type="text" v-model="formData.name_ru"  />
+        <small class="p-error" v-if="!formData.name_ru && submitted">{{ $t("common.requiredField") }}</small>
+      </div>
+      <div class="field">
+        <label>{{ $t('common.nameInEnglish') }}</label>
+        <InputText type="text" v-model="formData.name_en"  />
+        <small class="p-error" v-if="!formData.name_en && submitted">{{ $t("common.requiredField") }}</small>
+      </div>
+      <div class="field">
+        <label>{{ 'Описание' }}</label>
+        <Textarea :placeholder="'Описание'" type="text" rows="4" v-model="formData.desc" />
       </div>
     </div>
+
     <template #footer>
       <Button v-if="currentData" :label="$t('common.save')" icon="pi pi-check" class="p-button p-component p-button-success mr-2" @click="save"/>
       <Button v-if="!currentData" :label="$t('common.add')" icon="pi pi-check" class="p-button p-component p-button-success mr-2" @click="add"/>
@@ -31,20 +38,17 @@
 </template>
 
 <script>
-import {inject, onUnmounted, ref, unref} from "vue";
+import RichEditor from "@/components/documents/editor/RichEditor.vue";
+import {inject, onMounted, ref, unref} from "vue";
 import {useToast} from "primevue/usetoast";
 import {useI18n} from "vue-i18n";
 import {AdmissionInfoService} from "@/service/admission.info.service";
 import {EnuWebService} from "@/service/enu.web.service";
-import RichEditor from "@/components/documents/editor/RichEditor.vue";
-import {generateYears} from "@/helpers/HelperUtil";
 import {EduPriceService} from "@/service/edu.price.service";
-import {EduService} from "@/service/edu.service";
-import {useRoute} from "vue-router";
 
 export default {
-  name: "EduPriceAdd",
-  props: ['isShow', 'selectedData'],
+  name: "EduPriceCategoryAdd",
+  props: ['isShow', 'selectedData', 'parent'],
   setup(props, context) {
     const emitter = inject('emitter');
     const toast = useToast()
@@ -53,37 +57,54 @@ export default {
     const showModal = ref(props.isShow)
     const submitted = ref(false)
     const eduPriceService = new EduPriceService()
-    const eduService = new EduService()
+    const enuService = new EnuWebService()
     const currentData = ref(props.selectedData ? props.selectedData : null)
-    const years = ref(generateYears())
-    const eduFields = ref()
+    const categories = ref()
+    const degrees = ref()
+    const blockInfo = ref()
     const selectedDegree = ref()
-    const fields = ref()
-    const route = useRoute()
 
-    const getEduFields = () => {
-      eduService.getEduFields().then(res => {
-        if (res.data) eduFields.value = res.data
-        selectedDegree.value = currentData.value ? filter(eduFields.value, currentData.value.edu_field_id) : null;
+    onMounted(() => {
+      if (props.parent) {
+        selectedDegree.value = props.parent.degree;
+        formData.value.parent_id = props.parent.id;
+        onSelect(props.parent.degree);
+      }
+    });
+
+    const getBlock = () => {
+      eduPriceService.getEduPriceBlock().then(res => {
+        if (res.data) {
+          blockInfo.value = res.data;
+          getAcademicDegrees(blockInfo.value.block_id)
+        }
       }).catch(error => {
         toast.add({severity: "error", summary: error, life: 3000});
       });
     }
 
-    getEduFields();
+    const getAcademicDegrees = (block_id) => {
+      enuService.getBlockParamsByBlockId(block_id).then(res => {
+        if (res.data) {
+          degrees.value = res.data[0]
+        }
+      }).catch(error => {
+        toast.add({severity: "error", summary: error, life: 3000});
+      });
+    }
+    getBlock();
 
     const add = () => {
       submitted.value = true;
-      formData.value.category_id = parseInt(route.params.id)
       if (!isValid()) return;
-      eduPriceService.addPrice(formData.value).then(res => {
+
+      eduPriceService.addPriceCategory(formData.value).then(res => {
         if (res.data && res.data.is_success) {
           toast.add({severity: "success", summary: i18n.t('common.success'), life: 3000});
         }
         submitted.value = false;
         hideDialog();
       }).catch(error => {
-        hideDialog();
         submitted.value = false;
         toast.add({severity: "error", summary: error, life: 3000});
       });
@@ -95,7 +116,7 @@ export default {
         return;
       }
 
-      eduPriceService.editPrice(unref(formData)).then(res => {
+      eduPriceService.editPriceCategory(unref(formData)).then(res => {
         if (res.data && res.data.is_success) {
           toast.add({severity: "success", summary: i18n.t('common.success'), life: 3000});
         }
@@ -108,39 +129,31 @@ export default {
     }
 
     const hideDialog = () => {
-      formData.value = {}
-      currentData.value = null
-      emitter.emit("showEduPriceAddDialog", false)
+      emitter.emit("showEduPriceCategoryAddDialog", false)
+    }
+
+    const onSelect = (event) => {
+      formData.value.param_id = event.value.parameter_id || event.parameter_id;
+      formData.value.catalog_value_id = event.value.id || event.id
     }
 
     const isValid = () => {
       let errors = [];
 
-      if (!formData.value.edu_field_id)
+      if (!formData.value.name_kz)
         errors.push(1);
-      if (!formData.value.year)
+      if (!formData.value.name_ru)
         errors.push(1);
-      if (!formData.value.price)
+      if (!formData.value.name_en)
+        errors.push(1);
+      if (!formData.value.catalog_value_id)
         errors.push(1);
       return errors.length === 0
     }
 
-    const selectDegree = (event) => {
-      let degree = event.value;
-      fields.value = degree.options;
-    }
-
-    const filter = (array, value) => {
-      let res = array.find(e => {
-        return e.options.find(x => x.id === value)
-      });
-      fields.value = res.options || null
-      return res;
-    }
-
     return {
-      formData, showModal, currentData, submitted, eduFields, years, selectedDegree, fields,
-      hideDialog, add, save, selectDegree
+      formData, showModal, currentData, submitted, categories, degrees, selectedDegree,
+      hideDialog, add, save, onSelect
     }
   }
 }

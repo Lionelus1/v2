@@ -106,8 +106,11 @@ export class EnuWebService {
     }
 
     navigateToPlugin(componentName) {
-        if (componentName === "DocsListBlock") {
-           return "AdmissionInfoList";
+        switch (componentName) {
+            case 'DocsListBlock':
+                return "AdmissionInfoList";
+            case 'PriceEducation':
+                return 'EduPriceCategoryList'
         }
 
         return "";

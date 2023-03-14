@@ -190,7 +190,6 @@ export default {
           this.pages = res.data.pages;
           this.total = res.data.total;
         }
-        console.log(this.total)
         this.loading = false;
       }).catch(error => {
         this.loading = false;
@@ -223,7 +222,6 @@ export default {
       }
     },
     delPage(data) {
-      console.log(data)
       this.$confirm.require({
         message: this.$t('common.doYouWantDelete'),
         header: this.$t('common.delete'),

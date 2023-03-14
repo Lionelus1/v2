@@ -73,10 +73,12 @@ import BlotFormatter from "quill-blot-formatter";
 import ImageUploader from "quill-image-uploader";
 import {FileService} from "@/service/file.service";
 import {fileRoute, smartEnuApi} from "@/config/config";
+import htmlEditButton from "quill-html-edit-button";
 
 
 Quill.register("modules/blotFormatter", BlotFormatter);
 Quill.register("modules/imageUploader", ImageUploader);
+Quill.register("modules/htmlEditButton", htmlEditButton);
 
 export default {
   data() {
@@ -131,7 +133,8 @@ export default {
               });
             });
           },
-        }
+        },
+        htmlEditButton: {}
       },
       readOnly: this.readonly,
       theme: "snow",

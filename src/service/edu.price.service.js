@@ -23,12 +23,16 @@ export class EduPriceService {
         return api.post(`/web/deleteEduPrice`, {id: id}, {headers: getHeader()});
     }
 
+    deletePriceCategory(id) {
+        return api.post(`/web/deleteEduPriceCategory`, {id: id}, {headers: getHeader()});
+    }
+
     addPriceCategory(data) {
         return api.post(`/web/addEduPriceCategory`, data, {headers: getHeader()});
     }
 
     editPriceCategory(data) {
-        return api.post(`/web/getEduPriceCategories`, data, {headers: getHeader()});
+        return api.post(`/web/editEduPriceCategory`, data, {headers: getHeader()});
     }
 
     getPriceCategories(params) {
@@ -37,5 +41,9 @@ export class EduPriceService {
 
     getPricesByCategoryId(id) {
         return api.post(`/web/getEduPriceById/${id}`, {headers: getHeader()});
+    }
+
+    getEduPriceBlock() {
+        return api.post(`/web/getEduPriceBlockPlugin`, {}, {headers: getHeader()});
     }
 }

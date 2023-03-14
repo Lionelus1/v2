@@ -2,7 +2,7 @@
   <div class="col-12">
     <TitleBlock :show-back-button="true" :title="'Модуль Какие профессии есть?'" />
     <div class="card">
-      <Button :label="$t('common.add')" @click="openDialog" />
+      <Button :label="$t('common.add')" @click="openDialog(null)" />
     </div>
     <div class="card" v-if="data">
       <TreeTable class="p-treetable-sm" :value="data" :lazy="true" :loading="loading"
@@ -15,7 +15,8 @@
         </template>
         <Column :header="$t('common.nameIn')" :expander="true">
           <template #body="{ node }">
-            <a href="javascript:void(0)" @click="navigateToPrice(node.id)">{{ node['name_' + $i18n.locale] }}</a>
+            <span v-if="!node.leaf">{{ node['name_' + $i18n.locale] }}</span>
+            <a v-if="node.leaf" href="javascript:void(0)" @click="navigateToPrice(node.id)">{{ node['name_' + $i18n.locale] }}</a>
           </template>
         </Column>
         <Column :header="'Академиялық дәреже'">
@@ -30,6 +31,7 @@
         </Column>
         <Column header="" class="text-right">
           <template #body="{node}">
+            <Button type="button" icon="fa-solid fa-plus" class="p-button mr-2" @click="openDialog(node)"></Button>
             <Button icon="fa-solid fa-pen" class="p-button mr-2" @click="openEdit(node)" />
             <Button icon="fa-solid fa-trash" class="p-button-danger" @click="deleteConfirm(node)" />
           </template>
@@ -37,6 +39,8 @@
       </TreeTable>
     </div>
   </div>
+
+  <EduPriceCategoryAdd v-if="showModal" :isShow="showModal" :selected-data="selectedData" :parent="parentParams" />
 </template>
 
 <script>
@@ -49,10 +53,11 @@ import {useRouter} from "vue-router";
 import {EduPriceService} from "@/service/edu.price.service";
 import EduPriceAdd from "@/components/enuwebsite/blocks/edu.price/EduPriceAdd.vue";
 import {EnuWebService} from "@/service/enu.web.service";
+import EduPriceCategoryAdd from "@/components/enuwebsite/blocks/edu.price/EduPriceCategoryAdd.vue";
 
 export default {
   name: "EduPriceCategoryList",
-  components: {TitleBlock},
+  components: {TitleBlock, EduPriceCategoryAdd},
   setup() {
     const eduPriceService = new EduPriceService()
     const toast = useToast()
@@ -66,6 +71,7 @@ export default {
     const selectedData = ref()
     const emitter = inject('emitter');
     const parentNode = ref()
+    const parentParams = ref()
     const lazyParams = ref({
       page: 1,
       rows: 10,
@@ -88,15 +94,7 @@ export default {
           data.value = res.data;
         } else {
           parentData.children = res.data;
-          parentData.children.map(e => {
-            e.leaf = false
-            e.key = e.id.toString()
-          })
         }
-        data.value.map(e => {
-          e.leaf = false
-          e.key = e.id.toString()
-        })
         loading.value = false;
       }).catch(error => {
         loading.value = false;
@@ -105,19 +103,55 @@ export default {
     }
     getCategories(null);
 
-    const openDialog = () => {
+    const openDialog = (data) => {
+      if (data) parentParams.value = data;
+      selectedData.value = null;
       showModal.value = true;
     }
 
-    const hideDialog = () => {
+    const openEdit = (data) => {
+      selectedData.value = data;
+      showModal.value = true;
+    }
 
+    const deleteConfirm = (data) => {
+      confirm.require({
+        message: i18n.t('common.doYouWantDelete'),
+        header: i18n.t('common.delete'),
+        icon: 'pi pi-info-circle',
+        acceptClass: 'p-button-rounded p-button-success',
+        rejectClass: 'p-button-rounded p-button-danger',
+        accept: () => {
+          remove(data.id)
+        },
+      });
+    }
+
+    const remove = (id) => {
+      eduPriceService.deletePriceCategory(id).then(res => {
+        if (res.data && res.data.is_success) {
+          toast.add({severity: "success", summary: i18n.t('common.success'), life: 3000});
+        } else {
+          toast.add({severity: "warn", summary: i18n.t('common.message.title.saveError'), life: 3000});
+        }
+        getCategories(null);
+      }).catch(error => {
+        toast.add({severity: "error", summary: error, life: 3000});
+      });
     }
 
     const navigateToPrice = (id) => router.push({name: 'EduPriceList', params: {id: id}})
 
+    onMounted(() => {
+      emitter.on('showEduPriceCategoryAddDialog', isShow => {
+        showModal.value = isShow;
+        getCategories(null)
+      });
+    });
+
     return {
-      data, loading, showModal, block,
-      openDialog, hideDialog, navigateToPrice, onExpand
+      data, loading, showModal, block, selectedData, parentParams,
+      openDialog, navigateToPrice, onExpand, openEdit, deleteConfirm
     }
 
   }

@@ -90,7 +90,6 @@ export default {
     const categories = ref()
     const degrees = ref()
     let blockInfo = ref(props.block)
-    console.log(blockInfo)
 
     const getAcademicDegrees = () => {
       enuService.getBlockParamsByBlockId(blockInfo.value.block_id).then(res => {
@@ -107,7 +106,6 @@ export default {
         if (res.data) {
           categories.value = res.data
         }
-        console.log(res.data)
       }).catch(error => {
         toast.add({severity: "error", summary: error, life: 3000});
       })

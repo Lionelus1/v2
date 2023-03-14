@@ -38,7 +38,7 @@
     </div>
   </div>
 
-  <EduPriceAdd v-if="showModal" :selected-data="null" :is-show="showModal" :block="block" />
+  <EduPriceAdd v-if="showModal" :selected-data="selectedData" :is-show="showModal" :block="block" />
 </template>
 
 <script>
@@ -46,7 +46,7 @@ import TitleBlock from "@/components/TitleBlock.vue";
 import {useToast} from "primevue/usetoast";
 import {useI18n} from "vue-i18n";
 import {useConfirm} from "primevue/useconfirm";
-import {inject, ref} from "vue";
+import {inject, onMounted, ref} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {EduPriceService} from "@/service/edu.price.service";
 import EduPriceAdd from "@/components/enuwebsite/blocks/edu.price/EduPriceAdd.vue";
@@ -96,12 +96,51 @@ export default {
     getBlock();
 
     const openDialog = () => {
+      selectedData.value = null;
       showModal.value = true;
     }
 
+    const openEdit = (data) => {
+      selectedData.value = data;
+      showModal.value = true;
+    }
+
+    const deleteConfirm = (data) => {
+      confirm.require({
+        message: i18n.t('common.doYouWantDelete'),
+        header: i18n.t('common.delete'),
+        icon: 'pi pi-info-circle',
+        acceptClass: 'p-button-rounded p-button-success',
+        rejectClass: 'p-button-rounded p-button-danger',
+        accept: () => {
+          remove(data.id)
+        },
+      });
+    }
+
+    const remove = (id) => {
+      eduPriceService.deletePrice(id).then(res => {
+        if (res.data && res.data.is_success) {
+          toast.add({severity: "success", summary: i18n.t('common.success'), life: 3000});
+        } else {
+          toast.add({severity: "warn", summary: i18n.t('common.message.title.saveError'), life: 3000});
+        }
+        getPrices();
+      }).catch(error => {
+        toast.add({severity: "error", summary: error, life: 3000});
+      });
+    }
+
+    onMounted(() => {
+      emitter.on("showEduPriceAddDialog", isShow => {
+        showModal.value = isShow;
+        getPrices();
+      });
+    })
+
     return {
-      data, loading, showModal, block,
-      openDialog
+      data, loading, showModal, block, selectedData,
+      openDialog, openEdit, deleteConfirm
     }
   }
 }
