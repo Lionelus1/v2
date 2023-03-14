@@ -1,10 +1,10 @@
 <template>
   <div>
-    <div ref="htmlToPdf" class="p-grid" v-if="plan && !plan.is_oper">
+    <div ref="htmlToPdf" class="grid" v-if="plan && !plan.is_oper">
       <h5 style="width: 100%;text-align: center;font-size: 14.0pt;text-transform: uppercase;font-weight: bold;">
         {{ plan.work_plan_name }}</h5>
       <br/>
-      <div class="p-col-12">
+      <div class="col-12">
         <table
             style="width: 100%; font-size: 12.0pt; text-align: center;border-collapse: collapse;border: 1px solid grey">
           <tbody>
@@ -42,11 +42,11 @@
         </table>
       </div>
     </div>
-    <div ref="htmlToPdf" class="p-grid" v-if="plan && plan.is_oper">
+    <div ref="htmlToPdf" class="grid" v-if="plan && plan.is_oper">
       <h5 style="width: 100%;text-align: center;font-size: 14.0pt;text-transform: uppercase;font-weight: bold;">
         {{ plan.work_plan_name }}</h5>
       <br/>
-      <div class="p-col-12">
+      <div class="col-12">
         <table>
           <tbody>
           <tr>

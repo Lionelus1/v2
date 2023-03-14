@@ -305,7 +305,7 @@ h3 {
 .list-item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  flex-order-: space-between;
   padding: 0.5rem 0;
 }
 
@@ -319,7 +319,7 @@ h3 {
   margin-bottom: 1rem;
   padding: 0;
   display: flex;
-  justify-content: space-between;
+  flex-order-: space-between;
 }
 
 .steps-item span {

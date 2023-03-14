@@ -13,8 +13,8 @@
         </div>
         <div class="title" v-for="(it, ind) in item" :key="ind">
           {{ it.user.fullName }}
-          <i v-if="it.is_success" class="pi pi-check-circle p-ml-2 p-message-success" style="font-size: 1.2rem;color: #3eaf7c"></i>
-          <i v-if="!it.is_success" class="pi pi-spinner p-ml-2" style="font-size: 1.2rem;color: #c63737"></i>
+          <i v-if="it.is_success" class="pi pi-check-circle ml-2 p-message-success" style="font-size: 1.2rem;color: #3eaf7c"></i>
+          <i v-if="!it.is_success" class="pi pi-spinner ml-2" style="font-size: 1.2rem;color: #c63737"></i>
         </div>
       </div>
     </div>
@@ -75,7 +75,7 @@ export default {
   overflow-x: auto;
   padding: 10px;
   width: 100%;
-  /*justify-content: center;*/
+  /*flex-order-: center;*/
 }
 
 .step-header {
@@ -87,7 +87,7 @@ export default {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: center;
+  flex-order-: center;
   margin-bottom: 10px;
 }
 
@@ -110,7 +110,7 @@ export default {
   background-color: grey;
   color: white;
   align-items: center;
-  justify-content: center;
+  flex-order-: center;
   cursor: pointer;
 }
 
@@ -126,7 +126,7 @@ export default {
   /*width: 100px;*/
   position: relative;
   right: -10%;
-  justify-content: center;
+  flex-order-: center;
   margin-top: 3px;
 }
 

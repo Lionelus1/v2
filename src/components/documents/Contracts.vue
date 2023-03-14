@@ -1,32 +1,34 @@
 <template>
 <div>
   <div class="content-section">
-    <div class="feature-intro p-ml-3">
+    <BlockUI :blocked="saving" :fullScreen="true"></BlockUI>
+    <div class="feature-intro ml-3">
       <h3>{{$t('contracts.title')}}</h3>
     </div>
+    <ProgressBar v-if="saving" mode="indeterminate" style="height: .5em"/>
     <div class="card">
       <div class="p-col">
         <div class="box">
           <span><i class="pi pi-copy subtitle">&nbsp;{{$t('contracts.documents')}}</i></span>
-          <div class="p-field menu-item p-pb-3">
+          <div class="fieldmenu-item pb-3">
             <Button :label="$t('common.newDoc')" @click="openForm('createDocDialog')" class="p-button-link" /><br>
-            <i class="p-mx-3">{{$t('contracts.create')}}</i>
+            <i class="mx-3">{{$t('contracts.create')}}</i>
           </div>
-          <div class="p-field menu-item p-pb-3">
+          <div class="fieldmenu-item pb-3">
             <router-link to="/documents/journal"  class="p-button p-button-link">{{$t('contracts.list')}}</router-link><br>
-            <i class="p-mx-3">{{$t('contracts.listdesc')}}</i>
+            <i class="mx-3">{{$t('contracts.listdesc')}}</i>
           </div>
         </div>
 
         <div class="box">
           <span><i class="pi pi-id-card subtitle" >&nbsp;{{$t('common.refinf')}}</i></span>
-          <div class="p-field menu-item p-pb-3">
+          <div class="fieldmenu-item pb-3">
             <Button :label="$t('common.organization')" class="p-button-link" /><br>
-            <i class="p-mx-3">{{$t('contracts.orgdesc')}}</i>
+            <i class="mx-3">{{$t('contracts.orgdesc')}}</i>
           </div>
-          <div class="p-field menu-item p-pb-3">
+          <div class="fieldmenu-item pb-3">
            <Button :label="$t('common.person')" class="p-button-link" /><br>
-            <i class="p-mx-3">{{$t('contracts.person')}}</i>
+            <i class="mx-3">{{$t('contracts.person')}}</i>
           </div>
         </div>
       </div>
@@ -35,14 +37,14 @@
   </div>
   <Sidebar v-model:visible="dialogOpenState.createDocDialog" position="right"
   :modal="true" :breakpoints="{'960px': '75vw', '640px': '100vw'}" :style="{width: '760px', overflow:'hidden'}">
-  <div class="p-d-flex">
-    <SelectButton disabled="true" v-model="selectedDocSourceType" :options="docSourceType" class="p-mb-3 p-mr-3">
+  <div class="flex">
+    <SelectButton disabled="true" v-model="selectedDocSourceType" :options="docSourceType" class="mb-3 mr-3">
       <template #option="slotProps">
         <div v-if="slotProps.option == DocState.DocSourceType.Template">{{$t('contracts.fromtemplate')}}</div>
         <div v-else>{{$t('contracts.fromdoc')}}</div>
 	    </template>
     </SelectButton>
-    <SelectButton  @change="changeLanguage" v-model="selectedDocLanguage" :options="languages" class="p-mb-3">
+    <SelectButton  @change="changeLanguage" v-model="selectedDocLanguage" :options="languages" class="mb-3">
       <template #option="slotProps">
         <div v-if="slotProps.option == 'kz'">{{$t('common.language.kz')}}</div>
         <div v-else>{{$t('common.language.ru')}}</div>
@@ -50,7 +52,7 @@
     </SelectButton>
   </div>
     <div v-if="selectedDocSourceType == DocState.DocSourceType.Template" style="overflow-y:hidden" >
-      <div class="p-d-flex">
+      <div class="flex">
 <!-- <DataTable
               class="p-datatable-sm"
               v-model:selection="selectedTemplate"
@@ -138,6 +140,7 @@
         dialogOpenState: {
           createDocDialog: false,
         },
+        saving: false,
         docTemplates:[],
         selectedTemplate: null,
         DocState: DocState,
@@ -186,13 +189,16 @@
         if (this.selectedTemplate != null) {
           req.lang = this.selectedTemplate.templateLanguage == "kz" ? 0 : 1
         }
-        
+        this.saving=true;
         axios.post(smartEnuApi+url, req, { headers: getHeader() }).then(responce=>{
           this.showMessage('success', this.$t('contracts.title'), this.$t('contracts.message.created'));
+          this.saving =false;
           this.$router.push({ path: '/documents/contract/' + responce.data});
+
 
         })
         .catch(error => {
+          this.saving =false;
           console.log(error);
         })
       },
@@ -206,14 +212,15 @@
           lang: this.selectedDocLanguage == "kz" ? 0 : 1,
           byParams: true
         }
+        this.saving = true;
         
         axios.post(smartEnuApi+url, req, { headers: getHeader() }).then(responce=>{
+          this.saving = false;
           this.showMessage('success', this.$t('contracts.title'), this.$t('contracts.message.created'));
-          this.$router.push({ path: '/documents/contract/' + responce.data});
-
+          this.$router.push({ path: '/documents/contract/' + responce.data.id});
         })
-        .catch(error => {
-          console.log(error);
+        .catch(_ => {
+          this.saving = false;
         })
       },
       addTemplateNode(nodeDataChildren,node) {
@@ -237,6 +244,7 @@
       },
       initApiCall(){
         let url = "/doctemplates?groupID=1";
+        this.saving = true;
         axios.get(smartEnuApi+url, { headers: getHeader() })
         .then(res=>{
           res.data.forEach(el => {
@@ -246,9 +254,10 @@
               })
             }
           });
+          this.saving= false;
         })
-        .catch(error => {
-            console.error(error)
+        .catch(_ => {
+          this.saving=false;
         })
       }
     },

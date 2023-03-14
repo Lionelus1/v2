@@ -1,6 +1,6 @@
 <template>
   <div style="overflow-x: hidden">
-    <!-- <div class="feature-intro p-d-block">
+    <!-- <div class="feature-intro block">
   <h1>Smart.enu жүйесіне қош келдіңіз.</h1>
 </div> -->
     <div class="lang_dropdown">
@@ -9,7 +9,7 @@
     <div class="grid">
       <div class="col-12">
         <div class="card welcome_text_block">
-          <h5 class="p-text-center p-text-uppercase">{{ $t("common.loginWelcome") }}</h5>
+          <h5 class="text-center uppercase">{{ $t("common.loginWelcome") }}</h5>
           <Avatar icon="pi pi-user" class="mr-2" size="xlarge"/>
           <Avatar icon="pi pi-user" class="mr-2" size="large" style="background-color:#2196F3; color: #ffffff"/>
           <Avatar icon="pi pi-user" class="mr-2" style="background-color:#9c27b0; color: #ffffff"/>
@@ -18,45 +18,45 @@
     </div>
 
     <div class="grid">
-      <div class="col-12 p-text-center">
+      <div class="col-12 text-center">
         <img src="/assets/layout/images/logo_eng.png" alt="Image" width="250"/>
       </div>
     </div>
-    <div class="p-fluid p-formgrid p-grid p-jc-center p-pt-2">
+    <div class="p-fluid formgrid grid justify-content-center pt-2">
 
-      <TabView class="tabview-custom p-xl-6 p-md-8 p-sm-12 p-lg-6 p-col-12">
+      <TabView class="tabview-custom p-xl-6 md:col-8 p-sm-12 lg:col-6 col-12">
         <TabPanel>
           <template #header>
             <span>Login System</span>
-            <i class="pi pi-key p-ml-1"></i>
+            <i class="pi pi-key ml-1"></i>
           </template>
-          <div class="p-fluid text-center">
-            <div class="p-field p-col-12">
+          <div class="p-fluid text-left">
+            <div class="field col-12">
               <label for="inputtext">{{ $t('common.enterLogin') }}</label>
               <InputText id="inputtext" type="text" v-model="loginData.username"/>
 
 
             </div>
-            <div class="p-field p-col-12">
+            <div class="field col-12">
               <label for="inputpassword">{{ $t('common.enterPassword') }}</label>
               <Password :feedback="false" toggleMask v-model="loginData.password"
                         @keyup.enter="login"></Password>
             </div>
           </div>
-          <div class="p-w-100 p-text-right">
+          <div class="p-w-100 text-right">
             <Button :label="$t('common.login')" icon="pi pi-check" @click="login" iconPos="right"/>
           </div>
         </TabPanel>
         <TabPanel>
           <template #header>
             <span>ЭЦП</span>
-            <i class="pi pi-folder p-ml-1"></i>
+            <i class="pi pi-folder ml-1"></i>
           </template>
           <div class="p-fluid text-center">
-            <div class="p-field p-mb-3">
+            <div class="field mb-3">
               <InlineMessage severity="info">{{ $t('ncasigner.noteMark') }}</InlineMessage>
             </div>
-            <div class="p-field p-col-12 p-pb-2">
+            <div class="field col-12 pb-2">
               <Inplace :closable="true" @close="resetPassword">
                 <template #display>
                   {{ text || $t('common.changePassword') }}
@@ -67,12 +67,12 @@
                 </template>
               </Inplace>
             </div>
-            <div class="p-grid">
-              <div class="p-col-8">
+            <div class="grid">
+              <div class="col-8">
                 <Button icon="pi pi-upload " :label="$t('common.chooseCert')" class="p-button-danger"
                         @click="resetEtspLogin(-1)" iconPos="right"/>
               </div>
-              <div class="p-col-4">
+              <div class="col-4">
                 <Button :label="$t('common.login')" :disabled="isSignUp" icon="p-w-6 pi pi-check"
                         @click="loginVerify" iconPos="right"/>
               </div>
@@ -255,12 +255,12 @@ export default {
   }
 }
 
-.pi-eye {
+.p-password > .pi-eye {
   transform: scale(1.6);
   margin-right: 1rem;
 }
 
-.pi-eye-slash {
+.p-password > .pi-eye-slash {
   transform: scale(1.6);
   margin-right: 1rem;
 }
@@ -271,7 +271,7 @@ export default {
     top: 15px;
     left: 15px;
   }
-  h5.p-text-center {
+  h5.text-center {
     text-align: left !important;
   }
 }

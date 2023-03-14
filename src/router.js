@@ -114,6 +114,47 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
+                path: '/documents/certificates',
+                name: 'certificateJournal',
+                component: load('documents/certificates/Journal'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/course/organizers',
+                name: 'onlinecoursejournal',
+                component: load('documents/onlinecourse/Organizers'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/course/categories',
+                name: 'onlinecoursecategory',
+                component: load('documents/onlinecourse/Categories'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/courses',
+                name: 'onlinecourses',
+                component: load('documents/onlinecourse/Courses'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/catcourses/:categoryID',
+                name: 'onlinecoursesCat',
+                component: load('documents/onlinecourse/Courses'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/course/:id',
+                name: 'onlinecoursedetail',
+                component: load('documents/onlinecourse/Course'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/documents/certificate/:uuid',
+                name: 'certificate',
+                component: load('documents/certificates/Certificate'),
+            },
+            {
                 path: '/contragent/banks',
                 name: '/contragent/banks',
                 component: load('contragent/Banks'),
@@ -376,15 +417,29 @@ const routes = [
                 name: 'Cafedra',
                 component: load('documents/Cafedra'),
                 beforeEnter: ifAuthenticated,
+                
             },
             {
                 path: '/access',
                 name: 'access',
-                component: () => import('./pages/Access.vue')
+                component: () => import('./pages/Access.vue'),
+            },
+            {
+                path: '/course/certificate/templates',
+                name: 'CertificateTemplate',
+                component: load('documents/certificates/Template'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/role-control',
+                name: 'RoleControl',
+                component: load('roleControl/RoleControl'),
+                beforeEnter: ifAuthenticated,
             }
                 
         ]
     },
+   
     {
         path: '/guide',
         name: 'Guide',

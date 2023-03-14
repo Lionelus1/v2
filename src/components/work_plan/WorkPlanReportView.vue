@@ -1,27 +1,27 @@
 <template>
   <vue-element-loading :active="loading" is-full-screen color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)"/>
   <div>
-    <div class="p-col-12">
+    <div class="col-12">
       <div class="card" v-if="isPlanCreator && !isReportSentApproval">
         <WorkPlanReportApprove :doc-id="report.doc_id" :report="report_id"></WorkPlanReportApprove>
         <!--        <Button label="" icon="pi pi-download" @click="download"
-                        class="p-button p-button-info p-ml-2"/>-->
+                        class="p-button p-button-info ml-2"/>-->
       </div>
       <div class="card" v-if="isPlanReportApproved && (isPlanCreator || (isApproval || isCurrentUserApproved))">
         <Button :label="$t('common.signatures')" icon="pi pi-file"
                 @click="viewSignatures"
-                class="p-button p-ml-2"/>
+                class="p-button ml-2"/>
         <Button label="" icon="pi pi-download" v-if="plan && plan.is_oper"
                 @click="downloadWord"
-                class="p-button p-button-info p-ml-2"/>
+                class="p-button p-button-info ml-2"/>
       </div>
       <div class="card" v-if="!isPlanReportApproved && isReportSentApproval">
         <Button v-if="isApproval && !isRejected" :label="$t('common.action.approve')" icon="pi pi-check"
                 @click="openApprovePlan"
-                class="p-button p-button-success p-ml-2"/>
+                class="p-button p-button-success ml-2"/>
         <Button v-if="isApproval && !isRejected" :label="$t('workPlan.toCorrect')" icon="pi pi-check"
                 @click="openRejectPlan"
-                class="p-button p-button-danger p-ml-2"/>
+                class="p-button p-button-danger ml-2"/>
       </div>
       <div class="card" v-if="approval_users && report && report.status">
         <h5>{{ report.report_name }}
@@ -35,9 +35,9 @@
           <template #content="slotProps">
             <div v-for="(item, index) of slotProps.item" :key="index">
               {{ item.user.fullName }}
-              <i v-if="item.is_success" class="pi pi-check-circle p-ml-2 p-message-success"
+              <i v-if="item.is_success" class="pi pi-check-circle ml-2 p-message-success"
                  style="font-size: 1.2rem;color: #3eaf7c"></i>
-              <i v-if="!item.is_success" class="pi pi-spinner p-ml-2" style="font-size: 1.2rem;color: #c63737"></i>
+              <i v-if="!item.is_success" class="pi pi-spinner ml-2" style="font-size: 1.2rem;color: #c63737"></i>
             </div>
           </template>
         </Timeline>
@@ -56,14 +56,14 @@
 
     <Dialog :header="$t('workPlan.toCorrect')" v-model:visible="showRejectPlan" :style="{width: '450px'}"
             class="p-fluid">
-      <div class="p-field">
+      <div class="field">
         <label>{{ $t('common.comment') }}</label>
         <Textarea inputId="textarea" rows="3" cols="30" v-model="rejectComment"></Textarea>
       </div>
       <template #footer>
         <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
                 @click="closeModal"/>
-        <Button :label="$t('common.send')" icon="pi pi-check" class="p-button-rounded p-button-success p-mr-2"
+        <Button :label="$t('common.send')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2"
                 @click="rejectPlan"/>
       </template>
     </Dialog>

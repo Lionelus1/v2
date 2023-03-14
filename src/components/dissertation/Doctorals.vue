@@ -1,33 +1,33 @@
 <template>
   <div>
-    <div class="p-col-12">
-      <Toolbar class="p-mb-4">
+    <div class="col-12">
+      <Toolbar class="mb-4">
         <template #end>
           <Button
             v-if="findRole(null,'dissertation_council_secretary')"
             isSecretary
             icon="pi pi-plus"
-            class="p-button-success p-mr-2"
+            class="p-button-success mr-2"
             @click="showAddCouncilDialog()"
           />
           <Button
             v-if="findRole(null,'dissertation_council_secretary')"
             :disabled="(!selectedDoctoral || (selectedDoctoral && selectedDoctoral.meetingTime))"
             icon="pi pi-clock"
-            class="p-button-warning p-mr-2"
+            class="p-button-warning mr-2"
             @click="showDialog(dialog.setMeetingTime)"
             v-tooltip.top="$t('dissertation.setMeetingTime')"
           />
           <Button
             v-if="selectedDoctoral && selectedDoctoral.meetingTime"
             icon="pi pi-shield"
-            class="p-button-success p-mr-2"
+            class="p-button-success mr-2"
             @click="showDefenseDialog()"
              v-tooltip.top="$t('dissertation.defenseConduct')"
           />
           <Button
             icon="pi pi-print"
-            class="p-button-info p-mr-2"
+            class="p-button-info mr-2"
           />
           <Button
             v-if="isSecretary"
@@ -141,10 +141,10 @@
         :maximizable="true"
         class="p-fluid"
       >
-        <div class="p-grid p-formgrid">
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+        <div class="grid formgrid">
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
             <label  for="name">{{ $t("common.fullName") }}</label>
-            <FindUser class="p-pt-1" 
+            <FindUser class="pt-1" 
               v-model="selectedUsers"
               :max="1"
               :editMode="true" :user-type="0"
@@ -154,38 +154,38 @@
               v-if="submitted && validationErrors.user"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="p-col-12 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 pb-2 lg:col-6 mb-lg-0">
             <label for="name">{{ ($t("common.graduate")  + ' (' + $t('common.hei') + ')' )}}</label>
-            <DepartmentList class="p-pt-1" :autoLoad="true" v-model="doctoral.hei" :orgType="1" :editMode="true" @changed="getDepartments($event, $refs.departmentList)"></DepartmentList>
+            <DepartmentList class="pt-1" :autoLoad="true" v-model="doctoral.hei" :orgType="1" :editMode="true" @changed="getDepartments($event, $refs.departmentList)"></DepartmentList>
             <small
               class="p-error"
               v-if="submitted && validationErrors.hei"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="p-col-12 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 pb-2 lg:col-6 mb-lg-0">
             <label for="name">{{$t("common.faculty")}}</label>
-            <DepartmentList class="p-pt-1" ref="departmentList" :orgType="2" v-model="selectedDepartment"  :editMode="true" @changed="getDepartments($event,$refs.cafedraList)"></DepartmentList>
+            <DepartmentList class="pt-1" ref="departmentList" :orgType="2" v-model="selectedDepartment"  :editMode="true" @changed="getDepartments($event,$refs.cafedraList)"></DepartmentList>
             <small
               class="p-error"
               v-if="submitted && validationErrors.faculty"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="p-col-12 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 pb-2 lg:col-6 mb-lg-0">
             <label for="name">{{ $t("common.cafedra")}}</label>
-            <DepartmentList class="p-pt-1" ref="cafedraList" :orgType="3" v-model="doctoral.cafedra" :editMode="true"></DepartmentList>
+            <DepartmentList class="pt-1" ref="cafedraList" :orgType="3" v-model="doctoral.cafedra" :editMode="true"></DepartmentList>
             <small
               class="p-error"
               v-if="submitted && validationErrors.cafedra"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="p-col-12 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 pb-2 lg:col-6 mb-lg-0">
             <label for="speciality">{{$t('dissertation.specialityCode')}}</label>
-            <SpecialitySearch :style="'height:38px'" class="p-pt-1" :max="1" :educationLevel="Enums.EducationLevel.Doctorate"  v-model="selectedSpecialities" id="speciality"></SpecialitySearch>
+            <SpecialitySearch :style="'height:38px'" class="pt-1" :max="1" :educationLevel="Enums.EducationLevel.Doctorate"  v-model="selectedSpecialities" id="speciality"></SpecialitySearch>
             <small class="p-error" v-if="(submitted && validationErrors.speciality)">{{$t('dissertation.validationErrors.selectSpeciality')}}</small>
           </div>
-          <div class="p-col-12 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 pb-2 lg:col-6 mb-lg-0">
             <label for="name">{{$t('common.learnlang')}}</label>
-            <SelectButton style="height:35px" v-model="doctoral.teachlang" :options="language" class="p-mt-1">
+            <SelectButton style="height:35px" v-model="doctoral.teachlang" :options="language" class="mt-1">
               <template #option="slotProps">
                 <div v-if="slotProps.option == 1">{{$t('common.language.kz')}}</div>
                 <div v-else-if="slotProps.option == 2">{{$t('common.language.ru')}}</div>
@@ -194,52 +194,52 @@
             </SelectButton>
             <small class="p-error" v-if="(submitted && validationErrors.teachlang)">{{$t('common.requiredField')}}</small>
           </div>
-           <div class="p-col-12 p-pb-2 p-lg-6 p-mb-lg-0">
+           <div class="col-12 pb-2 lg:col-6 mb-lg-0">
             <label for="name">{{$t('common.graduationyear')}}</label>
-            <PrimeCalendar :placeholder="$t('common.select')" style="height:33px" class="p-pt-1" id="graduationyear" v-model="doctoral.graduationYear" view="year" dateFormat="yy"/>
+            <PrimeCalendar :placeholder="$t('common.select')" style="height:33px" class="pt-1" id="graduationyear" v-model="doctoral.graduationYear" view="year" dateFormat="yy"/>
             <small class="p-error" v-if="(submitted && validationErrors.graduationYear)">{{$t('common.requiredField')}}</small>
           </div>
-          <div class="p-col-12 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 pb-2 lg:col-6 mb-lg-0">
             <label for="name">{{$t('common.admissionyear')}}</label>
-            <PrimeCalendar :placeholder="$t('common.select')" style="height:33px" class="p-pt-1" id="admissionyear" v-model="doctoral.admissionYear" view="year" dateFormat="yy"/>
+            <PrimeCalendar :placeholder="$t('common.select')" style="height:33px" class="pt-1" id="admissionyear" v-model="doctoral.admissionYear" view="year" dateFormat="yy"/>
             <small class="p-error" v-if="(submitted && validationErrors.admissionYear)">{{$t('common.requiredField')}}</small>
           </div>
-          <div class="p-col-12 p-pb-2 p-lg-12 p-mb-lg-0">
+          <div class="col-12 pb-2 lg:col-12 mb-lg-0">
             <label for="namekz">{{$t('dissertation.disstitle') + ' ' + $t('common.language.kz')}}</label>
-            <InputText :placeholder="$t('common.enter')" class="p-pt-1" type="text" id="namekz" v-model="doctoral.dissertation.namekz" />
+            <InputText :placeholder="$t('common.enter')" class="pt-1" type="text" id="namekz" v-model="doctoral.dissertation.namekz" />
             <small class="p-error" v-if="(submitted && validationErrors.namekz)">{{$t('common.requiredField')}}</small>
           </div>
-          <div class="p-col-12 p-pb-2 p-lg-12 p-mb-lg-0">
+          <div class="col-12 pb-2 lg:col-12 mb-lg-0">
             <label for="nameru">{{$t('dissertation.disstitle') + ' ' + $t('common.language.ru')}}</label>
-            <InputText :placeholder="$t('common.enter')" class="p-pt-1" type="text" id="nameru" v-model="doctoral.dissertation.nameru" />
+            <InputText :placeholder="$t('common.enter')" class="pt-1" type="text" id="nameru" v-model="doctoral.dissertation.nameru" />
             <small class="p-error" v-if="(submitted && validationErrors.nameru)">{{$t('common.requiredField')}}</small>
           </div>
-          <div class="p-col-12 p-pb-2 p-lg-12 p-md-6 p-mb-lg-0">
+          <div class="col-12 pb-2 lg:col-12 md:col-6 mb-lg-0">
             <label for="nameen">{{$t('dissertation.disstitle') + ' ' + $t('common.language.en')}}</label>
-            <InputText :placeholder="$t('common.enter')" class="p-pt-1" type="text" id="nameen" v-model="doctoral.dissertation.nameen" />
+            <InputText :placeholder="$t('common.enter')" class="pt-1" type="text" id="nameen" v-model="doctoral.dissertation.nameen" />
             <small class="p-error" v-if="(submitted && validationErrors.nameen)">{{$t('common.requiredField')}}</small>
           </div>
-          <div class="p-col-12 p-pb-2 p-lg-12 p-mb-lg-0">
+          <div class="col-12 pb-2 lg:col-12 mb-lg-0">
             <label for="namekz">{{$t('common.annotation') + ' ' + $t('common.language.kz')}}</label>
-            <Textarea :placeholder="$t('common.enter')" class="p-pt-1" type="text" id="annotationkz" v-model="doctoral.dissertation.annotation.kz" />
+            <Textarea :placeholder="$t('common.enter')" class="pt-1" type="text" id="annotationkz" v-model="doctoral.dissertation.annotation.kz" />
             <small class="p-error" v-if="(submitted && validationErrors.annotationkz)">{{$t('common.requiredField')}}</small>
           </div>
-          <div class="p-col-12 p-pb-2 p-lg-12 p-mb-lg-0">
+          <div class="col-12 pb-2 lg:col-12 mb-lg-0">
             <label for="nameru">{{$t('common.annotation') + ' ' + $t('common.language.ru')}}</label>
-            <Textarea :placeholder="$t('common.enter')" class="p-pt-1" type="text" id="annotaionru" v-model="doctoral.dissertation.annotation.ru" />
+            <Textarea :placeholder="$t('common.enter')" class="pt-1" type="text" id="annotaionru" v-model="doctoral.dissertation.annotation.ru" />
             <small class="p-error" v-if="(submitted && validationErrors.annotationru)">{{$t('common.requiredField')}}</small>
           </div>
-          <div class="p-col-12 p-pb-2 p-lg-12 p-md-6 p-mb-lg-0">
+          <div class="col-12 pb-2 lg:col-12 md:col-6 mb-lg-0">
             <label for="nameen">{{$t('common.annotation') + ' ' + $t('common.language.en')}}</label>
-            <Textarea :placeholder="$t('common.enter')" class="p-pt-1" type="text" id="annotationen" v-model="doctoral.dissertation.annotation.en" />
+            <Textarea :placeholder="$t('common.enter')" class="pt-1" type="text" id="annotationen" v-model="doctoral.dissertation.annotation.en" />
             <small class="p-error" v-if="(submitted && validationErrors.annotationen)">{{$t('common.requiredField')}}</small>
           </div>
-          <div class="p-col-12 p-pb-2 p-lg-4 p-mb-lg-0">
+          <div class="col-12 pb-2 lg:col-4 mb-lg-0">
             <label for="abstractfile">{{$t('dissertation.abstractFile') + ' ' + $t('common.docFormat')}}</label>
             <FileUpload
                 id="abstractfile"
                 mode="basic"
-                class= "p-mt-1"
+                class= "mt-1"
                 :customUpload="true"
                 @uploader="uploadFile($event,'abstractFile')"
                 :auto="true"
@@ -249,12 +249,12 @@
               </FileUpload>
             <small class="p-error" v-if="(submitted && validationErrors.abstractFile)">{{$t('common.requiredField')}}</small>
           </div>
-          <div class="p-col-12 p-pb-2 p-lg-4 p-mb-lg-0">
+          <div class="col-12 pb-2 lg:col-4 mb-lg-0">
             <label for="dissertationfile">{{$t('dissertation.dissertationFile') + ' ' + $t('common.docFormat')}}</label>
             <FileUpload
                 id="dissertationfile"
                 mode="basic"
-                class= "p-mt-1"
+                class= "mt-1"
                 :customUpload="true"
                 @uploader="uploadFile($event, 'dissertationFile')"
                 :auto="true"
@@ -264,13 +264,13 @@
               </FileUpload>
             <small class="p-error" v-if="(submitted && validationErrors.dissertationFile)">{{$t('common.requiredField')}}</small>
           </div>
-           <div class="p-col-12 p-pb-2 p-lg-4 p-mb-lg-5">
+           <div class="col-12 pb-2 lg:col-4 mb-lg-5">
             <label for="swList">{{$t('dissertation.swList') + ' ' + $t('common.pdfFormat')}}</label>
             <FileUpload
                 id="swList"
                 mode="basic"
                 :customUpload="true"
-                class= "p-mt-1"
+                class= "mt-1"
                 @uploader="uploadFile($event, 'swListFile')"
                 :auto="true"
                 accept=".pdf"
@@ -305,11 +305,11 @@
       >
         <div>
           <label for="doctoralName">{{ $t("common.fullName")}}</label>
-          <InputText id="doctoralName" class="p-pt-2 p-mb-2" type="text" readonly="true" v-model="selectedDoctoral.user.fullName" />
+          <InputText id="doctoralName" class="pt-2 mb-2" type="text" readonly="true" v-model="selectedDoctoral.user.fullName" />
         </div>
         <div>
           <label for="defenseLanguage">{{ $t("dissertation.defenseLang")}}</label>
-          <SelectButton id = "defenseLanguage" style="height:35px"  v-model="selectedDoctoral.dissertation.language" :options="language" class="p-mt-1 p-mb-2">
+          <SelectButton id = "defenseLanguage" style="height:35px"  v-model="selectedDoctoral.dissertation.language" :options="language" class="mt-1 mb-2">
             <template #option="slotProps">
               <div v-if="slotProps.option == 1">{{$t('common.language.kz')}}</div>
               <div v-else-if="slotProps.option == 2">{{$t('common.language.ru')}}</div>
@@ -320,17 +320,17 @@
         </div>
         <div>
           <label for="meetingTime">{{ $t("dissertation.meetingTime")}}</label>
-          <PrimeCalendar id="meetingTime" :placeholder="$t('common.select')" style="height:33px" class="p-pt-1" v-model="selectedDoctoral.meetingTime" :showTime="true" :showIcon="true"  :stepMinute="10" :manualInput="true"  dateFormat="dd.mm.yy"/>
+          <PrimeCalendar id="meetingTime" :placeholder="$t('common.select')" style="height:33px" class="pt-1" v-model="selectedDoctoral.meetingTime" :showTime="true" :showIcon="true"  :stepMinute="10" :manualInput="true"  dateFormat="dd.mm.yy"/>
           <small class="p-error" v-if="(submitted && validationErrorsSetMeetingTime.meetingTime)">{{$t('common.requiredField')}}</small>
         </div>
         <div>
           <label for="meetingUrl">{{ $t("common.meetingUrl")}}</label>
-          <InputText id="meetingUrl" class="p-pt-2 p-mb-2" type="text"  v-model="selectedDoctoral.dissertation.meetingUrl" />
+          <InputText id="meetingUrl" class="pt-2 mb-2" type="text"  v-model="selectedDoctoral.dissertation.meetingUrl" />
           <small class="p-error" v-if="(submitted && validationErrorsSetMeetingTime.meetingUrl)">{{$t('common.requiredField')}}</small>
         </div>
         <div>
           <label for="meetingPlace">{{ $t("common.meetingPlace")}}</label>
-          <InputText id="meetingUrl" class="p-pt-2 p-mb-2" type="text"  v-model="selectedDoctoral.dissertation.meetingPlace" />
+          <InputText id="meetingUrl" class="pt-2 mb-2" type="text"  v-model="selectedDoctoral.dissertation.meetingPlace" />
           <small class="p-error" v-if="(submitted && validationErrorsSetMeetingTime.meetingPlace)">{{$t('common.requiredField')}}</small>
         </div>
         <div>
@@ -363,17 +363,17 @@
         <div v-if="!(selectedDoctoral && selectedDoctoral.dissertation.state == dissertationState.VotingFinished) && !(isDissertationMember && ((currentMemberState === memberState.Registered && selectedDoctoral.dissertation.state === dissertationState.VotingStarted) || (currentMemberState === memberState.Voted && selectedDoctoral.dissertation.state === dissertationState.VotingRestarted)))">
           <div>
             <label for="doctoralName">{{ $t("common.fullName")}}</label>
-            <InputText id="doctoralName" class="p-pt-2 p-mb-2" type="text" readonly="true" v-model="selectedDoctoral.user.fullName" />
+            <InputText id="doctoralName" class="pt-2 mb-2" type="text" readonly="true" v-model="selectedDoctoral.user.fullName" />
           </div>
         
           <div>
             <label for="meetingTime">{{ $t("dissertation.meetingTime")}}</label>
-            <PrimeCalendar id="meetingTime" :placeholder="$t('common.select')" style="height:33px" class="p-pt-1" v-model="selectedDoctoral.meetingTime" :showTime="true" :showIcon="true"  :stepMinute="10" :manualInput="true"  dateFormat="dd.mm.yy"/>
+            <PrimeCalendar id="meetingTime" :placeholder="$t('common.select')" style="height:33px" class="pt-1" v-model="selectedDoctoral.meetingTime" :showTime="true" :showIcon="true"  :stepMinute="10" :manualInput="true"  dateFormat="dd.mm.yy"/>
             <small class="p-error" v-if="(submitted && validationErrorsSetMeetingTime.meetingTime)">{{$t('common.requiredField')}}</small>
           </div>
           <div>
             <label for="meetingUrl">{{ $t("common.meetingUrl")}}</label>
-            <InputText id="meetingUrl" class="p-pt-2 p-mb-2" type="text"  v-model="selectedDoctoral.dissertation.meetingUrl" />
+            <InputText id="meetingUrl" class="pt-2 mb-2" type="text"  v-model="selectedDoctoral.dissertation.meetingUrl" />
             <small class="p-error" v-if="(submitted && validationErrorsSetMeetingTime.meetingUrl)">{{$t('common.requiredField')}}</small>
           </div>
           
@@ -476,28 +476,28 @@
                     @click="download()"
                   />
               </div>
-              <div class="p-field-radiobutton"
+              <div class="field-radiobutton"
                 v-if="(isDissertationMember || isSecretary) && currentMemberState === memberState.Registered && selectedDoctoral.dissertation.state === dissertationState.VotingStarted"
               >
                 <RadioButton id="vote1" name="vote" value="1" v-model="currentMemberVote" />
                 <label for="city1">{{$t('dissertation.vote.v1')}}</label>
               </div>
-              <div class="p-field-radiobutton">
+              <div class="field-radiobutton">
                 <RadioButton id="vote2" name="vote" value="2" v-model="currentMemberVote" />
                 <label for="city2">{{$t('dissertation.vote.v2')}}</label>
               </div>
-              <div class="p-field-radiobutton">
+              <div class="field-radiobutton">
                 <RadioButton id="vote3" name="vote" value="3" v-model="currentMemberVote" />
                 <label for="city3">{{$t('dissertation.vote.v3')}}</label>
               </div>
-              <div class="p-field-radiobutton"
+              <div class="field-radiobutton"
                 v-if="(isDissertationMember || isSecretary) && currentMemberState === memberState.Registered && selectedDoctoral.dissertation.state === dissertationState.VotingStarted"
               >
                 <RadioButton id="vote4" name="vote" value="4" v-model="currentMemberVote" />
                 <label for="city4">{{$t('dissertation.vote.v4')}}</label>
               </div>
           </div>
-          <Inplace :closable="true" class = "p-mt-3"
+          <Inplace :closable="true" class = "mt-3"
               v-if="(isDissertationMember || isSecretary) &&  (selectedDoctoral.dissertation.state >= dissertationState.VotingFinished && selectedDoctoral.dissertation.state !== dissertationState.VotingRestarted)"
             >
               <template #display>

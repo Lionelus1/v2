@@ -1,20 +1,20 @@
 <template>
-  <div id="carddiv" class="p-grid">
-    <div class="p-col-12">
+  <div id="carddiv" class="grid">
+    <div class="col-12">
       <h3>{{ this.$t("common.departmentNameLabel")}}</h3>
       <div>
         <Menubar :model="menu" :key="active" style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px"></Menubar>
       </div>
     </div>
-    <div class="p-col-12 p-md-12 p-fluid">
+    <div class="col-12 md:col-12 p-fluid">
       <div class="card">
-        <div class="p-grid p-formgrid">
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+        <div class="grid formgrid">
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ this.$t("common.organizationNameLabel") }}</label>
             <ContragentSelectOrg
               ref = "contragent"
               v-model="value.organization"
-              class="p-mt-2"
+              class="mt-2"
               @selected="getDepartments($event, $refs.departmentList)"
             ></ContragentSelectOrg>
             <small
@@ -22,9 +22,9 @@
                 v-if="validation.organization"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ this.$t("common.departmentNameLabel") }}</label>
-            <DepartmentList :readonly="readonly" class="p-mt-2"
+            <DepartmentList :readonly="readonly" class="mt-2"
                             :autoLoad="false"
                             :editMode="true"
                             ref="departmentList"
@@ -36,7 +36,7 @@
                 v-if="validation.department"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="p-field p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="field col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ this.$t("common.headLabel") }}</label>
             <FindUser v-model="head"
                       :max="1"
@@ -48,11 +48,11 @@
                 v-if="validation.head"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="p-col-12 p-mb-2 p-pb-2 p-lg-6 p-mb-lg-0">
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ this.$t("common.deadlineDate") }}</label>
             <PrimeCalendar
                 :readonly="readonly"
-                class="p-mt-2"
+                class="mt-2"
                 :class="{'p-invalid': validation.deadline}"
                 v-model="value.deadline"
                 dateFormat="dd.mm.yy"/>
@@ -64,12 +64,12 @@
         </div>
         <TabView>
           <TabPanel header="Қазақша">
-            <div class="p-field">
+            <div class="field">
               <label for="kazname">Атауы</label>
               <InputText
                   id="kazname"
                   :readonly="readonly"
-                  class="p-mt-2"
+                  class="mt-2"
                   :class="{'p-invalid': validation.nameKz}"
                   type="text"
                   placeholder="Атауы"
@@ -80,7 +80,7 @@
                   v-if="validation.nameKz"
               >{{ $t("common.requiredField") }}</small>
             </div>
-            <div class="p-field">
+            <div class="field">
               <label for="kazname">Функционалдық міндеттері</label>
               <Editor v-model="value.responsibilitiesKz"
                       class="p-invalid"
@@ -105,7 +105,7 @@
                   v-if="validation.responsibilitiesKz"
               >{{ $t("common.requiredField") }}</small>
             </div>
-            <div class="p-field">
+            <div class="field">
               <label for="kazname">Білімі</label>
               <Editor v-model="value.educationKz"
                       :readonly="readonly"
@@ -130,7 +130,7 @@
                   v-if="validation.educationKz"
               >{{ $t("common.requiredField") }}</small>
             </div>
-            <div class="p-field">
+            <div class="field">
               <label for="kazname">Мамандығы бойынша біліктілігі</label>
               <Editor v-model="value.qualificationKz"
                       :readonly="readonly"
@@ -155,7 +155,7 @@
                   v-if="validation.qualificationKz"
               >{{ $t("common.requiredField") }}</small>
             </div>
-            <div class="p-field">
+            <div class="field">
               <label for="kazname">Қажетті кәсіби тәжірибесі</label>
               <Editor v-model="value.experienceKz"
                       :readonly="readonly"
@@ -180,7 +180,7 @@
                   v-if="validation.experienceKz"
               >{{ $t("common.requiredField") }}</small>
             </div>
-            <div class="p-field">
+            <div class="field">
               <label for="kazname">Тілдерді меңгеру деңгейі</label>
               <Editor v-model="value.languageLevelKz"
                       :readonly="readonly"
@@ -205,7 +205,7 @@
                   v-if="validation.languageLevelKz"
               >{{ $t("common.requiredField") }}</small>
             </div>
-            <div class="p-field">
+            <div class="field">
               <label for="kazname">Сертификаттардың, дипломдардың болуы</label>
               <Editor v-model="value.certificateRequirementsKz"
                       :readonly="readonly"
@@ -230,7 +230,7 @@
                   v-if="validation.certificateRequirementsKz"
               >{{ $t("common.requiredField") }}</small>
             </div>
-            <div class="p-field">
+            <div class="field">
               <label for="kazname">Жеке қасиеттері</label>
               <Editor v-model="value.personalQualitiesKz"
                       :readonly="readonly"
@@ -255,7 +255,7 @@
                   v-if="validation.personalQualitiesKz"
               >{{ $t("common.requiredField") }}</small>
             </div>
-            <div class="p-field">
+            <div class="field">
               <label for="kazname">Жұмыс шарты</label>
               <Editor v-model="value.workConditionKz"
                       :readonly="readonly"
@@ -282,12 +282,12 @@
             </div>
           </TabPanel>
           <TabPanel header="Русский">
-            <div class="p-field">
+            <div class="field">
               <label for="kazname">Наименование</label>
               <InputText
                   id="kazname"
                   :readonly="readonly"
-                  class="p-mt-2"
+                  class="mt-2"
                   :class="{'p-invalid': validation.nameRu}"
                   type="text"
                   placeholder="Наименование"
@@ -298,7 +298,7 @@
                   v-if="validation.nameRu"
               >{{ $t("common.requiredField") }}</small>
             </div>
-            <div class="p-field">
+            <div class="field">
               <label for="kazname">Функциональные обязанности</label>
               <Editor v-model="value.responsibilitiesRu"
                       :readonly="readonly"
@@ -323,7 +323,7 @@
                   v-if="validation.responsibilitiesRu"
               >{{ $t("common.requiredField") }}</small>
             </div>
-            <div class="p-field">
+            <div class="field">
               <label for="kazname">Образование</label>
               <Editor v-model="value.educationRu"
                       :readonly="readonly"
@@ -348,7 +348,7 @@
                   v-if="validation.experienceRu"
               >{{ $t("common.requiredField") }}</small>
             </div>
-            <div class="p-field">
+            <div class="field">
               <label for="kazname">Квалификация по специальности</label>
               <Editor v-model="value.qualificationRu"
                       :readonly="readonly"
@@ -373,7 +373,7 @@
                   v-if="validation.qualificationRu"
               >{{ $t("common.requiredField") }}</small>
             </div>
-            <div class="p-field">
+            <div class="field">
               <label for="kazname">Требуемый опыт работы</label>
               <Editor v-model="value.experienceRu"
                       :readonly="readonly"
@@ -398,7 +398,7 @@
                   v-if="validation.experienceRu"
               >{{ $t("common.requiredField") }}</small>
             </div>
-            <div class="p-field">
+            <div class="field">
               <label for="kazname">Уровень знания языков</label>
               <Editor v-model="value.languageLevelRu"
                       :readonly="readonly"
@@ -423,7 +423,7 @@
                   v-if="validation.languageLevelRu"
               >{{ $t("common.requiredField") }}</small>
             </div>
-            <div class="p-field">
+            <div class="field">
               <label for="kazname">Наличие сертификатов и дипломов</label>
               <Editor v-model="value.certificateRequirementsRu"
                       :readonly="readonly"
@@ -448,7 +448,7 @@
                   v-if="validation.certificateRequirementsRu"
               >{{ $t("common.requiredField") }}</small>
             </div>
-            <div class="p-field">
+            <div class="field">
               <label for="kazname">Персональные качества</label>
               <Editor v-model="value.personalQualitiesRu"
                       :readonly="readonly"
@@ -473,7 +473,7 @@
                   v-if="validation.personalQualitiesRu"
               >{{ $t("common.requiredField") }}</small>
             </div>
-            <div class="p-field">
+            <div class="field">
               <label for="kazname">Условия работы</label>
               <Editor v-model="value.workConditionRu"
                       :readonly="readonly"
@@ -500,12 +500,12 @@
             </div>
           </TabPanel>
           <TabPanel header="English">
-            <div class="p-field">
+            <div class="field">
               <label for="kazname">Name</label>
               <InputText
                   id="kazname"
                   :readonly="readonly"
-                  class="p-mt-2"
+                  class="mt-2"
                   :class="{'p-invalid': validation.nameEn}"
                   type="text"
                   placeholder="Name"
@@ -516,7 +516,7 @@
                   v-if="validation.nameEn"
               >{{ $t("common.requiredField") }}</small>
             </div>
-            <div class="p-field">
+            <div class="field">
               <label for="kazname">Functional responsibilities</label>
               <Editor v-model="value.responsibilitiesEn"
                       :class="{'p-invalid': validation.responsibilitiesEn}"
@@ -540,7 +540,7 @@
                   v-if="validation.responsibilitiesEn"
               >{{ $t("common.requiredField") }}</small>
             </div>
-            <div class="p-field">
+            <div class="field">
               <label for="kazname">Education</label>
               <Editor v-model="value.educationEn"
                       :class="{'p-invalid': validation.educationEn}"
@@ -564,7 +564,7 @@
                   v-if="validation.educationEn"
               >{{ $t("common.requiredField") }}</small>
             </div>
-            <div class="p-field">
+            <div class="field">
               <label for="kazname">Qualification by specialty</label>
               <Editor v-model="value.qualificationEn"
                       :class="{'p-invalid': validation.qualificationEn}"
@@ -588,7 +588,7 @@
                   v-if="validation.qualificationEn"
               >{{ $t("common.requiredField") }}</small>
             </div>
-            <div class="p-field">
+            <div class="field">
               <label for="kazname">Required work experience</label>
               <Editor v-model="value.experienceEn"
                       :class="{'p-invalid': validation.experienceEn}"
@@ -612,7 +612,7 @@
                   v-if="validation.experienceEn"
               >{{ $t("common.requiredField") }}</small>
             </div>
-            <div class="p-field">
+            <div class="field">
               <label for="kazname">Language skills</label>
               <Editor v-model="value.languageLevelEn"
                       :class="{'p-invalid': validation.languageLevelEn}"
@@ -636,7 +636,7 @@
                   v-if="validation.languageLevelEn"
               >{{ $t("common.requiredField") }}</small>
             </div>
-            <div class="p-field">
+            <div class="field">
               <label for="kazname">Availability of certificates and diplomas</label>
               <Editor v-model="value.certificateRequirementsEn"
                       :class="{'p-invalid': validation.certificateRequirementsEn}"
@@ -660,7 +660,7 @@
                   v-if="validation.certificateRequirementsEn"
               >{{ $t("common.requiredField") }}</small>
             </div>
-            <div class="p-field">
+            <div class="field">
               <label for="kazname">Personal qualities</label>
               <Editor v-model="value.personalQualitiesEn"
                       :class="{'p-invalid': validation.personalQualitiesEn}"
@@ -684,7 +684,7 @@
                   v-if="validation.personalQualitiesEn"
               >{{ $t("common.requiredField") }}</small>
             </div>
-            <div class="p-field">
+            <div class="field">
               <label for="kazname">Working conditions</label>
               <Editor v-model="value.workConditionEn"
                       :class="{'p-invalid': validation.workConditionEn}"

@@ -1,6 +1,6 @@
 <template>
   <!-- РЕЗЮМЕ ҚҰРУ -->
-  <Toolbar class="p-mb-4" style="height:42px;margin-top:-7px;margin-left:-14px;margin-right:-14px">
+  <Toolbar class="mb-4" style="height:42px;margin-top:-7px;margin-left:-14px;margin-right:-14px">
     <template #start>
       <Button v-if="toolbar.start" style="margin-top:-10px" :label="$t('hr.resume.create')" icon="pi pi-plus" :onclick="createCandidate"/>
     </template>
@@ -16,8 +16,8 @@
   <!-- РЕЗЮМЕ  -->
   <div class="card" v-if="candidate !== null && candidate !== {}">
     <div class="card">
-      <div class="p-grid p-formgrid">
-        <div class="p-col-12 p-lg-9 card-border">
+      <div class="grid formgrid">
+        <div class="col-12 lg:col-9 card-border">
           <ResumeView  v-if="view" :value="candidate" :readonly="false"/>
         </div>
       </div>

@@ -1,21 +1,21 @@
 <template>
   <div :style="organization ? 'margin:-1em; margin-top:0' : ''">
     <div
-      class="content-section introduction"
+      class="introduction"
       :style="organization ? 'margin-top:-1.5em; margin-bottom:1.5em' : ''"
     >
-      <div class="feature-intro p-ml-3">
+      <div class="feature-intro ml-3">
         <h4 style="display: inline">
           {{
             personType === PersonType.IndividualEntrepreneur
-              ? $t("common.person")
+              ? $t("common.individualEntrepreneur")
               : $t("common.personal")
           }}
         </h4>
       </div>
     </div>
-    <div class="content-section implementation">
-      <div class="card p-p-0">
+    <div class="card implementation">
+      <div class="card p-0">
         <div class="p-col">
           <Menubar
             :model="menu"
@@ -23,19 +23,15 @@
             style="height: 36px;margin-top: -7px;margin-right: -7px;margin-left: -7px;"
           >
             <template #end>
-              <InputText
-                @keyup.enter="initApiCall"
-                style="height: 30px"
-                v-model="filters['global'].value"
-                placeholder="іздеу"
-              />
-
-              <Button
-                icon="pi pi-search"
-                style="height: 30px"
-                class="p-ml-1"
-                @click="initApiCall"
-              />
+              <span class="p-input-icon-left">
+                <i class="pi pi-search" />
+                <InputText
+                  @keyup.enter="initApiCall"
+                  style="height: 30px"
+                  v-model="filters['global'].value"
+                  :placeholder="$t('common.search')"
+                />
+              </span>
             </template>
           </Menubar>
           <div class="box">
@@ -63,7 +59,7 @@
                   totalRecords: '{totalRecords}',
                 })
               "
-              responsiveLayout="scroll"
+              responsiveLayout="stack"
             >
               <template #empty>
                 {{ this.$t("common.recordsNotFound") }}
@@ -93,7 +89,7 @@
               >
                 <template #body="slotProps">
                   <Button
-                    class="p-button-link p-text-left"
+                    class="p-button-link text-left"
                     @click="toggle($event, slotProps.data)"
                     >{{
                       slotProps.data.thirdName +
@@ -165,7 +161,7 @@
               class="p-sidebar-lg"
               style="overflow-y: scroll"
             >
-              <Person :shortMode="shortMode" :modelValue="currentPerson" :organization="organization" :addMode="addMode" :readonly="!shortMode" @userCreated="insertUser"></Person>
+              <Person :shortMode="shortMode" :modelValue="currentPerson" :organization="organization" :addMode="addMode" :personType="newPersonType" :readonly="!shortMode" @userCreated="insertUser"></Person>
               
             </Sidebar>
           </div>
@@ -187,6 +183,7 @@ export default {
       active: null,
       persons: null,
       addMode: false,
+      newPersonType: Number,
       personType: Number(this.$route.params.type),
       PersonType: Enum.PersonType,
       lazyParams: {
@@ -216,7 +213,7 @@ export default {
             Number(this.$route.params.type) ===
             Enum.PersonType.OrganizationMember
               ? "student"
-              : "INDIVIDUALENTREPRENEUR",
+              : "individual_entrepreneur",
           matchMode:
             Number(this.$route.params.type) ===
             Enum.PersonType.OrganizationMember
@@ -256,12 +253,19 @@ export default {
       ],
       localmenu: [{
           label: this.$t("common.activeList"),
-          items:[{
-            label: this.$t("common.person"),
-            icon: "pi pi-home",
-            disabled: false,
+          items:[
+            {
+              label: this.$t("common.individualEntrepreneur"),
+              icon: "pi pi-user-plus",
+              command: () => {
+                this.addPerson(Enum.PersonType.IndividualEntrepreneur)
+              }
+            }, 
+          {
+            label: this.$t("common.personal"),
+            icon: "pi pi-user-plus",
             command: () => {
-              this.addPerson()
+              this.addPerson(Enum.PersonType.OrganizationMember)
             }
           }
           ]
@@ -280,7 +284,7 @@ export default {
       default: false
     },
     shortMode: Boolean,
-    
+    contragentPersonType: Number,
   },
   setup(props, context) {
     function updateValue(currentPerson) {
@@ -293,7 +297,6 @@ export default {
   },
   watch: {
     "$route.params.type": function (id) {
-      this.personType = Number(this.$route.params.type);
       this.initApiCall();
     },
   },
@@ -306,14 +309,18 @@ export default {
       this.$emit("update:pagemenu", this.localmenu)
       let url = "/contragent/persons";
       this.personType = Number(this.$route.params.type);
-       if (this.$route.params.type === undefined) {
-        this.personType = 2
+      if (this.$route.params.type === undefined) {
+        if (this.contragentPersonType === undefined) {
+          this.personType = 2
+        } else {
+          this.personType = this.contragentPersonType
+        }
       }
 
       this.filters.userType.value =
         this.personType  === Enum.PersonType.OrganizationMember
           ? "student"
-          : "INDIVIDUALENTREPRENEUR";
+          : "individual_entrepreneur";
       
       this.filters.userType.matchMode =
         this.personType  === Enum.PersonType.OrganizationMember
@@ -364,11 +371,13 @@ export default {
       this.addMode = false;
       this.currentPerson = data;
       this.selectedPersons = data;
-      if (this.organization) {
+      if (this.organization || this.contragentPersonType !== undefined) {
         this.updateValue(data);
         this.$emit("updated",event)
+      } else {
+        this.newPersonType = this.personType  === Enum.PersonType.OrganizationMember ? Enum.PersonType.OrganizationMember : Enum.PersonType.IndividualEntrepreneur
+        this.sideVisible = true;
       }
-      else this.sideVisible = true;
 
     },
     onPage(event) {
@@ -387,7 +396,11 @@ export default {
       this.lazyParams.sortLang = this.$i18n.locale;
       this.initApiCall();
     },
-    addPerson(){
+    addPerson(type){
+      if (type === null) {
+        type = Enum.PersonType.OrganizationMember
+      }
+      this.newPersonType = type
       this.currentPerson = {
         IIN: null,
         name: null,

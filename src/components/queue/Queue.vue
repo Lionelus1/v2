@@ -1,12 +1,12 @@
 <template>
 	<div>
-    <Toolbar class="p-mb-4 ">
+    <Toolbar class="mb-4 ">
       <template #start>
         <Button
           :label="$t('common.add')"
           :title="$t('queue.creatQueue')"          
           icon="pi pi-plus"
-          class="p-button-success p-mr-2"
+          class="p-button-success mr-2"
           v-on:click="createQueue(null)"
         />        
       </template>
@@ -28,7 +28,7 @@
         <template #body="slotProps">            
           <div>
             <span display="chip" v-for="responsible in slotProps.node.responsibles" :key="responsible.userID">
-              <Chip class="p-mr-2 custom-chip" :label="responsible.fullName"/>
+              <Chip class="mr-2 custom-chip" :label="responsible.fullName"/>
             </span>
           </div>
 
@@ -40,43 +40,43 @@
             v-if="slotProps.node.createdUserId === loginedUser.userID || isOperator(slotProps.node)"
             icon="pi pi-plus" 
             v-tooltip.bottom="$t('common.add')"            
-            class="p-button-rounded p-button-success p-mr-2"  
+            class="p-button-rounded p-button-success mr-2"  
             @click="createQueue(slotProps.node)" />            
           <Button 
             v-if="slotProps.node.createdUserId === loginedUser.userID || isOperator(slotProps.node)"
             icon="pi pi-pencil"
             v-tooltip.bottom="$t('common.edit')"
-            class="p-button-rounded p-button-warning p-mr-2"  
+            class="p-button-rounded p-button-warning mr-2"  
             @click="editQueue(slotProps.node)" />
           <Button 
             v-if="slotProps.node.createdUserId === loginedUser.userID || isOperator(slotProps.node)"
             icon="pi pi-trash" 
             v-tooltip.bottom="$t('common.delete')"  
-            class="p-button-rounded p-button-danger p-mr-4" 
+            class="p-button-rounded p-button-danger mr-4" 
             @click="delQueue(slotProps.node)"/>
           <Button 
             icon="pi pi-user" 
             v-if="slotProps.node.createdUserId === loginedUser.userID || isOperator(slotProps.node)"
             v-tooltip.bottom="$t('queue.operator')"  
-            class="p-button-rounded p-button-info p-mr-2"  
+            class="p-button-rounded p-button-info mr-2"  
             @click="$router.push('/queue/operator/'+ slotProps.node.key+ '/' +  slotProps.node.parentId)" />
           <Button 
             icon="pi pi-desktop" 
             v-if="findRole(null, 'queue_tv')"
             v-tooltip.bottom="$t('queue.tv')"  
-            class="p-button-rounded p-button-help p-mr-2"  
+            class="p-button-rounded p-button-help mr-2"  
             @click="$router.push('/queue/tv/'+ slotProps.node.key )" />
            <Button 
             icon="pi pi-ticket" 
             v-tooltip.bottom="$t('queue.terminal')"  
             v-if="findRole(null, 'queue_terminal')"
-            class="p-button-rounded p-button-help p-mr-2"  
+            class="p-button-rounded p-button-help mr-2"  
             @click="$router.push('/queue/terminal/'+ slotProps.node.key )" />
             <Button 
             icon="pi pi-chart-line" 
             v-tooltip.bottom="$t('common.report')"  
             v-if="slotProps.node.parentId ===null && slotProps.node.createdUserId === loginedUser.userID "
-            class="p-button-rounded p-button-help p-mr-2"  
+            class="p-button-rounded p-button-help mr-2"  
             @click="$router.push('/queue/queueReport/'+ slotProps.node.key )" />
         </template>
       </Column>              
@@ -91,28 +91,28 @@
       :modal="true"
       class="p-fluid"
     >
-      <div class="p-field" style="margin: 1.5rem 0 1.5rem 0">
+      <div class="field" style="margin: 1.5rem 0 1.5rem 0">
         <span class="p-float-label">
           <InputText id="kz-title" v-model="queue.queueNamekz" />
           <label for="kz-title">{{ $t("common.nameInQazaq") }}</label>
         </span>
         <small class="p-error" v-if="!validation.nameKz && submitted">{{ $t("common.requiredField") }}</small>
       </div>
-      <div class="p-field" style="margin-bottom: 1.5rem">
+      <div class="field" style="margin-bottom: 1.5rem">
         <span class="p-float-label">
           <InputText id="ru-title" v-model="queue.queueNameru" />
           <label for="ru-title">{{ $t("common.nameInRussian") }}</label>
         </span>
         <small class="p-error" v-if="!validation.nameRu && submitted">{{ $t("common.requiredField") }}</small>
       </div>
-      <div class="p-field" style="margin-bottom: 1.5rem">
+      <div class="field" style="margin-bottom: 1.5rem">
         <span class="p-float-label">
           <InputText id="en-title" v-model="queue.queueNameen" />
           <label for="en-title">{{ $t("common.nameInEnglish") }}</label>
         </span>
         <small class="p-error" v-if="!validation.nameEn && submitted">{{ $t("common.requiredField") }}</small>
       </div>
-      <div class="p-field">
+      <div class="field">
           <label for="name">{{$t('common.fullName')}}</label>
           <FindUser v-model="queue.responsibles" :userType="2"></FindUser>
           <small class="p-error" v-if="!validation.responsibles && submitted">{{ $t("common.requiredField") }}</small>
@@ -122,7 +122,7 @@
         <Button
           v-bind:label="$t('common.save')"
           icon="pi pi-check"
-          class="p-button p-component p-button-success p-mr-2"
+          class="p-button p-component p-button-success mr-2"
           v-on:click="addQueue"
         />
         <Button
@@ -142,7 +142,7 @@
       :modal="true"
       >
       <div class="confirmation-content">
-        <i class="pi pi-exclamation-triangle p-mr-3" style="font-size: 2rem" />
+        <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
         <span v-if="queue"
           >{{ $t("common.doYouWantDelete") }}
           <b>{{
@@ -159,7 +159,7 @@
         <Button
           :label="$t('common.yes')"
           icon="pi pi-check"
-          class="p-button p-component p-button-success p-mr-2"
+          class="p-button p-component p-button-success mr-2"
           @click="deleteQueue"
         />
         <Button
@@ -418,7 +418,7 @@ export default {
 }
 .table-header {
   display: flex;
-  justify-content: space-between;
+  flex-order-: space-between;
 }
 ::v-deep(.p-datatable.p-datatable-customers) {
   .p-datatable-header {
