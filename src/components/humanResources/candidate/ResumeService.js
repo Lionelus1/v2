@@ -11,10 +11,10 @@ export default class ResumeService {
         )
     }
 
-    deleteCandidate(candidateId) {
+    deleteCandidate() {
         return axios.post(
             smartEnuApi + "/candidate/delete",
-            {id: candidateId},
+            {},
             {headers: getHeader()}
         )
     }

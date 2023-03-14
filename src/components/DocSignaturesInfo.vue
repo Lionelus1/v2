@@ -34,6 +34,18 @@
                       class="p-button-primary md:col-5" @click="sign" :label="$t('ncasigner.sign')" :loading="signing"/>
             </div>
           </Panel>
+          <div v-if="signerType === 'fl'" class="p-mt-2">
+            <Panel>
+              <template #header>
+                <div class="p-d-flex p-jc-center">
+                  <InlineMessage class="" severity="info">{{ $t('ncasigner.qrSinging') }}</InlineMessage>
+                </div>
+              </template>
+              <div class="p-d-flex p-jc-center">
+                <qrcode-vue size="350" render-as="svg" margin="2" :value="mgovSignUri"></qrcode-vue>
+              </div>
+            </Panel>
+          </div>
         </div>
       </TabPanel>
     </TabView>
@@ -45,14 +57,15 @@ import SignatureQrPdf from "@/components/ncasigner/SignatureQrPdf";
 import {runNCaLayer, makeTimestampForSignature} from "@/helpers/SignDocFunctions"
 
 import axios from "axios";
-import {getHeader, smartEnuApi, b64toBlob, findRole} from "@/config/config";
+import {getHeader, smartEnuApi, socketApi, b64toBlob, findRole} from "@/config/config";
 import html2pdf from "html2pdf.js";
 import DocInfo from "@/components/ncasigner/DocInfo";
+import QrcodeVue from "qrcode.vue";
 
 
 export default {
   name: "DocSignaturesInfo",
-  components: {SignatureQrPdf, DocInfo},
+  components: {SignatureQrPdf, DocInfo, QrcodeVue},
   props: {
     docIdParam: {
       type: String,
@@ -90,24 +103,32 @@ export default {
       signerType: null,
       docInfo: null,
       loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID,
+      loginedUserForMgovws: JSON.parse(localStorage.getItem("loginedUser")),
       isShow: false,
       showAllSigns: false,
       loading: true,
       signing: false,
       file: null,
       active: 0,
-      isSignShow: false
+      isSignShow: false,
+      mgovSignUri: null
     }
   },
   created() {
     if (!this.doc_id) {
       this.doc_id = this.docIdParam
     }
+    const tokenData = JSON.parse(window.localStorage.getItem("authUser"));
+    this.mgovSignUri = 'mobileSign:'+ smartEnuApi +'/mobileSignParams?docUuid=' + this.doc_id +
+        "&token=" + tokenData.access_token
     this.isTspRequired = this.tspParam
     this.signerIin = this.signerIinParam
     this.signerType = this.signerTypeParam
     this.showAllSigns = this.showAllSignsParam
     this.getData();
+  },
+  mounted() {
+    this.wsconnect()
   },
   methods: {
     findRole: findRole,
@@ -263,7 +284,33 @@ export default {
         arr.push(str.slice(index, index + n));
       }
       return arr;
-    }
+    },
+    wsconnect() {
+      let t = this;
+      this.connection =new WebSocket(socketApi+'/mgovws');
+      this.connection.onmessage = function(data) {
+        let response = JSON.parse(data.data)
+        if (response.result === 'error') {
+          t.$toast.add({
+            severity: 'error',
+            summary: response.errorMessage,
+            life: 3000
+          });
+        } else if (response.result === 'success') {
+          t.getData()
+          t.showMessage('success', t.$t('ncasigner.signDocTitle'), t.$t('ncasigner.success.signSuccess'));
+        } else if (response.result === 'unsigned') {
+          this.$toast.add({
+            severity: "error",
+            summary: t.$t(response.errorMessage),
+            life: 3000,
+          });
+        }
+      }
+      this.connection.onopen = function(event) {
+        t.connection.send(JSON.stringify(t.loginedUserForMgovws));
+      }
+    },
   }
 }
 </script>
