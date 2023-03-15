@@ -16,7 +16,7 @@
                  selectionMode="single" :rowHover="true" v-model:selection="selectedEvent" :filters="filters"
                  :loading="loading">
         <template #header>
-          <div class="table-header">
+          <div class="table-header flex flex-column md:flex-row justify-content-between">
             {{ $t("smartenu.eventsTitle") }}
             <span class="p-input-icon-left">
               <i class="pi pi-search"/>

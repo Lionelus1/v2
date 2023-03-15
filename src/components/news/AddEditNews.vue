@@ -6,7 +6,7 @@
 <!--      <Message v-for="msg of formValid" severity="error" :key="msg">{{ msg }}</Message>-->
       <TabView>
         <TabPanel header="Қазақша">
-          <div class="fieldmt-3">
+          <div class="field mt-3">
             <label for="kz-title">{{ $t("common.nameInQazaq") }}</label>
             <InputText id="kz-title" v-model="newsData.titleKz" rows="3"
                        :class="{ 'p-invalid': !newsData.titleKz && submitted }"/>
@@ -21,7 +21,7 @@
           </div>
         </TabPanel>
         <TabPanel header="Русский">
-          <div class="fieldmt-3">
+          <div class="field mt-3">
             <label for="ru-title">{{ $t("common.nameInRussian") }}</label>
             <InputText id="ru-title" v-model="newsData.titleRu"
                        rows="3" :class="{ 'p-invalid': !newsData.titleRu && submitted }"/>
@@ -36,7 +36,7 @@
           </div>
         </TabPanel>
         <TabPanel header="English">
-          <div class="fieldmt-3">
+          <div class="field mt-3">
             <label for="en-title">{{ $t("common.nameInEnglish") }}</label>
             <InputText id="en-title" v-model="newsData.titleEn" rows="3"
                        :class="{ 'p-invalid': !newsData.titleEn && submitted }"/>
@@ -63,6 +63,10 @@
         </small>
       </div>
       <div class="field">
+        <label>{{ $t('common.pDate') }}</label>
+        <PrimeCalendar v-model="newsData.publish_date" showTime hourFormat="24" dateFormat="dd.mm.yy" showIcon @date-select="selectDate" />
+      </div>
+      <div class="field">
         <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadImage1($event)"
                     :auto="true" v-bind:chooseLabel="$t('smartenu.chooseImage1')" accept="image/*"/>
         <small v-show="(!newsData.image1 && !imageFileMain) && submitted" class="p-error">
@@ -79,7 +83,7 @@
         <Checkbox id="isPoster" name="isPoster" v-model="newsData.isPoster" :binary="true"/>
         <label for="isPoster">{{ $t("smartenu.addPoster") }}</label>
       </div>
-      <div class="fieldmt-3" style="margin-bottom: 1.5rem" v-if="newsData.isPoster">
+      <div class="field mt-3" style="margin-bottom: 1.5rem" v-if="newsData.isPoster">
         <label for="poster-link">{{ $t("smartenu.posterLink") }}</label>
         <InputText id="poster-link" v-model="poster.link" rows="3" :placeholder="$t('smartenu.posterLink')"/>
         <div class="grid mt-3" v-if="newsData.isPoster">
@@ -184,6 +188,9 @@ export default {
     }
   },
   methods: {
+    selectDate(event) {
+      this.newsData.publish_date = new Date(event);
+    },
     addNews() {
       this.submitted = true;
       if (this.validateNews().length > 0) {
