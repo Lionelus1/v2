@@ -5,7 +5,7 @@
 <!--      <Message v-for="msg of formValid" severity="error" :key="msg">{{ msg }}</Message>-->
       <TabView>
         <TabPanel header="Қазақша">
-          <div class="fieldmt-3">
+          <div class="field mt-3">
             <label for="kz-title">{{ $t("common.nameInQazaq") }}</label>
             <InputText id="kz-title" v-model="event.titleKz" rows="3"
                        :class="{ 'p-invalid': event.titleKz && submitted }"/>
@@ -20,7 +20,7 @@
           </div>
         </TabPanel>
         <TabPanel header="Русский">
-          <div class="fieldmt-3" style="margin-bottom: 1.5rem">
+          <div class="field mt-3" style="margin-bottom: 1.5rem">
             <label for="ru-title">{{ $t("common.nameInRussian") }}</label>
             <InputText id="ru-title" v-model="event.titleRu" rows="3"
                        :class="{ 'p-invalid': !event.titleRu && submitted }"/>
@@ -37,7 +37,7 @@
           </div>
         </TabPanel>
         <TabPanel header="English">
-          <div class="fieldmt-3" style="margin-bottom: 1.5rem">
+          <div class="field mt-3" style="margin-bottom: 1.5rem">
             <label for="en-title">{{ $t("common.nameInEnglish") }}</label>
             <InputText id="en-title" v-model="event.titleEn" rows="3"
                        :class="{ 'p-invalid': !event.titleEn && submitted }"/>
@@ -146,7 +146,7 @@
         <Checkbox id="isPoster" name="isPoster" v-model="event.isPoster" :binary="true"/>
         <label for="isPoster">{{ $t("smartenu.addPoster") }}</label>
       </div>
-      <div class="fieldmt-3" style="margin-bottom: 1.5rem" v-if="event.isPoster">
+      <div class="field mt-3" style="margin-bottom: 1.5rem" v-if="event.isPoster">
         <label for="poster-link">{{ $t("smartenu.posterLink") }}</label>
         <InputText id="poster-link" v-model="poster.link" rows="3" :placeholder="$t('smartenu.posterLink')"/>
         <div class="grid mt-3" v-if="event.isPoster">

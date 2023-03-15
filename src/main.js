@@ -118,6 +118,11 @@ import {far} from '@fortawesome/free-regular-svg-icons';
 import ScrollPanel from "primevue/scrollpanel";
 import WorkPlanEventResult from "./components/work_plan/WorkPlanEventResult";
 
+Date.prototype.toJSON = function(){
+    const hoursDiff = this.getHours() - this.getTimezoneOffset() / 60;
+    this.setHours(hoursDiff);
+    return this.toISOString();
+};
 
 library.add(fas, far, fab)
 dom.watch();
