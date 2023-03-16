@@ -236,7 +236,7 @@
             :style="{width: '50vw'}" class="p-fluid">
       <ProgressBar v-if="approving" mode="indeterminate" style="height: .5em"/>
       <div class="field">
-        <ApprovalUsers :key="approveComponentKey" :approving="approving" v-model="selectedUsers"
+        <ApprovalUsers mode="standard" :key="approveComponentKey" :approving="approving" v-model="selectedUsers"
                        @closed="closeDialog('sendToApprove')"
                        @approve="approve($event)" :stages="stages"></ApprovalUsers>
       </div>
