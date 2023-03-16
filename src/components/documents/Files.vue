@@ -68,6 +68,10 @@ export default {
                 type: Number,
                 default: null
             },
+            uuid: {
+                type: String,
+                default:null,
+            },
             fileType: {
                 type: String,
 				default: null
@@ -119,7 +123,7 @@ export default {
         },
         getRealtedFiles() {
             this.uploading =true
-            this.service.getRelatedDocs({fileID: this.fileID}).then(response =>{
+            this.service.getRelatedDocs({fileID: this.fileID, uuid: this.uuid}).then(response =>{
                 this.uploadedFiles = this.uploadedFiles.concat(response.data)
                 this.uploading = false;
 
@@ -139,7 +143,7 @@ export default {
                 fcount = this.$refs.ufile.files.length
             }
 
-            fd.append('info', JSON.stringify({directory: this.folder+ "/" + this.fileID, count: fcount, fileID: this.fileID}));
+            fd.append('info', JSON.stringify({directory: this.folder+ "/" + this.fileID, count: fcount, fileID: this.fileID, uuid: this.uuid}));
             this.service.uploadRelatedDocs(fd).then(response =>{
                 this.files = []
                 this.uploadedFiles =response.data.concat(this.uploadedFiles)

@@ -86,6 +86,12 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
+                path: '/documents/catalog/postaccmonrep',
+                name: '/documents/catalog/postaccmonrep',
+                component: load('documents/catalog/PostAccreditaionMonitoringReport'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
 
                 path: '/documents/doctemplate:',
                 name: '/documents/doctemplate',
