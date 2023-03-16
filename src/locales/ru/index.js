@@ -287,7 +287,9 @@ export default {
         actionTitle: "Действие",
         style: "Стиль",
         bgColor: "Фоновый цвет",
-        textColor: "Цвет текста"
+        textColor: "Цвет текста",
+        signers: "Подписывающие стороны",
+        approvals: "Согласующие лица",
     },
     bank: {
         title: "Банки",
@@ -369,12 +371,15 @@ export default {
             period: "Период",
             text: "Текст",
             student: "Обучающийся",
-            individualEntrepreneur: "Индивидуальный предприниматель",
+            individualEntrepreneur: "Частное лицо",
             place: "Место заключения договора",
             date: "Дата заключения договора",
             addElement: "Добавление элемента договора",
             message: {}
         },
+        needsApproval: "Созданный по шаблону документ требует согласования",
+        approvalUsers: "Список согласующих лиц",
+        approvalListPlaceholder: "Инстанция",
     },
     contracts: {
         title: "Договоры",
@@ -441,7 +446,9 @@ export default {
         IncorrectFileTitle: "Файл с данным именем {dn} не прошел проверку подписи в системе SIGNERAPP",
         IncorrectFileContent: "Данный файл был изменен или был предоставлен другой файл. Пожалуйста, проверьте файл.",
         signed: "подписал(а) данный документ",
+        approved: "согласовал(а) данный документ",
         signingexpected: "ожидается подписание",
+        approvingExpected: "ожидается согласование",
         certTemplate: "Шаблон сертификата: ",
         IIN: "ИИН",
         certType: "Тип подписи: ",
@@ -918,7 +925,7 @@ export default {
         resultIndicator: "Показатель прямых результатов",
         summary: "Свод/Подтверждение",
         respExecutor: "Ответственные исполнители",
-        halfYear: "полугодие"
+        halfYear: "полугодие",
     },
     educomplex: {
         title: "Учебно-методический комплекс дисциплины",

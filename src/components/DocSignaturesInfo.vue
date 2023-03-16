@@ -1,4 +1,8 @@
 <template>
+  <div>
+    <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
+    <BlockUI :blocked="loading" :fullScreen="true"></BlockUI>
+  </div>
   <div v-if="!loading">
     <DocInfo :document="docInfo" v-if="!incorrect" :docID="doc_id"/>
     <ProgressBar v-if="signing" mode="indeterminate" style="height: .5em"/>
@@ -6,9 +10,9 @@
     <TabView v-model:activeIndex="active" @tab-change="showFile">
       <TabPanel v-bind:header="$t('ncasigner.signatureListTitle')">
         <div class="col-12" v-if="isShow">
-          <Button :label="$t('common.downloadSignaturesPdf')" icon="pi pi-download" @click="downloadSignatures"
+          <Button v-if="signatures && signatures.length > 0 || approvalStages && showSign()" :label="$t('common.downloadSignaturesPdf')" icon="pi pi-download" @click="downloadSignatures"
                   class="p-button ml-2"/>
-          <SignatureQrPdf ref="qrToPdf" :signatures="signatures" :title="docInfo.name"></SignatureQrPdf>
+          <SignatureQrPdf ref="qrToPdf" :showSign="showSign()" :signatures="signatures" :title="docInfo.name" :approvalStages="approvalStages"></SignatureQrPdf>
         </div>
         <div class="col-12" v-else>
           <div class="card">
@@ -34,7 +38,7 @@
                       class="p-button-primary md:col-5" @click="sign" :label="$t('ncasigner.sign')" :loading="signing"/>
             </div>
           </Panel>
-          <div v-if="signerType === 'fl'" class="p-mt-2">
+          <div v-if="isIndivid" class="p-mt-2">
             <Panel>
               <template #header>
                 <div class="p-d-flex p-jc-center">
@@ -61,7 +65,7 @@ import {getHeader, smartEnuApi, socketApi, b64toBlob, findRole} from "@/config/c
 import html2pdf from "html2pdf.js";
 import DocInfo from "@/components/ncasigner/DocInfo";
 import QrcodeVue from "qrcode.vue";
-
+import Enum from "@/enum/docstates/index";
 
 export default {
   name: "DocSignaturesInfo",
@@ -72,10 +76,6 @@ export default {
       default: null
     },
     signerIinParam: {
-      type: String,
-      default: null
-    },
-    signerTypeParam: {
       type: String,
       default: null
     },
@@ -96,22 +96,24 @@ export default {
   data() {
     return {
       signatures: null,
+      approvalStages: null,
       plan: null,
       doc_id: this.$route.params.uuid,
       isTspRequired: Boolean,
       signerIin: null,
-      signerType: null,
       docInfo: null,
       loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID,
       loginedUserForMgovws: JSON.parse(localStorage.getItem("loginedUser")),
       isShow: false,
       showAllSigns: false,
-      loading: true,
+      loading: false,
       signing: false,
       file: null,
       active: 0,
       isSignShow: false,
-      mgovSignUri: null
+      isIndivid: false,
+      mgovSignUri: null,
+      enum: Enum
     }
   },
   created() {
@@ -123,7 +125,6 @@ export default {
         "&token=" + tokenData.access_token
     this.isTspRequired = this.tspParam
     this.signerIin = this.signerIinParam
-    this.signerType = this.signerTypeParam
     this.showAllSigns = this.showAllSignsParam
     this.getData();
   },
@@ -153,20 +154,66 @@ export default {
       }
     },
     getData() {
-      axios.get(smartEnuApi + `/getDocInfo/${this.doc_id}`, {headers: getHeader()})
-          .then(res => {
-            if (res.data) {
-              this.docInfo = res.data;
-              this.signatures = res.data.signatures;
-              this.showAllSignsParam ? this.isShow = true :
-                  this.isShow = this.findRole(null, "career_moderator") || this.signatures.some(x => x.userId === this.loginedUserId) || this.docInfo.docHistory.setterId === this.loginedUserId;
-              this.isSignShow = this.signatures.some(x => x.userId === this.loginedUserId && (x.signature || x.signature !== ''));
-              this.signatures.map(e => {
-                e.sign = this.chunkString(e.signature, 1200)
+      this.loading = true
+      axios.post(smartEnuApi + `/agreement/getSignInfo`, {
+        doc_uuid: this.doc_id,
+      }, {
+        headers: getHeader(),
+      }).then(res => {
+        if (res.data) {
+          this.docInfo = res.data;
+          this.signatures = res.data.signatures;
+
+          if (this.showAllSignsParam) {
+            this.isShow = true;
+          } else {
+            this.isShow = this.findRole(null, "career_moderator") || (this.signatures && this.signatures.some(x => x.userId === this.loginedUserId)) || 
+              this.docInfo.docHistory.setterId === this.loginedUserId;
+          }
+
+          this.isSignShow = this.signatures && this.signatures.some(x => x.userId === this.loginedUserId && (x.signature || x.signature !== ''));  
+          
+          if (this.signatures) {
+            this.isIndivid = this.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === '') && (x.signRight && x.signRight !== '') && x.signRight === 'individual');
+            
+            this.signatures.map(e => {
+              e.sign = this.chunkString(e.signature, 1200)
+            });
+          }
+
+          if (this.docInfo.needApproval) {
+            this.approvalStages = res.data.approvalStages;
+
+            if (!this.showAllSignsParam && !this.isShow && this.approvalStages) {
+              this.approvalStages.forEach(element => {
+                this.isShow = this.isShow || (element.users && element.users.some(x => x.userID === this.loginedUserId));
+                if (this.isShow) {
+                  return
+                }
               });
             }
-            this.loading = false;
-          }).catch(error => {
+
+            if (!this.isSignShow && this.approvalStages) {
+              this.approvalStages.forEach(element => {
+                this.isSignShow = element.signatures && element.signatures.some(x => x.userId === this.loginedUserId && (x.signature || x.signature !== ''));
+                if (this.isSignShow) {
+                  return
+                }
+              });
+            }
+
+            if (this.approvalStages)
+              this.approvalStages.map(stage => {
+                if (stage.signatures)
+                  stage.signatures.map(e => {
+                    e.sign = this.chunkString(e.signature, 1200)
+                  })
+              });
+          }
+        }
+
+        this.loading = false;
+      }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
@@ -176,40 +223,43 @@ export default {
             life: 3000,
           });
         }
+        
         this.loading = false;
       });
     },
+    showSign() {
+      let showSign = false
+
+      if (this.docInfo && this.docInfo.docHistory && this.docInfo.docHistory.stateId && this.docInfo.docHistory.stateId > this.enum.APPROVED.ID) {
+        showSign = true
+      }
+
+      return showSign
+    },
     sign() {
       this.signing = true;
-      axios.post(
-          smartEnuApi + "/downloadFile", {
-            filePath: this.docInfo.filePath
-          }, {
-            headers: getHeader()
+      axios.post(smartEnuApi + "/downloadFile", {
+        filePath: this.docInfo.filePath
+      }, {
+        headers: getHeader()
+      }).then(response => {
+        runNCaLayer(this.$t, this.$toast, response.data, 'cms',this.signerType, this.isTspRequired, this.$i18n.locale).then(sign => {
+          if (sign != undefined) {
+              this.sendRequest(sign)
           }
-      )
-          .then(response => {
-            (
-                runNCaLayer(this.$t, this.$toast, response.data, 'cms',this.signerType, this.isTspRequired, this.$i18n.locale)
-                    .then(sign => {
-                      if (sign != undefined) {
-                          this.sendRequest(sign)
-                      }
-                    }).catch(e => {
-                  console.log(e)
-                  this.signing = false;
-                })
-            ).catch(error => {
-              this.signing = false;
-              if (error.response.status == 401) {
-                this.$store.dispatch("logLout");
-              }
-            })
-          })
+        }).catch(e => {
+          console.log(e)
+          this.signing = false;
+        })
+      }).catch(error => {
+        this.signing = false;
+        if (error.response.status == 401) {
+          this.$store.dispatch("logLout");
+        }
+      })
     },
     sendRequest(signature) {
       var req = {
-        userID: this.$store.state.loginedUser.userID,
         docUUID: this.docInfo.uuid,
         sign: signature,
         signerIin: this.signerIin,
@@ -272,7 +322,7 @@ export default {
           orientation: 'portrait',
           hotfixes: ["px_scaling"]
         },
-        pagebreak: {avoid: '#qr'},
+        pagebreak: {avoid: ['#qr']},
         filename: this.docInfo.name + ".pdf"
       };
       const pdfContent = this.$refs.qrToPdf.$refs.qrToPdf;

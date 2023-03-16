@@ -53,7 +53,7 @@
   </div>
     <div v-if="selectedDocSourceType == DocState.DocSourceType.Template" style="overflow-y:hidden" >
       <div class="flex">
-<!-- <DataTable
+      <!-- <DataTable
               class="p-datatable-sm"
               v-model:selection="selectedTemplate"
               selectionMode="single"
@@ -109,21 +109,18 @@
         <Button v-bind:label="$t('common.createNew')" icon="pi pi-check" autofocus @click="createDoc" />
       </template>
     </Card>
-
-    
-      
   </Sidebar>
-         <Sidebar :visible="false" position="right"
-  :modal="true" :breakpoints="{'960px': '75vw', '640px': '100vw'}" :style="{width: '760px', overflow:'hidden'}">
-        <div v-if="selectedTemplate != null">
-          <RichEditor v-if="selectedDocLanguage === 'kz'" :readonly="true"  v-model="selectedTemplate.mainTextKaz" editorStyle="height:300px;width:400px;max-width:700px">
-            <template v-slot:toolbar></template>
-          </RichEditor>
-          <RichEditor v-else :readonly="true"  v-model="selectedTemplate.mainTextRus" editorStyle="height:300px;width:400px;max-width:700px">
-            <template v-slot:toolbar></template>
-          </RichEditor>
-        </div>
-        </Sidebar>
+  <Sidebar :visible="false" position="right"
+    :modal="true" :breakpoints="{'960px': '75vw', '640px': '100vw'}" :style="{width: '760px', overflow:'hidden'}">
+    <div v-if="selectedTemplate != null">
+      <RichEditor v-if="selectedDocLanguage === 'kz'" :readonly="true"  v-model="selectedTemplate.mainTextKaz" editorStyle="height:300px;width:400px;max-width:700px">
+        <template v-slot:toolbar></template>
+      </RichEditor>
+      <RichEditor v-else :readonly="true"  v-model="selectedTemplate.mainTextRus" editorStyle="height:300px;width:400px;max-width:700px">
+        <template v-slot:toolbar></template>
+      </RichEditor>
+    </div>
+  </Sidebar>
 </div>
 </template>
 <script>

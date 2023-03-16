@@ -780,10 +780,9 @@ export default {
       }
     },
     toRevision() {
-      let url = "/doc/changestate"
+      let url = "/doc/sendtorevision"
       var req = {
         docID: this.file.id,
-        state: this.DocState.REVISION.ID,
         comment: this.revisionComment,
       }
       this.approving = true
