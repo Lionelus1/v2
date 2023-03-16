@@ -464,11 +464,11 @@ export default {
       isGlobalFilter: false,
     }
   },
-  findRole: findRole,
   created() {
     this.loginedUser = this.$store.state.loginedUser;
 
   },
+  
   mounted() {
     this.getFolders(null);
     window.addEventListener('resize', this.onResize);
@@ -477,6 +477,7 @@ export default {
     window.removeEventListener('resize', this.onResize);
   },
   methods: {
+    findRole: findRole,
     toggle(ref, event) {
       this.$refs[ref].toggle(event);
     },
