@@ -3,10 +3,12 @@
     <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
     <BlockUI :blocked="loading" :fullScreen="true"></BlockUI>
   </div>
-  <div v-if="!loading">
-    <DocInfo :document="docInfo" v-if="!incorrect" :docID="doc_id"/>
+  <div>
     <ProgressBar v-if="signing" mode="indeterminate" style="height: .5em"/>
     <BlockUI :blocked="signing" :fullScreen="true"></BlockUI>
+  </div>
+  <div v-if="!loading">
+    <DocInfo :document="docInfo" v-if="!incorrect" :docID="doc_id"/>
     <TabView v-model:activeIndex="active" @tab-change="showFile">
       <TabPanel v-bind:header="$t('ncasigner.signatureListTitle')">
         <div class="col-12" v-if="isShow">
@@ -245,7 +247,7 @@ export default {
       }).then(response => {
         runNCaLayer(this.$t, this.$toast, response.data, 'cms',this.signerType, this.isTspRequired, this.$i18n.locale).then(sign => {
           if (sign != undefined) {
-              this.sendRequest(sign)
+            this.sendRequest(sign)
           }
         }).catch(e => {
           console.log(e)
