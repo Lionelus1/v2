@@ -7,7 +7,7 @@
       <Toolbar class="m-0 p-1" style="position:relative;">
 
         <template #start>
-          <Button :disabled="selected===null || file.depType !=2" @click="resetFileInfo();openDialog('fileUpload')"
+          <Button v-if="findRole('accreditation_rating_sector_employee')"  :disabled="selected===null || file.depType !=2" @click="resetFileInfo();openDialog('fileUpload')"
                   class="p-button-info p-1 mr-2"><i
               class="fa-solid fa-file-circle-plus fa-xl"></i>&nbsp;{{ $t('common.add') }}
           </Button>
@@ -305,6 +305,7 @@ export default {
         userFilter: true,
       },
 
+
       DocState: DocState,
       revisionComment: "",
       approving: false,
@@ -463,6 +464,7 @@ export default {
       isGlobalFilter: false,
     }
   },
+  findRole: findRole,
   created() {
     this.loginedUser = this.$store.state.loginedUser;
 
@@ -531,7 +533,6 @@ export default {
       this.windowHeight = window.innerHeight - 270
     },
 
-    findRole: findRole,
     showMessage(msgtype, message, content) {
       this.$toast.add({severity: msgtype, summary: message, detail: content, life: 3000});
     },
