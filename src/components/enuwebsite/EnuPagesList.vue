@@ -164,7 +164,7 @@ export default {
         content_en: null,
       },
       lazyParams: {
-        page: 1,
+        page: 0,
         rows: 10,
         searchText: null,
         sortField: null,
