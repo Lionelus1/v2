@@ -18,7 +18,7 @@
 
 <script>
 import axios from "axios";
-import {hdfsApi} from "@/config/config";
+import {smartEnuApi} from "@/config/config";
 
 export default {
   data() {
@@ -44,7 +44,7 @@ export default {
       const fd = new FormData();
       fd.append('myFile', event.files[0]);
       fd.append('filePath', this.dir ? this.dir + '/' + event.files[0].name : event.files[0].name);
-      axios.post(hdfsApi + "/upload", fd, {
+      axios.post(smartEnuApi + "/upload", fd, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }

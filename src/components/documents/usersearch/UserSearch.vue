@@ -40,7 +40,7 @@
 </template>
 
 <script>
-	import {templateApi} from "@/config/config";
+	import {smartEnuApi} from "@/config/config";
 	import axios from 'axios';
 
 	export default {
@@ -99,7 +99,7 @@
 				let url = "/getadusers";
 				const axiosSource = axios.CancelToken.source();
 				this.request = { cancel: axiosSource.cancel, msg: "Loading..." };
-				axios.post(templateApi+url, {cancelToken: axiosSource.token, "dn" : inputValue, "userType" : this.userType})
+				axios.post(smartEnuApi+url, {cancelToken: axiosSource.token, "dn" : inputValue, "userType" : this.userType})
         .then(response=>{
 					this.foundEntities = response.data;
 					this.searchInProgres = false;

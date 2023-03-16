@@ -28,7 +28,22 @@
         <div  v-if="file.params != null && file.params != undefined ">
           <div class="field" v-for="(param,i) of file.params" :key="`${i}`" >
             <label>{{$t('hdfs.' + param.name)}}</label>
-            <InputText  v-model="param.value" type="text" />
+            <div v-if="param.description==='img'">
+              <img v-if="param.value" :src="imageUrl+param.value" class="shadow-2" style="max-width: 125px;max-height: 75px;" />
+              <Button :label="$t('common.choose')" @click="param.dialog=true;"></Button>
+              <Dialog v-model:visible="param.dialog" :modal="true" :closable="false" :breakpoints="{'960px': '75vw', '640px': '90vw'}" :style="{width: '80vw'}">
+                <template #header>
+                  <h5>{{ $t("common.message.addPicture") }}</h5>
+                </template>
+                  <Files folder="sysfile" :uuid="param.uuid" @selected="imageSelected($event, param)"></Files>
+                <template #footer>
+                  <div class="p-fluid">
+                    <Button :label="$t('common.cancel')" style="width:100%" @click="param.dialog=false"  class="mt-3 p-button-secondary p-button-outlined"/>
+                  </div> 
+                </template>
+              </Dialog>
+            </div>
+            <InputText v-else  v-model="param.value" type="text" />
             <small class="p-error" v-if="validation.param">{{ $t("common.requiredField") }}</small>
           </div>
         </div>
@@ -53,8 +68,9 @@
             <small class="p-error" v-if="validation.approveDate">{{ $t("common.requiredField") }}</small>
           </div>
         </div>
-      <div class="field">
-        <FileUpload v-if="showUploader" :showUploadButton="false" :showCancelButton="true" ref="ufile" :multiple="false"  class= "mt-1"  fileLimit="1" :accept="accept">
+      <div v-if="showUploader" class="field">
+        <label>{{$t('common.doc')}}</label>
+        <FileUpload  :showUploadButton="false" :showCancelButton="true" ref="ufile" :multiple="false"  class= "mt-1"  fileLimit="1" :accept="accept">
           <template #empty>
             <p>{{$t('hdfs.dragMsg')}}</p>
           </template>
@@ -73,16 +89,18 @@
 import axios from "axios";
 import DepartmentList from "../smartenu/DepartmentList.vue"
 
-import {smartEnuApi, getHeader, getFileHeader} from "@/config/config";
+import {smartEnuApi, getHeader, getFileHeader, fileRoute} from "@/config/config";
+import Files from "@/components/documents/Files.vue"
 
 export default {
-    components: {DepartmentList},
+    components: {DepartmentList,Files},
     data() {
       return {
         file: this.modelValue,
         state: this.visible,
         selectedDepartment: null,
         uploading: false,
+        imageUrl: smartEnuApi + fileRoute,
         showUploader: this.fileUpload,
         languages: [{name:"kz", value: 0}, {name:"ru", value:1},  {name:"en", value:2}],
         validation: {
@@ -152,6 +170,10 @@ export default {
           //result = result && validation[k];
       });
       return errors.length > 0
+    },
+    imageSelected(event,param) {
+      param.value = event.value.filePath;
+      param.dialog = false;
     },
     showMessage(msgtype,message,content) {
       this.$toast.add({severity:msgtype, summary: message, detail:content, life: 3000});

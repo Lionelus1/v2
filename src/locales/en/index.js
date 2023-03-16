@@ -426,6 +426,7 @@ export default {
         modulname: "Module code and name:",
         eduprogram: "Education program code and name:",
         discipline: "Discipline code and name:",
+        logo: "logo"
     },
     ncasigner: {
         chooseFile: "Select  the file",
@@ -929,6 +930,9 @@ export default {
     educomplex: {
         title: "Educational-methodical complex of the discipline",
         forme: "Concerning me"
+    },
+    postaccmonrep: {
+        title: "Post-accreditation monitoring reports",
     },
     ref:{
         getRef:"Get reference"
