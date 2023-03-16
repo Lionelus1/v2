@@ -42,7 +42,7 @@
 
 <script>
 import axios from "axios";
-import {hdfsApi} from "@/config/config";
+import {smartEnuApi} from "@/config/config";
 
 export default {
   data() {
@@ -75,7 +75,7 @@ export default {
       this.tableData = [];
       if (!dirName)
         dirName = "/"
-      axios.get(hdfsApi + "/getFiles?dirName=" + dirName).then(
+      axios.get(smartEnuApi + "/getFiles?dirName=" + dirName).then(
           (response) => {
             var pathList = response.data;
             pathList.forEach((i) => {
@@ -92,12 +92,12 @@ export default {
       let fname = this.selected ? this.selected + "/" + fileName : fileName;
       var aLink = document.createElement("a");
       aLink.download = fileName;
-      aLink.href = hdfsApi + "/download?fileName=" + fname;
+      aLink.href = smartEnuApi + "/download?fileName=" + fname;
       aLink.click();
     },
     remove(fileName) {
       let fname = this.selected ? this.selected + "/" + fileName : fileName;
-      axios.post(hdfsApi + "/remove?fileName=" + fname, {}).then((r) => {
+      axios.post(smartEnuApi + "/remove?fileName=" + fname, {}).then((r) => {
         if (r.status === 200) {
           this.$toast.add({severity: 'info', summary: this.$t('hdfs.success'), detail: this.$t('hdfs.fileRemoved'), life: 3000});
           this.getData(this.selected);
@@ -106,7 +106,7 @@ export default {
     },
     getDirectories() {
       this.dirs = [];
-      axios.get(hdfsApi + "/getDirs").then(response => {
+      axios.get(smartEnuApi + "/getDirs").then(response => {
         response.data.forEach((r) => {
           this.dirs.push({dirName: r});
         });
