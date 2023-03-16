@@ -286,7 +286,9 @@ export default {
         actionTitle: "Action",
         style: "Style",
         bgColor: "Background color",
-        textColor: "Text color"
+        textColor: "Text color",
+        signers: "Signatory parties",
+        approvals: "Approving persons",
     },
     bank: {
         title: "Banks",
@@ -373,6 +375,9 @@ export default {
             message: {
             }
         },
+        needsApproval: "The document created according to the template requires approval",
+        approvalUsers: "List of approvers",
+        approvalListPlaceholder: "Instance",
     },
     contracts : {
         title: "Contracts",
@@ -438,7 +443,9 @@ export default {
         IncorrectFileTitle: "A file with this name {dn} failed signature verification in the SIGNERAPP system",
         IncorrectFileContent: "This file has been modified or another file has been provided. Please check the file.",
         signed: "he/she signed this document",
+        approved: "he/she approved this document",
         signingexpected: "Signing is expected",
+        approvingExpected: "Approving is expected",
         certTemplate: "Certificate Template: ",
         IIN: "IIN",
         certType: "Signature type: ",
@@ -887,7 +894,7 @@ export default {
         resultIndicator: "Indicator of direct results",
         summary: "Summary/Confirmation",
         respExecutor: "Responsible performers",
-        halfYear: "semi-annual"
+        halfYear: "semi-annual",
     },
     queue: {
         

@@ -151,6 +151,13 @@ export default {
           value: "inapproval"
         },
         {
+          id: 3,
+          nameRu: "Согласован",
+          nameKz: "Келісілді",
+          nameEn: "Approved",
+          value: "approved"
+        },
+        {
           id: 4,
           nameRu: "На доработке",
           nameKz: "Түзетуде",
@@ -206,7 +213,7 @@ export default {
       }
       localStorage.setItem("journalCurrentPage", JSON.stringify(this.lazyParams));
       localStorage.setItem("contractFilters", JSON.stringify(this.filters));
-      let url = "/contract/jounal";
+      let url = "/agreement/journal";
       this.loading = true;
       this.lazyParams.userID = this.$store.state.loginedUser.userID
       let localFilter = JSON.parse(JSON.stringify(this.filters));
