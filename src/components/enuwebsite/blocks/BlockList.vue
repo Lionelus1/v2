@@ -5,17 +5,29 @@
       <Button :label="$t('web.addBlock')" @click="openDialog" />
     </div>
     <div class="card">
-      <DataTable :lazy="true" :value="blockList" dataKey="id" :rowHover="true" :loading="loading" responsiveLayout="scroll">
+      <DataTable :lazy="true" :value="blockList" dataKey="id" :loading="loading" responsiveLayout="scroll" :rows="10" :rowHover="true"
+                 :paginator="true" :totalRecords="total" @page="onPage" @sort="onSort">
         <template #empty>{{ $t("common.noData") }}</template>
         <template #loading>{{ $t("common.loading") }}</template>
-        <Column field="title" :header="$t('common.nameIn')">
+        <template #header>
+          <div class="text-right">
+            <div class="p-input-icon-left">
+              <i class="pi pi-search"/>
+              <InputText type="search" v-model="lazyParams.searchText" :placeholder="$t('common.search')"
+                         @search="getBlockList"/>
+              <Button icon="pi pi-search" class="ml-1" @click="getBlockList"/>
+            </div>
+          </div>
+        </template>
+        <Column :field="'title_' + $i18n.locale" :header="$t('common.nameIn')" sortable>
           <template #body="{data}">
             <a href="javascript:void(0)" @click="navigateToView(data)">
-              {{ $i18n.locale === "kz" ? data.title_kz : $i18n.locale === "ru" ? data.title_ru : data.title_en }}
+              {{ data['title_' + $i18n.locale] }}
+<!--              {{ $i18n.locale === "kz" ? data.title_kz : $i18n.locale === "ru" ? data.title_ru : data.title_en }}-->
             </a>
           </template>
         </Column>
-        <Column :header="$t('web.blockType')">
+        <Column :header="$t('web.blockType')" sortable>
           <template #body="{data}">
             {{ data.is_list ? $t('web.list') : !data.is_plugin ? $t('web.content') : $t('web.plugin') }}
           </template>
@@ -107,6 +119,14 @@ export default {
     const router = useRouter()
     let formData = ref({})
     const options = ref([true, false]);
+    const total = ref(0)
+    const lazyParams = ref({
+      page: 0,
+      rows: 10,
+      searchText: "",
+      sortField: null,
+      sortOrder: 0
+    })
 
     const navigateToView = (data) => {
       if (!data.is_plugin) router.push({name: 'BlockView', params: {id: data.block_id}})
@@ -119,9 +139,10 @@ export default {
 
     const getBlockList = () => {
       loading.value = true;
-      enuService.getBlockList().then(res => {
+      enuService.getBlockList(lazyParams.value).then(res => {
         if (res.data) {
-          blockList.value = res.data
+          blockList.value = res.data.blocks
+          total.value = res.data.total;
         }
         loading.value = false
       }).catch(error => {
@@ -208,14 +229,27 @@ export default {
       });
     }
 
+    const onPage = (event) => {
+      lazyParams.value.page = event.page
+      lazyParams.value.rows = event.rows
+      getBlockList();
+    }
+
+    const onSort = (event) => {
+      lazyParams.value.sortField = event.sortField;
+      lazyParams.value.sortOrder = event.sortOrder;
+      getBlockList();
+    }
+
     onMounted(() => {
       getBlockList();
     });
 
     return {
-      blockList, isCreateModal, formData,
-      loading, selectedBlock, submitted, options,
-      navigateToView, openDialog, hideDialog, addBlock, save, deleteConfirm, openEdit, formatDate
+      blockList, isCreateModal, formData, lazyParams,
+      loading, selectedBlock, submitted, options, total,
+      navigateToView, openDialog, hideDialog, addBlock, save, deleteConfirm, openEdit, formatDate,
+      onPage, onSort, getBlockList
     }
   }
 }
