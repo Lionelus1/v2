@@ -34,7 +34,7 @@ export default {
             alignleft aligncenter alignright alignjustify | \
             bullist numlist outdent indent | removeformat | image | code ',
         images_upload_handler: uploadSingFile,
-        language: this.$i18n.locale === "en" ? "en_US" : this.$i18n.locale
+        language: this.$i18n.locale === "en" ? "en_US" : this.$i18n.locale === "kz" ? "kk" : this.$i18n.locale
       },
       editorApi: "60lj0ro6ojutgtjvqom1a5txsxm2azkl8pftmzhf8ddim86d",
     }
