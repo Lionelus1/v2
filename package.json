@@ -51,6 +51,7 @@
 		"@fortawesome/free-solid-svg-icons": "^6.2.0",
 		"@fortawesome/vue-fontawesome": "^3.0.0",
 		"@popperjs/core": "^2.9.2",
+		"@tinymce/tinymce-vue": "^4.0.7",
 		"generate-password": "^1.7.0",
 		"howler": "^2.2.3",
 		"html2pdf.js": "^0.9.3",
