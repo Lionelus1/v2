@@ -1,5 +1,7 @@
 import * as imageResizeCompress from "image-resize-compress";
 import moment from "moment/moment";
+import {FileService} from "@/service/file.service";
+import {fileRoute, smartEnuApi} from "@/config/config";
 
 export function upFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1)
@@ -37,4 +39,19 @@ export function generateYears(startYear = 1979) {
         years.push(i);
     }
     return years;
+}
+
+export function uploadSingFile(blobInfo, success, failure) {
+    const fd = new FormData();
+    fd.append("files", blobInfo.blob(), blobInfo.filename());
+    new FileService().uploadFile(fd).then(res => {
+        if (res.data) {
+            res.data.map(e => {
+                e.filePath = smartEnuApi + fileRoute + e.filePath;
+            });
+            success(res.data[0].filePath)
+        }
+    }).catch(error => {
+        failure(error)
+    });
 }

@@ -80,7 +80,8 @@
         </div>
         <div class="field">
           <label for="kz-content">{{ $t("common.contentInQazaq") }}</label>
-          <RichEditor id="content_kz" v-model="formData.content_kz" editorStyle="height: 320px"/>
+<!--          <RichEditor id="content_kz" v-model="formData.content_kz" editorStyle="height: 320px"/>-->
+          <TinyEditor v-model="formData.content_kz"></TinyEditor>
           <small v-show="!formData.content_kz && submitted" class="p-error">{{ $t("smartenu.contentKzInvalid") }}</small>
         </div>
       </TabPanel>
@@ -92,7 +93,8 @@
         </div>
         <div class="field">
           <label for="kz-content">{{ $t("common.contentInRussian") }}</label>
-          <RichEditor id="content_ru" v-model="formData.content_ru" editorStyle="height: 320px"/>
+<!--          <RichEditor id="content_ru" v-model="formData.content_ru" editorStyle="height: 320px"/>-->
+          <TinyEditor v-model="formData.content_ru" />
           <small v-show="!formData.content_ru && submitted" class="p-error">{{ $t("smartenu.contentKzInvalid") }}</small>
         </div>
       </TabPanel>
@@ -104,7 +106,8 @@
         </div>
         <div class="field">
           <label for="kz-content">{{ $t("common.contentInEnglish") }}</label>
-          <RichEditor id="content_en" v-model="formData.content_en" editorStyle="height: 320px"/>
+<!--          <RichEditor id="content_en" v-model="formData.content_en" editorStyle="height: 320px"/>-->
+          <TinyEditor v-model="formData.content_en" />
           <small v-show="!formData.content_en && submitted" class="p-error">{{ $t("smartenu.contentKzInvalid") }}</small>
         </div>
       </TabPanel>
@@ -123,12 +126,12 @@
 <script>
 import {EnuWebService} from "@/service/enu.web.service";
 import PageView from "@/components/enuwebsite/PageView.vue";
-import RichEditor from "@/components/documents/editor/RichEditor.vue";
 import {formatDate} from "@/helpers/HelperUtil";
+import TinyEditor from "../TinyEditor";
 
 export default {
   name: "EnuPagesList",
-  components: {PageView, RichEditor},
+  components: {PageView, TinyEditor},
   data() {
     return {
       pages: [],
@@ -170,7 +173,7 @@ export default {
         sortField: null,
         sortOrder: 0
       },
-      total: 0
+      total: 0,
     }
   },
   created() {

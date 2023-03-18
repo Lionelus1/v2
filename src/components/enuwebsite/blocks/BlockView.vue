@@ -11,7 +11,8 @@
           </div>
           <div class="field">
             <label>{{ $t("common.contentInQazaq") }}</label>
-            <RichEditor ref="kztext" v-model="content.content_kz" editorStyle="height: 320px"></RichEditor>
+<!--            <RichEditor ref="kztext" v-model="content.content_kz" editorStyle="height: 320px"></RichEditor>-->
+            <TinyEditor v-model="content.content_kz" />
             <small v-show="!content.content_kz && submitted" class="p-error">
               {{ $t("smartenu.contentKzInvalid") }}
             </small>
@@ -27,7 +28,8 @@
           </div>
           <div class="field">
             <label for="ru-content">{{ $t("common.contentInRussian") }}</label>
-            <RichEditor id="ru-content" v-model="content.content_ru" editorStyle="height: 320px"/>
+<!--            <RichEditor id="ru-content" v-model="content.content_ru" editorStyle="height: 320px"/>-->
+            <TinyEditor v-model="content.content_ru" />
             <small v-show="!content.content_ru && submitted" class="p-error">
               {{ $t("smartenu.contentRuInvalid") }}
             </small>
@@ -43,7 +45,8 @@
           </div>
           <div class="field">
             <label>{{ $t("common.contentInEnglish") }}</label>
-            <RichEditor v-model="content.content_en" editorStyle="height: 320px"/>
+<!--            <RichEditor v-model="content.content_en" editorStyle="height: 320px"/>-->
+            <TinyEditor v-model="content.content_en" />
             <small v-show="!content.content_en && submitted" class="p-error">
               {{ $t("smartenu.contentEnInvalid") }}
             </small>
@@ -60,15 +63,15 @@
 import {onMounted, ref} from "vue";
 import {EnuWebService} from "@/service/enu.web.service";
 import BlockElementsList from "@/components/enuwebsite/blocks/BlockElementsList.vue";
-import {useRoute, useRouter} from "vue-router";
-import RichEditor from "@/components/documents/editor/RichEditor.vue";
+import {useRoute} from "vue-router";
 import {useToast} from "primevue/usetoast";
 import {useI18n} from "vue-i18n";
 import TitleBlock from "@/components/TitleBlock.vue";
+import TinyEditor from "../../TinyEditor";
 
 export default {
   name: "BlockView",
-  components: {BlockElementsList, RichEditor, TitleBlock},
+  components: {BlockElementsList, TitleBlock, TinyEditor},
   setup() {
     const loading = ref(false), submitted = ref(false)
     const enuService = new EnuWebService()

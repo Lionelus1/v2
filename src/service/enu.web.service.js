@@ -41,8 +41,8 @@ export class EnuWebService {
         return api.post(`/web/deleteMenuPage`, {id: id}, {headers: getHeader()});
     }
 
-    getBlockList() {
-        return api.get(`/web/getBlocks`, {headers: getHeader()});
+    getBlockList(params) {
+        return api.post(`/web/getBlocks`, params, {headers: getHeader()});
     }
 
     getBlockById(id) {

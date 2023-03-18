@@ -39,7 +39,8 @@
           </div>
           <div class="field">
             <label>{{ $t("common.contentInQazaq") }}</label>
-            <RichEditor ref="kztext" v-model="formData.content_kz" editorStyle="height: 320px"></RichEditor>
+<!--            <RichEditor ref="kztext" v-model="formData.content_kz" editorStyle="height: 320px"></RichEditor>-->
+            <TinyEditor v-model="formData.content_kz" />
             <small v-show="!formData.content_kz && submitted" class="p-error">
               {{ $t("smartenu.contentKzInvalid") }}
             </small>
@@ -55,7 +56,8 @@
           </div>
           <div class="field">
             <label for="ru-content">{{ $t("common.contentInRussian") }}</label>
-            <RichEditor id="ru-content" v-model="formData.content_ru" editorStyle="height: 320px"/>
+<!--            <RichEditor id="ru-content" v-model="formData.content_ru" editorStyle="height: 320px"/>-->
+            <TinyEditor v-model="formData.content_kz" />
             <small v-show="!formData.content_ru && submitted" class="p-error">
               {{ $t("smartenu.contentRuInvalid") }}
             </small>
@@ -71,7 +73,8 @@
           </div>
           <div class="field">
             <label>{{ $t("common.contentInEnglish") }}</label>
-            <RichEditor v-model="formData.content_en" editorStyle="height: 320px"/>
+<!--            <RichEditor v-model="formData.content_en" editorStyle="height: 320px"/>-->
+            <TinyEditor v-model="formData.content_en" />
             <small v-show="!formData.content_en && submitted" class="p-error">
               {{ $t("smartenu.contentEnInvalid") }}
             </small>
@@ -85,10 +88,11 @@
 <script>
 import RichEditor from "@/components/documents/editor/RichEditor.vue";
 import {EnuWebService} from "@/service/enu.web.service";
+import TinyEditor from "../TinyEditor";
 
 export default {
   name: "AddPage",
-  components: {RichEditor},
+  components: {TinyEditor},
   data() {
     return {
       formData: {},

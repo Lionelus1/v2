@@ -92,9 +92,9 @@ export default {
     }
 
     const getBlocks = () => {
-      enuService.getBlockList().then(res => {
+      enuService.getBlockList({}).then(res => {
         if (res.data) {
-          blocks.value = res.data
+          blocks.value = res.data.blocks
         }
       }).catch(error => {
         toast.add({severity: "error", summary: error, life: 3000});
