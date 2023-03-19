@@ -2,22 +2,22 @@
   <Dialog v-model:visible="showModal" :style="{ width: '1000px' }" :breakpoints="{'960px': '75vw', '640px': '90vw'}"
           :header="currentData ? $t('common.edit') : $t('common.add') " :modal="true" class="p-fluid" @hide="hideDialog">
     <div class="field">
-      <label>Выберите академическую степень</label>
+      <label>{{ $t('web.chooseDegree') }}</label>
       <Dropdown v-model="selectedDegree" :options="eduFields" @change="selectDegree"
                 :optionLabel="'name_' + $i18n.locale" :placeholder="$t('common.select')" />
     </div>
     <div class="field" v-if="fields">
-      <label>Выберите образовательную программу</label>
+      <label>{{ $t('web.chooseEduProgram') }}</label>
       <Dropdown v-model="formData.edu_field_id" :options="fields"
                 :optionLabel="'name_' + $i18n.locale" optionValue="id" :placeholder="$t('common.select')" />
     </div>
     <div v-if="formData.edu_field_id">
       <div class="field">
-        <label>Выберите год</label>
+        <label>{{ $t('web.year') }}</label>
         <Dropdown v-model="formData.year" :options="years" :placeholder="$t('common.select')" />
       </div>
       <div class="field">
-        <label>Цена</label>
+        <label>{{ $t('web.price') }}</label>
         <InputNumber v-model="formData.price" mode="currency" currency="KZT" />
       </div>
     </div>

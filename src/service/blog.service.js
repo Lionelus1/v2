@@ -11,6 +11,10 @@ export class BlogService {
         return api.post(`/web/getBlogRequestByBlogID`, {id: id}, {headers: getHeader()});
     }
 
+    getBlogRequestById(id) {
+        return api.get(`/web/getBlogRequestBId/${id}`, {headers: getHeader()});
+    }
+
     addBlog(data) {
         return api.post(`/web/addBlog`, data, {headers: getHeader()})
     }
@@ -23,8 +27,8 @@ export class BlogService {
         return api.post(`/web/deleteBlog`, {id: id}, {headers: getHeader()})
     }
 
-    sendQuestion(data) {
-        return api.post(`/web/addBlogRequest`, data, {headers: getHeader()});
+    sendBlogRequestAnswer(data) {
+        return api.post(`/web/sendBlogRequestAnswer`, data, {headers: getHeader()});
     }
 
 }

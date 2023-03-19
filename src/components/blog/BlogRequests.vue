@@ -1,72 +1,43 @@
 <template>
   <div class="col-12">
+    <TitleBlock :showBackButton="true" :title="$t('blog.title')" />
     <div class="card">
-      <DataView :lazy="true" :loading="loading" responsiveLayout="scroll" :value="items" :rows="10" >
-
-        <template #list="slotProps">
-          <div class="product-grid-item card">
-            <div class="product-grid-item-top mb-2">
-              <div class="col-12 grid">
-                <div class="lg:col-3 md:col-3 p-sm-6">
-                  <i class="fa-solid fa-tags product-category-icon"></i>
-                  <small class="product-category">{{ slotProps.data.category['name' + $i18n.locale].split("(")[0] }}</small>
-                </div>
-                <div class="lg:col-3  md:col-3 p-sm-6  text-right">
-                  <span v-if="adminMode"
-                        :class="'customer-badge status-' + slotProps.data.state.id">{{ $t("common.states." + slotProps.data.state.code) }}</span>
-                </div>
-                <div class="lg:col-3  md:col-3 p-sm-6">
-                  <small>№&nbsp;{{ slotProps.data.id }}</small>
-                </div>
-                <div class="lg:col-3  md:col-3 p-sm-6 text-right">
-                  <span v-if="slotProps.data.expired">
-                    <i class="fa-solid fa-calendar-days product-error-icon"></i>
-                  </span>
-                  <span v-else>
-                    <i class="fa-solid fa-calendar-days product-category-icon"></i>
-                  </span>
-                  <small class="product-category">{{ moment(new Date(slotProps.data.createdDate)).utc().format("DD.MM.YYYY") }}</small>
-                </div>
-              </div>
-            </div>
-            <div class="product-grid-item-content">
-              <p class="block-with-text">{{ slotProps.data.question }}</p>
-            </div>
-            <div class="product-grid-item-bottom">
-              <div class="col-12 grid">
-                <div class="lg:col-3 md:col-3 p-sm-6">
-                <span>
-                  <i class="fa-solid fa-at product-category-icon"></i>
-                  <small class="product-category">{{ slotProps.data.lastName + " " + slotProps.data.firstName }}</small>
-                </span>
-                </div>
-                <div class="lg:col-3 md:col-3 p-sm-6 text-right">
-                  <div v-if="adminMode">
-              <span v-if="slotProps.data.replier">
-                <i class="fa-solid fa-user-tag product-category-icon"></i>
-                <small class="product-category">{{ slotProps.data.replier.fullName }}</small>
-              </span>
-                    <Button v-if="slotProps.data.state.id !=7" :label="$t('common.send')" icon="pi pi-send" class="p-button-outlined p-button-warning"
-                            @click="currentQuestion=slotProps.data.id;sendDialog=true"></Button>
-                  </div>
-                </div>
-                <div class="lg:col-3 md:col-3 p-sm-6">
-                  <Button v-if="slotProps.data.filePath" :label="$t('faq.attachments')" icon="pi pi-download"
-                          @click="downloadFile(slotProps.data.filePath)"></Button>
-                </div>
-                <div class="lg:col-3 md:col-3 p-sm-6  text-right">
-                  <router-link :to="{ name: 'ReceptionQuestion', params: { id: slotProps.data.id } }" tag="a">
-                    <Button :label="$t('common.more')" class="p-button-outlined p-button-info"></Button>
-                  </router-link>
-                </div>
-
-              </div>
-            </div>
-          </div>
-
-
-        </template>
-      </DataView>
+      <DataTable :lazy="true" :value="items" dataKey="id" :loading="loading" responsiveLayout="scroll" :rowHover="true"
+        :rows="10" :paginator="true" :totalRecords="total" @page="onPage" @sort="onSort">
+        <template #empty>{{ $t("common.noData") }}</template>
+        <template #loading>{{ $t("common.loading") }}</template>
+        <Column field="question" :header="$t('faq.question')" style="width: 30%;">
+          <template #body="{data}">
+            <a href="javascript:void(0)" @click="navigateToView(data)">
+              {{ data.question }}
+            </a>
+          </template>
+        </Column>
+        <Column :header="$t('common.fullName')">
+          <template #body="{data}">
+            {{ data.last_name + ' ' + data.first_name }}
+          </template>
+        </Column>
+        <Column :header="$t('common.status')">
+          <template #body="{data}">
+            <span :class="'customer-badge status-' + data.state.id">
+              {{ $t("common.states." + data.state.code) }}
+            </span>
+          </template>
+        </Column>
+        <Column :header="$t('faq.createDate')">
+          <template #body="{data}">
+            {{ formatDate(data.created_date) }}
+          </template>
+        </Column>
+        <Column class="text-right">
+          <template #body="{data}">
+            <Button type="button" icon="fa-solid fa-eye" class="mr-2" @click="navigateToView(data)"></Button>
+            <Button icon="fa-solid fa-pen" class="p-button mr-2" @click="openEdit(data)" />
+            <Button icon="fa-solid fa-trash" class="p-button-danger" @click="deleteConfirm(data)" />
+          </template>
+        </Column>
+      </DataTable>
     </div>
   </div>
 </template>
@@ -77,11 +48,15 @@ import {useToast} from "primevue/usetoast";
 import {useConfirm} from "primevue/useconfirm";
 import {ref} from "vue";
 import {BlogService} from "@/service/blog.service";
-import {useRouter} from "vue-router";
+import {useRouter, useRoute} from "vue-router";
 import {formatDate} from "@/helpers/HelperUtil";
 
 export default {
   name: "BlogRequests",
+  adminMode: {
+    type: Boolean,
+    default: true
+  },
   setup() {
     const i18n = useI18n()
     const toast = useToast()
@@ -93,12 +68,14 @@ export default {
     const items = ref([])
     const blogService = new BlogService()
     const router = useRouter()
+    const route = useRoute()
     let formData = ref({})
     const options = ref([true, false]);
     const total = ref(0)
     const responsible = ref()
     const thumbFile = ref(null)
     const bgImg = ref(null)
+    const blogId = ref(route.params.id)
     const lazyParams = ref({
       page: 0,
       rows: 10,
@@ -108,14 +85,16 @@ export default {
     })
 
     const navigateToView = (data) => {
-      router.push({name: 'BlogRequestView', params: {id: data.block_id}})
+      router.push({name: 'BlogRequestView', params: {id: data.id}})
     };
 
     const getBlogRequests = () => {
       loading.value = true;
-      blogService.getBlogRequests().then(res => {
+      blogService.getBlogRequests(blogId.value).then(res => {
         if (res.data) {
-          items.value = res.data
+          items.value = res.data.blogs
+          console.log(items.value)
+          total.value = res.data.total
         }
         loading.value = false
       }).catch(error => {
@@ -201,6 +180,18 @@ export default {
       isCreateModal.value = false;
     }
 
+    const onPage = (event) => {
+      lazyParams.value.page = event.page
+      lazyParams.value.rows = event.rows
+      getBlogRequests();
+    }
+
+    const onSort = (event) => {
+      lazyParams.value.sortField = event.sortField;
+      lazyParams.value.sortOrder = event.sortOrder;
+      getBlogRequests();
+    }
+
     const deleteConfirm = (data) => {
       confirm.require({
         message: i18n.t('common.doYouWantDelete'),
@@ -230,12 +221,60 @@ export default {
     return {
       items, isCreateModal, formData, lazyParams, responsible,
       loading, selectedData, submitted, options, total, bgImg, thumbFile,
-      navigateToView, openDialog, hideDialog, addBlog, save, deleteConfirm, openEdit, formatDate, uploadThumb, uploadBg
+      navigateToView, openDialog, hideDialog, addBlog, save, deleteConfirm, openEdit, formatDate, uploadThumb, uploadBg,
+      onSort, onPage
     }
   }
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+.customer-badge {
+  border-radius: 2px;
+  padding: 0.25em 0.5rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.3px;
 
+  &.status-7 {
+    background: #c8e6c9;
+    color: #256029;
+  }
+
+  &.status-3 {
+    background: #ffcdd2;
+    color: #c63737;
+  }
+
+  &.status-negotiation {
+    background: #feedaf;
+    color: #8a5340;
+  }
+
+  &.status-1 {
+    background: #b3e5fc;
+    color: #23547b;
+  }
+
+  &.status-8 {
+    background: #eccfff;
+    color: #694382;
+  }
+
+  &.status-proposal {
+    background: #ffd8b2;
+    color: #805b36;
+  }
+
+  &.online {
+    background: #c8e6c9;
+    color: #256029;
+  }
+
+  &.offline {
+    background: #ffcdd2;
+    color: #c63737;
+  }
+}
 </style>

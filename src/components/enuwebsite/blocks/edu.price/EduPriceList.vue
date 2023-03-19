@@ -13,12 +13,12 @@
             <div>{{ data.edu_field ? data.edu_field['name_ru'] : '' }}</div>
           </template>
         </Column>
-        <Column :header="'Баға'">
+        <Column :header="$t('smartenu.category')">
           <template #body="{data}">
             {{ data.price_category ? data.price_category['name_' + $i18n.locale] : '' }}
           </template>
         </Column>
-        <Column :header="'Баға'">
+        <Column :header="$t('web.price')">
           <template #body="{data}">
             {{ data.price }}
           </template>

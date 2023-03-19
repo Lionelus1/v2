@@ -311,7 +311,7 @@ export default {
             givenorg: "Орган выдачи",
             givendate: "Дата выдачи",
             expire: "Годен до",
-        },  
+        },
         message: {
             validEmail: "Введите корректный email адрес",
         },
@@ -627,7 +627,7 @@ export default {
     },
 
     queue: {
-        
+
         title: "Очередь",
         secretary: "Обслуживание",
         queues: "Очереди",
@@ -783,7 +783,14 @@ export default {
         usefulLinkDesc: 'Краткое описание полезной ссылки',
         bgImg: 'Фоновое изображение',
         plugin: 'Плагин',
-        blog: 'Блог'
+        blog: 'Блог',
+        chooseDegree: 'Выберите академическую степень',
+        chooseEduProgram: 'Выберите образовательную программу',
+        year: 'Выберите год',
+        price: 'Цена',
+        degreeLevel: 'Академическая степень',
+        shortInfo: 'Краткая информация',
+        enrollDocs: 'Перечень документов для зачисления',
     },
 
     student: {
@@ -981,5 +988,8 @@ export default {
         addGuide: 'Создание справочника',
         editGuide: 'Редактирование справочника',
         notGuide: 'На эту страницу пока не создана справочник!',
+    },
+    blog: {
+        title: 'Блог',
     }
 }

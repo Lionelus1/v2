@@ -1,11 +1,11 @@
 <template>
   <div class="col-12">
-    <h3>{{ $t('Блог') }}</h3>
+    <h3>{{ $t('blog.title') }}</h3>
     <div class="card">
       <Button :label="$t('common.add')" @click="openDialog" />
     </div>
     <div class="card">
-      <DataTable :lazy="true" :value="blogList" dataKey="id" :loading="loading" responsiveLayout="scroll" :rows="10" :rowHover="true">
+      <DataTable :lazy="true" :value="blogList" dataKey="id" :loading="loading" responsiveLayout="scroll" :rowHover="true">
         <template #empty>{{ $t("common.noData") }}</template>
         <template #loading>{{ $t("common.loading") }}</template>
         <Column :field="'name_' + $i18n.locale" :header="$t('common.nameIn')" sortable>

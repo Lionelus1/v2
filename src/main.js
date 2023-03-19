@@ -115,6 +115,7 @@ import {fab} from '@fortawesome/free-brands-svg-icons';
 import {far} from '@fortawesome/free-regular-svg-icons';
 import ScrollPanel from "primevue/scrollpanel";
 import WorkPlanEventResult from "./components/work_plan/WorkPlanEventResult";
+import TitleBlock from "./components/TitleBlock";
 
 
 library.add(fas, far, fab)
@@ -355,4 +356,5 @@ app.component('Divider', Divider);
 
 app.component('WorkPlanEventResult', WorkPlanEventResult)
 app.component('TinyEditor', TinyEditor)
+app.component('TitleBlock', TitleBlock)
 app.mount('#app');

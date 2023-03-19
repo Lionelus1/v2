@@ -797,7 +797,14 @@ export default {
         usefulLinkDesc: 'Пайдалы сілтеменің қысқаша сипаттамасы',
         bgImg: 'Фонның суреті',
         plugin: 'Плагин',
-        blog: 'Блог'
+        blog: 'Блог',
+        chooseDegree: 'Академиялық дәрежені таңадаңыз',
+        chooseEduProgram: 'Білім беру бағдарламасын таңдаңыз',
+        year: 'Жылды таңдаңыз',
+        price: 'Баға',
+        degreeLevel: 'Академиялық дәреже',
+        shortInfo: 'Қысқаша ақпарат',
+        enrollDocs: 'Оқуға түсуге арналған құжаттардың тізімі',
     },
     //Student locale
     student: {
@@ -996,5 +1003,8 @@ export default {
         addGuide: 'Анықтаманы қосу',
         editGuide: 'Анықтаманы өзгерту',
         notGuide: 'Бұл бетке әзірге анқтыма құрылған жоқ!',
+    },
+    blog: {
+        title: 'Блог',
     }
 }
