@@ -782,7 +782,8 @@ export default {
         addToUsefulLink: 'Добавить в полезные ссылки',
         usefulLinkDesc: 'Краткое описание полезной ссылки',
         bgImg: 'Фоновое изображение',
-        plugin: 'Плагин'
+        plugin: 'Плагин',
+        blog: 'Блог'
     },
 
     student: {

@@ -102,6 +102,7 @@ import VueElementLoading from "vue-element-loading";
 import Person from '@/components/contragent/Person.vue';
 import Organization from '@/components/contragent/Organization.vue';
 import FindUser from "@/helpers/FindUser";
+import TinyEditor from "@/components/TinyEditor.vue";
 
 
 import ConfirmationService from 'primevue/confirmationservice';
@@ -353,4 +354,5 @@ app.component('ScrollPanel', ScrollPanel);
 app.component('Divider', Divider);
 
 app.component('WorkPlanEventResult', WorkPlanEventResult)
+app.component('TinyEditor', TinyEditor)
 app.mount('#app');

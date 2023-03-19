@@ -179,7 +179,10 @@ export class MenuService {
                         label: $t('web.pageLink'), icon: 'pi pi-fw pi-external-link', to: '/enu/pages'
                     },
                     {
-                        label: 'Блоки', icon: 'fa-solid fa-cube', to: '/enu/blocks'
+                        label: $t('web.blocks'), icon: 'fa-solid fa-cube', to: '/enu/blocks'
+                    },
+                    {
+                        label: $t('web.blog'), icon: 'fa-solid fa-message', to: '/blog'
                     }
                 ]
             },
