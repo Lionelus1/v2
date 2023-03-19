@@ -324,7 +324,7 @@ export default {
             givenorg: "Орган выдачи",
             givendate: "Дата выдачи",
             expire: "Годен до",
-        },  
+        },
         message: {
             validEmail: "Введите корректный email адрес",
         },
@@ -648,7 +648,7 @@ export default {
     },
 
     queue: {
-        
+
         title: "Очередь",
         secretary: "Обслуживание",
         queues: "Очереди",
@@ -803,7 +803,15 @@ export default {
         addToUsefulLink: 'Добавить в полезные ссылки',
         usefulLinkDesc: 'Краткое описание полезной ссылки',
         bgImg: 'Фоновое изображение',
-        plugin: 'Плагин'
+        plugin: 'Плагин',
+        blog: 'Блог',
+        chooseDegree: 'Выберите академическую степень',
+        chooseEduProgram: 'Выберите образовательную программу',
+        year: 'Выберите год',
+        price: 'Цена',
+        degreeLevel: 'Академическая степень',
+        shortInfo: 'Краткая информация',
+        enrollDocs: 'Перечень документов для зачисления',
     },
 
     student: {
@@ -1037,6 +1045,9 @@ export default {
         roleLabel: 'Роль',
         noResult: 'Не найдено записей',
         cantDelete: 'Невозможно удалить запись',
+    },
+    blog: {
+        title: 'Блог',
     }
 
 }

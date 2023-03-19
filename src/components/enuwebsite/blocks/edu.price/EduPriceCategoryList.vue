@@ -11,7 +11,7 @@
         <template #empty>{{ $t("common.noData") }}</template>
         <template #loading>{{ $t("common.loading") }}</template>
         <template #header>
-          <h4 class="mb-2 m-md-0 align-self-md-center">Категории</h4>
+          <h4 class="mb-2 m-md-0 align-self-md-center">{{ $t('smartenu.categories') }}</h4>
         </template>
         <Column :header="$t('common.nameIn')" :expander="true">
           <template #body="{ node }">
@@ -19,12 +19,12 @@
             <a v-if="node.leaf" href="javascript:void(0)" @click="navigateToPrice(node.id)">{{ node['name_' + $i18n.locale] }}</a>
           </template>
         </Column>
-        <Column :header="'Академиялық дәреже'">
+        <Column :header="$t('web.degreeLevel')">
           <template #body="{node}">
             <div v-if="node.degree">{{ node.degree['name_' + $i18n.locale] }}</div>
           </template>
         </Column>
-        <Column :header="'Сипаттама'">
+        <Column :header="$t('common.description')">
           <template #body="{node}">
             {{ node.desc ? node.desc : '' }}
           </template>

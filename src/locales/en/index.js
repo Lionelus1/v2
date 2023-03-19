@@ -27,7 +27,7 @@ export default {
         annotation: "Annotation",
         approve: "Approve",
         approveDate: "Approve date",
-        approvedBy: "Approved by", 
+        approvedBy: "Approved by",
         notUpload: 'Document not uploaded',
         action: {
             submit: 'Submit',
@@ -772,7 +772,15 @@ export default {
         addToUsefulLink: 'Add to useful links',
         usefulLinkDesc: 'Brief description of the useful link',
         bgImg: 'Background image',
-        plugin: 'Plugin'
+        plugin: 'Plugin',
+        blog: 'Blog',
+        chooseDegree: 'Choose an academic degree',
+        chooseEduProgram: 'Choose an educational program',
+        year: 'Select year',
+        price: 'Price',
+        degreeLevel: 'Academic degree',
+        shortInfo: 'Brief information',
+        enrollDocs: 'List of documents for enrollment',
     },
     //Student locale
     student: {
@@ -951,7 +959,7 @@ export default {
         halfYear: "semi-annual",
     },
     queue: {
-        
+
         title: "Queue",
         secretary:"Maintenance",
         queues:"Queues",
@@ -975,7 +983,7 @@ export default {
         selectTicket:"Select ticket",
         call: "Call",
         warning:"Take a photo of the coupon or print it by clicking on «Print». If you take a photo, be sure to close the window with the «Close button»!!!",
-        calledcount:"Сalled",        
+        calledcount:"Сalled",
         serviced:"Serviced",
         averageTime:"Average service time",
         redirected: "Redirected",
@@ -1029,5 +1037,8 @@ export default {
         roleLabel: 'Role',
         noResult: 'No records found',
         cantDelete: 'Cant delete the record',
+    },
+    blog: {
+        title: 'Blog',
     }
 }

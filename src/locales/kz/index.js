@@ -815,7 +815,15 @@ export default {
         addToUsefulLink: 'Пайдалы сілтемелерге қосу',
         usefulLinkDesc: 'Пайдалы сілтеменің қысқаша сипаттамасы',
         bgImg: 'Фонның суреті',
-        plugin: 'Плагин'
+        plugin: 'Плагин',
+        blog: 'Блог',
+        chooseDegree: 'Академиялық дәрежені таңадаңыз',
+        chooseEduProgram: 'Білім беру бағдарламасын таңдаңыз',
+        year: 'Жылды таңдаңыз',
+        price: 'Баға',
+        degreeLevel: 'Академиялық дәреже',
+        shortInfo: 'Қысқаша ақпарат',
+        enrollDocs: 'Оқуға түсуге арналған құжаттардың тізімі',
     },
     //Student locale
     student: {
@@ -1049,5 +1057,8 @@ export default {
         roleLabel: 'Роль',
         noResult: 'Жазбалар табылмады',
         cantDelete: 'Жазбаны өшіру мүмкін емес',
+    },
+    blog: {
+        title: 'Блог',
     }
 }

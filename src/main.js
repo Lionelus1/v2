@@ -105,6 +105,7 @@ import VueElementLoading from "vue-element-loading";
 import Person from '@/components/contragent/Person.vue';
 import Organization from '@/components/contragent/Organization.vue';
 import FindUser from "@/helpers/FindUser";
+import TinyEditor from "@/components/TinyEditor.vue";
 
 
 import ConfirmationService from 'primevue/confirmationservice';
@@ -117,6 +118,7 @@ import {fab} from '@fortawesome/free-brands-svg-icons';
 import {far} from '@fortawesome/free-regular-svg-icons';
 import ScrollPanel from "primevue/scrollpanel";
 import WorkPlanEventResult from "./components/work_plan/WorkPlanEventResult";
+import TitleBlock from "./components/TitleBlock";
 
 Date.prototype.toJSON = function(){
     const hoursDiff = this.getHours() - this.getTimezoneOffset() / 60;
@@ -360,6 +362,8 @@ app.component('ScrollPanel', ScrollPanel);
 app.component('Divider', Divider);
 
 app.component('WorkPlanEventResult', WorkPlanEventResult)
+app.component('TinyEditor', TinyEditor)
+app.component('TitleBlock', TitleBlock)
 
 interceptor(store,app);
 

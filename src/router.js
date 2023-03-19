@@ -514,6 +514,32 @@ const routes = [
                                 beforeEnter: ifAuthenticated,
                             }
                         ]
+                    },
+                ]
+            },
+            {
+                path: '/blog',
+                name: 'BlogComponent',
+                component: load('blog/BlogComponent'),
+                beforeEnter: ifAuthenticated,
+                children: [
+                    {
+                        path: '',
+                        name: 'BlogList',
+                        component: load('blog/BlogList'),
+                        beforeEnter: ifAuthenticated,
+                    },
+                    {
+                        path: 'requests/:id',
+                        name: 'BlogRequests',
+                        component: load('blog/BlogRequests'),
+                        beforeEnter: ifAuthenticated,
+                    },
+                    {
+                        path: 'view/:id',
+                        name: 'BlogRequestView',
+                        component: load('blog/BlogRequestView'),
+                        beforeEnter: ifAuthenticated,
                     }
                 ]
             },

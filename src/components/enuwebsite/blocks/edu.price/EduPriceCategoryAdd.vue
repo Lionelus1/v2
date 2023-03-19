@@ -23,8 +23,8 @@
         <small class="p-error" v-if="!formData.name_en && submitted">{{ $t("common.requiredField") }}</small>
       </div>
       <div class="field">
-        <label>{{ 'Описание' }}</label>
-        <Textarea :placeholder="'Описание'" type="text" rows="4" v-model="formData.desc" />
+        <label>{{ $t('common.description') }}</label>
+        <Textarea :placeholder="$t('common.description')" type="text" rows="4" v-model="formData.desc" />
       </div>
     </div>
 

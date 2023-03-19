@@ -7,20 +7,20 @@
                 :optionLabel="'name_' + $i18n.locale" optionValue="value" :placeholder="$t('common.select')" />
     </div>
     <div class="field" v-if="formData.level_id">
-      <label>Выберите категорию</label>
+      <label>{{ $t('smartenu.chooseCategory') }}</label>
       <Dropdown v-model="formData.admission_category_id" :options="categories"
                 :optionLabel="'name_' + $i18n.locale" optionValue="id" :placeholder="$t('common.select')" />
     </div>
     <TabView v-if="formData.admission_category_id">
       <TabPanel header="Қазақша">
         <div class="field mt-3">
-          <label>Краткая информация</label>
+          <label>{{ $t('web.shortInfo') }}</label>
 <!--          <RichEditor v-model="formData.short_info_kz" editorStyle="height: 100px"/>-->
           <TinyEditor v-model:model-value="formData.short_info_kz" height="200" />
           <small v-show="!formData.short_info_kz && submitted" class="p-error">{{ $t("smartenu.titleKzInvalid") }}</small>
         </div>
         <div class="field">
-          <label>Перечень документов для зачисления</label>
+          <label>{{ $t('web.enrollDocs') }}</label>
 <!--          <RichEditor v-model="formData.print_info_kz" editorStyle="height: 320px"></RichEditor>-->
           <TinyEditor v-model="formData.print_info_kz" />
           <small v-show="!formData.print_info_kz && submitted" class="p-error">
@@ -30,13 +30,13 @@
       </TabPanel>
       <TabPanel header="Русский">
         <div class="field mt-3">
-          <label>Краткая информация</label>
+          <label>{{ $t('web.shortInfo') }}</label>
 <!--          <RichEditor v-model="formData.short_info_ru" editorStyle="height: 100px"/>-->
           <TinyEditor v-model="formData.short_info_ru" height="200" />
           <small v-show="!formData.short_info_ru && submitted" class="p-error">{{ $t("smartenu.titleKzInvalid") }}</small>
         </div>
         <div class="field">
-          <label>Перечень документов для зачисления</label>
+          <label>{{ $t('web.shortInfo') }}</label>
 <!--          <RichEditor v-model="formData.print_info_ru" editorStyle="height: 320px"></RichEditor>-->
           <TinyEditor v-model="formData.print_info_ru"  />
           <small v-show="!formData.print_info_ru && submitted" class="p-error">
@@ -46,13 +46,13 @@
       </TabPanel>
       <TabPanel header="English">
         <div class="field mt-3">
-          <label>Краткая информация</label>
+          <label>{{ $t('web.shortInfo') }}</label>
 <!--          <RichEditor v-model="formData.short_info_en" editorStyle="height: 100px"/>-->
           <TinyEditor v-model="formData.short_info_en" height="200" />
           <small v-show="!formData.short_info_en && submitted" class="p-error">{{ $t("smartenu.titleKzInvalid") }}</small>
         </div>
         <div class="field">
-          <label>Перечень документов для зачисления</label>
+          <label>{{ $t('web.shortInfo') }}</label>
 <!--          <RichEditor v-model="formData.print_info_en" editorStyle="height: 320px"></RichEditor>-->
           <TinyEditor v-model="formData.print_info_en" />
           <small v-show="!formData.print_info_en && submitted" class="p-error">
