@@ -32,7 +32,7 @@ export default {
         toolbar:
             'undo redo | formatselect | bold italic backcolor | \
             alignleft aligncenter alignright alignjustify | \
-            bullist numlist outdent indent | removeformat | image | code ',
+            bullist numlist outdent indent | removeformat | table | image | code ',
         images_upload_handler: uploadSingFile,
         language: this.$i18n.locale === "en" ? "en_US" : this.$i18n.locale === "kz" ? "kk" : this.$i18n.locale
       },
