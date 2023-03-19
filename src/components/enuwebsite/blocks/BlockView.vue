@@ -12,7 +12,7 @@
           <div class="field">
             <label>{{ $t("common.contentInQazaq") }}</label>
 <!--            <RichEditor ref="kztext" v-model="content.content_kz" editorStyle="height: 320px"></RichEditor>-->
-            <TinyEditor v-model="content.content_kz" />
+            <TinyEditor v-if="content.content_kz" v-model="content.content_kz" />
             <small v-show="!content.content_kz && submitted" class="p-error">
               {{ $t("smartenu.contentKzInvalid") }}
             </small>
@@ -29,7 +29,7 @@
           <div class="field">
             <label for="ru-content">{{ $t("common.contentInRussian") }}</label>
 <!--            <RichEditor id="ru-content" v-model="content.content_ru" editorStyle="height: 320px"/>-->
-            <TinyEditor v-model="content.content_ru" />
+            <TinyEditor v-if="content.content_ru" v-model="content.content_ru" />
             <small v-show="!content.content_ru && submitted" class="p-error">
               {{ $t("smartenu.contentRuInvalid") }}
             </small>
@@ -46,7 +46,7 @@
           <div class="field">
             <label>{{ $t("common.contentInEnglish") }}</label>
 <!--            <RichEditor v-model="content.content_en" editorStyle="height: 320px"/>-->
-            <TinyEditor v-model="content.content_en" />
+            <TinyEditor v-if="content.content_en" v-model="content.content_en" />
             <small v-show="!content.content_en && submitted" class="p-error">
               {{ $t("smartenu.contentEnInvalid") }}
             </small>
