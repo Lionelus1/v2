@@ -815,7 +815,8 @@ export default {
         addToUsefulLink: 'Пайдалы сілтемелерге қосу',
         usefulLinkDesc: 'Пайдалы сілтеменің қысқаша сипаттамасы',
         bgImg: 'Фонның суреті',
-        plugin: 'Плагин'
+        plugin: 'Плагин',
+        blog: 'Блог'
     },
     //Student locale
     student: {

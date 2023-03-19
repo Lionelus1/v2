@@ -772,7 +772,8 @@ export default {
         addToUsefulLink: 'Add to useful links',
         usefulLinkDesc: 'Brief description of the useful link',
         bgImg: 'Background image',
-        plugin: 'Plugin'
+        plugin: 'Plugin',
+        blog: 'Blog'
     },
     //Student locale
     student: {
