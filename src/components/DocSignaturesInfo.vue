@@ -168,7 +168,7 @@ export default {
             this.isShow = true;
           } else {
             this.isShow = this.findRole(null, "career_moderator") || (this.signatures && this.signatures.some(x => x.userId === this.loginedUserId)) || 
-              this.docInfo.docHistory.setterId === this.loginedUserId;
+              this.docInfo.docHistory.setterId === this.loginedUserId || this.docInfo.creatorID === this.loginedUserId;
           }
 
           this.isSignShow = this.signatures && this.signatures.some(x => x.userId === this.loginedUserId && (x.signature || x.signature !== ''));  
