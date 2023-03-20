@@ -23,6 +23,7 @@ export default {
       content: this.value,
       editorOptions: {
         height: this.height,
+        fontsize_formats: "8px 10px 12px 14px 16px 18px 20px 22px 24px 36px 48px",
         menubar: false,
         plugins: [
           'advlist autolink lists link image charmap print preview anchor',
@@ -41,7 +42,7 @@ export default {
   },
   watch: {
     value(newValue) {
-      console.log(newValue)
+      this.content = newValue;
     }
 
   }

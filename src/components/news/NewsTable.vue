@@ -36,11 +36,7 @@
         <template #loading>{{ $t("smartenu.loadingNews") }}</template>
         <Column field="titleKz" v-bind:header="$t('common.nameIn')" :sortable="true">
           <template #body="slotProps">
-          <span>
-            {{
-              $i18n.locale === "kz" ? slotProps.data.titleKz : $i18n.locale === "ru" ? slotProps.data.titleRu : slotProps.data.titleEn
-            }}
-          </span>
+          <span>{{ slotProps.data['title_' + $i18n.locale] }}</span>
           </template>
         </Column>
         <Column :field="$i18n.locale === 'kz' ? `history.status.nameKz` : $i18n.locale === 'ru'

@@ -14,7 +14,8 @@
           </div>
           <div class="field">
             <label for="kz-content">{{ $t("common.contentInQazaq") }}</label>
-            <Editor id="kz-content" v-model="newsData.contentKz" editorStyle="height: 320px"/>
+            <TinyEditor v-model="newsData.contentKz" height="300" />
+<!--            <Editor id="kz-content" v-model="newsData.contentKz" editorStyle="height: 320px"/>-->
             <small v-show="!newsData.contentKz && submitted" class="p-error">{{
                 $t("smartenu.contentKzInvalid")
               }}</small>
@@ -29,7 +30,8 @@
           </div>
           <div class="field">
             <label for="ru-content">{{ $t("common.contentInRussian") }}</label>
-            <Editor id="ru-content" v-model="newsData.contentRu" editorStyle="height: 320px"/>
+            <TinyEditor v-model="newsData.contentRu" height="300" />
+<!--            <Editor id="ru-content" v-model="newsData.contentRu" editorStyle="height: 320px"/>-->
             <small v-show="!newsData.contentRu && submitted" class="p-error">
               {{ $t("smartenu.contentRuInvalid") }}
             </small>
@@ -47,7 +49,8 @@
 
           <div class="field">
             <label for="en-content">{{ $t("common.contentInEnglish") }}</label>
-            <Editor id="en-content" v-model="newsData.contentEn" editorStyle="height: 320px"/>
+            <TinyEditor v-model="newsData.contentEn" height="300" />
+<!--            <Editor id="en-content" v-model="newsData.contentEn" editorStyle="height: 320px"/>-->
             <small v-show="!newsData.contentEn && submitted" class="p-error">
               {{ $t("smartenu.contentEnInvalid") }}
             </small>
@@ -146,7 +149,7 @@ export default {
     return {
       editVisible: this.isVisible ?? false,
       formValid: [],
-      newsData: this.selectedNews,
+      newsData: this.selectedNews || {},
       submitted: false,
       selectedCatTree: null,
       catTreeElementsList: this.catTreeList,
