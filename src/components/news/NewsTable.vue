@@ -34,9 +34,9 @@
         </template>
         <template #empty>{{ $t("smartenu.newsNotFound") }}</template>
         <template #loading>{{ $t("smartenu.loadingNews") }}</template>
-        <Column field="titleKz" v-bind:header="$t('common.nameIn')" :sortable="true">
-          <template #body="slotProps">
-          <span>{{ slotProps.data['title_' + $i18n.locale] }}</span>
+        <Column field="titleKz" v-bind:header="$t('common.nameIn')" :sortable="true" style="width: 40%">
+          <template #body="{data}">
+          <span>{{ data['title' + locale] }}</span>
           </template>
         </Column>
         <Column :field="$i18n.locale === 'kz' ? `history.status.nameKz` : $i18n.locale === 'ru'
@@ -140,6 +140,7 @@ import {NewsService} from "../../service/news.service";
 import {PosterService} from "../../service/poster.service";
 import NewsView from "./NewsView";
 import AddEditNews from "./AddEditNews";
+import {upFirstLetter} from "@/helpers/HelperUtil";
 
 export default {
   name: "NewsTable",
@@ -548,6 +549,9 @@ export default {
     isStudent: function () {
       return this.roles.isStudent;
     },
+    locale: function() {
+      return upFirstLetter(this.$i18n.locale);
+    }
   },
 };
 </script>

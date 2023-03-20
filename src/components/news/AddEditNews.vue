@@ -142,7 +142,7 @@
 
 <script>
 import * as imageResizeCompress from "image-resize-compress";
-import {resizeImages} from "../../helpers/HelperUtil";
+import {formatDate, resizeImages} from "../../helpers/HelperUtil";
 import {NewsService} from "../../service/news.service";
 import {PosterService} from "../../service/poster.service";
 
@@ -191,6 +191,7 @@ export default {
     }
   },
   methods: {
+    formatDate,
     selectDate(event) {
       this.newsData.publish_date = new Date(event);
     },
@@ -242,7 +243,7 @@ export default {
       }
     },
     async insertNews() {
-      await resizeImages(this.newsData.contentKz).then(res => {
+      /*await resizeImages(this.newsData.contentKz).then(res => {
         this.newsData.contentKz = res
       });
       await resizeImages(this.newsData.contentRu).then(res => {
@@ -250,7 +251,7 @@ export default {
       });
       await resizeImages(this.newsData.contentEn).then(res => {
         this.newsData.contentEn = res
-      });
+      });*/
       if (this.newsData.poster)
         this.newsData.posterId = this.newsData.poster.id;
       const fd = new FormData();

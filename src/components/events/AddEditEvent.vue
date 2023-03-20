@@ -13,7 +13,8 @@
           </div>
           <div class="field">
             <label for="kz-content">{{ $t("common.contentInQazaq") }}</label>
-            <RichEditor ref="kztext" id="kz-content" v-model="event.contentKz" editorStyle="height: 320px"></RichEditor>
+            <TinyEditor v-model="event.contentKz" height="300" />
+<!--            <RichEditor ref="kztext" id="kz-content" v-model="event.contentKz" editorStyle="height: 320px"></RichEditor>-->
             <small v-show="!event.contentKz && submitted" class="p-error">
               {{ $t("smartenu.contentKzInvalid") }}
             </small>
@@ -30,7 +31,8 @@
           </div>
           <div class="field">
             <label for="ru-content">{{ $t("common.contentInRussian") }}</label>
-            <Editor id="ru-content" v-model="event.contentRu" editorStyle="height: 320px"/>
+            <TinyEditor v-model="event.contentRu" height="300" />
+<!--            <Editor id="ru-content" v-model="event.contentRu" editorStyle="height: 320px"/>-->
             <small v-show="!event.contentRu && submitted" class="p-error">
               {{ $t("smartenu.contentRuInvalid") }}
             </small>
@@ -47,7 +49,8 @@
           </div>
           <div class="field">
             <label for="en-content">{{ $t("common.contentInEnglish") }}</label>
-            <Editor id="en-content" v-model="event.contentEn" editorStyle="height: 320px"/>
+            <TinyEditor v-model="event.contentEn" height="300" />
+<!--            <Editor id="en-content" v-model="event.contentEn" editorStyle="height: 320px"/>-->
             <small v-show="!event.contentEn && submitted" class="p-error">
               {{ $t("smartenu.contentEnInvalid") }}
             </small>
@@ -202,7 +205,6 @@ import {PosterService} from "../../service/poster.service";
 export default {
   name: "AddEditEvent",
   props: ['selectedEvent', 'isVisible', 'partCats'],
-  components: {RichEditor},
   data() {
     return {
       editVisible: this.isVisible ?? false,
@@ -334,7 +336,7 @@ export default {
       }
     },
     async insertEvent() {
-      await resizeImages(this.event.contentKz).then(res => {
+      /*await resizeImages(this.event.contentKz).then(res => {
         this.event.contentKz = res
       });
       await resizeImages(this.event.contentRu).then(res => {
@@ -342,7 +344,7 @@ export default {
       });
       await resizeImages(this.event.contentEn).then(res => {
         this.event.contentEn = res
-      });
+      });*/
 
       this.event.additionalFile = null;
       this.event.mainImage = null;
