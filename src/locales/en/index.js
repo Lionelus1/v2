@@ -984,5 +984,6 @@ export default {
     },
     blog: {
         title: 'Blog',
+        welcomeText: 'Welcome text',
     }
 }

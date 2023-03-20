@@ -1,16 +1,16 @@
 <template>
   <div class="field">
     <FileUpload mode="basic" :customUpload="true" @uploader="$emit('upload', $event)" :auto="true"
-        :multiple="multiple" :chooseLabel="$t('hdfs.chooseFile')" :accept="accept"></FileUpload>
+                :multiple="multiple" :chooseLabel="$t('hdfs.chooseFile')" :accept="accept"></FileUpload>
   </div>
-  <div class="field" v-if="preview">
-    <img :src="imgPreview" alt="" class="w-full">
+  <div class="field" v-if="preview && !uploadedFiles">
+    <img :src="imgPreview" alt="" class="w-20rem">
   </div>
   <div class="field" v-if="uploadedFiles">
     <div ref="content" class="p-fileupload-content">
-      <div class="p-fileupload-files">
-        <div v-for="(file, index) of files" :key="index">
-          <div v-if="file.objectURL"><img :src="file.objectURL" alt="" class="tumblr"></div>
+      <div class="p-fileupload-files" v-if="uploadedFiles">
+        <div v-for="(file, index) of uploadedFiles" :key="index">
+          <div v-if="file.objectURL"><img :src="file.objectURL" alt="" class="w-20rem"></div>
           <div class="p-fileupload-row">
             <span class="mr-3"><i class="pi pi-paperclip"></i></span>
             <span>{{ file.name }}</span>
@@ -18,7 +18,7 @@
           </div>
         </div>
       </div>
-      <div class="p-fileupload-empty" v-if="files.length === 0">
+      <div class="p-fileupload-empty" v-if="uploadedFiles.length === 0">
         <slot name="empty"></slot>
       </div>
     </div>
@@ -26,22 +26,26 @@
 </template>
 
 <script>
-import {computed, ref, watch} from "vue";
+import {ref, watch} from "vue";
 import {fileRoute, smartEnuApi} from "@/config/config";
 
 export default {
   name: "CustomFileUpload",
-  props: ['files', 'accept', 'multiple', 'preview'],
+  props: ['modelValue', 'accept', 'multiple', 'preview'],
   setup(props) {
-    const uploadedFiles = computed(() =>  props.files);
-
+    const uploadedFiles = ref(props.modelValue)
     const imgPreview = ref(props.preview)
     if (imgPreview.value)
       imgPreview.value = smartEnuApi + fileRoute + imgPreview.value;
     const removeFile = (index) => {
       uploadedFiles.value.splice(index, 1)[0];
       uploadedFiles.value = [...uploadedFiles.value];
-    };
+      uploadedFiles.value && uploadedFiles.value.length === 0 ? uploadedFiles.value = null : uploadedFiles.value
+    }
+
+    watch(() => props.modelValue, (newValue, oldValue) => {
+      uploadedFiles.value = newValue;
+    })
 
     return {
       uploadedFiles, removeFile, imgPreview

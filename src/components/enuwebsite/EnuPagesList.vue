@@ -5,7 +5,7 @@
       <Button :label="$t('web.addPage')" icon="pi pi-plus" class="ml-2" @click="createPage"/>
     </div>
 
-    <div class="card" v-if="pages">
+    <div class="card">
       <DataTable :value="pages" responsiveLayout="scroll" :lazy="true" dataKey="enu_page_id" :loading="loading" :rows="10" :rowHover="true"
                  :paginator="true" :totalRecords="total" @page="onPage" @sort="onSort">
         <template #header>

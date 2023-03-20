@@ -62,7 +62,7 @@
     </div>
     <div class="field">
       <label>{{ $t('web.bgImg') }}</label>
-      <CustomFileUpload @upload="uploadFile" :accept="'image/*'" :files="bgImg" :multiple="false" :preview="formData.background_image"></CustomFileUpload>
+      <CustomFileUpload @upload="uploadFile" :accept="'image/*'" v-model="bgImg" :multiple="false" :preview="formData.background_image"></CustomFileUpload>
     </div>
     <template #footer>
       <Button v-if="currentMenu" :label="$t('common.save')" icon="pi pi-check" class="p-button p-component p-button-success mr-2" @click="editMenu"/>

@@ -991,5 +991,6 @@ export default {
     },
     blog: {
         title: 'Блог',
+        welcomeText: 'Приветственный текст',
     }
 }

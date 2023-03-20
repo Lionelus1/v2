@@ -1006,5 +1006,6 @@ export default {
     },
     blog: {
         title: 'Блог',
+        welcomeText: 'Кіріспе мәтін',
     }
 }

@@ -45,22 +45,21 @@
       <small class="p-error" v-if="!formData.name_en && submitted">{{ $t("common.requiredField") }}</small>
     </div>
     <div class="field">
-      <label>{{ $t('Приветственный текст') }}</label>
+      <label>{{ $t('blog.welcomeText') }}</label>
       <TinyEditor v-model="formData.description" height="200" />
     </div>
     <div class="field">
       <label>{{ $t('cafedra.responsible') }}</label>
-      {{ responsible }}
       <FindUser v-model="responsible" :max="1"></FindUser>
       <small class="p-error" v-if="!responsible && submitted">{{ $t("common.requiredField") }}</small>
     </div>
     <div class="field">
       <label>{{ $t('common.image') }}</label>
-      <CustomFileUpload @upload="uploadThumb" :accept="'image/*'" :files="thumbFile" :multiple="false" :preview="formData.thumb"></CustomFileUpload>
+      <CustomFileUpload v-model="thumbFile" @upload="uploadThumb" :accept="'image/*'" :multiple="false" :preview="formData.thumb"></CustomFileUpload>
     </div>
     <div class="field">
       <label>{{ $t('web.bgImg') }}</label>
-      <CustomFileUpload @upload="uploadBg" :accept="'image/*'" :files="bgImg" :multiple="false" :preview="formData.background_bg"></CustomFileUpload>
+      <CustomFileUpload v-model="bgImg" @upload="uploadBg" :accept="'image/*'" :multiple="false" :preview="formData.background_bg"></CustomFileUpload>
     </div>
     <template #footer>
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button p-component p-button-danger mr-2" @click="hideDialog"/>
@@ -129,6 +128,8 @@ export default {
 
     const addBlog = () => {
       submitted.value = true;
+      if (!isValid()) return;
+
       formData.value.owner_id = responsible.value.userID;
       const fd = new FormData();
       fd.append("blog", JSON.stringify(formData.value))
@@ -155,6 +156,7 @@ export default {
 
     const save = () => {
       submitted.value = true;
+      if (!isValid()) return;
       formData.value.owner_id = responsible.value.userID
       const fd = new FormData();
       fd.append("blog", JSON.stringify(formData.value))
@@ -182,11 +184,11 @@ export default {
     }
 
     const uploadThumb = (event) => {
-      thumbFile.value = event.files[0]
+      thumbFile.value = event.files
     }
 
     const uploadBg = (event) => {
-      bgImg.value = event.files[0]
+      bgImg.value = event.files
     }
 
     const openEdit = (data) => {
@@ -197,6 +199,7 @@ export default {
 
     const openDialog = () => {
       isCreateModal.value = true;
+      formData.value = {}
     }
 
     const hideDialog = () => {
@@ -227,6 +230,22 @@ export default {
       }).catch(error => {
         toast.add({severity: "error", summary: error, life: 3000});
       });
+    }
+
+    const isValid = () => {
+      let errors = [];
+      if (!formData.value.name_kz)
+        errors.push(1);
+      if (!formData.value.name_ru)
+        errors.push(1);
+      if (!formData.value.name_en)
+        errors.push(1);
+      if (!formData.value.description)
+        errors.push(1);
+      if (!formData.value.owner_id || !responsible.value)
+        errors.push(1);
+
+      return errors.length === 0
     }
 
     return {

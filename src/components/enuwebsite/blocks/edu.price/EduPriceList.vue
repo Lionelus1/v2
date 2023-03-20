@@ -4,7 +4,7 @@
     <div class="card">
       <Button :label="$t('common.add')" @click="openDialog" />
     </div>
-    <div class="card" v-if="data">
+    <div class="card">
       <DataTable :lazy="true" :value="data" dataKey="id" :loading="loading" responsiveLayout="scroll">
         <template #empty>{{ $t("common.noData") }}</template>
         <template #loading>{{ $t("common.loading") }}</template>

@@ -75,13 +75,14 @@ export default {
     const responsible = ref()
     const thumbFile = ref(null)
     const bgImg = ref(null)
-    const blogId = ref(route.params.id)
+    const blogId = ref(parseInt(route.params.id))
     const lazyParams = ref({
       page: 0,
       rows: 10,
       searchText: "",
       sortField: null,
-      sortOrder: 0
+      sortOrder: 0,
+      blog_id: blogId.value
     })
 
     const navigateToView = (data) => {
@@ -90,7 +91,7 @@ export default {
 
     const getBlogRequests = () => {
       loading.value = true;
-      blogService.getBlogRequests(blogId.value).then(res => {
+      blogService.getBlogRequests(lazyParams.value).then(res => {
         if (res.data) {
           items.value = res.data.blogs
           console.log(items.value)

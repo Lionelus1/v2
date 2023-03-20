@@ -4,7 +4,7 @@
     <div class="card">
       <Button :label="$t('common.add')" @click="openDialog(null)" />
     </div>
-    <div class="card" v-if="data">
+    <div class="card">
       <TreeTable class="p-treetable-sm" :value="data" :lazy="true" :loading="loading"
                  @nodeExpand="onExpand" scrollHeight="flex" responsiveLayout="scroll"
                  :resizableColumns="true" columnResizeMode="fit">

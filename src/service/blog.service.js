@@ -7,8 +7,8 @@ export class BlogService {
         return api.get(`/web/getBlog`, {headers: getHeader()});
     }
 
-    getBlogRequests(id) {
-        return api.post(`/web/getBlogRequestByBlogID`, {id: id}, {headers: getHeader()});
+    getBlogRequests(params) {
+        return api.post(`/web/getBlogRequestByBlogID`, params, {headers: getHeader()});
     }
 
     getBlogRequestById(id) {
