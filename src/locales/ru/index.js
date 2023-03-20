@@ -20,7 +20,7 @@ export default {
         councilName: 'Наименование совета',
         contragents: 'Контрагенты',
         documents: 'Документы',
-        sertificates: 'Свидетельства',
+        certificates: 'Свидетельства',
         administration: 'Администрирование',
         academicDegree: "Ученая степень",
         academicTitle: "Ученое звание",
@@ -44,6 +44,11 @@ export default {
         equals: "Равно",
         login: "Вход",
         logout: "Выход",
+        letterSpacing: {
+            expanded: "Разреженный",
+            condensed: "Уплотненный",
+            normal: "Обычный",
+        },
         enter: "Наберите",
         enterLogin: "Введите ИИН или почту platonus",
         enterPassword: "Введите пароль",
@@ -161,8 +166,11 @@ export default {
         params: "Параметры",
         password: "Пароль",
         person: "Персона",
+        individualEntrepreneur: "Частные лица",
         personal: "Сотрудники",
-        phoneNumber: '',
+        pending: "В ожидании",
+        uploaded: "Загруженные",
+        phoneNumber: 'Phone number',
         requiredField: "Обязательное поле",
         revision: "На доработку",
         teacher: "ППС",
@@ -243,6 +251,9 @@ export default {
             fileError: "Не удалось загрузить файл. Возможно файл поврежден",
             mailSendError: "Ошибка при отправке на электронную почту",
             ConsulAlwaysHasSameMember: "Указанное лицо уже состоит в другом совете",
+            saveChangesWarning: "Хотите сохранить внесенные изменения?",
+            unsaveOutcome: "Если изменения не сохранить, они будут утрачены.",
+            addPicture: "Добавить картинку"
         },
         language: {
             kz: "на казахском",
@@ -278,7 +289,9 @@ export default {
         bgColor: "Фоновый цвет",
         textColor: "Цвет текста",
         link: "Ссылка",
-        image: 'Картинка'
+        image: 'Картинка',
+        signers: "Подписывающие стороны",
+        approvals: "Согласующие лица",
     },
     bank: {
         title: "Банки",
@@ -360,11 +373,15 @@ export default {
             period: "Период",
             text: "Текст",
             student: "Обучающийся",
+            individualEntrepreneur: "Частное лицо",
             place: "Место заключения договора",
             date: "Дата заключения договора",
             addElement: "Добавление элемента договора",
             message: {}
         },
+        needsApproval: "Созданный по шаблону документ требует согласования",
+        approvalUsers: "Список согласующих лиц",
+        approvalListPlaceholder: "Инстанция",
     },
     contracts: {
         title: "Договоры",
@@ -413,9 +430,11 @@ export default {
         modulname: "Код и наименование модуля:",
         eduprogram: "Код и наименование образовательной программы:",
         discipline: "Код и наименование дисциплины:",
+        logo: "Логотип"
     },
     ncasigner: {
         chooseFile: "Выберите файл",
+        qrSinging: "Также можете подписать документ с помощью мобильного приложения \"eGov mobile\" отсканировав данный QR код:",
         noteMark: "Продолжая пользоваться сервисом Smart.ENU Вы даете согласие на сбор, обработку и хранение Ваших персональных данных в объеме, содержащемся в сертификате (электронная цифровая подпись)  НУЦ, для целей отображения данных об электронной подписи.",
         docIdNotExistMessageForFind: "Для того, чтобы найти страницу подписанного документа по файлу, в имени файла должен присутствовать корректный идентификатор SIGNERAPP. Убедитесть, что в имени вашего файла указан правильный идентификатор SIGNERAPP.",
         docIdNotExistMessageForSign: "Для того, чтобы подписать ранее подписанный документ по файлу, в имени файла должен присутствовать корректный идентификатор SIGNERAPP. Убедитесть, что в имени вашего файла указан правильный идентификатор SIGNERAPP. В противном случее, укажите имя файла без идентификатора SIGNERAPP для создания новой цепочки подписей.",
@@ -429,7 +448,9 @@ export default {
         IncorrectFileTitle: "Файл с данным именем {dn} не прошел проверку подписи в системе SIGNERAPP",
         IncorrectFileContent: "Данный файл был изменен или был предоставлен другой файл. Пожалуйста, проверьте файл.",
         signed: "подписал(а) данный документ",
+        approved: "согласовал(а) данный документ",
         signingexpected: "ожидается подписание",
+        approvingExpected: "ожидается согласование",
         certTemplate: "Шаблон сертификата: ",
         IIN: "ИИН",
         certType: "Тип подписи: ",
@@ -965,11 +986,14 @@ export default {
         resultIndicator: "Показатель прямых результатов",
         summary: "Свод/Подтверждение",
         respExecutor: "Ответственные исполнители",
-        halfYear: "полугодие"
+        halfYear: "полугодие",
     },
     educomplex: {
         title: "Учебно-методический комплекс дисциплины",
         forme: "Относительно меня"
+    },
+    postaccmonrep: {
+        title: "Отчеты по постаккредитационному мониторингу",
     },
     ref:{
         getRef:"Получить справку",
@@ -989,8 +1013,42 @@ export default {
         editGuide: 'Редактирование справочника',
         notGuide: 'На эту страницу пока не создана справочник!',
     },
+    course: {
+        title: 'Онлайн курсы',
+        courses: 'Курсы',
+        categories: 'Категории курсов',
+        certificate: {
+            title: 'Сертификаты',
+            template: 'Шаблоны сертфиката',
+            element: 'Элемент',
+            elements: 'Элементы',
+            designer: 'Дизайнер шаблона',
+            issue: "Выдать сертификат",
+
+        },
+        user: 'Участник',
+        users: "Участники курса",
+        organizers: 'Организаторы курсов',
+        lnum: 'Последний номер',
+    },
+    roleControl:{
+        menuTitle: 'Управление ролями',
+        giveRole: 'Дать новую роль',
+        selectOrg: 'Выберите организацию',
+        selectRole: 'Выберите роль',
+        selectEmployee: 'Выберите сотрудника',
+        employeeIIN: 'ИИН',
+        employeeName: 'Имя сотрудника',
+        employeeLabel: 'Сотрудник',
+        employeeNotFound: 'Сотрудник с таким ИИН не найдено',
+        roleName: 'Имя роля',
+        roleLabel: 'Роль',
+        noResult: 'Не найдено записей',
+        cantDelete: 'Невозможно удалить запись',
+    },
     blog: {
         title: 'Блог',
         welcomeText: 'Приветственный текст',
     }
+
 }

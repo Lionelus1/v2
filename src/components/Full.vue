@@ -9,7 +9,6 @@
         <div class="layout-logo">
           <router-link to="/">
             <h1>SMART ENU</h1>
-            <!-- <img alt="Logo" :src="logo" /> -->
           </router-link>
         </div>
         <AppProfile/>
@@ -19,8 +18,7 @@
     <div class="layout-main pr-0 pl-0">
       <router-view v-model:pagemenu="localpagemenu"/>
     </div>
-    <AppConfig :layoutMode="layoutMode" :layoutColorMode="layoutColorMode" @layout-change="onLayoutChange"
-               @layout-color-change="onLayoutColorChange"/>
+    <AppConfig :layoutMode="layoutMode" :layoutColorMode="layoutColorMode" @layout-change="onLayoutChange" @layout-color-change="onLayoutColorChange"/>
     <AppFooter/>
 
   </div>

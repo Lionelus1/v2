@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="content-section introduction">
+    <div class="content-section introduction pb-3">
       <div class="feature-intro ml-3">
         <h4 style="display: inline">{{ $t("contragent.organization") }}</h4>
         <label style="color: grey"
@@ -27,7 +27,7 @@
                   @keyup.enter="initApiCall"
                   style="height: 30px"
                   v-model="filters['global'].value"
-                  placeholder="іздеу"
+                  :placeholder="$t('common.search')"
                 />
               </span>
             </template>

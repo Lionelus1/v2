@@ -120,7 +120,7 @@ export default {
 	},
   props: {
     modelValue: null,
-		placeholder: String,
+	placeholder: String,
     readonly: Boolean,
   },
 }

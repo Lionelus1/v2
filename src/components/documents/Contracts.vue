@@ -1,9 +1,11 @@
 <template>
 <div>
   <div class="content-section">
+    <BlockUI :blocked="saving" :fullScreen="true"></BlockUI>
     <div class="feature-intro ml-3">
       <h3>{{$t('contracts.title')}}</h3>
     </div>
+    <ProgressBar v-if="saving" mode="indeterminate" style="height: .5em"/>
     <div class="card">
       <div class="p-col">
         <div class="box">
@@ -51,7 +53,7 @@
   </div>
     <div v-if="selectedDocSourceType == DocState.DocSourceType.Template" style="overflow-y:hidden" >
       <div class="flex">
-<!-- <DataTable
+      <!-- <DataTable
               class="p-datatable-sm"
               v-model:selection="selectedTemplate"
               selectionMode="single"
@@ -107,21 +109,18 @@
         <Button v-bind:label="$t('common.createNew')" icon="pi pi-check" autofocus @click="createDoc" />
       </template>
     </Card>
-
-    
-      
   </Sidebar>
-         <Sidebar :visible="false" position="right"
-  :modal="true" :breakpoints="{'960px': '75vw', '640px': '100vw'}" :style="{width: '760px', overflow:'hidden'}">
-        <div v-if="selectedTemplate != null">
-          <RichEditor v-if="selectedDocLanguage === 'kz'" :readonly="true"  v-model="selectedTemplate.mainTextKaz" editorStyle="height:300px;width:400px;max-width:700px">
-            <template v-slot:toolbar></template>
-          </RichEditor>
-          <RichEditor v-else :readonly="true"  v-model="selectedTemplate.mainTextRus" editorStyle="height:300px;width:400px;max-width:700px">
-            <template v-slot:toolbar></template>
-          </RichEditor>
-        </div>
-        </Sidebar>
+  <Sidebar :visible="false" position="right"
+    :modal="true" :breakpoints="{'960px': '75vw', '640px': '100vw'}" :style="{width: '760px', overflow:'hidden'}">
+    <div v-if="selectedTemplate != null">
+      <RichEditor v-if="selectedDocLanguage === 'kz'" :readonly="true"  v-model="selectedTemplate.mainTextKaz" editorStyle="height:300px;width:400px;max-width:700px">
+        <template v-slot:toolbar></template>
+      </RichEditor>
+      <RichEditor v-else :readonly="true"  v-model="selectedTemplate.mainTextRus" editorStyle="height:300px;width:400px;max-width:700px">
+        <template v-slot:toolbar></template>
+      </RichEditor>
+    </div>
+  </Sidebar>
 </div>
 </template>
 <script>
@@ -138,6 +137,7 @@
         dialogOpenState: {
           createDocDialog: false,
         },
+        saving: false,
         docTemplates:[],
         selectedTemplate: null,
         DocState: DocState,
@@ -186,13 +186,16 @@
         if (this.selectedTemplate != null) {
           req.lang = this.selectedTemplate.templateLanguage == "kz" ? 0 : 1
         }
-        
+        this.saving=true;
         axios.post(smartEnuApi+url, req, { headers: getHeader() }).then(responce=>{
           this.showMessage('success', this.$t('contracts.title'), this.$t('contracts.message.created'));
+          this.saving =false;
           this.$router.push({ path: '/documents/contract/' + responce.data});
+
 
         })
         .catch(error => {
+          this.saving =false;
           console.log(error);
         })
       },
@@ -206,14 +209,15 @@
           lang: this.selectedDocLanguage == "kz" ? 0 : 1,
           byParams: true
         }
+        this.saving = true;
         
         axios.post(smartEnuApi+url, req, { headers: getHeader() }).then(responce=>{
+          this.saving = false;
           this.showMessage('success', this.$t('contracts.title'), this.$t('contracts.message.created'));
-          this.$router.push({ path: '/documents/contract/' + responce.data});
-
+          this.$router.push({ path: '/documents/contract/' + responce.data.id});
         })
-        .catch(error => {
-          console.log(error);
+        .catch(_ => {
+          this.saving = false;
         })
       },
       addTemplateNode(nodeDataChildren,node) {
@@ -237,6 +241,7 @@
       },
       initApiCall(){
         let url = "/doctemplates?groupID=1";
+        this.saving = true;
         axios.get(smartEnuApi+url, { headers: getHeader() })
         .then(res=>{
           res.data.forEach(el => {
@@ -246,9 +251,10 @@
               })
             }
           });
+          this.saving= false;
         })
-        .catch(error => {
-            console.error(error)
+        .catch(_ => {
+          this.saving=false;
         })
       }
     },

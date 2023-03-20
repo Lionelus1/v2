@@ -20,7 +20,7 @@ export default {
         councilName: 'Кеңес аты',
         contragents: 'Контрагенттер',
         documents: 'Құжаттар',
-        sertificates: 'Куәліктер',
+        certificates: 'Куәліктер',
         administration: 'Әкімшілік',
         academicDegree: "Ғылыми дәрежесі",
         academicTitle: "Ғылыми атағы",
@@ -44,6 +44,11 @@ export default {
         equals: "Тең",
         login: "Кіру",
         logout: "Шығу",
+        letterSpacing: {
+            expanded: "Кең",
+            condensed: "Сығыңқы",
+            normal: "Әдепкі",
+        },
         enter: "Теріңіз",
         enterLogin: "ЖСН немесе platonus почтасын енгізіңіз",
         export: "Экспорт",
@@ -161,7 +166,10 @@ export default {
         params: "Параметрлер",
         password: "Құпия сөз",
         person: "Жеке тұлға",
+        individualEntrepreneur: "Жеке тұлғалар",
         personal: "Қызметкерлер",
+        pending: "Жүктеуді күтуде",
+        uploaded: "Жүктелген",
         revision: "Түзетуге",
         requiredField: "Міндетті түрде толтыру керек",
         teacher: "ПОҚ",
@@ -241,7 +249,9 @@ export default {
             fileError: "Файлды жүктеу мүмкін емес. Файл бүлінген болуы мүмкін",
             mailSendError: "Электронды поштаға хат жіберуде қате пайда болды",
             ConsulAlwaysHasSameMember: "Көрсетілген тұлға басқа кеңестің мүшесі",
-
+            saveChangesWarning: "Жасаған өзгерістерді сақтайсыз ба?",
+            unsaveOutcome: "Өзгерістерді сақтамасаңыз, біржола жоғалтасыз.",
+            addPicture: "Сурет қосу"
         },
         language: {
             kz: "қазақша",
@@ -277,7 +287,9 @@ export default {
         bgColor: "Фон түсі",
         textColor: "Мәтін түсі",
         link: "Сілтеме",
-        image: 'Сурет'
+        image: 'Сурет',
+        signers: "Қол қоюшы тараптар",
+        approvals: "Бекітетін тұлғалар",
     },
     bank: {
         title: "Банктер",
@@ -358,12 +370,16 @@ export default {
             period: "Кезең",
             text: "Мәтін",
             student: "Білім алушы",
+            individualEntrepreneur: "Жеке тұлға",
             number: "Нөмір",
             place: "Келісім-шарт жасалған орын",
             date: "Келісім-шарт жасалған күн",
             addElement: "Келісім-шарт элементін қосу",
             message: {}
         },
+        needsApproval: "Үлгі бойынша жасалған құжат келісуді қажет етеді",
+        approvalUsers: "Келісім беруі тиіс тұлғалар тізімі",
+        approvalListPlaceholder: "Инстанция",
     },
     contracts: {
         title: "Келісім-шарттар",
@@ -413,9 +429,10 @@ export default {
         modulname: "Модульдің коды және атауы:",
         eduprogram: "Білім беру бағдарламасының коды және атауы:",
         discipline: "Пәннің коды және атауы:",
-
+        logo: "Логотип"
     },
     ncasigner: {
+        qrSinging: "Құжатқа \"eGov mobile\" мобильдік қосымшасының көмегімен төмендегі QR кодты сканерлеу арқылы да қол қоя аласыз:",
         noteMark: "Smart.Enu қызметін пайдалана отырып сіз ҰКО сертификатында (электронды қолтаңба) қамтылған жеке мәліметтеріңізді жинауға, өңдеуге және сақтауға келісіміңізді бересіз.",
         chooseFile: "Файлды таңдаңыз",
         docIdNotExistMessageForFind: "Қол қойылған құжаттың бетін файл арқылы табу үшін файл атауында дұрыс SIGNERAPP идентификаторы болуы керек. Файл атауында дұрыс SIGNERAPP идентификаторы бар екеніне көз жеткізіңіз.",
@@ -430,7 +447,9 @@ export default {
         IncorrectFileTitle: "{dn} аты бар файл SIGNERAPP жүйесінде қолтаңбаны тексеруден өткен жоқ",
         IncorrectFileContent: "Бұл файл өзгертілді немесе басқа файл берілді. Файлды тексеріңіз.",
         signed: "осы құжатқа қол қойды",
+        approved: "осы құжатқа келісім берді",
         signingexpected: "қол қоюы тиіс",
+        approvingExpected: "келісім беруі тиіс",
         certTemplate: "Сертификат үлгісі: ",
         IIN: "ЖСН",
         certType: "Қолтаңба түрі:",
@@ -980,11 +999,14 @@ export default {
         resultIndicator: "Нәтиже көрсеткіші",
         summary: "Жинақтаушы/Растау",
         respExecutor: "Жауапты орындаушылар",
-        halfYear: "жартыжылдық"
+        halfYear: "жартыжылдық",
     },
     educomplex: {
         title: "Пәннің оқу-әдістемелік кешені",
         forme: "Маған қатысты"
+    },
+    postaccmonrep: {
+        title: "Аккредиттеуден кейінгі мониторинг туралы есептер",
     },
     ref:{
         getRef:"Анықтама алу",
@@ -1003,6 +1025,38 @@ export default {
         addGuide: 'Анықтаманы қосу',
         editGuide: 'Анықтаманы өзгерту',
         notGuide: 'Бұл бетке әзірге анқтыма құрылған жоқ!',
+    },
+    course: {
+        title: 'Онлайн курстар',
+        courses: 'Курстар',
+        categories: 'Курс категориялары',
+        certificate: {
+            title: 'Сертификаттар',
+            template: 'Сертификат үлгілері',
+            element: 'Элемент',
+            elements: 'Элементтер',
+            designer: 'Үлгі дизайнері',
+            issue: "Сертификат беру",
+        },
+        users: 'Курсқа қатысушылар',
+        user: 'Қатысушы',
+        organizers: 'Курс ұйымдастырушылар',
+        lnum: 'Соңғы нөмір',
+    },
+    roleControl:{
+        menuTitle: 'Рольдерді басқару',
+        giveRole: 'Жаңа роль беру',
+        selectOrg: 'Ұйымды таңдаңыз',
+        selectRole: 'Рольді таңдаңыз',
+        selectEmployee: 'Қызметкерді таңдаңыз',
+        employeeIIN: 'ЖСН',
+        employeeName: 'Қызметкер аты',
+        employeeLabel: 'Қызметкер',
+        employeeNotFound: 'Мұндай ЖСН-мен қызметкер табылмады',
+        roleName: 'Роль аты',
+        roleLabel: 'Роль',
+        noResult: 'Жазбалар табылмады',
+        cantDelete: 'Жазбаны өшіру мүмкін емес',
     },
     blog: {
         title: 'Блог',

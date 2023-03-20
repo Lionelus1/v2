@@ -1,6 +1,6 @@
 <template>
   <div class="container" id="app" v-cloak>
-    <div class="steps">
+    <div class="steps" v-if="mode == 'standard'">
       <ul class="steps-list">
         <li :class="{
                         'steps-item': true,
@@ -16,31 +16,61 @@
       </ul>
       <div class="steps-content">
         <FindUser @add="updateModel" @remove="updateModel" v-model="selectedUsers"></FindUser>
-        <Dropdown :disabled="!isNewStage" @change="updateModel" class="mt-2" v-model="sertificate" :options="sertificates" :optionLabel="'name' + $i18n.locale" :placeholder="$t('ncasigner.certType')" />
+        <Dropdown :disabled="!isNewStage" @change="updateModel" class="mt-2" v-model="certificate" :options="certificates" :optionLabel="'name' + $i18n.locale" :placeholder="$t('ncasigner.certType')" />
       </div>
 
       <div>
-        <Button v-if="isNewStage" icon="pi pi-plus" class="p-button-rounded p-button-success"
+        <Button :disabled="!(isNewStage && steps.length < 10)" icon="pi pi-plus" class="p-button-rounded p-button-success"
                 @click="addStep"/>
-        <button @click="clearSteps" class="btn danger ml-2"> {{ $t('common.clearApprovalList') }} </button>
+        <Button @click="clearSteps" class="btn danger ml-2"> {{ $t('common.clearApprovalList') }} </Button>
+      </div>
+    </div>
+    <div class="steps" v-else>
+      <ul class="steps-list">
+        <li :class="{
+                        'steps-item': true,
+                        /*'done': index < activeIndex ,*/
+                        'active': index === activeIndex,
+                    }"
+            v-for="(approvalStage, index) in approvalStages"
+            :key="approvalStage"
+        >
+          <span @click="setActive(index)"> {{ index + 1 }} </span>
+          <div class="pt-2">{{ $i18n.locale === 'kz'? approvalStage.titleKz : $i18n.locale === 'en' ? approvalStage.titleEn : approvalStage.titleRu }}</div>
+        </li>
+      </ul>
+      <div class="steps-content">
+        <Dropdown v-if="isNewStage" @change="approvalListChanged" v-model="approvalListItem" :options="approvalList" :optionLabel="'title' + $i18n.locale.charAt(0).toUpperCase() + $i18n.locale.slice(1)" :placeholder="$t('doctemplate.approvalListPlaceholder')"></Dropdown>
+        <FindUser :disabled="readonly || !approvalStages[activeIndex].userChangeable" class="mt-2" @add="updateModel" @remove="updateModel" v-model="selectedUsers"></FindUser>
+        <Dropdown :disabled="true" @change="updateModel" class="mt-2" v-model="certificate" :options="certificates" optionValue="value" :optionLabel="'name' + $i18n.locale" :placeholder="$t('ncasigner.certType')" />
+      </div>
+
+      <div>
+        <Button v-if="!readonly" :disabled="!(isNewStage && approvalStages.length < 10)" icon="pi pi-plus" class="p-button-rounded p-button-success"
+                @click="addStep"/>
+        <Button v-if="!readonly" @click="clearSteps" class="btn danger ml-2"> {{ $t('common.clearApprovalList') }} </Button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import axios from 'axios';
+import {smartEnuApi, getHeader} from "@/config/config";
 
 export default {
   name: "ApproveComponent",
   props: {
     modelValue: null,
-    stages: null
+    stages: null,
+    mode: null, // 'standard', 'doc_template', 'doc_template_creating'
+    readonly: null,
   },
   emits: ['clearStages'],
   data() {
     return {
       selectedUsers: null,
-      sertificates: [
+      certificates: [
         {namekz: "Жеке тұлғаның сертификаты", nameru: "Сертификат физического лица", nameen: "Certificate of an individual", value: "individual"},
         {namekz: "Ішкі құжат айналымы үшін (ГОСТ)", nameru: "Для внутреннего документооборота (ГОСТ)", nameen: "For internal document management (GOST)", value: "internal"},
         {namekz: "Бірінші басшының сертификаты", nameru: "Сертификат первого руководителя", nameen: "Certificate of the CEO", value: "ceo"},
@@ -48,8 +78,8 @@ export default {
         {namekz: "Қол қою құқығы бар қызметкер сертификаты", nameru: "Сертификат сотрудника с правом подписи", nameen: "Certificate of the employee with the right to sign", value: "sign_right"},
         {namekz: "Қаржы құжаттарына қол қою құқығы бар қызметкер сертификаты", nameru: "Сертификат сотрудника с правом подписи финансовых документов", nameen: "Certificate of the employee with the right to sign financial docs", value: "financial_sign_right"},
       ],
-      sertificate: null,
-      stage: this.modelValue.length +1,
+      certificate: null,
+      stage: this.modelValue != null ? this.modelValue.length + 1 : 1,
       stageValue: this.value,
       activeIndex: 0,
       isStepsFinished: false,
@@ -61,13 +91,16 @@ export default {
         }
       ],
       result: this.stages ? JSON.parse(JSON.stringify(this.stages)) : this.modelValue,
-      isNewStage: !this.stages
+      isNewStage: this.mode === 'standard' ? !this.stages : false,
+      approvalStages: this.modelValue,
+      approvalList: [],
+      approvalListItem: null,
     }
   },
   setup(props, context) {
     function updateValue(e) {
-      if (e.value) {
-        context.emit("update:modelValue", e.value);
+      if (e) {
+        context.emit("update:modelValue", e);
       }
     }
 
@@ -76,78 +109,155 @@ export default {
     };
   },
   methods: {
-    prev() {
-      if (this.activeIndex > 0) {
-        this.activeIndex--;
-      }
-    },
-    reset() {
-      this.activeIndex = 0;
-      this.isStepsFinished = false;
-    },
-    nextOfFinish() {
-      if (!this.isLastStep) {
-        this.activeIndex++;
-      } else {
-        this.isStepsFinished = true;
-      }
-    },
+    // prev() {
+    //   if (this.activeIndex > 0) {
+    //     this.activeIndex--;
+    //   }
+    // },
+    // reset() {
+    //   this.activeIndex = 0;
+    //   this.isStepsFinished = false;
+    // },
+    // nextOfFinish() {
+    //   if (!this.isLastStep) {
+    //     this.activeIndex++;
+    //   } else {
+    //     this.isStepsFinished = true;
+    //   }
+    // },
     setActive(index) {
       this.activeIndex = index;
-      this.stage = index + 1;
-      this.selectedUsers = this.result[index].users != null ? this.result[index].users : null;
-      this.sertificate = this.result[index].sertificate;
+      if (this.mode == 'standard') {
+        this.stage = index + 1;
+        this.selectedUsers = this.result[index].users != null ? this.result[index].users : null;
+        this.certificate = this.result[index].certificate;
+      } else {
+        this.approvalListItem = null
+        this.approvalList.forEach((app) => {
+          if (app.approvalListId === this.approvalStages[index].approvalListId) {
+            this.approvalListItem = app;
+            return;
+          }
+        })
+        this.selectedUsers = this.approvalStages[index].users != null ? this.approvalStages[index].users : null
+        this.certificate = this.approvalStages[index].certificate != null ?  this.approvalStages[index].certificate.value : null
+      }
     },
     addStep() {
-      this.result.push({stage: this.result.length+1, users: null, sertificate: null})
-      this.stage += 1;
-      this.activeIndex += 1;
-      this.steps.push({stage: this.stage})
-      this.selectedUsers = null;
-      this.sertificate = null;
+      if (this.mode == 'standard') {
+        this.result.push({stage: this.result.length+1, users: null, certificate: null})
+        this.stage += 1;
+        this.activeIndex += 1;
+        this.steps.push({stage: this.stage})
+        this.selectedUsers = null;
+        this.certificate = null;
+      } else {
+        this.approvalStages.push({
+          stage: this.approvalStages.length + 1,
+          users: null,
+          userChangeable: false,
+          certificate: null,
+          approvalListId: 0,
+        })
+        this.setActive(this.activeIndex + 1)
+      }
       //this.$emit('changeStep', this.stage);
     },
     updateModel() {
-      if (this.result.length ===0) {
-        this.result.push({stage: this.stage, users: this.selectedUsers, sertificate: this.sertificate})
+      if (this.mode == 'standard') {
+        if (this.result.length ===0) {
+          this.result.push({stage: this.stage, users: this.selectedUsers, certificate: this.certificate})
+        } else {
+          this.result[this.activeIndex].users= this.selectedUsers
+          this.result[this.activeIndex].certificate = this.certificate
+        }
+        this.updateValue(this.result)
       } else {
-        this.result[this.activeIndex].users= this.selectedUsers
-        this.result[this.activeIndex].sertificate = this.sertificate
+        this.approvalStages[this.activeIndex].users = this.selectedUsers
+        this.certificates.forEach((cert) => {
+          if (cert.value === this.certificate) {
+            this.approvalStages[this.activeIndex].certificate = cert;
+            return;
+          }
+        })
+        this.updateValue(this.approvalStages)
       }
-      //this.initResult()
-      this.$emit('update:modelValue', this.result);
-      //this.$emit('add', {stage: this.stage, users: this.selectedUsers, sertificate: this.sertificate});
+      // this.initResult()
+      // this.$emit('update:modelValue', this.result);
+      // this.$emit('add', {stage: this.stage, users: this.selectedUsers, certificate: this.certificate});
 
-      //if (preventDefault) {
+      // if (preventDefault) {
       //  event.preventDefault();
-      //}
+      // }
     },
     clearSteps() {
-      this.steps = [{
-        stage: 1,
-        users: null
-      }];
-      this.stagesList = null;
-      this.result = [];
-      this.updateModel();
-      this.setActive(0);
-      this.isNewStage = true;
-      this.$emit('clearStages', true)
+      if (this.mode == 'standard') {
+        this.steps = [{
+          stage: 1,
+          users: null
+        }];
+        this.stagesList = null;
+        this.result = [];
+        this.updateModel();
+        this.setActive(0);
+        this.isNewStage = true;
+        this.$emit('clearStages', true)
+      } else {
+        this.approvalStages = [{
+          stage: 1,
+          users: null,
+          userChangeable: false,
+          certificate: null,
+          approvalListId: 0,
+        }];
+        this.setActive(0);
+        this.updateModel();
+        this.isNewStage = true;
+      }
+    },
+    approvalListChanged() {
+      this.approvalStages[this.activeIndex].approvalListId = this.approvalListItem.approvalListId
+      this.approvalStages[this.activeIndex].userChangeable = this.approvalListItem.userChangeable
+      this.approvalStages[this.activeIndex].titleKz = this.approvalListItem.titleKz
+      this.approvalStages[this.activeIndex].titleRu = this.approvalListItem.titleRu
+      this.approvalStages[this.activeIndex].titleEn = this.approvalListItem.titleEn
+      this.certificate = this.approvalListItem.certificate.value
+      this.selectedUsers = this.approvalListItem.users
+      this.updateModel()
     }
   },
   created() {
     this.setActive(0);
   },
   computed: {
-    activeStep() {
-      return this.steps[this.activeIndex];
-    },
-    isFirstStep() {
-      return this.activeIndex === 0;
-    },
-    isLastStep() {
-      return this.activeIndex === this.steps.length - 1;
-    },
+    // activeStep() {
+    //   return this.steps[this.activeIndex];
+    // },
+    // isFirstStep() {
+    //   return this.activeIndex === 0;
+    // },
+    // isLastStep() {
+    //   return this.activeIndex === this.steps.length - 1;
+    // },
+  },
+  mounted() {
+    if (this.mode != 'standard') {
+      axios.post(smartEnuApi + "/doctemplate/getApprovalList", {}, {
+        headers: getHeader(),
+      }).then(response => {
+        this.approvalList = response.data
+      }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+      })
+    }
   },
   unmounted() {
     this.result = [];
@@ -210,10 +320,6 @@ h3 {
   font-size: 1.35rem;
 }
 
-.primary {
-  color: #42b983;
-}
-
 .danger {
   color: #c02929;
 }
@@ -269,65 +375,6 @@ h3 {
   max-width: 1000px;
 }
 
-.pt-5 {
-  padding-top: 5rem;
-}
-
-.form-control {
-  position: relative;
-  margin-bottom: 0.5rem;
-}
-
-.form-control input {
-  margin: 0;
-  outline: none;
-  border: 2px solid #ccc;
-  display: block;
-  width: 100%;
-  color: #2c3e50;
-  padding: 0.5rem 1.5rem;
-  border-radius: 3px;
-  font-size: 1rem;
-}
-
-.form-control label {
-  display: block;
-  margin: 0 0 0.3rem 0.3rem;
-  font-weight: 500;
-}
-
-.form-control input:active,
-.form-control input:focus {
-  transition: border 0.22s;
-  border: 2px solid #42b983;
-}
-
-.card {
-  padding: 1rem;
-  border-radius: 10px;
-  box-shadow: 2px 3px 10px rgba(0, 0, 0, 0.2);
-  background: #fff;
-}
-
-.card.center {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.list {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.list-item {
-  display: flex;
-  align-items: center;
-  flex-order-: space-between;
-  padding: 0.5rem 0;
-}
-
 .steps {
   position: relative;
 }
@@ -338,7 +385,19 @@ h3 {
   margin-bottom: 1rem;
   padding: 0;
   display: flex;
-  flex-order-: space-between;
+  justify-content: space-between;
+}
+
+.steps-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.steps-item span, .steps-item div {
+  margin: 0 auto;
+  text-align: center;
 }
 
 .steps-item span {

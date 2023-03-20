@@ -457,7 +457,7 @@
       <div class="field">
         {{ selectedFaq.content }}
       </div>
-      <div class="fieldmt-3">
+      <div class="field mt-3">
         <label for="forwardDep">{{ $t('faq.recipient') }}</label>
         <Dropdown id="forwardDep" v-model="selectedForwardDep" :options="forwardDepartmentList"
                   :optionLabel="$i18n.locale === 'kz' ? 'nameKz' : $i18n.locale === 'ru' ? 'nameRu' : 'nameEn'"

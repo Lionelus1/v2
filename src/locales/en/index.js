@@ -20,7 +20,7 @@ export default {
         councilName: 'Council name',
         contragents: 'Contragents',
         documents: 'Documents',
-        sertificates: 'Sertificates',
+        certificates: 'Certificates',
         administration: 'Administration',
         academicDegree: "Academic degree",
         academicTitle: "Academic title",
@@ -40,6 +40,11 @@ export default {
         },
         cabinet: 'Personal account',
         lt: "Less than",
+        letterSpacing: {
+            expanded: "Expanded",
+            condensed: "Condensed",
+            normal: "Normal",
+        },
         gt: "Greater than",
         equals: "Equals",
         login: "login",
@@ -145,6 +150,7 @@ export default {
         params: "Parameters",
         password: "Password",
         person: "Person",
+        individualEntrepreneur: "Persons",
         personal: "Staff",
         protocol: "Protocol",
         requiredField: "Required field",
@@ -163,6 +169,8 @@ export default {
         showingRecordsCount: "Showing {first} to {last} of {totalRecords} entries",
         votedFor: "Voted for: {result}",
         doYouWantDelete: "Are you sure to delete this item?",
+        pending: "Pending",
+        uploaded: "Uploaded",
         startDate: 'Start date',
         endDate: 'End date',
         send: "Send",
@@ -242,6 +250,9 @@ export default {
             fileError: "Failed to upload file. Maybe the file is corrupted",
             mailSendError: "Error sending email",
             ConsulAlwaysHasSameMember: "The named person is already a member of another council",
+            saveChangesWarning: "Would you like to save your changes?",
+            unsaveOutcome: "If changes are not saved, they will be lost.",
+            addPicture: "Add image"
         },
         language: {
             kz: "in kazakh",
@@ -277,7 +288,9 @@ export default {
         bgColor: "Background color",
         textColor: "Text color",
         link: "Link",
-        image: 'Image'
+        image: 'Image',
+        signers: "Signatory parties",
+        approvals: "Approving persons",
     },
     bank: {
         title: "Banks",
@@ -357,12 +370,16 @@ export default {
             number: "Number",
             text: "Text",
             student: "Student",
+            individualEntrepreneur: "Individual entrepreneur",
             place: "Place of contract",
             date: "Date of contract",
             addElement: "Adding a contract element",
             message: {
             }
         },
+        needsApproval: "The document created according to the template requires approval",
+        approvalUsers: "List of approvers",
+        approvalListPlaceholder: "Instance",
     },
     contracts : {
         title: "Contracts",
@@ -411,9 +428,11 @@ export default {
         modulname: "Module code and name:",
         eduprogram: "Education program code and name:",
         discipline: "Discipline code and name:",
+        logo: "logo"
     },
     ncasigner: {
         chooseFile: "Select  the file",
+        qrSinging: "You can also sign the document using the mobile application \"eGov mobile\" by scanning this QR code:",
         noteMark: "By continuing to use the Smart.ENU service, you consent to the collection, processing and storage of your personal data to the extent contained in the certificate (electronic digital signature) of the NCA for the purpose of displaying electronic signature data.",
         docIdNotExistMessageForFind: "In order to find the signed document page by file, the correct SIGNERAPP identifier must be present in the file name. Make sure that the correct SIGNERAPP ID is specified in your file name.",
         docIdNotExistMessageForSign: "In order to sign a previously signed document by file, the correct SIGNERAPP identifier must be present in the file name. Make sure that the correct SIGNERAPP ID is specified in your file name. Otherwise, specify the file name without the SIGNERAPP identifier to create a new signature chain.",
@@ -427,7 +446,9 @@ export default {
         IncorrectFileTitle: "A file with this name {dn} failed signature verification in the SIGNERAPP system",
         IncorrectFileContent: "This file has been modified or another file has been provided. Please check the file.",
         signed: "he/she signed this document",
+        approved: "he/she approved this document",
         signingexpected: "Signing is expected",
+        approvingExpected: "Approving is expected",
         certTemplate: "Certificate Template: ",
         IIN: "IIN",
         certType: "Signature type: ",
@@ -935,7 +956,7 @@ export default {
         resultIndicator: "Indicator of direct results",
         summary: "Summary/Confirmation",
         respExecutor: "Responsible performers",
-        halfYear: "semi-annual"
+        halfYear: "semi-annual",
     },
     queue: {
 
@@ -971,6 +992,9 @@ export default {
         title: "Educational-methodical complex of the discipline",
         forme: "Concerning me"
     },
+    postaccmonrep: {
+        title: "Post-accreditation monitoring reports",
+    },
     ref:{
         getRef:"Get reference"
     },
@@ -981,6 +1005,38 @@ export default {
         addGuide: 'Creating a guide',
         editGuide: 'Editing a guide',
         notGuide: 'There is no guide for this page yet!',
+    },
+    course: {
+        title: 'Online courses',
+        categories: 'Course categories',
+        courses: 'Сourses',
+        certificate: {
+            title: "Certificates",
+            template: 'Certificate templates',
+            element: 'Element',
+            elements: 'Elements',
+            designer: 'Template designer',
+            issue: "Issue a certificate",
+        },
+        users: 'Сourse participants',
+        user: 'Participant',
+        organizers: 'Course organizers',
+        lnum: 'last number',
+    },
+    roleControl:{
+        menuTitle: 'Role control',
+        giveRole: 'Give new role',
+        selectOrg: 'Select organization',
+        selectRole: 'Select role',
+        selectEmployee: 'Select employee',
+        employeeIIN: 'IIN',
+        employeeName: 'Employee name',
+        employeeLabel: 'Employee',
+        employeeNotFound: 'Employee with such IIN does not found',
+        roleName: 'Role name',
+        roleLabel: 'Role',
+        noResult: 'No records found',
+        cantDelete: 'Cant delete the record',
     },
     blog: {
         title: 'Blog',

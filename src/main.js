@@ -8,6 +8,7 @@ import AccordionTab from 'primevue/accordiontab';
 import Button from 'primevue/button';
 import Skeleton from "primevue/skeleton";
 import Breadcrumb from 'primevue/breadcrumb';
+import Badge from 'primevue/badge'
 import BlockUI from 'primevue/blockui';
 import VCalendar from 'v-calendar';
 import Calendar from 'primevue/calendar';
@@ -52,6 +53,7 @@ import PanelMenu from 'primevue/panelmenu';
 import Password from 'primevue/password';
 import PickList from 'primevue/picklist';
 import ProgressBar from 'primevue/progressbar';
+import ProgressSpinner from 'primevue/progressspinner';
 import Rating from 'primevue/rating';
 import RadioButton from 'primevue/radiobutton';
 import Ripple from 'primevue/ripple';
@@ -66,6 +68,7 @@ import TieredMenu from 'primevue/tieredmenu';
 import Timeline from 'primevue/timeline';
 import Textarea from 'primevue/textarea';
 import Toast from 'primevue/toast';
+import {useToast} from "primevue/usetoast";
 import ToastService from 'primevue/toastservice';
 import Toolbar from 'primevue/toolbar';
 import TabView from 'primevue/tabview';
@@ -117,6 +120,11 @@ import ScrollPanel from "primevue/scrollpanel";
 import WorkPlanEventResult from "./components/work_plan/WorkPlanEventResult";
 import TitleBlock from "./components/TitleBlock";
 
+Date.prototype.toJSON = function(){
+    const hoursDiff = this.getHours() - this.getTimezoneOffset() / 60;
+    this.setHours(hoursDiff);
+    return this.toISOString();
+};
 
 library.add(fas, far, fab)
 dom.watch();
@@ -127,8 +135,6 @@ router.beforeEach(function(to, from, next) {
 const app = createApp(App);
 const emitter = mitt();
 app.provide('emitter', emitter);
-
-interceptor(store);
 
 /* eslint-disable */
 app.use(PrimeVue, {
@@ -256,7 +262,6 @@ app.use(PrimeVue, {
 app.config.globalProperties.emitter = emitter;
 
 
-
 app.use(i18n);
 app.use(ToastService);
 app.use(router);
@@ -274,6 +279,7 @@ app.directive('ripple', Ripple);
 app.directive('code', CodeHighlight);
 
 app.component('Accordion', Accordion);
+app.component('Badge', Badge)
 app.component('Person', Person)
 app.component('Organization', Organization);
 app.component('FindUser', FindUser)
@@ -327,6 +333,7 @@ app.component('PanelMenu', PanelMenu);
 app.component('Password', Password);
 app.component('PickList', PickList);
 app.component('ProgressBar', ProgressBar);
+app.component('ProgressSpinner', ProgressSpinner);
 app.component('RadioButton', RadioButton);
 app.component('Rating', Rating);
 app.component('SelectButton', SelectButton);
@@ -357,4 +364,7 @@ app.component('Divider', Divider);
 app.component('WorkPlanEventResult', WorkPlanEventResult)
 app.component('TinyEditor', TinyEditor)
 app.component('TitleBlock', TitleBlock)
+
+interceptor(store,app);
+
 app.mount('#app');

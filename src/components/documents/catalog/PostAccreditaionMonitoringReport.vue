@@ -3,11 +3,11 @@
     <BlockUI :blocked="approving" :fullScreen="true"></BlockUI>
 
     <div>
-      <h4 class="ml-3">{{ $t("educomplex.title") }}</h4>
+      <h4 class="ml-3">{{ $t("postaccmonrep.title") }}</h4>
       <Toolbar class="m-0 p-1" style="position:relative;">
 
         <template #start>
-          <Button :disabled="selected===null || file.depType !=2" @click="resetFileInfo();openDialog('fileUpload')"
+          <Button v-if="findRole('accreditation_rating_sector_employee')"  :disabled="selected===null || file.depType !=2" @click="resetFileInfo();openDialog('fileUpload')"
                   class="p-button-info p-1 mr-2"><i
               class="fa-solid fa-file-circle-plus fa-xl"></i>&nbsp;{{ $t('common.add') }}
           </Button>
@@ -236,9 +236,9 @@
             :style="{width: '50vw'}" class="p-fluid">
       <ProgressBar v-if="approving" mode="indeterminate" style="height: .5em"/>
       <div class="field">
-        <ApprovalUsers :key="approveComponentKey" :approving="approving" v-model="selectedUsers"
+        <ApprovalUsers mode="standard" :key="approveComponentKey" :approving="approving" v-model="selectedUsers"
                        @closed="closeDialog('sendToApprove')"
-                       @approve="approve($event)" :stages="stages" :mode="'standard'"></ApprovalUsers>
+                       @approve="approve($event)" :stages="stages"></ApprovalUsers>
       </div>
     </Dialog>
     <Dialog :modal="true" v-bind:header="$t('common.revision')" v-model:visible="dialogOpenState.revision"
@@ -300,10 +300,11 @@ export default {
         rows: 10,
         parentID: null,
         ownerID: -1,
-        type: 2,
+        type: 10,
         showDocs: false,
         userFilter: true,
       },
+
 
       DocState: DocState,
       revisionComment: "",
@@ -340,27 +341,29 @@ export default {
         parentId: null,
         depType: 2,
         departmentID: null,
-        docType: 2,
+        docType: 10,
         lang: null,
         params: [
           {
             id: 1,
-            name: "modulname",
+            name: "logo",
+            uuid: "POSTACCMONREPORT",
             value: null,
-            description: "модуль атауы",
+            description: "img",
+            dialog: false,
           },
-          {
-            id: 2,
-            name: "eduprogram",
-            value: null,
-            description: "білім беру баағдарламасы атауы",
-          },
-          {
-            id: 3,
-            name: "discipline",
-            value: null,
-            description: "discipline",
-          },
+        //   {
+        //     id: 2,
+        //     name: "nameInRussian",
+        //     value: null,
+        //     description: "білім беру баағдарламасы атауы",
+        //   },
+        //   {
+        //     id: 3,
+        //     name: "nameInEngish",
+        //     value: null,
+        //     description: "discipline",
+        //   },
         ],
       },
       totalRecords: 10,
@@ -396,18 +399,18 @@ export default {
           value: "inapproval"
         },
         {
-          id: 3,
-          nameRu: "Согласован",
-          nameKz: "Келісілді",
-          nameEn: "Approved",
-          value: "approved"
-        },
-        {
           id: 4,
           nameRu: "На доработке",
           nameKz: "Түзетуде",
           nameEn: "Revision",
           value: "revision"
+        },
+        {
+          id: 7,
+          nameRu: "Подписан",
+          nameKz: "Қол қойылды",
+          nameEn: "Signed",
+          value: "signed"
         }
       ],
       numMatches: [
@@ -421,21 +424,21 @@ export default {
           stage: 1,
           users: [this.$store.state.loginedUser],
           certificate: {
-            namekz: "Жеке тұлғаның сертификаты",
-            nameru: "Сертификат физического лица",
-            nameen: "Certificate of an individual",
-            value: "individual"
+            namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+            nameru: "Для внутреннего документооборота (ГОСТ)",
+            nameen: "For internal document management (GOST)",
+            value: "internal"
           },
-          titleRu: "Преподаватель",
-          titleKz: "Оқытушы",
-          titleEn: "Teacher",
+          titleRu: "Рабочая группа",
+          titleKz: "Жұмыс тобы",
+          titleEn: "Working group",
         },
         {
           stage: 2,
           users: null,
-          titleRu: "Заведующий кафедры",
-          titleKz: "Кафедра меңгерушісі",
-          titleEn: "Head of Department",
+          titleRu: "Состав Рабочей группы",
+          titleKz: "Жұмыс тобының Құрамы",
+          titleEn: "Composition of the working group",
           certificate: {
             namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
             nameru: "Для внутреннего документооборота (ГОСТ)",
@@ -446,9 +449,9 @@ export default {
         {
           stage: 3,
           users: null,
-          titleRu: "Председатель УМК",
-          titleKz: "ОӘК төрағасы",
-          titleEn: "Chairman of the EMC",
+          titleRu: "Состав Руководящего комитета",
+          titleKz: "Басқарушы комитеттің Құрамы",
+          titleEn: "Composition of the Steering Committee",
           certificate: {
             namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
             nameru: "Для внутреннего документооборота (ГОСТ)",
@@ -456,19 +459,6 @@ export default {
             value: "internal"
           },
         },
-        {
-          stage: 4,
-          users: null,
-          titleRu: "Декан",
-          titleKz: "Декан",
-          titleEn: "Dean",
-          certificate: {
-            namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
-            nameru: "Для внутреннего документооборота (ГОСТ)",
-            nameen: "For internal document management (GOST)",
-            value: "internal"
-          },
-        }
       ],
       approveComponentKey: 0,
       isGlobalFilter: false,
@@ -478,6 +468,7 @@ export default {
     this.loginedUser = this.$store.state.loginedUser;
 
   },
+  
   mounted() {
     this.getFolders(null);
     window.addEventListener('resize', this.onResize);
@@ -486,6 +477,7 @@ export default {
     window.removeEventListener('resize', this.onResize);
   },
   methods: {
+    findRole: findRole,
     toggle(ref, event) {
       this.$refs[ref].toggle(event);
     },
@@ -500,10 +492,10 @@ export default {
     },
     signed(event) {
       this.file.isApproved = 1
-      this.file.stateID = 3
-      this.file.stateen = "approved"
-      this.file.stateru = "согласован"
-      this.file.statekz = "келісілді"
+      this.file.stateID = 7
+      this.file.stateen = "signed"
+      this.file.stateru = "подписан"
+      this.file.statekz = "қол қойылды"
     },
     approve(event) {
       this.approving = true;
@@ -542,7 +534,6 @@ export default {
       this.windowHeight = window.innerHeight - 270
     },
 
-    findRole: findRole,
     showMessage(msgtype, message, content) {
       this.$toast.add({severity: msgtype, summary: message, detail: content, life: 3000});
     },
@@ -625,25 +616,28 @@ export default {
         updatedDate: null,
         depType: 2,
         type: 2,
-        docType: 2,
+        docType: 10,
         departmentID: this.file.id,
         lang: null,
         params: [
           {
-            name: "modulname",
+            id: 1,
+            name: "logo",
+            uuid: "POSTACCMONREPORT",
             value: null,
-            description: "модуль атауы",
+            description: "img",
+            dialog: false
           },
-          {
-            name: "eduprogram",
-            value: null,
-            description: "білім беру баағдарламасы атауы",
-          },
-          {
-            name: "discipline",
-            value: null,
-            description: "discipline",
-          },
+          // {
+          //   name: "eduprogram",
+          //   value: null,
+          //   description: "білім беру баағдарламасы атауы",
+          // },
+          // {
+          //   name: "discipline",
+          //   value: null,
+          //   description: "discipline",
+          // },
         ],
 
       }
