@@ -5,6 +5,8 @@
 <script>
 import Editor from '@tinymce/tinymce-vue'
 import {uploadSingFile} from "../helpers/HelperUtil";
+import {FileService} from "@/service/file.service";
+import {fileRoute, smartEnuApi} from "@/config/config";
 
 export default {
   name: "TinyEditor",
@@ -43,6 +45,7 @@ export default {
             text: '<i class="fa-solid fa-file-arrow-up" style="font-size: 20px;"></i>',
             onAction: () => {
               // Open file upload form
+              this.uploadFile()
               //this.$refs.myEditor.click();
               //window.tinymce.activeEditor.execCommand('mceInsertContent', false, `<ul><li>Custom FIle YPLOAD</li><li>Custom FIle YPLOAD</li><li>Custom FIle YPLOAD</li></ul>`);
             }
@@ -58,26 +61,31 @@ export default {
     }
   },
   methods: {
-    uploadFile(cb, value, meta) {
+    uploadFile() {
+      const fd = new FormData();
       const input = document.createElement('input');
       input.setAttribute('type', 'file');
       //event listeners
       input.addEventListener('change', (e) => {
         const file = e.target.files[0];
-
-        const reader = new FileReader();
-        reader.addEventListener('load', () => {
-          //handle data processing with a blob
-          const id = 'blobid' + (new Date()).getTime();
-          const blobCache = window.tinymce.activeEditor.editorUpload.blobCache;
-          const base64 = reader.result.split(',')[1];
-          const blobInfo = blobCache.create(id, file, base64);
-          blobCache.add(blobInfo);
-          cb(blobInfo.blobUri(), { title: file.name });
+        fd.append("files", file)
+        new FileService().uploadFile(fd).then(res => {
+          let list = this.generateList(res.data);
+          console.log(list)
+          window.tinymce.activeEditor.execCommand('mceInsertContent', false, list);
+        }).catch(error => {
+          console.log(error)
         });
-        reader.readAsDataURL(file);
       });
       input.click();
+    },
+    generateList(list) {
+      let listHtml = '<ul>';
+      list.forEach(file => {
+        listHtml += `<li><a href="${smartEnuApi + fileRoute + file.filePath}">${file.filePath}</a></li>`;
+      });
+      listHtml += '</ul>';
+      return listHtml;
     }
   }
 }
