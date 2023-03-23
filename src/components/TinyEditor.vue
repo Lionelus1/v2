@@ -1,5 +1,5 @@
 <template>
-  <editor ref="myEditor" :id="'tiny'" :api-key="editorApi" v-model="content" :init="editorOptions"/>
+  <editor ref="myEditor" :api-key="editorApi" v-model="content" :init="editorOptions"/>
 </template>
 
 <script>
@@ -15,11 +15,16 @@ export default {
   },
   props: {
     value: null,
+    customFileUpload: {
+      type: Boolean,
+      default: false
+    },
     height: {
       type: Number,
       default: 500
     }
   },
+  emits: ['customUpload'],
   data() {
     return {
       content: this.value,
@@ -33,15 +38,14 @@ export default {
           'insertdatetime media table paste code help wordcount'
         ],
         toolbar:
-            'undo redo | fontselect fontsizeselect formatselect | formatselect | bold italic backcolor | \
-            alignleft aligncenter alignright alignjustify | \
-            bullist numlist outdent indent | removeformat | table | image media | code ',
+            `undo redo | fontselect fontsizeselect formatselect | formatselect | bold italic backcolor |
+            alignleft aligncenter alignright alignjustify | bullist numlist outdent indent |
+            removeformat | table | image media ${this.customFileUpload ? `fileupload` : ''} | code `,
         images_upload_handler: uploadSingFile,
         language: this.$i18n.locale === "en" ? "en_US" : this.$i18n.locale === "kz" ? "kk" : this.$i18n.locale,
         content_style: "body { font-size: 14px; }",
-        file_picker_callback: this.uploadFile,
         setup: editor => {
-          editor.ui.registry.addButton('customUpload', {
+          editor.ui.registry.addButton('fileupload', {
             text: '<i class="fa-solid fa-file-arrow-up" style="font-size: 20px;"></i>',
             onAction: () => {
               // Open file upload form
@@ -62,29 +66,20 @@ export default {
   },
   methods: {
     uploadFile() {
-      const fd = new FormData();
       const input = document.createElement('input');
       input.setAttribute('type', 'file');
       //event listeners
       input.addEventListener('change', (e) => {
         const file = e.target.files[0];
-        fd.append("files", file)
-        new FileService().uploadFile(fd).then(res => {
-          let list = this.generateList(res.data);
-          console.log(list)
-          window.tinymce.activeEditor.execCommand('mceInsertContent', false, list);
-        }).catch(error => {
-          console.log(error)
-        });
+        this.$emit('customUpload', file);
       });
       input.click();
     },
     generateList(list) {
-      let listHtml = '<ul>';
+      let listHtml = '';
       list.forEach(file => {
         listHtml += `<li><a href="${smartEnuApi + fileRoute + file.filePath}">${file.filePath}</a></li>`;
       });
-      listHtml += '</ul>';
       return listHtml;
     }
   }

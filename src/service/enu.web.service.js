@@ -6,7 +6,7 @@ export class EnuWebService {
 
     getAllMenus() {
         return api.get("/web/getMenus", {headers: getHeader()});
-        
+
     }
 
     addMenu(data){
@@ -25,6 +25,10 @@ export class EnuWebService {
         return api.get(`/web/getPage/${pageId}`, {headers: getHeader()});
     }
 
+    getPageFiles(pageId) {
+        return api.post(`/web/getPageFiles`, {page_id: pageId}, {headers: getHeader()});
+    }
+
     addPage(data){
         return api.post("/web/addPage", data, {headers: getHeader()})
     }
@@ -39,6 +43,10 @@ export class EnuWebService {
 
     deletePage(id) {
         return api.post(`/web/deleteMenuPage`, {id: id}, {headers: getHeader()});
+    }
+
+    deletePageFile(id) {
+        return api.post(`/web/deletePageFile`, {id: id}, {headers: getHeader()});
     }
 
     getBlockList(params) {

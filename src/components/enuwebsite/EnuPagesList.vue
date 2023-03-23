@@ -1,4 +1,5 @@
 <template>
+  <ConfirmPopup group="deleteResult"></ConfirmPopup>
   <div class="col-12">
     <h3>{{ $t("web.pageLink") }}</h3>
     <div class="card">
@@ -6,20 +7,20 @@
     </div>
 
     <div class="card">
-      <DataTable :value="pages" responsiveLayout="scroll" :lazy="true" dataKey="enu_page_id" :loading="loading" :rows="10" :rowHover="true"
+      <DataTable :value="pages" responsiveLayout="scroll" :lazy="true" dataKey="enu_page_id" :loading="loading"
+                 :rows="10" :rowHover="true"
                  :paginator="true" :totalRecords="total" @page="onPage" @sort="onSort">
         <template #header>
           <div class="text-right">
             <div class="p-input-icon-left">
               <i class="pi pi-search"/>
-              <InputText type="search" v-model="lazyParams.searchText" :placeholder="$t('common.search')"
-                         @search="getPages"/>
+              <InputText type="search" v-model="lazyParams.searchText" :placeholder="$t('common.search')" @search="getPages"/>
               <Button icon="pi pi-search" class="ml-1" @click="getPages"/>
             </div>
           </div>
         </template>
-        <template #empty>{{this.$t("common.recordsNotFound") }}</template>
-        <template #loading>{{this.$t("common.recordsLoading") }}</template>
+        <template #empty>{{ this.$t("common.recordsNotFound") }}</template>
+        <template #loading>{{ this.$t("common.recordsLoading") }}</template>
         <Column :field="'title_' + $i18n.locale" :header="$t('common.nameIn')" sortable>
           <template #body="{ data }">
             {{ $i18n.locale === 'kz' ? data.title_kz : $i18n.locale === 'ru' ? data.title_ru : data.title_en }}
@@ -56,17 +57,17 @@
     <div v-if="formData.is_landing">
       <div class="field">
         <label>{{ $t('common.nameInQazaq') }}</label>
-        <InputText type="text" v-model="formData.title_kz"  />
+        <InputText type="text" v-model="formData.title_kz"/>
         <small class="p-error" v-if="!formData.title_kz && submitted">{{ $t("common.requiredField") }}</small>
       </div>
       <div class="field">
-        <label>{{ $t('common.nameInRussian')}}</label>
-        <InputText type="text" v-model="formData.title_ru"  />
+        <label>{{ $t('common.nameInRussian') }}</label>
+        <InputText type="text" v-model="formData.title_ru"/>
         <small class="p-error" v-if="!formData.title_ru && submitted">{{ $t("common.requiredField") }}</small>
       </div>
       <div class="field">
         <label>{{ $t('common.nameInEnglish') }}</label>
-        <InputText type="text" v-model="formData.title_en"  />
+        <InputText type="text" v-model="formData.title_en"/>
         <small class="p-error" v-if="!formData.title_en && submitted">{{ $t("common.requiredField") }}</small>
       </div>
     </div>
@@ -80,9 +81,11 @@
         </div>
         <div class="field">
           <label for="kz-content">{{ $t("common.contentInQazaq") }}</label>
-<!--          <RichEditor id="content_kz" v-model="formData.content_kz" editorStyle="height: 320px"/>-->
-          <TinyEditor v-model="formData.content_kz"></TinyEditor>
-          <small v-show="!formData.content_kz && submitted" class="p-error">{{ $t("smartenu.contentKzInvalid") }}</small>
+          <!--          <RichEditor id="content_kz" v-model="formData.content_kz" editorStyle="height: 320px"/>-->
+          <TinyEditor v-model="formData.content_kz" height="400" :custom-file-upload="true" @customUpload="uploadFile"/>
+          <small v-show="!formData.content_kz && submitted" class="p-error">{{
+              $t("smartenu.contentKzInvalid")
+            }}</small>
         </div>
       </TabPanel>
       <TabPanel header="Русский">
@@ -93,9 +96,11 @@
         </div>
         <div class="field">
           <label for="kz-content">{{ $t("common.contentInRussian") }}</label>
-<!--          <RichEditor id="content_ru" v-model="formData.content_ru" editorStyle="height: 320px"/>-->
-          <TinyEditor v-model="formData.content_ru" />
-          <small v-show="!formData.content_ru && submitted" class="p-error">{{ $t("smartenu.contentKzInvalid") }}</small>
+          <!--          <RichEditor id="content_ru" v-model="formData.content_ru" editorStyle="height: 320px"/>-->
+          <TinyEditor v-model="formData.content_ru" height="400" :customFileUpload="true" @customUpload="uploadFile"/>
+          <small v-show="!formData.content_ru && submitted" class="p-error">{{
+              $t("smartenu.contentKzInvalid")
+            }}</small>
         </div>
       </TabPanel>
       <TabPanel header="English">
@@ -106,17 +111,41 @@
         </div>
         <div class="field">
           <label for="kz-content">{{ $t("common.contentInEnglish") }}</label>
-<!--          <RichEditor id="content_en" v-model="formData.content_en" editorStyle="height: 320px"/>-->
-          <TinyEditor v-model="formData.content_en" />
-          <small v-show="!formData.content_en && submitted" class="p-error">{{ $t("smartenu.contentKzInvalid") }}</small>
+          <!--          <RichEditor id="content_en" v-model="formData.content_en" editorStyle="height: 320px"/>-->
+          <TinyEditor v-model="formData.content_en" height="400" :custom-file-upload="true" @customUpload="uploadFile"/>
+          <small v-show="!formData.content_en && submitted" class="p-error">{{
+              $t("smartenu.contentKzInvalid")
+            }}</small>
         </div>
       </TabPanel>
     </TabView>
+    <div class="field" v-if="formData.file_list">
+      <label>{{ $t('workPlan.attachments') }}</label>
+      <div ref="content" class="p-fileupload-content">
+        <div class="p-fileupload-files">
+          <div class="p-fileupload-row" v-for="(file, index) of formData.file_list" :key="index">
+            <span class="mr-3" style="cursor: pointer;" @click="downloadFile(file)">
+              <i class="fa-solid fa-file-arrow-down text-green-500"></i>
+            </span>
+            <span @click="downloadFile(file)" style="cursor: pointer;">
+              {{ file.filename ? file.filename : file.filepath }}</span>
+            <span class="ml-2">
+              <Button icon="pi pi-copy" class="p-button-rounded p-button-text"
+                      v-clipboard:copy="copyToClipboard(file)" v-clipboard:success="onCopy" />
+            </span>
+            <span>
+              <Button icon="pi pi-times" class="p-button-rounded p-button-text"
+                      @click="deleteFileConfirm($event, file.id)"/>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
     <template #footer>
       <Button v-bind:label="$t('common.save')" icon="pi pi-check"
-          class="p-button p-component p-button-success mr-2" v-on:click="addButtonName"/>
+              class="p-button p-component p-button-success mr-2" v-on:click="addButtonName"/>
       <Button v-bind:label="$t('common.cancel')" icon="pi pi-times"
-          class="p-button p-component p-button-danger" @click="hideDialog"/>
+              class="p-button p-component p-button-danger" @click="hideDialog"/>
     </template>
   </Dialog>
 
@@ -128,6 +157,8 @@ import {EnuWebService} from "@/service/enu.web.service";
 import PageView from "@/components/enuwebsite/PageView.vue";
 import {formatDate} from "@/helpers/HelperUtil";
 import TinyEditor from "../TinyEditor";
+import {FileService} from "../../service/file.service";
+import {fileRoute, getHeader, smartEnuApi} from "../../config/config";
 
 export default {
   name: "EnuPagesList",
@@ -174,6 +205,8 @@ export default {
         sortOrder: 0
       },
       total: 0,
+      fileService: new FileService(),
+      fileList: []
     }
   },
   created() {
@@ -186,6 +219,26 @@ export default {
   },
   methods: {
     formatDate,
+    uploadFile(file) {
+      const fd = new FormData();
+      fd.append("files", file)
+      fd.append("page_id", this.formData.enu_page_id)
+      this.fileService.uploadFile(fd).then(res => {
+        let item = {filename: file.name, filepath: res.data[0].filePath};
+        let list = this.generateList(item);
+        this.fileList.push(item);
+        window.tinymce.activeEditor.execCommand('mceInsertContent', false, list);
+        this.getPageFiles()
+      }).catch(error => {
+        this.$toast.add({severity: "error", summary: error, life: 3000});
+      });
+    },
+    generateList(file) {
+      return `<li><a href="${smartEnuApi + fileRoute + file.filepath}">${file.filename}</a></li>`;
+    },
+    copyToClipboard(file) {
+      return smartEnuApi + fileRoute + file.filepath;
+    },
     getPages() {
       this.loading = true;
       this.enuService.getAllPages(this.lazyParams).then(res => {
@@ -198,6 +251,15 @@ export default {
         this.loading = false;
         this.$toast.add({severity: "error", summary: error, life: 3000});
       });
+    },
+    getPageFiles() {
+      this.enuService.getPageFiles(this.formData.enu_page_id).then(res => {
+        if (res.data)
+          this.formData.file_list = res.data;
+      }).catch(error => {
+        this.$toast.add({severity: "error", summary: error, life: 3000});
+      })
+
     },
     onPage(event) {
       this.lazyParams.page = event.page
@@ -238,12 +300,15 @@ export default {
     },
     addPage() {
       this.submitted = true;
-      if (this.validatePage().length > 0) {
-        return;
+      if (!this.validatePage()) return;
+
+      if (this.fileList) {
+        this.formData.files = this.fileList
       }
       this.enuService.addPage(this.formData).then(res => {
         if (res.data !== null) {
           this.$toast.add({severity: "success", summary: this.$t("web.createdPageSuccessMsg"), life: 3000});
+          this.fileList = [];
         }
       }).catch(error => {
         this.$toast.add({severity: "error", summary: error, life: 3000});
@@ -251,26 +316,26 @@ export default {
       this.display = false;
     },
     validatePage() {
-      this.formValid = [];
+      let errors = [];
       if (!this.formData.title_kz) {
-        this.formValid.push({title_kz: true});
+        errors.push({title_kz: true});
       }
       if (!this.formData.title_ru) {
-        this.formValid.push({title_ru: true});
+        errors.push({title_ru: true});
       }
       if (!this.formData.title_en) {
-        this.formValid.push({title_en: true});
+        errors.push({title_en: true});
       }
       if (!this.formData.is_landing && !this.formData.content_kz) {
-        this.formValid.push({content_kz: true});
+        errors.push({content_kz: true});
       }
       if (!this.formData.is_landing && !this.formData.content_ru) {
-        this.formValid.push({content_ru: true});
+        errors.push({content_ru: true});
       }
       if (!this.formData.is_landing && !this.formData.content_en) {
-        this.formValid.push({content_en: true});
+        errors.push({content_en: true});
       }
-      return this.formValid;
+      return errors.length === 0;
     },
     onDeletePage(id) {
       this.enuService.deletePage(id).then(res => {
@@ -302,14 +367,73 @@ export default {
       this.formData = data;
     },
     onSavePage() {
+      if (!this.validatePage()) return;
+
+      if (this.fileList) {
+        this.formData.files = this.fileList
+      }
+
       this.enuService.editPage(this.formData).then(res => {
         if (res.data !== null) {
           this.$toast.add({severity: "success", summary: this.$t("web.createdPageSuccessMsg"), life: 3000});
         }
+        this.getPageFiles();
       }).catch(error => {
         this.$toast.add({severity: "error", summary: error, life: 3000});
       });
       this.display = false;
+    },
+    downloadFile(file) {
+      let url = `${smartEnuApi}/serve?path=${file.filepath}`
+      fetch(url, {
+        method: 'GET',
+        headers: getHeader()
+      }).then(response => response.blob()).then(blob => {
+        let url = window.URL.createObjectURL(blob);
+        let a = document.createElement('a');
+        a.href = url;
+        a.download = file.filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+      });
+    },
+    deleteFileConfirm(event, id) {
+      this.$confirm.require({
+        target: event.currentTarget,
+        message: this.$t('common.confirmation'),
+        header: this.$t('common.confirm'),
+        group: 'deleteResult',
+        icon: 'pi pi-info-circle',
+        acceptClass: 'p-button-rounded p-button-success',
+        rejectClass: 'p-button-rounded p-button-danger',
+        accept: () => {
+          this.deleteFile(id);
+        }
+      });
+    },
+    deleteFile(id) {
+      this.enuService.deletePageFile(id).then(res => {
+        if (res.data.is_success) {
+          this.getPageFiles();
+          this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
+        }
+      }).catch((error) => {
+        this.$toast.add({severity: "error", summary: error, life: 3000});
+      });
+    },
+    onCopy() {
+      this.$toast.add({severity: 'success', summary: this.$t('ncasigner.successCopy'), life: 3000});
     }
   }
 }
@@ -328,6 +452,11 @@ export default {
 
 ::v-deep(.ck-editor__editable) {
   height: 320px;
+}
+
+.p-fileupload-row {
+  display: flex;
+  align-items: center;
 }
 
 </style>

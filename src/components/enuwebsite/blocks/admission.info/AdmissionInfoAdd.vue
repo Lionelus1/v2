@@ -16,7 +16,7 @@
         <div class="field mt-3">
           <label>{{ $t('web.shortInfo') }}</label>
 <!--          <RichEditor v-model="formData.short_info_kz" editorStyle="height: 100px"/>-->
-          <TinyEditor v-model:model-value="formData.short_info_kz" height="200" />
+          <TinyEditor v-model="formData.short_info_kz" height="200" />
           <small v-show="!formData.short_info_kz && submitted" class="p-error">{{ $t("smartenu.titleKzInvalid") }}</small>
         </div>
         <div class="field">

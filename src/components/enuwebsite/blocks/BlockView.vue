@@ -12,7 +12,7 @@
           <div class="field">
             <label>{{ $t("common.contentInQazaq") }}</label>
 <!--            <RichEditor ref="kztext" v-model="content.content_kz" editorStyle="height: 320px"></RichEditor>-->
-            <TinyEditor v-if="content.content_kz" v-model="content.content_kz" />
+            <TinyEditor v-model="content.content_kz" />
             <small v-show="!content.content_kz && submitted" class="p-error">
               {{ $t("smartenu.contentKzInvalid") }}
             </small>
@@ -29,7 +29,7 @@
           <div class="field">
             <label for="ru-content">{{ $t("common.contentInRussian") }}</label>
 <!--            <RichEditor id="ru-content" v-model="content.content_ru" editorStyle="height: 320px"/>-->
-            <TinyEditor v-if="content.content_ru" v-model="content.content_ru" />
+            <TinyEditor v-model="content.content_ru" />
             <small v-show="!content.content_ru && submitted" class="p-error">
               {{ $t("smartenu.contentRuInvalid") }}
             </small>
@@ -46,7 +46,7 @@
           <div class="field">
             <label>{{ $t("common.contentInEnglish") }}</label>
 <!--            <RichEditor v-model="content.content_en" editorStyle="height: 320px"/>-->
-            <TinyEditor v-if="content.content_en" v-model="content.content_en" />
+            <TinyEditor v-model="content.content_en" />
             <small v-show="!content.content_en && submitted" class="p-error">
               {{ $t("smartenu.contentEnInvalid") }}
             </small>
@@ -68,6 +68,8 @@ import {useToast} from "primevue/usetoast";
 import {useI18n} from "vue-i18n";
 import TitleBlock from "@/components/TitleBlock.vue";
 import TinyEditor from "../../TinyEditor";
+import {FileService} from "../../../service/file.service";
+import {fileRoute, smartEnuApi} from "../../../config/config";
 
 export default {
   name: "BlockView",
@@ -75,6 +77,7 @@ export default {
   setup() {
     const loading = ref(false), submitted = ref(false)
     const enuService = new EnuWebService()
+    const fileService = new FileService()
     const toast = useToast()
     const i18n = useI18n()
     let block = ref({})
