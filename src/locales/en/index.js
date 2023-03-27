@@ -933,7 +933,7 @@ export default {
         forme: "Concerning me"
     },
     postaccmonrep: {
-        title: "Post-accreditation monitoring reports",
+        title: "Self-assessment/post-accreditation monitoring report",
     },
     ref:{
         getRef:"Get reference"
