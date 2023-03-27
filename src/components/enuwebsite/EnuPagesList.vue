@@ -227,8 +227,8 @@ export default {
         let item = {filename: file.name, filepath: res.data[0].filePath};
         let list = this.generateList(item);
         this.fileList.push(item);
+        this.formData.file_list.push(item);
         window.tinymce.activeEditor.execCommand('mceInsertContent', false, list);
-        this.getPageFiles()
       }).catch(error => {
         this.$toast.add({severity: "error", summary: error, life: 3000});
       });

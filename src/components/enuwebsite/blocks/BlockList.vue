@@ -197,6 +197,7 @@ export default {
 
     const openDialog = () => {
       isCreateModal.value = true;
+      formData.value = {};
     }
 
     const hideDialog = () => {

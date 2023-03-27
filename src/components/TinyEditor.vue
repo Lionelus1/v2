@@ -48,9 +48,7 @@ export default {
           editor.ui.registry.addButton('fileupload', {
             text: '<i class="fa-solid fa-file-arrow-up" style="font-size: 20px;"></i>',
             onAction: () => {
-              // Open file upload form
-              this.uploadFile()
-              //this.$refs.myEditor.click();
+              this.uploadFile();
               //window.tinymce.activeEditor.execCommand('mceInsertContent', false, `<ul><li>Custom FIle YPLOAD</li><li>Custom FIle YPLOAD</li><li>Custom FIle YPLOAD</li></ul>`);
             }
           });
@@ -68,7 +66,6 @@ export default {
     uploadFile() {
       const input = document.createElement('input');
       input.setAttribute('type', 'file');
-      //event listeners
       input.addEventListener('change', (e) => {
         const file = e.target.files[0];
         this.$emit('customUpload', file);
