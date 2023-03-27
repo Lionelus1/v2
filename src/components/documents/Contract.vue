@@ -1,5 +1,9 @@
 <template>
-  <div class="ontent-section">
+  <div>
+    <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em" />
+    <BlockUI :blocked="loading" :fullScreen="true"></BlockUI>
+  </div>
+  <div v-if="haveAccess" class="content-section">
     <div @click="$router.back()" class="inline-block">
       <i class="fa-solid fa-arrow-left ml-2" style="font-size: 16px;cursor: pointer"></i>
     </div>
@@ -9,11 +13,8 @@
       :key="active"
       style="height: 36px; margin-top: -7px; margin-left: -14px"
     ></Menubar>
-    <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em" />
-    <BlockUI :blocked="loading" :fullScreen="true"></BlockUI>
     <TabView @TabChange="tabChanged" v-model:activeIndex="activeTab">
-      <TabPanel :header="$t('common.params')">
-
+      <TabPanel v-if="!this.contract || this.contract.sourceType !== Enum.DocSourceType.FilledDoc" :header="$t('common.params')">
         <div class="grid">
           <div class="lg:col-8 md:col-12 p-sm-12">
             <p v-if="contract">{{ $t("common.state") + ": " }}
@@ -104,13 +105,59 @@
           </div>
         </div>
       </TabPanel>
+      <TabPanel v-else :header="$t('common.params')">
+        <Button :label="$t('doctemplate.approvalUsers')" @click="openForm('approvalUsers')" 
+          style="margin-bottom: 1.5rem"/>
+        <SelectButton v-model="selectedDocParams" :options="docParamsType"
+          :unselectable='false' style="margin-bottom: 0.75rem">
+          <template #option="slotProps">
+            <div v-if="slotProps.option === 0">{{$t('common.organization')}}</div>
+            <div v-else>{{$t('common.individualEntrepreneur')}}</div>
+          </template>
+        </SelectButton>
+        <div class="grid">
+          <div class="lg:col-8 md:col-12 p-sm-12">
+            <div class="p-fluid" v-if="this.contract && this.filledDocParams.length === 2">
+              <div v-if="this.selectedDocParams === 0">
+                <div v-for="param in this.filledDocParams[0]"
+                  :key="param.id"
+                  class="fieldgrid">
+                  <label v-if="param.name == 'contragent' || param.name == 'ourside' || param.name == 'individualEntrepreneur'"
+                    :for="param.name + param.id"
+                    class="col-12 mb-12 md:col-12 mb-md-0 uppercase">
+                    {{ $t("doctemplate.editor." + param.name) }}
+                  </label>
+                  <div v-if="param.name == 'contragent' || param.name == 'ourside' || param.name == 'individualEntrepreneur'"
+                    class="col-12 md:col-12">
+                    <ContragentSelect @updated="filledDocParamsUpdated" v-model="param.value"></ContragentSelect>
+                  </div>
+                </div>
+              </div>
+              <div v-else>
+                <div v-for="param in this.filledDocParams[1]"
+                  :key="param.id"
+                  class="fieldgrid">
+                  <label v-if="param.name == 'contragent' || param.name == 'ourside' || param.name == 'individualEntrepreneur'"
+                    :for="param.name + param.id"
+                    class="col-12 mb-12 md:col-12 mb-md-0 uppercase">
+                    {{ $t("doctemplate.editor." + param.name) }}
+                  </label>
+                  <div v-if="param.name == 'contragent' || param.name == 'ourside' || param.name == 'individualEntrepreneur'"
+                    class="col-12 md:col-12">
+                    <ContragentSelect @updated="filledDocParamsUpdated" v-model="param.value"></ContragentSelect>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </TabPanel>
       <TabPanel :header="$t('common.show')">
         <div class="card">
           <embed :src="pdf+'#toolbar=0&navpanes=0&scrollbar=0'" style="width: 100%; height: 1000px" v-if="pdf" type="application/pdf" />
         </div>
       </TabPanel>
     </TabView>
-
     <Dialog
       :header="$t('common.registration')"
       modal="true"
@@ -161,13 +208,19 @@
       </div>
 
       <template #footer>
-        <Button
-			:disabled= "(this.contract.number && this.contract.number !== '')"
+        <Button :disabled= "(this.contract.number && this.contract.number !== '')"
           	:label="$t('common.registration')"
-          	@click="registrateContract()"
-        />
+          	@click="registrateContract()" />
         <Button :label="$t('common.cancel')" @click="closeForm('setNumber')" />
       </template>
+    </Dialog>
+    <!-- Список согласующих лиц -->
+    <Dialog :header="$t('doctemplate.approvalUsers')" v-model:visible="dialog.approvalUsers"
+            :style="{width: '50vw'}" class="p-fluid" @hide="dialogHidden()">
+      <div class="field">
+        <ApprovalUsers :mode="'doc_template'" v-model="this.approvalStagesDialog" :readonly="this.contract.docHistory.stateId > this.Enum.CREATED.ID"
+                      @closed="closeForm('approvalUsers')" @save="saveApprovalUser($event)"></ApprovalUsers>
+      </div>
     </Dialog>
     <Sidebar
       v-model:visible="signerInfo"
@@ -178,17 +231,15 @@
      <DocSignaturesInfo :docIdParam="contract.uuid"></DocSignaturesInfo>
     </Sidebar>
   </div>
+  <div v-else class="content-section">
+    <div @click="$router.back()" class="inline-block">
+      <i class="fa-solid fa-arrow-left ml-2" style="font-size: 16px;cursor: pointer"></i>
+    </div>
+    <Access mode="short" returnLink="/documents/journal"></Access>
+  </div>
 </template>
 <script>
-import { smartEnuApi, getHeader, b64toBlob, findRole } from "@/config/config";
 import axios from "axios";
-
-
-import ContragentSelect from "../contragent/ContragentSelect.vue";
-import moment from 'moment'
-import DocSignaturesInfo from "@/components/DocSignaturesInfo"
-
-import Enum from "@/enum/docstates/index";
 import {
   incline,
   inclineFirstname,
@@ -196,9 +247,18 @@ import {
   inclineMiddlename,
 } from "lvovich";
 import { constantizeGenderInRules } from "lvovich/lib/inclineRules";
+
+import { smartEnuApi, getHeader, b64toBlob, findRole } from "@/config/config";
+import Enum from "@/enum/docstates/index";
+
+import ContragentSelect from "@/components/contragent/ContragentSelect.vue";
+import DocSignaturesInfo from "@/components/DocSignaturesInfo";
+import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers";
+import Access from "@/pages/Access.vue";
+
 export default {
   name: "Contract",
-  components: {  ContragentSelect, DocSignaturesInfo },
+  components: {  ContragentSelect, DocSignaturesInfo, Access, ApprovalUsers },
   data() {
     return {
       contract: null,
@@ -208,18 +268,13 @@ export default {
       users:[],
       pdf: null,
       activeTab: 0,
-      readonly: true,
-      ContragentType: Enum.ContragentType,
+      Enum: Enum,
       tabs: {
         Parameters: 0,
         Preview: 1,
       },
       corrected: false,
       temp: false,
-      sourceType: {
-        template: 0,
-        uploadedDoc: 1,
-      },
       signerInfo : false,
 	    reserveNumber: null,
       range: {
@@ -227,17 +282,21 @@ export default {
         end: new Date(2020, 0, 5),
       },
       loading: false,
+      haveAccess: true,
       language: {
         kz: 0,
         ru: 1,
         en: 2,
       },
       approvalStages: null,
+      approvalStagesDialog: null,
+      filledDocParams: [],
+      ourside: null,
       menu: [
         {
           label: this.$t("common.save"),
           icon: "pi pi-fw pi-save",
-          disabled: !this.corrected ,
+          disabled: () => !this.corrected ,
           command: () => {
             this.saveContract();
           },
@@ -245,7 +304,6 @@ export default {
         {
           label: this.$t("common.download"),
           icon: "pi pi-fw pi-download",
-          disabled: this.readonly,
           command: () => {
             this.downloadContract(true);
           },
@@ -253,10 +311,8 @@ export default {
         {
           label: this.$t("common.registration"),
           icon: "pi pi-fw pi-paperclip",
-          disabled: this.readonly,
-
+          disabled: () => this.contract && this.contract.sourceType === this.Enum.DocSourceType.FilledDoc,
           items: [
-          
             {
               label: this.$t("contracts.setnumber"),
               icon: "pi pi-fw pi-list",
@@ -285,9 +341,9 @@ export default {
               label: this.$t("common.toapprove"),
               icon: "fa-regular fa-handshake",
               visible: () => 
-                this.contract && (this.contract.needApproval &&
+                this.contract && ((this.contract.needApproval || 
+                this.contract.sourceType === Enum.DocSourceType.FilledDoc) &&
                 this.contract.docHistory.stateId < Enum.APPROVED.ID) &&
-                this.contract.sourceType === this.sourceType.template && 
                 !this.findRole(null, 'student'),
               command: () => {
                 this.sendToApprove(2)
@@ -297,9 +353,9 @@ export default {
               label: this.$t("common.tosign"),
               icon: "pi pi-user-edit",
               visible: () => 
-                this.contract && (!this.contract.needApproval ||
-                this.contract.docHistory.stateEn == Enum.APPROVED.Value) &&
-                this.contract.sourceType === this.sourceType.template &&
+                this.contract && ((!this.contract.needApproval && 
+                this.contract.sourceType === Enum.DocSourceType.Template) || 
+                (this.contract.docHistory.stateId === Enum.APPROVED.ID)) &&
                 !this.findRole(null, 'student'),
               command: ()=> {
                 this.sendToSign()
@@ -307,20 +363,23 @@ export default {
             },
           ],
         },
-         {
+        {
           label: this.$t('common.approvalList'),
           icon: "pi pi-user-edit",
           command: () => {
             this.signerInfo = true
-          }
+        }
         },
       ],
       dialog: {
         setNumber: false,
+        approvalUsers: false,
       },
+
+      selectedDocParams: 0,
+      docParamsType: [0, 1],
     };
   },
-  
   computed: {
     previewText() {
       if (!this.contract) return "";
@@ -344,13 +403,11 @@ export default {
   methods: {
     findRole: findRole,
     showMessage(msgtype,message,content) {
-        this.$toast.add({severity:msgtype, summary: message, detail:content, life: 3000});
-      },
-    moment: moment,
+      this.$toast.add({severity:msgtype, summary: message, detail:content, life: 3000});
+    },
     correct() {
-      if (this.contract.docHistory.stateId == 1 || !this.findRole(null, "student")) {
+      if (this.contract.docHistory.stateId === this.Enum.CREATED.ID || !this.findRole(null, "student")) {
         this.corrected = true
-        this.menu[0].disabled = false
       }
     },
     openForm(formName) {
@@ -493,28 +550,58 @@ export default {
         result = false
         return result
       }
+
       if (this.contract.params != null)
-      this.contract.params.forEach((param)=> {
-        if ((param.value == null || param.value == "null" || param.value == "") && ((param.name !== "number") && (param.name !=="date"))) {
+        this.contract.params.forEach((param)=> {
+          if ((param.value == null || param.value == "null" || param.value == "") && ((param.name !== "number") && (param.name !=="date"))) {
+            result = false
+            return result
+          }
+          if ((param.name == "contragent" || param.name == "ourside") && (param.value.signer == null) ) {
+            result = false
+            return result
+          }
+          if (param.name == "individualEntrepreneur" && param.value == null) {
+            result = false
+            return result
+          }
+        });
+
+      if (this.contract.sourceType === this.Enum.DocSourceType.FilledDoc) {
+        if (!this.approvalStages || this.approvalStages.length < 1) {
           result = false
           return result
         }
-        if ((param.name == "contragent" || param.name == "ourside") && (param.value.signer == null) ) {
+
+        let filled = true;
+        this.approvalStages.forEach(au => {
+          if (au.users === null || au.users.length < 1 || au.certificate === null) {
+            filled = false;
+            return;
+          }
+        })
+
+        if (!filled) {
           result = false
           return result
         }
-        if (param.name == "individualEntrepreneur" && param.value == null) {
-          result = false
-          return result
-        }
-      });
+
+        this.filledDocParams[this.selectedDocParams].forEach((param)=> {
+          if (param.value == null || param.value == "null" || param.value == "") {
+            result = false
+            return result
+          }
+          if ((param.name == "contragent" || param.name == "ourside") && (param.value.signer == null) ) {
+            result = false
+            return result
+          }
+        });
+      }
+
       return result
     },
     closeForm(formName) {
       this.dialog[formName] = false;
-    },
-    sm(message) {
-      alert(JSON.stringify(message));
     },
     tabChanged() {
       if (this.activeTab === this.tabs.Preview) {
@@ -529,11 +616,10 @@ export default {
       axios
         .post(smartEnuApi + url, req, { headers: getHeader() })
         .then((res) => {
-          this.loading = false
           this.contract = res.data;
           this.contract.params.forEach((param) => {
             if (param.name == "period") {
-              param.value  = param.value .map(d => new Date(d));
+              param.value  = param.value.map(d => new Date(d));
             }
             if (param.name == "student" && (param.value.userID == 0 || param.value.userID == null)) {
               if (this.findRole(null, 'student')) {
@@ -541,29 +627,36 @@ export default {
               }
             }
           });
+
 		      this.reserveNumber = this.contract.number
-          if (this.contract.docHistory.stateId >= 6) {
-            if (this.contract.docHistory.stateId >=2) {
-              this.menu[3].items[0].disabled = true
+          if (this.contract.docHistory.stateId >= this.Enum.INAPPROVAL.ID) {
+            if (this.contract.docHistory.stateId >= this.Enum.SIGNING.ID) {
+              this.menu[3].items[2].disabled = true
             }
-            this.menu[3].items[2].disabled = true
+            this.menu[3].items[0].disabled = true
           } 
-          if (this.contract.sourceType == 0) {
+
+          if (this.contract.sourceType == this.Enum.DocSourceType.Template) {
             this.contract.text =
               this.contract.lang == this.language.kz
                 ? this.contract.template.mainTextKaz
                 : this.contract.template.mainTextRus;
           }
           this.initApprovalStages();
+          this.initOurside();
+          this.loading = false;
         }).catch((error) => {
+          console.log(error)
           this.loading = false
           if (error.response && error.response.status == 401) {
             this.$store.dispatch("logLout");
+          } else if (error.response && error.response.status == 405) {
+            this.haveAccess = false;
           }
         });
     },
     initApprovalStages() {
-      if (!this.contract.needApproval) {
+      if (!this.contract.needApproval && this.contract.sourceType !== this.Enum.DocSourceType.FilledDoc) {
         return
       }
       
@@ -574,16 +667,27 @@ export default {
       }).then(response => {
         if (response.status === 200) {
           this.approvalStages = response.data
-          
+
           if (this.approvalStages) {
+            this.approvalStagesDialog = [...this.approvalStages]
+          }
+          
+          if (this.approvalStages && this.contract.sourceType === this.Enum.DocSourceType.Template ||
+          this.contract.sourceType === this.Enum.DocSourceType.FilledDoc && this.contract.docHistory.stateId === this.Enum.INAPPROVAL.ID) {
             this.menu[3].items[1].disabled = true
           }
+        } else if (this.approvalStages == null && this.contract.sourceType === this.Enum.DocSourceType.FilledDoc) {
+          this.initDefaultApprovalInfo();
         }
       }).catch((error) => {
         if (error.response && error.response.status == 401) {
           this.$store.dispatch("logLout");
         } else {
           console.log(error)
+        }
+
+        if (this.approvalStages == null && this.contract.sourceType === this.Enum.DocSourceType.FilledDoc) {
+          this.initDefaultApprovalInfo();
         }
       });
     },
@@ -618,7 +722,7 @@ export default {
         return "";
       }
       switch (agent.type) {
-        case Enum.ContragentType.Organization:
+        case this.Enum.ContragentType.Organization:
           var orgName =
             lang != this.language.ru
               ? '"' + agent.data.name + '" ' + agent.data.form.shortname
@@ -637,7 +741,7 @@ export default {
             orgName += " тұлғасында";
           }
           return orgName;
-        case Enum.ContragentType.Person:
+        case this.Enum.ContragentType.Person:
           return (
             this.value.data.lname +
             " " +
@@ -645,7 +749,7 @@ export default {
             " " +
             (agent.data.sname ?? "")
           );
-        case Enum.ContragentType.Bank:
+        case this.Enum.ContragentType.Bank:
           return lang != this.language.ru
             ? '"' +
                 agent.data.organization.name +
@@ -673,11 +777,17 @@ export default {
       if (!this.contract) return;
       let url = "/agreement/updatedocparams";
       var req = this.contract;
+      req.params = this.filledDocParams[this.selectedDocParams]
       axios
         .post(smartEnuApi + url, req, { headers: getHeader() })
         .then((res) => {
           this.corrected = false
-          this.menu[0].disabled = true
+          this.contract.params = res.data.params
+
+          if (this.contract.sourceType === this.Enum.DocSourceType.Template) {
+            this.pdf = null
+          }
+
           this.$toast.add({
             severity: "success",
             summary: this.$t("common.save"),
@@ -701,33 +811,50 @@ export default {
       
     },
     downloadContract(saveFile) {
-      if (!this.contract) return;
+      if (!this.contract)
+        return;
+
+      if (this.pdf) {
+        if (saveFile) {
+          var link = document.createElement("a");
+          link.innerHTML = "Download PDF file";
+          link.download = this.contract.id + ".pdf";
+          link.href =  this.pdf;
+          link.click();
+        }
+          
+        return;
+      }
+
       let url = "/agreement/getpdf";
-      var req = { id: this.contract.id };
-      req.lang = "kaz";
+      var req = { 
+        id: this.contract.id, 
+        lang: "kaz",
+      };
+      
       if (this.contract.lang != 0) {
         req.lang = "rus";
       }
+
       this.loading = true
-      axios
-        .post(smartEnuApi + url, req, { headers: getHeader() })
-        .then((response) => {
-          this.loading = false
-          this.pdf = b64toBlob(response.data);
-          if (saveFile) {
-            var link = document.createElement("a");
-            link.innerHTML = "Download PDF file";
-            link.download = this.contract.id + ".pdf";
-            link.href =  this.pdf;
-            link.click();
-          }
-        })
-        .catch((error) => {
-          this.loading = false
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          }
-        });
+      axios.post(smartEnuApi + url, req, { 
+        headers: getHeader() 
+      }).then((response) => {
+        this.loading = false
+        this.pdf = b64toBlob(response.data);
+        if (saveFile) {
+          var link = document.createElement("a");
+          link.innerHTML = "Download PDF file";
+          link.download = this.contract.id + ".pdf";
+          link.href =  this.pdf;
+          link.click();
+        }
+      }).catch((error) => {
+        this.loading = false
+        if (error.response.status == 401) {
+          this.$store.dispatch("logLout");
+        }
+      });
     },
     registrateContract(next = false) {
       if (!this.contract) return;
@@ -742,7 +869,7 @@ export default {
         .post(smartEnuApi + url, req, { headers: getHeader() })
         .then((res) => {
           this.loading = false
-		  this.reserveNumber = res.data;
+		      this.reserveNumber = res.data;
           if (!next) {
             this.contract.number = res.data;
 
@@ -752,6 +879,8 @@ export default {
               detail: this.$t("common.message.succesRegistered"),
               life: 3000,
             });
+
+            this.pdf = null
           }
         })
         .catch((error) => {
@@ -761,6 +890,135 @@ export default {
             this.$store.dispatch("logout");
           }
         });
+    },
+    initDefaultApprovalInfo() {
+      axios.post(smartEnuApi + "/approvalList/getDefault", {
+        type: this.Enum.DefaultApprovalListType.ReadyAgreement,
+      }, {
+        headers: getHeader(),
+      }).then(response => {
+        this.approvalStages = response.data
+
+        if (this.approvalStages) {
+          this.approvalStagesDialog = [...this.approvalStages]
+        }
+      }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+      })
+    },
+    initOurside() {
+      axios.post(smartEnuApi + '/contragent/get', {
+        bin: '010140003594',
+        agenttype: this.Enum.ContragentType.Organization,
+      }, {
+        headers: getHeader()
+      }).then(res => {
+        if (res.status === 200) {
+          this.ourside = res.data.data
+        }
+
+        this.initFilledDocParams();
+      }).catch(error => {
+        if (error.response.status == 401) {
+          this.$store.dispatch("logLout");
+        }
+
+        this.initFilledDocParams();
+      })
+    },
+    initFilledDocParams() {
+      if (this.contract.params && this.contract.params.length > 0) {       
+        this.contract.params.forEach(e => {
+          if (e.name === 'contragent') {
+            this.selectedDocParams = 0
+            this.filledDocParams[this.selectedDocParams] = [...this.contract.params]
+          } else if (e.name === 'individualEntrepreneur') {
+            this.selectedDocParams = 1
+            this.filledDocParams[this.selectedDocParams] = [...this.contract.params]
+          }
+        })
+        return
+      }
+
+      this.filledDocParams[0] = [
+        {
+          id: null,
+          docID: this.contract.id,
+          name: 'ourside',
+          value: this.ourside,
+        },
+        {
+          id: null,
+          docID: this.contract.id,
+          name: 'contragent',
+          value: {},
+        }
+      ]
+      this.filledDocParams[1] = [
+        {
+          id: null,
+          docID: this.contract.id,
+          name: 'ourside',
+          value: this.ourside,
+        },
+        {
+          id: null,
+          docID: this.contract.id,
+          name: 'individualEntrepreneur',
+          value: {
+            type: 4,
+          },
+        }
+      ]
+      this.corrected = true
+    },
+    dialogHidden() {
+      this.approvalStagesDialog = [...this.approvalStages]
+    },
+    saveApprovalUser(event) {
+      this.loading = true
+      
+      axios.post(smartEnuApi + '/agreement/updateApprovalStages', {
+        docId: this.contract.id,
+        approvalStages: event,
+      }, {
+        headers: getHeader()
+      }).then(res => {
+        this.approvalStages = event
+        this.approvalStagesDialog = event
+
+        this.closeForm('approvalUsers')
+        this.loading = false
+      }).catch(error => {
+        if (error.response.status == 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: this.$t('common.message.saveError'),
+            life: 3000,
+          });
+        }
+
+        this.closeForm('approvalUsers')
+        this.loading = false
+      })
+
+    },
+    filledDocParamsUpdated() {
+      if (this.contract.docHistory.stateId > this.Enum.CREATED.ID) {
+        return
+      }
+      
+      this.corrected = true
     },
   },
   mounted() {

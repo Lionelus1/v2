@@ -13,6 +13,7 @@ export default {
         headIin: 'Head IIN',
         headFio: 'Head full name',
         home: 'Home page',
+        returnLink: 'Back to previous page',
         newPassword:"Enter new password",
         newPasswordRe:"Repeat new password",
         createDocument: 'Generate document',

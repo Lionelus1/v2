@@ -19,6 +19,7 @@
         <div class="field">
           <label for="filename" >{{$t('common.nameInRussian')}}</label>
           <InputText id="fodernameru" v-model="file.nameru" type="text" />
+          <small class="p-error" v-if="validation.nameru">{{ $t("common.requiredField") }}</small>
         </div>
         <div class="field">
           <label for="filename" >{{$t('common.nameInEnglish')}}</label>

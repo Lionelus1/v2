@@ -19,20 +19,47 @@ export default {
       Value: "rejected",
       ID: 5,
     },
+    SIGNING: {
+      Value: "signing",
+      ID: 6,
+    },
+    SIGNED: {
+      Value: "signed",
+      ID: 7,
+    },
 
     roles: {
       LegalServiceHead : "legal_service_head"
+    },
+
+    DefaultApprovalListType: {
+      DocTemplate: 0,
+      ReadyAgreement: 1,
     },
 
     DocSourceType : {
         Template: 0,
         FilledDoc: 1,
     },
+
+    DocType : {
+      DocTemplate: 1,
+      EduComplex: 2,
+      WorkPlan: 3,
+      Dissertation: 4,
+      Contract: 5,
+      NormativeDoc: 6,
+      CertificateTemplate: 7,
+      Certificate: 8,
+      RelatedDoc: 9,
+    },
+
     ContragentType: {
       Organization : 1,
       Bank: 2,
       Person: 4,
     },
+
     PersonType: {
       //жеке кәсіпкер
       IndividualEntrepreneur: 1,
@@ -40,6 +67,7 @@ export default {
       OrganizationMember: 2,
       Student: 3,
     },
+
     SignRighType : {
       Individual: 'individual', //для физ лиц
       Ceo: 'ceo', //для первого руководителя
@@ -48,12 +76,14 @@ export default {
       HrWorker: 'hr_worker', //сотрудник отдела кадров
       Internal: 'internal' //внутренний документооборот (все ключи алгоритма ГОСТ)
     },
+
     EducationLevel: {
       Bachelor: '6B',
       Magister: '7M',
       Residency: '7R',
       Doctorate: '8D',
     },
+
     FolderType: {
       NormativeDocuments: 0,
       Journals: 1,
