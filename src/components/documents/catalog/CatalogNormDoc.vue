@@ -174,7 +174,7 @@ export default {
                 approvedBy: null,
                 approveDate : null,
                 author: null,
-                docType: 6,
+                docType: Enum.DocType.NormativeDoc,
             },
             totalRecords: 10,
             dialogOpenState: {

@@ -29,7 +29,7 @@
         </div>
       </TabPanel>
       <TabPanel v-if="docInfo.docHistory.stateId==2 ||docInfo.docHistory.stateId==6" :header="$t('ncasigner.sign')"
-                :disabled="isSignShow">
+                :disabled="hideDocSign">
         <div class="mt-2">
           <Panel>
             <template #header>
@@ -67,7 +67,6 @@ import {getHeader, smartEnuApi, socketApi, b64toBlob, findRole} from "@/config/c
 import html2pdf from "html2pdf.js";
 import DocInfo from "@/components/ncasigner/DocInfo";
 import QrcodeVue from "qrcode.vue";
-
 import Enum from "@/enum/docstates/index";
 
 export default {
@@ -113,7 +112,7 @@ export default {
       signing: false,
       file: null,
       active: 0,
-      isSignShow: false,
+      hideDocSign: true,
       isIndivid: false,
       mgovSignUri: null,
       enum: Enum
@@ -171,12 +170,12 @@ export default {
             this.isShow = true;
           } else {
             this.isShow = this.findRole(null, "career_moderator") || (this.signatures && this.signatures.some(x => x.userId === this.loginedUserId)) ||
-              this.docInfo.docHistory.setterId === this.loginedUserId;
+              this.docInfo.docHistory.setterId === this.loginedUserId || this.docInfo.creatorID === this.loginedUserId;
           }
 
-          this.isSignShow = this.signatures && this.signatures.some(x => x.userId === this.loginedUserId && (x.signature || x.signature !== ''));  
 
           if (this.signatures) {
+            this.hideDocSign = !this.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));
             this.isIndivid = this.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === '') && (x.signRight && x.signRight !== '') && x.signRight === 'individual');
 
             this.signatures.map(e => {
@@ -184,25 +183,30 @@ export default {
             });
           }
 
-          if (this.docInfo.needApproval) {
+          if (this.docInfo.needApproval || this.docInfo.sourceType === this.enum.DocSourceType.FilledDoc) {
             this.approvalStages = res.data.approvalStages;
 
             if (!this.showAllSignsParam && !this.isShow && this.approvalStages) {
-              this.approvalStages.forEach(element => {
+              for (let element of this.approvalStages) {
                 this.isShow = this.isShow || (element.users && element.users.some(x => x.userID === this.loginedUserId));
                 if (this.isShow) {
-                  return
+                  break;
                 }
-              });
+              }
             }
 
-            if (!this.isSignShow && this.approvalStages) {
-              this.approvalStages.forEach(element => {
-                this.isSignShow = element.signatures && element.signatures.some(x => x.userId === this.loginedUserId && (x.signature || x.signature !== ''));
-                if (this.isSignShow) {
-                  return
+            if (this.hideDocSign && this.approvalStages) {
+              for (let element of this.approvalStages) {
+                if (!element.signatures) {
+                  continue;
                 }
-              });
+
+                this.hideDocSign = !element.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));
+
+                if (!this.hideDocSign) {
+                  break;
+                }
+              }
             }
 
             if (this.approvalStages)
@@ -233,7 +237,7 @@ export default {
     showSign() {
       let showSign = false
 
-      if (this.docInfo && this.docInfo.docHistory && this.docInfo.docHistory.stateId && this.docInfo.docHistory.stateId > this.enum.APPROVED.ID) {
+      if (this.docInfo && this.docInfo.docHistory && this.docInfo.docHistory.stateId && this.docInfo.docHistory.stateId > this.enum.CREATED.ID) {
         showSign = true
       }
 

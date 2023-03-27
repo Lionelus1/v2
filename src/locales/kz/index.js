@@ -13,6 +13,7 @@ export default {
         headIin: 'Бірінші басшының ЖСН-і',
         headFio: 'Бірінші басшының толық аты жөні',
         home: 'Бас бетке',
+        returnLink: 'Алдыңғы бетке оралу',
         newPassword: "Жаңа құпиясөзді енгізіңіз",
         newPasswordRe: "Құпиясөзді қайталап енгізіңіз",
         createDocument: 'Құжатты құрастыру',

@@ -242,7 +242,7 @@ export default {
   },
   mounted() {
     if (this.mode != 'standard') {
-      axios.post(smartEnuApi + "/doctemplate/getApprovalList", {}, {
+      axios.get(smartEnuApi + "/approvalList/get", {
         headers: getHeader(),
       }).then(response => {
         this.approvalList = response.data
