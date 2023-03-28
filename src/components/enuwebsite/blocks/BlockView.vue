@@ -99,7 +99,7 @@ import {useStore} from "vuex";
 
 export default {
   name: "BlockView",
-  components: {BlockElementsList, TitleBlock, TinyEditor},
+  components: {BlockElementsList, TitleBlock},
   setup() {
     const loading = ref(false), submitted = ref(false)
     const enuService = new EnuWebService()
