@@ -38,9 +38,9 @@ export default {
           'insertdatetime media table paste code help wordcount'
         ],
         toolbar:
-            `undo redo | fontselect fontsizeselect formatselect | formatselect | bold italic backcolor |
+            `undo redo | fontselect fontsizeselect formatselect | formatselect | bold italic forecolor backcolor |
             alignleft aligncenter alignright alignjustify | bullist numlist outdent indent |
-            removeformat | table | image media ${this.customFileUpload ? `fileupload` : ''} | code `,
+            removeformat | table | link | image media ${this.customFileUpload ? `fileupload` : ''} | code `,
         images_upload_handler: uploadSingFile,
         language: this.$i18n.locale === "en" ? "en_US" : this.$i18n.locale === "kz" ? "kk" : this.$i18n.locale,
         content_style: "body { font-size: 14px; }",
@@ -48,15 +48,14 @@ export default {
           editor.ui.registry.addButton('fileupload', {
             text: '<i class="fa-solid fa-file-arrow-up" style="font-size: 20px;"></i>',
             onAction: () => {
-              // Open file upload form
-              this.uploadFile()
-              //this.$refs.myEditor.click();
+              this.uploadFile();
               //window.tinymce.activeEditor.execCommand('mceInsertContent', false, `<ul><li>Custom FIle YPLOAD</li><li>Custom FIle YPLOAD</li><li>Custom FIle YPLOAD</li></ul>`);
             }
           });
         }
       },
       editorApi: "60lj0ro6ojutgtjvqom1a5txsxm2azkl8pftmzhf8ddim86d",
+      fileService: new FileService()
     }
   },
   watch: {
@@ -68,20 +67,24 @@ export default {
     uploadFile() {
       const input = document.createElement('input');
       input.setAttribute('type', 'file');
-      //event listeners
       input.addEventListener('change', (e) => {
         const file = e.target.files[0];
-        this.$emit('customUpload', file);
+        const fd = new FormData();
+        fd.append("files", file)
+        this.fileService.uploadFile(fd).then(res => {
+          let item = {filename: file.name, filepath: res.data[0].filePath};
+          window.tinymce.activeEditor.execCommand('mceInsertContent', false, this.generateList(item));
+          this.$emit('onAfterUpload', item);
+        }).catch(error => {
+          this.$toast.add({severity: "error", summary: error, life: 3000});
+        });
+
       });
       input.click();
     },
-    generateList(list) {
-      let listHtml = '';
-      list.forEach(file => {
-        listHtml += `<li><a href="${smartEnuApi + fileRoute + file.filePath}">${file.filePath}</a></li>`;
-      });
-      return listHtml;
-    }
+    generateList(file) {
+      return `<a href="${smartEnuApi + fileRoute + file.filepath}">${file.filename}</a>`;
+    },
   }
 }
 </script>
