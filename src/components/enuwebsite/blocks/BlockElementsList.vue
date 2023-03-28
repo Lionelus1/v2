@@ -23,7 +23,7 @@
   </div>
 
   <Dialog v-model:visible="isCreateModal" :style="{ width: '1000px' }" :breakpoints="{'960px': '75vw', '640px': '90vw'}"
-          :header="formData ? $t('web.editElement') : $t('web.createElement') " :modal="true" class="p-fluid" @hide="hideDialog">
+          :header="formData && formData.title_kz ? $t('web.editElement') : $t('web.createElement') " :modal="true" class="p-fluid" @hide="hideDialog">
     <div class="field">
       <label>{{ $t('common.nameInQazaq') }}</label>
       <InputText type="text" v-model="formData.title_kz"  />

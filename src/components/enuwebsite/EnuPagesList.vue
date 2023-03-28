@@ -82,7 +82,7 @@
         <div class="field">
           <label for="kz-content">{{ $t("common.contentInQazaq") }}</label>
           <!--          <RichEditor id="content_kz" v-model="formData.content_kz" editorStyle="height: 320px"/>-->
-          <TinyEditor v-model="formData.content_kz" height="400" :custom-file-upload="true" @customUpload="uploadFile"/>
+          <TinyEditor v-model="formData.content_kz" height="400" :custom-file-upload="true" @onAfterUpload="onAfterUpload"/>
           <small v-show="!formData.content_kz && submitted" class="p-error">{{
               $t("smartenu.contentKzInvalid")
             }}</small>
@@ -97,7 +97,7 @@
         <div class="field">
           <label for="kz-content">{{ $t("common.contentInRussian") }}</label>
           <!--          <RichEditor id="content_ru" v-model="formData.content_ru" editorStyle="height: 320px"/>-->
-          <TinyEditor v-model="formData.content_ru" height="400" :customFileUpload="true" @customUpload="uploadFile"/>
+          <TinyEditor v-model="formData.content_ru" height="400" :customFileUpload="true" @onAfterUpload="onAfterUpload"/>
           <small v-show="!formData.content_ru && submitted" class="p-error">{{
               $t("smartenu.contentKzInvalid")
             }}</small>
@@ -112,7 +112,7 @@
         <div class="field">
           <label for="kz-content">{{ $t("common.contentInEnglish") }}</label>
           <!--          <RichEditor id="content_en" v-model="formData.content_en" editorStyle="height: 320px"/>-->
-          <TinyEditor v-model="formData.content_en" height="400" :custom-file-upload="true" @customUpload="uploadFile"/>
+          <TinyEditor v-model="formData.content_en" height="400" :custom-file-upload="true" @onAfterUpload="onAfterUpload"/>
           <small v-show="!formData.content_en && submitted" class="p-error">{{
               $t("smartenu.contentKzInvalid")
             }}</small>
@@ -219,22 +219,9 @@ export default {
   },
   methods: {
     formatDate,
-    uploadFile(file) {
-      const fd = new FormData();
-      fd.append("files", file)
-      fd.append("page_id", this.formData.enu_page_id)
-      this.fileService.uploadFile(fd).then(res => {
-        let item = {filename: file.name, filepath: res.data[0].filePath};
-        let list = this.generateList(item);
-        this.fileList.push(item);
-        this.formData.file_list.push(item);
-        window.tinymce.activeEditor.execCommand('mceInsertContent', false, list);
-      }).catch(error => {
-        this.$toast.add({severity: "error", summary: error, life: 3000});
-      });
-    },
-    generateList(file) {
-      return `<li><a href="${smartEnuApi + fileRoute + file.filepath}">${file.filename}</a></li>`;
+    onAfterUpload(item) {
+      this.fileList.push(item);
+      this.formData.files.push(item);
     },
     copyToClipboard(file) {
       return smartEnuApi + fileRoute + file.filepath;
@@ -273,6 +260,7 @@ export default {
     },
     createPage() {
       this.display = true;
+      this.formData = {};
     },
     hideDialog() {
       this.display = false;

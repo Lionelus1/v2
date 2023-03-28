@@ -1,19 +1,20 @@
 <template>
+  <ConfirmPopup group="deleteResult"></ConfirmPopup>
   <div class="col-12">
     <TitleBlock :title="$t('web.blocks') + ' | ' + ($i18n.locale === 'kz' ? block.title_kz : $i18n.locale === 'ru' ? block.title_ru : block.title_en)" :showBackButton="true" />
-    <div class="card" v-if="block && content && !block.is_list">
-      <TabView class="p-fluid">
+    <div class="card" v-if="block && !block.is_list">
+      <TabView class="p-fluid" v-if="formData">
         <TabPanel header="Қазақша">
           <div class="field mt-3">
             <label for="kz-title">{{ $t("common.nameInQazaq") }}</label>
-            <InputText v-model="content.title_kz" rows="3" :class="{ 'p-invalid': !content.title_kz && submitted }"/>
-            <small v-show="!content.title_kz && submitted" class="p-error">{{ $t("smartenu.titleKzInvalid") }}</small>
+            <InputText v-model="formData.title_kz" rows="3" :class="{ 'p-invalid': !formData.title_kz && submitted }"/>
+            <small v-show="!formData.title_kz && submitted" class="p-error">{{ $t("smartenu.titleKzInvalid") }}</small>
           </div>
           <div class="field">
             <label>{{ $t("common.contentInQazaq") }}</label>
 <!--            <RichEditor ref="kztext" v-model="content.content_kz" editorStyle="height: 320px"></RichEditor>-->
-            <TinyEditor v-model="content.content_kz" />
-            <small v-show="!content.content_kz && submitted" class="p-error">
+            <TinyEditor v-model="formData.content_kz" :custom-file-upload="true" @onAfterUpload="onAfterUpload" />
+            <small v-show="!formData.content_kz && submitted" class="p-error">
               {{ $t("smartenu.contentKzInvalid") }}
             </small>
           </div>
@@ -21,16 +22,16 @@
         <TabPanel header="Русский">
           <div class="field mt-3" style="margin-bottom: 1.5rem">
             <label>{{ $t("common.nameInRussian") }}</label>
-            <InputText v-model="content.title_ru" rows="3" :class="{ 'p-invalid': !content.title_ru && submitted }"/>
-            <small v-show="!content.title_ru && submitted" class="p-error">
+            <InputText v-model="formData.title_ru" rows="3" :class="{ 'p-invalid': !formData.title_ru && submitted }"/>
+            <small v-show="!formData.title_ru && submitted" class="p-error">
               {{ $t("smartenu.titleRuInvalid") }}
             </small>
           </div>
           <div class="field">
             <label for="ru-content">{{ $t("common.contentInRussian") }}</label>
-<!--            <RichEditor id="ru-content" v-model="content.content_ru" editorStyle="height: 320px"/>-->
-            <TinyEditor v-model="content.content_ru" />
-            <small v-show="!content.content_ru && submitted" class="p-error">
+<!--            <RichEditor id="ru-content" v-model="formData.content_ru" editorStyle="height: 320px"/>-->
+            <TinyEditor v-model="formData.content_ru" :custom-file-upload="true" @onAfterUpload="onAfterUpload" />
+            <small v-show="!formData.content_ru && submitted" class="p-error">
               {{ $t("smartenu.contentRuInvalid") }}
             </small>
           </div>
@@ -38,21 +39,45 @@
         <TabPanel header="English">
           <div class="field mt-3" style="margin-bottom: 1.5rem">
             <label>{{ $t("common.nameInEnglish") }}</label>
-            <InputText v-model="content.title_en" rows="3" :class="{ 'p-invalid': !content.title_en && submitted }"/>
-            <small v-show="!content.title_en && submitted" class="p-error">
+            <InputText v-model="formData.title_en" rows="3" :class="{ 'p-invalid': !formData.title_en && submitted }"/>
+            <small v-show="!formData.title_en && submitted" class="p-error">
               {{ $t("smartenu.titleEnInvalid") }}
             </small>
           </div>
           <div class="field">
             <label>{{ $t("common.contentInEnglish") }}</label>
-<!--            <RichEditor v-model="content.content_en" editorStyle="height: 320px"/>-->
-            <TinyEditor v-model="content.content_en" />
-            <small v-show="!content.content_en && submitted" class="p-error">
+<!--            <RichEditor v-model="formData.content_en" editorStyle="height: 320px"/>-->
+            <TinyEditor v-model="formData.content_en" :custom-file-upload="true" @onAfterUpload="onAfterUpload" />
+            <small v-show="!formData.content_en && submitted" class="p-error">
               {{ $t("smartenu.contentEnInvalid") }}
             </small>
           </div>
         </TabPanel>
       </TabView>
+
+      <div class="field" v-if="formData && formData.files">
+        <label>{{ $t('workPlan.attachments') }}</label>
+        <div ref="content" class="p-fileupload-content">
+          <div class="p-fileupload-files">
+            <div class="p-fileupload-row" v-for="(file, index) of formData.files" :key="index">
+            <span class="mr-3" style="cursor: pointer;" @click="downloadFile(file)">
+              <i class="fa-solid fa-file-arrow-down text-green-500"></i>
+            </span>
+              <span @click="downloadFile(file)" style="cursor: pointer;">
+              {{ file.filename ? file.filename : file.filepath }}</span>
+              <span class="ml-2">
+              <Button icon="pi pi-copy" class="p-button-rounded p-button-text"
+                      v-clipboard:copy="copyToClipboard(file)" v-clipboard:success="onCopy" />
+            </span>
+              <span v-if="file.id">
+              <Button icon="pi pi-times" class="p-button-rounded p-button-text"
+                      @click="deleteFileConfirm($event, file.id)"/>
+            </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <Button :label="$t('common.save')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2" @click="saveBlocContent"/>
     </div>
     <BlockElementsList v-if="block.is_list" />
@@ -69,7 +94,9 @@ import {useI18n} from "vue-i18n";
 import TitleBlock from "@/components/TitleBlock.vue";
 import TinyEditor from "../../TinyEditor";
 import {FileService} from "../../../service/file.service";
-import {fileRoute, smartEnuApi} from "../../../config/config";
+import {fileRoute, getHeader, smartEnuApi} from "../../../config/config";
+import {useConfirm} from "primevue/useconfirm";
+import {useStore} from "vuex";
 
 export default {
   name: "BlockView",
@@ -78,12 +105,15 @@ export default {
     const loading = ref(false), submitted = ref(false)
     const enuService = new EnuWebService()
     const fileService = new FileService()
+    const store = useStore()
     const toast = useToast()
+    const confirm = useConfirm();
     const i18n = useI18n()
     let block = ref({})
     let elements = ref([])
-    let content = ref({})
+    let formData = ref({})
     const route = useRoute()
+    const fileList = ref([])
     const blockId = route.params.id
 
     const getBlockInfo = () => {
@@ -95,6 +125,7 @@ export default {
         } else {
           getBlockContent(block.value.block_id)
         }
+        loading.value = false;
       }).catch(error => {
         loading.value = false;
         toast.add({severity: "error", summary: error, life: 3000});
@@ -103,8 +134,7 @@ export default {
 
     const getBlockContent = (blockId) => {
       enuService.getBlockContentByBlockId(blockId).then(res => {
-        if (res.data)
-          content.value = res.data
+        formData.value = res.data
       }).catch(error => {
         toast.add({severity: "error", summary: error, life: 3000});
       });
@@ -121,18 +151,21 @@ export default {
     const saveBlocContent = () => {
       submitted.value = true;
       if (!isValid()) return;
-      if (content.value.block_content_id != null) {
-        enuService.editBlockContent(content.value).then(res => {
+      if (formData.value.block_content_id != null) {
+        if (fileList.value.length > 0)
+          formData.value.files = fileList.value;
+        enuService.editBlockContent(formData.value).then(res => {
           if (res.data.is_success) {
             submitted.value = false;
             toast.add({severity: "success", summary: i18n.t('common.success'), life: 3000});
           }
+          getBlockContent(blockId)
         }).catch(error => {
           submitted.value = false;
           toast.add({severity: "error", summary: error, life: 3000});
         });
       } else {
-        enuService.addBlockContent(content.value).then(res => {
+        enuService.addBlockContent(formData.value).then(res => {
           if (res.data.is_success) {
             submitted.value = false;
             toast.add({severity: "success", summary: i18n.t('common.success'), life: 3000});
@@ -146,20 +179,98 @@ export default {
 
     function isValid() {
       let errors = [];
-      if (!content.value.title_kz)
+      if (!formData.value.title_kz)
         errors.push(1);
-      if (!content.value.title_ru)
+      if (!formData.value.title_ru)
         errors.push(1);
-      if (!content.value.title_en)
+      if (!formData.value.title_en)
         errors.push(1);
-      if (!content.value.content_kz)
+      if (!formData.value.content_kz)
         errors.push(1);
-      if (!content.value.content_ru)
+      if (!formData.value.content_ru)
         errors.push(1);
-      if (!content.value.content_en)
+      if (!formData.value.content_en)
         errors.push(1);
 
       return errors.length === 0
+    }
+
+    const onAfterUpload = (file) => {
+      fileList.value.push(file);
+      if (formData.value.files && formData.value.files.length !== 0) {
+        formData.value.files.push(file)
+      } else {
+        formData.value.files = [];
+        formData.value.files.push(file)
+      }
+    }
+
+    const copyToClipboard = (file) => {
+      return smartEnuApi + fileRoute + file.filepath;
+    }
+
+    const onCopy = () => {
+      toast.add({severity: 'success', summary: i18n.t('ncasigner.successCopy'), life: 3000});
+    }
+
+    const downloadFile = (file) => {
+      let url = `${smartEnuApi}/serve?path=${file.filepath}`
+      fetch(url, {
+        method: 'GET',
+        headers: getHeader()
+      }).then(response => response.blob()).then(blob => {
+        let url = window.URL.createObjectURL(blob);
+        let a = document.createElement('a');
+        a.href = url;
+        a.download = file.filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          store.dispatch("logLout");
+        } else {
+          toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+      });
+    }
+
+    const deleteFileConfirm = (event, id) => {
+      confirm.require({
+        target: event.currentTarget,
+        message: i18n.t('common.confirmation'),
+        header: i18n.t('common.confirm'),
+        group: 'deleteResult',
+        icon: 'pi pi-info-circle',
+        acceptClass: 'p-button-rounded p-button-success',
+        rejectClass: 'p-button-rounded p-button-danger',
+        accept: () => {
+          deleteFile(id);
+        }
+      });
+    }
+
+    const deleteFile = (id) => {
+      enuService.deleteBlockContentFile(id).then(res => {
+        if (res.data.is_success) {
+          getBlockContentFiles();
+          toast.add({severity: 'success', detail: i18n.t('common.done'), life: 3000});
+        }
+      }).catch((error) => {
+        toast.add({severity: "error", summary: error, life: 3000});
+      });
+    }
+
+    const getBlockContentFiles = () => {
+      enuService.getBlockContentFiles(formData.value.block_content_id).then(res => {
+        formData.value.files = res.data;
+      }).catch(error => {
+        toast.add({severity: "error", summary: error, life: 3000});
+      });
     }
 
     onMounted(() => {
@@ -167,13 +278,16 @@ export default {
     })
 
     return {
-      loading, block, elements,
-      content, submitted, saveBlocContent
+      loading, block, elements, formData, submitted,
+      saveBlocContent, onAfterUpload, copyToClipboard, onCopy, downloadFile, deleteFileConfirm
     }
   }
 }
 </script>
 
 <style scoped>
-
+.p-fileupload-row {
+  display: flex;
+  align-items: center;
+}
 </style>

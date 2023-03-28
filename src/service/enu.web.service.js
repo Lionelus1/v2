@@ -113,6 +113,14 @@ export class EnuWebService {
         return api.post(`/web/getBlockParamValuesByBlockID`, {block_id: id}, {headers: getHeader()});
     }
 
+    getBlockContentFiles(id) {
+        return api.post(`/web/getBlockContentFiles`, {block_content_id: id}, {headers: getHeader()});
+    }
+
+    deleteBlockContentFile(id) {
+        return api.post(`/web/deleteBlockContentFile`, {id: id}, {headers: getHeader()});
+    }
+
     navigateToPlugin(componentName) {
         switch (componentName) {
             case 'DocsListBlock':
