@@ -111,7 +111,7 @@ export default {
     const i18n = useI18n()
     let block = ref({})
     let elements = ref([])
-    let formData = ref({})
+    let formData = ref(null)
     const route = useRoute()
     const blockId = route.params.id
     const fileList = ref([])
