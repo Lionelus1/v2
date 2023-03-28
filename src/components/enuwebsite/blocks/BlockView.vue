@@ -131,6 +131,7 @@ export default {
         toast.add({severity: "error", summary: error, life: 3000});
       });
     }
+    getBlockInfo();
 
     const getBlockContent = (blockId) => {
       enuService.getBlockContentByBlockId(blockId).then(res => {
@@ -272,10 +273,6 @@ export default {
         toast.add({severity: "error", summary: error, life: 3000});
       });
     }
-
-    onMounted(() => {
-      getBlockInfo()
-    })
 
     return {
       loading, block, elements, formData, submitted,
