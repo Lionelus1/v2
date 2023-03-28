@@ -46,7 +46,7 @@
     </div>
     <div class="field">
       <label>{{ $t('blog.welcomeText') }}</label>
-      <TinyEditor v-model="formData.description" height="200" />
+      <TinyEditor v-model="formData.description" :height="200" />
     </div>
     <div class="field">
       <label>{{ $t('cafedra.responsible') }}</label>

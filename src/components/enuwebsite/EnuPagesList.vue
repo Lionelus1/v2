@@ -82,7 +82,7 @@
         <div class="field">
           <label for="kz-content">{{ $t("common.contentInQazaq") }}</label>
           <!--          <RichEditor id="content_kz" v-model="formData.content_kz" editorStyle="height: 320px"/>-->
-          <TinyEditor v-model="formData.content_kz" height="400" :custom-file-upload="true" @onAfterUpload="onAfterUpload"/>
+          <TinyEditor v-model="formData.content_kz" :height="400" :custom-file-upload="true" @onAfterUpload="onAfterUpload"/>
           <small v-show="!formData.content_kz && submitted" class="p-error">{{
               $t("smartenu.contentKzInvalid")
             }}</small>
@@ -97,7 +97,7 @@
         <div class="field">
           <label for="kz-content">{{ $t("common.contentInRussian") }}</label>
           <!--          <RichEditor id="content_ru" v-model="formData.content_ru" editorStyle="height: 320px"/>-->
-          <TinyEditor v-model="formData.content_ru" height="400" :customFileUpload="true" @onAfterUpload="onAfterUpload"/>
+          <TinyEditor v-model="formData.content_ru" :height="400" :customFileUpload="true" @onAfterUpload="onAfterUpload"/>
           <small v-show="!formData.content_ru && submitted" class="p-error">{{
               $t("smartenu.contentKzInvalid")
             }}</small>
@@ -112,7 +112,7 @@
         <div class="field">
           <label for="kz-content">{{ $t("common.contentInEnglish") }}</label>
           <!--          <RichEditor id="content_en" v-model="formData.content_en" editorStyle="height: 320px"/>-->
-          <TinyEditor v-model="formData.content_en" height="400" :custom-file-upload="true" @onAfterUpload="onAfterUpload"/>
+          <TinyEditor v-model="formData.content_en" :height="400" :custom-file-upload="true" @onAfterUpload="onAfterUpload"/>
           <small v-show="!formData.content_en && submitted" class="p-error">{{
               $t("smartenu.contentKzInvalid")
             }}</small>
@@ -156,13 +156,12 @@
 import {EnuWebService} from "@/service/enu.web.service";
 import PageView from "@/components/enuwebsite/PageView.vue";
 import {formatDate} from "@/helpers/HelperUtil";
-import TinyEditor from "../TinyEditor";
 import {FileService} from "../../service/file.service";
 import {fileRoute, getHeader, smartEnuApi} from "../../config/config";
 
 export default {
   name: "EnuPagesList",
-  components: {PageView, TinyEditor},
+  components: {PageView},
   data() {
     return {
       pages: [],

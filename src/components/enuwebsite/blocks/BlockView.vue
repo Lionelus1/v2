@@ -112,8 +112,8 @@ export default {
     let elements = ref([])
     let formData = ref({})
     const route = useRoute()
-    const fileList = ref([])
     const blockId = route.params.id
+    const fileList = ref([])
 
     const getBlockInfo = () => {
       loading.value = true;
