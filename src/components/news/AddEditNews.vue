@@ -14,7 +14,7 @@
           </div>
           <div class="field">
             <label for="kz-content">{{ $t("common.contentInQazaq") }}</label>
-            <TinyEditor v-model="newsData.contentKz" height="300" />
+            <TinyEditor v-model="newsData.contentKz" :height="300" />
 <!--            <Editor id="kz-content" v-model="newsData.contentKz" editorStyle="height: 320px"/>-->
             <small v-show="!newsData.contentKz && submitted" class="p-error">{{
                 $t("smartenu.contentKzInvalid")
@@ -30,7 +30,7 @@
           </div>
           <div class="field">
             <label for="ru-content">{{ $t("common.contentInRussian") }}</label>
-            <TinyEditor v-model="newsData.contentRu" height="300" />
+            <TinyEditor v-model="newsData.contentRu" :height="300" />
 <!--            <Editor id="ru-content" v-model="newsData.contentRu" editorStyle="height: 320px"/>-->
             <small v-show="!newsData.contentRu && submitted" class="p-error">
               {{ $t("smartenu.contentRuInvalid") }}
@@ -49,7 +49,7 @@
 
           <div class="field">
             <label for="en-content">{{ $t("common.contentInEnglish") }}</label>
-            <TinyEditor v-model="newsData.contentEn" height="300" />
+            <TinyEditor v-model="newsData.contentEn" :height="300" />
 <!--            <Editor id="en-content" v-model="newsData.contentEn" editorStyle="height: 320px"/>-->
             <small v-show="!newsData.contentEn && submitted" class="p-error">
               {{ $t("smartenu.contentEnInvalid") }}

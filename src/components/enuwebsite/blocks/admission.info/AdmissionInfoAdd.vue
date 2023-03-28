@@ -16,7 +16,7 @@
         <div class="field mt-3">
           <label>{{ $t('web.shortInfo') }}</label>
 <!--          <RichEditor v-model="formData.short_info_kz" editorStyle="height: 100px"/>-->
-          <TinyEditor v-model="formData.short_info_kz" height="200" />
+          <TinyEditor v-model="formData.short_info_kz" :height="200" />
           <small v-show="!formData.short_info_kz && submitted" class="p-error">{{ $t("smartenu.titleKzInvalid") }}</small>
         </div>
         <div class="field">
@@ -32,7 +32,7 @@
         <div class="field mt-3">
           <label>{{ $t('web.shortInfo') }}</label>
 <!--          <RichEditor v-model="formData.short_info_ru" editorStyle="height: 100px"/>-->
-          <TinyEditor v-model="formData.short_info_ru" height="200" />
+          <TinyEditor v-model="formData.short_info_ru" :height="200" />
           <small v-show="!formData.short_info_ru && submitted" class="p-error">{{ $t("smartenu.titleKzInvalid") }}</small>
         </div>
         <div class="field">
@@ -48,7 +48,7 @@
         <div class="field mt-3">
           <label>{{ $t('web.shortInfo') }}</label>
 <!--          <RichEditor v-model="formData.short_info_en" editorStyle="height: 100px"/>-->
-          <TinyEditor v-model="formData.short_info_en" height="200" />
+          <TinyEditor v-model="formData.short_info_en" :height="200" />
           <small v-show="!formData.short_info_en && submitted" class="p-error">{{ $t("smartenu.titleKzInvalid") }}</small>
         </div>
         <div class="field">
