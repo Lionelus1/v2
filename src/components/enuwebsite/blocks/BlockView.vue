@@ -92,7 +92,6 @@ import {useRoute} from "vue-router";
 import {useToast} from "primevue/usetoast";
 import {useI18n} from "vue-i18n";
 import TitleBlock from "@/components/TitleBlock.vue";
-import TinyEditor from "../../TinyEditor";
 import {FileService} from "../../../service/file.service";
 import {fileRoute, getHeader, smartEnuApi} from "../../../config/config";
 import {useConfirm} from "primevue/useconfirm";
