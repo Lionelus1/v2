@@ -96,10 +96,11 @@ import {FileService} from "../../../service/file.service";
 import {fileRoute, getHeader, smartEnuApi} from "../../../config/config";
 import {useConfirm} from "primevue/useconfirm";
 import {useStore} from "vuex";
+import TinyEditor from "../../TinyEditor";
 
 export default {
   name: "BlockView",
-  components: {BlockElementsList, TitleBlock},
+  components: {BlockElementsList, TitleBlock, TinyEditor},
   setup() {
     const loading = ref(false), submitted = ref(false)
     const enuService = new EnuWebService()
