@@ -14,7 +14,7 @@ export default {
     'editor': Editor
   },
   props: {
-    value: String,
+    value: null,
     customFileUpload: {
       type: Boolean,
       default: false
@@ -24,7 +24,7 @@ export default {
       default: 500
     }
   },
-  emits: ['onAfterUpload', 'update:modelValue'],
+  emits: ['onAfterUpload'],
   data() {
     return {
       content: this.value,
@@ -61,7 +61,6 @@ export default {
   },
   watch: {
     value(newValue) {
-      this.$emit('update:modelValue', newValue)
       this.content = newValue;
     }
   },
