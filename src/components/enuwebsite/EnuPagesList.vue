@@ -297,6 +297,7 @@ export default {
           this.$toast.add({severity: "success", summary: this.$t("web.createdPageSuccessMsg"), life: 3000});
           this.fileList = [];
         }
+        this.getPages();
       }).catch(error => {
         this.$toast.add({severity: "error", summary: error, life: 3000});
       });

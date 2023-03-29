@@ -5,71 +5,71 @@
         <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
       </BlockUI>
       <div v-if="question" class="grid">
-        <div class="card">
+        <div class="product-grid-item card">
           <h5>{{ $t("faq.question") }}</h5>
-          <div class="mb-2 grid">
+
+          <div class="product-grid-item-top mb-2 grid">
             <div class="lg:col-2 md:col-6 p-sm-6">
-              <span>
-                <i class="fa-solid fa-at"></i>
-                <small class="m-1">№&nbsp;{{ question.id }} </small><br/>
-                <small>{{ question.last_name + " " + question.first_name }}</small>
-              </span>
+                        <span>
+                        <i class="fa-solid fa-at product-category-icon"></i>
+                        <small>№&nbsp;{{ question.id }} </small><br/>
+                        <small class="product-category">{{ question.fullName }}</small>
+                        </span>
             </div>
-            <div class="lg:col-2 md:col-6 p-sm-6">
-              <span v-if="question.mobile && question.email">
-                <small>{{ question.mobile + " " + question.email }}</small>
-              </span>
+            <div class="lg:col-2 md:col-6 p-sm-6" v-if="question.mobile && question.email">
+              <span><small class="product-category">{{ question.mobile + " " + question.email }}</small></span>
             </div>
+            <!--          <div class="lg:col-2 md:col-6 p-sm-6">
+                        <i class="fa-solid fa-tags product-category-icon"></i>
+                        <small class="product-category">{{ question.category['name' + $i18n.locale].split("(")[0] }}</small>
+                      </div>-->
             <div class="lg:col-3 md:col-6 p-sm-6">
-              <span :class="'customer-badge status-' + question.state.id">
-                {{ $t("common.states." + question.state.code) }}
-              </span>
+              <span v-if="loginedUser && question.state"
+                    :class="'customer-badge status-' + question.state.id">{{ $t("common.states." + question.state.code) }}</span>
             </div>
+
             <div class="lg:col-3 md:col-6 p-sm-12 text-right">
-              <i class="fa-solid fa-calendar-days"></i>
-              <small class="m-1">
-                {{ formatDate(new Date(question.created_date)) }}
-              </small>
+              <i class="fa-solid fa-calendar-days product-category-icon"></i>
+              <small class="product-category">{{ moment(new Date(question.created_date)).utc().format("DD.MM.YYYY") }}</small>
             </div>
           </div>
-          <div>
+          <div class="product-grid-item-content">
             <p class="block-with-text">{{ question.question }}</p>
           </div>
+          <!--        <div v-if="question.filePath" class="p-w-100 text-right">
+                    <Button :label="$t('faq.attachments')" icon="pi pi-download" @click="downloadFile(question.filePath)"></Button>
+                  </div>-->
         </div>
 
-      </div>
-    </div>
-    <div class="card">
-      <h5>{{ $t("faq.answer") }}</h5>
+        <div v-if="question.ownedBy" class="product-grid-item card">
+          <h5>{{ $t("faq.answer") }}</h5>
 
-      <div class="mb-2">
-        <div class="col-12 grid">
-          <!--              <div v-if="loginedUser" class="lg:col-6  md:col-6 p-sm-6">
-                                      <span v-if="question.replier != null">
-                                          <i class="fa-solid fa-user-tag product-category-icon"></i>
-                                          <small>{{ question.replier.fullName }}</small>
-                                      </span>
-                        </div>-->
-          <div v-if="question.answered_date" class="lg:col-6  md:col-6 p-sm-6 text-right">
-            <i class="fa-solid fa-calendar-days"></i>
-            <small>
-              {{ formatDate(question.answered_date) }}
-            </small>
+          <div class="product-grid-item-top mb-2">
+            <div class="col-12 grid">
+              <div v-if="loginedUser" class="lg:col-6  md:col-6 p-sm-6">
+                            <span v-if="question.ownedBy">
+                                <i class="fa-solid fa-user-tag product-category-icon"></i>
+                                <small class="product-category">{{ question.ownedBy.fullName }}</small>
+                            </span>
+              </div>
+              <div v-if="question.answered_date" class="lg:col-6  md:col-6 p-sm-6 text-right">
+                <i class="fa-solid fa-calendar-days product-category-icon"></i>
+                <small class="product-category">{{ moment(new Date(question.answered_date)).utc().format("DD.MM.YYYY") }}</small>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-      <div class="text-left" v-if="!question.answer">
-        <!--            <div v-if="loginedUser && question.owner_id && loginedUser.userID === question.owner_id">-->
-        <div>
-          <TinyEditor v-model="question.answer" :height="300"/>
-          <div class="p-w-100">
-            <Button v-if="question.state && question.state.id === 8" :label="$t('faq.toAnswer')" class="p-button-info mt-2"
-                    @click="answer"></Button>
+          <div class="product-grid-item-content text-left">
+            <div v-if="loginedUser && question.ownedBy.userID && loginedUser.userID === question.ownedBy.userID">
+              <TinyEditor :readonly="question.state.id !== 8" v-model="question.answer" :height="300"/>
+              <div class="p-w-100 text-right">
+                <Button v-if="question.state.id === 8" :label="$t('faq.toAnswer')" class="p-button-info mt-2" @click="answer"></Button>
+              </div>
+            </div>
+            <div v-else class="block-with-text" v-html="question.answer"></div>
           </div>
+
         </div>
       </div>
-      <div v-else class="block-with-text" v-html="question.answer"></div>
-
     </div>
   </div>
 </template>
@@ -82,6 +82,8 @@ import {ref} from "vue";
 import {useRoute, useRouter} from "vue-router/dist/vue-router";
 import {BlogService} from "../../service/blog.service";
 import {formatDate} from "../../helpers/HelperUtil";
+import TitleBlock from "@/components/TitleBlock.vue";
+import moment from "moment";
 
 export default {
   name: "BlogRequestView",
@@ -154,13 +156,51 @@ export default {
 
     return {
       loading, question, loginedUser,
-      formatDate, answer
+      formatDate, answer, moment
     }
   }
 }
 </script>
 
 <style scoped lang="scss">
+::v-deep(.product-list-item) {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  width: 100%;
+
+  img {
+    width: 150px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+    margin-right: 2rem;
+  }
+
+  .product-list-detail {
+    flex: 1 1 0;
+  }
+
+  .p-rating {
+    margin: 0 0 .5rem 0;
+  }
+
+  .product-price {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: .5rem;
+    align-self: flex-end;
+  }
+
+  .product-list-action {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .p-button {
+    margin-bottom: .5rem;
+  }
+
+}
+
 .customer-badge {
   border-radius: 2px;
   padding: 0.25em 0.5rem;
@@ -207,6 +247,43 @@ export default {
   &.offline {
     background: #ffcdd2;
     color: #c63737;
+  }
+}
+
+::v-deep(.product-grid-item) {
+  margin: .5em;
+  border: 1px solid #dee2e6;
+  width: 100%;
+
+  .product-grid-item-top,
+  .product-grid-item-bottom {
+    display: flex;
+    align-items: center;
+    flex-order-: space-between;
+  }
+
+
+  .product-grid-item-content {
+    text-align: center;
+  }
+
+  .product-price {
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+
+  .product-category-icon {
+    vertical-align: middle;
+    margin-right: .5rem;
+  }
+
+  .block-with-text {
+    overflow: visible;
+    position: relative;
+    line-height: normal;
+    text-align: justify;
+    margin-right: -1em;
+    padding-right: 1em;
   }
 }
 </style>
