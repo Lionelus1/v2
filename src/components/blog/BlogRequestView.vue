@@ -5,86 +5,70 @@
         <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
       </BlockUI>
       <div v-if="question" class="grid">
-        <div class="product-grid-item card">
+        <div class="card">
           <h5>{{ $t("faq.question") }}</h5>
-
-          <div class="product-grid-item-top mb-2 grid">
+          <div class="mb-2 grid">
             <div class="lg:col-2 md:col-6 p-sm-6">
               <span>
-                <i class="fa-solid fa-at product-category-icon"></i>
+                <i class="fa-solid fa-at"></i>
                 <small class="m-1">№&nbsp;{{ question.id }} </small><br/>
-                <small class="product-category">{{ question.last_name + " " + question.first_name }}</small>
+                <small>{{ question.last_name + " " + question.first_name }}</small>
               </span>
             </div>
             <div class="lg:col-2 md:col-6 p-sm-6">
               <span v-if="question.mobile && question.email">
-                <small class="product-category">{{ question.mobile + " " + question.email }}</small>
+                <small>{{ question.mobile + " " + question.email }}</small>
               </span>
             </div>
-            <!--            <div class="lg:col-2 md:col-6 p-sm-6">
-                          <i class="fa-solid fa-tags product-category-icon"></i>
-                          <small class="product-category">{{ question.category['name' + $i18n.locale].split("(")[0] }}</small>
-                        </div>-->
-            <!--            <div class="lg:col-3 md:col-6 p-sm-6">
-                          <span v-if="loginedUser" :class="'customer-badge status-' + question.state.id">
-                            {{ $t("common.states." + question.state.code) }}
-                          </span>
-                        </div>-->
+            <div class="lg:col-3 md:col-6 p-sm-6">
+              <span :class="'customer-badge status-' + question.state.id">
+                {{ $t("common.states." + question.state.code) }}
+              </span>
+            </div>
             <div class="lg:col-3 md:col-6 p-sm-12 text-right">
-              <i class="fa-solid fa-calendar-days product-category-icon"></i>
-              <small class="product-category m-1">
+              <i class="fa-solid fa-calendar-days"></i>
+              <small class="m-1">
                 {{ formatDate(new Date(question.created_date)) }}
               </small>
             </div>
           </div>
-          <div class="product-grid-item-content">
+          <div>
             <p class="block-with-text">{{ question.question }}</p>
           </div>
-          <div v-if="question.filePath" class="p-w-100 text-right">
-            <Button :label="$t('faq.attachments')" icon="pi pi-download"
-                    @click="downloadFile(question.filePath)"></Button>
-          </div>
-          <!--          <div v-if="question.state.id ==1 && findRole(null, 'faq_receiption_request_admin')"
-                         class="p-w-100 text-right">
-                      <Button :label="$t('common.send')" @click="sendDialog = true" class="p-button-info mt-2 "></Button>
-                    </div>-->
         </div>
 
-        <!--        <div v-if="question.owner_id" class="product-grid-item card">-->
-        <div class="product-grid-item card">
-          <h5>{{ $t("faq.answer") }}</h5>
+      </div>
+    </div>
+    <div class="card">
+      <h5>{{ $t("faq.answer") }}</h5>
 
-          <div class="product-grid-item-top mb-2">
-            <div class="col-12 grid">
-<!--              <div v-if="loginedUser" class="lg:col-6  md:col-6 p-sm-6">
-                            <span v-if="question.replier != null">
-                                <i class="fa-solid fa-user-tag product-category-icon"></i>
-                                <small class="product-category">{{ question.replier.fullName }}</small>
-                            </span>
-              </div>-->
-              <div v-if="question.answered_date" class="lg:col-6  md:col-6 p-sm-6 text-right">
-                <i class="fa-solid fa-calendar-days product-category-icon"></i>
-                <small class="product-category">
-                  {{ formatDate(question.answered_date) }}
-                </small>
-              </div>
-            </div>
+      <div class="mb-2">
+        <div class="col-12 grid">
+          <!--              <div v-if="loginedUser" class="lg:col-6  md:col-6 p-sm-6">
+                                      <span v-if="question.replier != null">
+                                          <i class="fa-solid fa-user-tag product-category-icon"></i>
+                                          <small>{{ question.replier.fullName }}</small>
+                                      </span>
+                        </div>-->
+          <div v-if="question.answered_date" class="lg:col-6  md:col-6 p-sm-6 text-right">
+            <i class="fa-solid fa-calendar-days"></i>
+            <small>
+              {{ formatDate(question.answered_date) }}
+            </small>
           </div>
-          <div class="product-grid-item-content text-left">
-            <!--            <div v-if="loginedUser && question.owner_id && loginedUser.userID === question.owner_id">-->
-            <div>
-              <TinyEditor v-model="question.answer"/>
-              <!--              <Editor :readonly="question.state.id !=8" v-model="question.answer" editorStyle="height: 200px"/>-->
-              <div class="p-w-100 text-right">
-                <Button v-if="question.state && question.state.id === 8" :label="$t('faq.toAnswer')" class="p-button-info mt-2"
-                        @click="answer"></Button>
-              </div>
-            </div>
-            <!--            <div v-else class="block-with-text" v-html="question.answer"></div>-->
-          </div>
-
         </div>
       </div>
+      <div class="text-left" v-if="!question.answer">
+        <!--            <div v-if="loginedUser && question.owner_id && loginedUser.userID === question.owner_id">-->
+        <div>
+          <TinyEditor v-model="question.answer" :height="300"/>
+          <div class="p-w-100">
+            <Button v-if="question.state && question.state.id === 8" :label="$t('faq.toAnswer')" class="p-button-info mt-2"
+                    @click="answer"></Button>
+          </div>
+        </div>
+      </div>
+      <div v-else class="block-with-text" v-html="question.answer"></div>
 
     </div>
   </div>
@@ -176,6 +160,53 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+.customer-badge {
+  border-radius: 2px;
+  padding: 0.25em 0.5rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.3px;
 
+  &.status-7 {
+    background: #c8e6c9;
+    color: #256029;
+  }
+
+  &.status-3 {
+    background: #ffcdd2;
+    color: #c63737;
+  }
+
+  &.status-negotiation {
+    background: #feedaf;
+    color: #8a5340;
+  }
+
+  &.status-1 {
+    background: #b3e5fc;
+    color: #23547b;
+  }
+
+  &.status-8 {
+    background: #eccfff;
+    color: #694382;
+  }
+
+  &.status-proposal {
+    background: #ffd8b2;
+    color: #805b36;
+  }
+
+  &.online {
+    background: #c8e6c9;
+    color: #256029;
+  }
+
+  &.offline {
+    background: #ffcdd2;
+    color: #c63737;
+  }
+}
 </style>

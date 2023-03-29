@@ -14,7 +14,7 @@ export default {
     'editor': Editor
   },
   props: {
-    modelValue: String,
+    value: null,
     customFileUpload: {
       type: Boolean,
       default: false
@@ -24,10 +24,10 @@ export default {
       default: 500
     }
   },
-  emits: ['onAfterUpload', 'update:modelValue'],
+  emits: ['onAfterUpload'],
   data() {
     return {
-      content: this.modelValue,
+      content: this.value,
       editorOptions: {
         height: this.height,
         fontsize_formats: "8px 10px 12px 14px 16px 18px 20px 22px 24px 36px 48px",
@@ -61,7 +61,6 @@ export default {
   },
   watch: {
     value(newValue) {
-      this.$emit('update:modelValue', newValue)
       this.content = newValue;
     }
   },
