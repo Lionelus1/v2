@@ -1,5 +1,5 @@
 <template>
-  <editor ref="myEditor" :api-key="editorApi" v-model="content" :init="editorOptions"/>
+  <editor ref="myEditor" :api-key="editorApi" v-model="content" :init="editorOptions" :disabled="readonly" />
 </template>
 
 <script>
@@ -22,6 +22,10 @@ export default {
     height: {
       type: Number,
       default: 500
+    },
+    readonly: {
+      type: Boolean,
+      default: false
     }
   },
   emits: ['onAfterUpload'],
