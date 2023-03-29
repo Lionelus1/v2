@@ -94,7 +94,6 @@ export default {
       blogService.getBlogRequests(lazyParams.value).then(res => {
         if (res.data) {
           items.value = res.data.blogs
-          console.log(items.value)
           total.value = res.data.total
         }
         loading.value = false
