@@ -36,11 +36,6 @@
             <a v-if="node.link" :href="node.link" target="_blank">{{ node.link }}</a>
           </template>
         </Column>
-        <Column field="is_main" :header="$t('web.isMainMenu')" :sortable="true">
-          <template #body="{ node }">
-            {{ node.is_main ? $t('web.onMain') : '' }}
-          </template>
-        </Column>
         <Column field="create_date" :header="$t('faq.createDate')" :sortable="true">
           <template #body="{ node }">
             {{ formatDate(node.create_date) }}
@@ -48,8 +43,9 @@
         </Column>
         <Column field="actions" header="" class="text-right">
           <template #body="{ node }">
-            <Button type="button" icon="fa-solid fa-plus" class="p-button mr-2" @click="createMenu(node)"></Button>
-            <Button type="button" icon="fa-solid fa-pen" class="p-button" @click="editMenu(node)"></Button>
+            <Button type="button" icon="fa-solid fa-plus" class="p-button-sm mr-2" @click="createMenu(node)"></Button>
+            <Button type="button" icon="fa-solid fa-pen" class="p-button-sm mr-2" @click="editMenu(node)"></Button>
+            <Button type="button" icon="fa-solid fa-trash" class="p-button-sm p-button-danger" @click="deleteConfirm(node)"></Button>
           </template>
         </Column>
       </TreeTable>
@@ -173,6 +169,28 @@ export default {
         this.selectedViewMenu = data.page;
         this.viewPageVisible = true;
       }
+    },
+    deleteConfirm(node) {
+      this.$confirm.require({
+        message: this.$t('common.doYouWantDelete'),
+        header: this.$t('common.delete'),
+        icon: 'pi pi-info-circle',
+        acceptClass: 'p-button-rounded p-button-success',
+        rejectClass: 'p-button-rounded p-button-danger',
+        accept: () => {
+          this.onDelete(node.menu_id);
+        },
+      });
+    },
+    onDelete(id) {
+      this.enuService.deleteMenu(id).then(res => {
+        if (res.data && res.data.is_success) {
+          this.$toast.add({severity: "success", summary: "Successfully deleted", life: 3000});
+        }
+        this.getMenus(this.parentNode || null);
+      }).catch(error => {
+        this.$toast.add({severity: "error", summary: error, life: 3000});
+      });
     },
     showPage(data) {
       let title = ""

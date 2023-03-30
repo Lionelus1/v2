@@ -12,7 +12,7 @@ export class AdmissionInfoService {
     }
 
     getAdmissionInfoByCategory(id) {
-        return api.get(`/web/getAdmissionInfoById/${id}`, {headers: getHeader()});
+        return api.get(`/web/getAdmissionCategoryById/${id}`, {headers: getHeader()});
     }
 
     addAdmissionInfo(data) {

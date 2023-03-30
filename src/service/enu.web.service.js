@@ -41,6 +41,10 @@ export class EnuWebService {
         return api.post('/web/getMenusTree', data, {headers: getHeader()});
     }
 
+    deleteMenu(id) {
+        return api.post(`/web/deleteMenu`, {id: id}, {headers: getHeader()});
+    }
+
     deletePage(id) {
         return api.post(`/web/deleteMenuPage`, {id: id}, {headers: getHeader()});
     }

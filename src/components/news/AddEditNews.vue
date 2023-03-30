@@ -3,60 +3,70 @@
           :header="$t('smartenu.createOrEditNews')"
           :modal="true" class="p-fluid">
     <div class="card">
-<!--      <Message v-for="msg of formValid" severity="error" :key="msg">{{ msg }}</Message>-->
+      <!--      <Message v-for="msg of formValid" severity="error" :key="msg">{{ msg }}</Message>-->
       <TabView>
         <TabPanel header="Қазақша">
           <div class="field mt-3">
             <label for="kz-title">{{ $t("common.nameInQazaq") }}</label>
-            <InputText id="kz-title" v-model="newsData.titleKz" rows="3"
-                       :class="{ 'p-invalid': !newsData.titleKz && submitted }"/>
+            <InputText id="kz-title" v-model="newsData.titleKz" rows="3" :class="{ 'p-invalid': !newsData.titleKz && submitted }"/>
             <small v-show="!newsData.titleKz && submitted" class="p-error">{{ $t("smartenu.titleKzInvalid") }}</small>
           </div>
           <div class="field">
             <label for="kz-content">{{ $t("common.contentInQazaq") }}</label>
-            <TinyEditor v-model="newsData.contentKz" :height="300" />
-<!--            <Editor id="kz-content" v-model="newsData.contentKz" editorStyle="height: 320px"/>-->
-            <small v-show="!newsData.contentKz && submitted" class="p-error">{{
-                $t("smartenu.contentKzInvalid")
-              }}</small>
+            <TinyEditor v-model="newsData.contentKz" :height="300" :custom-file-upload="true" @onAfterUpload="onAfterUpload"/>
+            <!--            <Editor id="kz-content" v-model="newsData.contentKz" editorStyle="height: 320px"/>-->
+            <small v-show="!newsData.contentKz && submitted" class="p-error">{{ $t("smartenu.contentKzInvalid") }}</small>
           </div>
         </TabPanel>
         <TabPanel header="Русский">
           <div class="field mt-3">
             <label for="ru-title">{{ $t("common.nameInRussian") }}</label>
-            <InputText id="ru-title" v-model="newsData.titleRu"
-                       rows="3" :class="{ 'p-invalid': !newsData.titleRu && submitted }"/>
+            <InputText id="ru-title" v-model="newsData.titleRu" rows="3" :class="{ 'p-invalid': !newsData.titleRu && submitted }"/>
             <small v-show="!newsData.titleRu && submitted" class="p-error">{{ $t("smartenu.titleRuInvalid") }}</small>
           </div>
           <div class="field">
             <label for="ru-content">{{ $t("common.contentInRussian") }}</label>
-            <TinyEditor v-model="newsData.contentRu" :height="300" />
-<!--            <Editor id="ru-content" v-model="newsData.contentRu" editorStyle="height: 320px"/>-->
-            <small v-show="!newsData.contentRu && submitted" class="p-error">
-              {{ $t("smartenu.contentRuInvalid") }}
-            </small>
+            <TinyEditor v-model="newsData.contentRu" :height="300" :custom-file-upload="true" @onAfterUpload="onAfterUpload"/>
+            <!--            <Editor id="ru-content" v-model="newsData.contentRu" editorStyle="height: 320px"/>-->
+            <small v-show="!newsData.contentRu && submitted" class="p-error">{{ $t("smartenu.contentRuInvalid") }}</small>
           </div>
         </TabPanel>
         <TabPanel header="English">
           <div class="field mt-3">
             <label for="en-title">{{ $t("common.nameInEnglish") }}</label>
-            <InputText id="en-title" v-model="newsData.titleEn" rows="3"
-                       :class="{ 'p-invalid': !newsData.titleEn && submitted }"/>
-            <small v-show="!newsData.titleEn && submitted" class="p-error">
-              {{ $t("smartenu.titleEnInvalid") }}
-            </small>
+            <InputText id="en-title" v-model="newsData.titleEn" rows="3" :class="{ 'p-invalid': !newsData.titleEn && submitted }"/>
+            <small v-show="!newsData.titleEn && submitted" class="p-error">{{ $t("smartenu.titleEnInvalid") }}</small>
           </div>
 
           <div class="field">
             <label for="en-content">{{ $t("common.contentInEnglish") }}</label>
-            <TinyEditor v-model="newsData.contentEn" :height="300" />
-<!--            <Editor id="en-content" v-model="newsData.contentEn" editorStyle="height: 320px"/>-->
-            <small v-show="!newsData.contentEn && submitted" class="p-error">
-              {{ $t("smartenu.contentEnInvalid") }}
-            </small>
+            <TinyEditor v-model="newsData.contentEn" :height="300" :custom-file-upload="true" @onAfterUpload="onAfterUpload"/>
+            <!--            <Editor id="en-content" v-model="newsData.contentEn" editorStyle="height: 320px"/>-->
+            <small v-show="!newsData.contentEn && submitted" class="p-error">{{ $t("smartenu.contentEnInvalid") }}</small>
           </div>
         </TabPanel>
       </TabView>
+      <div class="field">
+        <Fieldset :legend="$t('workPlan.attachments')" :toggleable="true" v-if="newsData.files" collapsed>
+          <div ref="content" class="p-fileupload-content">
+            <div class="p-fileupload-files">
+              <div class="p-fileupload-row" v-for="(file, index) of newsData.files" :key="index">
+            <span class="mr-3" style="cursor: pointer;" @click="downloadFile(file)">
+              <i class="fa-solid fa-file-arrow-down text-green-500"></i>
+            </span>
+                <span @click="downloadFile(file)" style="cursor: pointer;">{{ file.filename ? file.filename : file.filepath }}</span>
+                <span class="ml-2">
+                <Button icon="pi pi-copy" class="p-button-rounded p-button-text"
+                        v-clipboard:copy="copyToClipboard(file)" v-clipboard:success="onCopy"/>
+              </span>
+                <span>
+                <Button icon="pi pi-times" class="p-button-rounded p-button-text" @click="deleteFileConfirm($event, file.id)"/>
+              </span>
+              </div>
+            </div>
+          </div>
+        </Fieldset>
+      </div>
       <div class="field">
         <TreeSelect v-show="selectedCatTree" v-model="selectedCatTree" :options="catTree.root" selectionMode="checkbox"
                     :placeholder="$t('smartenu.selectCategories')"
@@ -67,7 +77,7 @@
       </div>
       <div class="field">
         <label>{{ $t('common.pDate') }}</label>
-        <PrimeCalendar v-model="newsData.publish_date" showTime hourFormat="24" dateFormat="dd.mm.yy" showIcon @date-select="selectDate" />
+        <PrimeCalendar v-model="newsData.publish_date" showTime hourFormat="24" dateFormat="dd.mm.yy" showIcon @date-select="selectDate"/>
       </div>
       <div class="field">
         <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadImage1($event)"
@@ -145,6 +155,7 @@ import * as imageResizeCompress from "image-resize-compress";
 import {formatDate, resizeImages} from "../../helpers/HelperUtil";
 import {NewsService} from "../../service/news.service";
 import {PosterService} from "../../service/poster.service";
+import {fileRoute, getHeader, smartEnuApi} from "@/config/config";
 
 export default {
   name: "AddEditNews",
@@ -172,7 +183,8 @@ export default {
       },
       imageFileMain: null,
       newsService: new NewsService(),
-      posterService: new PosterService()
+      posterService: new PosterService(),
+      fileList: []
     }
   },
   created() {
@@ -192,6 +204,18 @@ export default {
   },
   methods: {
     formatDate,
+    onAfterUpload(file) {
+      this.fileList.push(file);
+      if (this.newsData.files && this.newsData.files.length !== 0) {
+        this.newsData.files.push(file)
+      } else {
+        this.newsData.files = [];
+        this.newsData.files.push(file)
+      }
+    },
+    copyToClipboard(file) {
+      return smartEnuApi + fileRoute + file.filepath;
+    },
     selectDate(event) {
       this.newsData.publish_date = new Date(event);
     },
@@ -262,6 +286,7 @@ export default {
           this.emitter.emit('newsCreated', true);
         }
       }).catch((error) => {
+        console.log(error)
         if (error.response.status == 401) {
           this.$store.dispatch("logLout");
         } else {
@@ -341,6 +366,58 @@ export default {
       }
       return array;
     },
+    downloadFile(file) {
+      let url = `${smartEnuApi}/serve?path=${file.filepath}`
+      fetch(url, {
+        method: 'GET',
+        headers: getHeader()
+      }).then(response => response.blob()).then(blob => {
+        let url = window.URL.createObjectURL(blob);
+        let a = document.createElement('a');
+        a.href = url;
+        a.download = file.filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+      });
+    },
+    deleteFileConfirm(event, id) {
+      this.$confirm.require({
+        target: event.currentTarget,
+        message: this.$t('common.confirmation'),
+        header: this.$t('common.confirm'),
+        group: 'deleteResult',
+        icon: 'pi pi-info-circle',
+        acceptClass: 'p-button-rounded p-button-success',
+        rejectClass: 'p-button-rounded p-button-danger',
+        accept: () => {
+          this.deleteFile(id);
+        }
+      });
+    },
+    deleteFile(id) {
+      this.enuService.deletePageFile(id).then(res => {
+        if (res.data.is_success) {
+          this.getPageFiles();
+          this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
+        }
+      }).catch((error) => {
+        this.$toast.add({severity: "error", summary: error, life: 3000});
+      });
+    },
+    onCopy() {
+      this.$toast.add({severity: 'success', summary: this.$t('ncasigner.successCopy'), life: 3000});
+    },
     validateNews() {
       this.formValid = [];
       if (!this.newsData.titleKz) {
@@ -389,5 +466,8 @@ export default {
 </script>
 
 <style scoped>
-
+.p-fileupload-row {
+  display: flex;
+  align-items: center;
+}
 </style>
