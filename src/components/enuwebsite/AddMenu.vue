@@ -23,11 +23,11 @@
     <div class="field">
       <label>{{ $t('web.menuType') }}</label>
       <div class="field-radiobutton">
-        <RadioButton inputId="menuType1" name="menuType" :value="1" v-model="menuType" />
+        <RadioButton inputId="menuType1" name="menuType" :value="1" v-model="menuType" @change="typeChange" />
         <label for="menuType1">{{ $t('web.page') }}</label>
       </div>
       <div class="field-radiobutton">
-        <RadioButton inputId="menuType2" name="menuType" :value="2" v-model="menuType" />
+        <RadioButton inputId="menuType2" name="menuType" :value="2" v-model="menuType" @change="typeChange" />
         <label for="menuType2">{{ $t('common.link') }}</label>
       </div>
     </div>
@@ -136,6 +136,11 @@ export default {
     });
   },
   methods: {
+    typeChange() {
+      if (this.menuType === 1) {
+        this.formData.link = null
+      }
+    },
     expandMenuTreeSelect(node) {
       this.lazyParams.parent_id = Number(node.menu_id)
       this.parentNode = node
