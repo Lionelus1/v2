@@ -61,7 +61,7 @@
     </div>
     <Card v-else>
       <template #content>
-        <PostFile :fileUpload="true" :modelValue="file" directory="readyMadeContract" @updated="fileUpdated"></PostFile>
+        <PostFile :fileUpload="true" :modelValue="file" :showCatalog="true" directory="readyMadeContract" @updated="fileUpdated"></PostFile>
       </template>
     </Card>
   </Sidebar>
@@ -103,6 +103,7 @@
           id: null,
           lang: null,
           docType: Enum.DocType.Contract,
+          sourceType: Enum.DocSourceType.FilledDoc,
         },
       }
     },

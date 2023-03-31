@@ -106,9 +106,9 @@
         </div>
       </TabPanel>
       <TabPanel v-else :header="$t('common.params')">
-        <Button :label="$t('doctemplate.approvalUsers')" @click="openForm('approvalUsers')" 
+        <Button class="p-button-success" :label="$t('doctemplate.approvalUsers')" @click="openForm('approvalUsers')" 
           style="margin-bottom: 1.5rem"/>
-        <SelectButton v-model="selectedDocParams" :options="docParamsType"
+        <SelectButton v-model="selectedDocParams" :options="docParamsType" :disabled="selectedDocParamsDisabled"
           :unselectable='false' style="margin-bottom: 0.75rem">
           <template #option="slotProps">
             <div v-if="slotProps.option === 0">{{$t('common.organization')}}</div>
@@ -168,18 +168,7 @@
           <label for="catalog">{{ $t("contracts.journal") }}</label>
         </div>
         <div class="col-12 mb-2 lg:col-9 mb-lg-1 pr-2">
-          <InputText
-            readonly="true"
-            :modelValue="
-              this.$i18n.locale === 'kz'
-                ? contract.template.folder.namekz
-                : this.$i18n.locale === 'ru'
-                ? contract.template.folder.nameru
-                : contract.template.folder.nameen
-            "
-            >
-            </InputText
-          >
+          <InputText readonly="true" :modelValue="folderName" style="width: 100%;"></InputText>
         </div>
         <div class="col-12 mb-2 lg:col-3 mb-lg-1">
           <label for="catalog">{{ $t("common.date") }}</label>
@@ -274,7 +263,6 @@ export default {
         Preview: 1,
       },
       corrected: false,
-      temp: false,
       signerInfo : false,
 	    reserveNumber: null,
       range: {
@@ -311,13 +299,11 @@ export default {
         {
           label: this.$t("common.registration"),
           icon: "pi pi-fw pi-paperclip",
-          disabled: () => this.contract && this.contract.sourceType === this.Enum.DocSourceType.FilledDoc,
           items: [
             {
               label: this.$t("contracts.setnumber"),
               icon: "pi pi-fw pi-list",
               command: () => {
-                this.temp = true;
                 this.openForm("setNumber");
               },
             },
@@ -376,7 +362,9 @@ export default {
         approvalUsers: false,
       },
 
+      folderName: '',
       selectedDocParams: 0,
+      selectedDocParamsDisabled: false,
       docParamsType: [0, 1],
     };
   },
@@ -641,7 +629,13 @@ export default {
               this.contract.lang == this.language.kz
                 ? this.contract.template.mainTextKaz
                 : this.contract.template.mainTextRus;
+            
+            this.folderName = this.$i18n.locale === 'kz' ? this.contract.template.folder.namekz
+                : this.$i18n.locale === 'ru' ? this.contract.template.folder.nameru : this.contract.template.folder.nameen
+          } else {
+            this.getReadyDocCatalog();
           }
+
           this.initApprovalStages();
           this.initOurside();
           this.loading = false;
@@ -783,6 +777,7 @@ export default {
         .then((res) => {
           this.corrected = false
           this.contract.params = res.data.params
+          this.selectedDocParamsDisabled = true
 
           if (this.contract.sourceType === this.Enum.DocSourceType.Template) {
             this.pdf = null
@@ -805,7 +800,7 @@ export default {
               severity: "error",
               summary: this.$t('common.message.' + error.response.data.error),
               life: 3000,
-            });
+          });
         }
       })
       
@@ -861,7 +856,6 @@ export default {
       let url = "/agreement/setnumber";
       var req = {
         id: this.contract.id,
-        temp: this.temp,
         next: next,
       };
       this.loading = true
@@ -945,6 +939,7 @@ export default {
             this.filledDocParams[this.selectedDocParams] = [...this.contract.params]
           }
         })
+        this.selectedDocParamsDisabled = true
         return
       }
 
@@ -1019,6 +1014,26 @@ export default {
       }
       
       this.corrected = true
+    },
+    getReadyDocCatalog() {
+      axios.post(smartEnuApi + '/doc/getFoldersByType', {
+        type: Enum.FolderType.FilledDoc,
+        showDocs: false,
+      }, {
+        headers: getHeader()
+      }).then(res => {
+        res.data.forEach(el => {
+          if (el.id === this.contract.folderID) {
+            this.folderName = el['name' + this.$i18n.locale]
+          }
+        })
+      }).catch(err => {
+        if (err.response.status == 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          console.log(err)
+        }
+      })
     },
   },
   mounted() {

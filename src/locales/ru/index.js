@@ -229,6 +229,7 @@ export default {
             qazNameNotfilled: "Не указали наименование на казахском",
             rusNameNotfilled: "Не указали наименование на русском",
             engNameNotfilled: "Не указали наименование на английском",
+            catalogNotFilled: "Не указали каталог",
             codeNotFilled: "Не указали код каталога",
             catSuccesCreated: "Новый каталог успешно добавлен",
             recordNotFound: "Подходящих записей не найдено",

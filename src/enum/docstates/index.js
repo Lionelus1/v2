@@ -38,8 +38,8 @@ export default {
     },
 
     DocSourceType : {
-        Template: 0,
-        FilledDoc: 1,
+      Template: 0,
+      FilledDoc: 1,
     },
 
     DocType : {
@@ -88,5 +88,6 @@ export default {
       NormativeDocuments: 0,
       Journals: 1,
       EduComplex: 2,
+      FilledDoc: 3,
     },
 }

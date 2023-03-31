@@ -225,6 +225,7 @@ export default {
             serverError: "Server error",
             groupsNotSelected: "No groups selected",
             catCreateError: "Error while creating a new catalog",
+            catalogNotFilled: "Catalog is not specified",
             codeNotFilled: "Catalog code not specified",
             qazNameNotfilled: "Did not type the name in qazaq",
             rusNameNotfilled: "Did not type the name in russian",

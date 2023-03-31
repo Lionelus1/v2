@@ -228,6 +228,7 @@ export default {
             qazNameNotfilled: "Қазақша атауын көрсетпедіңіз",
             rusNameNotfilled: "Орысша атауын көрсетпедіңіз",
             engNameNotfilled: "Ағылшынша атауын көрсетпедіңіз",
+            catalogNotFilled: "Қалтаны көрсетпедіңіз",
             codeNotFilled: "Қалта кодын көрсетпедіңіз",
             catSuccesCreated: "Жаңа қалта сәтті қосылды",
             recordNotFound: "Сәйкес келетін ешбір жазба табылмады",
