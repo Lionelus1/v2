@@ -13,7 +13,7 @@
           </div>
           <div class="field">
             <label for="kz-content">{{ $t("common.contentInQazaq") }}</label>
-            <TinyEditor v-model="event.contentKz" :height="300" />
+            <TinyEditor v-model="event.contentKz" :height="300" :custom-file-upload="true" @onAfterUpload="onAfterUpload" />
 <!--            <RichEditor ref="kztext" id="kz-content" v-model="event.contentKz" editorStyle="height: 320px"></RichEditor>-->
             <small v-show="!event.contentKz && submitted" class="p-error">
               {{ $t("smartenu.contentKzInvalid") }}
@@ -31,7 +31,7 @@
           </div>
           <div class="field">
             <label for="ru-content">{{ $t("common.contentInRussian") }}</label>
-            <TinyEditor v-model="event.contentRu" :height="300" />
+            <TinyEditor v-model="event.contentRu" :height="300" :custom-file-upload="true" @onAfterUpload="onAfterUpload" />
 <!--            <Editor id="ru-content" v-model="event.contentRu" editorStyle="height: 320px"/>-->
             <small v-show="!event.contentRu && submitted" class="p-error">
               {{ $t("smartenu.contentRuInvalid") }}
@@ -49,7 +49,7 @@
           </div>
           <div class="field">
             <label for="en-content">{{ $t("common.contentInEnglish") }}</label>
-            <TinyEditor v-model="event.contentEn" :height="300" />
+            <TinyEditor v-model="event.contentEn" :height="300" :custom-file-upload="true" @onAfterUpload="onAfterUpload" />
 <!--            <Editor id="en-content" v-model="event.contentEn" editorStyle="height: 320px"/>-->
             <small v-show="!event.contentEn && submitted" class="p-error">
               {{ $t("smartenu.contentEnInvalid") }}
@@ -57,6 +57,27 @@
           </div>
         </TabPanel>
       </TabView>
+      <div class="field">
+        <Fieldset :legend="$t('workPlan.attachments')" :toggleable="true" v-if="event.files" collapsed>
+          <div ref="content" class="p-fileupload-content">
+            <div class="p-fileupload-files">
+              <div class="p-fileupload-row" v-for="(file, index) of event.files" :key="index">
+            <span class="mr-3" style="cursor: pointer;" @click="downloadFile(file)">
+              <i class="fa-solid fa-file-arrow-down text-green-500"></i>
+            </span>
+                <span @click="downloadFile(file)" style="cursor: pointer;">{{ file.filename ? file.filename : file.filepath }}</span>
+                <span class="ml-2">
+                <Button icon="pi pi-copy" class="p-button-rounded p-button-text"
+                        v-clipboard:copy="copyToClipboard(file)" v-clipboard:success="onCopy"/>
+              </span>
+                <span>
+                <Button icon="pi pi-times" class="p-button-rounded p-button-text" @click="deleteFileConfirm($event, file.id)"/>
+              </span>
+              </div>
+            </div>
+          </div>
+        </Fieldset>
+      </div>
       <div class="field">
         <label for="is-online">{{ $t("smartenu.eventFormat") }}</label>
         <Dropdown id="is-online" v-model="event.isOnline" :options="format" optionLabel="name" optionValue="value"
@@ -201,6 +222,7 @@ import {EventsService} from "../../service/event.service";
 import {resizeImages} from "../../helpers/HelperUtil";
 import * as imageResizeCompress from "image-resize-compress";
 import {PosterService} from "../../service/poster.service";
+import {fileRoute, getHeader, smartEnuApi} from "@/config/config";
 
 export default {
   name: "AddEditEvent",
@@ -246,7 +268,8 @@ export default {
       departments: null,
       selectedDepartments: null,
       eventService: new EventsService(),
-      posterService: new PosterService()
+      posterService: new PosterService(),
+      fileList: []
     }
   },
   created() {
@@ -505,6 +528,70 @@ export default {
         this.formValid.push(this.$t("smartenu.posterImageEnInvalid"));
       }
     },
+    onAfterUpload(file) {
+      this.fileList.push(file);
+      if (this.event.files && this.event.files.length !== 0) {
+        this.event.files.push(file)
+      } else {
+        this.event.files = [];
+        this.event.files.push(file)
+      }
+    },
+    copyToClipboard(file) {
+      return smartEnuApi + fileRoute + file.filepath;
+    },
+    downloadFile(file) {
+      let url = `${smartEnuApi}/serve?path=${file.filepath}`
+      fetch(url, {
+        method: 'GET',
+        headers: getHeader()
+      }).then(response => response.blob()).then(blob => {
+        let url = window.URL.createObjectURL(blob);
+        let a = document.createElement('a');
+        a.href = url;
+        a.download = file.filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+      });
+    },
+    deleteFileConfirm(event, id) {
+      this.$confirm.require({
+        target: event.currentTarget,
+        message: this.$t('common.confirmation'),
+        header: this.$t('common.confirm'),
+        group: 'deleteResult',
+        icon: 'pi pi-info-circle',
+        acceptClass: 'p-button-rounded p-button-success',
+        rejectClass: 'p-button-rounded p-button-danger',
+        accept: () => {
+          this.deleteFile(id);
+        }
+      });
+    },
+    deleteFile(id) {
+      this.enuService.deletePageFile(id).then(res => {
+        if (res.data.is_success) {
+          this.getPageFiles();
+          this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
+        }
+      }).catch((error) => {
+        this.$toast.add({severity: "error", summary: error, life: 3000});
+      });
+    },
+    onCopy() {
+      this.$toast.add({severity: 'success', summary: this.$t('ncasigner.successCopy'), life: 3000});
+    },
     async convertBase64(document) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -554,7 +641,6 @@ export default {
         );
       }
     },
-
     isCreated: function () {
       return (
           this.selectedEvent &&
