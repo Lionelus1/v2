@@ -6,7 +6,7 @@
 import Editor from '@tinymce/tinymce-vue'
 import {uploadSingFile} from "../helpers/HelperUtil";
 import {FileService} from "@/service/file.service";
-import {fileRoute, smartEnuApi} from "@/config/config";
+import {downloadRoute, fileRoute, smartEnuApi} from "@/config/config";
 
 export default {
   name: "TinyEditor",
@@ -75,9 +75,9 @@ export default {
       input.addEventListener('change', (e) => {
         const file = e.target.files[0];
         const fd = new FormData();
-        fd.append("files", file)
+        fd.append("files[]", file)
         this.fileService.uploadFile(fd).then(res => {
-          let item = {filename: file.name, filepath: res.data[0].filePath};
+          let item = res.data[0];
           window.tinymce.activeEditor.execCommand('mceInsertContent', false, this.generateList(item));
           this.$emit('onAfterUpload', item);
         }).catch(error => {
@@ -88,7 +88,7 @@ export default {
       input.click();
     },
     generateList(file) {
-      return `<a href="${smartEnuApi + fileRoute + file.filepath}">${file.filename}</a>`;
+      return `<a href="${smartEnuApi + downloadRoute + file.uuid}">${file.filename}</a>`;
     },
   }
 }
