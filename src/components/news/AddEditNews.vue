@@ -406,7 +406,7 @@ export default {
       });
     },
     deleteFile(id) {
-      this.enuService.deletePageFile(id).then(res => {
+      this.newsService.deleteNewsFile(id).then(res => {
         if (res.data.is_success) {
           this.getPageFiles();
           this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});

@@ -1,7 +1,8 @@
 <template>
   <ConfirmPopup group="deleteResult"></ConfirmPopup>
   <div class="col-12">
-    <TitleBlock :title="$t('web.blocks') + ' | ' + ($i18n.locale === 'kz' ? block.title_kz : $i18n.locale === 'ru' ? block.title_ru : block.title_en)" :showBackButton="true" />
+    <TitleBlock :title="$t('web.blocks') + ' | ' + ($i18n.locale === 'kz' ? block.title_kz : $i18n.locale === 'ru' ? block.title_ru : block.title_en)"
+                :showBackButton="true"/>
     <div class="card" v-if="block && !block.is_list">
       <TabView class="p-fluid" v-if="formData">
         <TabPanel header="Қазақша">
@@ -12,8 +13,8 @@
           </div>
           <div class="field">
             <label>{{ $t("common.contentInQazaq") }}</label>
-<!--            <RichEditor ref="kztext" v-model="content.content_kz" editorStyle="height: 320px"></RichEditor>-->
-            <TinyEditor v-model="formData.content_kz" :custom-file-upload="true" @onAfterUpload="onAfterUpload" />
+            <!--            <RichEditor ref="kztext" v-model="content.content_kz" editorStyle="height: 320px"></RichEditor>-->
+            <TinyEditor v-model="formData.content_kz" :custom-file-upload="true" @onAfterUpload="onAfterUpload"/>
             <small v-show="!formData.content_kz && submitted" class="p-error">
               {{ $t("smartenu.contentKzInvalid") }}
             </small>
@@ -29,8 +30,8 @@
           </div>
           <div class="field">
             <label for="ru-content">{{ $t("common.contentInRussian") }}</label>
-<!--            <RichEditor id="ru-content" v-model="formData.content_ru" editorStyle="height: 320px"/>-->
-            <TinyEditor v-model="formData.content_ru" :custom-file-upload="true" @onAfterUpload="onAfterUpload" />
+            <!--            <RichEditor id="ru-content" v-model="formData.content_ru" editorStyle="height: 320px"/>-->
+            <TinyEditor v-model="formData.content_ru" :custom-file-upload="true" @onAfterUpload="onAfterUpload"/>
             <small v-show="!formData.content_ru && submitted" class="p-error">
               {{ $t("smartenu.contentRuInvalid") }}
             </small>
@@ -46,8 +47,8 @@
           </div>
           <div class="field">
             <label>{{ $t("common.contentInEnglish") }}</label>
-<!--            <RichEditor v-model="formData.content_en" editorStyle="height: 320px"/>-->
-            <TinyEditor v-model="formData.content_en" :custom-file-upload="true" @onAfterUpload="onAfterUpload" />
+            <!--            <RichEditor v-model="formData.content_en" editorStyle="height: 320px"/>-->
+            <TinyEditor v-model="formData.content_en" :custom-file-upload="true" @onAfterUpload="onAfterUpload"/>
             <small v-show="!formData.content_en && submitted" class="p-error">
               {{ $t("smartenu.contentEnInvalid") }}
             </small>
@@ -59,20 +60,20 @@
         <label>{{ $t('workPlan.attachments') }}</label>
         <div ref="content" class="p-fileupload-content">
           <div class="p-fileupload-files">
-            <div class="p-fileupload-row" v-for="(file, index) of formData.files" :key="index">
-            <span class="mr-3" style="cursor: pointer;" @click="downloadFile(file)">
-              <i class="fa-solid fa-file-arrow-down text-green-500"></i>
-            </span>
-              <span @click="downloadFile(file)" style="cursor: pointer;">
-              {{ file.filename ? file.filename : file.filepath }}</span>
+            <div class="p-fileupload-row" v-for="(item, index) of formData.files" :key="index">
+              <span class="mr-3" style="cursor: pointer;" @click="downloadFile(item)">
+                <i class="fa-solid fa-file-arrow-down text-green-500"></i>
+              </span>
+              <span @click="downloadFile(item)" style="cursor: pointer;">
+                {{ item.file.filename ? item.file.filename : item.file.filepath }}
+              </span>
               <span class="ml-2">
-              <Button icon="pi pi-copy" class="p-button-rounded p-button-text"
-                      v-clipboard:copy="copyToClipboard(file)" v-clipboard:success="onCopy" />
-            </span>
-              <span v-if="file.id">
-              <Button icon="pi pi-times" class="p-button-rounded p-button-text"
-                      @click="deleteFileConfirm($event, file.id)"/>
-            </span>
+                <Button icon="pi pi-copy" class="p-button-rounded p-button-text"
+                        v-clipboard:copy="copyToClipboard(item)" v-clipboard:success="onCopy"/>
+              </span>
+              <span v-if="item.id">
+                <Button icon="pi pi-times" class="p-button-rounded p-button-text" @click="deleteFileConfirm($event, item.id)"/>
+              </span>
             </div>
           </div>
         </div>
@@ -80,7 +81,7 @@
 
       <Button :label="$t('common.save')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2" @click="saveBlocContent"/>
     </div>
-    <BlockElementsList v-if="block.is_list" />
+    <BlockElementsList v-if="block.is_list"/>
   </div>
 </template>
 
@@ -93,7 +94,7 @@ import {useToast} from "primevue/usetoast";
 import {useI18n} from "vue-i18n";
 import TitleBlock from "@/components/TitleBlock.vue";
 import {FileService} from "../../../service/file.service";
-import {fileRoute, getHeader, smartEnuApi} from "../../../config/config";
+import {downloadRoute, fileRoute, getHeader, smartEnuApi} from "../../../config/config";
 import {useConfirm} from "primevue/useconfirm";
 import {useStore} from "vuex";
 import TinyEditor from "../../TinyEditor";
@@ -214,8 +215,8 @@ export default {
       toast.add({severity: 'success', summary: i18n.t('ncasigner.successCopy'), life: 3000});
     }
 
-    const downloadFile = (file) => {
-      let url = `${smartEnuApi}/serve?path=${file.filepath}`
+    const downloadFile = (item) => {
+      let url = `${smartEnuApi + downloadRoute + item.file.uuid}`
       fetch(url, {
         method: 'GET',
         headers: getHeader()
@@ -223,7 +224,7 @@ export default {
         let url = window.URL.createObjectURL(blob);
         let a = document.createElement('a');
         a.href = url;
-        a.download = file.filename;
+        a.download = item.file.filename;
         document.body.appendChild(a);
         a.click();
         a.remove();
@@ -231,11 +232,7 @@ export default {
         if (error.response && error.response.status === 401) {
           store.dispatch("logLout");
         } else {
-          toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
+          toast.add({severity: "error", summary: error, life: 3000});
         }
       });
     }

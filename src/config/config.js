@@ -6,6 +6,7 @@ export const smartEnuApi = process.env.VUE_APP_SMARTENU_API
 export const socketApi = process.env.VUE_APP_SOCKET_API
 export const queueApi = process.env.VUE_APP_QUEUE_API
 export const fileRoute = "/serve?path="
+export const downloadRoute = "/download/"
 
 export const header  = {
   "Accept": "application/json",

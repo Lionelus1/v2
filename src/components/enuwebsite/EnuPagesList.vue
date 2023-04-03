@@ -123,19 +123,19 @@
       <label>{{ $t('workPlan.attachments') }}</label>
       <div ref="content" class="p-fileupload-content">
         <div class="p-fileupload-files">
-          <div class="p-fileupload-row" v-for="(file, index) of formData.file_list" :key="index">
-            <span class="mr-3" style="cursor: pointer;" @click="downloadFile(file)">
+          <div class="p-fileupload-row" v-for="(item, index) of formData.file_list" :key="index">
+            <span class="mr-3" style="cursor: pointer;" @click="downloadFile(item)">
               <i class="fa-solid fa-file-arrow-down text-green-500"></i>
             </span>
-            <span @click="downloadFile(file)" style="cursor: pointer;">
-              {{ file.filename ? file.filename : file.filepath }}</span>
+            <span @click="downloadFile(item)" style="cursor: pointer;">
+              {{ item.file.filename ? item.file.filename : item.file.filepath }}</span>
             <span class="ml-2">
               <Button icon="pi pi-copy" class="p-button-rounded p-button-text"
-                      v-clipboard:copy="copyToClipboard(file)" v-clipboard:success="onCopy" />
+                      v-clipboard:copy="copyToClipboard(item.file)" v-clipboard:success="onCopy" />
             </span>
             <span>
               <Button icon="pi pi-times" class="p-button-rounded p-button-text"
-                      @click="deleteFileConfirm($event, file.id)"/>
+                      @click="deleteFileConfirm($event, item.id)"/>
             </span>
           </div>
         </div>
@@ -157,7 +157,7 @@ import {EnuWebService} from "@/service/enu.web.service";
 import PageView from "@/components/enuwebsite/PageView.vue";
 import {formatDate} from "@/helpers/HelperUtil";
 import {FileService} from "../../service/file.service";
-import {fileRoute, getHeader, smartEnuApi} from "../../config/config";
+import {downloadRoute, fileRoute, getHeader, smartEnuApi} from "../../config/config";
 
 export default {
   name: "EnuPagesList",
@@ -220,10 +220,10 @@ export default {
     formatDate,
     onAfterUpload(item) {
       this.fileList.push(item);
-      this.formData.files.push(item);
+      this.formData.file_list.push({file_id: item.id, file: item});
     },
     copyToClipboard(file) {
-      return smartEnuApi + fileRoute + file.filepath;
+      return smartEnuApi + downloadRoute + file.uuid;
     },
     getPages() {
       this.loading = true;
@@ -372,7 +372,7 @@ export default {
       this.display = false;
     },
     downloadFile(file) {
-      let url = `${smartEnuApi}/serve?path=${file.filepath}`
+      let url = `${smartEnuApi + downloadRoute + file.uuid}`
       fetch(url, {
         method: 'GET',
         headers: getHeader()

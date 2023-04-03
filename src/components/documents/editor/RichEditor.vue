@@ -118,7 +118,7 @@ export default {
           upload: (file) => {
             return new Promise((resolve, reject) => {
               const fd = new FormData();
-              fd.append("files", file);
+              fd.append("files[]", file);
               this.fileService.uploadFile(fd).then(res => {
                 if (res.data) {
                   res.data.map(e => {

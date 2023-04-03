@@ -580,9 +580,9 @@ export default {
       });
     },
     deleteFile(id) {
-      this.enuService.deletePageFile(id).then(res => {
+      this.eventService.deleteEventFile(id).then(res => {
         if (res.data.is_success) {
-          this.getPageFiles();
+          this.getEventFiles();
           this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
         }
       }).catch((error) => {

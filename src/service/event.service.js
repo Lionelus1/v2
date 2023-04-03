@@ -23,6 +23,10 @@ export class EventsService {
         return api.post("/addEvent", fd, {headers: getHeader()});
     }
 
+    deleteEventFile(id) {
+        return api.post(`/deleteEventFile`, {id: id}, {headers: getHeader()});
+    }
+
     publishEvent(id, userId) {
         return api.post("/publishEvent", {
             id: id,

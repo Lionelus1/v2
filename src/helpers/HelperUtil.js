@@ -43,11 +43,11 @@ export function generateYears(startYear = 1979) {
 
 export function uploadSingFile(blobInfo, success, failure) {
     const fd = new FormData();
-    fd.append("files", blobInfo.blob(), blobInfo.filename());
+    fd.append("files[]", blobInfo.blob(), blobInfo.filename());
     new FileService().uploadFile(fd).then(res => {
         if (res.data) {
             res.data.map(e => {
-                e.filePath = smartEnuApi + fileRoute + e.filePath;
+                e.filePath = smartEnuApi + fileRoute + e.filepath;
             });
             success(res.data[0].filePath)
         }
