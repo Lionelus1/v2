@@ -324,7 +324,7 @@ export default {
             givenorg: "Орган выдачи",
             givendate: "Дата выдачи",
             expire: "Годен до",
-        },  
+        },
         message: {
             validEmail: "Введите корректный email адрес",
         },
@@ -381,7 +381,6 @@ export default {
         },
         needsApproval: "Созданный по шаблону документ требует согласования",
         approvalUsers: "Список согласующих лиц",
-        approvalListPlaceholder: "Инстанция",
     },
     contracts: {
         title: "Договоры",
@@ -648,7 +647,7 @@ export default {
     },
 
     queue: {
-        
+
         title: "Очередь",
         secretary: "Обслуживание",
         queues: "Очереди",
@@ -936,17 +935,17 @@ export default {
     postaccmonrep: {
         title: "Отчеты по самооценке/по постаккредитационному мониторингу",
     },
-    ref:{
-        getRef:"Получить справку",
-        createQr:"Присвоить QR код и поделиться",
-        sendMail:"Сообщить об ошибке данных в документе",
-        sendMail1:"Отправить почту",
-        correction:"Напишите здесь свою поправку. . .",
-        sendingMail:"Отправка почты подождите . . .",
-        mailSent:"Ваше письмо успешно отправлено в отдел кадров.",
-        mailFailed:"Ваше письмо не отправлено, попробуйте еще раз."
+    ref: {
+        getRef: "Получить справку",
+        createQr: "Присвоить QR код и поделиться",
+        sendMail: "Сообщить об ошибке данных в документе",
+        sendMail1: "Отправить почту",
+        correction: "Напишите здесь свою поправку. . .",
+        sendingMail: "Отправка почты подождите . . .",
+        mailSent: "Ваше письмо успешно отправлено в отдел кадров.",
+        mailFailed: "Ваше письмо не отправлено, попробуйте еще раз."
     },
-    guide:{
+    guide: {
         guide: 'Cправочник',
         pathName: 'Название пути',
         guideName: 'Название справочника',
@@ -972,7 +971,11 @@ export default {
         organizers: 'Организаторы курсов',
         lnum: 'Последний номер',
     },
-    roleControl:{
+    roleControl: {
+        addSidebar: 'Добавление новой записи',
+        userChangeable: 'Изменение пользователей по умолчанию',
+        certificate: 'Сертификат',
+        title: 'Заголовок',
         menuTitle: 'Управление ролями',
         giveRole: 'Дать новую роль',
         selectOrg: 'Выберите организацию',
@@ -986,6 +989,7 @@ export default {
         roleLabel: 'Роль',
         noResult: 'Не найдено записей',
         cantDelete: 'Невозможно удалить запись',
+        addNewInstance: 'Добавление новой должности',
     }
 
 }

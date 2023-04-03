@@ -379,7 +379,6 @@ export default {
         },
         needsApproval: "Үлгі бойынша жасалған құжат келісуді қажет етеді",
         approvalUsers: "Келісім беруі тиіс тұлғалар тізімі",
-        approvalListPlaceholder: "Инстанция",
     },
     contracts: {
         title: "Келісім-шарттар",
@@ -985,6 +984,10 @@ export default {
         lnum: 'Соңғы нөмір',
     },
     roleControl:{
+        addSidebar: 'Жаңа жазбаны қосу',
+        userChangeable: 'Әдепкі пайдаланушыларды өзгерту',
+        certificate : 'Сертификат',
+        title : 'Қазақша атауы',
         menuTitle: 'Рольдерді басқару',
         giveRole: 'Жаңа роль беру',
         selectOrg: 'Ұйымды таңдаңыз',
@@ -998,5 +1001,6 @@ export default {
         roleLabel: 'Роль',
         noResult: 'Жазбалар табылмады',
         cantDelete: 'Жазбаны өшіру мүмкін емес',
+        addNewInstance: 'Жаңа позиция қосу',
     }
 }

@@ -40,7 +40,7 @@
         </li>
       </ul>
       <div class="steps-content">
-        <Dropdown v-if="isNewStage" @change="approvalListChanged" v-model="approvalListItem" :options="approvalList" :optionLabel="'title' + $i18n.locale.charAt(0).toUpperCase() + $i18n.locale.slice(1)" :placeholder="$t('doctemplate.approvalListPlaceholder')"></Dropdown>
+        <Dropdown v-if="isNewStage" @change="approvalListChanged" v-model="approvalListItem" :options="approvalList" :optionLabel="'title' + $i18n.locale.charAt(0).toUpperCase() + $i18n.locale.slice(1)" :placeholder="$t('contact.position')"></Dropdown>
         <FindUser :disabled="readonly || !approvalStages[activeIndex].userChangeable" class="mt-2" @add="updateModel" @remove="updateModel" v-model="selectedUsers"></FindUser>
         <Dropdown :disabled="true" @change="updateModel" class="mt-2" v-model="certificate" :options="certificates" optionValue="value" :optionLabel="'name' + $i18n.locale" :placeholder="$t('ncasigner.certType')" />
       </div>
@@ -49,14 +49,21 @@
         <Button v-if="!readonly" :disabled="!(isNewStage && approvalStages.length < 10)" icon="pi pi-plus" class="p-button-rounded p-button-success"
                 @click="addStep"/>
         <Button v-if="!readonly" @click="clearSteps" class="btn danger ml-2"> {{ $t('common.clearApprovalList') }} </Button>
+        <Button v-if="!readonly" @click="approvalListControl = true" style="width: auto; color: white; font-weight: 700;"
+                :disabled="!isNewStage" class="p-button-warning"> {{ $t('roleControl.addNewInstance') }} </Button>
       </div>
     </div>
   </div>
+  <Dialog v-model:visible="approvalListControl" :style="{width: '50vw'}" class="p-fluid" @hide="dialogHidden">
+    <ApprovalListControl></ApprovalListControl>
+  </Dialog>
 </template>
 
 <script>
 import axios from 'axios';
 import {smartEnuApi, getHeader} from "@/config/config";
+
+import ApprovalListControl from '../../roleControl/ApprovalListControl.vue';
 
 export default {
   name: "ApproveComponent",
@@ -67,6 +74,7 @@ export default {
     readonly: null,
   },
   emits: ['clearStages'],
+  components: { ApprovalListControl },
   data() {
     return {
       selectedUsers: null,
@@ -95,6 +103,7 @@ export default {
       approvalStages: this.modelValue,
       approvalList: [],
       approvalListItem: null,
+      approvalListControl: false,
     }
   },
   setup(props, context) {
@@ -224,6 +233,26 @@ export default {
       this.certificate = this.approvalListItem.certificate.value
       this.selectedUsers = this.approvalListItem.users
       this.updateModel()
+    },
+    dialogHidden() {
+      this.getApprovalList()
+    },
+    getApprovalList() {
+      axios.get(smartEnuApi + "/approvalList/get", {
+        headers: getHeader(),
+      }).then(response => {
+        this.approvalList = response.data
+      }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+      })
     }
   },
   created() {
@@ -242,21 +271,7 @@ export default {
   },
   mounted() {
     if (this.mode != 'standard') {
-      axios.get(smartEnuApi + "/approvalList/get", {
-        headers: getHeader(),
-      }).then(response => {
-        this.approvalList = response.data
-      }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
-      })
+      this.getApprovalList()
     }
   },
   unmounted() {

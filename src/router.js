@@ -441,6 +441,12 @@ const routes = [
                 name: 'RoleControl',
                 component: load('roleControl/RoleControl'),
                 beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/approvalList',
+                name: 'ApprovalListControl',
+                component: load('roleControl/ApprovalListControl'),
+                beforeEnter: ifAuthenticated,
             }
                 
         ]
