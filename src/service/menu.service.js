@@ -37,6 +37,9 @@ export class MenuService {
                     {
                         label: $t('course.certificate.title'), icon: 'fa-solid fa-award', to: '/documents/certificates'
                     },
+                    {
+                        label: $t('postaccmonrep.title'), icon: 'pi pi-fw pi-folder', to: '/documents/catalog/postaccmonrep'
+                    },
               
                 ]
 

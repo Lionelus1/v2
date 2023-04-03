@@ -6,6 +6,9 @@ export class OnlineCourseService {
         return api.post('/certificate/update', data, {headers: getHeader()});
     }
     getCertificateTemplateJournal(data) {
+        return api.post('/certificate/templates', data, {headers:getHeader()});
+    }
+    getCertificateJournal(data) {
         return api.post('/certificate/journal', data, {headers:getHeader()});
     }
     updateCourseOrganizer(data) {

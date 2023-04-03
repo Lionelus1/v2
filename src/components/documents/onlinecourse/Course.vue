@@ -52,7 +52,13 @@
                     </template>
                     <Column field="profile.fullName" :header="$t('common.fullName')"></Column>
                     <Column :field="'profile.mainPosition.department.name' + ($i18n.locale).charAt(0).toUpperCase() + ($i18n.locale).slice(1)" :header="$t('common.department')"></Column> 
-                    <Column field="lastNumber" :header="$t('course.lnum')"></Column>
+                    <Column field="certificateUUID">
+                        <template #body="slotProps">
+                            <div >
+                                <i v-if="slotProps.data.certificateUUID"  class="fa-solid fa-award"></i>                    
+                            </div>
+                        </template>
+                    </Column>
                     <!-- <Column headerStyle="width:60px;">
                         <template #body="slotProps">
                         <Button @click="template=slotProps.data;templateEditorVisilble = true"
