@@ -981,6 +981,7 @@ export default {
         roleLabel: 'Role',
         noResult: 'No records found',
         cantDelete: 'Cant delete the record',
-        addNewInstance: 'Adding a new position',
+        addNewInstance: 'Adding new approvers/signers',
+        instance: 'Appover/signer',
     }
 }

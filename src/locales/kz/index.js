@@ -1001,6 +1001,7 @@ export default {
         roleLabel: 'Роль',
         noResult: 'Жазбалар табылмады',
         cantDelete: 'Жазбаны өшіру мүмкін емес',
-        addNewInstance: 'Жаңа позиция қосу',
+        addNewInstance: 'Жаңа мақұлдаушыларды/қол қоюшыларды қосу',
+        instance: 'Мақұлдаушы/қол қоюшы',
     }
 }
