@@ -1,4 +1,5 @@
 <template>
+  <ConfirmPopup group="deleteResult"></ConfirmPopup>
   <Dialog v-if="editVisible" v-model:visible="editVisible" :style="{ width: '1000px' }" :breakpoints="{'960px': '75vw', '640px': '90vw'}"
           :header="$t('smartenu.createOrEditNews')"
           :modal="true" class="p-fluid">
@@ -50,17 +51,17 @@
         <Fieldset :legend="$t('workPlan.attachments')" :toggleable="true" v-if="newsData.files" collapsed>
           <div ref="content" class="p-fileupload-content">
             <div class="p-fileupload-files">
-              <div class="p-fileupload-row" v-for="(file, index) of newsData.files" :key="index">
-            <span class="mr-3" style="cursor: pointer;" @click="downloadFile(file)">
+              <div class="p-fileupload-row" v-for="(item, index) of newsData.files" :key="index">
+            <span class="mr-3" style="cursor: pointer;" @click="downloadFile(item.file)">
               <i class="fa-solid fa-file-arrow-down text-green-500"></i>
             </span>
-                <span @click="downloadFile(file)" style="cursor: pointer;">{{ file.filename ? file.filename : file.filepath }}</span>
+                <span @click="downloadFile(item.file)" style="cursor: pointer;">{{ item.file.filename ? item.file.filename : item.file.filepath }}</span>
                 <span class="ml-2">
                 <Button icon="pi pi-copy" class="p-button-rounded p-button-text"
-                        v-clipboard:copy="copyToClipboard(file)" v-clipboard:success="onCopy"/>
+                        v-clipboard:copy="copyToClipboard(item.file)" v-clipboard:success="onCopy"/>
               </span>
                 <span>
-                <Button icon="pi pi-times" class="p-button-rounded p-button-text" @click="deleteFileConfirm($event, file.id)"/>
+                <Button icon="pi pi-times" class="p-button-rounded p-button-text" @click="deleteFileConfirm($event, item, index)"/>
               </span>
               </div>
             </div>
@@ -155,7 +156,7 @@ import * as imageResizeCompress from "image-resize-compress";
 import {formatDate, resizeImages} from "../../helpers/HelperUtil";
 import {NewsService} from "../../service/news.service";
 import {PosterService} from "../../service/poster.service";
-import {fileRoute, getHeader, smartEnuApi} from "@/config/config";
+import {downloadRoute, fileRoute, getHeader, smartEnuApi} from "@/config/config";
 
 export default {
   name: "AddEditNews",
@@ -207,14 +208,14 @@ export default {
     onAfterUpload(file) {
       this.fileList.push(file);
       if (this.newsData.files && this.newsData.files.length !== 0) {
-        this.newsData.files.push(file)
+        this.newsData.files.push({file_id: file.id, file: file})
       } else {
         this.newsData.files = [];
-        this.newsData.files.push(file)
+        this.newsData.files.push({file_id: file.id, file: file})
       }
     },
     copyToClipboard(file) {
-      return smartEnuApi + fileRoute + file.filepath;
+      return smartEnuApi + downloadRoute + file.uuid;
     },
     selectDate(event) {
       this.newsData.publish_date = new Date(event);
@@ -286,7 +287,6 @@ export default {
           this.emitter.emit('newsCreated', true);
         }
       }).catch((error) => {
-        console.log(error)
         if (error.response.status == 401) {
           this.$store.dispatch("logLout");
         } else {
@@ -367,7 +367,7 @@ export default {
       return array;
     },
     downloadFile(file) {
-      let url = `${smartEnuApi}/serve?path=${file.filepath}`
+      let url = `${smartEnuApi + downloadRoute + file.uuid}`
       fetch(url, {
         method: 'GET',
         headers: getHeader()
@@ -391,7 +391,7 @@ export default {
         }
       });
     },
-    deleteFileConfirm(event, id) {
+    deleteFileConfirm(event, item, index) {
       this.$confirm.require({
         target: event.currentTarget,
         message: this.$t('common.confirmation'),
@@ -401,17 +401,28 @@ export default {
         acceptClass: 'p-button-rounded p-button-success',
         rejectClass: 'p-button-rounded p-button-danger',
         accept: () => {
-          this.deleteFile(id);
+          if (item.id) {
+            this.deleteFile(item.id);
+          } else {
+            this.newsData.files.splice(index, 1)
+          }
         }
       });
     },
     deleteFile(id) {
       this.newsService.deleteNewsFile(id).then(res => {
         if (res.data.is_success) {
-          this.getPageFiles();
+          this.getNewsFiles();
           this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
         }
       }).catch((error) => {
+        this.$toast.add({severity: "error", summary: error, life: 3000});
+      });
+    },
+    getNewsFiles() {
+      this.newsService.getNewsFiles(this.newsData.id).then(res => {
+        this.newsData.files = res.data;
+      }).catch(error => {
         this.$toast.add({severity: "error", summary: error, life: 3000});
       });
     },

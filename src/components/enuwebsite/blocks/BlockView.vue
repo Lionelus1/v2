@@ -69,10 +69,10 @@
               </span>
               <span class="ml-2">
                 <Button icon="pi pi-copy" class="p-button-rounded p-button-text"
-                        v-clipboard:copy="copyToClipboard(item)" v-clipboard:success="onCopy"/>
+                        v-clipboard:copy="copyToClipboard(item.file)" v-clipboard:success="onCopy"/>
               </span>
               <span v-if="item.id">
-                <Button icon="pi pi-times" class="p-button-rounded p-button-text" @click="deleteFileConfirm($event, item.id)"/>
+                <Button icon="pi pi-times" class="p-button-rounded p-button-text" @click="deleteFileConfirm($event, item, index)"/>
               </span>
             </div>
           </div>
@@ -154,8 +154,6 @@ export default {
       submitted.value = true;
       if (!isValid()) return;
       if (formData.value.block_content_id != null) {
-        if (fileList.value.length > 0)
-          formData.value.files = fileList.value;
         enuService.editBlockContent(formData.value).then(res => {
           if (res.data.is_success) {
             submitted.value = false;
@@ -200,15 +198,15 @@ export default {
     const onAfterUpload = (file) => {
       fileList.value.push(file);
       if (formData.value.files && formData.value.files.length !== 0) {
-        formData.value.files.push(file)
+        formData.value.files.push({file_id: file.id, file: file})
       } else {
         formData.value.files = [];
-        formData.value.files.push(file)
+        formData.value.files.push({file_id: file.id, file: file})
       }
     }
 
     const copyToClipboard = (file) => {
-      return smartEnuApi + fileRoute + file.filepath;
+      return smartEnuApi + downloadRoute + file.uuid;
     }
 
     const onCopy = () => {
@@ -237,7 +235,7 @@ export default {
       });
     }
 
-    const deleteFileConfirm = (event, id) => {
+    const deleteFileConfirm = (event, item, index) => {
       confirm.require({
         target: event.currentTarget,
         message: i18n.t('common.confirmation'),
@@ -247,7 +245,11 @@ export default {
         acceptClass: 'p-button-rounded p-button-success',
         rejectClass: 'p-button-rounded p-button-danger',
         accept: () => {
-          deleteFile(id);
+          if (item.id) {
+            deleteFile(item.id);
+          } else {
+            formData.value.files.splice(index, 1);
+          }
         }
       });
     }

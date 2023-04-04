@@ -36,6 +36,10 @@ export class NewsService {
     }
 
     deleteNewsFile(id) {
-        return api.post(`/deleteNewsFile`, {id: id}, {headers: getHeader()});
+        return api.post(`/news/deleteFile`, {id: id}, {headers: getHeader()});
+    }
+
+    getNewsFiles(id) {
+        return api.post(`/web/getNewsFiles`, {content_id: id}, {headers: getHeader()});
     }
 }
