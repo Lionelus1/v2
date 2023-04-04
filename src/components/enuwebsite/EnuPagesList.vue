@@ -119,11 +119,11 @@
         </div>
       </TabPanel>
     </TabView>
-    <div class="field" v-if="formData.file_list">
+    <div class="field" v-if="formData.files">
       <label>{{ $t('workPlan.attachments') }}</label>
       <div ref="content" class="p-fileupload-content">
         <div class="p-fileupload-files">
-          <div class="p-fileupload-row" v-for="(item, index) of formData.file_list" :key="index">
+          <div class="p-fileupload-row" v-for="(item, index) of formData.files" :key="index">
             <span class="mr-3" style="cursor: pointer;" @click="downloadFile(item)">
               <i class="fa-solid fa-file-arrow-down text-green-500"></i>
             </span>
@@ -135,7 +135,7 @@
             </span>
             <span>
               <Button icon="pi pi-times" class="p-button-rounded p-button-text"
-                      @click="deleteFileConfirm($event, item.id)"/>
+                      @click="deleteFileConfirm($event, item, index)"/>
             </span>
           </div>
         </div>
@@ -220,7 +220,12 @@ export default {
     formatDate,
     onAfterUpload(item) {
       this.fileList.push(item);
-      this.formData.file_list.push({file_id: item.id, file: item});
+      if (this.formData.files) {
+        this.formData.files.push({file_id: item.id, file: item});
+      } else {
+        this.formData.files = [];
+        this.formData.files.push({file_id: item.id, file: item});
+      }
     },
     copyToClipboard(file) {
       return smartEnuApi + downloadRoute + file.uuid;
@@ -241,7 +246,7 @@ export default {
     getPageFiles() {
       this.enuService.getPageFiles(this.formData.enu_page_id).then(res => {
         if (res.data)
-          this.formData.file_list = res.data;
+          this.formData.files = res.data;
       }).catch(error => {
         this.$toast.add({severity: "error", summary: error, life: 3000});
       })
@@ -357,10 +362,6 @@ export default {
     onSavePage() {
       if (!this.validatePage()) return;
 
-      if (this.fileList) {
-        this.formData.files = this.fileList
-      }
-
       this.enuService.editPage(this.formData).then(res => {
         if (res.data !== null) {
           this.$toast.add({severity: "success", summary: this.$t("web.createdPageSuccessMsg"), life: 3000});
@@ -396,7 +397,7 @@ export default {
         }
       });
     },
-    deleteFileConfirm(event, id) {
+    deleteFileConfirm(event, item, index) {
       this.$confirm.require({
         target: event.currentTarget,
         message: this.$t('common.confirmation'),
@@ -406,7 +407,11 @@ export default {
         acceptClass: 'p-button-rounded p-button-success',
         rejectClass: 'p-button-rounded p-button-danger',
         accept: () => {
-          this.deleteFile(id);
+          if (item.id) {
+            this.deleteFile(item.id);
+          } else {
+            this.formData.files.splice(index, 1);
+          }
         }
       });
     },

@@ -1,4 +1,5 @@
 <template>
+  <ConfirmPopup group="deleteResult"></ConfirmPopup>
   <Dialog v-if="editVisible" v-model:visible="editVisible" :closable="false" :style="{ width: '1000px' }" :breakpoints="{'960px': '75vw', '640px': '90vw'}"
           :header="$t('smartenu.createOrEditEvents')" :modal="true" class="p-fluid">
     <div class="card">
@@ -61,17 +62,17 @@
         <Fieldset :legend="$t('workPlan.attachments')" :toggleable="true" v-if="event.files" collapsed>
           <div ref="content" class="p-fileupload-content">
             <div class="p-fileupload-files">
-              <div class="p-fileupload-row" v-for="(file, index) of event.files" :key="index">
-            <span class="mr-3" style="cursor: pointer;" @click="downloadFile(file)">
+              <div class="p-fileupload-row" v-for="(item, index) of event.files" :key="index">
+            <span class="mr-3" style="cursor: pointer;" @click="downloadFile(item.file)">
               <i class="fa-solid fa-file-arrow-down text-green-500"></i>
             </span>
-                <span @click="downloadFile(file)" style="cursor: pointer;">{{ file.filename ? file.filename : file.filepath }}</span>
+                <span @click="downloadFile(item.file)" style="cursor: pointer;">{{ item.file.filename ? item.file.filename : item.file.filepath }}</span>
                 <span class="ml-2">
                 <Button icon="pi pi-copy" class="p-button-rounded p-button-text"
-                        v-clipboard:copy="copyToClipboard(file)" v-clipboard:success="onCopy"/>
+                        v-clipboard:copy="copyToClipboard(item.file)" v-clipboard:success="onCopy"/>
               </span>
                 <span>
-                <Button icon="pi pi-times" class="p-button-rounded p-button-text" @click="deleteFileConfirm($event, file.id)"/>
+                <Button icon="pi pi-times" class="p-button-rounded p-button-text" @click="deleteFileConfirm($event, item, index)"/>
               </span>
               </div>
             </div>
@@ -222,7 +223,7 @@ import {EventsService} from "../../service/event.service";
 import {resizeImages} from "../../helpers/HelperUtil";
 import * as imageResizeCompress from "image-resize-compress";
 import {PosterService} from "../../service/poster.service";
-import {fileRoute, getHeader, smartEnuApi} from "@/config/config";
+import {downloadRoute, fileRoute, getHeader, smartEnuApi} from "@/config/config";
 
 export default {
   name: "AddEditEvent",
@@ -531,17 +532,17 @@ export default {
     onAfterUpload(file) {
       this.fileList.push(file);
       if (this.event.files && this.event.files.length !== 0) {
-        this.event.files.push(file)
+        this.event.files.push({file_id: file.id, file: file})
       } else {
         this.event.files = [];
-        this.event.files.push(file)
+        this.event.files.push({file_id: file.id, file: file})
       }
     },
     copyToClipboard(file) {
-      return smartEnuApi + fileRoute + file.filepath;
+      return smartEnuApi + downloadRoute + file.uuid;
     },
     downloadFile(file) {
-      let url = `${smartEnuApi}/serve?path=${file.filepath}`
+      let url = `${smartEnuApi + downloadRoute + file.uuid}`
       fetch(url, {
         method: 'GET',
         headers: getHeader()
@@ -565,7 +566,7 @@ export default {
         }
       });
     },
-    deleteFileConfirm(event, id) {
+    deleteFileConfirm(event, item, index) {
       this.$confirm.require({
         target: event.currentTarget,
         message: this.$t('common.confirmation'),
@@ -575,7 +576,11 @@ export default {
         acceptClass: 'p-button-rounded p-button-success',
         rejectClass: 'p-button-rounded p-button-danger',
         accept: () => {
-          this.deleteFile(id);
+          if (item.id) {
+            this.deleteFile(item.id);
+          } else {
+            this.event.files.splice(index, 1)
+          }
         }
       });
     },
@@ -586,6 +591,13 @@ export default {
           this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
         }
       }).catch((error) => {
+        this.$toast.add({severity: "error", summary: error, life: 3000});
+      });
+    },
+    getEventFiles() {
+      this.eventService.getEventFiles(this.event.id).then(res => {
+        this.event.files = res.data;
+      }).catch(error => {
         this.$toast.add({severity: "error", summary: error, life: 3000});
       });
     },
