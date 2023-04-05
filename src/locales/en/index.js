@@ -381,7 +381,6 @@ export default {
         },
         needsApproval: "The document created according to the template requires approval",
         approvalUsers: "List of approvers",
-        approvalListPlaceholder: "Instance",
     },
     contracts : {
         title: "Contracts",
@@ -1026,6 +1025,10 @@ export default {
         lnum: 'last number',
     },
     roleControl:{
+        addSidebar: 'Adding new record',
+        userChangeable: 'Changing default users',
+        certificate : 'Certificate',
+        title : 'Title',
         menuTitle: 'Role control',
         giveRole: 'Give new role',
         selectOrg: 'Select organization',
@@ -1039,6 +1042,8 @@ export default {
         roleLabel: 'Role',
         noResult: 'No records found',
         cantDelete: 'Cant delete the record',
+        addNewInstance: 'Adding new approvers/signers',
+        instance: 'Appover/signer',
     },
     blog: {
         title: 'Blog',
