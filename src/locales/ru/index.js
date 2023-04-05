@@ -223,6 +223,7 @@ export default {
             downloadError: "Ошибка во время скачивания",
             uploadError: "Ошибка во время загрузки",
             saveError: "Ошибка во время сохранения",
+            revisionError: "Ошибка во время отправки на доработку",
             serverError: "Серверная ошибка",
             groupsNotSelected: "Не указали группы",
             catCreateError: "Ошибка во время создания нового каталога",

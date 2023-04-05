@@ -184,7 +184,7 @@ export default {
         certificate: {
           value: 'internal',
         },
-        userChangeable: false,
+        userChangeable: true,
         users: [],
       },
       changed: false,
@@ -234,7 +234,7 @@ export default {
         certificate: {
           value: 'internal',
         },
-        userChangeable: false,
+        userChangeable: true,
         users: [],
       }
     },

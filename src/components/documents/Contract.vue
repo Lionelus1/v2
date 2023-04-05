@@ -106,50 +106,55 @@
         </div>
       </TabPanel>
       <TabPanel v-else :header="$t('common.params')">
-        <Button class="p-button-success" :label="$t('doctemplate.approvalUsers')" @click="openForm('approvalUsers')" 
-          style="margin-bottom: 1.5rem"/>
-        <SelectButton v-model="selectedDocParams" :options="docParamsType" :disabled="selectedDocParamsDisabled"
-          :unselectable='false' style="margin-bottom: 0.75rem">
-          <template #option="slotProps">
-            <div v-if="slotProps.option === 0">{{$t('common.organization')}}</div>
-            <div v-else>{{$t('common.individualEntrepreneur')}}</div>
-          </template>
-        </SelectButton>
-        <div class="grid">
-          <div class="lg:col-8 md:col-12 p-sm-12">
-            <div class="p-fluid" v-if="this.contract && this.filledDocParams.length === 2">
-              <div v-if="this.selectedDocParams === 0">
-                <div v-for="param in this.filledDocParams[0]"
-                  :key="param.id"
-                  class="fieldgrid">
-                  <label v-if="param.name == 'contragent' || param.name == 'ourside' || param.name == 'individualEntrepreneur'"
-                    :for="param.name + param.id"
-                    class="col-12 mb-12 md:col-12 mb-md-0 uppercase">
-                    {{ $t("doctemplate.editor." + param.name) }}
-                  </label>
-                  <div v-if="param.name == 'contragent' || param.name == 'ourside' || param.name == 'individualEntrepreneur'"
-                    class="col-12 md:col-12">
-                    <ContragentSelect @updated="filledDocParamsUpdated" v-model="param.value"></ContragentSelect>
+        <div v-if="contract.docHistory.stateId !== Enum.REVISION.ID">
+          <Button class="p-button-success" :label="$t('doctemplate.approvalUsers')" @click="openForm('approvalUsers')" 
+            style="margin-bottom: 1.5rem"/>
+          <SelectButton v-model="selectedDocParams" :options="docParamsType" :disabled="selectedDocParamsDisabled"
+            :unselectable='false' style="margin-bottom: 0.75rem">
+            <template #option="slotProps">
+              <div v-if="slotProps.option === 0">{{$t('common.organization')}}</div>
+              <div v-else>{{$t('common.individualEntrepreneur')}}</div>
+            </template>
+          </SelectButton>
+          <div class="grid">
+            <div class="lg:col-8 md:col-12 p-sm-12">
+              <div class="p-fluid" v-if="this.contract && this.filledDocParams.length === 2">
+                <div v-if="this.selectedDocParams === 0">
+                  <div v-for="param in this.filledDocParams[0]"
+                    :key="param.id"
+                    class="fieldgrid">
+                    <label v-if="param.name == 'contragent' || param.name == 'ourside' || param.name == 'individualEntrepreneur'"
+                      :for="param.name + param.id"
+                      class="col-12 mb-12 md:col-12 mb-md-0 uppercase">
+                      {{ $t("doctemplate.editor." + param.name) }}
+                    </label>
+                    <div v-if="param.name == 'contragent' || param.name == 'ourside' || param.name == 'individualEntrepreneur'"
+                      class="col-12 md:col-12">
+                      <ContragentSelect @updated="filledDocParamsUpdated" v-model="param.value"></ContragentSelect>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div v-else>
-                <div v-for="param in this.filledDocParams[1]"
-                  :key="param.id"
-                  class="fieldgrid">
-                  <label v-if="param.name == 'contragent' || param.name == 'ourside' || param.name == 'individualEntrepreneur'"
-                    :for="param.name + param.id"
-                    class="col-12 mb-12 md:col-12 mb-md-0 uppercase">
-                    {{ $t("doctemplate.editor." + param.name) }}
-                  </label>
-                  <div v-if="param.name == 'contragent' || param.name == 'ourside' || param.name == 'individualEntrepreneur'"
-                    class="col-12 md:col-12">
-                    <ContragentSelect @updated="filledDocParamsUpdated" v-model="param.value"></ContragentSelect>
+                <div v-else>
+                  <div v-for="param in this.filledDocParams[1]"
+                    :key="param.id"
+                    class="fieldgrid">
+                    <label v-if="param.name == 'contragent' || param.name == 'ourside' || param.name == 'individualEntrepreneur'"
+                      :for="param.name + param.id"
+                      class="col-12 mb-12 md:col-12 mb-md-0 uppercase">
+                      {{ $t("doctemplate.editor." + param.name) }}
+                    </label>
+                    <div v-if="param.name == 'contragent' || param.name == 'ourside' || param.name == 'individualEntrepreneur'"
+                      class="col-12 md:col-12">
+                      <ContragentSelect @updated="filledDocParamsUpdated" v-model="param.value"></ContragentSelect>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+        </div>
+        <div v-else>
+          <PostFile :fileUpload="true" :modelValue="file" directory="readyMadeContract" @updated="fileUpdated"></PostFile>
         </div>
       </TabPanel>
       <TabPanel :header="$t('common.show')">
@@ -174,10 +179,7 @@
           <label for="catalog">{{ $t("common.date") }}</label>
         </div>
         <div class="col-12 mb-2 lg:col-9 mb-lg-1 pr-2">
-          <i
-            class="mt-2"
-            
-          >{{(contract.registerDate ? contract.registerDate.split('T')[0] : '')}}</i>
+          <i class="mt-2"> {{ reserveDate ? reserveDate.split('T')[0] : '' }} </i>
         </div>
         <div class="col-12 mb-2 lg:col-3 mb-lg-0">
           <label for="regnum">{{ $t("contracts.regnum") }}</label>
@@ -240,14 +242,15 @@ import { constantizeGenderInRules } from "lvovich/lib/inclineRules";
 import { smartEnuApi, getHeader, b64toBlob, findRole } from "@/config/config";
 import Enum from "@/enum/docstates/index";
 
+import Access from "@/pages/Access.vue";
+import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers";
 import ContragentSelect from "@/components/contragent/ContragentSelect.vue";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo";
-import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers";
-import Access from "@/pages/Access.vue";
+import PostFile from "./PostFile.vue"
 
 export default {
   name: "Contract",
-  components: {  ContragentSelect, DocSignaturesInfo, Access, ApprovalUsers },
+  components: {  Access, ApprovalUsers, ContragentSelect, DocSignaturesInfo, PostFile },
   data() {
     return {
       contract: null,
@@ -264,6 +267,7 @@ export default {
       },
       corrected: false,
       signerInfo : false,
+      reserveDate: null,
 	    reserveNumber: null,
       range: {
         start: new Date(2020, 0, 1),
@@ -366,6 +370,7 @@ export default {
       selectedDocParams: 0,
       selectedDocParamsDisabled: false,
       docParamsType: [0, 1],
+      file: null,
     };
   },
   computed: {
@@ -402,10 +407,7 @@ export default {
       this.dialog[formName] = true;
       if (formName === "setNumber" && (!this.contract.number  || this.contract.number === "" )) {
         this.registrateContract(true);
-        this.contract.registerDate = new Date()
-          .toJSON()
-          .slice(0, 10)
-          .replace(/-/g, ".");
+        this.reserveDate = (new Date()).toJSON().slice(0, 10).replace(/-/g, ".");
       }
     },
     //Қол қою
@@ -634,6 +636,10 @@ export default {
                 : this.$i18n.locale === 'ru' ? this.contract.template.folder.nameru : this.contract.template.folder.nameen
           } else {
             this.getReadyDocCatalog();
+          }
+
+          if (this.contract.docHistory.stateId === this.Enum.REVISION.ID) {
+            this.initFileUpdate()
           }
 
           this.initApprovalStages();
@@ -1034,6 +1040,22 @@ export default {
           console.log(err)
         }
       })
+    },
+    fileUpdated() {
+      location.reload()
+    },
+    initFileUpdate() {
+      this.file = {
+        namekz: this.contract.namekz,
+        nameru: this.contract.nameru,
+        nameen: this.contract.nameen,
+        id: this.contract.id,
+        lang: {
+          value: this.contract.lang,
+        },
+        docType: this.contract.docType,
+        sourceType: this.contract.sourceType,
+      }
     },
   },
   mounted() {

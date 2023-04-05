@@ -54,6 +54,17 @@
           </div>
         </div>
       </TabPanel>
+      <TabPanel v-if="docInfo.docHistory.stateId === Enum.INAPPROVAL.ID && (docInfo.sourceType === Enum.DocSourceType.FilledDoc || 
+        (docInfo.docType && docInfo.docType === Enum.DocType.Contract))" :header="$t('common.revision')" :disabled="hideDocRevision">
+        <div class="card">
+          <label> {{ this.$t('common.comment') }} </label>
+          <InputText v-model="revisionComment" style="width: 100%; margin-bottom: 2rem;"></InputText>
+          <div class="flex justify-content-center">
+              <Button icon="fa-regular fa-circle-xmark"
+                      class="p-button-danger md:col-3" @click="revision" :label="$t('common.revision')" :loading="loading"/>
+          </div>
+        </div>
+      </TabPanel>
     </TabView>
   </div>
 </template>
@@ -115,7 +126,10 @@ export default {
       hideDocSign: true,
       isIndivid: false,
       mgovSignUri: null,
-      enum: Enum
+      Enum: Enum,
+
+      hideDocRevision: true,
+      revisionComment: null,
     }
   },
   created() {
@@ -175,7 +189,7 @@ export default {
 
           
           if (this.signatures) {
-            this.hideDocSign = !this.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));  
+            this.hideDocSign = !this.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));
             this.isIndivid = this.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === '') && (x.signRight && x.signRight !== '') && x.signRight === 'individual');
             
             this.signatures.map(e => {
@@ -183,7 +197,7 @@ export default {
             });
           }
 
-          if (this.docInfo.needApproval || this.docInfo.sourceType === this.enum.DocSourceType.FilledDoc) {
+          if (this.docInfo.needApproval || this.docInfo.sourceType === this.Enum.DocSourceType.FilledDoc) {
             this.approvalStages = res.data.approvalStages;
 
             if (!this.showAllSignsParam && !this.isShow && this.approvalStages) {
@@ -195,16 +209,18 @@ export default {
               }
             }
 
-            if (this.hideDocSign && this.approvalStages) {
+            if (this.approvalStages) {
               for (let element of this.approvalStages) {
                 if (!element.signatures) {
                   continue;
                 }
 
-                this.hideDocSign = !element.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));
+                if (this.hideDocSign) {
+                  this.hideDocSign = !element.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));
+                }
                 
-                if (!this.hideDocSign) {
-                  break;
+                if (this.hideDocRevision) {
+                  this.hideDocRevision = !element.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));
                 }
               }
             }
@@ -237,7 +253,7 @@ export default {
     showSign() {
       let showSign = false
       
-      if (this.docInfo && this.docInfo.docHistory && this.docInfo.docHistory.stateId && this.docInfo.docHistory.stateId > this.enum.CREATED.ID) {
+      if (this.docInfo && this.docInfo.docHistory && this.docInfo.docHistory.stateId && this.docInfo.docHistory.stateId > this.Enum.CREATED.ID) {
         showSign = true
       }
 
@@ -368,10 +384,39 @@ export default {
         t.connection.send(JSON.stringify(t.loginedUserForMgovws));
       }
     },
+    revision() {
+      if (this.revisionComment === null || this.revisionComment.length < 1) {
+        this.$toast.add({
+          severity: "error",
+          detail: this.$t("common.noComment"),
+          life: 3000,
+        })
+        return
+      }
+
+      this.loading = true
+      axios.post(smartEnuApi + `/doc/sendtorevision`, {
+        comment: this.revisionComment,
+        docID: this.docInfo.id,
+      }, {
+        headers: getHeader()
+      }).then(res => {
+        this.loading = false
+        location.reload()
+      }).catch(err => {
+        if (err.response.status == 401) {
+          this.$store.dispatch("logLout");
+        }
+        
+        this.$toast.add({
+          severity: "error",
+          detail: this.$t("common.message.saveError"),
+          life: 3000,
+        })
+        
+        this.loading = false
+      })
+    },
   }
 }
 </script>
-
-<style scoped>
-
-</style>

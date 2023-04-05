@@ -201,7 +201,7 @@ export default {
         }
 
         let locFolderId = this.parentID
-        if (this.catalogs !== null) {
+        if (this.catalogs !== null && this.catalog != null) {
           locFolderId = this.catalog.id
         }
 

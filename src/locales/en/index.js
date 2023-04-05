@@ -222,6 +222,7 @@ export default {
             downloadError: "Error during download",
             uploadError: "Error during upload",
             saveError: "Error during save",
+            revisionError: "Error while submitting for revision",
             serverError: "Server error",
             groupsNotSelected: "No groups selected",
             catCreateError: "Error while creating a new catalog",
