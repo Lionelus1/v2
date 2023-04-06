@@ -254,7 +254,8 @@ export default {
             ConsulAlwaysHasSameMember: "Көрсетілген тұлға басқа кеңестің мүшесі",
             saveChangesWarning: "Жасаған өзгерістерді сақтайсыз ба?",
             unsaveOutcome: "Өзгерістерді сақтамасаңыз, біржола жоғалтасыз.",
-            addPicture: "Сурет қосу"
+            addPicture: "Сурет қосу",
+            saveErrorToUpdate: "Сақтау кезінде қате пайда болды. Бетті жаңартыңыз!",
         },
         language: {
             kz: "қазақша",

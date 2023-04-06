@@ -255,7 +255,8 @@ export default {
             ConsulAlwaysHasSameMember: "The named person is already a member of another council",
             saveChangesWarning: "Would you like to save your changes?",
             unsaveOutcome: "If changes are not saved, they will be lost.",
-            addPicture: "Add image"
+            addPicture: "Add image",
+            saveErrorToUpdate: "Error during save. Please refresh the page!",
         },
         language: {
             kz: "in kazakh",
