@@ -38,100 +38,44 @@
   <Sidebar v-model:visible="dialogOpenState.createDocDialog" position="right"
   :modal="true" :breakpoints="{'960px': '75vw', '640px': '100vw'}" :style="{width: '760px', overflow:'hidden'}">
   <div class="flex">
-    <SelectButton disabled="true" v-model="selectedDocSourceType" :options="docSourceType" class="mb-3 mr-3">
+    <SelectButton :disabled="!this.$store.state.loginedUser.organization || !this.$store.state.loginedUser.organization.id || 
+      this.$store.state.loginedUser.organization.id !== 1 || this.findRole(null, 'student')" 
+      v-model="selectedDocSourceType" :options="docSourceType" class="mb-3 mr-3">
       <template #option="slotProps">
-        <div v-if="slotProps.option == DocState.DocSourceType.Template">{{$t('contracts.fromtemplate')}}</div>
+        <div v-if="slotProps.option == Enum.DocSourceType.Template">{{$t('contracts.fromtemplate')}}</div>
         <div v-else>{{$t('contracts.fromdoc')}}</div>
 	    </template>
     </SelectButton>
-    <SelectButton  @change="changeLanguage" v-model="selectedDocLanguage" :options="languages" class="mb-3">
+    <SelectButton @change="changeLanguage" v-model="selectedDocLanguage" :options="languages" class="mb-3"
+      :disabled="selectedDocSourceType != Enum.DocSourceType.Template">
       <template #option="slotProps">
         <div v-if="slotProps.option == 'kz'">{{$t('common.language.kz')}}</div>
         <div v-else>{{$t('common.language.ru')}}</div>
 	    </template>
     </SelectButton>
   </div>
-    <div v-if="selectedDocSourceType == DocState.DocSourceType.Template" style="overflow-y:hidden" >
+    <div v-if="selectedDocSourceType == Enum.DocSourceType.Template" style="overflow-y:hidden" >
       <div class="flex">
-      <!-- <DataTable
-              class="p-datatable-sm"
-              v-model:selection="selectedTemplate"
-              selectionMode="single"
-              :value="docTemplates"
-              :paginator="true"
-              :rowHover="true"
-              :filters="filters"
-              :loading="loading"
-              :lazy="true"
-              :totalRecords="count"
-              @page="onPage($event)"
-              @sort="onSort($event)"
-              :rows="lazyParams.rows"
-              dataKey="id"
-              paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-              :rowsPerPageOptions="[10, 25, 50]"
-              :currentPageReportTemplate="
-                $t('common.showingRecordsCount', {
-                  first: '{first}',
-                  last: '{last}',
-                  totalRecords: '{totalRecords}',
-                })
-              "
-              responsiveLayout="scroll"
-            >
-              <template #empty>
-                {{ this.$t("common.recordsNotFound") }}
-              </template>
-
-              <template #loading>
-                {{ this.$t("common.recordsLoading") }}
-              </template>
-              <Column
-                :field="('kz' ? 'nameKaz' : 'nameRus')"
-                :header="$t('hdfs.fileName')"
-                :sortable="true"
-              ></Column>
-              <Column>
-
-              </Column>
-             
-            </DataTable> -->
-      <DocTemplate ref="templateComponent" @languageChanged="templateLanguageChanged" v-model:currentLang="selectedDocLanguage" @onselect="createDocByTemplate($event)" selectMode="true" v-model:windowOpened="dialogOpenState.createDocDialog" :v-model="selectedTemplate"></DocTemplate>
-     
- 
+        <DocTemplate ref="templateComponent" @languageChanged="templateLanguageChanged" v-model:currentLang="selectedDocLanguage" @onselect="createDocByTemplate($event)" selectMode="true" v-model:windowOpened="dialogOpenState.createDocDialog" :v-model="selectedTemplate"></DocTemplate>
       </div>
     </div>
     <Card v-else>
       <template #content>
-        <HdfsUpload></HdfsUpload>
-      </template>  
-      <template #footer>
-        <Button v-bind:label="$t('common.createNew')" icon="pi pi-check" autofocus @click="createDoc" />
+        <PostFile :fileUpload="true" :modelValue="file" :showCatalog="true" directory="readyMadeContract" @updated="fileUpdated"></PostFile>
       </template>
     </Card>
-  </Sidebar>
-  <Sidebar :visible="false" position="right"
-    :modal="true" :breakpoints="{'960px': '75vw', '640px': '100vw'}" :style="{width: '760px', overflow:'hidden'}">
-    <div v-if="selectedTemplate != null">
-      <RichEditor v-if="selectedDocLanguage === 'kz'" :readonly="true"  v-model="selectedTemplate.mainTextKaz" editorStyle="height:300px;width:400px;max-width:700px">
-        <template v-slot:toolbar></template>
-      </RichEditor>
-      <RichEditor v-else :readonly="true"  v-model="selectedTemplate.mainTextRus" editorStyle="height:300px;width:400px;max-width:700px">
-        <template v-slot:toolbar></template>
-      </RichEditor>
-    </div>
   </Sidebar>
 </div>
 </template>
 <script>
-  import {smartEnuApi, getHeader} from "@/config/config";
+  import { smartEnuApi, getHeader, findRole } from "@/config/config";
   import axios from 'axios';
-  import DocState from "@/enum/docstates/index";
-  import RichEditor from "./editor/RichEditor.vue";
-  import HdfsUpload from "@/components/hdfs/HdfsUpload";
+  import Enum from "@/enum/docstates/index";
   import DocTemplate from "@/components/documents/DocTemplate.vue"
+  import PostFile from "./PostFile.vue"
+
   export default {
-    components: { RichEditor, HdfsUpload, DocTemplate},
+    components: { PostFile, DocTemplate},
     data() {
       return {
         dialogOpenState: {
@@ -140,9 +84,9 @@
         saving: false,
         docTemplates:[],
         selectedTemplate: null,
-        DocState: DocState,
-        selectedDocSourceType : DocState.DocSourceType.Template,
-        docSourceType: [DocState.DocSourceType.Template, DocState.DocSourceType.FilledDoc],
+        Enum: Enum,
+        selectedDocSourceType : Enum.DocSourceType.Template,
+        docSourceType: [Enum.DocSourceType.Template, Enum.DocSourceType.FilledDoc],
         languages: ["kz", "ru"],
         selectedDocLanguage : "kz",
         lazyParams: {
@@ -150,8 +94,17 @@
           rows: 10,
           userType: Number(this.$route.params.type),
           sortLang: this.$i18n.locale,
-      },
-
+        },
+        findRole: findRole,
+        file: {
+          namekz: '',
+          nameru: '',
+          nameen: '',
+          id: null,
+          lang: null,
+          docType: Enum.DocType.Contract,
+          sourceType: Enum.DocSourceType.FilledDoc,
+        },
       }
     },
     methods: {
@@ -202,7 +155,7 @@
       createDocByTemplate(event) {
         let url ="/agreement/create";
         var req = {
-          sourceType : DocState.DocSourceType.Template,
+          sourceType : Enum.DocSourceType.Template,
           templateId: event.value.id,
           creatorId: this.$store.state.loginedUser.userID,
           filePath: "",
@@ -239,28 +192,11 @@
         nodeDataChildren.push(childData);
         return childData;
       },
-      initApiCall(){
-        let url = "/doctemplates?groupID=1";
-        this.saving = true;
-        axios.get(smartEnuApi+url, { headers: getHeader() })
-        .then(res=>{
-          res.data.forEach(el => {
-            if(el.DocTemplates){
-              el.DocTemplates.forEach((child)=>{
-                this.addTemplateNode(this.docTemplates, child)
-              })
-            }
-          });
-          this.saving= false;
-        })
-        .catch(_ => {
-          this.saving=false;
-        })
-      }
+      fileUpdated(event) {
+        this.$router.push({ path: '/documents/contract/' + event.id });
+      },
     },
     mounted() {
-      this.initApiCall(
-      );
     },
   }
 </script>

@@ -29,7 +29,7 @@
         </div>
       </TabPanel>
       <TabPanel v-if="docInfo.docHistory.stateId==2 ||docInfo.docHistory.stateId==6" :header="$t('ncasigner.sign')"
-                :disabled="isSignShow">
+                :disabled="hideDocSign">
         <div class="mt-2">
           <Panel>
             <template #header>
@@ -51,6 +51,17 @@
                 <qrcode-vue size="350" render-as="svg" margin="2" :value="mgovSignUri"></qrcode-vue>
               </div>
             </Panel>
+          </div>
+        </div>
+      </TabPanel>
+      <TabPanel v-if="docInfo.docHistory.stateId === Enum.INAPPROVAL.ID && (docInfo.sourceType === Enum.DocSourceType.FilledDoc || 
+        (docInfo.docType && docInfo.docType === Enum.DocType.Contract))" :header="$t('common.revision')" :disabled="hideDocRevision">
+        <div class="card">
+          <label> {{ this.$t('common.comment') }} </label>
+          <InputText v-model="revisionComment" style="width: 100%; margin-bottom: 2rem;"></InputText>
+          <div class="flex justify-content-center">
+              <Button icon="fa-regular fa-circle-xmark"
+                      class="p-button-danger md:col-3" @click="revision" :label="$t('common.revision')" :loading="loading"/>
           </div>
         </div>
       </TabPanel>
@@ -112,10 +123,13 @@ export default {
       signing: false,
       file: null,
       active: 0,
-      isSignShow: false,
+      hideDocSign: true,
       isIndivid: false,
       mgovSignUri: null,
-      enum: Enum
+      Enum: Enum,
+
+      hideDocRevision: true,
+      revisionComment: null,
     }
   },
   created() {
@@ -173,9 +187,9 @@ export default {
               this.docInfo.docHistory.setterId === this.loginedUserId || this.docInfo.creatorID === this.loginedUserId;
           }
 
-          this.isSignShow = this.signatures && this.signatures.some(x => x.userId === this.loginedUserId && (x.signature || x.signature !== ''));  
           
           if (this.signatures) {
+            this.hideDocSign = !this.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));
             this.isIndivid = this.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === '') && (x.signRight && x.signRight !== '') && x.signRight === 'individual');
             
             this.signatures.map(e => {
@@ -183,25 +197,32 @@ export default {
             });
           }
 
-          if (this.docInfo.needApproval) {
+          if (this.docInfo.needApproval || this.docInfo.sourceType === this.Enum.DocSourceType.FilledDoc) {
             this.approvalStages = res.data.approvalStages;
 
             if (!this.showAllSignsParam && !this.isShow && this.approvalStages) {
-              this.approvalStages.forEach(element => {
+              for (let element of this.approvalStages) {
                 this.isShow = this.isShow || (element.users && element.users.some(x => x.userID === this.loginedUserId));
                 if (this.isShow) {
-                  return
+                  break;
                 }
-              });
+              }
             }
 
-            if (!this.isSignShow && this.approvalStages) {
-              this.approvalStages.forEach(element => {
-                this.isSignShow = element.signatures && element.signatures.some(x => x.userId === this.loginedUserId && (x.signature || x.signature !== ''));
-                if (this.isSignShow) {
-                  return
+            if (this.approvalStages) {
+              for (let element of this.approvalStages) {
+                if (!element.signatures) {
+                  continue;
                 }
-              });
+
+                if (this.hideDocSign) {
+                  this.hideDocSign = !element.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));
+                }
+                
+                if (this.hideDocRevision) {
+                  this.hideDocRevision = !element.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));
+                }
+              }
             }
 
             if (this.approvalStages)
@@ -231,8 +252,8 @@ export default {
     },
     showSign() {
       let showSign = false
-
-      if (this.docInfo && this.docInfo.docHistory && this.docInfo.docHistory.stateId && this.docInfo.docHistory.stateId > this.enum.APPROVED.ID) {
+      
+      if (this.docInfo && this.docInfo.docHistory && this.docInfo.docHistory.stateId && this.docInfo.docHistory.stateId > this.Enum.CREATED.ID) {
         showSign = true
       }
 
@@ -363,10 +384,39 @@ export default {
         t.connection.send(JSON.stringify(t.loginedUserForMgovws));
       }
     },
+    revision() {
+      if (this.revisionComment === null || this.revisionComment.length < 1) {
+        this.$toast.add({
+          severity: "error",
+          detail: this.$t("common.noComment"),
+          life: 3000,
+        })
+        return
+      }
+
+      this.loading = true
+      axios.post(smartEnuApi + `/doc/sendtorevision`, {
+        comment: this.revisionComment,
+        docID: this.docInfo.id,
+      }, {
+        headers: getHeader()
+      }).then(res => {
+        this.loading = false
+        location.reload()
+      }).catch(err => {
+        if (err.response.status == 401) {
+          this.$store.dispatch("logLout");
+        }
+        
+        this.$toast.add({
+          severity: "error",
+          detail: this.$t("common.message.saveError"),
+          life: 3000,
+        })
+        
+        this.loading = false
+      })
+    },
   }
 }
 </script>
-
-<style scoped>
-
-</style>

@@ -13,6 +13,7 @@ export default {
         headIin: 'Бірінші басшының ЖСН-і',
         headFio: 'Бірінші басшының толық аты жөні',
         home: 'Бас бетке',
+        returnLink: 'Алдыңғы бетке оралу',
         newPassword: "Жаңа құпиясөзді енгізіңіз",
         newPasswordRe: "Құпиясөзді қайталап енгізіңіз",
         createDocument: 'Құжатты құрастыру',
@@ -221,12 +222,14 @@ export default {
             sendToApprovalError: "Келісімге жіберуде қате пайда болды. Мәліметтердің дұрыстығын тексеріңіз!",
             uploadError: "Жүктеу кезінде қате пайда болды",
             saveError: "Сақтау кезінде қате пайда болды",
+            revisionError: "Түзетуге жіберу кезінде қате пайда болды",
             serverError: "Серверлік қате пайда болды",
             groupsNotSelected: "Топтарды көрсетпедіңіз",
             catCreateError: "Жаңа қалта құруда қате пайда болды",
             qazNameNotfilled: "Қазақша атауын көрсетпедіңіз",
             rusNameNotfilled: "Орысша атауын көрсетпедіңіз",
             engNameNotfilled: "Ағылшынша атауын көрсетпедіңіз",
+            catalogNotFilled: "Қалтаны көрсетпедіңіз",
             codeNotFilled: "Қалта кодын көрсетпедіңіз",
             catSuccesCreated: "Жаңа қалта сәтті қосылды",
             recordNotFound: "Сәйкес келетін ешбір жазба табылмады",
@@ -251,7 +254,8 @@ export default {
             ConsulAlwaysHasSameMember: "Көрсетілген тұлға басқа кеңестің мүшесі",
             saveChangesWarning: "Жасаған өзгерістерді сақтайсыз ба?",
             unsaveOutcome: "Өзгерістерді сақтамасаңыз, біржола жоғалтасыз.",
-            addPicture: "Сурет қосу"
+            addPicture: "Сурет қосу",
+            saveErrorToUpdate: "Сақтау кезінде қате пайда болды. Бетті жаңартыңыз!",
         },
         language: {
             kz: "қазақша",
@@ -377,7 +381,6 @@ export default {
         },
         needsApproval: "Үлгі бойынша жасалған құжат келісуді қажет етеді",
         approvalUsers: "Келісім беруі тиіс тұлғалар тізімі",
-        approvalListPlaceholder: "Инстанция",
     },
     contracts: {
         title: "Келісім-шарттар",
@@ -945,7 +948,7 @@ export default {
         forme: "Маған қатысты"
     },
     postaccmonrep: {
-        title: "Аккредиттеуден кейінгі мониторинг туралы есептер",
+        title: "Өзін өзі бағалау/аккредиттеуден кейінгі мониторинг бойынша есебі",
     },
     ref:{
         getRef:"Анықтама алу",
@@ -983,6 +986,10 @@ export default {
         lnum: 'Соңғы нөмір',
     },
     roleControl:{
+        addSidebar: 'Жаңа жазбаны қосу',
+        userChangeable: 'Әдепкі пайдаланушыларды өзгерту',
+        certificate : 'Сертификат',
+        title : 'Қазақша атауы',
         menuTitle: 'Рольдерді басқару',
         giveRole: 'Жаңа роль беру',
         selectOrg: 'Ұйымды таңдаңыз',
@@ -996,5 +1003,7 @@ export default {
         roleLabel: 'Роль',
         noResult: 'Жазбалар табылмады',
         cantDelete: 'Жазбаны өшіру мүмкін емес',
+        addNewInstance: 'Жаңа мақұлдаушыларды/қол қоюшыларды қосу',
+        instance: 'Мақұлдаушы/қол қоюшы',
     }
 }

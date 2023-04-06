@@ -92,6 +92,9 @@
                   <div v-if="data.template">
                     {{ $i18n.locale === 'ru' ? data.template.descriptionRus : data.template.descriptionKaz }}
                   </div>
+                  <div v-else>
+                    {{  data['name' + $i18n.locale] }}
+                  </div>
                 </template>
               </Column>
               <Column field="state" :header="$t('common.state')">

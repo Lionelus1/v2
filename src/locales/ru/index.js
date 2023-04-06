@@ -13,6 +13,7 @@ export default {
         headIin: 'ИИН первого руководителя',
         headFio: 'ФИО первого руководителя',
         home: 'На главную страницу',
+        returnLink: 'Вернуться на предыдущую страницу',
         newPassword: "Введите новый пароль",
         newPasswordRe: "Повторно введите пароль",
         createDocument: 'Сформировать документ',
@@ -222,12 +223,14 @@ export default {
             downloadError: "Ошибка во время скачивания",
             uploadError: "Ошибка во время загрузки",
             saveError: "Ошибка во время сохранения",
+            revisionError: "Ошибка во время отправки на доработку",
             serverError: "Серверная ошибка",
             groupsNotSelected: "Не указали группы",
             catCreateError: "Ошибка во время создания нового каталога",
             qazNameNotfilled: "Не указали наименование на казахском",
             rusNameNotfilled: "Не указали наименование на русском",
             engNameNotfilled: "Не указали наименование на английском",
+            catalogNotFilled: "Не указали каталог",
             codeNotFilled: "Не указали код каталога",
             catSuccesCreated: "Новый каталог успешно добавлен",
             recordNotFound: "Подходящих записей не найдено",
@@ -253,7 +256,8 @@ export default {
             ConsulAlwaysHasSameMember: "Указанное лицо уже состоит в другом совете",
             saveChangesWarning: "Хотите сохранить внесенные изменения?",
             unsaveOutcome: "Если изменения не сохранить, они будут утрачены.",
-            addPicture: "Добавить картинку"
+            addPicture: "Добавить картинку",
+            saveErrorToUpdate: "Ошибка во время сохранения. Пожалуйста, обновите страницу!",
         },
         language: {
             kz: "на казахском",
@@ -322,7 +326,7 @@ export default {
             givenorg: "Орган выдачи",
             givendate: "Дата выдачи",
             expire: "Годен до",
-        },  
+        },
         message: {
             validEmail: "Введите корректный email адрес",
         },
@@ -379,7 +383,6 @@ export default {
         },
         needsApproval: "Созданный по шаблону документ требует согласования",
         approvalUsers: "Список согласующих лиц",
-        approvalListPlaceholder: "Инстанция",
     },
     contracts: {
         title: "Договоры",
@@ -646,7 +649,7 @@ export default {
     },
 
     queue: {
-        
+
         title: "Очередь",
         secretary: "Обслуживание",
         queues: "Очереди",
@@ -932,19 +935,19 @@ export default {
         forme: "Относительно меня"
     },
     postaccmonrep: {
-        title: "Отчеты по постаккредитационному мониторингу",
+        title: "Отчеты по самооценке/по постаккредитационному мониторингу",
     },
-    ref:{
-        getRef:"Получить справку",
-        createQr:"Присвоить QR код и поделиться",
-        sendMail:"Сообщить об ошибке данных в документе",
-        sendMail1:"Отправить почту",
-        correction:"Напишите здесь свою поправку. . .",
-        sendingMail:"Отправка почты подождите . . .",
-        mailSent:"Ваше письмо успешно отправлено в отдел кадров.",
-        mailFailed:"Ваше письмо не отправлено, попробуйте еще раз."
+    ref: {
+        getRef: "Получить справку",
+        createQr: "Присвоить QR код и поделиться",
+        sendMail: "Сообщить об ошибке данных в документе",
+        sendMail1: "Отправить почту",
+        correction: "Напишите здесь свою поправку. . .",
+        sendingMail: "Отправка почты подождите . . .",
+        mailSent: "Ваше письмо успешно отправлено в отдел кадров.",
+        mailFailed: "Ваше письмо не отправлено, попробуйте еще раз."
     },
-    guide:{
+    guide: {
         guide: 'Cправочник',
         pathName: 'Название пути',
         guideName: 'Название справочника',
@@ -970,7 +973,11 @@ export default {
         organizers: 'Организаторы курсов',
         lnum: 'Последний номер',
     },
-    roleControl:{
+    roleControl: {
+        addSidebar: 'Добавление новой записи',
+        userChangeable: 'Изменение пользователей по умолчанию',
+        certificate: 'Сертификат',
+        title: 'Заголовок',
         menuTitle: 'Управление ролями',
         giveRole: 'Дать новую роль',
         selectOrg: 'Выберите организацию',
@@ -984,6 +991,8 @@ export default {
         roleLabel: 'Роль',
         noResult: 'Не найдено записей',
         cantDelete: 'Невозможно удалить запись',
+        addNewInstance: 'Добавление новых согласующих лиц/подписантов',
+        instance: 'Согласующее лицо/подписант',
     }
 
 }
