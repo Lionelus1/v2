@@ -206,7 +206,7 @@ export default {
         }
 
         if (this.directory === 'normativeDocs' && (this.parentID === null || this.parentID === undefined || 
-          this.locFolderId === null || this.locFolderId === undefined)) {
+          locFolderId === null || locFolderId === undefined)) {
           this.$toast.add({
             severity: 'error', 
             detail: this.$t('common.message.saveErrorToUpdate'), 
