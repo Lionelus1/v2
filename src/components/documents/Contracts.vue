@@ -61,7 +61,7 @@
     </div>
     <Card v-else>
       <template #content>
-        <PostFile :fileUpload="true" :modelValue="file" :showCatalog="true" directory="readyMadeContract" @updated="fileUpdated"></PostFile>
+        <PostFile :fileUpload="true" :modelValue="file" :showCatalog="true" directory="readyMadeContract" @updated="fileUpdated" accept=".pdf"></PostFile>
       </template>
     </Card>
   </Sidebar>
