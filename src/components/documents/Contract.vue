@@ -154,7 +154,7 @@
           </div>
         </div>
         <div v-else>
-          <PostFile :fileUpload="true" :modelValue="file" directory="readyMadeContract" @updated="fileUpdated"></PostFile>
+          <PostFile :fileUpload="true" :modelValue="file" directory="readyMadeContract" @updated="fileUpdated" accept=".pdf"></PostFile>
         </div>
       </TabPanel>
       <TabPanel :header="$t('common.show')">
