@@ -978,8 +978,11 @@ export default {
         userChangeable: 'Изменение пользователей по умолчанию',
         certificate: 'Сертификат',
         title: 'Заголовок',
-        menuTitle: 'Управление ролями',
+        menuTitle: 'Управление организацией',
+        roleTitle: 'Управление ролями',
+        rolePosRelTitle: 'Управление позицией-ролями',
         giveRole: 'Дать новую роль',
+        givePosRoleRel: 'Дать новое отношение позиция-роль',
         selectOrg: 'Выберите организацию',
         selectRole: 'Выберите роль',
         selectEmployee: 'Выберите сотрудника',
@@ -993,6 +996,8 @@ export default {
         cantDelete: 'Невозможно удалить запись',
         addNewInstance: 'Добавление новых согласующих лиц/подписантов',
         instance: 'Согласующее лицо/подписант',
+        failedToDelete: 'Не удалось удалить запись',
+        failedToLoad: 'Не удалось загрузить данные',
     }
 
 }
