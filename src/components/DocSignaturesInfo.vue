@@ -170,6 +170,7 @@ export default {
           this.file = this.b64toBlob(response.data)
         })
       } else if (this.active == 2 && this.loginedUserId === null) {
+        this.$store.dispatch("solveAttemptedUrl", this.$route)
         this.$router.push({ path: '/login' });
       }
     },
@@ -248,6 +249,7 @@ export default {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else if (error.response && error.response.status === 403) {
+          this.$store.dispatch("solveAttemptedUrl", this.$route)
           this.$router.push({ path: '/login' });
         } else {
           this.$toast.add({
