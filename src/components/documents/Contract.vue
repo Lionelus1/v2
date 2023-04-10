@@ -777,7 +777,9 @@ export default {
       if (!this.contract) return;
       let url = "/agreement/updatedocparams";
       var req = this.contract;
-      req.params = this.filledDocParams[this.selectedDocParams]
+      if (this.contract.sourceType === this.Enum.DocSourceType.FilledDoc && this.contract.docType === this.Enum.DocType.Contract) {
+        req.params = this.filledDocParams[this.selectedDocParams]
+      }
       axios
         .post(smartEnuApi + url, req, { headers: getHeader() })
         .then((res) => {
