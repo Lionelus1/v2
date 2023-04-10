@@ -1,4 +1,9 @@
 <template>
+  <div class="layout-topbar no-print">
+    <div class="layout-topbar-icons">
+        <LanguageDropdown/>
+    </div>
+  </div>
   <div>
     <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
     <BlockUI :blocked="loading" :fullScreen="true"></BlockUI>
@@ -9,7 +14,7 @@
   </div>
   <div v-if="!loading">
     <DocInfo :document="docInfo" v-if="!incorrect" :docID="doc_id"/>
-    <TabView v-model:activeIndex="active" @tab-change="showFile">
+    <TabView v-model:activeIndex="active" @tab-change="tabChanged">
       <TabPanel v-bind:header="$t('ncasigner.signatureListTitle')">
         <div class="col-12" v-if="isShow">
           <Button v-if="signatures && signatures.length > 0 || approvalStages && showSign()" :label="$t('common.downloadSignaturesPdf')" icon="pi pi-download" @click="downloadSignatures"
@@ -28,15 +33,14 @@
 
         </div>
       </TabPanel>
-      <TabPanel v-if="docInfo.docHistory.stateId==2 ||docInfo.docHistory.stateId==6" :header="$t('ncasigner.sign')"
-                :disabled="hideDocSign">
+      <TabPanel v-if="docInfo.docHistory.stateId==2 ||docInfo.docHistory.stateId==6" :header="$t('ncasigner.sign')">
         <div class="mt-2">
           <Panel>
             <template #header>
               <InlineMessage severity="info">{{ $t('ncasigner.noteMark') }}</InlineMessage>
             </template>
             <div class="flex justify-content-center">
-              <Button icon="pi pi-user-edit"
+              <Button icon="pi pi-user-edit" :disabled="hideDocSign"
                       class="p-button-primary md:col-5" @click="sign" :label="$t('ncasigner.sign')" :loading="signing"/>
             </div>
           </Panel>
@@ -72,6 +76,7 @@
 <script>
 import SignatureQrPdf from "@/components/ncasigner/SignatureQrPdf";
 import {runNCaLayer, makeTimestampForSignature} from "@/helpers/SignDocFunctions"
+import LanguageDropdown from "@/LanguageDropdown";
 
 import axios from "axios";
 import {getHeader, smartEnuApi, socketApi, b64toBlob, findRole} from "@/config/config";
@@ -82,7 +87,7 @@ import Enum from "@/enum/docstates/index";
 
 export default {
   name: "DocSignaturesInfo",
-  components: {SignatureQrPdf, DocInfo, QrcodeVue},
+  components: {SignatureQrPdf, DocInfo, QrcodeVue, LanguageDropdown},
   props: {
     docIdParam: {
       type: String,
@@ -115,7 +120,7 @@ export default {
       isTspRequired: Boolean,
       signerIin: null,
       docInfo: null,
-      loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID,
+      loginedUserId: JSON.parse(localStorage.getItem("loginedUser")) ? JSON.parse(localStorage.getItem("loginedUser")).userID : null,
       loginedUserForMgovws: JSON.parse(localStorage.getItem("loginedUser")),
       isShow: false,
       showAllSigns: false,
@@ -137,8 +142,10 @@ export default {
       this.doc_id = this.docIdParam
     }
     const tokenData = JSON.parse(window.localStorage.getItem("authUser"));
-    this.mgovSignUri = 'mobileSign:'+ smartEnuApi +'/mobileSignParams?docUuid=' + this.doc_id +
-        "&token=" + tokenData.access_token
+    if (tokenData !== null) {
+      this.mgovSignUri = 'mobileSign:'+ smartEnuApi +'/mobileSignParams?docUuid=' + this.doc_id +
+          "&token=" + tokenData.access_token
+    }
     this.isTspRequired = this.tspParam
     this.signerIin = this.signerIinParam
     this.showAllSigns = this.showAllSignsParam
@@ -153,20 +160,17 @@ export default {
     showMessage(msgtype, message, content) {
       this.$toast.add({severity: msgtype, summary: message, detail: content, life: 3000});
     },
-    showFile() {
+    tabChanged() {
       if (this.active == 1 && !this.file) { // showFileTab
-        axios.post(
-            smartEnuApi + "/downloadFile", {
-              filePath: this.docInfo.filePath
-            }, {
-              headers: getHeader()
-            }
-        )
-            .then(response => {
-              (
-                  this.file = this.b64toBlob(response.data)
-              )
-            })
+        axios.post(smartEnuApi + "/doc/download", {
+          doc_uuid: this.doc_id
+        }, {
+          headers: getHeader()
+        }).then(response => {
+          this.file = this.b64toBlob(response.data)
+        })
+      } else if (this.active == 2 && this.loginedUserId === null) {
+        this.$router.push({ path: '/login' });
       }
     },
     getData() {
@@ -232,6 +236,10 @@ export default {
                     e.sign = this.chunkString(e.signature, 1200)
                   })
               });
+          }
+
+          if (this.docInfo.docType === this.Enum.DocType.PostAccreditationMonitoringReport) {
+            this.isShow = true
           }
         }
 
@@ -420,3 +428,17 @@ export default {
   }
 }
 </script>
+<style scoped>
+  @media print {
+      .no-print, .no-print * {
+          display: none !important;
+      }
+  }
+
+  @media print {
+      .show-print, .show-print * {
+          display: block !important;
+          width: 100% !important;
+      }
+  }
+</style>

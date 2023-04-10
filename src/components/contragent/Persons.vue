@@ -342,7 +342,8 @@ export default {
       if (this.insertMode && this.personType === Enum.PersonType.IndividualEntrepreneur) {
         this.lazyParams.filters.userType.value = null
       }
-     
+
+      this.loading = true
       this.lazyParams.orgID = this.organization != null ? this.organization.id : null
       axios
         .post(smartEnuApi + url, this.lazyParams, { headers: getHeader() })
@@ -352,7 +353,7 @@ export default {
           if (!this.persons) {
             this.persons= []
           }
-
+          this.loading = false
         })
         .catch((error) => {
           if (error.response.status == 401) {
@@ -364,6 +365,7 @@ export default {
           }
 
           console.error(error);
+          this.loading = false
         });
     },
     insertUser(user) {
@@ -382,7 +384,6 @@ export default {
         this.newPersonType = this.personType  === Enum.PersonType.OrganizationMember ? Enum.PersonType.OrganizationMember : Enum.PersonType.IndividualEntrepreneur
         this.sideVisible = true;
       }
-
     },
     onPage(event) {
       this.lazyParams = event;
@@ -447,14 +448,11 @@ export default {
       }
       this.addMode = true
       this.sideVisible = true;
-
     }
   },
-
   mounted() {
     this.lazyParams.filters = this.filters;
     this.initApiCall();
-    this.loading = false;
   },
 };
 </script>

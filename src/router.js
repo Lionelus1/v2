@@ -44,8 +44,12 @@ const routes = [
         path: '/reception/request',
         name: "receptionRequest",
         component: load('publicReception/Request')
-    } ,
-    
+    },
+    {
+        path: '/sign/:uuid',
+        name: 'DocSignaturesInfo',
+        component: load('DocSignaturesInfo'),
+    },
     {
         path: '/afterauth',
         name: 'AfterAuth',
@@ -344,12 +348,6 @@ const routes = [
                 path: '/resume',
                 name: 'Resume',
                 component: load('humanResources/candidate/Resume'),
-                beforeEnter: ifAuthenticated,
-            },
-            {
-                path: '/sign/:uuid',
-                name: 'DocSignaturesInfo',
-                component: load('DocSignaturesInfo'),
                 beforeEnter: ifAuthenticated,
             },
             {
