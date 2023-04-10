@@ -1,4 +1,9 @@
 <template>
+  <div class="layout-topbar no-print">
+    <div class="layout-topbar-icons">
+        <LanguageDropdown/>
+    </div>
+  </div>
   <div>
     <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
     <BlockUI :blocked="loading" :fullScreen="true"></BlockUI>
@@ -71,6 +76,7 @@
 <script>
 import SignatureQrPdf from "@/components/ncasigner/SignatureQrPdf";
 import {runNCaLayer, makeTimestampForSignature} from "@/helpers/SignDocFunctions"
+import LanguageDropdown from "@/LanguageDropdown";
 
 import axios from "axios";
 import {getHeader, smartEnuApi, socketApi, b64toBlob, findRole} from "@/config/config";
@@ -81,7 +87,7 @@ import Enum from "@/enum/docstates/index";
 
 export default {
   name: "DocSignaturesInfo",
-  components: {SignatureQrPdf, DocInfo, QrcodeVue},
+  components: {SignatureQrPdf, DocInfo, QrcodeVue, LanguageDropdown},
   props: {
     docIdParam: {
       type: String,
@@ -422,3 +428,17 @@ export default {
   }
 }
 </script>
+<style scoped>
+  @media print {
+      .no-print, .no-print * {
+          display: none !important;
+      }
+  }
+
+  @media print {
+      .show-print, .show-print * {
+          display: block !important;
+          width: 100% !important;
+      }
+  }
+</style>
