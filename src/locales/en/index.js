@@ -1055,8 +1055,11 @@ export default {
         userChangeable: 'Changing default users',
         certificate : 'Certificate',
         title : 'Title',
-        menuTitle: 'Role control',
+        menuTitle: 'Organization management',
+        roleTitle: 'Role management',
+        rolePosRelTitle: 'Position-role management',
         giveRole: 'Give new role',
+        givePosRoleRel: 'Give new position-role relation',
         selectOrg: 'Select organization',
         selectRole: 'Select role',
         selectEmployee: 'Select employee',
@@ -1070,11 +1073,5 @@ export default {
         cantDelete: 'Cant delete the record',
         addNewInstance: 'Adding new approvers/signers',
         instance: 'Appover/signer',
-    },
-    blog: {
-        title: 'Blog',
-        welcomeTextKz: 'Welcome text in Kazakh',
-        welcomeTextRu: 'Welcome text in Russian',
-        welcomeTextEn: 'Welcome text in English',
     }
 }

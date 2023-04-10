@@ -589,9 +589,9 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
-                path: '/role-control',
-                name: 'RoleControl',
-                component: load('roleControl/RoleControl'),
+                path: '/orgControl',
+                name: 'OrgControl',
+                component: load('roleControl/OrgControl'),
                 beforeEnter: ifAuthenticated,
             },
             {

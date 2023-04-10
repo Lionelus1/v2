@@ -62,7 +62,7 @@ export class MenuService {
                     {
                         label: $t('roleControl.menuTitle'),
                         icon: 'pi pi-fw pi-user-edit',
-                        to: '/role-control',
+                        to: '/orgControl',
                         visible: this.findRole("main_administrator") || this.findRole("head_of_company")
                     },
                 ]

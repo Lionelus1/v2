@@ -1075,8 +1075,11 @@ export default {
         userChangeable: 'Әдепкі пайдаланушыларды өзгерту',
         certificate : 'Сертификат',
         title : 'Қазақша атауы',
-        menuTitle: 'Рольдерді басқару',
+        menuTitle: 'Ұйымды басқару',
+        roleTitle: 'Рөлді басқару',
+        rolePosRelTitle: 'Позиция-рөлді басқару',
         giveRole: 'Жаңа роль беру',
+        givePosRoleRel: 'Жаңа позиция-роль қарым-қатынасын беру',
         selectOrg: 'Ұйымды таңдаңыз',
         selectRole: 'Рольді таңдаңыз',
         selectEmployee: 'Қызметкерді таңдаңыз',
@@ -1090,11 +1093,5 @@ export default {
         cantDelete: 'Жазбаны өшіру мүмкін емес',
         addNewInstance: 'Жаңа мақұлдаушыларды/қол қоюшыларды қосу',
         instance: 'Мақұлдаушы/қол қоюшы',
-    },
-    blog: {
-        title: 'Блог',
-        welcomeTextKz: 'Қазақша алғысөз',
-        welcomeTextRu: 'Орысша алғысөз',
-        welcomeTextEn: 'Ағылшынша алғысөз',
     }
 }
