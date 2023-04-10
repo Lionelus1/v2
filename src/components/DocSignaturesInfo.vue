@@ -33,7 +33,7 @@
 
         </div>
       </TabPanel>
-      <TabPanel v-if="docInfo.docHistory.stateId==2 ||docInfo.docHistory.stateId==6" :header="$t('ncasigner.sign')">
+      <TabPanel v-if="docInfo && (docInfo.docHistory.stateId==2 ||docInfo.docHistory.stateId==6)" :header="$t('ncasigner.sign')">
         <div class="mt-2">
           <Panel>
             <template #header>
@@ -58,7 +58,7 @@
           </div>
         </div>
       </TabPanel>
-      <TabPanel v-if="docInfo.docHistory.stateId === Enum.INAPPROVAL.ID && (docInfo.sourceType === Enum.DocSourceType.FilledDoc || 
+      <TabPanel v-if="docInfo && docInfo.docHistory.stateId === Enum.INAPPROVAL.ID && (docInfo.sourceType === Enum.DocSourceType.FilledDoc || 
         (docInfo.docType && docInfo.docType === Enum.DocType.Contract))" :header="$t('common.revision')" :disabled="hideDocRevision">
         <div class="card">
           <label> {{ this.$t('common.comment') }} </label>
@@ -247,6 +247,8 @@ export default {
       }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
+        } else if (error.response && error.response.status === 403) {
+          this.$router.push({ path: '/login' });
         } else {
           this.$toast.add({
             severity: "error",
