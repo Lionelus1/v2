@@ -201,8 +201,18 @@ export default {
         }
 
         let locFolderId = this.parentID
-        if (this.catalogs !== null && this.catalog != null) {
+        if (this.catalogs !== null && this.catalog !== null) {
           locFolderId = this.catalog.id
+        }
+
+        if (this.directory === 'normativeDocs' && (this.parentID === null || this.parentID === undefined || 
+          locFolderId === null || locFolderId === undefined)) {
+          this.$toast.add({
+            severity: 'error', 
+            detail: this.$t('common.message.saveErrorToUpdate'), 
+            life: 3000
+          });
+          return;
         }
 
         this.uploading = true;

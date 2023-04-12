@@ -52,6 +52,7 @@ export default {
       CertificateTemplate: 7,
       Certificate: 8,
       RelatedDoc: 9,
+      PostAccreditationMonitoringReport: 10,
     },
 
     ContragentType: {

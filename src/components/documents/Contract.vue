@@ -154,7 +154,7 @@
           </div>
         </div>
         <div v-else>
-          <PostFile :fileUpload="true" :modelValue="file" directory="readyMadeContract" @updated="fileUpdated"></PostFile>
+          <PostFile :fileUpload="true" :modelValue="file" directory="readyMadeContract" @updated="fileUpdated" accept=".pdf"></PostFile>
         </div>
       </TabPanel>
       <TabPanel :header="$t('common.show')">
@@ -777,7 +777,9 @@ export default {
       if (!this.contract) return;
       let url = "/agreement/updatedocparams";
       var req = this.contract;
-      req.params = this.filledDocParams[this.selectedDocParams]
+      if (this.contract.sourceType === this.Enum.DocSourceType.FilledDoc && this.contract.docType === this.Enum.DocType.Contract) {
+        req.params = this.filledDocParams[this.selectedDocParams]
+      }
       axios
         .post(smartEnuApi + url, req, { headers: getHeader() })
         .then((res) => {

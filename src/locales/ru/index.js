@@ -256,7 +256,8 @@ export default {
             ConsulAlwaysHasSameMember: "Указанное лицо уже состоит в другом совете",
             saveChangesWarning: "Хотите сохранить внесенные изменения?",
             unsaveOutcome: "Если изменения не сохранить, они будут утрачены.",
-            addPicture: "Добавить картинку"
+            addPicture: "Добавить картинку",
+            saveErrorToUpdate: "Ошибка во время сохранения. Пожалуйста, обновите страницу!",
         },
         language: {
             kz: "на казахском",
