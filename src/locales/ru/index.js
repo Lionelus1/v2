@@ -812,6 +812,14 @@ export default {
         degreeLevel: 'Академическая степень',
         shortInfo: 'Краткая информация',
         enrollDocs: 'Перечень документов для зачисления',
+        programName: 'Наименование образовательных программ',
+        qazaqGroups: 'Казахский язык обучения',
+        russianGroups: 'Русский язык обучения',
+        eduDirections: 'Выберите академическое направление',
+        chooseProgram: 'Выберите образовательную программу',
+        testType: 'Виды теста',
+        passingScore: 'Баллы',
+        chooseTest: 'Выберите вид теста'
     },
 
     student: {

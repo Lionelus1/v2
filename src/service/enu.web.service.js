@@ -131,6 +131,10 @@ export class EnuWebService {
                 return "AdmissionInfoList";
             case 'PriceEducation':
                 return 'EduPriceCategoryList'
+            case 'ScoreListBlock':
+                return 'EduScoreCategoryList'
+            case 'DrScoreListBlock':
+                return 'EduDoctoralScoreCategoryList'
         }
 
         return "";
