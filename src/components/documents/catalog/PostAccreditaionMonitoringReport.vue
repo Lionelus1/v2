@@ -7,7 +7,7 @@
       <Toolbar class="m-0 p-1" style="position:relative;">
 
         <template #start>
-          <Button :disabled="selected===null || file.depType !=2" @click="resetFileInfo();openDialog('fileUpload')"
+          <Button v-if="findRole(null,'accreditation_rating_sector_employee')"  :disabled="selected===null || file.depType !=2" @click="resetFileInfo();openDialog('fileUpload')"
                   class="p-button-info p-1 mr-2"><i
               class="fa-solid fa-file-circle-plus fa-xl"></i>&nbsp;{{ $t('common.add') }}
           </Button>
@@ -256,26 +256,6 @@
         <Button v-bind:label="$t('common.yes')" icon="pi pi-check" @click="toRevision" autofocus/>
       </template>
     </Dialog>
-    <!-- <Dialog :modal="true" v-bind:header="$t('hdfs.umktitle')" v-model:visible="dialogOpenState.umkParams" :style="{width: '60vw'}" class="p-fluid">
-    <div class="p-fluid">
-        <div class="field">
-            <label for="module">{{$t('hdfs.modulname')}}</label>
-            <InputText id="module" class="mb-2" v-bind:placeholder="$t('hdfs.modulname')" v-model="revisionComment" type="text" />
-        </div>
-        <div class="field">
-            <label for="eduprogram">{{$t('hdfs.eduprogram')}}</label>
-            <InputText id="eduprogram" class="mb-2" v-bind:placeholder="$t('hdfs.eduprogram')" v-model="revisionComment" type="text" />
-        </div>
-        <div class="field">
-            <label for="discipline">{{$t('hdfs.discipline')}}</label>
-            <InputText id="discipline" class="mb-2" v-bind:placeholder="$t('hdfs.discipline')" v-model="revisionComment" type="text" />
-        </div>
-        </div>
-        <template #footer>
-        <Button v-bind:label="$t('common.no')" icon="pi pi-times" @click="closeDialog('toApproval')" class="p-button-text"/>
-        <Button v-bind:label="$t('common.yes')" icon="pi pi-check" @click="toRevision" autofocus />
-        </template>
-    </Dialog> -->
   </div>
 </template>
 
@@ -304,7 +284,6 @@ export default {
         showDocs: false,
         userFilter: true,
       },
-
       DocState: DocState,
       revisionComment: "",
       approving: false,
@@ -312,7 +291,7 @@ export default {
       selectedUsers: [
         {
           stage: 1,
-          users: [this.$store.state.loginedUser],
+          users:[],
           certificate: {
             namekz: "Жеке тұлғаның сертификаты",
             nameru: "Сертификат физического лица",
@@ -351,18 +330,6 @@ export default {
             description: "img",
             dialog: false,
           },
-        //   {
-        //     id: 2,
-        //     name: "nameInRussian",
-        //     value: null,
-        //     description: "білім беру баағдарламасы атауы",
-        //   },
-        //   {
-        //     id: 3,
-        //     name: "nameInEngish",
-        //     value: null,
-        //     description: "discipline",
-        //   },
         ],
       },
       totalRecords: 10,
@@ -421,7 +388,7 @@ export default {
       approvalStages: [
         {
           stage: 1,
-          users: [this.$store.state.loginedUser],
+          users: null,
           certificate: {
             namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
             nameru: "Для внутреннего документооборота (ГОСТ)",
@@ -465,7 +432,6 @@ export default {
   },
   created() {
     this.loginedUser = this.$store.state.loginedUser;
-
   },
   mounted() {
     this.getFolders(null);
@@ -475,6 +441,7 @@ export default {
     window.removeEventListener('resize', this.onResize);
   },
   methods: {
+    findRole: findRole,
     toggle(ref, event) {
       this.$refs[ref].toggle(event);
     },
@@ -531,7 +498,6 @@ export default {
       this.windowHeight = window.innerHeight - 270
     },
 
-    findRole: findRole,
     showMessage(msgtype, message, content) {
       this.$toast.add({severity: msgtype, summary: message, detail: content, life: 3000});
     },
@@ -778,10 +744,9 @@ export default {
       }
     },
     toRevision() {
-      let url = "/doc/changestate"
+      let url = "/doc/sendtorevision"
       var req = {
         docID: this.file.id,
-        state: this.DocState.REVISION.ID,
         comment: this.revisionComment,
       }
       this.approving = true
