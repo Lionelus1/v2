@@ -360,7 +360,7 @@ export default {
       });
     },
     viewSignatures() {
-      this.$router.push({name: 'DocSignaturesInfo', params: {uuid: this.plan.doc_id}})
+      this.$router.push({name: 'DocSignaturesInfo', params: {uuid: this.plan.doc_id, isInsideSidebar: true}})
     },
   }
 }

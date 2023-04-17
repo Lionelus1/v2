@@ -219,7 +219,7 @@
       class="p-sidebar-lg"
       style="overflow-y: scroll"
     >
-     <DocSignaturesInfo :docIdParam="contract.uuid"></DocSignaturesInfo>
+     <DocSignaturesInfo :docIdParam="contract.uuid" :isInsideSidebar="true"></DocSignaturesInfo>
     </Sidebar>
   </div>
   <div v-else class="content-section">

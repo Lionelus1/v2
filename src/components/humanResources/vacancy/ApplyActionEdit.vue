@@ -139,7 +139,8 @@
     >
       <DocSignaturesInfo :docIdParam="documentUuid"
                          :signerIinParam="petition.headIin"
-                         :tspParam="true"></DocSignaturesInfo>
+                         :tspParam="true"
+                         :isInsideSidebar="true"></DocSignaturesInfo>
     </Sidebar>
   </div>
 </template>

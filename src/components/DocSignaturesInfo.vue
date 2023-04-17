@@ -1,5 +1,5 @@
 <template>
-  <div class="layout-topbar no-print">
+  <div v-if="!isInsideSidebar" class="layout-topbar no-print">
     <div class="layout-topbar-icons">
         <LanguageDropdown/>
     </div>
@@ -107,6 +107,10 @@ export default {
      * Для того, чтобы поставить метку времени надо задать значение true.
      */
     tspParam: {
+      type: Boolean,
+      default: false
+    },
+    isInsideSidebar: {
       type: Boolean,
       default: false
     }
