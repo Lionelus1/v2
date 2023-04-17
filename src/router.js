@@ -20,7 +20,6 @@ const ifNotAuthenticated = (to, from, next) => {
 }
 
 const ifAuthenticated = (to, from, next) => {
-
     if (store.getters.isAuthenticated) {
         next()
         return
@@ -29,7 +28,22 @@ const ifAuthenticated = (to, from, next) => {
         next('/login')
         return
     }
+}
 
+const ifMainAdministrator = (to, from, next) => {
+    if (store.getters.isAuthenticated) {
+        if (store.getters.ifMainAdministrator) {
+            next()
+            return
+        } else {
+            next('/access')
+            return
+        }
+    } else {
+        store.dispatch("solveAttemptedUrl", to);
+        next('/login')
+        return
+    }
 }
 
 
@@ -592,7 +606,7 @@ const routes = [
                 path: '/orgControl',
                 name: 'OrgControl',
                 component: load('roleControl/OrgControl'),
-                beforeEnter: ifAuthenticated,
+                beforeEnter: ifMainAdministrator,
             },
             {
                 path: '/approvalList',

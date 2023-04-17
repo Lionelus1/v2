@@ -240,7 +240,7 @@
               class="p-sidebar-lg"
               style="overflow-y: scroll"
           >
-            <DocSignaturesInfo :docIdParam="selectedNode.data.docID"></DocSignaturesInfo>
+            <DocSignaturesInfo :docIdParam="selectedNode.data.docID" :isInsideSidebar="true"></DocSignaturesInfo>
           </Sidebar>
       </div>
 

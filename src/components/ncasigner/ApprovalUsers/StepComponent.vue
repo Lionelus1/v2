@@ -49,7 +49,7 @@
         <Button v-if="!readonly" :disabled="!(isNewStage && approvalStages.length < 10)" icon="pi pi-plus" class="p-button-rounded p-button-success"
                 @click="addStep"/>
         <Button v-if="!readonly" @click="clearSteps" class="btn danger ml-2"> {{ $t('common.clearApprovalList') }} </Button>
-        <Button v-if="!readonly" @click="approvalListControl = true" style="width: auto; color: white; font-weight: 700;"
+        <Button v-if="!readonly && isNewStage && isEnuWorker" @click="approvalListControl = true" style="width: auto; color: white; font-weight: 700;"
                 :disabled="!isNewStage" class="p-button-warning"> {{ $t('roleControl.addNewInstance') }} </Button>
       </div>
     </div>
@@ -253,6 +253,14 @@ export default {
           });
         }
       })
+    },
+    isEnuWorker() {
+      let currentUser = this.$store.state.loginedUser
+      if (currentUser && currentUser.organization && currentUser.organization.iin && currentUser.organization.iin === '010140003594') {
+        return true
+      }
+
+      return false 
     }
   },
   created() {
