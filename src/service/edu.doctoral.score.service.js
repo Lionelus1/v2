@@ -11,7 +11,7 @@ export class EduDoctoralScoreService {
         return api.post(`/web/getEduDoctoralExams`, params, {headers: getHeader()});
     }
     getEduDoctoralScoresByCategoryId(categoryId){
-        return api.post(`/web/getDoctoralProgramByScoreCategoryID`, {score_category_id: categoryId}, {headers: getHeader()})
+        return api.post(`/web/getDoctoralPassingScores`, {score_category_id: categoryId}, {headers: getHeader()})
     }
 
 }
