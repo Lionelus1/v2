@@ -32,7 +32,7 @@ const ifAuthenticated = (to, from, next) => {
 
 const ifMainAdministrator = (to, from, next) => {
     if (store.getters.isAuthenticated) {
-        if (store.getters.ifMainAdministrator) {
+        if (store.getters.isMainAdministrator) {
             next()
             return
         } else {
