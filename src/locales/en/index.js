@@ -784,6 +784,14 @@ export default {
         degreeLevel: 'Academic degree',
         shortInfo: 'Brief information',
         enrollDocs: 'List of documents for enrollment',
+        programName: 'Name of educational programs',
+        qazaqGroups: 'Education in Kazakh',
+        russianGroups: 'Education in Russian',
+        eduDirections: 'Choose an academic directions',
+        chooseProgram: 'Choose an academic program',
+        testType: 'Test types',
+        passingScore: 'Points',
+        chooseTest: 'Choose the type of exam'
     },
     //Student locale
     student: {

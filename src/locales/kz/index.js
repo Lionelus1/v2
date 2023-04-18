@@ -827,6 +827,14 @@ export default {
         degreeLevel: 'Академиялық дәреже',
         shortInfo: 'Қысқаша ақпарат',
         enrollDocs: 'Оқуға түсуге арналған құжаттардың тізімі',
+        programName: 'Білім беру бағдарламаларының атауы',
+        qazaqGroups: 'Қазақ тілінде білім',
+        russianGroups: 'Орыс тілінде білім',
+        eduDirections: 'Академиялық бағытты таңдаңыз',
+        chooseProgram: 'Білім беру бағдарламасын таңдаңыз',
+        testType: 'Тест түрлері',
+        passingScore: 'Ұпай',
+        chooseTest: 'Емтихан түрін таңдаңыз'
     },
     //Student locale
     student: {

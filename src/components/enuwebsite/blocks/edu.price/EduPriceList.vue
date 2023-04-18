@@ -70,6 +70,7 @@ export default {
     const selectedData = ref()
     const emitter = inject('emitter');
     const categoryId = ref(route.params.id)
+    
 
     const getPrices = () => {
       loading.value = true;
@@ -104,7 +105,7 @@ export default {
       selectedData.value = data;
       showModal.value = true;
     }
-
+    
     const deleteConfirm = (data) => {
       confirm.require({
         message: i18n.t('common.doYouWantDelete'),

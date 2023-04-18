@@ -4,6 +4,7 @@ import store from '@/store/store'
 import AdmissionInfoList from "@/components/enuwebsite/blocks/admission.info/AdmissionInfoList.vue";
 import EduPriceCategoryList from "@/components/enuwebsite/blocks/edu.price/EduPriceCategoryList.vue";
 import EduPriceComponent from "@/components/enuwebsite/blocks/edu.price/EduPriceComponent.vue";
+import EduScoreComponent from "@/components/enuwebsite/blocks/edu.score/EduScoreComponent.vue"
 
 function load(component) {
     return () => import(`./components/${component}.vue`)
@@ -509,6 +510,46 @@ const routes = [
                                 path: 'prices/:id',
                                 name: 'EduPriceList',
                                 component: load('enuwebsite/blocks/edu.price/EduPriceList'),
+                                beforeEnter: ifAuthenticated,
+                            }
+                        ]
+                    },
+                    {
+                        path: 'edu-score',
+                        name: 'EduScoreComponent',
+                        component: load('enuwebsite/blocks/edu.score/EduScoreComponent'),
+                        beforeEnter: ifAuthenticated,
+                        children: [
+                            {
+                                path: '',
+                                name: 'EduScoreCategoryList',
+                                component: load('enuwebsite/blocks/edu.score/EduScoreCategoryList'),
+                                beforeEnter: ifAuthenticated,
+                            },
+                            {
+                                path: 'scores/:id',
+                                name: 'EduScoreList',
+                                component: load('enuwebsite/blocks/edu.score/EduScoreList'),
+                                beforeEnter: ifAuthenticated,
+                            }
+                        ]
+                    },
+                    {
+                        path: 'edu-doctoral-score',
+                        name: 'EduDoctoralScoreComponent',
+                        component: load('enuwebsite/blocks/edu.doctoral.score/EduDoctoralScoreComponent'),
+                        beforeEnter: ifAuthenticated,
+                        children: [
+                            {
+                                path: '',
+                                name: 'EduDoctoralScoreCategoryList',
+                                component: load('enuwebsite/blocks/edu.doctoral.score/EduDoctoralScoreCategoryList'),
+                                beforeEnter: ifAuthenticated,
+                            },
+                            {
+                                path: 'drscores/:id',
+                                name: 'EduDoctoralScoreList',
+                                component: load('enuwebsite/blocks/edu.doctoral.score/EduDoctoralScoreList'),
                                 beforeEnter: ifAuthenticated,
                             }
                         ]
