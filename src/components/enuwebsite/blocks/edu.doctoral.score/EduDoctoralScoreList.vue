@@ -82,7 +82,6 @@
         });
       }
       getScores();
-      console.log(data);
   
       const getBlock = () => {
         loading.value = true;

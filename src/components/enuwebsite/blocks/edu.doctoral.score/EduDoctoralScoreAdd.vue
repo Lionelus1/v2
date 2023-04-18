@@ -81,15 +81,12 @@
       });
   }
   getDoctoralExams();
-  console.log(selectedExam);
   const add = () => {
     submitted.value = true;
     formData.value.score_category_id = parseInt(route.params.id);
     formData.value.exam_id = selectedExam.value.id
     if (!isValid()) return;
-    eduScoreService
-      .addScore(formData.value)
-      .then((res) => {
+    eduScoreService.addScore(formData.value).then((res) => {
         if (res.data && res.data.is_success) {
           toast.add({
             severity: "success",
