@@ -819,7 +819,8 @@ export default {
         chooseProgram: 'Выберите образовательную программу',
         testType: 'Виды теста',
         passingScore: 'Баллы',
-        chooseTest: 'Выберите вид теста'
+        chooseTest: 'Выберите вид теста',
+        currency: 'Валюта'
     },
 
     student: {
