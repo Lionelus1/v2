@@ -791,7 +791,8 @@ export default {
         chooseProgram: 'Choose an academic program',
         testType: 'Test types',
         passingScore: 'Points',
-        chooseTest: 'Choose the type of exam'
+        chooseTest: 'Choose the type of exam',
+        currency: 'Currency'
     },
     //Student locale
     student: {
