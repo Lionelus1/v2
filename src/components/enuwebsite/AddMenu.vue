@@ -37,7 +37,7 @@
                 <a href="javascript:void(0)" @click="showAddPage" class="ml-2 text-underline">{{ $t('common.createNew') }}</a>
             </label>
             <Dropdown v-model="formData.page_id" optionDisabled="true" :options="pages" optionLabel="title_kz" optionValue="enu_page_id"
-                      :filter="true" :showClear="true" :placeholder="$t('web.selectPage')" :loading="pageLoading" />
+                      :filter="true" :showClear="true" :placeholder="$t('web.selectPage')" :loading="pageLoading"/>
         </div>
         <div class="field" v-if="menuType === 2">
             <label>{{ $t('common.link') }}</label>
@@ -140,6 +140,7 @@ export default {
     mounted() {
         this.emitter.on('pageCreated', data => {
             if (data) {
+                this.addPageVisible = false;
                 this.getPages(data);
             }
         });
@@ -257,7 +258,6 @@ export default {
                 this.pages = res.data.pages;
                 if (data)
                     this.formData.page_id = data.enu_page_id;
-                this.addPageVisible = false;
                 this.pageLoading = false;
             }).catch(error => {
                 this.pageLoading = false;

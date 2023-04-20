@@ -57,7 +57,7 @@
           <div class="field">
             <label for="ru-content">{{ $t("common.contentInRussian") }}</label>
 <!--            <RichEditor id="ru-content" v-model="formData.content_ru" editorStyle="height: 320px"/>-->
-            <TinyEditor v-model="formData.content_kz" />
+            <TinyEditor v-model="formData.content_ru" />
             <small v-show="!formData.content_ru && submitted" class="p-error">
               {{ $t("smartenu.contentRuInvalid") }}
             </small>
