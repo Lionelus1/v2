@@ -294,14 +294,12 @@ export default {
       this.submitted = true;
       if (!this.validatePage()) return;
 
-      if (this.fileList) {
-        this.formData.files = this.fileList
-      }
       this.enuService.addPage(this.formData).then(res => {
         if (res.data !== null) {
           this.$toast.add({severity: "success", summary: this.$t("web.createdPageSuccessMsg"), life: 3000});
           this.fileList = [];
         }
+        this.lazyParams.page = 0;
         this.getPages();
       }).catch(error => {
         this.$toast.add({severity: "error", summary: error, life: 3000});
