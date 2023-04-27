@@ -22,7 +22,10 @@
         <template #loading> {{ $t('common.loading') }}</template>
         <Column field="menu_title_kz" :header="$t('common.nameIn')" :expander="true" style="min-width:300px">
           <template #body="{ node }">
-            <span><i class="fa-solid fa-folder"></i>&nbsp;{{ $i18n.locale === 'kz' ? node.menu_title_kz : $i18n.locale === 'ru' ? node.menu_title_ru : node.menu_title_en }}</span>
+            <span><i class="fa-solid fa-folder"></i>&nbsp;
+              {{ $i18n.locale === 'kz' ? node.menu_title_kz : $i18n.locale === 'ru' ? node.menu_title_ru : node.menu_title_en }}
+              <Badge value="Hidden" v-if="node.hidden"></Badge>
+            </span>
           </template>
         </Column>
         <Column field="page" :header="$t('web.menuMainPage')">
