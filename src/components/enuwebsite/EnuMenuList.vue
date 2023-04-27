@@ -24,7 +24,7 @@
           <template #body="{ node }">
             <span><i class="fa-solid fa-folder"></i>&nbsp;
               {{ $i18n.locale === 'kz' ? node.menu_title_kz : $i18n.locale === 'ru' ? node.menu_title_ru : node.menu_title_en }}
-              <Badge value="Hidden" v-if="node.hidden"></Badge>
+              <Badge :value="$t('web.isHidden')" v-if="node.hidden"></Badge>
             </span>
           </template>
         </Column>
