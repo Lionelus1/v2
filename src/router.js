@@ -583,6 +583,12 @@ const routes = [
                 ]
             },
             {
+                path: '/enu/settings',
+                name: 'EnuSiteSettings',
+                component: load('enuwebsite/EnuSiteSettings'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
                 path: '/role-control',
                 name: 'RoleControl',
                 component: load('roleControl/RoleControl'),

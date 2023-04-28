@@ -827,7 +827,9 @@ export default {
         passingScore: 'Баллы',
         chooseTest: 'Выберите вид теста',
         currency: 'Валюта',
-        note: 'Примечание'
+        note: 'Примечание',
+        siteSettings: 'Настройки сайта',
+        mourningMode: 'Траурный режим'
     },
 
     student: {

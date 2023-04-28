@@ -839,7 +839,9 @@ export default {
         passingScore: 'Ұпай',
         chooseTest: 'Емтихан түрін таңдаңыз',
         currency: 'Валюта',
-        note: 'Ескертпе'
+        note: 'Ескертпе',
+        siteSettings: 'Сайт баптаулары',
+        mourningMode: 'Қаралы күн режимі'
     },
     //Student locale
     student: {

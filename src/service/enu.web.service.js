@@ -125,6 +125,14 @@ export class EnuWebService {
         return api.post(`/web/deleteBlockContentFile`, {id: id}, {headers: getHeader()});
     }
 
+    getSiteSettings() {
+        return api.get(`/web/getSiteSettings`, {headers: getHeader()})
+    }
+
+    setSiteSettings(params) {
+        return api.post(`/web/updateSiteSettings`, params, {headers: getHeader()})
+    }
+
     navigateToPlugin(componentName) {
         switch (componentName) {
             case 'DocsListBlock':

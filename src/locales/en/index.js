@@ -796,7 +796,9 @@ export default {
         passingScore: 'Points',
         chooseTest: 'Choose the type of exam',
         currency: 'Currency',
-        note: 'Note'
+        note: 'Note',
+        siteSettings: 'Site settings',
+        mourningMode: 'Mourning modeТраурный режим'
     },
     //Student locale
     student: {

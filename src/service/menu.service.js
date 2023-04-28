@@ -201,6 +201,9 @@ export class MenuService {
                     },
                     {
                         label: $t('web.blog'), icon: 'fa-solid fa-message', to: '/blog'
+                    },
+                    {
+                        label: $t('web.siteSettings'), icon: 'fa-solid fa-gear', to: '/enu/settings'
                     }
                 ]
             },
