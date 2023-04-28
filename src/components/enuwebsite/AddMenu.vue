@@ -51,15 +51,30 @@
             </div>
         </div>
         <div class="field">
+            <label>{{ $t('web.isHidden') }}</label>
+            <div>
+                <Checkbox inputId="hidden" v-model="formData.hidden" :binary="true"/>
+                <label class="ml-2" for="hidden">{{ $t('common.yes') }}</label>
+            </div>
+        </div>
+        <div class="field">
             <label>{{ $t('web.addToUsefulLink') }}</label>
             <div>
-                <Checkbox inputId="is_main" v-model="formData.is_usefull_link" :binary="true"/>
+                <Checkbox inputId="is_usefull_link" v-model="formData.is_usefull_link" :binary="true"/>
                 <label class="ml-2" for="is_main">{{ $t('common.yes') }}</label>
             </div>
         </div>
         <div class="field" v-if="formData.is_usefull_link">
-            <label>{{ $t('web.usefulLinkDesc') }}</label>
-            <Textarea :placeholder="$t('common.enter')" class="pt-1" type="text" v-model="formData.description" maxlength="80"></Textarea>
+            <label>{{ $t('web.usefulLinkDescKZ') }}</label>
+            <Textarea :placeholder="$t('common.enter')" class="pt-1" type="text" v-model="formData.description_kz" maxlength="80"></Textarea>
+        </div>
+        <div class="field" v-if="formData.is_usefull_link">
+            <label>{{ $t('web.usefulLinkDescRU') }}</label>
+            <Textarea :placeholder="$t('common.enter')" class="pt-1" type="text" v-model="formData.description_ru" maxlength="80"></Textarea>
+        </div>
+        <div class="field" v-if="formData.is_usefull_link">
+            <label>{{ $t('web.usefulLinkDescEN') }}</label>
+            <Textarea :placeholder="$t('common.enter')" class="pt-1" type="text" v-model="formData.description_en" maxlength="80"></Textarea>
         </div>
         <div class="field">
             <label>{{ $t('web.bgImg') }}</label>
@@ -114,7 +129,9 @@ export default {
                 link: null,
                 is_header: false,
                 is_middle: false,
-                icon: ""
+                icon: "",
+                hidden: false
+                
             },
             bgImg: null,
             formValid: [],
@@ -295,6 +312,7 @@ export default {
             if (!this.formData.menu_title_en) {
                 errors.push(1)
             }
+         
             if (this.menuType === 1 && !this.formData.page_id) {
                 errors.push(1)
             }
