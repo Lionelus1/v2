@@ -835,7 +835,8 @@ export default {
         testType: 'Тест түрлері',
         passingScore: 'Ұпай',
         chooseTest: 'Емтихан түрін таңдаңыз',
-        currency: 'Валюта'
+        currency: 'Валюта',
+        note: 'Ескертпе'
     },
     //Student locale
     student: {

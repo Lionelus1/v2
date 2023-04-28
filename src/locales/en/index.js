@@ -792,7 +792,8 @@ export default {
         testType: 'Test types',
         passingScore: 'Points',
         chooseTest: 'Choose the type of exam',
-        currency: 'Currency'
+        currency: 'Currency',
+        note: 'Note'
     },
     //Student locale
     student: {

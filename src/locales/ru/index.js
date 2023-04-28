@@ -823,7 +823,8 @@ export default {
         testType: 'Виды теста',
         passingScore: 'Баллы',
         chooseTest: 'Выберите вид теста',
-        currency: 'Валюта'
+        currency: 'Валюта',
+        note: 'Примечание'
     },
 
     student: {
