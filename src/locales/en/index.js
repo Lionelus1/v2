@@ -1064,6 +1064,8 @@ export default {
     },
     blog: {
         title: 'Blog',
-        welcomeText: 'Welcome text',
+        welcomeTextKz: 'Welcome text in Kazakh',
+        welcomeTextRu: 'Welcome text in Russian',
+        welcomeTextEn: 'Welcome text in English',
     }
 }

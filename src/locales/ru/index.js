@@ -1072,7 +1072,9 @@ export default {
     },
     blog: {
         title: 'Блог',
-        welcomeText: 'Приветственный текст',
+        welcomeTextKz: 'Приветственный текст на казахском',
+        welcomeTextRu: 'Приветственный текст на русском',
+        welcomeTextEn: 'Приветственный текст на английском',
     }
 
 }

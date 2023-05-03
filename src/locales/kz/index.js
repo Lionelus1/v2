@@ -1084,6 +1084,8 @@ export default {
     },
     blog: {
         title: 'Блог',
-        welcomeText: 'Кіріспе мәтін',
+        welcomeTextKz: 'Қазақша алғысөз',
+        welcomeTextRu: 'Орысша алғысөз',
+        welcomeTextEn: 'Ағылшынша алғысөз',
     }
 }
