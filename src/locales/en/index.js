@@ -295,6 +295,7 @@ export default {
         image: 'Image',
         signers: "Signatory parties",
         approvals: "Approving persons",
+        goOver: 'Go over'
     },
     bank: {
         title: "Banks",

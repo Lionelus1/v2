@@ -294,6 +294,7 @@ export default {
         image: 'Сурет',
         signers: "Қол қоюшы тараптар",
         approvals: "Бекітетін тұлғалар",
+        goOver: 'Өту'
     },
     bank: {
         title: "Банктер",

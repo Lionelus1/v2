@@ -296,6 +296,7 @@ export default {
         image: 'Картинка',
         signers: "Подписывающие стороны",
         approvals: "Согласующие лица",
+        goOver: 'Перейти'
     },
     bank: {
         title: "Банки",

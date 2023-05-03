@@ -8,6 +8,8 @@ export const queueApi = process.env.VUE_APP_QUEUE_API
 export const fileRoute = "/serve?path="
 export const downloadRoute = "/download/"
 
+export const webEnuDomain = process.env.VUE_APP_ENU_DOMAIN
+
 export const header  = {
   "Accept": "application/json",
   "Access-Control-Allow-Origin": "*",
