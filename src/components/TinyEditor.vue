@@ -1,6 +1,5 @@
 <template>
     <editor ref="myEditor" :api-key="editorApi" v-model="content" :init="editorOptions" :disabled="readonly"/>
-    <Toast base-z-index="9999" group="tinygroup" />
 </template>
 
 <script>
@@ -134,7 +133,7 @@ export default {
                                             case 'pdf-view':
                                                 if (targetFile.type !== 'application/pdf') {
                                                     api.setData({link_open_type: 'current'})
-                                                    self.$toast.add({severity: "error", summary: self.$t('common.pdfTypeError'), life: 3000, group: 'tinygroup'});
+                                                    self.$toast.add({severity: "error", summary: self.$t('common.pdfTypeError'), life: 3000});
                                                     return;
                                                 }
                                                 api.setData({link_input: self.generateListLink(selectedFile, 'view')})
@@ -169,23 +168,8 @@ export default {
                                         });
                                         input.click();
                                     }
-                                },
-                                buttons: [
-                                    {
-                                        text: 'Close',
-                                        type: 'cancel',
-                                        onclick: 'close'
-                                    },
-                                    {
-                                        text: 'Insert',
-                                        type: 'submit',
-                                        primary: true,
-                                        enabled: false
-                                    }
-                                ]
+                                }
                             });
-
-                            //window.tinymce.activeEditor.execCommand('mceInsertContent', false, `<ul><li>Custom FIle YPLOAD</li><li>Custom FIle YPLOAD</li><li>Custom FIle YPLOAD</li></ul>`);
                         }
                     });
                 }
