@@ -295,7 +295,15 @@ export default {
         image: 'Image',
         signers: "Signatory parties",
         approvals: "Approving persons",
-        goOver: 'Go over'
+        goOver: 'Go over',
+        linkType: 'Link type',
+        linkTypeDownload: 'Download',
+        linkTypeView: 'View',
+        openLinkIn: 'Open link in...',
+        currentWindowLink: 'Current window',
+        newWindowLink: 'New window',
+        dialogWindowsPdf: 'In dialog box (for PDF)',
+        pdfTypeError: 'Тип файла не соответствует PDF'
     },
     bank: {
         title: "Banks",

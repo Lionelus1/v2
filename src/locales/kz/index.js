@@ -294,7 +294,15 @@ export default {
         image: 'Сурет',
         signers: "Қол қоюшы тараптар",
         approvals: "Бекітетін тұлғалар",
-        goOver: 'Өту'
+        goOver: 'Өту',
+        linkType: 'Сілтеме түрі',
+        linkTypeDownload: 'Жүктеу',
+        linkTypeView: 'Қарау',
+        openLinkIn: 'Сілтеме ашу...',
+        currentWindowLink: 'Ағымдағы терезе',
+        newWindowLink: 'Жаңа терезе',
+        dialogWindowsPdf: 'Диалогтық терезеде (PDF үшін)',
+        pdfTypeError: 'Файл түрі PDF форматына сәйкес келмейді'
     },
     bank: {
         title: "Банктер",

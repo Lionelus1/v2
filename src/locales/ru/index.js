@@ -296,7 +296,15 @@ export default {
         image: 'Картинка',
         signers: "Подписывающие стороны",
         approvals: "Согласующие лица",
-        goOver: 'Перейти'
+        goOver: 'Перейти',
+        linkType: 'Тип ссылки',
+        linkTypeDownload: 'Скачивание',
+        linkTypeView: 'Просмотр',
+        openLinkIn: 'Открыть ссылку в...',
+        currentWindowLink: 'Текущее окно',
+        newWindowLink: 'В новом окне',
+        dialogWindowsPdf: 'В диалоговом окне (для PDF)',
+        pdfTypeError: 'File type does not match PDF'
     },
     bank: {
         title: "Банки",
