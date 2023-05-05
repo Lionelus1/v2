@@ -106,7 +106,7 @@ export default {
                                             items: [
                                                 { value: 'current', text: self.$t('common.currentWindowLink') },
                                                 { value: 'blank', text: self.$t('common.newWindowLink') },
-                                                { value: 'pdf-view', text: self.$t('common.dialogWindowsPdf') },
+                                                { value: 'pdfview', text: self.$t('common.dialogWindowsPdf') },
                                             ]
                                         },
                                     ]
@@ -130,14 +130,15 @@ export default {
                                             case 'blank':
                                                 resultLink = `<a href="${data.link_input}" target="_blank">${data.title_input}</a>`
                                                 break;
-                                            case 'pdf-view':
+                                            case 'pdfview':
                                                 if (targetFile.type !== 'application/pdf') {
                                                     api.setData({link_open_type: 'current'})
                                                     self.$toast.add({severity: "error", summary: self.$t('common.pdfTypeError'), life: 3000});
                                                     return;
                                                 }
+                                                api.setData({link_type: 'view'})
                                                 api.setData({link_input: self.generateListLink(selectedFile, 'view')})
-                                                resultLink = `<a href="javascript:void(0)" data-link="${self.generateListLink(selectedFile, 'view')}" class="pdf-view">${data.title_input}</a>`
+                                                resultLink = `<a href="javascript:void(0)" data-link="${self.generateListLink(selectedFile, 'view')}" class="pdfview">${data.title_input}</a>`
                                                 break;
                                             default:
                                                 resultLink = `<a href="${data.link_input}">${data.title_input}</a>`
@@ -168,7 +169,20 @@ export default {
                                         });
                                         input.click();
                                     }
-                                }
+                                },
+                                buttons: [
+                                    {
+                                        text: 'Close',
+                                        type: 'cancel',
+                                        onclick: 'close'
+                                    },
+                                    {
+                                        text: 'Insert',
+                                        type: 'submit',
+                                        primary: true,
+                                        enabled: false
+                                    }
+                                ]
                             });
                         }
                     });
