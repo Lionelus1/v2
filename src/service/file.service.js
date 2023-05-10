@@ -11,4 +11,8 @@ export class FileService {
         return api.post("/webFileUpload", data, {headers: getHeader()});
     }
 
+    getFile(params) {
+        return api.post(`/getFile`, params, {headers: getHeader()});
+    }
+
 }
