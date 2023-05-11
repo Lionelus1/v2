@@ -3,71 +3,82 @@
     <div class="col-12">
         <h3>{{ $t("web.pageLink") }}</h3>
         <div class="card">
-            <Button :label="$t('web.addPage')" icon="pi pi-plus" class="ml-2" @click="createPage"/>
+            <Button :label="$t('web.addPage')" icon="pi pi-plus" class="ml-2" @click="createPage" />
         </div>
 
         <div class="card">
-            <DataTable :value="pages" responsiveLayout="scroll" :lazy="true" dataKey="enu_page_id" :loading="loading"
-                       :rows="10" :rowHover="true"
-                       :paginator="true" :totalRecords="total" @page="onPage" @sort="onSort">
-                <template #header>
-                    <div class="text-right">
-                        <div class="p-input-icon-left">
-                            <i class="pi pi-search"/>
-                            <InputText type="search" v-model="lazyParams.searchText" :placeholder="$t('common.search')" @search="getPages"/>
-                            <Button icon="pi pi-search" class="ml-1" @click="getPages"/>
-                        </div>
-                    </div>
-                </template>
-                <template #empty>{{ this.$t("common.recordsNotFound") }}</template>
-                <template #loading>{{ this.$t("common.recordsLoading") }}</template>
-                <Column :field="'title_' + $i18n.locale" :header="$t('common.nameIn')" sortable>
-                    <template #body="{ data }">
-                        {{ $i18n.locale === 'kz' ? data.title_kz : $i18n.locale === 'ru' ? data.title_ru : data.title_en }}
-                    </template>
-                </Column>
-                <Column field="is_landing" header="Landing page" sortable>
-                    <template #body="{ data }">
-                        {{ data.is_landing ? 'Landing page' : '' }}
-                    </template>
-                </Column>
-                <Column field="create_date" :header="$t('faq.createDate')" sortable>
-                    <template #body="{ data }">
-                        {{ formatDate(data.create_date) }}
-                    </template>
-                </Column>
-                <Column header="" style="text-align: right;">
-                    <template #body="{ data }">
-                        <Button type="button" icon="fa-solid fa-eye" class="mr-2" @click="onView(data)"></Button>
-                        <Button type="button" icon="fa-solid fa-pen" class="mr-2" @click="onEditPage(data)"></Button>
-                        <Button type="button" icon="fa-solid fa-trash" class="p-button-danger" @click="delPage(data)"></Button>
-                    </template>
-                </Column>
-            </DataTable>
+            <TabView>
+                <TabPanel :header="$t('web.properties')">
+                    <DataTable :value="pages" responsiveLayout="scroll" :lazy="true" dataKey="enu_page_id"
+                        :loading="loading" :rows="10" :rowHover="true" :paginator="true" :totalRecords="total"
+                        @page="onPage" @sort="onSort">
+                        <template #header>
+                            <div class="text-right">
+                                <div class="p-input-icon-left">
+                                    <i class="pi pi-search" />
+                                    <InputText type="search" v-model="lazyParams.searchText"
+                                        :placeholder="$t('common.search')" @search="getPages" />
+                                    <Button icon="pi pi-search" class="ml-1" @click="getPages" />
+                                </div>
+                            </div>
+                        </template>
+                        <template #empty>{{ this.$t("common.recordsNotFound") }}</template>
+                        <template #loading>{{ this.$t("common.recordsLoading") }}</template>
+                        <Column :field="'title_' + $i18n.locale" :header="$t('common.nameIn')" sortable>
+                            <template #body="{ data }">
+                                {{ $i18n.locale === 'kz' ? data.title_kz : $i18n.locale === 'ru' ? data.title_ru :
+                                    data.title_en }}
+                            </template>
+                        </Column>
+                        <Column field="is_landing" header="Landing page" sortable>
+                            <template #body="{ data }">
+                                {{ data.is_landing ? 'Landing page' : '' }}
+                            </template>
+                        </Column>
+                        <Column field="create_date" :header="$t('faq.createDate')" sortable>
+                            <template #body="{ data }">
+                                {{ formatDate(data.create_date) }}
+                            </template>
+                        </Column>
+                        <Column header="" style="text-align: right;">
+                            <template #body="{ data }">
+                                <Button type="button" icon="fa-solid fa-eye" class="mr-2" @click="onView(data)"></Button>
+                                <Button type="button" icon="fa-solid fa-pen" class="mr-2"
+                                    @click="onEditPage(data)"></Button>
+                                <Button type="button" icon="fa-solid fa-trash" class="p-button-danger"
+                                    @click="delPage(data)"></Button>
+                            </template>
+                        </Column>
+                    </DataTable>
+                </TabPanel>
+                <TabPanel :header="$t('web.history')" @click="getTableLogs()">
+                    <WebLogs :TN="TN" :key="TN" />
+                </TabPanel>
+            </TabView>
+
         </div>
     </div>
-    <Dialog v-model:visible="display" :style="{ width: '1000px' }" :breakpoints="{'960px': '75vw', '640px': '90vw'}"
-            :header="$t('web.addEditPageTitle')"
-            :modal="true" class="p-fluid">
+    <Dialog v-model:visible="display" :style="{ width: '1000px' }" :breakpoints="{ '960px': '75vw', '640px': '90vw' }"
+        :header="$t('web.addEditPageTitle')" :modal="true" class="p-fluid">
         <div class="field-checkbox mt-3">
-            <Checkbox id="landing" name="landing" v-model="formData.is_landing" :binary="true"/>
+            <Checkbox id="landing" name="landing" v-model="formData.is_landing" :binary="true" />
             <label for="landing">Landing page</label>
         </div>
 
         <div v-if="formData.is_landing">
             <div class="field">
                 <label>{{ $t('common.nameInQazaq') }}</label>
-                <InputText type="text" v-model="formData.title_kz"/>
+                <InputText type="text" v-model="formData.title_kz" />
                 <small class="p-error" v-if="!formData.title_kz && submitted">{{ $t("common.requiredField") }}</small>
             </div>
             <div class="field">
                 <label>{{ $t('common.nameInRussian') }}</label>
-                <InputText type="text" v-model="formData.title_ru"/>
+                <InputText type="text" v-model="formData.title_ru" />
                 <small class="p-error" v-if="!formData.title_ru && submitted">{{ $t("common.requiredField") }}</small>
             </div>
             <div class="field">
                 <label>{{ $t('common.nameInEnglish') }}</label>
-                <InputText type="text" v-model="formData.title_en"/>
+                <InputText type="text" v-model="formData.title_en" />
                 <small class="p-error" v-if="!formData.title_en && submitted">{{ $t("common.requiredField") }}</small>
             </div>
         </div>
@@ -76,46 +87,52 @@
             <TabPanel header="Қазақша">
                 <div class="field mt-3">
                     <label for="kz-title">{{ $t("common.nameInQazaq") }}</label>
-                    <InputText id="title_kz" v-model="formData.title_kz" rows="3"/>
-                    <small v-show="!formData.title_kz && submitted" class="p-error">{{ $t("smartenu.titleKzInvalid") }}</small>
+                    <InputText id="title_kz" v-model="formData.title_kz" rows="3" />
+                    <small v-show="!formData.title_kz && submitted" class="p-error">{{ $t("smartenu.titleKzInvalid")
+                    }}</small>
                 </div>
                 <div class="field">
                     <label for="kz-content">{{ $t("common.contentInQazaq") }}</label>
                     <!--          <RichEditor id="content_kz" v-model="formData.content_kz" editorStyle="height: 320px"/>-->
-                    <TinyEditor v-model="formData.content_kz" :height="400" :custom-file-upload="true" @onAfterUpload="onAfterUpload"/>
+                    <TinyEditor v-model="formData.content_kz" :height="400" :custom-file-upload="true"
+                        @onAfterUpload="onAfterUpload" />
                     <small v-show="!formData.content_kz && submitted" class="p-error">{{
                         $t("smartenu.contentKzInvalid")
-                        }}</small>
+                    }}</small>
                 </div>
             </TabPanel>
             <TabPanel header="Русский">
                 <div class="field mt-3">
                     <label for="ru-title">{{ $t("common.nameInRussian") }}</label>
-                    <InputText id="title_ru" v-model="formData.title_ru" rows="3"/>
-                    <small v-show="!formData.title_ru && submitted" class="p-error">{{ $t("smartenu.titleRuInvalid") }}</small>
+                    <InputText id="title_ru" v-model="formData.title_ru" rows="3" />
+                    <small v-show="!formData.title_ru && submitted" class="p-error">{{ $t("smartenu.titleRuInvalid")
+                    }}</small>
                 </div>
                 <div class="field">
                     <label for="kz-content">{{ $t("common.contentInRussian") }}</label>
                     <!--          <RichEditor id="content_ru" v-model="formData.content_ru" editorStyle="height: 320px"/>-->
-                    <TinyEditor v-model="formData.content_ru" :height="400" :customFileUpload="true" @onAfterUpload="onAfterUpload"/>
+                    <TinyEditor v-model="formData.content_ru" :height="400" :customFileUpload="true"
+                        @onAfterUpload="onAfterUpload" />
                     <small v-show="!formData.content_ru && submitted" class="p-error">{{
                         $t("smartenu.contentKzInvalid")
-                        }}</small>
+                    }}</small>
                 </div>
             </TabPanel>
             <TabPanel header="English">
                 <div class="field mt-3">
                     <label for="en-title">{{ $t("common.nameInEnglish") }}</label>
-                    <InputText id="title_en" v-model="formData.title_en" rows="3"/>
-                    <small v-show="!formData.title_en && submitted" class="p-error">{{ $t("smartenu.titleEnInvalid") }}</small>
+                    <InputText id="title_en" v-model="formData.title_en" rows="3" />
+                    <small v-show="!formData.title_en && submitted" class="p-error">{{ $t("smartenu.titleEnInvalid")
+                    }}</small>
                 </div>
                 <div class="field">
                     <label for="kz-content">{{ $t("common.contentInEnglish") }}</label>
                     <!--          <RichEditor id="content_en" v-model="formData.content_en" editorStyle="height: 320px"/>-->
-                    <TinyEditor v-model="formData.content_en" :height="400" :custom-file-upload="true" @onAfterUpload="onAfterUpload"/>
+                    <TinyEditor v-model="formData.content_en" :height="400" :custom-file-upload="true"
+                        @onAfterUpload="onAfterUpload" />
                     <small v-show="!formData.content_en && submitted" class="p-error">{{
                         $t("smartenu.contentKzInvalid")
-                        }}</small>
+                    }}</small>
                 </div>
             </TabPanel>
         </TabView>
@@ -124,28 +141,28 @@
             <div ref="content" class="p-fileupload-content">
                 <div class="p-fileupload-files">
                     <div class="p-fileupload-row" v-for="(item, index) of formData.files" :key="index">
-            <span class="mr-3" style="cursor: pointer;" @click="downloadFile(item)">
-              <i class="fa-solid fa-file-arrow-down text-green-500"></i>
-            </span>
+                        <span class="mr-3" style="cursor: pointer;" @click="downloadFile(item)">
+                            <i class="fa-solid fa-file-arrow-down text-green-500"></i>
+                        </span>
                         <span @click="downloadFile(item)" style="cursor: pointer;">
-              {{ item.file.filename ? item.file.filename : item.file.filepath }}</span>
+                            {{ item.file.filename ? item.file.filename : item.file.filepath }}</span>
                         <span class="ml-2">
-              <Button icon="pi pi-copy" class="p-button-rounded p-button-text"
-                      v-clipboard:copy="copyToClipboard(item.file)" v-clipboard:success="onCopy"/>
-            </span>
+                            <Button icon="pi pi-copy" class="p-button-rounded p-button-text"
+                                v-clipboard:copy="copyToClipboard(item.file)" v-clipboard:success="onCopy" />
+                        </span>
                         <span>
-              <Button icon="pi pi-times" class="p-button-rounded p-button-text"
-                      @click="deleteFileConfirm($event, item, index)"/>
-            </span>
+                            <Button icon="pi pi-times" class="p-button-rounded p-button-text"
+                                @click="deleteFileConfirm($event, item, index)" />
+                        </span>
                     </div>
                 </div>
             </div>
         </div>
         <template #footer>
-            <Button v-bind:label="$t('common.save')" icon="pi pi-check"
-                    class="p-button p-component p-button-success mr-2" v-on:click="addButtonName"/>
-            <Button v-bind:label="$t('common.cancel')" icon="pi pi-times"
-                    class="p-button p-component p-button-danger" @click="hideDialog"/>
+            <Button v-bind:label="$t('common.save')" icon="pi pi-check" class="p-button p-component p-button-success mr-2"
+                v-on:click="addButtonName" />
+            <Button v-bind:label="$t('common.cancel')" icon="pi pi-times" class="p-button p-component p-button-danger"
+                @click="hideDialog" />
         </template>
     </Dialog>
 
@@ -153,15 +170,16 @@
 </template>
 
 <script>
-import {EnuWebService} from "@/service/enu.web.service";
+import { EnuWebService } from "@/service/enu.web.service";
 import PageView from "@/components/enuwebsite/PageView.vue";
-import {formatDate} from "@/helpers/HelperUtil";
-import {FileService} from "../../service/file.service";
-import {downloadRoute, fileRoute, getHeader, smartEnuApi} from "../../config/config";
+import { formatDate } from "@/helpers/HelperUtil";
+import { FileService } from "../../service/file.service";
+import { downloadRoute, fileRoute, getHeader, smartEnuApi } from "../../config/config";
+import WebLogs from "@/components/enuwebsite/EnuSiteLogs.vue";
 
 export default {
     name: "EnuPagesList",
-    components: {PageView},
+    components: { PageView, WebLogs },
     data() {
         return {
             pages: [],
@@ -172,6 +190,7 @@ export default {
             pageView: false,
             deleteVisible: false,
             pageData: null,
+            TN: null,
             addButtonName: this.addPage,
             submitted: false,
             loading: false,
@@ -220,10 +239,10 @@ export default {
         onAfterUpload(item) {
             this.fileList.push(item);
             if (this.formData.files) {
-                this.formData.files.push({file_id: item.id, file: item});
+                this.formData.files.push({ file_id: item.id, file: item });
             } else {
                 this.formData.files = [];
-                this.formData.files.push({file_id: item.id, file: item});
+                this.formData.files.push({ file_id: item.id, file: item });
             }
         },
         copyToClipboard(file) {
@@ -235,11 +254,12 @@ export default {
                 if (res.data) {
                     this.pages = res.data.pages;
                     this.total = res.data.total;
+                    this.TN = res.data.tn_res;
                 }
                 this.loading = false;
             }).catch(error => {
                 this.loading = false;
-                this.$toast.add({severity: "error", summary: error, life: 3000});
+                this.$toast.add({ severity: "error", summary: error, life: 3000 });
             });
         },
         getPageFiles() {
@@ -247,7 +267,7 @@ export default {
                 if (res.data)
                     this.formData.files = res.data;
             }).catch(error => {
-                this.$toast.add({severity: "error", summary: error, life: 3000});
+                this.$toast.add({ severity: "error", summary: error, life: 3000 });
             })
 
         },
@@ -295,7 +315,7 @@ export default {
 
             this.enuService.addPage(this.formData).then(res => {
                 if (res.data !== null) {
-                    this.$toast.add({severity: "success", summary: this.$t("web.createdPageSuccessMsg"), life: 3000});
+                    this.$toast.add({ severity: "success", summary: this.$t("web.createdPageSuccessMsg"), life: 3000 });
                     this.fileList = [];
                 }
                 this.lazyParams.page = 0;
@@ -303,29 +323,29 @@ export default {
                 this.getPages();
             }).catch(error => {
                 this.resetForm()
-                this.$toast.add({severity: "error", summary: error, life: 3000});
+                this.$toast.add({ severity: "error", summary: error, life: 3000 });
             });
             this.display = false;
         },
         validatePage() {
             let errors = [];
             if (!this.formData.title_kz) {
-                errors.push({title_kz: true});
+                errors.push({ title_kz: true });
             }
             if (!this.formData.title_ru) {
-                errors.push({title_ru: true});
+                errors.push({ title_ru: true });
             }
             if (!this.formData.title_en) {
-                errors.push({title_en: true});
+                errors.push({ title_en: true });
             }
             if (!this.formData.is_landing && !this.formData.content_kz) {
-                errors.push({content_kz: true});
+                errors.push({ content_kz: true });
             }
             if (!this.formData.is_landing && !this.formData.content_ru) {
-                errors.push({content_ru: true});
+                errors.push({ content_ru: true });
             }
             if (!this.formData.is_landing && !this.formData.content_en) {
-                errors.push({content_en: true});
+                errors.push({ content_en: true });
             }
             return errors.length === 0;
         },
@@ -340,14 +360,14 @@ export default {
                 }
                 this.getPages();
             }).catch(error => {
-                this.$toast.add({severity: "error", summary: error, life: 3000});
+                this.$toast.add({ severity: "error", summary: error, life: 3000 });
             });
             this.deleteVisible = false;
 
         },
         onView(data) {
             if (data.is_landing) {
-                this.$router.push({name: 'LandingPageView', params: {id: data.enu_page_id}})
+                this.$router.push({ name: 'LandingPageView', params: { id: data.enu_page_id } })
             } else {
                 this.selectedPage = data;
                 this.pageView = true;
@@ -363,11 +383,11 @@ export default {
 
             this.enuService.editPage(this.formData).then(res => {
                 if (res.data !== null) {
-                    this.$toast.add({severity: "success", summary: this.$t("web.createdPageSuccessMsg"), life: 3000});
+                    this.$toast.add({ severity: "success", summary: this.$t("web.createdPageSuccessMsg"), life: 3000 });
                 }
                 this.getPageFiles();
             }).catch(error => {
-                this.$toast.add({severity: "error", summary: error, life: 3000});
+                this.$toast.add({ severity: "error", summary: error, life: 3000 });
             });
             this.display = false;
         },
@@ -418,14 +438,14 @@ export default {
             this.enuService.deletePageFile(id).then(res => {
                 if (res.data.is_success) {
                     this.getPageFiles();
-                    this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
+                    this.$toast.add({ severity: 'success', detail: this.$t('common.done'), life: 3000 });
                 }
             }).catch((error) => {
-                this.$toast.add({severity: "error", summary: error, life: 3000});
+                this.$toast.add({ severity: "error", summary: error, life: 3000 });
             });
         },
         onCopy() {
-            this.$toast.add({severity: 'success', summary: this.$t('ncasigner.successCopy'), life: 3000});
+            this.$toast.add({ severity: 'success', summary: this.$t('ncasigner.successCopy'), life: 3000 });
         },
         resetForm() {
             this.formData = {
@@ -444,22 +464,20 @@ export default {
 
 <style lang="scss" scoped>
 .dialog_img {
-  padding: 0 100px;
+    padding: 0 100px;
 }
 
 @media (max-width: 780px) {
-  .dialog_img {
-    padding: 0;
-  }
+    .dialog_img {
+        padding: 0;
+    }
 }
 
 ::v-deep(.ck-editor__editable) {
-  height: 320px;
+    height: 320px;
 }
 
 .p-fileupload-row {
-  display: flex;
-  align-items: center;
-}
-
-</style>
+    display: flex;
+    align-items: center;
+}</style>

@@ -5,6 +5,8 @@
             <Button :label="$t('web.addMenu')" icon="pi pi-plus" class="ml-2" v-on:click="createMenu"/>
         </div>
         <div class="card">
+            <TabView>
+        <TabPanel :header="$t('web.properties')">
             <TreeTable class="p-treetable-sm" :value="menus" :lazy="true" :loading="loading"
                        @nodeExpand="onExpand" scrollHeight="flex" responsiveLayout="scroll"
                        :resizableColumns="true" columnResizeMode="fit" :paginator="true" :rows="10" :total-records="total" @page="onPage($event)">
@@ -53,6 +55,11 @@
                     </template>
                 </Column>
             </TreeTable>
+        </TabPanel>
+        <TabPanel :header="$t('web.history')">
+          <WebLogs/>
+        </TabPanel>
+      </TabView>
         </div>
     </div>
 
@@ -67,10 +74,11 @@ import AddMenu from "@/components/enuwebsite/AddMenu.vue";
 import PageView from "@/components/enuwebsite/PageView.vue";
 import {formatDate} from "@/helpers/HelperUtil";
 import {webEnuDomain} from "@/config/config";
+import WebLogs from "@/components/enuwebsite/EnuSiteLogs.vue";
 
 export default {
     name: "EnuMenuList",
-    components: {AddMenu, PageView},
+    components: {AddMenu, PageView, WebLogs},
     data() {
         return {
             addMenuVisible: false,
@@ -83,6 +91,7 @@ export default {
             enuService: new EnuWebService(),
             loading: false,
             total: 0,
+            tableName: null,
             parentNode: null,
             filter: {
                 search_text: null
@@ -125,6 +134,7 @@ export default {
                 if (parentData == null) {
                     this.menus = res.data.menus;
                     this.total = res.data.total;
+                    this.tableName = res.data.table_name;
                     if (this.menus) {
                         this.menus.map(e => {
                             if (e.path) {

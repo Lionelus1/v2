@@ -603,6 +603,12 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
+                path: '/enu/weblogs',
+                name: 'EnuSiteLogs',
+                component: load('enuwebsite/EnuSiteLogs'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
                 path: '/orgControl',
                 name: 'OrgControl',
                 component: load('roleControl/OrgControl'),

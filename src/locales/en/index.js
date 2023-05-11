@@ -807,7 +807,15 @@ export default {
         currency: 'Currency',
         note: 'Note',
         siteSettings: 'Site settings',
-        mourningMode: 'Mourning modeТраурный режим'
+        mourningMode: 'Mourning modeТраурный режим',
+        siteLogs: 'Website Logs',
+        tableName: 'Table Name',
+        recordId: 'Record ID',
+        actionID: 'Actions',
+        ipAddress: 'IP Address',
+        logUser: 'User Name',
+        properties:'Properties',
+        history: 'History'
     },
     //Student locale
     student: {
@@ -1073,5 +1081,11 @@ export default {
         cantDelete: 'Cant delete the record',
         addNewInstance: 'Adding new approvers/signers',
         instance: 'Appover/signer',
+    },
+    blog: {
+        title: 'Blog',
+        welcomeTextKz: 'Welcome text in Kazakh',
+        welcomeTextRu: 'Welcome text in Russian',
+        welcomeTextEn: 'Welcome text in English',
     }
 }

@@ -132,6 +132,12 @@ export class EnuWebService {
     setSiteSettings(params) {
         return api.post(`/web/updateSiteSettings`, params, {headers: getHeader()})
     }
+    getSiteLogs(params) {
+        return api.post(`/web/getTableLogs`, params, {headers: getHeader()})
+    }
+    getWebSiteLogs(params) {
+        return api.post(`/web/getTableLogsByTableName`, params, {headers: getHeader()})
+    }
 
     navigateToPlugin(componentName) {
         switch (componentName) {

@@ -850,7 +850,15 @@ export default {
         currency: 'Валюта',
         note: 'Ескертпе',
         siteSettings: 'Сайт баптаулары',
-        mourningMode: 'Қаралы күн режимі'
+        mourningMode: 'Қаралы күн режимі',
+        siteLogs: 'Сайт журналы',
+        tableName: 'Кесте атауы',
+        recordId: 'Идентификатор',
+        actionID: 'Әрекеттер',
+        ipAddress: 'IP мекенжайы',
+        logUser: 'Қолданушы аты-жөні',
+        properties:'Қасиеттер',
+        history: 'Тарих'
     },
     //Student locale
     student: {
@@ -1093,5 +1101,13 @@ export default {
         cantDelete: 'Жазбаны өшіру мүмкін емес',
         addNewInstance: 'Жаңа мақұлдаушыларды/қол қоюшыларды қосу',
         instance: 'Мақұлдаушы/қол қоюшы',
+    },
+    blog: {
+        title: 'Блог',
+        welcomeTextKz: 'Қазақша алғысөз',
+        welcomeTextRu: 'Орысша алғысөз',
+        welcomeTextEn: 'Ағылшынша алғысөз',
     }
+        
+
 }

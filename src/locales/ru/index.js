@@ -838,7 +838,15 @@ export default {
         currency: 'Валюта',
         note: 'Примечание',
         siteSettings: 'Настройки сайта',
-        mourningMode: 'Траурный режим'
+        mourningMode: 'Траурный режим',
+        siteLogs: 'Журнал сайта',
+        tableName: 'Имя таблицы',
+        recordId: 'Идентификатор записи',
+        actionID: 'Действия',
+        ipAddress: 'IP адрес',
+        logUser: 'Имя пользователя',
+        properties:'Характеристики',
+        history: 'История'
     },
 
     student: {
@@ -1081,6 +1089,12 @@ export default {
         cantDelete: 'Невозможно удалить запись',
         addNewInstance: 'Добавление новых согласующих лиц/подписантов',
         instance: 'Согласующее лицо/подписант',
+    },
+    blog: {
+        title: 'Блог',
+        welcomeTextKz: 'Приветственный текст на казахском',
+        welcomeTextRu: 'Приветственный текст на русском',
+        welcomeTextEn: 'Приветственный текст на английском',
     }
 
 }
