@@ -846,7 +846,8 @@ export default {
         ipAddress: 'IP адрес',
         logUser: 'Имя пользователя',
         properties:'Характеристики',
-        history: 'История'
+        history: 'История',
+        optionalField: 'Не обязательно'
     },
 
     student: {

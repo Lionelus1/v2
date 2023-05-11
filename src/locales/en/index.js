@@ -815,7 +815,8 @@ export default {
         ipAddress: 'IP Address',
         logUser: 'User Name',
         properties:'Properties',
-        history: 'History'
+        history: 'History',
+        optionalField: 'Optional'
     },
     //Student locale
     student: {
