@@ -14,7 +14,7 @@
 
                 <Column :header="$t('web.actionID')">
                     <template #body="{ data }">
-                        <Badge :severity="getActionColor(data.action.code)">{{ data.action.code }}</Badge>
+                        <Badge :severity="getActionColor(data.action.code)">{{ data.action['name_' + $i18n.locale] }}</Badge>
                     </template>
                 </Column>
 
