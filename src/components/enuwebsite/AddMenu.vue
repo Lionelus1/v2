@@ -98,7 +98,7 @@
 
 <script>
 import {EnuWebService} from "@/service/enu.web.service";
-import AddPage from "@/components/enuwebsite/AddPage.vue";
+import AddPage from "@/components/enuwebsite/pages/AddPage.vue";
 import CustomFileUpload from "@/components/CustomFileUpload.vue";
 
 export default {

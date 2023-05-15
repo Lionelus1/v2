@@ -25,11 +25,12 @@ export class EnuWebService {
         return api.get(`/web/getPage/${pageId}`, {headers: getHeader()});
     }
 
-    getPageFiles(pageId) {
-        return api.post(`/web/getPageFiles`, {page_id: pageId}, {headers: getHeader()});
+    getPageFiles(pageId, isGallery) {
+        return api.post(`/web/getPageFiles`, {page_id: pageId, is_gallery: isGallery}, {headers: getHeader()});
     }
 
     addPage(data){
+        console.log("rest files", data.files)
         return api.post("/web/addPage", data, {headers: getHeader()})
     }
 

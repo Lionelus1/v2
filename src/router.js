@@ -460,9 +460,23 @@ const routes = [
             },
             {
                 path: '/enu/pages',
-                name: 'EnuPagesList',
-                component: load('enuwebsite/EnuPagesList'),
+                name: 'EnuPagesComponent',
+                component: load('enuwebsite/pages/EnuPagesComponent'),
                 beforeEnter: ifAuthenticated,
+                children: [
+                    {
+                        path: '',
+                        name: 'EnuPagesList',
+                        component: load('enuwebsite/pages/EnuPagesList'),
+                        beforeEnter: ifAuthenticated,
+                    },
+                    {
+                        path: ':id',
+                        name: 'EditPage',
+                        component: load('enuwebsite/pages/EditPage'),
+                        beforeEnter: ifAuthenticated,
+                    },
+                ]
             },
             {
                 path: '/enu/page/:id',

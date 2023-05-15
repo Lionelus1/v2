@@ -139,7 +139,6 @@ export default {
                         this.menus.map(e => {
                             if (e.path) {
                                 e.url = `${webEnuDomain}/${this.$i18n.locale}/page/${e.path.replaceAll("/", "%2F")}`
-                                console.log(e.url)
                             }
                         })
                     }
@@ -149,7 +148,6 @@ export default {
                         parentData.children.map(e => {
                             if (e.path) {
                                 e.url = `${webEnuDomain}/${this.$i18n.locale}/page/${e.path.replaceAll("/", "%2F")}`
-                                console.log(e.url)
                             }
                         })
                     }
