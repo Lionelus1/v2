@@ -1,4 +1,5 @@
 <template>
+  <Toast v-if="!isInsideSidebar"/>
   <div v-if="!isInsideSidebar" class="layout-topbar no-print">
     <div class="layout-topbar-icons">
         <LanguageDropdown/>

@@ -1103,6 +1103,8 @@ export default {
         cantDelete: 'Жазбаны өшіру мүмкін емес',
         addNewInstance: 'Жаңа мақұлдаушыларды/қол қоюшыларды қосу',
         instance: 'Мақұлдаушы/қол қоюшы',
+        failedToDelete: 'Жазба өшірілмеді',
+        failedToLoad: 'Деректерді жүктеу сәтсіз аяқталды',
     },
     blog: {
         title: 'Блог',
@@ -1110,6 +1112,6 @@ export default {
         welcomeTextRu: 'Орысша алғысөз',
         welcomeTextEn: 'Ағылшынша алғысөз',
     }
-        
+
 
 }

@@ -453,6 +453,12 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
+                path: '/orgControl',
+                name: 'OrgControl',
+                component: load('roleControl/OrgControl'),
+                beforeEnter: ifMainAdministrator,
+            },
+            {
                 path: '/enu/menus',
                 name: 'EnuMenuList',
                 component: load('enuwebsite/EnuMenuList'),

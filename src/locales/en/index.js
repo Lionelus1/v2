@@ -1083,6 +1083,8 @@ export default {
         cantDelete: 'Cant delete the record',
         addNewInstance: 'Adding new approvers/signers',
         instance: 'Appover/signer',
+        failedToDelete: 'Failed to delete',
+        failedToLoad: 'Failed to load data',
     },
     blog: {
         title: 'Blog',
