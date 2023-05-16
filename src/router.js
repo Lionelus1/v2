@@ -481,7 +481,7 @@ const routes = [
             {
                 path: '/enu/page/:id',
                 name: 'LandingPageView',
-                component: load('enuwebsite/LandingPageView'),
+                component: load('enuwebsite/pages/LandingPageView'),
                 beforeEnter: ifAuthenticated,
             },
             {
