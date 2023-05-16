@@ -27,26 +27,20 @@
                     <label>Автор</label>
                     <InputText v-model="item.author"/>
                 </div>
-                <TabView>
-                    <TabPanel header="Описание каз">
-                        <div class="field">
-                            <label>Описание</label>
-                            <Textarea v-model="item.img_desc_kz" rows="3"/>
-                        </div>
-                    </TabPanel>
-                    <TabPanel header="Описание рус">
-                        <div class="field">
-                            <label>Описание</label>
-                            <Textarea v-model="item.img_desc_ru" rows="3"/>
-                        </div>
-                    </TabPanel>
-                    <TabPanel header="Описание англ">
-                        <div class="field">
-                            <label>Описание</label>
-                            <Textarea v-model="item.img_desc_en" rows="3"/>
-                        </div>
-                    </TabPanel>
-                </TabView>
+                <div class="grid">
+                    <div class="field col">
+                        <label>{{ $t('common.nameInQazaq') }} <small id="nameQzHelp"></small></label>
+                        <InputText v-model="item.img_desc_kz" />
+                    </div>
+                    <div class="field col">
+                        <label>{{ $t('common.nameInRussian') }}</label>
+                        <InputText v-model="item.img_desc_ru"/>
+                    </div>
+                    <div class="field col">
+                        <label>{{ $t('common.nameInEnglish') }}</label>
+                        <InputText v-model="item.img_desc_en"/>
+                    </div>
+                </div>
             </div>
             <template #footer>
                 <Button :label="$t('common.save')" icon="pi pi-check"
