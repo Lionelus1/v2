@@ -3,18 +3,19 @@
     <Button :label="$t('web.createElement')" @click="openDialog" />
   </div>
   <div class="card">
-    <DataTable :lazy="true" :value="blockElements" dataKey="id" :rowHover="true" :loading="loading" responsiveLayout="scroll">
+    <DataTable :lazy="true" :value="blockElements" dataKey="id" :rowHover="true" :loading="loading"
+      responsiveLayout="scroll">
       <template #empty>{{ $t("common.noData") }}</template>
       <template #loading>{{ $t("common.loading") }}</template>
       <Column field="title" :header="$t('common.nameIn')">
-        <template #body="{data}">
+        <template #body="{ data }">
           <span>
             {{ $i18n.locale === "kz" ? data.title_kz : $i18n.locale === "ru" ? data.title_ru : data.title_en }}
           </span>
         </template>
       </Column>
       <Column class="text-right">
-        <template #body="{data}">
+        <template #body="{ data }">
           <Button icon="fa-solid fa-pen" class="p-button mr-2" @click="openEdit(data)" />
           <Button icon="fa-solid fa-trash" class="p-button-danger" @click="confirmRemove(data)" />
         </template>
@@ -22,46 +23,84 @@
     </DataTable>
   </div>
 
-  <Dialog v-model:visible="isCreateModal" :style="{ width: '1000px' }" :breakpoints="{'960px': '75vw', '640px': '90vw'}"
-          :header="formData && formData.title_kz ? $t('web.editElement') : $t('web.createElement') " :modal="true" class="p-fluid" @hide="hideDialog">
+  <Dialog v-model:visible="isCreateModal" :style="{ width: '1000px' }" :breakpoints="{ '960px': '75vw', '640px': '90vw' }"
+    :header="formData && formData.title_kz ? $t('web.editElement') : $t('web.createElement')" :modal="true"
+    class="p-fluid" @hide="hideDialog">
+
+    <TabView>
+      <TabPanel header="Қазақша">
+        <div class="field">
+          <label>{{ $t('common.nameInQazaq') }}</label>
+          <InputText type="text" v-model="formData.title_kz" />
+          <small class="p-error" v-if="!formData.title_kz && submitted">{{ $t("common.requiredField") }}</small>
+        </div>
+        <div class="field">
+          <label>{{ $t("common.contentInQazaq") }}</label>
+          <OptionalMessage :message="$t('web.optionalField')" />
+          <TinyEditor v-model="formData.content_kz" />
+        </div>
+      </TabPanel>
+      <TabPanel header="Русский">
+        <div class="field">
+          <label>{{ $t('common.nameInRussian') }}</label>
+          <InputText type="text" v-model="formData.title_ru" />
+          <small class="p-error" v-if="!formData.title_ru && submitted">{{ $t("common.requiredField") }}</small>
+        </div>
+        <div class="field">
+          <label for="ru-content">{{ $t("common.contentInRussian") }}</label>
+           <OptionalMessage :message="$t('web.optionalField')" />
+          <TinyEditor v-model="formData.content_ru" />
+         
+        </div>
+      </TabPanel>
+      <TabPanel header="English">
+        <div class="field">
+          <label>{{ $t('common.nameInEnglish') }}</label>
+          <InputText type="text" v-model="formData.title_en" />
+          <small class="p-error" v-if="!formData.title_en && submitted">{{ $t("common.requiredField") }}</small>
+        </div>
+        <div class="field">
+          <label>{{ $t("common.contentInEnglish") }}</label>
+          <OptionalMessage :message="$t('web.optionalField')" />
+          <TinyEditor v-model="formData.content_en" />
+          
+        </div>
+      </TabPanel>
+    </TabView>
     <div class="field">
-      <label>{{ $t('common.nameInQazaq') }}</label>
-      <InputText type="text" v-model="formData.title_kz"  />
-      <small class="p-error" v-if="!formData.title_kz && submitted">{{ $t("common.requiredField") }}</small>
-    </div>
-    <div class="field">
-      <label>{{ $t('common.nameInRussian')}}</label>
-      <InputText type="text" v-model="formData.title_ru"  />
-      <small class="p-error" v-if="!formData.title_ru && submitted">{{ $t("common.requiredField") }}</small>
-    </div>
-    <div class="field">
-      <label>{{ $t('common.nameInEnglish') }}</label>
-      <InputText type="text" v-model="formData.title_en"  />
-      <small class="p-error" v-if="!formData.title_en && submitted">{{ $t("common.requiredField") }}</small>
+      <label>{{ $t('common.link') }}</label>
+      <OptionalMessage :message="$t('web.optionalField')" />
+      <InputText type="text" v-model="formData.block_list_link" />
+      <small class="p-error" v-if="!formData.block_list_link && submitted"></small>
     </div>
     <div class="field">
       <label>{{ $t('common.image') }}</label>
       <FileUpload mode="basic" :customUpload="true" @uploader="uploadFile($event)" :auto="true"
-                  v-bind:chooseLabel="$t('faq.uploadImage')" accept="image/svg+xml"/>
+        v-bind:chooseLabel="$t('faq.uploadImage')" accept="image/svg+xml" />
       <div style="width: 100px;padding:10px;" v-html="formData.block_list_image"></div>
     </div>
     <template #footer>
-      <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button p-component p-button-danger mr-2" @click="hideDialog"/>
-      <Button v-if="!selectedData" :label="$t('common.add')" icon="pi pi-check" class="p-button p-component p-button-success" @click="add" />
-      <Button v-if="selectedData" :label="$t('common.save')" icon="pi pi-check" class="p-button p-component p-button-success" @click="edit" />
+      <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button p-component p-button-danger mr-2"
+        @click="hideDialog" />
+      <Button v-if="!selectedData" :label="$t('common.add')" icon="pi pi-check"
+        class="p-button p-component p-button-success" @click="add" />
+      <Button v-if="selectedData" :label="$t('common.save')" icon="pi pi-check"
+        class="p-button p-component p-button-success" @click="edit" />
     </template>
   </Dialog>
 </template>
 
 <script>
-import {onMounted, ref} from "vue";
-import {EnuWebService} from "@/service/enu.web.service";
-import {useRoute} from "vue-router";
-import {useConfirm} from "primevue/useconfirm";
-import {useI18n} from "vue-i18n";
-import {useToast} from "primevue/usetoast";
+import { onMounted, ref } from "vue";
+import { EnuWebService } from "@/service/enu.web.service";
+import { useRoute } from "vue-router";
+import { useConfirm } from "primevue/useconfirm";
+import { useI18n } from "vue-i18n";
+import { useToast } from "primevue/usetoast";
+import OptionalMessage from "@/components/enuwebsite/OptionalMessage";
 export default {
   name: "BlockElementsList",
+  components: { OptionalMessage },
   setup() {
     const route = useRoute()
     const confirm = useConfirm()
@@ -83,7 +122,7 @@ export default {
         loading.value = false;
       }).catch(error => {
         loading.value = false;
-        toast.add({severity: "error", summary: error, life: 3000});
+        toast.add({ severity: "error", summary: error, life: 3000 });
       });
     }
 
@@ -104,32 +143,33 @@ export default {
       formData.value.block_id = parseInt(blockId);
       enuService.addBlockContentListElement(formData.value).then(res => {
         if (res.data && res.data.is_success) {
-          toast.add({severity: "success", summary: i18n.t('common.success'), life: 3000});
+          toast.add({ severity: "success", summary: i18n.t('common.success'), life: 3000 });
         }
         submitted.value = false;
         isCreateModal.value = false;
         getBlockElements();
       }).catch(error => {
         submitted.value = false;
-        toast.add({severity: "error", summary: error, life: 3000});
+        toast.add({ severity: "error", summary: error, life: 3000 });
       });
     }
 
     const openEdit = (data) => {
       formData.value = data;
       selectedData.value = data;
+      selectedData.value.content_kz = data.content_kz
       isCreateModal.value = true;
     }
 
     const edit = () => {
       submitted.value = true;
       if (!isValid()) return;
-
+      
       enuService.editBlockListElement(formData.value).then(res => {
         if (res.data && res.data.is_success) {
-          toast.add({severity: "success", summary: i18n.t('common.success'), life: 3000});
+          toast.add({ severity: "success", summary: i18n.t('common.success'), life: 3000 });
         } else {
-          toast.add({severity: "error", summary: i18n.t('common.message.title.saveError'), life: 3000});
+          toast.add({ severity: "error", summary: i18n.t('common.message.title.saveError'), life: 3000 });
         }
         submitted.value = false;
         selectedData.value = null;
@@ -139,18 +179,18 @@ export default {
         submitted.value = false;
         selectedData.value = null;
         isCreateModal.value = false;
-        toast.add({severity: "error", summary: error, life: 3000});
+        toast.add({ severity: "error", summary: error, life: 3000 });
       })
     }
 
     const remove = (data) => {
       enuService.deleteBlockListElement(data.block_list_id).then(res => {
         if (res.data && res.data.is_success) {
-          toast.add({severity: "success", summary: i18n.t('common.success'), life: 3000});
+          toast.add({ severity: "success", summary: i18n.t('common.success'), life: 3000 });
           getBlockElements()
         }
       }).catch(error => {
-        toast.add({severity: "error", summary: error, life: 3000});
+        toast.add({ severity: "error", summary: error, life: 3000 });
       });
     }
 
@@ -170,10 +210,10 @@ export default {
     const uploadFile = (event) => {
       let file = event.files[0]
       fetch(file.objectURL)
-          .then(response => response.text())
-          .then(text => {
-            formData.value.block_list_image = text;
-          });
+        .then(response => response.text())
+        .then(text => {
+          formData.value.block_list_image = text;
+        });
     }
 
     const isValid = () => {
@@ -184,6 +224,7 @@ export default {
         errors.push(1);
       if (!formData.value.title_en)
         errors.push(1);
+      
       return errors.length === 0
     };
 
@@ -199,6 +240,4 @@ export default {
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

@@ -858,7 +858,9 @@ export default {
         ipAddress: 'IP мекенжайы',
         logUser: 'Қолданушы аты-жөні',
         properties:'Қасиеттер',
-        history: 'Тарих'
+        history: 'Тарих',
+        optionalField: 'Міндетті емес',
+        listType: 'Тізім түрі'
     },
     //Student locale
     student: {

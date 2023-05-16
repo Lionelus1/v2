@@ -139,6 +139,13 @@ export class EnuWebService {
     getWebSiteLogs(params) {
         return api.post(`/web/getTableLogsByTableName`, params, {headers: getHeader()})
     }
+    getBlockListTypes() {
+        return api.get("/web/getBlockListTypes", {headers: getHeader()});
+    }
+    getBlockListViewTypes() {
+        return api.get("/web/getBlockListViewTypes", {headers: getHeader()});
+    }
+
 
     navigateToPlugin(componentName) {
         switch (componentName) {
