@@ -22,7 +22,7 @@ export class EnuWebService {
     }
 
     getPageById(pageId) {
-        return api.get(`/web/getPage/${pageId}`, {headers: getHeader()});
+        return api.get(`/web/getPageAdmin/${pageId}`, {headers: getHeader()});
     }
 
     getPageFiles(pageId, isGallery) {
