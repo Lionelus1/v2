@@ -301,8 +301,11 @@ export default {
                 })
             }
 
+            const data = this.newsData;
+            delete data.galleryFiles;
+
             const fd = new FormData();
-            fd.append("news", JSON.stringify(this.newsData))
+            fd.append("news", JSON.stringify(data))
             fd.append("imageFileMain", this.imageFileMain);
             this.newsService.addNews(fd).then((response) => {
                 if (response.data !== null) {
