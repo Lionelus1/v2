@@ -859,7 +859,8 @@ export default {
         logUser: 'Қолданушы аты-жөні',
         properties:'Қасиеттер',
         history: 'Тарих',
-        optionalField: 'Міндетті емес'
+        optionalField: 'Міндетті емес',
+        listType: 'Тізім түрі'
     },
     //Student locale
     student: {

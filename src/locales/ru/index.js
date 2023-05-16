@@ -847,7 +847,8 @@ export default {
         logUser: 'Имя пользователя',
         properties:'Характеристики',
         history: 'История',
-        optionalField: 'Не обязательно'
+        optionalField: 'Не обязательно',
+        listType: 'Тип списка'
     },
 
     student: {

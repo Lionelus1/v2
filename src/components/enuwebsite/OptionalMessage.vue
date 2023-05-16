@@ -5,7 +5,7 @@
   </template>
   
   <script>
-  export default {
+  export default{
     name: 'OptionalMessage',
     props: {
       message: {
@@ -19,8 +19,6 @@
 <style scoped>
 .optionalText{
     text-transform: lowercase;
-    /* background: #3B82F6;
-    color: #ffffff; */
     color:#3498DB;
     padding:2px;
     font-size: 0.75rem;
@@ -28,7 +26,6 @@
     min-width: 1.5rem;
     height: 1.5rem;
     line-height: 1.5re;
-    border-radius: 1px;
     margin-left: 3px;
 }
 </style>

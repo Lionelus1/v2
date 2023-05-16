@@ -8,49 +8,49 @@
             <TabView>
                 <TabPanel :header="$t('web.properties')">
                     <DataTable :lazy="true" :value="blockList" dataKey="id" :loading="loading" responsiveLayout="scroll"
-                    :rows="10" :rowHover="true" :paginator="true" :totalRecords="total" @page="onPage" @sort="onSort">
-                    <template #empty>{{ $t("common.noData") }}</template>
-                    <template #loading>{{ $t("common.loading") }}</template>
-                    <template #header>
-                        <div class="text-right">
-                            <div class="p-input-icon-left">
-                                <i class="pi pi-search" />
-                                <InputText type="search" v-model="lazyParams.searchText" :placeholder="$t('common.search')"
-                                    @search="getBlockList" />
-                                <Button icon="pi pi-search" class="ml-1" @click="getBlockList" />
+                        :rows="10" :rowHover="true" :paginator="true" :totalRecords="total" @page="onPage" @sort="onSort">
+                        <template #empty>{{ $t("common.noData") }}</template>
+                        <template #loading>{{ $t("common.loading") }}</template>
+                        <template #header>
+                            <div class="text-right">
+                                <div class="p-input-icon-left">
+                                    <i class="pi pi-search" />
+                                    <InputText type="search" v-model="lazyParams.searchText"
+                                        :placeholder="$t('common.search')" @search="getBlockList" />
+                                    <Button icon="pi pi-search" class="ml-1" @click="getBlockList" />
+                                </div>
                             </div>
-                        </div>
-                    </template>
-                    <Column :field="'title_' + $i18n.locale" :header="$t('common.nameIn')" sortable>
-                        <template #body="{ data }">
-                            <a href="javascript:void(0)" @click="navigateToView(data)">
-                                {{ data['title_' + $i18n.locale] }}
-                                <!--              {{ $i18n.locale === "kz" ? data.title_kz : $i18n.locale === "ru" ? data.title_ru : data.title_en }}-->
-                            </a>
                         </template>
-                    </Column>
-                    <Column :header="$t('web.blockType')" sortable>
-                        <template #body="{ data }">
-                            {{ data.is_list ? $t('web.list') : !data.is_plugin ? $t('web.content') : $t('web.plugin') }}
-                        </template>
-                    </Column>
-                    <Column :header="$t('web.note')">
-                        <template #body="{ data }">
-                            {{ data.note }}
-                        </template>
-                    </Column>
-                    <Column :header="$t('faq.createDate')">
-                        <template #body="{ data }">
-                            {{ formatDate(data.create_date) }}
-                        </template>
-                    </Column>
-                    <Column class="text-right">
-                        <template #body="{ data }">
-                            <Button icon="fa-solid fa-pen" class="p-button mr-2" @click="openEdit(data)" />
-                            <Button icon="fa-solid fa-trash" class="p-button-danger" @click="deleteConfirm(data)" />
-                        </template>
-                    </Column>
-                </DataTable>
+                        <Column :field="'title_' + $i18n.locale" :header="$t('common.nameIn')" sortable>
+                            <template #body="{ data }">
+                                <a href="javascript:void(0)" @click="navigateToView(data)">
+                                    {{ data['title_' + $i18n.locale] }}
+                                    <!--              {{ $i18n.locale === "kz" ? data.title_kz : $i18n.locale === "ru" ? data.title_ru : data.title_en }}-->
+                                </a>
+                            </template>
+                        </Column>
+                        <Column :header="$t('web.blockType')" sortable>
+                            <template #body="{ data }">
+                                {{ data.is_list ? $t('web.list') : !data.is_plugin ? $t('web.content') : $t('web.plugin') }}
+                            </template>
+                        </Column>
+                        <Column :header="$t('web.note')">
+                            <template #body="{ data }">
+                                {{ data.note }}
+                            </template>
+                        </Column>
+                        <Column :header="$t('faq.createDate')">
+                            <template #body="{ data }">
+                                {{ formatDate(data.create_date) }}
+                            </template>
+                        </Column>
+                        <Column class="text-right">
+                            <template #body="{ data }">
+                                <Button icon="fa-solid fa-pen" class="p-button mr-2" @click="openEdit(data)" />
+                                <Button icon="fa-solid fa-trash" class="p-button-danger" @click="deleteConfirm(data)" />
+                            </template>
+                        </Column>
+                    </DataTable>
                 </TabPanel>
                 <TabPanel :header="$t('web.history')" @click="getTableLogs()">
                     <WebLogs :TN="TN" :key="TN" />
@@ -95,17 +95,20 @@
                 <label for="blockType2">{{ $t('web.content') }}</label>
             </div>
         </div>
+
         <div class="field" v-if="formData.is_list">
-            <label>{{ $t('web.view') }}</label>
-            <div class="field-radiobutton">
-                <RadioButton inputId="listType1" name="listType" :value="false" v-model="formData.is_grid" />
-                <label for="listType1">{{ $t('web.list') }}</label>
-            </div>
-            <div class="field-radiobutton">
-                <RadioButton inputId="listType2" name="listType" :value="true" v-model="formData.is_grid" />
-                <label for="listType2">{{ $t('web.grid') }}</label>
+            <label>{{ $t('web.listType') }}</label>
+            <Dropdown v-model="selectedBlockListType" :options="listTypes" :optionLabel="'name_' + $i18n.locale"
+                :placeholder="$t('common.select')" class="w-full md:w-14rem" @change="onBlockListTypeSelect" />
+        </div>
+        <div v-if="selectedBlockListType && formData.is_list">
+            <div class="field">
+                <label>{{ $t('web.view') }}</label>
+                <Dropdown v-model="selectedBlockListViewType" :options="listViewTypes" :optionLabel="'name_' + $i18n.locale"
+                    :placeholder="$t('common.select')" class="w-full md:w-14rem" @change="onBlockListViewTypeSelect" />
             </div>
         </div>
+
         <template #footer>
             <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button p-component p-button-danger mr-2"
                 @click="hideDialog" />
@@ -142,7 +145,9 @@ export default {
         const blockList = ref([])
         const enuService = new EnuWebService()
         const router = useRouter()
-        let formData = ref({})
+        let formData = ref({
+
+        })
         const options = ref([true, false]);
         const total = ref(0)
         const lazyParams = ref({
@@ -152,6 +157,14 @@ export default {
             sortField: null,
             sortOrder: 0
         })
+        const selectedBlockListType = ref();
+        const listTypes = ref([]);
+        const selectedBlockListViewType = ref();
+        const listViewTypes = ref([]);
+
+
+
+
 
         const navigateToView = (data) => {
             if (!data.is_plugin) router.push({ name: 'BlockView', params: { id: data.block_id } })
@@ -169,6 +182,33 @@ export default {
                     blockList.value = res.data.blocks
                     total.value = res.data.total;
                     TN.value = res.data.tn_res
+                }
+                loading.value = false
+            }).catch(error => {
+                loading.value = false
+                toast.add({ severity: "error", summary: error, life: 3000 });
+            });
+        }
+
+        const getBlockListTypes = () => {
+            loading.value = true;
+            enuService.getBlockListTypes().then(res => {
+                if (res.data) {
+                    listTypes.value = res.data;
+
+                }
+                loading.value = false
+            }).catch(error => {
+                loading.value = false
+                toast.add({ severity: "error", summary: error, life: 3000 });
+            });
+        }
+
+        const getBlockListViewTypes = () => {
+            loading.value = true;
+            enuService.getBlockListViewTypes().then(res => {
+                if (res.data) {
+                    listViewTypes.value = res.data;
                 }
                 loading.value = false
             }).catch(error => {
@@ -228,6 +268,8 @@ export default {
 
         const hideDialog = () => {
             isCreateModal.value = false;
+            selectedBlockListType.value = null;
+            selectedBlockListViewType.value = null;
         }
 
         const deleteConfirm = (data) => {
@@ -268,15 +310,27 @@ export default {
             getBlockList();
         }
 
+        const onBlockListTypeSelect = (event) => {
+            formData.value.list_type_id = event.value.id
+        }
+
+        const onBlockListViewTypeSelect = (event) => {
+            formData.value.list_type_view_id = event.value.id
+        }
+
+
         onMounted(() => {
             getBlockList();
+            getBlockListTypes();
+            getBlockListViewTypes();
         });
+
 
         return {
             blockList, isCreateModal, formData, lazyParams,
-            loading, selectedBlock, submitted, options, total, TN,
+            loading, selectedBlock, submitted, options, total, TN, onBlockListTypeSelect,
             navigateToView, openDialog, hideDialog, addBlock, save, deleteConfirm, openEdit, formatDate,
-            onPage, onSort, getBlockList
+            onPage, onSort, getBlockList, selectedBlockListType, listTypes, selectedBlockListViewType, onBlockListViewTypeSelect, listViewTypes
         }
     }
 }
@@ -292,4 +346,5 @@ export default {
         line-height: 1;
         margin-left: 0.5rem;
     }
-}</style>
+}
+</style>

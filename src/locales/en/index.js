@@ -816,7 +816,8 @@ export default {
         logUser: 'User Name',
         properties:'Properties',
         history: 'History',
-        optionalField: 'Optional'
+        optionalField: 'Optional',
+        listType: 'List Type'
     },
     //Student locale
     student: {
