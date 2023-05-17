@@ -187,9 +187,10 @@ const insert = () => {
 }
 
 .image-item {
-    border: 1px solid #000;
+    border: 1px solid #ccc;
     padding: 10px;
     margin-bottom: 10px;
+    border-radius: 5px;
 }
 
 .image-item img {
