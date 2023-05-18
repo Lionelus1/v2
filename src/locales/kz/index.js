@@ -860,7 +860,14 @@ export default {
         properties:'Қасиеттер',
         history: 'Тарих',
         optionalField: 'Міндетті емес',
-        listType: 'Тізім түрі'
+        listType: 'Тізім түрі',
+        webHelp: 'Мысал көру',
+        simpleListExe: 'Қарапайым тізімінің мысалы',
+        gridListExe: 'Қарапайым грид тізімінің мысалы',
+        accordionListExample: 'Қарапайым аккордеон тізімінің мысалы',
+        gridAccordionListExample: 'Қарапайым грид аккордеон тізімінің мысалы',
+        cardListExample: 'Қарапайым карт тізімінің мысалы',
+        gridCardListExample: 'Қарапайым грид карт тізімінің мысалы'
     },
     //Student locale
     student: {

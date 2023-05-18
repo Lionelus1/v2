@@ -848,7 +848,14 @@ export default {
         properties:'Характеристики',
         history: 'История',
         optionalField: 'Не обязательно',
-        listType: 'Тип списка'
+        listType: 'Тип списка',
+        webHelp: 'См. пример',
+        simpleListExe: 'Пример простого списка',
+        gridListExe: 'Пример простого списка сетки',
+        accordionListExample: 'Пример простого аккордеонного списка',
+        gridAccordionListExample: 'Пример простого сетки аккордеонного списка',
+        cardListExample: 'Пример простого списка карт',
+        gridCardListExample: 'Пример простого списка карт сетки'
     },
 
     student: {

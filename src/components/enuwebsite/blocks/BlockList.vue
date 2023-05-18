@@ -83,33 +83,283 @@
             <Textarea :placeholder="$t('web.note')" rows="3" class="pt-1" type="text" v-model="formData.note"
                 maxlength="100"></Textarea>
         </div>
-        <div class="field">
-            <label>{{ $t('common.type') }}</label>
-            <div class="field-radiobutton">
-                <RadioButton inputId="blockType1" name="blockType" :value="true" v-model="formData.is_list" />
-                <label for="blockType1">{{ $t('web.list') }}</label>
-            </div>
-            <div class="field-radiobutton">
-                <RadioButton inputId="blockType2" name="blockType" :value="false" @change="formData.is_grid = false"
-                    v-model="formData.is_list" />
-                <label for="blockType2">{{ $t('web.content') }}</label>
-            </div>
-        </div>
+        <div class="grid">
+            <div class="col-4">
+                <div class="field">
+                    <div class="field">
+                        <label>{{ $t('common.type') }}</label>
+                        <div class="field-radiobutton">
+                            <RadioButton inputId="blockType1" name="blockType" :value="true" v-model="formData.is_list" />
+                            <label for="blockType1">{{ $t('web.list') }}</label>
+                        </div>
+                        <div class="field-radiobutton">
+                            <RadioButton inputId="blockType2" name="blockType" :value="false"
+                                @change="formData.is_grid = false" v-model="formData.is_list" />
+                            <label for="blockType2">{{ $t('web.content') }}</label>
+                        </div>
+                    </div>
 
-        <div class="field" v-if="formData.is_list">
-            <label>{{ $t('web.listType') }}</label>
-            <Dropdown v-model="selectedBlockListType" :options="listTypes" :optionLabel="'name_' + $i18n.locale"
-                :placeholder="$t('common.select')" class="w-full md:w-14rem" @change="onBlockListTypeSelect" />
-        </div>
-        <div v-if="selectedBlockListType && formData.is_list">
-            <div class="field">
-                <label>{{ $t('web.view') }}</label>
-                <Dropdown v-model="selectedBlockListViewType" :options="listViewTypes" :optionLabel="'name_' + $i18n.locale"
-                    :placeholder="$t('common.select')" class="w-full md:w-14rem" @change="onBlockListViewTypeSelect" />
+                    <div class="field" v-if="formData.is_list">
+                        <label>{{ $t('web.listType') }}</label>
+                        <Dropdown v-model="selectedBlockListType" :options="listTypes" :optionLabel="'name_' + $i18n.locale"
+                            :placeholder="$t('common.select')" class="w-full md:w-14rem" @change="onBlockListTypeSelect" />
+                    </div>
+                    <div v-if="selectedBlockListType && formData.is_list">
+                        <div class="field">
+                            <label>{{ $t('web.view') }}</label>
+                            <Dropdown v-model="selectedBlockListViewType" :options="listViewTypes"
+                                :optionLabel="'name_' + $i18n.locale" :placeholder="$t('common.select')"
+                                class="w-full md:w-14rem" @change="onBlockListViewTypeSelect" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12" v-if="isGuideVisible">
+                <div v-if="formData.is_list">
+                    <div v-if="selectedBlockListType" id="listHelp">
+                        <div v-if="selectedBlockListType.code == 'LIST'">
+                            <div v-if="selectedBlockListViewType" style="margin-left: -6px;">
+                                <div v-if="selectedBlockListViewType.code == 'GRID'">
+                                    <label>
+                                        <h5><strong>{{ $t('web.gridListExe') }}</strong></h5>
+                                    </label>
+                                    <hr /><br />
+                                </div>
+                            </div>
+                            <div v-if="selectedBlockListViewType">
+                                <div v-if="selectedBlockListViewType.code == 'GRID'" class="grid">
+                                    <div>List1</div>
+                                    <div>List2</div>
+                                    <div>List3</div>
+                                    <div>List4</div>
+                                </div>
+                            </div>
+                            <div v-if="selectedBlockListViewType">
+
+                                <div v-if="selectedBlockListViewType.code !== 'GRID'" class="list">
+                                    <label>
+                                        <h5><strong>{{ $t('web.simpleListExe') }}</strong></h5>
+                                        <hr />
+                                    </label>
+                                    <div>List1</div>
+                                    <div>List2</div>
+                                    <div>List3</div>
+                                    <div>List4</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div v-if="selectedBlockListType.code == 'ACCORDION'">
+                            <div v-if="selectedBlockListViewType">
+                                <div v-if="selectedBlockListViewType.code == 'GRID'">
+                                    <label>
+                                        <h5><strong>{{ $t('web.gridAccordionListExample') }}</strong></h5>
+                                        <hr />
+                                    </label>
+                                </div>
+                            </div>
+                            <div v-if="selectedBlockListViewType">
+                                <div v-if="selectedBlockListViewType.code == 'GRID'" class="grid">
+                                    <div class="col">
+                                        <Accordion :multiple="true" :activeIndex="[0]">
+                                            <AccordionTab header="Accordion 1">
+                                                <p>
+                                                    Accordion Content
+                                                </p>
+                                            </AccordionTab>
+                                        </Accordion>
+                                    </div>
+                                    <div class="col">
+                                        <Accordion :multiple="true">
+                                            <AccordionTab header="Accordion 2">
+                                                <p>
+                                                    Accordion Content
+                                                </p>
+                                            </AccordionTab>
+                                        </Accordion>
+                                    </div>
+                                    <div class="col">
+                                        <Accordion :multiple="true">
+                                            <AccordionTab header="Accordion 3">
+                                                <p>
+                                                    Accordion Content
+                                                </p>
+                                            </AccordionTab>
+                                        </Accordion>
+                                    </div>
+                                    <div class="col">
+                                        <Accordion :multiple="true">
+                                            <AccordionTab header="Accordion 4">
+                                                <p>
+                                                    Accordion Content
+                                                </p>
+                                            </AccordionTab>
+                                        </Accordion>
+                                    </div>
+                                </div>
+                            </div>
+                            <div v-if="selectedBlockListViewType">
+                                <div v-if="selectedBlockListViewType.code !== 'GRID'" class="list">
+                                    <label>
+                                        <h5><strong>{{ $t('web.accordionListExample') }}</strong></h5>
+                                        <hr />
+                                    </label>
+                                    <div class="col">
+                                        <Accordion :multiple="true" :activeIndex="[0]">
+                                            <AccordionTab header="Accordion 1">
+                                                <p>
+                                                    Accordion Content
+                                                </p>
+                                            </AccordionTab>
+                                        </Accordion>
+                                    </div>
+                                    <div class="col">
+                                        <Accordion :multiple="true">
+                                            <AccordionTab header="Accordion 2">
+                                                <p>
+                                                    Accordion Content
+                                                </p>
+                                            </AccordionTab>
+                                        </Accordion>
+                                    </div>
+                                    <div class="col">
+                                        <Accordion :multiple="true">
+                                            <AccordionTab header="Accordion 3">
+                                                <p>
+                                                    Accordion Content
+                                                </p>
+                                            </AccordionTab>
+                                        </Accordion>
+                                    </div>
+                                    <div class="col">
+                                        <Accordion :multiple="true">
+                                            <AccordionTab header="Accordion 4">
+                                                <p>
+                                                    Accordion Content
+                                                </p>
+                                            </AccordionTab>
+                                        </Accordion>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div v-if="selectedBlockListType.code == 'CARD'">
+                            <div v-if="selectedBlockListViewType">
+                                <div v-if="selectedBlockListViewType.code == 'GRID'">
+                                    <label>
+                                        <h5><strong>{{ $t('web.gridCardListExample') }}</strong></h5>
+                                        <hr />
+                                    </label>
+                                </div>
+                            </div>
+                            <div v-if="selectedBlockListViewType">
+                                <div v-if="selectedBlockListViewType.code == 'GRID'" class="grid">
+
+                                    <div class="col">
+                                        <Card>
+                                            <template #title> Card Title </template>
+                                            <template #content>
+                                                <p>
+                                                    Card Content
+                                                </p>
+                                            </template>
+                                        </Card>
+                                    </div>
+                                    <div class="col">
+                                        <Card>
+                                            <template #title> Card Title </template>
+                                            <template #content>
+                                                <p>
+                                                    Card Content
+                                                </p>
+                                            </template>
+                                        </Card>
+                                    </div>
+                                    <div class="col">
+                                        <Card>
+                                            <template #title> Card Title </template>
+                                            <template #content>
+                                                <p>
+                                                    Card Content
+                                                </p>
+                                            </template>
+                                        </Card>
+                                    </div>
+                                    <div class="col">
+                                        <Card>
+                                            <template #title> Card Title </template>
+                                            <template #content>
+                                                <p>
+                                                    Card Content
+                                                </p>
+                                            </template>
+                                        </Card>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div v-if="selectedBlockListViewType">
+                                <div v-if="selectedBlockListViewType.code !== 'GRID'" class="list">
+                                    <label>
+                                        <h5><strong>{{ $t('web.cardListExample') }}</strong></h5>
+                                        <hr />
+                                    </label>
+                                    <div class="col">
+                                        <Card>
+                                            <template #title> Card Title </template>
+                                            <template #content>
+                                                <p>
+                                                    Card Content
+                                                </p>
+                                            </template>
+                                        </Card>
+                                    </div>
+                                    <div class="col">
+                                        <Card>
+                                            <template #title> Card Title </template>
+                                            <template #content>
+                                                <p>
+                                                    Card Content
+                                                </p>
+                                            </template>
+                                        </Card>
+                                    </div>
+                                    <div class="col">
+                                        <Card>
+                                            <template #title> Card Title </template>
+                                            <template #content>
+                                                <p>
+                                                    Card Content
+                                                </p>
+                                            </template>
+                                        </Card>
+                                    </div>
+                                    <div class="col">
+                                        <Card>
+                                            <template #title> Card Title </template>
+                                            <template #content>
+                                                <p>
+                                                    Card Content
+                                                </p>
+                                            </template>
+                                        </Card>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
-
         <template #footer>
+            <div class="field" style="float:left;" v-if="formData.is_list">
+                <div class="flex align-items-center">
+                    <Checkbox v-model="isGuideVisible" :binary="true" />&nbsp;<a href="javascript:void(0)"
+                        @click="showHideUserGuide">{{ $t('web.webHelp') }}</a>
+                </div>
+
+            </div>
             <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button p-component p-button-danger mr-2"
                 @click="hideDialog" />
             <Button v-if="selectedBlock" :label="$t('common.save')" icon="pi pi-check"
@@ -129,6 +379,7 @@ import { useI18n } from "vue-i18n";
 import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
 import WebLogs from "@/components/enuwebsite/EnuSiteLogs.vue";
+
 
 export default {
     name: "BlockList",
@@ -161,10 +412,15 @@ export default {
         const listTypes = ref([]);
         const selectedBlockListViewType = ref();
         const listViewTypes = ref([]);
+        const accTabs = ref([
+            { title: 'Title 1', content: 'Content 1' },
 
+        ]);
 
-
-
+        const isGuideVisible = ref(false);
+        const showHideUserGuide = () => {
+            isGuideVisible.value = !isGuideVisible.value;
+        };
 
         const navigateToView = (data) => {
             if (!data.is_plugin) router.push({ name: 'BlockView', params: { id: data.block_id } })
@@ -330,7 +586,8 @@ export default {
             blockList, isCreateModal, formData, lazyParams,
             loading, selectedBlock, submitted, options, total, TN, onBlockListTypeSelect,
             navigateToView, openDialog, hideDialog, addBlock, save, deleteConfirm, openEdit, formatDate,
-            onPage, onSort, getBlockList, selectedBlockListType, listTypes, selectedBlockListViewType, onBlockListViewTypeSelect, listViewTypes
+            onPage, onSort, getBlockList, selectedBlockListType, listTypes, selectedBlockListViewType, onBlockListViewTypeSelect, listViewTypes,
+            accTabs, showHideUserGuide, isGuideVisible
         }
     }
 }
@@ -347,4 +604,9 @@ export default {
         margin-left: 0.5rem;
     }
 }
-</style>
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 10px;
+}</style>
