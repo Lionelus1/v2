@@ -855,7 +855,9 @@ export default {
         accordionListExample: 'Пример простого аккордеонного списка',
         gridAccordionListExample: 'Пример простого сетки аккордеонного списка',
         cardListExample: 'Пример простого списка карт',
-        gridCardListExample: 'Пример простого списка карт сетки'
+        gridCardListExample: 'Пример простого списка карт сетки',
+        exampleTitle: 'Тема',
+        exampleContent: 'Пример содержания'
     },
 
     student: {

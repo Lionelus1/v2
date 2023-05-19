@@ -824,7 +824,9 @@ export default {
         accordionListExample: 'Simple Accordion List Example',
         gridAccordionListExample: 'Simple Grid Accordion List Example',
         cardListExample: 'Simple Card List Example',
-        gridCardListExample: 'Simple Grid Card List Example'
+        gridCardListExample: 'Simple Grid Card List Example',
+        exampleTitle: 'Title',
+        exampleContent: 'Example content'
     },
     //Student locale
     student: {

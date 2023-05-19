@@ -129,10 +129,49 @@
                             </div>
                             <div v-if="selectedBlockListViewType">
                                 <div v-if="selectedBlockListViewType.code == 'GRID'" class="grid">
-                                    <div>List1</div>
-                                    <div>List2</div>
-                                    <div>List3</div>
-                                    <div>List4</div>
+                                    <div class="flex flex-wrap p-2 align-items-center gap-3">
+                                        <img class="w-4rem shadow-2 flex-shrink-0 border-round"
+                                            src="https://primefaces.org/cdn/primevue/images/product/blue-band.jpg" />
+                                        <div class="flex-1 flex flex-column gap-2">
+                                            <span class="font-bold">{{ $t('web.exampleTitle') }}-{{ 1 }}</span>
+                                            <div class="flex align-items-center gap-2">
+                                                <span>{{ $t('web.exampleContent') }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-wrap p-2 align-items-center gap-3">
+                                        <img class="w-4rem shadow-2 flex-shrink-0 border-round"
+                                            src="https://primefaces.org/cdn/primevue/images/product/blue-band.jpg" />
+                                        <div class="flex-1 flex flex-column gap-2">
+                                            <span class="font-bold">{{ $t('web.exampleTitle') }}-{{ 2 }}</span>
+                                            <div class="flex align-items-center gap-2">
+
+                                                <span>{{ $t('web.exampleContent') }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-wrap p-2 align-items-center gap-3">
+                                        <img class="w-4rem shadow-2 flex-shrink-0 border-round"
+                                            src="https://primefaces.org/cdn/primevue/images/product/blue-band.jpg" />
+                                        <div class="flex-1 flex flex-column gap-2">
+                                            <span class="font-bold">{{ $t('web.exampleTitle') }}-{{ 3 }}</span>
+                                            <div class="flex align-items-center gap-2">
+
+                                                <span>{{ $t('web.exampleContent') }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-wrap p-2 align-items-center gap-3">
+                                        <img class="w-4rem shadow-2 flex-shrink-0 border-round"
+                                            src="https://primefaces.org/cdn/primevue/images/product/blue-band.jpg" />
+                                        <div class="flex-1 flex flex-column gap-2">
+                                            <span class="font-bold">{{ $t('web.exampleTitle') }}-{{ 4 }}</span>
+                                            <div class="flex align-items-center gap-2">
+
+                                                <span>{{ $t('web.exampleContent') }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div v-if="selectedBlockListViewType">
@@ -142,10 +181,49 @@
                                         <h5><strong>{{ $t('web.simpleListExe') }}</strong></h5>
                                         <hr />
                                     </label>
-                                    <div>List1</div>
-                                    <div>List2</div>
-                                    <div>List3</div>
-                                    <div>List4</div>
+                                    <div class="flex flex-wrap p-2 align-items-center gap-3">
+                                        <img class="w-4rem shadow-2 flex-shrink-0 border-round"
+                                            src="https://primefaces.org/cdn/primevue/images/product/blue-band.jpg" />
+                                        <div class="flex-1 flex flex-column gap-2">
+                                            <span class="font-bold">{{ $t('web.exampleTitle') }}-{{ 1 }}</span>
+                                            <div class="flex align-items-center gap-2">
+                                                <span>{{ $t('web.exampleContent') }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-wrap p-2 align-items-center gap-3">
+                                        <img class="w-4rem shadow-2 flex-shrink-0 border-round"
+                                            src="https://primefaces.org/cdn/primevue/images/product/blue-band.jpg" />
+                                        <div class="flex-1 flex flex-column gap-2">
+                                            <span class="font-bold">{{ $t('web.exampleTitle') }}-{{ 2 }}</span>
+                                            <div class="flex align-items-center gap-2">
+
+                                                <span>{{ $t('web.exampleContent') }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-wrap p-2 align-items-center gap-3">
+                                        <img class="w-4rem shadow-2 flex-shrink-0 border-round"
+                                            src="https://primefaces.org/cdn/primevue/images/product/blue-band.jpg" />
+                                        <div class="flex-1 flex flex-column gap-2">
+                                            <span class="font-bold">{{ $t('web.exampleTitle') }}-{{ 3 }}</span>
+                                            <div class="flex align-items-center gap-2">
+
+                                                <span>{{ $t('web.exampleContent') }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-wrap p-2 align-items-center gap-3">
+                                        <img class="w-4rem shadow-2 flex-shrink-0 border-round"
+                                            src="https://primefaces.org/cdn/primevue/images/product/blue-band.jpg" />
+                                        <div class="flex-1 flex flex-column gap-2">
+                                            <span class="font-bold">{{ $t('web.exampleTitle') }}-{{ 4 }}</span>
+                                            <div class="flex align-items-center gap-2">
+
+                                                <span>{{ $t('web.exampleContent') }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -161,37 +239,37 @@
                             <div v-if="selectedBlockListViewType">
                                 <div v-if="selectedBlockListViewType.code == 'GRID'" class="grid">
                                     <div class="col">
-                                        <Accordion :multiple="true" :activeIndex="[0]">
-                                            <AccordionTab header="Accordion 1">
+                                        <Accordion :multiple="true" >
+                                            <AccordionTab :header="$t('web.exampleTitle')">
                                                 <p>
-                                                    Accordion Content
+                                                    {{ $t('web.exampleContent') }}
                                                 </p>
                                             </AccordionTab>
                                         </Accordion>
                                     </div>
                                     <div class="col">
                                         <Accordion :multiple="true">
-                                            <AccordionTab header="Accordion 2">
+                                            <AccordionTab :header="$t('web.exampleTitle')">
                                                 <p>
-                                                    Accordion Content
+                                                    {{ $t('web.exampleContent') }}
                                                 </p>
                                             </AccordionTab>
                                         </Accordion>
                                     </div>
                                     <div class="col">
                                         <Accordion :multiple="true">
-                                            <AccordionTab header="Accordion 3">
+                                            <AccordionTab :header="$t('web.exampleTitle')">
                                                 <p>
-                                                    Accordion Content
+                                                    {{ $t('web.exampleContent') }}
                                                 </p>
                                             </AccordionTab>
                                         </Accordion>
                                     </div>
                                     <div class="col">
                                         <Accordion :multiple="true">
-                                            <AccordionTab header="Accordion 4">
+                                            <AccordionTab :header="$t('web.exampleTitle')">
                                                 <p>
-                                                    Accordion Content
+                                                    {{ $t('web.exampleContent') }}
                                                 </p>
                                             </AccordionTab>
                                         </Accordion>
@@ -205,37 +283,37 @@
                                         <hr />
                                     </label>
                                     <div class="col">
-                                        <Accordion :multiple="true" :activeIndex="[0]">
-                                            <AccordionTab header="Accordion 1">
+                                        <Accordion >
+                                            <AccordionTab :header="$t('web.exampleTitle')">
                                                 <p>
-                                                    Accordion Content
+                                                    {{ $t('web.exampleContent') }}
                                                 </p>
                                             </AccordionTab>
                                         </Accordion>
                                     </div>
                                     <div class="col">
                                         <Accordion :multiple="true">
-                                            <AccordionTab header="Accordion 2">
+                                            <AccordionTab :header="$t('web.exampleTitle')">
                                                 <p>
-                                                    Accordion Content
+                                                    {{ $t('web.exampleContent') }}
                                                 </p>
                                             </AccordionTab>
                                         </Accordion>
                                     </div>
                                     <div class="col">
                                         <Accordion :multiple="true">
-                                            <AccordionTab header="Accordion 3">
+                                            <AccordionTab :header="$t('web.exampleTitle')">
                                                 <p>
-                                                    Accordion Content
+                                                    {{ $t('web.exampleContent') }}
                                                 </p>
                                             </AccordionTab>
                                         </Accordion>
                                     </div>
                                     <div class="col">
                                         <Accordion :multiple="true">
-                                            <AccordionTab header="Accordion 4">
+                                            <AccordionTab :header="$t('web.exampleTitle')">
                                                 <p>
-                                                    Accordion Content
+                                                    {{ $t('web.exampleContent') }}
                                                 </p>
                                             </AccordionTab>
                                         </Accordion>
@@ -257,40 +335,56 @@
 
                                     <div class="col">
                                         <Card>
-                                            <template #title> Card Title </template>
+                                            <template #header>
+                                                <img alt="user header" height="50"
+                                                    src="https://primefaces.org/cdn/primevue/images/usercard.png" />
+                                            </template>
+                                            <template #title> {{ $t('web.exampleTitle') }} </template>
                                             <template #content>
                                                 <p>
-                                                    Card Content
+                                                    {{ $t('web.exampleContent') }}
                                                 </p>
                                             </template>
                                         </Card>
                                     </div>
                                     <div class="col">
                                         <Card>
-                                            <template #title> Card Title </template>
+                                            <template #header>
+                                                <img alt="user header" height="50"
+                                                    src="https://primefaces.org/cdn/primevue/images/usercard.png" />
+                                            </template>
+                                            <template #title> {{ $t('web.exampleTitle') }} </template>
                                             <template #content>
                                                 <p>
-                                                    Card Content
+                                                    {{ $t('web.exampleContent') }}
                                                 </p>
                                             </template>
                                         </Card>
                                     </div>
                                     <div class="col">
                                         <Card>
-                                            <template #title> Card Title </template>
+                                            <template #header>
+                                                <img alt="user header" height="50"
+                                                    src="https://primefaces.org/cdn/primevue/images/usercard.png" />
+                                            </template>
+                                            <template #title> {{ $t('web.exampleTitle') }} </template>
                                             <template #content>
                                                 <p>
-                                                    Card Content
+                                                    {{ $t('web.exampleContent') }}
                                                 </p>
                                             </template>
                                         </Card>
                                     </div>
                                     <div class="col">
                                         <Card>
-                                            <template #title> Card Title </template>
+                                            <template #header>
+                                                <img alt="user header" height="50"
+                                                    src="https://primefaces.org/cdn/primevue/images/usercard.png" />
+                                            </template>
+                                            <template #title> {{ $t('web.exampleTitle') }} </template>
                                             <template #content>
                                                 <p>
-                                                    Card Content
+                                                    {{ $t('web.exampleContent') }}
                                                 </p>
                                             </template>
                                         </Card>
@@ -306,40 +400,56 @@
                                     </label>
                                     <div class="col">
                                         <Card>
-                                            <template #title> Card Title </template>
+                                            <template #header>
+                                                <img alt="user header" height="50"
+                                                    src="https://primefaces.org/cdn/primevue/images/usercard.png" />
+                                            </template>
+                                            <template #title> {{ $t('web.exampleTitle') }} </template>
                                             <template #content>
                                                 <p>
-                                                    Card Content
+                                                    {{ $t('web.exampleContent') }}
                                                 </p>
                                             </template>
                                         </Card>
                                     </div>
                                     <div class="col">
                                         <Card>
-                                            <template #title> Card Title </template>
+                                            <template #header>
+                                                <img alt="user header" height="50"
+                                                    src="https://primefaces.org/cdn/primevue/images/usercard.png" />
+                                            </template>
+                                            <template #title> {{ $t('web.exampleTitle') }} </template>
                                             <template #content>
                                                 <p>
-                                                    Card Content
+                                                    {{ $t('web.exampleContent') }}
                                                 </p>
                                             </template>
                                         </Card>
                                     </div>
                                     <div class="col">
                                         <Card>
-                                            <template #title> Card Title </template>
+                                            <template #header>
+                                                <img alt="user header" height="50"
+                                                    src="https://primefaces.org/cdn/primevue/images/usercard.png" />
+                                            </template>
+                                            <template #title> {{ $t('web.exampleTitle') }} </template>
                                             <template #content>
                                                 <p>
-                                                    Card Content
+                                                    {{ $t('web.exampleContent') }}
                                                 </p>
                                             </template>
                                         </Card>
                                     </div>
                                     <div class="col">
                                         <Card>
-                                            <template #title> Card Title </template>
+                                            <template #header>
+                                                <img alt="user header" height="50"
+                                                    src="https://primefaces.org/cdn/primevue/images/usercard.png" />
+                                            </template>
+                                            <template #title> {{ $t('web.exampleTitle') }} </template>
                                             <template #content>
                                                 <p>
-                                                    Card Content
+                                                    {{ $t('web.exampleContent') }}
                                                 </p>
                                             </template>
                                         </Card>
@@ -379,6 +489,8 @@ import { useI18n } from "vue-i18n";
 import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
 import WebLogs from "@/components/enuwebsite/EnuSiteLogs.vue";
+import Accordion from 'primevue/accordion';
+import AccordionTab from 'primevue/accordiontab';
 
 
 export default {
@@ -609,4 +721,5 @@ export default {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     grid-gap: 10px;
-}</style>
+}
+</style>

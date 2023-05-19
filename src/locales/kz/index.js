@@ -867,7 +867,10 @@ export default {
         accordionListExample: 'Қарапайым аккордеон тізімінің мысалы',
         gridAccordionListExample: 'Қарапайым грид аккордеон тізімінің мысалы',
         cardListExample: 'Қарапайым карт тізімінің мысалы',
-        gridCardListExample: 'Қарапайым грид карт тізімінің мысалы'
+        gridCardListExample: 'Қарапайым грид карт тізімінің мысалы',
+        exampleTitle: 'Тақырып',
+        exampleContent: 'Мысалдың мазмұны'
+
     },
     //Student locale
     student: {
