@@ -170,7 +170,7 @@ export default {
             additionalFile: null,
             eventService: new EventsService(),
             posterService: new PosterService(),
-            loggedUser: JSON.parse(window.localStorage.getItem('loginedUser'))
+            loggedUser: JSON.parse(window.localStorage.getItem('loginedUser')),
         };
     },
     mounted() {
@@ -431,6 +431,7 @@ export default {
         this.getAllEvents();
         this.getParticipantsCategories();
         this.getRoles();
+
     },
 
     computed: {

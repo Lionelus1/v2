@@ -38,4 +38,16 @@ export class EventsService {
         }, {headers: getHeader()})
     }
 
+    getEventTypes() {
+        return api.get("/event/getTypes", {headers: getHeader()});
+    }
+    
+    isEvent() {
+        return "EVENT"
+    }
+    
+    isAnnounce() {
+        return "ANNOUNCE"
+    }
+
 }

@@ -1,4 +1,5 @@
 import instance from "./api";
+import router from "@/router";
 
 const setup = (store, app) => {
 var configG = app.config.globalProperties
@@ -13,12 +14,14 @@ var configG = app.config.globalProperties
     
     instance.interceptors.response.use((response) => {
         if(response.status === 401) {
+            console.log(response)
             store.dispatch('logLout')
         }
         return response;
     }, (error) => {
         if (error.response && error.response.data) {
             if (error.response.status === 401) {
+                store.dispatch('solveAttemptedUrl', router.currentRoute.value)
                 store.dispatch('logLout')
             } else 
             if (error.response.status === 405) {
