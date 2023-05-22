@@ -8,7 +8,7 @@
             <TabView>
         <TabPanel :header="$t('web.properties')">
             <TreeTable class="p-treetable-sm" :value="menus" :lazy="true" :loading="loading"
-                       @nodeExpand="onExpand" scrollHeight="flex" responsiveLayout="scroll"
+                       @nodeExpand="onExpand" scrollHeight="flex" responsiveLayout="scroll" show-gridlines
                        :resizableColumns="true" columnResizeMode="fit" :paginator="true" :rows="10" :total-records="total" @page="onPage($event)">
                 <template #header>
                     <div class="text-right">
@@ -100,6 +100,7 @@ export default {
                 page: 1,
                 rows: 10,
                 parent_id: null,
+                is_child: false
             },
             parentId: null
         };
@@ -121,6 +122,7 @@ export default {
         webDomain: webEnuDomain,
         onExpand(node) {
             this.lazyParams.parent_id = Number(node.menu_id)
+            this.lazyParams.is_child = true
             this.parentNode = node
             this.getMenus(node)
         },
