@@ -304,7 +304,8 @@ export default {
         currentWindowLink: 'Текущее окно',
         newWindowLink: 'В новом окне',
         dialogWindowsPdf: 'В диалоговом окне (для PDF)',
-        pdfTypeError: 'File type does not match PDF'
+        pdfTypeError: 'Тип файла не соответствует PDF',
+        eventType: 'Тип мероприятия'
     },
     bank: {
         title: "Банки",

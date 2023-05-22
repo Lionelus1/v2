@@ -303,7 +303,8 @@ export default {
         currentWindowLink: 'Current window',
         newWindowLink: 'New window',
         dialogWindowsPdf: 'In dialog box (for PDF)',
-        pdfTypeError: 'Тип файла не соответствует PDF'
+        pdfTypeError: 'File type does not match PDF',
+        eventType: 'Event type'
     },
     bank: {
         title: "Banks",

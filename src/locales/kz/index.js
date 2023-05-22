@@ -302,7 +302,8 @@ export default {
         currentWindowLink: 'Ағымдағы терезе',
         newWindowLink: 'Жаңа терезе',
         dialogWindowsPdf: 'Диалогтық терезеде (PDF үшін)',
-        pdfTypeError: 'Файл түрі PDF форматына сәйкес келмейді'
+        pdfTypeError: 'Файл түрі PDF форматына сәйкес келмейді',
+        eventType: 'Іс-шара түрі'
     },
     bank: {
         title: "Банктер",
