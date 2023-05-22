@@ -817,7 +817,16 @@ export default {
         properties:'Properties',
         history: 'History',
         optionalField: 'Optional',
-        listType: 'List Type'
+        listType: 'List Type',
+        webHelp: 'See an example',
+        simpleListExe: 'Simple List Example',
+        gridListExe: 'Simple Grid List Example',
+        accordionListExample: 'Simple Accordion List Example',
+        gridAccordionListExample: 'Simple Grid Accordion List Example',
+        cardListExample: 'Simple Card List Example',
+        gridCardListExample: 'Simple Grid Card List Example',
+        exampleTitle: 'Title',
+        exampleContent: 'Example content'
     },
     //Student locale
     student: {
