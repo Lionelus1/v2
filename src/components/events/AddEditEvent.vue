@@ -83,7 +83,8 @@
             </div>
             <div class="field" v-if="eventTypes">
                 <label>{{ $t('common.eventType') }}</label>
-                <Dropdown id="is-online" v-model="selectedEventType" :options="eventTypes" :optionLabel="'name_' + $i18n.locale" @change="onTypeSelect"
+                <Dropdown id="is-online" v-model="selectedEventType" :options="eventTypes" :optionLabel="'name_' + $i18n.locale"
+                          @change="onTypeSelect"
                           :placeholder="$t('common.eventType')" :class="{ 'p-invalid': !event.event_type_id && submitted }"/>
                 <small v-show="!event.event_type_id && submitted" class="p-error">
                     {{ $t("common.requiredField") }}
@@ -291,14 +292,14 @@ export default {
         }
     },
     mounted() {
-      if (this.event && this.event.main_image_file) {
-          this.event.main_image_file.url = smartEnuApi + fileRoute + this.event.main_image_file.filepath
-      } else if (this.event && this.event.main_image_path) {
-          this.event.main_image_path = smartEnuApi + fileRoute + this.event.main_image_path
-      }
+        this.getEventTypes();
+        if (this.event && this.event.main_image_file) {
+            this.event.main_image_file.url = smartEnuApi + fileRoute + this.event.main_image_file.filepath
+        } else if (this.event && this.event.main_image_path) {
+            this.event.main_image_path = smartEnuApi + fileRoute + this.event.main_image_path
+        }
     },
     created() {
-        this.getEventTypes();
         this.getMainCategories();
         this.getMasterCourses();
         this.getBachelorCourses();
@@ -464,13 +465,13 @@ export default {
                 });
         },
         getEventTypes() {
-          this.eventService.getEventTypes().then(res => {
-              if (res.data) {
-                  this.eventTypes = res.data;
-              }
-          }).catch(error => {
-              this.$toast.add({severity: "error", summary: error, life: 3000});
-          })
+            this.eventService.getEventTypes().then(res => {
+                if (res.data) {
+                    this.eventTypes = res.data;
+                }
+            }).catch(error => {
+                this.$toast.add({severity: "error", summary: error, life: 3000});
+            })
         },
         getMainCategories() {
             this.participantsMainCategories = [];
@@ -635,7 +636,7 @@ export default {
         },
     },
     computed: {
-        isEvent: function() {
+        isEvent: function () {
             return this.eventService.isEvent()
         },
         isMaster: function () {
