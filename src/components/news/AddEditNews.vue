@@ -82,15 +82,19 @@
                 <PrimeCalendar v-model="newsData.publish_date" showTime hourFormat="24" dateFormat="dd.mm.yy" showIcon @date-select="selectDate"/>
             </div>
             <div class="field">
-                <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadImage1($event)"
-                            :auto="true" v-bind:chooseLabel="$t('smartenu.chooseImage1')" accept="image/*"/>
-                <small v-show="(!newsData.image1 && !imageFileMain) && submitted" class="p-error">
+                <div class="grid">
+                    <div class="col-12 md:col-5">
+                        <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadImage1($event)"
+                                    :auto="true" v-bind:chooseLabel="$t('smartenu.chooseMainImage')" accept="image/*"/>
+                    </div>
+                </div>
+                <small v-show="!newsData.image_id && submitted" class="p-error">
                     {{ $t("smartenu.image1Invalid") }}
                 </small>
-                <div v-if="mainImage" class="mt-3">
-                    <img :src="mainImage" style="width: 50%; height: 50%" alt=""/>
+                <div v-if="newsData.main_image_file">
+                    <img :src="newsData.main_image_file.url" style="width: 50%; height: 50%"/>
                 </div>
-                <div v-if="!mainImage && newsData.imageUrl" class="mt-3">
+                <div v-else>
                     <img :src="newsData.imageUrl" style="width: 50%; height: 50%"/>
                 </div>
             </div>
@@ -196,7 +200,8 @@ export default {
             galleryFiles: null,
             fileList: [],
             uploadedGalleryFiles: null,
-            enuService: new EnuWebService()
+            enuService: new EnuWebService(),
+            fileService: new FileService()
         }
     },
     created() {
@@ -216,6 +221,11 @@ export default {
     },
     mounted() {
         this.getGalleryFiles()
+        if (this.newsData && this.newsData.main_image_file) {
+            this.newsData.main_image_file.url = smartEnuApi + fileRoute + this.newsData.main_image_file.filepath
+        } else if (this.newsData && this.newsData.image1) {
+            this.newsData.imageUrl = smartEnuApi + fileRoute + this.newsData.image1
+        }
     },
     methods: {
         formatDate,
@@ -304,10 +314,10 @@ export default {
             const data = this.newsData;
             delete data.galleryFiles;
 
-            const fd = new FormData();
+            /*const fd = new FormData();
             fd.append("news", JSON.stringify(data))
-            fd.append("imageFileMain", this.imageFileMain);
-            this.newsService.addNews(fd).then((response) => {
+            fd.append("imageFileMain", this.imageFileMain);*/
+            this.newsService.addNews(data).then((response) => {
                 if (response.data !== null) {
                     this.emitter.emit('newsCreated', true);
                 }
@@ -324,16 +334,17 @@ export default {
             });
         },
         uploadImage1(event) {
-            const file = event.files[0];
-            this.imageFileMain = event.files[0];
-            this.newsData.image1 = null;
-            imageResizeCompress
-                .fromBlob(file, 90, 720, "auto", "jpeg")
-                .then((res) => {
-                    imageResizeCompress.blobToURL(res).then((resp) => {
-                        this.mainImage = resp;
-                    });
-                });
+            const fd = new FormData()
+            fd.append("files[]", event.files[0])
+            this.fileService.uploadFile(fd).then(res => {
+                if (res.data) {
+                    this.newsData.main_image_file = res.data[0];
+                    this.newsData.main_image_file.url = smartEnuApi + fileRoute + this.newsData.main_image_file.filepath
+                    this.newsData.image_id = this.newsData.main_image_file.id
+                }
+            }).catch(error => {
+                this.$toast.add({severity: "error", summary: error, life: 3000});
+            })
         },
         uploadPosterImageKk(event) {
             const file = event.files[0];
@@ -496,9 +507,8 @@ export default {
             if (this.selectedCatTree.length === 0) {
                 this.formValid.push({selectedCatTree: true})
             }
-            if (!this.newsData.image1) {
-                if (!this.imageFileMain)
-                    this.formValid.push(this.$t("smartenu.image1Invalid"));
+            if (!this.newsData.image_id) {
+                this.formValid.push(this.$t("smartenu.image1Invalid"));
             }
             return this.formValid;
         },

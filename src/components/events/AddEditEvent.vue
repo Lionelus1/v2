@@ -157,7 +157,7 @@
                 <div class="grid">
                     <div class="col-12 md:col-5">
                         <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadMainImage($event)"
-                                    :auto="true" v-bind:chooseLabel="$t('smartenu.chooseMainImage')"/>
+                                    :auto="true" v-bind:chooseLabel="$t('smartenu.chooseMainImage')" accept="image/*"/>
                     </div>
                 </div>
                 <div v-if="event.main_image_file">
