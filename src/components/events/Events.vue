@@ -354,12 +354,6 @@ export default {
             this.event = event;
             this.editVisible = true;
             this.submitted = false;
-            this.isPoster = event.isPoster;
-            this.poster.id = event.posterId;
-            this.poster.link = event.poster.link;
-            this.poster.imageKk = event.poster.imageKk;
-            this.poster.imageRu = event.poster.imageRu;
-            this.poster.imageEn = event.poster.imageEn;
         },
 
         /**
@@ -492,7 +486,6 @@ export default {
             return this.roles.isStudent;
         },
         userHasAdmin: function () {
-            console.log(this.roles.isModer)
             return this.roles.isAdmin || this.roles.isModer;
         },
     },

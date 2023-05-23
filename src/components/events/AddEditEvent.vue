@@ -181,40 +181,34 @@
                 </div>
             </div>
             <div class="field-checkbox">
-                <Checkbox id="isPoster" name="isPoster" v-model="event.isPoster" :binary="true"/>
+                <Checkbox id="isPoster" name="isPoster" v-model="event.isPoster" :binary="true" @change="onChangePoster"/>
                 <label for="isPoster">{{ $t("smartenu.addPoster") }}</label>
             </div>
             <div class="field mt-3" style="margin-bottom: 1.5rem" v-if="event.isPoster">
                 <label for="poster-link">{{ $t("smartenu.posterLink") }}</label>
                 <InputText id="poster-link" v-model="poster.link" rows="3" :placeholder="$t('smartenu.posterLink')"/>
                 <div class="grid mt-3" v-if="event.isPoster">
-                    <div class="p-col">
+                    <div class="col">
                         <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadPosterImageKk($event)"
                                     :auto="true" v-bind:chooseLabel="$t('smartenu.posterImageKk')" accept="image/*"/>
-                        <div v-if="posterImageKk" class="mt-3">
-                            <img :src="posterImageKk" style="width: 50%; height: 50%"/>
-                        </div>
-                        <div v-else class="mt-3">
+                        <div class="mt-3">
                             <img :src="poster.imageKkUrl" style="width: 50%; height: 50%"/>
                         </div>
                     </div>
-                    <div class="p-col">
+                    <div class="col">
                         <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadPosterImageRu($event)"
                                     :auto="true" v-bind:chooseLabel="$t('smartenu.posterImageRu')" accept="image/*"/>
-                        <div v-if="posterImageRu" class="mt-3">
-                            <img :src="posterImageRu" style="width: 50%; height: 50%"/>
-                        </div>
-                        <div v-else class="mt-3">
+                        <div class="mt-3">
                             <img :src="poster.imageRuUrl" style="width: 50%; height: 50%"/>
                         </div>
                     </div>
-                    <div class="p-col">
+                    <div class="col">
                         <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadPosterImageEn($event)"
                                     :auto="true" v-bind:chooseLabel="$t('smartenu.posterImageEn')" accept="image/*"/>
                         <div v-if="posterImageEn" class="mt-3">
                             <img :src="posterImageEn" style="width: 50%; height: 50%"/>
                         </div>
-                        <div v-else class="mt-3">
+                        <div class="mt-3">
                             <img :src="poster.imageEnUrl" style="width: 50%; height: 50%"/>
                         </div>
                     </div>
@@ -298,6 +292,12 @@ export default {
         } else if (this.event && this.event.main_image_path) {
             this.event.main_image_path = smartEnuApi + fileRoute + this.event.main_image_path
         }
+
+        if (this.poster) {
+            this.poster.imageKkUrl = this.poster.imageKk ? smartEnuApi + fileRoute + this.poster.imageKk : ""
+            this.poster.imageRuUrl = this.poster.imageRu ? smartEnuApi + fileRoute + this.poster.imageRu : ""
+            this.poster.imageEnUrl = this.poster.imageEn ? smartEnuApi + fileRoute + this.poster.imageEn : ""
+        }
     },
     created() {
         this.getMainCategories();
@@ -362,34 +362,17 @@ export default {
                 if (this.formValid.length > 0) {
                     return;
                 }
-                const fd = new FormData();
-                fd.append("link", this.poster.link ? this.poster.link : '')
-                fd.append("imageKk", this.poster.imageKk)
-                fd.append("imageRu", this.poster.imageRu)
-                fd.append("imageEn", this.poster.imageEn)
-                if (this.posterImgKk)
-                    fd.append("imgKk", this.posterImgKk)
-                if (this.posterImgRu)
-                    fd.append("imgRu", this.posterImgRu)
-                if (this.posterImgEn)
-                    fd.append("imgEn", this.posterImgEn)
 
-                fd.append("id", this.poster.id ? parseInt(this.poster.id) : 0)
-
-                this.posterService.addPoster(fd).then((res) => {
+                this.posterService.addPoster(this.poster).then((res) => {
                     this.event.posterId = res.data.id;
                     this.insertEvent();
                 });
             } else {
+                this.event.posterId = null
                 this.insertEvent();
             }
         },
-        insertEvent() {
-            if (this.event.poster)
-                this.event.posterId = this.event.poster.id;
-            /*const fd = new FormData();
-            fd.append("event", JSON.stringify(this.event))*/
-
+        async insertEvent() {
             this.eventService.addEvent(this.event).then((response) => {
                 if (response.data !== null) {
                     this.emitter.emit('eventCreated', true);
@@ -432,37 +415,55 @@ export default {
             })
         },
         uploadPosterImageKk(event) {
-            const file = event.files[0];
-            this.posterImgKk = file;
-            imageResizeCompress
-                .fromBlob(file, 90, 720, "auto", "jpeg")
-                .then((res) => {
-                    imageResizeCompress.blobToURL(res).then((resp) => {
-                        this.posterImageKk = resp;
-                    });
-                });
+            const fd = new FormData()
+            fd.append("files[]", event.files[0])
+            this.fileService.uploadFile(fd).then(res => {
+                if (res.data) {
+                    this.poster.image_kk_file = res.data[0];
+                    this.poster.imageKkUrl = smartEnuApi + fileRoute + this.poster.image_kk_file.filepath
+                    this.poster.imageKk = this.poster.image_kk_file.filepath
+
+                }
+            }).catch(error => {
+                this.$toast.add({severity: "error", summary: error, life: 3000});
+            })
         },
         uploadPosterImageRu(event) {
-            const file = event.files[0];
-            this.posterImgRu = file;
-            imageResizeCompress
-                .fromBlob(file, 90, 720, "auto", "jpeg")
-                .then((res) => {
-                    imageResizeCompress.blobToURL(res).then((resp) => {
-                        this.posterImageRu = resp;
-                    });
-                });
+            const fd = new FormData()
+            fd.append("files[]", event.files[0])
+            this.fileService.uploadFile(fd).then(res => {
+                if (res.data) {
+                    this.poster.image_ru_file = res.data[0];
+                    this.poster.imageRuUrl = smartEnuApi + fileRoute + this.poster.image_ru_file.filepath
+                    this.poster.imageRu = this.poster.image_ru_file.filepath
+                }
+            }).catch(error => {
+                this.$toast.add({severity: "error", summary: error, life: 3000});
+            })
         },
         uploadPosterImageEn(event) {
-            const file = event.files[0];
-            this.posterImgEn = file;
-            imageResizeCompress
-                .fromBlob(file, 90, 720, "auto", "jpeg")
-                .then((res) => {
-                    imageResizeCompress.blobToURL(res).then((resp) => {
-                        this.posterImageEn = resp;
-                    });
-                });
+            const fd = new FormData()
+            fd.append("files[]", event.files[0])
+            this.fileService.uploadFile(fd).then(res => {
+                if (res.data) {
+                    this.poster.image_en_file = res.data[0];
+                    this.poster.imageEnUrl = smartEnuApi + fileRoute + this.poster.image_en_file.filepath
+                    this.poster.imageEn = this.poster.image_en_file.filepath
+                }
+            }).catch(error => {
+                this.$toast.add({severity: "error", summary: error, life: 3000});
+            })
+        },
+        onChangePoster() {
+            if (!this.event.isPoster) {
+                this.event.posterId = null
+                this.poster = {
+                    link: "",
+                    imageKk: null,
+                    imageRu: null,
+                    imageEn: null,
+                }
+            }
         },
         getEventTypes() {
             this.eventService.getEventTypes().then(res => {
@@ -539,13 +540,13 @@ export default {
             }
         },
         validPosterImages() {
-            if (!this.poster.imageKk && !this.posterImgKk) {
+            if (!this.poster.imageKk) {
                 this.formValid.push(this.$t("smartenu.posterImageKkInvalid"));
             }
-            if (!this.poster.imageRu && !this.posterImgRu) {
+            if (!this.poster.imageRu) {
                 this.formValid.push(this.$t("smartenu.posterImageRuInvalid"));
             }
-            if (!this.poster.imageEn && !this.posterImgEn) {
+            if (!this.poster.imageEn) {
                 this.formValid.push(this.$t("smartenu.posterImageEnInvalid"));
             }
         },
