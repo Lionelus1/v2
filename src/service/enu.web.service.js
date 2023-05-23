@@ -113,6 +113,10 @@ export class EnuWebService {
         return api.post(`/web/swapPageBlockPosition`, data,  {headers: getHeader()});
     }
 
+    orderMenuList(data){
+        return api.post(`/web/swapMenuPosition`, data,  {headers: getHeader()});
+    }
+
     getBlockParamsByBlockId(id) {
         return api.post(`/web/getBlockParamValuesByBlockID`, {block_id: id}, {headers: getHeader()});
     }

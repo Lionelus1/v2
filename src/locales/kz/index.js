@@ -803,7 +803,7 @@ export default {
         selectMainPage: "Парақша таңдау",
         giveCustomLink: "Сыртқы сілтеме беру",
         createNewPageButton: "Жаңа парақша құру",
-        menuOrderLabel: "Мәзір тәртібі",
+        menuOrderLabel: "Мәзірдің орналасу реті",
         customLinkInvalid: "Сілтеме толтырылмаған",
         createdMenuSuccessMsg: "Мәзір сәтті құрылды",
         createdPageSuccessMsg: "Парақша сәтті құрылды",
@@ -869,7 +869,11 @@ export default {
         cardListExample: 'Қарапайым карт тізімінің мысалы',
         gridCardListExample: 'Қарапайым грид карт тізімінің мысалы',
         exampleTitle: 'Тақырып',
-        exampleContent: 'Мысалдың мазмұны'
+        exampleContent: 'Мысалдың мазмұны',
+        mainMenu:'Негізгі мәзір',
+        headerMenu: 'Тақырып мәзірі',
+        middleMenu: 'Ортаңғы мәзір',
+        usefulMenu: 'Пайдалы сілтеме'
 
     },
     //Student locale
