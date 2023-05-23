@@ -1,9 +1,9 @@
 <template>
     <div class="mb-4">
-        <label><b>Галерея</b></label>
+        <label><b>{{ $t('common.gallery') }}</b></label>
         <!--      <CustomFileUpload v-model="galleryFiles" @upload="upload" :accept="'image/*'" :multiple="true" :is-gallery="true"/>-->
         <div class="my-2">
-            <Button :label="'Выбрать файл'" icon="pi pi-upload" @click="upload"/>
+            <Button :label="$t('hdfs.chooseFile')" icon="pi pi-upload" @click="upload"/>
         </div>
         <div v-if="galleryFiles" class="my-3 mr-2">
           <span v-for="(item, index) of galleryFiles" :key="index">
@@ -14,30 +14,30 @@
           </span>
         </div>
 
-        <Dialog header="Галерея" v-model:visible="modalAfterUpload" :style="{width: '60vw'}"
+        <Dialog :header="$t('common.gallery')" v-model:visible="modalAfterUpload" :style="{width: '60vw'}"
                 :modal="true" class="p-fluid">
             <div class="image-item" v-for="(item, index) of detailInfo" :key="index">
                 <div class="field">
-                    <label>Картинка</label>
+                    <label>{{ $t('common.image') }}</label>
                     <div>
                         <img :src="item.url" alt="">
                     </div>
                 </div>
                 <div class="field">
-                    <label>Автор</label>
+                    <label>{{ $t('common.createdBy') }}</label>
                     <InputText v-model="item.author"/>
                 </div>
                 <div class="grid">
                     <div class="field col">
-                        <label>{{ $t('common.nameInQazaq') }} <small id="nameQzHelp"></small></label>
+                        <label>{{ $t('common.nameInQazaq') }} <small>({{$t('web.optionalField')}})</small></label>
                         <InputText v-model="item.img_desc_kz" />
                     </div>
                     <div class="field col">
-                        <label>{{ $t('common.nameInRussian') }}</label>
+                        <label>{{ $t('common.nameInRussian') }} <small>({{$t('web.optionalField')}})</small></label>
                         <InputText v-model="item.img_desc_ru"/>
                     </div>
                     <div class="field col">
-                        <label>{{ $t('common.nameInEnglish') }}</label>
+                        <label>{{ $t('common.nameInEnglish') }} <small>({{$t('web.optionalField')}})</small></label>
                         <InputText v-model="item.img_desc_en"/>
                     </div>
                 </div>

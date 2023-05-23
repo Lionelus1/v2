@@ -303,7 +303,8 @@ export default {
         newWindowLink: 'Жаңа терезе',
         dialogWindowsPdf: 'Диалогтық терезеде (PDF үшін)',
         pdfTypeError: 'Файл түрі PDF форматына сәйкес келмейді',
-        eventType: 'Іс-шара түрі'
+        eventType: 'Іс-шара түрі',
+        gallery: 'Галерея'
     },
     bank: {
         title: "Банктер",

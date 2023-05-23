@@ -304,7 +304,8 @@ export default {
         newWindowLink: 'New window',
         dialogWindowsPdf: 'In dialog box (for PDF)',
         pdfTypeError: 'File type does not match PDF',
-        eventType: 'Event type'
+        eventType: 'Event type',
+        gallery: 'Gallery'
     },
     bank: {
         title: "Banks",
