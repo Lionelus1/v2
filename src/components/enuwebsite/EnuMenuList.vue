@@ -235,7 +235,8 @@ export default {
 
                 let data = {
                     drag_id: current.menu_id,
-                    drop_id: prev.menu_id
+                    drop_id: prev.menu_id,
+                    position: "up"
                 };
                 this.enuService.orderMenuList(data)
                     .then(res => {
@@ -255,7 +256,8 @@ export default {
                 let next = this.menus[index + 1]
                 let data = {
                     drag_id: current.menu_id,
-                    drop_id: next.menu_id
+                    drop_id: next.menu_id,
+                    position: "down"
                 };
                 this.enuService.orderMenuList(data)
                     .then(res => {
