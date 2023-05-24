@@ -64,6 +64,10 @@
                 <label class="ml-2" for="is_main">{{ $t('common.yes') }}</label>
             </div>
         </div>
+        <div class="field">
+            <label>{{ $t('web.menuOrderLabel') }}</label>
+            <InputNumber v-model="formData.order_id" name="order_id"/>
+        </div>
         <div class="field" v-if="formData.is_usefull_link">
             <label>{{ $t('web.usefulLinkDescKZ') }}</label>
             <Textarea :placeholder="$t('common.enter')" class="pt-1" type="text" v-model="formData.description_kz" maxlength="80"></Textarea>
@@ -127,6 +131,7 @@ export default {
                 parent_id: this.menu_id ? this.menu_id : null,
                 page_id: null,
                 link: null,
+                order_id:null,
                 is_header: false,
                 is_middle: false,
                 icon: "",
@@ -246,6 +251,8 @@ export default {
             const fd = new FormData();
             fd.append('menu', JSON.stringify(this.formData))
             if (this.bgImg) fd.append('background_image', this.bgImg[0]);
+            let orderID = parseInt(this.order_id)
+            if(this.order_id) fd.append('order_id', orderID)
 
             this.enuService.editMenu(fd).then(res => {
                 if (res.data.is_success) {

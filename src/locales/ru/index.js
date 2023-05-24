@@ -793,7 +793,7 @@ export default {
         selectMainPage: "Выберите страницу",
         giveCustomLink: "Создать внешнюю ссылку",
         createNewPageButton: "Создать новую страницу",
-        menuOrderLabel: "Заказ меню",
+        menuOrderLabel: "Порядок расположения в меню",
         customLinkInvalid: "Ссылка не заполнена",
         createdMenuSuccessMsg: "Меню успешно создано",
         createdPageSuccessMsg: "Страница успешно создана",
@@ -859,7 +859,11 @@ export default {
         cardListExample: 'Пример простого списка карт',
         gridCardListExample: 'Пример простого списка карт сетки',
         exampleTitle: 'Тема',
-        exampleContent: 'Пример содержания'
+        exampleContent: 'Пример содержания',
+        mainMenu:'Главное меню',
+        headerMenu: 'Меню заголовка',
+        middleMenu: 'Среднее меню',
+        usefulMenu: 'Полезное меню'
     },
 
     student: {
