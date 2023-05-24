@@ -864,6 +864,7 @@ export default {
     headerMenu: "Header menu",
     middleMenu: "Middle menu",
     usefulMenu: "Useful menu",
+    onMiddle: 'Middle menu'
   },
   //Student locale
   student: {

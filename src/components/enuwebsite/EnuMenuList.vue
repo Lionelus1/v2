@@ -8,9 +8,8 @@
             <TabView>
                 <TabPanel :header="$t('web.properties')">
                     <TreeTable class="p-treetable-sm" :value="menus" :lazy="true" :loading="loading" @nodeExpand="onExpand"
-                        scrollHeight="flex" responsiveLayout="scroll" :resizableColumns="true"
-                        columnResizeMode="fit" :paginator="true" :rows="10" :total-records="total" @page="onPage($event)"
-                        >
+                        scrollHeight="flex" responsiveLayout="scroll" :resizableColumns="true" columnResizeMode="fit"
+                        :paginator="true" :rows="10" :total-records="total" @page="onPage($event)">
                         <template #header>
                             <div class="text-left"></div>
                             <div class="text-right">
@@ -24,7 +23,8 @@
                                 <OverlayPanel ref="global-filter">
                                     <div v-for="text in menu_radio_options" :key="text" class="flex align-items-center">
                                         <div class="field-radiobutton">
-                                            <RadioButton v-model="selectedMenuType" :value="text.value" />
+                                            <RadioButton v-model="selectedMenuType" :value="text.value"
+                                                @change="menuTypeChange" />
                                             <label :for="text" class="ml-2">{{ text.text }}</label>
                                         </div>
                                     </div>
@@ -37,7 +37,7 @@
                                         </div>
                                         <div class="field">
                                             <Button icon="pi pi-search" :label="$t('common.search')" class="ml-1"
-                                                @click="getMenus(null)" />
+                                                @click="orderColumn(null)" />
                                         </div>
                                     </div>
                                 </OverlayPanel>
@@ -73,17 +73,22 @@
                                 <a v-if="node.link" :href="node.link" target="_blank">{{ node.link }}</a>
                             </template>
                         </Column>
-                       
-                        <Column v-if="filter.menu_type.is_usefull_link || filter.menu_type.is_header || filter.menu_type.is_middle" field="order" :header="$t('web.menuOrder')">
-                            <template #body="{ node }">
-                                <span class="p-buttonset">
-                                    <Button class="p-button-outlined" icon="pi pi-angle-up" @click="reOrderMenu(node, true)" />
-                                    <Button class="p-button-outlined" icon="pi pi-angle-down" @click="reOrderMenu(node, false)" />
-                                </span>
-                               
-                            </template>
-                        </Column>
-                        
+                        <div v-if="showOrderColumn">
+                            <Column
+                                v-if="filter.menu_type.is_usefull_link || filter.menu_type.is_header || filter.menu_type.is_middle"
+                                field="order" :header="$t('web.menuOrder')">
+                                <template #body="{ node }">
+                                    <span class="p-buttonset">
+                                        <Button class="p-button-outlined" icon="pi pi-angle-up"
+                                            @click="reOrderMenu(node, true)" />
+                                        <Button class="p-button-outlined" icon="pi pi-angle-down"
+                                            @click="reOrderMenu(node, false)" />
+                                    </span>
+
+                                </template>
+                            </Column>
+                        </div>
+
                         <Column field="create_date" :header="$t('faq.createDate')" :sortable="true">
                             <template #body="{ node }">
                                 {{ formatDate(node.create_date) }}
@@ -141,6 +146,7 @@ export default {
             tableName: null,
             parentNode: null,
             selectedMenuType: null,
+            showOrderColumn: false,
             menuList: ref({}),
             menu_radio_options: [
                 {
@@ -164,10 +170,6 @@ export default {
             filter: {
                 search_text: null,
                 menu_type: {
-                    is_main: null,
-                    is_header: null,
-                    is_middle: null,
-                    is_usefull_link: null
                 }
             },
             lazyParams: {
@@ -178,35 +180,6 @@ export default {
             parentId: null,
             isGlobalFilter: false,
         };
-    },
-    watch: {
-        selectedMenuType(menutype) {
-
-            if (menutype === "is_main") {
-                this.filter.menu_type.is_main = true
-                this.filter.menu_type.is_header = null
-                this.filter.menu_type.is_middle = null
-                this.filter.menu_type.is_usefull_link = null
-            }
-            if (menutype === "is_header") {
-                this.filter.menu_type.is_main = null
-                this.filter.menu_type.is_header = true
-                this.filter.menu_type.is_middle = null
-                this.filter.menu_type.is_usefull_link = null
-            }
-            if (menutype === "is_middle") {
-                this.filter.menu_type.is_main = null
-                this.filter.menu_type.is_header = null
-                this.filter.menu_type.is_middle = true
-                this.filter.menu_type.is_usefull_link = null
-            }
-            if (menutype === "is_usefull_link") {
-                this.filter.menu_type.is_main = null
-                this.filter.menu_type.is_header = null
-                this.filter.menu_type.is_middle = null
-                this.filter.menu_type.is_usefull_link = true
-            }
-        }
     },
     created() {
         this.getMenus();
@@ -278,6 +251,7 @@ export default {
             this.getMenus(node)
         },
         getMenus(parentData) {
+
             this.loading = true;
             if (parentData == null) {
                 this.lazyParams.parent_id = null;
@@ -293,7 +267,7 @@ export default {
                         this.menus.map(e => {
                             if (e.path) {
                                 e.url = `${webEnuDomain}/${this.$i18n.locale}/page/${e.path.replaceAll("/", "%2F")}`
-                                console.log(e.url)
+
                             }
                         })
                     }
@@ -303,7 +277,7 @@ export default {
                         parentData.children.map(e => {
                             if (e.path) {
                                 e.url = `${webEnuDomain}/${this.$i18n.locale}/page/${e.path.replaceAll("/", "%2F")}`
-                                console.log(e.url)
+
                             }
                         })
                     }
@@ -317,6 +291,35 @@ export default {
                     life: 3000,
                 });
             });
+        },
+        orderColumn() {
+            if (this.selectedMenuType === "is_main") {
+                this.filter.menu_type.is_main = true
+                this.filter.menu_type.is_header = null
+                this.filter.menu_type.is_middle = null
+                this.filter.menu_type.is_usefull_link = null
+            }
+            if (this.selectedMenuType === "is_header") {
+                this.filter.menu_type.is_main = null
+                this.filter.menu_type.is_header = true
+                this.filter.menu_type.is_middle = null
+                this.filter.menu_type.is_usefull_link = null
+            }
+            if (this.selectedMenuType === "is_middle") {
+                this.filter.menu_type.is_main = null
+                this.filter.menu_type.is_header = null
+                this.filter.menu_type.is_middle = true
+                this.filter.menu_type.is_usefull_link = null
+            }
+            if (this.selectedMenuType === "is_usefull_link") {
+                this.filter.menu_type.is_main = null
+                this.filter.menu_type.is_header = null
+                this.filter.menu_type.is_middle = null
+                this.filter.menu_type.is_usefull_link = true
+            }
+
+            this.getMenus();
+            this.showOrderColumn = true;
         },
         getPages() {
             this.pages = [];
@@ -399,6 +402,10 @@ export default {
             this.addMenuVisible = false;
             this.selectedMenu = null;
         },
+        menuTypeChange() {
+            //this.showOrderColumn = this.selectedMenuType === 'is_useful_link'
+
+        }
 
     }
 }

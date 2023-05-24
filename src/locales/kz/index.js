@@ -873,7 +873,8 @@ export default {
         mainMenu:'Негізгі мәзір',
         headerMenu: 'Тақырып мәзірі',
         middleMenu: 'Ортаңғы мәзір',
-        usefulMenu: 'Пайдалы сілтеме'
+        usefulMenu: 'Пайдалы сілтеме',
+        onMiddle: 'Ортаңғы мәзір'
 
     },
     //Student locale
