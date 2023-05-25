@@ -1,6 +1,6 @@
 <template>
-    <text v-if="message" class="optionalText">{{ message }}</text>
-    <text class="optionalText" v-else>No message provided.</text>
+    <small v-if="message" class="optionalText">{{ "("+message+")" }}</small>
+    <small class="optionalText" v-else>No message provided.</small>
     
   </template>
   
@@ -19,7 +19,6 @@
 <style scoped>
 .optionalText{
     text-transform: lowercase;
-    color:#3498DB;
     padding:2px;
     font-size: 0.75rem;
     font-weight: 700;

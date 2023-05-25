@@ -861,7 +861,8 @@ export default {
         mainMenu:'Главное меню',
         headerMenu: 'Меню заголовка',
         middleMenu: 'Среднее меню',
-        usefulMenu: 'Полезное меню'
+        usefulMenu: 'Полезное меню',
+        onMiddle: 'Среднее меню'
     },
 
     student: {
