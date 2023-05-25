@@ -387,6 +387,11 @@ export default {
         },
         onTypeSelect(event) {
             this.event.event_type_id = event.value.id
+          if (event.code !== this.isEvent) {
+            this.event.eventLink = null;
+            this.event.eventLocation = null;
+            this.selectedMainCategories = null
+          }
         },
         uploadMainImage(event) {
             const fd = new FormData()

@@ -178,9 +178,11 @@ const save = () => {
 
     if (uploadedGalleryFiles.value) {
         uploadedGalleryFiles.value.forEach(item => {
+          formData.value.files = formData.value.files || [];
             formData.value.files.push({file_id: item.id, file: item, is_gallery: item.is_gallery});
         })
     }
+  console.log(uploadedGalleryFiles.value)
 
     enuService.editPage(formData.value).then(res => {
         if (res.data !== null) {
@@ -303,7 +305,11 @@ const onAfterUpload = (item) => {
 }
 
 const afterUpload = (files) => {
+  if (uploadedGalleryFiles.value) {
+    uploadedGalleryFiles.value = uploadedGalleryFiles.value.concat(files)
+  } else {
     uploadedGalleryFiles.value = files;
+  }
 }
 
 const onGalleryRemove = (event) => {

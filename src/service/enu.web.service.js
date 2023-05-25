@@ -150,6 +150,13 @@ export class EnuWebService {
         return api.get("/web/getBlockListViewTypes", {headers: getHeader()});
     }
 
+    getBlockListFiles(id) {
+        return api.post(`/web/getBlockListFiles`, {id: id}, {headers: getHeader()});
+    }
+
+    deleteBlockListFile(id) {
+        return api.post(`/web/deleteBlockListFile`, {id: id}, {headers: getHeader()});
+    }
 
     navigateToPlugin(componentName) {
         switch (componentName) {
