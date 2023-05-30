@@ -508,7 +508,7 @@ export default {
       return blob;
     },
     viewSignatures() {
-      this.$router.push({name: 'DocSignaturesInfo', params: {uuid: this.report.doc_id}})
+      this.$router.push({name: 'DocSignaturesInfo', params: {uuid: this.report.doc_id, isInsideSidebar: true}})
     },
     openRejectPlan() {
       this.showRejectPlan = true;

@@ -89,7 +89,8 @@
 </template>
     </Dialog>
     <Dialog :header="$t('hdfs.uploadTitle')" v-model:visible="dialogOpenState.fileUpload" :style="{width: '60vw'}" :modal="true"> 
-      <PostFile :approveInfo="true" :fileUpload="fileUpload" :modelValue="file" directory="normativeDocs" :parentID="folder.id" @updated="fileUpdated"></PostFile>
+      <PostFile :approveInfo="true" :fileUpload="fileUpload" :modelValue="file" directory="normativeDocs" 
+        :parentID="folder.id" @updated="fileUpdated" accept=".doc,.docx,.pdf,.zip,.rar,.7z,.gz"></PostFile>
     </Dialog>
 
     <PostFolder style="display:none" ref="postFolder" :modelValue="folder" @updated="folderMoved"></PostFolder>
@@ -174,7 +175,7 @@ export default {
                 approvedBy: null,
                 approveDate : null,
                 author: null,
-                docType: 6,
+                docType: Enum.DocType.NormativeDoc,
             },
             totalRecords: 10,
             dialogOpenState: {

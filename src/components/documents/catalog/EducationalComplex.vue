@@ -227,7 +227,7 @@
     </Dialog>
     <Sidebar v-model:visible="dialogOpenState.signerInfo" position="right" class="p-sidebar-lg"
              style="overflow-y: scroll" @hide="getFolders(parentNode)">
-      <DocSignaturesInfo :docIdParam="file.key" @signed="signed"></DocSignaturesInfo>
+      <DocSignaturesInfo :docIdParam="file.key" @signed="signed" :isInsideSidebar="true"></DocSignaturesInfo>
     </Sidebar>
     <Sidebar v-model:visible="dialogOpenState.docInfo" position="right" class="p-sidebar-lg" style="overflow-y: scroll">
       <DocInfo :ID="file.id"></DocInfo>
@@ -286,7 +286,7 @@ import DocInfo from "../DocInfo.vue"
 import {smartEnuApi, getHeader, findRole} from "@/config/config";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo";
 import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers";
-import DocState from "@/enum/docstates/index"
+import Enum from "@/enum/docstates/index"
 import {FilterMatchMode} from "primevue/api";
 
 export default {
@@ -305,7 +305,7 @@ export default {
         userFilter: true,
       },
 
-      DocState: DocState,
+      Enum: Enum,
       revisionComment: "",
       approving: false,
       loginedUser: null,
@@ -340,7 +340,7 @@ export default {
         parentId: null,
         depType: 2,
         departmentID: null,
-        docType: 2,
+        docType: Enum.DocType.EduComplex,
         lang: null,
         params: [
           {
@@ -793,7 +793,7 @@ export default {
       }
       this.approving = true
       axios.post(smartEnuApi + url, req, {headers: getHeader()}).then(() => {
-        this.file.stateID = this.DocState.REVISION.ID;
+        this.file.stateID = this.Enum.REVISION.ID;
         this.file.statekz = "түзетуге";
         this.file.stateru = "на доработку";
         this.file.stateen = "revision";

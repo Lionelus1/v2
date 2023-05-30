@@ -2,7 +2,7 @@
     <div>
     <ProgressBar v-if="uploading" mode="indeterminate" style="height: .5em" />
       <div class="p-fluid">
-         <div class="field">
+        <div class="field">
           <label for="language" >{{$t('common.doclang')}}</label>
           <SelectButton v-model="file.lang" optionLabel="name" :options="languages" dataKey="value" class="mb-3">
             <template #option="slotProps">
@@ -19,6 +19,7 @@
         <div class="field">
           <label for="filename" >{{$t('common.nameInRussian')}}</label>
           <InputText id="fodernameru" v-model="file.nameru" type="text" />
+          <small class="p-error" v-if="validation.nameru">{{ $t("common.requiredField") }}</small>
         </div>
         <div class="field">
           <label for="filename" >{{$t('common.nameInEnglish')}}</label>
@@ -68,15 +69,20 @@
             <small class="p-error" v-if="validation.approveDate">{{ $t("common.requiredField") }}</small>
           </div>
         </div>
-      <div v-if="showUploader" class="field">
-        <label>{{$t('common.doc')}}</label>
-        <FileUpload  :showUploadButton="false" :showCancelButton="true" ref="ufile" :multiple="false"  class= "mt-1"  fileLimit="1" :accept="accept">
-          <template #empty>
-            <p>{{$t('hdfs.dragMsg')}}</p>
-          </template>
-        </FileUpload>
-        <small class="p-error" v-if="validation.file">{{ $t("hdfs.chooseFile") }}</small>
-      </div>
+        <div v-if="showUploader" class="field">
+          <label>{{$t('common.doc')}}</label>
+          <FileUpload  :showUploadButton="false" :showCancelButton="true" ref="ufile" :multiple="false"  class= "mt-1"  fileLimit="1" :accept="accept">
+            <template #empty>
+              <p>{{$t('hdfs.dragMsg')}}</p>
+            </template>
+          </FileUpload>
+          <small class="p-error" v-if="validation.file">{{ $t("hdfs.chooseFile") }}</small>
+        </div>
+        <div v-if="showCatalog" class="field">
+          <label>{{$t('common.catalog')}}</label>
+          <Dropdown v-model="catalog" :options="catalogs" :optionLabel='"name" + $i18n.locale'></Dropdown>
+          <small class="p-error" v-if="validation.catalog">{{ $t("common.message.catalogNotFilled") }}</small>
+        </div>
       </div>
       <div  style="text-align:right">
         <Button v-if="file.id===null" :label="$t('hdfs.uploadBtn')" icon="pi pi-upload" @click="updateFile" />
@@ -87,16 +93,19 @@
 </template>
 <script>
 import axios from "axios";
-import DepartmentList from "../smartenu/DepartmentList.vue"
+import Files from "@/components/documents/Files.vue"
 
 import {smartEnuApi, getHeader, getFileHeader, fileRoute} from "@/config/config";
-import Files from "@/components/documents/Files.vue"
+import DepartmentList from "../smartenu/DepartmentList.vue"
+import Enum from "@/enum/docstates/index";
 
 export default {
     components: {DepartmentList,Files},
     data() {
       return {
         file: this.modelValue,
+        catalogs: null,
+        catalog: null,
         state: this.visible,
         selectedDepartment: null,
         uploading: false,
@@ -114,6 +123,7 @@ export default {
             approvedBy: false,
             approveDate: false,
             author: false,
+            catalog: false,
         }
       }
     },
@@ -122,6 +132,7 @@ export default {
       directory: null,
       parentID: null,
       fileUpload: Boolean,
+      showCatalog: Boolean,
       approveInfo: {
         default: false
       },
@@ -138,7 +149,7 @@ export default {
       updateValue,
     };
   },
-    methods: {
+  methods: {
     notValid() {
       this.validation.namekz = this.file.namekz === null || this.file.namekz === ''
       this.validation.nameru = this.file.nameru === null || this.file.nameru === ''
@@ -160,6 +171,9 @@ export default {
       }
       if (this.showUploader) {
         this.validation.file = this.$refs.ufile.files == undefined || this.$refs.ufile.files.length <=0
+      }
+      if (this.showCatalog) {
+        this.validation.catalog = this.catalog === null || this.catalog === undefined || this.catalogs === null;
       }
       //var result = true;
       var validation = this.validation;
@@ -185,6 +199,22 @@ export default {
         if (this.notValid()) {
             return;
         }
+
+        let locFolderId = this.parentID
+        if (this.catalogs !== null && this.catalog !== null) {
+          locFolderId = this.catalog.id
+        }
+
+        if (this.directory === 'normativeDocs' && (this.parentID === null || this.parentID === undefined || 
+          locFolderId === null || locFolderId === undefined)) {
+          this.$toast.add({
+            severity: 'error', 
+            detail: this.$t('common.message.saveErrorToUpdate'), 
+            life: 3000
+          });
+          return;
+        }
+
         this.uploading = true;
         const fd = new FormData();
         var fcount = 0
@@ -196,7 +226,7 @@ export default {
         //var fcount = this.file.id !== null ? 0 : this.$refs.ufile.files.length
           fcount = this.$refs.ufile.files.length
         }
-        fd.append('info', JSON.stringify({directory: this.directory, count: fcount, folderID: this.parentID, fileInfo: this.file}));
+        fd.append('info', JSON.stringify({directory: this.directory, count: fcount, folderID: locFolderId, fileInfo: this.file}));
         axios.post(smartEnuApi + "/doc/updateFile", fd, {
           headers: getFileHeader()
         })
@@ -220,19 +250,40 @@ export default {
           this.uploading = false;
           this.$toast.add({severity: 'error', summary: 'Error', detail: error.message, life: 3000});
         });
-      },
-      deleteFile(hide) {
-        let url = "/doc/deleteFile";
-        axios.post(smartEnuApi+url, {id: this.folder.id, hide: hide}, { headers: getHeader() })
-        .then(response=>{
-            this.folder.key = response.data.id;
-            this.showMessage('success', this.$t('common.message.title.docCreation'),this.$t('common.message.catSuccesCreated'));
-            this.$emit("updated", this.folder);
-        },
-        error =>{
-          console.log(error);
-        });
     },
-  }
+    deleteFile(hide) {
+      let url = "/doc/deleteFile";
+      axios.post(smartEnuApi+url, {id: this.folder.id, hide: hide}, { headers: getHeader() })
+      .then(response=>{
+          this.folder.key = response.data.id;
+          this.showMessage('success', this.$t('common.message.title.docCreation'),this.$t('common.message.catSuccesCreated'));
+          this.$emit("updated", this.folder);
+      },
+      error =>{
+        console.log(error);
+      })
+    },
+    getReadyDocCatalog() {
+      axios.post(smartEnuApi + '/doc/getFoldersByType', {
+        type: Enum.FolderType.FilledDoc,
+        showDocs: false,
+      }, {
+        headers: getHeader()
+      }).then(res => {
+        this.catalogs = res.data
+      }).catch(err => {
+        if (err.response.status == 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          console.log(err)
+        }
+      })
+    },
+  },
+  mounted() {
+    if (this.file.docType === Enum.DocType.Contract && this.file.sourceType === Enum.DocSourceType.FilledDoc) {
+      this.getReadyDocCatalog()
+    }
+  },
 }
 </script>

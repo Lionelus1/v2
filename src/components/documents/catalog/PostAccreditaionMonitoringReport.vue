@@ -227,7 +227,7 @@
     </Dialog>
     <Sidebar v-model:visible="dialogOpenState.signerInfo" position="right" class="p-sidebar-lg"
              style="overflow-y: scroll" @hide="getFolders(parentNode)">
-      <DocSignaturesInfo :docIdParam="file.key" @signed="signed"></DocSignaturesInfo>
+      <DocSignaturesInfo :docIdParam="file.key" @signed="signed" :isInsideSidebar="true"></DocSignaturesInfo>
     </Sidebar>
     <Sidebar v-model:visible="dialogOpenState.docInfo" position="right" class="p-sidebar-lg" style="overflow-y: scroll">
       <DocInfo :ID="file.id"></DocInfo>

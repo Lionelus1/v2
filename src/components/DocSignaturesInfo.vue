@@ -1,4 +1,10 @@
 <template>
+  <Toast v-if="!isInsideSidebar"/>
+  <div v-if="!isInsideSidebar" class="layout-topbar no-print">
+    <div class="layout-topbar-icons">
+        <LanguageDropdown/>
+    </div>
+  </div>
   <div>
     <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
     <BlockUI :blocked="loading" :fullScreen="true"></BlockUI>
@@ -9,7 +15,7 @@
   </div>
   <div v-if="!loading">
     <DocInfo :document="docInfo" v-if="!incorrect" :docID="doc_id"/>
-    <TabView v-model:activeIndex="active" @tab-change="showFile">
+    <TabView v-model:activeIndex="active" @tab-change="tabChanged">
       <TabPanel v-bind:header="$t('ncasigner.signatureListTitle')">
         <div class="col-12" v-if="isShow">
           <Button v-if="signatures && signatures.length > 0 || approvalStages && showSign()" :label="$t('common.downloadSignaturesPdf')" icon="pi pi-download" @click="downloadSignatures"
@@ -28,15 +34,14 @@
 
         </div>
       </TabPanel>
-      <TabPanel v-if="docInfo.docHistory.stateId==2 ||docInfo.docHistory.stateId==6" :header="$t('ncasigner.sign')"
-                :disabled="isSignShow">
+      <TabPanel v-if="docInfo && (docInfo.docHistory.stateId==2 ||docInfo.docHistory.stateId==6)" :header="$t('ncasigner.sign')">
         <div class="mt-2">
           <Panel>
             <template #header>
               <InlineMessage severity="info">{{ $t('ncasigner.noteMark') }}</InlineMessage>
             </template>
             <div class="flex justify-content-center">
-              <Button icon="pi pi-user-edit"
+              <Button icon="pi pi-user-edit" :disabled="hideDocSign"
                       class="p-button-primary md:col-5" @click="sign" :label="$t('ncasigner.sign')" :loading="signing"/>
             </div>
           </Panel>
@@ -54,6 +59,17 @@
           </div>
         </div>
       </TabPanel>
+      <TabPanel v-if="docInfo && docInfo.docHistory.stateId === Enum.INAPPROVAL.ID && (docInfo.sourceType === Enum.DocSourceType.FilledDoc ||
+        (docInfo.docType && docInfo.docType === Enum.DocType.Contract))" :header="$t('common.revision')" :disabled="hideDocRevision">
+        <div class="card">
+          <label> {{ this.$t('common.comment') }} </label>
+          <InputText v-model="revisionComment" style="width: 100%; margin-bottom: 2rem;"></InputText>
+          <div class="flex justify-content-center">
+              <Button icon="fa-regular fa-circle-xmark"
+                      class="p-button-danger md:col-3" @click="revision" :label="$t('common.revision')" :loading="loading"/>
+          </div>
+        </div>
+      </TabPanel>
     </TabView>
   </div>
 </template>
@@ -61,6 +77,7 @@
 <script>
 import SignatureQrPdf from "@/components/ncasigner/SignatureQrPdf";
 import {runNCaLayer, makeTimestampForSignature} from "@/helpers/SignDocFunctions"
+import LanguageDropdown from "@/LanguageDropdown";
 
 import axios from "axios";
 import {getHeader, smartEnuApi, socketApi, b64toBlob, findRole} from "@/config/config";
@@ -71,7 +88,7 @@ import Enum from "@/enum/docstates/index";
 
 export default {
   name: "DocSignaturesInfo",
-  components: {SignatureQrPdf, DocInfo, QrcodeVue},
+  components: {SignatureQrPdf, DocInfo, QrcodeVue, LanguageDropdown},
   props: {
     docIdParam: {
       type: String,
@@ -93,6 +110,10 @@ export default {
     tspParam: {
       type: Boolean,
       default: false
+    },
+    isInsideSidebar: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -104,7 +125,7 @@ export default {
       isTspRequired: Boolean,
       signerIin: null,
       docInfo: null,
-      loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID,
+      loginedUserId: JSON.parse(localStorage.getItem("loginedUser")) ? JSON.parse(localStorage.getItem("loginedUser")).userID : null,
       loginedUserForMgovws: JSON.parse(localStorage.getItem("loginedUser")),
       isShow: false,
       showAllSigns: false,
@@ -113,10 +134,13 @@ export default {
       file: null,
       files: [],
       active: 0,
-      isSignShow: false,
+      hideDocSign: true,
       isIndivid: false,
       mgovSignUri: null,
-      enum: Enum
+      Enum: Enum,
+
+      hideDocRevision: true,
+      revisionComment: null,
     }
   },
   created() {
@@ -124,8 +148,10 @@ export default {
       this.doc_id = this.docIdParam
     }
     const tokenData = JSON.parse(window.localStorage.getItem("authUser"));
-    this.mgovSignUri = 'mobileSign:'+ smartEnuApi +'/mobileSignParams?docUuid=' + this.doc_id +
-        "&token=" + tokenData.access_token
+    if (tokenData !== null) {
+      this.mgovSignUri = 'mobileSign:'+ smartEnuApi +'/mobileSignParams?docUuid=' + this.doc_id +
+          "&token=" + tokenData.access_token
+    }
     this.isTspRequired = this.tspParam
     this.signerIin = this.signerIinParam
     this.showAllSigns = this.showAllSignsParam
@@ -163,6 +189,18 @@ export default {
     showMessage(msgtype, message, content) {
       this.$toast.add({severity: msgtype, summary: message, detail: content, life: 3000});
     },
+    tabChanged() {
+      if (this.active == 1 && !this.file) { // showFileTab
+        axios.post(smartEnuApi + "/doc/download", {
+          doc_uuid: this.doc_id
+        }, {
+          headers: getHeader()
+        }).then(response => {
+          this.file = this.b64toBlob(response.data)
+        })
+      } else if (this.active == 2 && this.loginedUserId === null) {
+        this.$store.dispatch("solveAttemptedUrl", this.$route)
+        this.$router.push({ path: '/login' });
     showFile() {
       console.log(this.docInfo)
         if (this.active == 1 && this.files.length === 0){
@@ -214,9 +252,9 @@ export default {
               this.docInfo.docHistory.setterId === this.loginedUserId || this.docInfo.creatorID === this.loginedUserId;
           }
 
-          this.isSignShow = this.signatures && this.signatures.some(x => x.userId === this.loginedUserId && (x.signature || x.signature !== ''));  
           
           if (this.signatures) {
+            this.hideDocSign = !this.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));
             this.isIndivid = this.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === '') && (x.signRight && x.signRight !== '') && x.signRight === 'individual');
             
             this.signatures.map(e => {
@@ -224,25 +262,32 @@ export default {
             });
           }
 
-          if (this.docInfo.needApproval) {
+          if (this.docInfo.needApproval || this.docInfo.sourceType === this.Enum.DocSourceType.FilledDoc) {
             this.approvalStages = res.data.approvalStages;
 
             if (!this.showAllSignsParam && !this.isShow && this.approvalStages) {
-              this.approvalStages.forEach(element => {
+              for (let element of this.approvalStages) {
                 this.isShow = this.isShow || (element.users && element.users.some(x => x.userID === this.loginedUserId));
                 if (this.isShow) {
-                  return
+                  break;
                 }
-              });
+              }
             }
 
-            if (!this.isSignShow && this.approvalStages) {
-              this.approvalStages.forEach(element => {
-                this.isSignShow = element.signatures && element.signatures.some(x => x.userId === this.loginedUserId && (x.signature || x.signature !== ''));
-                if (this.isSignShow) {
-                  return
+            if (this.approvalStages) {
+              for (let element of this.approvalStages) {
+                if (!element.signatures) {
+                  continue;
                 }
-              });
+
+                if (this.hideDocSign) {
+                  this.hideDocSign = !element.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));
+                }
+
+                if (this.hideDocRevision) {
+                  this.hideDocRevision = !element.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));
+                }
+              }
             }
 
             if (this.approvalStages)
@@ -253,12 +298,19 @@ export default {
                   })
               });
           }
+
+          if (this.docInfo.docType === this.Enum.DocType.PostAccreditationMonitoringReport) {
+            this.isShow = true
+          }
         }
 
         this.loading = false;
       }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
+        } else if (error.response && error.response.status === 403) {
+          this.$store.dispatch("solveAttemptedUrl", this.$route)
+          this.$router.push({ path: '/login' });
         } else {
           this.$toast.add({
             severity: "error",
@@ -273,7 +325,7 @@ export default {
     showSign() {
       let showSign = false
 
-      if (this.docInfo && this.docInfo.docHistory && this.docInfo.docHistory.stateId && this.docInfo.docHistory.stateId > this.enum.APPROVED.ID) {
+      if (this.docInfo && this.docInfo.docHistory && this.docInfo.docHistory.stateId && this.docInfo.docHistory.stateId > this.Enum.CREATED.ID) {
         showSign = true
       }
 
@@ -404,10 +456,53 @@ export default {
         t.connection.send(JSON.stringify(t.loginedUserForMgovws));
       }
     },
+    revision() {
+      if (this.revisionComment === null || this.revisionComment.length < 1) {
+        this.$toast.add({
+          severity: "error",
+          detail: this.$t("common.noComment"),
+          life: 3000,
+        })
+        return
+      }
+
+      this.loading = true
+      axios.post(smartEnuApi + `/doc/sendtorevision`, {
+        comment: this.revisionComment,
+        docID: this.docInfo.id,
+      }, {
+        headers: getHeader()
+      }).then(res => {
+        this.loading = false
+        location.reload()
+      }).catch(err => {
+        if (err.response.status == 401) {
+          this.$store.dispatch("logLout");
+        }
+
+        this.$toast.add({
+          severity: "error",
+          detail: this.$t("common.message.saveError"),
+          life: 3000,
+        })
+
+        this.loading = false
+      })
+    },
   }
 }
 </script>
-
 <style scoped>
+  @media print {
+      .no-print, .no-print * {
+          display: none !important;
+      }
+  }
 
+  @media print {
+      .show-print, .show-print * {
+          display: block !important;
+          width: 100% !important;
+      }
+  }
 </style>

@@ -13,6 +13,7 @@ export default {
         headIin: 'Head IIN',
         headFio: 'Head full name',
         home: 'Home page',
+        returnLink: 'Back to previous page',
         newPassword:"Enter new password",
         newPasswordRe:"Repeat new password",
         createDocument: 'Generate document',
@@ -221,9 +222,11 @@ export default {
             downloadError: "Error during download",
             uploadError: "Error during upload",
             saveError: "Error during save",
+            revisionError: "Error while submitting for revision",
             serverError: "Server error",
             groupsNotSelected: "No groups selected",
             catCreateError: "Error while creating a new catalog",
+            catalogNotFilled: "Catalog is not specified",
             codeNotFilled: "Catalog code not specified",
             qazNameNotfilled: "Did not type the name in qazaq",
             rusNameNotfilled: "Did not type the name in russian",
@@ -252,7 +255,8 @@ export default {
             ConsulAlwaysHasSameMember: "The named person is already a member of another council",
             saveChangesWarning: "Would you like to save your changes?",
             unsaveOutcome: "If changes are not saved, they will be lost.",
-            addPicture: "Add image"
+            addPicture: "Add image",
+            saveErrorToUpdate: "Error during save. Please refresh the page!",
         },
         language: {
             kz: "in kazakh",
@@ -379,7 +383,6 @@ export default {
         },
         needsApproval: "The document created according to the template requires approval",
         approvalUsers: "List of approvers",
-        approvalListPlaceholder: "Instance",
     },
     contracts : {
         title: "Contracts",
@@ -945,7 +948,7 @@ export default {
         forme: "Concerning me"
     },
     postaccmonrep: {
-        title: "Post-accreditation monitoring reports",
+        title: "Self-assessment/post-accreditation monitoring report",
     },
     ref:{
         getRef:"Get reference"
@@ -976,8 +979,15 @@ export default {
         lnum: 'last number',
     },
     roleControl:{
-        menuTitle: 'Role control',
+        addSidebar: 'Adding new record',
+        userChangeable: 'Changing default users',
+        certificate : 'Certificate',
+        title : 'Title',
+        menuTitle: 'Organization management',
+        roleTitle: 'Role management',
+        rolePosRelTitle: 'Position-role management',
         giveRole: 'Give new role',
+        givePosRoleRel: 'Give new position-role relation',
         selectOrg: 'Select organization',
         selectRole: 'Select role',
         selectEmployee: 'Select employee',
@@ -989,5 +999,9 @@ export default {
         roleLabel: 'Role',
         noResult: 'No records found',
         cantDelete: 'Cant delete the record',
+        addNewInstance: 'Adding new approvers/signers',
+        instance: 'Appover/signer',
+        failedToDelete: 'Failed to delete',
+        failedToLoad: 'Failed to load data',
     }
 }

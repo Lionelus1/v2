@@ -240,7 +240,7 @@
               class="p-sidebar-lg"
               style="overflow-y: scroll"
           >
-            <DocSignaturesInfo :docIdParam="selectedNode.data.docID"></DocSignaturesInfo>
+            <DocSignaturesInfo :docIdParam="selectedNode.data.docID" :isInsideSidebar="true"></DocSignaturesInfo>
           </Sidebar>
       </div>
 
@@ -723,14 +723,15 @@
         this.onNodeSelect(node)
         
       },
-      onNodeSelect(node) {
-        
+      onNodeSelect(node) { 
         this.selectedNode = node;
         this.currentNode = node
         this.readonly = this.selectedNode.data.stateEn == DocState.CREATED.Value || this.selectedNode.data.stateEn == DocState.REVISION.Value || (this.selectedNode.data.stateEn == DocState.INAPPROVAL.Value && this.findRole(null, DocState.roles.LegalServiceHead))
-        this.$refs.kzEditor.setReadOnly(this.readonly);
+        if (this.$refs.kzEditor) {
+          this.$refs.kzEditor.setReadOnly(this.readonly);
+        } else {
           this.$refs.ruEditor.setReadOnly(this.readonly);
-        
+        }
       },
       addTemplateNode(nodeDataChildren,node,fkey) {
         let child=new Object();
@@ -806,7 +807,9 @@
         this.initTemplateApprovalInfo();
       },
       initTemplateApprovalInfo(openForm, node) {
-        axios.post(smartEnuApi + "/doctemplate/getDefaultApprovalStages", {}, {
+        axios.post(smartEnuApi + "/approvalList/getDefault", {
+          type: Enum.DefaultApprovalListType.DocTemplate,
+        }, {
           headers: getHeader(),
         }).then(response => {
           this.initialApprovalStages = []

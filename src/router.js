@@ -16,7 +16,6 @@ const ifNotAuthenticated = (to, from, next) => {
 }
 
 const ifAuthenticated = (to, from, next) => {
-
     if (store.getters.isAuthenticated) {
         next()
         return
@@ -25,7 +24,22 @@ const ifAuthenticated = (to, from, next) => {
         next('/login')
         return
     }
+}
 
+const ifMainAdministrator = (to, from, next) => {
+    if (store.getters.isAuthenticated) {
+        if (store.getters.isMainAdministrator) {
+            next()
+            return
+        } else {
+            next('/access')
+            return
+        }
+    } else {
+        store.dispatch("solveAttemptedUrl", to);
+        next('/login')
+        return
+    }
 }
 
 
@@ -49,8 +63,12 @@ const routes = [
         path: '/reception/request',
         name: "receptionRequest",
         component: load('publicReception/Request')
-    } ,
-    
+    },
+    {
+        path: '/sign/:uuid',
+        name: 'DocSignaturesInfo',
+        component: load('DocSignaturesInfo'),
+    },
     {
         path: '/afterauth',
         name: 'AfterAuth',
@@ -357,12 +375,6 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
-                path: '/sign/:uuid',
-                name: 'DocSignaturesInfo',
-                component: load('DocSignaturesInfo'),
-                beforeEnter: ifAuthenticated,
-            },
-            {
                 path: '/sign-verify',
                 name: 'DocSignatureVerification',
                 component: load('DocSignatureVerification'),
@@ -453,9 +465,15 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
-                path: '/role-control',
-                name: 'RoleControl',
-                component: load('roleControl/RoleControl'),
+                path: '/orgControl',
+                name: 'OrgControl',
+                component: load('roleControl/OrgControl'),
+                beforeEnter: ifMainAdministrator,
+            },
+            {
+                path: '/approvalList',
+                name: 'ApprovalListControl',
+                component: load('roleControl/ApprovalListControl'),
                 beforeEnter: ifAuthenticated,
             }
                 
