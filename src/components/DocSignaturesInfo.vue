@@ -133,6 +133,29 @@ export default {
   },
   mounted() {
     this.wsconnect()
+    this.emitter.on('downloadCMS', (data) => {
+      if (data !== null) {
+        axios
+            .post(smartEnuApi + "/doc/downloadCms",
+                {documentUuid: this.doc_id, signatureId: data},
+                {headers: getHeader(),})
+            .then(res => {
+              console.log(res.data)
+              let result = res.data
+              var link = document.createElement('a');
+              link.innerHTML = 'Download file';
+              link.download = result.fileName;
+              link.href = result.data;
+              link.click();
+            }).catch(error => {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        });
+      }
+    });
   },
   methods: {
     findRole: findRole,

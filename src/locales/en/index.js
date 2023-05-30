@@ -270,6 +270,7 @@ export default {
         success: "Success",
         successDone: "Successfully completed",
         downloadSignaturesPdf: "Download signatures",
+        downloadCms: "Download CMS signature",
         signatures: "Signatures",
         unit: "Unit",
         planNumber: "Plan",
@@ -289,6 +290,7 @@ export default {
         textColor: "Text color",
         signers: "Signatory parties",
         approvals: "Approving persons",
+        verify: 'Document signature verification'
     },
     bank: {
         title: "Banks",
@@ -483,12 +485,22 @@ export default {
             api: {
                 emptySignerList: "The list of signers is empty.",
                 caCertNotFound: "The Kazakhstan NCA root certificate was not found",
+                signerNotInitialized: 'Signer not initialized',
+                notUniqueSigner: 'Signer uniqueness violated',
+                documentAlreadySigned: 'The document has already been signed',
+                xmlGeneration: 'Error generating XML file.',
+                zipGeneration: 'Error generating ZIP file.',
+                fileServer: 'Error getting file from storage server',
+                fileServerNoResponse: 'Error getting file from storage server. Empty response.',
+                failedFileUploading: 'Error uploading file to storage server.',
+                unzip: 'Error unpacking ZIP file.'
             },
             signature: {
                 cms: {
                     notVerified: "Failed to verify CMS signature.",
                     process: "Failed to process the CMS signature.",
                     emptyData: "There are no initial data for verifying the CMS signature.",
+                    multipleSigning: 'An error occurred while calculating the hash of the document.'
                 },
             },
             tsp: {
@@ -497,6 +509,7 @@ export default {
                 notVerified: "The timestamp of the electronic signature did not pass the verification.",
             },
             certificate: {
+                notFound: 'Certificate not found',
                 process: "Failed to process the certificate that was obtained from the signing CMS.",
                 extract: "Failed to get user certificate from CMS signature.",
                 policy: "Unknown certificate policy.",
