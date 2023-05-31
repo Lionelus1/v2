@@ -2,7 +2,7 @@
   <Toast v-if="!isInsideSidebar"/>
   <div v-if="!isInsideSidebar" class="layout-topbar no-print">
     <div class="layout-topbar-icons">
-        <LanguageDropdown/>
+      <LanguageDropdown/>
     </div>
   </div>
   <div>
@@ -18,9 +18,11 @@
     <TabView v-model:activeIndex="active" @tab-change="tabChanged">
       <TabPanel v-bind:header="$t('ncasigner.signatureListTitle')">
         <div class="col-12" v-if="isShow">
-          <Button v-if="signatures && signatures.length > 0 || approvalStages && showSign()" :label="$t('common.downloadSignaturesPdf')" icon="pi pi-download" @click="downloadSignatures"
+          <Button v-if="signatures && signatures.length > 0 || approvalStages && showSign()"
+                  :label="$t('common.downloadSignaturesPdf')" icon="pi pi-download" @click="downloadSignatures"
                   class="p-button ml-2"/>
-          <SignatureQrPdf ref="qrToPdf" :showSign="showSign()" :signatures="signatures" :title="docInfo.name" :approvalStages="approvalStages"></SignatureQrPdf>
+          <SignatureQrPdf ref="qrToPdf" :showSign="showSign()" :signatures="signatures" :title="docInfo.name"
+                          :approvalStages="approvalStages"></SignatureQrPdf>
         </div>
         <div class="col-12" v-else>
           <div class="card">
@@ -34,7 +36,8 @@
 
         </div>
       </TabPanel>
-      <TabPanel v-if="docInfo && (docInfo.docHistory.stateId==2 ||docInfo.docHistory.stateId==6)" :header="$t('ncasigner.sign')">
+      <TabPanel v-if="docInfo && (docInfo.docHistory.stateId==2 ||docInfo.docHistory.stateId==6)"
+                :header="$t('ncasigner.sign')">
         <div class="mt-2">
           <Panel>
             <template #header>
@@ -60,13 +63,15 @@
         </div>
       </TabPanel>
       <TabPanel v-if="docInfo && docInfo.docHistory.stateId === Enum.INAPPROVAL.ID && (docInfo.sourceType === Enum.DocSourceType.FilledDoc ||
-        (docInfo.docType && docInfo.docType === Enum.DocType.Contract))" :header="$t('common.revision')" :disabled="hideDocRevision">
+        (docInfo.docType && docInfo.docType === Enum.DocType.Contract))" :header="$t('common.revision')"
+                :disabled="hideDocRevision">
         <div class="card">
           <label> {{ this.$t('common.comment') }} </label>
           <InputText v-model="revisionComment" style="width: 100%; margin-bottom: 2rem;"></InputText>
           <div class="flex justify-content-center">
-              <Button icon="fa-regular fa-circle-xmark"
-                      class="p-button-danger md:col-3" @click="revision" :label="$t('common.revision')" :loading="loading"/>
+            <Button icon="fa-regular fa-circle-xmark"
+                    class="p-button-danger md:col-3" @click="revision" :label="$t('common.revision')"
+                    :loading="loading"/>
           </div>
         </div>
       </TabPanel>
@@ -149,7 +154,7 @@ export default {
     }
     const tokenData = JSON.parse(window.localStorage.getItem("authUser"));
     if (tokenData !== null) {
-      this.mgovSignUri = 'mobileSign:'+ smartEnuApi +'/mobileSignParams?docUuid=' + this.doc_id +
+      this.mgovSignUri = 'mobileSign:' + smartEnuApi + '/mobileSignParams?docUuid=' + this.doc_id +
           "&token=" + tokenData.access_token
     }
     this.isTspRequired = this.tspParam
@@ -191,21 +196,8 @@ export default {
     },
     tabChanged() {
       if (this.active == 1 && !this.file) { // showFileTab
-        axios.post(smartEnuApi + "/doc/download", {
-          doc_uuid: this.doc_id
-        }, {
-          headers: getHeader()
-        }).then(response => {
-          this.file = this.b64toBlob(response.data)
-        })
-      } else if (this.active == 2 && this.loginedUserId === null) {
-        this.$store.dispatch("solveAttemptedUrl", this.$route)
-        this.$router.push({ path: '/login' });
-    showFile() {
-      console.log(this.docInfo)
-        if (this.active == 1 && this.files.length === 0){
-          if (this.docInfo.isManifest === true) {
-            axios.post(
+        if (this.docInfo.isManifest === true) {
+          axios.post(
               smartEnuApi + "/downloadManifestFiles", {
                 docId: this.docInfo.id
               }, {
@@ -219,19 +211,22 @@ export default {
                 }
               })
         } else {
-              axios.post(
-                  smartEnuApi + "/downloadFile", {
-                    filePath: this.docInfo.filePath
-                  }, {
-                    headers: getHeader()
-                  }
-              )
-                  .then(response => {
-                    (
-                        this.files.push(this.b64toBlob(response.data))
-                    )
-                  })
-          }
+          axios.post(
+              smartEnuApi + "/downloadFile", {
+                filePath: this.docInfo.filePath
+              }, {
+                headers: getHeader()
+              }
+          )
+              .then(response => {
+                (
+                    this.files.push(this.b64toBlob(response.data))
+                )
+              })
+        }
+      } else if (this.active == 2 && this.loginedUserId === null) {
+        this.$store.dispatch("solveAttemptedUrl", this.$route)
+        this.$router.push({path: '/login'});
       }
     },
     getData() {
@@ -248,15 +243,15 @@ export default {
           if (this.showAllSignsParam) {
             this.isShow = true;
           } else {
-            this.isShow = this.findRole(null, "career_moderator") || (this.signatures && this.signatures.some(x => x.userId === this.loginedUserId)) || 
-              this.docInfo.docHistory.setterId === this.loginedUserId || this.docInfo.creatorID === this.loginedUserId;
+            this.isShow = this.findRole(null, "career_moderator") || (this.signatures && this.signatures.some(x => x.userId === this.loginedUserId)) ||
+                this.docInfo.docHistory.setterId === this.loginedUserId || this.docInfo.creatorID === this.loginedUserId;
           }
 
-          
+
           if (this.signatures) {
             this.hideDocSign = !this.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));
             this.isIndivid = this.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === '') && (x.signRight && x.signRight !== '') && x.signRight === 'individual');
-            
+
             this.signatures.map(e => {
               e.sign = this.chunkString(e.signature, 1200)
             });
@@ -310,7 +305,7 @@ export default {
           this.$store.dispatch("logLout");
         } else if (error.response && error.response.status === 403) {
           this.$store.dispatch("solveAttemptedUrl", this.$route)
-          this.$router.push({ path: '/login' });
+          this.$router.push({path: '/login'});
         } else {
           this.$toast.add({
             severity: "error",
@@ -318,7 +313,7 @@ export default {
             life: 3000,
           });
         }
-        
+
         this.loading = false;
       });
     },
@@ -338,7 +333,7 @@ export default {
       }, {
         headers: getHeader()
       }).then(response => {
-        runNCaLayer(this.$t, this.$toast, response.data, 'cms',this.signerType, this.isTspRequired, this.$i18n.locale).then(sign => {
+        runNCaLayer(this.$t, this.$toast, response.data, 'cms', this.signerType, this.isTspRequired, this.$i18n.locale).then(sign => {
           if (sign != undefined) {
             this.sendRequest(sign)
           }
@@ -432,8 +427,8 @@ export default {
     },
     wsconnect() {
       let t = this;
-      this.connection =new WebSocket(socketApi+'/mgovws');
-      this.connection.onmessage = function(data) {
+      this.connection = new WebSocket(socketApi + '/mgovws');
+      this.connection.onmessage = function (data) {
         let response = JSON.parse(data.data)
         if (response.result === 'error') {
           t.$toast.add({
@@ -452,7 +447,7 @@ export default {
           });
         }
       }
-      this.connection.onopen = function(event) {
+      this.connection.onopen = function (event) {
         t.connection.send(JSON.stringify(t.loginedUserForMgovws));
       }
     },
@@ -493,16 +488,16 @@ export default {
 }
 </script>
 <style scoped>
-  @media print {
-      .no-print, .no-print * {
-          display: none !important;
-      }
+@media print {
+  .no-print, .no-print * {
+    display: none !important;
   }
+}
 
-  @media print {
-      .show-print, .show-print * {
-          display: block !important;
-          width: 100% !important;
-      }
+@media print {
+  .show-print, .show-print * {
+    display: block !important;
+    width: 100% !important;
   }
+}
 </style>
