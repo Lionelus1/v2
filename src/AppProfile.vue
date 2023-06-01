@@ -12,6 +12,11 @@
     <transition name="layout-submenu-wrapper">
       <ul v-show="expanded">
         <li>
+          <button @click="sVerify = true" class="p-link">
+            <i class="pi pi-fw pi-verified"></i><span>{{ $t("common.verify") }}</span>
+          </button>
+        </li>
+        <li>
           <button @click="myResume" class="p-link">
             <i class="pi pi-fw pi-id-card"></i><span>{{ $t("common.cabinet") }}</span>
           </button>
@@ -29,6 +34,14 @@
       </ul>
     </transition>
   </div>
+  <Sidebar
+      v-model:visible="sVerify"
+      position="right"
+      class="p-sidebar-lg"
+      style="overflow-y: scroll"
+  >
+    <DocSignatureVerification></DocSignatureVerification>
+  </Sidebar>
 </template>
 
 <script>
@@ -36,11 +49,14 @@ import {
   mapActions,
   mapState
 } from "vuex";
+import DocSignatureVerification from "./components/DocSignatureVerification";
 
 export default {
+  components: {DocSignatureVerification},
   data() {
     return {
       expanded: false,
+      sVerify: false,
     };
   },
   methods: {
@@ -58,6 +74,9 @@ export default {
     myRef() {
       this.$router.push({path: "/myref"})
     },
+    signVerify() {
+      this.$router.push({path: "/sign-verify"})
+    }
   },
   computed: {
     ...mapState(["loginedUser"]),

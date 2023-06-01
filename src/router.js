@@ -60,6 +60,11 @@ const routes = [
         component: load('OutQr'),
     },
     {
+        path: '/human-resources/public/vacancy/:id',
+        name: '/human-resources/public/vacancy',
+        component: load('humanResources/vacancy/hr/SingleVacancy'),
+    },
+    {
         path: '/reception/request',
         name: "receptionRequest",
         component: load('publicReception/Request')
@@ -358,6 +363,11 @@ const routes = [
                 component: load('humanResources/vacancy/hr/HrVacancies'),
             },
             {
+                path: '/human-resources/vacancy/:id',
+                name: '/human-resources/vacancy',
+                component: load('humanResources/vacancy/hr/SingleVacancy'),
+            },
+            {
                 path: '/human-resources/vacancies',
                 name: '/human-resources/vacancies',
                 component: load('humanResources/vacancy/Vacancies'),
@@ -367,6 +377,12 @@ const routes = [
                 path: '/resume',
                 name: 'Resume',
                 component: load('humanResources/candidate/Resume'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/sign-verify',
+                name: 'DocSignatureVerification',
+                component: load('DocSignatureVerification'),
                 beforeEnter: ifAuthenticated,
             },
             {
