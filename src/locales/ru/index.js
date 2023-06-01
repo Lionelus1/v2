@@ -1036,7 +1036,7 @@ export default {
         validity: 'Срок действия сертификата',
         template: 'Шаблон сертификата',
         signDate: 'Дата подписания',
-        individual: 'Физическте лицо',
+        individual: 'Физическое лицо',
         ceo: 'Первый руководитель',
         sign_right: 'Право подписи',
         financial_sign_right: 'Право подписи финансовых документов',
