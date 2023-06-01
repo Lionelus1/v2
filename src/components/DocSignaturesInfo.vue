@@ -29,8 +29,8 @@
         </div>
       </TabPanel>
       <TabPanel :header="$t('ncasigner.goToDoc')" :disabled="!isShow">
-        <div class="card">
-          <embed :src="file" style="width: 100%; height: 1000px" v-if="file" type="application/pdf"/>
+        <div class="card" v-for="(item, index) of files" :key="index">
+          <embed :src="item" style="width: 100%; height: 1000px" v-if="files.length > 0" type="application/pdf"/>
 
         </div>
       </TabPanel>
@@ -132,6 +132,7 @@ export default {
       loading: false,
       signing: false,
       file: null,
+      files: [],
       active: 0,
       hideDocSign: true,
       isIndivid: false,
@@ -176,7 +177,39 @@ export default {
         })
       } else if (this.active == 2 && this.loginedUserId === null) {
         this.$store.dispatch("solveAttemptedUrl", this.$route)
-        this.$router.push({ path: '/login' });
+        this.$router.push({path: '/login'});
+      }
+    },
+    showFile() {
+      if (this.active == 1 && this.files.length === 0){
+        if (this.docInfo.isManifest === true) {
+          axios.post(
+              smartEnuApi + "/downloadManifestFiles", {
+                docId: this.docInfo.id
+              }, {
+                headers: getHeader()
+              }
+          )
+              .then(response => {
+                let filesBase64Array = response.data
+                for (let i = 0; i < filesBase64Array.length; i++) {
+                  this.files.push(this.b64toBlob(filesBase64Array[i]))
+                }
+              })
+        } else {
+          axios.post(
+              smartEnuApi + "/downloadFile", {
+                filePath: this.docInfo.filePath
+              }, {
+                headers: getHeader()
+              }
+          )
+              .then(response => {
+                (
+                    this.files.push(this.b64toBlob(response.data))
+                )
+              })
+        }
       }
     },
     getData() {
@@ -269,7 +302,7 @@ export default {
     },
     showSign() {
       let showSign = false
-      
+
       if (this.docInfo && this.docInfo.docHistory && this.docInfo.docHistory.stateId && this.docInfo.docHistory.stateId > this.Enum.CREATED.ID) {
         showSign = true
       }
