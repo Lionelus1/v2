@@ -210,33 +210,22 @@ export default {
                 }
               })
         } else {
-              axios.post(
-                  smartEnuApi + "/downloadFile", {
-                    filePath: this.docInfo.filePath
-                  }, {
-                    headers: getHeader()
-                  }
-              )
-                  .then(response => {
-                    (
-                        this.files.push(this.b64toBlob(response.data))
-                    )
-                  })
-          }
-=========
-    tabChanged() {
-      if (this.active == 1 && !this.file) { // showFileTab
-        axios.post(smartEnuApi + "/doc/download", {
-          doc_uuid: this.doc_id
-        }, {
-          headers: getHeader()
-        }).then(response => {
-          this.file = this.b64toBlob(response.data)
-        })
+          axios.post(
+              smartEnuApi + "/downloadFile", {
+                filePath: this.docInfo.filePath
+              }, {
+                headers: getHeader()
+              }
+          )
+              .then(response => {
+                (
+                    this.files.push(this.b64toBlob(response.data))
+                )
+              })
+        }
       } else if (this.active == 2 && this.loginedUserId === null) {
         this.$store.dispatch("solveAttemptedUrl", this.$route)
-        this.$router.push({ path: '/login' });
->>>>>>>>> Temporary merge branch 2
+        this.$router.push({path: '/login'});
       }
     },
     getData() {
