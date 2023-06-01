@@ -304,7 +304,8 @@ export default {
         dialogWindowsPdf: 'Диалогтық терезеде (PDF үшін)',
         pdfTypeError: 'Файл түрі PDF форматына сәйкес келмейді',
         eventType: 'Іс-шара түрі',
-        gallery: 'Галерея'
+        gallery: 'Галерея',
+        faculties: 'Факультеттер'
     },
     bank: {
         title: "Банктер",

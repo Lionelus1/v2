@@ -149,7 +149,8 @@
                     .then((response) => {
                         this.allNews = response.data.news;
                         this.allNews.map(e => {
-                            e.imageUrl = smartEnuApi + fileRoute + e.image1
+                          let fileUrl = e.main_image_file ? e.main_image_file.filepath : e.image1
+                            e.imageUrl = smartEnuApi + fileRoute + fileUrl
                         });
                         this.total = response.data.total;
                         this.loading = false;

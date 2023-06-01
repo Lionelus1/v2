@@ -306,7 +306,8 @@ export default {
         dialogWindowsPdf: 'В диалоговом окне (для PDF)',
         pdfTypeError: 'Тип файла не соответствует PDF',
         eventType: 'Тип мероприятия',
-        gallery: 'Галерея'
+        gallery: 'Галерея',
+        faculties: 'Факультеты'
     },
     bank: {
         title: "Банки",

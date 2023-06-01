@@ -130,8 +130,8 @@ export class EnuWebService {
         return api.post(`/web/deleteBlockContentFile`, {id: id}, {headers: getHeader()});
     }
 
-    getSiteSettings() {
-        return api.get(`/web/getSiteSettings`, {headers: getHeader()})
+    getSiteSettings(slugId) {
+        return api.post(`/web/getSiteSettings`, {}, {headers: getHeader()})
     }
 
     setSiteSettings(params) {
@@ -156,6 +156,26 @@ export class EnuWebService {
 
     deleteBlockListFile(id) {
         return api.post(`/web/deleteBlockListFile`, {id: id}, {headers: getHeader()});
+    }
+
+    getSlugs() {
+        return api.get(`/web/getSlugs`, {headers: getHeader()})
+    }
+
+    getSlugById(id) {
+        return api.post(`/web/getSlug`, {slug_id: id}, {headers: getHeader()})
+    }
+
+    getSlugBySlug(slug) {
+        return api.post(`/web/getSlug`, {slug: slug}, {headers: getHeader()})
+    }
+
+    setFacultyAdmin(slugId, userId) {
+        return api.post(`/web/setFacultyAdmin`, {slug_id: slugId, user_id: userId}, {headers: getHeader()})
+    }
+
+    setSiteInfo(params) {
+        return api.post(`/web/setSiteInfo`, params, {headers: getHeader()})
     }
 
     navigateToPlugin(componentName) {

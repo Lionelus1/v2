@@ -12,7 +12,7 @@ export class BlogService {
     }
 
     getBlogRequestById(id) {
-        return api.get(`/web/getBlogRequestBId/${id}`, {headers: getHeader()});
+        return api.get(`/web/getBlogRequestById/${id}`, {headers: getHeader()});
     }
 
     addBlog(data) {

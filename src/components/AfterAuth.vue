@@ -10,7 +10,7 @@ export default {
   name:"Auth",
   methods:{
     ...mapActions([
-      'setLoginedUser'
+      'setLoginedUser', 'setUserSiteSlug'
     ]),
     findRole: findRole,
     getLoginedUser(){
@@ -27,16 +27,30 @@ export default {
           location.replace('/#/');
         }else{
           this.$store.dispatch("solveAttemptedUrl","");
-          location.replace("/#"+oldPath); 
+          location.replace("/#"+oldPath);
         }
       })
       .catch(error => {
         this.$router.push({name:'Login'});
       })
+    },
+    getUserSlug() {
+      axios.get(smartEnuApi + `/getUserSlug`, {headers: getHeader()}).then(res => {
+        if (res.data) {
+          localStorage.setItem("userSlug", JSON.stringify(res.data))
+          this.setUserSiteSlug()
+        } else {
+          localStorage.removeItem("userSlug")
+        }
+      }).catch(error => {
+        localStorage.removeItem("userSlug")
+        this.$store.dispatch('removeUserSiteSlug')
+      });
     }
   },
   created(){
     this.getLoginedUser();
+    this.getUserSlug()
   }
 }
 </script>

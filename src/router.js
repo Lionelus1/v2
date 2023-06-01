@@ -624,9 +624,9 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
-                path: '/enu/weblogs',
-                name: 'EnuSiteLogs',
-                component: load('enuwebsite/EnuSiteLogs'),
+                path: '/enu/faculties',
+                name: 'Faculties',
+                component: load('enuwebsite/faculties/Faculties'),
                 beforeEnter: ifAuthenticated,
             },
             {

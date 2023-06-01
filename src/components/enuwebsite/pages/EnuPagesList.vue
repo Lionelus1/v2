@@ -42,11 +42,13 @@
                         </Column>
                         <Column header="" style="text-align: right;">
                             <template #body="{ data }">
-                                <Button type="button" icon="fa-solid fa-eye" class="mr-2" @click="onView(data)"></Button>
-                                <Button type="button" icon="fa-solid fa-pen" class="mr-2"
-                                    @click="onEditPage(data)"></Button>
-                                <Button type="button" icon="fa-solid fa-trash" class="p-button-danger"
-                                    @click="delPage(data)"></Button>
+                                <div class="grid">
+                                  <Button type="button" icon="fa-solid fa-eye" class="mr-2" @click="onView(data)"></Button>
+                                  <Button type="button" icon="fa-solid fa-pen" class="mr-2 sm:mt-2 md:mt-2 lg:mt-0 xl:mt-0"
+                                          @click="onEditPage(data)"></Button>
+                                  <Button type="button" icon="fa-solid fa-trash" class="p-button-danger sm:mt-2 md:mt-2 lg:mt-0 xl:mt-0"
+                                          @click="delPage(data)"></Button>
+                                </div>
                             </template>
                         </Column>
                     </DataTable>

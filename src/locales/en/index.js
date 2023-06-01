@@ -305,7 +305,8 @@ export default {
         dialogWindowsPdf: 'In dialog box (for PDF)',
         pdfTypeError: 'File type does not match PDF',
         eventType: 'Event type',
-        gallery: 'Gallery'
+        gallery: 'Gallery',
+        faculties: 'Faculties'
     },
     bank: {
         title: "Banks",

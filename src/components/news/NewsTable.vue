@@ -51,7 +51,7 @@
                 </Column>
                 <Column field="categories" v-bind:header="$t('smartenu.categories')" :sortable="false">
                     <template #body="slotProps">
-          <span>
+          <span v-if="slotProps.data.categories">
             {{ slotProps.data.categories.map((cat) => cat.nameKz).toString().replaceAll(",", ", ") }}
           </span>
                     </template>
