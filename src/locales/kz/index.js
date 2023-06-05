@@ -273,6 +273,7 @@ export default {
         success: "Сәтті",
         successDone: "Сәтті орындалды",
         downloadSignaturesPdf: "Қолтаңбаларды жүктеу",
+        downloadCms: "Қолтаңбаны CMS форматында жүктеу",
         signatures: "Қолтаңбалар",
         unit: "Өлшем бірлігі",
         planNumber: "Жоспар",
@@ -305,7 +306,8 @@ export default {
         pdfTypeError: 'Файл түрі PDF форматына сәйкес келмейді',
         eventType: 'Іс-шара түрі',
         gallery: 'Галерея',
-        faculties: 'Факультеттер'
+        faculties: 'Факультеттер',
+        verify: 'Құжатқа қол қоюды тексеру'
     },
     bank: {
         title: "Банктер",
@@ -501,12 +503,22 @@ export default {
             api: {
                 emptySignerList: "Қол қоюшылардың тізімі бос.",
                 caCertNotFound: "ҚР ҰКО-ның негізгі сертификаты табылмады.",
+                signerNotInitialized: 'Қол қоюшы инициализацияланбаған',
+                notUniqueSigner: 'Қол қоюшының бірегейлігі бұзылды',
+                documentAlreadySigned: 'Құжатқа қол қойылып қойған.',
+                xmlGeneration: 'XML файлын құрастыру сәтсіз аяқталды.',
+                zipGeneration: 'ZIP файлын құрастыру сәтсіз аяқталды.',
+                fileServer: 'Сақтау серверінен файлды алу сәтсіз аяқталды.',
+                fileServerNoResponse: 'Сақтау серверінен файлды алу сәтсіз аяқталды. Бос жауап қайтарылды.',
+                failedFileUploading: 'Файлды сақтау серверіне жүктеу сәтсіз аяқталды.',
+                unzip: 'ZIP файлын оқу сәтсіз аяқталды.'
             },
             signature: {
                 cms: {
                     notVerified: "CMS қолтаңбаны тексеру мүмкін емес.",
                     process: "CMS қолтаңбаны өңдеу мүмкін емес.",
                     emptyData: "CMS қолтаңбаны тексеруге керекті бастапқы деректер табылмады.",
+                    multipleSigning: 'Құжат хэшін есептеу кезінде қате орын алды.'
                 },
             },
             tsp: {
@@ -515,6 +527,7 @@ export default {
                 notVerified: "Электронды қолтаңбаның уақыт белгісін тексеру сәтсіз аяқталды.",
             },
             certificate: {
+                notFound: 'Сертификат табылмады',
                 process: "CMS қолтаңбадан алынған сертификаттық өңдеу мүмкін емес.",
                 extract: "CMS қолтаңбасынан пайдаланушы сертификатын алу мүмкін емес.",
                 policy: "Сертификаттың қолдану саясаты белгісіз.",
@@ -1128,6 +1141,38 @@ export default {
         welcomeTextKz: 'Қазақша алғысөз',
         welcomeTextRu: 'Орысша алғысөз',
         welcomeTextEn: 'Ағылшынша алғысөз',
+    },
+
+    verification: {
+        title: 'Электрондық құжатты тексеру',
+        new: 'Жаңа тексеру',
+        uploadEdoc: 'Электрондық құжатты таңдаңыз',
+        uploadEdocTitle: '*.cms пішіміндегі электрондық құжатты немесе *.zip пішіміндегі мұрағатты таңдауыңыз керек.',
+        uploadMainDoc: 'Қол қойылған құжатты таңдаңыз',
+        notDataAttachedTitle: 'CMS қолтаңбасында қол қойылған деректер жоқ. Бастапқы файлды таңдаңыз:',
+        successfulVerifying: 'Тексеру сәтті аяқталды. CMS қолтаңбасы бастапқы деректер бар.',
+        checkDataAttaching: 'Бастапқы деректерді тексеру',
+        signerNameTitle: 'Құжатқа қол қойды: ',
+        statusTitle: 'Жалпы тексеру күйі: ',
+        trueVerify: 'Сәтті',
+        falseVerify: 'Сәтсіз',
+        resultTitle: 'Сертификатты тексеру нәтижесі',
+        tspTitle: 'TSP тексеру нәтижесі',
+        signatureTitle: 'Қолтаңбаны тексеру нәтижесі',
+        iin: 'ЖСН',
+        fio: 'Толық аты',
+        bin: 'БСН',
+        company: 'Мекеменің атауы',
+        serialNumber: 'Сертификаттың сериялық номері',
+        validity: 'Сертификаттың жарамдылық мерзімі',
+        template: 'Сертификат үлгісі',
+        signDate: 'Қол қойылған күні',
+        individual: 'Жеке тұлға',
+        ceo: 'Бірінші басшы',
+        sign_right: 'Қол қою құқығы бар',
+        financial_sign_right: 'Қаржылық құжаттарға қол қою құқығы бар',
+        hr_worker: 'HR қызметкері',
+        internal: 'Мекеме қызметкері',
     }
 
 

@@ -274,6 +274,7 @@ export default {
         success: "Success",
         successDone: "Successfully completed",
         downloadSignaturesPdf: "Download signatures",
+        downloadCms: "Download CMS signature",
         signatures: "Signatures",
         unit: "Unit",
         planNumber: "Plan",
@@ -306,7 +307,8 @@ export default {
         pdfTypeError: 'File type does not match PDF',
         eventType: 'Event type',
         gallery: 'Gallery',
-        faculties: 'Faculties'
+        faculties: 'Faculties',
+        verify: 'Document signature verification'
     },
     bank: {
         title: "Banks",
@@ -500,12 +502,22 @@ export default {
             api: {
                 emptySignerList: "The list of signers is empty.",
                 caCertNotFound: "The Kazakhstan NCA root certificate was not found",
+                signerNotInitialized: 'Signer not initialized',
+                notUniqueSigner: 'Signer uniqueness violated',
+                documentAlreadySigned: 'The document has already been signed',
+                xmlGeneration: 'Error generating XML file.',
+                zipGeneration: 'Error generating ZIP file.',
+                fileServer: 'Error getting file from storage server',
+                fileServerNoResponse: 'Error getting file from storage server. Empty response.',
+                failedFileUploading: 'Error uploading file to storage server.',
+                unzip: 'Error unpacking ZIP file.'
             },
             signature: {
                 cms: {
                     notVerified: "Failed to verify CMS signature.",
                     process: "Failed to process the CMS signature.",
                     emptyData: "There are no initial data for verifying the CMS signature.",
+                    multipleSigning: 'An error occurred while calculating the hash of the document.'
                 },
             },
             tsp: {
@@ -514,6 +526,7 @@ export default {
                 notVerified: "The timestamp of the electronic signature did not pass the verification.",
             },
             certificate: {
+                notFound: 'Certificate not found',
                 process: "Failed to process the certificate that was obtained from the signing CMS.",
                 extract: "Failed to get user certificate from CMS signature.",
                 policy: "Unknown certificate policy.",
@@ -1103,5 +1116,36 @@ export default {
         welcomeTextKz: 'Welcome text in Kazakh',
         welcomeTextRu: 'Welcome text in Russian',
         welcomeTextEn: 'Welcome text in English',
+    },
+    verification: {
+        title: 'Verify Electronic Document',
+        new: 'New check',
+        uploadEdoc: 'Select an electronic document',
+        uploadEdocTitle: 'You must select an electronic document in *.cms format or an archive in *.zip format.',
+        uploadMainDoc: 'Select signed document',
+        notDataAttachedTitle: 'CMS signature does not contain signed data. Please select a source file:',
+        successfulVerifying: 'Verification successful. The CMS signature contains the original data.',
+        checkDataAttaching: 'Check for original data',
+        signerNameTitle: 'Signed document: ',
+        statusTitle: 'General check status: ',
+        trueVerify: 'Successful',
+        falseVerify: 'Unsuccessful',
+        resultTitle: 'Result of certificate verification',
+        tspTitle: 'TSP check result',
+        signatureTitle: 'Result of signature verification',
+        iin: 'IIN',
+        fio: 'full name',
+        bin: 'BIN',
+        company: 'Organization name',
+        serialNumber: 'Certificate serial number',
+        validity: 'Certificate validity period',
+        template: 'Certificate Template',
+        signDate: 'Sign Date',
+        individual: 'Individual',
+        ceo: 'First manager',
+        sign_right: 'Sign right',
+        financial_sign_right: 'The right to sign financial documents',
+        hr_worker: 'HR employee',
+        internal: 'Employee of the organization',
     }
 }
