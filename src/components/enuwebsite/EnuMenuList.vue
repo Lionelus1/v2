@@ -37,7 +37,7 @@
                                         </div>
                                         <div class="field">
                                             <Button icon="pi pi-search" :label="$t('common.search')" class="ml-1"
-                                                @click="getMenus(null)" />
+                                                @click="orderColumn(null)" />
                                         </div>
                                     </div>
                                 </OverlayPanel>
@@ -73,7 +73,7 @@
                                 <a v-if="node.link" :href="node.link" target="_blank">{{ node.link }}</a>
                             </template>
                         </Column>
-
+                        <div v-if="showOrderColumn">
                         <Column v-if="filter.menu_type.is_usefull_link || filter.menu_type.is_header || filter.menu_type.is_middle" field="order" :header="$t('web.menuOrder')">
                             <template #body="{ node }">
                                 <span class="p-buttonset">
@@ -83,6 +83,7 @@
 
                             </template>
                         </Column>
+                    </div>
 
                         <Column field="create_date" :header="$t('faq.createDate')" :sortable="true">
                             <template #body="{ node }">
@@ -141,6 +142,7 @@ export default {
             tableName: null,
             parentNode: null,
             selectedMenuType: null,
+            showOrderColumn: false,
             menuList: ref({}),
             menu_radio_options: [
                 {
@@ -164,10 +166,7 @@ export default {
             filter: {
                 search_text: null,
                 menu_type: {
-                    is_main: null,
-                    is_header: null,
-                    is_middle: null,
-                    is_usefull_link: null
+                    
                 }
             },
             lazyParams: {
@@ -179,35 +178,6 @@ export default {
             parentId: null,
             isGlobalFilter: false,
         };
-    },
-    watch: {
-        selectedMenuType(menutype) {
-
-            if (menutype === "is_main") {
-                this.filter.menu_type.is_main = true
-                this.filter.menu_type.is_header = null
-                this.filter.menu_type.is_middle = null
-                this.filter.menu_type.is_usefull_link = null
-            }
-            if (menutype === "is_header") {
-                this.filter.menu_type.is_main = null
-                this.filter.menu_type.is_header = true
-                this.filter.menu_type.is_middle = null
-                this.filter.menu_type.is_usefull_link = null
-            }
-            if (menutype === "is_middle") {
-                this.filter.menu_type.is_main = null
-                this.filter.menu_type.is_header = null
-                this.filter.menu_type.is_middle = true
-                this.filter.menu_type.is_usefull_link = null
-            }
-            if (menutype === "is_usefull_link") {
-                this.filter.menu_type.is_main = null
-                this.filter.menu_type.is_header = null
-                this.filter.menu_type.is_middle = null
-                this.filter.menu_type.is_usefull_link = true
-            }
-        }
     },
     created() {
         this.getMenus();
@@ -317,6 +287,35 @@ export default {
                     life: 3000,
                 });
             });
+        },
+        orderColumn() {
+            if (this.selectedMenuType === "is_main") {
+                this.filter.menu_type.is_main = true
+                this.filter.menu_type.is_header = null
+                this.filter.menu_type.is_middle = null
+                this.filter.menu_type.is_usefull_link = null
+            }
+            if (this.selectedMenuType === "is_header") {
+                this.filter.menu_type.is_main = null
+                this.filter.menu_type.is_header = true
+                this.filter.menu_type.is_middle = null
+                this.filter.menu_type.is_usefull_link = null
+            }
+            if (this.selectedMenuType === "is_middle") {
+                this.filter.menu_type.is_main = null
+                this.filter.menu_type.is_header = null
+                this.filter.menu_type.is_middle = true
+                this.filter.menu_type.is_usefull_link = null
+            }
+            if (this.selectedMenuType === "is_usefull_link") {
+                this.filter.menu_type.is_main = null
+                this.filter.menu_type.is_header = null
+                this.filter.menu_type.is_middle = null
+                this.filter.menu_type.is_usefull_link = true
+            }
+
+            this.getMenus();
+            this.showOrderColumn = true;
         },
         getPages() {
             this.pages = [];
