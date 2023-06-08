@@ -1172,6 +1172,10 @@ export default {
         financial_sign_right: 'Қаржылық құжаттарға қол қою құқығы бар',
         hr_worker: 'HR қызметкері',
         internal: 'Мекеме қызметкері',
+    },
+    visuallyImpaired: {
+        fontSize: "Қаріп өлшемі",
+        siteColors: "Сайттың түстері",
     }
 
 

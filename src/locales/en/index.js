@@ -1146,5 +1146,9 @@ export default {
         financial_sign_right: 'The right to sign financial documents',
         hr_worker: 'HR employee',
         internal: 'Employee of the organization',
+    },
+    visuallyImpaired: {
+        fontSize: "Font size",
+        siteColors: "Site colors",
     }
 }
