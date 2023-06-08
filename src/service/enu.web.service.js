@@ -170,6 +170,10 @@ export class EnuWebService {
         return api.post(`/web/getSlug`, {slug: slug}, {headers: getHeader()})
     }
 
+    getSlugByUserId(params) {
+        return api.post(`/web/getSlugByUser`, params, {headers: getHeader()})
+    }
+
     setFacultyAdmin(slugId, userId) {
         return api.post(`/web/setFacultyAdmin`, {slug_id: slugId, user_id: userId}, {headers: getHeader()})
     }

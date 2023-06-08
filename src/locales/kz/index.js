@@ -889,7 +889,12 @@ export default {
         mainMenu:'Негізгі мәзір',
         headerMenu: 'Тақырып мәзірі',
         middleMenu: 'Ортаңғы мәзір',
-        usefulMenu: 'Пайдалы сілтеме'
+        usefulMenu: 'Пайдалы сілтеме',
+        commonSettings: 'Параметрлер',
+        universityAddressInfo: 'Байланыс мәліметтері',
+        websiteAddress: 'Сайт',
+        universityAddress: 'Мекенжайы',
+        universityFax: 'Факс'
 
     },
     //Student locale

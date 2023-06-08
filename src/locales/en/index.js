@@ -823,7 +823,7 @@ export default {
         currency: 'Currency',
         note: 'Note',
         siteSettings: 'Site settings',
-        mourningMode: 'Mourning modeТраурный режим',
+        mourningMode: 'Mourning mode',
         siteLogs: 'Website Logs',
         tableName: 'Table Name',
         recordId: 'Record ID',
@@ -842,7 +842,12 @@ export default {
         cardListExample: 'Simple Card List Example',
         gridCardListExample: 'Simple Grid Card List Example',
         exampleTitle: 'Title',
-        exampleContent: 'Example content'
+        exampleContent: 'Example content',
+        commonSettings: 'Settings',
+        universityAddressInfo: 'Contact Address',
+        websiteAddress: 'Website',
+        universityAddress: 'Address',
+        universityFax: 'Fax'
     },
     //Student locale
     student: {

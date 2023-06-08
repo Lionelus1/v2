@@ -877,7 +877,12 @@ export default {
         mainMenu:'Главное меню',
         headerMenu: 'Меню заголовка',
         middleMenu: 'Среднее меню',
-        usefulMenu: 'Полезное меню'
+        usefulMenu: 'Полезное меню',
+        commonSettings: 'Настройки',
+        universityAddressInfo: 'Контактный адрес',
+        websiteAddress: 'Сайт',
+        universityAddress: 'Адрес',
+        universityFax: 'Факс'
     },
 
     student: {
