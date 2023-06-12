@@ -94,7 +94,7 @@ const routes = [
             {
                 path: '/documents/catalog/normdoc',
                 name: '/documents/catalog/normdoc',
-                component: load('documents/catalog/CatalogNormDoc'),
+                component: load('documents/catalog/NormativeDocuments'),
                 beforeEnter: ifAuthenticated,
             },
             {

@@ -257,6 +257,8 @@ export default {
             unsaveOutcome: "If changes are not saved, they will be lost.",
             addPicture: "Add image",
             saveErrorToUpdate: "Error during save. Please refresh the page!",
+            actionError: "An error occurred during this action",
+            actionErrorContactAdmin: "Please contact the administrators to resolve this issue",
         },
         language: {
             kz: "in kazakh",
@@ -990,5 +992,11 @@ export default {
         instance: 'Appover/signer',
         failedToDelete: 'Failed to delete',
         failedToLoad: 'Failed to load data',
+    },
+    responseExplanations: {
+        badRequest: 'Your request could not be understood or was missing required parameters.',
+        forbidden: 'Access to the requested resource is not allowed. This may be because you don\'t have the necessary permissions to access it.',
+        forbiddenAction: 'Action prohibited. You don\'t have the required permissions.',
+        internalServerError: 'We\'re sorry, something went wrong on our end. Please try again later.',
     }
 }
