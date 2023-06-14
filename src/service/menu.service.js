@@ -1,8 +1,10 @@
 import Enum from "../enum/docstates";
+import {useStore} from "vuex";
 
 export class MenuService {
 
     getGlobalMenu($t) {
+        const store = useStore()
         return [
 
           /*   {
@@ -188,8 +190,8 @@ export class MenuService {
 
             {
                 label: $t('web.mainMenuTitle'), icon: 'pi pi-fw pi-box ',
-                visible: this.findRole('enu_web_admin'),
-                items: [
+                visible: (this.findRole('enu_web_admin') || this.findRole('enu_fac_web_admin')) && store.state.userSlug !== null,
+                items:  [
                     {
                         label: $t('web.menuPage'), icon: 'pi pi-fw pi-bars', to: '/enu/menus'
                     },
@@ -203,7 +205,15 @@ export class MenuService {
                         label: $t('web.blog'), icon: 'fa-solid fa-message', to: '/blog'
                     },
                     {
-                        label: $t('web.siteSettings'), icon: 'fa-solid fa-gear', to: '/enu/settings'
+                        label: $t('common.faculties'),
+                        icon: 'fa-solid fa-folder',
+                        to: '/enu/faculties',
+                        visible: this.findRole('enu_web_admin') && localStorage.getItem("userSlug") !== null
+                    },
+                    {
+                        label: $t('web.siteSettings'),
+                        icon: 'fa-solid fa-gear',
+                        to: '/enu/settings'
                     }
                 ]
             },

@@ -11,6 +11,10 @@
         <p v-if="item.user"><b>{{ item.user.fullName }}</b> <!--({{ $t('ncasigner.IIN') }} <em>{{ item.user.IIN }}</em>)-->
           <br/> {{ item.sign && item.sign.length > 0 ? $t('ncasigner.signed') + ": " + new Date(item.signDate).toLocaleDateString() + ", " + new Date(item.signDate).toLocaleTimeString()  : $t('ncasigner.signingexpected') }}
         </p>
+        <div class="field">
+          <Button v-if="item.sign && item.sign.length > 0" :label="$t('common.downloadCms')" icon="pi pi-download" @click="this.emitter.emit('downloadCMS', item.id)"
+                  class="p-button-secondary ml-1"/>
+        </div>
         <div style="width: 100%;text-align: left;">
           <qrcode-vue v-for="(i, ind) of item.sign" :key="ind" size="300" render-as="svg" margin="2" :value="i"></qrcode-vue>
         </div>   

@@ -112,7 +112,6 @@ export default {
                     total.value = res.data.total;
                 }
                 loading.value = false
-                console.log(enuService)
             }).catch(error => {
                 loading.value = false
                 toast.add({ severity: "error", summary: error, life: 3000 });

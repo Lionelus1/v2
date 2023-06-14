@@ -144,11 +144,9 @@ export default {
       });
    
     const navigateToScore = (id) => router.push({name: 'EduScoreList', params: {id: id}})
-    console.log(navigateToScore)
     onMounted(() => {
       emitter.on('showEduScoreCategoryAddDialog', isShow => {
         showModal.value = isShow;
-        console.log(selectedData)
         
       });
     });

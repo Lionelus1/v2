@@ -277,6 +277,7 @@ export default {
         successDone: "Успешно выполнено",
         success: "Успешно",
         downloadSignaturesPdf: "Скачать подписи",
+        downloadCms: "Скачать подпись в формате CMS",
         signatures: "Подписи",
         unit: "Единица измерения",
         planNumber: "План (плановое число)",
@@ -306,7 +307,11 @@ export default {
         currentWindowLink: 'Текущее окно',
         newWindowLink: 'В новом окне',
         dialogWindowsPdf: 'В диалоговом окне (для PDF)',
-        pdfTypeError: 'File type does not match PDF'
+        pdfTypeError: 'Тип файла не соответствует PDF',
+        eventType: 'Тип мероприятия',
+        gallery: 'Галерея',
+        faculties: 'Факультеты',
+        verify: 'Проверка подписи документа'
     },
     bank: {
         title: "Банки",
@@ -501,12 +506,22 @@ export default {
             api: {
                 emptySignerList: "Список подписантов пуст.",
                 caCertNotFound: "Корневой сертификат НУЦ РК не найден.",
+                signerNotInitialized: 'Подписант не инициализирован',
+                notUniqueSigner: 'Уникальность подписанта нарушена',
+                documentAlreadySigned: 'Документ уже подписан',
+                xmlGeneration: 'Ошибка генерации XML файла.',
+                zipGeneration: 'Ошибка генерации ZIP файла.',
+                fileServer: 'Ошибка при получении файла из сервера хранилища',
+                fileServerNoResponse: 'Ошибка при получении файла из сервера хранилища. Пустой ответ.',
+                failedFileUploading: 'Ошибка загрузки файла на сервер хранилище.',
+                unzip: 'Ошибка распаковки ZIP файла.'
             },
             signature: {
                 cms: {
                     notVerified: "Произошла ошибка при проверке CMS подписи.",
                     process: "Произошла ошибка при обработке CMS подписи.",
                     emptyData: "Исходные данные для проверки CMS подписи отсутствуют.",
+                    multipleSigning: 'Ошибка во время вычисления хэша документа.'
                 },
             },
             tsp: {
@@ -515,6 +530,7 @@ export default {
                 notVerified: "Метка времени электронной подписи не прошла проверку.",
             },
             certificate: {
+                notFound: 'Сертификат не найдет',
                 process: "Произошла ошибка во время обработки сертификата, который был получен из CMS подписи.",
                 extract: "Не удалось получить сертификат пользователя из CMS подписи.",
                 policy: "Неизвестная политика применения сертификата.",
@@ -864,7 +880,12 @@ export default {
         headerMenu: 'Меню заголовка',
         middleMenu: 'Среднее меню',
         usefulMenu: 'Полезное меню',
-        onMiddle: 'Среднее меню'
+        onMiddle: 'Среднее меню',
+        commonSettings: 'Настройки',
+        universityAddressInfo: 'Контактный адрес',
+        websiteAddress: 'Сайт',
+        universityAddress: 'Адрес',
+        universityFax: 'Факс'
     },
 
     student: {
@@ -1121,6 +1142,36 @@ export default {
         welcomeTextKz: 'Приветственный текст на казахском',
         welcomeTextRu: 'Приветственный текст на русском',
         welcomeTextEn: 'Приветственный текст на английском',
+    },
+    verification: {
+        title: 'Проверка электронного документа',
+        new: 'Новая проверка',
+        uploadEdoc: 'Выберите электронный документ',
+        uploadEdocTitle: 'Необходимо выбрать электронный документ в формате *.cms или архив в формате *.zip.',
+        uploadMainDoc: 'Выберите подписанный документ',
+        notDataAttachedTitle: 'CMS подпись не содержит подписанные данные. Пожалуйста, выберите исходный файл:',
+        successfulVerifying: 'Успешная проверка. CMS подпись содержит исходные данные.',
+        checkDataAttaching: 'Проверить наличие исходных данных',
+        signerNameTitle: 'Подписал документ: ',
+        statusTitle: 'Общий статус проверки: ',
+        trueVerify: 'Успешно',
+        falseVerify: 'Неуспешно',
+        resultTitle: 'Результат проверки сертификата',
+        tspTitle: 'Результат проверки TSP',
+        signatureTitle: 'Результат проверки подписи',
+        iin: 'ИИН',
+        fio: 'ФИО',
+        bin: 'БИН',
+        company: 'Наименование организации',
+        serialNumber: 'Серийный номер сертификата',
+        validity: 'Срок действия сертификата',
+        template: 'Шаблон сертификата',
+        signDate: 'Дата подписания',
+        individual: 'Физическое лицо',
+        ceo: 'Первый руководитель',
+        sign_right: 'Право подписи',
+        financial_sign_right: 'Право подписи финансовых документов',
+        hr_worker: 'Сотрудник отдела кадров',
+        internal: 'Сотрудник организации',
     }
-
 }

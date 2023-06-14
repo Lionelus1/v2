@@ -22,14 +22,15 @@ export class EnuWebService {
     }
 
     getPageById(pageId) {
-        return api.get(`/web/getPage/${pageId}`, {headers: getHeader()});
+        return api.get(`/web/getPageAdmin/${pageId}`, {headers: getHeader()});
     }
 
-    getPageFiles(pageId) {
-        return api.post(`/web/getPageFiles`, {page_id: pageId}, {headers: getHeader()});
+    getPageFiles(pageId, isGallery) {
+        return api.post(`/web/getPageFiles`, {page_id: pageId, is_gallery: isGallery}, {headers: getHeader()});
     }
 
     addPage(data){
+        console.log("rest files", data.files)
         return api.post("/web/addPage", data, {headers: getHeader()})
     }
 
@@ -129,8 +130,8 @@ export class EnuWebService {
         return api.post(`/web/deleteBlockContentFile`, {id: id}, {headers: getHeader()});
     }
 
-    getSiteSettings() {
-        return api.get(`/web/getSiteSettings`, {headers: getHeader()})
+    getSiteSettings(slugId) {
+        return api.post(`/web/getSiteSettings`, {}, {headers: getHeader()})
     }
 
     setSiteSettings(params) {
@@ -149,6 +150,37 @@ export class EnuWebService {
         return api.get("/web/getBlockListViewTypes", {headers: getHeader()});
     }
 
+    getBlockListFiles(id) {
+        return api.post(`/web/getBlockListFiles`, {id: id}, {headers: getHeader()});
+    }
+
+    deleteBlockListFile(id) {
+        return api.post(`/web/deleteBlockListFile`, {id: id}, {headers: getHeader()});
+    }
+
+    getSlugs() {
+        return api.get(`/web/getSlugs`, {headers: getHeader()})
+    }
+
+    getSlugById(id) {
+        return api.post(`/web/getSlug`, {slug_id: id}, {headers: getHeader()})
+    }
+
+    getSlugBySlug(slug) {
+        return api.post(`/web/getSlug`, {slug: slug}, {headers: getHeader()})
+    }
+
+    getSlugByUserId(params) {
+        return api.post(`/web/getSlugByUser`, params, {headers: getHeader()})
+    }
+
+    setFacultyAdmin(slugId, userId) {
+        return api.post(`/web/setFacultyAdmin`, {slug_id: slugId, user_id: userId}, {headers: getHeader()})
+    }
+
+    setSiteInfo(params) {
+        return api.post(`/web/setSiteInfo`, params, {headers: getHeader()})
+    }
 
     navigateToPlugin(componentName) {
         switch (componentName) {

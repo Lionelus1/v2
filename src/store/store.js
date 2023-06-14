@@ -11,7 +11,8 @@ const store = createStore({
 
         loginedUser: {},
         token: "",
-        attemptedUrl:""
+        attemptedUrl:"",
+        userSlug: {}
     },
     mutations: {
         SET_LOGINED_USER(state) {
@@ -33,16 +34,24 @@ const store = createStore({
                     localStorage.removeItem('loginedUser');
                     localStorage.removeItem('journalCurrentPage');
                     localStorage.removeItem('contractFilters');
+                    localStorage.removeItem('userSlug')
                     router.push({ "name": "PublicVacancies" })
                 })
                 .catch((err) => {
                     //alert(JSON.stringify(err))
                     localStorage.removeItem('authUser');
                     localStorage.removeItem('loginedUser');
+                    localStorage.removeItem('userSlug');
                 
                     router.push({ "name": "/login" })
                 })
 
+        },
+        USER_SITE_SLUG(state) {
+            state.userSlug = JSON.parse(window.localStorage.getItem('userSlug'));
+        },
+        REMOVE_USER_SITE_SLUG(state) {
+            state.userSlug = {}
         }
     },
     actions: {
@@ -60,6 +69,12 @@ const store = createStore({
                 context.commit("SOLVE_ATTEMPT","");
             }
             
+        },
+        setUserSiteSlug(context) {
+            context.commit("USER_SITE_SLUG")
+        },
+        removeUserSiteSlug(context) {
+            context.commit("REMOVE_USER_SITE_SLUG")
         }
     },
     getters: {

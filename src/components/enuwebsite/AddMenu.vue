@@ -91,7 +91,6 @@
             <label>{{ $t('web.menuOrderLabel') }}</label>
             <InputNumber v-model="formData.order_id" name="order_id" />
         </div>
-
         <div class="field" v-if="formData.is_usefull_link">
             <label>{{ $t('web.usefulLinkDescKZ') }}</label>
             <Textarea :placeholder="$t('common.enter')" class="pt-1" type="text" v-model="formData.description_kz"
@@ -128,14 +127,14 @@
 </template>
 
 <script>
-import { EnuWebService } from "@/service/enu.web.service";
-import AddPage from "@/components/enuwebsite/AddPage.vue";
+import {EnuWebService} from "@/service/enu.web.service";
+import AddPage from "@/components/enuwebsite/pages/AddPage.vue";
 import CustomFileUpload from "@/components/CustomFileUpload.vue";
 
 export default {
     name: "AddMenu",
     props: ['isVisible', 'allPages', 'menu_id', 'currentMenu', 'allMenus'],
-    components: { AddPage, CustomFileUpload },
+    components: {AddPage, CustomFileUpload},
     data() {
         return {
             editMenuVisible: this.isVisible ?? false,
@@ -158,12 +157,11 @@ export default {
                 parent_id: this.menu_id ? this.menu_id : null,
                 page_id: null,
                 link: null,
-                order_id: null,
+                order_id:null,
                 is_header: false,
                 is_middle: false,
                 icon: "",
                 hidden: false
-
             },
             bgImg: null,
             formValid: [],

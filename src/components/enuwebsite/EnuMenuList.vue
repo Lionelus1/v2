@@ -8,8 +8,8 @@
             <TabView>
                 <TabPanel :header="$t('web.properties')">
                     <TreeTable class="p-treetable-sm" :value="menus" :lazy="true" :loading="loading" @nodeExpand="onExpand"
-                        scrollHeight="flex" responsiveLayout="scroll" :resizableColumns="true" columnResizeMode="fit"
-                        :paginator="true" :rows="10" :total-records="total" @page="onPage($event)">
+                        scrollHeight="flex" responsiveLayout="scroll" :resizableColumns="true" show-gridlines
+                        columnResizeMode="fit" :paginator="true" :rows="10" :total-records="total" @page="onPage($event)">
                         <template #header>
                             <div class="text-left"></div>
                             <div class="text-right">
@@ -170,12 +170,14 @@ export default {
             filter: {
                 search_text: null,
                 menu_type: {
+
                 }
             },
             lazyParams: {
                 page: 1,
                 rows: 10,
                 parent_id: null,
+                is_child: false
             },
             parentId: null,
             isGlobalFilter: false,
@@ -247,6 +249,7 @@ export default {
         },
         onExpand(node) {
             this.lazyParams.parent_id = Number(node.menu_id)
+            this.lazyParams.is_child = true
             this.parentNode = node
             this.getMenus(node)
         },
@@ -267,7 +270,6 @@ export default {
                         this.menus.map(e => {
                             if (e.path) {
                                 e.url = `${webEnuDomain}/${this.$i18n.locale}/page/${e.path.replaceAll("/", "%2F")}`
-
                             }
                         })
                     }
@@ -277,7 +279,6 @@ export default {
                         parentData.children.map(e => {
                             if (e.path) {
                                 e.url = `${webEnuDomain}/${this.$i18n.locale}/page/${e.path.replaceAll("/", "%2F")}`
-
                             }
                         })
                     }

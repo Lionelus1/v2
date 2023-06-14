@@ -1,28 +1,34 @@
 <template>
-  <div class="field">
-    <FileUpload mode="basic" :customUpload="true" @uploader="$emit('upload', $event)" :auto="true"
-                :multiple="multiple" :chooseLabel="$t('hdfs.chooseFile')" :accept="accept"></FileUpload>
-  </div>
-  <div class="field" v-if="preview && !uploadedFiles">
-    <img :src="imgPreview" alt="" class="w-20rem">
-  </div>
-  <div class="field" v-if="uploadedFiles">
-    <div ref="content" class="p-fileupload-content">
-      <div class="p-fileupload-files" v-if="uploadedFiles">
-        <div v-for="(file, index) of uploadedFiles" :key="index">
-          <div v-if="file.objectURL"><img :src="file.objectURL" alt="" class="w-20rem"></div>
-          <div class="p-fileupload-row">
-            <span class="mr-3"><i class="pi pi-paperclip"></i></span>
-            <span>{{ file.name }}</span>
-            <span class="ml-5"><Button icon="pi pi-times" class="p-button-rounded p-button-text" @click="removeFile(index)"/></span>
-          </div>
-        </div>
-      </div>
-      <div class="p-fileupload-empty" v-if="uploadedFiles.length === 0">
-        <slot name="empty"></slot>
-      </div>
+    <ConfirmPopup group="deleteResult"></ConfirmPopup>
+    <div class="field">
+        <FileUpload mode="basic" :customUpload="true" @uploader="upload" :auto="true"
+                    :multiple="multiple" :chooseLabel="$t('hdfs.chooseFile')" :accept="accept"></FileUpload>
     </div>
-  </div>
+
+    <div class="m-news-images-item" v-for="(item, index) of files" :key="index">
+        <img src="item" alt="">
+    </div>
+
+    <div class="field" v-if="preview && !uploadedFiles">
+        <img :src="imgPreview" alt="" class="w-20rem">
+    </div>
+    <div class="field" v-if="uploadedFiles">
+        <div ref="content" class="p-fileupload-content">
+            <div class="p-fileupload-files" v-if="uploadedFiles">
+                <div v-for="(file, index) of uploadedFiles" :key="index">
+                    <div v-if="file.objectURL"><img :src="file.objectURL" alt="" class="w-20rem"></div>
+                    <div class="p-fileupload-row">
+                        <span class="mr-3"><i class="pi pi-paperclip"></i></span>
+                        <span>{{ file.name }}</span>
+                        <span class="ml-5"><Button icon="pi pi-times" class="p-button-rounded p-button-text" @click="removeFile(index)"/></span>
+                    </div>
+                </div>
+            </div>
+            <div class="p-fileupload-empty" v-if="uploadedFiles.length === 0">
+                <slot name="empty"></slot>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script>
@@ -30,72 +36,77 @@ import {ref, watch} from "vue";
 import {fileRoute, smartEnuApi} from "@/config/config";
 
 export default {
-  name: "CustomFileUpload",
-  props: ['modelValue', 'accept', 'multiple', 'preview'],
-  setup(props) {
-    const uploadedFiles = ref(props.modelValue)
-    const imgPreview = ref(props.preview)
-    if (imgPreview.value)
-      imgPreview.value = smartEnuApi + fileRoute + imgPreview.value;
-    const removeFile = (index) => {
-      uploadedFiles.value.splice(index, 1)[0];
-      uploadedFiles.value = [...uploadedFiles.value];
-      uploadedFiles.value && uploadedFiles.value.length === 0 ? uploadedFiles.value = null : uploadedFiles.value
-    }
+    name: "CustomFileUpload",
+    props: ['modelValue', 'accept', 'multiple', 'preview', 'isGallery'],
+    setup(props, context) {
+        const uploadedFiles = ref(props.modelValue)
+        const imgPreview = ref(props.preview)
+        const files = ref()
+        if (imgPreview.value)
+            imgPreview.value = smartEnuApi + fileRoute + imgPreview.value;
+        const removeFile = (index) => {
+            uploadedFiles.value.splice(index, 1)[0];
+            uploadedFiles.value = [...uploadedFiles.value];
+            uploadedFiles.value && uploadedFiles.value.length === 0 ? uploadedFiles.value = null : uploadedFiles.value
+        }
 
-    watch(() => props.modelValue, (newValue, oldValue) => {
-      uploadedFiles.value = newValue;
-    })
+        const upload = (event) => {
+            files.value += event
+            context.emit('upload', event)
+        }
 
-    return {
-      uploadedFiles, removeFile, imgPreview
+        watch(() => props.modelValue, (newValue, oldValue) => {
+            uploadedFiles.value = newValue;
+        })
+
+        return {
+            uploadedFiles, removeFile, imgPreview, upload, files
+        }
     }
-  }
 }
 </script>
 
 <style scoped>
 .p-fileupload-content {
-  position: relative;
+    position: relative;
 }
 
 .p-fileupload-row {
-  display: flex;
-  align-items: center;
-  padding: 5px;
+    display: flex;
+    align-items: center;
+    padding: 5px;
 }
 
 .p-fileupload-row > div {
-  flex: 1 1 auto;
-  width: 25%;
+    flex: 1 1 auto;
+    width: 25%;
 }
 
 .p-fileupload-row > div:last-child {
-  text-align: right;
+    text-align: right;
 }
 
 .p-fileupload-content .p-progressbar {
-  width: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
 .p-button.p-fileupload-choose input[type=file] {
-  display: none;
+    display: none;
 }
 
 .p-fileupload-choose.p-fileupload-choose-selected input[type=file] {
-  display: none;
+    display: none;
 }
 
 .p-fileupload-filename {
-  word-break: break-all;
+    word-break: break-all;
 }
 
 .tumblr {
-  width: 100px;
-  height: auto;
+    width: 100px;
+    height: auto;
 }
-
 </style>

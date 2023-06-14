@@ -24,6 +24,7 @@ const ifAuthenticated = (to, from, next) => {
         next()
         return
     }else{
+        console.log(to)
         store.dispatch("solveAttemptedUrl",to);
         next('/login')
         return
@@ -57,6 +58,11 @@ const routes = [
         path:'/outqr',
         name:'OutQr',
         component: load('OutQr'),
+    },
+    {
+        path: '/human-resources/public/vacancy/:id',
+        name: '/human-resources/public/vacancy',
+        component: load('humanResources/vacancy/hr/SingleVacancy'),
     },
     {
         path: '/reception/request',
@@ -357,6 +363,11 @@ const routes = [
                 component: load('humanResources/vacancy/hr/HrVacancies'),
             },
             {
+                path: '/human-resources/vacancy/:id',
+                name: '/human-resources/vacancy',
+                component: load('humanResources/vacancy/hr/SingleVacancy'),
+            },
+            {
                 path: '/human-resources/vacancies',
                 name: '/human-resources/vacancies',
                 component: load('humanResources/vacancy/Vacancies'),
@@ -366,6 +377,12 @@ const routes = [
                 path: '/resume',
                 name: 'Resume',
                 component: load('humanResources/candidate/Resume'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/sign-verify',
+                name: 'DocSignatureVerification',
+                component: load('DocSignatureVerification'),
                 beforeEnter: ifAuthenticated,
             },
             {
@@ -466,14 +483,28 @@ const routes = [
             },
             {
                 path: '/enu/pages',
-                name: 'EnuPagesList',
-                component: load('enuwebsite/EnuPagesList'),
+                name: 'EnuPagesComponent',
+                component: load('enuwebsite/pages/EnuPagesComponent'),
                 beforeEnter: ifAuthenticated,
+                children: [
+                    {
+                        path: '',
+                        name: 'EnuPagesList',
+                        component: load('enuwebsite/pages/EnuPagesList'),
+                        beforeEnter: ifAuthenticated,
+                    },
+                    {
+                        path: ':id',
+                        name: 'EditPage',
+                        component: load('enuwebsite/pages/EditPage'),
+                        beforeEnter: ifAuthenticated,
+                    },
+                ]
             },
             {
                 path: '/enu/page/:id',
                 name: 'LandingPageView',
-                component: load('enuwebsite/LandingPageView'),
+                component: load('enuwebsite/pages/LandingPageView'),
                 beforeEnter: ifAuthenticated,
             },
             {
@@ -609,9 +640,9 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
-                path: '/enu/weblogs',
-                name: 'EnuSiteLogs',
-                component: load('enuwebsite/EnuSiteLogs'),
+                path: '/enu/faculties',
+                name: 'Faculties',
+                component: load('enuwebsite/faculties/Faculties'),
                 beforeEnter: ifAuthenticated,
             },
             {
