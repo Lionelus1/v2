@@ -1165,5 +1165,9 @@ export default {
         forbidden: 'Access to the requested resource is not allowed. This may be because you don\'t have the necessary permissions to access it.',
         forbiddenAction: 'Action prohibited. You don\'t have the required permissions.',
         internalServerError: 'We\'re sorry, something went wrong on our end. Please try again later.',
+    },
+    visuallyImpaired: {
+        fontSize: "Font size",
+        siteColors: "Site colors",
     }
 }

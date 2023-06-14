@@ -1173,5 +1173,9 @@ export default {
         financial_sign_right: 'Право подписи финансовых документов',
         hr_worker: 'Сотрудник отдела кадров',
         internal: 'Сотрудник организации',
+    },
+    visuallyImpaired: {
+        fontSize: "Размер шрифта",
+        siteColors: "Цвета сайта",
     }
 }
