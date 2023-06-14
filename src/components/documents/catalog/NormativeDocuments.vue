@@ -56,6 +56,8 @@
           <!-- <Button @click="toggle()" aria:haspopup="true" aria-controls="overlay_panel" class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-search fa-xl" />
           </Button> -->
+        </div>
+        <div>
           <Button @click="downloadFile()" :disabled="!tooltip.file" class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-file-arrow-down fa-xl" />
           </Button>
@@ -409,8 +411,6 @@ export default {
     },
     fileUpdated(event) {
       this.close('fileUploadDialog')
-
-console.log(event)
 
       if (this.newNode.id !== this.selectedNode.id) {
         if (!this.selectedNode.children) {
