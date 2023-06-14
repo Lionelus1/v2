@@ -1,7 +1,7 @@
 <template>
   <div class="col-12 flex flex-column">
     <TitleBlock
-      :title="`${$t('web.siteSettings')} - ${this.$i18n.locale === 'kz' ? facultyAbbrev.name_kz : this.$i18n.locale === 'ru' ? facultyAbbrev.name_ru : facultyAbbrev.name_en}`" />
+      :title="`${$t('web.siteSettings')} - ${$i18n.locale === 'kz' ? facultyAbbrev.name_kz : $i18n.locale === 'ru' ? facultyAbbrev.name_ru : facultyAbbrev.name_en}`" />
     <TabView>
       <TabPanel :header="$t('web.properties')">
         <Panel :header="$t('web.commonSettings')" v-if="isWebAdmin">
@@ -68,6 +68,7 @@ import { EnuWebService } from "@/service/enu.web.service";
 import { useToast } from "primevue/usetoast";
 import WebLogs from "@/components/enuwebsite/EnuSiteLogs.vue";
 import { findRole } from "@/config/config";
+import TitleBlock from "@/components/TitleBlock.vue";
 
 const formData = ref({})
 const infoData = ref({})
