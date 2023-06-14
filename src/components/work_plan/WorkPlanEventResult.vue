@@ -139,7 +139,7 @@
                       </div>
                     </template>
                     <template #content>
-                      <div class="p-py-2">
+                      <div class="py-2">
                         <Button :label="$t('common.save')" icon="pi pi-check" class="p-button p-button-success"
                                 @click="saveEditResult(item)" :loading="loading"/>
                         <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button ml-1"

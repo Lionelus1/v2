@@ -1,4 +1,5 @@
 <template>
+    <div class="request_card">
     <div class="grid">
         <div class="col-12">
         <BlockUI :blocked="uploading" :fullScreen="true">
@@ -62,6 +63,10 @@ Please double-check the entered data before submission.
                     <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="upload($event)" v-bind:chooseLabel="$t('faq.uploadFile')"></FileUpload>
 				</div>
                 <div class="field">
+                    <vue-recaptcha ref="captcha" sitekey="6LfSS5MjAAAAAAmSxN43yiDEQJdFRhoF5Ctc8uPj" @verify="isCaptchaSuccess = true"></vue-recaptcha>
+                    <small class="p-error" v-if="validation.captcha">{{$t("common.requiredField")}}</small>
+                </div>
+                <div class="field">
                     <Button :label="$t('common.action.submit')" @click="sendQuestion" />
                 </div>
 		        <span class="footer-text no-print" style="margin-right: 5px">@ {{$t("common.orgname")}}</span>
@@ -77,12 +82,15 @@ Please double-check the entered data before submission.
            
         </Dialog>
     </div>
+    </div>
 </template>
 <script>
     import axios from "axios";
-    import {getHeader, smartEnuApi} from "@/config/config";
+    import {smartEnuApi} from "@/config/config";
+    import {VueRecaptcha} from "vue-recaptcha";
 
     export default {
+        components: {VueRecaptcha},
     props: {
         pagemenu: null,
     },
@@ -114,8 +122,10 @@ Please double-check the entered data before submission.
                 mobile: false,
                 question: false,
                 category: false,
+                captcha: false
             },
             categories : null,
+            isCaptchaSuccess: false,
         };
     },
     methods: {
@@ -175,8 +185,9 @@ Please double-check the entered data before submission.
             this.validation.mobile = this.request.mobile === null || this.request.mobile === ''
             this.validation.question = this.request.question === null || this.request.question === '' 
             this.validation.category = this.request.category === null
+            this.validation.captcha = !this.isCaptchaSuccess;
             var errors = [];
-            var validation = this.validation
+            var validation = this.validation;
             Object.keys(this.validation).forEach(function(k)
             {
                 if (validation[k] === true) errors.push(validation[k])
@@ -201,9 +212,13 @@ Please double-check the entered data before submission.
                 this.request.number = resp.data
                 this.uploading = false;
                 this.uploaded = true;
+                this.$refs.captcha.reset()
+                this.isCaptchaSuccess = false;
             })
             .catch(error => {
                 this.uploading = false;
+                this.isCaptchaSuccess = false;
+                this.$refs.captcha.reset()
                 this.$toast.add({severity: 'error', summary: 'Error', detail: error.message, life: 3000});
                 if (error.response.status == 401) {
                     this.$store.dispatch("logLout");
@@ -221,7 +236,16 @@ Please double-check the entered data before submission.
     },
 }
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
+    .request_card{
+        overflow-x: hidden;
+        padding: 2% 10%;
+    }
+    @media (max-width: 800px) {
+        .request_card{
+            padding: 0;
+        }
+    }
     .message {
         background: #B3E5FC;
         border-width: 0 0 0 6px;

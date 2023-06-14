@@ -59,7 +59,7 @@
           </div>
         </div>
       </TabPanel>
-      <TabPanel v-if="docInfo && docInfo.docHistory.stateId === Enum.INAPPROVAL.ID && (docInfo.sourceType === Enum.DocSourceType.FilledDoc || 
+      <TabPanel v-if="docInfo && docInfo.docHistory.stateId === Enum.INAPPROVAL.ID && (docInfo.sourceType === Enum.DocSourceType.FilledDoc ||
         (docInfo.docType && docInfo.docType === Enum.DocType.Contract))" :header="$t('common.revision')" :disabled="hideDocRevision">
         <div class="card">
           <label> {{ this.$t('common.comment') }} </label>
@@ -194,14 +194,14 @@ export default {
             this.isShow = true;
           } else {
             this.isShow = this.findRole(null, "career_moderator") || (this.signatures && this.signatures.some(x => x.userId === this.loginedUserId)) || 
-              this.docInfo.docHistory.setterId === this.loginedUserId || this.docInfo.creatorID === this.loginedUserId;
+              this.docInfo.docHistory.setterId === this.loginedUserId;
           }
 
-          
+
           if (this.signatures) {
             this.hideDocSign = !this.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));
             this.isIndivid = this.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === '') && (x.signRight && x.signRight !== '') && x.signRight === 'individual');
-            
+
             this.signatures.map(e => {
               e.sign = this.chunkString(e.signature, 1200)
             });
@@ -228,7 +228,7 @@ export default {
                 if (this.hideDocSign) {
                   this.hideDocSign = !element.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));
                 }
-                
+
                 if (this.hideDocRevision) {
                   this.hideDocRevision = !element.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));
                 }
@@ -263,7 +263,7 @@ export default {
             life: 3000,
           });
         }
-        
+
         this.loading = false;
       });
     },
@@ -424,13 +424,13 @@ export default {
         if (err.response.status == 401) {
           this.$store.dispatch("logLout");
         }
-        
+
         this.$toast.add({
           severity: "error",
           detail: this.$t("common.message.saveError"),
           life: 3000,
         })
-        
+
         this.loading = false
       })
     },

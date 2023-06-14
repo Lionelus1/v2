@@ -1,4 +1,7 @@
 import * as imageResizeCompress from "image-resize-compress";
+import moment from "moment/moment";
+import {FileService} from "@/service/file.service";
+import {fileRoute, smartEnuApi} from "@/config/config";
 
 export function upFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1)
@@ -23,4 +26,32 @@ export async function resizeImages(content) {
             });
     }
     return content;
+}
+
+export function formatDate(date) {
+    return moment(new Date(date)).utc().format("DD.MM.YYYY HH:mm")
+}
+
+export function generateYears(startYear = 1979) {
+    let years = [];
+    let max = new Date().getFullYear();
+    for (let i = max; i >= startYear; i--) {
+        years.push(i);
+    }
+    return years;
+}
+
+export function uploadSingFile(blobInfo, success, failure) {
+    const fd = new FormData();
+    fd.append("files[]", blobInfo.blob(), blobInfo.filename());
+    new FileService().uploadFile(fd).then(res => {
+        if (res.data) {
+            res.data.map(e => {
+                e.filePath = smartEnuApi + fileRoute + e.filepath;
+            });
+            success(res.data[0].filePath)
+        }
+    }).catch(error => {
+        failure(error)
+    });
 }

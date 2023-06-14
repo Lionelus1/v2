@@ -1,11 +1,12 @@
 <template>
+  <ConfirmPopup group="deleteResult"></ConfirmPopup>
   <Dialog v-if="editVisible" v-model:visible="editVisible" :closable="false" :style="{ width: '1000px' }" :breakpoints="{'960px': '75vw', '640px': '90vw'}"
           :header="$t('smartenu.createOrEditEvents')" :modal="true" class="p-fluid">
     <div class="card">
 <!--      <Message v-for="msg of formValid" severity="error" :key="msg">{{ msg }}</Message>-->
       <TabView>
         <TabPanel header="Қазақша">
-          <div class="fieldmt-3">
+          <div class="field mt-3">
             <label for="kz-title">{{ $t("common.nameInQazaq") }}</label>
             <InputText id="kz-title" v-model="event.titleKz" rows="3"
                        :class="{ 'p-invalid': event.titleKz && submitted }"/>
@@ -13,14 +14,15 @@
           </div>
           <div class="field">
             <label for="kz-content">{{ $t("common.contentInQazaq") }}</label>
-            <RichEditor ref="kztext" id="kz-content" v-model="event.contentKz" editorStyle="height: 320px"></RichEditor>
+            <TinyEditor v-model="event.contentKz" :height="300" :custom-file-upload="true" @onAfterUpload="onAfterUpload" />
+<!--            <RichEditor ref="kztext" id="kz-content" v-model="event.contentKz" editorStyle="height: 320px"></RichEditor>-->
             <small v-show="!event.contentKz && submitted" class="p-error">
               {{ $t("smartenu.contentKzInvalid") }}
             </small>
           </div>
         </TabPanel>
         <TabPanel header="Русский">
-          <div class="fieldmt-3" style="margin-bottom: 1.5rem">
+          <div class="field mt-3" style="margin-bottom: 1.5rem">
             <label for="ru-title">{{ $t("common.nameInRussian") }}</label>
             <InputText id="ru-title" v-model="event.titleRu" rows="3"
                        :class="{ 'p-invalid': !event.titleRu && submitted }"/>
@@ -30,14 +32,15 @@
           </div>
           <div class="field">
             <label for="ru-content">{{ $t("common.contentInRussian") }}</label>
-            <Editor id="ru-content" v-model="event.contentRu" editorStyle="height: 320px"/>
+            <TinyEditor v-model="event.contentRu" :height="300" :custom-file-upload="true" @onAfterUpload="onAfterUpload" />
+<!--            <Editor id="ru-content" v-model="event.contentRu" editorStyle="height: 320px"/>-->
             <small v-show="!event.contentRu && submitted" class="p-error">
               {{ $t("smartenu.contentRuInvalid") }}
             </small>
           </div>
         </TabPanel>
         <TabPanel header="English">
-          <div class="fieldmt-3" style="margin-bottom: 1.5rem">
+          <div class="field mt-3" style="margin-bottom: 1.5rem">
             <label for="en-title">{{ $t("common.nameInEnglish") }}</label>
             <InputText id="en-title" v-model="event.titleEn" rows="3"
                        :class="{ 'p-invalid': !event.titleEn && submitted }"/>
@@ -47,13 +50,35 @@
           </div>
           <div class="field">
             <label for="en-content">{{ $t("common.contentInEnglish") }}</label>
-            <Editor id="en-content" v-model="event.contentEn" editorStyle="height: 320px"/>
+            <TinyEditor v-model="event.contentEn" :height="300" :custom-file-upload="true" @onAfterUpload="onAfterUpload" />
+<!--            <Editor id="en-content" v-model="event.contentEn" editorStyle="height: 320px"/>-->
             <small v-show="!event.contentEn && submitted" class="p-error">
               {{ $t("smartenu.contentEnInvalid") }}
             </small>
           </div>
         </TabPanel>
       </TabView>
+      <div class="field">
+        <Fieldset :legend="$t('workPlan.attachments')" :toggleable="true" v-if="event.files" collapsed>
+          <div ref="content" class="p-fileupload-content">
+            <div class="p-fileupload-files">
+              <div class="p-fileupload-row" v-for="(item, index) of event.files" :key="index">
+            <span class="mr-3" style="cursor: pointer;" @click="downloadFile(item.file)">
+              <i class="fa-solid fa-file-arrow-down text-green-500"></i>
+            </span>
+                <span @click="downloadFile(item.file)" style="cursor: pointer;">{{ item.file.filename ? item.file.filename : item.file.filepath }}</span>
+                <span class="ml-2">
+                <Button icon="pi pi-copy" class="p-button-rounded p-button-text"
+                        v-clipboard:copy="copyToClipboard(item.file)" v-clipboard:success="onCopy"/>
+              </span>
+                <span>
+                <Button icon="pi pi-times" class="p-button-rounded p-button-text" @click="deleteFileConfirm($event, item, index)"/>
+              </span>
+              </div>
+            </div>
+          </div>
+        </Fieldset>
+      </div>
       <div class="field">
         <label for="is-online">{{ $t("smartenu.eventFormat") }}</label>
         <Dropdown id="is-online" v-model="event.isOnline" :options="format" optionLabel="name" optionValue="value"
@@ -146,7 +171,7 @@
         <Checkbox id="isPoster" name="isPoster" v-model="event.isPoster" :binary="true"/>
         <label for="isPoster">{{ $t("smartenu.addPoster") }}</label>
       </div>
-      <div class="fieldmt-3" style="margin-bottom: 1.5rem" v-if="event.isPoster">
+      <div class="field mt-3" style="margin-bottom: 1.5rem" v-if="event.isPoster">
         <label for="poster-link">{{ $t("smartenu.posterLink") }}</label>
         <InputText id="poster-link" v-model="poster.link" rows="3" :placeholder="$t('smartenu.posterLink')"/>
         <div class="grid mt-3" v-if="event.isPoster">
@@ -198,11 +223,11 @@ import {EventsService} from "../../service/event.service";
 import {resizeImages} from "../../helpers/HelperUtil";
 import * as imageResizeCompress from "image-resize-compress";
 import {PosterService} from "../../service/poster.service";
+import {downloadRoute, fileRoute, getHeader, smartEnuApi} from "@/config/config";
 
 export default {
   name: "AddEditEvent",
   props: ['selectedEvent', 'isVisible', 'partCats'],
-  components: {RichEditor},
   data() {
     return {
       editVisible: this.isVisible ?? false,
@@ -244,7 +269,8 @@ export default {
       departments: null,
       selectedDepartments: null,
       eventService: new EventsService(),
-      posterService: new PosterService()
+      posterService: new PosterService(),
+      fileList: []
     }
   },
   created() {
@@ -334,7 +360,7 @@ export default {
       }
     },
     async insertEvent() {
-      await resizeImages(this.event.contentKz).then(res => {
+      /*await resizeImages(this.event.contentKz).then(res => {
         this.event.contentKz = res
       });
       await resizeImages(this.event.contentRu).then(res => {
@@ -342,7 +368,7 @@ export default {
       });
       await resizeImages(this.event.contentEn).then(res => {
         this.event.contentEn = res
-      });
+      });*/
 
       this.event.additionalFile = null;
       this.event.mainImage = null;
@@ -503,6 +529,81 @@ export default {
         this.formValid.push(this.$t("smartenu.posterImageEnInvalid"));
       }
     },
+    onAfterUpload(file) {
+      this.fileList.push(file);
+      if (this.event.files && this.event.files.length !== 0) {
+        this.event.files.push({file_id: file.id, file: file})
+      } else {
+        this.event.files = [];
+        this.event.files.push({file_id: file.id, file: file})
+      }
+    },
+    copyToClipboard(file) {
+      return smartEnuApi + downloadRoute + file.uuid;
+    },
+    downloadFile(file) {
+      let url = `${smartEnuApi + downloadRoute + file.uuid}`
+      fetch(url, {
+        method: 'GET',
+        headers: getHeader()
+      }).then(response => response.blob()).then(blob => {
+        let url = window.URL.createObjectURL(blob);
+        let a = document.createElement('a');
+        a.href = url;
+        a.download = file.filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+      });
+    },
+    deleteFileConfirm(event, item, index) {
+      this.$confirm.require({
+        target: event.currentTarget,
+        message: this.$t('common.confirmation'),
+        header: this.$t('common.confirm'),
+        group: 'deleteResult',
+        icon: 'pi pi-info-circle',
+        acceptClass: 'p-button-rounded p-button-success',
+        rejectClass: 'p-button-rounded p-button-danger',
+        accept: () => {
+          if (item.id) {
+            this.deleteFile(item.id);
+          } else {
+            this.event.files.splice(index, 1)
+          }
+        }
+      });
+    },
+    deleteFile(id) {
+      this.eventService.deleteEventFile(id).then(res => {
+        if (res.data.is_success) {
+          this.getEventFiles();
+          this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
+        }
+      }).catch((error) => {
+        this.$toast.add({severity: "error", summary: error, life: 3000});
+      });
+    },
+    getEventFiles() {
+      this.eventService.getEventFiles(this.event.id).then(res => {
+        this.event.files = res.data;
+      }).catch(error => {
+        this.$toast.add({severity: "error", summary: error, life: 3000});
+      });
+    },
+    onCopy() {
+      this.$toast.add({severity: 'success', summary: this.$t('ncasigner.successCopy'), life: 3000});
+    },
     async convertBase64(document) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -552,7 +653,6 @@ export default {
         );
       }
     },
-
     isCreated: function () {
       return (
           this.selectedEvent &&

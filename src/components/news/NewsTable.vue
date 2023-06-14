@@ -1,5 +1,6 @@
 <template>
   <div class="col-12">
+    <h3>{{ $t("smartenu.newsTitle") }}</h3>
     <div class="card">
       <Button :label="$t('common.add')" icon="pi pi-plus" class="p-button-success mr-2" v-on:click="createNews"/>
       <Button :label="$t('common.send')" icon="pi pi-send" class="mr-2" v-on:click="sendNews"
@@ -23,8 +24,7 @@
                  :filters="filters" filterDisplay="menu" :showFilterMatchModes="false" :loading="loading"
                  responsiveLayout="scroll" @sort="onSort($event)" selectionMode="single">
         <template #header>
-          <div class="table-header">
-            {{ $t("smartenu.newsTitle") }}
+          <div class="table-header flex justify-content-end align-items-center">
             <span class="p-input-icon-left"><i class="pi pi-search"/>
               <InputText type="search" v-model="lazyParams.searchText" :placeholder="$t('common.search')"
                          @keyup.enter="getAllNews" @click="clearData"/>
@@ -34,13 +34,9 @@
         </template>
         <template #empty>{{ $t("smartenu.newsNotFound") }}</template>
         <template #loading>{{ $t("smartenu.loadingNews") }}</template>
-        <Column field="titleKz" v-bind:header="$t('common.nameIn')" :sortable="true">
-          <template #body="slotProps">
-          <span>
-            {{
-              $i18n.locale === "kz" ? slotProps.data.titleKz : $i18n.locale === "ru" ? slotProps.data.titleRu : slotProps.data.titleEn
-            }}
-          </span>
+        <Column field="titleKz" v-bind:header="$t('common.nameIn')" :sortable="true" style="width: 40%">
+          <template #body="{data}">
+          <span>{{ data['title' + locale] }}</span>
           </template>
         </Column>
         <Column :field="$i18n.locale === 'kz' ? `history.status.nameKz` : $i18n.locale === 'ru'
@@ -68,7 +64,7 @@
         <Column>
           <template #body="slotProps">
             <Button icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2"
-                    @click="editNews(slotProps.data.id)"
+                    @click="editNews(slotProps.data)"
                     v-if="slotProps.data.history.status.id === statuses.created || isAdmin || isModer"/>
             <Button icon="pi pi-trash" class="p-button-rounded p-button-warning" @click="delNews(slotProps.data.id)"
                     v-if="slotProps.data.history.status.id === statuses.created || isAdmin"/>
@@ -83,19 +79,19 @@
   <Dialog v-model:visible="rejectVisible" :style="{ width: '600px' }" :header="$t('smartenu.createOrEditNews')"
           :modal="true" class="p-fluid">
     <div class="card">
-      <div class="fieldmt-3" style="margin-bottom: 1.5rem">
+      <div class="field mt-3" style="margin-bottom: 1.5rem">
           <span class="p-float-label">
             <InputText id="kz-title" v-model="selectedNews.history.rejectReasonKz" rows="3"/>
             <label for="kz-title">{{ $t("common.nameInQazaq") }}</label>
           </span>
       </div>
-      <div class="fieldmt-3" style="margin-bottom: 1.5rem">
+      <div class="field mt-3" style="margin-bottom: 1.5rem">
           <span class="p-float-label">
             <InputText id="ru-title" v-model="selectedNews.history.rejectReasonRu" rows="3"/>
             <label for="ru-title">{{ $t("common.nameInRussian") }}</label>
           </span>
       </div>
-      <div class="fieldmt-3">
+      <div class="field mt-3">
           <span class="p-float-label">
             <InputText id="en-title" v-model="selectedNews.history.rejectReasonEn" rows="3"/>
             <label for="en-title">{{ $t("common.nameInEnglish") }}</label>
@@ -144,6 +140,7 @@ import {NewsService} from "../../service/news.service";
 import {PosterService} from "../../service/poster.service";
 import NewsView from "./NewsView";
 import AddEditNews from "./AddEditNews";
+import {upFirstLetter} from "@/helpers/HelperUtil";
 
 export default {
   name: "NewsTable",
@@ -216,6 +213,7 @@ export default {
     this.emitter.on('newsViewModalClose', data => {
       this.newsViewVisible = data;
     });
+
     this.emitter.on('addEditNewsDialogHide', data => {
       if (data)
         this.hideDialog();
@@ -360,20 +358,19 @@ export default {
     /**
      *  NEWS PRE EDITING
      */
-    editNews(id) {
+    editNews(data) {
       this.catTreeElementsList = [];
       this.catTree.root = this.createCatTree(null, null);
       this.newsData = {};
       this.submitted = false;
-      let newsData = this.allNews.find((x) => x.id === id);
-      this.newsData = newsData;
+      this.newsData = data;
       this.selectedCatTree = [];
       for (let key in this.catTreeElementsList) {
-        for (let ixd in newsData.contentCategoryRelations) {
-          if (this.catTreeElementsList[key].data.id === newsData.contentCategoryRelations[ixd].categoryId) {
+        for (let ixd in data.contentCategoryRelations) {
+          if (this.catTreeElementsList[key].data.id === data.contentCategoryRelations[ixd].categoryId) {
             this.selectedCatTree[this.catTreeElementsList[key].key] = {
-              checked: newsData.contentCategoryRelations[ixd].checked,
-              partialChecked: newsData.contentCategoryRelations[ixd].partialChecked
+              checked: data.contentCategoryRelations[ixd].checked,
+              partialChecked: data.contentCategoryRelations[ixd].partialChecked
             }
           }
         }
@@ -552,6 +549,9 @@ export default {
     isStudent: function () {
       return this.roles.isStudent;
     },
+    locale: function() {
+      return upFirstLetter(this.$i18n.locale);
+    }
   },
 };
 </script>

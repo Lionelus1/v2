@@ -1,5 +1,6 @@
 <template>
   <div class="col-12">
+    <h3>{{ $t("smartenu.newsCategoriesTitle") }}</h3>
     <div class="card">
       <Button
           :label="$t('common.add')"
@@ -13,17 +14,16 @@
       <DataTable
           :value="categories"
           :paginator="true"
-          class="p-datatable-customers"
           :rows="10"
           dataKey="id"
           :rowHover="true"
           v-model:selection="selectedCategory"
           :filters="filters"
           :loading="loading"
+          responsive-layout="scroll"
       >
         <template #header>
-          <div class="table-header">
-            {{ $t("smartenu.newsCategoriesTitle") }}
+          <div class="table-header flex justify-content-end align-items-center">
             <span class="p-input-icon-left">
             <i class="pi pi-search"/>
             <InputText

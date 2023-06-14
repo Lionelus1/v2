@@ -6,6 +6,9 @@ export const smartEnuApi = process.env.VUE_APP_SMARTENU_API
 export const socketApi = process.env.VUE_APP_SOCKET_API
 export const queueApi = process.env.VUE_APP_QUEUE_API
 export const fileRoute = "/serve?path="
+export const downloadRoute = "/download/"
+
+export const webEnuDomain = process.env.VUE_APP_ENU_DOMAIN
 
 export const header  = {
   "Accept": "application/json",
@@ -24,7 +27,9 @@ export const getHeader = function() {
     const headers= {
       'Access-Control-Allow-Credentials':'true',
       'Content-Type': 'application/json',
-      'mode': 'no-cors',
+      'Accept':"*/*",
+
+      
       'Authorization':'Bearer ' + tokenData.access_token
     }
     return headers;

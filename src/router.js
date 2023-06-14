@@ -1,6 +1,10 @@
 import {createRouter, createWebHashHistory} from 'vue-router';
 import Full from './components/Full.vue';
 import store from '@/store/store'
+import AdmissionInfoList from "@/components/enuwebsite/blocks/admission.info/AdmissionInfoList.vue";
+import EduPriceCategoryList from "@/components/enuwebsite/blocks/edu.price/EduPriceCategoryList.vue";
+import EduPriceComponent from "@/components/enuwebsite/blocks/edu.price/EduPriceComponent.vue";
+import EduScoreComponent from "@/components/enuwebsite/blocks/edu.score/EduScoreComponent.vue"
 
 function load(component) {
     return () => import(`./components/${component}.vue`)
@@ -446,6 +450,168 @@ const routes = [
                 path: '/course/certificate/templates',
                 name: 'CertificateTemplate',
                 component: load('documents/certificates/Template'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/orgControl',
+                name: 'OrgControl',
+                component: load('roleControl/OrgControl'),
+                beforeEnter: ifMainAdministrator,
+            },
+            {
+                path: '/enu/menus',
+                name: 'EnuMenuList',
+                component: load('enuwebsite/EnuMenuList'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/enu/pages',
+                name: 'EnuPagesList',
+                component: load('enuwebsite/EnuPagesList'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/enu/page/:id',
+                name: 'LandingPageView',
+                component: load('enuwebsite/LandingPageView'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/enu/blocks',
+                name: 'BlockComponent',
+                component: load('enuwebsite/blocks/BlockComponent'),
+                beforeEnter: ifAuthenticated,
+                children: [
+                    {
+                        path: '',
+                        name: 'BlockList',
+                        component: load('enuwebsite/blocks/BlockList'),
+                        beforeEnter: ifAuthenticated,
+                    },
+                    {
+                        path: 'view/:id',
+                        name: 'BlockView',
+                        component: load('enuwebsite/blocks/BlockView'),
+                        beforeEnter: ifAuthenticated,
+                    },
+                    {
+                        path: 'admission-info',
+                        name: 'AdmissionInfoComponent',
+                        component: load('enuwebsite/blocks/admission.info/AdmissionInfoComponent'),
+                        beforeEnter: ifAuthenticated,
+                        children: [
+                            {
+                                path: '',
+                                name: 'AdmissionInfoList',
+                                component: load('enuwebsite/blocks/admission.info/AdmissionInfoList'),
+                                beforeEnter: ifAuthenticated,
+                            },
+                            {
+                                path: 'categories',
+                                name: 'AdmissionInfoCategory',
+                                component: load('enuwebsite/blocks/admission.info/AdmissionInfoCategory'),
+                                beforeEnter: ifAuthenticated,
+                            }
+                        ]
+                    },
+                    {
+                        path: 'edu-price',
+                        name: 'EduPriceComponent',
+                        component: load('enuwebsite/blocks/edu.price/EduPriceComponent'),
+                        beforeEnter: ifAuthenticated,
+                        children: [
+                            {
+                                path: '',
+                                name: 'EduPriceCategoryList',
+                                component: load('enuwebsite/blocks/edu.price/EduPriceCategoryList'),
+                                beforeEnter: ifAuthenticated,
+                            },
+                            {
+                                path: 'prices/:id',
+                                name: 'EduPriceList',
+                                component: load('enuwebsite/blocks/edu.price/EduPriceList'),
+                                beforeEnter: ifAuthenticated,
+                            }
+                        ]
+                    },
+                    {
+                        path: 'edu-score',
+                        name: 'EduScoreComponent',
+                        component: load('enuwebsite/blocks/edu.score/EduScoreComponent'),
+                        beforeEnter: ifAuthenticated,
+                        children: [
+                            {
+                                path: '',
+                                name: 'EduScoreCategoryList',
+                                component: load('enuwebsite/blocks/edu.score/EduScoreCategoryList'),
+                                beforeEnter: ifAuthenticated,
+                            },
+                            {
+                                path: 'scores/:id',
+                                name: 'EduScoreList',
+                                component: load('enuwebsite/blocks/edu.score/EduScoreList'),
+                                beforeEnter: ifAuthenticated,
+                            }
+                        ]
+                    },
+                    {
+                        path: 'edu-doctoral-score',
+                        name: 'EduDoctoralScoreComponent',
+                        component: load('enuwebsite/blocks/edu.doctoral.score/EduDoctoralScoreComponent'),
+                        beforeEnter: ifAuthenticated,
+                        children: [
+                            {
+                                path: '',
+                                name: 'EduDoctoralScoreCategoryList',
+                                component: load('enuwebsite/blocks/edu.doctoral.score/EduDoctoralScoreCategoryList'),
+                                beforeEnter: ifAuthenticated,
+                            },
+                            {
+                                path: 'drscores/:id',
+                                name: 'EduDoctoralScoreList',
+                                component: load('enuwebsite/blocks/edu.doctoral.score/EduDoctoralScoreList'),
+                                beforeEnter: ifAuthenticated,
+                            }
+                        ]
+                    },
+                ]
+            },
+            {
+                path: '/blog',
+                name: 'BlogComponent',
+                component: load('blog/BlogComponent'),
+                beforeEnter: ifAuthenticated,
+                children: [
+                    {
+                        path: '',
+                        name: 'BlogList',
+                        component: load('blog/BlogList'),
+                        beforeEnter: ifAuthenticated,
+                    },
+                    {
+                        path: 'requests/:id',
+                        name: 'BlogRequests',
+                        component: load('blog/BlogRequests'),
+                        beforeEnter: ifAuthenticated,
+                    },
+                    {
+                        path: 'view/:id',
+                        name: 'BlogRequestView',
+                        component: load('blog/BlogRequestView'),
+                        beforeEnter: ifAuthenticated,
+                    }
+                ]
+            },
+            {
+                path: '/enu/settings',
+                name: 'EnuSiteSettings',
+                component: load('enuwebsite/EnuSiteSettings'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/enu/weblogs',
+                name: 'EnuSiteLogs',
+                component: load('enuwebsite/EnuSiteLogs'),
                 beforeEnter: ifAuthenticated,
             },
             {

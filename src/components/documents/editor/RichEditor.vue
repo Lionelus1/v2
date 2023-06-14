@@ -69,6 +69,17 @@
 <script>
 import Quill from "quill";
 import QuillToolbarDropDown from "./QuillToolbarDropDown";
+import BlotFormatter from "quill-blot-formatter";
+import ImageUploader from "quill-image-uploader";
+import {FileService} from "@/service/file.service";
+import {fileRoute, smartEnuApi} from "@/config/config";
+import htmlEditButton from "quill-html-edit-button";
+
+
+Quill.register("modules/blotFormatter", BlotFormatter);
+Quill.register("modules/imageUploader", ImageUploader);
+Quill.register("modules/htmlEditButton", htmlEditButton);
+
 export default {
   data() {
 		return {
@@ -76,7 +87,8 @@ export default {
       agreementDesctiption: "",
       agreementElement: "",
       isValid:false,
-      pasteClear: this.clearOnPaste
+      pasteClear: this.clearOnPaste,
+      fileService: new FileService()
 		}
 	},
   emits: ["update:modelValue", "text-change"],
@@ -101,7 +113,28 @@ export default {
     this.quill = new Quill(this.$refs.editorElement, {
       modules: {
         toolbar: this.$refs.toolbarElement,
-
+        blotFormatter: {},
+        imageUploader: {
+          upload: (file) => {
+            return new Promise((resolve, reject) => {
+              const fd = new FormData();
+              fd.append("files[]", file);
+              this.fileService.uploadFile(fd).then(res => {
+                if (res.data) {
+                  res.data.map(e => {
+                    e.filePath = smartEnuApi + fileRoute + e.filePath;
+                  });
+                  res.data.forEach(e => {
+                    resolve(e.filePath)
+                  });
+                }
+              }).catch(error => {
+                reject(error)
+              });
+            });
+          },
+        },
+        htmlEditButton: {}
       },
       readOnly: this.readonly,
       theme: "snow",

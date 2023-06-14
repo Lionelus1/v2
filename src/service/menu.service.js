@@ -40,7 +40,7 @@ export class MenuService {
                     {
                         label: $t('postaccmonrep.title'), icon: 'pi pi-fw pi-folder', to: '/documents/catalog/postaccmonrep'
                     },
-              
+
                 ]
 
             },
@@ -73,8 +73,8 @@ export class MenuService {
 
                 items: [
                     {
-                        label: $t('common.organizations'), 
-                        icon: 'pi pi-fw pi-home', 
+                        label: $t('common.organizations'),
+                        icon: 'pi pi-fw pi-home',
                         to: '/contragent/organizations'},
                     //label: 'Банктер', icon: 'pi pi-fw pi-money-bill', to: '/contragent/banks'},
                     {
@@ -185,9 +185,31 @@ export class MenuService {
                 ]
 
             },
+
+            {
+                label: $t('web.mainMenuTitle'), icon: 'pi pi-fw pi-box ',
+                visible: this.findRole('enu_web_admin'),
+                items: [
+                    {
+                        label: $t('web.menuPage'), icon: 'pi pi-fw pi-bars', to: '/enu/menus'
+                    },
+                    {
+                        label: $t('web.pageLink'), icon: 'pi pi-fw pi-external-link', to: '/enu/pages'
+                    },
+                    {
+                        label: $t('web.blocks'), icon: 'fa-solid fa-cube', to: '/enu/blocks'
+                    },
+                    {
+                        label: $t('web.blog'), icon: 'fa-solid fa-message', to: '/blog'
+                    },
+                    {
+                        label: $t('web.siteSettings'), icon: 'fa-solid fa-gear', to: '/enu/settings'
+                    }
+                ]
+            },
             {
                 label: $t('course.title'), icon: 'fa-solid fa-chalkboard-user',
-                items: [ 
+                items: [
                     {
                         label: $t('course.certificate.template'), icon: 'fa-solid fa-certificate', to: '/course/certificate/templates',
                         visible: this.findRole("main_administrator") || this.findRole("online_course_administrator")
@@ -202,9 +224,9 @@ export class MenuService {
                     },
                     {
                         label: $t('course.courses'), icon: 'fa-solid fa-chalkboard', to: '/courses',
-                        
+
                     },
-                   
+
                 ]
             },
         ]
