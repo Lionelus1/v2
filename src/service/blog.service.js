@@ -27,6 +27,10 @@ export class BlogService {
         return api.post(`/web/deleteBlog`, {id: id}, {headers: getHeader()})
     }
 
+    deleteBlogRequest(id) {
+        return api.post(`/web/deleteBlogRequest`, {id: id}, {headers: getHeader()})
+    }
+
     sendBlogRequestAnswer(data) {
         return api.post(`/web/sendBlogRequestAnswer`, data, {headers: getHeader()});
     }
