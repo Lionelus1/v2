@@ -27,7 +27,6 @@
             </div>
           </div>
         </Panel>
-
         <Panel v-if="isFacultyWebAdmin || isWebAdmin" :header="$t('web.universityAddressInfo')" class="mt-3">
           <div class="p-fluid">
             <div class="field">
@@ -56,8 +55,6 @@
         <WebLogs :TN="TN" :key="TN" />
       </TabPanel>
     </TabView>
-
-
   </div>
 </template>
 

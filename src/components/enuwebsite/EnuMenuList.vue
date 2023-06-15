@@ -103,12 +103,11 @@
                     </TreeTable>
                 </TabPanel>
                 <TabPanel :header="$t('web.history')">
-                    <WebLogs />
+                    <WebLogs :TN="TN" :key="TN"/>
                 </TabPanel>
             </TabView>
         </div>
     </div>
-
     <AddMenu v-if="addMenuVisible" :is-visible="addMenuVisible" :all-pages="pages" :all-menus="menus"
         :current-menu="selectedMenu" :menu_id="parentId"></AddMenu>
     <PageView v-if="viewPageVisible" :is-visible="viewPageVisible" :selectedPage="selectedViewMenu"></PageView>
@@ -132,6 +131,7 @@ export default {
             addMenuVisible: false,
             viewPageVisible: false,
             menus: null,
+            TN: null,
             pages: [],
             submitted: false,
             selectedMenu: null,
@@ -259,6 +259,7 @@ export default {
             this.enuService.getMenusTree(this.lazyParams).then(res => {
                 if (parentData == null) {
                     this.menus = res.data.menus;
+                    this.TN = res.data.tn_res;
                     this.total = res.data.total;
                     this.tableName = res.data.table_name;
                     if (this.menus) {

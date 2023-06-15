@@ -37,7 +37,7 @@
           </DataTable>
         </TabPanel>
         <TabPanel :header="$t('web.history')">
-          <WebLogs />
+          <WebLogs :TN="TN" :key="TN"/>
         </TabPanel>
       </TabView>
     </div>
@@ -56,6 +56,7 @@ import WebLogs from "@/components/enuwebsite/EnuSiteLogs.vue";
 
 const { t } = useI18n()
 const toast = useToast()
+const TN = ref(null)
 const loading = ref(false)
 let submitted = ref(false)
 const list = ref([])
@@ -71,6 +72,7 @@ const getSlugs = () => {
   enuService.getSlugs().then(res => {
     if (res.data)
       list.value = res.data.slugs
+      TN.value = res.data.tn_res
     loading.value = false
   }).catch(error => {
     loading.value = false
