@@ -881,7 +881,9 @@ export default {
         commonSettings: 'Настройки',
         universityAddressInfo: 'Контактный адрес',
         websiteAddress: 'Сайт',
-        universityAddress: 'Адрес',
+        universityAddressKZ: 'Мекенжайы',
+        universityAddressRU: 'Адрес',
+        universityAddressEN: 'Address',
         universityFax: 'Факс'
     },
 

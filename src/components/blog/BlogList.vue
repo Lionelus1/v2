@@ -18,6 +18,11 @@
                                 </a>
                             </template>
                         </Column>
+                        <Column :header="$t('cafedra.responsible')">
+                            <template #body="{ data }">
+                                {{ data.ownedBy.fullName }}
+                            </template>
+                        </Column>
                         <Column class="text-right">
                             <template #body="{ data }">
                                 <Button icon="fa-solid fa-pen" class="p-button mr-2" @click="openEdit(data)" />
@@ -94,13 +99,15 @@
 import { useI18n } from "vue-i18n";
 import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { EnuWebService } from "@/service/enu.web.service";
 import { useRouter } from "vue-router";
 import { formatDate } from "@/helpers/HelperUtil";
 import { BlogService } from "@/service/blog.service";
 import CustomFileUpload from "@/components/CustomFileUpload.vue";
 import WebLogs from "@/components/enuwebsite/EnuSiteLogs.vue";
+const authUser = computed(() => JSON.parse(localStorage.getItem('loginedUser')))
+console.log("authUser:",authUser.value)
 
 const i18n = useI18n()
 const toast = useToast()

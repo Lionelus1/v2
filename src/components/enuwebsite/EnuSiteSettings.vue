@@ -27,29 +27,42 @@
             </div>
           </div>
         </Panel>
-        <Panel v-if="isFacultyWebAdmin || isWebAdmin" :header="$t('web.universityAddressInfo')" class="mt-3">
-          <div class="p-fluid">
-            <div class="field">
-              <label>{{ $t('web.universityFax') }}</label>
-              <InputText v-model="infoData.fax" />
+        <div v-if="isUserExist">
+          <Panel v-if="isFacultyWebAdmin || isWebAdmin" :header="$t('web.universityAddressInfo')" class="mt-3">
+            <div class="p-fluid">
+              <div class="field">
+                <label>{{ $t('web.universityFax') }}</label>
+                <InputText v-model="infoData.fax" />
+              </div>
+              <div class="field">
+                <label>{{ $t('contact.email') }}</label>
+                <InputText v-model="infoData.email" type="email" />
+              </div>
+              <div class="field">
+                <label>{{ $t('web.websiteAddress') }}</label>
+                <InputText v-model="infoData.website" />
+              </div>
+              <div class="field">
+                <label>{{ $t('web.universityAddressKZ') }}</label>
+                <InputText v-model="infoData.address_kz" />
+
+              </div>
+              <div class="field">
+                <label>{{ $t('web.universityAddressRU') }}</label>
+                <InputText v-model="infoData.address_ru" />
+
+              </div>
+              <div class="field">
+                <label>{{ $t('web.universityAddressEN') }}</label>
+                <InputText v-model="infoData.address_en" />
+
+              </div>
             </div>
             <div class="field">
-              <label>{{ $t('contact.email') }}</label>
-              <InputText v-model="infoData.email" type="email" />
+              <Button :label="$t('common.save')" class="mt-3" @click="saveSiteInfo" />
             </div>
-            <div class="field">
-              <label>{{ $t('web.websiteAddress') }}</label>
-              <InputText v-model="infoData.website" />
-            </div>
-            <div class="field">
-              <label>{{ $t('web.universityAddress') }}</label>
-              <InputText v-model="infoData.address" />
-            </div>
-          </div>
-          <div class="field">
-            <Button :label="$t('common.save')" class="mt-3" @click="saveSiteInfo" />
-          </div>
-        </Panel>
+          </Panel>
+        </div>
       </TabPanel>
       <TabPanel v-if="isWebAdmin.value" :header="$t('web.history')" @click="getTableLogs()">
         <WebLogs :TN="TN" :key="TN" />
@@ -74,6 +87,7 @@ const loading = ref(false)
 const toast = useToast()
 const submitted = ref(false)
 const TN = ref(null)
+const isUserExist = ref(false)
 const authUser = computed(() => JSON.parse(localStorage.getItem("loginedUser")))
 const isWebAdmin = computed(() => findRole(authUser.value, "enu_web_admin"))
 const isFacultyWebAdmin = computed(() => findRole(authUser.value, "enu_fac_web_admin"))
@@ -85,6 +99,7 @@ const getFacultyAbb = () => {
   enuService.getSlugByUserId(userParams.value).then(res => {
     if (res.data) {
       facultyAbbrev.value = res.data
+      isUserExist.value = true
 
     }
     loading.value = false;
@@ -101,6 +116,7 @@ const getSettings = () => {
       formData.value = res.data.settings;
       infoData.value = res.data.site_info
       TN.value = res.data.tn_res
+
       initMourning(formData.value)
     }
     loading.value = false;
@@ -113,7 +129,6 @@ const getSettings = () => {
 onMounted(() => {
   getSettings();
   getFacultyAbb();
-
 })
 
 const update = () => {
