@@ -854,7 +854,9 @@ export default {
         commonSettings: 'Settings',
         universityAddressInfo: 'Contact Address',
         websiteAddress: 'Website',
-        universityAddress: 'Address',
+        universityAddressKZ: 'Мекенжайы',
+        universityAddressRU: 'Адрес',
+        universityAddressEN: 'Address',
         universityFax: 'Fax'
     },
     //Student locale

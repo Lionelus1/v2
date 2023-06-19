@@ -896,7 +896,9 @@ export default {
         commonSettings: 'Параметрлер',
         universityAddressInfo: 'Байланыс мәліметтері',
         websiteAddress: 'Сайт',
-        universityAddress: 'Мекенжайы',
+        universityAddressKZ: 'Мекенжайы',
+        universityAddressRU: 'Адрес',
+        universityAddressEN: 'Address',
         universityFax: 'Факс'
 
     },
