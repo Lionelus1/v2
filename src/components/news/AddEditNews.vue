@@ -2,7 +2,7 @@
     <ConfirmPopup group="deleteResult"></ConfirmPopup>
     <Dialog v-if="editVisible" v-model:visible="editVisible" :style="{ width: '1000px' }" :breakpoints="{'960px': '75vw', '640px': '90vw'}"
             :header="$t('smartenu.createOrEditNews')"
-            :modal="true">
+            :modal="true" closable @close="hideDialog" :close-on-escape="false">
         <div class="card p-fluid">
             <!--      <Message v-for="msg of formValid" severity="error" :key="msg">{{ msg }}</Message>-->
             <TabView>
