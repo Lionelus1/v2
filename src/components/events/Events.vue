@@ -56,9 +56,9 @@
                 <Column headerStyle="width:120px">
                     <template #body="{ data }">
                         <Button icon="pi pi-pencil" class="p-button-rounded p-button-success" @click="editEvent(data)"
-                                v-if="data.history.status.id === statuses.created && userHasAdmin "/>
+                                v-if="data?.history.status.id === statuses.created || userHasAdmin "/>
                         <Button icon="pi pi-trash" class="p-button-rounded p-button-warning ml-2" @click="deleteConfirm(data)"
-                                v-if="data.history.status.id === statuses.created && isAdmin"/>
+                                v-if="data?.history.status.id === statuses.created || isAdmin"/>
                     </template>
                 </Column>
             </DataTable>
@@ -351,6 +351,7 @@ export default {
          *  NEWS PRE EDITING
          */
         editEvent(event) {
+          console.log(this.editVisible)
             this.event = event;
             this.editVisible = true;
             this.submitted = false;

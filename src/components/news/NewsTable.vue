@@ -56,11 +56,16 @@
           </span>
                     </template>
                 </Column>
-                <Column field="createdBy" v-bind:header="$t('common.createdBy')" :sortable="true">
+                <Column field="createdBy" v-bind:header="$t('common.createdBy')" >
                     <template #body="slotProps">
                         {{ slotProps.data.createdBy.fullName }}
                     </template>
                 </Column>
+              <Column field="history.modify_date" v-bind:header="$t('common.updated')" sortable>
+                <template #body="{data}">
+                  {{ formatDate(data?.history?.modifyDate) }}
+                </template>
+              </Column>
                 <Column>
                     <template #body="slotProps">
                         <Button icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2"
@@ -140,7 +145,7 @@ import {NewsService} from "../../service/news.service";
 import {PosterService} from "../../service/poster.service";
 import NewsView from "./NewsView";
 import AddEditNews from "./AddEditNews";
-import {upFirstLetter} from "@/helpers/HelperUtil";
+import {formatDate, upFirstLetter} from "@/helpers/HelperUtil";
 
 export default {
     name: "NewsTable",
@@ -225,6 +230,7 @@ export default {
         });
     },
     methods: {
+      formatDate,
         findRole: findRole,
         clearData() {
             if (!this.lazyParams.searchText) {
