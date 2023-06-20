@@ -70,6 +70,11 @@ const routes = [
         component: load('publicReception/Request')
     },
     {
+        path: '/document/:uuid',
+        name: 'Document',
+        component: load('documents/Document'),
+    },
+    {
         path: '/sign/:uuid',
         name: 'DocSignaturesInfo',
         component: load('DocSignaturesInfo'),
@@ -151,6 +156,12 @@ const routes = [
                 path: '/documents/certificates',
                 name: 'certificateJournal',
                 component: load('documents/certificates/Journal'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/docrequests',
+                name: 'DocumentRequests',
+                component: load('humanResources/ReferenceRequests'),
                 beforeEnter: ifAuthenticated,
             },
             {
@@ -392,9 +403,9 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
-                path:'/myref',
-                name:'OutQr1',
-                component: load('smartenu/JobDescription'),
+                path:'/references',
+                name:'References',
+                component: load('smartenu/References'),
                 beforeEnter: ifAuthenticated,
             },
             {

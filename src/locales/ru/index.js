@@ -1074,12 +1074,30 @@ export default {
     ref: {
         getRef: "Получить справку",
         createQr: "Присвоить QR код и поделиться",
-        sendMail: "Сообщить об ошибке данных в документе",
-        sendMail1: "Отправить почту",
+        errorReport: "Сообщить об ошибке данных в документе",
+        sendMail: "Отправить почту",
         correction: "Напишите здесь свою поправку. . .",
-        sendingMail: "Отправка почты подождите . . .",
+        sendingMail: "Отправка почты подождите. . .",
         mailSent: "Ваше письмо успешно отправлено в отдел кадров.",
-        mailFailed: "Ваше письмо не отправлено, попробуйте еще раз."
+        mailFailed: "Ваше письмо не отправлено, попробуйте еще раз.",
+        requestInfo: "Запросить информацию"
+    },
+    requests: {
+        menuTitle: 'Запросы по справкам',
+        requests: 'Запросы',
+        selectedRequest: 'Выбранный запрос',
+        requestType: 'Тип запроса',
+        requestedUser: 'Инициатор запроса',
+        requestedTime: 'Дата',
+        information: 'Информация',
+        reference: 'Справка',
+        save: 'Сохранить и одобрить',
+        reject: 'Отклонить запрос',
+        commentary: 'Комментарий от инициатора запроса',
+        types: {
+            reference_error_correction: 'На исправление ошибок',
+            reference_info_request: 'Дополнительная информация',
+        },
     },
     guide: {
         guide: 'Cправочник',

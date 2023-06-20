@@ -67,6 +67,12 @@ export class MenuService {
                         to: '/orgControl',
                         visible: this.findRole("main_administrator")
                     },
+                    {
+                        label: $t('requests.menuTitle'),
+                        icon: 'fa-solid fa-file-circle-question',
+                        to: '/docrequests',
+                        visible: this.findRole("hr_manager")
+                    },
                 ]
             },
             {
