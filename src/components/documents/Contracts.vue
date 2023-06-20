@@ -68,9 +68,11 @@
 </div>
 </template>
 <script>
-  import { smartEnuApi, getHeader, findRole } from "@/config/config";
   import axios from 'axios';
+  
+  import { smartEnuApi, getHeader, findRole } from "@/config/config";
   import Enum from "@/enum/docstates/index";
+  
   import DocTemplate from "@/components/documents/DocTemplate.vue"
   import PostFile from "./PostFile.vue"
 
@@ -172,25 +174,6 @@
         .catch(_ => {
           this.saving = false;
         })
-      },
-      addTemplateNode(nodeDataChildren,node) {
-        let childData = new Object();
-        childData.id=node.id;
-        if (node.History != null) {
-          childData.stateID = node.History[0].id;
-          childData.state =  this.$i18n.locale == "kz" ? node.History[0].stateKaz : this.$i18n.locale == "ru" ?  node.History[0].stateRus : node.History[0].stateEn;
-          childData.stateEn =  node.History[0].stateEn;
-
-        }
-        childData.namekz= node.descriptionKaz;
-        childData.nameru= node.descriptionRus;
-        childData.createdDate = node.createDate;
-        childData.mainTextKaz = node.mainTextKaz
-        childData.mainTextRus = node.mainTextRus
-        childData.type = 0;
-        childData.typeText= this.$t('common.doc');
-        nodeDataChildren.push(childData);
-        return childData;
       },
       fileUpdated(event) {
         this.$router.push({ path: '/documents/contract/' + event.id });

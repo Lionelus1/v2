@@ -1069,8 +1069,33 @@ export default {
     postaccmonrep: {
         title: "Self-assessment/post-accreditation monitoring report",
     },
-    ref:{
-        getRef:"Get reference"
+    ref: {
+        getRef: "Get reference",
+        createQr: "Assign a QR code and share",
+        errorReport: "Report a data error in the document",
+        sendMail: "Send mail",
+        correction: "Write your correction here. . .",
+        sendingMail: "Sending mail please wait. . .",
+        mailSent: "Your email has been successfully sent to the HR department.",
+        mailFailed: "Your email was not sent, please try again.",
+        requestInfo: "Request information"
+    },
+    requests: {
+        menuTitle: 'Reference requests',
+        requests: 'Requests',
+        selectedRequest: 'Selected request',
+        requestType: 'Request type',
+        requestedUser: 'Requester',
+        requestedTime: 'Date',
+        information: 'Information',
+        reference: 'Reference',
+        save: 'Save and approve',
+        reject: 'Reject request',
+        commentary: 'Comment from requester',
+        types: {
+            reference_error_correction: 'To correct mistakes',
+            reference_info_request: 'Additional information',
+        },
     },
     guide:{
         guide: 'Guide',

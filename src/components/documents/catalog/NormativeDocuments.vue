@@ -290,7 +290,7 @@ export default {
         this.expandedKeys = {}
       }
 
-      axios.post(smartEnuApi + '/folders/get', {
+      axios.post(smartEnuApi + '/folders', {
         folderType: Enum.FolderType.NormativeDocuments,
         page: null,
         rows: null,
@@ -344,7 +344,7 @@ export default {
     getFiles(parent) {
       this.loading = true;
 
-      axios.post(smartEnuApi + '/documents/get', {
+      axios.post(smartEnuApi + '/documents', {
         sourceType: null,
         docType: Enum.DocType.NormativeDoc,
         lang: null,

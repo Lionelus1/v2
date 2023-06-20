@@ -72,7 +72,7 @@ export default {
       this.$router.push({path: "/cabinet"})
     },
     myRef() {
-      this.$router.push({path: "/myref"})
+      this.$router.push({path: "/references"})
     },
     signVerify() {
       this.$router.push({path: "/sign-verify"})
