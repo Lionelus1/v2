@@ -91,14 +91,16 @@
           :sortable="true"
         ></Column>
         <Column field="user.organization.name" :header="$t('common.graduate')"></Column>
-        <Column
-          field="graduationYear"
-          :header="$t('common.graduationyear')"
-        ></Column>
-        <Column
-          field="admissionYear"
-          :header="$t('common.admissionyear')"
-        ></Column>
+        <Column :header="$t('common.graduationyear')">
+          <template #body="slotProps">
+            {{ getShortDateString(slotProps.data.graduationYear) }}
+          </template>
+        </Column>
+        <Column :header="$t('common.admissionyear')">
+          <template #body="slotProps">
+            {{ getShortDateString(slotProps.data.admissionYear) }}
+          </template>
+        </Column>
         <Column
           field="dissertation.namekz"
           :header="$t('dissertation.disstitle')"
@@ -110,7 +112,7 @@
           :header="$t('dissertation.meetingTime')"
         >
           <template #body="slotProps">
-            {{(slotProps.data.meetingTime != null ? new Date(slotProps.data.meetingTime).toLocaleString() : "")}}
+            {{ (slotProps.data.meetingTime != null ? getLongDateString(slotProps.data.meetingTime) : "") }}
           </template>
         </Column>
         <Column
@@ -593,6 +595,7 @@ import DepartmentList from '../smartenu/DepartmentList.vue';
 import SpecialitySearch from "../smartenu/speciality/specialitysearch/SpecialitySearch.vue";
 import html2canvas from "html2canvas";
 import * as jsPDF from "jspdf";
+import { getShortDateString, getLongDateString } from "@/helpers/helper";
 
 export default {
   components: {  DepartmentList, SpecialitySearch },
@@ -729,6 +732,8 @@ export default {
   methods: {
     findRole: findRole,
     downloadFile: downloadFile,
+    getLongDateString: getLongDateString,
+    getShortDateString: getShortDateString,
     exportCSV() {
             this.$refs.voteReport.exportCSV();
     },
