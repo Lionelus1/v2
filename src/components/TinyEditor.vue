@@ -40,6 +40,8 @@ export default {
                 menubar: false,
                 toolbar_mode: 'wrap',
                 allow_script_urls: true,
+                remove_script_host: false,
+                relative_urls: false,
                 plugins: [
                     'advlist autolink lists link image charmap print preview anchor',
                     'searchreplace visualblocks code fullscreen',
