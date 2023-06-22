@@ -38,7 +38,7 @@
                                         : data.titleEn
                                         }}
                                     </strong>
-                                    <div class="date">{{ formatDateMoment(data.history.modifyDate)}}</div>
+                                    <div class="date">{{ formatDateMoment(data.publish_date)}}</div>
                                 </div>
                             </div>
                         </template>
