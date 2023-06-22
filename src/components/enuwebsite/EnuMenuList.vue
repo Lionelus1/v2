@@ -73,6 +73,13 @@
                                 <a v-if="node.link" :href="node.link" target="_blank">{{ node.link }}</a>
                             </template>
                         </Column>
+                        <Column field="viewCount" :header="$t('web.viewCount')">
+                            <template #body="{ node }">
+                                <span v-if="node.view_count !== null">{{ node.view_count }}  {{ $t('web.viewTimes') }}</span>
+                                <span v-else>{{ 0 }}  {{ $t('web.viewTimes') }}</span>
+                                
+                            </template>
+                        </Column>
                         <div v-if="showOrderColumn">
                             <Column
                                 v-if="filter.menu_type.is_usefull_link || filter.menu_type.is_header || filter.menu_type.is_middle"
