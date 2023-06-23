@@ -53,6 +53,7 @@ export default {
       Certificate: 8,
       RelatedDoc: 9,
       PostAccreditationMonitoringReport: 10,
+      Reference: 11,
     },
 
     ContragentType: {
@@ -90,5 +91,12 @@ export default {
       Journals: 1,
       EduComplex: 2,
       FilledDoc: 3,
+      References: 4,
+    },
+
+    DocumentRequestType: {
+      CounterpartyInfoRequest: 'counterparty_info_request',
+      ReferenceErrorCorrection: 'reference_error_correction',
+      ReferenceInfoRequest: 'reference_info_request',
     },
 }

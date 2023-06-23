@@ -9,8 +9,7 @@
                 <TabPanel :header="$t('web.properties')">
                     <TreeTable class="p-treetable-sm" :value="menus" :lazy="true" :loading="loading" @nodeExpand="onExpand"
                         scrollHeight="flex" responsiveLayout="scroll" :resizableColumns="true" show-gridlines
-                        columnResizeMode="fit" :paginator="true" :rows="10" :total-records="total" @page="onPage($event)"
-                        >
+                        columnResizeMode="fit" :paginator="true" :rows="10" :total-records="total" @page="onPage($event)">
                         <template #header>
                             <div class="text-left"></div>
                             <div class="text-right">
@@ -24,7 +23,8 @@
                                 <OverlayPanel ref="global-filter">
                                     <div v-for="text in menu_radio_options" :key="text" class="flex align-items-center">
                                         <div class="field-radiobutton">
-                                            <RadioButton v-model="selectedMenuType" :value="text.value" />
+                                            <RadioButton v-model="selectedMenuType" :value="text.value"
+                                                @change="menuTypeChange" />
                                             <label :for="text" class="ml-2">{{ text.text }}</label>
                                         </div>
                                     </div>
@@ -81,16 +81,20 @@
                             </template>
                         </Column>
                         <div v-if="showOrderColumn">
-                        <Column v-if="filter.menu_type.is_usefull_link || filter.menu_type.is_header || filter.menu_type.is_middle" field="order" :header="$t('web.menuOrder')">
-                            <template #body="{ node }">
-                                <span class="p-buttonset">
-                                    <Button class="p-button-outlined" icon="pi pi-angle-up" @click="reOrderMenu(node, true)" />
-                                    <Button class="p-button-outlined" icon="pi pi-angle-down" @click="reOrderMenu(node, false)" />
-                                </span>
+                            <Column
+                                v-if="filter.menu_type.is_usefull_link || filter.menu_type.is_header || filter.menu_type.is_middle"
+                                field="order" :header="$t('web.menuOrder')">
+                                <template #body="{ node }">
+                                    <span class="p-buttonset">
+                                        <Button class="p-button-outlined" icon="pi pi-angle-up"
+                                            @click="reOrderMenu(node, true)" />
+                                        <Button class="p-button-outlined" icon="pi pi-angle-down"
+                                            @click="reOrderMenu(node, false)" />
+                                    </span>
 
-                            </template>
-                        </Column>
-                    </div>
+                                </template>
+                            </Column>
+                        </div>
 
                         <Column field="create_date" :header="$t('faq.createDate')" :sortable="true">
                             <template #body="{ node }">
@@ -173,7 +177,7 @@ export default {
             filter: {
                 search_text: null,
                 menu_type: {
-                    
+
                 }
             },
             lazyParams: {
@@ -257,6 +261,7 @@ export default {
             this.getMenus(node)
         },
         getMenus(parentData) {
+
             this.loading = true;
             if (parentData == null) {
                 this.lazyParams.parent_id = null;
@@ -406,6 +411,10 @@ export default {
             this.addMenuVisible = false;
             this.selectedMenu = null;
         },
+        menuTypeChange() {
+            //this.showOrderColumn = this.selectedMenuType === 'is_useful_link'
+
+        }
 
     }
 }

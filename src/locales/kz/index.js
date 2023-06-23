@@ -256,6 +256,8 @@ export default {
             unsaveOutcome: "Өзгерістерді сақтамасаңыз, біржола жоғалтасыз.",
             addPicture: "Сурет қосу",
             saveErrorToUpdate: "Сақтау кезінде қате пайда болды. Бетті жаңартыңыз!",
+            actionError: "Бұл әрекетті орындау кезінде қате пайда болды",
+            actionErrorContactAdmin: "Бұл мәселені шешу үшін әкімшілерге хабарласыңыз",
         },
         language: {
             kz: "қазақша",
@@ -890,6 +892,7 @@ export default {
         headerMenu: 'Тақырып мәзірі',
         middleMenu: 'Ортаңғы мәзір',
         usefulMenu: 'Пайдалы сілтеме',
+        onMiddle: 'Ортаңғы мәзір',
         commonSettings: 'Параметрлер',
         universityAddressInfo: 'Байланыс мәліметтері',
         websiteAddress: 'Сайт',
@@ -1084,15 +1087,33 @@ export default {
     postaccmonrep: {
         title: "Өзін өзі бағалау/аккредиттеуден кейінгі мониторинг бойынша есебі",
     },
-    ref:{
-        getRef:"Анықтама алу",
-        createQr:"QR код меншіктеп құжатпен бөлісу",
-        sendMail:"Құжаттағы қателіктер жайлы хабарлау",
-        sendMail1:"Пошта жіберу",
-        correction:"Түзетуіңізді осында жазыңыз. . .",
-        sendingMail:"Пошта жіберілуде, күте тұрыңыз. . .",
-        mailSent:"Сіздің хатыңыз HR қызметіне сәтті жіберілді.",
-        mailFailed:"Поштаңыз жіберілмеді, қайталап көріңіз."
+    ref: {
+        getRef: "Анықтама алу",
+        createQr: "QR код меншіктеп құжатпен бөлісу",
+        errorReport: "Құжаттағы қателіктер жайлы хабарлау",
+        sendMail: "Пошта жіберу",
+        correction: "Түзетуіңізді осында жазыңыз. . .",
+        sendingMail: "Пошта жіберілуде, күте тұрыңыз. . .",
+        mailSent: "Сіздің хатыңыз HR қызметіне сәтті жіберілді.",
+        mailFailed: "Поштаңыз жіберілмеді, қайталап көріңіз.",
+        requestInfo: "Ақпаратты сұрау"
+    },
+    requests: {
+        menuTitle: 'Анықтама бойынша өтініштер',
+        requests: 'Анықтамалар',
+        selectedRequest: 'Таңдалған анықтама',
+        requestType: 'Өтініш түрі',
+        requestedUser: 'Өтініш беруші',
+        requestedTime: 'Күні',
+        information: 'Ақпарат',
+        reference: 'Анықтама',
+        save: 'Сақтау және бекіту',
+        reject: 'Өтінішті қабылдамау',
+        commentary: 'Өтініш берушінің пікірі',
+        types: {
+            reference_error_correction: 'Қателерді түзету үшін',
+            reference_info_request: 'Қосымша ақпарат',
+        },
     },
     guide:{
         guide: 'Анықтама',
@@ -1151,7 +1172,6 @@ export default {
         welcomeTextRu: 'Орысша алғысөз',
         welcomeTextEn: 'Ағылшынша алғысөз',
     },
-
     verification: {
         title: 'Электрондық құжатты тексеру',
         new: 'Жаңа тексеру',
@@ -1182,7 +1202,17 @@ export default {
         financial_sign_right: 'Қаржылық құжаттарға қол қою құқығы бар',
         hr_worker: 'HR қызметкері',
         internal: 'Мекеме қызметкері',
+        failedToDelete: 'Жазба өшірілмеді',
+        failedToLoad: 'Деректерді жүктеу сәтсіз аяқталды',
+    },
+    responseExplanations: {
+        badRequest: 'Сіздің сұрауыңызды түсіну мүмкін емес немесе қажетті параметрлер жоқ.',
+        forbidden: 'Сұралған ресурсқа кіруге рұқсат етілмейді. Бұл оған кіру үшін қажетті рұқсаттарыңыз болмағандықтан болуы мүмкін.',
+        forbiddenAction: 'Әрекетке тыйым салынады. Сізде қажетті рұқсаттар жоқ.',
+        internalServerError: 'Кешіріңіз, біздің тарапымыздан бірдеңе дұрыс болмады. Әрекетті кейінірек қайталаңыз.',
+    },
+    visuallyImpaired: {
+        fontSize: "Қаріп өлшемі",
+        siteColors: "Сайттың түстері",
     }
-
-
 }

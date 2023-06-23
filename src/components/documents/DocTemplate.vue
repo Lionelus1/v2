@@ -762,10 +762,10 @@
         return child;
       },
       initApiCall(){
-        let url = "/doctemplates?groupID=-1";
-        var stateFilter = "&stateID=-1"
+        let url = "/doctemplates?";
+        var stateFilter = "stateID=-1"
         if (this.selectMode) {
-          stateFilter = "&stateID=" + this.DocState.APPROVED.ID
+          stateFilter = "stateID=" + this.DocState.APPROVED.ID
         }
         this.loading = true;
         url+= stateFilter

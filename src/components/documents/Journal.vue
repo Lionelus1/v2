@@ -78,7 +78,11 @@
                 responsiveLayout="scroll"
                 @sort="onSort($event)"
                 @filter="onFilter($event)">
-              <Column field="createDate" :header="$t('faq.createDate')"></Column>
+              <Column :header="$t('faq.createDate')">
+                <template #body="slotProps">
+                  {{ getLongDateString(slotProps.data.createDate) }}
+                </template>
+              </Column>
               <Column field="owner.fullName" :header="$t('common.createdBy')"></Column>
               <Column field="owner.mainPosition.department" :header="$t('contracts.cafedraGroup')">
                 <template #body="{ data }">
@@ -86,7 +90,11 @@
                 </template>
               </Column>
               <Column field="number" :header="$t('common.number')"></Column>
-              <Column field="registerDateS" :header="$t('common.registeredDate')"></Column>
+              <Column :header="$t('common.registeredDate')">
+                <template #body="slotProps">
+                  {{ getShortDateString(slotProps.data.registerDate) }}
+                </template>
+              </Column>
               <Column field="template" :header="$t('common.description')">
                 <template #body="{ data }">
                   <div v-if="data.template">
@@ -124,6 +132,7 @@
 
 <script>
 import {smartEnuApi, getHeader, b64toBlob} from "@/config/config";
+import {getShortDateString, getLongDateString} from "@/helpers/helper";
 import {FilterMatchMode} from "primevue/api";
 
 import axios from "axios";
@@ -210,6 +219,8 @@ export default {
     }
   },
   methods: {
+    getLongDateString: getLongDateString,
+    getShortDateString: getShortDateString,
     initApiCall() {
       if (this.filters.author.value || this.filters.status.value) {
         this.isFilterActive = true;
