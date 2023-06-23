@@ -20,7 +20,12 @@
                         </Column>
                         <Column :header="$t('cafedra.responsible')">
                             <template #body="{ data }">
-                                {{ data.ownedBy.fullName }}
+                                <span v-if="data.owner_id !== null">
+                                    {{ data.ownedBy.fullName }}
+                                </span>
+                                <span v-else>
+                                    User is not defined
+                                </span>
                             </template>
                         </Column>
                         <Column class="text-right">
@@ -59,7 +64,7 @@
         </div>
         <div class="field">
             <label>{{ $t('blog.welcomeTextKz') }}</label>
-            <TinyEditor v-model="formData.description_kz" :height="200" @click="toggle" />
+            <TinyEditor v-model="formData.description_kz" :height="200" />
         </div>
         <div class="field">
             <label>{{ $t('blog.welcomeTextRu') }}</label>
@@ -69,10 +74,12 @@
             <label>{{ $t('blog.welcomeTextEn') }}</label>
             <TinyEditor v-model="formData.description_en" :height="200" />
         </div>
+
+
         <div class="field">
             <label>{{ $t('cafedra.responsible') }}</label>
-            <FindUser v-model="responsible" :max="1"></FindUser>
-            <small class="p-error" v-if="!responsible && submitted">{{ $t("common.requiredField") }}</small>
+            <FindUser v-model="formData.user" :max="1" :editMode="false" />
+            <small class="p-error" v-if="formData.user && submitted">{{ $t("common.requiredField") }}</small>
         </div>
         <div class="field">
             <label>{{ $t('common.image') }}</label>
@@ -106,8 +113,6 @@ import { formatDate } from "@/helpers/HelperUtil";
 import { BlogService } from "@/service/blog.service";
 import CustomFileUpload from "@/components/CustomFileUpload.vue";
 import WebLogs from "@/components/enuwebsite/EnuSiteLogs.vue";
-const authUser = computed(() => JSON.parse(localStorage.getItem('loginedUser')))
-console.log("authUser:",authUser.value)
 
 const i18n = useI18n()
 const toast = useToast()
@@ -126,6 +131,7 @@ const total = ref(0)
 const responsible = ref()
 const thumbFile = ref(null)
 const bgImg = ref(null)
+
 const lazyParams = ref({
     page: 0,
     rows: 10,
@@ -134,7 +140,7 @@ const lazyParams = ref({
     sortOrder: 0
 })
 const op = ref();
-
+const selectedUser = ref([])
 const navigateToView = (data) => {
     router.push({ name: 'BlogRequests', params: { id: data.id } })
 };
@@ -156,10 +162,10 @@ getBlogs()
 
 const addBlog = () => {
     submitted.value = true;
+    formData.value.owner_id = formData.value.user && formData.value.user.length !== 0 ? formData.value.user[0].userID : null;
     if (!isValid()) return;
-
-    formData.value.owner_id = responsible.value.userID;
     const fd = new FormData();
+
     fd.append("blog", JSON.stringify(formData.value))
     if (bgImg.value)
         fd.append("background_bg", bgImg.value)
@@ -169,6 +175,7 @@ const addBlog = () => {
     blogService.addBlog(fd).then(res => {
         if (res.data && res.data.is_success) {
             toast.add({ severity: "success", summary: i18n.t('common.success'), life: 3000 });
+
         }
         submitted.value = false;
         isCreateModal.value = false;
@@ -184,8 +191,7 @@ const addBlog = () => {
 
 const save = () => {
     submitted.value = true;
-    formData.value.owner_id = responsible.value[0].userID
-
+    formData.value.owner_id = formData.value.user && formData.value.user.length !== 0 ? formData.value.user[0].userID : null//responsible.value[0].userID
     if (!isValid()) return;
     const fd = new FormData();
     fd.append("blog", JSON.stringify(formData.value))
@@ -222,7 +228,9 @@ const uploadBg = (event) => {
 
 const openEdit = (data) => {
     formData.value = data
+    formData.value.user = new Array(data.user_info)
     selectedData.value = data;
+    selectedData.value.user = new Array(data.user_info)
     isCreateModal.value = true;
 }
 
@@ -263,27 +271,25 @@ const remove = (id) => {
 
 const isValid = () => {
     let errors = [];
-    debugger;
+
     if (!formData.value.name_kz)
         errors.push(1);
     if (!formData.value.name_ru)
         errors.push(1);
     if (!formData.value.name_en)
         errors.push(1);
-    if (!formData.value.description_kz)
-        errors.push(1);
-    if (!formData.value.description_ru)
-        errors.push(1);
-    if (!formData.value.description_en)
-        errors.push(1);
-    if (!formData.value.owner_id)
-        errors.push(1);
+
     return errors.length === 0
 }
 
-const toggle = (event) => {
-    op.value.toggle(event);
-}
-</script>
+// const toggle = (event, data) => {
+//     selectedData.value = data;
+//     formData.value = data;
+//     if (data.user_info) {
+//         formData.value.user = new Array(data.user_info)
+//         formData.value.owner_id = formData.value.user[0].userID
+//     }
+//     op.value.toggle(event);
+// }
 
-<style scoped></style>
+</script>

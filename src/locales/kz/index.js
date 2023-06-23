@@ -896,7 +896,9 @@ export default {
         universityAddressKZ: 'Мекенжайы',
         universityAddressRU: 'Адрес',
         universityAddressEN: 'Address',
-        universityFax: 'Факс'
+        universityFax: 'Факс',
+        viewCount: 'Қарады',
+        viewTimes: 'рет'
 
     },
     //Student locale
