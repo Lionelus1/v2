@@ -76,7 +76,7 @@ export class TinymceCustomUploadPlugin {
                 link_input: collectData && collectData.href ? collectData.href : "",
                 title_input: collectData && collectData.title ? collectData.title : "",
                 link_type: collectData && collectData.link && collectData.class ? 'view' : collectData && collectData.href && collectData.href.includes('serve?path=') ? 'view' : 'download',
-                link_open_type: collectData && collectData.target ? collectData.target : collectData && collectData.link && collectData.class ? 'pdfview' : collectData && collectData.target ? collectData.target : 'current'
+                link_open_type: collectData && collectData.link && collectData.class ? 'pdfview' : collectData && collectData.target ? 'blank' : 'current'
             },
             onSubmit: function (api) {
                 if (anchorNode) {
@@ -89,18 +89,19 @@ export class TinymceCustomUploadPlugin {
                 api.close();
             },
             onChange: function (api) {
-                let data = api.getData();
+                let link = self.generateListLink(selectedFile, api.getData().link_type)
+                api.setData({link_input: link})
+                resultLink = `<a href="${api.getData().link_input}">${api.getData().title_input}</a>`
 
-                if (selectedFile)
-                    api.setData({link_input: self.generateListLink(selectedFile, data.link_type)})
-
-                if (selectedFile && data.link_open_type) {
-                    switch (data.link_open_type) {
+                if (selectedFile && api.getData().link_open_type) {
+                    switch (api.getData().link_open_type) {
                         case 'current':
-                            resultLink = `<a href="${data.link_input}" data-id="${selectedFile.uuid}">${data.title_input}</a>`
+                            api.setData({target: ''})
+                            resultLink = `<a href="${link}" data-id="${selectedFile.uuid}">${api.getData().title_input}</a>`
                             break;
                         case 'blank':
-                            resultLink = `<a href="${data.link_input}" target="_blank" data-id="${selectedFile.uuid}">${data.title_input}</a>`
+                            api.setData({link_open_type: 'blank'})
+                            resultLink = `<a href="${link}" target="_blank" data-id="${selectedFile.uuid}">${api.getData().title_input}</a>`
                             break;
                         case 'pdfview':
                             if (!$this.isPdf(targetFile ? targetFile : selectedFile)) {
@@ -110,10 +111,10 @@ export class TinymceCustomUploadPlugin {
                             }
                             api.setData({link_type: 'view'})
                             api.setData({link_input: self.generateListLink(selectedFile, 'view')})
-                            resultLink = `<a href="javascript:void(0)" data-id="${selectedFile.uuid}" data-link="${self.generateListLink(selectedFile, 'view')}" class="pdfview">${data.title_input}</a>`
+                            resultLink = `<a href="javascript:void(0)" data-id="${selectedFile.uuid}" data-link="${self.generateListLink(selectedFile, 'view')}" class="pdfview">${api.getData().title_input}</a>`
                             break;
                         default:
-                            resultLink = `<a href="${data.link_input}">${data.title_input}</a>`
+                            resultLink = `<a href="${link}">${api.getData().title_input}</a>`
                             break;
                     }
                 }
@@ -129,7 +130,6 @@ export class TinymceCustomUploadPlugin {
                         fd.append("files[]", file)
                         self.fileService.uploadFile(fd).then(res => {
                             selectedFile = res.data[0];
-                            console.log(selectedFile)
                             let linkType = dialogApi.getData().link_type
                             link = self.generateListLink(selectedFile, linkType)
                             dialogApi.setData({link_input: link, title_input: selectedFile.filename})
@@ -212,7 +212,6 @@ export class TinymceCustomUploadPlugin {
     }
 
     updateLink(editor, anchorElm, api) {
-        console.log(api)
         if (this.has(anchorElm, 'innerText')) {
             anchorElm.innerText = api.title_input;
         } else {
@@ -224,6 +223,8 @@ export class TinymceCustomUploadPlugin {
         }
         if (api.link_open_type === "blank")
             attrs.target = "_blank"
+        else
+            attrs.target = ""
 
         if (api.link_open_type === "pdfview") {
             attrs.class = "pdfview";
