@@ -53,30 +53,24 @@
     </Dialog>
 </template>
 
-<script>
+<script setup>
 import {fileRoute, smartEnuApi} from "@/config/config";
+import {inject, ref} from "vue";
+const props = defineProps(['isVisible', 'selectedNews'])
+const newsViewVisible = ref(props.isVisible ?? false)
+const emitter = inject('emitter');
 
-export default {
-        name: "NewsView",
-        props: ['isVisible', 'selectedNews'],
-        data() {
-            return {
-                newsViewVisible: this.isVisible ?? false
-            }
-        },
-      methods: {
-            closeModal() {
-                this.emitter.emit("newsViewModalClose", false);
-            },
-            getImageUrl(data) {
-              if (data && data.main_image_file) {
-                return  smartEnuApi + fileRoute + data.main_image_file.filepath
-              } else if (data && data.image1) {
-                return  smartEnuApi + fileRoute + data.image1
-              }
-            }
-        }
-    }
+const closeModal = () => {
+  emitter.emit("newsViewModalClose", false);
+}
+
+const getImageUrl = (data) => {
+  if (data && data.main_image_file) {
+    return  smartEnuApi + fileRoute + data.main_image_file?.filepath
+  } else if (data && data?.image1) {
+    return  smartEnuApi + fileRoute + data.image1
+  }
+}
 </script>
 
 <style lang="scss" scoped>
