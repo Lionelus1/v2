@@ -10,7 +10,7 @@
         <Card style="box-shadow: none">
             <template #header>
                 <div class="dialog_img">
-                    <img :src="selectedNews.imageUrl" style="width: 100%; height: 100%"/>
+                    <img :src="getImageUrl(selectedNews)" style="width: 100%; height: 100%" alt=""/>
                 </div>
             </template>
             <template #title>
@@ -54,7 +54,9 @@
 </template>
 
 <script>
-    export default {
+import {fileRoute, smartEnuApi} from "@/config/config";
+
+export default {
         name: "NewsView",
         props: ['isVisible', 'selectedNews'],
         data() {
@@ -62,9 +64,16 @@
                 newsViewVisible: this.isVisible ?? false
             }
         },
-        methods: {
+      methods: {
             closeModal() {
                 this.emitter.emit("newsViewModalClose", false);
+            },
+            getImageUrl(data) {
+              if (data && data.main_image_file) {
+                return  smartEnuApi + fileRoute + data.main_image_file.filepath
+              } else if (data && data.image1) {
+                return  smartEnuApi + fileRoute + data.image1
+              }
             }
         }
     }
