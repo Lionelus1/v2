@@ -80,39 +80,35 @@
           </div>
 
           <div v-if="selectedMemberCouncils">
-            <DataTable :value="selectedMemberCouncils" :lazy="true" responsive-layout="stack">
-              <Column field="specialitites" :header="$t('dissertation.directionCode')" style="min-width:12rem">
-                <template #body="{data}">
+            <Fieldset :legend="$t('dissertation.userOtherCouncils')" :toggleable="true">
+              <DataTable :value="selectedMemberCouncils" :lazy="true" responsive-layout="stack">
+                <Column field="specialitites" :header="$t('dissertation.directionCode')" style="min-width:12rem">
+                  <template #body="{data}">
                   <span v-for="sp in data.specialities" :key="sp.id">
                     {{ sp.trainingDirection.code }}-{{ getTrainigName(sp) }}
                     <span v-if="data?.specialities.indexOf(sp) < data?.specialities.length-1">, </span>
 
              </span>
-                </template>
-              </Column>
-              <Column field="specialitites" :header="$t('dissertation.specialityCode')" style="min-width:12rem">
-                <template #body="slotProps">
+                  </template>
+                </Column>
+                <Column field="specialitites" :header="$t('dissertation.specialityCode')" style="min-width:12rem">
+                  <template #body="slotProps">
                    <span v-for="sp in slotProps.data.specialities" :key="sp.code">
                      {{ sp.code }}-{{ getTrainigName(sp) }}<span
                        v-if="slotProps.data.specialities.indexOf(sp)<slotProps.data.specialities.length-1">, </span>
                    </span>
-                </template>
-              </Column>
-              <Column field="roles" :header="$t('common.role')" style="min-width:12rem">
-                <template #body="{data}">
+                  </template>
+                </Column>
+                <Column field="roles" :header="$t('common.role')" style="min-width:12rem">
+                  <template #body="{data}">
                    <span v-for="role in data?.member?.roles" :key="role.id">
                      {{ getRoleName(role) }}
                    </span>
-                </template>
-              </Column>
-              <Column headerStyle="width: 4rem; text-align: center" bodyStyle="text-align: center; overflow: visible">
-                <template #body="{data}">
-                  <Button icon="pi pi-trash" class="p-button-danger" @click="deleteMember(data?.member, true)"/>
-                </template>
-              </Column>
-            </DataTable>
+                  </template>
+                </Column>
+              </DataTable>
+            </Fieldset>
           </div>
-
         </div>
         <template #footer>
           <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-text" @click="hideDialog(dialog.addMember)"/>
@@ -177,8 +173,7 @@ export default {
         this.myDetails.status = this.statuses.indexOf(this.myDetails.status);
     },
     findRole: findRole,
-    deleteMember(data, isNewMember) {
-
+    deleteMember(data) {
       if (data !== undefined) this.selectedMember = data
 
       this.$confirm.require({
@@ -188,11 +183,7 @@ export default {
         accept: () => {
           axios.post(smartEnuApi + "/dissertation/deleteCouncilMember",
               {id: this.selectedMember.memberID}, {headers: getHeader(),}).then((response) => {
-                if (isNewMember) {
-                  this.selectedMemberCouncils = null
-                } else {
-                  this.MembersList.splice(this.MembersList.indexOf(this.selectedMember), 1);
-                }
+            this.MembersList.splice(this.MembersList.indexOf(this.selectedMember), 1);
           }).catch((error) => {
             if (error.response.status == 401) {
               this.$store.dispatch("logLout");
@@ -304,7 +295,6 @@ export default {
       }
     },
     onUserSelected(event) {
-      console.log("DDD", event.value)
       this.dissertationService.getMemberCouncils(event.value[0].userID, this.councilID).then(res => {
         this.selectedMemberCouncils = res.data
         if (this.selectedMemberCouncils) {
