@@ -778,7 +778,10 @@ export default {
         specialityCode: "Мамандық атауы мен коды",
         secretaryname: "Ғалым хатшының аты-жөні",
         secretary: "Ғалым хатшы",
-        userOtherCouncils: 'Қолданушының басқа диссертациялық кеңестерге қатысы'
+        userOtherCouncils: 'Қолданушының басқа диссертациялық кеңестерге қатысы',
+        closeDate: 'Тоқтатылған күні',
+        councilComment: 'Бұйрық нөмірі және т. б.',
+        closeCouncil: 'Диссертациялық кеңесті тоқтату'
     },
     faq: {
         title: "Қолдау қызметі",
