@@ -738,6 +738,10 @@ export default {
             s9: "submit the dissertation for re-defense",
             s10: "refuse to award the degree of Doctor of Philosophy (PhD) or Doctor of Science",
         },
+        userOtherCouncils: 'The user\'s attitude to other dissertation councils',
+        closeDate: 'Date of termination',
+        councilComment: 'Order number, etc.',
+        closeCouncil: 'Termination of the dissertation council'
     },
     faq: {
         title: "Help desk",
