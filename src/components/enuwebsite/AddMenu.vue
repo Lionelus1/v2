@@ -1,97 +1,108 @@
 <template>
-    <Dialog v-model:visible="editMenuVisible" :style="{ width: '1000px' }" :breakpoints="{'960px': '75vw', '640px': '90vw'}"
-            :header="currentMenu ? $t('web.editMenu') : $t('web.addMenu') " :modal="true" class="p-fluid" @hide="hideDialog">
+    <Dialog v-model:visible="editMenuVisible" :style="{ width: '1000px' }"
+        :breakpoints="{ '960px': '75vw', '640px': '90vw' }" :header="currentMenu ? $t('web.editMenu') : $t('web.addMenu')"
+        :modal="true" class="p-fluid" @hide="hideDialog">
         <div class="field">
             <label>{{ $t("common.nameInQazaq") }}</label>
-            <InputText v-model="formData.menu_title_kz" rows="3" :class="{ 'p-invalid': !formData.menu_title_kz && submitted }"/>
+            <InputText v-model="formData.menu_title_kz" rows="3"
+                :class="{ 'p-invalid': !formData.menu_title_kz && submitted }" />
             <small v-show="!formData.menu_title_kz && submitted" class="p-error">{{ $t("smartenu.titleKzInvalid") }}</small>
         </div>
         <div class="field">
             <label>{{ $t("common.nameInRussian") }}</label>
-            <InputText v-model="formData.menu_title_ru" rows="3" :class="{ 'p-invalid': !formData.menu_title_ru && submitted }"/>
+            <InputText v-model="formData.menu_title_ru" rows="3"
+                :class="{ 'p-invalid': !formData.menu_title_ru && submitted }" />
             <small v-show="!formData.menu_title_ru && submitted" class="p-error">{{ $t("smartenu.titleRuInvalid") }}</small>
         </div>
         <div class="field">
             <label>{{ $t("common.nameInEnglish") }}</label>
-            <InputText v-model="formData.menu_title_en" rows="3" :class="{ 'p-invalid': !formData.menu_title_en && submitted }"/>
+            <InputText v-model="formData.menu_title_en" rows="3"
+                :class="{ 'p-invalid': !formData.menu_title_en && submitted }" />
             <small v-show="!formData.menu_title_en && submitted" class="p-error">{{ $t("smartenu.titleEnInvalid") }}</small>
         </div>
-        <div class="field">
+        <div class="field" v-if="parentMenu">
             <label>{{ $t('web.menuParent') }}</label>
-            <TreeSelect v-model="selectedTreeMenu" :options="menus" :placeholder="$t('common.choose')" @node-expand="expandMenuTreeSelect"
-                        @nodeSelect="menuTreeSelect"></TreeSelect>
+            <TreeSelect v-model="selectedTreeMenu" :options="menus" :placeholder="$t('common.choose')"
+                @node-expand="expandMenuTreeSelect" @nodeSelect="menuTreeSelect"></TreeSelect>
         </div>
         <div class="field">
             <label>{{ $t('web.menuType') }}</label>
             <div class="field-radiobutton">
-                <RadioButton inputId="menuType1" name="menuType" :value="1" v-model="menuType" @change="typeChange"/>
+                <RadioButton inputId="menuType1" name="menuType" :value="1" v-model="menuType" @change="typeChange" />
                 <label for="menuType1">{{ $t('web.page') }}</label>
             </div>
             <div class="field-radiobutton">
-                <RadioButton inputId="menuType2" name="menuType" :value="2" v-model="menuType" @change="typeChange"/>
+                <RadioButton inputId="menuType2" name="menuType" :value="2" v-model="menuType" @change="typeChange" />
                 <label for="menuType2">{{ $t('common.link') }}</label>
             </div>
         </div>
         <div class="field" v-if="menuType === 1">
             <label for="choose-page">{{ $t("web.selectMainPage") }}
-                <a href="javascript:void(0)" @click="showAddPage" class="ml-2 text-underline">{{ $t('common.createNew') }}</a>
+                <a href="javascript:void(0)" @click="showAddPage" class="ml-2 text-underline">{{ $t('common.createNew')
+                }}</a>
             </label>
-            <Dropdown v-model="formData.page_id" optionDisabled="true" :options="pages" optionLabel="title_kz" optionValue="enu_page_id"
-                      :filter="true" :showClear="true" :placeholder="$t('web.selectPage')" :loading="pageLoading"/>
+            <Dropdown v-model="formData.page_id" optionDisabled="true" :options="pages" optionLabel="title_kz"
+                optionValue="enu_page_id" :filter="true" :showClear="true" :placeholder="$t('web.selectPage')"
+                :loading="pageLoading" />
         </div>
         <div class="field" v-if="menuType === 2">
             <label>{{ $t('common.link') }}</label>
-            <InputText id="en-title" v-model="formData.link" :placeholder="$t('common.link')"/>
+            <InputText id="en-title" v-model="formData.link" :placeholder="$t('common.link')" />
         </div>
+
+
         <div class="field">
             <label>{{ $t('web.onMain') }}</label>
             <div>
-                <Checkbox inputId="is_main" v-model="formData.is_main" :binary="true"/>
+                <Checkbox inputId="is_main" v-model="formData.is_main" :binary="true" />
                 <label class="ml-2" for="is_main">{{ $t('common.yes') }}</label>
             </div>
         </div>
         <div class="field">
             <label>{{ $t('web.isHidden') }}</label>
             <div>
-                <Checkbox inputId="hidden" v-model="formData.hidden" :binary="true"/>
+                <Checkbox inputId="hidden" v-model="formData.hidden" :binary="true" />
                 <label class="ml-2" for="hidden">{{ $t('common.yes') }}</label>
             </div>
         </div>
         <div class="field">
             <label>{{ $t('web.addToUsefulLink') }}</label>
             <div>
-                <Checkbox inputId="is_usefull_link" v-model="formData.is_usefull_link" :binary="true"/>
+                <Checkbox inputId="is_usefull_link" v-model="formData.is_usefull_link" :binary="true" />
                 <label class="ml-2" for="is_main">{{ $t('common.yes') }}</label>
             </div>
         </div>
         <div class="field">
             <label>{{ $t('web.menuOrderLabel') }}</label>
-            <InputNumber v-model="formData.order_id" name="order_id"/>
+            <InputNumber v-model="formData.order_id" name="order_id" />
         </div>
         <div class="field" v-if="formData.is_usefull_link">
             <label>{{ $t('web.usefulLinkDescKZ') }}</label>
-            <Textarea :placeholder="$t('common.enter')" class="pt-1" type="text" v-model="formData.description_kz" maxlength="80"></Textarea>
+            <Textarea :placeholder="$t('common.enter')" class="pt-1" type="text" v-model="formData.description_kz"
+                maxlength="80"></Textarea>
         </div>
         <div class="field" v-if="formData.is_usefull_link">
             <label>{{ $t('web.usefulLinkDescRU') }}</label>
-            <Textarea :placeholder="$t('common.enter')" class="pt-1" type="text" v-model="formData.description_ru" maxlength="80"></Textarea>
+            <Textarea :placeholder="$t('common.enter')" class="pt-1" type="text" v-model="formData.description_ru"
+                maxlength="80"></Textarea>
         </div>
         <div class="field" v-if="formData.is_usefull_link">
             <label>{{ $t('web.usefulLinkDescEN') }}</label>
-            <Textarea :placeholder="$t('common.enter')" class="pt-1" type="text" v-model="formData.description_en" maxlength="80"></Textarea>
+            <Textarea :placeholder="$t('common.enter')" class="pt-1" type="text" v-model="formData.description_en"
+                maxlength="80"></Textarea>
         </div>
         <div class="field">
             <label>{{ $t('web.bgImg') }}</label>
             <CustomFileUpload @upload="uploadFile" :accept="'image/*'" v-model="bgImg" :multiple="false"
-                              :preview="formData.background_image"></CustomFileUpload>
+                :preview="formData.background_image"></CustomFileUpload>
         </div>
         <template #footer>
-            <Button v-if="currentMenu" :label="$t('common.save')" icon="pi pi-check" class="p-button p-component p-button-success mr-2"
-                    @click="editMenu"/>
-            <Button v-if="!currentMenu" :label="$t('common.add')" icon="pi pi-check" class="p-button p-component p-button-success mr-2"
-                    @click="addMenu"/>
+            <Button v-if="currentMenu" :label="$t('common.save')" icon="pi pi-check"
+                class="p-button p-component p-button-success mr-2" @click="editMenu" />
+            <Button v-if="!currentMenu" :label="$t('common.add')" icon="pi pi-check"
+                class="p-button p-component p-button-success mr-2" @click="addMenu" />
             <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button p-component p-button-danger"
-                    @click="hideDialog"/>
+                @click="hideDialog" />
         </template>
     </Dialog>
 
@@ -101,14 +112,14 @@
 </template>
 
 <script>
-import {EnuWebService} from "@/service/enu.web.service";
+import { EnuWebService } from "@/service/enu.web.service";
 import AddPage from "@/components/enuwebsite/pages/AddPage.vue";
 import CustomFileUpload from "@/components/CustomFileUpload.vue";
 
 export default {
     name: "AddMenu",
     props: ['isVisible', 'allPages', 'menu_id', 'currentMenu', 'allMenus'],
-    components: {AddPage, CustomFileUpload},
+    components: { AddPage, CustomFileUpload },
     data() {
         return {
             editMenuVisible: this.isVisible ?? false,
@@ -131,12 +142,12 @@ export default {
                 parent_id: this.menu_id ? this.menu_id : null,
                 page_id: null,
                 link: null,
-                order_id:null,
+                order_id: null,
                 is_header: false,
                 is_middle: false,
                 icon: "",
                 hidden: false
-                
+
             },
             bgImg: null,
             formValid: [],
@@ -155,9 +166,11 @@ export default {
             }
         };
     },
+
     created() {
         this.getMenus(null)
         this.getPages(null)
+
     },
     mounted() {
         this.emitter.on('pageCreated', data => {
@@ -171,7 +184,11 @@ export default {
         typeChange() {
             if (this.menuType === 1) {
                 this.formData.link = null
+
             }
+
+
+
         },
         expandMenuTreeSelect(node) {
             this.lazyParams.parent_id = Number(node.menu_id)
@@ -252,7 +269,7 @@ export default {
             fd.append('menu', JSON.stringify(this.formData))
             if (this.bgImg) fd.append('background_image', this.bgImg[0]);
             let orderID = parseInt(this.order_id)
-            if(this.order_id) fd.append('order_id', orderID)
+            if (this.order_id) fd.append('order_id', orderID)
 
             this.enuService.editMenu(fd).then(res => {
                 if (res.data.is_success) {
@@ -278,7 +295,7 @@ export default {
         },
         getPages(data) {
             this.pageLoading = true;
-            this.enuService.getAllPages(this.pageLazyParams).then(res => {
+            this.enuService.getAllPagesBySlug(this.pageLazyParams).then(res => {
                 this.pages = res.data.pages;
                 if (data)
                     this.formData.page_id = data.enu_page_id;
@@ -319,13 +336,16 @@ export default {
             if (!this.formData.menu_title_en) {
                 errors.push(1)
             }
-         
+
             if (this.menuType === 1 && !this.formData.page_id) {
                 errors.push(1)
             }
             if (this.menuType === 2 && !this.formData.link) {
                 errors.push(1)
             }
+            // if (this.menuType === 3 && !this.formData.link) {
+            //     errors.push(1)
+            // }
             // if(!this.formData.parent_id){
             //     this.formValid.push({parent_id: true})
             // }
@@ -353,17 +373,17 @@ export default {
 
 <style lang="scss" scoped>
 .field-radiobutton {
-  align-items: center;
-  display: flex;
-  margin-bottom: 1rem;
+    align-items: center;
+    display: flex;
+    margin-bottom: 1rem;
 
-  label {
-    line-height: 1;
-    margin-left: 0.5rem;
-  }
+    label {
+        line-height: 1;
+        margin-left: 0.5rem;
+    }
 }
 
 .text-underline {
-  text-decoration: underline;
+    text-decoration: underline;
 }
 </style>

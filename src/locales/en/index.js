@@ -785,6 +785,7 @@ export default {
         editPage: 'Edit page',
         menuType: 'Menu type',
         page: 'Page',
+        parentMenu: 'Parent Menu',
         onMain: 'On the main',
         addBlock: 'Add block',
         editBlock: 'Edit block',

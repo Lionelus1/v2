@@ -816,6 +816,7 @@ export default {
         editPage: 'Редактировать страницу',
         menuType: 'Тип меню',
         page: 'Страница',
+        parentMenu: 'Главное меню',
         onMain: 'На главной',
         addBlock: 'Добавить блок',
         editBlock: 'Редактировать блок',
