@@ -235,7 +235,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .welcome_text_block {
   height: 63px;
 }
@@ -279,7 +279,7 @@ export default {
 @media (max-width: 525px) {
   h5 {
     width: 165px;
-    font-size: 15px;
+    font-size: 14px!important;
   }
 }
 </style>
