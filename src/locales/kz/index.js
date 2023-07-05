@@ -833,6 +833,7 @@ export default {
         editPage: 'Бетті өзгерту',
         menuType: 'Мәзір типі',
         page: 'Бет',
+        parentMenu: 'Аталық мәзір',
         onMain: 'Бастты бетте',
         addBlock: 'Блок қосу',
         editBlock: 'Блокты өзгерту',

@@ -21,6 +21,10 @@ export class EnuWebService {
         return api.post("/web/getPages", params, {headers: getHeader()});
     }
 
+    getAllPagesBySlug(params){
+        return api.post("/web/getPagesBySlug", params, {headers: getHeader()});
+    }
+
     getPageById(pageId) {
         return api.get(`/web/getPageAdmin/${pageId}`, {headers: getHeader()});
     }

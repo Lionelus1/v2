@@ -1,8 +1,8 @@
 <template>
     <div class="col-12">
         <h3>{{ $t('blog.title') }}</h3>
-        <div class="card">
-            <Button :label="$t('common.add')" @click="openDialog" />
+        <div v-if="!isFacultyWebAdmin" class="card">
+            <Button  :label="$t('common.add')" @click="openDialog" />
         </div>
         <div class="card">
             <TabView>
@@ -36,7 +36,7 @@
                         </Column>
                     </DataTable>
                 </TabPanel>
-                <TabPanel :header="$t('web.history')" @click="getTableLogs()">
+                <TabPanel :header="$t('web.history')" @click="getTableLogs()" v-if="!isFacultyWebAdmin">
                     <WebLogs :TN="TN" :key="TN" />
                 </TabPanel>
             </TabView>
@@ -113,7 +113,10 @@ import { formatDate } from "@/helpers/HelperUtil";
 import { BlogService } from "@/service/blog.service";
 import CustomFileUpload from "@/components/CustomFileUpload.vue";
 import WebLogs from "@/components/enuwebsite/EnuSiteLogs.vue";
+import { findRole } from "@/config/config";
 
+const authUser = computed(() => JSON.parse(localStorage.getItem("loginedUser")))
+const isFacultyWebAdmin = computed(() => findRole(authUser.value, "enu_web_fac_admin"))
 const i18n = useI18n()
 const toast = useToast()
 const confirm = useConfirm()

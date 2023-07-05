@@ -91,7 +91,7 @@ const TN = ref(null)
 const isUserExist = ref(false)
 const authUser = computed(() => JSON.parse(localStorage.getItem("loginedUser")))
 const isWebAdmin = computed(() => findRole(authUser.value, "enu_web_admin"))
-const isFacultyWebAdmin = computed(() => findRole(authUser.value, "enu_fac_web_admin"))
+const isFacultyWebAdmin = computed(() => findRole(authUser.value, "enu_web_fac_admin"))
 const facultyAbbrev = ref({})
 const userParams = ref({ user_id: authUser.value.userID })
 
@@ -102,7 +102,7 @@ const getFacultyAbb = () => {
       facultyAbbrev.value = res.data
       isUserExist.value = true
 
-    }
+    } 
     loading.value = false;
   }).catch(error => {
     loading.value = false;
