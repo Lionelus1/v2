@@ -1,7 +1,7 @@
 <template>
   <div class="col-12 flex flex-column">
     <TitleBlock
-      :title="`${$t('web.siteSettings')} - ${$i18n.locale === 'kz' ? facultyAbbrev.name_kz : $i18n.locale === 'ru' ? facultyAbbrev.name_ru : facultyAbbrev.name_en}`" />
+      :title="`${$t('web.siteSettings')}${facultyAbbrev ? ' - ' + facultyAbbrev['name_' + $i18n.locale] : ''}`" />
     <TabView>
       <TabPanel :header="$t('web.properties')">
         <Panel :header="$t('web.commonSettings')" v-if="isWebAdmin">
@@ -92,7 +92,7 @@ const isUserExist = ref(false)
 const authUser = computed(() => JSON.parse(localStorage.getItem("loginedUser")))
 const isWebAdmin = computed(() => findRole(authUser.value, "enu_web_admin"))
 const isFacultyWebAdmin = computed(() => findRole(authUser.value, "enu_web_fac_admin"))
-const facultyAbbrev = ref({})
+const facultyAbbrev = ref()
 const userParams = ref({ user_id: authUser.value.userID })
 
 const getFacultyAbb = () => {

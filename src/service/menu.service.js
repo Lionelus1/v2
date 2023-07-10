@@ -221,7 +221,7 @@ export class MenuService {
                         label: $t('common.faculties'),
                         icon: 'fa-solid fa-folder',
                         to: '/enu/faculties',
-                        visible: this.findRole('enu_web_admin') && localStorage.getItem("userSlug") !== null && !this.findRole("enu_web_fac_admin")
+                        visible: this.findRole('enu_web_admin') && store.state.userSlug
                     },
                     {
                         label: $t('web.siteSettings'),
