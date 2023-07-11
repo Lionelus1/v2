@@ -853,7 +853,8 @@ export default {
         universityAddressEN: 'Address',
         universityFax: 'Fax',
         viewCount: 'View count',
-        viewTimes: 'times'
+        viewTimes: 'times',
+        sitePreviewLink: 'Preview Link'
     },
     //Student locale
     student: {

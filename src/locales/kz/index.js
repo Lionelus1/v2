@@ -900,7 +900,8 @@ export default {
         universityAddressEN: 'Address',
         universityFax: 'Факс',
         viewCount: 'Қарады',
-        viewTimes: 'рет'
+        viewTimes: 'рет',
+        sitePreviewLink: 'Алдын ала қарау сілтемесі'
 
     },
     //Student locale

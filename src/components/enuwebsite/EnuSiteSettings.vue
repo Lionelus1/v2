@@ -4,8 +4,8 @@
       :title="`${$t('web.siteSettings')} - ${this.$i18n.locale === 'kz' ? facultyAbbrev.name_kz : this.$i18n.locale === 'ru' ? facultyAbbrev.name_ru : facultyAbbrev.name_en}`" />
     <TabView>
       <TabPanel :header="$t('web.properties')">
-        <Panel :header="$t('web.commonSettings')" v-if="isWebAdmin">
-          <div>
+        <Panel :header="$t('web.commonSettings')" v-if="isWebAdmin || isFacultyWebAdmin">
+          <div v-if="isWebAdmin">
             <div class="py-3">{{ i18n.t('web.mourningMode') }}</div>
             <InputSwitch v-model="formData.mourning" @change="mourningChange" />
             <div class="flex flex-column gap-2 pt-3" v-if="formData.mourning">
@@ -22,18 +22,16 @@
                 }}</small></div>
               </div>
             </div>
+            
+          </div>
+          <div>
+            <div class="py-3">{{ i18n.t('web.SiteMaintenanceMode') }}</div>
+            <InputSwitch v-model="formData.is_closed" />
+            <div class="py-3"><a :href="infoData.website+'/'+`${$i18n.locale}?mode=preview`" target="_blank">{{ i18n.t('web.sitePreviewLink') }}</a></div>
             <div class="field">
               <Button :label="$t('common.save')" class="mt-3" @click="update" />
             </div>
-          </div>
-        </Panel>
-        <Panel :header="$t('web.commonSettings')" v-if="isFacultyWebAdmin">
-          <div>
-            <div class="py-3">{{ i18n.t('web.SiteMaintenanceMode') }}</div>
-            <InputSwitch v-model="infoData.is_closed" @change="siteMaintenanceChange" />
-            <div class="field">
-              <Button :label="$t('common.save')" class="mt-3" @click="saveMaintenaceMode" />
-            </div>
+            
           </div>
         </Panel>
         <div v-if="isUserExist">
@@ -73,7 +71,7 @@
           </Panel>
         </div>
       </TabPanel>
-      <TabPanel v-if="isWebAdmin.value" :header="$t('web.history')" @click="getTableLogs()">
+      <TabPanel v-if="isWebAdmin" :header="$t('web.history')" @click="getTableLogs()">
         <WebLogs :TN="TN" :key="TN" />
       </TabPanel>
     </TabView>
@@ -126,7 +124,7 @@ const getSettings = () => {
     if (res.data) {
       formData.value = res.data.settings;
       infoData.value = res.data.site_info
-      isClosed.value = infoData.value.is_closed
+      formData.value.is_closed = infoData.value.is_closed
       TN.value = res.data.tn_res
 
       initMourning(formData.value)
@@ -155,7 +153,6 @@ const update = () => {
     formData.value.mourning_start = null;
     formData.value.mourning_end = null;
   }
-
   enuService.setSiteSettings(formData.value).then(res => {
     if (res.data) {
       toast.add({ severity: "success", summary: i18n.t('common.success'), life: 3000 });

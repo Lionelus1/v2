@@ -888,7 +888,8 @@ export default {
         universityAddressEN: 'Address',
         universityFax: 'Факс',
         viewCount: 'Просмотров',
-        viewTimes: 'раз'
+        viewTimes: 'раз',
+        sitePreviewLink: 'Ссылка для предварительного просмотра'
     },
 
     student: {
