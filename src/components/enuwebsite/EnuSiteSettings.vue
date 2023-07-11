@@ -27,6 +27,15 @@
             </div>
           </div>
         </Panel>
+        <Panel :header="$t('web.commonSettings')" v-if="isFacultyWebAdmin">
+          <div>
+            <div class="py-3">{{ i18n.t('web.SiteMaintenanceMode') }}</div>
+            <InputSwitch v-model="infoData.is_closed" @change="siteMaintenanceChange" />
+            <div class="field">
+              <Button :label="$t('common.save')" class="mt-3" @click="saveMaintenaceMode" />
+            </div>
+          </div>
+        </Panel>
         <div v-if="isUserExist">
           <Panel v-if="isFacultyWebAdmin || isWebAdmin" :header="$t('web.universityAddressInfo')" class="mt-3">
             <div class="p-fluid">
@@ -78,9 +87,11 @@ import { EnuWebService } from "@/service/enu.web.service";
 import { useToast } from "primevue/usetoast";
 import WebLogs from "@/components/enuwebsite/EnuSiteLogs.vue";
 import { findRole } from "@/config/config";
+import { testFunction } from "../../config/config";
 
 const formData = ref({})
 const infoData = ref({})
+const isClosed = ref()
 const i18n = useI18n()
 const enuService = new EnuWebService()
 const loading = ref(false)
@@ -101,7 +112,7 @@ const getFacultyAbb = () => {
       facultyAbbrev.value = res.data
       isUserExist.value = true
 
-    } 
+    }
     loading.value = false;
   }).catch(error => {
     loading.value = false;
@@ -115,6 +126,7 @@ const getSettings = () => {
     if (res.data) {
       formData.value = res.data.settings;
       infoData.value = res.data.site_info
+      isClosed.value = infoData.value.is_closed
       TN.value = res.data.tn_res
 
       initMourning(formData.value)
@@ -126,9 +138,11 @@ const getSettings = () => {
   });
 }
 
+
 onMounted(() => {
   getSettings();
   getFacultyAbb();
+
 })
 
 const update = () => {
@@ -169,6 +183,11 @@ const mourningChange = () => {
   }
 }
 
+const siteMaintenanceChange = () => {
+  isClosed.value = !isClosed.value;
+}
+
+
 const initMourning = (data) => {
   let currentDate = new Date()
 
@@ -184,9 +203,17 @@ const initMourning = (data) => {
 }
 
 const saveSiteInfo = () => {
-  //infoData.value.slug_id = 1;
-  console.log(infoData)
   enuService.setSiteInfo(infoData.value).then(res => {
+    if (res.data)
+      toast.add({ severity: "success", summary: i18n.t('common.success'), life: 3000 });
+    getSettings();
+  }).catch(error => {
+    toast.add({ severity: "error", summary: error, life: 3000 });
+  })
+}
+
+const saveMaintenaceMode = () => {
+  enuService.setSiteMaintenanceMode({is_closed:isClosed.value}).then(res => {
     if (res.data)
       toast.add({ severity: "success", summary: i18n.t('common.success'), life: 3000 });
     getSettings();

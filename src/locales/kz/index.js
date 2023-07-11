@@ -868,6 +868,7 @@ export default {
         note: 'Ескертпе',
         siteSettings: 'Сайт баптаулары',
         mourningMode: 'Қаралы күн режимі',
+        SiteMaintenanceMode: 'Сайт жөнделуде режимі',
         siteLogs: 'Сайт журналы',
         tableName: 'Кесте атауы',
         recordId: 'Идентификатор',

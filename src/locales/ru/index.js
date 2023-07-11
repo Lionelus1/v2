@@ -856,6 +856,7 @@ export default {
         note: 'Примечание',
         siteSettings: 'Настройки сайта',
         mourningMode: 'Траурный режим',
+        SiteMaintenanceMode: 'Обслуживания режим',
         siteLogs: 'Журнал сайта',
         tableName: 'Имя таблицы',
         recordId: 'Идентификатор записи',

@@ -825,6 +825,7 @@ export default {
         note: 'Note',
         siteSettings: 'Site settings',
         mourningMode: 'Mourning mode',
+        SiteMaintenanceMode: 'Maintenance mode',
         siteLogs: 'Website Logs',
         tableName: 'Table Name',
         recordId: 'Record ID',
