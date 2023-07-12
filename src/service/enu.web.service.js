@@ -203,4 +203,14 @@ export class EnuWebService {
 
         return "";
     }
+
+    getSiteUrl(store) {
+        const port = process.env.NODE_ENV === 'development' ? ":8085" : ""
+        const facUser = store.state.userSlug || null
+        if (facUser && facUser.slug) {
+            return `http://${facUser.slug}.enu.kz${port}`
+        } else {
+            return 'http://enu.kz'
+        }
+    }
 }

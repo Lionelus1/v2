@@ -22,16 +22,16 @@
                 }}</small></div>
               </div>
             </div>
-
+            
           </div>
           <div>
             <div class="py-3">{{ i18n.t('web.SiteMaintenanceMode') }}</div>
             <InputSwitch v-model="formData.is_closed" />
-            <div class="py-3"><a :href="infoData.website+'/'+`${$i18n.locale}?mode=preview`" target="_blank">{{ i18n.t('web.sitePreviewLink') }}</a></div>
+            <div class="py-3"><a :href="facultySite" target="_blank">{{ i18n.t('web.sitePreviewLink') }}</a></div>
             <div class="field">
               <Button :label="$t('common.save')" class="mt-3" @click="update" />
             </div>
-
+            
           </div>
         </Panel>
         <div v-if="isUserExist">
@@ -85,8 +85,10 @@ import { EnuWebService } from "@/service/enu.web.service";
 import { useToast } from "primevue/usetoast";
 import WebLogs from "@/components/enuwebsite/EnuSiteLogs.vue";
 import { findRole } from "@/config/config";
+import {useStore} from "vuex";
 import TitleBlock from "@/components/TitleBlock.vue";
 
+const store = useStore()
 const formData = ref({})
 const infoData = ref({})
 const isClosed = ref()
@@ -102,6 +104,10 @@ const isWebAdmin = computed(() => findRole(authUser.value, "enu_web_admin"))
 const isFacultyWebAdmin = computed(() => findRole(authUser.value, "enu_web_fac_admin"))
 const facultyAbbrev = ref()
 const userParams = ref({ user_id: authUser.value.userID })
+
+const facultySite = computed(() => {
+  return `${enuService.getSiteUrl(store)}?mode=preview`
+})
 
 const getFacultyAbb = () => {
   loading.value = true;
@@ -123,7 +129,7 @@ const getSettings = () => {
   enuService.getSiteSettings().then(res => {
     if (res.data) {
       formData.value = res.data.settings;
-      infoData.value = res.data.site_info
+      infoData.value = res.data.site_info || {}
       formData.value.is_closed = infoData.value.is_closed
       TN.value = res.data.tn_res
 
