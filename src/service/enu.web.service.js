@@ -141,6 +141,9 @@ export class EnuWebService {
     setSiteSettings(params) {
         return api.post(`/web/updateSiteSettings`, params, {headers: getHeader()})
     }
+    setSiteMaintenanceMode(params) {
+        return api.post(`/web/siteUnderConstraction`, params, {headers: getHeader()})
+    }
     getSiteLogs(params) {
         return api.post(`/web/getTableLogs`, params, {headers: getHeader()})
     }

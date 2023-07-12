@@ -792,6 +792,7 @@ export default {
         editPage: "Edit page",
         menuType: "Menu type",
         page: "Page",
+        parentMenu: 'Parent Menu',
         onMain: "On the main",
         addBlock: "Add block",
         editBlock: "Edit block",
@@ -830,7 +831,8 @@ export default {
         currency: "Currency",
         note: "Note",
         siteSettings: "Site settings",
-        mourningMode: "Mourning modeТраурный режим",
+        mourningMode: 'Mourning mode',
+        SiteMaintenanceMode: 'Maintenance mode',
         siteLogs: "Website Logs",
         tableName: "Table Name",
         recordId: "Record ID",
@@ -863,7 +865,8 @@ export default {
         universityAddressEN: 'Address',
         universityFax: 'Fax',
         viewCount: 'View count',
-        viewTimes: 'times'
+        viewTimes: 'times',
+        sitePreviewLink: 'Preview Link'
     },
     //Student locale
     student: {
