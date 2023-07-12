@@ -2,7 +2,7 @@
     <div class="col-12">
         <h3>{{ $t('blog.title') }}</h3>
         <div v-if="!isFacultyWebAdmin" class="card">
-            <Button  :label="$t('common.add')" @click="openDialog" />
+            <Button :label="$t('common.add')" @click="openDialog" />
         </div>
         <div class="card">
             <TabView>
@@ -83,14 +83,26 @@
         </div>
         <div class="field">
             <label>{{ $t('common.image') }}</label>
+            <FileUpload ref="formData" mode="basic" :customUpload="true" @uploader="uploadThumb" :auto="true"
+                v-bind:chooseLabel="$t('hdfs.chooseFile')" accept="image/*" />
+           
+        </div>
+        <div class="field">
+            <label>{{ $t('web.bgImg') }}</label>
+            <FileUpload ref="formData" mode="basic" :customUpload="true" @uploader="uploadBg" :auto="true"
+                v-bind:chooseLabel="$t('hdfs.chooseFile')" accept="image/*" />
+        </div>
+        <!-- <div class="field">
+            <label>{{ $t('common.image') }}</label>
             <CustomFileUpload v-model="thumbFile" @upload="uploadThumb" :accept="'image/*'" :multiple="false"
                 :preview="formData.thumb"></CustomFileUpload>
+
         </div>
         <div class="field">
             <label>{{ $t('web.bgImg') }}</label>
             <CustomFileUpload v-model="bgImg" @upload="uploadBg" :accept="'image/*'" :multiple="false"
                 :preview="formData.background_bg"></CustomFileUpload>
-        </div>
+        </div> -->
         <template #footer>
             <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button p-component p-button-danger mr-2"
                 @click="hideDialog" />
@@ -114,6 +126,7 @@ import { BlogService } from "@/service/blog.service";
 import CustomFileUpload from "@/components/CustomFileUpload.vue";
 import WebLogs from "@/components/enuwebsite/EnuSiteLogs.vue";
 import { findRole } from "@/config/config";
+import { FileService } from "@/service/file.service";
 
 const authUser = computed(() => JSON.parse(localStorage.getItem("loginedUser")))
 const isFacultyWebAdmin = computed(() => findRole(authUser.value, "enu_web_fac_admin"))
@@ -127,6 +140,7 @@ let submitted = ref(false)
 const TN = ref(null)
 const blogList = ref([])
 const blogService = new BlogService()
+const fileService = new FileService()
 const router = useRouter()
 let formData = ref({})
 const options = ref([true, false]);
@@ -134,6 +148,7 @@ const total = ref(0)
 const responsible = ref()
 const thumbFile = ref(null)
 const bgImg = ref(null)
+
 
 const lazyParams = ref({
     page: 0,
@@ -167,15 +182,15 @@ const addBlog = () => {
     submitted.value = true;
     formData.value.owner_id = formData.value.user && formData.value.user.length !== 0 ? formData.value.user[0].userID : null;
     if (!isValid()) return;
-    const fd = new FormData();
+    // const fd = new FormData();
 
-    fd.append("blog", JSON.stringify(formData.value))
-    if (bgImg.value)
-        fd.append("background_bg", bgImg.value)
-    if (thumbFile.value)
-        fd.append("thumb", thumbFile.value)
+    // fd.append("blog", JSON.stringify(formData.value))
+    // if (bgImg.value)
+    //     fd.append("background_bg", bgImg.value)
+    // if (thumbFile.value)
+    //     fd.append("thumb", thumbFile.value)
 
-    blogService.addBlog(fd).then(res => {
+    blogService.addBlog(formData.value).then(res => {
         if (res.data && res.data.is_success) {
             toast.add({ severity: "success", summary: i18n.t('common.success'), life: 3000 });
 
@@ -196,14 +211,14 @@ const save = () => {
     submitted.value = true;
     formData.value.owner_id = formData.value.user && formData.value.user.length !== 0 ? formData.value.user[0].userID : null//responsible.value[0].userID
     if (!isValid()) return;
-    const fd = new FormData();
-    fd.append("blog", JSON.stringify(formData.value))
-    if (bgImg.value)
-        fd.append("background_bg", bgImg.value)
-    if (thumbFile.value)
-        fd.append("thumb", thumbFile.value)
+    // const fd = new FormData();
+    // fd.append("blog", JSON.stringify(formData.value))
+    // if (bgImg.value)
+    //     fd.append("background_bg", bgImg.value)
+    // if (thumbFile.value)
+    //     fd.append("thumb", thumbFile.value)
 
-    blogService.editBlog(fd).then(res => {
+    blogService.editBlog(formData.value).then(res => {
         if (res.data && res.data.is_success) {
             toast.add({ severity: "success", summary: i18n.t('common.success'), life: 3000 });
         }
@@ -222,12 +237,36 @@ const save = () => {
 }
 
 const uploadThumb = (event) => {
-    thumbFile.value = event.files
+    thumbFile.value = event.files[0]
+    //formData.value.thumb = event.files[0]
+    const fd = new FormData()
+    fd.append("files[]", event.files[0])
+    fileService.uploadFile(fd).then(res => {
+        if (res.data) {
+            //formData.value.thumb = res.data[0];
+            formData.value.thumb = res.data[0];
+            
+        }
+    }).catch(error => {
+        toast.add({ severity: "error", summary: error, life: 3000 });
+    });
 }
 
 const uploadBg = (event) => {
-    bgImg.value = event.files
+    bgImg.value = event.files[0]
+    const fd = new FormData()
+    fd.append("files[]", event.files[0])
+    fileService.uploadFile(fd).then(res => {
+        if (res.data) {
+            formData.value.background_bg = res.data[0];
+            
+        }
+    }).catch(error => {
+        toast.add({ severity: "error", summary: error, life: 3000 });
+    });
 }
+
+
 
 const openEdit = (data) => {
     formData.value = data
@@ -235,6 +274,7 @@ const openEdit = (data) => {
     selectedData.value = data;
     selectedData.value.user = new Array(data.user_info)
     isCreateModal.value = true;
+
 }
 
 const openDialog = () => {
