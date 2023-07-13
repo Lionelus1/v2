@@ -27,7 +27,7 @@
           <div>
             <div class="py-3">{{ i18n.t('web.SiteMaintenanceMode') }}</div>
             <InputSwitch v-model="formData.is_closed" />
-            <div class="py-3"><a :href="facultySite" target="_blank">{{ i18n.t('web.sitePreviewLink') }}</a></div>
+            <div class="py-3" v-if="formData.is_closed"><a :href="facultySite" target="_blank">{{ i18n.t('web.sitePreviewLink') }}</a></div>
             <div class="field">
               <Button :label="$t('common.save')" class="mt-3" @click="update" />
             </div>
