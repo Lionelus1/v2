@@ -75,11 +75,8 @@ export default {
 
     getQueueReport(queueID) {
       this.loading = true  
-      // alert(queueID)
-      var date = new Date(this.selectDate);
-      var day = "" + date.getFullYear() +"-"+((date.getMonth() + 1) > 9 ? '' : '0')+ (date.getMonth() + 1) +"-"+ (date.getDate() > 9 ? '' : '0')+ date.getDate();
       axios
-      .post(smartEnuApi + "/queue/queueReport", {selectedDay:day},{
+      .post(smartEnuApi + "/queue/queueReport", {selectedDay:this.selectDate},{
         headers: getHeader(),
       })
       .then((response) => {
