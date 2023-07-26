@@ -15,7 +15,7 @@
         <AppMenu :model="globalMenu"  @menuitem-click="onMenuItemClick"/>
       </div>
     </transition>
-    <div class="layout-main pr-0 pl-0">
+    <div class="layout-main flex-grow-1">
       <router-view v-model:pagemenu="localpagemenu"/>
     </div>
     <AppConfig :layoutMode="layoutMode" :layoutColorMode="layoutColorMode" @layout-change="onLayoutChange" @layout-color-change="onLayoutColorChange"/>

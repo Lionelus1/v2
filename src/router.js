@@ -161,7 +161,7 @@ const routes = [
             {
                 path: '/docrequests',
                 name: 'DocumentRequests',
-                component: load('humanResources/ReferenceRequests'),
+                component: load('references/ReferenceRequests'),
                 beforeEnter: ifAuthenticated,
             },
             {
@@ -405,7 +405,7 @@ const routes = [
             {
                 path:'/references',
                 name:'References',
-                component: load('smartenu/References'),
+                component: load('references/References'),
                 beforeEnter: ifAuthenticated,
             },
             {
