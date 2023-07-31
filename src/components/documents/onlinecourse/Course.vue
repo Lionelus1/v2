@@ -7,6 +7,41 @@
         </div>
         <div class="surface-card shadow-2 flex h-4rem items-align-center">
             <Button :label="$t('course.users')" class="ml-3 p-button-text p-button-secondary" />
+            <Button :label="$t('course.modules')" class="ml-3 p-button-text p-button-secondary"  @click="showDialog = true"/>
+            <Dialog
+                v-model:visible="showDialog"
+                :header="$t('course.modules')"
+                :visible="showDialog"
+                :modal="true"
+               
+                
+                >
+                <TabView v-model:activeIndex="activeTabIndex">
+                    <!-- Add your TabPanel contents here -->
+                    <TabPanel header="Modul I">
+                        <DataTable :value="products" tableStyle="min-width: 50rem">
+                            <Column field="code" header="Course"></Column>
+                            <Column field="name" header="Name"></Column>
+                            <Column field="category" header="Category"></Column>
+                            <Column field="quantity" header="Quantity"></Column>
+                        </DataTable>
+                    </TabPanel>
+                    <TabPanel header="Modul II">
+                        <DataTable :value="products" tableStyle="min-width: 50rem">
+                            <Column field="code" header="Code"></Column>
+                            <Column field="name" header="Name"></Column>
+                            <Column field="category" header="Category"></Column>
+                            <Column field="quantity" header="Quantity"></Column>
+                        </DataTable>
+                    </TabPanel>
+                    <!-- Add more TabPanels as needed -->
+                </TabView>
+            </Dialog>
+            
+           
+            
+            
+
         </div>
         <ProgressBar v-if="saving" mode="indeterminate" style="height: .5em"/>
         <div class="surface-card shadow-2 p-4 ">
@@ -83,7 +118,7 @@
   <script>
 
 import {OnlineCourseService} from "@/service/onlinecourse.service";
-  
+// import { TabView, TabPanel, Button, Dialog } from 'primevue/components';
 export default({
     data() {
         return {
@@ -99,7 +134,9 @@ export default({
             submitted: false,
             studentDialog:false,
             newUsers:[],
-
+            // damir
+            showDialog: false,
+            activeTabIndex: 0,
 
         }
     },
@@ -107,6 +144,14 @@ export default({
         this.getCourse();
     },  
     methods: {
+        // Дамир 
+        onDropdownChange(event) {
+    if (event.value === false) {
+      // Reset the activeTabIndex when the dropdown is closed
+      this.activeTabIndex = 0;
+    }
+  },
+
         addStudent() {
             this.studentDialog = true;
         },
