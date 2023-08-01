@@ -20,7 +20,7 @@
                 :class="{ 'p-invalid': !formData.menu_title_en && submitted }" />
             <small v-show="!formData.menu_title_en && submitted" class="p-error">{{ $t("smartenu.titleEnInvalid") }}</small>
         </div>
-        <div class="field" v-if="parentMenu">
+        <div class="field" v-if="!(currentMenu || formData.parent_id)">
             <label>{{ $t('web.menuParent') }}</label>
             <TreeSelect v-model="selectedTreeMenu" :options="menus" :placeholder="$t('common.choose')"
                 @node-expand="expandMenuTreeSelect" @nodeSelect="menuTreeSelect"></TreeSelect>
@@ -113,16 +113,17 @@
 import { EnuWebService } from "@/service/enu.web.service";
 import AddPage from "@/components/enuwebsite/pages/AddPage.vue";
 import CustomFileUpload from "@/components/CustomFileUpload.vue";
+import {webEnuDomain} from "@/config/config";
 
 export default {
     name: "AddMenu",
-    props: ['isVisible', 'allPages', 'menu_id', 'currentMenu', 'allMenus'],
+    props: ['isVisible', 'allPages', 'menu_id', 'currentMenu'],
     components: { AddPage, CustomFileUpload },
     data() {
         return {
             editMenuVisible: this.isVisible ?? false,
             addPageVisible: false,
-            menus: this.allMenus,
+            menus: null,
             pages: this.allPages ? this.allPages : [],
             menu: [],
             menuTitle: "",
@@ -155,7 +156,7 @@ export default {
             selectedTreeMenu: null,
             lazyParams: {
                 page: 1,
-                rows: 10,
+                rows: 30,
                 parent_id: this.currentMenu ? this.currentMenu.menu_id : null,
             },
             pageLoading: false,
@@ -168,7 +169,8 @@ export default {
     created() {
         this.getMenus(null)
         this.getPages(null)
-
+      console.log(this.menu_id)
+      console.log(!this.currentMenu || !this.menu_id)
     },
     mounted() {
         this.emitter.on('pageCreated', data => {
@@ -182,11 +184,7 @@ export default {
         typeChange() {
             if (this.menuType === 1) {
                 this.formData.link = null
-
             }
-
-
-
         },
         expandMenuTreeSelect(node) {
             this.lazyParams.parent_id = Number(node.menu_id)
@@ -200,12 +198,38 @@ export default {
             }
             this.enuService.getMenusTree(this.lazyParams).then(res => {
                 if (parentData == null) {
-                    this.mapMenu(res.data.menus)
-                    this.menus = res.data.menus;
-                    this.total = res.data.total;
+                  this.menus = res.data.menus;
+                  this.TN = res.data.tn_res;
+                  this.total = res.data.total;
+                  this.tableName = res.data.table_name;
+                  if (this.menus) {
+                    let index = 0;
+                    this.menus = this.menus.filter(x => !x.link);
+                    this.menus.map(e => {
+                      e.label = e['menu_title_' + this.$i18n.locale];
+                      e.key = index.toString();
+                      e.children = [];
+                      if (e.path) {
+                        e.url = `${webEnuDomain}/${this.$i18n.locale}/page/${e.path}`
+                      }
+                      index++;
+                    })
+                  }
                 } else {
-                    this.mapMenu(res.data.menus)
-                    parentData.children = res.data.menus;
+                  parentData.children = res.data.menus;
+                  parentData.children = parentData.children.filter(x => !x.link);
+                  if (parentData.children) {
+                    let index = 0;
+                    parentData.children.map(e => {
+                      e.label = e['menu_title_' + this.$i18n.locale];
+                      e.key = `${e.key}-${index}`;
+                      e.children = !e.leaf ? [] : null;
+                      if (e.path) {
+                        e.url = `${webEnuDomain}/${this.$i18n.locale}/page/${e.path}`
+                      }
+                      index++;
+                    })
+                  }
                 }
                 this.loading = false;
             }).catch(error => {
@@ -220,7 +244,8 @@ export default {
         mapMenu(menus) {
             menus.map(e => {
                 e.label = e['menu_title_' + this.$i18n.locale];
-                e.children = e.sub_menu;
+                e.key = e.menu_id;
+                e.children = [];
             });
         },
         menuTreeSelect(node) {

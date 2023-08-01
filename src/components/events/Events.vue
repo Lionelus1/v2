@@ -2,10 +2,10 @@
     <div class="col-12">
         <h3>{{ $t("smartenu.eventsTitle") }}</h3>
         <!-- BEGINNING OF TABLE -->
-        <div class="card" v-if="isAdmin || isModer || selectedEvent">
-            <Button v-if="isAdmin || isModer" :label="$t('common.add')" icon="pi pi-plus"
+        <div class="card" v-if="isAdmin || isModer || selectedEvent || isEnuWebAdmin || isEnuWebFacAdmin">
+            <Button v-if="isAdmin || isModer || isEnuWebAdmin || isEnuWebFacAdmin" :label="$t('common.add')" icon="pi pi-plus"
                     class="p-button-success mr-2" v-on:click="createEvent"/>
-            <Button :label="$t('common.publish')" v-if="isCreated && (isAdmin || isPublisher)" icon="pi pi-check"
+            <Button :label="$t('common.publish')" v-if="isCreated && (isAdmin || isPublisher || isEnuWebAdmin || isEnuWebFacAdmin)" icon="pi pi-check"
                     class="p-button-help mr-2" v-on:click="publishEvent"/>
             <Button :label="$t('common.show')" v-if="selectedEvent" icon="pi pi-eye"
                     class="p-button-secondary mr-2" v-on:click="eventView"/>
@@ -155,6 +155,8 @@ export default {
                 isPublisher: false,
                 isUser: true,
                 isStudent: false,
+                isEnuWebAdmin: false,
+                isEnuWebFacAdmin: false,
             },
             formValid: [],
             isPoster: false,
@@ -416,6 +418,8 @@ export default {
             this.roles.isPublisher = this.findRole(null, "news_publisher");
             this.roles.isStudent = this.findRole(null, "student");
             this.roles.isModer = this.findRole(null, "news_moderator");
+            this.roles.isEnuWebAdmin = this.findRole(null, "enu_web_admin");
+            this.roles.isEnuWebFacAdmin = this.findRole(null, "enu_web_fac_admin");
         },
         isCreator(row) {
             return row.history.userId === this.loggedUser.userID;
@@ -485,6 +489,12 @@ export default {
         },
         isStudent: function () {
             return this.roles.isStudent;
+        },
+        isEnuWebAdmin: function() {
+            return this.roles.isEnuWebAdmin
+        },
+        isEnuWebFacAdmin: function() {
+            return this.roles.isEnuWebFacAdmin
         },
         userHasAdmin: function () {
             return this.roles.isAdmin || this.roles.isModer;
