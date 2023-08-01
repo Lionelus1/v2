@@ -70,11 +70,9 @@ const isWebAdmin = computed(() => findRole(authUser.value, "enu_web_admin"))
 const getSlugs = () => {
   loading.value = true;
   enuService.getSlugs().then(res => {
-    
     if (res.data)
       list.value = res.data.slugs
     TN.value = res.data.tn_res
-    
     loading.value = false
   }).catch(error => {
     loading.value = false
@@ -82,8 +80,6 @@ const getSlugs = () => {
   })
 }
 getSlugs()
-
-
 
 const setFacultyAdmin = () => {
   const userId = formData.value.user && formData.value.user.length !== 0 ? formData.value.user[0].userID : null

@@ -9,8 +9,7 @@
                 <TabPanel :header="$t('web.properties')">
                     <TreeTable class="p-treetable-sm" :value="menus" :lazy="true" :loading="loading" @nodeExpand="onExpand"
                         scrollHeight="flex" responsiveLayout="scroll" :resizableColumns="true" show-gridlines
-                        columnResizeMode="fit" :paginator="true" :rows="10" :total-records="total" @page="onPage($event)"
-                        >
+                        columnResizeMode="fit" :paginator="true" :rows="10" :total-records="total" @page="onPage($event)">
                         <template #header>
                             <div class="text-left"></div>
                             <div class="text-right">
@@ -75,22 +74,26 @@
                         </Column>
                         <Column field="viewCount" :header="$t('web.viewCount')">
                             <template #body="{ node }">
-                                <span v-if="node.view_count !== null">{{ node.view_count }}  {{ $t('web.viewTimes') }}</span>
-                                <span v-else>{{ 0 }}  {{ $t('web.viewTimes') }}</span>
-                                
-                            </template>
-                        </Column>
-                        <div v-if="showOrderColumn">
-                        <Column v-if="filter.menu_type.is_usefull_link || filter.menu_type.is_header || filter.menu_type.is_middle" field="order" :header="$t('web.menuOrder')">
-                            <template #body="{ node }">
-                                <span class="p-buttonset">
-                                    <Button class="p-button-outlined" icon="pi pi-angle-up" @click="reOrderMenu(node, true)" />
-                                    <Button class="p-button-outlined" icon="pi pi-angle-down" @click="reOrderMenu(node, false)" />
-                                </span>
+                                <span v-if="node.view_count !== null">{{ node.view_count }} {{ $t('web.viewTimes') }}</span>
+                                <span v-else>{{ 0 }} {{ $t('web.viewTimes') }}</span>
 
                             </template>
                         </Column>
-                    </div>
+                        <div v-if="showOrderColumn">
+                            <Column
+                                v-if="filter.menu_type.is_usefull_link || filter.menu_type.is_header || filter.menu_type.is_middle"
+                                field="order" :header="$t('web.menuOrder')">
+                                <template #body="{ node }">
+                                    <span class="p-buttonset">
+                                        <Button class="p-button-outlined" icon="pi pi-angle-up"
+                                            @click="reOrderMenu(node, true)" />
+                                        <Button class="p-button-outlined" icon="pi pi-angle-down"
+                                            @click="reOrderMenu(node, false)" />
+                                    </span>
+
+                                </template>
+                            </Column>
+                        </div>
 
                         <Column field="create_date" :header="$t('faq.createDate')" :sortable="true">
                             <template #body="{ node }">
@@ -110,7 +113,7 @@
                     </TreeTable>
                 </TabPanel>
                 <TabPanel :header="$t('web.history')">
-                    <WebLogs :TN="TN" :key="TN"/>
+                    <WebLogs :TN="TN" :key="TN" />
                 </TabPanel>
             </TabView>
         </div>
@@ -173,7 +176,7 @@ export default {
             filter: {
                 search_text: null,
                 menu_type: {
-                    
+
                 }
             },
             lazyParams: {
@@ -206,15 +209,15 @@ export default {
         },
 
         reOrderMenu(node, up) {
-            const index = this.menus.findIndex(x => x.menu_id === node.menu_id)
+            const index = this.menus.findIndex(x => x.menu_id === node.menu_id);
             if (up) {
-                const current = this.menus[index]
-                const prev = this.menus[index - 1]
+                const current = this.menus[index];
+                const prev = this.menus[index - 1];
 
                 let data = {
                     drag_id: current.menu_id,
-                    drop_id: prev.menu_id,
-                    position: "up"
+                    drop_id: prev ? prev.menu_id : null,
+                    position: "up",
                 };
                 this.enuService.orderMenuList(data)
                     .then(res => {
@@ -227,15 +230,14 @@ export default {
                     .catch(error => {
                         this.toast.add({ severity: "error", summary: error, life: 3000 });
                     });
-
-
             } else {
-                const current = this.menus[index]
-                let next = this.menus[index + 1]
+                const current = this.menus[index];
+                let next = this.menus[index + 1];
+
                 let data = {
                     drag_id: current.menu_id,
-                    drop_id: next.menu_id,
-                    position: "down"
+                    drop_id: next ? next.menu_id : null,
+                    position: "down",
                 };
                 this.enuService.orderMenuList(data)
                     .then(res => {

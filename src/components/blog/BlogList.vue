@@ -1,7 +1,7 @@
 <template>
     <div class="col-12">
         <h3>{{ $t('blog.title') }}</h3>
-        <div v-if="!isFacultyWebAdmin" class="card">
+        <div v-if="!isFacultyWebAdmin && isWebAdmin" class="card">
             <Button :label="$t('common.add')" @click="openDialog" />
         </div>
         <div class="card">
@@ -31,10 +31,12 @@
                         <Column class="text-right">
                             <template #body="{ data }">
                                 <Button icon="fa-solid fa-pen" class="p-button mr-2" @click="openEdit(data)" />
-                                <Button icon="fa-solid fa-trash" class="p-button-danger" @click="deleteConfirm(data)" />
+                                <Button v-if="isWebAdmin" icon="fa-solid fa-trash" class="p-button-danger"
+                                    @click="deleteConfirm(data)" />
                             </template>
                         </Column>
                     </DataTable>
+                    
                 </TabPanel>
                 <TabPanel :header="$t('web.history')" @click="getTableLogs()" v-if="!isFacultyWebAdmin">
                     <WebLogs :TN="TN" :key="TN" />
@@ -85,7 +87,7 @@
             <label>{{ $t('common.image') }}</label>
             <FileUpload ref="formData" mode="basic" :customUpload="true" @uploader="uploadThumb" :auto="true"
                 v-bind:chooseLabel="$t('hdfs.chooseFile')" accept="image/*" />
-           
+
         </div>
         <div class="field">
             <label>{{ $t('web.bgImg') }}</label>
@@ -130,6 +132,7 @@ import { FileService } from "@/service/file.service";
 
 const authUser = computed(() => JSON.parse(localStorage.getItem("loginedUser")))
 const isFacultyWebAdmin = computed(() => findRole(authUser.value, "enu_web_fac_admin"))
+const isWebAdmin = computed(() => findRole(authUser.value, "enu_web_admin"))
 const i18n = useI18n()
 const toast = useToast()
 const confirm = useConfirm()
@@ -182,6 +185,7 @@ const addBlog = () => {
     submitted.value = true;
     formData.value.owner_id = formData.value.user && formData.value.user.length !== 0 ? formData.value.user[0].userID : null;
     if (!isValid()) return;
+
     // const fd = new FormData();
 
     // fd.append("blog", JSON.stringify(formData.value))
@@ -189,6 +193,7 @@ const addBlog = () => {
     //     fd.append("background_bg", bgImg.value)
     // if (thumbFile.value)
     //     fd.append("thumb", thumbFile.value)
+
 
     blogService.addBlog(formData.value).then(res => {
         if (res.data && res.data.is_success) {
@@ -245,7 +250,7 @@ const uploadThumb = (event) => {
         if (res.data) {
             //formData.value.thumb = res.data[0];
             formData.value.thumb = res.data[0];
-            
+
         }
     }).catch(error => {
         toast.add({ severity: "error", summary: error, life: 3000 });
@@ -259,20 +264,19 @@ const uploadBg = (event) => {
     fileService.uploadFile(fd).then(res => {
         if (res.data) {
             formData.value.background_bg = res.data[0];
-            
+
         }
     }).catch(error => {
         toast.add({ severity: "error", summary: error, life: 3000 });
     });
 }
 
-
-
 const openEdit = (data) => {
     formData.value = data
-    formData.value.user = new Array(data.user_info)
     selectedData.value = data;
-    selectedData.value.user = new Array(data.user_info)
+    formData.value.user = new Array(data.user_info);
+
+    selectedData.value.user = new Array(data.user_info);
     isCreateModal.value = true;
 
 }
