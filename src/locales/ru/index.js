@@ -954,11 +954,14 @@ export default {
             issue: "Выдать сертификат",
 
         },
-        modules:'Модули',
-        modulePosition: '№',// module
-        moduleTitle: 'Наименование',// module
-        moduleHours: 'Часы', // module
-        moduleGrade: 'Оценка',// module
+        modules:'Модули курса',
+        module: 'Модуль',
+        modulePosition: '№',
+        moduleTitle: 'Наименование',
+        moduleHours: 'Часы', 
+        moduleGrade: 'Оценка',
+        moduleName:'Название модуля',
+
         user: 'Участник',
         users: "Участники курса",
         organizers: 'Организаторы курсов',

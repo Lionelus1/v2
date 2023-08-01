@@ -7,7 +7,7 @@
         </div>
         
                 <TabView v-model:activeIndex="activeTabIndex">
-                    <!-- Add your TabPanel contents here -->
+         
                     <TabPanel :header="$t('course.users')">
                         <!-- курсқа қатысушылар -->
                         <div v-if="course && course.students">
@@ -64,6 +64,7 @@
                             <Dialog v-model:visible="studentDialog" :style="{width: '450px'}" :header="$t('course.user')" :modal="true" class="p-fluid">
                                 <div class="field">
                                     <label for="newUsers">{{$t('common.fullName')}}</label>
+                                    
                                     <!-- <FindUser id="name"  required="true" autofocus :class="{'p-invalid': submitted && !student}" /> -->
                                     <FindUser id="newUsers" v-model="newUsers" :userType="2"></FindUser>
                                     <small class="p-error" v-if="submitted && !(newUsers && newUsers.length>0)">{{ $t('common.requiredField') }}</small>
@@ -85,15 +86,37 @@
                             <Column :field="('course.moduleGrade'+$i18n.locale)" v-bind:header="$t('course.moduleGrade')"></Column>
                         </DataTable>
                     </TabPanel>
-         
+                    
                 </TabView>
+                <div class="flex gap-2">
+                    <Button class="p-button-success" icon="pi pi-plus" :label="$t('common.add')" @click="addModule"/>
+                    <Column field="course.moduleName" :header="$t('course.moduleName')"></Column>
+
+                </div>
+                         <!-- module қосу диалогы -->
+                         <Dialog v-model:visible="moduleDialog" :style="{width: '450px'}" :header="$t('course.module')" :modal="true" class="p-fluid">
+                                <div class="field">
+                                    <label for="newModules">{{$t('course.moduleName')}}</label>
+                                    
+                                    <!-- <FindUser id="name"  required="true" autofocus :class="{'p-invalid': submitted && !student}" /> -->
+                                    <FindUser id="newModules" v-model="newModules" :userType="2"></FindUser>
+                                    <small class="p-error" v-if="submitted && !(newModules && newModules.length>0)">{{ $t('common.requiredField') }}</small>
+                                </div>
+                                <template #footer>
+                                    <div class="flex flex-wrap row-gap-1">
+                                        <Button :label="$t('common.save')" @click="addModulesToCourse" class="w-full p-button-primary"/>
+                                        <Button :label="$t('common.cancel')" @click="closeModuleDialog"  class="w-full p-button-secondary p-button-outlined"/>
+                                    </div> 
+                                </template>
+                            </Dialog>      
+                          
+            
             </div>
      
   </template>
   <script>
 
 import {OnlineCourseService} from "@/service/onlinecourse.service";
-// import { TabView, TabPanel, Button, Dialog } from 'primevue/components';
 export default({
     data() {
         return {
@@ -109,10 +132,12 @@ export default({
             submitted: false,
             studentDialog:false,
             newUsers:[],
+           
             // damir
-            showDialog: false,
-            activeTabIndex: 0,
-            selectedModule: 0,
+            moduleDialog:false,
+            module: null,
+            newModules:[],
+
 
         }
     },
@@ -120,14 +145,41 @@ export default({
         this.getCourse();
     },  
     methods: {
-        // Дамир 
-        onDropdownChange(event) {
-    if (event.value === false) {
-      // Reset the activeTabIndex when the dropdown is closed
-      this.activeTabIndex = 0;
-    }
-  },
+        //-------------------------------------------Module
+        addModule() {
+            this.moduleDialog = true;
+        },
+        closeModuleDialog() {
+            this.moduleDialog = false;
+            this.newModules = []
+        },
+        addModulesToCourse() {
+            this.submitted = true;
+            if (this.newModules.length<=0){
+                return
+            }
+            if (!this.course.history || this.course.history.length<=0) {
+                return
+            }
+            this.saving = true
+            this.service.addModulesToCourse({
+                users: this.newModules,
+                courseHistoryID: this.course.history[0].id,
+                comment: ""
+            }).then(_=>{
+                this.saving = false;
+                this.submitted = false;
+                this.newModules=[]
+                this.closeModuleDialog()
+                this.getCourseStudents() //??????
+                
+            }).catch(_=>{
+                this.saving = false;
+                this.submitted = false;
+            })
+        },
 
+        //---------------------------------------------------
         addStudent() {
             this.studentDialog = true;
         },
@@ -157,7 +209,8 @@ export default({
             this.studentDialog = false;
             this.newUsers = []
         },
-        getCourse() {
+       
+        getCourse() { //             ??????????
             this.loading = true,
             this.service.getCourse(this.$route.params.id).then(response => {
                 this.course = response.data
@@ -166,7 +219,7 @@ export default({
                 this.loading = false
             });
         },
-        getCourseStudents() {
+        getCourseStudents() { // ???????
             this.loading = true,
             this.service.getCourseStudents(this.$route.params.id, this.studentLazyParams.page, this.studentLazyParams.rows).then(response => {
                 this.course.students = response.data.students
@@ -176,7 +229,7 @@ export default({
                 this.loading = false
             });
         },
-        studentTableOnPage(event) {
+        studentTableOnPage(event) { // ???????
             this.studentLazyParams = event;
             this.getCourseStudents();
         },

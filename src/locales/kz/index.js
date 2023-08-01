@@ -967,11 +967,14 @@ export default {
             designer: 'Үлгі дизайнері',
             issue: "Сертификат беру",
         },
-        modules:'Модулдер', 
-        modulePosition: '№',// module
-        moduleTitle: 'Белгі',// module
-        moduleHours: 'Сағат', // module
-        moduleGrade: 'Баға',// module
+        modules:'Курс модульдері',
+        module: 'Модуль', 
+        modulePosition: '№',
+        moduleTitle: 'Белгі',
+        moduleHours: 'Сағат', 
+        moduleGrade: 'Баға',
+        moduleName:'Модуль атауы',
+        
         users: 'Курсқа қатысушылар',
         user: 'Қатысушы',
         organizers: 'Курс ұйымдастырушылар',

@@ -947,11 +947,16 @@ export default {
             issue: "Issue a certificate",
 
         },
-        modules:'Modules', // module
-        modulePosition: '№',// module
-        moduleTitle: 'Title',// module
-        moduleHours: 'Hours', // module
-        moduleGrade: 'Grade',// module
+      
+        modules:'Сourse modules', 
+        module: 'Module',
+        modulePosition: '№',
+        moduleTitle: 'Title',
+        moduleHours: 'Hours', 
+        moduleGrade: 'Grade',
+        moduleName:'Module name',
+    
+
         users: 'Сourse participants',
         user: 'Participant',
         organizers: 'Course organizers',
