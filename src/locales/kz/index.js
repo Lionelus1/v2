@@ -968,6 +968,10 @@ export default {
             issue: "Сертификат беру",
         },
         modules:'Модулдер', 
+        modulePosition: '№',// module
+        moduleTitle: 'Белгі',// module
+        moduleHours: 'Сағат', // module
+        moduleGrade: 'Баға',// module
         users: 'Курсқа қатысушылар',
         user: 'Қатысушы',
         organizers: 'Курс ұйымдастырушылар',

@@ -5,115 +5,90 @@
             <div class=" font-medium text-3xl text-900 mb-3">{{course["name"+$i18n.locale]}}</div>
             <div class="text-500 mb-5">{{course["description"+$i18n.locale]}}</div>
         </div>
-        <div class="surface-card shadow-2 flex h-4rem items-align-center">
-            <Button :label="$t('course.users')" class="ml-3 p-button-text p-button-secondary" />
-            <Button :label="$t('course.modules')" class="ml-3 p-button-text p-button-secondary"  @click="showDialog = true"/>
-            <Dialog
-                v-model:visible="showDialog"
-                :header="$t('course.modules')"
-                :visible="showDialog"
-                :modal="true"
-               
-                
-                >
+        
                 <TabView v-model:activeIndex="activeTabIndex">
                     <!-- Add your TabPanel contents here -->
-                    <TabPanel header="Modul I">
-                        <DataTable :value="products" tableStyle="min-width: 50rem">
-                            <Column field="code" header="Course"></Column>
-                            <Column field="name" header="Name"></Column>
-                            <Column field="category" header="Category"></Column>
-                            <Column field="quantity" header="Quantity"></Column>
+                    <TabPanel :header="$t('course.users')">
+                        <!-- курсқа қатысушылар -->
+                        <div v-if="course && course.students">
+                            <DataTable
+                                selectionMode="single"
+                                v-model:selection="student"
+                                :lazy="true"
+                                :totalRecords="course.studentsCount"
+                                :value="course.students"
+                                @page="studentTableOnPage($event)"
+                                :paginator="true"
+                                :first="studentLazyParams.page"
+                                :rows="studentLazyParams.rows"
+                                dataKey="profile.userID"
+                                :rowHover="true"
+                                :loading="loading"
+                                paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink JumpToPageDropdown CurrentPageReport RowsPerPageDropdown"
+                                :rowsPerPageOptions="[10, 25, 50]"
+                                :currentPageReportTemplate="
+                                $t('common.showingRecordsCount', {
+                                    first: '{first}',
+                                    last: '{last}',
+                                    totalRecords: '{totalRecords}',
+                                })"
+                                responsiveLayout="stack"
+                                breakpoint="480px"
+                                @sort="onSort($event)"
+                                @filter="onFilter($event)">
+                            
+                                <template #header>
+                                    <div class="table-header flex justify-content-between flex-wrap card-container purple-container">
+                                        <div class="flex gap-2">
+                                            <Button class="p-button-success" icon="pi pi-plus" :label="$t('common.add')" @click="addStudent"/>
+                                            <Button class="p-button-help" icon="fa-solid fa-certificate" :label="$t('course.certificate.issue')" @click="issueCertificate"/>
+                                        </div>
+                                        <span class="p-input-icon-left">
+                                            <i class="pi pi-search" />
+                                            <InputText disabled="true" :placeholder="$t('common.search')" />
+                                        </span>
+                                    </div>
+                                </template>
+                                <Column field="profile.fullName" :header="$t('common.fullName')"></Column>
+                                <Column :field="'profile.mainPosition.department.name' + ($i18n.locale).charAt(0).toUpperCase() + ($i18n.locale).slice(1)" :header="$t('common.department')"></Column> 
+                                <Column field="lastNumber" :header="$t('course.lnum')"></Column>
+                                <!-- <Column headerStyle="width:60px;">
+                                    <template #body="slotProps">
+                                    <Button @click="template=slotProps.data;templateEditorVisilble = true"
+                                            type="button"
+                                            icon="pi pi-eye" class="p-button-info"></Button>
+                                    </template>
+                                </Column> -->
+                            </DataTable>
+                            <!-- студент қосу диалогы -->
+                            <Dialog v-model:visible="studentDialog" :style="{width: '450px'}" :header="$t('course.user')" :modal="true" class="p-fluid">
+                                <div class="field">
+                                    <label for="newUsers">{{$t('common.fullName')}}</label>
+                                    <!-- <FindUser id="name"  required="true" autofocus :class="{'p-invalid': submitted && !student}" /> -->
+                                    <FindUser id="newUsers" v-model="newUsers" :userType="2"></FindUser>
+                                    <small class="p-error" v-if="submitted && !(newUsers && newUsers.length>0)">{{ $t('common.requiredField') }}</small>
+                                </div>
+                                <template #footer>
+                                    <div class="flex flex-wrap row-gap-1">
+                                        <Button :label="$t('common.save')" @click="addStudentsToCourse" class="w-full p-button-primary"/>
+                                        <Button :label="$t('common.cancel')" @click="closeStudentDialog"  class="w-full p-button-secondary p-button-outlined"/>
+                                    </div> 
+                                </template>
+                            </Dialog>
+                        </div>
+                    </TabPanel>
+                    <TabPanel :header="$t('course.modules')" >
+                        <DataTable v-model:selection="selectedModule" selectionMode="single" tableStyle="min-width: 50rem">
+                            <Column :field="('course.modulePosition' +$i18n.locale)" v-bind:header="$t('course.modulePosition')"></Column>
+                            <Column :field="('course.moduleTitle'+$i18n.locale)" v-bind:header="$t('course.moduleTitle')"></Column>
+                            <Column :field="('course.moduleHours'+$i18n.locale)" v-bind:header="$t('course.moduleHours')"></Column>
+                            <Column :field="('course.moduleGrade'+$i18n.locale)" v-bind:header="$t('course.moduleGrade')"></Column>
                         </DataTable>
                     </TabPanel>
-                    <TabPanel header="Modul II">
-                        <DataTable :value="products" tableStyle="min-width: 50rem">
-                            <Column field="code" header="Code"></Column>
-                            <Column field="name" header="Name"></Column>
-                            <Column field="category" header="Category"></Column>
-                            <Column field="quantity" header="Quantity"></Column>
-                        </DataTable>
-                    </TabPanel>
-                    <!-- Add more TabPanels as needed -->
+         
                 </TabView>
-            </Dialog>
-            
-           
-            
-            
-
-        </div>
-        <ProgressBar v-if="saving" mode="indeterminate" style="height: .5em"/>
-        <div class="surface-card shadow-2 p-4 ">
-            <!-- курсқа қатысушылар -->
-            <div v-if="course && course.students">
-                <DataTable
-                    selectionMode="single"
-                    v-model:selection="student"
-                    :lazy="true"
-                    :totalRecords="course.studentsCount"
-                    :value="course.students"
-                    @page="studentTableOnPage($event)"
-                    :paginator="true"
-                    :first="studentLazyParams.page"
-                    :rows="studentLazyParams.rows"
-                    dataKey="profile.userID"
-                    :rowHover="true"
-                    :loading="loading"
-                    paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink JumpToPageDropdown CurrentPageReport RowsPerPageDropdown"
-                    :rowsPerPageOptions="[10, 25, 50]"
-                    :currentPageReportTemplate="
-                    $t('common.showingRecordsCount', {
-                        first: '{first}',
-                        last: '{last}',
-                        totalRecords: '{totalRecords}',
-                    })"
-                    responsiveLayout="stack"
-                    breakpoint="480px"
-                    @sort="onSort($event)"
-                    @filter="onFilter($event)">
-                 
-                    <template #header>
-                        <div class="table-header flex justify-content-between flex-wrap card-container purple-container">
-                            <div class="flex gap-2">
-                                <Button class="p-button-success" icon="pi pi-plus" :label="$t('common.add')" @click="addStudent"/>
-                                <Button class="p-button-help" icon="fa-solid fa-certificate" :label="$t('course.certificate.issue')" @click="issueCertificate"/>
-                            </div>
-                            <span class="p-input-icon-left">
-                                <i class="pi pi-search" />
-                                <InputText disabled="true" :placeholder="$t('common.search')" />
-                            </span>
-					    </div>
-                    </template>
-                    <Column field="profile.fullName" :header="$t('common.fullName')"></Column>
-                    <Column :field="'profile.mainPosition.department.name' + ($i18n.locale).charAt(0).toUpperCase() + ($i18n.locale).slice(1)" :header="$t('common.department')"></Column> 
-                    <Column field="lastNumber" :header="$t('course.lnum')"></Column>
-                    <!-- <Column headerStyle="width:60px;">
-                        <template #body="slotProps">
-                        <Button @click="template=slotProps.data;templateEditorVisilble = true"
-                                type="button"
-                                icon="pi pi-eye" class="p-button-info"></Button>
-                        </template>
-                    </Column> -->
-                </DataTable>
-                <!-- студент қосу диалогы -->
-                <Dialog v-model:visible="studentDialog" :style="{width: '450px'}" :header="$t('course.user')" :modal="true" class="p-fluid">
-                    <div class="field">
-                        <label for="newUsers">{{$t('common.fullName')}}</label>
-                        <!-- <FindUser id="name"  required="true" autofocus :class="{'p-invalid': submitted && !student}" /> -->
-                        <FindUser id="newUsers" v-model="newUsers" :userType="2"></FindUser>
-                        <small class="p-error" v-if="submitted && !(newUsers && newUsers.length>0)">{{ $t('common.requiredField') }}</small>
-                    </div>
-                    <template #footer>
-                        <div class="flex flex-wrap row-gap-1">
-                            <Button :label="$t('common.save')" @click="addStudentsToCourse" class="w-full p-button-primary"/>
-                            <Button :label="$t('common.cancel')" @click="closeStudentDialog"  class="w-full p-button-secondary p-button-outlined"/>
-                        </div> 
-                    </template>
-                </Dialog>
             </div>
-        </div>
-    </div>
+     
   </template>
   <script>
 
@@ -137,6 +112,7 @@ export default({
             // damir
             showDialog: false,
             activeTabIndex: 0,
+            selectedModule: 0,
 
         }
     },

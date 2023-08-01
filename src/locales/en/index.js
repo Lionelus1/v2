@@ -945,9 +945,13 @@ export default {
             elements: 'Elements',
             designer: 'Template designer',
             issue: "Issue a certificate",
-            // application: 'Applications', //************************ DAMIR
+
         },
-        modules:'Modules', 
+        modules:'Modules', // module
+        modulePosition: '№',// module
+        moduleTitle: 'Title',// module
+        moduleHours: 'Hours', // module
+        moduleGrade: 'Grade',// module
         users: 'Сourse participants',
         user: 'Participant',
         organizers: 'Course organizers',

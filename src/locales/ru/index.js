@@ -955,6 +955,10 @@ export default {
 
         },
         modules:'Модули',
+        modulePosition: '№',// module
+        moduleTitle: 'Наименование',// module
+        moduleHours: 'Часы', // module
+        moduleGrade: 'Оценка',// module
         user: 'Участник',
         users: "Участники курса",
         organizers: 'Организаторы курсов',
