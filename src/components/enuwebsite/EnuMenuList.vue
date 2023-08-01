@@ -115,7 +115,7 @@
             </TabView>
         </div>
     </div>
-    <AddMenu v-if="addMenuVisible" :is-visible="addMenuVisible" :all-pages="pages" :all-menus="menus"
+    <AddMenu v-if="addMenuVisible" :is-visible="addMenuVisible" :all-pages="pages"
         :current-menu="selectedMenu" :menu_id="parentId"></AddMenu>
     <PageView v-if="viewPageVisible" :is-visible="viewPageVisible" :selectedPage="selectedViewMenu"></PageView>
 </template>
