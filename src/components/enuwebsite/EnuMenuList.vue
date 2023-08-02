@@ -2,7 +2,7 @@
     <div class="col-12">
         <h3>{{ $t("web.menuPage") }}</h3>
         <div class="card">
-            <Button :label="$t('web.addMenu')" icon="pi pi-plus" class="ml-2" v-on:click="createMenu" />
+            <Button :label="$t('web.addMenu')" icon="pi pi-plus" class="ml-2" v-on:click="createMenu(null)" />
         </div>
         <div class="card">
             <TabView>
@@ -357,6 +357,7 @@ export default {
             this.getMenus(null);
         },
         createMenu(data) {
+          console.log(data)
             this.selectedMenu = data;
             this.addMenuVisible = true;
         },
