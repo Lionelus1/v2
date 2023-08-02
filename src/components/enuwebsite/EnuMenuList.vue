@@ -362,7 +362,7 @@ export default {
             this.getMenus(null);
         },
         createMenu(data) {
-            if (data) this.parentId = data.menu_id;
+            this.selectedMenu = data;
             this.addMenuVisible = true;
         },
         editMenu(data) {
