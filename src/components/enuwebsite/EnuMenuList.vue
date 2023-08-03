@@ -75,9 +75,9 @@
                         </Column>
                         <Column field="viewCount" :header="$t('web.viewCount')">
                             <template #body="{ node }">
-                                <span v-if="node.view_count !== null">{{ node.view_count }}  {{ $t('web.viewTimes') }}</span>
-                                <span v-else>{{ 0 }}  {{ $t('web.viewTimes') }}</span>
-                                
+                                <span v-if="node.view_count !== null">{{ node.view_count }} {{ $t('web.viewTimes') }}</span>
+                                <span v-else>{{ 0 }} {{ $t('web.viewTimes') }}</span>
+
                             </template>
                         </Column>
                         <div v-if="showOrderColumn">
@@ -114,7 +114,7 @@
                     </TreeTable>
                 </TabPanel>
                 <TabPanel :header="$t('web.history')">
-                    <WebLogs :TN="TN" :key="TN"/>
+                    <WebLogs :TN="TN" :key="TN" />
                 </TabPanel>
             </TabView>
         </div>
@@ -210,15 +210,15 @@ export default {
         },
 
         reOrderMenu(node, up) {
-            const index = this.menus.findIndex(x => x.menu_id === node.menu_id)
+            const index = this.menus.findIndex(x => x.menu_id === node.menu_id);
             if (up) {
-                const current = this.menus[index]
-                const prev = this.menus[index - 1]
+                const current = this.menus[index];
+                const prev = this.menus[index - 1];
 
                 let data = {
                     drag_id: current.menu_id,
-                    drop_id: prev.menu_id,
-                    position: "up"
+                    drop_id: prev ? prev.menu_id : null,
+                    position: "up",
                 };
                 this.enuService.orderMenuList(data)
                     .then(res => {
@@ -231,15 +231,14 @@ export default {
                     .catch(error => {
                         this.toast.add({ severity: "error", summary: error, life: 3000 });
                     });
-
-
             } else {
-                const current = this.menus[index]
-                let next = this.menus[index + 1]
+                const current = this.menus[index];
+                let next = this.menus[index + 1];
+
                 let data = {
                     drag_id: current.menu_id,
-                    drop_id: next.menu_id,
-                    position: "down"
+                    drop_id: next ? next.menu_id : null,
+                    position: "down",
                 };
                 this.enuService.orderMenuList(data)
                     .then(res => {

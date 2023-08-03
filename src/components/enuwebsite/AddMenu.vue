@@ -57,6 +57,20 @@
             </div>
         </div>
         <div class="field">
+            <label>{{ $t('web.headerMenu') }}</label>
+            <div>
+                <Checkbox inputId="is_header" v-model="formData.is_header" :binary="true" />
+                <label class="ml-2" for="is_header">{{ $t('common.yes') }}</label>
+            </div>
+        </div>
+        <div class="field">
+            <label>{{ $t('web.middleMenu') }}</label>
+            <div>
+                <Checkbox inputId="is_middle" v-model="formData.is_middle" :binary="true" />
+                <label class="ml-2" for="is_middle">{{ $t('common.yes') }}</label>
+            </div>
+        </div>
+        <div class="field">
             <label>{{ $t('web.isHidden') }}</label>
             <div>
                 <Checkbox inputId="hidden" v-model="formData.hidden" :binary="true"/>
