@@ -48,7 +48,7 @@
 
 
   <Dialog v-model:visible="isCreateModal" :style="{ width: '1000px' }" :breakpoints="{ '960px': '75vw', '640px': '90vw' }"
-          :header="'Add'" :modal="true" class="p-fluid" @hide="hideDialog">
+          :header="formData ? $t('common.add') : $t('common.edit')" :modal="true" class="p-fluid" @hide="hideDialog">
     <div class="field">
       <label>{{ $t('common.nameInQazaq') }}</label>
       <InputText type="text" v-model="formData.name_kz"/>
@@ -136,7 +136,7 @@ const blogList = ref([])
 const blogService = new BlogService()
 const fileService = new FileService()
 const router = useRouter()
-const formData = ref({})
+const formData = ref(null)
 const options = ref([true, false]);
 const total = ref(0)
 const responsible = ref()
@@ -241,10 +241,10 @@ const uploadThumb = (event) => {
   //formData.value.thumb = event.files[0]
   const fd = new FormData()
   fd.append("files[]", event.files[0])
+  fd.append("watermark", false)
   fileService.uploadFile(fd).then(res => {
     if (res.data) {
       //formData.value.thumb = res.data[0];
-      console.log(res.data)
       formData.value.thumb = res.data[0]?.filepath;
       formData.value.thumbUrl = smartEnuApi + fileRoute + formData.value.thumb;
     }
@@ -257,6 +257,7 @@ const uploadBg = (event) => {
   bgImg.value = event.files[0]
   const fd = new FormData()
   fd.append("files[]", event.files[0])
+  fd.append("watermark", false)
   fileService.uploadFile(fd).then(res => {
     if (res.data) {
       formData.value.background_bg = res.data[0].filepath;
@@ -270,11 +271,10 @@ const uploadBg = (event) => {
 const openEdit = (data) => {
   formData.value = data
   selectedData.value = data;
-  console.log("DDD", formData.value)
-  console.log("FFF", data)
-  //formData.value.user = new Array(data.user_info);
 
-  //selectedData.value.user = new Array(data.user_info);
+  formData.value.user = new Array(data.user_info);
+  selectedData.value.user = new Array(data.user_info);
+
   isCreateModal.value = true;
 }
 
