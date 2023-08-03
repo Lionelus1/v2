@@ -185,8 +185,6 @@ export default {
     created() {
         this.getMenus(null)
         this.getPages(null)
-      console.log(this.menu_id)
-      console.log(!this.currentMenu || !this.menu_id)
     },
     mounted() {
         this.emitter.on('pageCreated', data => {
