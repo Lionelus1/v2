@@ -43,9 +43,6 @@
                             <!--            <RichEditor ref="kztext" v-model="formData.content_kz" editorStyle="height: 320px"></RichEditor>-->
                             <TinyEditor v-model="formData.content_kz" :height="400" :custom-file-upload="true"
                                         @onAfterUpload="onAfterUpload"/>
-                            <small v-show="!formData.content_kz && submitted" class="p-error">
-                                {{ $t("smartenu.contentKzInvalid") }}
-                            </small>
                         </div>
                     </TabPanel>
                     <TabPanel header="Русский">
@@ -61,9 +58,6 @@
                             <!--            <RichEditor id="ru-content" v-model="formData.content_ru" editorStyle="height: 320px"/>-->
                             <TinyEditor v-model="formData.content_ru" :height="400" :custom-file-upload="true"
                                         @onAfterUpload="onAfterUpload"/>
-                            <small v-show="!formData.content_ru && submitted" class="p-error">
-                                {{ $t("smartenu.contentRuInvalid") }}
-                            </small>
                         </div>
                     </TabPanel>
                     <TabPanel header="English">
@@ -79,9 +73,6 @@
                             <!--            <RichEditor v-model="formData.content_en" editorStyle="height: 320px"/>-->
                             <TinyEditor v-model="formData.content_en" :height="400" :custom-file-upload="true"
                                         @onAfterUpload="onAfterUpload"/>
-                            <small v-show="!formData.content_en && submitted" class="p-error">
-                                {{ $t("smartenu.contentEnInvalid") }}
-                            </small>
                         </div>
                     </TabPanel>
                 </TabView>
@@ -276,12 +267,6 @@ export default {
             if (!this.formData.title_ru)
                 errors.push(1);
             if (!this.formData.title_en)
-                errors.push(1);
-            if (!this.formData.is_landing && !this.formData.content_kz)
-                errors.push(1);
-            if (!this.formData.is_landing && !this.formData.content_ru)
-                errors.push(1);
-            if (!this.formData.is_landing && !this.formData.content_en)
                 errors.push(1);
 
             return errors.length === 0

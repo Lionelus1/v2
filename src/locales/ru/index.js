@@ -769,6 +769,10 @@ export default {
             s9: "направить диссертацию на повторную защиту",
             s10: "отказать в присуждении степени доктора философии (PhD) или доктора по профилю",
         },
+        userOtherCouncils: 'Отношение пользователя к другим диссертационным советам',
+        closeDate: 'Дата прекращения',
+        councilComment: 'Номер приказа и т.п.',
+        closeCouncil: 'Остановить диссертационный совет'
     },
     faq: {
         title: "Служба поддержки",
@@ -818,6 +822,7 @@ export default {
         editPage: 'Редактировать страницу',
         menuType: 'Тип меню',
         page: 'Страница',
+        parentMenu: 'Главное меню',
         onMain: 'На главной',
         addBlock: 'Добавить блок',
         editBlock: 'Редактировать блок',
@@ -857,6 +862,7 @@ export default {
         note: 'Примечание',
         siteSettings: 'Настройки сайта',
         mourningMode: 'Траурный режим',
+        SiteMaintenanceMode: 'Режим обслуживания',
         siteLogs: 'Журнал сайта',
         tableName: 'Имя таблицы',
         recordId: 'Идентификатор записи',
@@ -884,12 +890,13 @@ export default {
         commonSettings: 'Настройки',
         universityAddressInfo: 'Контактный адрес',
         websiteAddress: 'Сайт',
-        universityAddressKZ: 'Мекенжайы',
-        universityAddressRU: 'Адрес',
-        universityAddressEN: 'Address',
+        universityAddressKZ: 'Адрес (На казахском)',
+        universityAddressRU: 'Адрес (На русском)',
+        universityAddressEN: 'Адрес (На английском)',
         universityFax: 'Факс',
         viewCount: 'Просмотров',
-        viewTimes: 'раз'
+        viewTimes: 'раз',
+        sitePreviewLink: 'Ссылка для предварительного просмотра'
     },
 
     student: {

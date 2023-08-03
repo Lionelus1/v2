@@ -66,6 +66,7 @@ const op = ref()
 const selectedData = ref()
 const authUser = computed(() => JSON.parse(localStorage.getItem('loginedUser')))
 const isWebAdmin = computed(() => findRole(authUser.value, "enu_web_admin"))
+
 const getSlugs = () => {
   loading.value = true;
   enuService.getSlugs().then(res => {

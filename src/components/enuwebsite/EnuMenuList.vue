@@ -2,7 +2,7 @@
     <div class="col-12">
         <h3>{{ $t("web.menuPage") }}</h3>
         <div class="card">
-            <Button :label="$t('web.addMenu')" icon="pi pi-plus" class="ml-2" v-on:click="createMenu" />
+            <Button :label="$t('web.addMenu')" icon="pi pi-plus" class="ml-2" v-on:click="createMenu(null)" />
         </div>
         <div class="card">
             <TabView>
@@ -75,9 +75,9 @@
                         </Column>
                         <Column field="viewCount" :header="$t('web.viewCount')">
                             <template #body="{ node }">
-                                <span v-if="node.view_count !== null">{{ node.view_count }}  {{ $t('web.viewTimes') }}</span>
-                                <span v-else>{{ 0 }}  {{ $t('web.viewTimes') }}</span>
-                                
+                                <span v-if="node.view_count !== null">{{ node.view_count }} {{ $t('web.viewTimes') }}</span>
+                                <span v-else>{{ 0 }} {{ $t('web.viewTimes') }}</span>
+
                             </template>
                         </Column>
                         <div v-if="showOrderColumn">
@@ -114,12 +114,12 @@
                     </TreeTable>
                 </TabPanel>
                 <TabPanel :header="$t('web.history')">
-                    <WebLogs :TN="TN" :key="TN"/>
+                    <WebLogs :TN="TN" :key="TN" />
                 </TabPanel>
             </TabView>
         </div>
     </div>
-    <AddMenu v-if="addMenuVisible" :is-visible="addMenuVisible" :all-pages="pages" :all-menus="menus"
+    <AddMenu v-if="addMenuVisible" :is-visible="addMenuVisible" :all-pages="pages"
         :current-menu="selectedMenu" :menu_id="parentId"></AddMenu>
     <PageView v-if="viewPageVisible" :is-visible="viewPageVisible" :selectedPage="selectedViewMenu"></PageView>
 </template>
@@ -210,15 +210,15 @@ export default {
         },
 
         reOrderMenu(node, up) {
-            const index = this.menus.findIndex(x => x.menu_id === node.menu_id)
+            const index = this.menus.findIndex(x => x.menu_id === node.menu_id);
             if (up) {
-                const current = this.menus[index]
-                const prev = this.menus[index - 1]
+                const current = this.menus[index];
+                const prev = this.menus[index - 1];
 
                 let data = {
                     drag_id: current.menu_id,
-                    drop_id: prev.menu_id,
-                    position: "up"
+                    drop_id: prev ? prev.menu_id : null,
+                    position: "up",
                 };
                 this.enuService.orderMenuList(data)
                     .then(res => {
@@ -231,15 +231,14 @@ export default {
                     .catch(error => {
                         this.toast.add({ severity: "error", summary: error, life: 3000 });
                     });
-
-
             } else {
-                const current = this.menus[index]
-                let next = this.menus[index + 1]
+                const current = this.menus[index];
+                let next = this.menus[index + 1];
+
                 let data = {
                     drag_id: current.menu_id,
-                    drop_id: next.menu_id,
-                    position: "down"
+                    drop_id: next ? next.menu_id : null,
+                    position: "down",
                 };
                 this.enuService.orderMenuList(data)
                     .then(res => {
@@ -362,7 +361,8 @@ export default {
             this.getMenus(null);
         },
         createMenu(data) {
-            if (data) this.parentId = data.menu_id;
+          console.log(data)
+            this.selectedMenu = data;
             this.addMenuVisible = true;
         },
         editMenu(data) {

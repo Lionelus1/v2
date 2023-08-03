@@ -196,16 +196,23 @@ export class MenuService {
 
             {
                 label: $t('web.mainMenuTitle'), icon: 'pi pi-fw pi-box ',
-                visible: (this.findRole('enu_web_admin') || this.findRole('enu_fac_web_admin')) && store.state.userSlug !== null,
+                visible: (this.findRole('enu_web_admin') || this.findRole('enu_web_fac_admin')) && store.state.userSlug !== null,
                 items:  [
                     {
-                        label: $t('web.menuPage'), icon: 'pi pi-fw pi-bars', to: '/enu/menus'
+                        label: $t('web.menuPage'), icon: 'pi pi-fw pi-bars', to: '/enu/menus',
+                        visible: this.findRole('enu_web_admin') || this.findRole('enu_web_fac_admin')
                     },
                     {
-                        label: $t('web.pageLink'), icon: 'pi pi-fw pi-external-link', to: '/enu/pages'
+                        label: $t('web.pageLink'), 
+                        icon: 'pi pi-fw pi-external-link', 
+                        to: '/enu/pages',
+                        visible: this.findRole('enu_web_admin') || this.findRole('enu_web_fac_admin')
                     },
                     {
-                        label: $t('web.blocks'), icon: 'fa-solid fa-cube', to: '/enu/blocks'
+                        label: $t('web.blocks'), 
+                        icon: 'fa-solid fa-cube', 
+                        to: '/enu/blocks',
+                        visible: this.findRole('enu_web_admin') || this.findRole('enu_web_fac_admin')
                     },
                     {
                         label: $t('web.blog'), icon: 'fa-solid fa-message', to: '/blog'
@@ -214,7 +221,7 @@ export class MenuService {
                         label: $t('common.faculties'),
                         icon: 'fa-solid fa-folder',
                         to: '/enu/faculties',
-                        visible: this.findRole('enu_web_admin') && localStorage.getItem("userSlug") !== null
+                        visible: this.findRole('enu_web_admin') && store.state.userSlug
                     },
                     {
                         label: $t('web.siteSettings'),

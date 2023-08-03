@@ -5,9 +5,9 @@
                     :multiple="multiple" :chooseLabel="$t('hdfs.chooseFile')" :accept="accept"></FileUpload>
     </div>
 
-    <div class="m-news-images-item" v-for="(item, index) of files" :key="index">
+    <!-- <div class="m-news-images-item" v-for="(item, index) of files" :key="index">
         <img src="item" alt="">
-    </div>
+    </div> -->
 
     <div class="field" v-if="preview && !uploadedFiles">
         <img :src="imgPreview" alt="" class="w-20rem">

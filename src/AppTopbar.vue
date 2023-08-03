@@ -22,29 +22,30 @@
 <script>
 import LanguageDropdown from "./LanguageDropdown";
 
-export default {
-    components: {LanguageDropdown},
-    props: {
-        pagemenu: null,
-    },
-    data() {
-        return {
-            isShowGuide: process.env.VUE_APP_SHOW_GUIDE === 'true'
-        }
-    },
-    methods: {
-        toggle(event) {
-            this.$refs.menu.toggle(event);
+    export default {
+        components: {LanguageDropdown},
+        props: {
+            pagemenu: null,
         },
-        onMenuToggle(event) {
-            this.$emit('menu-toggle', event);
+        data() {
+            return {
+                isShowGuide: process.env.VUE_APP_SHOW_GUIDE === 'true'
+            }
         },
-        navigate() {
-            let routeData = this.$router.resolve({name: 'MainGuide', params: {id: this.$route.path}});
-            window.open(routeData.href, '_blank');
-        },
-        navigateToTelegram() {
-            window.open('https://t.me/smartenu_chat', '_blank')
+        methods: {
+            toggle(event) {
+                this.$refs.menu.toggle(event);
+            },
+            onMenuToggle(event) {
+                this.$emit('menu-toggle', event);
+            },
+            navigate() {
+                let routeData = this.$router.resolve({name: 'MainGuide', params: {id: this.$route.path}});
+                window.open(routeData.href, '_blank');
+            },
+            navigateToTelegram() {
+              window.open('https://t.me/smartenu_chat', '_blank')
+            }
         }
     }
 }

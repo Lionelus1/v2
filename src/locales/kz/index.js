@@ -780,7 +780,10 @@ export default {
         specialityCode: "Мамандық атауы мен коды",
         secretaryname: "Ғалым хатшының аты-жөні",
         secretary: "Ғалым хатшы",
-
+        userOtherCouncils: 'Қолданушының басқа диссертациялық кеңестерге қатысы',
+        closeDate: 'Тоқтатылған күні',
+        councilComment: 'Бұйрық нөмірі және т. б.',
+        closeCouncil: 'Диссертациялық кеңесті тоқтату'
     },
     faq: {
         title: "Қолдау қызметі",
@@ -830,6 +833,7 @@ export default {
         editPage: 'Бетті өзгерту',
         menuType: 'Мәзір типі',
         page: 'Бет',
+        parentMenu: 'Аталық мәзір',
         onMain: 'Бастты бетте',
         addBlock: 'Блок қосу',
         editBlock: 'Блокты өзгерту',
@@ -869,6 +873,7 @@ export default {
         note: 'Ескертпе',
         siteSettings: 'Сайт баптаулары',
         mourningMode: 'Қаралы күн режимі',
+        SiteMaintenanceMode: 'Қызмет көрсету режимі',
         siteLogs: 'Сайт журналы',
         tableName: 'Кесте атауы',
         recordId: 'Идентификатор',
@@ -896,12 +901,13 @@ export default {
         commonSettings: 'Параметрлер',
         universityAddressInfo: 'Байланыс мәліметтері',
         websiteAddress: 'Сайт',
-        universityAddressKZ: 'Мекенжайы',
-        universityAddressRU: 'Адрес',
-        universityAddressEN: 'Address',
+        universityAddressKZ: 'Мекен-жайы (Қазақша)',
+        universityAddressRU: 'Мекен-жайы (Орысша)',
+        universityAddressEN: 'Мекен-жайы (Ағылшынша)',
         universityFax: 'Факс',
         viewCount: 'Қарады',
-        viewTimes: 'рет'
+        viewTimes: 'рет',
+        sitePreviewLink: 'Алдын ала қарау сілтемесі'
 
     },
     //Student locale
