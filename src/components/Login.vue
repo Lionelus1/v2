@@ -24,7 +24,8 @@
     </div>
     <div class="p-fluid formgrid grid justify-content-center pt-2">
 
-      <TabView class="tabview-custom p-xl-6 md:col-8 p-sm-12 lg:col-6 col-12">
+      <TabView class="tabview-custom p-xl-6 md:col-8 p-sm-12 lg:col-6 col-12"
+               v-model:activeIndex="active" @tab-change="tabChanged">
         <TabPanel>
           <template #header>
             <span>Login System</span>
@@ -79,6 +80,18 @@
             </div>
           </div>
         </TabPanel>
+        <TabPanel>
+          <template #header>
+            <span>QR</span>
+            <i class="pi pi-qrcode ml-1"></i>
+          </template>
+          <div class="p-fluid text-center">
+            <qrcode-vue size="300" render-as="svg" margin="2" :value="mgovSignUri"></qrcode-vue>
+            <div class="field mb-3">
+              <InlineMessage severity="info">{{ $t('ncasigner.noteMark') }}</InlineMessage>
+            </div>
+          </div>
+        </TabPanel>
       </TabView>
     </div>
   </div>
@@ -87,15 +100,16 @@
 <script>
 
 import axios from 'axios';
-import {getHeader, header, smartEnuApi, etspTokenEndPoint} from "../config/config";
+import {getHeader, header, smartEnuApi, socketApi, etspTokenEndPoint} from "../config/config";
 import {NCALayerClient} from "ncalayer-js-client";
 import {NCALayerClientExtension} from "@/helpers/ncalayer-client-ext";
 import LanguageDropdown from "../LanguageDropdown";
+import QrcodeVue from "qrcode.vue";
 
 const authUser = {};
 export default {
   name: "Login",
-  components: {LanguageDropdown},
+  components: {QrcodeVue, LanguageDropdown},
   data() {
     return {
       loginData: {
@@ -113,7 +127,9 @@ export default {
         xmlSignature: "",
         password: ""
       },
-      isSignUp: true
+      isSignUp: true,
+      mgovSignUri: "",
+      active: 0
     }
   },
   created() {
@@ -127,7 +143,41 @@ export default {
         password2: ""
       }
     },
+    tabChanged() {
+      if (this.active === 2) {
+        axios.post(smartEnuApi + "/etsptokenid", {}, {headers: getHeader()})
+            .then(res => {
+              this.mgovSignUri = 'mobileSign:' + smartEnuApi + '/mobileAuthParams?uuid=' + res.data.connectionId
+              this.wsconnect(res.data.connectionId)
+            })
+            .catch(error => {
+              alert(error.message)
+            });
+      }
+    },
 
+    wsconnect(connectionId) {
+      let t = this;
+      this.connection = new WebSocket(socketApi + '/authws');
+      this.connection.onmessage = function (data) {
+        let response = JSON.parse(data.data)
+        if (response.result === 'error') {
+          t.$toast.add({
+            severity: 'error',
+            summary: response.errorMessage,
+            life: 3000
+          });
+        } else if (response.result === 'token') {
+          authUser.access_token = response.data.tokens.access_token;
+          authUser.refresh_token = response.data.tokens.refresh_token;
+          window.localStorage.setItem('authUser', JSON.stringify(authUser));
+          t.$router.push({name: 'AfterAuth'});
+        }
+      }
+      this.connection.onopen = function (event) {
+        t.connection.send(JSON.stringify(connectionId));
+      }
+    },
 
     etspLogin(event) {
       var tabIndex = Number(event.index);

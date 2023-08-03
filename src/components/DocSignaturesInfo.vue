@@ -48,7 +48,7 @@
                       class="p-button-primary md:col-5" @click="sign" :label="$t('ncasigner.sign')" :loading="signing"/>
             </div>
           </Panel>
-          <div v-if="isIndivid" class="p-mt-2">
+          <div class="p-mt-2">
             <Panel>
               <template #header>
                 <div class="p-d-flex p-jc-center">
@@ -139,7 +139,6 @@ export default {
       files: [],
       active: 0,
       hideDocSign: true,
-      isIndivid: false,
       mgovSignUri: null,
       Enum: Enum,
 
@@ -249,8 +248,6 @@ export default {
 
           if (this.signatures) {
             this.hideDocSign = !this.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));
-            this.isIndivid = this.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === '') && (x.signRight && x.signRight !== '') && x.signRight === 'individual');
-
             this.signatures.map(e => {
               e.sign = this.chunkString(e.signature, 1200)
             });
