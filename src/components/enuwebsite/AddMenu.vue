@@ -49,40 +49,53 @@
             <label>{{ $t('common.link') }}</label>
             <InputText id="en-title" v-model="formData.link" :placeholder="$t('common.link')" />
         </div>
-        <div class="field">
-            <label>{{ $t('web.onMain') }}</label>
-            <div>
-                <Checkbox inputId="is_main" v-model="formData.is_main" :binary="true"/>
+
+        <div class="grid">
+          <div class="col">
+            <div class="field">
+              <label>{{ $t('web.onMain') }}</label>
+              <div>
+                <Checkbox inputId="is_main" v-model="formData.is_main" :binary="true" />
                 <label class="ml-2" for="is_main">{{ $t('common.yes') }}</label>
+              </div>
             </div>
-        </div>
-        <div class="field">
-            <label>{{ $t('web.headerMenu') }}</label>
-            <div>
+          </div>
+          <div class="col">
+            <div class="field">
+              <label>{{ $t('web.headerMenu') }}</label>
+              <div>
                 <Checkbox inputId="is_header" v-model="formData.is_header" :binary="true" />
                 <label class="ml-2" for="is_header">{{ $t('common.yes') }}</label>
+              </div>
             </div>
-        </div>
-        <div class="field">
-            <label>{{ $t('web.middleMenu') }}</label>
-            <div>
+          </div>
+          <div class="col">
+            <div class="field">
+              <label>{{ $t('web.middleMenu') }}</label>
+              <div>
                 <Checkbox inputId="is_middle" v-model="formData.is_middle" :binary="true" />
                 <label class="ml-2" for="is_middle">{{ $t('common.yes') }}</label>
+              </div>
             </div>
-        </div>
-        <div class="field">
-            <label>{{ $t('web.isHidden') }}</label>
-            <div>
-                <Checkbox inputId="hidden" v-model="formData.hidden" :binary="true"/>
+          </div>
+          <div class="col">
+            <div class="field">
+              <label>{{ $t('web.isHidden') }}</label>
+              <div>
+                <Checkbox inputId="hidden" v-model="formData.hidden" :binary="true" />
                 <label class="ml-2" for="hidden">{{ $t('common.yes') }}</label>
+              </div>
             </div>
-        </div>
-        <div class="field">
-            <label>{{ $t('web.addToUsefulLink') }}</label>
-            <div>
-                <Checkbox inputId="is_usefull_link" v-model="formData.is_usefull_link" :binary="true"/>
+          </div>
+          <div class="col">
+            <div class="field">
+              <label>{{ $t('web.addToUsefulLink') }}</label>
+              <div>
+                <Checkbox inputId="is_usefull_link" v-model="formData.is_usefull_link" :binary="true" />
                 <label class="ml-2" for="is_main">{{ $t('common.yes') }}</label>
+              </div>
             </div>
+          </div>
         </div>
         <div class="field">
             <label>{{ $t('web.menuOrderLabel') }}</label>
@@ -160,7 +173,7 @@ export default {
                 is_middle: false,
                 icon: "",
                 hidden: false
-                
+
             },
             bgImg: null,
             formValid: [],
@@ -183,8 +196,6 @@ export default {
     created() {
         this.getMenus(null)
         this.getPages(null)
-      console.log(this.menu_id)
-      console.log(!this.currentMenu || !this.menu_id)
     },
     mounted() {
         this.emitter.on('pageCreated', data => {
