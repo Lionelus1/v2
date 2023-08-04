@@ -64,7 +64,7 @@
                             <Dialog v-model:visible="studentDialog" :style="{width: '450px'}" :header="$t('course.user')" :modal="true" class="p-fluid">
                                 <div class="field">
                                     <label for="newUsers">{{$t('common.fullName')}}</label>
-                                    
+                                    //TODO: add btn
                                     <!-- <FindUser id="name"  required="true" autofocus :class="{'p-invalid': submitted && !student}" /> -->
                                     <FindUser id="newUsers" v-model="newUsers" :userType="2"></FindUser>
                                     <small class="p-error" v-if="submitted && !(newUsers && newUsers.length>0)">{{ $t('common.requiredField') }}</small>
@@ -81,24 +81,22 @@
 
                      <!-- module қосу table -->
                     <TabPanel :header="$t('course.modules')" >
-                       
-                        <div :v-model="module">{{ module }}<hr/>
-                            <ul>
-                                <li v-for="name in module">{{name.name}}</li>
-                            </ul>
-                        </div>
-                        <DataTable v-model:selection="selectedModule" selectionMode="single" tableStyle="min-width: 50rem">
-                            <Column :field="('course.modulePosition' +$i18n.locale)" v-bind:header="$t('course.modulePosition')">sfbgsg</Column>
-                            <Column :field="('course.moduleTitle'+$i18n.locale)" v-bind:header="$t('course.moduleTitle')">iii</Column>
+
+                        <DataTable :value="module" tableStyle="min-width: 50rem">
+                            <Column field="name" header="Name"></Column>
+                            <Column field="hours" header="Hours"></Column>
+                            <Column field="description" header="Description"></Column>
+                            <Button class="p-button-success" icon="pi pi-plus" :label="$t('common.add')" @click="addModule"/>
+                            <!-- <Column field="course.moduleName" :header="$t('course.moduleName')"></Column> -->
                         </DataTable>
+
+                            <!-- <Button :label="$t('common.journal')" @click="addJournal(true)" class="mb-2 p-button-outlined"/> -->
+        
+        
+   
                     </TabPanel>
                     
                 </TabView>
-                <div class="flex gap-2">
-                    <Button class="p-button-success" icon="pi pi-plus" :label="$t('common.add')" @click="addModule"/>
-                    <Column field="course.moduleName" :header="$t('course.moduleName')"></Column>
-
-                </div>
                          <!-- module қосу диалогы -->
                         <Dialog v-model:visible="moduleDialog" :style="{width: '450px'}" :header="$t('course.module')" :modal="true" class="p-fluid">
                                 <div class="field">
