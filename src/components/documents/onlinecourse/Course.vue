@@ -78,12 +78,18 @@
                             </Dialog>
                         </div>
                     </TabPanel>
+
+                     <!-- module қосу table -->
                     <TabPanel :header="$t('course.modules')" >
+                       
+                        <div :v-model="module">{{ module }}<hr/>
+                            <ul>
+                                <li v-for="name in module">{{name.name}}</li>
+                            </ul>
+                        </div>
                         <DataTable v-model:selection="selectedModule" selectionMode="single" tableStyle="min-width: 50rem">
-                            <Column :field="('course.modulePosition' +$i18n.locale)" v-bind:header="$t('course.modulePosition')"></Column>
-                            <Column :field="('course.moduleTitle'+$i18n.locale)" v-bind:header="$t('course.moduleTitle')"></Column>
-                            <Column :field="('course.moduleHours'+$i18n.locale)" v-bind:header="$t('course.moduleHours')"></Column>
-                            <Column :field="('course.moduleGrade'+$i18n.locale)" v-bind:header="$t('course.moduleGrade')"></Column>
+                            <Column :field="('course.modulePosition' +$i18n.locale)" v-bind:header="$t('course.modulePosition')">sfbgsg</Column>
+                            <Column :field="('course.moduleTitle'+$i18n.locale)" v-bind:header="$t('course.moduleTitle')">iii</Column>
                         </DataTable>
                     </TabPanel>
                     
@@ -94,12 +100,10 @@
 
                 </div>
                          <!-- module қосу диалогы -->
-                         <Dialog v-model:visible="moduleDialog" :style="{width: '450px'}" :header="$t('course.module')" :modal="true" class="p-fluid">
+                        <Dialog v-model:visible="moduleDialog" :style="{width: '450px'}" :header="$t('course.module')" :modal="true" class="p-fluid">
                                 <div class="field">
                                     <label for="newModules">{{$t('course.moduleName')}}</label>
-                                    
-                                    <!-- <FindUser id="name"  required="true" autofocus :class="{'p-invalid': submitted && !student}" /> -->
-                                    <FindUser id="newModules" v-model="newModules" :userType="2"></FindUser>
+                                    <InputText type="text" id="newModules" v-model="newModules" :userType="2"></InputText>
                                     <small class="p-error" v-if="submitted && !(newModules && newModules.length>0)">{{ $t('common.requiredField') }}</small>
                                 </div>
                                 <template #footer>
@@ -108,15 +112,32 @@
                                         <Button :label="$t('common.cancel')" @click="closeModuleDialog"  class="w-full p-button-secondary p-button-outlined"/>
                                     </div> 
                                 </template>
-                            </Dialog>      
+                        </Dialog>      
                           
-            
+
+    <!-- Терезені жабу диалогы -->
+    <!-- <Dialog v-model:visible="closeDialogVisible" :modal="true" :closable="false">
+      <template #header>
+        <h5>{{ $t("common.message.saveChangesWarning") }}</h5>
+      </template>
+
+      {{ $t("common.message.unsaveOutcome") }}
+
+      <template #footer>
+        <div class="p-fluid">
+          <Button :label="$t('common.save')" @click="saveCertificateTemplate" style="width:100%" class="p-button-primary"/>
+          <Button :label="$t('common.no')" @click="closeTemplateEditor(false)" style="width:100%" class="mt-1 p-button-secondary p-button-outlined"/>
+          <Button :label="$t('common.cancel')" style="width:100%" @click="closeDialogVisible=false"  class="mt-3 p-button-secondary p-button-outlined"/>
+        </div> 
+      </template>
+    </Dialog> -->
+    
             </div>
      
   </template>
   <script>
 
-import {OnlineCourseService} from "@/service/onlinecourse.service";
+import { OnlineCourseService } from "@/service/onlinecourse.service";
 export default({
     data() {
         return {
@@ -125,6 +146,7 @@ export default({
             course: null,
             saving: false,
             student: null,
+            modules: [],
             studentsCount: 10,
             studentLazyParams: {
                 page:0, rows:10
@@ -143,9 +165,24 @@ export default({
     },
     created() {
         this.getCourse();
+        this.getModule();
+        
     },  
     methods: {
         //-------------------------------------------Module
+        getModule() { 
+            this.loading = true,
+            this.service.getAllModule().then(response => {
+                this.course = response.data;
+                this.module = response.data;
+                console.log("module data: ", this.module)
+                
+                this.loading = false
+            }).catch(_=> {
+                this.loading = false
+            });
+        },
+        
         addModule() {
             this.moduleDialog = true;
         },
@@ -171,7 +208,7 @@ export default({
                 this.submitted = false;
                 this.newModules=[]
                 this.closeModuleDialog()
-                this.getCourseStudents() //??????
+                // this.getCourseStudents() //??????
                 
             }).catch(_=>{
                 this.saving = false;
@@ -180,6 +217,7 @@ export default({
         },
 
         //---------------------------------------------------
+        
         addStudent() {
             this.studentDialog = true;
         },
@@ -210,7 +248,7 @@ export default({
             this.newUsers = []
         },
        
-        getCourse() { //             ??????????
+        getCourse() {          
             this.loading = true,
             this.service.getCourse(this.$route.params.id).then(response => {
                 this.course = response.data
@@ -219,7 +257,7 @@ export default({
                 this.loading = false
             });
         },
-        getCourseStudents() { // ???????
+        getCourseStudents() { 
             this.loading = true,
             this.service.getCourseStudents(this.$route.params.id, this.studentLazyParams.page, this.studentLazyParams.rows).then(response => {
                 this.course.students = response.data.students
@@ -229,7 +267,7 @@ export default({
                 this.loading = false
             });
         },
-        studentTableOnPage(event) { // ???????
+        studentTableOnPage(event) { 
             this.studentLazyParams = event;
             this.getCourseStudents();
         },

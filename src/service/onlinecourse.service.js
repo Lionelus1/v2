@@ -2,6 +2,7 @@ import api from "./api";
 import {getHeader} from "@/config/config";
 
 export class OnlineCourseService {
+
     saveCertificateTemplate(data) {
         return api.post('/certificate/update', data, {headers: getHeader()});
     }
@@ -23,6 +24,9 @@ export class OnlineCourseService {
     getCourses(data) {
         return api.post('/onlinecourse/courses', data, {headers:getHeader()});
     }
+    getAllModule() {
+        return api.get(`/onlinecourse/getAllModule`, { headers: getHeader() });
+    }
     getCourse(courseID) {
         return api.get(`/onlinecourse/course/${courseID}`, {headers: getHeader()});
     }
@@ -35,4 +39,5 @@ export class OnlineCourseService {
     issueCertificate(data) {
         return api.post('/onlinecourse/issueCertificate', data, {headers:getHeader()});
     }
+    
 }
