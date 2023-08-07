@@ -955,12 +955,14 @@ export default {
         moduleHours: 'Hours', 
         moduleGrade: 'Grade',
         moduleName:'Module name',
+        modulePeriod:'Module period',
     
 
         users: 'Сourse participants',
         user: 'Participant',
         organizers: 'Course organizers',
         lnum: 'last number',
+        journalOfUsers: 'journal-users',
     },
     roleControl:{
         menuTitle: 'Role control',

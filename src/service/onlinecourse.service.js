@@ -39,5 +39,7 @@ export class OnlineCourseService {
     issueCertificate(data) {
         return api.post('/onlinecourse/issueCertificate', data, {headers:getHeader()});
     }
-    
+    addModulesToCourse(data){
+        return api.post('/onlinecourse/addModule', data, { headers: getHeader()});
+    }
 }

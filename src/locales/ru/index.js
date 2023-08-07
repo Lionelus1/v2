@@ -961,6 +961,7 @@ export default {
         moduleHours: 'Часы', 
         moduleGrade: 'Оценка',
         moduleName:'Название модуля',
+        modulePeriod:'Период модуля',
 
         user: 'Участник',
         users: "Участники курса",

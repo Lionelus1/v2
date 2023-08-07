@@ -974,7 +974,7 @@ export default {
         moduleHours: 'Сағат', 
         moduleGrade: 'Баға',
         moduleName:'Модуль атауы',
-        
+        modulePeriod:'Модуль кезеңі',
         users: 'Курсқа қатысушылар',
         user: 'Қатысушы',
         organizers: 'Курс ұйымдастырушылар',
