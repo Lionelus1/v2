@@ -190,7 +190,7 @@ export class MenuService {
 
             {
                 label: $t('web.mainMenuTitle'), icon: 'pi pi-fw pi-box ',
-                visible: (this.findRole('enu_web_admin') || this.findRole('enu_web_fac_admin')) && store.state.userSlug !== null,
+                visible: this.findRole('enu_web_admin') || this.findRole('enu_web_fac_admin'),
                 items:  [
                     {
                         label: $t('web.menuPage'), icon: 'pi pi-fw pi-bars', to: '/enu/menus',

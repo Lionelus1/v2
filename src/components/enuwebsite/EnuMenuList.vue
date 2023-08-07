@@ -2,7 +2,7 @@
     <div class="col-12">
         <h3>{{ $t("web.menuPage") }}</h3>
         <div class="card">
-            <Button :label="$t('web.addMenu')" icon="pi pi-plus" class="ml-2" v-on:click="createMenu" />
+            <Button :label="$t('web.addMenu')" icon="pi pi-plus" class="ml-2" v-on:click="createMenu(null)" />
         </div>
         <div class="card">
             <TabView>
@@ -118,7 +118,7 @@
             </TabView>
         </div>
     </div>
-    <AddMenu v-if="addMenuVisible" :is-visible="addMenuVisible" :all-pages="pages" :all-menus="menus"
+    <AddMenu v-if="addMenuVisible" :is-visible="addMenuVisible" :all-pages="pages"
         :current-menu="selectedMenu" :menu_id="parentId"></AddMenu>
     <PageView v-if="viewPageVisible" :is-visible="viewPageVisible" :selectedPage="selectedViewMenu"></PageView>
 </template>
@@ -359,7 +359,8 @@ export default {
             this.getMenus(null);
         },
         createMenu(data) {
-            if (data) this.parentId = data.menu_id;
+          console.log(data)
+            this.selectedMenu = data;
             this.addMenuVisible = true;
         },
         editMenu(data) {
