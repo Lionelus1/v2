@@ -24,7 +24,7 @@
                 </template>
 
 			<template #grid="slotProps">
-				<div @click="selectCourse(slotProps.data)" class="col-12 md:col-4 shadow-4 border-round p-4 item course p-ripple" v-ripple>
+				<div @click="selectCourse(slotProps.data)" class="col-12 md:col-4 shadow-4 border-round p-4 item course p-ripple mr-3" v-ripple>
                     <div class="text-xl font-medium text-900 mb-3">{{ slotProps.data['name' + $i18n.locale] }}</div>
                     <div class="font-medium text-700 mb-3">{{ slotProps.data['description' + $i18n.locale] }}</div>
 				</div>

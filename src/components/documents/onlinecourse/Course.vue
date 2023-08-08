@@ -1,4 +1,5 @@
 <template>
+    <div>
     <div v-if="course">
         <BlockUI :blocked="saving" :fullScreen="true"></BlockUI>
         <div class="surface-card p-4">
@@ -40,13 +41,14 @@
                             </div>
                         </template>
                         <Column field="profile.fullName" :header="$t('common.fullName')"></Column>
-                        
+
                         <Column
                             :field="'profile.mainPosition.department.name' + ($i18n.locale).charAt(0).toUpperCase() + ($i18n.locale).slice(1)"
                             :header="$t('common.department')"></Column>
-                        <Column :header="$t('Journal')">
+                        <Column header="">
                             <template #body="">
-                                <Button class="p-button-success" icon="pi pi-eye" label="" @click="openJournal" />
+                                <Button icon="fa-solid fa-award" class="mr-3" label="" @click="openCertificate()"/>
+                                <Button class="p-button-success mr-3" icon="pi pi-list" label="" @click="openJournal" />
                             </template>
                         </Column>
                     
@@ -85,13 +87,19 @@
 
          <!-- module қосу table -->
             <TabPanel :header="$t('course.modules')">
-                <DataTable :value="module" tableStyle="min-width: 50rem">
-                    <Column field="name" header="Name"></Column>
-                    <Column field="hours" header="Hours"></Column>
-                    <Column field="description" header="Description"></Column>
-                    <Button class="p-button-success" icon="pi pi-plus" :label="$t('common.add')" @click="addModule" />
+                <DataTable :value="moduleData">
+                    <template #header>
+                        <div
+                            class="table-header flex justify-content-between flex-wrap card-container purple-container">
+                            <div class="flex gap-2">
+                                <Button class="p-button-success" icon="pi pi-plus" :label="$t('common.add')" @click="addModule" />
+                            </div>
+                        </div>
+                    </template>
+                    <Column field="name" :header="$t('common.name')"></Column>
+                    <Column field="hours" :header="$t('course.moduleHours')"></Column>
+                    <Column field="description" :header="$t('common.description')"></Column>
                 </DataTable>
-
             </TabPanel>
         </TabView>
 
@@ -101,22 +109,25 @@
     <Dialog v-model:visible="moduleDialog" :style="{ width: '450px' }" :header="$t('course.module')" :modal="true"
         class="p-fluid">
         <div class="field">
-
             <!-- new module қосу -->
             <label for="newModules">{{ $t('course.moduleName') }}</label>
             <InputText type="text" id="newModules" v-model="newModules" :userType="2"></InputText>
-   
+            <small class="p-error" v-if="submitted && !(newModules && newModules.length > 0)">{{
+                    $t('common.requiredField') }}</small>
+        </div>
+        <div class="field">
             <!-- new period қосу  -->
             <label for="newPeriod">{{ $t('course.modulePeriod') }}</label>
             <InputText type="text" id="newPeriod" v-model="newPeriod" :userType="2"></InputText>
-            
-            
-            <small class="p-error" v-if="submitted && !(newModules && newModules.length > 0)">{{
-                $t('common.requiredField') }}</small>
-
-                        
             <small class="p-error" v-if="submitted && !(newPeriod && newPeriod.length > 0)">{{
                 $t('common.requiredField') }}</small>
+        </div>
+        <div class="field">
+            <!-- new period қосу  -->
+            <label for="newPeriod">{{ $t('common.description') }}</label>
+            <InputText type="text" id="newPeriod" v-model="newPeriod" :userType="2"></InputText>
+            <small class="p-error" v-if="submitted && !(newPeriod && newPeriod.length > 0)">{{
+                    $t('common.requiredField') }}</small>
         </div>
         <template #footer>
             <div class="flex flex-wrap row-gap-1">
@@ -133,6 +144,17 @@
       style="overflow-y: scroll; width: 50%;"
       @hide="closeJournal"
   >
+        <div class="card">
+            <DataTable :value="moduleData">
+                <Column field="name" :header="$t('common.name')"></Column>
+                <Column field="hours" :header="$t('course.moduleGrade')">
+                    <template #body="slotProps">
+                    <InputNumber v-model="slotProps.data.hours"/>
+                    </template>
+                </Column>
+                <Column field="description" :header="$t('common.description')"></Column>
+            </DataTable>
+        </div>
   <Button :label="$t('common.save')" icon="pi pi-check" class="p-button p-component p-button-success mr-2"
                 @click="openGradeSidebar()" />
   </Sidebar>
@@ -145,7 +167,7 @@
   >
     
   </Sidebar>
-
+    </div>
 </template>
 <script>
 
@@ -169,7 +191,7 @@ export default ({
 
             // damir
             moduleDialog: false,
-            module: null,
+            moduleData: [],
             newModules: [],
             newPeriod:[],
             user: null,
@@ -188,12 +210,11 @@ export default ({
             this.moduleDialog = true;
         },
         getModule() {
-            this.loading = true,
+            this.loading = true
                 this.service.getAllModule().then(response => {
-                    this.course = response.data;
-                    this.module = response.data;
-                    console.log("module data: ", this.module)
-
+                    //this.course = response.data;
+                    this.moduleData = response.data;
+                    console.log("module data: ", this.moduleData)
                     this.loading = false
                 }).catch(_ => {
                     this.loading = false
@@ -232,6 +253,10 @@ export default ({
                 this.submitted = false;
             })
         },
+        openCertificate() {
+            //let url = this.smartEnuApi +"/document?qrcode="+uuid;
+            window.open('_blank');
+        },
 
         //---------------------------------------------------
 
@@ -266,7 +291,7 @@ export default ({
         },
 
         getCourse() {
-            this.loading = true,
+            this.loading = true
                 this.service.getCourse(this.$route.params.id).then(response => {
                     this.course = response.data
                     this.loading = false
@@ -275,7 +300,7 @@ export default ({
                 });
         },
         getCourseStudents() {
-            this.loading = true,
+            this.loading = true
                 this.service.getCourseStudents(this.$route.params.id, this.studentLazyParams.page, this.studentLazyParams.rows).then(response => {
                     this.course.students = response.data.students
                     this.course.studentsCount = response.data.total
@@ -320,7 +345,11 @@ export default ({
             this.journalVisible = false;
         },
         openGradeSidebar() {
-            this.gradeVisible =  true;
+            this.$toast.add({
+                severity: "success",
+                summary: this.$t("common.message.succesSaved"),
+                life: 3000,
+            });
         }
 
     }
