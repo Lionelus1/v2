@@ -48,7 +48,7 @@
             <Button :label="$t('common.login')" icon="pi pi-check" @click="login" iconPos="right"/>
           </div>
         </TabPanel>
-        <TabPanel>
+        <TabPanel v-if="isNotMobile">
           <template #header>
             <span>ЭЦП</span>
             <i class="pi pi-folder ml-1"></i>
@@ -80,7 +80,7 @@
             </div>
           </div>
         </TabPanel>
-        <TabPanel>
+        <TabPanel v-if="isNotMobile">
           <template #header>
             <span>QR</span>
             <i class="pi pi-qrcode ml-1"></i>
@@ -91,6 +91,7 @@
               <InlineMessage severity="info">{{ $t('ncasigner.noteMark') }}</InlineMessage>
             </div>
           </div>
+          <QrGuideline/>
         </TabPanel>
       </TabView>
     </div>
@@ -105,11 +106,12 @@ import {NCALayerClient} from "ncalayer-js-client";
 import {NCALayerClientExtension} from "@/helpers/ncalayer-client-ext";
 import LanguageDropdown from "../LanguageDropdown";
 import QrcodeVue from "qrcode.vue";
+import QrGuideline from "./QrGuideline.vue";
 
 const authUser = {};
 export default {
   name: "Login",
-  components: {QrcodeVue, LanguageDropdown},
+  components: {QrGuideline, QrcodeVue, LanguageDropdown},
   data() {
     return {
       loginData: {
@@ -129,14 +131,20 @@ export default {
       },
       isSignUp: true,
       mgovSignUri: "",
-      active: 0
+      active: 0,
+      isNotMobile: false,
     }
   },
   created() {
     //alert("came");
+    this.checkDevice()
     this.$store.dispatch("logLout");
   },
   methods: {
+    checkDevice() {
+      const ua = navigator.userAgent;
+      this.isNotMobile = !/mobile/i.test(ua);
+    },
     resetPassword() {
       this.newPass = {
         password1: "",

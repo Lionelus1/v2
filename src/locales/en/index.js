@@ -1198,5 +1198,13 @@ export default {
     visuallyImpaired: {
         fontSize: "Font size",
         siteColors: "Site colors",
+    },
+    mgov: {
+        inApp: "Required application: ",
+        guidelineLabel: "To sign-in or sing document using QR-code",
+        stepOne: "1. Open eGov Mobile app on your mobile device",
+        stepTwo: "2. Open QR-code scanner in the right-upper corner of the main page",
+        stepThree: "3. Point camera on this page to scan the code",
+        mobileAppNotInstalled: "If you don't have eGov Mobile/Business application installed, scan the QR below",
     }
 }
