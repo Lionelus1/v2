@@ -204,7 +204,7 @@ export default {
         this.selectedRequest.completedTime = Date.now()
 
         if (status === 1) {
-          axios.post(smartEnuApi + '/document', {
+          axios.post(smartEnuApi + '/document/get', {
             uuid: this.selectedRequest.doc.uuid,
           }, {
             headers: getHeader() 

@@ -223,7 +223,7 @@ export default {
 
       this.fileTableLoading = true
 
-      axios.post(smartEnuApi + '/doctemplates', {
+      axios.post(smartEnuApi + '/document/templates', {
         page: this.filePage,
         rows: this.fileRows,
         folderId: this.parentFolder.id,

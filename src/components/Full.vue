@@ -15,8 +15,8 @@
         <AppMenu :model="globalMenu"  @menuitem-click="onMenuItemClick"/>
       </div>
     </transition>
-    <div class="layout-main flex-grow-1">
-      <router-view v-model:pagemenu="localpagemenu"/>
+    <div class="layout-main flex-grow-1" :class="{ 'flex flex-column': applyFlex }">
+      <router-view v-model:pagemenu="localpagemenu" @apply-flex="applyFlexHandler"/>
     </div>
     <AppConfig :layoutMode="layoutMode" :layoutColorMode="layoutColorMode" @layout-change="onLayoutChange" @layout-color-change="onLayoutColorChange"/>
     <AppFooter/>
@@ -50,7 +50,9 @@ export default {
       overlayMenuActive: false,
       mobileMenuActive: false,
       localpagemenu: this.pagemenu,
-      menuService: new MenuService()
+      menuService: new MenuService(),
+
+      applyFlex: false,
     }
   },
 
@@ -181,6 +183,9 @@ export default {
       } else {
         return true;
       }
+    },
+    applyFlexHandler(value) {
+      this.applyFlex = value;
     },
   },
   computed: {
