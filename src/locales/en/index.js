@@ -1120,11 +1120,24 @@ export default {
             elements: 'Elements',
             designer: 'Template designer',
             issue: "Issue a certificate",
+
         },
+      
+        modules:'Сourse modules', 
+        module: 'Module',
+        modulePosition: '№',
+        moduleTitle: 'Title',
+        moduleHours: 'Hours', 
+        moduleGrade: 'Grade',
+        moduleName:'Module name',
+        modulePeriod:'Module period',
+    
+
         users: 'Сourse participants',
         user: 'Participant',
         organizers: 'Course organizers',
         lnum: 'last number',
+        journalOfUsers: 'journal-users',
     },
     roleControl:{
         addSidebar: 'Adding new record',
