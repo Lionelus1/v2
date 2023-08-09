@@ -16,7 +16,7 @@
                   class=" p-button-info p-1 mr-2"><i
               class="fa-solid fa-file-contract fa-xl"></i>&nbsp;{{ $t('common.toapprove') }}
           </Button>
-          <Button v-if="loginedUser != null && loginedUser.userID != file.ownerId && file.stateID == 2"
+          <Button v-if="loginedUser != null && loginedUser.userID != file.ownerId && file.stateID == 2 && file.needApproveByMe"
                   :disabled="selected===null || file.depType !=3" @click="openDialog('revision')"
                   class=" p-button-warning p-1 mr-2"><i class="fa-solid fa-file-circle-exclamation fa-xl"></i>&nbsp;{{
               $t('common.revision')

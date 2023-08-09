@@ -1,5 +1,6 @@
 <template>
-  <div class="card">
+  <div class="card mb-0 flex flex-column" :style="{height: innerHeightInRem.toString()+'rem',
+    minHeight: '300px'}">
     <h4 class="ml-3">{{ $t("smartenu.catalogNormDoc") }}</h4>
     <Toolbar class="m-0 p-1">
       <template #start>
@@ -64,16 +65,18 @@
         </div>
       </template>
     </Toolbar>
-    <TreeTable :value="catalog" :expandedKeys="expandedKeys" selectionMode="single" v-model:selectionKeys="selectedNodeKey"
-    :lazy="true" :loading="loading" :scrollable="true" scrollHeight="flex" class="p-treetable-sm"
-    @node-select="onNodeSelect($event)" @node-expand="onNodeExpand($event)"  >
-      <Column :header="$t('common.name')" :expander="true">
-        <template #body="slotProps">
+    <div class="flex-grow-1" style="height: 300px;">
+      <TreeTable :value="catalog" :expandedKeys="expandedKeys" selectionMode="single" v-model:selectionKeys="selectedNodeKey"
+      :lazy="true" :loading="loading" scrollable scrollHeight="flex" class="p-treetable-sm"
+      @node-select="onNodeSelect($event)" @node-expand="onNodeExpand($event)"  >
+        <Column :header="$t('common.name')" :expander="true" :pt="{rowToggler: {style: 'flex-shrink: 0;'}}">
+          <template #body="slotProps">
             <span v-if="slotProps.node.hidden || slotProps.node.isHidden"><i class="fa-solid fa-eye-slash"></i>&nbsp;{{slotProps.node["name"+$i18n.locale]}}</span>
             <span v-else><i :class="'fa-solid fa-' + (slotProps.node.nodeType)"></i>&nbsp;{{ slotProps.node["name"+$i18n.locale] }}</span>
-        </template>
-      </Column>
-    </TreeTable>
+          </template>
+        </Column>
+      </TreeTable>
+    </div>
   </div>
   <!-- панель для фильтра -->
   <OverlayPanel ref="overlay_panel">
@@ -154,6 +157,7 @@ export default {
   emits: [],
   data() {
     return {
+      innerHeightInRem: 0,
       loading: false,
       fileUpload: false,
 
@@ -202,6 +206,12 @@ export default {
   mounted() { 
     this.loginedUser = JSON.parse(window.localStorage.getItem("loginedUser"));
     this.getFolders();
+
+    this.onResize();
+    window.addEventListener('resize', this.onResize);
+  },
+  beforeUnmount() {
+    window.removeEventListener('resize', this.onResize);
   },
   methods: {
     findRole: findRole,
@@ -215,6 +225,9 @@ export default {
     },
     toggle(event) {
       this.$refs.overlay_panel.toggle(event);
+    },
+    onResize() {
+      this.innerHeightInRem = (window.innerHeight - 50 - 45) / parseFloat(getComputedStyle(document.documentElement).fontSize);
     },
     open(name, node = null) {
       if (node) {
@@ -733,5 +746,8 @@ export default {
   }
 }
 </script>
-<style scoped>
+<style scoped >
+:deep(.p-treetable-toggler) {
+  flex-shrink: 0;
+}
 </style>
