@@ -1,5 +1,4 @@
 <template>
-    <div>
     <div v-if="course">
         <BlockUI :blocked="saving" :fullScreen="true"></BlockUI>
         <div class="surface-card p-4">
@@ -41,12 +40,13 @@
                             </div>
                         </template>
                         <Column field="profile.fullName" :header="$t('common.fullName')"></Column>
-
+                        
                         <Column
                             :field="'profile.mainPosition.department.name' + ($i18n.locale).charAt(0).toUpperCase() + ($i18n.locale).slice(1)"
                             :header="$t('common.department')"></Column>
-                        <Column header="">
-                            <template #body="">
+                        <Column :header="$t('Journal')">
+                            <template #body="slotProps">
+                                <Button class="p-button-success" icon="pi pi-eye" label="" @click="openJournal(slotProps.data.profile.userID)" />
                                 <Button icon="fa-solid fa-award" class="mr-3" label="" @click="openCertificate()"/>
                                 <Button class="p-button-success mr-3" icon="pi pi-list" label="" @click="openJournal" />
                             </template>
@@ -100,6 +100,7 @@
                     <Column field="hours" :header="$t('course.moduleHours')"></Column>
                     <Column field="description" :header="$t('common.description')"></Column>
                 </DataTable>
+
             </TabPanel>
         </TabView>
 
@@ -167,7 +168,7 @@
   >
     
   </Sidebar>
-    </div>
+
 </template>
 <script>
 
@@ -191,17 +192,18 @@ export default ({
 
             // damir
             moduleDialog: false,
-            moduleData: [],
+            module: null,
             newModules: [],
             newPeriod:[],
             user: null,
             journalVisible: false,
             gradeVisible: false,
+            journal: [],
         }
     },
     created() {
         this.getCourse();
-        this.getModule();
+        this.getModulesByCourseID();
 
     },
     methods: {
@@ -209,16 +211,26 @@ export default ({
         getUser() {
             this.moduleDialog = true;
         },
-        getModule() {
-            this.loading = true
-                this.service.getAllModule().then(response => {
-                    //this.course = response.data;
-                    this.moduleData = response.data;
-                    console.log("module data: ", this.moduleData)
+        getModulesByCourseID() {
+            this.loading = true,
+                this.service.getModulesByCourseID(this.$route.params.id).then(response => {
+                    this.course = response.data;
+                    this.module = response.data;
+                    console.log("module data: ", this.module)
+
                     this.loading = false
                 }).catch(_ => {
                     this.loading = false
                 });
+        },
+        getJournal(courseHistoryID, userID){
+            this.loading = true,
+            this.service.getJournal(courseHistoryID, userID).then(response => {
+                this.journal = response.data;
+                this.loading = false;
+            }).catch(_ => {
+                    this.loading = false
+            });
         },
 
         addModule() {
@@ -246,7 +258,7 @@ export default ({
                 this.submitted = false;
                 this.newModules = []
                 this.closeModuleDialog()
-                // this.getCourseStudents() //??????
+
 
             }).catch(_ => {
                 this.saving = false;
@@ -338,7 +350,9 @@ export default ({
                 this.submitted = false;
             })
         },
-        openJournal() {
+        openJournal(studentID) {
+
+            this.getJournal(this.course.history[0].id, studentID)
             this.journalVisible = true;
         },
         closeJournal() {
