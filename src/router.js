@@ -96,10 +96,6 @@ const routes = [
         name: '/login',
         component: Full,
         children:[
-
-
-            // Менің қосқандарым
-
             {
                 path:'/',
                 name:'Welcome',
@@ -115,7 +111,7 @@ const routes = [
             {
                 path: '/documents/catalog/educomplex',
                 name: '/documents/catalog/educomplex',
-                component: load('documents/catalog/EducationalComplex'),
+                component: load('documents/catalog/DisciplineEduMetComplex'),
                 beforeEnter: ifAuthenticated,
             },
             {
@@ -161,7 +157,7 @@ const routes = [
             {
                 path: '/docrequests',
                 name: 'DocumentRequests',
-                component: load('humanResources/ReferenceRequests'),
+                component: load('references/ReferenceRequests'),
                 beforeEnter: ifAuthenticated,
             },
             {
@@ -405,7 +401,7 @@ const routes = [
             {
                 path:'/references',
                 name:'References',
-                component: load('smartenu/References'),
+                component: load('references/References'),
                 beforeEnter: ifAuthenticated,
             },
             {

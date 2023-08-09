@@ -23,7 +23,7 @@
         </li>
         <li v-if="loginedUser && loginedUser.organization && loginedUser.organization.id === 1">
           <button @click="myRef" class="p-link">
-            <i class="pi pi-fw pi-book"></i><span>{{ $t("ref.getRef") }}</span>
+            <i class="pi pi-fw pi-book"></i><span>{{ $t("ref.myRefs") }}</span>
           </button>
         </li>
         <li>
