@@ -904,7 +904,9 @@ export default {
         universityFax: 'Факс',
         viewCount: 'Қарады',
         viewTimes: 'рет',
-        sitePreviewLink: 'Алдын ала қарау сілтемесі'
+        sitePreviewLink: 'Алдын ала қарау сілтемесі',
+        editAnswer: 'Жауапты өңдеу',
+        editAnswerConfirm: 'Сіз шынымен жауапқа өзгерістер еңгізгіңіз келе ме?'
 
     },
     //Student locale

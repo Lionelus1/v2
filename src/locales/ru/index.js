@@ -893,7 +893,10 @@ export default {
         universityFax: 'Факс',
         viewCount: 'Просмотров',
         viewTimes: 'раз',
-        sitePreviewLink: 'Ссылка для предварительного просмотра'
+        sitePreviewLink: 'Ссылка для предварительного просмотра',
+        editAnswer: 'Изменить ответ',
+        editAnswerConfirm: 'Вы уверены, что хотите внести изменения в ответ?'
+
     },
 
     student: {
