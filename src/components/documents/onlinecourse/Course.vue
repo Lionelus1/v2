@@ -45,8 +45,8 @@
                             :field="'profile.mainPosition.department.name' + ($i18n.locale).charAt(0).toUpperCase() + ($i18n.locale).slice(1)"
                             :header="$t('common.department')"></Column>
                         <Column :header="$t('Journal')">
-                            <template #body="">
-                                <Button class="p-button-success" icon="pi pi-eye" label="" @click="openJournal" />
+                            <template #body="slotProps">
+                                <Button class="p-button-success" icon="pi pi-eye" label="" @click="openJournal(slotProps.data.profile.userID)" />
                             </template>
                         </Column>
                     
@@ -135,7 +135,9 @@
   >
   <Button :label="$t('common.save')" icon="pi pi-check" class="p-button p-component p-button-success mr-2"
                 @click="openGradeSidebar()" />
+                {{ journal }}
   </Sidebar>
+  
 
   <Sidebar
       v-model:visible="gradeVisible"
@@ -175,11 +177,12 @@ export default ({
             user: null,
             journalVisible: false,
             gradeVisible: false,
+            journal: [],
         }
     },
     created() {
         this.getCourse();
-        this.getModule();
+        this.getModulesByCourseID();
 
     },
     methods: {
@@ -187,9 +190,9 @@ export default ({
         getUser() {
             this.moduleDialog = true;
         },
-        getModule() {
+        getModulesByCourseID() {
             this.loading = true,
-                this.service.getAllModule().then(response => {
+                this.service.getModulesByCourseID(this.$route.params.id).then(response => {
                     this.course = response.data;
                     this.module = response.data;
                     console.log("module data: ", this.module)
@@ -198,6 +201,15 @@ export default ({
                 }).catch(_ => {
                     this.loading = false
                 });
+        },
+        getJournal(courseHistoryID, userID){
+            this.loading = true,
+            this.service.getJournal(courseHistoryID, userID).then(response => {
+                this.journal = response.data;
+                this.loading = false;
+            }).catch(_ => {
+                    this.loading = false
+            });
         },
 
         addModule() {
@@ -225,7 +237,7 @@ export default ({
                 this.submitted = false;
                 this.newModules = []
                 this.closeModuleDialog()
-                // this.getCourseStudents() //??????
+ 
 
             }).catch(_ => {
                 this.saving = false;
@@ -313,7 +325,9 @@ export default ({
                 this.submitted = false;
             })
         },
-        openJournal() {
+        openJournal(studentID) {
+   
+            this.getJournal(this.course.history[0].id, studentID)
             this.journalVisible = true;
         },
         closeJournal() {
