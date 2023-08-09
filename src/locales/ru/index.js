@@ -1264,5 +1264,13 @@ export default {
     visuallyImpaired: {
         fontSize: "Размер шрифта",
         siteColors: "Цвета сайта",
+    },
+    mgov: {
+        inApp: "Необходимое приложение: ",
+        guidelineLabel: "Чтобы авторизоваться или подписать документ по QR-коду на SMART.ENU",
+        stepOne: "1. Откройте приложение eGov Mobile/Business на Вашем телефоне",
+        stepTwo: "2. Откройте сканер QR в правом верхнем углу главной страницы",
+        stepThree: "3. Наведите телефон на этот экран, чтобы считать код",
+        mobileAppNotInstalled: "Если у Вас нет приложения eGov Mobile/Business, то установите его сканируя QR",
     }
 }

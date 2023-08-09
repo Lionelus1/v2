@@ -48,16 +48,21 @@
                       class="p-button-primary md:col-5" @click="sign" :label="$t('ncasigner.sign')" :loading="signing"/>
             </div>
           </Panel>
-          <div v-if="isIndivid" class="p-mt-2">
+          <div class="p-mt-2">
             <Panel>
               <template #header>
                 <div class="p-d-flex p-jc-center">
                   <InlineMessage class="" severity="info">{{ $t('ncasigner.qrSinging') }}</InlineMessage>
                 </div>
+
               </template>
+              <div class="text-center">
+                <h6><b>{{ $t('mgov.inApp') }}</b> <b style="color: red">{{ mobileApp }}</b></h6>
+              </div>
               <div class="p-d-flex p-jc-center">
                 <qrcode-vue size="350" render-as="svg" margin="2" :value="mgovSignUri"></qrcode-vue>
               </div>
+              <QrGuideline/>
             </Panel>
           </div>
         </div>
@@ -90,10 +95,11 @@ import DocInfo from "@/components/ncasigner/DocInfo";
 import QrcodeVue from "qrcode.vue";
 import Enum from "@/enum/docstates/index";
 import RolesEnum from "@/enum/roleControls/index";
+import QrGuideline from "./QrGuideline.vue";
 
 export default {
   name: "DocSignaturesInfo",
-  components: {SignatureQrPdf, DocInfo, QrcodeVue, LanguageDropdown},
+  components: {QrGuideline, SignatureQrPdf, DocInfo, QrcodeVue, LanguageDropdown},
   props: {
     docIdParam: {
       type: String,
@@ -140,13 +146,13 @@ export default {
       files: [],
       active: 0,
       hideDocSign: true,
-      isIndivid: false,
       mgovSignUri: null,
       Enum: Enum,
       RolesEnum: RolesEnum,
 
       hideDocRevision: true,
       revisionComment: null,
+      mobileApp: null,
     }
   },
   created() {
@@ -245,15 +251,22 @@ export default {
             this.isShow = true;
           } else {
             this.isShow = this.findRole(null, RolesEnum.roles.CareerModerator) || this.findRole(null, RolesEnum.roles.UMKAdministrator) ||
-              (this.signatures && this.signatures.some(x => x.userId === this.loginedUserId)) || 
+              (this.signatures && this.signatures.some(x => x.userId === this.loginedUserId)) ||
               this.docInfo.docHistory.setterId === this.loginedUserId || this.docInfo.creatorID === this.loginedUserId;
           }
 
 
           if (this.signatures) {
             this.hideDocSign = !this.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));
-            this.isIndivid = this.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === '') && (x.signRight && x.signRight !== '') && x.signRight === 'individual');
-
+            let usersign = this.signatures.filter(x => x.userId === this.loginedUserId &&
+                (!x.signature || x.signature === '') && (x.signRight && x.signRight !== ''))
+            if (usersign.length !== 0) {
+              if ( usersign[0].signRight === "individual") {
+                this.mobileApp = "eGov Mobile";
+              } else {
+                this.mobileApp = "eGov Business";
+              }
+            }
             this.signatures.map(e => {
               e.sign = this.chunkString(e.signature, 1200)
             });
