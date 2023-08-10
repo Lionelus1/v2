@@ -5,10 +5,10 @@
             <div class=" font-medium text-3xl text-900 mb-3">{{ course["name" + $i18n.locale] }}</div>
             <div class="text-500 mb-5">{{ course["description" + $i18n.locale] }}</div>
         </div>
-
-        <TabView v-model:activeIndex="activeTabIndex">
-
+        <TabView>
             <TabPanel :header="$t('course.users')">
+                <Button v-if="course && course.students===null" class="btn mb-3" :label="$t('hr.sp.request')"
+                        @click="confirm1()" />
                 <!-- курсқа қатысушылар -->
                 <div v-if="course && course.students">
                     <DataTable selectionMode="single" v-model:selection="student" :lazy="true"
@@ -44,11 +44,10 @@
                         <Column
                             :field="'profile.mainPosition.department.name' + ($i18n.locale).charAt(0).toUpperCase() + ($i18n.locale).slice(1)"
                             :header="$t('common.department')"></Column>
-                        <Column :header="$t('Journal')">
+                        <Column header="">
                             <template #body="slotProps">
-                                <Button class="p-button-success" icon="pi pi-eye" label="" @click="openJournal(slotProps.data.profile.userID)" />
-                                <Button icon="fa-solid fa-award" class="mr-3" label="" @click="openCertificate()"/>
-                                <Button class="p-button-success mr-3" icon="pi pi-list" label="" @click="openJournal" />
+                                <Button class="p-button-success mr-3" icon="fa-solid fa-list-check" label="" @click="openJournal(slotProps.data.profile.userID)" />
+                                <Button v-if="slotProps.data.certificateUUID" icon="fa-solid fa-award" class="mr-3" label="" @click="openCertificate(slotProps.data.certificateUUID)"/>
                             </template>
                         </Column>
                     
@@ -87,7 +86,7 @@
 
          <!-- module қосу table -->
             <TabPanel :header="$t('course.modules')">
-                <DataTable :value="moduleData">
+                <DataTable :value="module">
                     <template #header>
                         <div
                             class="table-header flex justify-content-between flex-wrap card-container purple-container">
@@ -103,7 +102,6 @@
 
             </TabPanel>
         </TabView>
-
     </div>
 
     <!-- module қосу диалогы -->
@@ -111,15 +109,29 @@
         class="p-fluid">
         <div class="field">
             <!-- new module қосу -->
-            <label for="newModules">{{ $t('course.moduleName') }}</label>
+            <label for="newModules">{{ $t('common.nameInQazaq') }}</label>
+            <InputText type="text" id="newModules" v-model="newModules" :userType="2"></InputText>
+            <small class="p-error" v-if="submitted && !(newModules && newModules.length > 0)">{{
+                    $t('common.requiredField') }}</small>
+        </div>
+        <div class="field">
+            <!-- new module қосу -->
+            <label for="newModules">{{ $t('common.nameInRussian') }}</label>
+            <InputText type="text" id="newModules" v-model="newModules" :userType="2"></InputText>
+            <small class="p-error" v-if="submitted && !(newModules && newModules.length > 0)">{{
+                    $t('common.requiredField') }}</small>
+        </div>
+        <div class="field">
+            <!-- new module қосу -->
+            <label for="newModules">{{ $t('common.nameInEnglish') }}</label>
             <InputText type="text" id="newModules" v-model="newModules" :userType="2"></InputText>
             <small class="p-error" v-if="submitted && !(newModules && newModules.length > 0)">{{
                     $t('common.requiredField') }}</small>
         </div>
         <div class="field">
             <!-- new period қосу  -->
-            <label for="newPeriod">{{ $t('course.modulePeriod') }}</label>
-            <InputText type="text" id="newPeriod" v-model="newPeriod" :userType="2"></InputText>
+            <label for="newPeriod">{{ $t('course.moduleHours') }}</label>
+            <InputNumber id="newPeriod"></InputNumber>
             <small class="p-error" v-if="submitted && !(newPeriod && newPeriod.length > 0)">{{
                 $t('common.requiredField') }}</small>
         </div>
@@ -142,38 +154,39 @@
       v-model:visible="journalVisible"
       position="right"
       class="p-sidebar-lg"
-      style="overflow-y: scroll; width: 50%;"
+      style="width: 50%;"
       @hide="closeJournal"
   >
-        <div class="card">
-            <DataTable :value="moduleData">
-                <Column field="name" :header="$t('common.name')"></Column>
-                <Column field="hours" :header="$t('course.moduleGrade')">
+            <Card class="mt-3 mb-3">
+                <template #content>
+            <DataTable :value="journal">
+                <Column field="name" :header="$t('common.name')">
                     <template #body="slotProps">
-                    <InputNumber v-model="slotProps.data.hours"/>
+                        {{slotProps.data.module["name_"+$i18n.locale]}}
                     </template>
                 </Column>
-                <Column field="description" :header="$t('common.description')"></Column>
+                <Column field="grade" :header="$t('course.moduleGrade')">
+                    <template #body="slotProps">
+                    <InputNumber v-model="slotProps.data.grade"/>
+                    </template>
+                </Column>
+                <Column field="hours" :header="$t('course.moduleHours')"></Column>
+                <Column field="description" :header="$t('common.description')">
+                    <template #body="slotProps">
+                        {{slotProps.data.module["description_"+$i18n.locale]}}
+                    </template>
+                </Column>
             </DataTable>
-        </div>
+                </template>
+            </Card>
   <Button :label="$t('common.save')" icon="pi pi-check" class="p-button p-component p-button-success mr-2"
-                @click="openGradeSidebar()" />
+                @click="updateJournal()" />
   </Sidebar>
-
-  <Sidebar
-      v-model:visible="gradeVisible"
-      position="right"
-      class="p-sidebar-lg"
-      style="overflow-y: scroll; width: 30%;"
-  >
-    
-  </Sidebar>
-
 </template>
 <script>
-
 import { OnlineCourseService } from "@/service/onlinecourse.service";
-export default ({
+import {smartEnuApi} from "@/config/config";
+export default {
     data() {
         return {
             loading: false,
@@ -189,7 +202,7 @@ export default ({
             submitted: false,
             studentDialog: false,
             newUsers: [],
-
+            updateGrades: [],
             // damir
             moduleDialog: false,
             module: null,
@@ -199,11 +212,12 @@ export default ({
             journalVisible: false,
             gradeVisible: false,
             journal: [],
+            smartEnuApi: smartEnuApi,
         }
     },
     created() {
         this.getCourse();
-        this.getModulesByCourseID();
+        this.getModuleByCourseID();
 
     },
     methods: {
@@ -211,20 +225,17 @@ export default ({
         getUser() {
             this.moduleDialog = true;
         },
-        getModulesByCourseID() {
-            this.loading = true,
+        getModuleByCourseID() {
+            this.loading = true
                 this.service.getModulesByCourseID(this.$route.params.id).then(response => {
-                    this.course = response.data;
                     this.module = response.data;
-                    console.log("module data: ", this.module)
-
                     this.loading = false
                 }).catch(_ => {
                     this.loading = false
                 });
         },
         getJournal(courseHistoryID, userID){
-            this.loading = true,
+            this.loading = true
             this.service.getJournal(courseHistoryID, userID).then(response => {
                 this.journal = response.data;
                 this.loading = false;
@@ -265,9 +276,9 @@ export default ({
                 this.submitted = false;
             })
         },
-        openCertificate() {
-            //let url = this.smartEnuApi +"/document?qrcode="+uuid;
-            window.open('_blank');
+        openCertificate(uuid) {
+            let url = this.smartEnuApi +"/document?qrcode="+uuid;
+            window.open(url, '_blank');
         },
 
         //---------------------------------------------------
@@ -351,22 +362,39 @@ export default ({
             })
         },
         openJournal(studentID) {
-
             this.getJournal(this.course.history[0].id, studentID)
             this.journalVisible = true;
         },
         closeJournal() {
             this.journalVisible = false;
         },
-        openGradeSidebar() {
-            this.$toast.add({
-                severity: "success",
-                summary: this.$t("common.message.succesSaved"),
-                life: 3000,
+        updateJournal() {
+            this.service.updateJournal(this.journal).then(_ => {
+                this.$toast.add({
+                    severity: "success",
+                    summary: this.$t("common.message.succesSaved"),
+                    life: 3000,
+                });
+                this.journalVisible = false
+            }).catch(_ => {
+                this.$toast.add({
+                    severity: "error",
+                    summary: this.$t("common.message.saveError"),
+                    life: 3000,
+                });
+            })
+        },
+        confirm1() {
+            this.$confirm.require({
+                message: this.$t('common.confirmation'),
+                header: this.$t('common.confirm'),
+                icon: 'pi pi-exclamation-triangle',
+                accept: () => {
+                    this.$toast.add({ severity: 'success', summary: this.$t("common.message.successCompleted"), life: 3000 });
+                }
             });
-        }
-
+        },
     }
-});
+}
 </script>
 <style></style>

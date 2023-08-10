@@ -49,4 +49,7 @@ export class OnlineCourseService {
     addModulesToCourse(data){
         return api.post('/onlinecourse/addModule', data, { headers: getHeader()});
     }
+    updateJournal(data) {
+        return api.post('/onlinecourse/updateJournal', data, {headers:getHeader()});
+    }
 }
