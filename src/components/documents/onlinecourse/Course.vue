@@ -108,38 +108,45 @@
     <Dialog v-model:visible="moduleDialog" :style="{ width: '450px' }" :header="$t('course.module')" :modal="true"
         class="p-fluid">
         <div class="field">
-            <!-- new module қосу -->
-            <label for="newModules">{{ $t('common.nameInQazaq') }}</label>
-            <InputText type="text" id="newModules" v-model="newModules" :userType="2"></InputText>
-            <small class="p-error" v-if="submitted && !(newModules && newModules.length > 0)">{{
+            <label>{{ $t('common.nameInQazaq') }}</label>
+            <InputText type="text" v-model="formData.name_kz"></InputText>
+            <small class="p-error" v-if="!formData.name_kz && submitted">{{
                     $t('common.requiredField') }}</small>
         </div>
         <div class="field">
-            <!-- new module қосу -->
-            <label for="newModules">{{ $t('common.nameInRussian') }}</label>
-            <InputText type="text" id="newModules" v-model="newModules" :userType="2"></InputText>
-            <small class="p-error" v-if="submitted && !(newModules && newModules.length > 0)">{{
+            <label>{{ $t('common.nameInRussian') }}</label>
+            <InputText type="text" v-model="formData.name_ru"></InputText>
+            <small class="p-error" v-if="!formData.name_ru && submitted">{{
                     $t('common.requiredField') }}</small>
         </div>
         <div class="field">
-            <!-- new module қосу -->
-            <label for="newModules">{{ $t('common.nameInEnglish') }}</label>
-            <InputText type="text" id="newModules" v-model="newModules" :userType="2"></InputText>
-            <small class="p-error" v-if="submitted && !(newModules && newModules.length > 0)">{{
+            <label>{{ $t('common.nameInEnglish') }}</label>
+            <InputText type="text" v-model="formData.name_en"></InputText>
+            <small class="p-error" v-if="!formData.name_en && submitted">{{
                     $t('common.requiredField') }}</small>
         </div>
         <div class="field">
-            <!-- new period қосу  -->
-            <label for="newPeriod">{{ $t('course.moduleHours') }}</label>
-            <InputNumber id="newPeriod"></InputNumber>
-            <small class="p-error" v-if="submitted && !(newPeriod && newPeriod.length > 0)">{{
+            <label>{{ $t('course.moduleHours') }}</label>
+            <InputNumber v-model="formData.hours"></InputNumber>
+            <small class="p-error" v-if="!formData.hours && submitted">{{
                 $t('common.requiredField') }}</small>
         </div>
         <div class="field">
-            <!-- new period қосу  -->
-            <label for="newPeriod">{{ $t('common.description') }}</label>
-            <InputText type="text" id="newPeriod" v-model="newPeriod" :userType="2"></InputText>
-            <small class="p-error" v-if="submitted && !(newPeriod && newPeriod.length > 0)">{{
+            <label>{{ $t('common.descriptionKz') }}</label>
+            <InputText type="text" v-model="formData.description_kz"></InputText>
+            <small class="p-error" v-if="!formData.description_kz && submitted">{{
+                    $t('common.requiredField') }}</small>
+        </div>
+        <div class="field">
+            <label>{{ $t('common.descriptionRu') }}</label>
+            <InputText type="text" v-model="formData.description_ru"></InputText>
+            <small class="p-error" v-if="!formData.description_ru && submitted">{{
+                    $t('common.requiredField') }}</small>
+        </div>
+        <div class="field">
+            <label>{{ $t('common.descriptionEn') }}</label>
+            <InputText type="text" v-model="formData.description_en"></InputText>
+            <small class="p-error" v-if="!formData.description_en && submitted">{{
                     $t('common.requiredField') }}</small>
         </div>
         <template #footer>
@@ -213,12 +220,12 @@ export default {
             gradeVisible: false,
             journal: [],
             smartEnuApi: smartEnuApi,
+            formData: {},
         }
     },
     created() {
         this.getCourse();
         this.getModuleByCourseID();
-
     },
     methods: {
         //-------------------------------------------Module
@@ -249,32 +256,46 @@ export default {
         },
         closeModuleDialog() {
             this.moduleDialog = false;
-            this.newModules = []
+            this.formData = {};
         },
         addModulesToCourse() {
+            console.log('rrrrrr:  ', this.formData)
             this.submitted = true;
-            if (this.newModules.length <= 0) {
-                return
-            }
-            if (!this.course.history || this.course.history.length <= 0) {
-                return
+            if (!this.isValid()) {
+                return;
             }
             this.saving = true
-            this.service.addModulesToCourse({
+           /* this.service.addModulesToCourse({
                 users: this.newModules,
                 courseHistoryID: this.course.history[0].id,
                 comment: ""
             }).then(_ => {
                 this.saving = false;
                 this.submitted = false;
-                this.newModules = []
                 this.closeModuleDialog()
-
-
             }).catch(_ => {
                 this.saving = false;
                 this.submitted = false;
-            })
+            })*/
+        },
+        isValid() {
+            let errors = [];
+            if (!this.formData.name_kz)
+                errors.push(1);
+            if (!this.formData.name_ru)
+                errors.push(1);
+            if (!this.formData.name_en)
+                errors.push(1);
+            if (!this.formData.hours)
+                errors.push(1);
+            if (!this.formData.description_kz)
+                errors.push(1);
+            if (!this.formData.description_ru)
+                errors.push(1);
+            if (!this.formData.description_en)
+                errors.push(1);
+
+            return errors.length === 0
         },
         openCertificate(uuid) {
             let url = this.smartEnuApi +"/document?qrcode="+uuid;
