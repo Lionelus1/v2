@@ -27,9 +27,9 @@
                             <div
                                 class="table-header flex justify-content-between flex-wrap card-container purple-container">
                                 <div class="flex gap-2">
-                                    <Button class="p-button-success" icon="pi pi-plus" :label="$t('common.add')"
+                                    <Button class="p-button-success mb-2" icon="pi pi-plus" :label="$t('common.add')"
                                         @click="addStudent" />
-                                    <Button class="p-button-help" icon="fa-solid fa-certificate"
+                                    <Button class="p-button-help mb-2" icon="fa-solid fa-certificate"
                                         :label="$t('course.certificate.issue')" @click="issueCertificate" />
 
                                 </div>
@@ -390,7 +390,12 @@ export default {
             this.journalVisible = false;
         },
         updateJournal() {
-            this.service.updateJournal(this.journal).then(_ => {
+            const dataSend = this.journal.map(e=>{
+                const newObjs = {id: e.id, course_history_id: e.course_history_id, grade: e.grade};
+                newObjs.module = {id: e.module.id}
+                return newObjs
+            })
+            this.service.updateJournal(dataSend).then(_ => {
                 this.$toast.add({
                     severity: "success",
                     summary: this.$t("common.message.succesSaved"),

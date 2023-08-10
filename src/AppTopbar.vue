@@ -8,7 +8,7 @@
                 :label="$t('common.createNew')" @click="toggle" aria-haspopup="true" aria-controls="overlay_menu"/>
         <Menu id="overlay_menu" ref="menu" :model="pagemenu" :popup="true"/>
         <div class="layout-topbar-icons">
-            <button v-tooltip.bottom="$t('Telegram Chat')" class="tg" @click="navigateToTelegram()">
+            <button v-tooltip.bottom="'Telegram Chat'" class="tg" @click="navigateToTelegram()">
                 <i class="fa-brands fa-telegram"></i>
             </button>
             <button v-if="isShowGuide" v-tooltip.bottom="$t('guide.guide')" class="guide" @click="navigate()">
