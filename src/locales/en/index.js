@@ -740,7 +740,11 @@ export default {
         userOtherCouncils: 'The user\'s attitude to other dissertation councils',
         closeDate: 'Date of termination',
         councilComment: 'Order number, etc.',
-        closeCouncil: 'Termination of the dissertation council'
+        closeCouncil: 'Termination of the dissertation council',
+        scientificConsultant: 'Review of the scientific consultant',
+        foreignConsultant: 'Review of foreign consultant',
+        commissionConclusion: 'Conclusion of the ethical assessment committee',
+        reviewerComment: 'Official reviewer\'s review',
     },
     faq: {
         title: "Help desk",

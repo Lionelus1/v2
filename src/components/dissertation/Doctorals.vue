@@ -256,31 +256,31 @@
               <small class="p-error" v-if="(submitted && validationErrors.swListFile)">{{$t('common.requiredField')}}</small>
             </div>
             <div class="field">
-              <label>{{'Отзыв научного консультанта ' + $t('common.pdfFormat')}}</label>
+              <label>{{$t('dissertation.scientificConsultant') + ' ' + $t('common.pdfFormat')}}</label>
               <CustomFileUpload @upload="uploadFile($event,'scientificConsultantFile')" v-model="scientificConsultantFile"
                                 :accept="'application/pdf'" :multiple="false"/>
               <small class="p-error" v-if="(submitted && validationErrors.scientificConsultantFile)">{{$t('common.requiredField')}}</small>
             </div>
             <div class="field">
-              <label>{{'Отзыв зарубежного консультанта ' + $t('common.pdfFormat')}}</label>
+              <label>{{$t('dissertation.foreignConsultant') + ' ' + $t('common.pdfFormat')}}</label>
               <CustomFileUpload @upload="uploadFile($event,'foreignConsultantFile')" v-model="foreignConsultantFile"
                                 :accept="'application/pdf'" :multiple="false"/>
               <small class="p-error" v-if="(submitted && validationErrors.foreignConsultantFile)">{{$t('common.requiredField')}}</small>
             </div>
             <div class="field">
-              <label>{{'Заключение комиссии по этической оценке ' + $t('common.pdfFormat')}}</label>
+              <label>{{$t('dissertation.commissionConclusion') + ' ' + $t('common.pdfFormat')}}</label>
               <CustomFileUpload @upload="uploadFile($event,'commissionConclusionFile')" v-model="commissionConclusionFile"
                                 :accept="'application/pdf'" :multiple="false"/>
               <small class="p-error" v-if="(submitted && validationErrors.commissionConclusionFile)">{{$t('common.requiredField')}}</small>
             </div>
             <div class="field">
-              <label>{{'Отзыв официального рецензента ' + $t('common.pdfFormat')}}</label>
+              <label>{{$t('dissertation.reviewerComment') + ' ' + $t('common.pdfFormat')}}</label>
               <CustomFileUpload @upload="uploadFile($event,'reviewer1CommentFile')" v-model="reviewer1CommentFile"
                                 :accept="'application/pdf'" :multiple="false"/>
               <small class="p-error" v-if="(submitted && validationErrors.reviewer1CommentFile)">{{$t('common.requiredField')}}</small>
             </div>
             <div class="field">
-              <label>{{'Отзыв официального рецензента ' + $t('common.pdfFormat')}}</label>
+              <label>{{$t('dissertation.reviewerComment') + ' ' + $t('common.pdfFormat')}}</label>
               <CustomFileUpload @upload="uploadFile($event,'reviewer2CommentFile')" v-model="reviewer2CommentFile"
                                 :accept="'application/pdf'" :multiple="false"/>
               <small class="p-error" v-if="(submitted && validationErrors.reviewer2CommentFile)">{{$t('common.requiredField')}}</small>
@@ -661,7 +661,6 @@ export default {
       commissionConclusionFile: null,
       reviewer1CommentFile: null,
       reviewer2CommentFile: null,
-      councilConclusionFile: null,
       language: [1, 2, 3],
       dialog: {
         addDoctoral: {
@@ -717,7 +716,6 @@ export default {
         commissionConclusionFile: false,
         reviewer1CommentFile: false,
         reviewer2CommentFile: false,
-        councilConclusionFile: false,
       },
       validationErrorsSetMeetingTime: {
         defenseLanguage: false,
@@ -1284,7 +1282,6 @@ export default {
       this.validationErrors.commissionConclusionFile = !this.commissionConclusionFile
       this.validationErrors.reviewer1CommentFile = !this.reviewer1CommentFile
       this.validationErrors.reviewer2CommentFile = !this.reviewer2CommentFile
-      this.validationErrors.councilConclusionFile = !this.councilConclusionFile
 
       let result = true
       for (var key of Object.keys(this.validationErrors)) {

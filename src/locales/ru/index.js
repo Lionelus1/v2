@@ -772,7 +772,11 @@ export default {
         userOtherCouncils: 'Отношение пользователя к другим диссертационным советам',
         closeDate: 'Дата прекращения',
         councilComment: 'Номер приказа и т.п.',
-        closeCouncil: 'Остановить диссертационный совет'
+        closeCouncil: 'Остановить диссертационный совет',
+        scientificConsultant: 'Отзыв научного консультанта',
+        foreignConsultant: 'Отзыв зарубежного консультанта',
+        commissionConclusion: 'Заключение комиссии по этической оценке',
+        reviewerComment: 'Отзыв официального рецензента',
     },
     faq: {
         title: "Служба поддержки",

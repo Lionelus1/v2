@@ -783,7 +783,11 @@ export default {
         userOtherCouncils: 'Қолданушының басқа диссертациялық кеңестерге қатысы',
         closeDate: 'Тоқтатылған күні',
         councilComment: 'Бұйрық нөмірі және т. б.',
-        closeCouncil: 'Диссертациялық кеңесті тоқтату'
+        closeCouncil: 'Диссертациялық кеңесті тоқтату',
+        scientificConsultant: 'Ғылыми кеңесшінің пікірі',
+        foreignConsultant: 'Шетелдік кеңесшінің пікірі',
+        commissionConclusion: 'Этикалық бағалау комиссиясының қорытындысы',
+        reviewerComment: 'Ресми рецензенттің пікірі',
     },
     faq: {
         title: "Қолдау қызметі",
