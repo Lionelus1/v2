@@ -15,6 +15,9 @@ export class OnlineCourseService {
     updateCourseOrganizer(data) {
         return api.post('/onlinecourse/updateOrganizer', data, {headers:getHeader()});
     }
+    updateUserState(courseHistoryID, studentID, state) {
+        return api.post('/onlinecourse/updateUserState', {"course_history_id": courseHistoryID, "student_id": studentID, "state": state}, {headers:getHeader()});
+    }
     getCourseOrganizers(data) {
         return api.post('/onlinecourse/organizers', data, {headers:getHeader()});
     }

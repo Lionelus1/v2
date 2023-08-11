@@ -8,7 +8,7 @@
         <TabView>
             <TabPanel :header="$t('course.users')">
                 <Button v-if="course && course.students===null" class="btn mb-3" :label="$t('hr.sp.request')"
-                        @click="confirm1()" />
+                        @click="sendRequestToCourse()" />
                 <!-- курсқа қатысушылар -->
                 <div v-if="course && course.students">
                     <DataTable selectionMode="single" v-model:selection="student" :lazy="true"
@@ -46,7 +46,8 @@
                             :header="$t('common.department')"></Column>
                         <Column header="">
                             <template #body="slotProps">
-                                <Button class="p-button-success mr-3" icon="fa-solid fa-list-check" label="" @click="openJournal(slotProps.data.profile.userID)" />
+                                <Button v-if="slotProps.data.state.id == 1" class="p-button-success mr-3" icon="fa-solid fa-check" label="" @click="updateUserState(slotProps.data.profile.userID, 4)" />
+                                <Button v-if="slotProps.data.state.id != 1" class="p-button-success mr-3" icon="fa-solid fa-list-check" label="" @click="openJournal(slotProps.data.profile.userID)" />
                                 <Button v-if="slotProps.data.certificateUUID" icon="fa-solid fa-award" class="mr-3" label="" @click="openCertificate(slotProps.data.certificateUUID)"/>
                             </template>
                         </Column>
@@ -72,7 +73,7 @@
                         </div>
                         <template #footer>
                             <div class="flex flex-wrap row-gap-1">
-                                <Button :label="$t('common.save')" @click="addStudentsToCourse"
+                                <Button :label="$t('common.save')" @click="addStudentsToCourse(4)"
                                     class="w-full p-button-primary" />
                                 <Button :label="$t('common.cancel')" @click="closeStudentDialog"
                                     class="w-full p-button-secondary p-button-outlined" />
@@ -229,6 +230,22 @@ export default {
     },
     methods: {
         //-------------------------------------------Module
+        //ToDo Dimash
+        sendRequestToCourse() {
+            this.newUsers = [];
+            this.addStudentsToCourse(1)
+        },
+        //ToDo Dimash check parameters, change alert and student state
+        updateUserState(userID, state) {
+            this.loading = true;
+            this.service.updateUserState(this.course.history[0].id,userID, state).then(response => {
+                alert("Sutent State Updated")
+                this.loading = false
+            }).catch(_ => {
+                this.loading = false
+            });
+            
+        },
         getUser() {
             this.moduleDialog = true;
         },
@@ -312,7 +329,8 @@ export default {
             this.service.issueCertificate({
                 users: null,
                 courseID: this.course.id,
-                comment: ""
+                comment: "",
+                withApplication: 0, 1 //ToDo
             }).then(_ => {
                 this.saving = false;
                 this.submitted = false;
@@ -357,9 +375,9 @@ export default {
             this.studentLazyParams = event;
             this.getCourseStudents();
         },
-        addStudentsToCourse() {
+        addStudentsToCourse(state) {
             this.submitted = true;
-            if (this.newUsers.length <= 0) {
+            if (this.newUsers.length <= 0 && state !=1)  {
                 return
             }
             if (!this.course.history || this.course.history.length <= 0) {
@@ -369,7 +387,8 @@ export default {
             this.service.addStudentsToCourse({
                 users: this.newUsers,
                 courseHistoryID: this.course.history[0].id,
-                comment: ""
+                comment: "",
+                state: state,
             }).then(_ => {
                 this.saving = false;
                 this.submitted = false;
