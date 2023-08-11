@@ -712,6 +712,12 @@ export default {
         abstractFile: false,
         dissertationFile:false,
         swListFile: false,
+        scientificConsultantFile: false,
+        foreignConsultantFile: false,
+        commissionConclusionFile: false,
+        reviewer1CommentFile: false,
+        reviewer2CommentFile: false,
+        councilConclusionFile: false,
       },
       validationErrorsSetMeetingTime: {
         defenseLanguage: false,
@@ -922,15 +928,6 @@ export default {
     },
     uploadFile(files,ufile) {
       this[ufile] = files;
-    },
-    customUploadFile(event, ufile) {
-      const input = document.createElement('input');
-      input.setAttribute('type', 'file');
-      input.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        console.log(file)
-      });
-      input.click();
     },
     uploadDissertationNote(event) {
       this.dissertationFile = event.files[0];
@@ -1281,7 +1278,14 @@ export default {
       this.validationErrors.annotationen = !this.doctoral.dissertation.annotation.en
       this.validationErrors.abstractFile = !this.abstractFile
       this.validationErrors.dissertationFile = !this.dissertationFile
-      this.validationErrors.swListFile = !this.swListFile 
+      this.validationErrors.swListFile = !this.swListFile
+      this.validationErrors.scientificConsultantFile = !this.scientificConsultantFile
+      this.validationErrors.foreignConsultantFile = !this.foreignConsultantFile
+      this.validationErrors.commissionConclusionFile = !this.commissionConclusionFile
+      this.validationErrors.reviewer1CommentFile = !this.reviewer1CommentFile
+      this.validationErrors.reviewer2CommentFile = !this.reviewer2CommentFile
+      this.validationErrors.councilConclusionFile = !this.councilConclusionFile
+
       let result = true
       for (var key of Object.keys(this.validationErrors)) {
         result = result && !this.validationErrors[key]
