@@ -2,7 +2,7 @@
     <div v-if="course">
         <BlockUI :blocked="saving" :fullScreen="true"></BlockUI>
         <div class="surface-card p-4">
-            <div class=" font-medium text-3xl text-900 mb-3">{{ course["name" + $i18n.locale] }}</div>
+            <h3 class="mb-3">{{ course["name" + $i18n.locale] }}</h3>
             <div class="text-500 mb-5">{{ course["description" + $i18n.locale] }}</div>
         </div>
         <TabView>

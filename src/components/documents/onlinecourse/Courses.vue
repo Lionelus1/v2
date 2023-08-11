@@ -2,7 +2,7 @@
     <div>
         <BlockUI :blocked="saving" :fullScreen="true"></BlockUI>
         <div v-if="!catLazyParams.parentID"  class="surface-card p-4 mb-1 shadow-2 border-round">
-            <div class="text-2xl font-medium text-900 mb-3">{{ $t('course.categories') }}</div>
+            <h4 class="mb-3">{{ $t('course.categories') }}</h4>
             <Splide v-if="courses && courses.length>0" :options="options" :extensions="extensions">
                 <SplideSlide v-for="cat of categories" :key="cat.id">
                     <div @click="selectCategory(cat)" class="item category bg-blue-500 surface-card p-4 m-2 shadow-4 border-round p-ripple" v-ripple>
@@ -13,7 +13,7 @@
             </Splide>
         </div>
         <div class="surface-card p-4 shadow-2 border-round">
-            <div class="text-2xl font-medium text-900 mb-3">{{ $t('course.courses') }}</div>
+            <h4 class="mb-3">{{ $t('course.courses') }}</h4>
             <DataView class="ml-7 mr-7" :value="courses" :layout="layout" :paginator="true" :rows="9" :sortOrder="sortOrder"> 
                  <!-- :sortField="sortField"> -->
                 <template #list="slotProps">
