@@ -867,7 +867,9 @@ export default {
         universityFax: 'Fax',
         viewCount: 'View count',
         viewTimes: 'times',
-        sitePreviewLink: 'Preview Link'
+        sitePreviewLink: 'Preview Link',
+        editAnswer: 'Edit answer',
+        editAnswerConfirm: 'Are you sure you want to make changes to the answer?'
     },
     //Student locale
     student: {

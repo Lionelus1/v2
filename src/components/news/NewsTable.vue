@@ -70,9 +70,9 @@
                     <template #body="slotProps">
                         <Button icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2"
                                 @click="editNews(slotProps.data)"
-                                v-if="slotProps.data.history.status.id === statuses.created || isAdmin || isModer"/>
+                                v-if="slotProps.data.history.status.id === statuses.created || isAdmin || isModer || isEnuWebAdmin || isEnuWebFacAdmin"/>
                         <Button icon="pi pi-trash" class="p-button-rounded p-button-warning" @click="delNews(slotProps.data.id)"
-                                v-if="slotProps.data.history.status.id === statuses.created || isAdmin"/>
+                                v-if="slotProps.data.history.status.id === statuses.created || isAdmin || isEnuWebAdmin || isEnuWebFacAdmin"/>
                     </template>
                 </Column>
             </DataTable>
