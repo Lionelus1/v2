@@ -236,51 +236,56 @@
             <Textarea :placeholder="$t('common.enter')" class="pt-1" type="text" id="annotationen" v-model="doctoral.dissertation.annotation.en" />
             <small class="p-error" v-if="(submitted && validationErrors.annotationen)">{{$t('common.requiredField')}}</small>
           </div>
-          <div class="col-12 pb-2 lg:col-4 mb-lg-0">
-            <label for="abstractfile">{{$t('dissertation.abstractFile') + ' ' + $t('common.docFormat')}}</label>
-            <FileUpload
-                id="abstractfile"
-                mode="basic"
-                class= "mt-1"
-                :customUpload="true"
-                @uploader="uploadFile($event,'abstractFile')"
-                :auto="true"
-                accept=".doc,.docx"
-                :fileLimit="1"
-              >
-              </FileUpload>
-            <small class="p-error" v-if="(submitted && validationErrors.abstractFile)">{{$t('common.requiredField')}}</small>
-          </div>
-          <div class="col-12 pb-2 lg:col-4 mb-lg-0">
-            <label for="dissertationfile">{{$t('dissertation.dissertationFile') + ' ' + $t('common.docFormat')}}</label>
-            <FileUpload
-                id="dissertationfile"
-                mode="basic"
-                class= "mt-1"
-                :customUpload="true"
-                @uploader="uploadFile($event, 'dissertationFile')"
-                :auto="true"
-                accept=".doc,.docx"
-                :fileLimit="1"
-              >
-              </FileUpload>
-            <small class="p-error" v-if="(submitted && validationErrors.dissertationFile)">{{$t('common.requiredField')}}</small>
-          </div>
-           <div class="col-12 pb-2 lg:col-4 mb-lg-5">
-            <label for="swList">{{$t('dissertation.swList') + ' ' + $t('common.pdfFormat')}}</label>
-            <FileUpload
-                id="swList"
-                mode="basic"
-                :customUpload="true"
-                class= "mt-1"
-                @uploader="uploadFile($event, 'swListFile')"
-                :auto="true"
-                accept=".pdf"
-                :fileLimit="1"
-            >
-            </FileUpload>
-            <small class="p-error" v-if="(submitted && validationErrors.swListFile)">{{$t('common.requiredField')}}</small>
-          </div>
+          <Fieldset :legend="'Файлы'" class="col-12" toggleable>
+            <div class="field">
+              <label for="abstractfile">{{$t('dissertation.abstractFile') + ' ' + $t('common.docFormat')}}</label>
+              <CustomFileUpload @upload="uploadFile($event,'abstractFile')" v-model="abstractFile"
+                                :accept="'application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'" :multiple="false"/>
+              <small class="p-error" v-if="(submitted && validationErrors.abstractFile)">{{$t('common.requiredField')}}</small>
+            </div>
+            <div class="field">
+              <label for="dissertationfile">{{$t('dissertation.dissertationFile') + ' ' + $t('common.docFormat')}}</label>
+              <CustomFileUpload @upload="uploadFile($event,'dissertationFile')" v-model="dissertationFile"
+                                :accept="'application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'" :multiple="false"/>
+              <small class="p-error" v-if="(submitted && validationErrors.dissertationFile)">{{$t('common.requiredField')}}</small>
+            </div>
+            <div class="field">
+              <label for="swList">{{$t('dissertation.swList') + ' ' + $t('common.pdfFormat')}}</label>
+              <CustomFileUpload @upload="uploadFile($event,'swListFile')" v-model="swListFile"
+                                :accept="'application/pdf'" :multiple="false"/>
+              <small class="p-error" v-if="(submitted && validationErrors.swListFile)">{{$t('common.requiredField')}}</small>
+            </div>
+            <div class="field">
+              <label>{{'Отзыв научного консультанта ' + $t('common.pdfFormat')}}</label>
+              <CustomFileUpload @upload="uploadFile($event,'scientificConsultantFile')" v-model="scientificConsultantFile"
+                                :accept="'application/pdf'" :multiple="false"/>
+              <small class="p-error" v-if="(submitted && validationErrors.scientificConsultantFile)">{{$t('common.requiredField')}}</small>
+            </div>
+            <div class="field">
+              <label>{{'Отзыв зарубежного консультанта ' + $t('common.pdfFormat')}}</label>
+              <CustomFileUpload @upload="uploadFile($event,'foreignConsultantFile')" v-model="foreignConsultantFile"
+                                :accept="'application/pdf'" :multiple="false"/>
+              <small class="p-error" v-if="(submitted && validationErrors.foreignConsultantFile)">{{$t('common.requiredField')}}</small>
+            </div>
+            <div class="field">
+              <label>{{'Заключение комиссии по этической оценке ' + $t('common.pdfFormat')}}</label>
+              <CustomFileUpload @upload="uploadFile($event,'commissionConclusionFile')" v-model="commissionConclusionFile"
+                                :accept="'application/pdf'" :multiple="false"/>
+              <small class="p-error" v-if="(submitted && validationErrors.commissionConclusionFile)">{{$t('common.requiredField')}}</small>
+            </div>
+            <div class="field">
+              <label>{{'Отзыв официального рецензента ' + $t('common.pdfFormat')}}</label>
+              <CustomFileUpload @upload="uploadFile($event,'reviewer1CommentFile')" v-model="reviewer1CommentFile"
+                                :accept="'application/pdf'" :multiple="false"/>
+              <small class="p-error" v-if="(submitted && validationErrors.reviewer1CommentFile)">{{$t('common.requiredField')}}</small>
+            </div>
+            <div class="field">
+              <label>{{'Отзыв официального рецензента ' + $t('common.pdfFormat')}}</label>
+              <CustomFileUpload @upload="uploadFile($event,'reviewer2CommentFile')" v-model="reviewer2CommentFile"
+                                :accept="'application/pdf'" :multiple="false"/>
+              <small class="p-error" v-if="(submitted && validationErrors.reviewer2CommentFile)">{{$t('common.requiredField')}}</small>
+            </div>
+          </Fieldset>
         </div>
         <template #footer>
           <Button
@@ -596,9 +601,10 @@ import SpecialitySearch from "../smartenu/speciality/specialitysearch/Speciality
 import html2canvas from "html2canvas";
 import * as jsPDF from "jspdf";
 import { getShortDateString, getLongDateString } from "@/helpers/helper";
+import CustomFileUpload from "@/components/CustomFileUpload.vue";
 
 export default {
-  components: {  DepartmentList, SpecialitySearch },
+  components: {  DepartmentList, SpecialitySearch, CustomFileUpload },
   data() {
     return {
       printStyle: 'display:none;text-align:center',
@@ -650,6 +656,12 @@ export default {
       abstractFile: null,
       dissertationFile: null,
       swListFile: null,
+      scientificConsultantFile: null,
+      foreignConsultantFile: null,
+      commissionConclusionFile: null,
+      reviewer1CommentFile: null,
+      reviewer2CommentFile: null,
+      councilConclusionFile: null,
       language: [1, 2, 3],
       dialog: {
         addDoctoral: {
@@ -908,8 +920,17 @@ export default {
     hideDialog(dialog) {
       dialog.state = false;
     },
-    uploadFile(event,ufile) {
-      this[ufile] = event.files[0];
+    uploadFile(files,ufile) {
+      this[ufile] = files;
+    },
+    customUploadFile(event, ufile) {
+      const input = document.createElement('input');
+      input.setAttribute('type', 'file');
+      input.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        console.log(file)
+      });
+      input.click();
     },
     uploadDissertationNote(event) {
       this.dissertationFile = event.files[0];
@@ -1207,6 +1228,11 @@ export default {
         data.append("abstractFile", this.abstractFile);
         data.append("dissertationFile", this.dissertationFile)
         data.append("swListFile", this.swListFile)
+        data.append("scientificConsultantFile", this.scientificConsultantFile)
+        data.append("foreignConsultantFile", this.foreignConsultantFile)
+        data.append("commissionConclusionFile", this.commissionConclusionFile)
+        data.append("reviewer1CommentFile", this.reviewer1CommentFile)
+        data.append("reviewer2CommentFile", this.reviewer2CommentFile)
         this.doctoral.user = this.selectedUsers[0]
         this.doctoral.speciality = this.selectedSpecialities[0]
         data.append("doctoral", JSON.stringify(this.doctoral))
