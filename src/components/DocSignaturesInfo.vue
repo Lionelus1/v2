@@ -62,6 +62,18 @@
               <div class="p-d-flex p-jc-center">
                 <qrcode-vue size="350" render-as="svg" margin="2" :value="mgovSignUri"></qrcode-vue>
               </div>
+              <div v-if="mgovMobileRedirectUri && isIndivid" class="p-fluid text-center">
+                <Button class="p-button-outlined" :label="$t('common.mgovMobile')" @click="redirectToMgovMobile"/>
+              </div>
+              <div v-if="mgovMobileRedirectUri && isIndivid">
+                <hr>
+              </div>
+              <div v-if="mgobBusinessRedirectUri && !isIndivid" class="p-fluid text-center">
+                <Button class="p-button-outlined" :label="$t('common.mgovBusiness')" @click="redirectToMgovBusiness"/>
+              </div>
+              <div v-if="mgobBusinessRedirectUri && !isIndivid">
+                <hr>
+              </div>
               <QrGuideline/>
             </Panel>
           </div>
@@ -146,11 +158,14 @@ export default {
       active: 0,
       hideDocSign: true,
       mgovSignUri: null,
+      mgovMobileRedirectUri: null,
+      mgobBusinessRedirectUri: null,
       Enum: Enum,
 
       hideDocRevision: true,
       revisionComment: null,
       mobileApp: null,
+      isIndivid: null
     }
   },
   created() {
@@ -159,8 +174,12 @@ export default {
     }
     const tokenData = JSON.parse(window.localStorage.getItem("authUser"));
     if (tokenData !== null) {
-      this.mgovSignUri = 'mobileSign:' + smartEnuApi + '/mobileSignParams?docUuid=' + this.doc_id +
+      let signUri = smartEnuApi + '/mobileSignParams?docUuid=' + this.doc_id +
           "&token=" + tokenData.access_token
+      this.mgovSignUri = 'mobileSign:' + signUri
+      this.mgovMobileRedirectUri = "https://mgovsign.page.link/?link=" + signUri + "&apn=kz.mobile.mgov&isi=1476128386&ibi=kz.egov.mobile"
+      this.mgobBusinessRedirectUri = "https://egovbusiness.page.link/?link=" + signUri + "&apn=kz.mobile.mgov.business&isi=1597880144&ibi=kz.mobile.mgov.business"
+
     }
     this.isTspRequired = this.tspParam
     this.signerIin = this.signerIinParam
@@ -198,6 +217,12 @@ export default {
     b64toBlob: b64toBlob,
     showMessage(msgtype, message, content) {
       this.$toast.add({severity: msgtype, summary: message, detail: content, life: 3000});
+    },
+    redirectToMgovMobile() {
+      window.open(this.mgovMobileRedirectUri)
+    },
+    redirectToMgovBusiness() {
+      window.open(this.mgobBusinessRedirectUri)
     },
     tabChanged() {
       if (this.active == 1 && !this.file) { // showFileTab
@@ -260,8 +285,10 @@ export default {
             if (usersign.length !== 0) {
               if ( usersign[0].signRight === "individual") {
                 this.mobileApp = "eGov Mobile";
+                this.isIndivid = true
               } else {
                 this.mobileApp = "eGov Business";
+                this.isIndivid = false
               }
             }
             this.signatures.map(e => {

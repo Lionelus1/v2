@@ -50,6 +50,8 @@ export default {
     gt: "Greater than",
     equals: "Equals",
     login: "login",
+    mgovMobile: "Sign in eGov mobile as an individual",
+    mgovBusiness: "Sign in eGov Business as a legal entity",
     logout: "Logout",
     enter: "Type in",
     enterLogin: "Enter IIN or platonus mail",

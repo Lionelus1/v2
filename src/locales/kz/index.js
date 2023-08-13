@@ -44,6 +44,8 @@ export default {
         gt: "Үлкен",
         equals: "Тең",
         login: "Кіру",
+        mgovMobile: "eGov Mobile-да жеке тұлға ретінде қол қою",
+        mgovBusiness: "eGov Business-те заңды тұлға ретінде қол қою",
         logout: "Шығу",
         letterSpacing: {
             expanded: "Кең",
