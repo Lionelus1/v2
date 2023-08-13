@@ -80,7 +80,7 @@
             </div>
           </div>
         </TabPanel>
-        <TabPanel v-if="isNotMobile">
+        <TabPanel>
           <template #header>
             <span>QR</span>
             <i class="pi pi-qrcode ml-1"></i>
