@@ -86,7 +86,19 @@
             <i class="pi pi-qrcode ml-1"></i>
           </template>
           <div class="p-fluid text-center">
-            <qrcode-vue size="300" render-as="svg" margin="2" :value="mgovSignUri"></qrcode-vue>
+            <qrcode-vue size="300" render-as="svg" margin="2" :value="qrSignUri"></qrcode-vue>
+            <div v-if="mgovMobileRedirectUri" class="p-fluid text-center">
+              <Button class="p-button-outlined" :label="$t('common.mgovMobile')" @click="redirectToMgovMobile"/>
+            </div>
+            <div v-if="mgovMobileRedirectUri">
+              <hr>
+            </div>
+            <div v-if="mgobBusinessRedirectUri" class="p-fluid text-center">
+              <Button class="p-button-outlined" :label="$t('common.mgovBusiness')" @click="redirectToMgovBusiness"/>
+            </div>
+            <div v-if="mgobBusinessRedirectUri">
+              <hr>
+            </div>
             <div class="field mb-3">
               <InlineMessage severity="info">{{ $t('ncasigner.noteMark') }}</InlineMessage>
             </div>
@@ -130,7 +142,9 @@ export default {
         password: ""
       },
       isSignUp: true,
-      mgovSignUri: "",
+      qrSignUri: "",
+      mgovMobileRedirectUri: null,
+      mgobBusinessRedirectUri: null,
       active: 0,
       isNotMobile: false,
     }
@@ -141,6 +155,12 @@ export default {
     this.$store.dispatch("logLout");
   },
   methods: {
+    redirectToMgovMobile() {
+      window.open(this.mgovMobileRedirectUri)
+    },
+    redirectToMgovBusiness() {
+      window.open(this.mgobBusinessRedirectUri)
+    },
     checkDevice() {
       const ua = navigator.userAgent;
       this.isNotMobile = !/mobile/i.test(ua);
@@ -155,7 +175,10 @@ export default {
       if (this.active === 2) {
         axios.post(smartEnuApi + "/etsptokenid", {}, {headers: getHeader()})
             .then(res => {
-              this.mgovSignUri = 'mobileSign:' + smartEnuApi + '/mobileAuthParams?uuid=' + res.data.connectionId
+              let mgovSignUri = smartEnuApi + '/mobileAuthParams?uuid=' + res.data.connectionId
+              this.qrSignUri = 'mobileSign:' + mgovSignUri
+              this.mgovMobileRedirectUri = "https://mgovsign.page.link/?link=" + mgovSignUri + "&apn=kz.mobile.mgov&isi=1476128386&ibi=kz.egov.mobile"
+              this.mgobBusinessRedirectUri = "https://egovbusiness.page.link/?link=" + mgovSignUri + "&apn=kz.mobile.mgov.business&isi=1597880144&ibi=kz.mobile.mgov.business"
               this.wsconnect(res.data.connectionId)
             })
             .catch(error => {
@@ -176,8 +199,8 @@ export default {
             life: 3000
           });
         } else if (response.result === 'token') {
-          authUser.access_token = response.data.tokens.access_token;
-          authUser.refresh_token = response.data.tokens.refresh_token;
+          authUser.access_token = response.tokens.access_token;
+          authUser.refresh_token = response.tokens.refresh_token;
           window.localStorage.setItem('authUser', JSON.stringify(authUser));
           t.$router.push({name: 'AfterAuth'});
         }
