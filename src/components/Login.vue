@@ -172,7 +172,7 @@ export default {
       }
     },
     tabChanged() {
-      if (this.active === 2) {
+      if (this.active === 2 || (!this.isNotMobile && this.active === 1)) {
         axios.post(smartEnuApi + "/etsptokenid", {}, {headers: getHeader()})
             .then(res => {
               let mgovSignUri = smartEnuApi + '/mobileAuthParams?uuid=' + res.data.connectionId
