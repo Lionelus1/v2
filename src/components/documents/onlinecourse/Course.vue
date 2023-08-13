@@ -330,7 +330,7 @@ export default {
                 users: null,
                 courseID: this.course.id,
                 comment: "",
-                withApplication: 0, 1 //ToDo
+                withApplication: 0 //ToDo 0, 1
             }).then(_ => {
                 this.saving = false;
                 this.submitted = false;
