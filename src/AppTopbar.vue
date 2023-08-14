@@ -1,22 +1,22 @@
 <template>
-  <div class="layout-topbar no-print">
-    <button class="p-link layout-menu-button" @click="onMenuToggle">
-      <span class="pi pi-bars"></span>
-    </button>
-    <Button v-if="($route.name=='organizations') || ($route.name=='persons')" class="add_new p-button"
-            icon="pi pi-plus"
-            :label="$t('common.createNew')" @click="toggle" aria-haspopup="true" aria-controls="overlay_menu"/>
-    <Menu id="overlay_menu" ref="menu" :model="pagemenu" :popup="true"/>
-    <div class="layout-topbar-icons">
-      <button v-tooltip.bottom="$t('Telegram Chat')" class="tg" @click="navigateToTelegram()">
-        <i class="fa-brands fa-telegram" style="font-size: 20px"></i>
-      </button>
-      <button v-if="isShowGuide" v-tooltip.bottom="$t('guide.guide')" class="guide" @click="navigate()">
-        <i class="pi pi-question-circle"></i>
-      </button>
-      <LanguageDropdown class="top_lang"/>
+    <div class="layout-topbar no-print">
+        <button class="p-link layout-menu-button" @click="onMenuToggle">
+            <span class="pi pi-bars"></span>
+        </button>
+        <Button v-if="($route.name=='organizations') || ($route.name=='persons')" class="add_new p-button"
+                icon="pi pi-plus"
+                :label="$t('common.createNew')" @click="toggle" aria-haspopup="true" aria-controls="overlay_menu"/>
+        <Menu id="overlay_menu" ref="menu" :model="pagemenu" :popup="true"/>
+        <div class="layout-topbar-icons">
+            <button v-tooltip.bottom="'Telegram Chat'" class="tg" @click="navigateToTelegram()">
+                <i class="fa-brands fa-telegram"></i>
+            </button>
+            <button v-if="isShowGuide" v-tooltip.bottom="$t('guide.guide')" class="guide" @click="navigate()">
+                <i class="pi pi-question-circle"></i>
+            </button>
+            <LanguageDropdown class="top_lang"/>
+        </div>
     </div>
-  </div>
 </template>
 
 <script>
