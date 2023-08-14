@@ -261,8 +261,12 @@ export default {
         updateUserState(userID, state) {
             this.loading = true;
             this.service.updateUserState(this.course.history[0].id,userID, state).then(response => {
-                alert("Sutent State Updated")
                 this.loading = false
+                this.$toast.add({
+                    severity: "success",
+                    summary: this.$t('common.successDone'),
+                    life: 3000,
+                });
             }).catch(_ => {
                 this.loading = false
             });
