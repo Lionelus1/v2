@@ -1137,6 +1137,7 @@ export default {
             elements: 'Элементтер',
             designer: 'Үлгі дизайнері',
             issue: "Сертификат беру",
+            issueWithApp: "Сертификатқа қосымша беру",
         },
         modules:'Курс модульдері',
         module: 'Модуль', 

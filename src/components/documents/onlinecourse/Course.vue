@@ -24,13 +24,34 @@
                         @filter="onFilter($event)">
 
                         <template #header>
-                            <div
-                                class="table-header flex justify-content-between flex-wrap card-container purple-container">
+                            <div class="table-header flex justify-content-between flex-wrap card-container purple-container">
                                 <div class="flex gap-2">
                                     <Button class="p-button-success mb-2" icon="pi pi-plus" :label="$t('common.add')"
                                         @click="addStudent" />
                                     <Button class="p-button-help mb-2" icon="fa-solid fa-certificate"
-                                        :label="$t('course.certificate.issue')" @click="issueCertificate" />
+                                        :label="$t('course.certificate.issue')" @click="issueCertificate(0)" />
+                                        
+                                    <Button class="p-button-help mb-2" icon="fa-solid fa-certificate"
+                                        :label="$t('course.certificate.issueWithApp')" @click="issueCertificate(1)" />
+<!--appliction with certif adding-->
+<!-- <TabPanel :header="$t('course.modules')">
+                <DataTable :value="module">
+                    <template #header>
+                        <div
+                            class="table-header flex justify-content-between flex-wrap card-container purple-container">
+                            <div class="flex gap-2">
+                                <Button class="p-button-success" icon="pi pi-plus" :label="$t('common.add')" @click="addModule" />
+                            </div>
+                        </div>
+                    </template>
+                    <Column field="name" :header="$t('common.name')"></Column>
+                    <Column field="hours" :header="$t('course.moduleHours')"></Column>
+                    <Column field="description" :header="$t('common.description')"></Column>
+                </DataTable>
+
+            </TabPanel>
+        </TabView> -->
+
 
                                 </div>
                                 <span class="p-input-icon-left">
@@ -230,12 +251,12 @@ export default {
     },
     methods: {
         //-------------------------------------------Module
-        //ToDo Dimash
+        //ToDo -> Dimash
         sendRequestToCourse() {
             this.newUsers = [];
             this.addStudentsToCourse(1)
         },
-        //ToDo Dimash check parameters, change alert and student state
+        //ToDo -> Dimash check parameters, change alert and student state
         updateUserState(userID, state) {
             this.loading = true;
             this.service.updateUserState(this.course.history[0].id,userID, state).then(response => {
@@ -324,13 +345,13 @@ export default {
         addStudent() {
             this.studentDialog = true;
         },
-        issueCertificate() {
+        issueCertificate(withApplication) {
             this.saving = true
             this.service.issueCertificate({
                 users: null,
                 courseID: this.course.id,
                 comment: "",
-                withApplication: 0 //ToDo 0, 1
+                withApplication: withApplication //ToDo 0, 1
             }).then(_ => {
                 this.saving = false;
                 this.submitted = false;
@@ -347,6 +368,31 @@ export default {
                 this.submitted = false;
             })
         },
+        // added by damir
+        // issueCertificateWithApplication() {
+        //     this.saving = true
+        //     this.service.issueCertificateWithApplication({
+        //         users: null,
+        //         courseID: this.course.id,
+        //         comment: "",
+        //         withApplication: 0 // ToDo 0, 1
+        //     }).then(_ => {
+        //         this.saving = false;
+        //         this.submitted = false;
+        //         this.$toast.add({
+        //             severity: "success",
+        //             summary: this.$t('common.successDone'),
+        //             life: 3000,
+        //         });
+        //         this.getCourseStudents()
+
+
+        //     }).catch(_ => {
+        //         this.saving = false;
+        //         this.submitted = false;
+        //     })
+        // },
+
         closeStudentDialog() {
             this.studentDialog = false;
             this.newUsers = []
