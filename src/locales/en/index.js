@@ -1123,6 +1123,7 @@ export default {
             elements: 'Elements',
             designer: 'Template designer',
             issue: "Issue a certificate",
+            issueWithApp: "Issue a certificate with application",
 
         },
       

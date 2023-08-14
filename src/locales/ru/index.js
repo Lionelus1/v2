@@ -1123,6 +1123,7 @@ export default {
             elements: 'Элементы',
             designer: 'Дизайнер шаблона',
             issue: "Выдать сертификат",
+            issueWithApp: "Выдать сертификат с приложением",
 
         },
         modules:'Модули курса',
