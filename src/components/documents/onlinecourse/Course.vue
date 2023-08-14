@@ -9,6 +9,7 @@
             <TabPanel :header="$t('course.users')">
                 <Button v-if="course && course.students===null" class="btn mb-3" :label="$t('hr.sp.request')"
                         @click="sendRequestToCourse()" />
+                <h4 class="status text-green-400" v-if="course && course.students===null">Өтінім қаралымда</h4>
                 <!-- курсқа қатысушылар -->
                 <div v-if="course && course.students">
                     <DataTable selectionMode="single" v-model:selection="student" :lazy="true"
@@ -46,7 +47,7 @@
                             :header="$t('common.department')"></Column>
                         <Column header="">
                             <template #body="slotProps">
-                                <Button v-if="slotProps.data.state.id == 1" class="p-button-success mr-3" icon="fa-solid fa-check" label="" @click="updateUserState(slotProps.data.profile.userID, 4)" />
+                                <Button v-if="slotProps.data.state.id === 1" class="p-button-success mr-3" icon="fa-solid fa-check" label="" @click="updateUserState(slotProps.data.profile.userID, 4)" />
                                 <Button v-if="slotProps.data.state.id != 1" class="p-button-success mr-3" icon="fa-solid fa-list-check" label="" @click="openJournal(slotProps.data.profile.userID)" />
                                 <Button v-if="slotProps.data.certificateUUID" icon="fa-solid fa-award" class="mr-3" label="" @click="openCertificate(slotProps.data.certificateUUID)"/>
                             </template>
@@ -244,7 +245,6 @@ export default {
             }).catch(_ => {
                 this.loading = false
             });
-            
         },
         getUser() {
             this.moduleDialog = true;
