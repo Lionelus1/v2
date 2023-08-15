@@ -305,19 +305,14 @@ export default {
             if (!this.isValid()) {
                 return;
             }
-            this.saving = true
-           /* this.service.addModulesToCourse({
-                users: this.newModules,
-                courseHistoryID: this.course.history[0].id,
-                comment: ""
-            }).then(_ => {
+            this.service.addModulesToCourse(this.formData).then(_ => {
                 this.saving = false;
                 this.submitted = false;
                 this.closeModuleDialog()
             }).catch(_ => {
                 this.saving = false;
                 this.submitted = false;
-            })*/
+            })
         },
         isValid() {
             let errors = [];
