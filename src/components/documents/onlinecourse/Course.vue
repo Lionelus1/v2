@@ -218,6 +218,7 @@ import {smartEnuApi} from "@/config/config";
 export default {
     data() {
         return {
+            course_id: parseInt(this.$route.params.id),
             loading: false,
             service: new OnlineCourseService(),
             course: null,
@@ -301,11 +302,13 @@ export default {
         },
         addModulesToCourse() {
             console.log('rrrrrr:  ', this.formData)
+            this.formData.course_id = parseInt(this.course_id);
             this.submitted = true;
             if (!this.isValid()) {
                 return;
             }
-            this.service.addModulesToCourse(this.formData).then(_ => {
+            this.saving = true
+           this.service.addModulesToCourse(this.formData).then(_ => {
                 this.saving = false;
                 this.submitted = false;
                 this.closeModuleDialog()
@@ -338,8 +341,6 @@ export default {
             window.open(url, '_blank');
         },
 
-        //---------------------------------------------------
-
         addStudent() {
             this.studentDialog = true;
         },
@@ -349,7 +350,7 @@ export default {
                 users: null,
                 courseID: this.course.id,
                 comment: "",
-                withApplication: withApplication //ToDo 0, 1
+                withApplication: withApplication
             }).then(_ => {
                 this.saving = false;
                 this.submitted = false;
@@ -366,30 +367,6 @@ export default {
                 this.submitted = false;
             })
         },
-        // added by damir
-        // issueCertificateWithApplication() {
-        //     this.saving = true
-        //     this.service.issueCertificateWithApplication({
-        //         users: null,
-        //         courseID: this.course.id,
-        //         comment: "",
-        //         withApplication: 0 // ToDo 0, 1
-        //     }).then(_ => {
-        //         this.saving = false;
-        //         this.submitted = false;
-        //         this.$toast.add({
-        //             severity: "success",
-        //             summary: this.$t('common.successDone'),
-        //             life: 3000,
-        //         });
-        //         this.getCourseStudents()
-
-
-        //     }).catch(_ => {
-        //         this.saving = false;
-        //         this.submitted = false;
-        //     })
-        // },
 
         closeStudentDialog() {
             this.studentDialog = false;
@@ -398,7 +375,7 @@ export default {
 
         getCourse() {
             this.loading = true
-                this.service.getCourse(this.$route.params.id).then(response => {
+                this.service.getCourse(this.course_id).then(response => {
                     this.course = response.data
                     this.loading = false
                 }).catch(_ => {
