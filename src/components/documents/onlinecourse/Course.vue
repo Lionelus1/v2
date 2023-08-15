@@ -118,9 +118,9 @@
                             </div>
                         </div>
                     </template>
-                    <Column field="name" :header="$t('common.name')"></Column>
+                    <Column :field="'name_' + $i18n.locale" :header="$t('common.name')"></Column>
                     <Column field="hours" :header="$t('course.moduleHours')"></Column>
-                    <Column field="description" :header="$t('common.description')"></Column>
+                    <Column :field="'description_'+ $i18n.locale" :header="$t('common.description')"></Column>
                 </DataTable>
 
             </TabPanel>
@@ -301,7 +301,6 @@ export default {
             this.formData = {};
         },
         addModulesToCourse() {
-            console.log('rrrrrr:  ', this.formData)
             this.formData.course_id = parseInt(this.course_id);
             this.submitted = true;
             if (!this.isValid()) {
@@ -312,6 +311,7 @@ export default {
                 this.saving = false;
                 this.submitted = false;
                 this.closeModuleDialog()
+                this.getModuleByCourseID();
             }).catch(_ => {
                 this.saving = false;
                 this.submitted = false;
@@ -443,6 +443,7 @@ export default {
                     life: 3000,
                 });
                 this.journalVisible = false
+
             }).catch(_ => {
                 this.$toast.add({
                     severity: "error",
