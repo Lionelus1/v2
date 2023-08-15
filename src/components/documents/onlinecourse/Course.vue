@@ -118,7 +118,7 @@
                             </div>
                         </div>
                     </template>
-                    <Column field="name" :header="$t('common.name')"></Column>
+                    <Column field="name_kz" :header="$t('common.name')"></Column>
                     <Column field="hours" :header="$t('course.moduleHours')"></Column>
                     <Column field="description" :header="$t('common.description')"></Column>
                 </DataTable>
