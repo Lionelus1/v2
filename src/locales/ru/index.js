@@ -44,6 +44,8 @@ export default {
         gt: "Больше",
         equals: "Равно",
         login: "Вход",
+        mgovMobile: "Подписать в eGov mobile как физическое лицо",
+        mgovBusiness: "Подписать в eGov Business как юридическое лицо",
         logout: "Выход",
         letterSpacing: {
             expanded: "Разреженный",
