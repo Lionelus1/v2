@@ -459,11 +459,12 @@ export default {
             this.journalVisible = false;
         },
         updateJournal() {
-            const dataSend = this.journal.map(e=>{
+            let journals = this.journal.map(e=>{
                 const newObjs = {id: e.id, course_history_id: e.course_history_id, grade: e.grade};
                 newObjs.module = {id: e.module.id}
                 return newObjs
             })
+            const dataSend = { journals : journals }
             this.service.updateJournal(dataSend).then(_ => {
                 this.$toast.add({
                     severity: "success",
