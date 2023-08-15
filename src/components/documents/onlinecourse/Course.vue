@@ -200,7 +200,6 @@
                     <InputNumber v-model="slotProps.data.grade"/>
                     </template>
                 </Column>
-                <Column field="hours" :header="$t('course.moduleHours')"></Column>
                 <Column field="description" :header="$t('common.description')">
                     <template #body="slotProps">
                         {{slotProps.data.module["description_"+$i18n.locale]}}
