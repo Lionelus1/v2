@@ -374,22 +374,22 @@
           :style="{ width: '600px' }" :header="$t('dissertation.setMeetingTime')"
           :modal="true" :maximizable="true" class="p-fluid">
         <div class="field">
-          <label><b>Докторант</b></label>
+          <label><b>{{ $t('common.fullName') }}</b></label>
           <div>{{ selectedDoctoral.user.fullName }}</div>
         </div>
         <div class="field">
-          <label><b>Тема</b></label>
+          <label><b>{{ $t('dissertation.disstitle') }}</b></label>
           <div>{{ selectedDoctoral.dissertation['name' + $i18n.locale] }}</div>
         </div>
         <div class="field">
-          <label><b>Кафедра и специальность</b></label>
+          <label><b>{{ $t('common.cafedra') + '/' + $t('common.speciality') }}</b></label>
           <div>{{
-              $t('common.cafedra') + ' ' + selectedDoctoral.cafedra['name' + upFirstLetter($i18n.locale)] + ', ' + $t('common.speciality') + ' "' + selectedDoctoral.speciality['nameIn' + upFirstLetter($i18n.locale)] + '"'
+              $t('common.cafedra') + ' ' + selectedDoctoral.cafedra['name' + upFirstLetter($i18n.locale)] + '/' + $t('common.speciality') + ' "' + selectedDoctoral.speciality['nameIn' + upFirstLetter($i18n.locale)] + '"'
             }}
           </div>
         </div>
         <div class="field">
-          <label><b>Язык защиты</b></label>
+          <label><b>{{ $t('dissertation.defenseLang') }}</b></label>
           <div>{{
               selectedDoctoral.dissertation.language === 1 ? $t('common.language.kz') :
                   selectedDoctoral.dissertation.language === 2 ? $t('common.language.ru') : $t('common.language.en')
@@ -397,13 +397,13 @@
           </div>
         </div>
         <div class="field">
-          <label><b>Рецензенты</b></label>
+          <label><b>{{ $t('dissertation.reviewers') }}</b></label>
           <template v-if="memberList !== 0">
             <div v-for="(item, index) in initMembers('dissertation_council_reviewer')" :key="index">
               {{ item.fullName }}
             </div>
           </template>
-          <small><a href="javascript:void(0)" @click="showDialog(dialog.addMember)">Добавить</a></small>
+          <div><small><a href="javascript:void(0)" @click="showDialog(dialog.addMember)">{{ $t('common.add') }}</a></small></div>
         </div>
         <div class="field">
           <label><b>{{ $t('dissertation.tempMember') }}</b></label>
@@ -412,16 +412,16 @@
               {{ item.fullName }}
             </div>
           </template>
-          <small><a href="javascript:void(0)" @click="showDialog(dialog.addMember)">Добавить</a></small>
+          <div><small><a href="javascript:void(0)" @click="showDialog(dialog.addMember)">{{ $t('common.add') }}</a></small></div>
         </div>
         <div class="field">
-          <label><b>Научные консультанты</b></label>
+          <label><b>{{ $t('dissertation.advisors') }}</b></label>
           <template v-if="memberList !== 0">
             <div v-for="(item, index) in initMembers('dissertation_council_consultant')" :key="index">
               {{ item.fullName }}
             </div>
           </template>
-          <div><small><a href="javascript:void(0)" @click="showDialog(dialog.addMember)">Добавить</a></small></div>
+          <div><small><a href="javascript:void(0)" @click="showDialog(dialog.addMember)">{{ $t('common.add') }}</a></small></div>
         </div>
         <div class="field">
           <label><b>{{ $t('dissertation.meetingTime') }}</b></label>
@@ -433,10 +433,10 @@
         </div>
         <div class="field">
           <label><b>{{ $t('common.address') }}</b></label>
-          <div>{{  }}</div>
+          <div>{{ selectedDoctoral.dissertation.meetingPlace }}</div>
         </div>
         <template #footer>
-          <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-text" @click="hideDialog(dialog.setMeetingTime)"/>
+          <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-text" @click="hideDialog(dialog.setMeetingTimeConfirm)"/>
           <Button :label="$t('common.yes')" icon="pi pi-check" class="p-button-text" @click="setMeetingTime"/>
         </template>
       </Dialog>

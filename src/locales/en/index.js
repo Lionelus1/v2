@@ -310,7 +310,8 @@ export default {
         eventType: 'Event type',
         gallery: 'Gallery',
         faculties: 'Faculties',
-        verify: 'Document signature verification'
+        verify: 'Document signature verification',
+        address: 'Address'
     },
     bank: {
         title: "Banks",

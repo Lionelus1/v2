@@ -311,7 +311,8 @@ export default {
         eventType: 'Тип мероприятия',
         gallery: 'Галерея',
         faculties: 'Факультеты',
-        verify: 'Проверка подписи документа'
+        verify: 'Проверка подписи документа',
+        address: 'Адрес'
     },
     bank: {
         title: "Банки",

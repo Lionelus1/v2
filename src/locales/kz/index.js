@@ -309,7 +309,8 @@ export default {
         eventType: 'Іс-шара түрі',
         gallery: 'Галерея',
         faculties: 'Факультеттер',
-        verify: 'Құжатқа қол қоюды тексеру'
+        verify: 'Құжатқа қол қоюды тексеру',
+        address: 'Адрес'
     },
     bank: {
         title: "Банктер",
