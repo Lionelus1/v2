@@ -874,7 +874,8 @@ export default {
         viewTimes: 'times',
         sitePreviewLink: 'Preview Link',
         editAnswer: 'Edit answer',
-        editAnswerConfirm: 'Are you sure you want to make changes to the answer?'
+        editAnswerConfirm: 'Are you sure you want to make changes to the answer?',
+        facultyName: 'Faculty Name'
     },
     //Student locale
     student: {

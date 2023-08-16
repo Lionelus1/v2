@@ -915,7 +915,8 @@ export default {
         viewTimes: 'рет',
         sitePreviewLink: 'Алдын ала қарау сілтемесі',
         editAnswer: 'Жауапты өңдеу',
-        editAnswerConfirm: 'Сіз шынымен жауапқа өзгерістер еңгізгіңіз келе ме?'
+        editAnswerConfirm: 'Сіз шынымен жауапқа өзгерістер еңгізгіңіз келе ме?',
+        facultyName: 'Факультет атауы'
 
     },
     //Student locale
