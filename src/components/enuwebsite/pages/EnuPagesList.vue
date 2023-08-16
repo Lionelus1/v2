@@ -40,6 +40,12 @@
                                 {{ formatDate(data.create_date) }}
                             </template>
                         </Column>
+                        <!-- <Column field="faculty_name" :header="$t('web.facultyName')" sortable>
+                            <template #body="{ data }">
+                                {{ $i18n.locale === 'kz' ? data.faculty_name.faculty_name_kz : $i18n.locale === 'ru' ? data.faculty_name.faculty_name_ru :
+                                    data.faculty_name.faculty_name_en }}
+                            </template>
+                        </Column> -->
                         <Column header="" style="text-align: right;">
                             <template #body="{ data }">
                                 <div class="grid">
