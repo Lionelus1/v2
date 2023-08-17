@@ -375,8 +375,7 @@
           :modal="true" :maximizable="true" class="p-fluid">
         <div class="field">
           <Message :severity="'info'" icon="fa-solid fa-circle-info" :closable="false">
-            Төмендегі {{ $t('common.yes') }} батырмасын басу арқылы, ақпараттардың дұрыстығын
-            растайсыз және осы ақпарат сайтқа хабарландыру болып шығарылады
+            {{ $t('dissertation.setMeetingTimeConfirmMsg', {btn: $t('common.yes')}) }}
           </Message>
         </div>
         <div class="field">
@@ -1281,8 +1280,10 @@ export default {
           });
     },
     confirmSetMeetingTime() {
-      console.log(this.selectedDoctoral)
+      this.submitted = true;
+      if (!this.validateSetMeetingTimeForm()) return;
       this.loadCouncil();
+      this.submitted = false;
       this.dialog.setMeetingTimeConfirm.state = true;
     },
     setMeetingTime() {

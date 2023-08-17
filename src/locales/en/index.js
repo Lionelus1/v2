@@ -746,6 +746,7 @@ export default {
         foreignConsultant: 'Review of foreign consultant',
         commissionConclusion: 'Conclusion of the ethical assessment committee',
         reviewerComment: 'Official reviewer\'s review',
+        setMeetingTimeConfirmMsg: "Төмендегі {btn} батырмасын басу арқылы, ақпараттардың дұрыстығын растайсыз және осы ақпарат сайтқа хабарландыру болып шығарылады"
     },
     faq: {
         title: "Help desk",
