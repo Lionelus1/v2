@@ -374,6 +374,12 @@
           :style="{ width: '600px' }" :header="$t('dissertation.setMeetingTime')"
           :modal="true" :maximizable="true" class="p-fluid">
         <div class="field">
+          <Message :severity="'info'" icon="fa-solid fa-circle-info" :closable="false">
+            Төмендегі {{ $t('common.yes') }} батырмасын басу арқылы, ақпараттардың дұрыстығын
+            растайсыз және осы ақпарат сайтқа хабарландыру болып шығарылады
+          </Message>
+        </div>
+        <div class="field">
           <label><b>{{ $t('common.fullName') }}</b></label>
           <div>{{ selectedDoctoral.user.fullName }}</div>
         </div>
@@ -1301,7 +1307,9 @@ export default {
             .then((res) => {
               this.submitted = false;
               this.selectedDoctoral.dissertation.state = this.dissertationState.DefenseDate
+              this.hideDialog(this.dialog.setMeetingTimeConfirm)
               this.hideDialog(this.dialog.setMeetingTime)
+              this.$toast.add({severity: "success", summary: "Хабарландыру сәтті құрылды", life: 3000});
             })
             .catch((error) => {
               if (error.response.status == 401) {
