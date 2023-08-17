@@ -93,10 +93,10 @@
             <div v-if="mgovMobileRedirectUri">
               <hr>
             </div>
-            <div v-if="mgobBusinessRedirectUri" class="p-fluid text-center">
+            <div v-if="mgovBusinessRedirectUri" class="p-fluid text-center">
               <Button class="p-button-outlined" :label="$t('common.mgovBusiness')" @click="redirectToMgovBusiness"/>
             </div>
-            <div v-if="mgobBusinessRedirectUri">
+            <div v-if="mgovBusinessRedirectUri">
               <hr>
             </div>
             <div class="field mb-3">
@@ -142,9 +142,10 @@ export default {
         password: ""
       },
       isSignUp: true,
+      connectionId: null,
       qrSignUri: "",
       mgovMobileRedirectUri: null,
-      mgobBusinessRedirectUri: null,
+      mgovBusinessRedirectUri: null,
       active: 0,
       isNotMobile: false,
     }
@@ -159,7 +160,7 @@ export default {
       window.open(this.mgovMobileRedirectUri)
     },
     redirectToMgovBusiness() {
-      window.open(this.mgobBusinessRedirectUri)
+      window.open(this.mgovBusinessRedirectUri)
     },
     checkDevice() {
       const ua = navigator.userAgent;
@@ -173,17 +174,25 @@ export default {
     },
     tabChanged() {
       if (this.active === 2 || (!this.isNotMobile && this.active === 1)) {
-        axios.post(smartEnuApi + "/etsptokenid", {}, {headers: getHeader()})
-            .then(res => {
-              let mgovSignUri = smartEnuApi + '/mobileAuthParams?uuid=' + res.data.connectionId
-              this.qrSignUri = 'mobileSign:' + mgovSignUri
-              this.mgovMobileRedirectUri = "https://mgovsign.page.link/?link=" + mgovSignUri + "&apn=kz.mobile.mgov&isi=1476128386&ibi=kz.egov.mobile"
-              this.mgobBusinessRedirectUri = "https://egovbusiness.page.link/?link=" + mgovSignUri + "&apn=kz.mobile.mgov.business&isi=1597880144&ibi=kz.mobile.mgov.business"
-              this.wsconnect(res.data.connectionId)
-            })
-            .catch(error => {
-              alert(error.message)
-            });
+        if (this.connectionId  === null) {
+          this.qrSignUri = ""
+          this.mgovMobileRedirectUri = null
+          this.mgovBusinessRedirectUri = null
+          axios.post(smartEnuApi + "/etsptokenid", {}, {headers: getHeader()})
+              .then(res => {
+                this.connectionId = res.data.connectionId;
+                let mgovSignUri = smartEnuApi + '/mobileAuthParams/' + this.connectionId
+                this.qrSignUri = 'mobileSign:' + mgovSignUri
+                this.mgovMobileRedirectUri = "https://mgovsign.page.link/?link=" + mgovSignUri + "?mgovSign&apn=kz.mobile.mgov&isi=1476128386&ibi=kz.egov.mobile"
+                this.mgovBusinessRedirectUri = "https://egovbusiness.page.link/?link=" + mgovSignUri + "?mgovSign&apn=kz.mobile.mgov.business&isi=1597880144&ibi=kz.mobile.mgov.business"
+                this.wsconnect(this.connectionId)
+              })
+              .catch(error => {
+                alert(error.message)
+              });
+        } else {
+          this.wsconnect(this.connectionId)
+        }
       }
     },
 
