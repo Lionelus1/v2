@@ -432,7 +432,7 @@ export default {
         },
         updateJournal() {
             let journals = this.journal.map(e=>{
-                const newObjs = {id: e.id, course_history_id: e.course_history_id, grade: e.grade};
+                const newObjs = {id: e.id, course_history_student_rel_id: e.course_history_student_rel_id, grade: e.grade};
                 newObjs.module = {id: e.module.id}
                 return newObjs
             })
