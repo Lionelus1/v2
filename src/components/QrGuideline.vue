@@ -39,18 +39,24 @@
     <div class="col-12 lg:col-4">
       <div class="p-fluid text-center">
         <b>eGov Mobile</b>
+      </div>
+      <div class="p-fluid text-center">
         <qrcode-vue size="200" render-as="svg" margin="2" :value="eGovMobileLink"></qrcode-vue>
       </div>
     </div>
     <div class="col-12 lg:col-4">
       <div class="p-fluid text-center">
         <b>eGov Business (App Store)</b>
+      </div>
+      <div class="p-fluid text-center">
         <qrcode-vue size="200" render-as="svg" margin="2" :value="eGovBusinessAppStoreLink"></qrcode-vue>
       </div>
     </div>
     <div class="col-12 lg:col-4">
       <div class="p-fluid text-center">
         <b>eGov Business (Play Market)</b>
+      </div>
+      <div class="p-fluid text-center">
         <qrcode-vue size="200" render-as="svg" margin="2" :value="eGovBusinessAndroidLink"></qrcode-vue>
       </div>
     </div>
