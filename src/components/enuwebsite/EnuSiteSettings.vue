@@ -94,8 +94,8 @@ import { useI18n } from "vue-i18n";
 import { EnuWebService } from "@/service/enu.web.service";
 import { useToast } from "primevue/usetoast";
 import WebLogs from "@/components/enuwebsite/EnuSiteLogs.vue";
-import { findRole, smartEnuApi, fileRoute } from "@/config/config";
-import { useStore } from "vuex";
+import { findRole } from "@/config/config";
+import {useStore} from "vuex";
 import {FileService} from "@/service/file.service";
 import TitleBlock from "@/components/TitleBlock.vue";
 
