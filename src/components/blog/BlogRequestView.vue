@@ -1,10 +1,12 @@
 <template>
   <div class="col-12">
+    <TitleBlock :showBackButton="true" :title="$t('blog.question')" />
     <div class="card">
       <BlockUI :blocked="loading" :fullScreen="true">
         <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em" />
       </BlockUI>
       <div v-if="question" class="grid">
+        
         <div class="product-grid-item card">
           <h5>{{ $t("faq.question") }}</h5>
 

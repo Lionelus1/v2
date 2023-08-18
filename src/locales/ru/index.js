@@ -1248,6 +1248,7 @@ export default {
         welcomeTextKz: 'Приветственный текст на казахском',
         welcomeTextRu: 'Приветственный текст на русском',
         welcomeTextEn: 'Приветственный текст на английском',
+        question: 'Вопросы'
     },
     verification: {
         title: 'Проверка электронного документа',

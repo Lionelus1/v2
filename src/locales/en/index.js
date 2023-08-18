@@ -1196,16 +1196,16 @@ export default {
             issueWithApp: "Issue a certificate with application",
 
         },
-      
-        modules:'Сourse modules', 
+
+        modules:'Сourse modules',
         module: 'Module',
         modulePosition: '№',
         moduleTitle: 'Title',
-        moduleHours: 'Hours', 
+        moduleHours: 'Hours',
         moduleGrade: 'Grade',
         moduleName:'Module name',
         modulePeriod:'Module period',
-    
+
 
         users: 'Сourse participants',
         user: 'Participant',
@@ -1240,10 +1240,11 @@ export default {
         failedToLoad: 'Failed to load data',
     },
     blog: {
-        title: "Blog",
-        welcomeTextKz: "Welcome text in Kazakh",
-        welcomeTextRu: "Welcome text in Russian",
-        welcomeTextEn: "Welcome text in English",
+        title: 'Blog',
+        welcomeTextKz: 'Welcome text in Kazakh',
+        welcomeTextRu: 'Welcome text in Russian',
+        welcomeTextEn: 'Welcome text in English',
+        question: 'Questions'
     },
     verification: {
         title: 'Verify Electronic Document',
