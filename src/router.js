@@ -663,7 +663,13 @@ const routes = [
                 name: 'ApprovalListControl',
                 component: load('roleControl/ApprovalListControl'),
                 beforeEnter: ifAuthenticated,
-            }
+            },
+            {
+                path: '/qrGenerator',
+                name: 'QR',
+                component: () => import('./components/QrGenerator.vue'),
+                beforeEnter: ifAuthenticated,
+            },
                 
         ]
     },

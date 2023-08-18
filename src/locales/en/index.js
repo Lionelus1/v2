@@ -314,7 +314,10 @@ export default {
         eventType: 'Event type',
         gallery: 'Gallery',
         faculties: 'Faculties',
-        verify: 'Document signature verification'
+        verify: 'Document signature verification',
+        qrGenerator: 'QR generator',
+        generate: 'Generate',
+        selectFormat: 'Select format'
     },
     bank: {
         title: "Banks",

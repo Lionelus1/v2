@@ -314,7 +314,10 @@ export default {
         eventType: 'Тип мероприятия',
         gallery: 'Галерея',
         faculties: 'Факультеты',
-        verify: 'Проверка подписи документа'
+        verify: 'Проверка подписи документа',
+        qrGenerator: 'QR генератор',
+        generate: 'Генерировать',
+        selectFormat: 'Выберите формат'
     },
     bank: {
         title: "Банки",

@@ -312,7 +312,10 @@ export default {
         eventType: 'Іс-шара түрі',
         gallery: 'Галерея',
         faculties: 'Факультеттер',
-        verify: 'Құжатқа қол қоюды тексеру'
+        verify: 'Құжатқа қол қоюды тексеру',
+        qrGenerator: 'QR генератор',
+        generate: 'Генерациялау',
+        selectFormat: 'Форматты таңдаңыз'
     },
     bank: {
         title: "Банктер",
