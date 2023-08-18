@@ -2,7 +2,7 @@
     <div>
         <BlockUI :blocked="saving" :fullScreen="true"></BlockUI>
         <div v-if="!catLazyParams.parentID"  class="surface-card p-4 mb-1 shadow-2 border-round">
-            <div class="text-2xl font-medium text-900 mb-3">{{ $t('course.categories') }}</div>
+            <h4 class="mb-3">{{ $t('course.categories') }}</h4>
             <Splide v-if="courses && courses.length>0" :options="options" :extensions="extensions">
                 <SplideSlide v-for="cat of categories" :key="cat.id">
                     <div @click="selectCategory(cat)" class="item category bg-blue-500 surface-card p-4 m-2 shadow-4 border-round p-ripple" v-ripple>
@@ -13,7 +13,7 @@
             </Splide>
         </div>
         <div class="surface-card p-4 shadow-2 border-round">
-            <div class="text-2xl font-medium text-900 mb-3">{{ $t('course.courses') }}</div>
+            <h4 class="mb-3">{{ $t('course.courses') }}</h4>
             <DataView class="ml-7 mr-7" :value="courses" :layout="layout" :paginator="true" :rows="9" :sortOrder="sortOrder"> 
                  <!-- :sortField="sortField"> -->
                 <template #list="slotProps">
@@ -24,7 +24,7 @@
                 </template>
 
 			<template #grid="slotProps">
-				<div @click="selectCourse(slotProps.data)" class="col-12 md:col-4 shadow-4 border-round p-4 item course p-ripple" v-ripple>
+				<div @click="selectCourse(slotProps.data)" class="col-12 md:col-4 shadow-4 border-round p-4 item course p-ripple mr-3" v-ripple>
                     <div class="text-xl font-medium text-900 mb-3">{{ slotProps.data['name' + $i18n.locale] }}</div>
                     <div class="font-medium text-700 mb-3">{{ slotProps.data['description' + $i18n.locale] }}</div>
 				</div>

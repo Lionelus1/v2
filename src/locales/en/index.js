@@ -145,6 +145,9 @@ export default {
     newCatalog: "New catalog",
     newDoc: "New document",
     description: "Description",
+    descriptionKz: "Description in qazaq",
+    descriptionRu: "Description in russian",
+    descriptionEn: "Description  in english",
     records: "Records",
     recordsLoading: "Loading ...",
     recordsNotFound: "Records not found",
@@ -1189,11 +1192,25 @@ export default {
             elements: 'Elements',
             designer: 'Template designer',
             issue: "Issue a certificate",
+            issueWithApp: "Issue a certificate with application",
+
         },
+      
+        modules:'Сourse modules', 
+        module: 'Module',
+        modulePosition: '№',
+        moduleTitle: 'Title',
+        moduleHours: 'Hours', 
+        moduleGrade: 'Grade',
+        moduleName:'Module name',
+        modulePeriod:'Module period',
+    
+
         users: 'Сourse participants',
         user: 'Participant',
         organizers: 'Course organizers',
         lnum: 'last number',
+        journalOfUsers: 'journal-users',
     },
     roleControl:{
         addSidebar: 'Adding new record',

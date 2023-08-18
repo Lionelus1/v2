@@ -2,6 +2,7 @@ import api from "./api";
 import {getHeader} from "@/config/config";
 
 export class OnlineCourseService {
+
     saveCertificateTemplate(data) {
         return api.post('/certificate/update', data, {headers: getHeader()});
     }
@@ -13,6 +14,9 @@ export class OnlineCourseService {
     }
     updateCourseOrganizer(data) {
         return api.post('/onlinecourse/updateOrganizer', data, {headers:getHeader()});
+    }
+    updateUserState(courseHistoryID, studentID, state) {
+        return api.post('/onlinecourse/updateUserState', {"course_history_id": courseHistoryID, "student_id": studentID, "state": state}, {headers:getHeader()});
     }
     getCourseOrganizers(data) {
         return api.post('/onlinecourse/organizers', data, {headers:getHeader()});
@@ -26,16 +30,30 @@ export class OnlineCourseService {
     getCourses(data) {
         return api.post('/onlinecourse/courses', data, {headers:getHeader()});
     }
+    getModulesByCourseID(courseID) {
+        return api.get(`/onlinecourse/getModulesByCourseId/${courseID}`, { headers: getHeader() });
+    }
     getCourse(courseID) {
         return api.get(`/onlinecourse/course/${courseID}`, {headers: getHeader()});
     }
     getCourseStudents(courseID,page,rows) {
         return api.get(`/onlinecourse/students/${courseID}/${page}/${rows}`, { headers: getHeader()});
     }
+
+    getJournal(courseHistoryID, studentID) {
+        return api.get(`/onlinecourse/getJournal/${courseHistoryID}/${studentID}`, { headers: getHeader()});
+    }
     addStudentsToCourse(data) {
         return api.post('/onlinecourse/addStudent', data, {headers:getHeader()});
     }
     issueCertificate(data) {
         return api.post('/onlinecourse/issueCertificate', data, {headers:getHeader()});
+    }
+
+    addModulesToCourse(data){
+        return api.post('/onlinecourse/addModule', data, { headers: getHeader()});
+    }
+    updateJournal(data) {
+        return api.post('/onlinecourse/updateJournal', data, {headers:getHeader()});
     }
 }
