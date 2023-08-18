@@ -1139,6 +1139,7 @@ export default {
         welcomeTextKz: 'Welcome text in Kazakh',
         welcomeTextRu: 'Welcome text in Russian',
         welcomeTextEn: 'Welcome text in English',
+        question: 'Questions'
     },
     verification: {
         title: 'Verify Electronic Document',

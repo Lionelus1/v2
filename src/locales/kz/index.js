@@ -1159,6 +1159,7 @@ export default {
         welcomeTextKz: 'Қазақша алғысөз',
         welcomeTextRu: 'Орысша алғысөз',
         welcomeTextEn: 'Ағылшынша алғысөз',
+        question: 'Сұрақтар'
     },
 
     verification: {
