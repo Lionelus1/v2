@@ -855,6 +855,10 @@ export default {
         gridCardListExample: 'Simple Grid Card List Example',
         exampleTitle: 'Title',
         exampleContent: 'Example content',
+        mainMenu:'Main Menu',
+        headerMenu: 'Header Menu',
+        middleMenu: 'Middle Menu',
+        usefulMenu: 'Useful Menu',
         commonSettings: 'Settings',
         universityAddressInfo: 'Contact Address',
         websiteAddress: 'Website',
@@ -864,7 +868,10 @@ export default {
         universityFax: 'Fax',
         viewCount: 'View count',
         viewTimes: 'times',
-        sitePreviewLink: 'Preview Link'
+        sitePreviewLink: 'Preview Link',
+        editAnswer: 'Edit answer',
+        editAnswerConfirm: 'Are you sure you want to make changes to the answer?',
+        facultyName: 'Faculty Name'
     },
     //Student locale
     student: {
@@ -1219,6 +1226,7 @@ export default {
         welcomeTextKz: 'Welcome text in Kazakh',
         welcomeTextRu: 'Welcome text in Russian',
         welcomeTextEn: 'Welcome text in English',
+        question: 'Questions'
     },
     verification: {
         title: 'Verify Electronic Document',

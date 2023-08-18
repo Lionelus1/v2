@@ -899,7 +899,11 @@ export default {
         universityFax: 'Факс',
         viewCount: 'Просмотров',
         viewTimes: 'раз',
-        sitePreviewLink: 'Ссылка для предварительного просмотра'
+        sitePreviewLink: 'Ссылка для предварительного просмотра',
+        editAnswer: 'Изменить ответ',
+        editAnswerConfirm: 'Вы уверены, что хотите внести изменения в ответ?',
+        facultyName: 'Название факультета'
+
     },
 
     student: {
@@ -1231,6 +1235,7 @@ export default {
         welcomeTextKz: 'Приветственный текст на казахском',
         welcomeTextRu: 'Приветственный текст на русском',
         welcomeTextEn: 'Приветственный текст на английском',
+        question: 'Вопросы'
     },
     verification: {
         title: 'Проверка электронного документа',

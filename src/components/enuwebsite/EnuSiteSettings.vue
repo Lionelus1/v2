@@ -27,7 +27,8 @@
           <div>
             <div class="py-3">{{ i18n.t('web.SiteMaintenanceMode') }}</div>
             <InputSwitch v-model="formData.is_closed" />
-            <div class="py-3" v-if="formData.is_closed"><a :href="facultySite" target="_blank">{{ i18n.t('web.sitePreviewLink') }}</a></div>
+            <div class="py-3" v-if="formData.is_closed"><a :href="facultySite" target="_blank">{{
+              i18n.t('web.sitePreviewLink') }}</a></div>
             <div class="field">
               <Button :label="$t('common.save')" class="mt-3" @click="update" />
             </div>
@@ -64,6 +65,15 @@
                 <InputText v-model="infoData.address_en" />
 
               </div>
+              <div class="field">
+                <label>{{ $t('web.bgImg') }}</label>
+                <FileUpload mode="basic" :customUpload="true" @uploader="uploadBg" :auto="true"
+                  v-bind:chooseLabel="$t('hdfs.chooseFile')" accept="image/*" />
+                <div v-if="infoData.bg_image" class="img-block">
+                  <br/>
+                  <Image :src="infoData.bgUrl ? infoData.bgUrl : getImgUrl(infoData.bg_image)" alt="Image" width="350" preview />
+                </div>
+              </div>
             </div>
             <div class="field">
               <Button :label="$t('common.save')" class="mt-3" @click="saveSiteInfo" />
@@ -84,8 +94,9 @@ import { useI18n } from "vue-i18n";
 import { EnuWebService } from "@/service/enu.web.service";
 import { useToast } from "primevue/usetoast";
 import WebLogs from "@/components/enuwebsite/EnuSiteLogs.vue";
-import { findRole } from "@/config/config";
-import {useStore} from "vuex";
+import { findRole, smartEnuApi, fileRoute } from "@/config/config";
+import { useStore } from "vuex";
+import {FileService} from "@/service/file.service";
 import TitleBlock from "@/components/TitleBlock.vue";
 
 const store = useStore()
@@ -104,6 +115,8 @@ const isWebAdmin = computed(() => findRole(authUser.value, "enu_web_admin"))
 const isFacultyWebAdmin = computed(() => findRole(authUser.value, "enu_web_fac_admin"))
 const facultyAbbrev = ref()
 const userParams = ref({ user_id: authUser.value.userID })
+const fileService = new FileService()
+const bgImg = ref(null)
 
 const facultySite = computed(() => {
   return `${enuService.getSiteUrl(store)}?mode=preview`
@@ -142,7 +155,6 @@ const getSettings = () => {
   });
 }
 
-
 onMounted(() => {
   getSettings();
   getFacultyAbb();
@@ -172,6 +184,25 @@ const update = () => {
   });
 }
 
+const getImgUrl = (url) => {
+  return smartEnuApi + fileRoute + url
+}
+
+const uploadBg = (event) => {
+  bgImg.value = event.files[0]
+  const fd = new FormData()
+  fd.append("files[]", event.files[0])
+  fd.append("watermark", true)
+  fileService.uploadFile(fd).then(res => {
+    if (res.data) {
+      infoData.value.bg_image = res.data[0].filepath;
+      infoData.value.bgUrl = smartEnuApi + fileRoute + infoData.value.bg_image;
+    }
+  }).catch(error => {
+    toast.add({severity: "error", summary: error, life: 3000});
+  });
+}
+
 const endDateSelect = (event) => {
   let date = new Date(event);
   date.setHours(23, 59, 59, 0);
@@ -189,7 +220,6 @@ const mourningChange = () => {
 const siteMaintenanceChange = () => {
   isClosed.value = !isClosed.value;
 }
-
 
 const initMourning = (data) => {
   let currentDate = new Date()
@@ -216,7 +246,7 @@ const saveSiteInfo = () => {
 }
 
 const saveMaintenaceMode = () => {
-  enuService.setSiteMaintenanceMode({is_closed:isClosed.value}).then(res => {
+  enuService.setSiteMaintenanceMode({ is_closed: isClosed.value }).then(res => {
     if (res.data)
       toast.add({ severity: "success", summary: i18n.t('common.success'), life: 3000 });
     getSettings();

@@ -910,7 +910,10 @@ export default {
         universityFax: 'Факс',
         viewCount: 'Қарады',
         viewTimes: 'рет',
-        sitePreviewLink: 'Алдын ала қарау сілтемесі'
+        sitePreviewLink: 'Алдын ала қарау сілтемесі',
+        editAnswer: 'Жауапты өңдеу',
+        editAnswerConfirm: 'Сіз шынымен жауапқа өзгерістер еңгізгіңіз келе ме?',
+        facultyName: 'Факультет атауы'
 
     },
     //Student locale
@@ -1237,6 +1240,7 @@ export default {
         welcomeTextKz: 'Қазақша алғысөз',
         welcomeTextRu: 'Орысша алғысөз',
         welcomeTextEn: 'Ағылшынша алғысөз',
+        question: 'Сұрақтар'
     },
     verification: {
         title: 'Электрондық құжатты тексеру',
