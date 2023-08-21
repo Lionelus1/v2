@@ -34,25 +34,6 @@
                                         
                                     <Button class="p-button-help mb-2" icon="fa-solid fa-certificate"
                                         :label="$t('course.certificate.issueWithApp')" @click="issueCertificate(1)" />
-<!--appliction with certif adding-->
-<!-- <TabPanel :header="$t('course.modules')">
-                <DataTable :value="module">
-                    <template #header>
-                        <div
-                            class="table-header flex justify-content-between flex-wrap card-container purple-container">
-                            <div class="flex gap-2">
-                                <Button class="p-button-success" icon="pi pi-plus" :label="$t('common.add')" @click="addModule" />
-                            </div>
-                        </div>
-                    </template>
-                    <Column field="name" :header="$t('common.name')"></Column>
-                    <Column field="hours" :header="$t('course.moduleHours')"></Column>
-                    <Column field="description" :header="$t('common.description')"></Column>
-                </DataTable>
-
-            </TabPanel>
-        </TabView> -->
-
 
                                 </div>
                                 <span class="p-input-icon-left">
@@ -73,22 +54,21 @@
                                 <Button v-if="slotProps.data.certificateUUID" icon="fa-solid fa-award" class="mr-3" v-tooltip.bottom="$t('course.certificate.view')" label="" @click="openCertificate(slotProps.data.certificateUUID)"/>
                             </template>
                         </Column>
-                    
-                        <!-- <Column headerStyle="width:60px;">
-                                    <template #body="slotProps">
-                                    <Button @click="template=slotProps.data;templateEditorVisilble = true"
-                                            type="button"
-                                            icon="pi pi-eye" class="p-button-info"></Button>
-                                    </template>
-                                </Column> -->
+    <!-- <Column headerStyle="width:60px;">
+      <template #body="slotProps">
+        <Button @click="template=slotProps.data;templateEditorVisilble = true"
+          type="button"
+          icon="pi pi-eye" class="p-button-info"></Button>
+          </template>
+    </Column> -->                    
+                            
                     </DataTable>
-          <!-- студент қосу диалогы -->
+                    <!-- студент қосу диалогы -->
                     <Dialog v-model:visible="studentDialog" :style="{ width: '450px' }" :header="$t('course.user')"
                         :modal="true" class="p-fluid">
                         <div class="field">
                             <label for="newUsers">{{ $t('common.fullName') }}</label>
 
-                            <!-- <FindUser id="name"  required="true" autofocus :class="{'p-invalid': submitted && !student}" /> -->
                             <FindUser id="newUsers" v-model="newUsers" :userType="2"></FindUser>
                             <small class="p-error" v-if="submitted && !(newUsers && newUsers.length > 0)">{{
                                 $t('common.requiredField') }}</small>
@@ -122,8 +102,8 @@
                     <Column field="hours" :header="$t('course.moduleHours')"></Column>
                     <Column field="description" :header="$t('common.description')"></Column>
                     <Column field="">
-                        <template #body="">
-                        <Button class="p-button-danger mr-3" icon="fa-solid fa-trash" label="" @click="deleteModule" />
+                        <template #body="{data}">
+                        <Button class="p-button-danger mr-3" icon="fa-solid fa-trash" label="" @click="deleteModule(data.id)" />
                         </template>
                     </Column>
                 </DataTable>
@@ -220,7 +200,9 @@
 </template>
 <script>
 import { OnlineCourseService } from "@/service/onlinecourse.service";
-import {smartEnuApi} from "@/config/config";
+import {smartEnuApi, getHeader} from "@/config/config";
+import api from "@/service/api";
+
 export default {
     data() {
         return {
@@ -239,7 +221,7 @@ export default {
             studentDialog: false,
             newUsers: [],
             updateGrades: [],
-            // damir
+       
             moduleDialog: false,
             module: null,
             newModules: [],
@@ -259,8 +241,6 @@ export default {
         this.getModuleByCourseID();
     },
     methods: {
-        //-------------------------------------------Module
-        //ToDo -> Dimash
         sendRequestToCourse() {
             this.$confirm.require({
                 message: this.$t('common.confirmation'),
@@ -276,7 +256,7 @@ export default {
             });
 
         },
-        //ToDo -> Dimash check parameters, change alert and student state
+      
         updateUserState(userID, state) {
             this.loading = true;
             this.service.updateUserState(this.course.history[0].id,userID, state).then(response => {
@@ -320,7 +300,6 @@ export default {
             this.formData = {};
         },
         addModulesToCourse() {
-            console.log('rrrrrr:  ', this.formData)
             this.formData.course_id = parseInt(this.course_id);
             this.submitted = true;
             if (!this.isValid()) {
@@ -478,7 +457,7 @@ export default {
                 });
             })
         },
-        deleteModule(){
+        deleteModule(id){
             this.$confirm.require({
                 message: this.$t('common.doYouWantDelete'),
                 header: this.$t('common.delete'),
@@ -486,6 +465,13 @@ export default {
                 acceptClass: 'p-button-rounded p-button-success',
                 rejectClass: 'p-button-rounded p-button-danger',
                 accept: () => {
+                    this.service.deleteModule(id).then(res => {
+                        this.getModuleByCourseID();
+                        this.$toast.add({severity: "success", summary: this.$t("common.success"), life: 3000});
+                    }).catch(error => {
+                        console.log(error);
+                        this.$toast.add({severity: "error", summary: this.$t("common.message.saveError"), life: 3000});
+                    })
                 }
             });
         },
