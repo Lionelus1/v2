@@ -1198,7 +1198,7 @@ export default {
             designer: 'Дизайнер шаблона',
             issue: "Выдать сертификат",
             issueWithApp: "Выдать сертификат с приложением",
-
+            view: "Посмотреть сертификат",
         },
         modules:'Модули курса',
         module: 'Модуль',
@@ -1208,11 +1208,12 @@ export default {
         moduleGrade: 'Оценка',
         moduleName:'Название модуля',
         modulePeriod:'Период модуля',
-
         user: 'Участник',
         users: "Участники курса",
         organizers: 'Организаторы курсов',
         lnum: 'Последний номер',
+        journal: 'Журнал',
+        addCourse: 'Добавить в курс',
     },
     roleControl: {
         addSidebar: 'Добавление новой записи',

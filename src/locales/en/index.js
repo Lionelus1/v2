@@ -1197,7 +1197,7 @@ export default {
             designer: 'Template designer',
             issue: "Issue a certificate",
             issueWithApp: "Issue a certificate with application",
-
+            view: "View the certificate",
         },
 
         modules:'Сourse modules',
@@ -1208,13 +1208,13 @@ export default {
         moduleGrade: 'Grade',
         moduleName:'Module name',
         modulePeriod:'Module period',
-
-
         users: 'Сourse participants',
         user: 'Participant',
         organizers: 'Course organizers',
         lnum: 'last number',
         journalOfUsers: 'journal-users',
+        journal: 'Journal',
+        addCourse: 'Add to the course',
     },
     roleControl:{
         addSidebar: 'Adding new record',
