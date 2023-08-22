@@ -112,7 +112,7 @@
 
             </TabPanel>
         </TabView>
-    </div>щк
+    </div>
 
   <!-- module қосу диалогы -->
     <Dialog v-model:visible="moduleDialog" :style="{ width: '450px' }" :header="$t('course.module')" :modal="true"
