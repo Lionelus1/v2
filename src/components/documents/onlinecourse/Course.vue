@@ -9,7 +9,7 @@
             <TabPanel :header="$t('course.users')">
                 <Button v-if="reqBtn && course && course.students===null" class="btn mb-3" :label="$t('hr.sp.request')"
                         @click="sendRequestToCourse()" />
-                <h4 class="status text-green-400" v-if="statusText">Өтінім қаралымда</h4>
+                <h4 class="status text-green-400" v-if="statusText">{{ $t('common.status')}}:</h4>
                 <!-- курсқа қатысушылар -->
                 <div v-if="course && course.students">
                     <DataTable selectionMode="single" v-model:selection="student" :lazy="true"
@@ -112,7 +112,7 @@
 
             </TabPanel>
         </TabView>
-    </div>
+    </div>щк
 
   <!-- module қосу диалогы -->
     <Dialog v-model:visible="moduleDialog" :style="{ width: '450px' }" :header="$t('course.module')" :modal="true"
