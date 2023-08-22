@@ -9,7 +9,7 @@
         <TabPanel :header="$t('web.properties')">
           <TreeTable class="p-treetable-sm" :value="menus" :lazy="true" :loading="loading" @nodeExpand="onExpand"
             scrollHeight="flex" responsiveLayout="scroll" :resizableColumns="true" show-gridlines columnResizeMode="fit"
-            :paginator="true" :rows="10" :total-records="total" @page="onPage($event)">
+            :paginator="true" :rows="lazyParams.rows" :total-records="total" @page="onPage($event)">
             <template #header>
               <div class="text-left"></div>
               <div class="text-right">
@@ -173,8 +173,8 @@ export default {
         menu_type: {}
       },
       lazyParams: {
-        page: 1,
-        rows: 10,
+        page: 0,
+        rows: 20,
         parent_id: null,
         is_child: false
       },
@@ -247,7 +247,7 @@ export default {
     },
     onExpand(node) {
       this.lazyParams.parent_id = Number(node.menu_id)
-      this.lazyParams.is_child = true
+      this.lazyParams.is_child = !this.lazyParams.is_child
       this.parentNode = node
       this.getMenus(node)
     },
@@ -353,7 +353,6 @@ export default {
     },
     createMenu(data) {
       if (data) this.parentId = data.menu_id;
-      //this.selectedMenu = data
       this.addMenuVisible = true;
 
     },
