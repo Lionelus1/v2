@@ -94,16 +94,16 @@
                         <div
                             class="table-header flex justify-content-between flex-wrap card-container purple-container">
                             <div class="flex gap-2">
-                                <Button class="p-button-success" icon="pi pi-plus" :label="$t('common.add')" @click="addModule" />
+                                <Button v-if="findRole(null,'online_course_administrator')" class="p-button-success" icon="pi pi-plus" :label="$t('common.add')" @click="addModule" />
                             </div>
                         </div>
                     </template>
-                    <Column field="name_kz" :header="$t('common.name')"></Column>
+                    <Column :field="'name_' + $i18n.locale" :header="$t('common.name')"></Column>
                     <Column field="hours" :header="$t('course.moduleHours')"></Column>
-                    <Column field="description" :header="$t('common.description')"></Column>
+                    <Column :field="'description_' + $i18n.locale" :header="$t('common.description')"></Column>
                     <Column field="">
                         <template #body="{data}">
-                        <Button class="p-button-danger mr-3" icon="fa-solid fa-trash" label="" @click="deleteModule(data.id)" />
+                        <Button v-if="findRole(null,'online_course_administrator')" class="p-button-danger mr-3" icon="fa-solid fa-trash" label="" @click="deleteModule(data.id)" />
                         </template>
                     </Column>
                 </DataTable>
@@ -200,7 +200,7 @@
 </template>
 <script>
 import { OnlineCourseService } from "@/service/onlinecourse.service";
-import {smartEnuApi, getHeader} from "@/config/config";
+import {smartEnuApi, getHeader,findRole} from "@/config/config";
 import api from "@/service/api";
 
 export default {
@@ -241,6 +241,7 @@ export default {
         this.getModuleByCourseID();
     },
     methods: {
+        findRole: findRole,
         sendRequestToCourse() {
             this.$confirm.require({
                 message: this.$t('common.confirmation'),
