@@ -318,6 +318,7 @@ export default {
         gallery: 'Галерея',
         faculties: 'Факультеты',
         verify: 'Проверка подписи документа',
+        address: 'Адрес',
         qrGenerator: 'QR генератор',
         generate: 'Генерировать',
         selectFormat: 'Выберите формат'
@@ -781,7 +782,12 @@ export default {
         userOtherCouncils: 'Отношение пользователя к другим диссертационным советам',
         closeDate: 'Дата прекращения',
         councilComment: 'Номер приказа и т.п.',
-        closeCouncil: 'Остановить диссертационный совет'
+        closeCouncil: 'Остановить диссертационный совет',
+        scientificConsultant: 'Отзыв научного консультанта',
+        foreignConsultant: 'Отзыв зарубежного консультанта',
+        commissionConclusion: 'Заключение комиссии по этической оценке',
+        reviewerComment: 'Отзыв официального рецензента',
+        setMeetingTimeConfirmMsg: "Төмендегі {btn} батырмасын басу арқылы, ақпараттардың дұрыстығын растайсыз және осы ақпарат сайтқа хабарландыру болып шығарылады"
     },
     faq: {
         title: "Служба поддержки",
@@ -1204,7 +1210,7 @@ export default {
         module: 'Модуль',
         modulePosition: '№',
         moduleTitle: 'Наименование',
-        moduleHours: 'Часы', 
+        moduleHours: 'Часы',
         moduleGrade: 'Оценка',
         moduleName:'Название модуля',
         modulePeriod:'Период модуля',

@@ -1,17 +1,20 @@
 <template>
     <ConfirmPopup group="deleteResult"></ConfirmPopup>
-    <div class="field">
-        <FileUpload mode="basic" :customUpload="true" @uploader="upload" :auto="true"
-                    :multiple="multiple" :chooseLabel="$t('hdfs.chooseFile')" :accept="accept"></FileUpload>
+    <FileUpload v-if="button" mode="basic" :customUpload="true" @uploader="upload" :auto="true"
+                :multiple="multiple" :chooseLabel="$t('hdfs.chooseFile')" :accept="accept"></FileUpload>
+    <div v-if="(!button && !uploadedFiles) || multiple">
+      <a v-if="!uploadedFiles || multiple" href="javascript:void(0)" @click="upload" class="text-underline">{{ $t('hdfs.chooseFile') }} </a>
     </div>
 
     <!-- <div class="m-news-images-item" v-for="(item, index) of files" :key="index">
         <img src="item" alt="">
     </div> -->
 
-    <div class="field" v-if="preview && !uploadedFiles">
+    <template v-if="preview && !uploadedFiles">
+      <div class="field">
         <img :src="imgPreview" alt="" class="w-20rem">
-    </div>
+      </div>
+    </template>
     <div class="field" v-if="uploadedFiles">
         <div ref="content" class="p-fileupload-content">
             <div class="p-fileupload-files" v-if="uploadedFiles">
@@ -37,7 +40,7 @@ import {fileRoute, smartEnuApi} from "@/config/config";
 
 export default {
     name: "CustomFileUpload",
-    props: ['modelValue', 'accept', 'multiple', 'preview', 'isGallery'],
+    props: ['modelValue', 'accept', 'multiple', 'preview', 'isGallery', 'button'],
     setup(props, context) {
         const uploadedFiles = ref(props.modelValue)
         const imgPreview = ref(props.preview)
@@ -51,12 +54,29 @@ export default {
         }
 
         const upload = (event) => {
-            files.value += event
-            context.emit('upload', event)
+            if (!props.button) {
+              const input = document.createElement('input');
+              input.setAttribute('type', 'file');
+              input.setAttribute('accept', props.accept)
+              input.setAttribute('multiple', props.multiple)
+              input.addEventListener('change', (e) => {
+                context.emit('upload', props.multiple ? e.target.files : e.target.files[0])
+              });
+              input.click();
+            } else {
+              context.emit('upload', event)
+            }
         }
 
         watch(() => props.modelValue, (newValue, oldValue) => {
-            uploadedFiles.value = newValue;
+          if (!props.multiple) {
+            // eslint-disable-next-line valid-typeof
+            uploadedFiles.value = typeof newValue === "array" ? newValue : [newValue]
+          } else {
+            uploadedFiles.value = uploadedFiles.value || []
+            console.log(uploadedFiles.value)
+            uploadedFiles.value = uploadedFiles.value.push(newValue) || uploadedFiles.value.concat(newValue)
+          }
         })
 
         return {
@@ -75,6 +95,7 @@ export default {
     display: flex;
     align-items: center;
     padding: 5px;
+    font-size: 12px;
 }
 
 .p-fileupload-row > div {
