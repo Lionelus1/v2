@@ -2,65 +2,62 @@
   <div class="col-12">
     <h3>{{ $t("web.menuPage") }}</h3>
     <div class="card">
-      <Button :label="$t('web.addMenu')" icon="pi pi-plus" class="ml-2" v-on:click="createMenu(null)"/>
+      <Button :label="$t('web.addMenu')" icon="pi pi-plus" class="ml-2" v-on:click="createMenu(null)" />
     </div>
     <div class="card">
       <TabView>
         <TabPanel :header="$t('web.properties')">
           <TreeTable class="p-treetable-sm" :value="menus" :lazy="true" :loading="loading" @nodeExpand="onExpand"
-                     scrollHeight="flex" responsiveLayout="scroll" :resizableColumns="true" show-gridlines
-                     columnResizeMode="fit" :paginator="true" :rows="10" :total-records="total" @page="onPage($event)">
+            scrollHeight="flex" responsiveLayout="scroll" :resizableColumns="true" show-gridlines columnResizeMode="fit"
+            :paginator="true" :rows="lazyParams.rows" :total-records="total" @page="onPage($event)">
             <template #header>
               <div class="text-left"></div>
               <div class="text-right">
                 <Button type="button" icon="pi pi-search" :label="$t('common.search')"
-                        @click="toggle('global-filter', $event)" aria:haspopup="true"
-                        aria-controls="overlay_panel" class="p-button-info p-1"><i
-                    class="fa-solid fa-filter fa-xl"></i>&nbsp;{{
+                  @click="toggle('global-filter', $event)" aria:haspopup="true" aria-controls="overlay_panel"
+                  class="p-button-info p-1"><i class="fa-solid fa-filter fa-xl"></i>&nbsp;{{
                     $t('common.filter')
                   }}
                 </Button>&nbsp;
                 <OverlayPanel ref="global-filter">
                   <div v-for="text in menu_radio_options" :key="text" class="flex align-items-center">
                     <div class="field-radiobutton">
-                      <RadioButton v-model="selectedMenuType" :value="text.value"/>
+                      <RadioButton v-model="selectedMenuType" :value="text.value" />
                       <label :for="text" class="ml-2">{{ text.text }}</label>
                     </div>
                   </div>
                   <div class="p-fluid">
                     <div class="field">
-                      <br/>
+                      <br />
 
                       <Button icon="pi pi-trash" class="ml-1" @click="clearMenuTypeFilter()"
-                              :label="$t('common.clear')"/>
+                        :label="$t('common.clear')" />
                     </div>
                     <div class="field">
-                      <Button icon="pi pi-search" :label="$t('common.search')" class="ml-1"
-                              @click="orderColumn(null)"/>
+                      <Button icon="pi pi-search" :label="$t('common.search')" class="ml-1" @click="orderColumn(null)" />
                     </div>
                   </div>
                 </OverlayPanel>
                 <div class="p-input-icon-left">
-                  <i class="pi pi-search"/>
+                  <i class="pi pi-search" />
                   <InputText type="search" v-model="filter.search_text" :placeholder="$t('common.search')"
-                             @search="getMenus(null)"/>
-                  <Button icon="pi pi-search" class="ml-1" @click="getMenus(null)"/>
+                    @search="getMenus(null)" />
+                  <Button icon="pi pi-search" class="ml-1" @click="getMenus(null)" />
                 </div>
               </div>
             </template>
             <template #empty> {{ $t('common.noData') }}</template>
             <template #loading> {{ $t('common.loading') }}</template>
-            <Column field="menu_title_kz" :header="$t('common.nameIn')" :expander="true"
-                    style="min-width:300px">
+            <Column field="menu_title_kz" :header="$t('common.nameIn')" :expander="true" style="min-width:300px">
               <template #body="{ node }">
-                                <span><i class="fa-solid fa-folder"></i>&nbsp;
-                                    {{
-                                    $i18n.locale === 'kz' ? node.menu_title_kz : $i18n.locale === 'ru' ?
-                                        node.menu_title_ru : node.menu_title_en
-                                  }}
-                                    (<a :href="node.url" target="_blank">{{ $t('common.link') }}</a>)
-                                    <Badge :value="$t('web.isHidden')" v-if="node.hidden"></Badge>
-                                </span>
+                <span><i class="fa-solid fa-folder"></i>&nbsp;
+                  {{
+                    $i18n.locale === 'kz' ? node.menu_title_kz : $i18n.locale === 'ru' ?
+                    node.menu_title_ru : node.menu_title_en
+                  }}
+                  (<a :href="node.url" target="_blank">{{ $t('common.link') }}</a>)
+                  <Badge :value="$t('web.isHidden')" v-if="node.hidden"></Badge>
+                </span>
               </template>
             </Column>
             <Column field="page" :header="$t('web.menuMainPage')">
@@ -83,16 +80,13 @@
               </template>
             </Column>
             <div v-if="showOrderColumn">
-              <Column
-                  v-if="filter.menu_type.is_usefull_link || filter.menu_type.is_header || filter.menu_type.is_middle"
-                  field="order" :header="$t('web.menuOrder')">
+              <Column v-if="filter.menu_type.is_usefull_link || filter.menu_type.is_header || filter.menu_type.is_middle"
+                field="order" :header="$t('web.menuOrder')">
                 <template #body="{ node }">
-                                    <span class="p-buttonset">
-                                        <Button class="p-button-outlined" icon="pi pi-angle-up"
-                                                @click="reOrderMenu(node, true)"/>
-                                        <Button class="p-button-outlined" icon="pi pi-angle-down"
-                                                @click="reOrderMenu(node, false)"/>
-                                    </span>
+                  <span class="p-buttonset">
+                    <Button class="p-button-outlined" icon="pi pi-angle-up" @click="reOrderMenu(node, true)" />
+                    <Button class="p-button-outlined" icon="pi pi-angle-down" @click="reOrderMenu(node, false)" />
+                  </span>
 
                 </template>
               </Column>
@@ -105,40 +99,38 @@
             </Column>
             <Column field="actions" header="" class="text-right">
               <template #body="{ node }">
-                <Button type="button" icon="fa-solid fa-plus" class="p-button-sm mr-2"
-                        @click="createMenu(node)"></Button>
-                <Button type="button" icon="fa-solid fa-pen" class="p-button-sm mr-2"
-                        @click="editMenu(node)"></Button>
+                <Button type="button" icon="fa-solid fa-plus" class="p-button-sm mr-2" @click="createMenu(node)"></Button>
+                <Button type="button" icon="fa-solid fa-pen" class="p-button-sm mr-2" @click="editMenu(node)"></Button>
                 <Button type="button" icon="fa-solid fa-trash" class="p-button-sm p-button-danger"
-                        @click="deleteConfirm(node)"></Button>
+                  @click="deleteConfirm(node)"></Button>
               </template>
             </Column>
           </TreeTable>
         </TabPanel>
         <TabPanel :header="$t('web.history')">
-          <WebLogs :TN="TN" :key="TN"/>
+          <WebLogs :TN="TN" :key="TN" />
         </TabPanel>
       </TabView>
     </div>
   </div>
-  <AddMenu v-if="addMenuVisible" :is-visible="addMenuVisible" :all-pages="pages"
-           :current-menu="selectedMenu" :menu_id="parentId"></AddMenu>
+  <AddMenu v-if="addMenuVisible" :is-visible="addMenuVisible" :all-pages="pages" :current-menu="selectedMenu"
+    :menu_id="parentId"></AddMenu>
   <PageView v-if="viewPageVisible" :is-visible="viewPageVisible" :selectedPage="selectedViewMenu"></PageView>
 </template>
 
 <script>
-import {EnuWebService} from "@/service/enu.web.service";
+import { EnuWebService } from "@/service/enu.web.service";
 import AddMenu from "@/components/enuwebsite/AddMenu.vue";
 import PageView from "@/components/enuwebsite/PageView.vue";
-import {formatDate} from "@/helpers/HelperUtil";
-import {webEnuDomain} from "@/config/config";
+import { formatDate } from "@/helpers/HelperUtil";
+import { webEnuDomain } from "@/config/config";
 import WebLogs from "@/components/enuwebsite/EnuSiteLogs.vue";
-import {onMounted, ref} from "vue"
+import { onMounted, ref } from "vue"
 
 
 export default {
   name: "EnuMenuList",
-  components: {AddMenu, PageView, WebLogs},
+  components: { AddMenu, PageView, WebLogs },
   data() {
     return {
       addMenuVisible: false,
@@ -181,8 +173,8 @@ export default {
         menu_type: {}
       },
       lazyParams: {
-        page: 1,
-        rows: 10,
+        page: 0,
+        rows: 20,
         parent_id: null,
         is_child: false
       },
@@ -221,16 +213,16 @@ export default {
           position: "up",
         };
         this.enuService.orderMenuList(data)
-            .then(res => {
-              if (res.data && res.data.is_success) {
-                this.getMenus();
-              } else {
-                this.toast.add({severity: "error", summary: this.i18n.t('common.error'), life: 3000});
-              }
-            })
-            .catch(error => {
-              this.toast.add({severity: "error", summary: error, life: 3000});
-            });
+          .then(res => {
+            if (res.data && res.data.is_success) {
+              this.getMenus();
+            } else {
+              this.toast.add({ severity: "error", summary: this.i18n.t('common.error'), life: 3000 });
+            }
+          })
+          .catch(error => {
+            this.toast.add({ severity: "error", summary: error, life: 3000 });
+          });
       } else {
         const current = this.menus[index];
         let next = this.menus[index + 1];
@@ -241,21 +233,21 @@ export default {
           position: "down",
         };
         this.enuService.orderMenuList(data)
-            .then(res => {
-              if (res.data && res.data.is_success) {
-                this.getMenus();
-              } else {
-                this.toast.add({severity: "error", summary: this.i18n.t('common.error'), life: 3000});
-              }
-            })
-            .catch(error => {
-              this.toast.add({severity: "error", summary: error, life: 3000});
-            });
+          .then(res => {
+            if (res.data && res.data.is_success) {
+              this.getMenus();
+            } else {
+              this.toast.add({ severity: "error", summary: this.i18n.t('common.error'), life: 3000 });
+            }
+          })
+          .catch(error => {
+            this.toast.add({ severity: "error", summary: error, life: 3000 });
+          });
       }
     },
     onExpand(node) {
       this.lazyParams.parent_id = Number(node.menu_id)
-      this.lazyParams.is_child = true
+      this.lazyParams.is_child = !this.lazyParams.is_child
       this.parentNode = node
       this.getMenus(node)
     },
@@ -360,17 +352,18 @@ export default {
       this.getMenus(null);
     },
     createMenu(data) {
-      console.log(data)
-      this.selectedMenu = data;
+      if (data) this.parentId = data.menu_id;
       this.addMenuVisible = true;
+
     },
     editMenu(data) {
       this.selectedMenu = data;
+      this.parentId = data.menu_id;
       this.addMenuVisible = true;
     },
     viewPage(data) {
       if (data.page && data.page.is_landing) {
-        this.$router.push({name: 'LandingPageView', params: {id: data.page.enu_page_id}})
+        this.$router.push({ name: 'LandingPageView', params: { id: data.page.enu_page_id } })
       } else {
         this.selectedViewMenu = data.page;
         this.viewPageVisible = true;
@@ -391,11 +384,11 @@ export default {
     onDelete(id) {
       this.enuService.deleteMenu(id).then(res => {
         if (res.data && res.data.is_success) {
-          this.$toast.add({severity: "success", summary: "Successfully deleted", life: 3000});
+          this.$toast.add({ severity: "success", summary: "Successfully deleted", life: 3000 });
         }
         this.getMenus(this.parentNode || null);
       }).catch(error => {
-        this.$toast.add({severity: "error", summary: error, life: 3000});
+        this.$toast.add({ severity: "error", summary: error, life: 3000 });
       });
     },
     showPage(data) {
@@ -409,6 +402,7 @@ export default {
       this.getMenus(this.parentNode);
       this.addMenuVisible = false;
       this.selectedMenu = null;
+      this.parentId = null;
     },
 
   },
