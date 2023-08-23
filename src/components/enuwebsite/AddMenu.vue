@@ -51,51 +51,58 @@
         </div>
 
         <div class="grid">
-          <div class="col">
-            <div class="field">
-              <label>{{ $t('web.onMain') }}</label>
-              <div>
-                <Checkbox inputId="is_main" v-model="formData.is_main" :binary="true" />
-                <label class="ml-2" for="is_main">{{ $t('common.yes') }}</label>
-              </div>
+            <div class="col">
+                <div class="field">
+                    <label>{{ $t('web.onMain') }}</label>
+                    <div>
+                        <Checkbox inputId="is_main" v-model="formData.is_main" :binary="true" />
+                        <label class="ml-2" for="is_main">{{ $t('common.yes') }}</label>
+                    </div>
+                </div>
             </div>
-          </div>
-          <div class="col">
-            <div class="field">
-              <label>{{ $t('web.headerMenu') }}</label>
-              <div>
-                <Checkbox inputId="is_header" v-model="formData.is_header" :binary="true" />
-                <label class="ml-2" for="is_header">{{ $t('common.yes') }}</label>
-              </div>
+            <div class="col">
+                <div class="field">
+                    <label>{{ $t('web.headerMenu') }}</label>
+                    <div>
+                        <Checkbox inputId="is_header" @click="isMenuIcon" v-model="formData.is_header" :binary="true" />
+                        <label class="ml-2" for="is_header">{{ $t('common.yes') }}</label>
+                    </div>
+                </div>
             </div>
-          </div>
-          <div class="col">
-            <div class="field">
-              <label>{{ $t('web.middleMenu') }}</label>
-              <div>
-                <Checkbox inputId="is_middle" v-model="formData.is_middle" :binary="true" />
-                <label class="ml-2" for="is_middle">{{ $t('common.yes') }}</label>
-              </div>
+            <div class="col">
+                <div class="field">
+                    <label>{{ $t('web.middleMenu') }}</label>
+                    <div>
+                        <Checkbox inputId="is_middle" @click="isMenuIcon" v-model="formData.is_middle" :binary="true" />
+                        <label class="ml-2" for="is_middle">{{ $t('common.yes') }}</label>
+                    </div>
+                </div>
             </div>
-          </div>
-          <div class="col">
-            <div class="field">
-              <label>{{ $t('web.isHidden') }}</label>
-              <div>
-                <Checkbox inputId="hidden" v-model="formData.hidden" :binary="true" />
-                <label class="ml-2" for="hidden">{{ $t('common.yes') }}</label>
-              </div>
+            <div class="col">
+                <div class="field">
+                    <label>{{ $t('web.isHidden') }}</label>
+                    <div>
+                        <Checkbox inputId="hidden" v-model="formData.hidden" :binary="true" />
+                        <label class="ml-2" for="hidden">{{ $t('common.yes') }}</label>
+                    </div>
+                </div>
             </div>
-          </div>
-          <div class="col">
-            <div class="field">
-              <label>{{ $t('web.addToUsefulLink') }}</label>
-              <div>
-                <Checkbox inputId="is_usefull_link" v-model="formData.is_usefull_link" :binary="true" />
-                <label class="ml-2" for="is_main">{{ $t('common.yes') }}</label>
-              </div>
+            <div class="col">
+                <div class="field">
+                    <label>{{ $t('web.addToUsefulLink') }}</label>
+                    <div>
+                        <Checkbox inputId="is_usefull_link" v-model="formData.is_usefull_link" :binary="true" />
+                        <label class="ml-2" for="is_main">{{ $t('common.yes') }}</label>
+                    </div>
+                </div>
             </div>
-          </div>
+        </div>
+        <div class="field" v-if="formData.is_middle || formData.is_header">
+            <label>{{ $t('web.menuIcon') }}</label><br />
+            <FileUpload mode="basic" :customUpload="true" @uploader="uploadBg" :auto="true"
+                v-bind:chooseLabel="$t('faq.uploadImage')" accept="image/svg+xml" />
+            <div class="svg-container" v-html="formData.icon"></div>
+
         </div>
         <div class="field">
             <label>{{ $t('web.menuOrderLabel') }}</label>
@@ -140,7 +147,8 @@
 import { EnuWebService } from "@/service/enu.web.service";
 import AddPage from "@/components/enuwebsite/pages/AddPage.vue";
 import CustomFileUpload from "@/components/CustomFileUpload.vue";
-import {webEnuDomain} from "@/config/config";
+import { webEnuDomain } from "@/config/config";
+import { FileService } from "@/service/file.service";
 
 export default {
     name: "AddMenu",
@@ -161,6 +169,7 @@ export default {
             selectedPage: null,
             selectedMenu: this.currentMenu,
             enuService: new EnuWebService(),
+            fileService: new FileService(),
             formData: this.currentMenu ? this.currentMenu : {
                 menu_title_kz: null,
                 menu_title_ru: null,
@@ -174,7 +183,13 @@ export default {
                 icon: "",
                 hidden: false
             },
+            isSelectedMenu: {
+                is_header: false,
+                is_middle: false,
+            },
             bgImg: null,
+            iconImg: null,
+            menuIcon: false,
             formValid: [],
             menuType: !this.currentMenu ? 1 : this.currentMenu && this.currentMenu.page_id ? 1 : 2,
             checked: this.is_main ? this.is_main : null,
@@ -193,8 +208,10 @@ export default {
     },
 
     created() {
-        this.getMenus(null)
-        this.getPages(null)
+        this.getMenus(null);
+        this.getPages(null);
+
+
     },
     mounted() {
         this.emitter.on('pageCreated', data => {
@@ -203,6 +220,7 @@ export default {
                 this.getPages(data);
             }
         });
+        
     },
     methods: {
         typeChange() {
@@ -222,38 +240,38 @@ export default {
             }
             this.enuService.getMenusTree(this.lazyParams).then(res => {
                 if (parentData == null) {
-                  this.menus = res.data.menus;
-                  this.TN = res.data.tn_res;
-                  this.total = res.data.total;
-                  this.tableName = res.data.table_name;
-                  if (this.menus) {
-                    let index = 0;
-                    this.menus = this.menus.filter(x => !x.link);
-                    this.menus.map(e => {
-                      e.label = e['menu_title_' + this.$i18n.locale];
-                      e.key = index.toString();
-                      e.children = [];
-                      if (e.path) {
-                        e.url = `${webEnuDomain}/${this.$i18n.locale}/page/${e.path}`
-                      }
-                      index++;
-                    })
-                  }
+                    this.menus = res.data.menus;
+                    this.TN = res.data.tn_res;
+                    this.total = res.data.total;
+                    this.tableName = res.data.table_name;
+                    if (this.menus) {
+                        let index = 0;
+                        this.menus = this.menus.filter(x => !x.link);
+                        this.menus.map(e => {
+                            e.label = e['menu_title_' + this.$i18n.locale];
+                            e.key = index.toString();
+                            e.children = [];
+                            if (e.path) {
+                                e.url = `${webEnuDomain}/${this.$i18n.locale}/page/${e.path}`
+                            }
+                            index++;
+                        })
+                    }
                 } else {
-                  parentData.children = res.data.menus;
-                  parentData.children = parentData.children.filter(x => !x.link);
-                  if (parentData.children) {
-                    let index = 0;
-                    parentData.children.map(e => {
-                      e.label = e['menu_title_' + this.$i18n.locale];
-                      e.key = `${e.key}-${index}`;
-                      e.children = !e.leaf ? [] : null;
-                      if (e.path) {
-                        e.url = `${webEnuDomain}/${this.$i18n.locale}/page/${e.path}`
-                      }
-                      index++;
-                    })
-                  }
+                    parentData.children = res.data.menus;
+                    parentData.children = parentData.children.filter(x => !x.link);
+                    if (parentData.children) {
+                        let index = 0;
+                        parentData.children.map(e => {
+                            e.label = e['menu_title_' + this.$i18n.locale];
+                            e.key = `${e.key}-${index}`;
+                            e.children = !e.leaf ? [] : null;
+                            if (e.path) {
+                                e.url = `${webEnuDomain}/${this.$i18n.locale}/page/${e.path}`
+                            }
+                            index++;
+                        })
+                    }
                 }
                 this.loading = false;
             }).catch(error => {
@@ -278,12 +296,42 @@ export default {
         uploadFile(event) {
             this.bgImg = event.files
         },
+        uploadBg(event) {
+            // this.iconImg = event.files[0];
+            // const fd = new FormData();
+            // fd.append("files[]", event.files[0]);
+            // fd.append("watermark", false);
+            // this.fileService.uploadFile(fd)
+            //     .then(res => {
+            //         if (res.data) {
+            //             this.formData.icon = res.data[0].filepath;
+            //             this.formData.bgUrl = smartEnuApi + fileRoute + this.formData.icon;
+            //         }
+            //     })
+            //     .catch(error => {
+            //         this.toast.add({ severity: "error", summary: error, life: 3000 });
+            //     });
+            let file = event.files[0]
+            fetch(file.objectURL)
+                .then(response => response.text())
+                .then(text => {
+                    this.formData.icon = text;
+                });
+        },
+        // const uploadFile = (event) => {
+        //     let file = event.files[0]
+        //     fetch(file.objectURL)
+        //         .then(response => response.text())
+        //         .then(text => {
+        //             formData.value.block_list_image = text;
+        //         });
+        // },
         addMenu() {
             this.submitted = true;
             if (!this.validateMenus()) {
                 return;
             }
-
+            
             const fd = new FormData();
             fd.append('menu', JSON.stringify(this.formData))
             if (this.bgImg) fd.append('background_image', this.bgImg[0]);
@@ -299,7 +347,7 @@ export default {
                     });
                 }
             }).catch(error => {
-              console.log(error)
+                console.log(error)
                 this.$toast.add({
                     severity: "error",
                     summary: error,
@@ -307,17 +355,21 @@ export default {
                 });
             });
         },
+
         editMenu() {
             this.submitted = true;
             if (!this.validateMenus()) {
                 return;
             }
-
+            if (this.selectedMenu.is_middle){
+                this.menuIcon = true;
+            }
             const fd = new FormData();
             fd.append('menu', JSON.stringify(this.formData))
             if (this.bgImg) fd.append('background_image', this.bgImg[0]);
             let orderID = parseInt(this.order_id)
             if (this.order_id) fd.append('order_id', orderID)
+
 
             this.enuService.editMenu(fd).then(res => {
                 if (res.data.is_success) {
@@ -369,6 +421,10 @@ export default {
             this.formData.is_main = null;
             this.formData.order_id = null;
             this.formData.parent_id = null;
+        },
+        isMenuIcon() {
+            this.menuIcon = !this.menuIcon;
+
         },
         showAddPage() {
             this.addPageVisible = true;
@@ -433,5 +489,20 @@ export default {
 
 .text-underline {
     text-decoration: underline;
+}
+
+.svg-container {
+    padding: 10px 0 0 0;
+    margin:15px 0 0 0;
+}
+
+.svg-content {
+    width: 100%;
+    height: 100%;
+}
+
+::v-deep(.svg-container svg) {
+    width: 200px;
+    height: auto;
 }
 </style>
