@@ -907,7 +907,8 @@ export default {
         sitePreviewLink: 'Алдын ала қарау сілтемесі',
         editAnswer: 'Жауапты өңдеу',
         editAnswerConfirm: 'Сіз шынымен жауапқа өзгерістер еңгізгіңіз келе ме?',
-        facultyName: 'Факультет атауы'
+        facultyName: 'Факультет атауы',
+        menuIcon: 'Мәзір айконы'
 
     },
     //Student locale
