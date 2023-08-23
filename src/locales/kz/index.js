@@ -1211,6 +1211,7 @@ export default {
             designer: 'Үлгі дизайнері',
             issue: "Сертификат беру",
             issueWithApp: "Сертификатқа қосымша беру",
+            view: "Сертификатты қарау",
         },
         modules:'Курс модульдері',
         module: 'Модуль', 
@@ -1224,6 +1225,8 @@ export default {
         user: 'Қатысушы',
         organizers: 'Курс ұйымдастырушылар',
         lnum: 'Соңғы нөмір',
+        journal: 'Журнал',
+        addCourse: 'Курсқа қосу',
     },
     roleControl:{
         addSidebar: 'Жаңа жазбаны қосу',
