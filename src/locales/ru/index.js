@@ -914,7 +914,8 @@ export default {
         sitePreviewLink: 'Ссылка для предварительного просмотра',
         editAnswer: 'Изменить ответ',
         editAnswerConfirm: 'Вы уверены, что хотите внести изменения в ответ?',
-        facultyName: 'Название факультета'
+        facultyName: 'Название факультета',
+        menuIcon: 'Значок меню'
 
     },
 

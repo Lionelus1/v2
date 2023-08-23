@@ -149,6 +149,8 @@ export default {
       selectedMenuType: null,
       showOrderColumn: false,
       menuList: ref({}),
+      menuIcon: false,
+      menuIconEditMode: false,
       menu_radio_options: [
         {
           text: this.$t('web.mainMenu'),
@@ -303,12 +305,14 @@ export default {
         this.filter.menu_type.is_header = true
         this.filter.menu_type.is_middle = null
         this.filter.menu_type.is_usefull_link = null
+        
       }
       if (this.selectedMenuType === "is_middle") {
         this.filter.menu_type.is_main = null
         this.filter.menu_type.is_header = null
         this.filter.menu_type.is_middle = true
         this.filter.menu_type.is_usefull_link = null
+        
       }
       if (this.selectedMenuType === "is_usefull_link") {
         this.filter.menu_type.is_main = null
@@ -360,6 +364,8 @@ export default {
       this.selectedMenu = data;
       this.parentId = data.menu_id;
       this.addMenuVisible = true;
+      
+      
     },
     viewPage(data) {
       if (data.page && data.page.is_landing) {
