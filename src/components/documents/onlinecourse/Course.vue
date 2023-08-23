@@ -9,7 +9,7 @@
             <TabPanel :header="$t('course.users')">
                 <Button v-if="reqBtn && course && course.students===null" class="btn mb-3" :label="$t('hr.sp.request')"
                         @click="sendRequestToCourse()" />
-                <h4 class="status text-green-400" v-if="statusText">{{ $t('common.status')}}:</h4>
+                <!-- <h4 class="status text-green-400" v-if="statusText">{{ $t('common.status')}}:</h4> -->
                 <!-- курсқа қатысушылар -->
                 <div v-if="course && course.students">
                     <DataTable selectionMode="single" v-model:selection="student" :lazy="true"
