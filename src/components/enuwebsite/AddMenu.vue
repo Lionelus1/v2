@@ -97,11 +97,11 @@
                 </div>
             </div>
         </div>
-        <div class="field" v-if="menuIcon || isSelectedMenu.is_middle">
+        <div class="field" v-if="formData.is_middle || formData.is_header">
             <label>{{ $t('web.menuIcon') }}</label><br />
             <FileUpload mode="basic" :customUpload="true" @uploader="uploadBg" :auto="true"
                 v-bind:chooseLabel="$t('faq.uploadImage')" accept="image/svg+xml" />
-            <div style="width: 300px;padding:10px; margin: 15px 0 0 0;" v-html="formData.icon"></div>
+            <div class="svg-container" v-html="formData.icon"></div>
 
         </div>
         <div class="field">
@@ -493,12 +493,17 @@ export default {
 }
 
 .svg-container {
-    width: 100px;
-    height: 100px;
+    padding: 10px 0 0 0;
+    margin:15px 0 0 0;
 }
 
 .svg-content {
     width: 100%;
     height: 100%;
+}
+
+::v-deep(.svg-container svg) {
+    width: 200px;
+    height: auto;
 }
 </style>
