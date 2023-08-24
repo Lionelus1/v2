@@ -102,7 +102,7 @@
           </template>
         </Column>
         <Column
-          field="dissertation.namekz"
+          :field="'dissertation.name' + $i18n.locale"
           :header="$t('dissertation.disstitle')"
           :sortable="true"
         ></Column>
@@ -915,6 +915,7 @@ export default {
       this.dissertationFile = event.files[0];
     },
     reload(event) {
+      console.log(event)
       //this.lazyParams = event;
       this.lazyParams = event;
       this.getDoctorals();

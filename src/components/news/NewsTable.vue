@@ -4,10 +4,10 @@
         <div class="card">
             <Button :label="$t('common.add')" icon="pi pi-plus" class="p-button-success mr-2" v-on:click="createNews"/>
             <Button :label="$t('common.send')" icon="pi pi-send" class="mr-2" v-on:click="sendNews"
-                    v-if="selectedNews && selectedNews.history.status.id === statuses.created && (!isModer || !isPublisher || !isAdmin)"/>
+                    v-if="selectedNews && selectedNews.history.status.id === statuses.created && (!isModer || !isPublisher || !isAdmin || !isEnuWebAdmin || !isEnuWebFacAdmin)"/>
             <Button :label="$t('common.publish')"
                     v-if="selectedNews && (selectedNews.history.status.id === statuses.sent || selectedNews.history.status.id === statuses.created) &&
-            (isModer || isPublisher || isAdmin)"
+            (isModer || isPublisher || isAdmin || isEnuWebAdmin || isEnuWebFacAdmin)"
                     icon="pi pi-check" class="p-button-help mr-2" v-on:click="publishNews"/>
             <Button :label="$t('common.reject')"
                     v-if="selectedNews && selectedNews.history.status.id === statuses.sent && (isModer || isPublisher || isAdmin)"
@@ -70,9 +70,9 @@
                     <template #body="slotProps">
                         <Button icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2"
                                 @click="editNews(slotProps.data)"
-                                v-if="slotProps.data.history.status.id === statuses.created || isAdmin || isModer"/>
+                                v-if="slotProps.data.history.status.id === statuses.created || isAdmin || isModer || isEnuWebAdmin || isEnuWebFacAdmin"/>
                         <Button icon="pi pi-trash" class="p-button-rounded p-button-warning" @click="delNews(slotProps.data.id)"
-                                v-if="slotProps.data.history.status.id === statuses.created || isAdmin"/>
+                                v-if="slotProps.data.history.status.id === statuses.created || isAdmin || isEnuWebAdmin || isEnuWebFacAdmin"/>
                     </template>
                 </Column>
             </DataTable>
@@ -199,6 +199,8 @@ export default {
                 isPublisher: false,
                 isUser: true,
                 isStudent: false,
+                isEnuWebAdmin: false,
+                isEnuWebFacAdmin: true,
             },
             formValid: [],
             isPoster: false,
@@ -534,13 +536,17 @@ export default {
             this.roles.isPublisher = this.findRole(null, "news_publisher");
             this.roles.isStudent = this.findRole(null, "student");
             this.roles.isModer = this.findRole(null, "news_moderator");
+            this.roles.isEnuWebAdmin = this.findRole(null, "enu_web_admin");
+            this.roles.isEnuWebFacAdmin = this.findRole(null, "enu_web_fac_admin");
         },
+        
     },
 
     created() {
         this.getAllNews();
         this.getCategories();
         this.getRoles();
+      
     },
 
     computed: {
@@ -555,6 +561,12 @@ export default {
         },
         isStudent: function () {
             return this.roles.isStudent;
+        },
+        isEnuWebAdmin: function() {
+            return this.roles.isEnuWebAdmin
+        },
+        isEnuWebFacAdmin: function() {
+            return this.roles.isEnuWebFacAdmin
         },
         locale: function () {
             return upFirstLetter(this.$i18n.locale);

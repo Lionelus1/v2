@@ -44,6 +44,8 @@ export default {
         gt: "Больше",
         equals: "Равно",
         login: "Вход",
+        mgovMobile: "Подписать в eGov mobile как физическое лицо",
+        mgovBusiness: "Подписать в eGov Business как юридическое лицо",
         logout: "Выход",
         letterSpacing: {
             expanded: "Разреженный",
@@ -162,7 +164,8 @@ export default {
         search: "Поиск",
         send: "Отправить",
         sendToResponsible: "Отправить ответственному",
-        showingRecordsCount: ' Показаны записи с {first} по {last} из  {totalRecords} ',
+        showingRecordsCount: ' Показаны записи с {first} по {last} из  {totalRecords}',
+        showingRecordsCountShort: 'от {first} до {last} из {totalRecords}',
         startDate: 'Дата начала',
         endDate: 'Дата окончания',
         organization: "Организация",
@@ -314,7 +317,10 @@ export default {
         eventType: 'Тип мероприятия',
         gallery: 'Галерея',
         faculties: 'Факультеты',
-        verify: 'Проверка подписи документа'
+        verify: 'Проверка подписи документа',
+        qrGenerator: 'QR генератор',
+        generate: 'Генерировать',
+        selectFormat: 'Выберите формат'
     },
     bank: {
         title: "Банки",
@@ -772,6 +778,10 @@ export default {
             s9: "направить диссертацию на повторную защиту",
             s10: "отказать в присуждении степени доктора философии (PhD) или доктора по профилю",
         },
+        userOtherCouncils: 'Отношение пользователя к другим диссертационным советам',
+        closeDate: 'Дата прекращения',
+        councilComment: 'Номер приказа и т.п.',
+        closeCouncil: 'Остановить диссертационный совет'
     },
     faq: {
         title: "Служба поддержки",
@@ -821,6 +831,7 @@ export default {
         editPage: 'Редактировать страницу',
         menuType: 'Тип меню',
         page: 'Страница',
+        parentMenu: 'Главное меню',
         onMain: 'На главной',
         addBlock: 'Добавить блок',
         editBlock: 'Редактировать блок',
@@ -860,6 +871,7 @@ export default {
         note: 'Примечание',
         siteSettings: 'Настройки сайта',
         mourningMode: 'Траурный режим',
+        SiteMaintenanceMode: 'Режим обслуживания',
         siteLogs: 'Журнал сайта',
         tableName: 'Имя таблицы',
         recordId: 'Идентификатор записи',
@@ -887,12 +899,18 @@ export default {
         commonSettings: 'Настройки',
         universityAddressInfo: 'Контактный адрес',
         websiteAddress: 'Сайт',
-        universityAddressKZ: 'Мекенжайы',
-        universityAddressRU: 'Адрес',
-        universityAddressEN: 'Address',
+        universityAddressKZ: 'Адрес (На казахском)',
+        universityAddressRU: 'Адрес (На русском)',
+        universityAddressEN: 'Адрес (На английском)',
         universityFax: 'Факс',
         viewCount: 'Просмотров',
-        viewTimes: 'раз'
+        viewTimes: 'раз',
+        sitePreviewLink: 'Ссылка для предварительного просмотра',
+        editAnswer: 'Изменить ответ',
+        editAnswerConfirm: 'Вы уверены, что хотите внести изменения в ответ?',
+        facultyName: 'Название факультета',
+        menuIcon: 'Значок меню'
+
     },
 
     student: {
@@ -1071,21 +1089,68 @@ export default {
     },
     educomplex: {
         title: "Учебно-методический комплекс дисциплины",
-        forme: "Относительно меня"
+        forme: "Относительно меня",
+        add: "Добавить",
+        toapprove: "На согласование",
+        filter: "Фильтр",
+        years: "Годы",
+        globalFilter: "Глобальный фильтр",
+        tooltip: {
+            home: "Главный список",
+            previous: "Назад",
+            into: "Зайти",
+            maximize: "Максимизировать",
+            minimize: "Минимизировать",
+            cover: "Скрыть",
+            uncover: "Раскрыть",
+            download: "Скачать",
+            document: "Информация о документе",
+            revision: "Информация о доработке",
+            delete: "Удалить документ",
+        },
+        columns: {
+            faculties: "Факультеты",
+            cafedras: "Кафедры {faculty}",
+            name: "Имя",
+            author: "Разработчик",
+            year: "Год",
+            state: "Состояние",
+        },
     },
     postaccmonrep: {
         title: "Отчеты по самооценке/по постаккредитационному мониторингу",
     },
     ref: {
+        myRefs: "Мои справки",
+        open: "Карточка",
         getRef: "Получить справку",
+        get: "Получить",
         createQr: "Присвоить QR код и поделиться",
         errorReport: "Сообщить об ошибке данных в документе",
-        sendMail: "Отправить почту",
+        send: "Отправить",
         correction: "Напишите здесь свою поправку. . .",
-        sendingMail: "Отправка почты подождите. . .",
-        mailSent: "Ваше письмо успешно отправлено в отдел кадров.",
-        mailFailed: "Ваше письмо не отправлено, попробуйте еще раз.",
-        requestInfo: "Запросить информацию"
+        sent: "Успешно отправлено в отдел кадров.",
+        failed: "Не отправлено, попробуйте еще раз.",
+        requestInfo: "Запросить информацию",
+        filter: "Фильтр",
+        referenceDate: "Дата выдачи справки",
+        referenceNumber: "Номер справки",
+        referenceType: "Тип справки",
+        referenceStatus: "Статус",
+        additionalInfo: "Дополнительная информация",
+        statusIssued: "Выдана",
+        statusRejected: "Отклонена",
+        statusApplied: "Подана",
+        statusSalary: "Зарплата",
+        statusErrorRequest: "Ошибка в данных",
+        sharedLinkTooltip: "Скопировать ссылку общего доступа",
+        folderName: "Папка",
+        fileName: "Тип справки",
+        currentFolder: "Текущая папка:",
+        salary: "С размером зарплаты",
+        experience: "C опытом работы",
+        salaryRequested: "Ваш запрос о справке с указанием размера зарплаты обрабатывается менеджером по кадрам.",
+        referenceRejected: "Справка не выдана.",
     },
     requests: {
         menuTitle: 'Запросы по справкам',
@@ -1102,6 +1167,16 @@ export default {
         types: {
             reference_error_correction: 'На исправление ошибок',
             reference_info_request: 'Дополнительная информация',
+            reference_salary_request: 'Зарплата',
+        },
+        params: {
+            full_name: 'ФИО',
+            position: 'Должность',
+            registration_date: 'Дата регистрации',
+            registration_number: 'Регистрационный номер',
+            salary_amount: 'Зарплата',
+            structural_unit: 'Структурное подразделение',
+            work_start_date: 'Начало работы',
         },
     },
     guide: {
@@ -1178,6 +1253,7 @@ export default {
         welcomeTextKz: 'Приветственный текст на казахском',
         welcomeTextRu: 'Приветственный текст на русском',
         welcomeTextEn: 'Приветственный текст на английском',
+        question: 'Вопросы'
     },
     verification: {
         title: 'Проверка электронного документа',
@@ -1213,5 +1289,13 @@ export default {
     visuallyImpaired: {
         fontSize: "Размер шрифта",
         siteColors: "Цвета сайта",
+    },
+    mgov: {
+        inApp: "Необходимое приложение: ",
+        guidelineLabel: "Чтобы авторизоваться или подписать документ по QR-коду на SMART.ENU",
+        stepOne: "1. Откройте приложение eGov Mobile/Business на Вашем телефоне",
+        stepTwo: "2. Откройте сканер QR в правом верхнем углу главной страницы",
+        stepThree: "3. Наведите телефон на этот экран, чтобы считать код",
+        mobileAppNotInstalled: "Если у Вас нет приложения eGov Mobile/Business, то установите его сканируя QR",
     }
 }

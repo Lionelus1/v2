@@ -1,20 +1,22 @@
 <template>
   <div class="col-12">
+    <TitleBlock :showBackButton="true" :title="$t('blog.question')" />
     <div class="card">
       <BlockUI :blocked="loading" :fullScreen="true">
-        <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
+        <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em" />
       </BlockUI>
       <div v-if="question" class="grid">
+        
         <div class="product-grid-item card">
           <h5>{{ $t("faq.question") }}</h5>
 
           <div class="product-grid-item-top mb-2 grid">
             <div class="lg:col-2 md:col-6 p-sm-6">
-                        <span>
-                        <i class="fa-solid fa-at product-category-icon"></i>
-                        <small>№&nbsp;{{ question.id }} </small><br/>
-                        <small class="product-category">{{ question.fullName }}</small>
-                        </span>
+              <span>
+                <i class="fa-solid fa-at product-category-icon"></i>
+                <small>№&nbsp;{{ question.id }} </small><br />
+                <small class="product-category">{{ question.fullName }}</small>
+              </span>
             </div>
             <div class="lg:col-2 md:col-6 p-sm-6" v-if="question.mobile && question.email">
               <span><small class="product-category">{{ question.mobile + " " + question.email }}</small></span>
@@ -24,13 +26,14 @@
                         <small class="product-category">{{ question.category['name' + $i18n.locale].split("(")[0] }}</small>
                       </div>-->
             <div class="lg:col-3 md:col-6 p-sm-6">
-              <span v-if="loginedUser && question.state"
-                    :class="'customer-badge status-' + question.state.id">{{ $t("common.states." + question.state.code) }}</span>
+              <span v-if="loginedUser && question.state" :class="'customer-badge status-' + question.state.id">{{
+                $t("common.states." + question.state.code) }}</span>
             </div>
 
             <div class="lg:col-3 md:col-6 p-sm-12 text-right">
               <i class="fa-solid fa-calendar-days product-category-icon"></i>
-              <small class="product-category">{{ moment(new Date(question.created_date)).utc().format("DD.MM.YYYY") }}</small>
+              <small class="product-category">{{ moment(new Date(question.created_date)).utc().format("DD.MM.YYYY")
+              }}</small>
             </div>
           </div>
           <div class="product-grid-item-content">
@@ -47,22 +50,24 @@
           <div class="product-grid-item-top mb-2">
             <div class="col-12 grid">
               <div v-if="loginedUser" class="lg:col-6  md:col-6 p-sm-6">
-                            <span v-if="question.ownedBy">
-                                <i class="fa-solid fa-user-tag product-category-icon"></i>
-                                <small class="product-category">{{ question.ownedBy.fullName }}</small>
-                            </span>
+                <span v-if="question.ownedBy">
+                  <i class="fa-solid fa-user-tag product-category-icon"></i>
+                  <small class="product-category">{{ question.ownedBy.fullName }}</small>
+                </span>
               </div>
               <div v-if="question.answered_date" class="lg:col-6  md:col-6 p-sm-6 text-right">
                 <i class="fa-solid fa-calendar-days product-category-icon"></i>
-                <small class="product-category">{{ moment(new Date(question.answered_date)).utc().format("DD.MM.YYYY") }}</small>
+                <small class="product-category">{{ moment(new Date(question.answered_date)).utc().format("DD.MM.YYYY")
+                }}</small>
               </div>
             </div>
           </div>
           <div class="product-grid-item-content text-left">
             <div v-if="loginedUser && question.ownedBy.userID && loginedUser.userID === question.ownedBy.userID">
-              <TinyEditor :readonly="question.state.id !== 8" v-model="question.answer" :height="300"/>
+              <TinyEditor :readonly="question.state.id !== 8" v-model="question.answer" :height="300" />
               <div class="p-w-100 text-right">
-                <Button v-if="question.state.id === 8" :label="$t('faq.toAnswer')" class="p-button-info mt-2" @click="answer"></Button>
+                <Button v-for="(button, index) in actionButtons" :key="index" :label="button.label" :icon="button.icon"
+                  :class="['p-button-info', 'mt-2', button.customClass]" @click="button.handler" />
               </div>
             </div>
             <div v-else class="block-with-text" v-html="question.answer"></div>
@@ -75,13 +80,13 @@
 </template>
 
 <script>
-import {useI18n} from "vue-i18n/dist/vue-i18n.esm-bundler";
-import {useToast} from "primevue/usetoast";
-import {useConfirm} from "primevue/useconfirm";
-import {ref} from "vue";
-import {useRoute, useRouter} from "vue-router/dist/vue-router";
-import {BlogService} from "../../service/blog.service";
-import {formatDate} from "../../helpers/HelperUtil";
+import { useI18n } from "vue-i18n/dist/vue-i18n.esm-bundler";
+import { useToast } from "primevue/usetoast";
+import { useConfirm } from "primevue/useconfirm";
+import { ref } from "vue";
+import { useRoute, useRouter } from "vue-router/dist/vue-router";
+import { BlogService } from "../../service/blog.service";
+import { formatDate } from "../../helpers/HelperUtil";
 import TitleBlock from "@/components/TitleBlock.vue";
 import moment from "moment";
 
@@ -106,10 +111,32 @@ export default {
         loading.value = false;
       }).catch(error => {
         loading.value = false
-        toast.add({severity: "error", summary: error, life: 3000});
+        toast.add({ severity: "error", summary: error, life: 3000 });
       });
     }
     getBlogRequestById();
+
+    const editAnswer = () => {
+      confirm.require({
+        message: i18n.t("web.editAnswerConfirm"),
+        header: i18n.t("common.confirm"),
+        icon: 'pi pi-exclamation-triangle',
+        accept: () => {
+          if (question.value.answer === null || question.value.answer === "") {
+            toast.add({
+              severity: "error",
+              summary: i18n.t('common.message.fillError'),
+              life: 3000,
+            });
+          }
+          question.value.state.id = 8;
+        },
+        reject: () => {
+          toast.add({ severity: 'info', summary: 'Rejected', detail: i18n.t("faq.rejected"), life: 3000 });
+        }
+      });
+
+    }
 
     const answer = () => {
       confirm.require({
@@ -126,7 +153,7 @@ export default {
             });
           }
           loading.value = true
-          let data = {id: parseInt(questionId.value), answer: question.value.answer};
+          let data = { id: parseInt(questionId.value), answer: question.value.answer };
           blogService.sendBlogRequestAnswer(data).then(_ => {
             question.value.state.id = 7;
             question.value.state.code = "replied";
@@ -149,16 +176,41 @@ export default {
           });
         },
         reject: () => {
-          toast.add({severity: 'info', summary: 'Rejected', detail: i18n.t("faq.rejected"), life: 3000});
+          toast.add({ severity: 'info', summary: 'Rejected', detail: i18n.t("faq.rejected"), life: 3000 });
         }
       });
     }
 
     return {
       loading, question, loginedUser,
-      formatDate, answer, moment
+      formatDate, answer, moment, editAnswer
     }
-  }
+  },
+  computed: {
+    actionButtons() {
+      const buttons = [];
+
+      if (this.question.state.id === 8) {
+        buttons.push({
+          label: this.$t('faq.toAnswer'),
+          icon: 'pi pi-reply',
+          customClass: '',
+          handler: this.answer,
+        });
+      }
+
+      if (this.question.state.id === 7) {
+        buttons.push({
+          label: this.$t('web.editAnswer'),
+          icon: 'pi pi-check',
+          customClass: '',
+          handler: this.editAnswer,
+        });
+      }
+
+      return buttons;
+    },
+  },
 }
 </script>
 
@@ -284,6 +336,9 @@ export default {
     text-align: justify;
     margin-right: -1em;
     padding-right: 1em;
+  }
+  .edit-answer {
+    background-color: #256029;
   }
 }
 </style>

@@ -33,7 +33,7 @@
         <Column class="text-right">
           <template #body="{data}">
             <Button type="button" icon="fa-solid fa-eye" class="mr-2" @click="navigateToView(data)"></Button>
-            <Button icon="fa-solid fa-pen" class="p-button mr-2" @click="openEdit(data)" />
+            <!-- <Button icon="fa-solid fa-pen" class="p-button mr-2" @click="openEdit(data)" /> -->
             <Button icon="fa-solid fa-trash" class="p-button-danger" @click="deleteConfirm(data)" />
           </template>
         </Column>

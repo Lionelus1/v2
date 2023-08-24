@@ -4,7 +4,7 @@ import api from "./api";
 export class EventsService {
 
     getEvents() {
-        return api.get("/allEvents");
+        return api.get(`/allEvents`, {headers: getHeader()});
     }
 
     downloadEventFile(event) {

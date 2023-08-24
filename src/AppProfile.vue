@@ -23,9 +23,14 @@
         </li>
         <li v-if="loginedUser && loginedUser.organization && loginedUser.organization.id === 1">
           <button @click="myRef" class="p-link">
-            <i class="pi pi-fw pi-book"></i><span>{{ $t("ref.getRef") }}</span>
+            <i class="pi pi-fw pi-book"></i><span>{{ $t("ref.myRefs") }}</span>
           </button>
         </li>
+          <li v-if="!this.findRole(null, 'student')">
+              <button @click="qr" class="p-link">
+                  <i class="pi pi-fw pi-qrcode"></i><span>{{ $t("common.qrGenerator") }}</span>
+              </button>
+          </li>
         <li>
           <button @click="logOutFromSystem" class="p-link">
             <i class="pi pi-fw pi-power-off"></i><span>{{ $t("common.logout") }}</span>
@@ -50,6 +55,7 @@ import {
   mapState
 } from "vuex";
 import DocSignatureVerification from "./components/DocSignatureVerification";
+import {findRole} from "@/config/config";
 
 export default {
   components: {DocSignatureVerification},
@@ -57,6 +63,7 @@ export default {
     return {
       expanded: false,
       sVerify: false,
+        findRole: findRole,
     };
   },
   methods: {
@@ -76,6 +83,9 @@ export default {
     },
     signVerify() {
       this.$router.push({path: "/sign-verify"})
+    },
+    qr() {
+      this.$router.push({path: "/qrGenerator"})
     }
   },
   computed: {
