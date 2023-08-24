@@ -1198,6 +1198,7 @@ export default {
             issue: "Issue a certificate",
             issueWithApp: "Issue a certificate with application",
             view: "View the certificate",
+            getQr: "Get QR",
         },
       
         modules:'Сourse modules', 

@@ -1212,6 +1212,7 @@ export default {
             issue: "Сертификат беру",
             issueWithApp: "Сертификатқа қосымша беру",
             view: "Сертификатты қарау",
+            getQr: "QR алу",
         },
         modules:'Курс модульдері',
         module: 'Модуль', 

@@ -52,6 +52,7 @@
                                 <Button v-if="slotProps.data.state.id === 1" class="p-button-success mr-3" icon="fa-solid fa-check" v-tooltip.bottom="$t('course.addCourse')" label="" @click="updateUserState(slotProps.data.profile.userID, 4)" />
                                 <Button v-if="slotProps.data.state.id != 1" class="p-button-success mr-3" icon="fa-solid fa-list-check" v-tooltip.bottom="$t('course.journal')" label="" @click="openJournal(slotProps.data.profile.userID)" />
                                 <Button v-if="slotProps.data.certificateUUID" icon="fa-solid fa-award" class="mr-3" v-tooltip.bottom="$t('course.certificate.view')" label="" @click="openCertificate(slotProps.data.certificateUUID)"/>
+                                <Button v-if="slotProps.data.certificateUUID" icon="pi pi-fw pi-qrcode" class="p-button-help mr-3" v-tooltip.bottom="$t('course.certificate.getQr')" label="" @click="openCertificate(slotProps.data.certificateUUID)"/>
                             </template>
                         </Column>
     <!-- <Column headerStyle="width:60px;">
