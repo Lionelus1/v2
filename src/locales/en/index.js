@@ -866,7 +866,8 @@ export default {
         editAnswer: 'Edit answer',
         editAnswerConfirm: 'Are you sure you want to make changes to the answer?',
         facultyName: 'Faculty Name',
-        menuIcon: 'Menu Icon'
+        menuIcon: 'Menu Icon',
+        uploadMenuIcon: 'Add Icon'
     },
     //Student locale
     student: {

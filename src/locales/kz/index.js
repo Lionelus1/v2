@@ -908,7 +908,8 @@ export default {
         editAnswer: 'Жауапты өңдеу',
         editAnswerConfirm: 'Сіз шынымен жауапқа өзгерістер еңгізгіңіз келе ме?',
         facultyName: 'Факультет атауы',
-        menuIcon: 'Мәзір айконы'
+        menuIcon: 'Мәзір белгішесі',
+        uploadMenuIcon: 'Белгіше қосу'
 
     },
     //Student locale

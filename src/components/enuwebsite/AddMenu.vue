@@ -100,10 +100,12 @@
         <div class="field" v-if="formData.is_middle || formData.is_header">
             <label>{{ $t('web.menuIcon') }}</label><br />
             <FileUpload mode="basic" :customUpload="true" @uploader="uploadBg" :auto="true"
-                v-bind:chooseLabel="$t('faq.uploadImage')" accept="image/svg+xml" />
+                v-bind:chooseLabel="$t('web.uploadMenuIcon')" accept="image/svg+xml" />
             <div class="container1" v-if="removeIconBtn">
-                <div class="close-button" @click="removeIcon" v-if="formData.icon.length > 0"> <span id="pv_id_22_badge"
-                        class="p-badge p-component p-badge-no-gutter" data-pc-name="badge" data-pc-section="root">x</span>
+                <div class="close-button" @click="removeIcon" v-if="formData.icon.length > 0"> 
+                    <span id="pv_id_22_badge" class="p-badge p-component p-badge-no-gutter" style="background-color: #2b89d1 !important;" data-pc-name="badge" data-pc-section="root">
+                        <i class="pi pi-times-circle" style="padding-bottom: 15px;font-size: 16px;"></i>
+                    </span>
                 </div>
                 <span v-if="formData.icon.length > 0" class="svg-container p-overlay-badge" v-html="formData.icon"
                     style="font-size:2rem;" data-pd-badge="true" data-p-overlay-badge="true">
@@ -490,32 +492,41 @@ export default {
 .svg-container {
     padding: 10px 0 0 0;
     margin: 15px 0 0 0;
+    width: 140px;
 }
 
 .svg-content {
     width: 100%;
     height: 100%;
-}
 
-::v-deep(.svg-container svg) {
-    width: 200px;
-    height: auto;
+
+    ::v-deep(.svg-container svg) {
+        width: 150px;
+        height: auto;
+        transform: scale(2, 3);
+    }
+
+
 }
 
 .container1 {
     position: relative;
-    width: 250px;
+    width: 135px;
     height: 100%;
     padding: 20px;
+    background-color: #2b89d1;
+    margin-top: 10px;
+    border-radius: 5px;
+    overflow: hidden;
 }
 
 .close-button {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 7px;
+    right: 5px;
     cursor: pointer;
-    font-weight: bold;
-    font-size: 18px;
-    color: #333;
+    
+        
+   
 }
 </style>
