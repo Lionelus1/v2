@@ -915,7 +915,8 @@ export default {
         editAnswer: 'Изменить ответ',
         editAnswerConfirm: 'Вы уверены, что хотите внести изменения в ответ?',
         facultyName: 'Название факультета',
-        menuIcon: 'Значок меню'
+        menuIcon: 'Значок меню',
+        uploadMenuIcon: 'Выберите значок'
 
     },
 
