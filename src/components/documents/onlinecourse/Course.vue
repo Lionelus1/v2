@@ -13,41 +13,40 @@
                 <!-- курсқа қатысушылар -->
                 <div v-if="course && course.students">
                     <DataTable selectionMode="single" v-model:selection="student" :lazy="true"
-                               :totalRecords="course.studentsCount" :value="course.students"
-                               @page="studentTableOnPage($event)"
-                               :paginator="true" :first="studentLazyParams.page" :rows="studentLazyParams.rows"
-                               dataKey="profile.userID" :rowHover="true" :loading="loading"
-                               paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink JumpToPageDropdown CurrentPageReport RowsPerPageDropdown"
-                               :rowsPerPageOptions="[10, 25, 50]" :currentPageReportTemplate="$t('common.showingRecordsCount', {
+                        :totalRecords="course.studentsCount" :value="course.students" @page="studentTableOnPage($event)"
+                        :paginator="true" :first="studentLazyParams.page" :rows="studentLazyParams.rows"
+                        dataKey="profile.userID" :rowHover="true" :loading="loading"
+                        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink JumpToPageDropdown CurrentPageReport RowsPerPageDropdown"
+                        :rowsPerPageOptions="[10, 25, 50]" :currentPageReportTemplate="$t('common.showingRecordsCount', {
                             first: '{first}',
                             last: '{last}',
                             totalRecords: '{totalRecords}',
                         })" responsiveLayout="stack" breakpoint="480px" @sort="onSort($event)"
-                               @filter="onFilter($event)">
+                        @filter="onFilter($event)">
 
                         <template #header>
                             <div class="table-header flex justify-content-between flex-wrap card-container purple-container">
                                 <div class="flex gap-2">
                                     <Button class="p-button-success mb-2" icon="pi pi-plus" :label="$t('common.add')"
-                                            @click="addStudent"/>
+                                        @click="addStudent" />
                                     <Button class="p-button-help mb-2" icon="fa-solid fa-certificate"
-                                            :label="$t('course.certificate.issue')" @click="issueCertificate(0)"/>
+                                        :label="$t('course.certificate.issue')" @click="issueCertificate(0)" />
 
                                     <Button class="p-button-help mb-2" icon="fa-solid fa-certificate"
                                         :label="$t('course.certificate.issueWithApp')" @click="issueCertificate(1)" />
 
                                 </div>
                                 <span class="p-input-icon-left">
-                                    <i class="pi pi-search"/>
-                                    <InputText disabled="true" :placeholder="$t('common.search')"/>
+                                    <i class="pi pi-search" />
+                                    <InputText disabled="true" :placeholder="$t('common.search')" />
                                 </span>
                             </div>
                         </template>
                         <Column field="profile.fullName" :header="$t('common.fullName')"></Column>
 
                         <Column
-                                :field="'profile.mainPosition.department.name' + ($i18n.locale).charAt(0).toUpperCase() + ($i18n.locale).slice(1)"
-                                :header="$t('common.department')"></Column>
+                            :field="'profile.mainPosition.department.name' + ($i18n.locale).charAt(0).toUpperCase() + ($i18n.locale).slice(1)"
+                            :header="$t('common.department')"></Column>
                         <Column header="">
                             <template #body="slotProps">
                                 <Button v-if="slotProps.data.state.id === 1" class="p-button-success mr-3" icon="fa-solid fa-check" v-tooltip.bottom="$t('course.addCourse')" label="" @click="updateUserState(slotProps.data.profile.userID, 4)" />
@@ -64,23 +63,22 @@
     </Column> -->
 
                     </DataTable>
-                    <!-- студент қосу диалогы -->
+          <!-- студент қосу диалогы -->
                     <Dialog v-model:visible="studentDialog" :style="{ width: '450px' }" :header="$t('course.user')"
-                            :modal="true" class="p-fluid">
+                        :modal="true" class="p-fluid">
                         <div class="field">
                             <label for="newUsers">{{ $t('common.fullName') }}</label>
 
                             <FindUser id="newUsers" v-model="newUsers" :userType="2"></FindUser>
                             <small class="p-error" v-if="submitted && !(newUsers && newUsers.length > 0)">{{
-                                $t('common.requiredField')
-                                }}</small>
+                                $t('common.requiredField') }}</small>
                         </div>
                         <template #footer>
                             <div class="flex flex-wrap row-gap-1">
                                 <Button :label="$t('common.save')" @click="addStudentsToCourse(4)"
-                                        class="w-full p-button-primary"/>
+                                    class="w-full p-button-primary" />
                                 <Button :label="$t('common.cancel')" @click="closeStudentDialog"
-                                        class="w-full p-button-secondary p-button-outlined"/>
+                                    class="w-full p-button-secondary p-button-outlined" />
                             </div>
 
                         </template>
@@ -89,18 +87,18 @@
                 </div>
             </TabPanel>
 
-            <!-- module қосу table -->
+         <!-- module қосу table -->
             <TabPanel :header="$t('course.modules')">
                 <DataTable :value="module">
                     <template #header>
                         <div
-                                class="table-header flex justify-content-between flex-wrap card-container purple-container">
+                            class="table-header flex justify-content-between flex-wrap card-container purple-container">
                             <div class="flex gap-2">
                                 <Button v-if="findRole(null,'online_course_administrator')" class="p-button-success" icon="pi pi-plus" :label="$t('common.add')" @click="addModule" />
                             </div>
                         </div>
                     </template>
-                    <Column :field="'name_' + $i18n.locale" :header="$t('common.name')"></Column>
+                    <Column field="name_kz" :header="$t('common.name')"></Column>
                     <Column field="hours" :header="$t('course.moduleHours')"></Column>
                     <Column :field="'description_' + $i18n.locale" :header="$t('common.description')"></Column>
                     <Column field="">
@@ -114,98 +112,91 @@
         </TabView>
     </div>
 
-  <!-- module қосу диалогы -->
+    <!-- module қосу диалогы -->
     <Dialog v-model:visible="moduleDialog" :style="{ width: '450px' }" :header="$t('course.module')" :modal="true"
-            class="p-fluid">
+        class="p-fluid">
         <div class="field">
             <label>{{ $t('common.nameInQazaq') }}</label>
             <InputText type="text" v-model="formData.name_kz"></InputText>
             <small class="p-error" v-if="!formData.name_kz && submitted">{{
-                $t('common.requiredField')
-                }}</small>
+                    $t('common.requiredField') }}</small>
         </div>
         <div class="field">
             <label>{{ $t('common.nameInRussian') }}</label>
             <InputText type="text" v-model="formData.name_ru"></InputText>
             <small class="p-error" v-if="!formData.name_ru && submitted">{{
-                $t('common.requiredField')
-                }}</small>
+                    $t('common.requiredField') }}</small>
         </div>
         <div class="field">
             <label>{{ $t('common.nameInEnglish') }}</label>
             <InputText type="text" v-model="formData.name_en"></InputText>
             <small class="p-error" v-if="!formData.name_en && submitted">{{
-                $t('common.requiredField')
-                }}</small>
+                    $t('common.requiredField') }}</small>
         </div>
         <div class="field">
             <label>{{ $t('course.moduleHours') }}</label>
             <InputNumber v-model="formData.hours"></InputNumber>
             <small class="p-error" v-if="!formData.hours && submitted">{{
-                $t('common.requiredField')
-                }}</small>
+                $t('common.requiredField') }}</small>
         </div>
         <div class="field">
             <label>{{ $t('common.descriptionKz') }}</label>
             <InputText type="text" v-model="formData.description_kz"></InputText>
             <small class="p-error" v-if="!formData.description_kz && submitted">{{
-                $t('common.requiredField')
-                }}</small>
+                    $t('common.requiredField') }}</small>
         </div>
         <div class="field">
             <label>{{ $t('common.descriptionRu') }}</label>
             <InputText type="text" v-model="formData.description_ru"></InputText>
             <small class="p-error" v-if="!formData.description_ru && submitted">{{
-                $t('common.requiredField')
-                }}</small>
+                    $t('common.requiredField') }}</small>
         </div>
         <div class="field">
             <label>{{ $t('common.descriptionEn') }}</label>
             <InputText type="text" v-model="formData.description_en"></InputText>
             <small class="p-error" v-if="!formData.description_en && submitted">{{
-                $t('common.requiredField')
-                }}</small>
+                    $t('common.requiredField') }}</small>
         </div>
         <template #footer>
             <div class="flex flex-wrap row-gap-1">
-                <Button :label="$t('common.save')" @click="addModulesToCourse" class="w-full p-button-primary"/>
-                <Button :label="$t('common.cancel')" @click="closeModuleDialog"
-                        class="w-full p-button-secondary p-button-outlined"/>
+                <Button :label="$t('common.save')" @click="addModulesToCourse" class="w-full p-button-primary" />
+                <Button :label="$t('common.cancel')" @click="closeModuleDialog" class="w-full p-button-secondary p-button-outlined" />
             </div>
         </template>
     </Dialog>
 
     <Sidebar
-            v-model:visible="journalVisible"
-            position="right"
-            class="p-sidebar-lg"
-            style="width: 50%;"
-            @hide="closeJournal"
-    >
-        <Card class="mt-3 mb-3">
-            <template #content>
-                <DataTable :value="journal">
-                    <Column :field="'name_' + $i18n.locale" :header="$t('common.name')">
-                        <template #body="slotProps">
-                            {{ slotProps.data.module["name_" + $i18n.locale] }}
-                        </template>
-                    </Column>
-                    <Column field="grade" :header="$t('course.moduleGrade')">
-                        <template #body="slotProps">
-                            <InputNumber v-model="slotProps.data.grade"/>
-                        </template>
-                    </Column>
-                    <Column :field="'description_' + $i18n.locale" :header="$t('common.description')">
-                        <template #body="slotProps">
-                            {{ slotProps.data.module["description_" + $i18n.locale] }}
-                        </template>
-                    </Column>
-                </DataTable>
-            </template>
-        </Card>
-        <Button :label="$t('common.save')" icon="pi pi-check" class="p-button p-component p-button-success mr-2"
-                @click="updateJournal()"/>
-    </Sidebar>
+      v-model:visible="journalVisible"
+      position="right"
+      class="p-sidebar-lg"
+      style="width: 50%;"
+      @hide="closeJournal"
+  >
+            <Card class="mt-3 mb-3">
+                <template #content>
+            <DataTable :value="journal">
+                <Column field="name" :header="$t('common.name')">
+                    <template #body="slotProps">
+                        {{slotProps.data.module["name_"+$i18n.locale]}}
+                    </template>
+                </Column>
+                <Column field="grade" :header="$t('course.moduleGrade')">
+                    <template #body="slotProps">
+                    <InputNumber v-model="slotProps.data.grade"/>
+                    </template>
+                </Column>
+                <Column field="hours" :header="$t('course.moduleHours')"></Column>
+                <Column field="description" :header="$t('common.description')">
+                    <template #body="slotProps">
+                        {{slotProps.data.module["description_"+$i18n.locale]}}
+                    </template>
+                </Column>
+            </DataTable>
+                </template>
+            </Card>
+  <Button :label="$t('common.save')" icon="pi pi-check" class="p-button p-component p-button-success mr-2"
+                @click="updateJournal()" />
+  </Sidebar>
 </template>
 <script>
 import { OnlineCourseService } from "@/service/onlinecourse.service";
@@ -234,7 +225,7 @@ export default {
             moduleDialog: false,
             module: null,
             newModules: [],
-            newPeriod: [],
+            newPeriod:[],
             user: null,
             journalVisible: false,
             gradeVisible: false,
@@ -269,7 +260,7 @@ export default {
 
         updateUserState(userID, state) {
             this.loading = true;
-            this.service.updateUserState(this.course.history[0].id, userID, state).then(response => {
+            this.service.updateUserState(this.course.history[0].id,userID, state).then(response => {
                 this.loading = false
                 this.$toast.add({
                     severity: "success",
@@ -285,20 +276,20 @@ export default {
         },
         getModuleByCourseID() {
             this.loading = true
-            this.service.getModulesByCourseID(this.$route.params.id).then(response => {
-                this.module = response.data;
-                this.loading = false
-            }).catch(_ => {
-                this.loading = false
-            });
+                this.service.getModulesByCourseID(this.$route.params.id).then(response => {
+                    this.module = response.data;
+                    this.loading = false
+                }).catch(_ => {
+                    this.loading = false
+                });
         },
-        getJournal(courseHistoryID, userID) {
+        getJournal(courseHistoryID, userID){
             this.loading = true
             this.service.getJournal(courseHistoryID, userID).then(response => {
                 this.journal = response.data;
                 this.loading = false;
             }).catch(_ => {
-                this.loading = false
+                    this.loading = false
             });
         },
 
@@ -310,17 +301,17 @@ export default {
             this.formData = {};
         },
         addModulesToCourse() {
+            console.log('rrrrrr:  ', this.formData)
             this.formData.course_id = parseInt(this.course_id);
             this.submitted = true;
             if (!this.isValid()) {
                 return;
             }
             this.saving = true
-            this.service.addModulesToCourse(this.formData).then(_ => {
+           this.service.addModulesToCourse(this.formData).then(_ => {
                 this.saving = false;
                 this.submitted = false;
                 this.closeModuleDialog()
-                this.getModuleByCourseID();
             }).catch(_ => {
                 this.saving = false;
                 this.submitted = false;
@@ -346,7 +337,7 @@ export default {
             return errors.length === 0
         },
         openCertificate(uuid) {
-            let url = this.smartEnuApi + "/document?qrcode=" + uuid;
+            let url = this.smartEnuApi +"/document?qrcode="+uuid;
             window.open(url, '_blank');
         },
 
@@ -415,7 +406,7 @@ export default {
         },
         addStudentsToCourse(state) {
             this.submitted = true;
-            if (this.newUsers.length <= 0 && state != 1) {
+            if (this.newUsers.length <= 0 && state !=1)  {
                 return
             }
             if (!this.course.history || this.course.history.length <= 0) {
@@ -433,13 +424,7 @@ export default {
                 this.newUsers = []
                 this.closeStudentDialog()
                 this.getCourseStudents()
-                if (state === 1) {
-                    this.$toast.add({
-                        severity: "success",
-                        summary: this.$t("common.message.successCompleted"),
-                        life: 3000,
-                    });
-                }
+
             }).catch(_ => {
                 this.saving = false;
                 this.submitted = false;
@@ -458,7 +443,7 @@ export default {
                 newObjs.module = {id: e.module.id}
                 return newObjs
             })
-            const dataSend = {journals: journals}
+            const dataSend = { journals : journals }
             this.service.updateJournal(dataSend).then(_ => {
                 this.$toast.add({
                     severity: "success",
@@ -466,7 +451,6 @@ export default {
                     life: 3000,
                 });
                 this.journalVisible = false
-
             }).catch(_ => {
                 this.$toast.add({
                     severity: "error",
