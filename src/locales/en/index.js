@@ -867,7 +867,7 @@ export default {
         editAnswerConfirm: 'Are you sure you want to make changes to the answer?',
         facultyName: 'Faculty Name',
         menuIcon: 'Menu Icon',
-        uploadMenuIcon: 'Add Icon'
+        uploadMenuIcon: 'Select an Icon'
     },
     //Student locale
     student: {

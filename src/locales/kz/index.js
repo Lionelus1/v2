@@ -909,7 +909,7 @@ export default {
         editAnswerConfirm: 'Сіз шынымен жауапқа өзгерістер еңгізгіңіз келе ме?',
         facultyName: 'Факультет атауы',
         menuIcon: 'Мәзір белгішесі',
-        uploadMenuIcon: 'Белгіше қосу'
+        uploadMenuIcon: 'Белгішені таңдау'
 
     },
     //Student locale

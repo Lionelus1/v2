@@ -101,7 +101,7 @@
             <label>{{ $t('web.menuIcon') }}</label><br />
             <FileUpload mode="basic" :customUpload="true" @uploader="uploadBg" :auto="true"
                 v-bind:chooseLabel="$t('web.uploadMenuIcon')" accept="image/svg+xml" />
-            <div class="container1" v-if="removeIconBtn">
+            <div class="container1" v-if="removeIconBtn && formData.icon.length > 0">
                 <div class="close-button" @click="removeIcon" v-if="formData.icon.length > 0"> 
                     <span id="pv_id_22_badge" class="p-badge p-component p-badge-no-gutter" style="background-color: #2b89d1 !important;" data-pc-name="badge" data-pc-section="root">
                         <i class="pi pi-times-circle" style="padding-bottom: 15px;font-size: 16px;"></i>
