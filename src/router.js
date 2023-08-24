@@ -665,7 +665,7 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
-                path: '/qrGenerator',
+                path: '/qr',
                 name: 'QR',
                 component: () => import('./components/QrGenerator.vue'),
                 beforeEnter: ifAuthenticated,

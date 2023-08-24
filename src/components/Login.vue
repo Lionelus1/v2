@@ -87,7 +87,7 @@
           </template>
           <div class="p-fluid text-center">
               <div class="qr_shadow">
-                  <QrLogin v-if="qrSignUri" :qrData="qrSignUri"/>
+                  <Qr v-if="qrSignUri" :qrData="qrSignUri"/>
               </div>
 <!--            <qrcode-vue size="300" render-as="svg" margin="2" :value="qrSignUri"></qrcode-vue>-->
             <div v-if="mgovMobileRedirectUri" class="p-fluid text-center">
@@ -122,12 +122,12 @@ import {NCALayerClientExtension} from "@/helpers/ncalayer-client-ext";
 import LanguageDropdown from "../LanguageDropdown";
 import QrcodeVue from "qrcode.vue";
 import QrGuideline from "./QrGuideline.vue";
-import QrLogin from "@/components/QrLogin.vue";
+import Qr from "@/components/Qr.vue";
 
 const authUser = {};
 export default {
   name: "Login",
-  components: {QrLogin, QrGuideline, LanguageDropdown},
+  components: {Qr, QrGuideline, LanguageDropdown},
   data() {
     return {
       loginData: {

@@ -85,7 +85,7 @@ export default {
       this.$router.push({path: "/sign-verify"})
     },
     qr() {
-      this.$router.push({path: "/qrGenerator"})
+      this.$router.push({path: "/qr"})
     }
   },
   computed: {
