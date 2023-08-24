@@ -103,8 +103,8 @@
                 v-bind:chooseLabel="$t('web.uploadMenuIcon')" accept="image/svg+xml" />
             <div class="container1" v-if="removeIconBtn && formData.icon.length > 0">
                 <div class="close-button" @click="removeIcon" v-if="formData.icon.length > 0"> 
-                    <span id="pv_id_22_badge" class="p-badge p-component p-badge-no-gutter" style="background-color: #2b89d1 !important;" data-pc-name="badge" data-pc-section="root">
-                        <i class="pi pi-times-circle" style="padding-bottom: 15px;font-size: 16px;"></i>
+                    <span id="pv_id_22_badge" :title="$t('hdfs.remove')" class="p-badge p-component p-badge-no-gutter" style="background-color: #2b89d1 !important;" data-pc-name="badge" data-pc-section="root">
+                        <i class="pi pi-times-circle" style="padding-bottom: 15px;font-size: 16px;" ></i>
                     </span>
                 </div>
                 <span v-if="formData.icon.length > 0" class="svg-container p-overlay-badge" v-html="formData.icon"
@@ -511,7 +511,7 @@ export default {
 
 .container1 {
     position: relative;
-    width: 135px;
+    width: 162px;
     height: 100%;
     padding: 20px;
     background-color: #2b89d1;
@@ -522,8 +522,8 @@ export default {
 
 .close-button {
     position: absolute;
-    top: 7px;
-    right: 5px;
+    top: 5px;
+    right: 3px;
     cursor: pointer;
     
         
