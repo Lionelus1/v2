@@ -26,7 +26,7 @@
 
                         <template #header>
                             <div class="table-header flex justify-content-between flex-wrap card-container purple-container">
-                                <div class="flex gap-2">
+                                <div class="flex gap-2 flex-column sm:flex-row">
                                     <Button class="p-button-success mb-2" icon="pi pi-plus" :label="$t('common.add')"
                                             @click="addStudent"/>
                                     <Button class="p-button-help mb-2" icon="fa-solid fa-certificate"
