@@ -7,95 +7,106 @@
         </div>
         <TabView>
             <TabPanel :header="$t('course.users')">
-                <Button v-if="reqBtn && course && course.students===null" class="btn mb-3" :label="$t('hr.sp.request')"
-                        @click="sendRequestToCourse()" />
+                <Button v-if="reqBtn && !students" class="btn mb-3" :label="$t('hr.sp.request')"
+                        @click="sendRequestToCourse()"/>
                 <!-- <h4 class="status text-green-400" v-if="statusText">{{ $t('common.status')}}:</h4> -->
                 <!-- курсқа қатысушылар -->
-                <div v-if="course && course.students">
-                    <DataTable selectionMode="single" v-model:selection="student" :lazy="true"
-                        :totalRecords="course.studentsCount" :value="course.students" @page="studentTableOnPage($event)"
-                        :paginator="true" :first="studentLazyParams.page" :rows="studentLazyParams.rows"
-                        dataKey="profile.userID" :rowHover="true" :loading="loading"
-                        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink JumpToPageDropdown CurrentPageReport RowsPerPageDropdown"
-                        :rowsPerPageOptions="[10, 25, 50]" :currentPageReportTemplate="$t('common.showingRecordsCount', {
+                <div v-if="students">
+                    <DataTable class="p-datatable-sm" selectionMode="single" v-model:selection="student" :lazy="true"
+                               :totalRecords="studentsCount" :value="students"
+                               @page="studentTableOnPage($event)" :first="studentLazyParams.first"
+                               :paginator="true" :rows="studentLazyParams.rows"
+                               dataKey="profile.userID" :rowHover="true" :loading="loading"
+                               paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink JumpToPageDropdown CurrentPageReport RowsPerPageDropdown"
+                               :rowsPerPageOptions="[10, 25, 50]" :currentPageReportTemplate="$t('common.showingRecordsCount', {
                             first: '{first}',
                             last: '{last}',
                             totalRecords: '{totalRecords}',
-                        })" responsiveLayout="stack" breakpoint="480px" @sort="onSort($event)"
-                        @filter="onFilter($event)">
+                        })" responsiveLayout="stack" breakpoint="480px">
 
                         <template #header>
                             <div class="table-header flex justify-content-between flex-wrap card-container purple-container">
                                 <div class="flex gap-2">
                                     <Button class="p-button-success mb-2" icon="pi pi-plus" :label="$t('common.add')"
-                                        @click="addStudent" />
+                                            @click="addStudent"/>
                                     <Button class="p-button-help mb-2" icon="fa-solid fa-certificate"
-                                        :label="$t('course.certificate.issue')" @click="issueCertificate(0)" />
-                                        
-                                    <Button class="p-button-help mb-2" icon="fa-solid fa-certificate"
-                                        :label="$t('course.certificate.issueWithApp')" @click="issueCertificate(1)" />
+                                            :label="$t('course.certificate.issue')" @click="issueCertificate(0)"/>
+
+                                    <Button class="p-button-help mb-2" icon="fa-solid fa-file-circle-check"
+                                            :label="$t('course.certificate.issueWithApp')"
+                                            @click="issueCertificate(1)"/>
 
                                 </div>
                                 <span class="p-input-icon-left">
-                                    <i class="pi pi-search" />
-                                    <InputText disabled="true" :placeholder="$t('common.search')" />
+                                    <i class="pi pi-search"/>
+                                    <InputText disabled="true" :placeholder="$t('common.search')"/>
                                 </span>
                             </div>
                         </template>
                         <Column field="profile.fullName" :header="$t('common.fullName')"></Column>
-                        
+
                         <Column
-                            :field="'profile.mainPosition.department.name' + ($i18n.locale).charAt(0).toUpperCase() + ($i18n.locale).slice(1)"
-                            :header="$t('common.department')"></Column>
+                                :field="'profile.mainPosition.department.name' + ($i18n.locale).charAt(0).toUpperCase() + ($i18n.locale).slice(1)"
+                                :header="$t('common.department')"></Column>
                         <Column header="">
                             <template #body="slotProps">
-                                <Button v-if="slotProps.data.state.id === 1" class="p-button-success mr-3" icon="fa-solid fa-check" v-tooltip.bottom="$t('course.addCourse')" label="" @click="updateUserState(slotProps.data.profile.userID, 4)" />
-                                <Button v-if="slotProps.data.state.id != 1" class="p-button-success mr-3" icon="fa-solid fa-list-check" v-tooltip.bottom="$t('course.journal')" label="" @click="openJournal(slotProps.data.profile.userID)" />
-                                <Button v-if="slotProps.data.certificateUUID" icon="fa-solid fa-award" class="mr-3" v-tooltip.bottom="$t('course.certificate.view')" label="" @click="openCertificate(slotProps.data.certificateUUID)"/>
-                                <Button v-if="slotProps.data.certificateUUID" icon="pi pi-fw pi-qrcode" class="p-button-help mr-3" v-tooltip.bottom="$t('course.certificate.getQr')" label="" @click="openCertificate(slotProps.data.certificateUUID)"/>
+                                <Button v-if="slotProps.data.state.id === 1" class="p-button-success mr-3"
+                                        icon="fa-solid fa-check" v-tooltip.bottom="$t('course.addCourse')" label=""
+                                        @click="updateUserState(slotProps.data.profile.userID, 4)"/>
+                                <Button v-if="slotProps.data.state.id != 1" class="p-button-success mr-3"
+                                        icon="fa-solid fa-list-check" v-tooltip.bottom="$t('course.journal')" label=""
+                                        @click="openJournal(slotProps.data.profile.userID)"/>
+                                <Button v-if="slotProps.data.certificateUUID" icon="fa-solid fa-award" class="mr-3"
+                                        v-tooltip.bottom="$t('course.certificate.view')" label=""
+                                        @click="openCertificate(slotProps.data.certificateUUID)"/>
+                                <Button v-if="slotProps.data.certificateUUID" icon="pi pi-fw pi-qrcode"
+                                        class="p-button-help mr-3" v-tooltip.bottom="$t('course.certificate.getQr')"
+                                        label="" @click="getQR(slotProps.data.certificateUUID)"/>
                             </template>
                         </Column>
-    <!-- <Column headerStyle="width:60px;">
-      <template #body="slotProps">
-        <Button @click="template=slotProps.data;templateEditorVisilble = true"
-          type="button"
-          icon="pi pi-eye" class="p-button-info"></Button>
-          </template>
-    </Column> -->                    
-                            
+                        <!-- <Column headerStyle="width:60px;">
+                          <template #body="slotProps">
+                            <Button @click="template=slotProps.data;templateEditorVisilble = true"
+                              type="button"
+                              icon="pi pi-eye" class="p-button-info"></Button>
+                              </template>
+                        </Column> -->
+
                     </DataTable>
                     <!-- студент қосу диалогы -->
                     <Dialog v-model:visible="studentDialog" :style="{ width: '450px' }" :header="$t('course.user')"
-                        :modal="true" class="p-fluid">
+                            :modal="true" class="p-fluid">
                         <div class="field">
                             <label for="newUsers">{{ $t('common.fullName') }}</label>
 
                             <FindUser id="newUsers" v-model="newUsers" :userType="2"></FindUser>
                             <small class="p-error" v-if="submitted && !(newUsers && newUsers.length > 0)">{{
-                                $t('common.requiredField') }}</small>
+                                $t('common.requiredField')
+                                }}</small>
                         </div>
                         <template #footer>
                             <div class="flex flex-wrap row-gap-1">
                                 <Button :label="$t('common.save')" @click="addStudentsToCourse(4)"
-                                    class="w-full p-button-primary" />
+                                        class="w-full p-button-primary"/>
                                 <Button :label="$t('common.cancel')" @click="closeStudentDialog"
-                                    class="w-full p-button-secondary p-button-outlined" />
+                                        class="w-full p-button-secondary p-button-outlined"/>
                             </div>
 
                         </template>
                     </Dialog>
-         
+
                 </div>
             </TabPanel>
 
-         <!-- module қосу table -->
+            <!-- module қосу table -->
             <TabPanel :header="$t('course.modules')">
                 <DataTable :value="module">
                     <template #header>
                         <div
-                            class="table-header flex justify-content-between flex-wrap card-container purple-container">
+                                class="table-header flex justify-content-between flex-wrap card-container purple-container">
                             <div class="flex gap-2">
-                                <Button v-if="findRole(null,'online_course_administrator')" class="p-button-success" icon="pi pi-plus" :label="$t('common.add')" @click="addModule" />
+                                <Button v-if="findRole(null,'online_course_administrator')" class="p-button-success"
+                                        icon="pi pi-plus" :label="$t('common.add')" @click="addModule"/>
                             </div>
                         </div>
                     </template>
@@ -104,7 +115,8 @@
                     <Column :field="'description_' + $i18n.locale" :header="$t('common.description')"></Column>
                     <Column field="">
                         <template #body="{data}">
-                        <Button v-if="findRole(null,'online_course_administrator')" class="p-button-danger mr-3" icon="fa-solid fa-trash" label="" @click="deleteModule(data.id)" />
+                            <Button v-if="findRole(null,'online_course_administrator')" class="p-button-danger mr-3"
+                                    icon="fa-solid fa-trash" label="" @click="deleteModule(data.id)"/>
                         </template>
                     </Column>
                 </DataTable>
@@ -113,120 +125,140 @@
         </TabView>
     </div>
 
-    <!-- module қосу диалогы -->
+  <!-- module қосу диалогы -->
     <Dialog v-model:visible="moduleDialog" :style="{ width: '450px' }" :header="$t('course.module')" :modal="true"
-        class="p-fluid">
+            class="p-fluid">
         <div class="field">
             <label>{{ $t('common.nameInQazaq') }}</label>
             <InputText type="text" v-model="formData.name_kz"></InputText>
             <small class="p-error" v-if="!formData.name_kz && submitted">{{
-                    $t('common.requiredField') }}</small>
+                $t('common.requiredField')
+                }}</small>
         </div>
         <div class="field">
             <label>{{ $t('common.nameInRussian') }}</label>
             <InputText type="text" v-model="formData.name_ru"></InputText>
             <small class="p-error" v-if="!formData.name_ru && submitted">{{
-                    $t('common.requiredField') }}</small>
+                $t('common.requiredField')
+                }}</small>
         </div>
         <div class="field">
             <label>{{ $t('common.nameInEnglish') }}</label>
             <InputText type="text" v-model="formData.name_en"></InputText>
             <small class="p-error" v-if="!formData.name_en && submitted">{{
-                    $t('common.requiredField') }}</small>
+                $t('common.requiredField')
+                }}</small>
         </div>
         <div class="field">
             <label>{{ $t('course.moduleHours') }}</label>
             <InputNumber v-model="formData.hours"></InputNumber>
             <small class="p-error" v-if="!formData.hours && submitted">{{
-                $t('common.requiredField') }}</small>
+                $t('common.requiredField')
+                }}</small>
         </div>
         <div class="field">
             <label>{{ $t('common.descriptionKz') }}</label>
             <InputText type="text" v-model="formData.description_kz"></InputText>
             <small class="p-error" v-if="!formData.description_kz && submitted">{{
-                    $t('common.requiredField') }}</small>
+                $t('common.requiredField')
+                }}</small>
         </div>
         <div class="field">
             <label>{{ $t('common.descriptionRu') }}</label>
             <InputText type="text" v-model="formData.description_ru"></InputText>
             <small class="p-error" v-if="!formData.description_ru && submitted">{{
-                    $t('common.requiredField') }}</small>
+                $t('common.requiredField')
+                }}</small>
         </div>
         <div class="field">
             <label>{{ $t('common.descriptionEn') }}</label>
             <InputText type="text" v-model="formData.description_en"></InputText>
             <small class="p-error" v-if="!formData.description_en && submitted">{{
-                    $t('common.requiredField') }}</small>
+                $t('common.requiredField')
+                }}</small>
         </div>
         <template #footer>
             <div class="flex flex-wrap row-gap-1">
-                <Button :label="$t('common.save')" @click="addModulesToCourse" class="w-full p-button-primary" />
-                <Button :label="$t('common.cancel')" @click="closeModuleDialog" class="w-full p-button-secondary p-button-outlined" />
+                <Button :label="$t('common.save')" @click="addModulesToCourse" class="w-full p-button-primary"/>
+                <Button :label="$t('common.cancel')" @click="closeModuleDialog"
+                        class="w-full p-button-secondary p-button-outlined"/>
             </div>
         </template>
     </Dialog>
 
     <Sidebar
-      v-model:visible="journalVisible"
-      position="right"
-      class="p-sidebar-lg"
-      style="width: 50%;"
-      @hide="closeJournal"
-  >
-            <Card class="mt-3 mb-3">
-                <template #content>
-            <DataTable :value="journal">
-                <Column field="name" :header="$t('common.name')">
-                    <template #body="slotProps">
-                        {{slotProps.data.module["name_"+$i18n.locale]}}
-                    </template>
-                </Column>
-                <Column field="grade" :header="$t('course.moduleGrade')">
-                    <template #body="slotProps">
-                    <InputNumber v-model="slotProps.data.grade"/>
-                    </template>
-                </Column>
-                <Column field="hours" :header="$t('course.moduleHours')"></Column>
-                <Column field="description" :header="$t('common.description')">
-                    <template #body="slotProps">
-                        {{slotProps.data.module["description_"+$i18n.locale]}}
-                    </template>
-                </Column>
-            </DataTable>
-                </template>
-            </Card>
-  <Button :label="$t('common.save')" icon="pi pi-check" class="p-button p-component p-button-success mr-2"
-                @click="updateJournal()" />
-  </Sidebar>
+            v-model:visible="journalVisible"
+            position="right"
+            class="p-sidebar-lg"
+            style="width: 50%;"
+            @hide="closeJournal"
+    >
+        <Card class="mt-3 mb-3">
+            <template #content>
+                <DataTable :value="journal">
+                    <Column field="name" :header="$t('common.name')">
+                        <template #body="slotProps">
+                            {{ slotProps.data.module["name_" + $i18n.locale] }}
+                        </template>
+                    </Column>
+                    <Column field="grade" :header="$t('course.moduleGrade')">
+                        <template #body="slotProps">
+                            <InputNumber v-model="slotProps.data.grade"/>
+                        </template>
+                    </Column>
+                    <Column field="hours" :header="$t('course.moduleHours')"></Column>
+                    <Column field="description" :header="$t('common.description')">
+                        <template #body="slotProps">
+                            {{ slotProps.data.module["description_" + $i18n.locale] }}
+                        </template>
+                    </Column>
+                </DataTable>
+            </template>
+        </Card>
+        <Button :label="$t('common.save')" icon="pi pi-check" class="p-button p-component p-button-success mr-2"
+                @click="updateJournal()"/>
+    </Sidebar>
+
+    <Sidebar v-model:visible="qrVisible"
+             position="right"
+             class="p-sidebar-lg">
+        <QrGenerator :data="this.qrUrl" :showBackButton="false" />
+    </Sidebar>
 </template>
 <script>
-import { OnlineCourseService } from "@/service/onlinecourse.service";
-import {smartEnuApi, getHeader,findRole} from "@/config/config";
+import {OnlineCourseService} from "@/service/onlinecourse.service";
+import {smartEnuApi, getHeader, findRole} from "@/config/config";
 import api from "@/service/api";
+import QrGenerator from "@/components/QrGenerator.vue";
 
 export default {
+    components: {QrGenerator},
     data() {
         return {
+            qrVisible: false,
+            qrUrl: null,
             course_id: parseInt(this.$route.params.id),
             loading: false,
             service: new OnlineCourseService(),
             course: null,
+            students: null,
             saving: false,
             student: null,
             modules: [],
             studentsCount: 10,
             studentLazyParams: {
-                page: 0, rows: 10
+                page: 0,
+                rows: 10,
             },
             submitted: false,
             studentDialog: false,
             newUsers: [],
             updateGrades: [],
-       
+
             moduleDialog: false,
             module: null,
             newModules: [],
-            newPeriod:[],
+            newPeriod: [],
             user: null,
             journalVisible: false,
             gradeVisible: false,
@@ -238,7 +270,13 @@ export default {
         }
     },
     created() {
+        /*let oldPath = this.$router.options.history.state.forward;
+        if (oldPath && oldPath.indexOf('/qr?url') !== -1) {
+            this.studentLazyParams = JSON.parse(localStorage.getItem("course_page"))
+            this.studentLazyParams.first =  this.studentLazyParams.rows * this.studentLazyParams.page
+        }*/
         this.getCourse();
+        this.getCourseStudents();
         this.getModuleByCourseID();
     },
     methods: {
@@ -258,10 +296,10 @@ export default {
             });
 
         },
-      
+
         updateUserState(userID, state) {
             this.loading = true;
-            this.service.updateUserState(this.course.history[0].id,userID, state).then(response => {
+            this.service.updateUserState(this.course.history[0].id, userID, state).then(response => {
                 this.loading = false
                 this.$toast.add({
                     severity: "success",
@@ -277,20 +315,20 @@ export default {
         },
         getModuleByCourseID() {
             this.loading = true
-                this.service.getModulesByCourseID(this.$route.params.id).then(response => {
-                    this.module = response.data;
-                    this.loading = false
-                }).catch(_ => {
-                    this.loading = false
-                });
+            this.service.getModulesByCourseID(this.$route.params.id).then(response => {
+                this.module = response.data;
+                this.loading = false
+            }).catch(_ => {
+                this.loading = false
+            });
         },
-        getJournal(courseHistoryID, userID){
+        getJournal(courseHistoryID, userID) {
             this.loading = true
             this.service.getJournal(courseHistoryID, userID).then(response => {
                 this.journal = response.data;
                 this.loading = false;
             }).catch(_ => {
-                    this.loading = false
+                this.loading = false
             });
         },
 
@@ -308,7 +346,7 @@ export default {
                 return;
             }
             this.saving = true
-           this.service.addModulesToCourse(this.formData).then(_ => {
+            this.service.addModulesToCourse(this.formData).then(_ => {
                 this.saving = false;
                 this.submitted = false;
                 this.closeModuleDialog()
@@ -337,35 +375,48 @@ export default {
             return errors.length === 0
         },
         openCertificate(uuid) {
-            let url = this.smartEnuApi +"/document?qrcode="+uuid;
+            let url = this.smartEnuApi + "/document?qrcode=" + uuid;
             window.open(url, '_blank');
+        },
+        getQR(uuid){
+            this.qrUrl = this.smartEnuApi + "/document?qrcode=" + uuid;
+            // if (url) {
+            //     this.$router.push({path: "/qr", query: {url}})
+            // }
+
+            this.qrVisible = true;
         },
 
         addStudent() {
             this.studentDialog = true;
         },
         issueCertificate(withApplication) {
-            this.saving = true
-            this.service.issueCertificate({
-                users: null,
-                courseID: this.course.id,
-                comment: "",
-                withApplication: withApplication 
-            }).then(_ => {
-                this.saving = false;
-                this.submitted = false;
-                this.$toast.add({
-                    severity: "success",
-                    summary: this.$t('common.successDone'),
-                    life: 3000,
-                });
-                this.getCourseStudents()
-
-
-            }).catch(_ => {
-                this.saving = false;
-                this.submitted = false;
-            })
+            this.$confirm.require({
+                message: withApplication === 0 ? this.$t("course.certificate.confirm") : withApplication === 1 ? this.$t("course.certificate.confirm2") : '',
+                header: ' ',
+                icon: 'pi pi-exclamation-triangle',
+                accept: () => {
+                    this.saving = true
+                    this.service.issueCertificate({
+                        users: null,
+                        courseID: this.course.id,
+                        comment: "",
+                        withApplication: withApplication
+                    }).then(_ => {
+                        this.saving = false;
+                        this.submitted = false;
+                        this.$toast.add({
+                            severity: "success",
+                            summary: this.$t('common.successDone'),
+                            life: 3000,
+                        });
+                        this.getCourseStudents()
+                    }).catch(_ => {
+                        this.saving = false;
+                        this.submitted = false;
+                    })
+                },
+            });
         },
 
         closeStudentDialog() {
@@ -375,38 +426,39 @@ export default {
 
         getCourse() {
             this.loading = true
-                this.service.getCourse(this.course_id).then(response => {
-                    this.course = response.data
-                    if(this.course.students){
-                        this.course.students = response.data.students
-                    }/*else {
+            this.service.getCourse(this.course_id).then(response => {
+                this.course = response.data
+                /*if (this.course.students) {
+                    this.course.students = response.data.students
+                } else {
                         this.statusText = true
                         this.reqBtn = false
                     }*/
-                    this.loading = false
-                }).catch(_ => {
-                    this.loading = false
-                });
-        },
-        getCourseStudents() {
-            this.loading = true
-                this.service.getCourseStudents(this.$route.params.id, this.studentLazyParams.page, this.studentLazyParams.rows).then(response => {
-                    if(response.data.students){
-                        this.course.students = response.data.students
-                    }
-                    this.course.studentsCount = response.data.total
-                    this.loading = false
-                }).catch(_ => {
-                    this.loading = false
-                });
+                this.loading = false
+            }).catch(_ => {
+                this.loading = false
+            });
         },
         studentTableOnPage(event) {
             this.studentLazyParams = event;
             this.getCourseStudents();
         },
+        getCourseStudents() {
+            this.loading = true
+            //localStorage.setItem("course_page", JSON.stringify(this.studentLazyParams));
+            this.service.getCourseStudents(this.course_id, this.studentLazyParams.page, this.studentLazyParams.rows).then(response => {
+                if (response.data.students) {
+                    this.students = response.data.students
+                }
+                this.studentsCount = response.data.total
+                this.loading = false
+            }).catch(_ => {
+                this.loading = false
+            });
+        },
         addStudentsToCourse(state) {
             this.submitted = true;
-            if (this.newUsers.length <= 0 && state !=1)  {
+            if (this.newUsers.length <= 0 && state != 1) {
                 return
             }
             if (!this.course.history || this.course.history.length <= 0) {
@@ -438,12 +490,16 @@ export default {
             this.journalVisible = false;
         },
         updateJournal() {
-            let journals = this.journal.map(e=>{
-                const newObjs = {id: e.id, course_history_student_rel_id: e.course_history_student_rel_id, grade: e.grade};
+            let journals = this.journal.map(e => {
+                const newObjs = {
+                    id: e.id,
+                    course_history_student_rel_id: e.course_history_student_rel_id,
+                    grade: e.grade
+                };
                 newObjs.module = {id: e.module.id}
                 return newObjs
             })
-            const dataSend = { journals : journals }
+            const dataSend = {journals: journals}
             this.service.updateJournal(dataSend).then(_ => {
                 this.$toast.add({
                     severity: "success",
@@ -459,7 +515,7 @@ export default {
                 });
             })
         },
-        deleteModule(id){
+        deleteModule(id) {
             this.$confirm.require({
                 message: this.$t('common.doYouWantDelete'),
                 header: this.$t('common.delete'),
