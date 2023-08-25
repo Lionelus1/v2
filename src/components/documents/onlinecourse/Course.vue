@@ -51,8 +51,8 @@
                         <Column header="">
                             <template #body="slotProps">
                                 <Button v-if="slotProps.data.state.id === 1 && findRole(null,'online_course_administrator')"  class="p-button-success mr-3" icon="fa-solid fa-check" v-tooltip.bottom="$t('course.addCourse')" label="" @click="updateUserState(slotProps.data.profile.userID, 4)" />
-                                <template v-if="findRole(null, 'student')">
-                                    <p  :header="$t('common.states')">{{ $t('common.states.pending') }}</p>
+                                <template v-if="findRole(null, 'student') && slotProps.data.state.id === 1">
+                                    <p :header="$t('common.states')">{{ $t('common.states.pending') }}</p>
                                 </template>
                                 <Button v-if="slotProps.data.state.id != 1" class="p-button-success mr-3" icon="fa-solid fa-list-check" v-tooltip.bottom="$t('course.journal')" label="" @click="openJournal(slotProps.data.profile.userID)" />
                                 <Button v-if="slotProps.data.certificateUUID" icon="fa-solid fa-award" class="mr-3" v-tooltip.bottom="$t('course.certificate.view')" label="" @click="openCertificate(slotProps.data.certificateUUID)"/>
