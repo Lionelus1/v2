@@ -27,19 +27,23 @@
                         <template #header>
                             <div class="table-header flex justify-content-between flex-wrap card-container purple-container">
                                 <div class="flex gap-2 flex-column sm:flex-row">
-                                   <Button v-if="findRole(null,'online_course_administrator')"  class="p-button-success mb-2" icon="pi pi-plus" :label="$t('common.add')"
-                                        @click="addStudent" />
+                                    <Button v-if="findRole(null,'online_course_administrator')"
+                                            class="p-button-success mb-2" icon="pi pi-plus" :label="$t('common.add')"
+                                            @click="addStudent"/>
 
-                                    <Button v-if="findRole(null,'online_course_administrator')"  class="p-button-help mb-2" icon="fa-solid fa-certificate"
-                                        :label="$t('course.certificate.issue')" @click="issueCertificate(0)" />
+                                    <Button v-if="findRole(null,'online_course_administrator')"
+                                            class="p-button-help mb-2" icon="fa-solid fa-certificate"
+                                            :label="$t('course.certificate.issue')" @click="issueCertificate(0)"/>
 
-                                    <Button v-if="findRole(null,'online_course_administrator')"  class="p-button-help mb-2" icon="fa-solid fa-file-circle-check"
-                                        :label="$t('course.certificate.issueWithApp')" @click="issueCertificate(1)" />
+                                    <Button v-if="findRole(null,'online_course_administrator')"
+                                            class="p-button-help mb-2" icon="fa-solid fa-file-circle-check"
+                                            :label="$t('course.certificate.issueWithApp')"
+                                            @click="issueCertificate(1)"/>
 
                                 </div>
                                 <span v-if="findRole(null,'online_course_administrator')" class="p-input-icon-left">
-                                    <i class="pi pi-search" />
-                                    <InputText disabled="true" :placeholder="$t('common.search')" />
+                                    <i class="pi pi-search"/>
+                                    <InputText disabled="true" :placeholder="$t('common.search')"/>
                                 </span>
                             </div>
                         </template>
@@ -50,12 +54,13 @@
                                 :header="$t('common.department')"></Column>
                         <Column header="">
                             <template #body="slotProps">
-                                <Button v-if="slotProps.data.state.id === 1 && findRole(null,'online_course_administrator')"  class="p-button-success mr-3" icon="fa-solid fa-check" v-tooltip.bottom="$t('course.addCourse')" label="" @click="updateUserState(slotProps.data.profile.userID, 4)" />
+                                <Button v-if="slotProps.data.state.id === 1 && findRole(null,'online_course_administrator')"
+                                        class="p-button-success mr-3" icon="fa-solid fa-check"
+                                        v-tooltip.bottom="$t('course.addCourse')" label=""
+                                        @click="updateUserState(slotProps.data.profile.userID, 4)"/>
                                 <template v-if="findRole(null, 'student') && slotProps.data.state.id === 1">
                                     <p :header="$t('common.states')">{{ $t('common.states.pending') }}</p>
                                 </template>
-                                <Button v-if="slotProps.data.state.id != 1" class="p-button-success mr-3" icon="fa-solid fa-list-check" v-tooltip.bottom="$t('course.journal')" label="" @click="openJournal(slotProps.data.profile.userID)" />
-                                <Button v-if="slotProps.data.certificateUUID" icon="fa-solid fa-award" class="mr-3" v-tooltip.bottom="$t('course.certificate.view')" label="" @click="openCertificate(slotProps.data.certificateUUID)"/>
                                 <Button v-if="slotProps.data.state.id === 1" class="p-button-success mr-3"
                                         icon="fa-solid fa-check" v-tooltip.bottom="$t('course.addCourse')" label=""
                                         @click="updateUserState(slotProps.data.profile.userID, 4)"/>
@@ -228,7 +233,7 @@
     <Sidebar v-model:visible="qrVisible"
              position="right"
              class="p-sidebar-lg">
-        <QrGenerator :data="this.qrUrl" :showBackButton="false" />
+        <QrGenerator :data="this.qrUrl" :showBackButton="false"/>
     </Sidebar>
 </template>
 <script>
@@ -384,7 +389,7 @@ export default {
             let url = this.smartEnuApi + "/document?qrcode=" + uuid;
             window.open(url, '_blank');
         },
-        getQR(uuid){
+        getQR(uuid) {
             this.qrUrl = this.smartEnuApi + "/document?qrcode=" + uuid;
             // if (url) {
             //     this.$router.push({path: "/qr", query: {url}})
