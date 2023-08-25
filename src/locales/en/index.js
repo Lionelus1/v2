@@ -1203,9 +1203,12 @@ export default {
             element: 'Element',
             elements: 'Elements',
             designer: 'Template designer',
-            issue: "Issue a certificate",
+            issue: "Issue certificate without application",
             issueWithApp: "Issue a certificate with application",
             view: "View the certificate",
+            getQr: "Get QR",
+            confirm: "Confirm the issuance of a certificate WITHOUT an application?",
+            confirm2: "The certificate will be issued With the application, do you confirm the correctness of filling out the application?",
         },
 
         modules:'Сourse modules',
