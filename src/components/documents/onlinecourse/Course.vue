@@ -7,9 +7,8 @@
         </div>
         <TabView>
             <TabPanel :header="$t('course.users')">
-                <Button v-if="reqBtn && !students" class="btn mb-3" :label="$t('hr.sp.request')"
+                <Button v-if="students.length === 0" class="btn mb-3" :label="$t('hr.sp.request')"
                         @click="sendRequestToCourse()"/>
-                <!-- <h4 class="status text-green-400" v-if="statusText">{{ $t('common.status')}}:</h4> -->
                 <!-- курсқа қатысушылар -->
                 <div v-if="students">
                     <DataTable class="p-datatable-sm" selectionMode="single" v-model:selection="student" :lazy="true"
@@ -52,17 +51,14 @@
                         <Column
                                 :field="'profile.mainPosition.department.name' + ($i18n.locale).charAt(0).toUpperCase() + ($i18n.locale).slice(1)"
                                 :header="$t('common.department')"></Column>
+                        <Column
+                            :field="'state.name' + ($i18n.locale)"
+                            :header="$t('common.status')"></Column>
                         <Column header="">
                             <template #body="slotProps">
                                 <Button v-if="slotProps.data.state.id === 1 && findRole(null,'online_course_administrator')"
                                         class="p-button-success mr-3" icon="fa-solid fa-check"
                                         v-tooltip.bottom="$t('course.addCourse')" label=""
-                                        @click="updateUserState(slotProps.data.profile.userID, 4)"/>
-                                <template v-if="findRole(null, 'student') && slotProps.data.state.id === 1">
-                                    <p :header="$t('common.states')">{{ $t('common.states.pending') }}</p>
-                                </template>
-                                <Button v-if="slotProps.data.state.id === 1" class="p-button-success mr-3"
-                                        icon="fa-solid fa-check" v-tooltip.bottom="$t('course.addCourse')" label=""
                                         @click="updateUserState(slotProps.data.profile.userID, 4)"/>
                                 <Button v-if="slotProps.data.state.id != 1" class="p-button-success mr-3"
                                         icon="fa-solid fa-list-check" v-tooltip.bottom="$t('course.journal')" label=""
@@ -214,10 +210,14 @@
                     </Column>
                     <Column field="grade" :header="$t('course.moduleGrade')">
                         <template #body="slotProps">
-                            <InputNumber v-model="slotProps.data.grade"/>
+                            <InputNumber :disabled="!findRole(null,'online_course_administrator')" v-model="slotProps.data.grade"/>
                         </template>
                     </Column>
-                    <Column field="hours" :header="$t('course.moduleHours')"></Column>
+                    <Column field="hours" :header="$t('course.moduleHours')">
+                        <template #body="slotProps">
+                            {{slotProps.data.module.hours}}
+                        </template>
+                    </Column>
                     <Column field="description" :header="$t('common.description')">
                         <template #body="slotProps">
                             {{ slotProps.data.module["description_" + $i18n.locale] }}
@@ -226,7 +226,7 @@
                 </DataTable>
             </template>
         </Card>
-        <Button :label="$t('common.save')" icon="pi pi-check" class="p-button p-component p-button-success mr-2"
+        <Button v-if="findRole(null,'online_course_administrator')" :label="$t('common.save')" icon="pi pi-check" class="p-button p-component p-button-success mr-2"
                 @click="updateJournal()"/>
     </Sidebar>
 
@@ -252,7 +252,7 @@ export default {
             loading: false,
             service: new OnlineCourseService(),
             course: null,
-            students: null,
+            students: [],
             saving: false,
             student: null,
             modules: [],
