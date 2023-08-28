@@ -59,7 +59,7 @@
                                 <Button v-if="slotProps.data.state.id === 1 && findRole(null,'online_course_administrator')"
                                         class="p-button-success mr-3" icon="fa-solid fa-check"
                                         v-tooltip.bottom="$t('course.addCourse')" label=""
-                                        @click="updateUserState(slotProps.data.profile.userID, 4)"/>
+                                        @click="updateUserState(slotProps.data.profile.userID, 2)"/>
                                 <Button v-if="slotProps.data.state.id != 1" class="p-button-success mr-3"
                                         icon="fa-solid fa-list-check" v-tooltip.bottom="$t('course.journal')" label=""
                                         @click="openJournal(slotProps.data.profile.userID)"/>
@@ -317,6 +317,7 @@ export default {
                     summary: this.$t('common.successDone'),
                     life: 3000,
                 });
+                this.getCourseStudents();
             }).catch(_ => {
                 this.loading = false
             });
