@@ -59,4 +59,7 @@ export class OnlineCourseService {
     deleteModule(id) {
         return api.post('/onlinecourse/deleteModule', {id: parseInt(id)}, {headers:getHeader()});
     }
+    updateModuleOfCourse(data){
+        return api.post('onlinecourse/updateModule', data, {headers:getHeader()});
+    }
 }

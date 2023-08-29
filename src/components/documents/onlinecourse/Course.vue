@@ -59,7 +59,7 @@
                                 <Button v-if="slotProps.data.state.id === 1 && findRole(null,'online_course_administrator')"
                                         class="p-button-success mr-3" icon="fa-solid fa-check"
                                         v-tooltip.bottom="$t('course.addCourse')" label=""
-                                        @click="updateUserState(slotProps.data.profile.userID, 4)"/>
+                                        @click="updateUserState(slotProps.data.profile.userID, 2)"/>
                                 <Button v-if="slotProps.data.state.id != 1" class="p-button-success mr-3"
                                         icon="fa-solid fa-list-check" v-tooltip.bottom="$t('course.journal')" label=""
                                         @click="openJournal(slotProps.data.profile.userID)"/>
@@ -122,8 +122,13 @@
                     <Column :field="'description_' + $i18n.locale" :header="$t('common.description')"></Column>
                     <Column field="">
                         <template #body="{data}">
+                            <Button v-if="findRole(null, 'online_course_administrator')" class="p-button-warning mb-2"
+                                icon="pi pi-pencil" label="" @click="updateModule(data)"/>
+
                             <Button v-if="findRole(null,'online_course_administrator')" class="p-button-danger mr-3"
                                     icon="fa-solid fa-trash" label="" @click="deleteModule(data.id)"/>
+
+                            
                         </template>
                     </Column>
                 </DataTable>
@@ -185,9 +190,14 @@
                 }}</small>
         </div>
         <template #footer>
-            <div class="flex flex-wrap row-gap-1">
+            <div class="flex flex-wrap row-gap-1" v-if="!formData.id" >
                 <Button :label="$t('common.save')" @click="addModulesToCourse" class="w-full p-button-primary"/>
                 <Button :label="$t('common.cancel')" @click="closeModuleDialog"
+                        class="w-full p-button-secondary p-button-outlined"/>
+            </div>
+            <div class="flex flex-wrap row-gap-1" v-else>
+                <Button :label="$t('common.save')" @click="updateModuleOfCourse" class="w-full p-button-primary"/>
+                <Button :label="$t('common.cancel')" @click="closeModuleDialog" 
                         class="w-full p-button-secondary p-button-outlined"/>
             </div>
         </template>
@@ -317,6 +327,7 @@ export default {
                     summary: this.$t('common.successDone'),
                     life: 3000,
                 });
+                this.getCourseStudents();
             }).catch(_ => {
                 this.loading = false
             });
@@ -545,6 +556,30 @@ export default {
                 }
             });
         },
+        updateModule(data) {
+            this.moduleDialog = true;
+
+            this.formData = data;
+        },
+
+        updateModuleOfCourse() {
+            this.formData.course_id = parseInt(this.course_id);
+            this.submitted = true;
+            if (!this.isValid()) {
+                return;
+            }
+
+            this.saving = true;
+            this.service.updateModuleOfCourse(this.formData).then(_ => {
+                this.saving = false;
+                this.submitted = false;
+                this.closeModuleDialog();   
+            }).catch(_ => {
+                this.saving = false;
+                this.submitted = false;
+            });
+        }
+
     }
 }
 </script>
