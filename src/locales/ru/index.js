@@ -1225,6 +1225,7 @@ export default {
         lnum: 'Последний номер',
         journal: 'Журнал',
         addCourse: 'Добавить в курс',
+        completedTraining: 'Прошел обучение',
     },
     roleControl: {
         addSidebar: 'Добавление новой записи',

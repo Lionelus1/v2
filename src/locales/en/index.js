@@ -1226,6 +1226,7 @@ export default {
         journalOfUsers: 'journal-users',
         journal: 'Journal',
         addCourse: 'Add to the course',
+        completedTraining: 'Completed training',
     },
     roleControl:{
         addSidebar: 'Adding new record',

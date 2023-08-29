@@ -1237,6 +1237,7 @@ export default {
         lnum: 'Соңғы нөмір',
         journal: 'Журнал',
         addCourse: 'Курсқа қосу',
+        completedTraining: 'Оқуды аяқтады',
     },
     roleControl:{
         addSidebar: 'Жаңа жазбаны қосу',
