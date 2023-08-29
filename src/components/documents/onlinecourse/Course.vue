@@ -122,6 +122,9 @@
                     <Column :field="'description_' + $i18n.locale" :header="$t('common.description')"></Column>
                     <Column field="">
                         <template #body="{data}">
+                            <Button v-if="findRole(null, 'online_course_administrator')" class="p-button-warning mb-2"
+                                icon="pi pi-pencil" label="" @click="updateModule(data)"/>
+
                             <Button v-if="findRole(null,'online_course_administrator')" class="p-button-danger mr-3"
                                     icon="fa-solid fa-trash" label="" @click="deleteModule(data.id)"/>
                         </template>
@@ -185,8 +188,13 @@
                 }}</small>
         </div>
         <template #footer>
-            <div class="flex flex-wrap row-gap-1">
+            <div class="flex flex-wrap row-gap-1" v-if="!formData.id" >
                 <Button :label="$t('common.save')" @click="addModulesToCourse" class="w-full p-button-primary"/>
+                <Button :label="$t('common.cancel')" @click="closeModuleDialog"
+                        class="w-full p-button-secondary p-button-outlined"/>
+            </div>
+            <div class="flex flex-wrap row-gap-1" v-if="formData.id">
+                <Button :label="$t('common.save')" @click="updateModuleOfCourse" class="w-full p-button-primary"/>
                 <Button :label="$t('common.cancel')" @click="closeModuleDialog"
                         class="w-full p-button-secondary p-button-outlined"/>
             </div>
@@ -280,8 +288,6 @@ export default {
             formData: {},
             reqBtn: true,
             statusText: false,
-            inputs: [{ value: '' }],
-            showRequiredMessage: false,
             userID: null,
             stateID: null
         }
@@ -354,6 +360,7 @@ export default {
 
         addModule() {
             this.moduleDialog = true;
+            this.formData = {};
         },
         closeModuleDialog() {
             this.moduleDialog = false;
@@ -505,7 +512,6 @@ export default {
         openJournal(studentID,stateID) {
             this.userID = studentID
             this.stateID = stateID
-            console.log(this.stateID)
             this.getJournal(this.course.history[0].id, studentID)
             this.journalVisible = true;
         },
@@ -556,6 +562,29 @@ export default {
                 }
             });
         },
+        updateModule(data) {
+            this.moduleDialog = true;
+
+            this.formData = data;
+        },
+
+        updateModuleOfCourse() {
+            this.formData.course_id = parseInt(this.course_id);
+            this.submitted = true;
+            if (!this.isValid()) {
+                return;
+            }
+
+            this.saving = true;
+            this.service.updateModuleOfCourse(this.formData).then(_ => {
+                this.saving = false;
+                this.submitted = false;
+                this.closeModuleDialog();
+            }).catch(_ => {
+                this.saving = false;
+                this.submitted = false;
+            });
+        }
     },
     computed: {
         isButtonDisabled() {
