@@ -356,6 +356,7 @@ export default {
 
         addModule() {
             this.moduleDialog = true;
+            this.formData = {};
         },
         closeModuleDialog() {
             this.moduleDialog = false;
