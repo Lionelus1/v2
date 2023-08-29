@@ -56,6 +56,10 @@
 </template>
 <script>
 import LanguageDropdown from "./LanguageDropdown";
+import axios from "axios";
+import {getHeader, smartEnuApi, socketApi} from "@/config/config";
+import moment from "moment";
+import {mapState} from "vuex";
 
 export default {
   components: {LanguageDropdown},
