@@ -62,7 +62,7 @@
                                         @click="updateUserState(slotProps.data.profile.userID, 2)"/>
                                 <Button v-if="slotProps.data.state.id != 1" class="p-button-success mr-3"
                                         icon="fa-solid fa-list-check" v-tooltip.bottom="$t('course.journal')" label=""
-                                        @click="openJournal(slotProps.data.profile.userID)"/>
+                                        @click="openJournal(slotProps.data.profile.userID, slotProps.data.state.id)"/>
                                 <Button v-if="slotProps.data.certificateUUID" icon="fa-solid fa-award" class="mr-3"
                                         v-tooltip.bottom="$t('course.certificate.view')" label=""
                                         @click="openCertificate(slotProps.data.certificateUUID)"/>
@@ -228,6 +228,8 @@
         </Card>
         <Button v-if="findRole(null,'online_course_administrator')" :label="$t('common.save')" icon="pi pi-check" class="p-button p-component p-button-success mr-2"
                 @click="updateJournal()"/>
+        <Button v-if="findRole(null,'online_course_administrator') && stateID !== 5" :label="$t('course.completedTraining')" icon="pi pi-check" class="p-button p-component mr-2"
+                @click="updateUserState(userID, 4)" :disabled="!isButtonDisabled"/>
     </Sidebar>
 
     <Sidebar v-model:visible="qrVisible"
@@ -277,7 +279,11 @@ export default {
             smartEnuApi: smartEnuApi,
             formData: {},
             reqBtn: true,
-            statusText: false
+            statusText: false,
+            inputs: [{ value: '' }],
+            showRequiredMessage: false,
+            userID: null,
+            stateID: null
         }
     },
     created() {
@@ -310,6 +316,7 @@ export default {
 
         updateUserState(userID, state) {
             this.loading = true;
+            this.updateJournal();
             this.service.updateUserState(this.course.history[0].id, userID, state).then(response => {
                 this.loading = false
                 this.$toast.add({
@@ -318,6 +325,7 @@ export default {
                     life: 3000,
                 });
                 this.getCourseStudents();
+                this.journalVisible = false
             }).catch(_ => {
                 this.loading = false
             });
@@ -494,7 +502,10 @@ export default {
                 this.submitted = false;
             })
         },
-        openJournal(studentID) {
+        openJournal(studentID,stateID) {
+            this.userID = studentID
+            this.stateID = stateID
+            console.log(this.stateID)
             this.getJournal(this.course.history[0].id, studentID)
             this.journalVisible = true;
         },
@@ -545,7 +556,12 @@ export default {
                 }
             });
         },
-    }
+    },
+    computed: {
+        isButtonDisabled() {
+            return this.journal.every(item => item.grade !== null);
+        }
+    },
 }
 </script>
 <style></style>
