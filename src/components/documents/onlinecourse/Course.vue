@@ -195,7 +195,7 @@
                 <Button :label="$t('common.cancel')" @click="closeModuleDialog"
                         class="w-full p-button-secondary p-button-outlined"/>
             </div>
-            <div class="flex flex-wrap row-gap-1" v-else>
+            <div class="flex flex-wrap row-gap-1" v-if="formData.id">
                 <Button :label="$t('common.save')" @click="updateModuleOfCourse" class="w-full p-button-primary"/>
                 <Button :label="$t('common.cancel')" @click="closeModuleDialog" 
                         class="w-full p-button-secondary p-button-outlined"/>
