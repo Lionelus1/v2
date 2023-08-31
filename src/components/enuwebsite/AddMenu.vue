@@ -100,9 +100,17 @@
         <div class="field" v-if="formData.is_middle || formData.is_header">
             <label>{{ $t('web.menuIcon') }}</label><br />
             <FileUpload mode="basic" :customUpload="true" @uploader="uploadBg" :auto="true"
-                v-bind:chooseLabel="$t('faq.uploadImage')" accept="image/svg+xml" />
-            <div class="svg-container" v-html="formData.icon"></div>
-
+                v-bind:chooseLabel="$t('web.uploadMenuIcon')" accept="image/svg+xml" />
+            <div class="container1" v-if="removeIconBtn && formData.icon.length > 0">
+                <div class="close-button" @click="removeIcon" v-if="formData.icon.length > 0"> 
+                    <span id="pv_id_22_badge" :title="$t('hdfs.remove')" class="p-badge p-component p-badge-no-gutter" style="background-color: #2b89d1 !important;" data-pc-name="badge" data-pc-section="root">
+                        <i class="pi pi-times-circle" style="padding-bottom: 15px;font-size: 16px;" ></i>
+                    </span>
+                </div>
+                <span v-if="formData.icon.length > 0" class="svg-container p-overlay-badge" v-html="formData.icon"
+                    style="font-size:2rem;" data-pd-badge="true" data-p-overlay-badge="true">
+                </span>
+            </div>
         </div>
         <div class="field">
             <label>{{ $t('web.menuOrderLabel') }}</label>
@@ -190,6 +198,7 @@ export default {
             bgImg: null,
             iconImg: null,
             menuIcon: false,
+            removeIconBtn: false,
             formValid: [],
             menuType: !this.currentMenu ? 1 : this.currentMenu && this.currentMenu.page_id ? 1 : 2,
             checked: this.is_main ? this.is_main : null,
@@ -210,6 +219,11 @@ export default {
     created() {
         this.getMenus(null);
         this.getPages(null);
+        if (this.formData.icon.length !== null) {
+            this.removeIconBtn = true;
+        } else {
+            this.removeIconBtn = false;
+        }
 
 
     },
@@ -220,7 +234,7 @@ export default {
                 this.getPages(data);
             }
         });
-        
+
     },
     methods: {
         typeChange() {
@@ -296,42 +310,26 @@ export default {
         uploadFile(event) {
             this.bgImg = event.files
         },
+        removeIcon() {
+            this.formData.icon = "";
+            this.removeIconBtn = false;
+        },
         uploadBg(event) {
-            // this.iconImg = event.files[0];
-            // const fd = new FormData();
-            // fd.append("files[]", event.files[0]);
-            // fd.append("watermark", false);
-            // this.fileService.uploadFile(fd)
-            //     .then(res => {
-            //         if (res.data) {
-            //             this.formData.icon = res.data[0].filepath;
-            //             this.formData.bgUrl = smartEnuApi + fileRoute + this.formData.icon;
-            //         }
-            //     })
-            //     .catch(error => {
-            //         this.toast.add({ severity: "error", summary: error, life: 3000 });
-            //     });
             let file = event.files[0]
             fetch(file.objectURL)
                 .then(response => response.text())
                 .then(text => {
                     this.formData.icon = text;
+                    this.removeIconBtn = true;
                 });
         },
-        // const uploadFile = (event) => {
-        //     let file = event.files[0]
-        //     fetch(file.objectURL)
-        //         .then(response => response.text())
-        //         .then(text => {
-        //             formData.value.block_list_image = text;
-        //         });
-        // },
+
         addMenu() {
             this.submitted = true;
             if (!this.validateMenus()) {
                 return;
             }
-            
+
             const fd = new FormData();
             fd.append('menu', JSON.stringify(this.formData))
             if (this.bgImg) fd.append('background_image', this.bgImg[0]);
@@ -361,9 +359,7 @@ export default {
             if (!this.validateMenus()) {
                 return;
             }
-            if (this.selectedMenu.is_middle){
-                this.menuIcon = true;
-            }
+
             const fd = new FormData();
             fd.append('menu', JSON.stringify(this.formData))
             if (this.bgImg) fd.append('background_image', this.bgImg[0]);
@@ -424,6 +420,7 @@ export default {
         },
         isMenuIcon() {
             this.menuIcon = !this.menuIcon;
+
 
         },
         showAddPage() {
@@ -493,16 +490,42 @@ export default {
 
 .svg-container {
     padding: 10px 0 0 0;
-    margin:15px 0 0 0;
+    margin: 15px 0 0 0;
+    width: 140px;
 }
 
 .svg-content {
     width: 100%;
     height: 100%;
+
+
+    ::v-deep(.svg-container svg) {
+        width: 150px;
+        height: auto;
+        transform: scale(2, 3);
+    }
+
+
 }
 
-::v-deep(.svg-container svg) {
-    width: 200px;
-    height: auto;
+.container1 {
+    position: relative;
+    width: 162px;
+    height: 100%;
+    padding: 20px;
+    background-color: #2b89d1;
+    margin-top: 10px;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.close-button {
+    position: absolute;
+    top: 5px;
+    right: 3px;
+    cursor: pointer;
+    
+        
+   
 }
 </style>
