@@ -1,9 +1,6 @@
 <template>
     <div class="col-12">
         <div class="card">
-            <div class="p-col-12">
-                {{ notifications }}
-            </div>
             <h4>{{ $t("common.welcome") }}, {{ loginedUser.fullName }} !</h4>
         </div>
         <div class="card card_bottom">

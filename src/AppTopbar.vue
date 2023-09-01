@@ -9,6 +9,10 @@
             :label="$t('common.createNew')" @click="toggle" aria-haspopup="true" aria-controls="overlay_menu"/>
     <Menu id="overlay_menu" ref="menu" :model="pagemenu" :popup="true"/>
     <div class="layout-topbar-icons">
+        <div class="notification" @click="visibleRight = true">
+            <i class="fa-regular fa-bell" />
+            <Badge :value="notLength" severity="danger"></Badge>
+        </div>
       <button v-tooltip.bottom="'Telegram Chat'" class="tg" @click="navigateToTelegram()">
         <i class="fa-brands fa-telegram"></i>
       </button>
@@ -16,14 +20,6 @@
         <i class="pi pi-question-circle"></i>
       </button>
       <LanguageDropdown class="top_lang"/>
-
-      <Button v-if="notLength>0" type="button" label="Notifications"
-              icon="pi pi-bell" class="p-button-primary"
-              :badge="notLength" @click="visibleRight = true" badgeClass="p-badge-danger"/>
-
-      <Button v-if="notLength==0" type="button" label="Notifications"
-              icon="pi pi-bell" class="p-button-primary"
-              @click="visibleRight = true" badgeClass="p-badge-danger"/>
     </div>
     <Sidebar v-model:visible="visibleRight"
              blockScroll=false
@@ -362,7 +358,20 @@ export default {
     font-size: .875rem;
   }
 }
-
+.notification{
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+svg{
+  font-size: 20px;
+}
+    span{
+        position: absolute;
+        left: 10px;
+        top: -5px;
+    }
+}
 @media screen and (max-width: 576px) {
   .product-item {
     flex-wrap: wrap;
