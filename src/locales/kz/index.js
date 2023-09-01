@@ -316,6 +316,7 @@ export default {
         gallery: 'Галерея',
         faculties: 'Факультеттер',
         verify: 'Құжатқа қол қоюды тексеру',
+        address: 'Адрес',
         qrGenerator: 'QR генератор',
         generate: 'Генерациялау',
         selectFormat: 'Форматты таңдаңыз'
@@ -792,7 +793,12 @@ export default {
         userOtherCouncils: 'Қолданушының басқа диссертациялық кеңестерге қатысы',
         closeDate: 'Тоқтатылған күні',
         councilComment: 'Бұйрық нөмірі және т. б.',
-        closeCouncil: 'Диссертациялық кеңесті тоқтату'
+        closeCouncil: 'Диссертациялық кеңесті тоқтату',
+        scientificConsultant: 'Ғылыми кеңесшінің пікірі',
+        foreignConsultant: 'Шетелдік кеңесшінің пікірі',
+        commissionConclusion: 'Этикалық бағалау комиссиясының қорытындысы',
+        reviewerComment: 'Ресми рецензенттің пікірі',
+        setMeetingTimeConfirmMsg: "Төмендегі {btn} батырмасын басу арқылы, ақпараттардың дұрыстығын растайсыз және осы ақпарат сайтқа хабарландыру болып шығарылады"
     },
     faq: {
         title: "Қолдау қызметі",
@@ -920,7 +926,8 @@ export default {
         editAnswer: 'Жауапты өңдеу',
         editAnswerConfirm: 'Сіз шынымен жауапқа өзгерістер еңгізгіңіз келе ме?',
         facultyName: 'Факультет атауы',
-        menuIcon: 'Мәзір айконы'
+        menuIcon: 'Мәзір белгішесі',
+        uploadMenuIcon: 'Белгішені таңдау'
 
     },
     //Student locale
@@ -1217,10 +1224,10 @@ export default {
             confirm2: "Сертификат ҚОСЫМШАМЕН беріледі, қосымша дұрыс толтырылған ба?",
         },
         modules:'Курс модульдері',
-        module: 'Модуль', 
+        module: 'Модуль',
         modulePosition: '№',
         moduleTitle: 'Белгі',
-        moduleHours: 'Сағат', 
+        moduleHours: 'Сағат',
         moduleGrade: 'Баға',
         moduleName:'Модуль атауы',
         modulePeriod:'Модуль кезеңі',

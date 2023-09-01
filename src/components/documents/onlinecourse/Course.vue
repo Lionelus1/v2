@@ -80,7 +80,7 @@
                         </Column> -->
 
                     </DataTable>
-                    <!-- студент қосу диалогы -->
+          <!-- студент қосу диалогы -->
                     <Dialog v-model:visible="studentDialog" :style="{ width: '450px' }" :header="$t('course.user')"
                             :modal="true" class="p-fluid">
                         <div class="field">
@@ -117,7 +117,7 @@
                             </div>
                         </div>
                     </template>
-                    <Column :field="'name_' + $i18n.locale" :header="$t('common.name')"></Column>
+                    <Column field="name_kz" :header="$t('common.name')"></Column>
                     <Column field="hours" :header="$t('course.moduleHours')"></Column>
                     <Column :field="'description_' + $i18n.locale" :header="$t('common.description')"></Column>
                     <Column field="">
@@ -367,6 +367,7 @@ export default {
             this.formData = {};
         },
         addModulesToCourse() {
+            console.log('rrrrrr:  ', this.formData)
             this.formData.course_id = parseInt(this.course_id);
             this.submitted = true;
             if (!this.isValid()) {

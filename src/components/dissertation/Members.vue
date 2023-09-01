@@ -57,7 +57,7 @@
         </Column>
 
       </DataTable>
-      <Dialog v-model:visible="dialog.addMember.state" :breakpoints="{'960px': '75vw', '640px': '90vw'}" :header="$t('dissertation.members')"
+<!--      <Dialog v-model:visible="dialog.addMember.state" :breakpoints="{'960px': '75vw', '640px': '90vw'}" :header="$t('dissertation.members')"
               :modal="true" class="p-fluid">
         <div class="p-fluid">
           <div class="field">
@@ -73,7 +73,7 @@
           <div
               v-if="selectedRole != null && (selectedRole.name=== 'dissertation_council_reviewer' || selectedRole.name=== 'dissertation_council_temporary_member')"
               class="field">
-            <!-- <div v-if="selectedRole != null && (selectedRole.name=== 'dissertation_council_reviewer')" class="field"> -->
+            &lt;!&ndash; <div v-if="selectedRole != null && (selectedRole.name=== 'dissertation_council_reviewer')" class="field"> &ndash;&gt;
             <label for="name">{{ $t('dissertation.doctorals') }}</label>
             <FindDoctorals :max="2" v-model="selectedDoctorals"></FindDoctorals>
             <small class="p-error" v-if="submitted && validationErrors.doctorals">{{ $t('dissertation.validationErrors.selectDoctorals') }}</small>
@@ -114,7 +114,10 @@
           <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-text" @click="hideDialog(dialog.addMember)"/>
           <Button :label="$t('common.add')" icon="pi pi-check" class="p-button-text" @click="addMember"/>
         </template>
-      </Dialog>
+      </Dialog>-->
+
+      <AddMemberDialog v-if="dialog.addMember.state" :show="dialog.addMember.state" :councilID="councilID" :members="MembersList"
+                       @hide="hideDialog(dialog.addMember)" />
     </div>
 
   </div>
@@ -127,9 +130,10 @@ import axios from 'axios';
 import {getHeader, smartEnuApi, findRole} from "@/config/config";
 import FindDoctorals from "./FindDoctorals.vue"
 import {DissertationService} from "@/service/dissertation.service";
+import AddMemberDialog from "@/components/dissertation/AddMemberDialog.vue";
 
 export default {
-  components: {RolesByName, FindDoctorals},
+  components: {AddMemberDialog},
   data() {
     return {
       councilID: Number(this.$route.params.id),
@@ -301,7 +305,6 @@ export default {
           this.selectedMemberCouncils.map(e => {
             e.member = e.members.find(x => x.userID === event.value[0].userID)
           })
-          console.log(this.selectedMemberCouncils)
         }
       }).catch(error => {
         console.log(error)

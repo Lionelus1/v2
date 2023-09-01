@@ -22,14 +22,11 @@ export const header  = {
 export const loginUrl = apiDomain+"/oauth/token";
 export const getHeader = function() {
   const tokenData = JSON.parse(window.localStorage.getItem("authUser"));
-
   if(tokenData){
     const headers= {
-      'Access-Control-Allow-Credentials':'true',
+      //'Access-Control-Allow-Credentials':'true',
       'Content-Type': 'application/json',
-      'Accept':"*/*",
-
-      
+      'mode': 'no-cors',
       'Authorization':'Bearer ' + tokenData.access_token
     }
     return headers;
