@@ -40,7 +40,7 @@
           <div style="width: 80%; float:left">
             <h6 :style="{margin:0,marginBottom:'2px',fontWeight : n.isSeen==0 ? 'bolder' : '400'}">{{ n.senderObject.fullName }}</h6>
             <p :style="{margin:0,fontWeight : n.isSeen==0 ? 'bolder' : '400'}" class="p-text-warn">
-              {{ n.description }}
+              {{ n["description_" + $i18n.locale] }}
             </p>
             <span style="display: block; margin-top:5px;color:#2196F3;">{{ timeDifference(n.createdDate) }}</span>
           </div>
