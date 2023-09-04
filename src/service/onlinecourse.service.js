@@ -62,4 +62,10 @@ export class OnlineCourseService {
     updateModuleOfCourse(data){
         return api.post('onlinecourse/updateModule', data, {headers:getHeader()});
     }
+    updateCourseOrganizerLastNumber(data){
+        return api.post('onlinecourse/organizers/updateLastNumber', data, {headers:getHeader()});
+    }
+    getCourseOrganizerByCourseID(courseID) {
+        return api.get(`onlinecourse/organizers/${courseID}`, {headers: getHeader()});
+    }
 }

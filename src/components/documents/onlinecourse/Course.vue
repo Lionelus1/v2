@@ -32,12 +32,12 @@
 
                                     <Button v-if="findRole(null,'online_course_administrator')"
                                             class="p-button-help mb-2" icon="fa-solid fa-certificate"
-                                            :label="$t('course.certificate.issue')" @click="issueCertificate(0)"/>
+                                            :label="$t('course.certificate.issue')" @click="openIssueCertificateDialog"/>
 
                                     <Button v-if="findRole(null,'online_course_administrator')"
                                             class="p-button-help mb-2" icon="fa-solid fa-file-circle-check"
                                             :label="$t('course.certificate.issueWithApp')"
-                                            @click="issueCertificate(1)"/>
+                                            @click="openIssueCertificateWithDialog"/>
 
                                 </div>
                                 <span v-if="findRole(null,'online_course_administrator')" class="p-input-icon-left">
@@ -100,6 +100,48 @@
                             </div>
 
                         </template>
+                    </Dialog>
+
+                    <Dialog v-model:visible="issueCertificateDialog" :style="{ width: '500px' }">   
+                        <template #header>
+                            <div>
+                                <i class="pi pi-exclamation-triangle" style="padding-left: 10px">{{ $t('course.certificate.confirm') }}</i>
+                            </div>
+                        </template>
+
+                        <template #footer>
+                            <div class="flex flex-wrap row-gap-1">
+                                    <InputText type="text" v-model="organizer.lastNumber"></InputText>
+                                    <Button v-if="findRole(null,'online_course_administrator')"
+                                            :label="$t('common.yes')" @click="issueCertificate(0)"/>
+
+                                    <Button :label="$t('common.no')" @click="closeIssueCertificateDialog"
+                                        class="w-full p-button-secondary p-button-outlined"/>
+                            </div>
+
+                        </template>
+                        
+                    </Dialog>
+
+                    <Dialog v-model:visible="issueCertificateWithDialog" :style="{ width: '450px' }">
+                        <template #header>
+                            <div>
+                                <i class="pi pi-exclamation-triangle" style="padding-left: 10px">{{ $t('course.certificate.confirm2') }}</i>
+                            </div>
+                        </template>
+
+                        <template #footer>
+                            <div class="flex flex-wrap row-gap-1">
+                                <InputText type="text" v-model="organizer.lastNumber"></InputText>
+                                <Button v-if="findRole(null,'online_course_administrator')"
+                                            :label="$t('common.yes')" 
+                                            @click="issueCertificate(1)"/>
+
+                                <Button :label="$t('common.no')" @click="closeIssueCertificateWithDialog"
+                                        class="w-full p-button-secondary p-button-outlined"/>
+                            </div>
+                        </template>
+                        
                     </Dialog>
 
                 </div>
@@ -262,6 +304,7 @@ export default {
             loading: false,
             service: new OnlineCourseService(),
             course: null,
+            organizer: {},
             students: [],
             saving: false,
             student: null,
@@ -273,6 +316,8 @@ export default {
             },
             submitted: false,
             studentDialog: false,
+            issueCertificateDialog: false,
+            issueCertificateWithDialog: false,
             newUsers: [],
             updateGrades: [],
 
@@ -418,6 +463,16 @@ export default {
         addStudent() {
             this.studentDialog = true;
         },
+        openIssueCertificateDialog() {
+            this.issueCertificateDialog = true;
+            this.getCourseOrganizerByCourseID()
+        },
+
+        openIssueCertificateWithDialog() {
+            this.issueCertificateWithDialog = true;
+            this.getCourseOrganizerByCourseID()
+        },
+
         issueCertificate(withApplication) {
             this.$confirm.require({
                 message: withApplication === 0 ? this.$t("course.certificate.confirm") : withApplication === 1 ? this.$t("course.certificate.confirm2") : '',
@@ -446,10 +501,28 @@ export default {
                 },
             });
         },
-
+        getCourseOrganizerByCourseID() {
+            this.loading = true
+            
+            this.service.getCourseOrganizerByCourseID(this.course_id).then(response => {
+                this.organizer = response.data.organizer
+      
+                this.loading = false
+            }).catch(_ => {
+                this.loading = false
+            });
+        },  
         closeStudentDialog() {
             this.studentDialog = false;
             this.newUsers = []
+        },
+
+        closeIssueCertificateDialog() {
+            this.issueCertificateDialog = false;
+        },
+
+        closeIssueCertificateWithDialog() {
+            this.issueCertificateWithDialog = false;
         },
 
         getCourse() {
