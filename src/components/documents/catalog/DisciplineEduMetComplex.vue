@@ -11,7 +11,7 @@
               <Button icon="fa-solid fa-home" class="menubar-icons"
                 v-tooltip="$t('educomplex.tooltip.home')"
                 @click="home" :disabled="!faculty"></Button>
-              <Button icon="fa-solid fa-turn-down" class="menubar-icons"
+              <Button icon="fa-regular fa-folder-open" class="menubar-icons"
                 v-tooltip="$t('educomplex.tooltip.into')"
                 @click="into" :disabled="faculty || !currentDepartment"></Button>
             </div>
@@ -45,9 +45,20 @@
           :currentPageReportTemplate="currentPageReportTemplate" :lazy="true" :loading="departmentTableLoading" scrollable scrollHeight="flex"
           v-model:selection="currentDepartment" selectionMode="single" :rowHover="true" stripedRows class="flex-grow-1"
           @page="onPageDepartment" @row-dblclick="doubleClickDepartment" @update:selection="onSelectionDepartment">
-          <Column :header="faculty ? $t('educomplex.columns.cafedras', {'faculty': getDepartmentName(faculty)}) : $t('educomplex.columns.faculties')">
+          <Column :header="faculty ? $t('educomplex.columns.cafedras', {'faculty': getDepartmentName(faculty)}) : 
+            $t('educomplex.columns.faculties')" style="min-width: 250px;">
             <template #body="slotProps">
               {{ getDepartmentName(slotProps.data) }}
+            </template>
+          </Column>
+          <Column style="min-width: 20px;">
+            <template #body="slotProps" v-if="!faculty">
+              <div style="width: 100%; display: flex; justify-content: flex-end;">
+                <Button @click="currentDepartment=slotProps.data;into()"
+                  class="p-button-text p-button-info p-1" v-tooltip="$t('educomplex.tooltip.into')">
+                  <i class="fa-regular fa-folder-open"></i>
+                </Button>
+              </div>
             </template>
           </Column>
         </DataTable>
@@ -195,7 +206,7 @@
   <Dialog :header="$t('hdfs.uploadTitle')" v-model:visible="visibility.addDocumentDialog" 
     :style="{width: '60vw'}" :modal="true">
     <PostFile :fileUpload="true" :modelValue="newFile" directory="eduMetComplex"
-      @updated="getFiles" accept=".pdf"></PostFile>
+      @updated="close('addDocumentDialog');getFiles()" accept=".pdf"></PostFile>
   </Dialog>
   <!-- documentInfoSidebar -->
   <Sidebar v-model:visible="visibility.documentInfoSidebar" position="right" class="p-sidebar-lg"
@@ -292,9 +303,7 @@ import PostFile from "@/components/documents/PostFile.vue"
 export default {
   name: 'DisciplineEduMetComplex',
   components: { ApprovalUsers, DocSignaturesInfo, DocInfo, PostFile },
-  props: {
-    
-  },
+  props: { },
   emits: [],
   data() {
     return {
@@ -647,6 +656,7 @@ export default {
         namekz: "",
         nameru: "",
         nameen: "",
+        lang: {name:"kz", value: 0},
         docType: this.Enum.DocType.EduComplex,
         departmentID: this.currentDepartment.id,
         params: [
@@ -692,6 +702,7 @@ export default {
     },
     onPageDepartment(event) {
       this.departmentPage = event.page;
+      this.departmentRows = event.rows;
       this.getDepartments();
     },
     doubleClickDepartment(event) {
@@ -730,11 +741,13 @@ export default {
       }, { 
         headers: getHeader() 
       }).then(res => {
-        this.departments = res.data.departments
-        this.totalDepartments = res.data.total
-        this.currentDepartment = null
+        this.departments = res.data.departments;
+        this.totalDepartments = res.data.total;
+        this.currentDepartment = null;
 
-        this.departmentTableLoading = false
+        this.departmentTableLoading = false;
+        this.filePage = 0;
+        this.getFiles();
       }).catch(err => {
         this.departments = []
         this.totalDepartments = 0
@@ -749,14 +762,14 @@ export default {
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
 
-        this.departmentTableLoading = false
+        this.departmentTableLoading = false;
+        this.filePage = 0;
+        this.getFiles();
       });
-
-      this.filePage = 0;
-      this.getFiles();
     },
     onPageFile(event) {
       this.filePage = event.page;
+      this.fileRows = event.rows
       this.getFiles();
     },
     getFiles() {
