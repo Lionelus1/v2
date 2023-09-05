@@ -105,18 +105,21 @@
                     <Dialog v-model:visible="issueCertificateDialog" :style="{ width: '500px' }">   
                         <template #header>
                             <div>
-                                <i class="pi pi-exclamation-triangle" style="padding-left: 10px">{{ $t('course.certificate.confirm') }}</i>
+                                <i class="pi pi-exclamation-triangle mr-2"></i>
+                                {{ $t('course.certificate.confirm') }}
                             </div>
                         </template>
-
+                        <label>{{ $t('common.nextIssue') }}</label>
                         <template #footer>
-                            <div class="flex flex-wrap row-gap-1">
+                            <div class="flex justify-content-between">
                                     <InputText type="text" v-model="organizer.lastNumber"></InputText>
-                                    <Button v-if="findRole(null,'online_course_administrator')"
+                                    <div>
+                                        <Button v-if="findRole(null,'online_course_administrator')"
                                             :label="$t('common.yes')" @click="issueCertificate(0)"/>
 
-                                    <Button :label="$t('common.no')" @click="closeIssueCertificateDialog"
-                                        class="w-full p-button-secondary p-button-outlined"/>
+                                        <Button :label="$t('common.no')" @click="closeIssueCertificateDialog"
+                                        class="p-button-outlined"/>
+                                    </div>
                             </div>
 
                         </template>
@@ -126,19 +129,23 @@
                     <Dialog v-model:visible="issueCertificateWithDialog" :style="{ width: '450px' }">
                         <template #header>
                             <div>
-                                <i class="pi pi-exclamation-triangle" style="padding-left: 10px">{{ $t('course.certificate.confirm2') }}</i>
+                                <i class="pi pi-exclamation-triangle mr-2"></i>
+                                {{ $t('course.certificate.confirm2') }}
                             </div>
                         </template>
 
+                        <label>{{ $t('common.nextIssue') }}</label>
                         <template #footer>
-                            <div class="flex flex-wrap row-gap-1">
+                            <div class="flex justify-content-between">
                                 <InputText type="text" v-model="organizer.lastNumber"></InputText>
-                                <Button v-if="findRole(null,'online_course_administrator')"
+                                <div>
+                                    <Button v-if="findRole(null,'online_course_administrator')"
                                             :label="$t('common.yes')" 
                                             @click="issueCertificate(1)"/>
-
-                                <Button :label="$t('common.no')" @click="closeIssueCertificateWithDialog"
-                                        class="w-full p-button-secondary p-button-outlined"/>
+                                    <Button :label="$t('common.no')" @click="closeIssueCertificateWithDialog"
+                                            class="p-button-secondary p-button-outlined"/>
+                                </div>
+                                
                             </div>
                         </template>
                         
@@ -474,32 +481,29 @@ export default {
         },
 
         issueCertificate(withApplication) {
-            this.$confirm.require({
-                message: withApplication === 0 ? this.$t("course.certificate.confirm") : withApplication === 1 ? this.$t("course.certificate.confirm2") : '',
-                header: ' ',
-                icon: 'pi pi-exclamation-triangle',
-                accept: () => {
-                    this.saving = true
-                    this.service.issueCertificate({
-                        users: null,
-                        courseID: this.course.id,
-                        comment: "",
-                        withApplication: withApplication
-                    }).then(_ => {
-                        this.saving = false;
-                        this.submitted = false;
-                        this.$toast.add({
-                            severity: "success",
-                            summary: this.$t('common.successDone'),
-                            life: 3000,
-                        });
-                        this.getCourseStudents()
-                    }).catch(_ => {
-                        this.saving = false;
-                        this.submitted = false;
-                    })
-                },
-            });
+            this.saving = true
+            this.service.issueCertificate({
+                users: null,
+                courseID: this.course.id,
+                comment: "",
+                withApplication: withApplication
+            }).then(_ => {
+                this.saving = false;
+                this.submitted = false;
+                this.$toast.add({
+                    severity: "success",
+                    summary: this.$t('common.successDone'),
+                    life: 3000,
+                });
+                this.getCourseStudents()
+                this.issueCertificateWithDialog = false
+                this.issueCertificateDialog = false
+            }).catch(_ => {
+                this.saving = false;
+                this.submitted = false;
+                this.issueCertificateWithDialog = false
+                this.issueCertificateDialog = false
+            })
         },
         getCourseOrganizerByCourseID() {
             this.loading = true
