@@ -44,7 +44,9 @@ export class MenuService {
                     {
                         label: $t('postaccmonrep.title'), icon: 'pi pi-fw pi-folder', to: '/documents/catalog/postaccmonrep'
                     },
-
+                    {
+                        label: $t('dissertation.swList'), icon: 'pi pi-fw pi-folder', to: '/documents/scientific-works'
+                    },
                 ]
 
             },

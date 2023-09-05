@@ -319,7 +319,8 @@ export default {
         address: 'Адрес',
         qrGenerator: 'QR генератор',
         generate: 'Генерациялау',
-        selectFormat: 'Форматты таңдаңыз'
+        selectFormat: 'Форматты таңдаңыз',
+        addPost: 'Пост қосу'
     },
     bank: {
         title: "Банктер",

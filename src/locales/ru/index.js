@@ -321,7 +321,8 @@ export default {
         address: 'Адрес',
         qrGenerator: 'QR генератор',
         generate: 'Генерировать',
-        selectFormat: 'Выберите формат'
+        selectFormat: 'Выберите формат',
+        addPost: 'Добавить публикацию'
     },
     bank: {
         title: "Банки",

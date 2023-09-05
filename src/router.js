@@ -155,6 +155,12 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
+                path: '/documents/scientific-works',
+                name: 'ScientificWorks',
+                component: load('documents/ScientificWorks'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
                 path: '/docrequests',
                 name: 'DocumentRequests',
                 component: load('references/ReferenceRequests'),

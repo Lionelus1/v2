@@ -321,7 +321,8 @@ export default {
         address: 'Address',
         qrGenerator: 'QR generator',
         generate: 'Generate',
-        selectFormat: 'Select format'
+        selectFormat: 'Select format',
+        addPost: 'Add post'
     },
     bank: {
         title: "Banks",
