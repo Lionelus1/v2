@@ -35,9 +35,10 @@
                :src="'data:image/jpeg;base64,' + n.senderObject.photo " rounded/>
           <div style="width: 80%; float:left">
             <h6 :style="{margin:0,marginBottom:'2px',fontWeight : n.isSeen==0 ? 'bolder' : '400'}">{{ n.senderObject.fullName }}</h6>
-            <p :style="{margin:0,fontWeight : n.isSeen==0 ? 'bolder' : '400'}" class="p-text-warn">
-              {{ n["description_" + $i18n.locale] }}
+            <p :style="{ margin: 0, fontWeight: n.isSeen == 0 ? 'bolder' : '400' }" class="p-text-warn">
+              <span v-html="n['description_' + $i18n.locale]"></span>
             </p>
+
             <span style="display: block; margin-top:5px;color:#2196F3;">{{ timeDifference(n.createdDate) }}</span>
           </div>
         </div>
@@ -173,8 +174,7 @@ export default {
           yy: this.$i18n.locale === "kz" ? "%d жыл бұрын" : this.$i18n.locale === "en" ? "%d years" : "",
         }
       });
-      console.log(now);
-      console.log(given);
+
       return moment.duration(given.diff(now)).humanize();
 
     },
@@ -215,9 +215,13 @@ export default {
 
     this.socket.onmessage = (event) => {
       let parsed = JSON.parse(event.data);
+      let tempDiv = document.createElement('div');
+      tempDiv.innerHTML = parsed['description_'+ this.$i18n.locale];
+      let descriptionText = tempDiv.textContent;
+
       this.$toast.add({
             severity: 'success',
-            summary: parsed.description,
+            summary: descriptionText,
             detail: JSON.parse(parsed.senderJSON).fullName,
             life: 3000
           }
