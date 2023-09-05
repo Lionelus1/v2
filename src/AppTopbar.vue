@@ -11,7 +11,7 @@
     <div class="layout-topbar-icons">
         <div class="notification" @click="visibleRight = true">
             <i class="fa-regular fa-bell" />
-            <Badge :value="notLength" severity="danger"></Badge>
+            <Badge :value="notLength" severity="primary"></Badge>
         </div>
       <button v-tooltip.bottom="'Telegram Chat'" class="tg" @click="navigateToTelegram()">
         <i class="fa-brands fa-telegram"></i>
@@ -282,15 +282,15 @@ export default {
   }
 }
 
-.top_lang {
-  ::v-deep(.p-inputtext) {
-    color: #fff !important;
-  }
-}
+//.top_lang {
+//  ::v-deep(.p-inputtext) {
+//    color: #fff !important;
+//  }
+//}
 
-::v-deep(.p-dropdown .p-dropdown-trigger) {
-  color: #fff !important;
-}
+//::v-deep(.p-dropdown .p-dropdown-trigger) {
+//  color: #fff !important;
+//}
 
 @media print {
   .no-print, .no-print * {
@@ -308,7 +308,7 @@ export default {
 .pi-question-circle {
   margin-right: 10px;
   font-size: 20px;
-  color: white;
+  //color: white;
 }
 
 @media (max-width: 425px) {
@@ -316,13 +316,6 @@ export default {
     padding: 1em;
   }
 }
-
-.pi-question-circle {
-  margin-right: 10px;
-  font-size: 20px;
-  color: white;
-}
-
 
 .product-item {
   display: flex;
