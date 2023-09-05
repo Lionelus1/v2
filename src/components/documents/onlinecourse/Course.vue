@@ -471,11 +471,13 @@ export default {
             this.studentDialog = true;
         },
         openIssueCertificateDialog() {
+            this.issueCertificateWithDialog = false;
             this.issueCertificateDialog = true;
             this.getCourseOrganizerByCourseID()
         },
 
         openIssueCertificateWithDialog() {
+            this.issueCertificateDialog = false;
             this.issueCertificateWithDialog = true;
             this.getCourseOrganizerByCourseID()
         },
