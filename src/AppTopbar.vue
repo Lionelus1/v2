@@ -215,9 +215,13 @@ export default {
 
     this.socket.onmessage = (event) => {
       let parsed = JSON.parse(event.data);
+      let tempDiv = document.createElement('div');
+      tempDiv.innerHTML = parsed['description_'+ this.$i18n.locale];
+      let descriptionText = tempDiv.textContent;
+
       this.$toast.add({
             severity: 'success',
-            summary: parsed.description_kz,
+            summary: descriptionText,
             detail: JSON.parse(parsed.senderJSON).fullName,
             life: 3000
           }
