@@ -4,15 +4,13 @@
       class="introduction"
       :style="organization ? 'margin-top:-1.5em; margin-bottom:1.5em' : ''"
     >
-      <div class="feature-intro ml-3">
-        <h4 style="display: inline">
+        <h3>
           {{
             personType === PersonType.IndividualEntrepreneur
               ? $t("common.individualEntrepreneur")
               : $t("common.personal")
           }}
-        </h4>
-      </div>
+        </h3>
     </div>
     <div class="card implementation">
       <div class="card p-0">
@@ -69,7 +67,7 @@
                 {{ this.$t("common.recordsLoading") }}
               </template>
               <Column
-                selectionMode="multiple"
+                selectionMode="single"
                 headerStyle="width: 3em"
               ></Column>
               <Column
@@ -226,12 +224,7 @@ export default {
           label: "",
           icon: "pi pi-fw pi-refresh",
           command: () => {
-            this.$toast.add({
-              severity: "success",
-              summary: "Updated",
-              detail: "Data Updated",
-              life: 3000,
-            });
+              this.initApiCall();
           },
         },
         {
