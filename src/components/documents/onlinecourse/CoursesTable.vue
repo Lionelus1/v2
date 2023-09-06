@@ -7,7 +7,7 @@
                 v-model:selection="selectedCourse" selectionMode="single" :rowHover="true" stripedRows
                 @page="onPage">
                 <template #header>
-                    <h4 class="mb-3">{{ $t('course.courses') }}</h4>
+                  <h4 class="mb-3">{{ $t('course.courses') }}</h4>
                 </template>
                 <Column :header="$t('common.name')">
                     <template #body="body">
@@ -21,13 +21,18 @@
                 </Column>
                 <Column :header="$t('common.goToTheCourse')">
                     <template #body="body">
-                        <Button v-model="body.Button" class="p-button-info mb-2" />
+                      <Button
+                        v-model="body.Button"
+                        class="p-button-info mb-2"
+                        @click="selectCourse(body.data)"
+                      />
                     </template>
                 </Column>
 
                 <Column :header="$t('common.addCertificate')">
                     <template #body="body">
-                        <Checkbox v-model="body.data.checked" :binary="true" />
+                        <Checkbox v-model="body.data.checked"
+                        :binary="true" />
                     </template> 
                 </Column> 
 
@@ -64,6 +69,7 @@ export default {
         page: 0,
         rows: 10,
         checked: true,
+        course: null,
     }
   },
   created() {
@@ -118,6 +124,9 @@ export default {
         this.tableLoading = false
       });
     },
+    selectCourse(course) {
+      this.$router.push('/course/' + course.id)
+    }, 
   }
 }
 </script>
