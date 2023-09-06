@@ -31,6 +31,8 @@ export default {
         approveDate: "Дата утверждения",
         notUpload: 'Документ не загружен',
         nextIssue: 'Последний номер сертификата',
+        goToTheCourse: "Перейти к курсу",
+        addCertificate: "Добавить сертификат", 
         action: {
             submit: 'Отправить',
             accept: 'Принять',

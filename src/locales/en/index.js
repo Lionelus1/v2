@@ -32,6 +32,8 @@ export default {
     approvedBy: "Approved by",
     notUpload: "Document not uploaded",
     nextIssue: "Last certificate number",
+    goToTheCourse: "Go to the course",
+    addCertificate: "Add a certificate",
     action: {
       submit: "Submit",
       accept: "Accept",

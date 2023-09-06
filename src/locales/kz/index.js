@@ -31,6 +31,8 @@ export default {
         approvedBy: "Бекіткен",
         notUpload: 'Құжат жүктелмеді',
         nextIssue: 'Сертификаттың соңғы нөмірі',
+        goToTheCourse: "Курсқа өту",
+        addCertificate: "Сертификат қосу",
         action: {
             submit: 'Жіберу',
             accept: 'Қабылдау',
