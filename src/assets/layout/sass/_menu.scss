@@ -29,7 +29,7 @@
             }
 
             &:focus {
-                @include focused-inset();
+                //@include focused-inset();
             }
         }
 
@@ -151,12 +151,12 @@
     .layout-menu {
         > li {
             > a {
-                border-top: 1px solid $menuitemDarkBorderColor;
+                //border-top: 1px solid $menuitemDarkBorderColor;
             }
 
             &:last-child {
                 > a {
-                    border-bottom: 1px solid $menuitemDarkBorderColor;
+                    //border-bottom: 1px solid $menuitemDarkBorderColor;
                 }
             }
 
@@ -171,6 +171,10 @@
 
                 &.router-link-active {
                     color: $menuitemActiveRouteColor;
+
+                    &:hover {
+                        color: $menuitemActiveRouteColor;
+                    }
                 }
 
                 &:hover {
@@ -180,7 +184,7 @@
 
             &.active-menuitem {
                 > a {
-                    background-color: $menuitemDarkActiveBgColor;
+                    //background-color: $menuitemDarkActiveBgColor;
                     color: $menuitemDarkActiveColor;
                 }
             }
