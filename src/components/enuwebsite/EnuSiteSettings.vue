@@ -2,6 +2,11 @@
   <div class="col-12 flex flex-column">
     <TitleBlock
       :title="`${$t('web.siteSettings')}${facultyAbbrev ? ' - ' + facultyAbbrev['name_' + $i18n.locale] : ''}`" />
+
+    <div class="card">
+      <SelectSiteSlug @onSelect="onSlugSelect"/>
+    </div>
+
     <TabView>
       <TabPanel :header="$t('web.properties')">
         <Panel :header="$t('web.commonSettings')" v-if="isWebAdmin || isFacultyWebAdmin">
@@ -97,6 +102,7 @@ import WebLogs from "@/components/enuwebsite/EnuSiteLogs.vue";
 import { findRole, smartEnuApi, fileRoute } from "@/config/config";
 import { useStore } from "vuex";
 import {FileService} from "@/service/file.service";
+import SelectSiteSlug from "@/components/enuwebsite/SelectSiteSlug.vue";
 
 const store = useStore()
 const formData = ref({})
@@ -118,7 +124,7 @@ const fileService = new FileService()
 const bgImg = ref(null)
 
 const facultySite = computed(() => {
-  return `${enuService.getSiteUrl(store)}?mode=preview`
+  return `${enuService.getSiteUrl(store, null)}?mode=preview`
 })
 
 const getFacultyAbb = () => {
@@ -261,6 +267,10 @@ const isValid = () => {
     errors.push(1)
 
   return errors.length === 0
+}
+
+const onSlugSelect = (event) => {
+
 }
 
 </script>

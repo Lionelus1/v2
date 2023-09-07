@@ -35,6 +35,7 @@ const store = createStore({
                     localStorage.removeItem('journalCurrentPage');
                     localStorage.removeItem('contractFilters');
                     localStorage.removeItem('userSlug')
+                    localStorage.removeItem('selectedSlug')
                     router.push({ "name": "PublicVacancies" })
                 })
                 .catch((err) => {
@@ -42,6 +43,7 @@ const store = createStore({
                     localStorage.removeItem('authUser');
                     localStorage.removeItem('loginedUser');
                     localStorage.removeItem('userSlug');
+                    localStorage.removeItem('selectedSlug')
                 
                     router.push({ "name": "/login" })
                 })
