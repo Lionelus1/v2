@@ -11,7 +11,7 @@
               <Button icon="fa-solid fa-home" class="menubar-icons"
                 v-tooltip="$t('educomplex.tooltip.home')"
                 @click="home" :disabled="!faculty"></Button>
-              <Button icon="fa-regular fa-folder-open" class="menubar-icons"
+              <Button icon="fa-regular fa-folder" class="menubar-icons"
                 v-tooltip="$t('educomplex.tooltip.into')"
                 @click="into" :disabled="faculty || !currentDepartment"></Button>
             </div>
@@ -56,7 +56,7 @@
               <div style="width: 100%; display: flex; justify-content: flex-end;">
                 <Button @click="currentDepartment=slotProps.data;into()"
                   class="p-button-text p-button-info p-1" v-tooltip="$t('educomplex.tooltip.into')">
-                  <i class="fa-regular fa-folder-open"></i>
+                  <i class="fa-regular fa-folder"></i>
                 </Button>
               </div>
             </template>
@@ -562,6 +562,9 @@ export default {
     },
     uncover(element) {
       this.neutral()
+    },
+    isTest(element) {
+      console.log(element)
     },
     cover(element) {
       if (this.screen[element].maximized) {

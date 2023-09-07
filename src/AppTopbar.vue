@@ -9,17 +9,13 @@
                     :label="$t('common.createNew')" @click="toggle" aria-haspopup="true" aria-controls="overlay_menu"/>
         </div>
         <Menu id="overlay_menu" ref="menu" :model="pagemenu" :popup="true"/>
-        <div class="layout-topbar-icons">
-            <div class="notification" @click="visibleRight = true">
+        <div class="header_icons flex align-items-center">
+            <div class="notification ml-2 mr-4" @click="visibleRight = true">
                 <i class="fa-regular fa-bell"/>
                 <Badge :value="notLength" severity="primary"></Badge>
             </div>
-            <button v-tooltip.bottom="'Telegram Chat'" class="tg" @click="navigateToTelegram()">
-                <i class="fa-brands fa-telegram"></i>
-            </button>
-            <button v-if="isShowGuide" v-tooltip.bottom="$t('guide.guide')" class="guide" @click="navigate()">
-                <i class="pi pi-question-circle"></i>
-            </button>
+                <i v-tooltip.bottom="'Telegram Chat'" @click="navigateToTelegram()" class="tg pi pi-telegram ml-2 mr-2"></i>
+                <i v-if="isShowGuide" v-tooltip.bottom="$t('guide.guide')" @click="navigate()" class="pi pi-question-circle ml-2 mr-2"></i>
             <LanguageDropdown class="top_lang"/>
         </div>
         <Sidebar v-model:visible="visibleRight"
@@ -252,9 +248,6 @@ export default {
 
 
 <style lang="scss" scoped>
-.layout-topbar .layout-topbar-icons {
-  display: flex;
-}
 
 .add_new {
   margin-left: 20px;
@@ -262,17 +255,18 @@ export default {
   background-color: #e3f2fd;
   color: #495057;
 }
-
-.tg {
-  border: none;
+.header_icons{
+  color: #6c757d;
   cursor: pointer;
-  background: transparent;
-  font-size: 22px;
-  margin-left: 0;
-
-  i {
-    margin: 0 !important;
-  }
+}
+.header_icons i:hover{
+  color: #293042;
+}
+.header_icons svg:hover{
+  color: #293042;
+}
+.tg {
+  font-size: 20px;
 }
 
 .round {
@@ -280,29 +274,6 @@ export default {
   /* Радиус скругления */
   margin-right: 5px;
 }
-
-.guide {
-  border: none;
-  cursor: pointer;
-  background: transparent;
-  font-size: 15px;
-  margin-left: 5px !important;
-  margin-right: 5px;
-
-  i {
-    margin: 0 !important;
-  }
-}
-
-//.top_lang {
-//  ::v-deep(.p-inputtext) {
-//    color: #fff !important;
-//  }
-//}
-
-//::v-deep(.p-dropdown .p-dropdown-trigger) {
-//  color: #fff !important;
-//}
 
 @media print {
   .no-print, .no-print * {
