@@ -1,24 +1,21 @@
 <template>
   <div class="layout-topbar no-print">
-
-    <button class="p-link layout-menu-button" @click="onMenuToggle">
-      <span class="pi pi-bars"></span>
-    </button>
-    <Button v-if="($route.name=='organizations') || ($route.name=='persons')" class="add_new p-button"
-            icon="pi pi-plus"
-            :label="$t('common.createNew')" @click="toggle" aria-haspopup="true" aria-controls="overlay_menu"/>
+    <div>
+      <button class="p-link layout-menu-button" @click="onMenuToggle">
+        <span class="pi pi-bars"></span>
+      </button>
+      <Button v-if="($route.name=='organizations') || ($route.name=='persons')" class="add_new p-button"
+              icon="pi pi-plus"
+              :label="$t('common.createNew')" @click="toggle" aria-haspopup="true" aria-controls="overlay_menu"/>
+    </div>
     <Menu id="overlay_menu" ref="menu" :model="pagemenu" :popup="true"/>
-    <div class="layout-topbar-icons">
-        <div class="notification" @click="visibleRight = true">
-            <i class="fa-regular fa-bell" />
-            <Badge :value="notLength" severity="primary"></Badge>
-        </div>
-      <button v-tooltip.bottom="'Telegram Chat'" class="tg" @click="navigateToTelegram()">
-        <i class="fa-brands fa-telegram"></i>
-      </button>
-      <button v-if="isShowGuide" v-tooltip.bottom="$t('guide.guide')" class="guide" @click="navigate()">
-        <i class="pi pi-question-circle"></i>
-      </button>
+    <div class="header_icons flex align-items-center">
+      <div class="notification ml-2 mr-4" @click="visibleRight = true">
+        <i class="fa-regular fa-bell"/>
+        <Badge :value="notLength" severity="primary"></Badge>
+      </div>
+      <i v-tooltip.bottom="'Telegram Chat'" @click="navigateToTelegram()" class="tg pi pi-telegram ml-2 mr-2"></i>
+      <i v-if="isShowGuide" v-tooltip.bottom="$t('guide.guide')" @click="navigate()" class="pi pi-question-circle ml-2 mr-2"></i>
       <LanguageDropdown class="top_lang"/>
     </div>
     <Sidebar v-model:visible="visibleRight"
@@ -29,7 +26,7 @@
              style="width: 25%;">
       <h3>Notifications</h3>
       <div>
-        <div v-for="n,ni in notifications" :key="ni"
+        <div v-for="(n,ni) in notifications" :key="ni"
              style="overflow: hidden; clear: left; width: 100%; display: block; margin-bottom:25px;padding-bottom:15px;border-bottom:1px dotted #ccc;">
           <img class="round" style="height: 80px; float:left;" v-if="n.senderObject.photo != null && n.senderObject.photo !=''"
                :src="'data:image/jpeg;base64,' + n.senderObject.photo " rounded/>
@@ -45,7 +42,8 @@
         <div class="p-w-full p-text-center">
           <span v-if="notLoading">Loading please wait . . .</span>
           <Button v-if="showCalc && !notLoading" icon="pi pi-refresh" @click="loadByPage()"
-                  style="width:100%;" class="p-w-full p-button-rounded p-button-outlined" iconPos="right" label="Load more"/>
+                  style="width:100%;" class="p-w-full p-button-rounded p-button-outlined" iconPos="right"
+                  label="Load more"/>
         </div>
       </div>
     </Sidebar>
@@ -114,7 +112,10 @@ export default {
     },
     loadNotifications() {
       this.notLoading = true;
-      axios.post(smartEnuApi + "/notifications", {pageNum: this.pageNum, itemsPerPage: this.itemsPerPage}, {headers: getHeader()})
+      axios.post(smartEnuApi + "/notifications", {
+        pageNum: this.pageNum,
+        itemsPerPage: this.itemsPerPage
+      }, {headers: getHeader()})
           .then(response => {
             this.newCount = response.data.NewCount ? response.data.NewCount : 0;
             let recordCount = response.data.RecordCount;
@@ -195,7 +196,10 @@ export default {
   mounted() {
 
     this.notLoading = true;
-    axios.post(smartEnuApi + "/notifications", {pageNum: this.pageNum, itemsPerPage: this.itemsPerPage}, {headers: getHeader()})
+    axios.post(smartEnuApi + "/notifications", {
+      pageNum: this.pageNum,
+      itemsPerPage: this.itemsPerPage
+    }, {headers: getHeader()})
         .then(response => {
           this.newCount = response.data.NewCount ? response.data.NewCount : 0;
           let recordCount = response.data.RecordCount;
@@ -216,7 +220,7 @@ export default {
     this.socket.onmessage = (event) => {
       let parsed = JSON.parse(event.data);
       let tempDiv = document.createElement('div');
-      tempDiv.innerHTML = parsed['description_'+ this.$i18n.locale];
+      tempDiv.innerHTML = parsed['description_' + this.$i18n.locale];
       let descriptionText = tempDiv.textContent;
 
       this.$toast.add({
@@ -244,9 +248,6 @@ export default {
 
 
 <style lang="scss" scoped>
-.layout-topbar .layout-topbar-icons {
-  display: flex;
-}
 
 .add_new {
   margin-left: 20px;
@@ -255,16 +256,21 @@ export default {
   color: #495057;
 }
 
-.tg {
-  border: none;
+.header_icons {
+  color: #6c757d;
   cursor: pointer;
-  background: transparent;
-  font-size: 22px;
-  margin-left: 0;
+}
 
-  i {
-    margin: 0 !important;
-  }
+.header_icons i:hover {
+  color: #293042;
+}
+
+.header_icons svg:hover {
+  color: #293042;
+}
+
+.tg {
+  font-size: 20px;
 }
 
 .round {
@@ -272,29 +278,6 @@ export default {
   /* Радиус скругления */
   margin-right: 5px;
 }
-
-.guide {
-  border: none;
-  cursor: pointer;
-  background: transparent;
-  font-size: 15px;
-  margin-left: 5px !important;
-  margin-right: 5px;
-
-  i {
-    margin: 0 !important;
-  }
-}
-
-//.top_lang {
-//  ::v-deep(.p-inputtext) {
-//    color: #fff !important;
-//  }
-//}
-
-//::v-deep(.p-dropdown .p-dropdown-trigger) {
-//  color: #fff !important;
-//}
 
 @media print {
   .no-print, .no-print * {
@@ -355,20 +338,24 @@ export default {
     font-size: .875rem;
   }
 }
-.notification{
+
+.notification {
   position: relative;
   display: flex;
   align-items: center;
   cursor: pointer;
-svg{
-  font-size: 20px;
+
+  svg {
+    font-size: 20px;
+  }
+
+  span {
+    position: absolute;
+    left: 10px;
+    top: -5px;
+  }
 }
-    span{
-        position: absolute;
-        left: 10px;
-        top: -5px;
-    }
-}
+
 @media screen and (max-width: 576px) {
   .product-item {
     flex-wrap: wrap;
