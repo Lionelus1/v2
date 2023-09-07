@@ -42,7 +42,7 @@
                                 </div>
                                 <span v-if="findRole(null,'online_course_administrator')" class="p-input-icon-left">
                                     <i class="pi pi-search"/>
-                                    <InputText disabled="true" :placeholder="$t('common.search')"/>
+                                    <InputText type="search" v-model="searchText" @keyup.enter="getCourseStudents"  @search="getCourseStudents" :placeholder="$t('common.search')"/>
                                 </span>
                             </div>
                         </template>
@@ -341,7 +341,9 @@ export default {
             reqBtn: true,
             statusText: false,
             userID: null,
-            stateID: null
+            stateID: null, 
+            searchText: '',
+            searchData: {}
         }
     },
     created() {
@@ -552,8 +554,15 @@ export default {
         },
         getCourseStudents() {
             this.loading = true
+            const requestData = {
+                courseID: this.course_id,
+                page: this.studentLazyParams.page,
+                rows: this.studentLazyParams.rows,
+                searchText: this.searchText,
+            };
+
             //localStorage.setItem("course_page", JSON.stringify(this.studentLazyParams));
-            this.service.getCourseStudents(this.course_id, this.studentLazyParams.page, this.studentLazyParams.rows).then(response => {
+            this.service.getCourseStudents(requestData).then(response => {
                 if (response.data.students) {
                     this.students = response.data.students
                 }
