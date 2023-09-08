@@ -124,9 +124,9 @@ export class MenuService {
             },
 
 
-            {
+            /*{
                 label: $t('vaccination.title'), icon: 'pi pi-fw pi-check-circle', to: '/smartenu/vaccination'
-            },
+            },*/
             /*{
               label:  $t('faq.title'), icon: 'pi pi-fw pi-question-circle', to: '/faq/faqmain'
             },*/
