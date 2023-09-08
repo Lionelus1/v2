@@ -24,29 +24,30 @@
                  @after-hide="resetNot"
                  :baseZIndex="10000" position="right"
                  style="width: 25%;">
-            <h3>Notifications</h3>
+            <h4>{{ $t('common.notifications') }}</h4>
             <div>
-                <div v-for="n,ni in notifications" :key="ni"
-                     style="overflow: hidden; clear: left; width: 100%; display: block; margin-bottom:25px;padding-bottom:15px;border-bottom:1px dotted #ccc;">
-                    <img class="round" style="height: 80px; float:left;"
+                <div v-for="(n,ni) in notifications" :key="ni"
+                     style="clear: left; width: 100%; display: block; margin-bottom:25px;padding-bottom:15px;border-bottom:1px dotted #ccc;">
+                  <div class="flex">
+                    <img class="round h-5rem mr-3"
                          v-if="n.senderObject.photo != null && n.senderObject.photo !=''"
                          :src="'data:image/jpeg;base64,' + n.senderObject.photo " rounded/>
-                    <div style="width: 80%; float:left">
-                        <h6 :style="{margin:0,marginBottom:'2px',fontWeight : n.isSeen==0 ? 'bolder' : '400'}">
-                            {{ n.senderObject.fullName }}</h6>
-                        <p :style="{margin:0,fontWeight : n.isSeen==0 ? 'bolder' : '400'}" class="p-text-warn">
-                            {{ n["description_" + $i18n.locale] }}
-                        </p>
-                        <span style="display: block; margin-top:5px;color:#2196F3;">{{
-                            timeDifference(n.createdDate)
-                            }}</span>
+                    <div class="flex flex-column gap-1" style="width: 75%;word-wrap: break-word;">
+                      <h6 :style="{margin:0,marginBottom:'2px',fontWeight : n.isSeen==0 ? 'bolder' : '400'}">
+                        {{ n.senderObject.fullName }}</h6>
+                      <div :style="{fontWeight : n.isSeen==0 ? 'bolder' : '400'}" class="font-semibold" v-html="n['description_' + $i18n.locale]">
+                      </div>
+                      <span class="text-gray-500 mt-3">{{
+                          timeDifference(n.createdDate)
+                        }}</span>
                     </div>
+                  </div>
                 </div>
                 <div class="p-w-full p-text-center">
                     <span v-if="notLoading">Loading please wait . . .</span>
                     <Button v-if="showCalc && !notLoading" icon="pi pi-refresh" @click="loadByPage()"
                             style="width:100%;" class="p-w-full p-button-rounded p-button-outlined" iconPos="right"
-                            label="Load more"/>
+                            :label="$t('common.loadMore')"/>
                 </div>
             </div>
         </Sidebar>

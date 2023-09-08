@@ -116,6 +116,7 @@ export default {
         cancel: "Отмена",
         main: "Основные",
         more: "Подробнее",
+        loadMore: "Загрузить больше",
         meetingUrl: "Ссылка для онлайн собрания",
         meetingPlace: "Место собрания",
         move: "Перемещение",
@@ -321,7 +322,8 @@ export default {
         address: 'Адрес',
         qrGenerator: 'QR генератор',
         generate: 'Генерировать',
-        selectFormat: 'Выберите формат'
+        selectFormat: 'Выберите формат',
+        notifications: 'Уведомления'
     },
     bank: {
         title: "Банки",

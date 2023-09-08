@@ -114,6 +114,7 @@ export default {
         code: "Коды",
         main: "Негізгі",
         more: "Толық",
+        loadMore: "Көбірек жүктеу",
         meetingUrl: "Онлайн жиналысқа сілтеме",
         meetingPlace: "Жиналыс өтетін орын",
         move: "Орнын ауыстыру",
@@ -319,7 +320,8 @@ export default {
         address: 'Адрес',
         qrGenerator: 'QR генератор',
         generate: 'Генерациялау',
-        selectFormat: 'Форматты таңдаңыз'
+        selectFormat: 'Форматты таңдаңыз',
+        notifications: 'Хабарламалар'
     },
     bank: {
         title: "Банктер",

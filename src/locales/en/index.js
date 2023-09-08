@@ -115,6 +115,7 @@ export default {
     code: "Code",
     main: "Main",
     more: "More",
+    loadMore: "Load more",
     meetingUrl: "Link to online meeting",
     meetingPlace: "Meeting place",
     myData: "My details",
@@ -321,7 +322,8 @@ export default {
         address: 'Address',
         qrGenerator: 'QR generator',
         generate: 'Generate',
-        selectFormat: 'Select format'
+        selectFormat: 'Select format',
+        notifications: 'Notifications'
     },
     bank: {
         title: "Banks",
