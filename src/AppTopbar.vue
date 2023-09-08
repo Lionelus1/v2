@@ -37,7 +37,7 @@
                         {{ n.senderObject.fullName }}</h6>
                       <div :style="{fontWeight : n.isSeen==0 ? 'bolder' : '400'}" class="font-semibold" v-html="n['description_' + $i18n.locale]">
                       </div>
-                      <span class="text-gray-500 mt-3">{{
+                      <span class="text-gray-500">{{
                           timeDifference(n.createdDate)
                         }}</span>
                     </div>
