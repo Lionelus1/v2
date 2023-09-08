@@ -29,7 +29,7 @@
                 <div v-for="(n,ni) in notifications" :key="ni"
                      style="clear: left; width: 100%; display: block; margin-bottom:25px;padding-bottom:15px;border-bottom:1px dotted #ccc;">
                   <div class="flex">
-                    <img class="round h-5rem mr-3"
+                    <img class="notification_img round mr-3"
                          v-if="n.senderObject.photo != null && n.senderObject.photo !=''"
                          :src="'data:image/jpeg;base64,' + n.senderObject.photo " rounded/>
                     <div class="flex flex-column gap-1" style="width: 75%;word-wrap: break-word;">
@@ -41,6 +41,7 @@
                           timeDifference(n.createdDate)
                         }}</span>
                     </div>
+                    <div v-if="n.isSeen===0" class="new_notification"></div>
                   </div>
                 </div>
                 <div class="p-w-full p-text-center">
@@ -282,7 +283,19 @@ export default {
   /* Радиус скругления */
   margin-right: 5px;
 }
-
+.notification_img{
+  width: 60px;
+  min-width: 60px;
+  height: 60px;
+}
+.new_notification{
+  width: 8px;
+  min-width: 8px;
+  height: 8px;
+  background: #4eb0ff;
+  border-radius: 50%;
+  //box-shadow: 0 0 3px 1px #2196F3;
+}
 @media print {
   .no-print, .no-print * {
     display: none !important;
