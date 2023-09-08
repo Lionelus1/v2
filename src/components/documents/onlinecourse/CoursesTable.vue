@@ -1,42 +1,43 @@
 <template>
-    <div class="surface-card p-4 shadow-2 border-round">
-        <TabPanel :header="$t('course.courses')">
-            <DataTable :value="courses" dataKey="id" :rows="rows" :totalRecords="total"
-                :paginator="true" :paginatorTemplate="paginatorTemplate" :rowsPerPageOptions="[10, 25, 50]"
-                :currentPageReportTemplate="currentPageReportTemplate" :lazy="true" :loading="tableLoading" scrollable scrollHeight="flex"
-                v-model:selection="selectedCourse" selectionMode="single" :rowHover="true" stripedRows
-                @page="onPage">
-                <template #header>
-                  <h4 class="mb-3">{{ $t('course.courses') }}</h4>
-                </template>
-                <Column :header="$t('common.name')">
-                    <template #body="body">
-                        {{ body.data['name' + $i18n.locale] }}
-                    </template>
-                </Column>
-                <Column :header="$t('common.description')">
-                    <template #body="body">
-                        {{ body.data['description' +  $i18n.locale] }}
-                    </template>
-                </Column>
-                <Column :header="$t('common.goToTheCourse')">
-                    <template #body="body">
-                      <Button
-                        v-model="body.Button"
-                        class="p-button-info mb-2"
-                        @click="selectCourse(body.data)"
-                      />
-                    </template>
-                </Column>
+    <div class="surface-card p-4 shadow-2 border-round">  
+      <TabPanel :header="$t('course.courses')"> 
+        <DataTable :value="courses" dataKey="id" :rows="rows" :totalRecords="total"
+        :paginator="true" :paginatorTemplate="paginatorTemplate" :rowsPerPageOptions="[10, 25, 50]"
+        :currentPageReportTemplate="currentPageReportTemplate" :lazy="true" :loading="tableLoading" scrollable scrollHeight="flex"
+        v-model:selection="selectedCourse" selectionMode="single" :rowHover="true" stripedRows
+        @page="onPage">
+        <template #header>
+          <h4 class="mb-3">{{ $t('course.courses') }}</h4>
+          <Button value="test" @click="getOod()"/>
+        </template>
+              <Column :header="$t('common.name')">
+                  <template #body="body">
+                      {{ body.data['name' + $i18n.locale] }}
+                  </template>
+              </Column>
+              <Column :header="$t('common.description')">
+                  <template #body="body">
+                      {{ body.data['description' +  $i18n.locale] }}
+                  </template>
+              </Column>
+              <Column :header="$t('common.goToTheCourse')">
+                  <template #body="body">
+                    <Button
+                      v-model="body.Button"
+                      class="p-button-info mb-2"
+                      @click="selectCourse(body.data)"
+                    />
+                  </template>
+              </Column>
 
-                <Column :header="$t('common.addCertificate')">
-                    <template #body="body">
-                        <Checkbox v-model="body.data.checked"
-                        :binary="true" />
-                    </template> 
-                </Column> 
+              <Column :header="$t('common.addCertificate')">
+                  <template #body="body">
+                      <Checkbox v-model="body.data.checked"
+                      :binary="true" />
+                  </template> 
+              </Column> 
 
-            </DataTable>
+          </DataTable>
         </TabPanel>
     </div>
 </template>
@@ -44,6 +45,7 @@
 <script>    
 import axios  from 'axios';
 import Checkbox from '@/main';
+import {OnlineCourseService} from "@/service/onlinecourse.service";
 
 import { getHeader, smartEnuApi } from "@/config/config";
 
@@ -70,6 +72,9 @@ export default {
         rows: 10,
         checked: true,
         course: null,
+        service: new OnlineCourseService(),
+        loading: false,
+        saving: false
     }
   },
   created() {
@@ -126,7 +131,16 @@ export default {
     },
     selectCourse(course) {
       this.$router.push('/course/' + course.id)
-    }, 
+    },
+    getOod() {
+       this.loading = true
+       this.service.getOod().then(_ => {
+        this.loading = false
+        
+       }).catch (_ => {
+        this.loading = false
+       })
+    } 
   }
 }
 </script>

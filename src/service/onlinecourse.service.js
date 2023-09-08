@@ -68,4 +68,7 @@ export class OnlineCourseService {
     getCourseOrganizerByCourseID(courseID) {
         return api.get(`onlinecourse/organizers/${courseID}`, {headers: getHeader()});
     }
+    getOod() {
+        return api.get(`onlinecourse/getOod`, {headers: getHeader()});
+    }
 }
