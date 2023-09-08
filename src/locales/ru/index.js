@@ -30,6 +30,7 @@ export default {
         approvedBy: "утвердил",
         approveDate: "Дата утверждения",
         notUpload: 'Документ не загружен',
+        nextIssue: 'Последний номер сертификата',
         action: {
             submit: 'Отправить',
             accept: 'Принять',

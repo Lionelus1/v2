@@ -31,6 +31,7 @@ export default {
     approveDate: "Approve date",
     approvedBy: "Approved by",
     notUpload: "Document not uploaded",
+    nextIssue: "Last certificate number",
     action: {
       submit: "Submit",
       accept: "Accept",

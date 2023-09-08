@@ -36,8 +36,8 @@ export class OnlineCourseService {
     getCourse(courseID) {
         return api.get(`/onlinecourse/course/${courseID}`, {headers: getHeader()});
     }
-    getCourseStudents(courseID,page,rows) {
-        return api.get(`/onlinecourse/students/${courseID}/${page}/${rows}`, { headers: getHeader()});
+    getCourseStudents(data) {
+        return api.post(`/onlinecourse/students`, data, { headers: getHeader()});
     }
 
     getJournal(courseHistoryID, studentID) {
@@ -61,5 +61,11 @@ export class OnlineCourseService {
     }
     updateModuleOfCourse(data){
         return api.post('onlinecourse/updateModule', data, {headers:getHeader()});
+    }
+    updateCourseOrganizerLastNumber(data){
+        return api.post('onlinecourse/organizers/updateLastNumber', data, {headers:getHeader()});
+    }
+    getCourseOrganizerByCourseID(courseID) {
+        return api.get(`onlinecourse/organizers/${courseID}`, {headers: getHeader()});
     }
 }

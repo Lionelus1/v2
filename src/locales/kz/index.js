@@ -30,6 +30,7 @@ export default {
         approveDate: "Бекітілген күні",
         approvedBy: "Бекіткен",
         notUpload: 'Құжат жүктелмеді',
+        nextIssue: 'Сертификаттың соңғы нөмірі',
         action: {
             submit: 'Жіберу',
             accept: 'Қабылдау',
