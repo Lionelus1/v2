@@ -7,6 +7,15 @@
             :closable="false"
             :breakpoints="{'960px': '75vw', '640px': '90vw'}"
     >
+      <template #header>
+        <div class="w-full flex justify-content-end">
+          <Button
+              icon="pi pi-times"
+              class="p-dialog-header-icon p-dialog-header-close p-link"
+              @click="closeModal"
+          />
+        </div>
+      </template>
         <Card style="box-shadow: none">
             <template #header>
                 <div class="dialog_img">
@@ -42,14 +51,7 @@
                 </div>
             </template>
         </Card>
-        <template #footer>
-            <Button
-                    v-bind:label="$t('common.close')"
-                    icon="pi pi-times"
-                    class="p-button p-component p-button-primary"
-                    @click="closeModal"
-            />
-        </template>
+
     </Dialog>
 </template>
 
