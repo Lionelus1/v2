@@ -1,7 +1,7 @@
 <template>
     <div class="col-12">
         <div class="card mt-2">
-            <h3 class="m-0">{{ $t('common.qrGenerator') }}</h3>
+            <TitleBlock :title="$t('common.qrGenerator')" :show-back-button="showBackButton"/>
         </div>
         <div class="card pt-8">
             <div class="qr_card flex justify-content-center gap-3">
@@ -34,12 +34,19 @@
 <script setup>
 import {ref} from 'vue';
 import Qr from "@/components/Qr.vue";
+import {useRoute} from "vue-router";
 
-const inputData = ref('https://smart.enu.kz');
+const props = defineProps(['data', 'showBackButton'])
+
+const route = useRoute();
+const courseQR = ref(props.data ? props.data : route.query.url)
+const inputData = ref(courseQR.value? courseQR.value:'https://smart.enu.kz');
 const warningText = ref(false);
 const sendText = ref(null);
 const extension = ref('');
 const formatRef = ref();
+
+
 
 const download = () => {
     formatRef.value.extensionDownload(extension.value.value)

@@ -190,6 +190,7 @@ export default {
                 is_middle: false,
                 icon: "",
                 hidden: false
+
             },
             isSelectedMenu: {
                 is_header: false,

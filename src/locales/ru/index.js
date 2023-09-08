@@ -116,6 +116,7 @@ export default {
         cancel: "Отмена",
         main: "Основные",
         more: "Подробнее",
+        loadMore: "Загрузить больше",
         meetingUrl: "Ссылка для онлайн собрания",
         meetingPlace: "Место собрания",
         move: "Перемещение",
@@ -318,9 +319,11 @@ export default {
         gallery: 'Галерея',
         faculties: 'Факультеты',
         verify: 'Проверка подписи документа',
+        address: 'Адрес',
         qrGenerator: 'QR генератор',
         generate: 'Генерировать',
-        selectFormat: 'Выберите формат'
+        selectFormat: 'Выберите формат',
+        notifications: 'Уведомления'
     },
     bank: {
         title: "Банки",
@@ -781,7 +784,12 @@ export default {
         userOtherCouncils: 'Отношение пользователя к другим диссертационным советам',
         closeDate: 'Дата прекращения',
         councilComment: 'Номер приказа и т.п.',
-        closeCouncil: 'Остановить диссертационный совет'
+        closeCouncil: 'Остановить диссертационный совет',
+        scientificConsultant: 'Отзыв научного консультанта',
+        foreignConsultant: 'Отзыв зарубежного консультанта',
+        commissionConclusion: 'Заключение комиссии по этической оценке',
+        reviewerComment: 'Отзыв официального рецензента',
+        setMeetingTimeConfirmMsg: "Нажимая кнопку {btn} ниже, вы подтверждаете корректность информации и данная информация публикуется в виде объявления на сайте."
     },
     faq: {
         title: "Служба поддержки",
@@ -1198,15 +1206,18 @@ export default {
             element: 'Элемент',
             elements: 'Элементы',
             designer: 'Дизайнер шаблона',
-            issue: "Выдать сертификат",
+            issue: "Выдать сертификат без приложения",
             issueWithApp: "Выдать сертификат с приложением",
             view: "Посмотреть сертификат",
+            getQr: "Получить QR",
+            confirm: "Подтверждаете выдачу сертификата БЕЗ приложения?",
+            confirm2: "Сертификат будет выдан С приложением, подтверждаете корректность заполнение приложения?",
         },
         modules:'Модули курса',
         module: 'Модуль',
         modulePosition: '№',
         moduleTitle: 'Наименование',
-        moduleHours: 'Часы', 
+        moduleHours: 'Часы',
         moduleGrade: 'Оценка',
         moduleName:'Название модуля',
         modulePeriod:'Период модуля',
@@ -1216,6 +1227,7 @@ export default {
         lnum: 'Последний номер',
         journal: 'Журнал',
         addCourse: 'Добавить в курс',
+        completedTraining: 'Прошел обучение',
     },
     roleControl: {
         addSidebar: 'Добавление новой записи',
