@@ -103,6 +103,7 @@ import { findRole, smartEnuApi, fileRoute } from "@/config/config";
 import { useStore } from "vuex";
 import {FileService} from "@/service/file.service";
 import SelectSiteSlug from "@/components/enuwebsite/SelectSiteSlug.vue";
+import TitleBlock from "@/components/TitleBlock.vue";
 
 const store = useStore()
 const formData = ref({})

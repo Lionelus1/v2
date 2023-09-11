@@ -31,3 +31,14 @@
 		border-radius: 50%;
 	}
 }
+.layout-sidebar::-webkit-scrollbar{
+	width: 7px;
+	max-height: 150px;
+}
+.layout-sidebar::-webkit-scrollbar-track {
+	background-color: rgba(0, 0, 0, 0.3);
+}
+.layout-sidebar::-webkit-scrollbar-thumb{
+	background-color: rgba(255, 255, 255, 0.3);
+	border-radius: 20px;
+}

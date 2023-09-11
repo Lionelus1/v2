@@ -22,7 +22,7 @@
             <div class="field">
                 <label>{{$t('common.date')}}:</label>
                 <div>
-                    <b v-if="doc != null && doc.docHistory != null && doc.docHistory.setDate != null">{{doc.docHistory.setDate.replace("T", " ").replace("Z","")}}</b>
+                    <b v-if="doc != null && doc.docHistory != null && doc.docHistory.setDate != null">{{getLongDateString(doc.docHistory.setDate)}}</b>
                 </div>
             </div>
              <div class="field">
@@ -38,6 +38,7 @@
 <script>
 import axios from "axios";
 import { getHeader, smartEnuApi, b64toBlob } from "@/config/config";
+import { getLongDateString } from "@/helpers/helper";
 
 export default {
     name: "DocSignaturesInfo",
@@ -63,6 +64,7 @@ export default {
         this.getData();
     },
     methods: {
+        getLongDateString: getLongDateString,
         getData() {
         let url = "/agreement/get";
         var req = { id: this.docID };

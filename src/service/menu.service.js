@@ -34,7 +34,9 @@ export class MenuService {
                         to: '/documents/catalog/normdoc'
                     },
                     {
-                        label: $t('educomplex.title'), icon: 'pi pi-fw pi-folder', to: '/documents/catalog/educomplex'
+                        label: $t('educomplex.title'), 
+                        icon: 'pi pi-fw pi-folder', 
+                        to: '/documents/catalog/educomplex'
                     },
                     {
                         label: $t('course.certificate.title'), icon: 'fa-solid fa-award', to: '/documents/certificates'
@@ -48,6 +50,7 @@ export class MenuService {
             },
             {
                 label: $t('common.administration'), icon: 'fa-solid fa-user-shield',
+                visible: !this.findRole("student"),
                 items: [
                     {
                         label: $t('hr.vacancies'),
@@ -66,6 +69,12 @@ export class MenuService {
                         icon: 'pi pi-fw pi-user-edit',
                         to: '/orgControl',
                         visible: this.findRole("main_administrator")
+                    },
+                    {
+                        label: $t('requests.menuTitle'),
+                        icon: 'fa-solid fa-file-circle-question',
+                        to: '/docrequests',
+                        visible: this.findRole("hr_manager")
                     },
                 ]
             },
@@ -95,7 +104,6 @@ export class MenuService {
                 label: 'HDFS', icon: 'pi pi-fw pi-folder', to: '/hdfs/hdfsmain'
             },*/
             {
-
                 label: $t('smartenu.newsTitle'), icon: 'fa-solid fa-newspaper',
                 items: [
                     {
@@ -103,7 +111,11 @@ export class MenuService {
                         icon: 'fa-solid fa-tags',
                         to: '/newscategories/cattable'
                     },
-                    {label: $t('smartenu.newsList'), icon: 'fa-solid fa-rss', to: '/news'},
+                    {
+                        label: $t('smartenu.newsList'), 
+                        icon: 'fa-solid fa-rss', 
+                        to: '/news'
+                    },
                 ]
             },
 
@@ -112,9 +124,9 @@ export class MenuService {
             },
 
 
-            {
+            /*{
                 label: $t('vaccination.title'), icon: 'pi pi-fw pi-check-circle', to: '/smartenu/vaccination'
-            },
+            },*/
             /*{
               label:  $t('faq.title'), icon: 'pi pi-fw pi-question-circle', to: '/faq/faqmain'
             },*/
@@ -190,7 +202,7 @@ export class MenuService {
 
             {
                 label: $t('web.mainMenuTitle'), icon: 'pi pi-fw pi-box ',
-                visible: this.findRole('enu_web_admin') || this.findRole('enu_web_fac_admin'),
+                visible: (this.findRole('enu_web_admin') || this.findRole('enu_web_fac_admin')),
                 items:  [
                     {
                         label: $t('web.menuPage'), icon: 'pi pi-fw pi-bars', to: '/enu/menus',

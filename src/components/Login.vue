@@ -24,7 +24,8 @@
     </div>
     <div class="p-fluid formgrid grid justify-content-center pt-2">
 
-      <TabView class="tabview-custom p-xl-6 md:col-8 p-sm-12 lg:col-6 col-12">
+      <TabView class="tabview-custom p-xl-6 md:col-8 p-sm-12 lg:col-6 col-12"
+               v-model:activeIndex="active" @tab-change="tabChanged">
         <TabPanel>
           <template #header>
             <span>Login System</span>
@@ -47,7 +48,7 @@
             <Button :label="$t('common.login')" icon="pi pi-check" @click="login" iconPos="right"/>
           </div>
         </TabPanel>
-        <TabPanel>
+        <TabPanel v-if="isNotMobile">
           <template #header>
             <span>ЭЦП</span>
             <i class="pi pi-folder ml-1"></i>
@@ -79,6 +80,34 @@
             </div>
           </div>
         </TabPanel>
+        <TabPanel>
+          <template #header>
+            <span>QR</span>
+            <i class="pi pi-qrcode ml-1"></i>
+          </template>
+          <div class="p-fluid text-center">
+              <div class="qr_shadow">
+                  <Qr v-if="qrSignUri" :qrData="qrSignUri"/>
+              </div>
+<!--            <qrcode-vue size="300" render-as="svg" margin="2" :value="qrSignUri"></qrcode-vue>-->
+            <div v-if="mgovMobileRedirectUri" class="p-fluid text-center">
+              <Button class="p-button-outlined" :label="$t('common.mgovMobile')" @click="redirectToMgovMobile"/>
+            </div>
+            <div v-if="mgovMobileRedirectUri">
+              <hr>
+            </div>
+            <div v-if="mgovBusinessRedirectUri" class="p-fluid text-center">
+              <Button class="p-button-outlined" :label="$t('common.mgovBusiness')" @click="redirectToMgovBusiness"/>
+            </div>
+            <div v-if="mgovBusinessRedirectUri">
+              <hr>
+            </div>
+            <div class="field mb-3">
+              <InlineMessage severity="info">{{ $t('ncasigner.noteMark') }}</InlineMessage>
+            </div>
+          </div>
+          <QrGuideline/>
+        </TabPanel>
       </TabView>
     </div>
   </div>
@@ -87,15 +116,18 @@
 <script>
 
 import axios from 'axios';
-import {getHeader, header, smartEnuApi, etspTokenEndPoint} from "../config/config";
+import {getHeader, header, smartEnuApi, socketApi, etspTokenEndPoint} from "../config/config";
 import {NCALayerClient} from "ncalayer-js-client";
 import {NCALayerClientExtension} from "@/helpers/ncalayer-client-ext";
 import LanguageDropdown from "../LanguageDropdown";
+import QrcodeVue from "qrcode.vue";
+import QrGuideline from "./QrGuideline.vue";
+import Qr from "@/components/Qr.vue";
 
 const authUser = {};
 export default {
   name: "Login",
-  components: {LanguageDropdown},
+  components: {Qr, QrGuideline, LanguageDropdown},
   data() {
     return {
       loginData: {
@@ -113,21 +145,83 @@ export default {
         xmlSignature: "",
         password: ""
       },
-      isSignUp: true
+      isSignUp: true,
+      connectionId: null,
+      qrSignUri: "",
+      mgovMobileRedirectUri: null,
+      mgovBusinessRedirectUri: null,
+      active: 0,
+      isNotMobile: false,
     }
   },
   created() {
     //alert("came");
+    this.checkDevice()
     this.$store.dispatch("logLout");
   },
   methods: {
+    redirectToMgovMobile() {
+      window.open(this.mgovMobileRedirectUri)
+    },
+    redirectToMgovBusiness() {
+      window.open(this.mgovBusinessRedirectUri)
+    },
+    checkDevice() {
+      const ua = navigator.userAgent;
+      this.isNotMobile = !/mobile/i.test(ua);
+    },
     resetPassword() {
       this.newPass = {
         password1: "",
         password2: ""
       }
     },
+    tabChanged() {
+      if (this.active === 2 || (!this.isNotMobile && this.active === 1)) {
+        if (this.connectionId  === null) {
+          this.qrSignUri = ""
+          this.mgovMobileRedirectUri = null
+          this.mgovBusinessRedirectUri = null
+          axios.post(smartEnuApi + "/etsptokenid", {}, {headers: getHeader()})
+              .then(res => {
+                this.connectionId = res.data.connectionId;
+                let mgovSignUri = smartEnuApi + '/mobileAuthParams/' + this.connectionId
+                this.qrSignUri = 'mobileSign:' + mgovSignUri
+                this.mgovMobileRedirectUri = "https://mgovsign.page.link/?link=" + mgovSignUri + "?mgovSign&apn=kz.mobile.mgov&isi=1476128386&ibi=kz.egov.mobile"
+                this.mgovBusinessRedirectUri = "https://egovbusiness.page.link/?link=" + mgovSignUri + "?mgovSign&apn=kz.mobile.mgov.business&isi=1597880144&ibi=kz.mobile.mgov.business"
+                this.wsconnect(this.connectionId)
+              })
+              .catch(error => {
+                alert(error.message)
+              });
+        } else {
+          this.wsconnect(this.connectionId)
+        }
+      }
+    },
 
+    wsconnect(connectionId) {
+      let t = this;
+      this.connection = new WebSocket(socketApi + '/authws');
+      this.connection.onmessage = function (data) {
+        let response = JSON.parse(data.data)
+        if (response.result === 'error') {
+          t.$toast.add({
+            severity: 'error',
+            summary: response.errorMessage,
+            life: 3000
+          });
+        } else if (response.result === 'token') {
+          authUser.access_token = response.tokens.access_token;
+          authUser.refresh_token = response.tokens.refresh_token;
+          window.localStorage.setItem('authUser', JSON.stringify(authUser));
+          t.$router.push({name: 'AfterAuth'});
+        }
+      }
+      this.connection.onopen = function (event) {
+        t.connection.send(JSON.stringify(connectionId));
+      }
+    },
 
     etspLogin(event) {
       var tabIndex = Number(event.index);
@@ -235,7 +329,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .welcome_text_block {
   height: 63px;
 }
@@ -264,7 +358,12 @@ export default {
   transform: scale(1.6);
   margin-right: 1rem;
 }
-
+.qr_shadow{
+  width: fit-content;
+  margin: 0 auto 20px auto ;
+  box-shadow: 0px 3px 3px -2px rgba(0,0,0,0.2), 0px 3px 4px 0px rgba(0,0,0,0.14), 0px 1px 8px 0px rgba(0,0,0,0.12);
+  border-radius: 4px;
+}
 @media (max-width: 740px) {
   h5 {
     position: absolute;
@@ -279,7 +378,7 @@ export default {
 @media (max-width: 525px) {
   h5 {
     width: 165px;
-    font-size: 15px;
+    font-size: 14px!important;
   }
 }
 </style>

@@ -48,16 +48,33 @@
                       class="p-button-primary md:col-5" @click="sign" :label="$t('ncasigner.sign')" :loading="signing"/>
             </div>
           </Panel>
-          <div v-if="isIndivid" class="p-mt-2">
+          <div class="p-mt-2">
             <Panel>
               <template #header>
                 <div class="p-d-flex p-jc-center">
                   <InlineMessage class="" severity="info">{{ $t('ncasigner.qrSinging') }}</InlineMessage>
                 </div>
+
               </template>
+              <div class="text-center">
+                <h6><b>{{ $t('mgov.inApp') }}</b> <b style="color: red">{{ mobileApp }}</b></h6>
+              </div>
               <div class="p-d-flex p-jc-center">
                 <qrcode-vue size="350" render-as="svg" margin="2" :value="mgovSignUri"></qrcode-vue>
               </div>
+              <div v-if="mgovMobileRedirectUri && isIndivid" class="p-fluid text-center">
+                <Button class="p-button-outlined" :label="$t('common.mgovMobile')" @click="redirectToMgovMobile"/>
+              </div>
+              <div v-if="mgovMobileRedirectUri && isIndivid">
+                <hr>
+              </div>
+              <div v-if="mgobBusinessRedirectUri && !isIndivid" class="p-fluid text-center">
+                <Button class="p-button-outlined" :label="$t('common.mgovBusiness')" @click="redirectToMgovBusiness"/>
+              </div>
+              <div v-if="mgobBusinessRedirectUri && !isIndivid">
+                <hr>
+              </div>
+              <QrGuideline/>
             </Panel>
           </div>
         </div>
@@ -89,10 +106,12 @@ import html2pdf from "html2pdf.js";
 import DocInfo from "@/components/ncasigner/DocInfo";
 import QrcodeVue from "qrcode.vue";
 import Enum from "@/enum/docstates/index";
+import RolesEnum from "@/enum/roleControls/index";
+import QrGuideline from "./QrGuideline.vue";
 
 export default {
   name: "DocSignaturesInfo",
-  components: {SignatureQrPdf, DocInfo, QrcodeVue, LanguageDropdown},
+  components: {QrGuideline, SignatureQrPdf, DocInfo, QrcodeVue, LanguageDropdown},
   props: {
     docIdParam: {
       type: String,
@@ -139,12 +158,16 @@ export default {
       files: [],
       active: 0,
       hideDocSign: true,
-      isIndivid: false,
       mgovSignUri: null,
+      mgovMobileRedirectUri: null,
+      mgobBusinessRedirectUri: null,
       Enum: Enum,
+      RolesEnum: RolesEnum,
 
       hideDocRevision: true,
       revisionComment: null,
+      mobileApp: null,
+      isIndivid: null
     }
   },
   created() {
@@ -153,8 +176,11 @@ export default {
     }
     const tokenData = JSON.parse(window.localStorage.getItem("authUser"));
     if (tokenData !== null) {
-      this.mgovSignUri = 'mobileSign:' + smartEnuApi + '/mobileSignParams?docUuid=' + this.doc_id +
-          "&token=" + tokenData.access_token
+      let signUri = smartEnuApi + '/mobileSignParams/' + this.doc_id + "/" + tokenData.access_token
+      this.mgovSignUri = 'mobileSign:' + signUri
+      this.mgovMobileRedirectUri = "https://mgovsign.page.link/?link=" + signUri + "?mgovSign&apn=kz.mobile.mgov&isi=1476128386&ibi=kz.egov.mobile"
+      this.mgobBusinessRedirectUri = "https://egovbusiness.page.link/?link=" + signUri + "?mgovSign&apn=kz.mobile.mgov.business&isi=1597880144&ibi=kz.mobile.mgov.business"
+
     }
     this.isTspRequired = this.tspParam
     this.signerIin = this.signerIinParam
@@ -192,6 +218,12 @@ export default {
     b64toBlob: b64toBlob,
     showMessage(msgtype, message, content) {
       this.$toast.add({severity: msgtype, summary: message, detail: content, life: 3000});
+    },
+    redirectToMgovMobile() {
+      window.open(this.mgovMobileRedirectUri)
+    },
+    redirectToMgovBusiness() {
+      window.open(this.mgobBusinessRedirectUri)
     },
     tabChanged() {
       if (this.active == 1 && !this.file) { // showFileTab
@@ -242,15 +274,25 @@ export default {
           if (this.showAllSignsParam) {
             this.isShow = true;
           } else {
-            this.isShow = this.findRole(null, "career_moderator") || (this.signatures && this.signatures.some(x => x.userId === this.loginedUserId)) || 
-              this.docInfo.docHistory.setterId === this.loginedUserId;
+            this.isShow = this.findRole(null, RolesEnum.roles.CareerModerator) || this.findRole(null, RolesEnum.roles.UMKAdministrator) ||
+              (this.signatures && this.signatures.some(x => x.userId === this.loginedUserId)) ||
+              this.docInfo.docHistory.setterId === this.loginedUserId || this.docInfo.creatorID === this.loginedUserId;
           }
 
 
           if (this.signatures) {
             this.hideDocSign = !this.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));
-            this.isIndivid = this.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === '') && (x.signRight && x.signRight !== '') && x.signRight === 'individual');
-
+            let usersign = this.signatures.filter(x => x.userId === this.loginedUserId &&
+                (!x.signature || x.signature === '') && (x.signRight && x.signRight !== ''))
+            if (usersign.length !== 0) {
+              if ( usersign[0].signRight === "individual") {
+                this.mobileApp = "eGov Mobile";
+                this.isIndivid = true
+              } else {
+                this.mobileApp = "eGov Business";
+                this.isIndivid = false
+              }
+            }
             this.signatures.map(e => {
               e.sign = this.chunkString(e.signature, 1200)
             });

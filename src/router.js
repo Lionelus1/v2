@@ -70,6 +70,11 @@ const routes = [
         component: load('publicReception/Request')
     },
     {
+        path: '/document/:uuid',
+        name: 'Document',
+        component: load('documents/Document'),
+    },
+    {
         path: '/sign/:uuid',
         name: 'DocSignaturesInfo',
         component: load('DocSignaturesInfo'),
@@ -91,10 +96,6 @@ const routes = [
         name: '/login',
         component: Full,
         children:[
-
-
-            // Менің қосқандарым
-
             {
                 path:'/',
                 name:'Welcome',
@@ -104,13 +105,13 @@ const routes = [
             {
                 path: '/documents/catalog/normdoc',
                 name: '/documents/catalog/normdoc',
-                component: load('documents/catalog/CatalogNormDoc'),
+                component: load('documents/catalog/NormativeDocuments'),
                 beforeEnter: ifAuthenticated,
             },
             {
                 path: '/documents/catalog/educomplex',
                 name: '/documents/catalog/educomplex',
-                component: load('documents/catalog/EducationalComplex'),
+                component: load('documents/catalog/DisciplineEduMetComplex'),
                 beforeEnter: ifAuthenticated,
             },
             {
@@ -151,6 +152,12 @@ const routes = [
                 path: '/documents/certificates',
                 name: 'certificateJournal',
                 component: load('documents/certificates/Journal'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/docrequests',
+                name: 'DocumentRequests',
+                component: load('references/ReferenceRequests'),
                 beforeEnter: ifAuthenticated,
             },
             {
@@ -392,9 +399,9 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
-                path:'/myref',
-                name:'OutQr1',
-                component: load('smartenu/JobDescription'),
+                path:'/references',
+                name:'References',
+                component: load('references/References'),
                 beforeEnter: ifAuthenticated,
             },
             {
@@ -656,7 +663,14 @@ const routes = [
                 name: 'ApprovalListControl',
                 component: load('roleControl/ApprovalListControl'),
                 beforeEnter: ifAuthenticated,
-            }
+            },
+            {
+                path: '/qr',
+                name: 'QR',
+                component: () => import('./components/QrGenerator.vue'),
+                beforeEnter: ifAuthenticated,
+            },
+                
         ]
     },
    

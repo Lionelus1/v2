@@ -1,5 +1,5 @@
 <template>
-<div class="card">
+<div>
   <TabView>
     <TabPanel :header="$t('common.myResume')">
       <Resume/>

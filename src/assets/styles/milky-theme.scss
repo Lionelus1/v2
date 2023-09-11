@@ -1,0 +1,56 @@
+:root.milky-theme {
+  --background-color: #f7f3d6;
+  --background-color-secondary: #fdfbe9;
+  --background-color-third: #e9e6ca;
+  --text-color: #4d4b43;
+  .layout-topbar,.layout-sidebar, .card, .layout-footer{
+    .p-dropdown .p-dropdown-trigger,.p-dropdown-label{
+      color: var(--text-color);
+    }
+    background: var(--background-color);
+    color: var(--text-color);
+  }
+  .layout-topbar i, .layout-logo a, .layout-topbar .layout-menu-button span{
+    color: var(--text-color);
+  }
+  .layout-sidebar-dark .layout-menu li a, .layout-sidebar-dark .layout-profile .layout-profile-link, .layout-sidebar-dark .layout-profile ul li button{
+    color: var(--text-color);
+  }
+  .layout-sidebar-dark .layout-menu > li ul, .layout-sidebar-dark .layout-menu li.active-menuitem > a, .layout-sidebar-dark .layout-profile ul{
+    background: var(--background-color-third);
+  }
+  .p-treetable .p-treetable-header, .p-treetable .p-treetable-thead > tr > th,.p-datatable .p-datatable-thead > tr > th{
+    background: var(--background-color-third);
+    color: var(--text-color);
+  }
+  .p-treetable .p-treetable-tbody > tr{
+    color: var(--text-color);
+  }
+  .p-datatable .p-datatable-header,.p-toolbar,.p-menubar, .surface-card{
+    background: var(--background-color-third)!important;
+    color: var(--text-color);
+  }
+  .p-treetable .p-treetable-tbody > tr, .p-datatable .p-datatable-tbody > tr{
+    background: var(--background-color-secondary);
+    color: var(--text-color);
+  }
+  .p-tabview .p-tabview-nav, li .p-tabview-nav-link {
+    background: var(--background-color);
+  }
+  .p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
+    background: var(--background-color-secondary);
+  }
+  .p-tabview .p-tabview-panels, .p-paginator{
+    background: var(--background-color);
+  }
+  .p-dataview .p-dataview-content{
+    background: var(--background-color-secondary);
+    color: var(--text-color);
+  }
+  .layout-main,.layout-wrapper {
+    background: var(--background-color-secondary);
+  }
+  h3,h4,h5{
+    color: var(--text-color);
+  }
+}

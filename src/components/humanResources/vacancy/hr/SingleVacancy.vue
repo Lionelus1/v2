@@ -290,6 +290,7 @@ import ResumeView from "../../candidate/ResumeView.vue";
 import html2pdf from "html2pdf.js";
 import {NCALayerClientExtension} from "../../../../helpers/ncalayer-client-ext";
 import store from "../../../../store/store";
+import router from '@/router';
 
 export default {
   components: {ResumeView},
@@ -329,7 +330,11 @@ export default {
     this.vacancyId = this.$route.params.id
     this.changeRouteAndGetVacancy()
   },
+
   methods: {
+    redirectToResume() {
+      router.push({ "name": "Cabinet" })
+    },
     openResume() {
       this.visible.resume = true
     },

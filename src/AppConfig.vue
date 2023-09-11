@@ -8,7 +8,54 @@
 		</a>
 
 		<div class="layout-config-content">
-
+			<div class="vi_card">
+				<h5 class="title">{{ $t("visuallyImpaired.fontSize") }} :</h5>
+				<div class="btns">
+					<button class="vi_btn small" @click="smallFz">A</button>
+					<button class="vi_btn middle" @click="middleFz">A</button>
+					<button class="vi_btn big" @click="bigFz">A</button>
+				</div>
+				<h5 class="title">{{ $t("visuallyImpaired.siteColors") }} :</h5>
+				<div class="btns">
+					<button class="vi_btn black" @click="darkTheme">
+						{{
+							$i18n.locale === "kz"
+									? "T"
+									: $i18n.locale === "ru"
+											? "Ц"
+											: "C"
+						}}
+					</button>
+					<button class="vi_btn blue" @click="blueTheme">
+						{{
+							$i18n.locale === "kz"
+									? "T"
+									: $i18n.locale === "ru"
+											? "Ц"
+											: "C"
+						}}
+					</button>
+					<button class="vi_btn brown" @click="brownTheme">
+						{{
+							$i18n.locale === "kz"
+									? "T"
+									: $i18n.locale === "ru"
+											? "Ц"
+											: "C"
+						}}
+					</button>
+					<button class="vi_btn milky" @click="milkyTheme">
+						{{
+							$i18n.locale === "kz"
+									? "T"
+									: $i18n.locale === "ru"
+											? "Ц"
+											: "C"
+						}}
+					</button>
+				</div>
+				<Button class="p-button" @click="hideVi">Қалыпты нұсқа</Button>
+			</div>
 			<h5 style="margin-top: 0">Input Style</h5>
 			<div class="p-formgroup-inline">
 				<div class="field-radiobutton">
@@ -68,8 +115,15 @@
 				active: false,
 				d_layoutMode: this.layoutMode,
 				d_layoutColorMode: this.layoutColorMode,
+				userTheme: "default-theme",
 			}
 		},
+		mounted() {
+			const initUserTheme = this.getTheme();
+			this.setTheme(initUserTheme);
+			const initUserFz = this.getFz();
+			this.setFz(initUserFz);
+			},
 		watch: {
 			$route() {
 				if (this.active) {
@@ -86,6 +140,46 @@
 		},
 		outsideClickListener: null,
 		methods: {
+			darkTheme() {
+				this.setTheme("dark-theme");
+			},
+			blueTheme(){
+				this.setTheme("blue-theme");
+			},
+			brownTheme() {
+				this.setTheme("brown-theme");
+			},
+			milkyTheme() {
+				this.setTheme("milky-theme");
+			},
+			setTheme(theme) {
+				localStorage.setItem("user-theme", theme);
+				this.userTheme = theme;
+				document.documentElement.className = theme;
+			},
+			getTheme() {
+				return localStorage.getItem("user-theme");
+			},
+			setFz(fontSize) {
+				localStorage.setItem("user-font-size", fontSize);
+				document.documentElement.id = fontSize;
+			},
+			getFz() {
+				return localStorage.getItem("user-font-size");
+			},
+			smallFz() {
+				this.setFz("fz-small");
+			},
+			middleFz() {
+				this.setFz("fz-middle");
+			},
+			bigFz() {
+				this.setFz("fz-big");
+			},
+			hideVi() {
+				this.setFz("default");
+				this.setTheme("default-theme");
+			},
 			toggleConfigurator(event) {
 				this.active = !this.active;
 				event.preventDefault();
@@ -132,7 +226,7 @@
 			},
 			isOutsideClicked(event) {
 				return !(this.$el.isSameNode(event.target) || this.$el.contains(event.target));
-			}
+			},
 		},
 		computed: {
 			containerClass() {
@@ -147,8 +241,55 @@
 		}
 	}
 </script>
-<style scoped>
+<style lang="scss" scoped>
+.vi_card{
+	margin-bottom: 10px;
+	.btns{
+		.vi_btn{
+			font-weight: 700;
+			width: 40px;
+			height: 40px;
+			border-radius: 50%;
+			background: transparent;
+			margin-right: 10px;
+			border: 1px solid #ccc;
+			font-size: 16px;
+			cursor: pointer;
+			margin-bottom: 10px;
+		}
+		.small {
+			font-size: 18px;
+			width: 30px;
+			height: 30px;
+		}
 
+		.middle {
+			font-size: 25px;
+			width: 35px;
+			height: 35px;
+		}
+
+		.big {
+			font-size: 30px;
+		}
+		.black{
+			background: #000;
+			color: #fff;
+		}
+		.blue{
+			background: #9dd1ff;
+			color: #195183;
+		}
+		.brown{
+			background: #3b2716;
+			color: #a7e44d;
+		}
+		.milky{
+			background: #f7f3d6;
+			color: #4d4b43;
+		}
+	}
+}
 	@media print
    {    
 	   .no-print, .no-print *
@@ -156,13 +297,11 @@
 		   display:none !important;
 	   }
    }
-	@media print
-   {    
+	@media print{
 	   .show-print, .show-print *
 	   {
 		   display: block !important;
 		   width:100% !important;
 	   }
    }
-
 </style>

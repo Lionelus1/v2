@@ -128,11 +128,11 @@
               <span class="buttonset">
                 <Button style="margin-right: 0.5rem;" v-if="(selectedNode.data.stateEn == DocState.CREATED.Value || selectedNode.data.stateEn == DocState.REVISION.Value)" :label="$t('common.save')" icon="pi pi-save" @click="saveDocTemplate"/>
                 <Button style="margin-right: 0.5rem;" v-bind:label="$t('common.download')" icon="pi pi-file-pdf" @click="downloadDocTemplatePdf" />
-                <Button style="margin-right: 0.5rem;" v-if="selectedNode.data.needApproval && ((selectedNode.data.stateEn == DocState.INAPPROVAL.Value && findRole(null, DocState.roles.LegalServiceHead)) || selectedNode.data.stateEn == DocState.REVISION.Value || selectedNode.data.stateEn == DocState.APPROVED.Value)" 
+                <Button style="margin-right: 0.5rem;" v-if="selectedNode.data.needApproval && ((selectedNode.data.stateEn == DocState.INAPPROVAL.Value && findRole(null, RolesEnum.roles.LegalServiceHead)) || selectedNode.data.stateEn == DocState.REVISION.Value || selectedNode.data.stateEn == DocState.APPROVED.Value)" 
                   class="p-button-warning" :label="$t('doctemplate.approvalUsers')" icon="fa-solid fa-users-gear" @click="initApprovalInfo(true);"></Button>
                 <Button style="margin-right: 0.5rem;" v-if="selectedNode.data.stateEn == DocState.CREATED.Value || selectedNode.data.stateEn == DocState.REVISION.Value" :label="$t('common.toapprove')" icon="pi pi-send" @click="openForm('toApproval')" />
-                <Button style="margin-right: 0.5rem;" v-if="selectedNode.data.stateEn == DocState.INAPPROVAL.Value && findRole(null, DocState.roles.LegalServiceHead)" class="p-button-success" :label ="$t('common.approve')" icon="pi pi-check" @click="approve()"/>
-                <Button style="margin-right: 0.5rem;" v-if="selectedNode.data.stateEn == DocState.INAPPROVAL.Value && findRole(null, DocState.roles.LegalServiceHead)" class="p-button-warning" :label ="$t('common.revision')" icon="pi pi-times" @click="openForm('revision')"/>
+                <Button style="margin-right: 0.5rem;" v-if="selectedNode.data.stateEn == DocState.INAPPROVAL.Value && findRole(null, RolesEnum.roles.LegalServiceHead)" class="p-button-success" :label ="$t('common.approve')" icon="pi pi-check" @click="approve()"/>
+                <Button style="margin-right: 0.5rem;" v-if="selectedNode.data.stateEn == DocState.INAPPROVAL.Value && findRole(null, RolesEnum.roles.LegalServiceHead)" class="p-button-warning" :label ="$t('common.revision')" icon="pi pi-times" @click="openForm('revision')"/>
                 <Button style="margin-right: 0.5rem;" v-if="selectedNode.data.stateEn == DocState.APPROVED.Value" class="p-button-primary" :label ="$t('common.approvalList')" icon="pi pi-user-edit" @click="openForm('signerInfo')"/>
               </span>
 
@@ -255,7 +255,8 @@
   import {runNCaLayer} from "@/helpers/SignDocFunctions"
   import axios from 'axios';
   import RichEditor from "./editor/RichEditor.vue";
-  import DocState from "@/enum/docstates/index"
+  import DocState from "@/enum/docstates/index";
+  import RolesEnum from "@/enum/roleControls/index";
   import DocSignaturesInfo from "@/components/DocSignaturesInfo"
   import Enum from "@/enum/docstates/index"
   import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers";
@@ -276,6 +277,7 @@
         editorReadOnly :false,
         signing : false,
         DocState: DocState,
+        RolesEnum: RolesEnum,
         templateLanguage: this.currentLang != null ? this.currentLang : 'kz',
         dialogOpenState: {
           addFolder : false,
@@ -484,7 +486,7 @@
         let isLegalHead = false;
         this.selectedUsers.forEach(user => {
           console.log(user)
-          isLegalHead = this.findRole(user, DocState.roles.LegalServiceHead)
+          isLegalHead = this.findRole(user, RolesEnum.roles.LegalServiceHead)
         });
         
         if (isLegalHead ===false) {
@@ -726,7 +728,7 @@
       onNodeSelect(node) { 
         this.selectedNode = node;
         this.currentNode = node
-        this.readonly = this.selectedNode.data.stateEn == DocState.CREATED.Value || this.selectedNode.data.stateEn == DocState.REVISION.Value || (this.selectedNode.data.stateEn == DocState.INAPPROVAL.Value && this.findRole(null, DocState.roles.LegalServiceHead))
+        this.readonly = this.selectedNode.data.stateEn == DocState.CREATED.Value || this.selectedNode.data.stateEn == DocState.REVISION.Value || (this.selectedNode.data.stateEn == DocState.INAPPROVAL.Value && this.findRole(null, RolesEnum.roles.LegalServiceHead))
         if (this.$refs.kzEditor) {
           this.$refs.kzEditor.setReadOnly(this.readonly);
         } else {
@@ -762,10 +764,10 @@
         return child;
       },
       initApiCall(){
-        let url = "/doctemplates?groupID=-1";
-        var stateFilter = "&stateID=-1"
+        let url = "/doctemplates?";
+        var stateFilter = "stateID=-1"
         if (this.selectMode) {
-          stateFilter = "&stateID=" + this.DocState.APPROVED.ID
+          stateFilter = "stateID=" + this.DocState.APPROVED.ID
         }
         this.loading = true;
         url+= stateFilter
