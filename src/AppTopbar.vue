@@ -56,198 +56,187 @@
 </template>
 <script>
 import LanguageDropdown from "./LanguageDropdown";
-import axios from "axios";
 import {getHeader, smartEnuApi, socketApi} from "@/config/config";
 import moment from "moment";
 import {mapState} from "vuex";
+import {NotificationService} from "@/service/notification.service";
 
 export default {
-  components: {LanguageDropdown},
-  props: {
-    pagemenu: null,
-  },
-  data() {
-    return {
-      visibleRight: false,
-      socket: null,
-      isShowGuide: process.env.VUE_APP_SHOW_GUIDE === 'true',
-      notifications: [],
-      itemsPerPage: 6,
-      pageCount: 0,
-      pageNum: 1,
-      newCount: 0,
-      firstShown: false
-    }
-  },
-  methods: {
-    resetNot() {
-      this.notifications = [];
-      this.pageNum = 1;
+    components: {LanguageDropdown},
+    props: {
+        pagemenu: null,
     },
-    firstShow() {
-      this.loadNotifications();
-    },
-    loadByPage() {
-      //alert("pageNum :"+this.pageNum +" pageCount :" +parseInt(this.pageCount-1))
-      this.loadNotifications();
-    },
-    toggle(event) {
-      this.$refs.menu.toggle(event);
-    },
-    onMenuToggle(event) {
-      this.$emit('menu-toggle', event);
-    },
-    navigate() {
-      let routeData = this.$router.resolve({name: 'MainGuide', params: {id: this.$route.path}});
-      window.open(routeData.href, '_blank');
-    },
-    navigateToTelegram() {
-      window.open('https://t.me/smartenu_chat', '_blank')
-    },
-    ViewNotification(nots) {
-      axios.post(smartEnuApi + "/viewnotifications", {views: nots}, {headers: getHeader()})
-          .then(response => {
-                if (this.newCount > 0)
-                  this.newCount = this.newCount - nots.length < 0 ? 0 : this.newCount - nots.length;
-                console.info("view result", response)
-              }
-          ).catch(error => {
-        alert(error.message)
-      });
-    },
-    loadNotifications() {
-      this.notLoading = true;
-      axios.post(smartEnuApi + "/notifications", {
-        pageNum: this.pageNum,
-        itemsPerPage: this.itemsPerPage
-      }, {headers: getHeader()})
-          .then(response => {
-            this.newCount = response.data.NewCount ? response.data.NewCount : 0;
-            let recordCount = response.data.RecordCount;
-            this.pageCount = recordCount % this.itemsPerPage == 0 ? parseInt(recordCount / this.itemsPerPage) : parseInt(recordCount / this.itemsPerPage) + 1;
-            //alert("private len "+response.data.private.length+" "+" general len"+response.data.general.length);
-            if (!response.data.private) {
-              response.data.private = [];
-            }
-            if (!response.data.general) {
-              response.data.general = [];
-            }
-            let nots = response.data.private.concat(response.data.general);
-            nots.forEach(n => {
-              if (n) {
-                n.senderObject = JSON.parse(n.senderJSON);
-                if (!n.isSeen) {
-                  n.isSeen = 0;
-                }
-              }
-
-            });
-            this.notifications = this.notifications.concat(nots);
-            this.pageNum = this.pageNum + 1;
-            this.notLoading = false;
-            let newNots = this.notifications.filter(f => parseInt(f.isSeen) == 0);
-            if (newNots.length > 0) {
-              this.ViewNotification(newNots);
-            }
-
-          })
-          .catch(error => {
-            console.log(error)
-          })
-    },
-    timeDifference(givenDate) {
-
-      const now = moment()
-
-      const given = moment(givenDate);
-      moment.locale('smartEnu', {
-        relativeTime: {
-          future: this.$i18n.locale === "kz" ? "" : this.$i18n.locale === "en" ? "in %s" : "",
-          past: this.$i18n.locale === "kz" ? "%s бұрын" : this.$i18n.locale === "en" ? "%s ago" : "",
-          ss: this.$i18n.locale === "kz" ? "бірнеше секунд бұрын" : this.$i18n.locale === "en" ? "few seconds ago" : "",
-          m: this.$i18n.locale === "kz" ? "минут бұрын" : this.$i18n.locale === "en" ? "a minute" : "",
-          mm: this.$i18n.locale === "kz" ? "%d минут бұрын" : this.$i18n.locale === "en" ? "%d minutes" : "",
-
-          h: this.$i18n.locale === "kz" ? "бір сағат бұрын" : this.$i18n.locale === "en" ? "an hour" : "",
-          hh: this.$i18n.locale === "kz" ? "%d сағат бұрын" : this.$i18n.locale === "en" ? "%d hours" : "",
-          d: this.$i18n.locale === "kz" ? "бір күн бұрын" : this.$i18n.locale === "en" ? "a day" : "",
-          dd: this.$i18n.locale === "kz" ? "%d күн бұрын" : this.$i18n.locale === "en" ? "%d days" : "",
-          w: this.$i18n.locale === "kz" ? "бір апта бұрын" : this.$i18n.locale === "en" ? "a week" : "",
-          ww: this.$i18n.locale === "kz" ? "%d апта бұрын" : this.$i18n.locale === "en" ? "%d weeks" : "",
-          M: this.$i18n.locale === "kz" ? "бір ай бұрын" : this.$i18n.locale === "en" ? "a month" : "",
-          MM: this.$i18n.locale === "kz" ? "%d ай бұрын" : this.$i18n.locale === "en" ? "%d months" : "",
-          y: this.$i18n.locale === "kz" ? "бір жыл бұрын" : this.$i18n.locale === "en" ? "a year" : "",
-          yy: this.$i18n.locale === "kz" ? "%d жыл бұрын" : this.$i18n.locale === "en" ? "%d years" : "",
+    data() {
+        return {
+            visibleRight: false,
+            socket: null,
+            isShowGuide: process.env.VUE_APP_SHOW_GUIDE === 'true',
+            notifications: [],
+            itemsPerPage: 6,
+            pageCount: 0,
+            pageNum: 1,
+            newCount: 0,
+            firstShown: false,
+            notificationService: new NotificationService()
         }
-      });
-
-      return moment.duration(given.diff(now)).humanize();
-
     },
-  },
-  computed: {
-    ...mapState(["loginedUser"]),
-    notLength() {
-      return this.newCount.toString()
+    methods: {
+        resetNot() {
+            this.notifications = [];
+            this.pageNum = 1;
+        },
+        firstShow() {
+            this.loadNotifications();
+        },
+        loadByPage() {
+            //alert("pageNum :"+this.pageNum +" pageCount :" +parseInt(this.pageCount-1))
+            this.loadNotifications();
+        },
+        toggle(event) {
+            this.$refs.menu.toggle(event);
+        },
+        onMenuToggle(event) {
+            this.$emit('menu-toggle', event);
+        },
+        navigate() {
+            let routeData = this.$router.resolve({name: 'MainGuide', params: {id: this.$route.path}});
+            window.open(routeData.href, '_blank');
+        },
+        navigateToTelegram() {
+            window.open('https://t.me/smartenu_chat', '_blank')
+        },
+        ViewNotification(nots) {
+          this.notificationService.viewNotifications({views: nots}).then(response => {
+                    if (this.newCount > 0)
+                        this.newCount = this.newCount - nots.length < 0 ? 0 : this.newCount - nots.length;
+                    console.info("view result", response)
+                  }
+                ).catch(error => {
+            this.$toast.add({ severity: "error", summary: error, life: 3000 });
+            });
+        },
+        loadNotifications() {
+            this.notLoading = true;
+            this.notificationService.getNotifications(this.pageNum, this.itemsPerPage).then(response => {
+                    this.newCount = response.data.NewCount ? response.data.NewCount : 0;
+                    let recordCount = response.data.RecordCount;
+                    this.pageCount = recordCount % this.itemsPerPage == 0 ? parseInt(recordCount / this.itemsPerPage) : parseInt(recordCount / this.itemsPerPage) + 1;
+                    //alert("private len "+response.data.private.length+" "+" general len"+response.data.general.length);
+                    if (!response.data.private) {
+                        response.data.private = [];
+                    }
+                    if (!response.data.general) {
+                        response.data.general = [];
+                    }
+                    let nots = response.data.private.concat(response.data.general);
+                    nots.forEach(n => {
+                        if (n) {
+                            n.senderObject = JSON.parse(n.senderJSON);
+                            if (!n.isSeen) {
+                                n.isSeen = 0;
+                            }
+                        }
+
+                    });
+                    this.notifications = this.notifications.concat(nots);
+                    this.pageNum = this.pageNum + 1;
+                    this.notLoading = false;
+                    let newNots = this.notifications.filter(f => parseInt(f.isSeen) == 0);
+                    if (newNots.length > 0) {
+                        this.ViewNotification(newNots);
+                    }
+
+                })
+                .catch(error => {
+                    console.log(error)
+                })
+        },
+        timeDifference(givenDate) {
+
+            const now = moment()
+
+            const given = moment(givenDate);
+            moment.locale('smartEnu', {
+                relativeTime: {
+                    future: this.$i18n.locale === "kz" ? "" : this.$i18n.locale === "en" ? "in %s" : "",
+                    past: this.$i18n.locale === "kz" ? "%s бұрын" : this.$i18n.locale === "en" ? "%s ago" : "",
+                    ss: this.$i18n.locale === "kz" ? "бірнеше секунд бұрын" : this.$i18n.locale === "en" ? "few seconds ago" : "",
+                    m: this.$i18n.locale === "kz" ? "минут бұрын" : this.$i18n.locale === "en" ? "a minute" : "",
+                    mm: this.$i18n.locale === "kz" ? "%d минут бұрын" : this.$i18n.locale === "en" ? "%d minutes" : "",
+
+                    h: this.$i18n.locale === "kz" ? "бір сағат бұрын" : this.$i18n.locale === "en" ? "an hour" : "",
+                    hh: this.$i18n.locale === "kz" ? "%d сағат бұрын" : this.$i18n.locale === "en" ? "%d hours" : "",
+                    d: this.$i18n.locale === "kz" ? "бір күн бұрын" : this.$i18n.locale === "en" ? "a day" : "",
+                    dd: this.$i18n.locale === "kz" ? "%d күн бұрын" : this.$i18n.locale === "en" ? "%d days" : "",
+                    w: this.$i18n.locale === "kz" ? "бір апта бұрын" : this.$i18n.locale === "en" ? "a week" : "",
+                    ww: this.$i18n.locale === "kz" ? "%d апта бұрын" : this.$i18n.locale === "en" ? "%d weeks" : "",
+                    M: this.$i18n.locale === "kz" ? "бір ай бұрын" : this.$i18n.locale === "en" ? "a month" : "",
+                    MM: this.$i18n.locale === "kz" ? "%d ай бұрын" : this.$i18n.locale === "en" ? "%d months" : "",
+                    y: this.$i18n.locale === "kz" ? "бір жыл бұрын" : this.$i18n.locale === "en" ? "a year" : "",
+                    yy: this.$i18n.locale === "kz" ? "%d жыл бұрын" : this.$i18n.locale === "en" ? "%d years" : "",
+                }
+            });
+            console.log(now);
+            console.log(given);
+            return moment.duration(given.diff(now)).humanize();
+
+        },
     },
+    computed: {
+        ...mapState(["loginedUser"]),
+        notLength() {
+            return this.newCount.toString()
+        },
 
-    showCalc() {
-      if (parseInt(this.pageNum) <= parseInt(this.pageCount)) {
-        return true;
-      }
-      return false;
+        showCalc() {
+            if (parseInt(this.pageNum) <= parseInt(this.pageCount)) {
+                return true;
+            }
+            return false;
+        }
+    },
+    mounted() {
+
+        this.notLoading = true;
+        this.notificationService.getNotifications(this.pageNum, this.itemsPerPage).then(response => {
+                this.newCount = response.data.NewCount ? response.data.NewCount : 0;
+                let recordCount = response.data.RecordCount;
+                this.pageCount = recordCount % this.itemsPerPage == 0 ? parseInt(recordCount / this.itemsPerPage) : parseInt(recordCount / this.itemsPerPage) + 1;
+            })
+            .catch(error => {
+              this.$toast.add({ severity: "error", summary: error, life: 3000 });
+            })
+    },
+    async created() {
+
+        let v = this;
+        this.socket = await new WebSocket(socketApi + "/notificationws");
+        this.socket.onopen = () => {
+            this.socket.send(JSON.stringify(this.loginedUser));
+        }
+
+        this.socket.onmessage = (event) => {
+            let parsed = JSON.parse(event.data);
+            this.$toast.add({
+                    severity: 'success',
+                    summary: parsed.description,
+                    detail: JSON.parse(parsed.senderJSON).fullName,
+                    life: 3000
+                }
+            );
+            this.newCount = this.newCount + 1;
+            // v.notifications.unshift({
+            //     uniqueName:parsed.uniqueName,
+            //     isSeen:parsed.isSeen,
+            //     notificationId:parsed.notificationId,
+            //     senderId:parsed.senderId,
+            //     senderObject:JSON.parse(parsed.senderJSON),
+            //     description:parsed.description,
+            //     link:parsed.link,
+            //     jsMethod:parsed.jsMethod,
+            // });
+        }
     }
-  },
-  mounted() {
-
-    this.notLoading = true;
-    axios.post(smartEnuApi + "/notifications", {
-      pageNum: this.pageNum,
-      itemsPerPage: this.itemsPerPage
-    }, {headers: getHeader()})
-        .then(response => {
-          this.newCount = response.data.NewCount ? response.data.NewCount : 0;
-          let recordCount = response.data.RecordCount;
-          this.pageCount = recordCount % this.itemsPerPage == 0 ? parseInt(recordCount / this.itemsPerPage) : parseInt(recordCount / this.itemsPerPage) + 1;
-        })
-        .catch(error => {
-          alert(error.message)
-        })
-  },
-  async created() {
-
-    let v = this;
-    this.socket = await new WebSocket(socketApi + "/notificationws");
-    this.socket.onopen = () => {
-      this.socket.send(JSON.stringify(this.loginedUser));
-    }
-
-    this.socket.onmessage = (event) => {
-      let parsed = JSON.parse(event.data);
-      let tempDiv = document.createElement('div');
-      tempDiv.innerHTML = parsed['description_' + this.$i18n.locale];
-      let descriptionText = tempDiv.textContent;
-
-      this.$toast.add({
-            severity: 'success',
-            summary: descriptionText,
-            detail: JSON.parse(parsed.senderJSON).fullName,
-            life: 3000
-          }
-      );
-      this.newCount = this.newCount + 1;
-      // v.notifications.unshift({
-      //     uniqueName:parsed.uniqueName,
-      //     isSeen:parsed.isSeen,
-      //     notificationId:parsed.notificationId,
-      //     senderId:parsed.senderId,
-      //     senderObject:JSON.parse(parsed.senderJSON),
-      //     description:parsed.description,
-      //     link:parsed.link,
-      //     jsMethod:parsed.jsMethod,
-      // });
-    }
-  }
 }
 </script>
 
@@ -260,20 +249,16 @@ export default {
   background-color: #e3f2fd;
   color: #495057;
 }
-
-.header_icons {
+.header_icons{
   color: #6c757d;
   cursor: pointer;
 }
-
-.header_icons i:hover {
+.header_icons i:hover{
   color: #293042;
 }
-
-.header_icons svg:hover {
+.header_icons svg:hover{
   color: #293042;
 }
-
 .tg {
   font-size: 20px;
 }
