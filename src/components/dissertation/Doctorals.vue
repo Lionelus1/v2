@@ -1,6 +1,6 @@
 <template>
-  <div>
     <div class="col-12">
+        <div class="card">
       <Toolbar class="mb-4">
         <template #end>
           <Button

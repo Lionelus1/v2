@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div class="card">
     <Toolbar class="mb-4 ">
       <template #start>
         <Button
