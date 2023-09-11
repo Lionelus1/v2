@@ -56,10 +56,10 @@
 </template>
 <script>
 import LanguageDropdown from "./LanguageDropdown";
-import axios from "axios";
 import {getHeader, smartEnuApi, socketApi} from "@/config/config";
 import moment from "moment";
 import {mapState} from "vuex";
+import {NotificationService} from "@/service/notification.service";
 
 export default {
     components: {LanguageDropdown},
@@ -76,7 +76,8 @@ export default {
             pageCount: 0,
             pageNum: 1,
             newCount: 0,
-            firstShown: false
+            firstShown: false,
+            notificationService: new NotificationService()
         }
     },
     methods: {
@@ -105,23 +106,18 @@ export default {
             window.open('https://t.me/smartenu_chat', '_blank')
         },
         ViewNotification(nots) {
-            axios.post(smartEnuApi + "/viewnotifications", {views: nots}, {headers: getHeader()})
-                .then(response => {
-                        if (this.newCount > 0)
-                            this.newCount = this.newCount - nots.length < 0 ? 0 : this.newCount - nots.length;
-                        console.info("view result", response)
-                    }
+          this.notificationService.viewNotifications({views: nots}).then(response => {
+                    if (this.newCount > 0)
+                        this.newCount = this.newCount - nots.length < 0 ? 0 : this.newCount - nots.length;
+                    console.info("view result", response)
+                  }
                 ).catch(error => {
-                alert(error.message)
+            this.$toast.add({ severity: "error", summary: error, life: 3000 });
             });
         },
         loadNotifications() {
             this.notLoading = true;
-            axios.post(smartEnuApi + "/notifications", {
-                pageNum: this.pageNum,
-                itemsPerPage: this.itemsPerPage
-            }, {headers: getHeader()})
-                .then(response => {
+            this.notificationService.getNotifications(this.pageNum, this.itemsPerPage).then(response => {
                     this.newCount = response.data.NewCount ? response.data.NewCount : 0;
                     let recordCount = response.data.RecordCount;
                     this.pageCount = recordCount % this.itemsPerPage == 0 ? parseInt(recordCount / this.itemsPerPage) : parseInt(recordCount / this.itemsPerPage) + 1;
@@ -202,17 +198,13 @@ export default {
     mounted() {
 
         this.notLoading = true;
-        axios.post(smartEnuApi + "/notifications", {
-            pageNum: this.pageNum,
-            itemsPerPage: this.itemsPerPage
-        }, {headers: getHeader()})
-            .then(response => {
+        this.notificationService.getNotifications(this.pageNum, this.itemsPerPage).then(response => {
                 this.newCount = response.data.NewCount ? response.data.NewCount : 0;
                 let recordCount = response.data.RecordCount;
                 this.pageCount = recordCount % this.itemsPerPage == 0 ? parseInt(recordCount / this.itemsPerPage) : parseInt(recordCount / this.itemsPerPage) + 1;
             })
             .catch(error => {
-                alert(error.message)
+              this.$toast.add({ severity: "error", summary: error, life: 3000 });
             })
     },
     async created() {
