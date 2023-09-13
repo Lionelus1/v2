@@ -63,13 +63,14 @@ export default {
   },
   computed: {
     selectedContragentName() {
+      console.log(this.value)
       if (!this.value)
         return "";
       switch(this.value.type) {
         case Enum.ContragentType.Organization:
           return this.$i18n.locale != 'ru' ? '"' + this.value.name + '" ' + this.value.form.shortname : this.value.form.shortnameru + ' "' + this.value.nameru + '"';
         case Enum.ContragentType.Person:
-          if (this.value.id || this.value.userId) {
+          if (this.value.id || this.value.userId || this.value.userID) {
             if (this.value.lname === undefined) {
               return this.value.lastName + ' ' + this.value.firstName + ' ' + (this.value.thirdName ?? '');
             } else {
