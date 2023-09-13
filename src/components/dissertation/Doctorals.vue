@@ -1408,8 +1408,12 @@ export default {
       }
     },
     loadCouncil() {
-      this.lazyParams.id = this.selectedDoctoral.councilID;
-      axios.post(smartEnuApi + "/dissertation/getcouncilmembers", this.lazyParams, { headers: getHeader() }).then((response) => {
+      let data = {
+        id: this.selectedDoctoral.councilID,
+        page: 0,
+        rows: 10
+      }
+      axios.post(smartEnuApi + "/dissertation/getcouncilmembers", data, { headers: getHeader() }).then((response) => {
         console.log(response.data)
         this.memberList = response.data;
       }).catch((error) => {
