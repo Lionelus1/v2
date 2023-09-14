@@ -5,11 +5,14 @@
          <div class="col-12">
              <div class="card">
          <div class="text-2xl font-medium text-900 mb-3">{{$t("course.certificate.title")}}</div>
-      
-        <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
+         <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
+         <Button  v-if="findRole(null,'student')" @click="getStudentCertificates()"
+            :label="$t('common.downloadCertificate')"
+            type="button"
+            class="p-button-info" />
          <DataTable
-           v-if="journal"
-           selectionMode="single"
+         v-if="journal"
+         selectionMode="single"
            v-model:selection="template"
            :lazy="true"
            :totalRecords="count"
@@ -27,7 +30,7 @@
              first: '{first}',
              last: '{last}',
              totalRecords: '{totalRecords}',
-           })"
+            })"
            responsiveLayout="scroll"
            @sort="onSort($event)"
            @filter="onFilter($event)">
@@ -45,12 +48,6 @@
          </DataTable>
              </div>
          </div>
-               
-     
-    
-     
-    
-   
      </div>
  </template>
  <script>
@@ -58,7 +55,7 @@
  import Certificate from './Certificate.vue';
  
  import {OnlineCourseService} from "@/service/onlinecourse.service";
- import { smartEnuApi, fileRoute } from '../../../config/config';
+ import { smartEnuApi, fileRoute, findRole } from '../../../config/config';
  export default {
      name: "SertificateJournal",
     
@@ -124,6 +121,17 @@
          }
      },
      methods: {
+      findRole: findRole,
+      getStudentCertificates() {
+          this.loading = true
+          this.service.getStudentCertificates().then(_ => {
+          }).catch(_ =>{
+          })
+          .finally(()=> {
+            this.getJournal()
+            this.loading = false
+          })
+         },
          openCertificate(uuid) {
             let url = this.smartEnuApi +"/document?qrcode="+uuid;
             window.open(url, '_blank');
