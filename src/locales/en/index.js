@@ -33,7 +33,9 @@ export default {
     notUpload: "Document not uploaded",
     nextIssue: "Last certificate number",
     goToTheCourse: "Go to the course",
-    addCertificate: "Add a certificate",
+    addCertificate: "Certificate required",
+    updateGES:"Update the list of GES",
+    downloadCertificate:"Download The Certificate",
     action: {
       submit: "Submit",
       accept: "Accept",

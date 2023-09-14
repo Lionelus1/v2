@@ -32,7 +32,9 @@ export default {
         notUpload: 'Документ не загружен',
         nextIssue: 'Последний номер сертификата',
         goToTheCourse: "Перейти к курсу",
-        addCertificate: "Добавить сертификат", 
+        addCertificate: "Требуется сертификат", 
+        updateGES:"Обновить список ООД",
+        downloadCertificate:"Загрузить сертификат",
         action: {
             submit: 'Отправить',
             accept: 'Принять',

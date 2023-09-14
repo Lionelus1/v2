@@ -32,7 +32,9 @@ export default {
         notUpload: 'Құжат жүктелмеді',
         nextIssue: 'Сертификаттың соңғы нөмірі',
         goToTheCourse: "Курсқа өту",
-        addCertificate: "Сертификат қосу",
+        addCertificate: "Сертификат қажет етіледі",
+        updateGES:"ЖББП тізімін жаңарту",
+        downloadCertificate:"Сертификат жүктеп алу",
         action: {
             submit: 'Жіберу',
             accept: 'Қабылдау',

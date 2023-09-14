@@ -71,4 +71,10 @@ export class OnlineCourseService {
     getOod() {
         return api.get(`onlinecourse/getOod`, {headers: getHeader()});
     }
+    getStudentCertificates() {
+        return api.get('onlinecourse/getStudentCertificates', {headers: getHeader()});
+    }
+    updateCourseGiveCertificates(data){
+        return api.post('onlinecourse/updateCourse/giveCertificate', data, {headers:getHeader()});
+    }
 }

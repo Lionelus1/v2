@@ -100,9 +100,11 @@ export default {
           this.service.getCertificateTemplateJournal(this.lazyParams).then(response =>{
             this.journal = response.data.templates;
             this.count = response.data.count;
-            this.loading = false;
           })
-          .catch(_=> {
+          .catch((e)=> {
+            console.log(e)
+          })
+          .finally(() => {
             this.loading = false;
           })
         },
