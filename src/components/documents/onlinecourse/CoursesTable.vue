@@ -5,16 +5,14 @@
         :paginatorTemplate="paginatorTemplate" :rowsPerPageOptions="[10, 25, 50]"
         :currentPageReportTemplate="currentPageReportTemplate" :lazy="true" :loading="tableLoading" scrollable
         scrollHeight="flex" v-model:selection="selectedCourse" selectionMode="single" :rowHover="true" stripedRows
-        @page="onPage">
+        @page="onPage" @select-all-change="onCourseSelected" filterDisplay="row" :globalFilterFields="['give_certificate']">
         <template #header>
           <h4 class="mb-3">{{ $t('course.courses') }}</h4>
-          <Button v-if="findRole(null, 'online_course_administrator')" :label="$t('common.updateGES')" @click="getOod()" />
-          <Button v-if="findRole(null, 'online_course_administrator')" :label="$t('common.save')"
+          <div class="sm:flex block justify-content-between">
+            <Button class="mr-2" v-if="findRole(null, 'online_course_administrator')" :label="$t('common.updateGES')" @click="getOod()" />
+            <Button class="mt-2" v-if="findRole(null, 'online_course_administrator')" :label="$t('common.save')"
             @click="updateCourseGiveCertificates()" />
-        
-          <Checkbox v-model="selectAllChecked" @input="checkboxSelectAll" :binary="true" />
-
-
+          </div>
         </template>
 
         <Column :header="$t('common.name')">
@@ -27,11 +25,15 @@
             {{ body.data['description' + $i18n.locale] }}
           </template>
         </Column>
-        <Column v-if="findRole(null, 'online_course_administrator')" :header="$t('common.addCertificate')">
+        <Column v-if="findRole(null, 'online_course_administrator')"  :header="$t('common.addCertificate')">         
           <template #body="body">
             <Checkbox v-model="body.data.give_certificate" @change="pushAndDeleteGiveCertificates(body.data)"
               :binary="true" />
           </template>
+          <template #footer>
+            <Checkbox inputId="selectAll"  class="mr-2" v-model="selectAllChecked" @input="checkboxSelectAll" :binary="true"  />
+            <label for="selectAll">{{$t('common.selectAll')}}</label>
+        </template>
         </Column>
         <Column>
           <template #body="body">
@@ -39,7 +41,7 @@
               @click="selectCourse(body.data)" />
           </template>
         </Column>
-
+        
       </DataTable>
     </TabPanel>
   </div>
@@ -209,6 +211,9 @@ export default {
           this.tableLoading = false
           console.log('error')
         })
+    },
+    onCourseSelected() {
+      console.log(this.selectedCourse);
     }
   }
 }

@@ -35,6 +35,7 @@ export default {
         addCertificate: "Требуется сертификат", 
         updateGES:"Обновить список ООД",
         downloadCertificate:"Загрузить сертификат",
+        selectAll: "Выбрать все",
         action: {
             submit: 'Отправить',
             accept: 'Принять',

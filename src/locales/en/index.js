@@ -36,6 +36,7 @@ export default {
     addCertificate: "Certificate required",
     updateGES:"Update the list of GES",
     downloadCertificate:"Download The Certificate",
+    selectAll: "Select All",
     action: {
       submit: "Submit",
       accept: "Accept",

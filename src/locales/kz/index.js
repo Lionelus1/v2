@@ -35,6 +35,7 @@ export default {
         addCertificate: "Сертификат қажет етіледі",
         updateGES:"ЖББП тізімін жаңарту",
         downloadCertificate:"Сертификат жүктеп алу",
+        selectAll: "Барлығын таңдау",
         action: {
             submit: 'Жіберу',
             accept: 'Қабылдау',
