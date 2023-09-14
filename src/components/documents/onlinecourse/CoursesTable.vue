@@ -211,9 +211,6 @@ export default {
           this.tableLoading = false
           console.log('error')
         })
-    },
-    onCourseSelected() {
-      console.log(this.selectedCourse);
     }
   }
 }
