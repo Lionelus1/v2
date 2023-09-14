@@ -159,6 +159,8 @@ import AddPage from "@/components/enuwebsite/pages/AddPage.vue";
 import CustomFileUpload from "@/components/CustomFileUpload.vue";
 import {webEnuDomain} from "@/config/config";
 import {FileService} from "@/service/file.service";
+import {findRole} from "@/config/config";
+import {useStore} from "vuex";
 
 export default {
   name: "AddMenu",
@@ -211,13 +213,14 @@ export default {
         page: 1,
         rows: 30,
         parent_id: this.currentMenu ? this.currentMenu.menu_id : null,
-        slug: this.slug ?? null
+        slug: localStorage.getItem('selectedSlug') ? JSON.parse(localStorage.getItem('selectedSlug')).slug : null
       },
       pageLoading: false,
       pageLazyParams: {
         searchText: null,
         slug: this.slug ?? null
-      }
+      },
+      store : useStore()
     };
   },
 
@@ -334,7 +337,10 @@ export default {
       if (!this.validateMenus()) {
         return;
       }
-
+      // slug check
+      if (this.lazyParams.slug && findRole(this.store.state.loginedUser, 'enu_web_admin'))
+        
+      this.formData.slug = this.lazyParams.slug
       const fd = new FormData();
       fd.append('menu', JSON.stringify(this.formData))
       if (this.bgImg) fd.append('background_image', this.bgImg[0]);
