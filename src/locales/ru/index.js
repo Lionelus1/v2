@@ -31,6 +31,11 @@ export default {
         approveDate: "Дата утверждения",
         notUpload: 'Документ не загружен',
         nextIssue: 'Последний номер сертификата',
+        goToTheCourse: "Перейти к курсу",
+        addCertificate: "Требуется сертификат", 
+        updateGES:"Обновить список ООД",
+        downloadCertificate:"Загрузить сертификат",
+        selectAll: "Выбрать все",
         action: {
             submit: 'Отправить',
             accept: 'Принять',

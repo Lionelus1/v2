@@ -500,9 +500,10 @@ export default {
                     life: 3000,
                 });
                 this.getCourseStudents()
-                this.issueCertificateWithDialog = false
-                this.issueCertificateDialog = false
+
             }).catch(_ => {
+            })
+            .finally(() => {
                 this.saving = false;
                 this.submitted = false;
                 this.issueCertificateWithDialog = false
