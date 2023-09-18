@@ -123,7 +123,8 @@ export default {
         rows: 10,
         searchText: null,
         sortField: null,
-        sortOrder: 0
+        sortOrder: 0,
+        slug: localStorage.getItem('selectedSlug') ? JSON.parse(localStorage.getItem('selectedSlug')).slug : null
       },
       total: 0,
       fileService: new FileService(),

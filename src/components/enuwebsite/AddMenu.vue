@@ -338,9 +338,10 @@ export default {
         return;
       }
       // slug check
-      if (this.lazyParams.slug && findRole(this.store.state.loginedUser, 'enu_web_admin'))
+      if (this.lazyParams.slug && findRole(this.store.state.loginedUser, 'enu_web_admin')) {
+        this.formData.slug = this.lazyParams.slug
+      }
         
-      this.formData.slug = this.lazyParams.slug
       const fd = new FormData();
       fd.append('menu', JSON.stringify(this.formData))
       if (this.bgImg) fd.append('background_image', this.bgImg[0]);
@@ -397,8 +398,8 @@ export default {
       });
     },
     onPageLoad(event) {
-      //this.pageLazyParams.searchText = event.value;
-      //this.getPages(null)
+      // this.pageLazyParams.searchText = event.value;
+      // this.getPages(null)
     },
     getPages(data) {
       this.pageLoading = true;
