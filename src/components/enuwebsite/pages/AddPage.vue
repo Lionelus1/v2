@@ -155,10 +155,11 @@ export default {
             if (!this.isValid()) {
                 return;
             }
-            if (this.lazyParams.slug && findRole(this.store.state.loginedUser, 'enu_web_admin'))
-        
-            this.formData.slug = this.lazyParams.slug
-
+            if (this.lazyParams.slug && findRole(this.store.state.loginedUser, 'enu_web_admin')) (
+                this.formData.slug = this.lazyParams.slug
+            )  
+            console.log(this.formData.slug)
+            
             if (this.uploadedGalleryFiles) {
                 this.uploadedGalleryFiles.forEach(item => {
                     this.formData.files = this.formData.files || []
