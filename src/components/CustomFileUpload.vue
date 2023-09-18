@@ -19,7 +19,6 @@
         <div ref="content" class="p-fileupload-content">
             <div class="p-fileupload-files" v-if="uploadedFiles">
                 <div v-for="(file, index) of uploadedFiles" :key="index">
-                    {{ typeof file }}
                     <div v-if="file && file.objectURL"><img :src="file.objectURL" alt="" class="w-20rem"></div>
                     <div class="p-fileupload-row">
                         <span class="mr-3"><i class="pi pi-paperclip"></i></span>
