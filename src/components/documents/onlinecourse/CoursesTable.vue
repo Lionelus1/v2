@@ -25,14 +25,14 @@
             {{ body.data['description' + $i18n.locale] }}
           </template>
         </Column>
-        <Column v-if="findRole(null, 'online_course_administrator')"  :header="$t('common.addCertificate')">   
+        <Column v-if="findRole(null, 'online_course_administrator')">   
           <template #body="body">
             <Checkbox v-model="body.data.give_certificate" @change="pushAndDeleteGiveCertificates(body.data)"
               :binary="true" />
           </template>
-          <template #footer>
+          <template #header>
             <Checkbox inputId="selectAll"  class="mr-2" v-model="selectAllChecked" @input="checkboxSelectAll" :binary="true"  />
-            <label for="selectAll">{{$t('common.selectAll')}}</label>
+            <label for="selectAll">{{$t('common.addCertificate')}}</label>
         </template>
         </Column>
         <Column>
@@ -102,14 +102,12 @@ export default {
     },
     checkboxSelectAll() {
       if (this.selectAllChecked) {
-        console.log(this.selectAllChecked, '1')
         this.selectAllChecked = true;
         this.courses.forEach((course) => {
           course.give_certificate = true;
           this.pushAndDeleteGiveCertificates(course);
         });
       } else {
-        console.log(this.selectAllChecked, '2')
         this.selectAllChecked = false;
         this.courses.forEach((course) => {
           course.give_certificate = false;
@@ -209,7 +207,6 @@ export default {
         .finally(() => {
           this.getCourses()
           this.tableLoading = false
-          console.log('error')
         })
     }
   }

@@ -18,11 +18,12 @@
     <div class="field" v-if="uploadedFiles">
         <div ref="content" class="p-fileupload-content">
             <div class="p-fileupload-files" v-if="uploadedFiles">
-                <div v-for="(file, index) of uploadedFiles" :key="index">
-                    <div v-if="file.objectURL"><img :src="file.objectURL" alt="" class="w-20rem"></div>
+                {{ uploadedFiles }}
+                <div v-for="(file, index) of uploadedFiles" :key="index">           
+                    <div v-if="file && file.objectURL"><img :src="file.objectURL" alt="" class="w-20rem"></div>
                     <div class="p-fileupload-row">
                         <span class="mr-3"><i class="pi pi-paperclip"></i></span>
-                        <span>{{ file.name }}</span>
+                        <span>{{ file && file.name }}</span>
                         <span class="ml-5"><Button icon="pi pi-times" class="p-button-rounded p-button-text" @click="removeFile(index)"/></span>
                     </div>
                 </div>
@@ -42,8 +43,9 @@ export default {
     name: "CustomFileUpload",
     props: ['modelValue', 'accept', 'multiple', 'preview', 'isGallery', 'button'],
     setup(props, context) {
-        const uploadedFiles = ref(props.modelValue)
+        const uploadedFiles = ref(props.modelValue);
         const imgPreview = ref(props.preview)
+        let formData = ref({})
         const files = ref()
         if (imgPreview.value)
             imgPreview.value = smartEnuApi + fileRoute + imgPreview.value;
@@ -60,23 +62,34 @@ export default {
               input.setAttribute('accept', props.accept)
               input.setAttribute('multiple', props.multiple)
               input.addEventListener('change', (e) => {
-                context.emit('upload', props.multiple ? e.target.files : e.target.files[0])
-              });
+              context.emit('upload', props.multiple ? e.target.files : e.target.files[0])
+              console.log(input, 'hello')
+            
+            });
               input.click();
             } else {
               context.emit('upload', event)
             }
         }
 
+
         watch(() => props.modelValue, (newValue, oldValue) => {
-          if (!props.multiple) {
-            // eslint-disable-next-line valid-typeof
-            uploadedFiles.value = typeof newValue === "array" ? newValue : [newValue]
-          } else {
-            uploadedFiles.value = uploadedFiles.value || []
-            console.log(uploadedFiles.value)
-            uploadedFiles.value = uploadedFiles.value.push(newValue) || uploadedFiles.value.concat(newValue)
-          }
+            if (Array.isArray(uploadedFiles.value)) {
+                uploadedFiles.value.push(newValue);
+            } else {
+                console.log('hello', oldValue)
+                uploadedFiles.value = [newValue];
+            }
+
+
+        //   if (!props.multiple) {
+        //     // eslint-disable-next-line valid-typeof
+        //     uploadedFiles.value = typeof newValue === "array" ? newValue : [newValue]
+        //   } else {
+        //     uploadedFiles.value = uploadedFiles.value || []
+        //     console.log(uploadedFiles.value)
+        //     uploadedFiles.value = uploadedFiles.value.push(newValue) || uploadedFiles.value.concat(newValue)
+        //   }
         })
 
         return {

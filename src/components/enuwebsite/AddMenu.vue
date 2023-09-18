@@ -316,6 +316,7 @@ export default {
             this.removeIconBtn = false;
         },
         uploadBg(event) {
+            // console.log(event)
             let file = event.files[0]
             fetch(file.objectURL)
                 .then(response => response.text())
