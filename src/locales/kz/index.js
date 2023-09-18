@@ -30,6 +30,7 @@ export default {
         approveDate: "Бекітілген күні",
         approvedBy: "Бекіткен",
         notUpload: 'Құжат жүктелмеді',
+        nextIssue: 'Сертификаттың соңғы нөмірі',
         action: {
             submit: 'Жіберу',
             accept: 'Қабылдау',
@@ -114,6 +115,7 @@ export default {
         code: "Коды",
         main: "Негізгі",
         more: "Толық",
+        loadMore: "Көбірек жүктеу",
         meetingUrl: "Онлайн жиналысқа сілтеме",
         meetingPlace: "Жиналыс өтетін орын",
         move: "Орнын ауыстыру",
@@ -319,7 +321,8 @@ export default {
         address: 'Адрес',
         qrGenerator: 'QR генератор',
         generate: 'Генерациялау',
-        selectFormat: 'Форматты таңдаңыз'
+        selectFormat: 'Форматты таңдаңыз',
+        notifications: 'Хабарламалар'
     },
     bank: {
         title: "Банктер",
@@ -798,7 +801,9 @@ export default {
         foreignConsultant: 'Шетелдік кеңесшінің пікірі',
         commissionConclusion: 'Этикалық бағалау комиссиясының қорытындысы',
         reviewerComment: 'Ресми рецензенттің пікірі',
-        setMeetingTimeConfirmMsg: "Төмендегі {btn} батырмасын басу арқылы, ақпараттардың дұрыстығын растайсыз және осы ақпарат сайтқа хабарландыру болып шығарылады"
+        setMeetingTimeConfirmMsg: "Төмендегі {btn} батырмасын басу арқылы, ақпараттардың дұрыстығын растайсыз және осы ақпарат сайтқа хабарландыру болып шығарылады",
+        addMemeberToDisCouncil: 'Диссертациялық кеңеске мүше қосу',
+        meetingDateMessage: 'Қорғауды жүргізуді тек бір күн қалғанда бастай аласыз'
     },
     faq: {
         title: "Қолдау қызметі",

@@ -31,6 +31,7 @@ export default {
     approveDate: "Approve date",
     approvedBy: "Approved by",
     notUpload: "Document not uploaded",
+    nextIssue: "Last certificate number",
     action: {
       submit: "Submit",
       accept: "Accept",
@@ -115,6 +116,7 @@ export default {
     code: "Code",
     main: "Main",
     more: "More",
+    loadMore: "Load more",
     meetingUrl: "Link to online meeting",
     meetingPlace: "Meeting place",
     myData: "My details",
@@ -321,7 +323,8 @@ export default {
         address: 'Address',
         qrGenerator: 'QR generator',
         generate: 'Generate',
-        selectFormat: 'Select format'
+        selectFormat: 'Select format',
+        notifications: 'Notifications'
     },
     bank: {
         title: "Banks",
@@ -756,7 +759,9 @@ export default {
         foreignConsultant: 'Review of foreign consultant',
         commissionConclusion: 'Conclusion of the ethical assessment committee',
         reviewerComment: 'Official reviewer\'s review',
-        setMeetingTimeConfirmMsg: "By clicking the {btn} button below, you confirm the correctness of the information and this information is published in the form of an announcement on the site."
+        setMeetingTimeConfirmMsg: "By clicking the {btn} button below, you confirm the correctness of the information and this information is published in the form of an announcement on the site.",
+        addMemeberToDisCouncil: 'Add Member to The Dissertation Council',
+        meetingDateMessage: 'You can start the Conducting a defence only one day before'
     },
     faq: {
         title: "Help desk",

@@ -32,17 +32,17 @@
 
                                     <Button v-if="findRole(null,'online_course_administrator')"
                                             class="p-button-help mb-2" icon="fa-solid fa-certificate"
-                                            :label="$t('course.certificate.issue')" @click="issueCertificate(0)"/>
+                                            :label="$t('course.certificate.issue')" @click="openIssueCertificateDialog"/>
 
                                     <Button v-if="findRole(null,'online_course_administrator')"
                                             class="p-button-help mb-2" icon="fa-solid fa-file-circle-check"
                                             :label="$t('course.certificate.issueWithApp')"
-                                            @click="issueCertificate(1)"/>
+                                            @click="openIssueCertificateWithDialog"/>
 
                                 </div>
                                 <span v-if="findRole(null,'online_course_administrator')" class="p-input-icon-left">
                                     <i class="pi pi-search"/>
-                                    <InputText disabled="true" :placeholder="$t('common.search')"/>
+                                    <InputText type="search" v-model="searchText" @keyup.enter="getCourseStudents"  @search="getCourseStudents" :placeholder="$t('common.search')"/>
                                 </span>
                             </div>
                         </template>
@@ -100,6 +100,55 @@
                             </div>
 
                         </template>
+                    </Dialog>
+
+                    <Dialog v-model:visible="issueCertificateDialog" :style="{ width: '500px' }">   
+                        <template #header>
+                            <div>
+                                <i class="pi pi-exclamation-triangle mr-2"></i>
+                                {{ $t('course.certificate.confirm') }}
+                            </div>
+                        </template>
+                        <label>{{ $t('common.nextIssue') }}</label>
+                        <template #footer>
+                            <div class="flex justify-content-between">
+                                    <InputText type="text" v-model="organizer.lastNumber"></InputText>
+                                    <div>
+                                        <Button v-if="findRole(null,'online_course_administrator')"
+                                            :label="$t('common.yes')" @click="issueCertificate(0)"/>
+
+                                        <Button :label="$t('common.no')" @click="closeIssueCertificateDialog"
+                                        class="p-button-outlined"/>
+                                    </div>
+                            </div>
+
+                        </template>
+                        
+                    </Dialog>
+
+                    <Dialog v-model:visible="issueCertificateWithDialog" :style="{ width: '450px' }">
+                        <template #header>
+                            <div>
+                                <i class="pi pi-exclamation-triangle mr-2"></i>
+                                {{ $t('course.certificate.confirm2') }}
+                            </div>
+                        </template>
+
+                        <label>{{ $t('common.nextIssue') }}</label>
+                        <template #footer>
+                            <div class="flex justify-content-between">
+                                <InputText type="text" v-model="organizer.lastNumber"></InputText>
+                                <div>
+                                    <Button v-if="findRole(null,'online_course_administrator')"
+                                            :label="$t('common.yes')" 
+                                            @click="issueCertificate(1)"/>
+                                    <Button :label="$t('common.no')" @click="closeIssueCertificateWithDialog"
+                                            class="p-button-secondary p-button-outlined"/>
+                                </div>
+                                
+                            </div>
+                        </template>
+                        
                     </Dialog>
 
                 </div>
@@ -262,6 +311,7 @@ export default {
             loading: false,
             service: new OnlineCourseService(),
             course: null,
+            organizer: {},
             students: [],
             saving: false,
             student: null,
@@ -273,6 +323,8 @@ export default {
             },
             submitted: false,
             studentDialog: false,
+            issueCertificateDialog: false,
+            issueCertificateWithDialog: false,
             newUsers: [],
             updateGrades: [],
 
@@ -289,7 +341,9 @@ export default {
             reqBtn: true,
             statusText: false,
             userID: null,
-            stateID: null
+            stateID: null, 
+            searchText: '',
+            searchData: {}
         }
     },
     created() {
@@ -418,38 +472,65 @@ export default {
         addStudent() {
             this.studentDialog = true;
         },
-        issueCertificate(withApplication) {
-            this.$confirm.require({
-                message: withApplication === 0 ? this.$t("course.certificate.confirm") : withApplication === 1 ? this.$t("course.certificate.confirm2") : '',
-                header: ' ',
-                icon: 'pi pi-exclamation-triangle',
-                accept: () => {
-                    this.saving = true
-                    this.service.issueCertificate({
-                        users: null,
-                        courseID: this.course.id,
-                        comment: "",
-                        withApplication: withApplication
-                    }).then(_ => {
-                        this.saving = false;
-                        this.submitted = false;
-                        this.$toast.add({
-                            severity: "success",
-                            summary: this.$t('common.successDone'),
-                            life: 3000,
-                        });
-                        this.getCourseStudents()
-                    }).catch(_ => {
-                        this.saving = false;
-                        this.submitted = false;
-                    })
-                },
-            });
+        openIssueCertificateDialog() {
+            this.issueCertificateWithDialog = false;
+            this.issueCertificateDialog = true;
+            this.getCourseOrganizerByCourseID()
         },
 
+        openIssueCertificateWithDialog() {
+            this.issueCertificateDialog = false;
+            this.issueCertificateWithDialog = true;
+            this.getCourseOrganizerByCourseID()
+        },
+
+        issueCertificate(withApplication) {
+            this.saving = true
+            this.service.issueCertificate({
+                users: null,
+                courseID: this.course.id,
+                comment: "",
+                withApplication: withApplication
+            }).then(_ => {
+                this.saving = false;
+                this.submitted = false;
+                this.$toast.add({
+                    severity: "success",
+                    summary: this.$t('common.successDone'),
+                    life: 3000,
+                });
+                this.getCourseStudents()
+                this.issueCertificateWithDialog = false
+                this.issueCertificateDialog = false
+            }).catch(_ => {
+                this.saving = false;
+                this.submitted = false;
+                this.issueCertificateWithDialog = false
+                this.issueCertificateDialog = false
+            })
+        },
+        getCourseOrganizerByCourseID() {
+            this.loading = true
+            
+            this.service.getCourseOrganizerByCourseID(this.course_id).then(response => {
+                this.organizer = response.data.organizer
+      
+                this.loading = false
+            }).catch(_ => {
+                this.loading = false
+            });
+        },  
         closeStudentDialog() {
             this.studentDialog = false;
             this.newUsers = []
+        },
+
+        closeIssueCertificateDialog() {
+            this.issueCertificateDialog = false;
+        },
+
+        closeIssueCertificateWithDialog() {
+            this.issueCertificateWithDialog = false;
         },
 
         getCourse() {
@@ -473,8 +554,15 @@ export default {
         },
         getCourseStudents() {
             this.loading = true
+            const requestData = {
+                courseID: this.course_id,
+                page: this.studentLazyParams.page,
+                rows: this.studentLazyParams.rows,
+                searchText: this.searchText,
+            };
+
             //localStorage.setItem("course_page", JSON.stringify(this.studentLazyParams));
-            this.service.getCourseStudents(this.course_id, this.studentLazyParams.page, this.studentLazyParams.rows).then(response => {
+            this.service.getCourseStudents(requestData).then(response => {
                 if (response.data.students) {
                     this.students = response.data.students
                 }

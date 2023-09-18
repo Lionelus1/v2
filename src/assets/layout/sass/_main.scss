@@ -32,5 +32,20 @@ a {
     min-height: 100vh;
 }
 
+.p-datatable .p-datatable-thead > tr > th {
+    background: transparent;
+}
+
+.p-datatable .p-datatable-header {
+    background: transparent;
+}
+
+.p-treetable .p-treetable-header {
+    background: transparent;
+}
+
+.p-treetable .p-treetable-thead > tr > th {
+    background: transparent;
+}
 
 
