@@ -134,7 +134,7 @@
         <div class="field">
             <label>{{ $t('web.bgImg') }}</label>
             <CustomFileUpload @upload="uploadFile" :accept="'image/*'" v-model="bgImg" :multiple="false"
-                :preview="formData.background_image"></CustomFileUpload>
+                :preview="formData.background_image" :button="true"></CustomFileUpload>
         </div>
         <template #footer>
             <Button v-if="currentMenu" :label="$t('common.save')" icon="pi pi-check"
@@ -309,6 +309,7 @@ export default {
             this.formData.parent_id = node.menu_id;
         },
         uploadFile(event) {
+            console.log(event);
             this.bgImg = event.files
         },
         removeIcon() {
