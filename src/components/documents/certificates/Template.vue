@@ -3,8 +3,8 @@
     <BlockUI :blocked="loading" :fullScreen="true">
     </BlockUI>
 		<div class="col-12">
+      <TitleBlock :title="$t('course.certificate.template')" />
 			<div class="card">
-        <div class="text-2xl font-medium text-900 mb-3">{{$t("course.certificate.template")}}</div>
         <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
 
         <Toolbar>
@@ -76,6 +76,7 @@
 
 import {OnlineCourseService} from "@/service/onlinecourse.service";
 import Certificate from './Certificate.vue';
+import TitleBlock from "@/components/TitleBlock"
 export default {
     name: "Templates",
     components: {Certificate},

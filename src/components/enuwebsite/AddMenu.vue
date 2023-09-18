@@ -132,21 +132,21 @@
       <label>{{ $t('web.usefulLinkDescEN') }}</label>
       <Textarea :placeholder="$t('common.enter')" class="pt-1" type="text" v-model="formData.description_en"
                 maxlength="80"></Textarea>
-    </div>
-    <div class="field">
-      <label>{{ $t('web.bgImg') }}</label>
-      <CustomFileUpload @upload="uploadFile" :accept="'image/*'" v-model="bgImg" :multiple="false"
-                        :preview="formData.background_image"></CustomFileUpload>
-    </div>
-    <template #footer>
-      <Button v-if="currentMenu" :label="$t('common.save')" icon="pi pi-check"
-              class="p-button p-component p-button-success mr-2" @click="editMenu"/>
-      <Button v-if="!currentMenu" :label="$t('common.add')" icon="pi pi-check"
-              class="p-button p-component p-button-success mr-2" @click="addMenu"/>
-      <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button p-component p-button-danger"
-              @click="hideDialog"/>
-    </template>
-  </Dialog>
+        </div>
+        <div class="field">
+            <label>{{ $t('web.bgImg') }}</label>
+            <CustomFileUpload @upload="uploadFile" :accept="'image/*'" v-model="bgImg" :multiple="false"
+                :preview="formData.background_image" :button="true"></CustomFileUpload>
+        </div>
+        <template #footer>
+            <Button v-if="currentMenu" :label="$t('common.save')" icon="pi pi-check"
+                class="p-button p-component p-button-success mr-2" @click="editMenu" />
+            <Button v-if="!currentMenu" :label="$t('common.add')" icon="pi pi-check"
+                class="p-button p-component p-button-success mr-2" @click="addMenu" />
+            <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button p-component p-button-danger"
+                @click="hideDialog" />
+        </template>
+    </Dialog>
 
   <Sidebar v-model:visible="addPageVisible" position="right" class="p-sidebar-lg " style="overflow-y: scroll">
     <AddPage></AddPage>
@@ -339,7 +339,7 @@ export default {
       }
       // slug check
       if (this.lazyParams.slug && findRole(this.store.state.loginedUser, 'enu_web_admin'))
-        
+
       this.formData.slug = this.lazyParams.slug
       const fd = new FormData();
       fd.append('menu', JSON.stringify(this.formData))
