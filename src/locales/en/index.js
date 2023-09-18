@@ -759,7 +759,9 @@ export default {
         foreignConsultant: 'Review of foreign consultant',
         commissionConclusion: 'Conclusion of the ethical assessment committee',
         reviewerComment: 'Official reviewer\'s review',
-        setMeetingTimeConfirmMsg: "By clicking the {btn} button below, you confirm the correctness of the information and this information is published in the form of an announcement on the site."
+        setMeetingTimeConfirmMsg: "By clicking the {btn} button below, you confirm the correctness of the information and this information is published in the form of an announcement on the site.",
+        addMemeberToDisCouncil: 'Add Member to The Dissertation Council',
+        meetingDateMessage: 'You can start the Conducting a defence only one day before'
     },
     faq: {
         title: "Help desk",
