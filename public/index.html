@@ -8,13 +8,29 @@
 	<link rel="icon" href="assets/layout/images/favicon-enu.ico">
 	<title>Smart.ENU</title>
 </head>
+<style>
+    .loader{
+        background: #0077c4;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        z-index: 3000;
+    }
+    .loader img {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100px;
+        height: auto;
+    }
+</style>
     <body>
         <div id="app">
-            <div class="splash-screen">
-                <div class="splash-container">
-                    <div class="splash-double-bounce1"></div>
-                    <div class="splash-double-bounce2"></div>
-                </div>
+            <div class="loader">
+                <img src="assets/layout/images/enu-logo.gif" alt="">
             </div>
         </div>
     </body>
