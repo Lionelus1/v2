@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="col-12">
-
+        <div class="card">
       <Toolbar class="mb-4">
         <template #end>
           <Button v-if="isDissertationAdmin" icon="pi pi-plus" class="p-button-success mr-2"
@@ -141,6 +141,7 @@
         </template>
       </Dialog>
     </div>
+  </div>
   </div>
 </template>
 <script>
