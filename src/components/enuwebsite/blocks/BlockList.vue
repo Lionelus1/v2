@@ -4,7 +4,7 @@
     <div class="card">
       <Button :label="$t('web.addBlock')" @click="openDialog"/>
     </div>
-    <div class="card" v-if="findRole(null,'enu_web_admin')">
+    <div class="card" v-if="isWebAdmin">
       <SelectSiteSlug @onSelect="onSlugSelect"/>
     </div>
     <div class="card">
@@ -485,7 +485,7 @@
 </template>
 
 <script>
-import {onMounted, ref, reactive, toRefs} from "vue";
+import {onMounted, computed, ref, reactive, toRefs} from "vue";
 import {EnuWebService} from "@/service/enu.web.service";
 import {formatDate} from "@/helpers/HelperUtil";
 import {useRouter} from "vue-router";
@@ -613,7 +613,7 @@ export default {
         toast.add({severity: "error", summary: error, life: 3000});
       });
     }
-
+    const isWebAdmin = computed(() => findRole(store.state.loginedUser, "enu_web_admin"))
     const save = () => {
       submitted.value = true;
       enuService.editBlock(formData.value).then(res => {
@@ -696,7 +696,7 @@ export default {
     const onBlockListViewTypeSelect = (event) => {
       formData.value.list_type_view_id = event.value.id
     }
-
+   
     const onSlugSelect = (event) => {
       lazyParams.value.slug = event.slug
       getBlockList()
@@ -715,7 +715,7 @@ export default {
       loading, selectedBlock, submitted, options, total, TN, onBlockListTypeSelect,
       navigateToView, openDialog, hideDialog, addBlock, save, deleteConfirm, openEdit, formatDate,
       onPage, onSort, getBlockList, selectedBlockListType, listTypes, selectedBlockListViewType, onBlockListViewTypeSelect, listViewTypes,
-      accTabs, showHideUserGuide, isGuideVisible, onSlugSelect
+      accTabs, showHideUserGuide, isGuideVisible, onSlugSelect, isWebAdmin
     }
   }
 }

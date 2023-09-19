@@ -84,7 +84,7 @@ import {EnuWebService} from "@/service/enu.web.service";
 import PageView from "@/components/enuwebsite/PageView.vue";
 import {formatDate} from "@/helpers/HelperUtil";
 import {FileService} from "../../../service/file.service";
-import {downloadRoute, fileRoute, getHeader, smartEnuApi} from "../../../config/config";
+import {downloadRoute, findRole, fileRoute, getHeader, smartEnuApi} from "../../../config/config";
 import WebLogs from "@/components/enuwebsite/EnuSiteLogs.vue";
 import AddPage from "@/components/enuwebsite/pages/AddPage.vue";
 import TitleBlock from "@/components/TitleBlock.vue";
@@ -147,6 +147,7 @@ export default {
     });
   },
   methods: {
+    findRole,
     formatDate,
     getPages() {
       this.loading = true;
