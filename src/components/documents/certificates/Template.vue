@@ -7,11 +7,8 @@
 			<div class="card">
         <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
 
-        <Toolbar>
-          <template #end>
-            <Button :label="$t('common.add')" @click="this.inittialNewTemplate();templateEditorVisilble=true;" icon="pi pi-plus" />
-          </template>
-        </Toolbar>
+          <Button :label="$t('common.add')" @click="this.inittialNewTemplate();templateEditorVisilble=true;" icon="pi pi-plus" />
+  
         <DataTable
           v-if="journal"
           selectionMode="single"
