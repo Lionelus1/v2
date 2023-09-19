@@ -6,7 +6,7 @@
       <Button :label="$t('web.addPage')" icon="pi pi-plus" class="ml-2" @click="createPage"/>
     </div>
 
-    <div class="card">
+    <div class="card" v-if="findRole(null,'enu_web_admin')">
       <SelectSiteSlug @onSelect="onSlugSelect"/>
     </div>
 
