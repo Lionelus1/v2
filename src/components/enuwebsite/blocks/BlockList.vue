@@ -4,7 +4,7 @@
     <div class="card">
       <Button :label="$t('web.addBlock')" @click="openDialog"/>
     </div>
-    <div class="card">
+    <div class="card" v-if="findRole(null,'enu_web_admin')">
       <SelectSiteSlug @onSelect="onSlugSelect"/>
     </div>
     <div class="card">
