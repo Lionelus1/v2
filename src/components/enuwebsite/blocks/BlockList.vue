@@ -595,8 +595,9 @@ export default {
 
     const addBlock = () => {
       submitted.value = true;
-      if (lazyParams.value.slug && findRole(store.state.loginedUser, 'enu_web_admin'))
+      if (lazyParams.value.slug && findRole(store.state.loginedUser, 'enu_web_admin')) {
         formData.value.slug = lazyParams.value.slug
+      }
       enuService.addBlock(formData.value).then(res => {
         if (res.data && res.data.is_success) {
           toast.add({severity: "success", summary: i18n.t('common.success'), life: 3000});
