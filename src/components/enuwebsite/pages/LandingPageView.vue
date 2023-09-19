@@ -63,6 +63,7 @@ import {useRoute, useRouter} from "vue-router";
 import {EnuWebService} from "@/service/enu.web.service";
 import TitleBlock from "@/components/TitleBlock.vue";
 import {useConfirm} from "primevue/useconfirm";
+import { useStore } from "vuex";
 
 export default {
     name: "LandingPageView",
@@ -82,6 +83,9 @@ export default {
         const selectedBlock = ref({})
         const op = ref();
         const selectedParams = ref([])
+        const store = useStore()
+        const slug = ref(store.state.userSlug)
+        console.log(slug.value);
 
         const getPageData = () => {
             enuService.getPageById(pageId).then(res => {
@@ -94,7 +98,11 @@ export default {
         }
 
         const getBlocks = () => {
-            enuService.getBlockList({}).then(res => {
+            if (localStorage.getItem("selectedSlug")) {
+                slug.value = JSON.parse(localStorage.getItem("selectedSlug"))
+                console.log(JSON.parse(localStorage.getItem("selectedSlug")));
+            }
+            enuService.getBlockList({slug: slug.value.slug}).then(res => {
                 if (res.data) {
                     blocks.value = res.data.blocks
                     if (blocks.value) {

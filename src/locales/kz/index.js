@@ -937,8 +937,8 @@ export default {
         editAnswerConfirm: 'Сіз шынымен жауапқа өзгерістер еңгізгіңіз келе ме?',
         facultyName: 'Факультет атауы',
         menuIcon: 'Мәзір белгішесі',
-        uploadMenuIcon: 'Белгішені таңдау'
-
+        uploadMenuIcon: 'Белгішені таңдау',
+        domain: 'Домен'
     },
     //Student locale
     student: {
