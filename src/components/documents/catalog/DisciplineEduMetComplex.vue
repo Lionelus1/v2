@@ -1,9 +1,9 @@
 <template>
   <ProgressBar v-if="loading" mode="indeterminate" class="progress-bar"/>
+    <h3 v-if="screen.isLarge">{{ $t("educomplex.title") }}</h3>
+    <h3 v-else>{{ $t("educomplex.title") }}</h3>
   <BlockUI :blocked="loading" class="block-ui">
-    <h4 v-if="screen.isLarge" class="m-3">{{ $t("educomplex.title") }}</h4>
-    <h5 v-else class="m-3">{{ $t("educomplex.title") }}</h5>
-    <div ref="outerDiv" class="flex flex-grow-1" :class="{ 'flex-column': !screen.isLarge }">
+    <div ref="outerDiv" class="card flex flex-grow-1" :class="{ 'flex-column': !screen.isLarge }">
       <div :class="'flex flex-column' + getDepFlexGrow()">
         <Toolbar class="p-1">
           <template #start>

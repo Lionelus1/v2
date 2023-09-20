@@ -1,9 +1,9 @@
 <template>
+    <h3>{{ $t("ref.myRefs") }}</h3>
   <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
   <BlockUI :blocked="loading" :fullScreen="true"></BlockUI>
-  <div class="l-card flex flex-column" :style="{height: innerHeightInRem.toString()+'rem',
+  <div class="card flex flex-column" :style="{height: innerHeightInRem.toString()+'rem',
     minHeight: '300px'}">
-    <h4 class="ml-3 mb-2"> {{ $t("ref.myRefs") }} </h4>
     <Toolbar class="m-0 p-1">
       <template #start>
         <div class="flex flex-wrap gap-2">

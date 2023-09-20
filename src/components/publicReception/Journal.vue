@@ -1,6 +1,6 @@
 <template>
   <div class="col-12">
-    <h5>{{ $t("publicReception.title") }}</h5>
+    <h3>{{ $t("publicReception.title") }}</h3>
     <BlockUI :blocked="loading" :fullScreen="true">
       <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
     </BlockUI>

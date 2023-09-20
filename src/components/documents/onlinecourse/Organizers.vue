@@ -1,9 +1,9 @@
 <template>
+    <TitleBlock :title="$t('course.organizers')" />
     <div>
         <BlockUI :blocked="saving" :fullScreen="true"></BlockUI>
-        <TitleBlock :title="$t('course.organizers')" />
         <div class="surface-card p-4 shadow-2 border-round">
-            
+
             <div>
                 <DataTable
                     selectionMode="single"
