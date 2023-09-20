@@ -1,8 +1,9 @@
 <template>
-    <h3>{{ $t('course.organizers') }}</h3>
     <div>
         <BlockUI :blocked="saving" :fullScreen="true"></BlockUI>
+        <TitleBlock :title="$t('course.organizers')" />
         <div class="surface-card p-4 shadow-2 border-round">
+            
             <div>
                 <DataTable
                     selectionMode="single"

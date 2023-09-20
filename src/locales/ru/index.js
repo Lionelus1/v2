@@ -30,6 +30,12 @@ export default {
         approvedBy: "утвердил",
         approveDate: "Дата утверждения",
         notUpload: 'Документ не загружен',
+        nextIssue: 'Последний номер сертификата',
+        goToTheCourse: "Перейти к курсу",
+        addCertificate: "Требуется сертификат", 
+        updateGES:"Обновить список ООД",
+        downloadCertificate:"Загрузить сертификат",
+        selectAll: "Выбрать все",
         action: {
             submit: 'Отправить',
             accept: 'Принять',
@@ -789,7 +795,9 @@ export default {
         foreignConsultant: 'Отзыв зарубежного консультанта',
         commissionConclusion: 'Заключение комиссии по этической оценке',
         reviewerComment: 'Отзыв официального рецензента',
-        setMeetingTimeConfirmMsg: "Нажимая кнопку {btn} ниже, вы подтверждаете корректность информации и данная информация публикуется в виде объявления на сайте."
+        setMeetingTimeConfirmMsg: "Нажимая кнопку {btn} ниже, вы подтверждаете корректность информации и данная информация публикуется в виде объявления на сайте.",
+        addMemeberToDisCouncil: 'Добавить члена в диссертационный совет',
+        meetingDateMessage: 'Начать проведение защиту можно только за день до'
     },
     faq: {
         title: "Служба поддержки",
@@ -918,8 +926,8 @@ export default {
         editAnswerConfirm: 'Вы уверены, что хотите внести изменения в ответ?',
         facultyName: 'Название факультета',
         menuIcon: 'Значок меню',
-        uploadMenuIcon: 'Выберите значок'
-
+        uploadMenuIcon: 'Выберите значок',
+        domain: 'Домен'
     },
 
     student: {

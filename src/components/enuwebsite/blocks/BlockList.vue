@@ -1,725 +1,741 @@
 <template>
-    <div class="col-12">
-        <h3>{{ $t('web.blocks') }}</h3>
-        <div class="card">
-            <Button :label="$t('web.addBlock')" @click="openDialog" />
-        </div>
-        <div class="card">
-            <TabView>
-                <TabPanel :header="$t('web.properties')">
-                    <DataTable :lazy="true" :value="blockList" dataKey="id" :loading="loading" responsiveLayout="scroll"
-                        :rows="10" :rowHover="true" :paginator="true" :totalRecords="total" @page="onPage" @sort="onSort">
-                        <template #empty>{{ $t("common.noData") }}</template>
-                        <template #loading>{{ $t("common.loading") }}</template>
-                        <template #header>
-                            <div class="text-right">
-                                <div class="p-input-icon-left">
-                                    <i class="pi pi-search" />
-                                    <InputText type="search" v-model="lazyParams.searchText"
-                                        :placeholder="$t('common.search')" @search="getBlockList" />
-                                    <Button icon="pi pi-search" class="ml-1" @click="getBlockList" />
-                                </div>
-                            </div>
-                        </template>
-                        <Column :field="'title_' + $i18n.locale" :header="$t('common.nameIn')" sortable>
-                            <template #body="{ data }">
-                                <a href="javascript:void(0)" @click="navigateToView(data)">
-                                    {{ data['title_' + $i18n.locale] }}
-                                    <!--              {{ $i18n.locale === "kz" ? data.title_kz : $i18n.locale === "ru" ? data.title_ru : data.title_en }}-->
-                                </a>
-                            </template>
-                        </Column>
-                        <Column :header="$t('web.blockType')" sortable>
-                            <template #body="{ data }">
-                                {{ data.is_list ? $t('web.list') : !data.is_plugin ? $t('web.content') : $t('web.plugin') }}
-                            </template>
-                        </Column>
-                        <Column :header="$t('web.note')">
-                            <template #body="{ data }">
-                                {{ data.note }}
-                            </template>
-                        </Column>
-                        <Column :header="$t('faq.createDate')">
-                            <template #body="{ data }">
-                                {{ formatDate(data.create_date) }}
-                            </template>
-                        </Column>
-                        <Column class="text-right">
-                            <template #body="{ data }">
-                                <Button icon="fa-solid fa-pen" class="p-button mr-2" @click="openEdit(data)" />
-                                <Button icon="fa-solid fa-trash" class="p-button-danger" @click="deleteConfirm(data)" />
-                            </template>
-                        </Column>
-                    </DataTable>
-                </TabPanel>
-                <TabPanel :header="$t('web.history')" @click="getTableLogs()">
-                    <WebLogs :TN="TN" :key="TN" />
-                </TabPanel>
-            </TabView>
-
-        </div>
+  <div class="col-12">
+    <TitleBlock :title="$t('web.blocks')" />
+    <div class="card">
+      <Button :label="$t('web.addBlock')" @click="openDialog"/>
     </div>
+    <div class="card" v-if="isWebAdmin">
+      <SelectSiteSlug @onSelect="onSlugSelect"/>
+    </div>
+    <div class="card">
+      <TabView>
+        <TabPanel :header="$t('web.properties')">
+          <DataTable :lazy="true" :value="blockList" dataKey="id" :loading="loading" responsiveLayout="scroll"
+                     :rows="10" :rowHover="true" :paginator="true" :totalRecords="total" @page="onPage" @sort="onSort">
+            <template #empty>{{ $t("common.noData") }}</template>
+            <template #loading>{{ $t("common.loading") }}</template>
+            <template #header>
+              <div class="text-right">
+                <div class="p-input-icon-left">
+                  <i class="pi pi-search"/>
+                  <InputText type="search" v-model="lazyParams.searchText"
+                             :placeholder="$t('common.search')" @search="getBlockList"/>
+                  <Button icon="pi pi-search" class="ml-1" @click="getBlockList"/>
+                </div>
+              </div>
+            </template>
+            <Column :field="'title_' + $i18n.locale" :header="$t('common.nameIn')" sortable>
+              <template #body="{ data }">
+                <a href="javascript:void(0)" @click="navigateToView(data)">
+                  {{ data['title_' + $i18n.locale] }}
+                  <!--              {{ $i18n.locale === "kz" ? data.title_kz : $i18n.locale === "ru" ? data.title_ru : data.title_en }}-->
+                </a>
+              </template>
+            </Column>
+            <Column :header="$t('web.blockType')" sortable>
+              <template #body="{ data }">
+                {{ data.is_list ? $t('web.list') : !data.is_plugin ? $t('web.content') : $t('web.plugin') }}
+              </template>
+            </Column>
+            <Column :header="$t('web.note')">
+              <template #body="{ data }">
+                {{ data.note }}
+              </template>
+            </Column>
+            <Column :header="$t('faq.createDate')">
+              <template #body="{ data }">
+                {{ formatDate(data.create_date) }}
+              </template>
+            </Column>
+            <Column class="text-right">
+              <template #body="{ data }">
+                <Button icon="fa-solid fa-pen" class="p-button mr-2" @click="openEdit(data)"/>
+                <Button icon="fa-solid fa-trash" class="p-button-danger" @click="deleteConfirm(data)"/>
+              </template>
+            </Column>
+          </DataTable>
+        </TabPanel>
+        <TabPanel :header="$t('web.history')" @click="getTableLogs()">
+          <WebLogs :TN="TN" :key="TN"/>
+        </TabPanel>
+      </TabView>
 
-    <Dialog v-model:visible="isCreateModal" :style="{ width: '1000px' }" :breakpoints="{ '960px': '75vw', '640px': '90vw' }"
-        :header="formData && formData.title_kz ? $t('web.editBlock') : $t('web.addBlock')" :modal="true" class="p-fluid"
-        @hide="hideDialog">
-        <div class="field">
-            <label>{{ $t('common.nameInQazaq') }}</label>
-            <InputText type="text" v-model="formData.title_kz" />
-            <small class="p-error" v-if="!formData.title_kz && submitted">{{ $t("common.requiredField") }}</small>
-        </div>
-        <div class="field">
-            <label>{{ $t('common.nameInRussian') }}</label>
-            <InputText type="text" v-model="formData.title_ru" />
-            <small class="p-error" v-if="!formData.title_ru && submitted">{{ $t("common.requiredField") }}</small>
-        </div>
-        <div class="field">
-            <label>{{ $t('common.nameInEnglish') }}</label>
-            <InputText type="text" v-model="formData.title_en" />
-            <small class="p-error" v-if="!formData.title_en && submitted">{{ $t("common.requiredField") }}</small>
-        </div>
-        <div class="field">
-            <label>{{ $t('web.note') }}</label>
-            <Textarea :placeholder="$t('web.note')" rows="3" class="pt-1" type="text" v-model="formData.note"
+    </div>
+  </div>
+
+  <Dialog v-model:visible="isCreateModal" :style="{ width: '1000px' }" :breakpoints="{ '960px': '75vw', '640px': '90vw' }"
+          :header="formData && formData.title_kz ? $t('web.editBlock') : $t('web.addBlock')" :modal="true" class="p-fluid"
+          @hide="hideDialog">
+    <div class="field">
+      <label>{{ $t('common.nameInQazaq') }}</label>
+      <InputText type="text" v-model="formData.title_kz"/>
+      <small class="p-error" v-if="!formData.title_kz && submitted">{{ $t("common.requiredField") }}</small>
+    </div>
+    <div class="field">
+      <label>{{ $t('common.nameInRussian') }}</label>
+      <InputText type="text" v-model="formData.title_ru"/>
+      <small class="p-error" v-if="!formData.title_ru && submitted">{{ $t("common.requiredField") }}</small>
+    </div>
+    <div class="field">
+      <label>{{ $t('common.nameInEnglish') }}</label>
+      <InputText type="text" v-model="formData.title_en"/>
+      <small class="p-error" v-if="!formData.title_en && submitted">{{ $t("common.requiredField") }}</small>
+    </div>
+    <div class="field">
+      <label>{{ $t('web.note') }}</label>
+      <Textarea :placeholder="$t('web.note')" rows="3" class="pt-1" type="text" v-model="formData.note"
                 maxlength="100"></Textarea>
+    </div>
+    <div class="grid">
+      <div class="col-4">
+        <div class="field">
+          <div class="field">
+            <label>{{ $t('common.type') }}</label>
+            <div class="field-radiobutton">
+              <RadioButton inputId="blockType1" name="blockType" :value="true" v-model="formData.is_list"/>
+              <label for="blockType1">{{ $t('web.list') }}</label>
+            </div>
+            <div class="field-radiobutton">
+              <RadioButton inputId="blockType2" name="blockType" :value="false"
+                           @change="formData.is_grid = false" v-model="formData.is_list"/>
+              <label for="blockType2">{{ $t('web.content') }}</label>
+            </div>
+          </div>
+
+          <div class="field" v-if="formData.is_list">
+            <label>{{ $t('web.listType') }}</label>
+            <Dropdown v-model="selectedBlockListType" :options="listTypes" :optionLabel="'name_' + $i18n.locale"
+                      :placeholder="$t('common.select')" class="w-full md:w-14rem" @change="onBlockListTypeSelect"/>
+          </div>
+          <div v-if="selectedBlockListType && formData.is_list">
+            <div class="field">
+              <label>{{ $t('web.view') }}</label>
+              <Dropdown v-model="selectedBlockListViewType" :options="listViewTypes"
+                        :optionLabel="'name_' + $i18n.locale" :placeholder="$t('common.select')"
+                        class="w-full md:w-14rem" @change="onBlockListViewTypeSelect"/>
+            </div>
+          </div>
         </div>
-        <div class="grid">
-            <div class="col-4">
-                <div class="field">
-                    <div class="field">
-                        <label>{{ $t('common.type') }}</label>
-                        <div class="field-radiobutton">
-                            <RadioButton inputId="blockType1" name="blockType" :value="true" v-model="formData.is_list" />
-                            <label for="blockType1">{{ $t('web.list') }}</label>
-                        </div>
-                        <div class="field-radiobutton">
-                            <RadioButton inputId="blockType2" name="blockType" :value="false"
-                                @change="formData.is_grid = false" v-model="formData.is_list" />
-                            <label for="blockType2">{{ $t('web.content') }}</label>
-                        </div>
-                    </div>
+      </div>
 
-                    <div class="field" v-if="formData.is_list">
-                        <label>{{ $t('web.listType') }}</label>
-                        <Dropdown v-model="selectedBlockListType" :options="listTypes" :optionLabel="'name_' + $i18n.locale"
-                            :placeholder="$t('common.select')" class="w-full md:w-14rem" @change="onBlockListTypeSelect" />
-                    </div>
-                    <div v-if="selectedBlockListType && formData.is_list">
-                        <div class="field">
-                            <label>{{ $t('web.view') }}</label>
-                            <Dropdown v-model="selectedBlockListViewType" :options="listViewTypes"
-                                :optionLabel="'name_' + $i18n.locale" :placeholder="$t('common.select')"
-                                class="w-full md:w-14rem" @change="onBlockListViewTypeSelect" />
-                        </div>
-                    </div>
+      <div class="col-12" v-if="isGuideVisible">
+        <div v-if="formData.is_list">
+          <div v-if="selectedBlockListType" id="listHelp">
+            <div v-if="selectedBlockListType.code == 'LIST'">
+              <div v-if="selectedBlockListViewType" style="margin-left: -6px;">
+                <div v-if="selectedBlockListViewType.code == 'GRID'">
+                  <label>
+                    <h5><strong>{{ $t('web.gridListExe') }}</strong></h5>
+                  </label>
+                  <hr/>
+                  <br/>
                 </div>
-            </div>
-
-            <div class="col-12" v-if="isGuideVisible">
-                <div v-if="formData.is_list">
-                    <div v-if="selectedBlockListType" id="listHelp">
-                        <div v-if="selectedBlockListType.code == 'LIST'">
-                            <div v-if="selectedBlockListViewType" style="margin-left: -6px;">
-                                <div v-if="selectedBlockListViewType.code == 'GRID'">
-                                    <label>
-                                        <h5><strong>{{ $t('web.gridListExe') }}</strong></h5>
-                                    </label>
-                                    <hr /><br />
-                                </div>
-                            </div>
-                            <div v-if="selectedBlockListViewType">
-                                <div v-if="selectedBlockListViewType.code == 'GRID'" class="grid">
-                                    <div class="flex flex-wrap p-2 align-items-center gap-3">
-                                        <img class="w-4rem shadow-2 flex-shrink-0 border-round"
-                                            src="https://primefaces.org/cdn/primevue/images/product/blue-band.jpg" />
-                                        <div class="flex-1 flex flex-column gap-2">
-                                            <span class="font-bold">{{ $t('web.exampleTitle') }}-{{ 1 }}</span>
-                                            <div class="flex align-items-center gap-2">
-                                                <span>{{ $t('web.exampleContent') }}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="flex flex-wrap p-2 align-items-center gap-3">
-                                        <img class="w-4rem shadow-2 flex-shrink-0 border-round"
-                                            src="https://primefaces.org/cdn/primevue/images/product/blue-band.jpg" />
-                                        <div class="flex-1 flex flex-column gap-2">
-                                            <span class="font-bold">{{ $t('web.exampleTitle') }}-{{ 2 }}</span>
-                                            <div class="flex align-items-center gap-2">
-
-                                                <span>{{ $t('web.exampleContent') }}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="flex flex-wrap p-2 align-items-center gap-3">
-                                        <img class="w-4rem shadow-2 flex-shrink-0 border-round"
-                                            src="https://primefaces.org/cdn/primevue/images/product/blue-band.jpg" />
-                                        <div class="flex-1 flex flex-column gap-2">
-                                            <span class="font-bold">{{ $t('web.exampleTitle') }}-{{ 3 }}</span>
-                                            <div class="flex align-items-center gap-2">
-
-                                                <span>{{ $t('web.exampleContent') }}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="flex flex-wrap p-2 align-items-center gap-3">
-                                        <img class="w-4rem shadow-2 flex-shrink-0 border-round"
-                                            src="https://primefaces.org/cdn/primevue/images/product/blue-band.jpg" />
-                                        <div class="flex-1 flex flex-column gap-2">
-                                            <span class="font-bold">{{ $t('web.exampleTitle') }}-{{ 4 }}</span>
-                                            <div class="flex align-items-center gap-2">
-
-                                                <span>{{ $t('web.exampleContent') }}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div v-if="selectedBlockListViewType">
-
-                                <div v-if="selectedBlockListViewType.code !== 'GRID'" class="list">
-                                    <label>
-                                        <h5><strong>{{ $t('web.simpleListExe') }}</strong></h5>
-                                        <hr />
-                                    </label>
-                                    <div class="flex flex-wrap p-2 align-items-center gap-3">
-                                        <img class="w-4rem shadow-2 flex-shrink-0 border-round"
-                                            src="https://primefaces.org/cdn/primevue/images/product/blue-band.jpg" />
-                                        <div class="flex-1 flex flex-column gap-2">
-                                            <span class="font-bold">{{ $t('web.exampleTitle') }}-{{ 1 }}</span>
-                                            <div class="flex align-items-center gap-2">
-                                                <span>{{ $t('web.exampleContent') }}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="flex flex-wrap p-2 align-items-center gap-3">
-                                        <img class="w-4rem shadow-2 flex-shrink-0 border-round"
-                                            src="https://primefaces.org/cdn/primevue/images/product/blue-band.jpg" />
-                                        <div class="flex-1 flex flex-column gap-2">
-                                            <span class="font-bold">{{ $t('web.exampleTitle') }}-{{ 2 }}</span>
-                                            <div class="flex align-items-center gap-2">
-
-                                                <span>{{ $t('web.exampleContent') }}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="flex flex-wrap p-2 align-items-center gap-3">
-                                        <img class="w-4rem shadow-2 flex-shrink-0 border-round"
-                                            src="https://primefaces.org/cdn/primevue/images/product/blue-band.jpg" />
-                                        <div class="flex-1 flex flex-column gap-2">
-                                            <span class="font-bold">{{ $t('web.exampleTitle') }}-{{ 3 }}</span>
-                                            <div class="flex align-items-center gap-2">
-
-                                                <span>{{ $t('web.exampleContent') }}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="flex flex-wrap p-2 align-items-center gap-3">
-                                        <img class="w-4rem shadow-2 flex-shrink-0 border-round"
-                                            src="https://primefaces.org/cdn/primevue/images/product/blue-band.jpg" />
-                                        <div class="flex-1 flex flex-column gap-2">
-                                            <span class="font-bold">{{ $t('web.exampleTitle') }}-{{ 4 }}</span>
-                                            <div class="flex align-items-center gap-2">
-
-                                                <span>{{ $t('web.exampleContent') }}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div v-if="selectedBlockListType.code == 'ACCORDION'">
-                            <div v-if="selectedBlockListViewType">
-                                <div v-if="selectedBlockListViewType.code == 'GRID'">
-                                    <label>
-                                        <h5><strong>{{ $t('web.gridAccordionListExample') }}</strong></h5>
-                                        <hr />
-                                    </label>
-                                </div>
-                            </div>
-                            <div v-if="selectedBlockListViewType">
-                                <div v-if="selectedBlockListViewType.code == 'GRID'" class="grid">
-                                    <div class="col">
-                                        <Accordion :multiple="true" >
-                                            <AccordionTab :header="$t('web.exampleTitle')">
-                                                <p>
-                                                    {{ $t('web.exampleContent') }}
-                                                </p>
-                                            </AccordionTab>
-                                        </Accordion>
-                                    </div>
-                                    <div class="col">
-                                        <Accordion :multiple="true">
-                                            <AccordionTab :header="$t('web.exampleTitle')">
-                                                <p>
-                                                    {{ $t('web.exampleContent') }}
-                                                </p>
-                                            </AccordionTab>
-                                        </Accordion>
-                                    </div>
-                                    <div class="col">
-                                        <Accordion :multiple="true">
-                                            <AccordionTab :header="$t('web.exampleTitle')">
-                                                <p>
-                                                    {{ $t('web.exampleContent') }}
-                                                </p>
-                                            </AccordionTab>
-                                        </Accordion>
-                                    </div>
-                                    <div class="col">
-                                        <Accordion :multiple="true">
-                                            <AccordionTab :header="$t('web.exampleTitle')">
-                                                <p>
-                                                    {{ $t('web.exampleContent') }}
-                                                </p>
-                                            </AccordionTab>
-                                        </Accordion>
-                                    </div>
-                                </div>
-                            </div>
-                            <div v-if="selectedBlockListViewType">
-                                <div v-if="selectedBlockListViewType.code !== 'GRID'" class="list">
-                                    <label>
-                                        <h5><strong>{{ $t('web.accordionListExample') }}</strong></h5>
-                                        <hr />
-                                    </label>
-                                    <div class="col">
-                                        <Accordion >
-                                            <AccordionTab :header="$t('web.exampleTitle')">
-                                                <p>
-                                                    {{ $t('web.exampleContent') }}
-                                                </p>
-                                            </AccordionTab>
-                                        </Accordion>
-                                    </div>
-                                    <div class="col">
-                                        <Accordion :multiple="true">
-                                            <AccordionTab :header="$t('web.exampleTitle')">
-                                                <p>
-                                                    {{ $t('web.exampleContent') }}
-                                                </p>
-                                            </AccordionTab>
-                                        </Accordion>
-                                    </div>
-                                    <div class="col">
-                                        <Accordion :multiple="true">
-                                            <AccordionTab :header="$t('web.exampleTitle')">
-                                                <p>
-                                                    {{ $t('web.exampleContent') }}
-                                                </p>
-                                            </AccordionTab>
-                                        </Accordion>
-                                    </div>
-                                    <div class="col">
-                                        <Accordion :multiple="true">
-                                            <AccordionTab :header="$t('web.exampleTitle')">
-                                                <p>
-                                                    {{ $t('web.exampleContent') }}
-                                                </p>
-                                            </AccordionTab>
-                                        </Accordion>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div v-if="selectedBlockListType.code == 'CARD'">
-                            <div v-if="selectedBlockListViewType">
-                                <div v-if="selectedBlockListViewType.code == 'GRID'">
-                                    <label>
-                                        <h5><strong>{{ $t('web.gridCardListExample') }}</strong></h5>
-                                        <hr />
-                                    </label>
-                                </div>
-                            </div>
-                            <div v-if="selectedBlockListViewType">
-                                <div v-if="selectedBlockListViewType.code == 'GRID'" class="grid">
-
-                                    <div class="col">
-                                        <Card>
-                                            <template #header>
-                                                <img alt="user header" height="50"
-                                                    src="https://primefaces.org/cdn/primevue/images/usercard.png" />
-                                            </template>
-                                            <template #title> {{ $t('web.exampleTitle') }} </template>
-                                            <template #content>
-                                                <p>
-                                                    {{ $t('web.exampleContent') }}
-                                                </p>
-                                            </template>
-                                        </Card>
-                                    </div>
-                                    <div class="col">
-                                        <Card>
-                                            <template #header>
-                                                <img alt="user header" height="50"
-                                                    src="https://primefaces.org/cdn/primevue/images/usercard.png" />
-                                            </template>
-                                            <template #title> {{ $t('web.exampleTitle') }} </template>
-                                            <template #content>
-                                                <p>
-                                                    {{ $t('web.exampleContent') }}
-                                                </p>
-                                            </template>
-                                        </Card>
-                                    </div>
-                                    <div class="col">
-                                        <Card>
-                                            <template #header>
-                                                <img alt="user header" height="50"
-                                                    src="https://primefaces.org/cdn/primevue/images/usercard.png" />
-                                            </template>
-                                            <template #title> {{ $t('web.exampleTitle') }} </template>
-                                            <template #content>
-                                                <p>
-                                                    {{ $t('web.exampleContent') }}
-                                                </p>
-                                            </template>
-                                        </Card>
-                                    </div>
-                                    <div class="col">
-                                        <Card>
-                                            <template #header>
-                                                <img alt="user header" height="50"
-                                                    src="https://primefaces.org/cdn/primevue/images/usercard.png" />
-                                            </template>
-                                            <template #title> {{ $t('web.exampleTitle') }} </template>
-                                            <template #content>
-                                                <p>
-                                                    {{ $t('web.exampleContent') }}
-                                                </p>
-                                            </template>
-                                        </Card>
-                                    </div>
-                                </div>
-
-                            </div>
-                            <div v-if="selectedBlockListViewType">
-                                <div v-if="selectedBlockListViewType.code !== 'GRID'" class="list">
-                                    <label>
-                                        <h5><strong>{{ $t('web.cardListExample') }}</strong></h5>
-                                        <hr />
-                                    </label>
-                                    <div class="col">
-                                        <Card>
-                                            <template #header>
-                                                <img alt="user header" height="50"
-                                                    src="https://primefaces.org/cdn/primevue/images/usercard.png" />
-                                            </template>
-                                            <template #title> {{ $t('web.exampleTitle') }} </template>
-                                            <template #content>
-                                                <p>
-                                                    {{ $t('web.exampleContent') }}
-                                                </p>
-                                            </template>
-                                        </Card>
-                                    </div>
-                                    <div class="col">
-                                        <Card>
-                                            <template #header>
-                                                <img alt="user header" height="50"
-                                                    src="https://primefaces.org/cdn/primevue/images/usercard.png" />
-                                            </template>
-                                            <template #title> {{ $t('web.exampleTitle') }} </template>
-                                            <template #content>
-                                                <p>
-                                                    {{ $t('web.exampleContent') }}
-                                                </p>
-                                            </template>
-                                        </Card>
-                                    </div>
-                                    <div class="col">
-                                        <Card>
-                                            <template #header>
-                                                <img alt="user header" height="50"
-                                                    src="https://primefaces.org/cdn/primevue/images/usercard.png" />
-                                            </template>
-                                            <template #title> {{ $t('web.exampleTitle') }} </template>
-                                            <template #content>
-                                                <p>
-                                                    {{ $t('web.exampleContent') }}
-                                                </p>
-                                            </template>
-                                        </Card>
-                                    </div>
-                                    <div class="col">
-                                        <Card>
-                                            <template #header>
-                                                <img alt="user header" height="50"
-                                                    src="https://primefaces.org/cdn/primevue/images/usercard.png" />
-                                            </template>
-                                            <template #title> {{ $t('web.exampleTitle') }} </template>
-                                            <template #content>
-                                                <p>
-                                                    {{ $t('web.exampleContent') }}
-                                                </p>
-                                            </template>
-                                        </Card>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+              </div>
+              <div v-if="selectedBlockListViewType">
+                <div v-if="selectedBlockListViewType.code == 'GRID'" class="grid">
+                  <div class="flex flex-wrap p-2 align-items-center gap-3">
+                    <img class="w-4rem shadow-2 flex-shrink-0 border-round"
+                         src="https://primefaces.org/cdn/primevue/images/product/blue-band.jpg"/>
+                    <div class="flex-1 flex flex-column gap-2">
+                      <span class="font-bold">{{ $t('web.exampleTitle') }}-{{ 1 }}</span>
+                      <div class="flex align-items-center gap-2">
+                        <span>{{ $t('web.exampleContent') }}</span>
+                      </div>
                     </div>
+                  </div>
+                  <div class="flex flex-wrap p-2 align-items-center gap-3">
+                    <img class="w-4rem shadow-2 flex-shrink-0 border-round"
+                         src="https://primefaces.org/cdn/primevue/images/product/blue-band.jpg"/>
+                    <div class="flex-1 flex flex-column gap-2">
+                      <span class="font-bold">{{ $t('web.exampleTitle') }}-{{ 2 }}</span>
+                      <div class="flex align-items-center gap-2">
+
+                        <span>{{ $t('web.exampleContent') }}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="flex flex-wrap p-2 align-items-center gap-3">
+                    <img class="w-4rem shadow-2 flex-shrink-0 border-round"
+                         src="https://primefaces.org/cdn/primevue/images/product/blue-band.jpg"/>
+                    <div class="flex-1 flex flex-column gap-2">
+                      <span class="font-bold">{{ $t('web.exampleTitle') }}-{{ 3 }}</span>
+                      <div class="flex align-items-center gap-2">
+
+                        <span>{{ $t('web.exampleContent') }}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="flex flex-wrap p-2 align-items-center gap-3">
+                    <img class="w-4rem shadow-2 flex-shrink-0 border-round"
+                         src="https://primefaces.org/cdn/primevue/images/product/blue-band.jpg"/>
+                    <div class="flex-1 flex flex-column gap-2">
+                      <span class="font-bold">{{ $t('web.exampleTitle') }}-{{ 4 }}</span>
+                      <div class="flex align-items-center gap-2">
+
+                        <span>{{ $t('web.exampleContent') }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div v-if="selectedBlockListViewType">
+
+                <div v-if="selectedBlockListViewType.code !== 'GRID'" class="list">
+                  <label>
+                    <h5><strong>{{ $t('web.simpleListExe') }}</strong></h5>
+                    <hr/>
+                  </label>
+                  <div class="flex flex-wrap p-2 align-items-center gap-3">
+                    <img class="w-4rem shadow-2 flex-shrink-0 border-round"
+                         src="https://primefaces.org/cdn/primevue/images/product/blue-band.jpg"/>
+                    <div class="flex-1 flex flex-column gap-2">
+                      <span class="font-bold">{{ $t('web.exampleTitle') }}-{{ 1 }}</span>
+                      <div class="flex align-items-center gap-2">
+                        <span>{{ $t('web.exampleContent') }}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="flex flex-wrap p-2 align-items-center gap-3">
+                    <img class="w-4rem shadow-2 flex-shrink-0 border-round"
+                         src="https://primefaces.org/cdn/primevue/images/product/blue-band.jpg"/>
+                    <div class="flex-1 flex flex-column gap-2">
+                      <span class="font-bold">{{ $t('web.exampleTitle') }}-{{ 2 }}</span>
+                      <div class="flex align-items-center gap-2">
+
+                        <span>{{ $t('web.exampleContent') }}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="flex flex-wrap p-2 align-items-center gap-3">
+                    <img class="w-4rem shadow-2 flex-shrink-0 border-round"
+                         src="https://primefaces.org/cdn/primevue/images/product/blue-band.jpg"/>
+                    <div class="flex-1 flex flex-column gap-2">
+                      <span class="font-bold">{{ $t('web.exampleTitle') }}-{{ 3 }}</span>
+                      <div class="flex align-items-center gap-2">
+
+                        <span>{{ $t('web.exampleContent') }}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="flex flex-wrap p-2 align-items-center gap-3">
+                    <img class="w-4rem shadow-2 flex-shrink-0 border-round"
+                         src="https://primefaces.org/cdn/primevue/images/product/blue-band.jpg"/>
+                    <div class="flex-1 flex flex-column gap-2">
+                      <span class="font-bold">{{ $t('web.exampleTitle') }}-{{ 4 }}</span>
+                      <div class="flex align-items-center gap-2">
+
+                        <span>{{ $t('web.exampleContent') }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div v-if="selectedBlockListType.code == 'ACCORDION'">
+              <div v-if="selectedBlockListViewType">
+                <div v-if="selectedBlockListViewType.code == 'GRID'">
+                  <label>
+                    <h5><strong>{{ $t('web.gridAccordionListExample') }}</strong></h5>
+                    <hr/>
+                  </label>
+                </div>
+              </div>
+              <div v-if="selectedBlockListViewType">
+                <div v-if="selectedBlockListViewType.code == 'GRID'" class="grid">
+                  <div class="col">
+                    <Accordion :multiple="true">
+                      <AccordionTab :header="$t('web.exampleTitle')">
+                        <p>
+                          {{ $t('web.exampleContent') }}
+                        </p>
+                      </AccordionTab>
+                    </Accordion>
+                  </div>
+                  <div class="col">
+                    <Accordion :multiple="true">
+                      <AccordionTab :header="$t('web.exampleTitle')">
+                        <p>
+                          {{ $t('web.exampleContent') }}
+                        </p>
+                      </AccordionTab>
+                    </Accordion>
+                  </div>
+                  <div class="col">
+                    <Accordion :multiple="true">
+                      <AccordionTab :header="$t('web.exampleTitle')">
+                        <p>
+                          {{ $t('web.exampleContent') }}
+                        </p>
+                      </AccordionTab>
+                    </Accordion>
+                  </div>
+                  <div class="col">
+                    <Accordion :multiple="true">
+                      <AccordionTab :header="$t('web.exampleTitle')">
+                        <p>
+                          {{ $t('web.exampleContent') }}
+                        </p>
+                      </AccordionTab>
+                    </Accordion>
+                  </div>
+                </div>
+              </div>
+              <div v-if="selectedBlockListViewType">
+                <div v-if="selectedBlockListViewType.code !== 'GRID'" class="list">
+                  <label>
+                    <h5><strong>{{ $t('web.accordionListExample') }}</strong></h5>
+                    <hr/>
+                  </label>
+                  <div class="col">
+                    <Accordion>
+                      <AccordionTab :header="$t('web.exampleTitle')">
+                        <p>
+                          {{ $t('web.exampleContent') }}
+                        </p>
+                      </AccordionTab>
+                    </Accordion>
+                  </div>
+                  <div class="col">
+                    <Accordion :multiple="true">
+                      <AccordionTab :header="$t('web.exampleTitle')">
+                        <p>
+                          {{ $t('web.exampleContent') }}
+                        </p>
+                      </AccordionTab>
+                    </Accordion>
+                  </div>
+                  <div class="col">
+                    <Accordion :multiple="true">
+                      <AccordionTab :header="$t('web.exampleTitle')">
+                        <p>
+                          {{ $t('web.exampleContent') }}
+                        </p>
+                      </AccordionTab>
+                    </Accordion>
+                  </div>
+                  <div class="col">
+                    <Accordion :multiple="true">
+                      <AccordionTab :header="$t('web.exampleTitle')">
+                        <p>
+                          {{ $t('web.exampleContent') }}
+                        </p>
+                      </AccordionTab>
+                    </Accordion>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div v-if="selectedBlockListType.code == 'CARD'">
+              <div v-if="selectedBlockListViewType">
+                <div v-if="selectedBlockListViewType.code == 'GRID'">
+                  <label>
+                    <h5><strong>{{ $t('web.gridCardListExample') }}</strong></h5>
+                    <hr/>
+                  </label>
+                </div>
+              </div>
+              <div v-if="selectedBlockListViewType">
+                <div v-if="selectedBlockListViewType.code == 'GRID'" class="grid">
+
+                  <div class="col">
+                    <Card>
+                      <template #header>
+                        <img alt="user header" height="50"
+                             src="https://primefaces.org/cdn/primevue/images/usercard.png"/>
+                      </template>
+                      <template #title> {{ $t('web.exampleTitle') }}</template>
+                      <template #content>
+                        <p>
+                          {{ $t('web.exampleContent') }}
+                        </p>
+                      </template>
+                    </Card>
+                  </div>
+                  <div class="col">
+                    <Card>
+                      <template #header>
+                        <img alt="user header" height="50"
+                             src="https://primefaces.org/cdn/primevue/images/usercard.png"/>
+                      </template>
+                      <template #title> {{ $t('web.exampleTitle') }}</template>
+                      <template #content>
+                        <p>
+                          {{ $t('web.exampleContent') }}
+                        </p>
+                      </template>
+                    </Card>
+                  </div>
+                  <div class="col">
+                    <Card>
+                      <template #header>
+                        <img alt="user header" height="50"
+                             src="https://primefaces.org/cdn/primevue/images/usercard.png"/>
+                      </template>
+                      <template #title> {{ $t('web.exampleTitle') }}</template>
+                      <template #content>
+                        <p>
+                          {{ $t('web.exampleContent') }}
+                        </p>
+                      </template>
+                    </Card>
+                  </div>
+                  <div class="col">
+                    <Card>
+                      <template #header>
+                        <img alt="user header" height="50"
+                             src="https://primefaces.org/cdn/primevue/images/usercard.png"/>
+                      </template>
+                      <template #title> {{ $t('web.exampleTitle') }}</template>
+                      <template #content>
+                        <p>
+                          {{ $t('web.exampleContent') }}
+                        </p>
+                      </template>
+                    </Card>
+                  </div>
                 </div>
 
+              </div>
+              <div v-if="selectedBlockListViewType">
+                <div v-if="selectedBlockListViewType.code !== 'GRID'" class="list">
+                  <label>
+                    <h5><strong>{{ $t('web.cardListExample') }}</strong></h5>
+                    <hr/>
+                  </label>
+                  <div class="col">
+                    <Card>
+                      <template #header>
+                        <img alt="user header" height="50"
+                             src="https://primefaces.org/cdn/primevue/images/usercard.png"/>
+                      </template>
+                      <template #title> {{ $t('web.exampleTitle') }}</template>
+                      <template #content>
+                        <p>
+                          {{ $t('web.exampleContent') }}
+                        </p>
+                      </template>
+                    </Card>
+                  </div>
+                  <div class="col">
+                    <Card>
+                      <template #header>
+                        <img alt="user header" height="50"
+                             src="https://primefaces.org/cdn/primevue/images/usercard.png"/>
+                      </template>
+                      <template #title> {{ $t('web.exampleTitle') }}</template>
+                      <template #content>
+                        <p>
+                          {{ $t('web.exampleContent') }}
+                        </p>
+                      </template>
+                    </Card>
+                  </div>
+                  <div class="col">
+                    <Card>
+                      <template #header>
+                        <img alt="user header" height="50"
+                             src="https://primefaces.org/cdn/primevue/images/usercard.png"/>
+                      </template>
+                      <template #title> {{ $t('web.exampleTitle') }}</template>
+                      <template #content>
+                        <p>
+                          {{ $t('web.exampleContent') }}
+                        </p>
+                      </template>
+                    </Card>
+                  </div>
+                  <div class="col">
+                    <Card>
+                      <template #header>
+                        <img alt="user header" height="50"
+                             src="https://primefaces.org/cdn/primevue/images/usercard.png"/>
+                      </template>
+                      <template #title> {{ $t('web.exampleTitle') }}</template>
+                      <template #content>
+                        <p>
+                          {{ $t('web.exampleContent') }}
+                        </p>
+                      </template>
+                    </Card>
+                  </div>
+                </div>
+              </div>
             </div>
+          </div>
         </div>
-        <template #footer>
-            <div class="field" style="float:left;" v-if="formData.is_list">
-                <div class="flex align-items-center">
-                    <Checkbox v-model="isGuideVisible" :binary="true" />&nbsp;<a href="javascript:void(0)"
-                        @click="showHideUserGuide">{{ $t('web.webHelp') }}</a>
-                </div>
 
-            </div>
-            <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button p-component p-button-danger mr-2"
-                @click="hideDialog" />
-            <Button v-if="selectedBlock" :label="$t('common.save')" icon="pi pi-check"
-                class="p-button p-component p-button-success" @click="save" />
-            <Button v-if="!selectedBlock" :label="$t('common.add')" icon="pi pi-check"
-                class="p-button p-component p-button-success" @click="addBlock" />
-        </template>
-    </Dialog>
+      </div>
+    </div>
+    <template #footer>
+      <div class="field" style="float:left;" v-if="formData.is_list">
+        <div class="flex align-items-center">
+          <Checkbox v-model="isGuideVisible" :binary="true"/>&nbsp;<a href="javascript:void(0)"
+                                                                      @click="showHideUserGuide">{{ $t('web.webHelp') }}</a>
+        </div>
+
+      </div>
+      <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button p-component p-button-danger mr-2"
+              @click="hideDialog"/>
+      <Button v-if="selectedBlock" :label="$t('common.save')" icon="pi pi-check"
+              class="p-button p-component p-button-success" @click="save"/>
+      <Button v-if="!selectedBlock" :label="$t('common.add')" icon="pi pi-check"
+              class="p-button p-component p-button-success" @click="addBlock"/>
+    </template>
+  </Dialog>
 </template>
 
 <script>
-import { onMounted, ref, reactive, toRefs } from "vue";
-import { EnuWebService } from "@/service/enu.web.service";
-import { formatDate } from "@/helpers/HelperUtil";
-import { useRouter } from "vue-router";
-import { useI18n } from "vue-i18n";
-import { useToast } from "primevue/usetoast";
-import { useConfirm } from "primevue/useconfirm";
+import {onMounted, computed, ref, reactive, toRefs} from "vue";
+import {EnuWebService} from "@/service/enu.web.service";
+import {formatDate} from "@/helpers/HelperUtil";
+import {useRouter} from "vue-router";
+import {useI18n} from "vue-i18n";
+import {useToast} from "primevue/usetoast";
+import {useConfirm} from "primevue/useconfirm";
 import WebLogs from "@/components/enuwebsite/EnuSiteLogs.vue";
 import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
+import SelectSiteSlug from "@/components/enuwebsite/SelectSiteSlug.vue";
+import TitleBlock from "@/components/TitleBlock.vue";
+import {findRole} from "@/config/config";
+import {useStore} from "vuex";
 
 
 export default {
-    name: "BlockList",
-    components: { WebLogs },
-    setup() {
-        const i18n = useI18n()
-        const toast = useToast()
-        const confirm = useConfirm()
-        const loading = ref(false)
-        const TN = ref(null)
-        let selectedBlock = ref()
-        let isCreateModal = ref(false)
-        let submitted = ref(false)
-        const blockList = ref([])
-        const enuService = new EnuWebService()
-        const router = useRouter()
-        let formData = ref({
+  name: "BlockList",
+  components: {TitleBlock, SelectSiteSlug, WebLogs},
+  setup() {
+    const store = useStore()
+    const i18n = useI18n()
+    const toast = useToast()
+    const confirm = useConfirm()
+    const loading = ref(false)
+    const TN = ref(null)
+    let selectedBlock = ref()
+    let isCreateModal = ref(false)
+    let submitted = ref(false)
+    const blockList = ref([])
+    const enuService = new EnuWebService()
+    const router = useRouter()
+    let formData = ref({})
+    const options = ref([true, false]);
+    const total = ref(0)
+    const lazyParams = ref({
+      page: 0,
+      rows: 10,
+      searchText: "",
+      sortField: null,
+      sortOrder: 0,
+      slug: localStorage.getItem('selectedSlug') ? JSON.parse(localStorage.getItem('selectedSlug')).slug : null
+    })
+    const selectedBlockListType = ref();
+    const listTypes = ref([]);
+    const selectedBlockListViewType = ref();
+    const listViewTypes = ref([]);
+    const accTabs = ref([
+      {title: 'Title 1', content: 'Content 1'},
 
-        })
-        const options = ref([true, false]);
-        const total = ref(0)
-        const lazyParams = ref({
-            page: 0,
-            rows: 10,
-            searchText: "",
-            sortField: null,
-            sortOrder: 0
-        })
-        const selectedBlockListType = ref();
-        const listTypes = ref([]);
-        const selectedBlockListViewType = ref();
-        const listViewTypes = ref([]);
-        const accTabs = ref([
-            { title: 'Title 1', content: 'Content 1' },
+    ]);
 
-        ]);
+    const isGuideVisible = ref(false);
+    const showHideUserGuide = () => {
+      isGuideVisible.value = !isGuideVisible.value;
+    };
 
-        const isGuideVisible = ref(false);
-        const showHideUserGuide = () => {
-            isGuideVisible.value = !isGuideVisible.value;
-        };
+    const navigateToView = (data) => {
+      if (!data.is_plugin) router.push({name: 'BlockView', params: {id: data.block_id}})
 
-        const navigateToView = (data) => {
-            if (!data.is_plugin) router.push({ name: 'BlockView', params: { id: data.block_id } })
+      if (data.block_plugin) {
+        const compName = enuService.navigateToPlugin(data.block_plugin.component_name)
+        router.push({name: compName});
+      }
+    };
 
-            if (data.block_plugin) {
-                const compName = enuService.navigateToPlugin(data.block_plugin.component_name)
-                router.push({ name: compName });
-            }
-        };
-
-        const getBlockList = () => {
-            loading.value = true;
-            enuService.getBlockList(lazyParams.value).then(res => {
-                if (res.data) {
-                    blockList.value = res.data.blocks
-                    total.value = res.data.total;
-                    TN.value = res.data.tn_res
-                }
-                loading.value = false
-            }).catch(error => {
-                loading.value = false
-                toast.add({ severity: "error", summary: error, life: 3000 });
-            });
+    const getBlockList = () => {
+      loading.value = true;
+      enuService.getBlockList(lazyParams.value).then(res => {
+        if (res.data) {
+          blockList.value = res.data.blocks
+          total.value = res.data.total;
+          TN.value = res.data.tn_res
         }
-
-        const getBlockListTypes = () => {
-            loading.value = true;
-            enuService.getBlockListTypes().then(res => {
-                if (res.data) {
-                    listTypes.value = res.data;
-
-                }
-                loading.value = false
-            }).catch(error => {
-                loading.value = false
-                toast.add({ severity: "error", summary: error, life: 3000 });
-            });
-        }
-
-        const getBlockListViewTypes = () => {
-            loading.value = true;
-            enuService.getBlockListViewTypes().then(res => {
-                if (res.data) {
-                    listViewTypes.value = res.data;
-                }
-                loading.value = false
-            }).catch(error => {
-                loading.value = false
-                toast.add({ severity: "error", summary: error, life: 3000 });
-            });
-        }
-
-        const addBlock = () => {
-            submitted.value = true;
-            enuService.addBlock(formData.value).then(res => {
-                if (res.data && res.data.is_success) {
-                    toast.add({ severity: "success", summary: i18n.t('common.success'), life: 3000 });
-                }
-                submitted.value = false;
-                isCreateModal.value = false;
-                formData.value = {}
-                getBlockList()
-            }).catch(error => {
-                submitted.value = false;
-                isCreateModal.value = false;
-                formData.value = {}
-                toast.add({ severity: "error", summary: error, life: 3000 });
-            });
-        }
-
-        const save = () => {
-            submitted.value = true;
-            enuService.editBlock(formData.value).then(res => {
-                if (res.data && res.data.is_success) {
-                    toast.add({ severity: "success", summary: i18n.t('common.success'), life: 3000 });
-                }
-                submitted.value = false;
-                isCreateModal.value = false;
-                formData.value = {}
-                selectedBlock.value = null
-                getBlockList()
-            }).catch(error => {
-                submitted.value = false;
-                isCreateModal.value = false;
-                formData.value = {}
-                selectedBlock.value = null
-                toast.add({ severity: "error", summary: error, life: 3000 });
-            });
-        }
-
-        const openEdit = (data) => {
-            formData.value = data
-            selectedBlock.value = data;
-            isCreateModal.value = true;
-        }
-
-        const openDialog = () => {
-            isCreateModal.value = true;
-            formData.value = {};
-        }
-
-        const hideDialog = () => {
-            isCreateModal.value = false;
-            selectedBlockListType.value = null;
-            selectedBlockListViewType.value = null;
-        }
-
-        const deleteConfirm = (data) => {
-            confirm.require({
-                message: i18n.t('common.doYouWantDelete'),
-                header: i18n.t('common.delete'),
-                icon: 'pi pi-info-circle',
-                acceptClass: 'p-button-rounded p-button-success',
-                rejectClass: 'p-button-rounded p-button-danger',
-                accept: () => {
-                    remove(data.block_id)
-                },
-            });
-        }
-
-        const remove = (id) => {
-            enuService.deleteBlock(id).then(res => {
-                if (res.data && res.data.is_success) {
-                    toast.add({ severity: "success", summary: i18n.t('common.success'), life: 3000 });
-                } else {
-                    toast.add({ severity: "warn", summary: i18n.t('common.message.title.saveError'), life: 3000 });
-                }
-                getBlockList();
-            }).catch(error => {
-                toast.add({ severity: "error", summary: error, life: 3000 });
-            });
-        }
-
-        const onPage = (event) => {
-            lazyParams.value.page = event.page
-            lazyParams.value.rows = event.rows
-            getBlockList();
-        }
-
-        const onSort = (event) => {
-            lazyParams.value.sortField = event.sortField;
-            lazyParams.value.sortOrder = event.sortOrder;
-            getBlockList();
-        }
-
-        const onBlockListTypeSelect = (event) => {
-            formData.value.list_type_id = event.value.id
-        }
-
-        const onBlockListViewTypeSelect = (event) => {
-            formData.value.list_type_view_id = event.value.id
-        }
-
-
-        onMounted(() => {
-            getBlockList();
-            getBlockListTypes();
-            getBlockListViewTypes();
-        });
-
-
-        return {
-            blockList, isCreateModal, formData, lazyParams,
-            loading, selectedBlock, submitted, options, total, TN, onBlockListTypeSelect,
-            navigateToView, openDialog, hideDialog, addBlock, save, deleteConfirm, openEdit, formatDate,
-            onPage, onSort, getBlockList, selectedBlockListType, listTypes, selectedBlockListViewType, onBlockListViewTypeSelect, listViewTypes,
-            accTabs, showHideUserGuide, isGuideVisible
-        }
+        loading.value = false
+      }).catch(error => {
+        loading.value = false
+        toast.add({severity: "error", summary: error, life: 3000});
+      });
     }
+
+    const getBlockListTypes = () => {
+      loading.value = true;
+      enuService.getBlockListTypes().then(res => {
+        if (res.data) {
+          listTypes.value = res.data;
+
+        }
+        loading.value = false
+      }).catch(error => {
+        loading.value = false
+        toast.add({severity: "error", summary: error, life: 3000});
+      });
+    }
+
+    const getBlockListViewTypes = () => {
+      loading.value = true;
+      enuService.getBlockListViewTypes().then(res => {
+        if (res.data) {
+          listViewTypes.value = res.data;
+        }
+        loading.value = false
+      }).catch(error => {
+        loading.value = false
+        toast.add({severity: "error", summary: error, life: 3000});
+      });
+    }
+
+    const addBlock = () => {
+      submitted.value = true;
+      if (lazyParams.value.slug && findRole(store.state.loginedUser, 'enu_web_admin')) {
+        formData.value.slug = lazyParams.value.slug
+      }
+      enuService.addBlock(formData.value).then(res => {
+        if (res.data && res.data.is_success) {
+          toast.add({severity: "success", summary: i18n.t('common.success'), life: 3000});
+        }
+        submitted.value = false;
+        isCreateModal.value = false;
+        formData.value = {}
+        getBlockList()
+      }).catch(error => {
+        submitted.value = false;
+        isCreateModal.value = false;
+        formData.value = {}
+        toast.add({severity: "error", summary: error, life: 3000});
+      });
+    }
+    const isWebAdmin = computed(() => findRole(store.state.loginedUser, "enu_web_admin"))
+    const save = () => {
+      submitted.value = true;
+      enuService.editBlock(formData.value).then(res => {
+        if (res.data && res.data.is_success) {
+          toast.add({severity: "success", summary: i18n.t('common.success'), life: 3000});
+        }
+        submitted.value = false;
+        isCreateModal.value = false;
+        formData.value = {}
+        selectedBlock.value = null
+        getBlockList()
+      }).catch(error => {
+        submitted.value = false;
+        isCreateModal.value = false;
+        formData.value = {}
+        selectedBlock.value = null
+        toast.add({severity: "error", summary: error, life: 3000});
+      });
+    }
+
+    const openEdit = (data) => {
+      formData.value = data
+      selectedBlock.value = data;
+      isCreateModal.value = true;
+    }
+
+    const openDialog = () => {
+      isCreateModal.value = true;
+      formData.value = {};
+    }
+
+    const hideDialog = () => {
+      isCreateModal.value = false;
+      selectedBlockListType.value = null;
+      selectedBlockListViewType.value = null;
+    }
+
+    const deleteConfirm = (data) => {
+      confirm.require({
+        message: i18n.t('common.doYouWantDelete'),
+        header: i18n.t('common.delete'),
+        icon: 'pi pi-info-circle',
+        acceptClass: 'p-button-rounded p-button-success',
+        rejectClass: 'p-button-rounded p-button-danger',
+        accept: () => {
+          remove(data.block_id)
+        },
+      });
+    }
+
+    const remove = (id) => {
+      enuService.deleteBlock(id).then(res => {
+        if (res.data && res.data.is_success) {
+          toast.add({severity: "success", summary: i18n.t('common.success'), life: 3000});
+        } else {
+          toast.add({severity: "warn", summary: i18n.t('common.message.title.saveError'), life: 3000});
+        }
+        getBlockList();
+      }).catch(error => {
+        toast.add({severity: "error", summary: error, life: 3000});
+      });
+    }
+
+    const onPage = (event) => {
+      lazyParams.value.page = event.page
+      lazyParams.value.rows = event.rows
+      getBlockList();
+    }
+
+    const onSort = (event) => {
+      lazyParams.value.sortField = event.sortField;
+      lazyParams.value.sortOrder = event.sortOrder;
+      getBlockList();
+    }
+
+    const onBlockListTypeSelect = (event) => {
+      formData.value.list_type_id = event.value.id
+    }
+
+    const onBlockListViewTypeSelect = (event) => {
+      formData.value.list_type_view_id = event.value.id
+    }
+   
+    const onSlugSelect = (event) => {
+      lazyParams.value.slug = event.slug
+      getBlockList()
+    }
+
+
+    onMounted(() => {
+      getBlockList();
+      getBlockListTypes();
+      getBlockListViewTypes();
+    });
+
+
+    return {
+      blockList, isCreateModal, formData, lazyParams,
+      loading, selectedBlock, submitted, options, total, TN, onBlockListTypeSelect,
+      navigateToView, openDialog, hideDialog, addBlock, save, deleteConfirm, openEdit, formatDate,
+      onPage, onSort, getBlockList, selectedBlockListType, listTypes, selectedBlockListViewType, onBlockListViewTypeSelect, listViewTypes,
+      accTabs, showHideUserGuide, isGuideVisible, onSlugSelect, isWebAdmin
+    }
+  }
 }
 </script>
 
 <style lang="scss" scoped>
 .field-radiobutton {
-    align-items: center;
-    display: flex;
-    margin-bottom: 1rem;
+  align-items: center;
+  display: flex;
+  margin-bottom: 1rem;
 
-    label {
-        line-height: 1;
-        margin-left: 0.5rem;
-    }
+  label {
+    line-height: 1;
+    margin-left: 0.5rem;
+  }
 }
 
 .grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 10px;
 }
 </style>

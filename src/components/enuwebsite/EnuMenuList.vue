@@ -1,8 +1,11 @@
 <template>
   <div class="col-12">
-    <h3>{{ $t("web.menuPage") }}</h3>
+    <TitleBlock :title="$t('web.menuPage')" />
     <div class="card">
       <Button :label="$t('web.addMenu')" icon="pi pi-plus" class="ml-2" v-on:click="createMenu(null)" />
+    </div>
+    <div class="card" v-if="findRole(null,'enu_web_admin')">
+      <SelectSiteSlug @onSelect="onSlugSelect" />
     </div>
     <div class="card">
       <TabView>
@@ -111,7 +114,7 @@
     </div>
   </div>
   <AddMenu v-if="addMenuVisible" :is-visible="addMenuVisible" :all-pages="pages" :current-menu="selectedMenu"
-    :menu_id="parentId"></AddMenu>
+    :menu_id="parentId" :slug="lazyParams.slug"></AddMenu>
   <PageView v-if="viewPageVisible" :is-visible="viewPageVisible" :selectedPage="selectedViewMenu"></PageView>
 </template>
 
@@ -120,15 +123,17 @@ import { EnuWebService } from "@/service/enu.web.service";
 import AddMenu from "@/components/enuwebsite/AddMenu.vue";
 import PageView from "@/components/enuwebsite/PageView.vue";
 import { formatDate } from "@/helpers/HelperUtil";
-import { webEnuDomain } from "@/config/config";
+import {findRole, webEnuDomain} from "@/config/config";
 import WebLogs from "@/components/enuwebsite/EnuSiteLogs.vue";
 import { onMounted, ref } from "vue"
+import TitleBlock from "@/components/TitleBlock.vue";
+import SelectSiteSlug from "@/components/enuwebsite/SelectSiteSlug.vue";
 import ActionButton from "@/components/ActionButton.vue";
 
 
 export default {
   name: "EnuMenuList",
-  components: {ActionButton, AddMenu, PageView, WebLogs },
+  components: {SelectSiteSlug, TitleBlock, AddMenu, PageView, WebLogs,ActionButton },
   data() {
     return {
       actionsNode: Object,
@@ -177,7 +182,8 @@ export default {
         page: 0,
         rows: 20,
         parent_id: null,
-        is_child: false
+        is_child: false,
+        slug: localStorage.getItem('selectedSlug') ? JSON.parse(localStorage.getItem('selectedSlug')).slug : null
       },
       parentId: null,
       isGlobalFilter: false,
@@ -196,6 +202,7 @@ export default {
     });
   },
   methods: {
+    findRole,
     formatDate,
     webDomain: webEnuDomain,
     toggle(ref, event) {
@@ -327,7 +334,7 @@ export default {
     },
     getPages() {
       this.pages = [];
-      this.enuService.getAllPages({}).then(res => {
+      this.enuService.getAllPages({slug: this.lazyParams.slug}).then(res => {
         if (res.data) {
           this.pages = res.data.pages;
         }
@@ -410,11 +417,17 @@ export default {
       this.selectedMenu = null;
       this.parentId = null;
     },
+    onSlugSelect(event) {
+      console.log("ON SLUG SLEECT", event)
+      this.lazyParams.slug = event.slug
+      this.getMenus()
+      this.getPages()
+    }
 
   },
   computed: {
     getSiteUrl() {
-      return this.enuService.getSiteUrl(this.$store)
+      return this.enuService.getSiteUrl(this.$store, this.lazyParams.slug)
     },
       initItems() {
         return [

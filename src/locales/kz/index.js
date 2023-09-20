@@ -30,6 +30,12 @@ export default {
         approveDate: "Бекітілген күні",
         approvedBy: "Бекіткен",
         notUpload: 'Құжат жүктелмеді',
+        nextIssue: 'Сертификаттың соңғы нөмірі',
+        goToTheCourse: "Курсқа өту",
+        addCertificate: "Сертификат қажет етіледі",
+        updateGES:"ЖББП тізімін жаңарту",
+        downloadCertificate:"Сертификат жүктеп алу",
+        selectAll: "Барлығын таңдау",
         action: {
             submit: 'Жіберу',
             accept: 'Қабылдау',
@@ -800,7 +806,9 @@ export default {
         foreignConsultant: 'Шетелдік кеңесшінің пікірі',
         commissionConclusion: 'Этикалық бағалау комиссиясының қорытындысы',
         reviewerComment: 'Ресми рецензенттің пікірі',
-        setMeetingTimeConfirmMsg: "Төмендегі {btn} батырмасын басу арқылы, ақпараттардың дұрыстығын растайсыз және осы ақпарат сайтқа хабарландыру болып шығарылады"
+        setMeetingTimeConfirmMsg: "Төмендегі {btn} батырмасын басу арқылы, ақпараттардың дұрыстығын растайсыз және осы ақпарат сайтқа хабарландыру болып шығарылады",
+        addMemeberToDisCouncil: 'Диссертациялық кеңеске мүше қосу',
+        meetingDateMessage: 'Қорғауды жүргізуді тек бір күн қалғанда бастай аласыз'
     },
     faq: {
         title: "Қолдау қызметі",
@@ -929,8 +937,8 @@ export default {
         editAnswerConfirm: 'Сіз шынымен жауапқа өзгерістер еңгізгіңіз келе ме?',
         facultyName: 'Факультет атауы',
         menuIcon: 'Мәзір белгішесі',
-        uploadMenuIcon: 'Белгішені таңдау'
-
+        uploadMenuIcon: 'Белгішені таңдау',
+        domain: 'Домен'
     },
     //Student locale
     student: {

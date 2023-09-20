@@ -181,7 +181,7 @@ const routes = [
             {
                 path: '/catcourses/:categoryID',
                 name: 'onlinecoursesCat',
-                component: load('documents/onlinecourse/Courses'),
+                component: load('documents/onlinecourse/CoursesTable'),
                 beforeEnter: ifAuthenticated,
             },
             {

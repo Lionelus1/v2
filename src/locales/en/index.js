@@ -31,6 +31,12 @@ export default {
     approveDate: "Approve date",
     approvedBy: "Approved by",
     notUpload: "Document not uploaded",
+    nextIssue: "Last certificate number",
+    goToTheCourse: "Go to the course",
+    addCertificate: "Certificate required",
+    updateGES:"Update the list of GES",
+    downloadCertificate:"Download The Certificate",
+    selectAll: "Select All",
     action: {
       submit: "Submit",
       accept: "Accept",
@@ -758,7 +764,9 @@ export default {
         foreignConsultant: 'Review of foreign consultant',
         commissionConclusion: 'Conclusion of the ethical assessment committee',
         reviewerComment: 'Official reviewer\'s review',
-        setMeetingTimeConfirmMsg: "By clicking the {btn} button below, you confirm the correctness of the information and this information is published in the form of an announcement on the site."
+        setMeetingTimeConfirmMsg: "By clicking the {btn} button below, you confirm the correctness of the information and this information is published in the form of an announcement on the site.",
+        addMemeberToDisCouncil: 'Add Member to The Dissertation Council',
+        meetingDateMessage: 'You can start the Conducting a defence only one day before'
     },
     faq: {
         title: "Help desk",
@@ -888,7 +896,8 @@ export default {
         editAnswerConfirm: 'Are you sure you want to make changes to the answer?',
         facultyName: 'Faculty Name',
         menuIcon: 'Menu Icon',
-        uploadMenuIcon: 'Select an Icon'
+        uploadMenuIcon: 'Select an Icon',
+        domain: 'Domain'
     },
     //Student locale
     student: {

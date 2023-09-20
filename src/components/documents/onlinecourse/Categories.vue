@@ -1,8 +1,8 @@
 <template>
-    <h3>{{ $t('course.categories') }}</h3>
-    <div>
+    <div class="col-12">
+        <TitleBlock :title="$t('course.categories')" />
         <BlockUI :blocked="saving" :fullScreen="true"></BlockUI>
-        <div class="surface-card p-4 shadow-2 border-round">
+        <div class="card p-4 shadow-2 border-round">
             <div>
                 <TreeTable :value="categories" :lazy="true" :paginator="true" :rows="lazyParams.rows" :loading="loading"
                     @nodeExpand="onExpand" @page="onPage" :totalRecords="total">
@@ -20,6 +20,7 @@
 <script>
 
 import {OnlineCourseService} from "@/service/onlinecourse.service";
+import {TitleBlock} from "@/components/TitleBlock"
 export default {
     name: "Categories",
    
