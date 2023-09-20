@@ -10,45 +10,39 @@
     <div class="card">
       <TabView>
         <TabPanel :header="$t('web.properties')">
+            <div class="text-right mb-3">
+                <Button type="button" icon="fa-solid fa-filter"
+                        @click="toggle('global-filter', $event)" aria:haspopup="true" aria-controls="overlay_panel"
+                        class="p-button-outlined mr-2" />
+                <OverlayPanel ref="global-filter">
+                    <div v-for="text in menu_radio_options" :key="text" class="flex align-items-center">
+                        <div class="field-radiobutton">
+                            <RadioButton v-model="selectedMenuType" :value="text.value" />
+                            <label :for="text" class="ml-2">{{ text.text }}</label>
+                        </div>
+                    </div>
+                    <div class="p-fluid">
+                        <div class="field">
+                            <br />
+
+                            <Button icon="pi pi-trash" class="ml-1" @click="clearMenuTypeFilter()"
+                                    :label="$t('common.clear')" />
+                        </div>
+                        <div class="field">
+                            <Button icon="pi pi-search" :label="$t('common.search')" class="ml-1" @click="orderColumn(null)" />
+                        </div>
+                    </div>
+                </OverlayPanel>
+                <div class="p-input-icon-left">
+                    <i class="pi pi-search" />
+                    <InputText type="search" v-model="filter.search_text" :placeholder="$t('common.search')"
+                               @search="getMenus(null)" />
+                    <Button icon="pi pi-search" class="ml-1" @click="getMenus(null)" />
+                </div>
+            </div>
           <TreeTable class="p-treetable-sm" :value="menus" :lazy="true" :loading="loading" @nodeExpand="onExpand"
             scrollHeight="flex" responsiveLayout="scroll" :resizableColumns="true" show-gridlines columnResizeMode="fit"
             :paginator="true" :rows="lazyParams.rows" :total-records="total" @page="onPage($event)">
-            <template #header>
-              <div class="text-left"></div>
-              <div class="text-right">
-                <Button type="button" icon="pi pi-search" :label="$t('common.search')"
-                  @click="toggle('global-filter', $event)" aria:haspopup="true" aria-controls="overlay_panel"
-                  class="p-button-info p-1"><i class="fa-solid fa-filter fa-xl"></i>&nbsp;{{
-                    $t('common.filter')
-                  }}
-                </Button>&nbsp;
-                <OverlayPanel ref="global-filter">
-                  <div v-for="text in menu_radio_options" :key="text" class="flex align-items-center">
-                    <div class="field-radiobutton">
-                      <RadioButton v-model="selectedMenuType" :value="text.value" />
-                      <label :for="text" class="ml-2">{{ text.text }}</label>
-                    </div>
-                  </div>
-                  <div class="p-fluid">
-                    <div class="field">
-                      <br />
-
-                      <Button icon="pi pi-trash" class="ml-1" @click="clearMenuTypeFilter()"
-                        :label="$t('common.clear')" />
-                    </div>
-                    <div class="field">
-                      <Button icon="pi pi-search" :label="$t('common.search')" class="ml-1" @click="orderColumn(null)" />
-                    </div>
-                  </div>
-                </OverlayPanel>
-                <div class="p-input-icon-left">
-                  <i class="pi pi-search" />
-                  <InputText type="search" v-model="filter.search_text" :placeholder="$t('common.search')"
-                    @search="getMenus(null)" />
-                  <Button icon="pi pi-search" class="ml-1" @click="getMenus(null)" />
-                </div>
-              </div>
-            </template>
             <template #empty> {{ $t('common.noData') }}</template>
             <template #loading> {{ $t('common.loading') }}</template>
             <Column field="menu_title_kz" :header="$t('common.nameIn')" :expander="true" style="min-width:300px">

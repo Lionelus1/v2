@@ -49,8 +49,7 @@
             </Column>
             <Column class="text-right">
               <template #body="{ data }">
-                <Button icon="fa-solid fa-pen" class="p-button mr-2" @click="openEdit(data)"/>
-                <Button icon="fa-solid fa-trash" class="p-button-danger" @click="deleteConfirm(data)"/>
+                  <ActionButton :items="initItems" @toggle="toggle(data)" />
               </template>
             </Column>
           </DataTable>
@@ -499,11 +498,12 @@ import SelectSiteSlug from "@/components/enuwebsite/SelectSiteSlug.vue";
 import TitleBlock from "@/components/TitleBlock.vue";
 import {findRole} from "@/config/config";
 import {useStore} from "vuex";
+import ActionButton from "@/components/ActionButton.vue";
 
 
 export default {
   name: "BlockList",
-  components: {TitleBlock, SelectSiteSlug, WebLogs},
+  components: {ActionButton, TitleBlock, SelectSiteSlug, WebLogs},
   setup() {
     const store = useStore()
     const i18n = useI18n()
@@ -536,9 +536,9 @@ export default {
       {title: 'Title 1', content: 'Content 1'},
 
     ]);
-
     const isGuideVisible = ref(false);
-    const showHideUserGuide = () => {
+    const actionsNode = ref(null)
+      const showHideUserGuide = () => {
       isGuideVisible.value = !isGuideVisible.value;
     };
 
@@ -614,6 +614,30 @@ export default {
       });
     }
     const isWebAdmin = computed(() => findRole(store.state.loginedUser, "enu_web_admin"))
+    const initItems = computed(() =>
+        {
+            return [
+                {
+                    label: i18n.t('common.edit'),
+                    icon: 'fa-solid fa-pen',
+                    command: () => {
+                        openEdit(actionsNode.value)
+                    }
+                },
+                {
+                    label: i18n.t('common.delete'),
+                    icon: 'fa-solid fa-trash',
+                    command: () => {
+                        deleteConfirm(actionsNode.value)
+                    }
+                },
+
+            ];
+        }
+    )
+    const toggle = (node) => {
+      actionsNode.value = node
+    }
     const save = () => {
       submitted.value = true;
       enuService.editBlock(formData.value).then(res => {
@@ -715,7 +739,7 @@ export default {
       loading, selectedBlock, submitted, options, total, TN, onBlockListTypeSelect,
       navigateToView, openDialog, hideDialog, addBlock, save, deleteConfirm, openEdit, formatDate,
       onPage, onSort, getBlockList, selectedBlockListType, listTypes, selectedBlockListViewType, onBlockListViewTypeSelect, listViewTypes,
-      accTabs, showHideUserGuide, isGuideVisible, onSlugSelect, isWebAdmin
+      accTabs, showHideUserGuide, isGuideVisible, onSlugSelect, isWebAdmin, initItems, actionsNode, toggle
     }
   }
 }

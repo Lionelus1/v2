@@ -47,5 +47,7 @@ a {
 .p-treetable .p-treetable-thead > tr > th {
     background: transparent;
 }
-
+.p-tabview .p-tabview-nav li .p-tabview-nav-link:not(.p-disabled):focus{
+    box-shadow: none;
+}
 
