@@ -99,11 +99,7 @@
             </Column>
             <Column field="actions" header="" class="text-right">
               <template #body="{ node }">
-                  <SplitButton :label="$t('web.actionID')" :model="initItems" @mousedown="md(node)" />
-<!--                      <Button type="button" icon="fa-solid fa-plus" class="p-button-sm mr-2" @click="createMenu(node)"></Button>
-                      <Button type="button" icon="fa-solid fa-pen" class="p-button-sm mr-2" @click="editMenu(node)"></Button>
-                      <Button type="button" icon="fa-solid fa-trash" class="p-button-sm p-button-danger"
-                              @click="deleteConfirm(node)"></Button>-->
+                  <ActionButton :items="initItems" @toggle="toggle2(node)" />
               </template>
             </Column>
           </TreeTable>
@@ -127,11 +123,12 @@ import { formatDate } from "@/helpers/HelperUtil";
 import { webEnuDomain } from "@/config/config";
 import WebLogs from "@/components/enuwebsite/EnuSiteLogs.vue";
 import { onMounted, ref } from "vue"
+import ActionButton from "@/components/ActionButton.vue";
 
 
 export default {
   name: "EnuMenuList",
-  components: { AddMenu, PageView, WebLogs },
+  components: {ActionButton, AddMenu, PageView, WebLogs },
   data() {
     return {
       actionsNode: Object,
@@ -204,8 +201,8 @@ export default {
     toggle(ref, event) {
       this.$refs[ref].toggle(event);
     },
-    md(event) {
-      this.actionsNode = event
+    toggle2(node) {
+      this.actionsNode = node
     },
     reOrderMenu(node, up) {
       const index = this.menus.findIndex(x => x.menu_id === node.menu_id);
