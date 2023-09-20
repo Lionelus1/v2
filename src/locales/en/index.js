@@ -32,6 +32,11 @@ export default {
     approvedBy: "Approved by",
     notUpload: "Document not uploaded",
     nextIssue: "Last certificate number",
+    goToTheCourse: "Go to the course",
+    addCertificate: "Certificate required",
+    updateGES:"Update the list of GES",
+    downloadCertificate:"Download The Certificate",
+    selectAll: "Select All",
     action: {
       submit: "Submit",
       accept: "Accept",
