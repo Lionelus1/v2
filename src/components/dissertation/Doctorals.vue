@@ -1,5 +1,5 @@
 <template>
-    <div class="col-12">
+    <h3>{{ $t("dissertation.doctorals") }}</h3>
         <div class="card">
       <Toolbar class="mb-4">
         <template #end>
@@ -38,7 +38,7 @@
           />
         </template>
         <template #start>
-          <h4>{{ $t("dissertation.doctorals") }}</h4>
+
         </template>
       </Toolbar>
       <DataTable
@@ -696,7 +696,6 @@
         </template>
       </Dialog>
     </div>
-  </div>
 
   <AddMemberDialog v-if="dialog.addMember.state" :show="dialog.addMember.state" :councilID="selectedDoctoral.councilID" :members="memberList"
                    @afterAddMember="hideDialog(dialog.addMember)" @hide="hideDialog(dialog.addMember)" />

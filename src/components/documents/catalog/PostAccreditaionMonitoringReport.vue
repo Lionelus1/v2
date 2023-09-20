@@ -1,9 +1,9 @@
 <template>
-  <div class="card">
+    <h3>{{ $t("postaccmonrep.title") }}</h3>
+    <div class="card">
     <BlockUI :blocked="approving" :fullScreen="true"></BlockUI>
 
     <div>
-      <h4 class="ml-3">{{ $t("postaccmonrep.title") }}</h4>
       <Toolbar class="m-0 p-1" style="position:relative;">
 
         <template #start>

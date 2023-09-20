@@ -1,11 +1,9 @@
 <template>
     <div>
+        <h3>{{$t("course.certificate.title")}}</h3>
      <BlockUI :blocked="loading" :fullScreen="true">
      </BlockUI>
-         <div class="col-12">
              <div class="card">
-         <div class="text-2xl font-medium text-900 mb-3">{{$t("course.certificate.title")}}</div>
-      
         <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
          <DataTable
            v-if="journal"
@@ -45,13 +43,6 @@
          </DataTable>
              </div>
          </div>
-               
-     
-    
-     
-    
-   
-     </div>
  </template>
  <script>
  

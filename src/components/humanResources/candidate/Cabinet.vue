@@ -1,5 +1,6 @@
 <template>
-<div>
+    <h3>{{ $t("common.cabinet") }}</h3>
+<div class="card">
   <TabView>
     <TabPanel :header="$t('common.myResume')">
       <Resume/>

@@ -99,10 +99,11 @@
             </Column>
             <Column field="actions" header="" class="text-right">
               <template #body="{ node }">
-                <Button type="button" icon="fa-solid fa-plus" class="p-button-sm mr-2" @click="createMenu(node)"></Button>
-                <Button type="button" icon="fa-solid fa-pen" class="p-button-sm mr-2" @click="editMenu(node)"></Button>
-                <Button type="button" icon="fa-solid fa-trash" class="p-button-sm p-button-danger"
-                  @click="deleteConfirm(node)"></Button>
+                  <SplitButton :label="$t('web.actionID')" :model="initItems" @mousedown="md(node)" />
+<!--                      <Button type="button" icon="fa-solid fa-plus" class="p-button-sm mr-2" @click="createMenu(node)"></Button>
+                      <Button type="button" icon="fa-solid fa-pen" class="p-button-sm mr-2" @click="editMenu(node)"></Button>
+                      <Button type="button" icon="fa-solid fa-trash" class="p-button-sm p-button-danger"
+                              @click="deleteConfirm(node)"></Button>-->
               </template>
             </Column>
           </TreeTable>
@@ -133,6 +134,7 @@ export default {
   components: { AddMenu, PageView, WebLogs },
   data() {
     return {
+      actionsNode: Object,
       addMenuVisible: false,
       viewPageVisible: false,
       menus: null,
@@ -202,7 +204,9 @@ export default {
     toggle(ref, event) {
       this.$refs[ref].toggle(event);
     },
-
+    md(event) {
+      this.actionsNode = event
+    },
     reOrderMenu(node, up) {
       const index = this.menus.findIndex(x => x.menu_id === node.menu_id);
       if (up) {
@@ -358,7 +362,6 @@ export default {
     createMenu(data) {
       if (data) this.parentId = data.menu_id;
       this.addMenuVisible = true;
-
     },
     editMenu(data) {
       this.selectedMenu = data;
@@ -415,7 +418,33 @@ export default {
   computed: {
     getSiteUrl() {
       return this.enuService.getSiteUrl(this.$store)
-    }
+    },
+      initItems() {
+        return [
+            {
+                label: this.$t('common.add'),
+                icon: 'fa-solid fa-plus',
+                command: () => {
+                    this.createMenu(this.actionsNode)
+                }
+            },
+            {
+                label: this.$t('common.edit'),
+                icon: 'fa-solid fa-pen',
+                command: () => {
+                    this.editMenu(this.actionsNode)
+                }
+            },
+            {
+                label: this.$t('common.delete'),
+                icon: 'fa-solid fa-trash',
+                command: () => {
+                    this.deleteConfirm(this.actionsNode)
+                }
+            },
+
+        ];
+      }
   }
 }
 </script>

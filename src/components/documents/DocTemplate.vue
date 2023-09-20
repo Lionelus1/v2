@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="!selectMode" class="content-section introduction">
-      <div class="feature-intro ml-3">
+      <div class="feature-intro">
         <h3>{{$t('doctemplate.title')}}</h3> 
       </div>
     </div>
