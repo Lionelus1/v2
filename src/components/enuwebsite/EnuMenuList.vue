@@ -1,54 +1,48 @@
 <template>
   <div class="col-12">
-    <TitleBlock :title="$t('web.menuPage')"/>
+    <TitleBlock :title="$t('web.menuPage')" />
     <div class="card">
-      <Button :label="$t('web.addMenu')" icon="pi pi-plus" class="ml-2" v-on:click="createMenu(null)"/>
+      <Button :label="$t('web.addMenu')" icon="pi pi-plus" class="ml-2" v-on:click="createMenu(null)" />
     </div>
     <div class="card" v-if="findRole(null,'enu_web_admin')">
-      <SelectSiteSlug @onSelect="onSlugSelect"/>
+      <SelectSiteSlug @onSelect="onSlugSelect" />
     </div>
     <div class="card">
       <TabView>
         <TabPanel :header="$t('web.properties')">
-          <TreeTable class="p-treetable-sm" :value="menus" :lazy="true" :loading="loading" @nodeExpand="onExpand"
-                     scrollHeight="flex" responsiveLayout="scroll" :resizableColumns="true" show-gridlines columnResizeMode="fit"
-                     :paginator="true" :rows="lazyParams.rows" :total-records="total" @page="onPage($event)">
-            <template #header>
-              <div class="text-left"></div>
-              <div class="text-right">
-                <Button type="button" icon="pi pi-search" :label="$t('common.search')"
+            <div class="text-right mb-3">
+                <Button type="button" icon="fa-solid fa-filter"
                         @click="toggle('global-filter', $event)" aria:haspopup="true" aria-controls="overlay_panel"
-                        class="p-button-info p-1"><i class="fa-solid fa-filter fa-xl"></i>&nbsp;{{
-                    $t('common.filter')
-                  }}
-                </Button>&nbsp;
+                        class="p-button-outlined mr-2" />
                 <OverlayPanel ref="global-filter">
-                  <div v-for="text in menu_radio_options" :key="text" class="flex align-items-center">
-                    <div class="field-radiobutton">
-                      <RadioButton v-model="selectedMenuType" :value="text.value"/>
-                      <label :for="text" class="ml-2">{{ text.text }}</label>
+                    <div v-for="text in menu_radio_options" :key="text" class="flex align-items-center">
+                        <div class="field-radiobutton">
+                            <RadioButton v-model="selectedMenuType" :value="text.value" />
+                            <label :for="text" class="ml-2">{{ text.text }}</label>
+                        </div>
                     </div>
-                  </div>
-                  <div class="p-fluid">
-                    <div class="field">
-                      <br/>
+                    <div class="p-fluid">
+                        <div class="field">
+                            <br />
 
-                      <Button icon="pi pi-trash" class="ml-1" @click="clearMenuTypeFilter()"
-                              :label="$t('common.clear')"/>
+                            <Button icon="pi pi-trash" class="ml-1" @click="clearMenuTypeFilter()"
+                                    :label="$t('common.clear')" />
+                        </div>
+                        <div class="field">
+                            <Button icon="pi pi-search" :label="$t('common.search')" class="ml-1" @click="orderColumn(null)" />
+                        </div>
                     </div>
-                    <div class="field">
-                      <Button icon="pi pi-search" :label="$t('common.search')" class="ml-1" @click="orderColumn(null)"/>
-                    </div>
-                  </div>
                 </OverlayPanel>
                 <div class="p-input-icon-left">
-                  <i class="pi pi-search"/>
-                  <InputText type="search" v-model="filter.search_text" :placeholder="$t('common.search')"
-                             @search="getMenus(null)"/>
-                  <Button icon="pi pi-search" class="ml-1" @click="getMenus(null)"/>
+                    <i class="pi pi-search" />
+                    <InputText type="search" v-model="filter.search_text" :placeholder="$t('common.search')"
+                               @search="getMenus(null)" />
+                    <Button icon="pi pi-search" class="ml-1" @click="getMenus(null)" />
                 </div>
-              </div>
-            </template>
+            </div>
+          <TreeTable class="p-treetable-sm" :value="menus" :lazy="true" :loading="loading" @nodeExpand="onExpand"
+            scrollHeight="flex" responsiveLayout="scroll" :resizableColumns="true" show-gridlines columnResizeMode="fit"
+            :paginator="true" :rows="lazyParams.rows" :total-records="total" @page="onPage($event)">
             <template #empty> {{ $t('common.noData') }}</template>
             <template #loading> {{ $t('common.loading') }}</template>
             <Column field="menu_title_kz" :header="$t('common.nameIn')" :expander="true" style="min-width:300px">
@@ -56,7 +50,7 @@
                 <span><i class="fa-solid fa-folder"></i>&nbsp;
                   {{
                     $i18n.locale === 'kz' ? node.menu_title_kz : $i18n.locale === 'ru' ?
-                        node.menu_title_ru : node.menu_title_en
+                    node.menu_title_ru : node.menu_title_en
                   }}
                   (<a :href="node.url" target="_blank">{{ $t('common.link') }}</a>)
                   <Badge :value="$t('web.isHidden')" v-if="node.hidden"></Badge>
@@ -84,11 +78,11 @@
             </Column>
             <div v-if="showOrderColumn">
               <Column v-if="filter.menu_type.is_usefull_link || filter.menu_type.is_header || filter.menu_type.is_middle"
-                      field="order" :header="$t('web.menuOrder')">
+                field="order" :header="$t('web.menuOrder')">
                 <template #body="{ node }">
                   <span class="p-buttonset">
-                    <Button class="p-button-outlined" icon="pi pi-angle-up" @click="reOrderMenu(node, true)"/>
-                    <Button class="p-button-outlined" icon="pi pi-angle-down" @click="reOrderMenu(node, false)"/>
+                    <Button class="p-button-outlined" icon="pi pi-angle-up" @click="reOrderMenu(node, true)" />
+                    <Button class="p-button-outlined" icon="pi pi-angle-down" @click="reOrderMenu(node, false)" />
                   </span>
 
                 </template>
@@ -102,41 +96,38 @@
             </Column>
             <Column field="actions" header="" class="text-right">
               <template #body="{ node }">
-                <SplitButton :label="$t('web.actionID')" :model="initItems" @mousedown="md(node)"/>
-                <!--                      <Button type="button" icon="fa-solid fa-plus" class="p-button-sm mr-2" @click="createMenu(node)"></Button>
-                                      <Button type="button" icon="fa-solid fa-pen" class="p-button-sm mr-2" @click="editMenu(node)"></Button>
-                                      <Button type="button" icon="fa-solid fa-trash" class="p-button-sm p-button-danger"
-                                              @click="deleteConfirm(node)"></Button>-->
+                  <ActionButton :items="initItems" @toggle="toggle2(node)" />
               </template>
             </Column>
           </TreeTable>
         </TabPanel>
         <TabPanel :header="$t('web.history')">
-          <WebLogs :TN="TN" :key="TN"/>
+          <WebLogs :TN="TN" :key="TN" />
         </TabPanel>
       </TabView>
     </div>
   </div>
   <AddMenu v-if="addMenuVisible" :is-visible="addMenuVisible" :all-pages="pages" :current-menu="selectedMenu"
-           :menu_id="parentId" :slug="lazyParams.slug"></AddMenu>
+    :menu_id="parentId" :slug="lazyParams.slug"></AddMenu>
   <PageView v-if="viewPageVisible" :is-visible="viewPageVisible" :selectedPage="selectedViewMenu"></PageView>
 </template>
 
 <script>
-import {EnuWebService} from "@/service/enu.web.service";
+import { EnuWebService } from "@/service/enu.web.service";
 import AddMenu from "@/components/enuwebsite/AddMenu.vue";
 import PageView from "@/components/enuwebsite/PageView.vue";
-import {formatDate} from "@/helpers/HelperUtil";
+import { formatDate } from "@/helpers/HelperUtil";
 import {findRole, webEnuDomain} from "@/config/config";
 import WebLogs from "@/components/enuwebsite/EnuSiteLogs.vue";
-import {onMounted, ref} from "vue"
+import { onMounted, ref } from "vue"
 import TitleBlock from "@/components/TitleBlock.vue";
 import SelectSiteSlug from "@/components/enuwebsite/SelectSiteSlug.vue";
+import ActionButton from "@/components/ActionButton.vue";
 
 
 export default {
   name: "EnuMenuList",
-  components: {SelectSiteSlug, TitleBlock, AddMenu, PageView, WebLogs},
+  components: {SelectSiteSlug, TitleBlock, AddMenu, PageView, WebLogs,ActionButton },
   data() {
     return {
       actionsNode: Object,
@@ -211,8 +202,8 @@ export default {
     toggle(ref, event) {
       this.$refs[ref].toggle(event);
     },
-    md(event) {
-      this.actionsNode = event
+    toggle2(node) {
+      this.actionsNode = node
     },
     reOrderMenu(node, up) {
       const index = this.menus.findIndex(x => x.menu_id === node.menu_id);
@@ -226,16 +217,16 @@ export default {
           position: "up",
         };
         this.enuService.orderMenuList(data)
-            .then(res => {
-              if (res.data && res.data.is_success) {
-                this.getMenus();
-              } else {
-                this.toast.add({severity: "error", summary: this.i18n.t('common.error'), life: 3000});
-              }
-            })
-            .catch(error => {
-              this.toast.add({severity: "error", summary: error, life: 3000});
-            });
+          .then(res => {
+            if (res.data && res.data.is_success) {
+              this.getMenus();
+            } else {
+              this.toast.add({ severity: "error", summary: this.i18n.t('common.error'), life: 3000 });
+            }
+          })
+          .catch(error => {
+            this.toast.add({ severity: "error", summary: error, life: 3000 });
+          });
       } else {
         const current = this.menus[index];
         let next = this.menus[index + 1];
@@ -246,16 +237,16 @@ export default {
           position: "down",
         };
         this.enuService.orderMenuList(data)
-            .then(res => {
-              if (res.data && res.data.is_success) {
-                this.getMenus();
-              } else {
-                this.toast.add({severity: "error", summary: this.i18n.t('common.error'), life: 3000});
-              }
-            })
-            .catch(error => {
-              this.toast.add({severity: "error", summary: error, life: 3000});
-            });
+          .then(res => {
+            if (res.data && res.data.is_success) {
+              this.getMenus();
+            } else {
+              this.toast.add({ severity: "error", summary: this.i18n.t('common.error'), life: 3000 });
+            }
+          })
+          .catch(error => {
+            this.toast.add({ severity: "error", summary: error, life: 3000 });
+          });
       }
     },
     onExpand(node) {
@@ -316,14 +307,14 @@ export default {
         this.filter.menu_type.is_header = true
         this.filter.menu_type.is_middle = null
         this.filter.menu_type.is_usefull_link = null
-
+        
       }
       if (this.selectedMenuType === "is_middle") {
         this.filter.menu_type.is_main = null
         this.filter.menu_type.is_header = null
         this.filter.menu_type.is_middle = true
         this.filter.menu_type.is_usefull_link = null
-
+        
       }
       if (this.selectedMenuType === "is_usefull_link") {
         this.filter.menu_type.is_main = null
@@ -374,12 +365,12 @@ export default {
       this.selectedMenu = data;
       this.parentId = data.menu_id;
       this.addMenuVisible = true;
-
-
+      
+      
     },
     viewPage(data) {
       if (data.page && data.page.is_landing) {
-        this.$router.push({name: 'LandingPageView', params: {id: data.page.enu_page_id}})
+        this.$router.push({ name: 'LandingPageView', params: { id: data.page.enu_page_id } })
       } else {
         this.selectedViewMenu = data.page;
         this.viewPageVisible = true;
@@ -400,11 +391,11 @@ export default {
     onDelete(id) {
       this.enuService.deleteMenu(id).then(res => {
         if (res.data && res.data.is_success) {
-          this.$toast.add({severity: "success", summary: "Successfully deleted", life: 3000});
+          this.$toast.add({ severity: "success", summary: "Successfully deleted", life: 3000 });
         }
         this.getMenus(this.parentNode || null);
       }).catch(error => {
-        this.$toast.add({severity: "error", summary: error, life: 3000});
+        this.$toast.add({ severity: "error", summary: error, life: 3000 });
       });
     },
     showPage(data) {
@@ -432,32 +423,32 @@ export default {
     getSiteUrl() {
       return this.enuService.getSiteUrl(this.$store, this.lazyParams.slug)
     },
-    initItems() {
-      return [
-        {
-          label: this.$t('common.add'),
-          icon: 'fa-solid fa-plus',
-          command: () => {
-            this.createMenu(this.actionsNode)
-          }
-        },
-        {
-          label: this.$t('common.edit'),
-          icon: 'fa-solid fa-pen',
-          command: () => {
-            this.editMenu(this.actionsNode)
-          }
-        },
-        {
-          label: this.$t('common.delete'),
-          icon: 'fa-solid fa-trash',
-          command: () => {
-            this.deleteConfirm(this.actionsNode)
-          }
-        },
+      initItems() {
+        return [
+            {
+                label: this.$t('common.add'),
+                icon: 'fa-solid fa-plus',
+                command: () => {
+                    this.createMenu(this.actionsNode)
+                }
+            },
+            {
+                label: this.$t('common.edit'),
+                icon: 'fa-solid fa-pen',
+                command: () => {
+                    this.editMenu(this.actionsNode)
+                }
+            },
+            {
+                label: this.$t('common.delete'),
+                icon: 'fa-solid fa-trash',
+                command: () => {
+                    this.deleteConfirm(this.actionsNode)
+                }
+            },
 
-      ];
-    }
+        ];
+      }
   }
 }
 </script>

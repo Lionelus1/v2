@@ -54,13 +54,7 @@
             </Column> -->
             <Column header="" style="text-align: right;">
               <template #body="{ data }">
-                <div class="grid">
-                  <Button type="button" icon="fa-solid fa-eye" class="mr-2" @click="onView(data)"></Button>
-                  <Button type="button" icon="fa-solid fa-pen" class="mr-2 sm:mt-2 md:mt-2 lg:mt-0 xl:mt-0"
-                          @click="onEditPage(data)"></Button>
-                  <Button type="button" icon="fa-solid fa-trash" class="p-button-danger sm:mt-2 md:mt-2 lg:mt-0 xl:mt-0"
-                          @click="delPage(data)"></Button>
-                </div>
+                  <ActionButton :items="initItems" @toggle="toggle(data)" />
               </template>
             </Column>
           </DataTable>
@@ -89,10 +83,11 @@ import WebLogs from "@/components/enuwebsite/EnuSiteLogs.vue";
 import AddPage from "@/components/enuwebsite/pages/AddPage.vue";
 import TitleBlock from "@/components/TitleBlock.vue";
 import SelectSiteSlug from "@/components/enuwebsite/SelectSiteSlug.vue";
+import ActionButton from "@/components/ActionButton.vue";
 
 export default {
   name: "EnuPagesList",
-  components: {SelectSiteSlug, TitleBlock, AddPage, PageView, WebLogs},
+  components: {ActionButton, SelectSiteSlug, TitleBlock, AddPage, PageView, WebLogs},
   data() {
     return {
       pages: [],
@@ -128,7 +123,8 @@ export default {
       },
       total: 0,
       fileService: new FileService(),
-      fileList: []
+      fileList: [],
+      actionsNode: null
     }
   },
   created() {
@@ -221,8 +217,39 @@ export default {
     onSlugSelect(event) {
       this.lazyParams.slug = event.slug;
       this.getPages()
+    },
+    toggle(node) {
+      this.actionsNode = node
+    },
+  },
+    computed: {
+        initItems() {
+            return [
+                {
+                    label: this.$t('common.show'),
+                    icon: 'fa-solid fa-eye',
+                    command: () => {
+                        this.onView(this.actionsNode)
+                    }
+                },
+                {
+                    label: this.$t('common.edit'),
+                    icon: 'fa-solid fa-pen',
+                    command: () => {
+                        this.onEditPage(this.actionsNode)
+                    }
+                },
+                {
+                    label: this.$t('common.delete'),
+                    icon: 'fa-solid fa-trash',
+                    command: () => {
+                        this.delPage(this.actionsNode)
+                    }
+                },
+
+            ];
+        }
     }
-  }
 }
 </script>
 

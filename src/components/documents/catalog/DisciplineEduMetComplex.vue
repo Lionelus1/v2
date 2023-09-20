@@ -51,7 +51,10 @@
               {{ getDepartmentName(slotProps.data) }}
             </template>
           </Column>
-          <Column style="min-width: 20px;">
+          <Column style="min-width: 20px;justify-content: end">
+              <template #header="">
+                  <Button @click="home" icon="fa-solid fa-arrow-left" class="menubar-icons" v-if="faculty" />
+              </template>
             <template #body="slotProps" v-if="!faculty">
               <div style="width: 100%; display: flex; justify-content: flex-end;">
                 <Button @click="currentDepartment=slotProps.data;into()"

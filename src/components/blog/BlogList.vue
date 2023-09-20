@@ -1,6 +1,6 @@
 <template>
   <div class="col-12">
-    <h3>{{ $t('blog.title') }}</h3>
+    <TitleBlock :title="$t('blog.title')" />
     <div v-if="!isFacultyWebAdmin && isWebAdmin" class="card">
       <Button :label="$t('common.add')" @click="openDialog"/>
     </div>
@@ -30,9 +30,7 @@
             </Column>
             <Column class="text-right">
               <template #body="{ data }">
-                <Button icon="fa-solid fa-pen" class="p-button mr-2" @click="openEdit(data)"/>
-                <Button v-if="isWebAdmin" icon="fa-solid fa-trash" class="p-button-danger"
-                        @click="deleteConfirm(data)"/>
+                  <ActionButton :items="initItems" @toggle="toggle(data)" />
               </template>
             </Column>
           </DataTable>
@@ -120,10 +118,34 @@ import {BlogService} from "@/service/blog.service";
 import WebLogs from "@/components/enuwebsite/EnuSiteLogs.vue";
 import {fileRoute, findRole, smartEnuApi} from "@/config/config";
 import {FileService} from "@/service/file.service";
+import TitleBlock from "@/components/TitleBlock.vue";
+import ActionButton from "@/components/ActionButton.vue";
 
 const authUser = computed(() => JSON.parse(localStorage.getItem("loginedUser")))
 const isFacultyWebAdmin = computed(() => findRole(authUser.value, "enu_web_fac_admin"))
 const isWebAdmin = computed(() => findRole(authUser.value, "enu_web_admin"))
+const actionsNode = ref(null)
+const initItems = computed(() =>
+    {
+        return [
+            {
+                label: i18n.t('common.edit'),
+                icon: 'fa-solid fa-pen',
+                command: () => {
+                    openEdit(actionsNode.value)
+                }
+            },
+            {
+                label: i18n.t('common.delete'),
+                icon: 'fa-solid fa-trash',
+                visible: isWebAdmin.value,
+                command: () => {
+                    deleteConfirm(actionsNode.value)
+                }
+            },
+        ];
+    }
+)
 const i18n = useI18n()
 const toast = useToast()
 const confirm = useConfirm()
@@ -324,6 +346,9 @@ const isValid = () => {
     errors.push(1);
 
   return errors.length === 0
+}
+const toggle = (node) => {
+    actionsNode.value = node
 }
 
 // const toggle = (event, data) => {

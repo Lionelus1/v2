@@ -326,7 +326,9 @@ export default {
   font-size: 20px;
   //color: white;
 }
-
+.p-link:focus {
+    box-shadow: none;
+}
 @media (max-width: 425px) {
   .layout-topbar {
     padding: 1em;
