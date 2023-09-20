@@ -3,9 +3,6 @@
     <TitleBlock
       :title="`${$t('web.siteSettings')}${facultyAbbrev ? ' - ' + facultyAbbrev['name_' + $i18n.locale] : ''}`" />
 
-    <div class="card">
-      <SelectSiteSlug @onSelect="onSlugSelect"/>
-    </div>
 
     <TabView>
       <TabPanel :header="$t('web.properties')">
@@ -102,7 +99,6 @@ import WebLogs from "@/components/enuwebsite/EnuSiteLogs.vue";
 import { findRole, smartEnuApi, fileRoute } from "@/config/config";
 import { useStore } from "vuex";
 import {FileService} from "@/service/file.service";
-import SelectSiteSlug from "@/components/enuwebsite/SelectSiteSlug.vue";
 import TitleBlock from "@/components/TitleBlock.vue";
 
 const store = useStore()
@@ -162,7 +158,7 @@ const getSettings = () => {
 }
 
 onMounted(() => {
-  getSettings();
+  // getSettings();
   getFacultyAbb();
 
 })
@@ -245,7 +241,7 @@ const saveSiteInfo = () => {
   enuService.setSiteInfo(infoData.value).then(res => {
     if (res.data)
       toast.add({ severity: "success", summary: i18n.t('common.success'), life: 3000 });
-    getSettings();
+    // getSettings();
   }).catch(error => {
     toast.add({ severity: "error", summary: error, life: 3000 });
   })
@@ -255,7 +251,7 @@ const saveMaintenaceMode = () => {
   enuService.setSiteMaintenanceMode({ is_closed: isClosed.value }).then(res => {
     if (res.data)
       toast.add({ severity: "success", summary: i18n.t('common.success'), life: 3000 });
-    getSettings();
+    // getSettings();
   }).catch(error => {
     toast.add({ severity: "error", summary: error, life: 3000 });
   })

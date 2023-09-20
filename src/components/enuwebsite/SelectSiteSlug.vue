@@ -1,6 +1,6 @@
 <template>
   <div class="col-12" v-if="slugs">
-    <h5>Домен</h5>
+    <h5>{{ $t('web.domain') }}</h5>
     <Dropdown v-model="selectedSlug" :options="slugs" optionLabel="name"
               placeholder="Выберите факультет" class="w-full" :loading="loading" @change="select" />
   </div>
@@ -56,7 +56,6 @@ onMounted(() => {
     slug.name = `${slug.slug ? slug.slug + "." : ""}enu.kz - ${slug['name_' + i18n.locale.value]}`
     selectedSlug.value = slug
   }
-  console.log(selectedSlug.value)
   getSlugs()
 })
 </script>

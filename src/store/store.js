@@ -63,6 +63,7 @@ const store = createStore({
         },
         logLout(context) {
             context.commit("LOG_OUT_SYSTEM");
+            context.commit("REMOVE_USER_SITE_SLUG")
         },
         solveAttemptedUrl(context,data){
             if(data.fullPath){

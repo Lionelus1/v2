@@ -74,7 +74,6 @@ export default {
             uploadedFiles.value = typeof newValue === "array" ? newValue : [newValue]
           } else {
             uploadedFiles.value = uploadedFiles.value || []
-            console.log(uploadedFiles.value)
             uploadedFiles.value = uploadedFiles.value.push(newValue) || uploadedFiles.value.concat(newValue)
           }
         })

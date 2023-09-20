@@ -4,7 +4,7 @@
     <div class="card">
       <Button :label="$t('web.addBlock')" @click="openDialog"/>
     </div>
-    <div class="card">
+    <div class="card" v-if="isWebAdmin">
       <SelectSiteSlug @onSelect="onSlugSelect"/>
     </div>
     <div class="card">
@@ -485,7 +485,7 @@
 </template>
 
 <script>
-import {onMounted, ref, reactive, toRefs} from "vue";
+import {onMounted, computed, ref, reactive, toRefs} from "vue";
 import {EnuWebService} from "@/service/enu.web.service";
 import {formatDate} from "@/helpers/HelperUtil";
 import {useRouter} from "vue-router";
@@ -595,8 +595,9 @@ export default {
 
     const addBlock = () => {
       submitted.value = true;
-      if (lazyParams.value.slug && findRole(store.state.loginedUser, 'enu_web_admin'))
+      if (lazyParams.value.slug && findRole(store.state.loginedUser, 'enu_web_admin')) {
         formData.value.slug = lazyParams.value.slug
+      }
       enuService.addBlock(formData.value).then(res => {
         if (res.data && res.data.is_success) {
           toast.add({severity: "success", summary: i18n.t('common.success'), life: 3000});
@@ -612,7 +613,7 @@ export default {
         toast.add({severity: "error", summary: error, life: 3000});
       });
     }
-
+    const isWebAdmin = computed(() => findRole(store.state.loginedUser, "enu_web_admin"))
     const save = () => {
       submitted.value = true;
       enuService.editBlock(formData.value).then(res => {
@@ -695,7 +696,7 @@ export default {
     const onBlockListViewTypeSelect = (event) => {
       formData.value.list_type_view_id = event.value.id
     }
-
+   
     const onSlugSelect = (event) => {
       lazyParams.value.slug = event.slug
       getBlockList()
@@ -714,7 +715,7 @@ export default {
       loading, selectedBlock, submitted, options, total, TN, onBlockListTypeSelect,
       navigateToView, openDialog, hideDialog, addBlock, save, deleteConfirm, openEdit, formatDate,
       onPage, onSort, getBlockList, selectedBlockListType, listTypes, selectedBlockListViewType, onBlockListViewTypeSelect, listViewTypes,
-      accTabs, showHideUserGuide, isGuideVisible, onSlugSelect
+      accTabs, showHideUserGuide, isGuideVisible, onSlugSelect, isWebAdmin
     }
   }
 }

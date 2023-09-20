@@ -183,7 +183,8 @@ export default {
         page: 0,
         rows: 20,
         parent_id: null,
-        is_child: false
+        is_child: false,
+        slug: localStorage.getItem('selectedSlug') ? JSON.parse(localStorage.getItem('selectedSlug')).slug : null
       },
       parentId: null,
       isGlobalFilter: false,

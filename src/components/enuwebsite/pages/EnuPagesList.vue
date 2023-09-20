@@ -6,7 +6,7 @@
       <Button :label="$t('web.addPage')" icon="pi pi-plus" class="ml-2" @click="createPage"/>
     </div>
 
-    <div class="card">
+    <div class="card" v-if="findRole(null,'enu_web_admin')">
       <SelectSiteSlug @onSelect="onSlugSelect"/>
     </div>
 
@@ -84,7 +84,7 @@ import {EnuWebService} from "@/service/enu.web.service";
 import PageView from "@/components/enuwebsite/PageView.vue";
 import {formatDate} from "@/helpers/HelperUtil";
 import {FileService} from "../../../service/file.service";
-import {downloadRoute, fileRoute, getHeader, smartEnuApi} from "../../../config/config";
+import {downloadRoute, findRole, fileRoute, getHeader, smartEnuApi} from "../../../config/config";
 import WebLogs from "@/components/enuwebsite/EnuSiteLogs.vue";
 import AddPage from "@/components/enuwebsite/pages/AddPage.vue";
 import TitleBlock from "@/components/TitleBlock.vue";
@@ -123,7 +123,8 @@ export default {
         rows: 10,
         searchText: null,
         sortField: null,
-        sortOrder: 0
+        sortOrder: 0,
+        slug: localStorage.getItem('selectedSlug') ? JSON.parse(localStorage.getItem('selectedSlug')).slug : null
       },
       total: 0,
       fileService: new FileService(),
@@ -146,6 +147,7 @@ export default {
     });
   },
   methods: {
+    findRole,
     formatDate,
     getPages() {
       this.loading = true;
