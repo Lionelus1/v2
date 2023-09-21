@@ -9,9 +9,9 @@
         @page="onPage">
         <template #header>
           <div class="sm:flex block justify-content-between">
-            <!-- <Button class="mr-2" v-if="findRole(null, 'online_course_administrator')" :label="$t('common.updateGES')" @click="getOod()" /> -->
-            <!-- <Button class="mt-2" v-if="findRole(null, 'online_course_administrator')" :label="$t('common.save')"
-            @click="updateCourseGiveCertificates()" /> -->
+            <Button class="mr-2" v-if="findRole(null, 'online_course_administrator')" :label="$t('common.updateGES')" @click="getOod()" /> 
+         <Button class="mt-2" v-if="findRole(null, 'online_course_administrator')" :label="$t('common.save')"
+            @click="updateCourseGiveCertificates()" />
           </div>
         </template>
 
@@ -25,7 +25,7 @@
             {{ body.data['description' + $i18n.locale] }}
           </template>
         </Column>
-        <!-- <Column v-if="findRole(null, 'online_course_administrator')">   
+        <Column v-if="findRole(null, 'online_course_administrator')">   
           <template #body="body">
             <Checkbox v-model="body.data.give_certificate" @change="pushAndDeleteGiveCertificates(body.data)"
               :binary="true" />
@@ -34,7 +34,7 @@
             <Checkbox inputId="selectAll"  class="mr-2" v-model="selectAllChecked" @input="checkboxSelectAll" :binary="true"  />
             <label for="selectAll">{{$t('common.addCertificate')}}</label>
         </template>
-        </Column> -->
+        </Column>
         <Column>
           <template #body="body">
             <Button :label="$t('common.goToTheCourse')" v-model="body.Button" class="p-button-info mb-2"
