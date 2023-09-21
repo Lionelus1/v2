@@ -7,7 +7,7 @@
         </div>
         <TabView>
             <TabPanel :header="$t('course.users')">
-                <Button v-if="students.length === 0" class="btn mb-3" :label="$t('hr.sp.request')"
+                <Button v-if="students.length === 0  && dic_course_type == 1" class="btn mb-3" :label="$t('hr.sp.request')"
                         @click="sendRequestToCourse()"/>
                 <!-- курсқа қатысушылар -->
                 <div v-if="students">
@@ -26,15 +26,15 @@
                         <template #header>
                             <div class="table-header flex justify-content-between flex-wrap card-container purple-container">
                                 <div class="flex gap-2 flex-column sm:flex-row">
-                                    <Button v-if="findRole(null,'online_course_administrator')"
+                                    <Button v-if="findRole(null,'online_course_administrator') && dic_course_type == 1"
                                             class="p-button-success mb-2" icon="pi pi-plus" :label="$t('common.add')"
                                             @click="addStudent"/>
 
-                                    <Button v-if="findRole(null,'online_course_administrator')"
+                                    <Button v-if="findRole(null,'online_course_administrator') && dic_course_type == 1"
                                             class="p-button-help mb-2" icon="fa-solid fa-certificate"
                                             :label="$t('course.certificate.issue')" @click="openIssueCertificateDialog"/>
 
-                                    <Button v-if="findRole(null,'online_course_administrator')"
+                                    <Button v-if="findRole(null,'online_course_administrator') && dic_course_type == 1"
                                             class="p-button-help mb-2" icon="fa-solid fa-file-circle-check"
                                             :label="$t('course.certificate.issueWithApp')"
                                             @click="openIssueCertificateWithDialog"/>
@@ -155,7 +155,7 @@
             </TabPanel>
 
             <!-- module қосу table -->
-            <TabPanel :header="$t('course.modules')">
+            <TabPanel :header="$t('course.modules')" v-if="dic_course_type == 1">
                 <DataTable :value="module">
                     <template #header>
                         <div
@@ -343,7 +343,8 @@ export default {
             userID: null,
             stateID: null, 
             searchText: '',
-            searchData: {}
+            searchData: {},
+            dic_course_type: null,
         }
     },
     created() {
@@ -357,6 +358,9 @@ export default {
         this.getModuleByCourseID();
     },
     methods: {
+        check(dic_course_type) {
+            console.log(dic_course_type)
+        },  
         findRole: findRole,
         sendRequestToCourse() {
             this.$confirm.require({
@@ -568,6 +572,7 @@ export default {
                     this.students = response.data.students
                 }
                 this.studentsCount = response.data.total
+                this.dic_course_type = response.data.dic_course_type
                 this.loading = false
             }).catch(_ => {
                 this.loading = false
