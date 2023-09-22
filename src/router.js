@@ -222,9 +222,29 @@ const routes = [
 
             {
                 path: '/news',
-                name: 'NewsTable',
-                component: load('news/NewsTable'),
+                name: 'NewsComponent',
+                component: load('news/NewsComponent'),
                 beforeEnter: ifAuthenticated,
+                children: [
+                    {
+                        path: '',
+                        name: 'NewsTable',
+                        component: load('news/NewsTable'),
+                        beforeEnter: ifAuthenticated,
+                    },
+                    {
+                        path: ':id',
+                        name: 'EditNews',
+                        component: load('news/AddEditNews'),
+                        beforeEnter: ifAuthenticated,
+                    },
+                    {
+                        path: 'add',
+                        name: 'AddNews',
+                        component: load('news/AddEditNews'),
+                        beforeEnter: ifAuthenticated,
+                    }
+                ]
             },
             {
                 path: '/newscategories/cattable',
