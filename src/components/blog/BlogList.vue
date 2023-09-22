@@ -30,7 +30,7 @@
             </Column>
             <Column class="text-right">
               <template #body="{ data }">
-                  <ActionButton :items="initItems" @toggle="toggle(data)" />
+                  <ActionButton :show-label="true" :items="initItems" @toggle="toggle(data)" />
               </template>
             </Column>
           </DataTable>
