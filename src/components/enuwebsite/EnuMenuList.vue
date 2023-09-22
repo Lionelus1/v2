@@ -96,7 +96,7 @@
             </Column>
             <Column field="actions" header="" class="text-right">
               <template #body="{ node }">
-                  <ActionButton :items="initItems" @toggle="toggle2(node)" />
+                  <ActionButton :show-label="true" :items="initItems" @toggle="toggle2(node)" />
               </template>
             </Column>
           </TreeTable>

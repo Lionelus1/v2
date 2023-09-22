@@ -146,7 +146,7 @@
           :currentPageReportTemplate="currentPageReportTemplate" :lazy="true" :loading="fileTableLoading" scrollable scrollHeight="flex"
           v-model:selection="currentFile" selectionMode="single" :rowHover="true" stripedRows class="flex-grow-1"
           @page="onPageFile">
-          <Column :header="$t('educomplex.columns.name')" style="min-width: 250px;">
+          <Column :header="$t('educomplex.columns.name')" style="min-width: 150px;">
             <template #body="slotProps">
               {{ slotProps.data['name' + $i18n.locale] }}
             </template>
@@ -178,27 +178,7 @@
           </Column>
           <Column style="min-width: 50px;">
             <template #body="slotProps">
-              <Button v-if="slotProps.data.filePath != null && slotProps.data.uuid != null" 
-                @click="downloadFile(slotProps.data.uuid, slotProps.data.filePath)"
-                class="p-button-text p-button-info p-1" v-tooltip="$t('educomplex.tooltip.download')">
-                <i class="fa-solid fa-file-arrow-down fa-xl"></i>
-              </Button>
-              <Button v-if="slotProps.data.docHistory.stateId !== Enum.REVISION.ID"
-                @click="currentFile=slotProps.data;open('documentInfoSidebar')"
-                class="p-button-text p-button-info p-1" v-tooltip="$t('educomplex.tooltip.document')">
-                <i class="fa-solid fa-eye fa-xl"></i>
-              </Button>
-              <Button v-if="slotProps.data.docHistory.stateId === Enum.REVISION.ID"
-                @click="currentFile=slotProps.data;open('revisionInfoSidebar')"
-                class="p-button-text p-button-info p-1" v-tooltip="$t('educomplex.tooltip.revision')">
-                <i class="fa-solid fa-file-circle-exclamation fa-xl"></i>
-              </Button>
-              <Button v-if="(slotProps.data.docHistory.stateId === Enum.CREATED.ID || 
-                slotProps.data.docHistory.stateId === Enum.REVISION.ID) && loginedUser.userID === slotProps.data.creatorID"
-                @click="currentFile=slotProps.data;deleteFile(false)"
-                class="p-button-text p-button-danger p-1" v-tooltip="$t('educomplex.tooltip.delete')">
-                <i class="fa-solid fa-trash fa-xl"></i>
-              </Button>
+                <ActionButton :items="initItems" :showTooltip="true" @toggle="showActions(slotProps.data)" />
             </template>
           </Column>
         </DataTable>
@@ -302,10 +282,11 @@ import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo";
 import DocInfo from "@/components/documents/DocInfo";
 import PostFile from "@/components/documents/PostFile.vue"
+import ActionButton from "@/components/ActionButton.vue";
 
 export default {
   name: 'DisciplineEduMetComplex',
-  components: { ApprovalUsers, DocSignaturesInfo, DocInfo, PostFile },
+  components: {ActionButton, ApprovalUsers, DocSignaturesInfo, DocInfo, PostFile },
   props: { },
   emits: [],
   data() {
@@ -369,7 +350,7 @@ export default {
       stages: [],
       revisionComment: null,
       newFile: null,
-
+      actionsNode: null,
       statuses: [
         {
           id: 'status_created',
@@ -406,7 +387,50 @@ export default {
     disableRevisionButton() {
       let approve = this.needToApproveByMe()
       return !approve
-    }
+    },
+      initItems() {
+          return [
+              {
+                  label: this.$t('educomplex.tooltip.download'),
+                  icon: 'fa-solid fa-file-arrow-down',
+                  visible: this.actionsNode && this.actionsNode.filePath != null && this.actionsNode.uuid != null,
+                  command: () => {
+                      this.downloadFile(this.actionsNode.uuid, this.actionsNode.filePath)
+                  }
+              },
+              {
+                  label: this.$t('educomplex.tooltip.document'),
+                  icon: 'fa-solid fa-eye',
+                  visible: this.actionsNode && this.actionsNode.docHistory.stateId !== Enum.REVISION.ID,
+                  command: () => {
+                      this.currentFile = this.actionsNode;
+                      this.open('documentInfoSidebar')
+                  }
+              },
+              {
+                  label: this.$t('educomplex.tooltip.revision'),
+                  icon: 'fa-solid fa-file-circle-exclamation',
+                  visible: this.actionsNode && this.actionsNode.docHistory.stateId === Enum.REVISION.ID,
+                  command: () => {
+                      this.currentFile = this.actionsNode;
+                      this.open('revisionInfoSidebar')
+
+                  }
+              },
+              {
+                  label: this.$t('educomplex.tooltip.delete'),
+                  icon: 'fa-solid fa-trash',
+                  visible:this.actionsNode && (this.actionsNode.docHistory.stateId === Enum.CREATED.ID ||
+                      this.actionsNode.docHistory.stateId === Enum.REVISION.ID) && this.loginedUser.userID === this.actionsNode.creatorID,
+                  command: () => {
+                      console.log(this.actionsNode)
+                      this.currentFile = this.actionsNode;
+                      this.deleteFile(false)
+                  }
+              },
+
+          ];
+      }
   },
   created() {
     this.loginedUser = JSON.parse(localStorage.getItem("loginedUser"))
@@ -439,6 +463,9 @@ export default {
     },
     toggle(ref, event) {
       this.$refs[ref].toggle(event);
+    },
+    showActions(node) {
+      this.actionsNode = node;
     },
     checkScreenSize() {
       this.screen.isLarge = window.innerWidth >= 640;
@@ -1098,6 +1125,11 @@ export default {
 .not-approved {
   color: #a6a6a6;
 }
+@media (max-width: 1550px) {
+  .customer-badge{
+    font-size: 10px;
+  }
+}
 @media (max-width: 640px) {
   .menubar-icons {
     padding: 0.25rem;
@@ -1105,6 +1137,7 @@ export default {
   :deep(.p-paginator.p-component) {
     padding: 0rem;
   }
+
 }
 @media (min-width: 640px) {
   .menubar-icons {
