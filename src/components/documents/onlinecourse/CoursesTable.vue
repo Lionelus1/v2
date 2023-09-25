@@ -9,8 +9,8 @@
         @page="onPage">
         <template #header>
           <div class="sm:flex block justify-content-between">
-            <Button class="mr-2" v-if="findRole(null, 'online_course_administrator')" :label="$t('common.updateGES')" @click="getOod()" /> 
-         <Button class="mt-2" v-if="findRole(null, 'online_course_administrator')" :label="$t('common.save')"
+            <Button class="mr-2" v-if="findRole(null, 'online_course_administrator') && dic_course_type == 2" :label="$t('common.updateGES')" @click="getOod()" /> 
+         <Button class="mt-2" v-if="findRole(null, 'online_course_administrator') && dic_course_type == 2" :label="$t('common.save')"
             @click="updateCourseGiveCertificates()" />
           </div>
         </template>
@@ -25,7 +25,7 @@
             {{ body.data['description' + $i18n.locale] }}
           </template>
         </Column>
-        <Column v-if="findRole(null, 'online_course_administrator')">   
+        <Column v-if="findRole(null, 'online_course_administrator') && dic_course_type == 2">   
           <template #body="body">
             <Checkbox v-model="body.data.give_certificate" @change="pushAndDeleteGiveCertificates(body.data)"
               :binary="true" />
@@ -79,6 +79,7 @@ export default {
       service: new OnlineCourseService(),
       give_certificates: [],
       selectAllChecked: true,
+      dic_course_type: null,
     }
   },
   created() {
@@ -173,6 +174,7 @@ export default {
             this.selectAllChecked = true
           }
         })
+        this.dic_course_type = res.data.dic_course_type
         this.total = res.data.total
         this.selectedCourse = null
 
