@@ -12,6 +12,10 @@
             <Button class="mr-2" v-if="findRole(null, 'online_course_administrator') && dic_course_type == 2" :label="$t('common.updateGES')" @click="getOod()" /> 
          <Button class="mt-2" v-if="findRole(null, 'online_course_administrator') && dic_course_type == 2" :label="$t('common.save')"
             @click="updateCourseGiveCertificates()" />
+        <span v-if="findRole(null,'online_course_administrator')" class="p-input-icon-left">
+            <i class="pi pi-search"/>
+            <InputText type="search" v-model="searchText" @keyup.enter="getCourseStudents"  @search="getCourses" :placeholder="$t('common.search')"/>
+        </span>
           </div>
         </template>
 
@@ -80,6 +84,7 @@ export default {
       give_certificates: [],
       selectAllChecked: true,
       dic_course_type: null,
+      searchText: null,
     }
   },
   created() {
@@ -158,6 +163,8 @@ export default {
         page: this.page,
         rows: this.rows,
         categoryID: this.categoryId,
+        lang: this.$i18n.locale,
+        searchText: this.searchText,
       }, {
         headers: getHeader()
       }).then(res => {
