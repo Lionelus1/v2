@@ -43,9 +43,6 @@
                             <!--            <RichEditor ref="kztext" v-model="formData.content_kz" editorStyle="height: 320px"></RichEditor>-->
                             <TinyEditor v-model="formData.content_kz" :height="400" :custom-file-upload="true"
                                         @onAfterUpload="onAfterUpload"/>
-                            <small v-show="!formData.content_kz && submitted" class="p-error">
-                                {{ $t("smartenu.contentKzInvalid") }}
-                            </small>
                         </div>
                     </TabPanel>
                     <TabPanel header="Русский">
@@ -61,9 +58,6 @@
                             <!--            <RichEditor id="ru-content" v-model="formData.content_ru" editorStyle="height: 320px"/>-->
                             <TinyEditor v-model="formData.content_ru" :height="400" :custom-file-upload="true"
                                         @onAfterUpload="onAfterUpload"/>
-                            <small v-show="!formData.content_ru && submitted" class="p-error">
-                                {{ $t("smartenu.contentRuInvalid") }}
-                            </small>
                         </div>
                     </TabPanel>
                     <TabPanel header="English">
@@ -79,9 +73,6 @@
                             <!--            <RichEditor v-model="formData.content_en" editorStyle="height: 320px"/>-->
                             <TinyEditor v-model="formData.content_en" :height="400" :custom-file-upload="true"
                                         @onAfterUpload="onAfterUpload"/>
-                            <small v-show="!formData.content_en && submitted" class="p-error">
-                                {{ $t("smartenu.contentEnInvalid") }}
-                            </small>
                         </div>
                     </TabPanel>
                 </TabView>
@@ -123,6 +114,8 @@ import {EnuWebService} from "@/service/enu.web.service";
 import TinyEditor from "../../TinyEditor.vue";
 import Gallery from "@/components/Gallery.vue";
 import {downloadRoute, getHeader, smartEnuApi} from "@/config/config";
+import {findRole} from "@/config/config";
+import {useStore} from "vuex";
 
 export default {
     name: "AddPage",
@@ -133,7 +126,14 @@ export default {
             submitted: false,
             enuService: new EnuWebService(),
             fileList: [],
-            uploadedGalleryFiles: null
+            uploadedGalleryFiles: null,
+            store : useStore(),
+            lazyParams: {
+                page: 1,
+                rows: 30,
+                parent_id: this.currentMenu ? this.currentMenu.menu_id : null,
+                slug: localStorage.getItem('selectedSlug') ? JSON.parse(localStorage.getItem('selectedSlug')).slug : null
+            },
         }
     },
     computed: {
@@ -155,7 +155,10 @@ export default {
             if (!this.isValid()) {
                 return;
             }
-
+            if (this.lazyParams.slug && findRole(this.store.state.loginedUser, 'enu_web_admin')) (
+                this.formData.slug = this.lazyParams.slug
+            )  
+            
             if (this.uploadedGalleryFiles) {
                 this.uploadedGalleryFiles.forEach(item => {
                     this.formData.files = this.formData.files || []
@@ -276,12 +279,6 @@ export default {
             if (!this.formData.title_ru)
                 errors.push(1);
             if (!this.formData.title_en)
-                errors.push(1);
-            if (!this.formData.is_landing && !this.formData.content_kz)
-                errors.push(1);
-            if (!this.formData.is_landing && !this.formData.content_ru)
-                errors.push(1);
-            if (!this.formData.is_landing && !this.formData.content_en)
                 errors.push(1);
 
             return errors.length === 0

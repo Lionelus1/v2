@@ -1,9 +1,10 @@
 <template>
   <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
   <BlockUI :blocked="loading" :fullScreen="true"></BlockUI>
-  <div>
-    <TabView v-model:activeIndex="panelActiveIndex.outside">
-      <TabPanel :header="$t('requests.requests')">
+  <div class="l-card flex flex-column p-0" :style="{height: innerHeightInRem.toString()+'rem',
+    minHeight: '300px'}">
+    <TabView v-model:activeIndex="panelActiveIndex.outside" class="flex flex-column flex-grow-1">
+      <TabPanel :header="$t('requests.requests')" >
         <DataTable v-if="requests" :value="requests" dataKey="id" :rows="requestBody.rows"
           :totalRecords="total" :paginator="true" paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink JumpToPageDropdown CurrentPageReport RowsPerPageDropdown"
           :rowsPerPageOptions="[10, 25, 50]" :currentPageReportTemplate="
@@ -11,10 +12,10 @@
               first: '{first}',
               last: '{last}',
               totalRecords: '{totalRecords}',
-            })" :lazy="true" :loading="loading"
+            })" :lazy="true" :loading="tableLoading" scrollable scrollHeight="flex"
           v-model:selection="selectedRequest" selectionMode="single" :rowHover="true"
-          @page="onPage($event)" @row-select="select($event)" style="margin: -1rem;">
-            <Column :header="$t('requests.requestType')">
+          @page="onPage($event)" @update:selection="selectedRequestChanged()">
+            <Column :header="$t('requests.requestType')" style="width: 50%; min-width: 500px; flex-grow: 5; flex-shrink: 0;">
               <template #body="slotProps">
                 <div class="flex align-items-center flex-wrap card-container gap-3">
                   <span :class="slotProps.data.type">{{ $t('requests.types.' + slotProps.data.type) }}</span>
@@ -22,51 +23,58 @@
                 </div>
               </template>
             </Column>
-            <Column :header="$t('requests.requestedUser')">
+            <Column :header="$t('requests.requestedUser')" style="width: 20%; min-width: 200px; flex-grow: 2; flex-shrink: 0;">
               <template #body="slotProps">
                 {{ slotProps.data.requestedUser ? slotProps.data.requestedUser.fullName : "" }}
               </template>
             </Column>
-            <Column :header="$t('requests.requestedTime')">
+            <Column :header="$t('requests.requestedTime')" style="width: 20%; min-width: 200px; flex-grow: 2; flex-shrink: 0;">
               <template #body="slotProps">
                 {{ getLongDateString(slotProps.data.createdTime) }}
               </template>
             </Column>
-            <Column>
+            <Column style="width: 10%; min-width: 100px; flex-grow: 1; flex-shrink: 0;">
               <template #body="slotProps">
-                <Button icon="fa-solid fa-arrow-right" @click="this.selectedRequest = slotProps.data;this.panelActiveIndex.outside = 1"></Button>
+                <Button icon="fa-solid fa-arrow-right" @click="this.selectedRequest = slotProps.data;selectedRequestChanged();this.panelActiveIndex.outside = 1"></Button>
               </template>
             </Column>
         </DataTable>
       </TabPanel>
       <TabPanel :header="$t('requests.selectedRequest')" :disabled="!selectedRequest">
-        <TabView v-model:activeIndex="panelActiveIndex.inside" @tab-change="panelTabChanged()" style="margin: -1rem;">
+        <TabView v-model:activeIndex="panelActiveIndex.inside" @tab-change="panelTabChanged()" class="flex flex-column flex-grow-1">
           <TabPanel :header="$t('requests.information')" >
-            <Menubar :model="menuItems" class="mb-4" style="height: 2.5rem; margin: -1rem; "></Menubar>
-            <div v-if="selectedRequest">
-              <div class="p-fluid lg:col-8 mb-2" style="margin-top: -1rem;"
-              v-if="selectedRequest.type === Enum.DocumentRequestType.ReferenceErrorCorrection">
+            <Menubar :model="menuItems" class="mb-2" style="height: 2.5rem;"></Menubar>
+            <div v-if="selectedRequest" class="flex flex-column flex-grow-1 ml-2 mr-2">
+              <div class="p-fluid lg:col-6 mb-2" v-if="selectedRequest.type === Enum.DocumentRequestType.ReferenceErrorCorrection">
                 <InlineMessage severity="error" class="justify-content-start">{{ selectedRequest.commentary }}</InlineMessage>
               </div>
-              <div class="lg:col-8">
+              <div class="lg:col-6">
                 <p> {{ $t('requests.requestType') + ": " }}
                   <span :class="selectedRequest.type">{{ $t('requests.types.' + selectedRequest.type) }}</span>
                 </p>
               </div>
-              <div class="p-fluid lg:col-8">
-                <div v-for="param in selectedRequest.doc.params"
-                  :key="param.id">
-                  <label v-if="param.name == 'text'">{{ param.description == 'date' || param.description == 'number' ? $t('common.' + param.description) : param.description }}</label>
-                  <InputText v-if="param.name == 'text'" v-model="param.value" type="text" class="mb-3"
-                    :disabled="param.description == 'date' || param.description == 'number'" @input="input()"></InputText>
+              <div class="flex-grow-1 p-2" style="overflow: scroll; height: 150px;" v-if="selectedRequestParams">
+                <div v-for="param in selectedRequestParams" :key="param.id">
+                  <label v-if="param.name == 'text' || param.name == 'date'">{{ $t('requests.params.' + param.description) }}</label>
+                  <div class="p-fluid lg:col-6 mb-3" v-if="param.name == 'text' && param.properties.translate">
+                    <InputText v-model="param.value.kz" type="text" class="mb-1" @input="input()"></InputText>
+                    <InputText v-model="param.value.ru" type="text" class="mb-1" @input="input()"></InputText>
+                    <InputText v-model="param.value.en" type="text" @input="input()"></InputText>
+                  </div>
+                  <div class="p-fluid lg:col-6 mb-3" v-else-if="param.name == 'text'">
+                    <InputText v-model="param.value" type="text"
+                      :disabled="param.properties.readonly" @input="input()"></InputText>
+                  </div>
+                  <div class="p-fluid lg:col-6 mb-3" v-else-if="param.name == 'date'">
+                    <PrimeCalendar v-model="param.value" dateFormat="dd.mm.yy" showIcon
+                      :disabled="param.properties.readonly" @update:modelValue="input()"></PrimeCalendar>
+                  </div>
                 </div>
               </div>
             </div>
           </TabPanel>
-          <TabPanel :header="$t('requests.reference')">
-            <div style="margin: -1rem;">
-              <embed :src="pdf" style="width: 100%; height: 1000px" v-if="pdf" type="application/pdf"/>
-            </div>
+          <TabPanel :header="$t('requests.reference')" :disabled="!selectedRequest || !selectedRequest.doc.filePath">
+            <embed :src="pdf" style="width: 100%; height: 100%;" v-if="pdf" type="application/pdf"/>
           </TabPanel>
         </TabView>
       </TabPanel>
@@ -91,24 +99,28 @@ export default {
     return {
       Enum: Enum,
 
+      innerHeightInRem: 0,
+      loading: false,
+      tableLoading: true,
+
       requests: null,
       selectedRequest: null,
-      total: 0,
+      selectedRequestParams: [],
       pdf: null,
-
+      
       panelActiveIndex: {
         outside: 0,
         inside: 0,
       },
-      loading: true,
       changed: false,
-
+      
+      total: 0,
       requestBody: {
         page: 0,
         rows: 10,
         requestTypes: [
           Enum.DocumentRequestType.ReferenceErrorCorrection, 
-          Enum.DocumentRequestType.ReferenceInfoRequest
+          Enum.DocumentRequestType.ReferenceSalaryRequest
         ],
       },
 
@@ -131,6 +143,12 @@ export default {
   },
   mounted() {
     this.initApiCall();
+
+    this.onResize();
+    window.addEventListener('resize', this.onResize);
+  },
+  beforeUnmount() {
+    window.removeEventListener('resize', this.onResize);
   },
   methods: {
     getLongDateString: getLongDateString,
@@ -142,8 +160,11 @@ export default {
         life: 3000
       });
     },
+    onResize() {
+      this.innerHeightInRem = (window.innerHeight - 50 - 45) / parseFloat(getComputedStyle(document.documentElement).fontSize);
+    },
     initApiCall() {
-      this.loading = true
+      this.tableLoading = true
 
       axios.post(smartEnuApi + '/docrequests', this.requestBody, {
         headers: getHeader()
@@ -151,7 +172,7 @@ export default {
         this.requests = res.data.docrequests
         this.total = res.data.total
 
-        this.loading = false
+        this.tableLoading = false
       }).catch(err => {
         if (err.response && err.response.status == 401) {
           this.$store.dispatch("logLout")
@@ -162,20 +183,18 @@ export default {
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
 
-        this.loading = false
+        this.tableLoading = false
       })
     },
     updateStatus(status) {
-      this.loading = true
+      this.loading = true;
+      this.parseParams();
 
       let requestBody = {
         requestId: this.selectedRequest.id,
         status: status,
-      }
-
-      if (status === 1) {
-        requestBody['docParams'] = this.selectedRequest.doc.params
-      }
+        docParams: this.selectedRequest.doc.newParams,
+      };
 
       axios.post(smartEnuApi + '/docrequest/update', requestBody, {
         headers: getHeader()
@@ -185,9 +204,28 @@ export default {
         this.selectedRequest.completedTime = Date.now()
 
         if (status === 1) {
-          this.getPdf()
+          axios.post(smartEnuApi + '/document/get', {
+            uuid: this.selectedRequest.doc.uuid,
+          }, {
+            headers: getHeader() 
+          }).then(res => {
+            this.selectedRequest.doc = res.data;
+            this.getParams();
+            this.loading = false;
+          }).catch(err => {
+            if (err.response && err.response.status == 401) {
+              this.$store.dispatch("logLout")
+            } else if (err.response && err.response.data && err.response.data.localized) {
+              this.showMessage('error', this.$t(err.response.data.localizedPath), null)
+            } else {
+              console.log(err)
+              this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
+            }
+
+            this.loading = false;
+          });
         } else {
-          this.loading = false
+          this.loading = false;
         }
       }).catch(err => {
         if (err.response && err.response.status == 401) {
@@ -207,7 +245,52 @@ export default {
         this.getPdf()
       }
     },
+    selectedRequestChanged() {
+      this.changed = false;
+      this.pdf = null;
+      this.panelActiveIndex.inside = 0;
+
+      this.getParams();
+    },
+    getParams() {
+      this.selectedRequestParams = [];
+
+      let param = this.selectedRequest.doc.newParams['registration_number']
+      this.selectedRequestParams.push(param)
+
+      param = this.selectedRequest.doc.newParams['registration_date']
+      param.value = param.value ? new Date(param.value) : null
+      this.selectedRequestParams.push(param)
+
+      param = this.selectedRequest.doc.newParams['full_name']
+      this.selectedRequestParams.push(param)
+
+      param = this.selectedRequest.doc.newParams['structural_unit']
+      this.selectedRequestParams.push(param)
+      
+      param = this.selectedRequest.doc.newParams['position']
+      this.selectedRequestParams.push(param)
+
+      param = this.selectedRequest.doc.newParams['work_start_date']
+      param.value = new Date(param.value)
+      this.selectedRequestParams.push(param)
+
+      if (this.selectedRequest.doc.newParams['salary'].value) {
+        param = this.selectedRequest.doc.newParams['salary_amount']
+        this.selectedRequestParams.push(param)
+      }
+    },
+    parseParams() {
+      for (const ind in this.selectedRequestParams) {
+        const param = this.selectedRequestParams[ind]
+        this.selectedRequest.doc.newParams[param.description].value = param.value
+      }
+    },
     getPdf() {
+      if (!this.selectedRequest.doc.filePath) {
+        return
+      }
+
       this.loading = true
 
       axios.post(smartEnuApi + '/document/download', {
@@ -231,9 +314,6 @@ export default {
         this.loading = false
       })
     },
-    select(event) {
-      this.pdf = null
-    },
     onPage(event) {
       this.requestBody.page = event.page;
       this.initApiCall();
@@ -245,7 +325,12 @@ export default {
 }
 </script>
 <style scoped>
-.reference_error_correction, .reference_info_request {
+.l-card {
+  background-color: #ffffff;
+  padding: 1rem;
+}
+
+.reference_error_correction, .reference_salary_request {
   border-radius: 2px;
   padding: 0.25em 0.5rem;
   text-transform: uppercase;
@@ -259,8 +344,22 @@ export default {
   color: #ff0000;
 }
 
-.reference_info_request {
+.reference_salary_request {
   background: #17a2b8;
   color: #fff;
 }
+
+:deep(.p-tabview-panels) {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0rem;
+}
+
+:deep(.p-tabview-panel) {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
 </style>

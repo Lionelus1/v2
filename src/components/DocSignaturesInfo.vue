@@ -106,6 +106,7 @@ import html2pdf from "html2pdf.js";
 import DocInfo from "@/components/ncasigner/DocInfo";
 import QrcodeVue from "qrcode.vue";
 import Enum from "@/enum/docstates/index";
+import RolesEnum from "@/enum/roleControls/index";
 import QrGuideline from "./QrGuideline.vue";
 
 export default {
@@ -161,6 +162,7 @@ export default {
       mgovMobileRedirectUri: null,
       mgobBusinessRedirectUri: null,
       Enum: Enum,
+      RolesEnum: RolesEnum,
 
       hideDocRevision: true,
       revisionComment: null,
@@ -272,8 +274,9 @@ export default {
           if (this.showAllSignsParam) {
             this.isShow = true;
           } else {
-            this.isShow = this.findRole(null, "career_moderator") || (this.signatures && this.signatures.some(x => x.userId === this.loginedUserId)) || 
-              this.docInfo.docHistory.setterId === this.loginedUserId;
+            this.isShow = this.findRole(null, RolesEnum.roles.CareerModerator) || this.findRole(null, RolesEnum.roles.UMKAdministrator) ||
+              (this.signatures && this.signatures.some(x => x.userId === this.loginedUserId)) ||
+              this.docInfo.docHistory.setterId === this.loginedUserId || this.docInfo.creatorID === this.loginedUserId;
           }
 
 

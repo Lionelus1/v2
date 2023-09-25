@@ -21,6 +21,10 @@ export class EnuWebService {
         return api.post("/web/getPages", params, {headers: getHeader()});
     }
 
+    getAllPagesBySlug(params){
+        return api.post("/web/getPagesBySlug", params, {headers: getHeader()});
+    }
+
     getPageById(pageId) {
         return api.get(`/web/getPageAdmin/${pageId}`, {headers: getHeader()});
     }
@@ -137,6 +141,9 @@ export class EnuWebService {
     setSiteSettings(params) {
         return api.post(`/web/updateSiteSettings`, params, {headers: getHeader()})
     }
+    setSiteMaintenanceMode(params) {
+        return api.post(`/web/siteUnderConstraction`, params, {headers: getHeader()})
+    }
     getSiteLogs(params) {
         return api.post(`/web/getTableLogs`, params, {headers: getHeader()})
     }
@@ -195,5 +202,18 @@ export class EnuWebService {
         }
 
         return "";
+    }
+
+    getSiteUrl(store, slug) {
+        const port = process.env.NODE_ENV === 'development' ? ":8085" : ""
+        const facUser = store.state.userSlug || null
+        if (facUser && facUser.slug) {
+            return `http://${facUser.slug}.enu.kz${port}`
+        }
+        if (slug) {
+            return `http://${slug}.enu.kz${port}`
+        }
+
+        return 'http://enu.kz'
     }
 }

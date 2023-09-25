@@ -8,15 +8,15 @@
       <div :class="sidebarClass" @click="onSidebarClick" v-show="isSidebarVisible()">
         <div class="layout-logo">
           <router-link to="/">
-            <h1>SMART ENU</h1>
+            <h2 class="text-white">SMART.ENU</h2>
           </router-link>
         </div>
         <AppProfile/>
         <AppMenu :model="globalMenu"  @menuitem-click="onMenuItemClick"/>
       </div>
     </transition>
-    <div class="layout-main pr-0 pl-0">
-      <router-view v-model:pagemenu="localpagemenu"/>
+    <div class="layout-main flex-grow-1" :class="{ 'flex flex-column': applyFlex }">
+      <router-view v-model:pagemenu="localpagemenu" @apply-flex="applyFlexHandler"/>
     </div>
     <AppConfig :layoutMode="layoutMode" :layoutColorMode="layoutColorMode" @layout-change="onLayoutChange" @layout-color-change="onLayoutColorChange"/>
     <AppFooter/>
@@ -50,7 +50,9 @@ export default {
       overlayMenuActive: false,
       mobileMenuActive: false,
       localpagemenu: this.pagemenu,
-      menuService: new MenuService()
+      menuService: new MenuService(),
+
+      applyFlex: false,
     }
   },
 
@@ -182,6 +184,9 @@ export default {
         return true;
       }
     },
+    applyFlexHandler(value) {
+      this.applyFlex = value;
+    },
   },
   computed: {
     containerClass() {
@@ -230,6 +235,7 @@ export default {
 </script>
 
 <style lang="scss">
+
 .p-toast.p-toast-topright {
   z-index: 1000;
   top: 70px;

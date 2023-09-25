@@ -3,7 +3,7 @@
     <h5><em>{{ $t('hr.resume.loading') }}</em></h5>
     <ProgressBar :value="progress"/>
   </div>
-  <div ref="htmlToPdf" class="card" v-if="progressed">
+  <div ref="htmlToPdf" v-if="progressed">
     <div class="grid formgrid">
       <div class="col-12 lg:col-9">
         <p style="text-align: center">

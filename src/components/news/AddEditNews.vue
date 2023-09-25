@@ -29,7 +29,7 @@
                         <label for="ru-content">{{ $t("common.contentInRussian") }}</label>
                         <TinyEditor v-model="newsData.contentRu" :height="300" :custom-file-upload="true" @onAfterUpload="onAfterUpload"/>
                         <!--            <Editor id="ru-content" v-model="newsData.contentRu" editorStyle="height: 320px"/>-->
-                        <small v-show="!newsData.contentRu && submitted" class="p-error">{{ $t("smartenu.contentRuInvalid") }}</small>
+                        <small v-show="!newsData.contentRu && submitted" class="p-error">{{ $t("smartenu.contentRuInvalid") }}</small>  
                     </div>
                 </TabPanel>
                 <TabPanel header="English">
@@ -334,6 +334,7 @@ export default {
         uploadPosterImageKk(event) {
             const fd = new FormData()
             fd.append("files[]", event.files[0])
+            fd.append("watermark", false)
             this.fileService.uploadFile(fd).then(res => {
                 if (res.data) {
                     this.poster.image_kk_file = res.data[0];
@@ -348,6 +349,7 @@ export default {
         uploadPosterImageRu(event) {
             const fd = new FormData()
             fd.append("files[]", event.files[0])
+            fd.append("watermark", false)
             this.fileService.uploadFile(fd).then(res => {
                 if (res.data) {
                     this.poster.image_ru_file = res.data[0];
@@ -361,6 +363,7 @@ export default {
         uploadPosterImageEn(event) {
             const fd = new FormData()
             fd.append("files[]", event.files[0])
+            fd.append("watermark", false)
             this.fileService.uploadFile(fd).then(res => {
                 if (res.data) {
                     this.poster.image_en_file = res.data[0];

@@ -1,5 +1,5 @@
 <template>
-  <!-- DataTable -->
+    <h3>{{ $t("hr.vacancies") }}</h3>
   <div class="card">
     <DataTable :lazy="true"
                :value="vacancies"
@@ -34,8 +34,7 @@
                @sort="onSort($event)">
       <!--  HEADER -->
       <template #header>
-        <div class="table-header flex flex-column md:flex-row md:justify-content-between">
-          <h4 class="mb-2 m-md-0 align-self-md-center">{{ $t("hr.vacancies") }}</h4>
+        <div class="table-header flex flex-column md:flex-row md:justify-content-end">
           <span class="p-input-icon-left">
             <i class="pi pi-search"/>
             <InputText type="search"

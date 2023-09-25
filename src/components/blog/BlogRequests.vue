@@ -3,13 +3,13 @@
     <TitleBlock :showBackButton="true" :title="$t('blog.title')" />
     <div class="card">
       <DataTable :lazy="true" :value="items" dataKey="id" :loading="loading" responsiveLayout="scroll" :rowHover="true"
-        :rows="10" :paginator="true" :totalRecords="total" @page="onPage" @sort="onSort">
+                 :rows="10" :paginator="true" :totalRecords="total" @page="onPage" @sort="onSort">
         <template #empty>{{ $t("common.noData") }}</template>
         <template #loading>{{ $t("common.loading") }}</template>
         <Column field="question" :header="$t('faq.question')" style="width: 30%;">
           <template #body="{data}">
-            <a href="javascript:void(0)" @click="navigateToView(data)">
-              {{ data.question }}
+            <a href="javascript:void(0)" @click="navigateToView(data)" v-tooltip.bottom="{value: data.question, class: 'w-100 tooltip-size'}">
+              {{ truncateQuestion(data.question) }}
             </a>
           </template>
         </Column>
@@ -33,7 +33,7 @@
         <Column class="text-right">
           <template #body="{data}">
             <Button type="button" icon="fa-solid fa-eye" class="mr-2" @click="navigateToView(data)"></Button>
-            <Button icon="fa-solid fa-pen" class="p-button mr-2" @click="openEdit(data)" />
+            <!-- <Button icon="fa-solid fa-pen" class="p-button mr-2" @click="openEdit(data)" /> -->
             <Button icon="fa-solid fa-trash" class="p-button-danger" @click="deleteConfirm(data)" />
           </template>
         </Column>
@@ -218,11 +218,20 @@ export default {
       });
     }
 
+    const truncateQuestion = (text) => {
+      if (text.length <= 70) {
+        return text;
+      }
+
+      return text.substring(0, 70) + '\u2026'
+    }
+
+
     return {
       items, isCreateModal, formData, lazyParams, responsible,
       loading, selectedData, submitted, options, total, bgImg, thumbFile,
       navigateToView, openDialog, hideDialog, addBlog, save, deleteConfirm, openEdit, formatDate, uploadThumb, uploadBg,
-      onSort, onPage
+      onSort, onPage, truncateQuestion
     }
   }
 }
@@ -276,5 +285,9 @@ export default {
     background: #ffcdd2;
     color: #c63737;
   }
+}
+
+::v-global(.tooltip-size .p-tooltip-text) {
+  width: 25rem !important;
 }
 </style>

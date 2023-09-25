@@ -86,7 +86,10 @@
             <i class="pi pi-qrcode ml-1"></i>
           </template>
           <div class="p-fluid text-center">
-            <qrcode-vue size="300" render-as="svg" margin="2" :value="qrSignUri"></qrcode-vue>
+              <div class="qr_shadow">
+                  <Qr v-if="qrSignUri" :qrData="qrSignUri"/>
+              </div>
+<!--            <qrcode-vue size="300" render-as="svg" margin="2" :value="qrSignUri"></qrcode-vue>-->
             <div v-if="mgovMobileRedirectUri" class="p-fluid text-center">
               <Button class="p-button-outlined" :label="$t('common.mgovMobile')" @click="redirectToMgovMobile"/>
             </div>
@@ -119,11 +122,12 @@ import {NCALayerClientExtension} from "@/helpers/ncalayer-client-ext";
 import LanguageDropdown from "../LanguageDropdown";
 import QrcodeVue from "qrcode.vue";
 import QrGuideline from "./QrGuideline.vue";
+import Qr from "@/components/Qr.vue";
 
 const authUser = {};
 export default {
   name: "Login",
-  components: {QrGuideline, QrcodeVue, LanguageDropdown},
+  components: {Qr, QrGuideline, LanguageDropdown},
   data() {
     return {
       loginData: {
@@ -325,7 +329,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .welcome_text_block {
   height: 63px;
 }
@@ -354,7 +358,12 @@ export default {
   transform: scale(1.6);
   margin-right: 1rem;
 }
-
+.qr_shadow{
+  width: fit-content;
+  margin: 0 auto 20px auto ;
+  box-shadow: 0px 3px 3px -2px rgba(0,0,0,0.2), 0px 3px 4px 0px rgba(0,0,0,0.14), 0px 1px 8px 0px rgba(0,0,0,0.12);
+  border-radius: 4px;
+}
 @media (max-width: 740px) {
   h5 {
     position: absolute;
@@ -369,7 +378,7 @@ export default {
 @media (max-width: 525px) {
   h5 {
     width: 165px;
-    font-size: 15px;
+    font-size: 14px!important;
   }
 }
 </style>
