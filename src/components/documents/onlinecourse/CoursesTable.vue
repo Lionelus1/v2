@@ -10,12 +10,14 @@
         <template #header>
           <div class="sm:flex block justify-content-between">
             <Button class="mr-2" v-if="findRole(null, 'online_course_administrator') && dic_course_type == 2" :label="$t('common.updateGES')" @click="getOod()" /> 
-         <Button class="mt-2" v-if="findRole(null, 'online_course_administrator') && dic_course_type == 2" :label="$t('common.save')"
+        <div>
+            <Button class="mt-2" v-if="findRole(null, 'online_course_administrator') && dic_course_type == 2" :label="$t('common.save')"
             @click="updateCourseGiveCertificates()" />
-        <span v-if="findRole(null,'online_course_administrator')" class="p-input-icon-left">
-            <i class="pi pi-search"/>
-            <InputText type="search" v-model="searchText" @keyup.enter="getCourseStudents"  @search="getCourses" :placeholder="$t('common.search')"/>
-        </span>
+          <span  v-if="findRole(null,'online_course_administrator')" class="p-input-icon-left">
+              <i class="pi pi-search"/>
+              <InputText type="search" v-model="searchText" @keyup.enter="getCourseStudents"  @search="getCourses" :placeholder="$t('common.search')"/>
+          </span>
+        </div>
           </div>
         </template>
 
