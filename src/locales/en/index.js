@@ -7,8 +7,7 @@ export default {
     chooseCert: "Choose the certificate",
     activeList: "Active list",
     approvalList: "Approval sheet",
-    newPasswordError:
-      "Passwords are not identical or character count is less than 5 symbol",
+    newPasswordError: "Passwords are not identical or character count is less than 5 symbol",
     changePassword: "Change password",
     head: "Head of organization",
     headIin: "Head IIN",
@@ -329,7 +328,18 @@ export default {
         qrGenerator: 'QR generator',
         generate: 'Generate',
         selectFormat: 'Select format',
-        notifications: 'Notifications'
+        notifications: 'Notifications',
+        continue: "Continue",
+        changeOrganization: "Change organization",
+        changeSigner: "Change signer",
+        change: "Change",
+    },
+    positions: {
+        menuTitle: 'Change position',
+        beginText: 'You are logged in as: ',
+        individual: 'individual',
+        changePosition: 'Change',
+        continue: 'Continue without change',
     },
     bank: {
         title: "Banks",

@@ -277,7 +277,7 @@ export class MenuService {
 
     isRoleGroupMember(groupPrefix) {
         let loginedUser = this.getLoginedUser();
-        if (!loginedUser.roles) {
+        if (!loginedUser || !loginedUser.roles) {
             return false;
         }
         for (let i = 0; i < loginedUser.roles.length; i++) {
@@ -294,7 +294,7 @@ export class MenuService {
 
     findRole(roleName) {
         let loginedUser = this.getLoginedUser();
-        if (!loginedUser.roles) {
+        if (!loginedUser || !loginedUser.roles) {
             return false;
         }
         for (let i = 0; i < loginedUser.roles.length; i++) {

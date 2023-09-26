@@ -189,7 +189,7 @@
 				}, {
 					headers: getHeader()
 				}).then(res => {
-					close('delete')
+					this.close('delete')
 					this.initRolePositionRels()
 				}).catch(err => {
 					if (err.response.status == 401) {
@@ -202,7 +202,7 @@
 						life: 3000,
 					})
 
-					close('delete')
+					this.close('delete')
 					this.loading = false
 				})
 			},

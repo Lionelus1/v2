@@ -329,7 +329,18 @@ export default {
         qrGenerator: 'QR генератор',
         generate: 'Генерировать',
         selectFormat: 'Выберите формат',
-        notifications: 'Уведомления'
+        notifications: 'Уведомления',
+        continue: "Продолжить",
+        changeOrganization: "Поменять организацию",
+        changeSigner: "Сменить подписывающего",
+        change: "Сменить",
+    },
+    positions: {
+        menuTitle: 'Поменять позицию',
+        beginText: 'Вы зашли как: ',
+        individual: 'физическое лицо',
+        changePosition: 'Сменить',
+        continue: 'Продолжить без смены',
     },
     bank: {
         title: "Банки",
@@ -1165,7 +1176,7 @@ export default {
         fileName: "Тип справки",
         currentFolder: "Текущая папка:",
         salary: "С размером зарплаты",
-        experience: "C опытом работы",
+        experience: "Cо стажем работы",
         salaryRequested: "Ваш запрос о справке с указанием размера зарплаты обрабатывается менеджером по кадрам.",
         referenceRejected: "Справка не выдана.",
     },
