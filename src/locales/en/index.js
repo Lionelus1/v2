@@ -1221,6 +1221,7 @@ export default {
             getQr: "Get QR",
             confirm: "Confirm the issuance of a certificate WITHOUT an application?",
             confirm2: "The certificate will be issued With the application, do you confirm the correctness of filling out the application?",
+            issueDate: "Date of registration",
         },
 
         modules:'Сourse modules',

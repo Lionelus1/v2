@@ -60,7 +60,7 @@
                                         class="p-button-success mr-3" icon="fa-solid fa-check"
                                         v-tooltip.bottom="$t('course.addCourse')" label=""
                                         @click="updateUserState(slotProps.data.profile.userID, 2)"/>
-                                <Button v-if="slotProps.data.state.id != 1" class="p-button-success mr-3"
+                                <Button v-if="slotProps.data.state.id != 1 && dic_course_type == 1" class="p-button-success mr-3"
                                         icon="fa-solid fa-list-check" v-tooltip.bottom="$t('course.journal')" label=""
                                         @click="openJournal(slotProps.data.profile.userID, slotProps.data.state.id)"/>
                                 <Button v-if="slotProps.data.certificateUUID" icon="fa-solid fa-award" class="mr-3"

@@ -9,9 +9,15 @@
         @page="onPage">
         <template #header>
           <div class="sm:flex block justify-content-between">
-            <Button class="mr-2" v-if="findRole(null, 'online_course_administrator')" :label="$t('common.updateGES')" @click="getOod()" /> 
-         <Button class="mt-2" v-if="findRole(null, 'online_course_administrator')" :label="$t('common.save')"
+            <Button class="mr-2" v-if="findRole(null, 'online_course_administrator') && dic_course_type == 2" :label="$t('common.updateGES')" @click="getOod()" /> 
+        <div>
+            <Button class="mt-2" v-if="findRole(null, 'online_course_administrator') && dic_course_type == 2" :label="$t('common.save')"
             @click="updateCourseGiveCertificates()" />
+          <span  v-if="findRole(null,'online_course_administrator')" class="p-input-icon-left">
+              <i class="pi pi-search"/>
+              <InputText type="search" v-model="searchText" @keyup.enter="getCourseStudents"  @search="getCourses" :placeholder="$t('common.search')"/>
+          </span>
+        </div>
           </div>
         </template>
 
@@ -25,7 +31,7 @@
             {{ body.data['description' + $i18n.locale] }}
           </template>
         </Column>
-        <Column v-if="findRole(null, 'online_course_administrator')">   
+        <Column v-if="findRole(null, 'online_course_administrator') && dic_course_type == 2">   
           <template #body="body">
             <Checkbox v-model="body.data.give_certificate" @change="pushAndDeleteGiveCertificates(body.data)"
               :binary="true" />
@@ -79,6 +85,8 @@ export default {
       service: new OnlineCourseService(),
       give_certificates: [],
       selectAllChecked: true,
+      dic_course_type: null,
+      searchText: null,
     }
   },
   created() {
@@ -157,6 +165,8 @@ export default {
         page: this.page,
         rows: this.rows,
         categoryID: this.categoryId,
+        lang: this.$i18n.locale,
+        searchText: this.searchText,
       }, {
         headers: getHeader()
       }).then(res => {
@@ -173,6 +183,7 @@ export default {
             this.selectAllChecked = true
           }
         })
+        this.dic_course_type = res.data.dic_course_type
         this.total = res.data.total
         this.selectedCourse = null
 
