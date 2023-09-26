@@ -1264,6 +1264,10 @@ export default {
         instance: 'Appover/signer',
         failedToDelete: 'Failed to delete',
         failedToLoad: 'Failed to load data',
+        rolePosRel: 'Position management',
+        givePosRel: 'Create a position',
+        departmentName: 'Name of departments',
+        positionName: 'Name of Position'
     },
     blog: {
         title: 'Blog',

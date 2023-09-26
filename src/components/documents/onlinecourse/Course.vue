@@ -380,7 +380,8 @@ export default {
 
         updateUserState(userID, state) {
             this.loading = true;
-            this.updateJournal();
+            if (this.journal != null)
+                this.updateJournal();
             this.service.updateUserState(this.course.history[0].id, userID, state).then(response => {
                 this.loading = false
                 this.$toast.add({
@@ -614,6 +615,9 @@ export default {
             this.journalVisible = false;
         },
         updateJournal() {
+            if (this.journal == null) {
+                return
+            }
             let journals = this.journal.map(e => {
                 const newObjs = {
                     id: e.id,
