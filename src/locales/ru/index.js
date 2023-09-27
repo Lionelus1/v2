@@ -797,7 +797,9 @@ export default {
         reviewerComment: 'Отзыв официального рецензента',
         setMeetingTimeConfirmMsg: "Нажимая кнопку {btn} ниже, вы подтверждаете корректность информации и данная информация публикуется в виде объявления на сайте.",
         addMemeberToDisCouncil: 'Добавить члена в диссертационный совет',
-        meetingDateMessage: 'Начать проведение защиту можно только за день до'
+        meetingDateMessage: 'Начать проведение защиту можно только за день до',
+        scienceConsultantInfo: 'Научный консультант',
+        foreignConsultantInfo: 'Зарубежный консультант'
     },
     faq: {
         title: "Служба поддержки",

@@ -766,7 +766,9 @@ export default {
         reviewerComment: 'Official reviewer\'s review',
         setMeetingTimeConfirmMsg: "By clicking the {btn} button below, you confirm the correctness of the information and this information is published in the form of an announcement on the site.",
         addMemeberToDisCouncil: 'Add Member to The Dissertation Council',
-        meetingDateMessage: 'You can start the Conducting a defence only one day before'
+        meetingDateMessage: 'You can start the Conducting a defence only one day before',
+        scienceConsultantInfo: 'Science Consultant',
+        foreignConsultantInfo: 'Foreign Consultant',
     },
     faq: {
         title: "Help desk",

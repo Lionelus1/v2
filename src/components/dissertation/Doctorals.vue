@@ -174,6 +174,36 @@
             <small class="p-error" v-if="(submitted && validationErrors.annotationen)">{{ $t('common.requiredField')
             }}</small>
           </div>
+          <div class="col-12 pb-2 lg:col-12 mb-lg-0">
+            <label for="scienceConsultantKz">{{ $t('dissertation.scienceConsultantInfo') + ' ' + $t('common.language.kz') }}</label>
+            <Textarea :placeholder="$t('common.enter')" class="pt-1" type="text" id="scienceConsultantKz"
+                      v-model="doctoral.dissertation.science_consultant_kz" />
+          </div>
+          <div class="col-12 pb-2 lg:col-12 mb-lg-0">
+            <label for="scienceConsultantRu">{{ $t('dissertation.scienceConsultantInfo') + ' ' + $t('common.language.ru') }}</label>
+            <Textarea :placeholder="$t('common.enter')" class="pt-1" type="text" id="scienceConsultantRu"
+                      v-model="doctoral.dissertation.science_consultant_ru" />
+          </div>
+          <div class="col-12 pb-2 lg:col-12 mb-lg-0">
+            <label for="scienceConsultantEn">{{ $t('dissertation.scienceConsultantInfo') + ' ' + $t('common.language.en') }}</label>
+            <Textarea :placeholder="$t('common.enter')" class="pt-1" type="text" id="scienceConsultantEn"
+                      v-model="doctoral.dissertation.science_consultant_en" />
+          </div>
+          <div class="col-12 pb-2 lg:col-12 mb-lg-0">
+            <label for="foreignConsultantKz">{{ $t('dissertation.foreignConsultantInfo') + ' ' + $t('common.language.kz') }}</label>
+            <Textarea :placeholder="$t('common.enter')" class="pt-1" type="text" id="foreignConsultantKz"
+                      v-model="doctoral.dissertation.foreign_consultant_kz" />
+          </div>
+          <div class="col-12 pb-2 lg:col-12 mb-lg-0">
+            <label for="foreignConsultantRu">{{ $t('dissertation.foreignConsultantInfo') + ' ' + $t('common.language.ru') }}</label>
+            <Textarea :placeholder="$t('common.enter')" class="pt-1" type="text" id="foreignConsultantRu"
+                      v-model="doctoral.dissertation.foreign_consultant_ru" />
+          </div>
+          <div class="col-12 pb-2 lg:col-12 mb-lg-0">
+            <label for="foreignConsultantEn">{{ $t('dissertation.foreignConsultantInfo') + ' ' + $t('common.language.en') }}</label>
+            <Textarea :placeholder="$t('common.enter')" class="pt-1" type="text" id="foreignConsultantEn"
+                      v-model="doctoral.dissertation.foreign_consultant_en" />
+          </div>
           <Fieldset :legend="'Файлы'" class="col-12" toggleable>
             <div class="field">
               <label for="abstractfile">{{ $t('dissertation.abstractFile') + ' ' + $t('common.docFormat') }}</label>
@@ -220,7 +250,7 @@
               <small class="p-error" v-if="(submitted && validationErrors.commissionConclusionFile)">{{
                 $t('common.requiredField') }}</small>
             </div>
-            <div class="field">
+<!--            <div class="field">
               <label>{{ $t('dissertation.reviewerComment') + ' ' + $t('common.pdfFormat') }}</label>
               <CustomFileUpload @upload="uploadFile($event, 'reviewer1CommentFile')" v-model="reviewer1CommentFile"
                 :accept="'application/pdf'" :multiple="false" />
@@ -233,7 +263,7 @@
                 :accept="'application/pdf'" :multiple="false" />
               <small class="p-error" v-if="(submitted && validationErrors.reviewer2CommentFile)">{{
                 $t('common.requiredField') }}</small>
-            </div>
+            </div>-->
           </Fieldset>
         </div>
         <template #footer>
@@ -1375,8 +1405,8 @@ export default {
         data.append("scientificConsultantFile", this.scientificConsultantFile)
         data.append("foreignConsultantFile", this.foreignConsultantFile)
         data.append("commissionConclusionFile", this.commissionConclusionFile)
-        data.append("reviewer1CommentFile", this.reviewer1CommentFile)
-        data.append("reviewer2CommentFile", this.reviewer2CommentFile)
+        /*data.append("reviewer1CommentFile", this.reviewer1CommentFile)
+        data.append("reviewer2CommentFile", this.reviewer2CommentFile)*/
         this.doctoral.user = this.selectedUsers[0]
         this.doctoral.speciality = this.selectedSpecialities[0]
         data.append("doctoral", JSON.stringify(this.doctoral))
@@ -1446,8 +1476,8 @@ export default {
       this.validationErrors.scientificConsultantFile = !this.scientificConsultantFile
       this.validationErrors.foreignConsultantFile = !this.foreignConsultantFile
       this.validationErrors.commissionConclusionFile = !this.commissionConclusionFile
-      this.validationErrors.reviewer1CommentFile = !this.reviewer1CommentFile
-      this.validationErrors.reviewer2CommentFile = !this.reviewer2CommentFile
+      /*this.validationErrors.reviewer1CommentFile = !this.reviewer1CommentFile
+      this.validationErrors.reviewer2CommentFile = !this.reviewer2CommentFile*/
 
       let result = true
       for (var key of Object.keys(this.validationErrors)) {

@@ -808,7 +808,9 @@ export default {
         reviewerComment: 'Ресми рецензенттің пікірі',
         setMeetingTimeConfirmMsg: "Төмендегі {btn} батырмасын басу арқылы, ақпараттардың дұрыстығын растайсыз және осы ақпарат сайтқа хабарландыру болып шығарылады",
         addMemeberToDisCouncil: 'Диссертациялық кеңеске мүше қосу',
-        meetingDateMessage: 'Қорғауды жүргізуді тек бір күн қалғанда бастай аласыз'
+        meetingDateMessage: 'Қорғауды жүргізуді тек бір күн қалғанда бастай аласыз',
+        scienceConsultantInfo: 'Ғылыми кеңесші',
+        foreignConsultantInfo: 'Шетелдік кеңесші'
     },
     faq: {
         title: "Қолдау қызметі",
