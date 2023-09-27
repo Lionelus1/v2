@@ -363,9 +363,8 @@ export default {
     },
     editMenu(data) {
       this.selectedMenu = data;
-      this.parentId = data.menu_id;
+      //this.parentId = data.menu_id;
       this.addMenuVisible = true;
-      
       
     },
     viewPage(data) {
