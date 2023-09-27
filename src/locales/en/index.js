@@ -769,6 +769,7 @@ export default {
         meetingDateMessage: 'You can start the Conducting a defence only one day before',
         scienceConsultantInfo: 'Science Consultant',
         foreignConsultantInfo: 'Foreign Consultant',
+        videoLink: 'Link to video'
     },
     faq: {
         title: "Help desk",

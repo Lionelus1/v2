@@ -810,7 +810,8 @@ export default {
         addMemeberToDisCouncil: 'Диссертациялық кеңеске мүше қосу',
         meetingDateMessage: 'Қорғауды жүргізуді тек бір күн қалғанда бастай аласыз',
         scienceConsultantInfo: 'Ғылыми кеңесші',
-        foreignConsultantInfo: 'Шетелдік кеңесші'
+        foreignConsultantInfo: 'Шетелдік кеңесші',
+        videoLink: 'Видеоға сілтеме'
     },
     faq: {
         title: "Қолдау қызметі",
