@@ -33,7 +33,7 @@
             </div>
         </div>-->
         </div>
-      <DataView :loading="loading" :value="data" :rows="10" :paginator="true" @page="onPage($event)"
+      <DataView :lazy="true" :loading="loading" :value="data" :rows="10" :paginator="true" @page="onPage($event)"
                 :totalRecords="total" layout="grid">
         <template #grid="slotProps">
           <div class="col-12 lg:col-6 p-2">
@@ -66,6 +66,7 @@
                   </div>
                   <div class="product-grid-item-bottom">
                       <div class="block sm:flex justify-content-between align-items-center">
+                          <div>
                               <div class="mb-2 sm:m-0">
                                   <i class="fa-solid fa-at product-category-icon mr-2"></i>
                                   <small class="product-category">{{ slotProps.data.lastName + " " + slotProps.data.firstName }}</small>
@@ -75,19 +76,24 @@
                                     <i class="fa-solid fa-user-tag product-category-icon mr-2"></i>
                                     <small class="product-category mb-2 sm:m-0">{{ slotProps.data.replier.fullName }}</small>
                                   </span>
-                                  <Button v-if="slotProps.data.state.id !=7" :label="$t('common.send')" icon="pi pi-send" class="p-button-outlined p-button-warning sm:ml-2 sm:mt-0 ml-0 mt-2"
+                              </div>
+                          </div>
+                          <div class="sm:flex block justify-content-between align-items-center">
+                              <div v-if="adminMode">
+                                  <Button v-if="slotProps.data.state.id !=7" :label="$t('common.send')" icon="pi pi-send" class="p-button-outlined p-button-warning sm:ml-2 sm:mt-0 ml-0 mt-2 sm:mr-4 mr-0"
                                           @click="currentQuestion=slotProps.data.id;sendDialog=true"></Button>
                               </div>
-                          <div class="mt-2 sm:m-0">
-                              <Button v-if="slotProps.data.filePath" :label="$t('faq.attachments')" icon="pi pi-download"
-                                      @click="downloadFile(slotProps.data.filePath)"></Button>
+                                  <Button class="mt-2 sm:mt-0 sm:mr-4 mr-0" v-if="slotProps.data.filePath" :label="$t('faq.attachments')" icon="pi pi-download"
+                                          @click="downloadFile(slotProps.data.filePath)"></Button>
+                              <div class="">
+                                  <router-link :to="{ name: 'ReceptionQuestion', params: { id: slotProps.data.id } }" tag="a">
+                                      <Button :label="$t('common.more')" class="p-button-outlined p-button-info mt-2 sm:mt-0 sm:mr-4 mr-0"></Button>
+                                  </router-link>
+                              </div>
+                              <div style="text-align: end">
+                                  <i class="fa-solid fa-trash cursor-pointer product-error-icon"></i>
+                              </div>
                           </div>
-                          <div class="">
-                              <router-link :to="{ name: 'ReceptionQuestion', params: { id: slotProps.data.id } }" tag="a">
-                                  <Button :label="$t('common.more')" class="p-button-outlined p-button-info sm:ml-2 ml-0"></Button>
-                              </router-link>
-                          </div>
-
                       </div>
                   </div>
               </div>
