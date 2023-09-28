@@ -376,8 +376,9 @@ export default {
 
         updateUserState(userID, state) {
             this.loading = true;
-            if (this.journal != null)
+            if (this.journal != null) {
 			    this.updateJournal();
+            }
             this.service.updateUserState(this.course.history[0].id, userID, state).then(response => {
                 this.loading = false
                 this.$toast.add({
