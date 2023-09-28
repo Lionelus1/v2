@@ -26,4 +26,8 @@ export class DissertationService {
     getMemberState() {
         return api.post(`/dissertation/getMemberState`)
     }
+
+    updateDoctoral(params) {
+        return api.post(`/dissertation/updateDoctoral`, params, {headers: getHeader()});
+    }
 }
