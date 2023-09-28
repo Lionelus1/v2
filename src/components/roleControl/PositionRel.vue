@@ -73,7 +73,7 @@
 					<br>
 					<Dropdown class="dropdown" v-model="selectedOrganization" :options="organizations" 
                         :optionLabel="organizationLabel" :placeholder="$t('roleControl.selectOrg')" 
-                        :filter="true" :showClear="true"
+                        :filter="true" :showClear="true" @change="handleSelectedOrgChanged"
                         dataKey="id" :emptyFilterMessage="$t('roleControl.noResult')"
                         @filter="handleFilter"/>
 				</div>
@@ -84,7 +84,7 @@
                         :optionLabel="departmentLabel" :placeholder="$t('roleControl.selectDep')" 
                         :filter="true" :showClear="true"
                         dataKey="id" :emptyFilterMessage="$t('roleControl.noResult')"
-                        @filter="handleFilter"/>
+                        @filter="handleFilterDepartment"/>
 				</div>
 			</div>
 			<div>
@@ -142,6 +142,12 @@
     const roleControlService = new RoleControlService()
     const orgParams = {
         searchText: null
+    }
+    const departmentRequest = {
+        page: 0,
+        rows: 10,
+        orgId: null,
+        searchText: null,
     }
     const organizations = ref([])
     const departments = ref([])
@@ -209,11 +215,9 @@
 	}
 
     const departmentLabel = (item) => {
-        if (item.bin) {
-            return item.bin + ' - ' + item['name' + locale.value]
-        } else {
-            return item['name' + locale.value]
-        }
+        console.log(item, 'test')
+        return item['']
+
 	}
 
     const getOrganizations = () => {
@@ -231,6 +235,32 @@
       })
     }
 
+    const handleSelectedOrgChanged = (event) => {
+        if (selectedOrganization.value) {
+            departmentRequest.orgId = selectedOrganization.value.id
+            console.log(departmentRequest.orgId)
+            departmentRequest.searchText = null
+            getDepartments()
+        } 
+    }
+
+    const getDepartments = () => {
+      departmentRequest.orgId = selectedOrganization.value.id
+      roleControlService.getDepartments(departmentRequest).then(response => {
+        departments.value = response.data
+      }).catch(error => {
+        if (error.response.status == 401) {
+          this.$store.dispatch("logLout")
+        }
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        })
+      })
+    }
+
+
     const handleFilter = (event) => {
       if (event.value && event.value.length > 3) {
         orgParams.searchText = event.value
@@ -241,14 +271,25 @@
       }
     }
 
+    const handleFilterDepartment = (event) => {
+      if (event.value && event.value.length > 3) {
+        orgParams.searchText = event.value
+        getDepartments()
+      } else if (orgParams.searchText.length > 3) {
+        orgParams.searchText = null
+        getDepartments()
+      }
+    }
+
+
     const openSidebar = () => {
         sidebarVisible.value = true
         initPositions()
+        getOrganizations()
     }
  
     onMounted(() => {
         initPositionRels()
-        getOrganizations()
     })
 	
 

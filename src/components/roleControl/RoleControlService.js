@@ -54,4 +54,12 @@ export default class RoleControlService {
             {headers: getHeader()}
         )
     }
+
+    getDepartments(departmentRequest) {
+        return axios.post(
+            smartEnuApi + "/positionRel/getDepartmentByOrgId",
+            departmentRequest,
+            {headers: getHeader()}
+        )
+    }
 }
