@@ -365,13 +365,12 @@
         </div>
         <div class="field">
           <label><b>{{ $t('dissertation.advisors') }}</b></label>
-          <template v-if="memberList !== 0">
-            <div v-for="(item, index) in initMembers('dissertation_council_consultant')" :key="index">
-              {{ item.fullName }}
-            </div>
-          </template>
-          <div><small><a href="javascript:void(0)" @click="showDialog(dialog.addMember)">{{ $t('common.add')
-          }}</a></small></div>
+          <div v-if="selectedDoctoral.dissertation['science_consultant_' + $i18n.locale]">
+            {{ selectedDoctoral.dissertation['science_consultant_' + $i18n.locale] }}
+          </div>
+          <div v-if="selectedDoctoral.dissertation['foreign_consultant_' + $i18n.locale]">
+            {{ selectedDoctoral.dissertation['foreign_consultant_' + $i18n.locale] }}
+          </div>
         </div>
         <div class="field">
           <label><b>{{ $t('dissertation.meetingTime') }}</b></label>
