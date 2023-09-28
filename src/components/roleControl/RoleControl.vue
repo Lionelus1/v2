@@ -8,7 +8,7 @@
           :filter="true" :showClear="true" @change="handleSelectionChange"
           dataKey="id" :emptyFilterMessage="$t('roleControl.noResult')"
           @filter="handleFilter"/>
-          <Button
+        <Button
             :label="$t('roleControl.giveRole')"
             icon="pi pi-plus"
             class="p-button-success p-mr-2"

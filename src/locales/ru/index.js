@@ -1266,7 +1266,8 @@ export default {
         rolePosRel: 'Управление позицией',
         givePosRel: 'Создать позицию',
         departmentName: 'Название департамента',
-        positionName: 'Название позицией'
+        positionName: 'Название позицией',
+        selectDep: 'Выберите департамента',
     },
     responseExplanations: {
         badRequest: 'Ваш запрос не был понят или в нем отсутствовали необходимые параметры.',

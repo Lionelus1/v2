@@ -1267,7 +1267,8 @@ export default {
         rolePosRel: 'Position management',
         givePosRel: 'Create a position',
         departmentName: 'Name of departments',
-        positionName: 'Name of Position'
+        positionName: 'Name of Position',
+        selectDep: 'Select department', 
     },
     blog: {
         title: 'Blog',
