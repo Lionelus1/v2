@@ -59,7 +59,7 @@
 			</h5>
             <div>
                 <label>{{ $t('common.fullName') }}</label>
-                <FindUser />
+                <FindUser v-model="user"/>
             </div>
 			<div>
 				<div style="margin-bottom: 0.5rem;">
@@ -89,11 +89,11 @@
 			</div>
 			<div>
 				<Button :label="$t('common.save')" icon="pi pi-check" :disabled="position === null || role === null"
-								@click="saveRolePositionRel" style="margin-top: 10px"/>
+								@click="savePositionRel" style="margin-top: 10px"/>
 			</div>
             </Sidebar>
             <!--  ДИАЛОГОВОЕ ОКНО ДЛЯ УДАЛЕНИЯ ЗАПИСИ В ТАБЛИЦЕ  -->
-            <Dialog v-model:visible="dialogVisible" :style="{ width: '450px' }"
+            <!-- <Dialog v-model:visible="dialogVisible" :style="{ width: '450px' }"
                     :modal="true" :closable="false">
             <div class="confirmation-content">
                 <i class="pi pi-exclamation-triangle p-mr-3" style="font-size: 2rem"/>
@@ -109,7 +109,7 @@
                         class="p-button p-component p-button-danger p-mr-2"
                         @click="dialogVisible = false"/>
             </template>
-            </Dialog>
+            </Dialog> -->
          
     </div>
 </template>
@@ -130,9 +130,8 @@
     const dialogVisible = ref(false)
     const selectedOrganization = ref(null)
     const selectedDepartment = ref(null)
-
+    const user = ref(null)
     const positionRels = ref([])
-    const forDeleting =  ref(null)
     const getParams = { 
 					page: 0,
 					rows: 10,
@@ -215,9 +214,7 @@
 	}
 
     const departmentLabel = (item) => {
-        console.log(item, 'test')
-        return item['']
-
+        return item.name
 	}
 
     const getOrganizations = () => {
@@ -238,7 +235,6 @@
     const handleSelectedOrgChanged = (event) => {
         if (selectedOrganization.value) {
             departmentRequest.orgId = selectedOrganization.value.id
-            console.log(departmentRequest.orgId)
             departmentRequest.searchText = null
             getDepartments()
         } 
@@ -247,7 +243,7 @@
     const getDepartments = () => {
       departmentRequest.orgId = selectedOrganization.value.id
       roleControlService.getDepartments(departmentRequest).then(response => {
-        departments.value = response.data
+        departments.value = response.data.departments
       }).catch(error => {
         if (error.response.status == 401) {
           this.$store.dispatch("logLout")
@@ -273,15 +269,51 @@
 
     const handleFilterDepartment = (event) => {
       if (event.value && event.value.length > 3) {
-        orgParams.searchText = event.value
+        departmentRequest.searchText = event.value
         getDepartments()
-      } else if (orgParams.searchText.length > 3) {
-        orgParams.searchText = null
+      } else if (departmentRequest.searchText && departmentRequest.searchText.length > 3) {
+        departmentRequest.searchText = null
         getDepartments()
       }
     }
 
+    const  savePositionRel = () => {
+        console.log(user.value[0].userID, 'test')
+        if (position.value === null || selectedDepartment.value === null || user.value === null) {
+            return
+        }
 
+        loading.value = true
+
+        axios.post(smartEnuApi + '/positionRel/create', {
+            userId: user.value[0].userID,
+            positionId: position.value.id,
+            department_id: selectedDepartment.value.id
+        }, {
+            headers: getHeader()
+        }).then(res => {
+            closeSidebar()
+        }).catch(err => {
+            if (err.response.status == 401) {
+               this.$store.dispatch("logLout")
+            }
+            
+            this.$toast.add({
+                severity: "error",
+                detail: this.$t("common.message.saveError"),
+                life: 3000,
+            })
+  
+        })
+        closeSidebar()
+        loading.value = false
+    }
+
+    const closeSidebar = ()=> {
+        sidebarVisible.value = false
+        initPositionRels()
+    }
+    
     const openSidebar = () => {
         sidebarVisible.value = true
         initPositions()
