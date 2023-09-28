@@ -101,4 +101,7 @@ export default {
   box-shadow: 0 0 0 3px #2196f3, 0 0 13px #333;
   /* Параметры теней */
 }
+.p-link:focus {
+    box-shadow: none;
+}
 </style>
