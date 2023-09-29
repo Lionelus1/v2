@@ -2,6 +2,10 @@
 	<div class="card">
         <Toolbar>
             <template #start>
+                <span class="p-input-icon-left mr-2">
+                  <i class="pi pi-search"/>
+                  <InputText type="search" v-model="searchText" @keyup.enter="initPositionRels" :placeholder="$t('common.search')"/>
+                </span>
 				<Button :label="$t('roleControl.givePosRel')" icon="pi pi-plus"
 					class="p-button-success p-mr-2" v-on:click="openSidebar"/>
             </template>
@@ -51,6 +55,12 @@
                 </span>
                 </template>
             </Column>
+            <Column>
+        <template #body="slotProps">
+          <Button icon="pi pi-times" class="p-button-danger"
+                  @click="open(slotProps.data)"/>
+        </template>
+      </Column>
         </DataTable>
         <Sidebar v-model:visible="sidebarVisible" position="right"
              class="p-sidebar-lg" style="overflow-y: scroll">
@@ -92,9 +102,8 @@
 								@click="savePositionRel" style="margin-top: 10px"/>
 			</div>
             </Sidebar>
-            <!--  ДИАЛОГОВОЕ ОКНО ДЛЯ УДАЛЕНИЯ ЗАПИСИ В ТАБЛИЦЕ  -->
-            <!-- <Dialog v-model:visible="dialogVisible" :style="{ width: '450px' }"
-                    :modal="true" :closable="false">
+            <Dialog v-model:visible="deleteView" :style="{ width: '450px' }"
+                :modal="true" :closable="false">
             <div class="confirmation-content">
                 <i class="pi pi-exclamation-triangle p-mr-3" style="font-size: 2rem"/>
                 <span>
@@ -104,12 +113,12 @@
             <template #footer>
                 <Button :label="$t('common.yes')" icon="pi pi-check"
                         class="p-button p-component p-button-success p-mr-2"
-                        @click="deletePositionRoleRelation"/>
+                        @click="deletePositionRelation"/>
                 <Button :label="$t('common.no')" icon="pi pi-times"
                         class="p-button p-component p-button-danger p-mr-2"
-                        @click="dialogVisible = false"/>
+                        @click="deleteView = false"/>
             </template>
-            </Dialog> -->
+            </Dialog>
          
     </div>
 </template>
@@ -132,9 +141,11 @@
     const selectedDepartment = ref(null)
     const user = ref(null)
     const positionRels = ref([])
+    const deleteView = ref(false)
     const getParams = { 
 					page: 0,
 					rows: 10,
+                    searchText: null,
 				}
     const positions =  ref([])
     const position = ref(null)
@@ -150,12 +161,14 @@
     }
     const organizations = ref([])
     const departments = ref([])
-
-
+    const forDeleting = ref(null)
+    const searchText = ref(null)
 
     const initPositionRels = () => {        
         loading.value = true
-
+        if (searchText.value) {
+            getParams.searchText = searchText.value
+        }
         axios.post(smartEnuApi + '/positionRel', getParams, {
             headers: getHeader()
         }).then(res => {
@@ -172,9 +185,10 @@
                 detail: this.$t("roleControl.noResult"),
                 life: 3000,
             })
-
             loading.value = false
         })
+
+        getParams.searchText = null
     }
 
     const  initPositions = () => {
@@ -313,13 +327,45 @@
         sidebarVisible.value = false
         initPositionRels()
     }
-    
+    const open = (data) => {
+        deleteView.value = true
+        forDeleting.value = data
+	}
     const openSidebar = () => {
         sidebarVisible.value = true
         initPositions()
         getOrganizations()
     }
- 
+
+    const deletePositionRelation = () => {
+        if (!forDeleting.value) {
+            return
+        }
+    
+        loading.value = true
+
+        axios.post(smartEnuApi + '/positionRel/delete', {
+            id: forDeleting.value.id
+        }, {
+            headers: getHeader()
+        }).then(_ => {
+            deleteView.value = false
+            initPositionRels()
+        }).catch(err => {
+            if (err.response.status == 401) {
+                this.$store.dispatch("logLout")
+            }
+            
+            this.$toast.add({
+                severity: "error",
+                detail: this.$t("roleControl.failedToDelete"),
+                life: 3000,
+            })
+
+            deleteView.value = false
+            loading.value = false
+        })
+    }
     onMounted(() => {
         initPositionRels()
     })
