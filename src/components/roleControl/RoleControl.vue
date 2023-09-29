@@ -117,6 +117,7 @@
              position="right"
              class="p-sidebar-lg"
              style="overflow-y: scroll">
+   
       <AddRole :selectedOrganization="selectedOrganization" />
     </Sidebar>
     <!--  ДИАЛОГОВОЕ ОКНО ДЛЯ УДАЛЕНИЯ ЗАПИСИ В ТАБЛИЦЕ  -->
