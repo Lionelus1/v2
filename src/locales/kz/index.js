@@ -1279,6 +1279,12 @@ export default {
         instance: 'Мақұлдаушы/қол қоюшы',
         failedToDelete: 'Жазба өшірілмеді',
         failedToLoad: 'Деректерді жүктеу сәтсіз аяқталды',
+        rolePosRel: 'Позиция басқару',
+        givePosRel: 'Жаңа позиция',
+        departmentName: 'Бөлім атауы',
+        positionName: 'Позиция атауы',
+        selectDep: 'Бөлімді таңдаңыз',
+
     },
     blog: {
         title: 'Блог',

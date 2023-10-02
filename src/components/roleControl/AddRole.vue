@@ -14,13 +14,14 @@
         </div>
         <div class="p-field pb-3">
           <label>{{ this.$t("roleControl.employeeLabel") }}</label>
-          <div class="p-inputgroup">
-            <InputMask v-model="iin" :placeholder="this.$t('roleControl.employeeIIN')" mask="999999999999"/>
-            <Button icon="pi pi-search" class="p-button-warning" @click="searchEmployee"/>
+          <div>
+            <FindUser v-model="employee" :max="1"/>
+            <!-- <InputMask v-model="iin" :placeholder="this.$t('roleControl.employeeIIN')" mask="999999999999"/>
+            <Button icon="pi pi-search" class="p-button-warning" @click="searchEmployee"/> -->
           </div>
-          <div style="margin-top: 0.5rem;" class="p-field">
+          <!-- <div style="margin-top: 0.5rem;" class="p-field">
             <InputText type="text" v-model="employeeFullName" disabled />
-          </div>
+          </div> -->
         </div>
         <div class="p-field">
           <label>{{ this.$t("roleControl.roleLabel") }}</label>
@@ -36,12 +37,13 @@
 
 <script>
 import RoleControlService from "./RoleControlService";
-
+import FindUser from "@/helpers/FindUser";
 export default {
   name: "AddRole",
   props: {
     selectedOrganization: null,
   },
+  components: {FindUser},
   data() {
     return {
       roles: [],
@@ -88,7 +90,7 @@ export default {
     save() {
       this.params.orgId = this.selectedOrganization.id;
       this.params.roleId = this.role.id;
-      this.params.userId = this.employee.userID;
+      this.params.userId = this.employee[0].userID;
       this.roleControlService.addRoleRelation(this.params).then(result => {
         this.emitter.emit("roleRelationAdded", true);
       }).catch(error => {

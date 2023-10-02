@@ -381,7 +381,7 @@ export default {
         updateUserState(userID, state) {
             this.loading = true;
             if (this.journal != null)
-			    this.updateJournal();
+                this.updateJournal();
             this.service.updateUserState(this.course.history[0].id, userID, state).then(response => {
                 this.loading = false
                 this.$toast.add({
@@ -495,7 +495,8 @@ export default {
                 users: null,
                 courseID: this.course.id,
                 comment: "",
-                withApplication: withApplication
+                withApplication: withApplication,
+                lastNumber: parseInt(this.organizer.lastNumber)
             }).then(_ => {
                 this.saving = false;
                 this.submitted = false;

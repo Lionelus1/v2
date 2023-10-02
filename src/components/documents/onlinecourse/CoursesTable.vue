@@ -11,12 +11,12 @@
           <div class="sm:flex block justify-content-between">
             <Button class="mr-2" v-if="findRole(null, 'online_course_administrator') && dic_course_type == 2" :label="$t('common.updateGES')" @click="getOod()" /> 
         <div>
-            <Button class="mt-2" v-if="findRole(null, 'online_course_administrator') && dic_course_type == 2" :label="$t('common.save')"
-            @click="updateCourseGiveCertificates()" />
-          <span  v-if="findRole(null,'online_course_administrator')" class="p-input-icon-left">
+          <span  v-if="findRole(null,'online_course_administrator')" class="p-input-icon-left mr-2">
               <i class="pi pi-search"/>
               <InputText type="search" v-model="searchText" @keyup.enter="getCourseStudents"  @search="getCourses" :placeholder="$t('common.search')"/>
           </span>
+            <Button class="mt-2" v-if="findRole(null, 'online_course_administrator') && dic_course_type == 2" :label="$t('common.save')"
+            @click="updateCourseGiveCertificates()" />
         </div>
           </div>
         </template>

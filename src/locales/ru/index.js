@@ -1267,6 +1267,11 @@ export default {
         instance: 'Согласующее лицо/подписант',
         failedToDelete: 'Не удалось удалить запись',
         failedToLoad: 'Не удалось загрузить данные',
+        rolePosRel: 'Управление позицией',
+        givePosRel: 'Создать позицию',
+        departmentName: 'Название департамента',
+        positionName: 'Название позицией',
+        selectDep: 'Выберите департамента',
     },
     responseExplanations: {
         badRequest: 'Ваш запрос не был понят или в нем отсутствовали необходимые параметры.',
