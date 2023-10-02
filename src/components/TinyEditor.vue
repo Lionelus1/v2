@@ -53,10 +53,11 @@ export default {
             removeformat | table | link | image media ${this.customFileUpload ? `fileupload` : ''} | code `,
                 contextmenu: 'link | customUploadContext',
                 images_upload_handler: uploadSingFile,
-                //language: this.$i18n.locale === "en" ? "en_US" : this.$i18n.locale === "kz" ? "kk" : this.$i18n.locale,
+                language: this.$i18n.locale === "en" ? "en_US" : this.$i18n.locale === "kz" ? "kk" : this.$i18n.locale,
                 content_style: "body { font-size: 14px; }",
                 setup: editor => {
                     const self = this;
+                    this.content = this.value;
                     editor.ui.registry.addToggleButton('fileupload', {
                         text: '<i class="fa-solid fa-file-arrow-up" style="font-size: 20px;"></i>',
                         onAction: () => {
