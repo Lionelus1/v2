@@ -119,7 +119,8 @@
       <div class="card p-fluid">
         <div class="card-title">{{ $t('common.pDate') }}</div>
         <div class="field">
-          <PrimeCalendar v-model="newsData.publish_date" showTime hourFormat="24" dateFormat="dd.mm.yy" showIcon @date-select="selectDate"/>
+          <PrimeCalendar v-model="newsData.publish_date" :showTime="true" :showIcon="true" :stepMinute="10" :manualInput="true"
+                         hourFormat="24" dateFormat="dd.mm.yy" @date-select="selectDate"/>
         </div>
       </div>
       <div class="card">
@@ -215,13 +216,6 @@ export default {
     this.getCategories()
     this.init();
   },
-  mounted() {
-    if (this.poster) {
-      this.poster.imageKkUrl = this.poster.imageKk ? smartEnuApi + fileRoute + this.poster.imageKk : ""
-      this.poster.imageRuUrl = this.poster.imageRu ? smartEnuApi + fileRoute + this.poster.imageRu : ""
-      this.poster.imageEnUrl = this.poster.imageEn ? smartEnuApi + fileRoute + this.poster.imageEn : ""
-    }
-  },
   methods: {
     formatDate,
     init() {
@@ -236,6 +230,12 @@ export default {
     getNewsById() {
       this.newsService.getNewsById(this.newsId).then(res => {
         this.newsData = res.data
+        this.poster = this.newsData.poster
+        if (this.poster) {
+          this.poster.imageKkUrl = this.poster.imageKk ? smartEnuApi + fileRoute + this.poster.imageKk : ""
+          this.poster.imageRuUrl = this.poster.imageRu ? smartEnuApi + fileRoute + this.poster.imageRu : ""
+          this.poster.imageEnUrl = this.poster.imageEn ? smartEnuApi + fileRoute + this.poster.imageEn : ""
+        }
 
         this.generateImageUrl();
 
