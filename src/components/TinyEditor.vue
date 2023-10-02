@@ -53,7 +53,7 @@ export default {
             removeformat | table | link | image media ${this.customFileUpload ? `fileupload` : ''} | code `,
                 contextmenu: 'link | customUploadContext',
                 images_upload_handler: uploadSingFile,
-                language: this.$i18n.locale === "en" ? "en_US" : this.$i18n.locale === "kz" ? "kk" : this.$i18n.locale,
+                //language: this.$i18n.locale === "en" ? "en_US" : this.$i18n.locale === "kz" ? "kk" : this.$i18n.locale,
                 content_style: "body { font-size: 14px; }",
                 setup: editor => {
                     const self = this;
