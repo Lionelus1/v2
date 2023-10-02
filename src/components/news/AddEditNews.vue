@@ -1,7 +1,7 @@
 <template>
   <ConfirmPopup group="deleteResult"></ConfirmPopup>
   <TitleBlock :title="$t(newsId === 0 ? 'smartenu.createNews' : 'smartenu.editNews')" :show-back-button="true"/>
-  <div class="grid">
+  <div class="grid" v-if="newsData">
     <div class="col-12 lg:col-9">
       <div class="card p-fluid">
         <TabView>
@@ -179,8 +179,8 @@ export default {
   data() {
     return {
       formValid: [],
-      newsData: this.selectedNews || {},
-      newsId: this.$route.params.id || 0,
+      newsData: null,
+      newsId: parseInt(this.$route.params.id) || 0,
       submitted: false,
       selectedCatTree: [],
       catTreeElementsList: null,
@@ -216,8 +216,6 @@ export default {
     this.init();
   },
   mounted() {
-
-
     if (this.poster) {
       this.poster.imageKkUrl = this.poster.imageKk ? smartEnuApi + fileRoute + this.poster.imageKk : ""
       this.poster.imageRuUrl = this.poster.imageRu ? smartEnuApi + fileRoute + this.poster.imageRu : ""
@@ -231,6 +229,8 @@ export default {
         this.selectedCatTree = []
         this.getNewsById();
         this.getGalleryFiles();
+      } else {
+        this.newsData = {};
       }
     },
     getNewsById() {
@@ -315,16 +315,6 @@ export default {
       }
     },
     async insertNews() {
-      /*await resizeImages(this.newsData.contentKz).then(res => {
-        this.newsData.contentKz = res
-      });
-      await resizeImages(this.newsData.contentRu).then(res => {
-        this.newsData.contentRu = res
-      });
-      await resizeImages(this.newsData.contentEn).then(res => {
-        this.newsData.contentEn = res
-      });*/
-
       if (this.uploadedGalleryFiles) {
         this.uploadedGalleryFiles.forEach(item => {
           this.newsData.files = this.newsData.files || [];
@@ -335,9 +325,6 @@ export default {
       const data = this.newsData;
       delete data.galleryFiles;
 
-      /*const fd = new FormData();
-      fd.append("news", JSON.stringify(data))
-      fd.append("imageFileMain", this.imageFileMain);*/
       this.newsService.addNews(data).then((response) => {
         if (response.data) {
           this.$router.push({name: "NewsTable"})
@@ -520,7 +507,7 @@ export default {
       this.$toast.add({severity: 'success', summary: this.$t('ncasigner.successCopy'), life: 3000});
     },
     getGalleryFiles() {
-      this.newsService.getNewsFiles({content_id: this.newsData.id, is_gallery: true}).then(res => {
+      this.newsService.getNewsFiles({content_id: this.newsId, is_gallery: true}).then(res => {
         this.galleryFiles = res.data;
       }).catch(error => {
         this.$toast.add({severity: "error", summary: error, life: 3000});

@@ -57,6 +57,7 @@ export default {
                 content_style: "body { font-size: 14px; }",
                 setup: editor => {
                     const self = this;
+                    this.content = this.value;
                     editor.ui.registry.addToggleButton('fileupload', {
                         text: '<i class="fa-solid fa-file-arrow-up" style="font-size: 20px;"></i>',
                         onAction: () => {
