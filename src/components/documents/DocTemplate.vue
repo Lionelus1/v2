@@ -145,7 +145,7 @@
               </SelectButton>
               <Button v-if="selectMode && selectedNode.data.type!=1" icon="pi pi-check-circle" class="p-button-success ml-2" @click="select($event,selectedNode)" v-tooltip.bottom="$t('common.choose')"></Button>
             </div>
-              <div v-if="templateLanguage ==='kz'&& selectedNode.data && selectedNode.data.mainTextKaz">
+              <div v-if="templateLanguage ==='kz'&& selectedNode.data">
                   <TinyEditor v-model="selectedNode.data.mainTextKaz" :readonly="!readonly" :contract-elements="true" :height="800"/>
               </div>
               <div v-else>
