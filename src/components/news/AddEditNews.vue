@@ -230,7 +230,7 @@ export default {
     getNewsById() {
       this.newsService.getNewsById(this.newsId).then(res => {
         this.newsData = res.data
-        this.poster = this.newsData.poster
+        this.poster = this.newsData.poster || {}
         if (this.poster) {
           this.poster.imageKkUrl = this.poster.imageKk ? smartEnuApi + fileRoute + this.poster.imageKk : ""
           this.poster.imageRuUrl = this.poster.imageRu ? smartEnuApi + fileRoute + this.poster.imageRu : ""
