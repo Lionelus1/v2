@@ -82,37 +82,37 @@ export default {
                                 {
                                     type: 'menuitem',
                                     text: this.$t('doctemplate.editor.ourside'),
-                                    onAction: () => onSelectItem('{ourside}'),
+                                    onAction: () => onSelectItem('{ourside}&nbsp;'),
                                 },
                                 {
                                     type: 'menuitem',
                                     text: this.$t('doctemplate.editor.contragent'),
-                                    onAction: () => onSelectItem('{contragent}'),
+                                    onAction: () => onSelectItem('{contragent}&nbsp;'),
                                 },
                                 {
                                     type: 'menuitem',
                                     text: this.$t('doctemplate.editor.place'),
-                                    onAction: () => onSelectItem('{place}'),
+                                    onAction: () => onSelectItem('{place}&nbsp;'),
                                 },
                                 {
                                     type: 'menuitem',
                                     text: this.$t('doctemplate.editor.date'),
-                                    onAction: () => onSelectItem('{date}'),
+                                    onAction: () => onSelectItem('{date}&nbsp;'),
                                 },
                                 {
                                     type: 'menuitem',
                                     text: this.$t('doctemplate.editor.period'),
-                                    onAction: () => onSelectItem('{period}'),
+                                    onAction: () => onSelectItem('{period}&nbsp;'),
                                 },
                                 {
                                     type: 'menuitem',
                                     text: this.$t('doctemplate.editor.student'),
-                                    onAction: () => onSelectItem('{student}'),
+                                    onAction: () => onSelectItem('{student}&nbsp;'),
                                 },
                                 {
                                     type: 'menuitem',
                                     text: this.$t('doctemplate.editor.individualEntrepreneur'),
-                                    onAction: () => onSelectItem('{individualEntrepreneur}'),
+                                    onAction: () => onSelectItem('{individualEntrepreneur}&nbsp;'),
                                 },
                                 {
                                     type: 'menuitem',
@@ -122,13 +122,12 @@ export default {
                                 {
                                     type: 'menuitem',
                                     text: this.$t('common.number'),
-                                    onAction: () => onSelectItem('{number}'),
+                                    onAction: () => onSelectItem('{number}&nbsp;'),
                                 },
                             ];
                             callback(items);
                         },
                     });
-
                     const onSelectItem = (value) => {
                         if (value === "text") {
                             this.tinyEditorService.contractElementsDialog(editor, self)
@@ -136,10 +135,8 @@ export default {
                             const styledText = `<span style="font-weight: bold ;color: blue;font-style: italic;">${value}</span>`;
                             editor.selection.setContent(styledText);
                         }
+                        editor.execCommand('removeformat', false, null);
                     };
-                    const resetStyle = ()=>{
-                        editor.execCommand('removeFormat', false, null);
-                    }
                 }
             },
             modalText: true,
