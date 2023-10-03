@@ -1,5 +1,5 @@
 <template>
-    <editor ref="myEditor" :api-key="editorApi" v-model="content" :init="editorOptions" :disabled="readonly"/>
+    <editor  ref="myEditor" :api-key="editorApi" v-model="content" :init="editorOptions" :disabled="readonly"/>
 </template>
 
 <script>
@@ -20,6 +20,10 @@ export default {
             type: Boolean,
             default: false
         },
+        contractElements: {
+            type: Boolean,
+            default: false
+        },
         height: {
             type: Number,
             default: 500
@@ -32,8 +36,11 @@ export default {
     emits: ['onAfterUpload'],
     data() {
         return {
+            showModal: false,
             content: this.value,
             tinyEditorService: new TinymceCustomUploadPlugin(),
+            editorApi: "60lj0ro6ojutgtjvqom1a5txsxm2azkl8pftmzhf8ddim86d",
+            fileService: new FileService(),
             editorOptions: {
                 height: this.height,
                 fontsize_formats: "8px 10px 12px 14px 16px 18px 20px 22px 24px 36px 48px",
@@ -45,16 +52,19 @@ export default {
                 plugins: [
                     'advlist autolink lists link image charmap print preview anchor',
                     'searchreplace visualblocks code fullscreen',
-                    'insertdatetime media table paste code help wordcount'
+                    'insertdatetime media table paste code help wordcount pagebreak'
                 ],
                 toolbar:
-                    `undo redo | fontselect fontsizeselect formatselect | formatselect | bold italic forecolor backcolor |
+                    `undo redo | fontselect fontsizeselect formatselect | ${this.contractElements ? `customSelect` : ''} | bold italic forecolor backcolor |
             alignleft aligncenter alignright alignjustify | bullist numlist outdent indent |
-            removeformat | table | link | image media ${this.customFileUpload ? `fileupload` : ''} | code `,
+            removeformat | table | link | image media ${this.customFileUpload ? `fileupload` : ''} | code | pagebreak`,
                 contextmenu: 'link | customUploadContext',
                 images_upload_handler: uploadSingFile,
                 language: this.$i18n.locale === "en" ? "en_US" : this.$i18n.locale === "kz" ? "kk" : this.$i18n.locale,
-                content_style: "body { font-size: 14px; }",
+                content_style: "html{background: #f7f7f7;display: flex; justify-content: center; } " +
+                    "body {background: #fff; font-size: 14px; width: 794px; min-height:1122px; padding: 20px}" +
+                    ".mce-pagebreak { background: #f7f7f7;border: none; height: 15px; width:900px; margin-left:-50px }" +
+                    " @media(max-width: 500px){html{display: block; }}",
                 setup: editor => {
                     const self = this;
                     this.content = this.value;
@@ -66,10 +76,76 @@ export default {
                         },
                         onSetup: this.tinyEditorService.toggleActiveState(editor)
                     });
+                    editor.ui.registry.addMenuButton('customSelect', {
+                        text: this.$t('doctemplate.editor.contractElements'),
+                        fetch: (callback) => {
+                            const items = [
+                                {
+                                    type: 'menuitem',
+                                    text: this.$t('doctemplate.editor.ourside'),
+                                    onAction: () => onSelectItem('{ourside}'),
+                                },
+                                {
+                                    type: 'menuitem',
+                                    text: this.$t('doctemplate.editor.contragent'),
+                                    onAction: () => onSelectItem('{contragent}'),
+                                },
+                                {
+                                    type: 'menuitem',
+                                    text: this.$t('doctemplate.editor.place'),
+                                    onAction: () => onSelectItem('{place}'),
+                                },
+                                {
+                                    type: 'menuitem',
+                                    text: this.$t('doctemplate.editor.date'),
+                                    onAction: () => onSelectItem('{date}'),
+                                },
+                                {
+                                    type: 'menuitem',
+                                    text: this.$t('doctemplate.editor.period'),
+                                    onAction: () => onSelectItem('{period}'),
+                                },
+                                {
+                                    type: 'menuitem',
+                                    text: this.$t('doctemplate.editor.student'),
+                                    onAction: () => onSelectItem('{student}'),
+                                },
+                                {
+                                    type: 'menuitem',
+                                    text: this.$t('doctemplate.editor.individualEntrepreneur'),
+                                    onAction: () => onSelectItem('{individualEntrepreneur}'),
+                                },
+                                {
+                                    type: 'menuitem',
+                                    text: this.$t('doctemplate.editor.text'),
+                                    onAction: () => onSelectItem('text'),
+                                },
+                                {
+                                    type: 'menuitem',
+                                    text: this.$t('common.number'),
+                                    onAction: () => onSelectItem('{number}'),
+                                },
+                            ];
+                            callback(items);
+                        },
+                    });
+
+                    const onSelectItem = (value) => {
+                        if (value === "text") {
+                            this.tinyEditorService.contractElementsDialog(editor, self)
+                        } else {
+                            const styledText = `<span style="font-weight: bold ;color: blue;font-style: italic;">${value}</span>`;
+                            editor.selection.setContent(styledText);
+                        }
+                    };
+                    const resetStyle = ()=>{
+                        editor.execCommand('removeFormat', false, null);
+                    }
                 }
             },
-            editorApi: "60lj0ro6ojutgtjvqom1a5txsxm2azkl8pftmzhf8ddim86d",
-            fileService: new FileService()
+            modalText: true,
+            displayModal: false,
+            agreementDesctiption: "",
         }
     },
     watch: {
@@ -114,10 +190,16 @@ export default {
             }
             return result;
         },
+        insertModal() {},
+        closeModal() {
+            this.displayModal = false;
+        },
     }
 }
 </script>
 
 <style scoped>
-
+.mce-pagebreak{
+    background: #cccccc!important;
+}
 </style>
