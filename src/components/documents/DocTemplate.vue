@@ -138,14 +138,20 @@
 
               <SelectButton @change="languageChanged" v-model="templateLanguage" :options="language" class="mb-3">
                 <template #option="slotProps">
-                  <div v-if="slotProps.option == 'kz'">{{$t('common.language.kz')}}</div>
-                  <div v-else-if="slotProps.option == 'ru'">{{$t('common.language.ru')}}</div>
+                  <div v-if="slotProps.option === 'kz'">{{$t('common.language.kz')}}</div>
+                  <div v-else-if="slotProps.option === 'ru'">{{$t('common.language.ru')}}</div>
                   <div v-else>{{$t('common.language.en')}}</div>
                 </template>
               </SelectButton>
               <Button v-if="selectMode && selectedNode.data.type!=1" icon="pi pi-check-circle" class="p-button-success ml-2" @click="select($event,selectedNode)" v-tooltip.bottom="$t('common.choose')"></Button>
             </div>
-            <RichEditor ref="kzEditor" :readonly="editorReadOnly" v-if="templateLanguage =='kz'" v-model="selectedNode.data.mainTextKaz" editorStyle="height:500px;max-width:700px;min-width:500px">
+              <div v-if="templateLanguage ==='kz'" ref="kzEditor">
+                  <TinyEditor v-model="selectedNode.data.mainTextKaz" :readonly="!readonly" :contract-elements="true" :height="800"/>
+              </div>
+              <div v-else ref="ruEditor">
+                  <TinyEditor v-model="selectedNode.data.mainTextRus" :readonly="!readonly" :contract-elements="true" :height="800"/>
+              </div>
+<!--            <RichEditor ref="kzEditor" :readonly="editorReadOnly" v-if="templateLanguage =='kz'" v-model="selectedNode.data.mainTextKaz" editorStyle="height:500px;max-width:700px;min-width:500px">
               <template v-slot:toolbar>
                 <span class="ql-formats">
                   <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
@@ -186,7 +192,7 @@
                 </span>
                 
               </template>
-            </RichEditor>
+            </RichEditor>-->
             <!-- Келісімге жіберу диалогы -->
             <Dialog :modal="true"  v-bind:header="$t('common.toapprove')" v-model:visible="dialogOpenState.toApproval" :style="{width: '50vw'}">
               <div class="p-fluid">
@@ -254,19 +260,19 @@
   import {smartEnuApi, findRole, getHeader} from "@/config/config";
   import {runNCaLayer} from "@/helpers/SignDocFunctions"
   import axios from 'axios';
-  import RichEditor from "./editor/RichEditor.vue";
   import DocState from "@/enum/docstates/index";
   import RolesEnum from "@/enum/roleControls/index";
   import DocSignaturesInfo from "@/components/DocSignaturesInfo"
   import Enum from "@/enum/docstates/index"
   import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers";
+  import TinyEditor from "@/components/TinyEditor.vue";
 
   export default {
     emits: ['onselect', 'languageChanged'],
-    components: { RichEditor, DocSignaturesInfo, ApprovalUsers },
+    components: { TinyEditor, DocSignaturesInfo, ApprovalUsers },
     data() {
       return {
-        readonly : true,
+        readonly : false,
         currentNode: null,
         selectedUsers: null,
         dialogNote: "",
@@ -274,7 +280,7 @@
         selectedNode: {
           data : {},
         },
-        editorReadOnly :false,
+        editorReadOnly :true,
         signing : false,
         DocState: DocState,
         RolesEnum: RolesEnum,
@@ -728,12 +734,12 @@
       onNodeSelect(node) { 
         this.selectedNode = node;
         this.currentNode = node
-        this.readonly = this.selectedNode.data.stateEn == DocState.CREATED.Value || this.selectedNode.data.stateEn == DocState.REVISION.Value || (this.selectedNode.data.stateEn == DocState.INAPPROVAL.Value && this.findRole(null, RolesEnum.roles.LegalServiceHead))
-        if (this.$refs.kzEditor) {
+        this.readonly = this.selectedNode.data.stateEn === DocState.CREATED.Value || this.selectedNode.data.stateEn === DocState.REVISION.Value || (this.selectedNode.data.stateEn === DocState.INAPPROVAL.Value && this.findRole(null, RolesEnum.roles.LegalServiceHead))
+        /*if (this.$refs.kzEditor) {
           this.$refs.kzEditor.setReadOnly(this.readonly);
         } else {
           this.$refs.ruEditor.setReadOnly(this.readonly);
-        }
+        }*/
       },
       addTemplateNode(nodeDataChildren,node,fkey) {
         let child=new Object();
@@ -947,6 +953,11 @@
           margin-right: .5rem;
       }
   }
-
+@media (max-width: 500px) {
+  .buttonset button{
+    margin-bottom: 10px;
+    margin-right: 10px!important;
+  }
+}
 
 </style>
