@@ -145,12 +145,14 @@
               </SelectButton>
               <Button v-if="selectMode && selectedNode.data.type!=1" icon="pi pi-check-circle" class="p-button-success ml-2" @click="select($event,selectedNode)" v-tooltip.bottom="$t('common.choose')"></Button>
             </div>
-              <div v-if="templateLanguage ==='kz'">
-                  <TinyEditor v-if="selectedNode.data.mainTextKaz !== null" v-model="selectedNode.data.mainTextKaz" :readonly="!readonly" :contract-elements="true" :height="800"/>
-              </div>
-              <div v-else>
-                  <TinyEditor v-if="selectedNode.data.mainTextRus !== null" v-model="selectedNode.data.mainTextRus" :readonly="!readonly" :contract-elements="true" :height="800"/>
-              </div>
+              <template v-if="onEditorTabSelected">
+                  <div v-if="templateLanguage ==='kz'">
+                      <TinyEditor v-model="selectedNode.data.mainTextKaz" :readonly="!readonly" :contract-elements="true" :height="800"/>
+                  </div>
+                  <div v-else>
+                      <TinyEditor v-model="selectedNode.data.mainTextRus" :readonly="!readonly" :contract-elements="true" :height="800"/>
+                  </div>
+              </template>
 <!--            <RichEditor ref="kzEditor" :readonly="editorReadOnly" v-if="templateLanguage =='kz'" v-model="selectedNode.data.mainTextKaz" editorStyle="height:500px;max-width:700px;min-width:500px">
               <template v-slot:toolbar>
                 <span class="ql-formats">
@@ -899,6 +901,11 @@
       this.initApiCall();
       this.templateLanguage = this.currentLang != null ? this.currentLang : 'kz'
     },
+      computed: {
+        onEditorTabSelected() {
+            return !(this.selectedNode.data.type == null || this.selectedNode.data.type == 1)
+        }
+      }
   };
 </script>
 
