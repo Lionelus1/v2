@@ -4,8 +4,10 @@
             :style="{ width: '1000px' }"
             :modal="true"
             class="p-fluid"
-            :closable="false"
+            :closable="true"
             :breakpoints="{'960px': '75vw', '640px': '90vw'}"
+            :close-on-escape="true"
+            @hide="closeModal"
     >
       <template #header>
         <div class="w-full flex justify-content-end">
