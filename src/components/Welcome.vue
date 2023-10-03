@@ -1,330 +1,312 @@
 <template>
-    <div class="col-12">
-        <div class="card">
-            <h4 class="m-0">{{ $t("common.welcome") }}, {{ loginedUser.fullName }} !</h4>
-        </div>
-        <div class="card card_bottom">
-            <TabView ref="templateView" v-model:activeIndex="active">
-                <TabPanel v-bind:header="$t('smartenu.newsTitle')">
-                    <div v-if="allNews===0">
-                        {{ $t("smartenu.newsNotFound") }}
-                    </div>
-                    <div v-if="loading" class="skeletons">
-                        <div class="skeleton" :key="s" v-for="s of skeletons">
-                            <Skeleton class="skeleton_img"></Skeleton>
-                            <div style="flex: 1; margin-left: 10px">
-                                <Skeleton class="first_skeleton"></Skeleton>
-                                <Skeleton class="second_skeleton"></Skeleton>
-                            </div>
-                        </div>
-                    </div>
-                    <DataView :lazy="true" :value="allNews" :layout="layout" :paginator="true" :rows="10"
-                              @page="onPage($event)" :totalRecords="total">
-                        <template #empty>{{
-                            this.$t("smartenu.newsNotFound")
-                            }}
-                        </template>
-                        <template #list="{ data }">
-                            <div class="post" v-on:click="newsView(data)">
-                                <img class="round" v-if="data.imageUrl != null && data.imageUrl !=''"
-                                     :src="data.imageUrl"/>
-                                <div class="text">
-                                    <strong>
-                                        {{
-                                        $i18n.locale === "kz"
-                                        ? data.titleKz
-                                        : $i18n.locale === "ru"
-                                        ? data.titleRu
-                                        : data.titleEn
-                                        }}
-                                    </strong>
-                                    <div class="date">{{ formatDateMoment(data.publish_date)}}</div>
-                                </div>
-                            </div>
-                        </template>
-                    </DataView>
-                </TabPanel>
-                <TabPanel v-bind:header="$t('smartenu.eventsTitle')">
-                    <DataTable
-                            :value="allEvents"
-                            :paginator="true"
-                            class="p-datatable-customers"
-                            :rows="10"
-                            dataKey="id"
-                            :rowHover="true"
-                            :loading="loading"
-                    >
-                        <template #empty>
-                            {{ $t("smartenu.eventsNotFound") }}
-                        </template>
-                        <Column
-                                field="createdBy"
-                                v-bind:header="$t('common.date')"
-                        >
-                            <template #body="slotProps">
-          <span>
-              {{new Date(slotProps.data.eventDate).toLocaleDateString()}}
-          </span>
-                            </template>
-                        </Column>
-                        <Column :field="
-                                     $i18n.locale === 'kz'
-                                     ? `titleKz`
-                                     : $i18n.locale === 'ru'
-                                     ? `titleRu`
-                                     : `titleEn`
-                                     "
-                                v-bind:header="$t('common.nameIn')">
-                            <template #body="slotProps">
-                                <a href="javascript:void(0)" @click="eventView(slotProps.data)">
-                                    {{
-                                    $i18n.locale === "kz"
-                                    ? slotProps.data.titleKz
-                                    : $i18n.locale === "ru"
-                                    ? slotProps.data.titleRu
-                                    : slotProps.data.titleEn
-                                    }}
-                                </a>
-                            </template>
-                        </Column>
-
-                    </DataTable>
-                </TabPanel>
-            </TabView>
-        </div>
-        <NewsView v-if="newsViewVisible" :is-visible="newsViewVisible" :selected-news="selectedNews"/>
-        <EventsView v-if="eventViewVisible" :is-visible="eventViewVisible" :selectedEvent="selectedEvent"/>
+  <div class="col-12">
+    <div class="card">
+      <h4 class="m-0">{{ $t("common.welcome") }}, {{ loginedUser.fullName }} !</h4>
     </div>
+    <div class="card card_bottom">
+      <TabView ref="templateView" v-model:activeIndex="active">
+        <TabPanel v-bind:header="$t('smartenu.newsTitle')">
+          <div v-if="allNews===0">
+            {{ $t("smartenu.newsNotFound") }}
+          </div>
+          <div v-if="loading" class="skeletons">
+            <div class="skeleton" :key="s" v-for="s of skeletons">
+              <Skeleton class="skeleton_img"></Skeleton>
+              <div style="flex: 1; margin-left: 10px">
+                <Skeleton class="first_skeleton"></Skeleton>
+                <Skeleton class="second_skeleton"></Skeleton>
+              </div>
+            </div>
+          </div>
+          <DataView :lazy="true" :value="allNews" :layout="layout" :paginator="true" :rows="10"
+                    @page="onPage($event)" :totalRecords="total">
+            <template #empty>{{
+                this.$t("smartenu.newsNotFound")
+              }}
+            </template>
+            <template #list="{ data }">
+              <div class="post" v-on:click="newsView(data)">
+                <img class="round" v-if="data.imageUrl != null && data.imageUrl !=''"
+                     :src="data.imageUrl"/>
+                <div class="text">
+                  <strong>
+                    {{
+                      $i18n.locale === "kz"
+                          ? data.titleKz
+                          : $i18n.locale === "ru"
+                              ? data.titleRu
+                              : data.titleEn
+                    }}
+                  </strong>
+                  <div class="date">{{ formatDateMoment(data.publish_date) }}</div>
+                </div>
+              </div>
+            </template>
+          </DataView>
+        </TabPanel>
+        <TabPanel v-bind:header="$t('smartenu.eventsTitle')">
+          <DataTable
+              :value="allEvents"
+              :paginator="true"
+              class="p-datatable-customers"
+              :rows="10"
+              dataKey="id"
+              :rowHover="true"
+              :loading="loading"
+          >
+            <template #empty>
+              {{ $t("smartenu.eventsNotFound") }}
+            </template>
+            <Column
+                field="createdBy"
+                v-bind:header="$t('common.date')"
+            >
+              <template #body="slotProps">
+          <span>
+              {{ new Date(slotProps.data.eventDate).toLocaleDateString() }}
+          </span>
+              </template>
+            </Column>
+            <Column :field="$i18n.locale === 'kz' ? `titleKz` : $i18n.locale === 'ru' ? `titleRu` : `titleEn`"
+                    v-bind:header="$t('common.nameIn')">
+              <template #body="slotProps">
+                <a href="javascript:void(0)" @click="eventView(slotProps.data)">
+                  {{
+                    $i18n.locale === "kz"
+                        ? slotProps.data.titleKz
+                        : $i18n.locale === "ru"
+                            ? slotProps.data.titleRu
+                            : slotProps.data.titleEn
+                  }}
+                </a>
+              </template>
+            </Column>
+
+          </DataTable>
+        </TabPanel>
+      </TabView>
+    </div>
+    <NewsView v-if="newsViewVisible" :is-visible="newsViewVisible" :selected-news="selectedNews"/>
+    <EventsView v-if="eventViewVisible" :is-visible="eventViewVisible" :selectedEvent="selectedEvent"/>
+  </div>
 </template>
 
 <script>
-    import {mapState} from "vuex";
-    import axios from "axios";
-    import {getHeader, smartEnuApi} from "@/config/config";
-    import moment from "moment";
-    import NewsView from "./news/NewsView.vue";
-    import {fileRoute} from "../config/config";
-    import EventsView from "./events/EventsView";
+import {mapState} from "vuex";
+import {getHeader, smartEnuApi} from "@/config/config";
+import moment from "moment";
+import NewsView from "./news/NewsView.vue";
+import {fileRoute} from "../config/config";
+import EventsView from "./events/EventsView";
+import {NewsService} from "@/service/news.service";
+import {EventsService} from "@/service/event.service";
 
-    export default {
-        name: "Welcome",
-        components: {EventsView, NewsView},
-        data() {
-            return {
-                total: 0,
-                layout: 'list',
-                selectedNews: {},
-                selectedEvent: {},
-                newsViewVisible: false,
-                eventViewVisible: false,
-                skeletons: new Array(6),
-                loading: false,
-                lazyParams: {
-                    page: 0,
-                    rows: 10,
-                    searchText: null,
-                    sortField: "",
-                    sortOrder: 0
-                },
-                allNews: [],
-                allEvents: [],
-                notifications:[]
-            };
-        },
-       
-        methods: {
-            getAllNews() {
-                this.loading = true
-                this.lazyParams.countMode = null;
-                axios
-                    .post(smartEnuApi + "/getNews", this.lazyParams, {
-                        headers: getHeader(),
-                    })
-                    .then((response) => {
-                        this.allNews = response.data.news;
-                        this.allNews.map(e => {
-                          let fileUrl = e.main_image_file ? e.main_image_file.filepath : e.image1
-                            e.imageUrl = smartEnuApi + fileRoute + fileUrl
-                        });
-                        this.total = response.data.total;
-                        this.loading = false;
-                    })
-                    .catch((error) => {
-                        if (error.response.status === 401) {
-                            this.$store.dispatch("logLout");
-                        } else {
-                            this.$toast.add({
-                                severity: "error",
-                                summary: this.$t("smartenu.loadAllNewsError") + ":\n" + error,
-                                life: 3000,
-                            });
-                        }
-                    });
-            },
-            getAllEvents() {
-                this.allEvents = [];
-                axios
-                    .get(smartEnuApi + "/getPublishEvents")
-                    .then((response) => {
-                        this.allEvents = response.data;
-                        this.allEvents.map(e => {
-                            e.imageUrl = smartEnuApi + fileRoute + e.main_image_path
-                        });
-                        //console.log("ddd", this.allEvents)
-                        this.loading = false;
-                    })
-                    .catch((error) => {
-                        if (error.response.status === 401) {
-                            this.$store.dispatch("logLout");
-                        } else {
-                            this.$toast.add({
-                                severity: "error",
-                                summary: this.$t("smartenu.loadAllEventsError") + ":\n" + error,
-                                life: 3000,
-                            });
-                        }
-                    });
-            },
-            formatDateMoment(date) {
-                return moment(new Date(date)).utc().format("DD.MM.YYYY HH:mm")
-            },
-            newsView(item) {
-                this.selectedNews = item;
-                this.newsViewVisible = true;
-            },
-            eventView(item) {
-                this.selectedEvent = item;
-                this.eventViewVisible = true;
-            },
-            onPage(event) {
-                this.lazyParams = event
-                this.getAllNews();
-            },
-        },
-        created() {
-            this.getAllNews();
-            this.getAllEvents();
-        },
-        mounted(){
-            this.emitter.on('newsViewModalClose', data => {
-                this.newsViewVisible = data;
-            });
-            this.emitter.on('eventViewModalClose', data => {
-                this.eventViewVisible = data;
-            });
+export default {
+  name: "Welcome",
+  components: {EventsView, NewsView},
+  data() {
+    return {
+      total: 0,
+      layout: 'list',
+      selectedNews: {},
+      selectedEvent: {},
+      newsViewVisible: false,
+      eventViewVisible: false,
+      skeletons: new Array(6),
+      loading: false,
+      lazyParams: {
+        page: 0,
+        rows: 10,
+        searchText: null,
+        sortField: "",
+        sortOrder: 0
+      },
+      allNews: [],
+      allEvents: [],
+      notifications: [],
+      newsService: new NewsService(),
+      eventService: new EventsService()
+    };
+  },
 
-           
-        },
-        computed: {
-            ...mapState(["loginedUser"]),
-        },
-    }
+  methods: {
+    getAllNews() {
+      this.loading = true
+      this.lazyParams.countMode = null;
+      this.newsService.getWelcomeNews(this.lazyParams).then((response) => {
+        this.allNews = response.data.news;
+        this.allNews.map(e => {
+          let fileUrl = e.main_image_file ? e.main_image_file.filepath : e.image1
+          e.imageUrl = smartEnuApi + fileRoute + fileUrl
+        });
+        this.total = response.data.total;
+        this.loading = false;
+      }).catch((error) => {
+        this.$toast.add({
+          severity: "error",
+          summary: this.$t("smartenu.loadAllNewsError") + ":\n" + error,
+          life: 3000,
+        });
+      });
+    },
+    getAllEvents() {
+      this.allEvents = [];
+      this.eventService.getPublishEvents().then((response) => {
+        this.allEvents = response.data;
+        this.allEvents.map(e => {
+          let fileUrl = e.main_image_file ? e.main_image_file.filepath : e.image1
+          e.imageUrl = smartEnuApi + fileRoute + fileUrl
+        });
+        //console.log("ddd", this.allEvents)
+        this.loading = false;
+      }).catch((error) => {
+        this.$toast.add({
+          severity: "error",
+          summary: this.$t("smartenu.loadAllEventsError") + ":\n" + error,
+          life: 3000,
+        });
+      });
+    },
+    formatDateMoment(date) {
+      return moment(new Date(date)).utc().format("DD.MM.YYYY HH:mm")
+    },
+    newsView(item) {
+      this.selectedNews = item;
+      this.newsViewVisible = true;
+    },
+    eventView(item) {
+      this.selectedEvent = item;
+      this.eventViewVisible = true;
+    },
+    onPage(event) {
+      this.lazyParams = event
+      this.getAllNews();
+    },
+  },
+  created() {
+    this.getAllNews();
+    this.getAllEvents();
+  },
+  mounted() {
+    this.emitter.on('newsViewModalClose', data => {
+      this.newsViewVisible = data;
+    });
+    this.emitter.on('eventViewModalClose', data => {
+      this.eventViewVisible = data;
+    });
+
+
+  },
+  computed: {
+    ...mapState(["loginedUser"]),
+  },
+}
 </script>
 
 <style lang="scss" scoped>
-    .skeletons {
-        width: 80%;
+.skeletons {
+  width: 80%;
 
-        .skeleton {
-            display: flex;
-            margin: 15px 0;
-            padding: 10px;
+  .skeleton {
+    display: flex;
+    margin: 15px 0;
+    padding: 10px;
 
-            .skeleton_img {
-                width: 9rem !important;
-                height: 6rem !important;
-                border-radius: 5px !important;
-            }
-
-            .first_skeleton {
-                width: 90% !important;
-                height: 2rem !important;
-                margin-bottom: 20px !important;
-            }
-
-            .second_skeleton {
-                width: 25% !important;
-            }
-
-        }
+    .skeleton_img {
+      width: 9rem !important;
+      height: 6rem !important;
+      border-radius: 5px !important;
     }
 
-    .post {
-        cursor: pointer;
-        display: flex;
-        margin: 15px 0;
-        width: 100%;
-        border-radius: 5px;
-        padding: 10px;
-        //box-shadow: 0 2px 1px -1px rgb(0 0 0 / 20%), 0 1px 1px 0 rgb(0 0 0 / 14%), 0 1px 3px 0 rgb(0 0 0 / 12%);
-
-        .text {
-            position: relative;
-            margin-left: 10px;
-
-            .date {
-                position: absolute;
-                bottom: 0;
-                color: #838080;
-                white-space: nowrap;
-            }
-        }
-
-        img {
-            width: 120px;
-            height: 80px;
-            border-radius: 5px;
-            box-shadow: 0 3px 6px rgb(0 0 0 / 16%), 0 3px 6px rgb(0 0 0 / 23%);
-        }
+    .first_skeleton {
+      width: 90% !important;
+      height: 2rem !important;
+      margin-bottom: 20px !important;
     }
 
-    @media (max-width: 780px) {
-        .skeletons, .post {
-            width: 100%;
-        }
+    .second_skeleton {
+      width: 25% !important;
     }
 
-    @media (max-width: 550px) {
-        .skeletons, .post {
-            width: 100%;
-        }
-        .skeletons {
-            .skeleton {
-                .skeleton_img {
-                    width: 7rem !important;
-                    height: 5rem !important;
-                }
+  }
+}
 
-                .first_skeleton {
-                    width: 100% !important;
-                }
+.post {
+  cursor: pointer;
+  display: flex;
+  margin: 15px 0;
+  width: 100%;
+  border-radius: 5px;
+  padding: 10px;
+  //box-shadow: 0 2px 1px -1px rgb(0 0 0 / 20%), 0 1px 1px 0 rgb(0 0 0 / 14%), 0 1px 3px 0 rgb(0 0 0 / 12%);
 
-                .second_skeleton {
-                    width: 40% !important;
-                }
-            }
-        }
-        .post {
-            img {
-                width: 7rem;
-                height: 5rem;
-            }
+  .text {
+    position: relative;
+    margin-left: 10px;
 
-            .text {
-                strong {
-                    display: -webkit-box;
-                    -webkit-line-clamp: 2;
-                    -webkit-box-orient: vertical;
-                    overflow: hidden;
-                }
-            }
-        }
-        .card_bottom {
-            padding: 0;
-        }
-        .card_title {
-            font-size: 16px;
-        }
+    .date {
+      position: absolute;
+      bottom: 0;
+      color: #838080;
+      white-space: nowrap;
     }
+  }
+
+  img {
+    width: 120px;
+    height: 80px;
+    border-radius: 5px;
+    box-shadow: 0 3px 6px rgb(0 0 0 / 16%), 0 3px 6px rgb(0 0 0 / 23%);
+  }
+}
+
+@media (max-width: 780px) {
+  .skeletons, .post {
+    width: 100%;
+  }
+}
+
+@media (max-width: 550px) {
+  .skeletons, .post {
+    width: 100%;
+  }
+  .skeletons {
+    .skeleton {
+      .skeleton_img {
+        width: 7rem !important;
+        height: 5rem !important;
+      }
+
+      .first_skeleton {
+        width: 100% !important;
+      }
+
+      .second_skeleton {
+        width: 40% !important;
+      }
+    }
+  }
+  .post {
+    img {
+      width: 7rem;
+      height: 5rem;
+    }
+
+    .text {
+      strong {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+    }
+  }
+  .card_bottom {
+    padding: 0;
+  }
+  .card_title {
+    font-size: 16px;
+  }
+}
 
 </style>
