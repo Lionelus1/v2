@@ -2,7 +2,7 @@
   <div>
     <div v-if="!selectMode" class="content-section introduction">
       <div class="feature-intro">
-        <h3>{{$t('doctemplate.title')}}</h3> 
+        <h3>{{$t('doctemplate.title')}}</h3>
       </div>
     </div>
     <div class="content-section implementation">
@@ -66,7 +66,7 @@
                   <i v-else class="pi pi-file"></i>
                 </template>
               </Column>
-              
+
                <Column field="name" v-bind:header="$t('common.name')">
                 <template #body="slotProps">
                   <Button class="p-button-link" style="text-align:left" v-if="selectMode && slotProps.node.data.type===0" @click="select($event,slotProps.node)" v-tooltip.bottom="$t('common.choose')">{{slotProps.node.data.name}}</Button>
@@ -77,7 +77,7 @@
                   <!-- <span v-if="slotProps.node.data.needApproval" class="sm-visible">/ <i class="fa-solid fa-list-check"></i></span> -->
                   <!-- <span v-if="slotProps.node.data.updatedDate!=null" class="sm-visible"> /{{slotProps.node.data.updatedDate}}</span> -->
                 </template>
-              </Column> 
+              </Column>
               <Column field="code" v-bind:header="$t('common.code')" headerClass="sm-invisible" bodyClass="sm-invisible"></Column>
               <Column v-if="!selectMode" field="createdDate" v-bind:header="$t('common.created')"  headerClass="sm-invisible" bodyClass="sm-invisible">
                 <template #body="slotProps">
@@ -100,7 +100,7 @@
                 </template>
 
               </Column>
-              
+
               <!-- <Column field="updatedDate" v-bind:header="$t('common.updated')" headerClass="sm-invisible" bodyClass="sm-invisible">
                <template #body="slotProps">
                     {{slotProps.node.data.updatedDate ? slotProps.node.data.updatedDate.replace('Z', '').replace('T', ' ') : ''}}
@@ -115,7 +115,7 @@
                   <Button v-if="slotProps.node.data.type!=1" type="button" icon="pi pi-search" class="p-button-warning" @click="editDocTemplate(slotProps.node)" v-tooltip.bottom="$t('common.show')"></Button>&nbsp;
                   <Button v-if="slotProps.node.data.type!=1 && slotProps.node.data.stateEn == DocState.REVISION.Value" icon="pi pi-comment" @click="openForm('dialogComment',slotProps.node)" v-tooltip.bottom="$t('common.comment')"></Button>
                   <Button v-if="selectMode && slotProps.node.data.type!=1" icon="pi pi-check-circle" class="p-button-success ml-2" @click="select($event,slotProps.node)" v-tooltip.bottom="$t('common.choose')"></Button>
-                  
+
               </template>
             </Column>
             <!-- <template v-if="selectMode" #footer>
@@ -128,7 +128,7 @@
               <span class="buttonset">
                 <Button style="margin-right: 0.5rem;" v-if="(selectedNode.data.stateEn == DocState.CREATED.Value || selectedNode.data.stateEn == DocState.REVISION.Value)" :label="$t('common.save')" icon="pi pi-save" @click="saveDocTemplate"/>
                 <Button style="margin-right: 0.5rem;" v-bind:label="$t('common.download')" icon="pi pi-file-pdf" @click="downloadDocTemplatePdf" />
-                <Button style="margin-right: 0.5rem;" v-if="selectedNode.data.needApproval && ((selectedNode.data.stateEn == DocState.INAPPROVAL.Value && findRole(null, RolesEnum.roles.LegalServiceHead)) || selectedNode.data.stateEn == DocState.REVISION.Value || selectedNode.data.stateEn == DocState.APPROVED.Value)" 
+                <Button style="margin-right: 0.5rem;" v-if="selectedNode.data.needApproval && ((selectedNode.data.stateEn == DocState.INAPPROVAL.Value && findRole(null, RolesEnum.roles.LegalServiceHead)) || selectedNode.data.stateEn == DocState.REVISION.Value || selectedNode.data.stateEn == DocState.APPROVED.Value)"
                   class="p-button-warning" :label="$t('doctemplate.approvalUsers')" icon="fa-solid fa-users-gear" @click="initApprovalInfo(true);"></Button>
                 <Button style="margin-right: 0.5rem;" v-if="selectedNode.data.stateEn == DocState.CREATED.Value || selectedNode.data.stateEn == DocState.REVISION.Value" :label="$t('common.toapprove')" icon="pi pi-send" @click="openForm('toApproval')" />
                 <Button style="margin-right: 0.5rem;" v-if="selectedNode.data.stateEn == DocState.INAPPROVAL.Value && findRole(null, RolesEnum.roles.LegalServiceHead)" class="p-button-success" :label ="$t('common.approve')" icon="pi pi-check" @click="approve()"/>
@@ -138,14 +138,20 @@
 
               <SelectButton @change="languageChanged" v-model="templateLanguage" :options="language" class="mb-3">
                 <template #option="slotProps">
-                  <div v-if="slotProps.option == 'kz'">{{$t('common.language.kz')}}</div>
-                  <div v-else-if="slotProps.option == 'ru'">{{$t('common.language.ru')}}</div>
+                  <div v-if="slotProps.option === 'kz'">{{$t('common.language.kz')}}</div>
+                  <div v-else-if="slotProps.option === 'ru'">{{$t('common.language.ru')}}</div>
                   <div v-else>{{$t('common.language.en')}}</div>
                 </template>
               </SelectButton>
               <Button v-if="selectMode && selectedNode.data.type!=1" icon="pi pi-check-circle" class="p-button-success ml-2" @click="select($event,selectedNode)" v-tooltip.bottom="$t('common.choose')"></Button>
             </div>
-            <RichEditor ref="kzEditor" :readonly="editorReadOnly" v-if="templateLanguage =='kz'" v-model="selectedNode.data.mainTextKaz" editorStyle="height:500px;max-width:700px;min-width:500px">
+              <div v-if="templateLanguage ==='kz'">
+                  <TinyEditor v-if="selectedNode.data.mainTextKaz !== null" v-model="selectedNode.data.mainTextKaz" :readonly="!readonly" :contract-elements="true" :height="800"/>
+              </div>
+              <div v-else>
+                  <TinyEditor v-if="selectedNode.data.mainTextRus !== null" v-model="selectedNode.data.mainTextRus" :readonly="!readonly" :contract-elements="true" :height="800"/>
+              </div>
+<!--            <RichEditor ref="kzEditor" :readonly="editorReadOnly" v-if="templateLanguage =='kz'" v-model="selectedNode.data.mainTextKaz" editorStyle="height:500px;max-width:700px;min-width:500px">
               <template v-slot:toolbar>
                 <span class="ql-formats">
                   <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
@@ -184,9 +190,9 @@
                     <option value="justify"></option>
                   </select>
                 </span>
-                
+
               </template>
-            </RichEditor>
+            </RichEditor>-->
             <!-- Келісімге жіберу диалогы -->
             <Dialog :modal="true"  v-bind:header="$t('common.toapprove')" v-model:visible="dialogOpenState.toApproval" :style="{width: '50vw'}">
               <div class="p-fluid">
@@ -245,8 +251,8 @@
       </div>
 
     </div>
-    
-    
+
+
   </div>
 </template>
 
@@ -254,19 +260,19 @@
   import {smartEnuApi, findRole, getHeader} from "@/config/config";
   import {runNCaLayer} from "@/helpers/SignDocFunctions"
   import axios from 'axios';
-  import RichEditor from "./editor/RichEditor.vue";
   import DocState from "@/enum/docstates/index";
   import RolesEnum from "@/enum/roleControls/index";
   import DocSignaturesInfo from "@/components/DocSignaturesInfo"
   import Enum from "@/enum/docstates/index"
   import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers";
+  import TinyEditor from "@/components/TinyEditor.vue";
 
   export default {
     emits: ['onselect', 'languageChanged'],
-    components: { RichEditor, DocSignaturesInfo, ApprovalUsers },
+    components: { TinyEditor, DocSignaturesInfo, ApprovalUsers },
     data() {
       return {
-        readonly : true,
+        readonly : false,
         currentNode: null,
         selectedUsers: null,
         dialogNote: "",
@@ -274,7 +280,7 @@
         selectedNode: {
           data : {},
         },
-        editorReadOnly :false,
+        editorReadOnly :true,
         signing : false,
         DocState: DocState,
         RolesEnum: RolesEnum,
@@ -295,7 +301,7 @@
           {namekz: 'профессор-оқытушылар құрамы', nameru: 'профессорско-преподавательский состав', nameen:'teaching staff', id: 1},
           {namekz: 'қызметкерлер', nameru: 'сотрудники', nameen:'staff', id: 2},
         ],
-       
+
         language: ['kz', 'ru'],
         createdFolder: {
           groups: null,
@@ -306,7 +312,7 @@
           createdDate: null,
           updatedDate: null,
           type: Enum.FolderType.Journals
-          
+
         },
         createdTemplate: {
           creatorId: 1,
@@ -377,7 +383,7 @@
       showMessage(msgtype,message,content) {
         this.$toast.add({severity:msgtype, summary: message, detail:content, life: 3000});
       },
-      
+
       findRole: findRole,
       openForm(formName,node) {
         this.dialogOpenState[formName] = true;
@@ -395,7 +401,7 @@
           icon: 'pi pi-exclamation-triangle',
           accept: () => {
                 axios.post(smartEnuApi + "/downloadFile",
-                { filePath: this.selectedNode.data.filePath},  
+                { filePath: this.selectedNode.data.filePath},
                 { headers: getHeader() }).then(
                   response => {
                     runNCaLayer(this.$t, this.$toast, response.data, 'cms', 'ul', false, this.$i18n.locale).then(sign=>{
@@ -423,10 +429,10 @@
                           }
                           if (error.response.status == 401) {
                             this.$store.dispatch("logLout");
-                          } else 
+                          } else
                           this.signing = false;
                       })
-                      
+
                       }
                     });
                   }
@@ -436,7 +442,7 @@
                     }
                     console.log(error);
                 })
-                
+
               }
         });
       },
@@ -458,18 +464,18 @@
         .catch(error => {
           if (error.response && error.response.status == 401) {
             this.$store.dispatch("logLout");
-          } else 
+          } else
           console.log(error);
         })
 
         this.dialogOpenState.revision = false;
-        
-        
+
+
       },
       sendToApproval() {
         this.signing = true
         this.dialogOpenState.toApproval = false;
-        
+
         let url = "/doctemplate/toapproval";
 
         if (this.selectedNode == null || this.selectedNode.data.type != 0 || this.selectedUsers == null || this.dialogNote == null) {
@@ -488,7 +494,7 @@
           console.log(user)
           isLegalHead = this.findRole(user, RolesEnum.roles.LegalServiceHead)
         });
-        
+
         if (isLegalHead ===false) {
           this.showMessage('error', this.$t('doctemplate.title'), this.$t('common.message.notPermissionForApprove'));
           this.signing = false
@@ -511,7 +517,7 @@
         .catch(error => {
           if (error.response.status == 401) {
             this.$store.dispatch("logLout");
-          } else 
+          } else
           console.log(error);
           this.signing = false
 
@@ -531,10 +537,10 @@
         req.lang = "kaz";
         if (this.templateLanguage != "ru") {
           req.lang = "kaz"
-        } 
+        }
         if (this.templateLanguage != "kz") {
           req.lang = "rus"
-        } 
+        }
         axios.post(smartEnuApi+url, req, { headers: getHeader() })
         .then(response=>{
           let pdf = response.data;
@@ -583,7 +589,7 @@
         .catch(error => {
           if (error.response.status == 401) {
             this.$store.dispatch("logLout");
-          } else 
+          } else
           console.log(error);
           this.signing = false
         })
@@ -648,7 +654,7 @@
         .catch(error => {
           if (error.response && error.response.status == 401) {
             this.$store.dispatch("logLout");
-          } else 
+          } else
             console.error(error)
         })
       },
@@ -716,24 +722,25 @@
           }
           else if (error.response.status == 401) {
             this.$store.dispatch("logLout");
-          } else 
+          } else
             console.error(error)
         })
       },
       editDocTemplate(node){
         this.active = 1;
         this.onNodeSelect(node)
-        
+
       },
-      onNodeSelect(node) { 
+      onNodeSelect(node) {
         this.selectedNode = node;
+          console.log(node)
         this.currentNode = node
-        this.readonly = this.selectedNode.data.stateEn == DocState.CREATED.Value || this.selectedNode.data.stateEn == DocState.REVISION.Value || (this.selectedNode.data.stateEn == DocState.INAPPROVAL.Value && this.findRole(null, RolesEnum.roles.LegalServiceHead))
-        if (this.$refs.kzEditor) {
+        this.readonly = this.selectedNode.data.stateEn === DocState.CREATED.Value || this.selectedNode.data.stateEn === DocState.REVISION.Value || (this.selectedNode.data.stateEn === DocState.INAPPROVAL.Value && this.findRole(null, RolesEnum.roles.LegalServiceHead))
+        /*if (this.$refs.kzEditor) {
           this.$refs.kzEditor.setReadOnly(this.readonly);
         } else {
           this.$refs.ruEditor.setReadOnly(this.readonly);
-        }
+        }*/
       },
       addTemplateNode(nodeDataChildren,node,fkey) {
         let child=new Object();
@@ -802,7 +809,7 @@
           this.loading = false;
           if (error.response.status == 401) {
             this.$store.dispatch("logLout");
-          } else 
+          } else
             console.error(error)
         })
 
@@ -947,6 +954,11 @@
           margin-right: .5rem;
       }
   }
-
+@media (max-width: 500px) {
+  .buttonset button{
+    margin-bottom: 10px;
+    margin-right: 10px!important;
+  }
+}
 
 </style>
