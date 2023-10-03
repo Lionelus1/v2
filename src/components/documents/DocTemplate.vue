@@ -145,10 +145,10 @@
               </SelectButton>
               <Button v-if="selectMode && selectedNode.data.type!=1" icon="pi pi-check-circle" class="p-button-success ml-2" @click="select($event,selectedNode)" v-tooltip.bottom="$t('common.choose')"></Button>
             </div>
-              <div v-if="templateLanguage ==='kz'" ref="kzEditor">
+              <div v-if="templateLanguage ==='kz'&& selectedNode.data && selectedNode.data.mainTextKaz">
                   <TinyEditor v-model="selectedNode.data.mainTextKaz" :readonly="!readonly" :contract-elements="true" :height="800"/>
               </div>
-              <div v-else ref="ruEditor">
+              <div v-else>
                   <TinyEditor v-model="selectedNode.data.mainTextRus" :readonly="!readonly" :contract-elements="true" :height="800"/>
               </div>
 <!--            <RichEditor ref="kzEditor" :readonly="editorReadOnly" v-if="templateLanguage =='kz'" v-model="selectedNode.data.mainTextKaz" editorStyle="height:500px;max-width:700px;min-width:500px">
