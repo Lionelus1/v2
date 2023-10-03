@@ -63,7 +63,7 @@
             >
               <template #body="slotProps">
           <span>
-              {{ new Date(slotProps.data.eventDate).toLocaleDateString() }}
+              {{ formatDateMoment(slotProps.data.eventDate) }}
           </span>
               </template>
             </Column>
@@ -241,14 +241,13 @@ export default {
   //box-shadow: 0 2px 1px -1px rgb(0 0 0 / 20%), 0 1px 1px 0 rgb(0 0 0 / 14%), 0 1px 3px 0 rgb(0 0 0 / 12%);
 
   .text {
-    position: relative;
-    margin-left: 10px;
+    padding: 0 0 0 10px;
+    display: flex;
+    flex-direction: column;
 
     .date {
-      position: absolute;
-      bottom: 0;
       color: #838080;
-      white-space: nowrap;
+      margin-top: 10px;
     }
   }
 
