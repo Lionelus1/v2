@@ -46,4 +46,8 @@ export class NewsService {
     getNewsFiles(params) {
         return api.post(`/web/getNewsFiles`, params, {headers: getHeader()});
     }
+
+    getWelcomeNews(params) {
+        return api.post("/getNews", params, {headers: getHeader()})
+    }
 }
