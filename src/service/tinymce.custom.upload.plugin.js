@@ -295,8 +295,9 @@ export class TinymceCustomUploadPlugin {
             ],
             onSubmit: function (api) {
                 if(api.getData().link_input === '') return
-                const enteredText = `<span style="color: blue; font-weight: bold; font-style: italic;">${`{text:` + api.getData().link_input + `}`}</span>`;
+                const enteredText = `<span style="color: blue; font-weight: bold; font-style: italic;">${`{text:` + api.getData().link_input + `}&nbsp;`}</span>`;
                 editor.selection.setContent(enteredText);
+                editor.execCommand('removeformat', false, null);
                 api.close();
             }
         })
