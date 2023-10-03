@@ -1,6 +1,6 @@
 <template>
     <div class="mb-4">
-        <label><b>{{ $t('common.gallery') }}</b></label>
+        <div class="card-title">{{ $t('common.gallery') }}</div>
         <!--      <CustomFileUpload v-model="galleryFiles" @upload="upload" :accept="'image/*'" :multiple="true" :is-gallery="true"/>-->
         <div class="my-2">
             <Button :label="$t('hdfs.chooseFile')" icon="pi pi-upload" @click="upload"/>
