@@ -733,14 +733,14 @@
       },
       onNodeSelect(node) {
         this.selectedNode = node;
-          console.log(node)
         this.currentNode = node
         this.readonly = this.selectedNode.data.stateEn === DocState.CREATED.Value || this.selectedNode.data.stateEn === DocState.REVISION.Value || (this.selectedNode.data.stateEn === DocState.INAPPROVAL.Value && this.findRole(null, RolesEnum.roles.LegalServiceHead))
-        /*if (this.$refs.kzEditor) {
-          this.$refs.kzEditor.setReadOnly(this.readonly);
-        } else {
-          this.$refs.ruEditor.setReadOnly(this.readonly);
-        }*/
+        this.$emit("languageChanged", this.templateLanguage )
+          /*if (this.$refs.kzEditor) {
+            this.$refs.kzEditor.setReadOnly(this.readonly);
+          } else {
+            this.$refs.ruEditor.setReadOnly(this.readonly);
+          }*/
       },
       addTemplateNode(nodeDataChildren,node,fkey) {
         let child=new Object();
