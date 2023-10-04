@@ -9,15 +9,6 @@
             :close-on-escape="true"
             @hide="closeModal"
     >
-      <template #header>
-        <div class="w-full flex justify-content-end">
-          <Button
-              icon="pi pi-times"
-              class="p-dialog-header-icon p-dialog-header-close p-link"
-              @click="closeModal"
-          />
-        </div>
-      </template>
         <Card style="box-shadow: none">
             <template #header>
                 <div class="dialog_img">
