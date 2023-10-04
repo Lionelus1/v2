@@ -511,7 +511,7 @@ export default {
 
 .container1 {
     position: relative;
-    width: 135px;
+    width: 162px;
     height: 100%;
     padding: 20px;
     background-color: #2b89d1;

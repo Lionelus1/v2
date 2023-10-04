@@ -26,4 +26,19 @@ export class DissertationService {
     getMemberState() {
         return api.post(`/dissertation/getMemberState`)
     }
+    getDissertationList(params) {
+        return api.post(`/dissertation/list`, params, {headers: getHeader()});
+    }
+    addDissertationReportByYear(params) {
+        return api.post(`/dissertation/addYearReport`, params, {headers: getHeader()});
+    }
+    getDissertationHtml(params) {
+        return api.post(`/dissertation/htmlcode`, params, {headers: getHeader()});
+    }
+    dissertationReport(params) {
+        return api.post(`/dissertation/report`, params, {headers: getHeader()});
+    }
+    deleteReport(id) {
+        return api.post(`/dissertation/deleteReport`, {id: id}, {headers: getHeader()});
+    }
 }
