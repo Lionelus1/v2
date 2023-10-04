@@ -30,4 +30,19 @@ export class DissertationService {
     updateDoctoral(params) {
         return api.post(`/dissertation/updateDoctoral`, params, {headers: getHeader()});
     }
+    getDissertationList(params) {
+        return api.post(`/dissertation/addReport`, params, {headers: getHeader()});
+    }
+    addDissertationReportByYear(params) {
+        return api.post(`/dissertation/addYearReport`, params, {headers: getHeader()});
+    }
+    getDissertationHtml(params) {
+        return api.post(`/dissertation/htmlcode`, params, {headers: getHeader()});
+    }
+    dissertationReport(params) {
+        return api.post(`/dissertation/report`, params, {headers: getHeader()});
+    }
+    deleteReport(id) {
+        return api.post(`/dissertation/deleteReport`, {id: id}, {headers: getHeader()});
+    }
 }

@@ -521,14 +521,14 @@ export default {
 }
 
 .container1 {
-  position: relative;
-  width: 162px;
-  height: 100%;
-  padding: 20px;
-  background-color: #2b89d1;
-  margin-top: 10px;
-  border-radius: 5px;
-  overflow: hidden;
+    position: relative;
+    width: 135px;
+    height: 100%;
+    padding: 20px;
+    background-color: #2b89d1;
+    margin-top: 10px;
+    border-radius: 5px;
+    overflow: hidden;
 }
 
 .close-button {
