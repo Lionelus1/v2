@@ -264,8 +264,8 @@ const routes = [
                     },
                     {
                         path: 'report/:id',
-                        name: 'DissertationList',
-                        component: load('dissertation/DissertationList'),
+                        name: 'DissertationReport',
+                        component: load('dissertation/DissertationReport'),
                         beforeEnter: ifAuthenticated
                     },
                     {

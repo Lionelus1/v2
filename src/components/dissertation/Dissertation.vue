@@ -233,7 +233,7 @@ export default {
       this.$router.push({ name: "Members", params: { id: id, role: 1 } });
     },
     openDissertationList(id) {
-      this.$router.push({ name: "DissertationList", params: { id: id, specCode:this.selectedCouncil.specialities[0].code, specNameKz: this.selectedCouncil.specialities[0].nameInKz || "null", specNameRu: this.selectedCouncil.specialities[0].nameInRu || "null", specNameEn: this.selectedCouncil.specialities[0].nameInEn || "null", dirCode:this.selectedCouncil.specialities[0].trainingDirection.code, trainingDirectionKz:this.selectedCouncil.specialities[0].trainingDirection.nameInKz || "null", trainingDirectionRu:this.selectedCouncil.specialities[0].trainingDirection.nameInRu || "null", trainingDirectionEn:this.selectedCouncil.specialities[0].trainingDirection.nameInEn || "null"} });
+      this.$router.push({ name: "DissertationReport", params: { id: id, specCode:this.selectedCouncil.specialities[0].code, specNameKz: this.selectedCouncil.specialities[0].nameInKz || "null", specNameRu: this.selectedCouncil.specialities[0].nameInRu || "null", specNameEn: this.selectedCouncil.specialities[0].nameInEn || "null", dirCode:this.selectedCouncil.specialities[0].trainingDirection.code, trainingDirectionKz:this.selectedCouncil.specialities[0].trainingDirection.nameInKz || "null", trainingDirectionRu:this.selectedCouncil.specialities[0].trainingDirection.nameInRu || "null", trainingDirectionEn:this.selectedCouncil.specialities[0].trainingDirection.nameInEn || "null"} });
 
 
     },
