@@ -27,7 +27,7 @@ export class DissertationService {
         return api.post(`/dissertation/getMemberState`)
     }
     getDissertationList(params) {
-        return api.post(`/dissertation/list`, params, {headers: getHeader()});
+        return api.post(`/dissertation/addReport`, params, {headers: getHeader()});
     }
     addDissertationReportByYear(params) {
         return api.post(`/dissertation/addYearReport`, params, {headers: getHeader()});
