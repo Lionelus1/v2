@@ -2,6 +2,8 @@
   <div class="col-12 flex flex-column">
     <TitleBlock
       :title="`${$t('web.siteSettings')}${facultyAbbrev ? ' - ' + facultyAbbrev['name_' + $i18n.locale] : ''}`" />
+
+
     <TabView>
       <TabPanel :header="$t('web.properties')">
         <Panel :header="$t('web.commonSettings')" v-if="isWebAdmin || isFacultyWebAdmin">
@@ -119,7 +121,7 @@ const fileService = new FileService()
 const bgImg = ref(null)
 
 const facultySite = computed(() => {
-  return `${enuService.getSiteUrl(store)}?mode=preview`
+  return `${enuService.getSiteUrl(store, null)}?mode=preview`
 })
 
 const getFacultyAbb = () => {
@@ -156,7 +158,7 @@ const getSettings = () => {
 }
 
 onMounted(() => {
-  getSettings();
+  // getSettings();
   getFacultyAbb();
 
 })
@@ -239,7 +241,7 @@ const saveSiteInfo = () => {
   enuService.setSiteInfo(infoData.value).then(res => {
     if (res.data)
       toast.add({ severity: "success", summary: i18n.t('common.success'), life: 3000 });
-    getSettings();
+    // getSettings();
   }).catch(error => {
     toast.add({ severity: "error", summary: error, life: 3000 });
   })
@@ -249,7 +251,7 @@ const saveMaintenaceMode = () => {
   enuService.setSiteMaintenanceMode({ is_closed: isClosed.value }).then(res => {
     if (res.data)
       toast.add({ severity: "success", summary: i18n.t('common.success'), life: 3000 });
-    getSettings();
+    // getSettings();
   }).catch(error => {
     toast.add({ severity: "error", summary: error, life: 3000 });
   })
@@ -262,6 +264,10 @@ const isValid = () => {
     errors.push(1)
 
   return errors.length === 0
+}
+
+const onSlugSelect = (event) => {
+
 }
 
 </script>

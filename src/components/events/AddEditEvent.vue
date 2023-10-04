@@ -422,6 +422,7 @@ export default {
         uploadPosterImageKk(event) {
             const fd = new FormData()
             fd.append("files[]", event.files[0])
+            fd.append("watermark", false)
             this.fileService.uploadFile(fd).then(res => {
                 if (res.data) {
                     this.poster.image_kk_file = res.data[0];
@@ -436,6 +437,7 @@ export default {
         uploadPosterImageRu(event) {
             const fd = new FormData()
             fd.append("files[]", event.files[0])
+            fd.append("watermark", false)
             this.fileService.uploadFile(fd).then(res => {
                 if (res.data) {
                     this.poster.image_ru_file = res.data[0];
@@ -449,6 +451,7 @@ export default {
         uploadPosterImageEn(event) {
             const fd = new FormData()
             fd.append("files[]", event.files[0])
+            fd.append("watermark", false)
             this.fileService.uploadFile(fd).then(res => {
                 if (res.data) {
                     this.poster.image_en_file = res.data[0];

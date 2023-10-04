@@ -1,8 +1,9 @@
 <template>
     <div>
         <BlockUI :blocked="saving" :fullScreen="true"></BlockUI>
+        <TitleBlock :title="$t('course.organizers')" />
         <div class="surface-card p-4 shadow-2 border-round">
-            <div class="text-2xl font-medium text-900 mb-3">{{ $t('course.organizers') }}</div>
+            
             <div>
                 <DataTable
                     selectionMode="single"

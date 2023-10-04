@@ -32,5 +32,29 @@ a {
     min-height: 100vh;
 }
 
+.p-datatable .p-datatable-thead > tr > th {
+    background: transparent;
+}
 
+.p-datatable .p-datatable-header {
+    background: transparent;
+    border-bottom: 1px solid #e9ecef;
+    border-top: transparent;
+}
 
+.p-treetable .p-treetable-header {
+    background: transparent;
+}
+
+.p-treetable .p-treetable-thead > tr > th {
+    background: transparent;
+}
+.p-tabview .p-tabview-nav li .p-tabview-nav-link:not(.p-disabled):focus{
+    box-shadow: none;
+}
+
+.card-title {
+    color: #495057;
+    font-weight: 500;
+    margin-bottom: .7rem;
+}

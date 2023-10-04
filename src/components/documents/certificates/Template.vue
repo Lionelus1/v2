@@ -3,15 +3,12 @@
     <BlockUI :blocked="loading" :fullScreen="true">
     </BlockUI>
 		<div class="col-12">
+      <TitleBlock :title="$t('course.certificate.template')" />
 			<div class="card">
-        <div class="text-2xl font-medium text-900 mb-3">{{$t("course.certificate.template")}}</div>
         <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
 
-        <Toolbar>
-          <template #end>
-            <Button :label="$t('common.add')" @click="this.inittialNewTemplate();templateEditorVisilble=true;" icon="pi pi-plus" />
-          </template>
-        </Toolbar>
+          <Button :label="$t('common.add')" @click="this.inittialNewTemplate();templateEditorVisilble=true;" icon="pi pi-plus" />
+  
         <DataTable
           v-if="journal"
           selectionMode="single"
@@ -76,6 +73,7 @@
 
 import {OnlineCourseService} from "@/service/onlinecourse.service";
 import Certificate from './Certificate.vue';
+import TitleBlock from "@/components/TitleBlock"
 export default {
     name: "Templates",
     components: {Certificate},
@@ -100,9 +98,11 @@ export default {
           this.service.getCertificateTemplateJournal(this.lazyParams).then(response =>{
             this.journal = response.data.templates;
             this.count = response.data.count;
-            this.loading = false;
           })
-          .catch(_=> {
+          .catch((e)=> {
+            console.log(e)
+          })
+          .finally(() => {
             this.loading = false;
           })
         },

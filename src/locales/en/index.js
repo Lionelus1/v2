@@ -31,6 +31,12 @@ export default {
     approveDate: "Approve date",
     approvedBy: "Approved by",
     notUpload: "Document not uploaded",
+    nextIssue: "Last certificate number",
+    goToTheCourse: "Go to the course",
+    addCertificate: "Certificate required",
+    updateGES:"Update the list of GES",
+    downloadCertificate:"Download The Certificate",
+    selectAll: "Select All",
     action: {
       submit: "Submit",
       accept: "Accept",
@@ -115,6 +121,7 @@ export default {
     code: "Code",
     main: "Main",
     more: "More",
+    loadMore: "Load more",
     meetingUrl: "Link to online meeting",
     meetingPlace: "Meeting place",
     myData: "My details",
@@ -321,7 +328,8 @@ export default {
         address: 'Address',
         qrGenerator: 'QR generator',
         generate: 'Generate',
-        selectFormat: 'Select format'
+        selectFormat: 'Select format',
+        notifications: 'Notifications'
     },
     bank: {
         title: "Banks",
@@ -601,7 +609,8 @@ export default {
         loadingEvents: "Loading events. Please wait.",
         newsCategoriesTitle: "News categories",
         createOrEditNewsCategory: "Create/edit news category",
-        createOrEditNews: "Create/edit news",
+        createNews: "Create news",
+        editNews: "Edit news",
         createOrEditEvents: "Create/edit events",
         chooseCategory: "select a category",
         parent: "parent category",
@@ -759,6 +768,9 @@ export default {
         setMeetingTimeConfirmMsg: "By clicking the {btn} button below, you confirm the correctness of the information and this information is published in the form of an announcement on the site.",
         addMemeberToDisCouncil: 'Add Member to The Dissertation Council',
         meetingDateMessage: 'You can start the Conducting a defence only one day before',
+        scienceConsultantInfo: 'Science Consultant',
+        foreignConsultantInfo: 'Foreign Consultant',
+        videoLink: 'Link to video',
         dissertationList: 'Dissertation reports',
         doctorantFullName: 'Doctorant Fullname',
         doctorantBirthday: 'Year of birth',
@@ -916,7 +928,8 @@ export default {
         editAnswerConfirm: 'Are you sure you want to make changes to the answer?',
         facultyName: 'Faculty Name',
         menuIcon: 'Menu Icon',
-        uploadMenuIcon: 'Select an Icon'
+        uploadMenuIcon: 'Select an Icon',
+        domain: 'Domain'
     },
     //Student locale
     student: {
@@ -1256,6 +1269,7 @@ export default {
         journalOfUsers: 'journal-users',
         journal: 'Journal',
         addCourse: 'Add to the course',
+        completedTraining: 'Completed training',
     },
     roleControl:{
         addSidebar: 'Adding new record',

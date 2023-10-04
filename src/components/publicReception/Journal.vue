@@ -1,75 +1,103 @@
 <template>
-  <div class="col-12">
-    <h5>{{ $t("publicReception.title") }}</h5>
+    <TitleBlock :title="$t('publicReception.title')" />
     <BlockUI :blocked="loading" :fullScreen="true">
       <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
     </BlockUI>
-    <div class="card">
-      <DataView :lazy="true" :loading="loading" responsiveLayout="scroll" :value="data" :rows="10" :paginator="true" @page="onPage($event)"
-                :totalRecords="total">
-
-        <template #list="slotProps">
-          <div class="product-grid-item card">
-            <div class="product-grid-item-top mb-2">
-              <div class="col-12 grid">
-                <div class="lg:col-3 md:col-3 p-sm-6">
-                  <i class="fa-solid fa-tags product-category-icon"></i>
-                  <small class="product-category">{{ slotProps.data.category['name' + $i18n.locale].split("(")[0] }}</small>
+    <div class="">
+        <div class="grid">
+<!--        <div class="card col-6 shadow-1 gap-1" v-for="i of data" :key="i">
+            <div class="flex justify-content-between">
+                <div>
+                    <i class="fa-solid fa-tags product-category-icon"></i>
+                    <small class="product-category">{{ i.category['name' + $i18n.locale].split("(")[0] }}</small>
                 </div>
-                <div class="lg:col-3  md:col-3 p-sm-6  text-right">
-                  <span v-if="adminMode"
-                        :class="'customer-badge status-' + slotProps.data.state.id">{{ $t("common.states." + slotProps.data.state.code) }}</span>
+                <div>
+                    <span v-if="adminMode" :class="'customer-badge status-' + i.state.id">{{ $t("common.states." + i.state.code) }}</span>
                 </div>
-                <div class="lg:col-3  md:col-3 p-sm-6">
-                  <small>№&nbsp;{{ slotProps.data.id }}</small>
-                </div>
-                <div class="lg:col-3  md:col-3 p-sm-6 text-right">
-                  <span v-if="slotProps.data.expired">
+                <div>
+                    <span v-if="i.expired">
                     <i class="fa-solid fa-calendar-days product-error-icon"></i>
                   </span>
-                  <span v-else>
+                    <span v-else>
                     <i class="fa-solid fa-calendar-days product-category-icon"></i>
                   </span>
-                  <small class="product-category">{{ moment(new Date(slotProps.data.createdDate)).utc().format("DD.MM.YYYY") }}</small>
+                    <small class="product-category">{{ moment(new Date(i.createdDate)).utc().format("DD.MM.YYYY") }}</small>
                 </div>
-              </div>
             </div>
-            <div class="product-grid-item-content">
-              <p class="block-with-text">{{ slotProps.data.question }}</p>
-            </div>
-            <div class="product-grid-item-bottom">
-              <div class="col-12 grid">
-                <div class="lg:col-3 md:col-3 p-sm-6">
-                <span>
-                  <i class="fa-solid fa-at product-category-icon"></i>
-                  <small class="product-category">{{ slotProps.data.lastName + " " + slotProps.data.firstName }}</small>
-                </span>
+            <div class="flex justify-content-between">
+                <div>
+
                 </div>
-                <div class="lg:col-3 md:col-3 p-sm-6 text-right">
-                  <div v-if="adminMode">
-              <span v-if="slotProps.data.replier">
-                <i class="fa-solid fa-user-tag product-category-icon"></i>
-                <small class="product-category">{{ slotProps.data.replier.fullName }}</small>
-              </span>
-                    <Button v-if="slotProps.data.state.id !=7" :label="$t('common.send')" icon="pi pi-send" class="p-button-outlined p-button-warning"
-                            @click="currentQuestion=slotProps.data.id;sendDialog=true"></Button>
+                <i class="fa-solid fa-at product-category-icon"></i>
+                <small class="product-category">{{ slotProps.data.lastName + " " + slotProps.data.firstName }}</small>
+            </div>
+        </div>-->
+        </div>
+      <DataView :lazy="true" :loading="loading" :value="data" :rows="10" :paginator="true" @page="onPage($event)"
+                :totalRecords="total" layout="grid">
+        <template #grid="slotProps">
+          <div class="col-12 lg:col-6 p-2">
+              <div class="card question_card p-3 shadow-1 m-0">
+                  <div class="block sm:flex justify-content-between relative">
+                          <div class="">
+                              <i class="fa-solid fa-tags product-category-icon mr-2"></i>
+                              <small class="product-category">{{ slotProps.data.category['name' + $i18n.locale].split("(")[0] }}</small>
+                          </div>
+                          <div class="question_status block sm:absolute mt-2 mb-2 sm:m-0">
+                          <span class="font-bold mr-2">
+                            <small>№&nbsp;{{ slotProps.data.id }}</small>
+                          </span>
+                          <span v-if="adminMode" :class="'customer-badge status-' + slotProps.data.state.id">
+                            {{ $t("common.states." + slotProps.data.state.code) }}
+                          </span>
+                          </div>
+                          <div class="">
+                  <span v-if="slotProps.data.expired">
+                    <i class="fa-solid fa-calendar-days product-error-icon mr-2"></i>
+                  </span>
+                  <span v-else>
+                    <i class="fa-solid fa-calendar-days product-category-icon mr-2"></i>
+                  </span>
+                              <small class="product-category">{{ moment(new Date(slotProps.data.createdDate)).utc().format("DD.MM.YYYY") }}</small>
+                          </div>
+                      </div>
+                  <div class="product-grid-item-content mt-4 mb-4">
+                      <p class="question_text" :title="slotProps.data.question">{{ slotProps.data.question }}</p>
                   </div>
-                </div>
-                <div class="lg:col-3 md:col-3 p-sm-6">
-                  <Button v-if="slotProps.data.filePath" :label="$t('faq.attachments')" icon="pi pi-download"
-                          @click="downloadFile(slotProps.data.filePath)"></Button>
-                </div>
-                <div class="lg:col-3 md:col-3 p-sm-6  text-right">
-                  <router-link :to="{ name: 'ReceptionQuestion', params: { id: slotProps.data.id } }" tag="a">
-                    <Button :label="$t('common.more')" class="p-button-outlined p-button-info"></Button>
-                  </router-link>
-                </div>
-
+                  <div class="product-grid-item-bottom">
+                      <div class="block sm:flex justify-content-between align-items-center">
+                          <div>
+                              <div class="mb-2 sm:m-0">
+                                  <i class="fa-solid fa-at product-category-icon mr-2"></i>
+                                  <small class="product-category">{{ slotProps.data.lastName + " " + slotProps.data.firstName }}</small>
+                              </div>
+                              <div v-if="adminMode" class="block sm:flex align-items-center">
+                                  <span v-if="slotProps.data.replier">
+                                    <i class="fa-solid fa-user-tag product-category-icon mr-2"></i>
+                                    <small class="product-category mb-2 sm:m-0">{{ slotProps.data.replier.fullName }}</small>
+                                  </span>
+                              </div>
+                          </div>
+                          <div class="sm:flex block justify-content-between align-items-center">
+                              <div v-if="adminMode">
+                                  <Button v-if="slotProps.data.state.id !=7" :label="$t('common.send')" icon="pi pi-send" class="p-button-outlined p-button-warning sm:ml-2 sm:mt-0 ml-0 mt-2 sm:mr-4 mr-0"
+                                          @click="currentQuestion=slotProps.data.id;sendDialog=true"></Button>
+                              </div>
+                                  <Button class="mt-2 sm:mt-0 sm:mr-4 mr-0" v-if="slotProps.data.filePath" :label="$t('faq.attachments')" icon="pi pi-download"
+                                          @click="downloadFile(slotProps.data.filePath)"></Button>
+                              <div class="">
+                                  <router-link :to="{ name: 'ReceptionQuestion', params: { id: slotProps.data.id } }" tag="a">
+                                      <Button :label="$t('common.more')" class="p-button-outlined p-button-info mt-2 sm:mt-0 sm:mr-4 mr-0"></Button>
+                                  </router-link>
+                              </div>
+                              <div style="text-align: end">
+                                  <i class="fa-solid fa-trash cursor-pointer product-error-icon"></i>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
               </div>
-            </div>
           </div>
-
-
         </template>
       </DataView>
     </div>
@@ -84,8 +112,6 @@
         <Button :label="$t('common.yes')" autofocus @click="sendToResponsible"/>
       </template>
     </Dialog>
-
-  </div>
 </template>
 
 <script>
@@ -94,9 +120,11 @@ import {FilterMatchMode, FilterOperator} from 'primevue/api';
 import {getHeader, smartEnuApi, findRole} from "@/config/config";
 import moment from "moment";
 import ReceptionService from "@/service/reception.service";
+import TitleBlock from "@/components/TitleBlock.vue";
 
 
 export default {
+    components: {TitleBlock},
   props: {
     adminMode: {
       type: Boolean,
@@ -231,6 +259,12 @@ export default {
       this.lazyParams = event
       this.getData();
     },
+    truncateQuestion(text) {
+      if (text.length <= 70) {
+        return text;
+      }
+        return text.substring(0, 70) + '\u2026'
+    }
   }
 };
 </script>
@@ -350,12 +384,6 @@ export default {
     margin-right: .5rem;
   }
 
-  .product-error-icon {
-    vertical-align: middle;
-    margin-right: .5rem;
-    color: #c63737
-  }
-
   .block-with-text {
     overflow: hidden;
     position: relative;
@@ -365,5 +393,30 @@ export default {
     margin-right: -1em;
     padding-right: 1em;
   }
+}
+.product-error-icon {
+  vertical-align: middle;
+  margin-right: .5rem;
+  color: #c63737
+}
+
+::v-deep(.p-dataview .p-dataview-content) {
+  background: transparent !important;
+}
+::v-deep(.p-dataview .p-paginator-bottom){
+  margin-top: 20px;
+}
+.question_text{
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  display: -webkit-box;
+  overflow: hidden;
+  width: 90%;
+}
+.question_card{
+  min-height: 166px;
+}
+.question_status{
+  left: 45%;
 }
 </style>

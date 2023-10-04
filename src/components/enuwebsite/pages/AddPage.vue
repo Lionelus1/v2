@@ -114,6 +114,8 @@ import {EnuWebService} from "@/service/enu.web.service";
 import TinyEditor from "../../TinyEditor.vue";
 import Gallery from "@/components/Gallery.vue";
 import {downloadRoute, getHeader, smartEnuApi} from "@/config/config";
+import {findRole} from "@/config/config";
+import {useStore} from "vuex";
 
 export default {
     name: "AddPage",
@@ -124,7 +126,14 @@ export default {
             submitted: false,
             enuService: new EnuWebService(),
             fileList: [],
-            uploadedGalleryFiles: null
+            uploadedGalleryFiles: null,
+            store : useStore(),
+            lazyParams: {
+                page: 1,
+                rows: 30,
+                parent_id: this.currentMenu ? this.currentMenu.menu_id : null,
+                slug: localStorage.getItem('selectedSlug') ? JSON.parse(localStorage.getItem('selectedSlug')).slug : null
+            },
         }
     },
     computed: {
@@ -146,7 +155,10 @@ export default {
             if (!this.isValid()) {
                 return;
             }
-
+            if (this.lazyParams.slug && findRole(this.store.state.loginedUser, 'enu_web_admin')) (
+                this.formData.slug = this.lazyParams.slug
+            )  
+            
             if (this.uploadedGalleryFiles) {
                 this.uploadedGalleryFiles.forEach(item => {
                     this.formData.files = this.formData.files || []

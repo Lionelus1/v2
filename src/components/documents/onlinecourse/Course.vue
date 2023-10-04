@@ -32,17 +32,17 @@
 
                                     <Button v-if="findRole(null,'online_course_administrator')"
                                             class="p-button-help mb-2" icon="fa-solid fa-certificate"
-                                            :label="$t('course.certificate.issue')" @click="issueCertificate(0)"/>
+                                            :label="$t('course.certificate.issue')" @click="openIssueCertificateDialog"/>
 
                                     <Button v-if="findRole(null,'online_course_administrator')"
                                             class="p-button-help mb-2" icon="fa-solid fa-file-circle-check"
                                             :label="$t('course.certificate.issueWithApp')"
-                                            @click="issueCertificate(1)"/>
+                                            @click="openIssueCertificateWithDialog"/>
 
                                 </div>
                                 <span v-if="findRole(null,'online_course_administrator')" class="p-input-icon-left">
                                     <i class="pi pi-search"/>
-                                    <InputText disabled="true" :placeholder="$t('common.search')"/>
+                                    <InputText type="search" v-model="searchText" @keyup.enter="getCourseStudents"  @search="getCourseStudents" :placeholder="$t('common.search')"/>
                                 </span>
                             </div>
                         </template>
@@ -62,7 +62,7 @@
                                         @click="updateUserState(slotProps.data.profile.userID, 2)"/>
                                 <Button v-if="slotProps.data.state.id != 1" class="p-button-success mr-3"
                                         icon="fa-solid fa-list-check" v-tooltip.bottom="$t('course.journal')" label=""
-                                        @click="openJournal(slotProps.data.profile.userID)"/>
+                                        @click="openJournal(slotProps.data.profile.userID, slotProps.data.state.id)"/>
                                 <Button v-if="slotProps.data.certificateUUID" icon="fa-solid fa-award" class="mr-3"
                                         v-tooltip.bottom="$t('course.certificate.view')" label=""
                                         @click="openCertificate(slotProps.data.certificateUUID)"/>
@@ -102,6 +102,55 @@
                         </template>
                     </Dialog>
 
+                    <Dialog v-model:visible="issueCertificateDialog" :style="{ width: '500px' }">   
+                        <template #header>
+                            <div>
+                                <i class="pi pi-exclamation-triangle mr-2"></i>
+                                {{ $t('course.certificate.confirm') }}
+                            </div>
+                        </template>
+                        <label>{{ $t('common.nextIssue') }}</label>
+                        <template #footer>
+                            <div class="flex justify-content-between">
+                                    <InputText type="text" v-model="organizer.lastNumber"></InputText>
+                                    <div>
+                                        <Button v-if="findRole(null,'online_course_administrator')"
+                                            :label="$t('common.yes')" @click="issueCertificate(0)"/>
+
+                                        <Button :label="$t('common.no')" @click="closeIssueCertificateDialog"
+                                        class="p-button-outlined"/>
+                                    </div>
+                            </div>
+
+                        </template>
+                        
+                    </Dialog>
+
+                    <Dialog v-model:visible="issueCertificateWithDialog" :style="{ width: '450px' }">
+                        <template #header>
+                            <div>
+                                <i class="pi pi-exclamation-triangle mr-2"></i>
+                                {{ $t('course.certificate.confirm2') }}
+                            </div>
+                        </template>
+
+                        <label>{{ $t('common.nextIssue') }}</label>
+                        <template #footer>
+                            <div class="flex justify-content-between">
+                                <InputText type="text" v-model="organizer.lastNumber"></InputText>
+                                <div>
+                                    <Button v-if="findRole(null,'online_course_administrator')"
+                                            :label="$t('common.yes')" 
+                                            @click="issueCertificate(1)"/>
+                                    <Button :label="$t('common.no')" @click="closeIssueCertificateWithDialog"
+                                            class="p-button-secondary p-button-outlined"/>
+                                </div>
+                                
+                            </div>
+                        </template>
+                        
+                    </Dialog>
+
                 </div>
             </TabPanel>
 
@@ -127,8 +176,6 @@
 
                             <Button v-if="findRole(null,'online_course_administrator')" class="p-button-danger mr-3"
                                     icon="fa-solid fa-trash" label="" @click="deleteModule(data.id)"/>
-
-                            
                         </template>
                     </Column>
                 </DataTable>
@@ -197,7 +244,7 @@
             </div>
             <div class="flex flex-wrap row-gap-1" v-if="formData.id">
                 <Button :label="$t('common.save')" @click="updateModuleOfCourse" class="w-full p-button-primary"/>
-                <Button :label="$t('common.cancel')" @click="closeModuleDialog" 
+                <Button :label="$t('common.cancel')" @click="closeModuleDialog"
                         class="w-full p-button-secondary p-button-outlined"/>
             </div>
         </template>
@@ -238,6 +285,8 @@
         </Card>
         <Button v-if="findRole(null,'online_course_administrator')" :label="$t('common.save')" icon="pi pi-check" class="p-button p-component p-button-success mr-2"
                 @click="updateJournal()"/>
+        <Button v-if="findRole(null,'online_course_administrator') && stateID !== 5" :label="$t('course.completedTraining')" icon="pi pi-check" class="p-button p-component mr-2"
+                @click="updateUserState(userID, 4)" :disabled="!isButtonDisabled"/>
     </Sidebar>
 
     <Sidebar v-model:visible="qrVisible"
@@ -262,6 +311,7 @@ export default {
             loading: false,
             service: new OnlineCourseService(),
             course: null,
+            organizer: {},
             students: [],
             saving: false,
             student: null,
@@ -273,6 +323,8 @@ export default {
             },
             submitted: false,
             studentDialog: false,
+            issueCertificateDialog: false,
+            issueCertificateWithDialog: false,
             newUsers: [],
             updateGrades: [],
 
@@ -287,7 +339,11 @@ export default {
             smartEnuApi: smartEnuApi,
             formData: {},
             reqBtn: true,
-            statusText: false
+            statusText: false,
+            userID: null,
+            stateID: null, 
+            searchText: '',
+            searchData: {}
         }
     },
     created() {
@@ -320,6 +376,9 @@ export default {
 
         updateUserState(userID, state) {
             this.loading = true;
+            if (this.journal != null) {
+			    this.updateJournal();
+            }
             this.service.updateUserState(this.course.history[0].id, userID, state).then(response => {
                 this.loading = false
                 this.$toast.add({
@@ -328,6 +387,7 @@ export default {
                     life: 3000,
                 });
                 this.getCourseStudents();
+                this.journalVisible = false
             }).catch(_ => {
                 this.loading = false
             });
@@ -414,38 +474,66 @@ export default {
         addStudent() {
             this.studentDialog = true;
         },
-        issueCertificate(withApplication) {
-            this.$confirm.require({
-                message: withApplication === 0 ? this.$t("course.certificate.confirm") : withApplication === 1 ? this.$t("course.certificate.confirm2") : '',
-                header: ' ',
-                icon: 'pi pi-exclamation-triangle',
-                accept: () => {
-                    this.saving = true
-                    this.service.issueCertificate({
-                        users: null,
-                        courseID: this.course.id,
-                        comment: "",
-                        withApplication: withApplication
-                    }).then(_ => {
-                        this.saving = false;
-                        this.submitted = false;
-                        this.$toast.add({
-                            severity: "success",
-                            summary: this.$t('common.successDone'),
-                            life: 3000,
-                        });
-                        this.getCourseStudents()
-                    }).catch(_ => {
-                        this.saving = false;
-                        this.submitted = false;
-                    })
-                },
-            });
+        openIssueCertificateDialog() {
+            this.issueCertificateWithDialog = false;
+            this.issueCertificateDialog = true;
+            this.getCourseOrganizerByCourseID()
         },
 
+        openIssueCertificateWithDialog() {
+            this.issueCertificateDialog = false;
+            this.issueCertificateWithDialog = true;
+            this.getCourseOrganizerByCourseID()
+        },
+
+        issueCertificate(withApplication) {
+            this.saving = true
+            this.service.issueCertificate({
+                users: null,
+                courseID: this.course.id,
+                comment: "",
+                withApplication: withApplication
+            }).then(_ => {
+                this.saving = false;
+                this.submitted = false;
+                this.$toast.add({
+                    severity: "success",
+                    summary: this.$t('common.successDone'),
+                    life: 3000,
+                });
+                this.getCourseStudents()
+
+            }).catch(_ => {
+            })
+            .finally(() => {
+                this.saving = false;
+                this.submitted = false;
+                this.issueCertificateWithDialog = false
+                this.issueCertificateDialog = false
+            })
+        },
+        getCourseOrganizerByCourseID() {
+            this.loading = true
+            
+            this.service.getCourseOrganizerByCourseID(this.course_id).then(response => {
+                this.organizer = response.data.organizer
+      
+                this.loading = false
+            }).catch(_ => {
+                this.loading = false
+            });
+        },  
         closeStudentDialog() {
             this.studentDialog = false;
             this.newUsers = []
+        },
+
+        closeIssueCertificateDialog() {
+            this.issueCertificateDialog = false;
+        },
+
+        closeIssueCertificateWithDialog() {
+            this.issueCertificateWithDialog = false;
         },
 
         getCourse() {
@@ -469,8 +557,15 @@ export default {
         },
         getCourseStudents() {
             this.loading = true
+            const requestData = {
+                courseID: this.course_id,
+                page: this.studentLazyParams.page,
+                rows: this.studentLazyParams.rows,
+                searchText: this.searchText,
+            };
+
             //localStorage.setItem("course_page", JSON.stringify(this.studentLazyParams));
-            this.service.getCourseStudents(this.course_id, this.studentLazyParams.page, this.studentLazyParams.rows).then(response => {
+            this.service.getCourseStudents(requestData).then(response => {
                 if (response.data.students) {
                     this.students = response.data.students
                 }
@@ -506,7 +601,9 @@ export default {
                 this.submitted = false;
             })
         },
-        openJournal(studentID) {
+        openJournal(studentID,stateID) {
+            this.userID = studentID
+            this.stateID = stateID
             this.getJournal(this.course.history[0].id, studentID)
             this.journalVisible = true;
         },
@@ -514,6 +611,9 @@ export default {
             this.journalVisible = false;
         },
         updateJournal() {
+            if (this.journal == null) {
+                return
+            }
             let journals = this.journal.map(e => {
                 const newObjs = {
                     id: e.id,
@@ -574,14 +674,18 @@ export default {
             this.service.updateModuleOfCourse(this.formData).then(_ => {
                 this.saving = false;
                 this.submitted = false;
-                this.closeModuleDialog();   
+                this.closeModuleDialog();
             }).catch(_ => {
                 this.saving = false;
                 this.submitted = false;
             });
         }
-
-    }
+    },
+    computed: {
+        isButtonDisabled() {
+            return this.journal.every(item => item.grade !== null);
+        }
+    },
 }
 </script>
 <style></style>

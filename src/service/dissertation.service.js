@@ -41,4 +41,8 @@ export class DissertationService {
     deleteReport(id) {
         return api.post(`/dissertation/deleteReport`, {id: id}, {headers: getHeader()});
     }
+
+    updateDoctoral(params) {
+        return api.post(`/dissertation/updateDoctoral`, params, {headers: getHeader()});
+    }
 }

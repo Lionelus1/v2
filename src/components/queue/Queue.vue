@@ -1,16 +1,15 @@
 <template>
-	<div>
-    <Toolbar class="mb-4 ">
-      <template #start>
+    <h3>{{ $t("queue.title") }}</h3>
+	<div class="card">
+    <div class="mb-4 ">
         <Button
           :label="$t('common.add')"
           :title="$t('queue.creatQueue')"          
           icon="pi pi-plus"
           class="p-button-success mr-2"
           v-on:click="createQueue(null)"
-        />        
-      </template>
-    </Toolbar>
+        />
+    </div>
     <TreeTable :value="queues" :lazy="true" :paginator="true" :rows="lazyParams.rows" :loading="loading"
       @nodeExpand="onExpand" @page="onPage" :totalRecords="totalRecords" selectionMode="single" v-model:selectionKeys="currentNode">
       <template #header>

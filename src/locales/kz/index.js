@@ -30,6 +30,12 @@ export default {
         approveDate: "Бекітілген күні",
         approvedBy: "Бекіткен",
         notUpload: 'Құжат жүктелмеді',
+        nextIssue: 'Сертификаттың соңғы нөмірі',
+        goToTheCourse: "Курсқа өту",
+        addCertificate: "Сертификат қажет етіледі",
+        updateGES:"ЖББП тізімін жаңарту",
+        downloadCertificate:"Сертификат жүктеп алу",
+        selectAll: "Барлығын таңдау",
         action: {
             submit: 'Жіберу',
             accept: 'Қабылдау',
@@ -114,6 +120,7 @@ export default {
         code: "Коды",
         main: "Негізгі",
         more: "Толық",
+        loadMore: "Көбірек жүктеу",
         meetingUrl: "Онлайн жиналысқа сілтеме",
         meetingPlace: "Жиналыс өтетін орын",
         move: "Орнын ауыстыру",
@@ -319,7 +326,8 @@ export default {
         address: 'Адрес',
         qrGenerator: 'QR генератор',
         generate: 'Генерациялау',
-        selectFormat: 'Форматты таңдаңыз'
+        selectFormat: 'Форматты таңдаңыз',
+        notifications: 'Хабарламалар'
     },
     bank: {
         title: "Банктер",
@@ -615,7 +623,8 @@ export default {
         loadingEvents: "Іс-шаралар жүктелуде. Өтініш, күте тұрыңыз.",
         newsCategoriesTitle: "Жаңалықтар санаттары",
         createOrEditNewsCategory: "Жаңалықтар санатын құру/өзгерту",
-        createOrEditNews: "Жаңалықтарды құру/өзгерту",
+        createNews: "Жаңалық құру",
+        editNews: "Жаңалық өзгерту",
         createOrEditEvents: "Іс-шараларды құру/өзгерту",
         chooseCategory: "санатты таңдаңыз",
         parent: "ата санаты",
@@ -801,6 +810,9 @@ export default {
         setMeetingTimeConfirmMsg: "Төмендегі {btn} батырмасын басу арқылы, ақпараттардың дұрыстығын растайсыз және осы ақпарат сайтқа хабарландыру болып шығарылады",
         addMemeberToDisCouncil: 'Диссертациялық кеңеске мүше қосу',
         meetingDateMessage: 'Қорғау жүргізуді тек бір күн қалғанда бастай аласыз',
+        scienceConsultantInfo: 'Ғылыми кеңесші',
+        foreignConsultantInfo: 'Шетелдік кеңесші',
+        videoLink: 'Видеоға сілтеме',
         dissertationList: 'Диссертациялық есептер',
         doctorantFullName: 'Докторанттың Т.А.Ә.',
         doctorantBirthday: 'Туған жылы',
@@ -956,8 +968,8 @@ export default {
         editAnswerConfirm: 'Сіз шынымен жауапқа өзгерістер еңгізгіңіз келе ме?',
         facultyName: 'Факультет атауы',
         menuIcon: 'Мәзір белгішесі',
-        uploadMenuIcon: 'Белгішені таңдау'
-
+        uploadMenuIcon: 'Белгішені таңдау',
+        domain: 'Домен'
     },
     //Student locale
     student: {
@@ -1266,6 +1278,7 @@ export default {
         lnum: 'Соңғы нөмір',
         journal: 'Журнал',
         addCourse: 'Курсқа қосу',
+        completedTraining: 'Оқуды аяқтады',
     },
     roleControl:{
         addSidebar: 'Жаңа жазбаны қосу',

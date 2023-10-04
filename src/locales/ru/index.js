@@ -30,6 +30,12 @@ export default {
         approvedBy: "утвердил",
         approveDate: "Дата утверждения",
         notUpload: 'Документ не загружен',
+        nextIssue: 'Последний номер сертификата',
+        goToTheCourse: "Перейти к курсу",
+        addCertificate: "Требуется сертификат", 
+        updateGES:"Обновить список ООД",
+        downloadCertificate:"Загрузить сертификат",
+        selectAll: "Выбрать все",
         action: {
             submit: 'Отправить',
             accept: 'Принять',
@@ -116,6 +122,7 @@ export default {
         cancel: "Отмена",
         main: "Основные",
         more: "Подробнее",
+        loadMore: "Загрузить больше",
         meetingUrl: "Ссылка для онлайн собрания",
         meetingPlace: "Место собрания",
         move: "Перемещение",
@@ -321,7 +328,8 @@ export default {
         address: 'Адрес',
         qrGenerator: 'QR генератор',
         generate: 'Генерировать',
-        selectFormat: 'Выберите формат'
+        selectFormat: 'Выберите формат',
+        notifications: 'Уведомления'
     },
     bank: {
         title: "Банки",
@@ -605,7 +613,8 @@ export default {
         loadingEvents: "Загрузка мероприятий. Пожалуйста, подождите.",
         newsCategoriesTitle: "Категории новостей",
         createOrEditNewsCategory: "Создание/редактирование категории новостей",
-        createOrEditNews: "Создание/редактирование новостей",
+        createNews: "Создание новостей",
+        editNews: "Редактирование новостей",
         createOrEditEvents: "Создание/редактирование мероприятий",
         chooseCategory: "выберите категорию",
         parent: "родительская категория",
@@ -790,6 +799,9 @@ export default {
         setMeetingTimeConfirmMsg: "Нажимая кнопку {btn} ниже, вы подтверждаете корректность информации и данная информация публикуется в виде объявления на сайте.",
         addMemeberToDisCouncil: 'Добавить члена в диссертационный совет',
         meetingDateMessage: 'Начать проведение защиту можно только за день до',
+        scienceConsultantInfo: 'Научный консультант',
+        foreignConsultantInfo: 'Зарубежный консультант',
+        videoLink: 'Ссылка на видео',
         dissertationList: 'Диссертационные отчеты',
         doctorantFullName: 'ФИО докторанта',
         doctorantBirthday: 'Год рождения',
@@ -945,8 +957,8 @@ export default {
         editAnswerConfirm: 'Вы уверены, что хотите внести изменения в ответ?',
         facultyName: 'Название факультета',
         menuIcon: 'Значок меню',
-        uploadMenuIcon: 'Выберите значок'
-
+        uploadMenuIcon: 'Выберите значок',
+        domain: 'Домен'
     },
 
     student: {
@@ -1254,6 +1266,7 @@ export default {
         lnum: 'Последний номер',
         journal: 'Журнал',
         addCourse: 'Добавить в курс',
+        completedTraining: 'Прошел обучение',
     },
     roleControl: {
         addSidebar: 'Добавление новой записи',
