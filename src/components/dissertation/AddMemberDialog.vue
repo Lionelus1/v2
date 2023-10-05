@@ -111,6 +111,7 @@ const addMember = () => {
       submitted.value = false;
       hideDialog();
     }).catch((error) => {
+      console.log(error.response)
       if (error.response.status == 401) {
         store.dispatch("logLout");
       }
@@ -119,6 +120,13 @@ const addMember = () => {
           severity: "error",
           summary: i18n.t('dissertation.title'),
           detail: i18n.t('dissertation.message.hasSameMember'),
+          life: 3000
+        });
+      } else if (error && error.response.status == 500) {
+        toast.add({
+          severity: "error",
+          summary: i18n.t('dissertation.title'),
+          detail: i18n.t('dissertation.message.' + error.response.data.error),
           life: 3000
         });
       } else {

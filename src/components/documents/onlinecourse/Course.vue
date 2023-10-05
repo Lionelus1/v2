@@ -360,7 +360,7 @@ export default {
     methods: {
         check(dic_course_type) {
             console.log(dic_course_type)
-        },  
+        },
         findRole: findRole,
         sendRequestToCourse() {
             this.$confirm.require({
