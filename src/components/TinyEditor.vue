@@ -31,6 +31,10 @@ export default {
         readonly: {
             type: Boolean,
             default: false
+        },
+        wordformat: {
+            type: Boolean,
+            default: false
         }
     },
     emits: ['onAfterUpload'],
@@ -61,10 +65,10 @@ export default {
                 contextmenu: 'link | customUploadContext',
                 images_upload_handler: uploadSingFile,
                 language: this.$i18n.locale === "en" ? "en_US" : this.$i18n.locale === "kz" ? "kk" : this.$i18n.locale,
-                content_style: "html{background: #f7f7f7;display: flex; justify-content: center; } " +
-                    "body {background: #fff; font-size: 14px; width: 794px; min-height:1122px; padding: 20px}" +
+                content_style: this.wordformat ? "html{background: #f7f7f7;display: flex; justify-content: center; } " +
+                    "body {background: #fff; font-size: 14px; width: 794px; min-height:1120px; padding: 20px}" +
                     ".mce-pagebreak { background: #f7f7f7;border: none; height: 15px; width:900px; margin-left:-50px }" +
-                    " @media(max-width: 500px){html{display: block; }}",
+                    " @media(max-width: 500px){html{display: block; }}" : "body {background: #fff; font-size: 14px;}",
                 setup: editor => {
                     const self = this;
                     editor.ui.registry.addToggleButton('fileupload', {
