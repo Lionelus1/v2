@@ -743,6 +743,7 @@ export default {
             notRegistered: "You cannot vote, because you are not registered",
             enterKey: "Enter the password you used to vote to decrypt your vote",
             votingRestarted: "The dissertataion has been submitted for re-voting",
+            reviewerHasAlreadyAdded: "The reviewer has already been added to the selected doctoral",
         },
         states: {
             s0: "created",
