@@ -839,7 +839,9 @@ export default {
         dissReportDelete: 'Есепті жою',
         selectDateRanges: 'Уақыт ауқымдарын таңдаңыз',
         editReport: 'Есепті өңдеу',
-        addReport: 'Есепті қосу'
+        addReport: 'Есепті қосу',
+        sendReportForSign: 'Есепті қол қоюға жіберу',
+        doYouWantSendReport: "Бұл есепті қол қоюға жіберуге сенімдісіз бе?",
     },
     faq: {
         title: "Қолдау қызметі",

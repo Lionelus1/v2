@@ -38,6 +38,9 @@ export class DissertationService {
     dissertationReport(params) {
         return api.post(`/dissertation/report`, params, {headers: getHeader()});
     }
+    dissertationReportSendToSign(params) {
+        return api.post(`/dissertation/sendToSign`, params, {headers: getHeader()});
+    }
     deleteReport(id) {
         return api.post(`/dissertation/deleteReport`, {id: id}, {headers: getHeader()});
     }

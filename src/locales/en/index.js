@@ -797,7 +797,9 @@ export default {
         dissReportDelete: 'Delete Report',
         selectDateRanges: 'Select a datetime ranges',
         editReport: 'Edit Report',
-        addReport: 'Add Report'
+        addReport: 'Add Report',
+        sendReportForSign: 'Send the report for signature',
+        doYouWantSendReport: "Are you sure to submit this report for signature?",
         
     },
     faq: {

@@ -40,7 +40,7 @@
                     @click="getDissertations()" class="mt-2 p-button-secondary" />
                   <Button v-if="lazyParams.filter.quarter == 5" :label="$t('dissertation.generateReport')"
                     @click="getDissertationHtml()" class="mt-2 p-button-secondary" />
-                  <Button :label="$t('common.clear')" @click="clearFilter()" class="mt-2 p-button-outlined" />
+                  <Button :label="$t('common.clear')" @click="clearDissertationFilter()" class="mt-2 p-button-outlined" />
                 </div>
               </div>
             </OverlayPanel>
@@ -81,8 +81,9 @@
 
       </Toolbar>
 
-      <DataTable :lazy="true" v-model:selection="selectedNode" :value="dissertationReports" dataKey="id" :loading="loading" responsiveLayout="scroll"
-      :rows="lazyParams.rows" :paginator="true" :totalRecords="total" :rowHover="true" @page="onPage($event)">
+      <DataTable :lazy="true" v-model:selection="selectedNode" :value="dissertationReports" dataKey="id"
+        :loading="loading" responsiveLayout="scroll" :rows="lazyParams.rows" :paginator="true" :totalRecords="total"
+        :rowHover="true" @page="onPage($event)">
         <template #empty>{{ $t("common.noData") }}</template>
         <template #loading>{{ $t("common.loading") }}</template>
         <Column :field="'department_kz'" :header="$t('common.faculty')">
@@ -110,17 +111,31 @@
             {{ formatLanuage(data['report_language']) }}
           </template>
         </Column>
+
         <Column :field="'report_path'" :header="$t('dissertation.dissReportActions')">
           <template #body="{ data }">
+            <ActionButton :show-label="true" :items="initItems" @toggle="actionToggle(data)" />
+            <!-- <Button v-if="data.report_quarter == 5" type="button" icon="fa-solid fa-paper-plane" class="mr-2"
+              @click="signView(data)" v-tooltip.top="$t('dissertation.dissReportView')"></Button>
+            <Button type="button" icon="pi pi-user-edit" class="mr-2" @click="onUserEditView(data)"
+              v-tooltip.top="$t('dissertation.dissReportView')"></Button>
             <Button type="button" icon="fa-solid fa-eye" class="mr-2" @click="onView(data)"
               v-tooltip.top="$t('dissertation.dissReportView')"></Button>
             <Button type="button" icon="fa-solid fa-trash" class="p-button-danger sm:mt-2 md:mt-2 lg:mt-0 xl:mt-0"
-              @click="deleteReport(data)" v-tooltip.top="$t('dissertation.dissReportDelete')"></Button>
+              @click="deleteReport(data)" v-tooltip.top="$t('dissertation.dissReportDelete')"></Button> -->
           </template>
         </Column>
       </DataTable>
 
     </div>
+    <Dialog v-model:visible="showSignPanel" :style="{ width: '1000' }" :breakpoints="{ '960px': '75vw', '640px': '90vw' }"
+      :header="$t('dissertation.sendReportForSign')" :modal="true" class="p-fluid" closable="false">
+
+      <div class="card flex justify-content-center">
+        <ProgressSpinner aria-label="Loading" />
+      </div>
+
+    </Dialog>
     <Dialog v-model:visible="showReport" :style="{ width: '1350px' }" :breakpoints="{ '960px': '75vw', '640px': '90vw' }"
       :header="currentData ? $t('dissertation.addReport') : $t('dissertation.editReport')" :modal="true" class="p-fluid"
       @hide="hideDialog">
@@ -137,12 +152,7 @@
 
   </div>
 
-  <Sidebar
-      v-model:visible="showReportDoc"
-      position="right"
-      class="p-sidebar-lg"
-      style="overflow-y: scroll"
-  >
+  <Sidebar v-model:visible="showReportDoc" position="right" class="p-sidebar-lg" style="overflow-y: scroll">
     <DocSignaturesInfo :docIdParam="selectedNode.doc_id" :isInsideSidebar="true"></DocSignaturesInfo>
   </Sidebar>
 </template>
@@ -157,39 +167,17 @@ import { useI18n } from "vue-i18n"
 import { getHeader, smartEnuApi } from "@/config/config";
 import { formatDate } from "@/helpers/HelperUtil";
 import { useConfirm } from "primevue/useconfirm";
+import ActionButton from "@/components/ActionButton.vue";
 
 const route = useRoute();
 const councilID = ref(parseInt(route.params.id))
 const confirm = useConfirm()
 const showReport = ref(false)
+const showSignPanel = ref(false)
 const yearVisible = ref(true)
 const dateRangeVisible = ref(false)
 const i18n = useI18n()
 const showReportDoc = ref(false)
-
-// Тұра тұрсын
-// const dissDec = {
-//   kz: "Диссертациялық кеңестердің философия докторы (PhD) дәрежелерін беру (бас тарту) жөніндегі шешімдері",
-//   ru: "Решения диссертационного совета о присуждении (отказе) степени доктора философии (PhD)",
-//   en: "Decisions of Dissertation Boards on awarding (refusal) degrees of Doctor of Philosophy (PhD)",
-// }
-// const middleShort = {
-//   kz: "кадрларды даярлау бағытында",
-//   ru: "по направлению подготовки кадров",
-//   en: "in the direction of personnel training",
-// }
-// const profName = {
-//   kz: "мамандықтары бойынша диссертациялық кеңесінің тоқсандық есебі",
-//   ru: "ежеквартальный отчет диссертационного совета по специальностям",
-//   en: "quarterly report of dissertation council on specialties",
-// }
-// const endShort = {
-//   kz: "тоқсандық есебі",
-//   ru: "квартальный отчет",
-//   en: "quarterly report",
-// }
-// Тұра тұрсын
-
 const languages = ref([
   { name: "Қазақша", code: "kz" },
   { name: "Русский", code: "ru" },
@@ -239,6 +227,11 @@ const lazyParamsReport = ref({
     date_ranges: null
   },
 })
+const actionsNode = ref(null)
+const sendSignParams = ref({
+  council_id: null,
+  doc_uuid: null
+})
 
 watch(() => lazyParams.value.filter.quarter, (newValue) => {
   if (newValue == 0) {
@@ -266,12 +259,59 @@ const clearFilter = () => {
   getDissReport();
 
 }
+const clearDissertationFilter = () => {
+  lazyParams.value.filter.year = null
+  lazyParams.value.filter.language = null
+  lazyParams.value.filter.quarter = null
+  lazyParams.value.filter.date_ranges = null
+  getDissReport();
+
+}
 
 const onView = (node) => {
-  selectedNode.value = node;
-  //showReportDoc.value = true;
-  let url = `${smartEnuApi}/document?qrcode=${node.doc_id}`
+  selectedNode.value = node.value;
+  let url = `${smartEnuApi}/document?qrcode=${node.value.doc_id}`
   window.open(url, '_blank');
+
+}
+
+const onUserEditView = (node) => {
+  selectedNode.value = node.value;
+  if (node.value.report_quarter == 5) {
+    showReportDoc.value = true;
+  }
+
+}
+
+const signView = (node) => {
+  confirm.require({
+    message: i18n.t('dissertation.doYouWantSendReport'),
+    header: i18n.t('common.send'),
+    icon: 'pi pi-info-circle',
+    acceptClass: 'p-button-rounded p-button-success',
+    rejectClass: 'p-button-rounded p-button-danger',
+    accept: () => {
+      selectedNode.value = node.value;
+
+      sendSignParams.value.council_id = node.value.council_id
+      sendSignParams.value.doc_uuid = node.value.doc_id
+      showSignPanel.value = true
+      dissertationService.dissertationReportSendToSign(sendSignParams.value).then(res => {
+        if (res.data) {
+          if (res.data.is_success) {
+            toast.add({ severity: "success", summary: i18n.t('common.success'), life: 3000 });
+          }
+        }
+        showSignPanel.value = false
+        getDissReport()
+      }).catch(error => {
+        loading.value = false
+        toast.add({ severity: 'error', summary: error, life: 3000 })
+      })
+    },
+  });
+
+
 
 }
 
@@ -383,7 +423,7 @@ const deleteReport = (data) => {
     acceptClass: 'p-button-rounded p-button-success',
     rejectClass: 'p-button-rounded p-button-danger',
     accept: () => {
-      onDeleteReport(data.id)
+      onDeleteReport(data.value.id)
     },
   });
 }
@@ -408,6 +448,47 @@ const toggle = (event) => {
 const toggleFilter = (event) => {
   opFilter.value.toggle(event);
 }
+
+
+const actionToggle = (node) => {
+  actionsNode.value = node
+}
+
+const initItems = computed(() => {
+  return [
+    {
+      label: i18n.t('common.send'),
+      icon: 'fa-solid fa-paper-plane',
+      visible: (actionsNode.value && actionsNode.value.report_quarter === 5 && (actionsNode.value.doc_state == 1 || actionsNode.value.doc_state == 5)),
+      command: () => {
+        signView(actionsNode);
+      }
+    },
+    {
+      label: i18n.t('common.approvalList'),
+      icon: 'pi pi-user-edit',
+      visible: actionsNode.value && actionsNode.value.report_quarter === 5,
+      command: () => {
+        onUserEditView(actionsNode);
+      }
+    },
+    {
+      label: i18n.t('dissertation.dissReportView'),
+      icon: 'fa-solid fa-eye',
+      command: () => {
+        onView(actionsNode);
+      },
+    },
+    {
+      label: i18n.t('common.delete'),
+      icon: 'fa-solid fa-trash',
+      command: () => {
+        deleteReport(actionsNode);
+      },
+    }
+  ]
+});
+
 </script>
 
 <style>
