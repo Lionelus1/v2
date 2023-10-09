@@ -829,7 +829,9 @@ export default {
         dissReportDelete: 'Удалить отчет',
         selectDateRanges: 'Выберите диапазон дат и времени',
         editReport: 'Редактировать отчет',
-        addReport: 'Добавить отчет'
+        addReport: 'Добавить отчет',
+        sendReportForSign: 'Отправить отчет на подпись',
+        doYouWantSendReport: "Вы уверены, что отправите этот отчет на подпись?",
     },
     faq: {
         title: "Служба поддержки",

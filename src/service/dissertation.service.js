@@ -27,9 +27,6 @@ export class DissertationService {
         return api.post(`/dissertation/getMemberState`)
     }
 
-    updateDoctoral(params) {
-        return api.post(`/dissertation/updateDoctoral`, params, {headers: getHeader()});
-    }
     getDissertationList(params) {
         return api.post(`/dissertation/addReport`, params, {headers: getHeader()});
     }
@@ -42,7 +39,14 @@ export class DissertationService {
     dissertationReport(params) {
         return api.post(`/dissertation/report`, params, {headers: getHeader()});
     }
+    dissertationReportSendToSign(params) {
+        return api.post(`/dissertation/sendToSign`, params, {headers: getHeader()});
+    }
     deleteReport(id) {
         return api.post(`/dissertation/deleteReport`, {id: id}, {headers: getHeader()});
+    }
+
+    updateDoctoral(params) {
+        return api.post(`/dissertation/updateDoctoral`, params, {headers: getHeader()});
     }
 }

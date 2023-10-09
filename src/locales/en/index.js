@@ -798,7 +798,9 @@ export default {
         dissReportDelete: 'Delete Report',
         selectDateRanges: 'Select a datetime ranges',
         editReport: 'Edit Report',
-        addReport: 'Add Report'
+        addReport: 'Add Report',
+        sendReportForSign: 'Send the report for signature',
+        doYouWantSendReport: "Are you sure to submit this report for signature?",
 
     },
     faq: {
@@ -1302,7 +1304,7 @@ export default {
         givePosRel: 'Create a position',
         departmentName: 'Name of departments',
         positionName: 'Name of Position',
-        selectDep: 'Select department', 
+        selectDep: 'Select department',
     },
     blog: {
         title: 'Blog',

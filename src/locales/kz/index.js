@@ -810,7 +810,7 @@ export default {
         reviewerComment: 'Ресми рецензенттің пікірі',
         setMeetingTimeConfirmMsg: "Төмендегі {btn} батырмасын басу арқылы, ақпараттардың дұрыстығын растайсыз және осы ақпарат сайтқа хабарландыру болып шығарылады",
         addMemeberToDisCouncil: 'Диссертациялық кеңеске мүше қосу',
-        meetingDateMessage: 'Қорғауды жүргізуді тек бір күн қалғанда бастай аласыз',
+        meetingDateMessage: 'Қорғау жүргізуді тек бір күн қалғанда бастай аласыз',
         scienceConsultantInfo: 'Ғылыми кеңесші',
         foreignConsultantInfo: 'Шетелдік кеңесші',
         videoLink: 'Видеоға сілтеме',
@@ -840,7 +840,9 @@ export default {
         dissReportDelete: 'Есепті жою',
         selectDateRanges: 'Уақыт ауқымдарын таңдаңыз',
         editReport: 'Есепті өңдеу',
-        addReport: 'Есепті қосу'
+        addReport: 'Есепті қосу',
+        sendReportForSign: 'Есепті қол қоюға жіберу',
+        doYouWantSendReport: "Бұл есепті қол қоюға жіберуге сенімдісіз бе?",
     },
     faq: {
         title: "Қолдау қызметі",
