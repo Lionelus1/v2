@@ -327,7 +327,8 @@ export default {
         qrGenerator: 'QR генератор',
         generate: 'Генерациялау',
         selectFormat: 'Форматты таңдаңыз',
-        notifications: 'Хабарламалар'
+        notifications: 'Хабарламалар',
+        noResult: 'Жазбалар табылмады',
     },
     bank: {
         title: "Банктер",
@@ -419,6 +420,31 @@ export default {
         approvalUsers: "Келісім беруі тиіс тұлғалар тізімі",
     },
     contracts: {
+        card: "Карта",
+        columns: {
+            createDate: "Құрылған күні",
+            author: "Автор",
+            department: "Департамент/Топ",
+            regNumber: "Тіркеу нөмірі",
+            regDate: "Тіркелген күні",
+            description: "Қысқаша сипаттамасы",
+            status: "Статус",
+        },
+        filter: {
+            button: "Фильтр",
+            author: "Автор",
+            status: "Статус",
+            createdFrom: "Құрылған күні бастап",
+            createdTo: "Құрылған күні дейін",
+            contractType: {
+                label: "Шарт түрі",
+                byTemplate: "Үлгі бойынша",
+                fromReadyDoc: "Дайын құжат бойынша",
+            },
+            templateType: "Үлгі түрі",
+            documentName: "Келісім-шарт атауы",
+            folder: "Келісім-шарт қалтасы",
+        },
         title: "Келісім-шарттар",
         template: "Келісім-шарт үлгілері",
         autogenerate: "Қол қойылған немесе тіркелген уақытта автоматты түрде қойылады",

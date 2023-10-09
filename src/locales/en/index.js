@@ -7,8 +7,7 @@ export default {
     chooseCert: "Choose the certificate",
     activeList: "Active list",
     approvalList: "Approval sheet",
-    newPasswordError:
-      "Passwords are not identical or character count is less than 5 symbol",
+    newPasswordError: "Passwords are not identical or character count is less than 5 symbol",
     changePassword: "Change password",
     head: "Head of organization",
     headIin: "Head IIN",
@@ -329,7 +328,8 @@ export default {
         qrGenerator: 'QR generator',
         generate: 'Generate',
         selectFormat: 'Select format',
-        notifications: 'Notifications'
+        notifications: 'Notifications',
+        noResult: 'No records found',
     },
     bank: {
         title: "Banks",
@@ -420,6 +420,31 @@ export default {
         approvalUsers: "List of approvers",
     },
     contracts : {
+        card: "Card",
+        columns: {
+            createDate: "Date of creation",
+            author: "Author",
+            department: "Department/Group",
+            regNumber: "Registration number",
+            regDate: "Registration date",
+            description: "Description",
+            status: "Status",
+        },
+        filter: {
+            button: "Fitler",
+            author: "Author",
+            status: "Status",
+            createdFrom: "Date of creation from",
+            createdTo: "Date of creation to",
+            contractType: {
+                label: "Contract type",
+                byTemplate: "From template",
+                fromReadyDoc: "From a finished document",
+            },
+            templateType: "Template type",
+            documentName: "Contract name",
+            folder: "Contract catalog",
+        },
         title: "Contracts",
         autogenerate: "Will be generated automatically when signing or registering",
         contract:"Contract",

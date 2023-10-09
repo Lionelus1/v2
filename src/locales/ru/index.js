@@ -329,7 +329,8 @@ export default {
         qrGenerator: 'QR генератор',
         generate: 'Генерировать',
         selectFormat: 'Выберите формат',
-        notifications: 'Уведомления'
+        notifications: 'Уведомления',
+        noResult: 'Не найдено записей',
     },
     bank: {
         title: "Банки",
@@ -421,6 +422,31 @@ export default {
         approvalUsers: "Список согласующих лиц",
     },
     contracts: {
+        card: "Карточка",
+        columns: {
+            createDate: "Дата создания",
+            author: "Автор",
+            department: "Департамент/Группа",
+            regNumber: "Номер регистрации",
+            regDate: "Дата регистрации",
+            description: "Короткое описание",
+            status: "Статус",
+        },
+        filter: {
+            button: "Фильтр",
+            author: "Автор",
+            status: "Статус",
+            createdFrom: "Дата создания с",
+            createdTo: "Дата создания до",
+            contractType: {
+                label: "Тип договора",
+                byTemplate: "Из шаблона",
+                fromReadyDoc: "Из готового документа",
+            },
+            templateType: "Тип шаблона",
+            documentName: "Наименование договора",
+            folder: "Каталог договора",
+        },
         title: "Договоры",
         autogenerate: "Будет сформировано автоматически при подписании или регистрации",
         contract: "Договор",
