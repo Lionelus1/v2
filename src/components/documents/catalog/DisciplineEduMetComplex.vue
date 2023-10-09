@@ -2,8 +2,8 @@
   <ProgressBar v-if="loading" mode="indeterminate" class="progress-bar"/>
     <h3 v-if="screen.isLarge">{{ $t("educomplex.title") }}</h3>
     <h3 v-else>{{ $t("educomplex.title") }}</h3>
-  <BlockUI :blocked="loading" class="block-ui">
-    <div ref="outerDiv" class="card flex flex-grow-1" :class="{ 'flex-column': !screen.isLarge }">
+  <BlockUI :blocked="loading" class="card">
+    <div ref="outerDiv" class="flex flex-grow-1" :class="{ 'flex-column': !screen.isLarge }">
       <div :class="'flex flex-column' + getDepFlexGrow()">
         <Toolbar class="p-1">
           <template #start>
@@ -1073,11 +1073,13 @@ export default {
   width: 100%;
   z-index: 1102;
 }
-.block-ui {
+.card {
   flex-grow: 1;
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
+  padding: 1rem;
+  margin-bottom: 0px;
 }
 .status-status_created {
   background: #6c757d;
@@ -1143,5 +1145,8 @@ export default {
   .menubar-icons {
     padding: 0.5rem;
   }
+}
+:deep(.p-datatable.p-datatable-scrollable > .p-datatable-wrapper > .p-datatable-table > .p-datatable-thead) {
+  background: transparent;
 }
 </style>
