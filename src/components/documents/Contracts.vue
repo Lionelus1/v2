@@ -1,63 +1,43 @@
 <template>
-<div>
-  <div class="content-section">
-    <BlockUI :blocked="saving" :fullScreen="true"></BlockUI>
-    <div class="feature-intro">
-      <h3>{{$t('contracts.title')}}</h3>
-    </div>
-    <ProgressBar v-if="saving" mode="indeterminate" style="height: .5em"/>
-    <div class="card">
-      <div class="p-col">
-        <div class="box">
-          <span><i class="pi pi-copy subtitle">&nbsp;{{$t('contracts.documents')}}</i></span>
-          <div class="fieldmenu-item pb-3">
-            <Button :label="$t('common.newDoc')" @click="openForm('createDocDialog')" class="p-button-link" /><br>
-            <i class="mx-3">{{$t('contracts.create')}}</i>
-          </div>
-          <div class="fieldmenu-item pb-3">
-            <router-link to="/documents/journal"  class="p-button p-button-link">{{$t('contracts.list')}}</router-link><br>
-            <i class="mx-3">{{$t('contracts.listdesc')}}</i>
-          </div>
+  <BlockUI :blocked="saving" :fullScreen="true"></BlockUI>
+  <ProgressBar v-if="saving" mode="indeterminate" style="height: .5em"/>
+  <h3 class="mt-0"> {{ $t('contracts.title') }} </h3>
+  <div class="card">
+    <div class="p-col">
+      <div class="box">
+        <span class="subtitle"><i class="pi pi-copy subtitle"></i>&nbsp;{{$t('contracts.documents')}}</span>
+        <div class="fieldmenu-item pb-3">
+          <Button :label="$t('common.newDoc')" @click="openForm('createDocDialog')" class="p-button-link" /><br>
+          <i class="mx-3">{{$t('contracts.create')}}</i>
         </div>
-
-        <div class="box">
-          <span><i class="pi pi-id-card subtitle" >&nbsp;{{$t('common.refinf')}}</i></span>
-          <div class="fieldmenu-item pb-3">
-            <Button :label="$t('common.organization')" class="p-button-link" /><br>
-            <i class="mx-3">{{$t('contracts.orgdesc')}}</i>
-          </div>
-          <div class="fieldmenu-item pb-3">
-           <Button :label="$t('common.person')" class="p-button-link" /><br>
-            <i class="mx-3">{{$t('contracts.person')}}</i>
-          </div>
+        <div class="fieldmenu-item pb-3">
+          <router-link to="/documents/catalog/contracts"  class="p-button p-button-link">{{$t('contracts.list')}}</router-link><br>
+          <i class="mx-3">{{$t('contracts.listdesc')}}</i>
         </div>
       </div>
     </div>
+  </div>
 
-  </div>
-  <Sidebar v-model:visible="dialogOpenState.createDocDialog" position="right"
-  :modal="true" :breakpoints="{'960px': '75vw', '640px': '100vw'}" :style="{width: '760px', overflow:'hidden'}">
-  <div class="flex">
-    <SelectButton :disabled="!this.$store.state.loginedUser.organization || !this.$store.state.loginedUser.organization.id || 
-      this.$store.state.loginedUser.organization.id !== 1 || this.findRole(null, 'student')" 
-      v-model="selectedDocSourceType" :options="docSourceType" class="mb-3 mr-3">
-      <template #option="slotProps">
-        <div v-if="slotProps.option == Enum.DocSourceType.Template">{{$t('contracts.fromtemplate')}}</div>
-        <div v-else>{{$t('contracts.fromdoc')}}</div>
-	    </template>
-    </SelectButton>
-    <SelectButton @change="changeLanguage" v-model="selectedDocLanguage" :options="languages" class="mb-3"
-      :disabled="selectedDocSourceType != Enum.DocSourceType.Template">
-      <template #option="slotProps">
-        <div v-if="slotProps.option == 'kz'">{{$t('common.language.kz')}}</div>
-        <div v-else>{{$t('common.language.ru')}}</div>
-	    </template>
-    </SelectButton>
-  </div>
-    <div v-if="selectedDocSourceType == Enum.DocSourceType.Template" style="overflow-y:hidden" >
-      <div class="flex">
-        <DocTemplate ref="templateComponent" @languageChanged="templateLanguageChanged" v-model:currentLang="selectedDocLanguage" @onselect="createDocByTemplate($event)" selectMode="true" v-model:windowOpened="dialogOpenState.createDocDialog" :v-model="selectedTemplate"></DocTemplate>
-      </div>
+  <Sidebar v-model:visible="dialogOpenState.createDocDialog" :modal="true" :style="largeScreen ? 'width:75vw' : ''" :position="largeScreen ? 'right' : 'full'">
+    <div class="flex flex-wrap justify-content-between">
+      <SelectButton :disabled="!this.$store.state.loginedUser.organization || !this.$store.state.loginedUser.organization.id || 
+        this.$store.state.loginedUser.organization.id !== 1 || this.findRole(null, 'student')" 
+        v-model="selectedDocSourceType" :options="docSourceType" class="mb-3 mr-3">
+        <template #option="slotProps">
+          <div v-if="slotProps.option == Enum.DocSourceType.Template">{{$t('contracts.fromtemplate')}}</div>
+          <div v-else>{{$t('contracts.fromdoc')}}</div>
+        </template>
+      </SelectButton>
+      <SelectButton @change="changeLanguage" v-model="selectedDocLanguage" :options="languages" class="mb-3"
+        :disabled="selectedDocSourceType != Enum.DocSourceType.Template">
+        <template #option="slotProps">
+          <div v-if="slotProps.option == 'kz'">{{$t('common.language.kz')}}</div>
+          <div v-else>{{$t('common.language.ru')}}</div>
+        </template>
+      </SelectButton>
+    </div>
+    <div v-if="selectedDocSourceType == Enum.DocSourceType.Template">
+      <DocTemplate ref="templateComponent" @languageChanged="templateLanguageChanged" v-model:currentLang="selectedDocLanguage" @onselect="createDocByTemplate($event)" selectMode="true" v-model:windowOpened="dialogOpenState.createDocDialog" :v-model="selectedTemplate"></DocTemplate>
     </div>
     <Card v-else>
       <template #content>
@@ -65,7 +45,6 @@
       </template>
     </Card>
   </Sidebar>
-</div>
 </template>
 <script>
   import axios from 'axios';
@@ -80,6 +59,8 @@
     components: { PostFile, DocTemplate},
     data() {
       return {
+        largeScreen: false,
+
         dialogOpenState: {
           createDocDialog: false,
         },
@@ -103,13 +84,23 @@
           nameru: '',
           nameen: '',
           id: null,
-          lang: null,
+          lang: {name:"kz", value: 0},
           docType: Enum.DocType.Contract,
           sourceType: Enum.DocSourceType.FilledDoc,
         },
       }
     },
+    mounted() {
+      this.checkScreenSize();
+      this.$emit('apply-flex', true);
+    },
+    beforeUnmount() {
+      this.$emit('apply-flex', false);
+    },
     methods: {
+      checkScreenSize() {
+        this.largeScreen = window.innerWidth >= 640;
+      },
       changeLanguage() {
         this.$refs.templateComponent.changeLanguage(this.selectedDocLanguage)
       },
@@ -127,32 +118,6 @@
       },
       showMessage(msgtype,message,content) {
         this.$toast.add({severity:msgtype, summary: message, detail:content, life: 3000});
-      },
-      createDoc() {
-        
-        let url ="/agreement/create";
-        var req = {
-          sourceType : this.selectedDocSourceType,
-          templateId: this.selectedTemplate != null ? this.selectedTemplate.id : null,
-          creatorId: 1,
-          filePath: "",
-          lang: this.selectedDocLanguage == "kz" ? 0 : 1
-        }
-        if (this.selectedTemplate != null) {
-          req.lang = this.selectedTemplate.templateLanguage == "kz" ? 0 : 1
-        }
-        this.saving=true;
-        axios.post(smartEnuApi+url, req, { headers: getHeader() }).then(responce=>{
-          this.showMessage('success', this.$t('contracts.title'), this.$t('contracts.message.created'));
-          this.saving =false;
-          this.$router.push({ path: '/documents/contract/' + responce.data});
-
-
-        })
-        .catch(error => {
-          this.saving =false;
-          console.log(error);
-        })
       },
       createDocByTemplate(event) {
         let url ="/agreement/create";
@@ -179,21 +144,20 @@
         this.$router.push({ path: '/documents/contract/' + event.id });
       },
     },
-    mounted() {
-    },
   }
 </script>
 
-<style scoped lang="scss">
+<style scoped>
+  .card {
+    flex-grow: 1;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    margin-bottom: 0px;
+  }
   .subtitle {
     font-size: 20px;
     letter-spacing: .3px;
-  }
-  .menu-item {
-    margin-bottom: 3px;
-    padding-left: 15px;
-  }
-  .menu-item:hover {
-    background-color:#edf0f5;
   }
 </style>
