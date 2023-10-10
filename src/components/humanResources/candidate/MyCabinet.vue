@@ -301,7 +301,8 @@
 
   const deleteEducation = () => {
     const data = {
-      id: Number(education.value.id)
+      id: Number(education.value.id),
+      userId: Number(myAccount.value.userID)
     }
     axios.post(smartEnuApi + "/account/education/delete/id", data, {headers: getHeader()}).then(res  => {
       getMyAccount()
@@ -345,9 +346,11 @@
   }
 
   const showFile = (data) => {
+     if (!data) {
+        return
+     }
      fileData.value = data
-     console.log(fileData.value, 'idPathFile')
-      fileView.value = true
+     fileView.value = true
   }
 
   onMounted(() => {
