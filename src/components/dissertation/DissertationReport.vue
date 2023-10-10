@@ -93,7 +93,13 @@
         </Column>
         <Column :field="'report_year'" :header="$t('dissertation.dissYear')">
           <template #body="{ data }">
-            {{ data['report_year'] }}
+            <div v-if="data['report_year'] != null || data['report_year'] != ''">
+              {{ data['report_year'] }}
+            </div>
+            <div v-if="data['start_date'] != null && data['end_date'] != null">
+              {{ formatDateRange(data['start_date']) }} - {{ formatDateRange(data['end_date']) }}
+            </div>
+
           </template>
         </Column>
         <Column :field="'report_quarter'" :header="$t('dissertation.dissQuarter')">
@@ -115,14 +121,6 @@
         <Column :field="'report_path'" :header="$t('dissertation.dissReportActions')">
           <template #body="{ data }">
             <ActionButton :show-label="true" :items="initItems" @toggle="actionToggle(data)" />
-            <!-- <Button v-if="data.report_quarter == 5" type="button" icon="fa-solid fa-paper-plane" class="mr-2"
-              @click="signView(data)" v-tooltip.top="$t('dissertation.dissReportView')"></Button>
-            <Button type="button" icon="pi pi-user-edit" class="mr-2" @click="onUserEditView(data)"
-              v-tooltip.top="$t('dissertation.dissReportView')"></Button>
-            <Button type="button" icon="fa-solid fa-eye" class="mr-2" @click="onView(data)"
-              v-tooltip.top="$t('dissertation.dissReportView')"></Button>
-            <Button type="button" icon="fa-solid fa-trash" class="p-button-danger sm:mt-2 md:mt-2 lg:mt-0 xl:mt-0"
-              @click="deleteReport(data)" v-tooltip.top="$t('dissertation.dissReportDelete')"></Button> -->
           </template>
         </Column>
       </DataTable>
@@ -245,6 +243,7 @@ watch(() => lazyParams.value.filter.quarter, (newValue) => {
   }
 });
 
+
 const onPage = (event) => {
   lazyParamsReport.value.page = event.page
   lazyParamsReport.value.rows = event.rows
@@ -311,8 +310,6 @@ const signView = (node) => {
     },
   });
 
-
-
 }
 
 const hideDialog = (() => {
@@ -331,6 +328,7 @@ const getDissReport = () => {
   }).catch(error => {
     loading.value = false
     toast.add({ severity: 'error', summary: error, life: 3000 })
+
   })
 
 }
@@ -355,15 +353,15 @@ const getDissertations = () => {
 
   }).catch(error => {
     loading.value = false
-    toast.add({ severity: 'error', summary: error, life: 3000 })
+    if (error && error.error) {
+      toast.add({ severity: "warn", summary: i18n.t('common.message.title.' + error.error), life: 3000 });
+    }
   })
-
 
 }
 
 const getDissertationHtml = () => {
   loading.value = true;
-
   dissertationService.getDissertationHtml(lazyParams.value).then(res => {
     if (res.data) {
       generatedHtml.value = res.data.generated_html
@@ -373,9 +371,10 @@ const getDissertationHtml = () => {
     showReport.value = true
   }).catch(error => {
     loading.value = false
-    toast.add({ severity: 'error', summary: error, life: 3000 })
+    if (error && error.error) {
+      toast.add({ severity: "warn", summary: i18n.t('common.message.title.' + error.error), life: 3000 });
+    }
   })
-
 
 }
 
@@ -394,7 +393,9 @@ const addReportByYear = () => {
     op.value.hide()
   }).catch(error => {
     loading.value = false
-    toast.add({ severity: 'error', summary: error, life: 3000 })
+    if (error && error.error) {
+      toast.add({ severity: "warn", summary: i18n.t('common.message.title.' + error.error), life: 3000 });
+    }
   })
 }
 
@@ -410,6 +411,7 @@ const formatLanuage = (code) => {
       return '';
   }
 }
+
 const getQuarterLabel = (code) => {
   const quarter = quarters.value.find(q => q.code === code);
   return quarter ? quarter.latin : '';
@@ -452,6 +454,17 @@ const toggleFilter = (event) => {
 
 const actionToggle = (node) => {
   actionsNode.value = node
+}
+
+const formatDateRange = (value) => {
+  if (value) {
+    const date = new Date(value);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}.${month}.${day}`;
+  }
+  return '';
 }
 
 const initItems = computed(() => {
