@@ -330,6 +330,17 @@ export default {
         selectFormat: 'Select format',
         notifications: 'Notifications',
         noResult: 'No records found',
+        continue: "Continue",
+        changeOrganization: "Change organization",
+        changeSigner: "Change signer",
+        change: "Change",
+    },
+    positions: {
+        menuTitle: 'Change position',
+        beginText: 'You are logged in as: ',
+        individual: 'individual',
+        changePosition: 'Change',
+        continue: 'Continue without change',
     },
     bank: {
         title: "Banks",

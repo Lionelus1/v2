@@ -1,3 +1,4 @@
+<!-- further delete file -->
 <template>
     <h3>{{ $t("smartenu.catalogNormDoc") }}</h3>
     <div class="card">

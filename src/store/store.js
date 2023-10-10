@@ -45,7 +45,7 @@ const store = createStore({
                     localStorage.removeItem('userSlug');
                     localStorage.removeItem('selectedSlug')
                 
-                    router.push({ "name": "/login" })
+                    router.push({ "path": "/login" })
                 })
 
         },

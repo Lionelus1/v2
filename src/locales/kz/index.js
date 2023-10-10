@@ -329,6 +329,17 @@ export default {
         selectFormat: 'Форматты таңдаңыз',
         notifications: 'Хабарламалар',
         noResult: 'Жазбалар табылмады',
+        continue: "Жалғастыру",
+        changeOrganization: "Ұйымды ауыстыру",
+        changeSigner: "Қол қоюшыны өзгерту",
+        change: "Өзгерту",
+    },
+    positions: {
+        menuTitle: 'Позицияны өзгерту',
+        beginText: 'Сіз жүйеге кірдіңіз: ',
+        individual: 'жеке тұлға',
+        changePosition: 'Өзгерту',
+        continue: 'Өзгертусіз жалғастыру',
     },
     bank: {
         title: "Банктер",

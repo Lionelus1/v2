@@ -89,7 +89,11 @@
       </DataTable>
     </div>
   </div>
-  <Sidebar v-model:visible="visibility.referenceSidebar" position="full">
+  <Sidebar v-model:visible="visibility.referenceSidebar" position="full" :pt="{header: {style: 'justify-content: space-between;'}}">
+    <template #header>
+      <Button class="p-sidebar-close p-sidebar-icon p-link" icon="fa-solid fa-arrow-left"
+        @click="visibility.referenceSidebar = false"></Button>
+    </template>
     <ReferencePage :referenceProp="selectedReference"></ReferencePage>
   </Sidebar>
   <Dialog :header="$t('ref.getRef')" v-model:visible="visibility.getRefStep1Dialog"
@@ -192,7 +196,8 @@ export default {
       this.showMessage('warn', this.$t('ncasigner.failCopy'));
     },
     onPage(event) {
-      this.page = event.page
+      this.page = event.page;
+      this.rows = event.rows;
       this.getReferences();
     },
     doubleClick(event) {

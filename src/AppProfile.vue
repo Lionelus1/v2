@@ -11,7 +11,7 @@
     </button>
     <transition name="layout-submenu-wrapper">
       <ul v-show="expanded">
-        <li>
+        <li v-if="loginedUser && loginedUser.organization && loginedUser.organization.id === 1">
           <button @click="sVerify = true" class="p-link">
             <i class="pi pi-fw pi-verified"></i><span>{{ $t("common.verify") }}</span>
           </button>
@@ -19,6 +19,11 @@
         <li>
           <button @click="myResume" class="p-link">
             <i class="pi pi-fw pi-id-card"></i><span>{{ $t("common.cabinet") }}</span>
+          </button>
+        </li>
+        <li>
+          <button @click="changeRole" class="p-link">
+            <i class="fa-solid fa-user-shield"></i><span>{{ $t("positions.menuTitle") }}</span>
           </button>
         </li>
         <li v-if="loginedUser && loginedUser.organization && loginedUser.organization.id === 1">
@@ -47,6 +52,7 @@
   >
     <DocSignatureVerification></DocSignatureVerification>
   </Sidebar>
+  <PositionChangeDialog ref="positionChangeDialog"></PositionChangeDialog>
 </template>
 
 <script>
@@ -54,16 +60,19 @@ import {
   mapActions,
   mapState
 } from "vuex";
-import DocSignatureVerification from "./components/DocSignatureVerification";
+
 import {findRole} from "@/config/config";
 
+import DocSignatureVerification from "./components/DocSignatureVerification";
+import PositionChangeDialog from './components/PositionChangeDialog.vue';
+
 export default {
-  components: {DocSignatureVerification},
+  components: {DocSignatureVerification, PositionChangeDialog},
   data() {
     return {
       expanded: false,
       sVerify: false,
-        findRole: findRole,
+      findRole: findRole,
     };
   },
   methods: {
@@ -86,6 +95,9 @@ export default {
     },
     qr() {
       this.$router.push({path: "/qr"})
+    },
+    changeRole() {
+      this.$refs.positionChangeDialog.show();
     }
   },
   computed: {
