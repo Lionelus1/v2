@@ -226,7 +226,14 @@ export default {
                 downloadError: "Жүктеп алу қатесі",
                 uploadError: "Жүктеу қатесі",
                 saveError: "Сақтау қатесі",
-                docCreation: "Жаңа қалта қосу"
+                docCreation: "Жаңа қалта қосу",
+                selectreportlanguage: "Тілді таңдаған жоқсыз",
+                selectreportyear: "Жылын таңдаған жоқсыз",
+                yearlessthancurrentyear: "Таңдаған жылыңыздың мәні ағымдағы жылдан кіші немесе тең болу керек",
+                selectreportquarter: "Тоқсанды таңдаған жоқсыз",
+                pleaseselectdateranges : "Күндер ауқымын таңдаған жоқсыз",
+                reportalreadyexists: "Бұл есеп әлдеқашан шығарылған",
+                filternotfound: "Сүзгі табылмады"
             },
             invalidkey: "Дұрыс кілт енгізбедіңіз",
             notPermissionForApprove: "Таңдалған қолданушының құжатқа келісім беру құзыреті жоқ",

@@ -331,6 +331,7 @@ const getDissReport = () => {
   }).catch(error => {
     loading.value = false
     toast.add({ severity: 'error', summary: error, life: 3000 })
+   
   })
 
 }
@@ -355,7 +356,9 @@ const getDissertations = () => {
 
   }).catch(error => {
     loading.value = false
-    toast.add({ severity: 'error', summary: error, life: 3000 })
+    if (error && error.error) {
+      toast.add({ severity: "warn", summary: i18n.t('common.message.title.' + error.error), life: 3000 });
+    }
   })
 
 
@@ -363,7 +366,6 @@ const getDissertations = () => {
 
 const getDissertationHtml = () => {
   loading.value = true;
-
   dissertationService.getDissertationHtml(lazyParams.value).then(res => {
     if (res.data) {
       generatedHtml.value = res.data.generated_html
@@ -373,7 +375,9 @@ const getDissertationHtml = () => {
     showReport.value = true
   }).catch(error => {
     loading.value = false
-    toast.add({ severity: 'error', summary: error, life: 3000 })
+    if (error && error.error) {
+      toast.add({ severity: "warn", summary: i18n.t('common.message.title.' + error.error), life: 3000 });
+    }
   })
 
 
@@ -394,7 +398,9 @@ const addReportByYear = () => {
     op.value.hide()
   }).catch(error => {
     loading.value = false
-    toast.add({ severity: 'error', summary: error, life: 3000 })
+    if (error && error.error) {
+      toast.add({ severity: "warn", summary: i18n.t('common.message.title.' + error.error), life: 3000 });
+    }
   })
 }
 

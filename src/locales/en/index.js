@@ -227,7 +227,14 @@ export default {
                 downloadError: "Download error",
                 uploadError: "Upload error",
                 saveError: "Save error",
-                docCreation: "Adding a new catalog"
+                docCreation: "Adding a new catalog",
+                selectreportlanguage: "You have not select a language",
+                selectreportyear: "You have not select a year",
+                yearlessthancurrentyear: "The value of the year you select must be less than or equal to the current year",
+                selectreportquarter: "You have not select a quarter",
+                pleaseselectdateranges : "You have not select a date ranges",
+                reportalreadyexists: "The report already exists",
+                filternotfound: "Filter not found"
             },
             invalidkey: "Wrong password entered",
             notPermissionForApprove: "The selected user does not have the appropriate privileges to reconcile the document",

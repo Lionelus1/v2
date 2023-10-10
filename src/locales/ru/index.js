@@ -228,6 +228,13 @@ export default {
                 uploadError: "Ошибка загрузки",
                 saveError: "Ошибка сохранения",
                 docCreation: "Добавление нового каталога",
+                selectreportlanguage: "Вы не выбрали язык",
+                selectreportyear: "Вы не выбрали год",
+                yearlessthancurrentyear: "Значение выбранного года должно быть меньше или равно текущему году",
+                selectreportquarter: "Вы не выбрали квартал",
+                pleaseselectdateranges : "Вы не выбрали диапазон дат",
+                reportalreadyexists: "Отчет уже существует",
+                filternotfound: "Фильтр не найден"
             },
             invalidkey: "Введен неправильный пароль",
             notPermissionForApprove: "Выбранный пользователь не имеет соответствующие привилегия для согласования документа",
