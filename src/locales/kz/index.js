@@ -199,6 +199,8 @@ export default {
         headLabel: "Жетекші:",
         report: "Есеп",
         author: "Әзірлеуші",
+        personalInfo: 'Жеке ақпарат',
+        myAddress: 'Мекенжайы',
         states: {
             created: "құрылды",
             inapproval: "келісуде",

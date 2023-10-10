@@ -200,6 +200,8 @@ export default {
         headLabel: "Руководитель:",
         report: "Отчет",
         author: "Разработчик",
+        personalInfo: 'Личная информация',
+        myAddress: 'Адрес',
         states: {
             created: "создан",
             inapproval: "на согласовании",
@@ -1003,7 +1005,7 @@ export default {
         },
         id: {
             startDate: 'Дата выдачи',
-            issuedBy: 'Кем выдан'
+            issuedBy: 'Кем выдан',
         },
         lang: {
             pl: 'Уровень владения',

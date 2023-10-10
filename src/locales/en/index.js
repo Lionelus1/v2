@@ -199,6 +199,8 @@ export default {
     departmentNameLabel: "The name of the structural unit",
     headLabel: "Head:",
     author: "Author",
+    personalInfo: 'Personal information',
+    myAddress: 'Address',
     states: {
       created: "created",
       inapproval: "in approval",
