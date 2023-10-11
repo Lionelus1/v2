@@ -18,5 +18,7 @@ export default class ReceptionService {
     sendToResponsible(data) {
         return api.post('/reception/setRequestResponsible', data, {headers: getHeader()});
     }
-
+    deleteReceptionQuestion(id) {
+        return api.post('/reception/questions/delete/id', id, {headers: getHeader()});
+    }
 }

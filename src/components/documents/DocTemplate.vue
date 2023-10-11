@@ -147,10 +147,10 @@
             </div>
               <template v-if="onEditorTabSelected">
                   <div v-if="templateLanguage ==='kz'">
-                      <TinyEditor v-model="selectedNode.data.mainTextKaz" :readonly="!readonly" :contract-elements="true" :height="800"/>
+                      <TinyEditor v-model="selectedNode.data.mainTextKaz" :readonly="!readonly" :contract-elements="true" :wordformat="true" :height="800"/>
                   </div>
                   <div v-else>
-                      <TinyEditor v-model="selectedNode.data.mainTextRus" :readonly="!readonly" :contract-elements="true" :height="800"/>
+                      <TinyEditor v-model="selectedNode.data.mainTextRus" :readonly="!readonly" :contract-elements="true" :wordformat="true" :height="800"/>
                   </div>
               </template>
 <!--            <RichEditor ref="kzEditor" :readonly="editorReadOnly" v-if="templateLanguage =='kz'" v-model="selectedNode.data.mainTextKaz" editorStyle="height:500px;max-width:700px;min-width:500px">
