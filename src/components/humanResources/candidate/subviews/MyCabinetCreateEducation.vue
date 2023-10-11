@@ -1,7 +1,7 @@
   <template>
     <div id="carddiv" class="grid">
       <div class="col-12">
-        <h3>Создание и редактирование образования</h3>
+        <h3>{{ $t('hr.crAndUpdEdu') }}</h3>
         <div>
           <Menubar :model="menu" :key="active" style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px">
           </Menubar>
@@ -38,7 +38,7 @@
                   v-if="validation.institutionAddress"
               >{{ $t("common.requiredField") }}</small>
             </div>
-            <!-- <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+            <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
               <label>{{ $t('common.faculty') }}</label>
               <InputText
                   :readonly="readonly"
@@ -51,7 +51,7 @@
                   class="p-error"
                   v-if="validation.faculty"
               >{{ $t("common.requiredField") }}</small>
-            </div> -->
+            </div>
             <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
               <label>{{ $t('common.speciality') }}</label>
               <InputText
@@ -150,7 +150,7 @@
         userId: props.modelValue.userId,
         institution: props.modelValue.institution,
         speciality: props.modelValue.speciality,
-        // faculty: props.modelValue.faculty,
+        faculty: props.modelValue.faculty,
         diplomaNumber: props.modelValue.diplomaNumber,
         institutionAddress: props.modelValue.institutionAddress,
         receiptDate: props.modelValue.receiptDate,
@@ -177,7 +177,7 @@
   const validateForm = ()=> {
       validation.value.institution = !payload.value.institution || payload.value.institution == ""
       validation.value.institutionAddress = !payload.value.institutionAddress || payload.value.institutionAddress == ""
-      // validation.value.faculty = !payload.value.faculty || payload.value.faculty == ""
+      validation.value.faculty = !payload.value.faculty || payload.value.faculty == ""
       validation.value.speciality = !payload.value.speciality || payload.value.speciality == ""
       validation.value.receiptDate = !payload.value.receiptDate || payload.value.receiptDate == ""
       validation.value.expirationDate = !payload.value.expirationDate || payload.value.expirationDate == ""

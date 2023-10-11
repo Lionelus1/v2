@@ -116,6 +116,7 @@
     <DataTable class="p-datatable-sm" selectionMode="single" v-model="education"
                :lazy="true" :value="educations" :loading="loading" v-model:selection="education">
       <Column field="institution" :header="$t('hr.edu.institution')"></Column>
+      <Column field="faculty" :header="$t('common.faculty')"></Column>
       <Column field="institutionAddress" :header="$t('hr.edu.institutionAddress')"></Column>
       <Column field="speciality" :header="$t('common.speciality')"></Column>
       <Column  field="diplomaNumber" :header="$t('common.diplomNumber')"></Column>

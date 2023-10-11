@@ -135,7 +135,6 @@ const emitter = inject("emitter");
   const file = ref(null)
 
   const upload = (event) =>  {
-      console.log(event.files[0])
       file.value = event.files[0];
   }
 
@@ -147,7 +146,6 @@ const emitter = inject("emitter");
     const fd = new FormData();
     fd.append("id", JSON.stringify(payload.value))
     fd.append("idImage", file.value);  
-    console.log(fd)
 
     axios.post(smartEnuApi + '/account/cardID/update', fd, {headers: getHeader()}).then(res  => {
         emitter.emit('educationUpdated', true)
