@@ -91,7 +91,8 @@
                                   </router-link>
                               </div>
                               <div style="text-align: end">
-                                  <i class="fa-solid fa-trash cursor-pointer product-error-icon"></i>
+                                <Button v-if="adminMode" class="p-button-danger"
+                                        icon="pi pi-trash" label="" @click="deleteVisibleReceptionQuestion(slotProps.data.id)" />
                               </div>
                           </div>
                       </div>
@@ -112,6 +113,29 @@
         <Button :label="$t('common.yes')" autofocus @click="sendToResponsible"/>
       </template>
     </Dialog>
+  <Dialog
+      v-model:visible="deleteVisible"
+      :closable="false"
+      header=""
+      :style="{ width: '450px' }"
+      :modal="true">
+    <div class="confirmation-content">
+      <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"/>
+      <span>{{ $t("common.doYouWantDelete") }}?</span>
+    </div>
+    <template #footer>
+      <Button
+          :label="$t('common.yes')"
+          icon="pi pi-check"
+          class="p-button p-component p-button-success mr-2"
+          @click="deleteReceptionQuestion(questionID)"/>
+      <Button
+          :label="$t('common.no')"
+          icon="pi pi-times"
+          class="p-button p-component p-button-danger"
+          @click="deleteVisible = false"/>
+    </template>
+  </Dialog>
 </template>
 
 <script>
@@ -133,6 +157,8 @@ export default {
   },
   data() {
     return {
+      deleteVisible: false,
+      questionID: 0,
       data: [],
       currentQuestion: -1,
       responsible: null,
@@ -264,7 +290,30 @@ export default {
         return text;
       }
         return text.substring(0, 70) + '\u2026'
-    }
+    },
+    deleteReceptionQuestion(data) {
+      this.loading = true
+      const req ={
+        id: Number(data)
+      }
+      this.receptionService.deleteReceptionQuestion(req).then(_ => {
+        this.getData()
+        this.loading = false
+      }).catch((error) => {
+        this.$toast.add({
+          severity: "error",
+          summary: "downloadFileError:\n" + error,
+          life: 3000,
+        });
+        this.loading = false;
+      });
+      this.deleteVisible = false;
+    },
+
+    deleteVisibleReceptionQuestion(id) {
+      this.questionID = id;
+      this.deleteVisible = true;
+    },
   }
 };
 </script>
