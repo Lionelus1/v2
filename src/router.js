@@ -67,7 +67,7 @@ const routes = [
     {
         path: '/reception/request',
         name: "receptionRequest",
-        component: load('publicReception/Request')
+        component: load('publicReception/NewRequest')
     },
     {
         path: '/document/:uuid',

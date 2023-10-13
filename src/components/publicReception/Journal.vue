@@ -33,23 +33,23 @@
             </div>
         </div>-->
         </div>
-      <DataView :lazy="true" :loading="loading" :value="data" :rows="10" :paginator="true" @page="onPage($event)"
+      <DataView :lazy="true" :loading="loading" :value="data" :rows="10" :paginator="true" :first="pageFirst" @page="onPage($event)"
                 :totalRecords="total" layout="grid">
         <template #grid="slotProps">
           <div class="col-12 lg:col-6 p-2">
               <div class="card question_card p-3 shadow-1 m-0">
+                  <div class="question_status text-center mt-2 mb-2 sm:m-0">
+                          <span class="font-bold mr-2">
+                            <small>№&nbsp;{{ slotProps.data.id }}</small>
+                          </span>
+                    <span v-if="adminMode" :class="'customer-badge status-' + slotProps.data.state.id">
+                            {{ $t("common.states." + slotProps.data.state.code) }}
+                          </span>
+                  </div>
                   <div class="block sm:flex justify-content-between relative">
                           <div class="">
                               <i class="fa-solid fa-tags product-category-icon mr-2"></i>
                               <small class="product-category">{{ slotProps.data.category['name' + $i18n.locale].split("(")[0] }}</small>
-                          </div>
-                          <div class="question_status block sm:absolute mt-2 mb-2 sm:m-0">
-                          <span class="font-bold mr-2">
-                            <small>№&nbsp;{{ slotProps.data.id }}</small>
-                          </span>
-                          <span v-if="adminMode" :class="'customer-badge status-' + slotProps.data.state.id">
-                            {{ $t("common.states." + slotProps.data.state.code) }}
-                          </span>
                           </div>
                           <div class="">
                   <span v-if="slotProps.data.expired">
@@ -61,7 +61,7 @@
                               <small class="product-category">{{ moment(new Date(slotProps.data.createdDate)).utc().format("DD.MM.YYYY") }}</small>
                           </div>
                       </div>
-                  <div class="product-grid-item-content mt-4 mb-4">
+                  <div class="product-grid-item-content mt-2 mb-2">
                       <p class="question_text" :title="slotProps.data.question">{{ slotProps.data.question }}</p>
                   </div>
                   <div class="product-grid-item-bottom">
@@ -178,6 +178,8 @@ export default {
         completed: 3,
         expired: 4,
       },
+      currentPage: 0,
+      pageFirst: 0,
       lazyParams: {
         page: 0,
         rows: 10,
@@ -191,13 +193,27 @@ export default {
       receptionService: new ReceptionService()
     };
   },
-  created() {
+  mounted() {
     this.getData();
+  },
+  beforeUnmount(){
+    if(!this.$route.path.includes('/reception')){
+      localStorage.removeItem('currentPage');
+      localStorage.removeItem('pageFirst');
+    }
   },
   methods: {
     moment: moment,
     getData() {
       this.loading = true;
+      const savedPage = localStorage.getItem('currentPage');
+      const savedPage2 = localStorage.getItem('pageFirst');
+      if (savedPage) {
+        this.currentPage = parseInt(savedPage, 10);
+        this.pageFirst = parseInt(savedPage2, 10);
+        this.lazyParams.page = this.currentPage
+        this.lazyParams.first = this.pageFirst
+      }
       axios.post(smartEnuApi + "/reception/questions", this.lazyParams, {
         headers: getHeader(),
       }).then((response) => {
@@ -282,6 +298,8 @@ export default {
       this.getData();
     },
     onPage(event) {
+      localStorage.setItem('currentPage', event.page);
+      localStorage.setItem('pageFirst', event.first);
       this.lazyParams = event
       this.getData();
     },
