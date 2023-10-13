@@ -44,11 +44,15 @@
       </label>
       <Dropdown v-model="formData.page_id" optionDisabled="true" :options="pages" optionLabel="title_kz"
                 optionValue="enu_page_id" :filter="true" :showClear="true" :placeholder="$t('web.selectPage')"
-                :loading="pageLoading"/>
+                :loading="pageLoading"
+                :class="{ 'p-invalid': menuType === 1 && !formData.page_id && submitted }"/>
+      <small v-show="menuType === 1 && !formData.page_id && submitted" class="p-error">{{ $t("common.requiredField") }}</small>
     </div>
     <div class="field" v-if="menuType === 2">
       <label>{{ $t('common.link') }}</label>
-      <InputText id="en-title" v-model="formData.link" :placeholder="$t('common.link')"/>
+      <InputText id="en-title" v-model="formData.link" :placeholder="$t('common.link')"
+                 :class="{ 'p-invalid': menuType === 2 && !formData.link && submitted }"/>
+      <small v-show="menuType === 2 && !formData.link && submitted" class="p-error">{{ $t("common.requiredField") }}</small>
     </div>
 
     <div class="grid">
