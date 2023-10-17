@@ -59,9 +59,9 @@ export default {
                     'insertdatetime media table paste code help wordcount pagebreak'
                 ],
                 toolbar:
-                    `undo redo | fontselect fontsizeselect formatselect | ${this.contractElements ? `customSelect` : ''} | bold italic forecolor backcolor |
-            alignleft aligncenter alignright alignjustify | bullist numlist outdent indent |
-            removeformat | table | link | image media ${this.customFileUpload ? `fileupload` : ''} | code | pagebreak`,
+                    `undo redo | fontselect fontsizeselect formatselect | formatselect | ${this.contractElements ? `customSelect` : ''} | bold italic forecolor backcolor |
+            alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | blockquote |
+            removeformat | table | link | image media ${this.customFileUpload ? `fileupload` : ''} | code `,
                 contextmenu: 'link | customUploadContext',
                 images_upload_handler: uploadSingFile,
                 language: this.$i18n.locale === "en" ? "en_US" : this.$i18n.locale === "kz" ? "kk" : this.$i18n.locale,
