@@ -49,7 +49,7 @@ export default {
                 ],
                 toolbar:
                     `undo redo | fontselect fontsizeselect formatselect | formatselect | bold italic forecolor backcolor |
-            alignleft aligncenter alignright alignjustify | bullist numlist outdent indent |
+            alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | blockquote |
             removeformat | table | link | image media ${this.customFileUpload ? `fileupload` : ''} | code `,
                 contextmenu: 'link | customUploadContext',
                 images_upload_handler: uploadSingFile,
