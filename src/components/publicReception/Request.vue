@@ -85,10 +85,10 @@ Please double-check the entered data before submission.
     </div>
 </template>
 <script>
-    import axios from "axios";
     import {smartEnuApi} from "@/config/config";
     import {VueRecaptcha} from "vue-recaptcha";
-
+    import ReceptionService from "@/service/reception.service";
+    import {UserService} from "@/service/user.service"
     export default {
         components: {VueRecaptcha},
     props: {
@@ -126,6 +126,8 @@ Please double-check the entered data before submission.
             },
             categories : null,
             isCaptchaSuccess: false,
+            receptionService: new ReceptionService(),
+            userService: new UserService()
         };
     },
     methods: {
@@ -145,13 +147,10 @@ Please double-check the entered data before submission.
             }
         },
         getCategories() {
-            axios
-                .post(
-                smartEnuApi + "/auth/getDictionary",
-                { name: "req_category" },
-              
-                )
-                .then((res) => {
+            const req = {
+                name: "req_category" 
+            }
+            this.userService.getDictionary(req).then((res) => {
                     this.categories = res.data
                 })
                 .catch((error) => {
@@ -207,8 +206,7 @@ Please double-check the entered data before submission.
                 this.request.count  = 1
             }
             fd.append('question', JSON.stringify({question: this.request, count: this.request.count}));
-            axios.post(smartEnuApi + "/reception/sendQuestion", fd)
-            .then(resp => {
+            this.receptionService.sendQuestion(fd).then(resp => {
                 this.request.number = resp.data
                 this.uploading = false;
                 this.uploaded = true;

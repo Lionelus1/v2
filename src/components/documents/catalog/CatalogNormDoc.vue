@@ -99,7 +99,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import PostFolder from "../PostFolder.vue"
 import PostFile from "../PostFile.vue"
 import { smartEnuApi, getHeader, findRole } from "@/config/config";
@@ -108,6 +107,8 @@ import { FilterMatchMode, FilterOperator } from "primevue/api";
 import Enum from "@/enum/docstates/index"
 
 import DepartmentList from "@/components/smartenu/DepartmentList.vue"
+import { DocService } from "../../../service/doc.service";
+import { FileService } from "@/service/file.service";
 
 export default {
     components: { PostFolder, PostFile, DepartmentList },
@@ -214,6 +215,8 @@ export default {
                     }
                 },
             ],
+            docService: new DocService(),
+            fileService: new FileService(),
         }
     },
     mounted() {
@@ -249,8 +252,7 @@ export default {
                 this.expandedKeys = {}
             }
             let url = "/doc/getFoldersByType";
-            axios.post(smartEnuApi + url, this.lazyParams, { headers: getHeader() })
-                .then(response => {
+            this.docService.getFoldersByType(this.lazyParams).then(response => {
                     if (parent == null || this.lazyParams.filters != null)  {
                         this.catalog = response.data
                     } else {
@@ -378,8 +380,10 @@ export default {
                 icon: 'pi pi-exclamation-triangle',
                 accept: () => {
                     let url = "/doc/deleteFolder";
-                    axios.post(smartEnuApi + url, { id: this.folder.id, hide: hide }, { headers: getHeader() })
-                        .then(_ => {
+                    const req = {
+                        id: this.folder.id, hide: hide
+                    }
+                    this.docService.docDeleteFolder(req).then(_ => {
                                 this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
                                 this.folder.hidden = hide
                                 if (!hide) {
@@ -399,17 +403,17 @@ export default {
                 icon: 'pi pi-exclamation-triangle',
                 accept: () => {
                     let url = "/doc/deleteFile";
-                    axios.post(smartEnuApi + url, { id: this.file.id, hide: hide }, { headers: getHeader() })
-                        .then(_ => {
-                                this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
-                                this.file.hidden = hide
-                                if (!hide) {
-                                    this.deleteChild(this.catalog[0])
-                                }
-                            },
-                            error => {
-                                console.log(error);
-                            });
+                    const req = {id: this.file.id, hide: hide}
+                    this.docService.docDeleteFile(req).then(_ => {
+                        this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
+                        this.file.hidden = hide
+                        if (!hide) {
+                            this.deleteChild(this.catalog[0])
+                        }
+                    },
+                    error => {
+                        console.log(error);
+                    });
                 },
             });
         },
@@ -437,62 +441,50 @@ export default {
         },
         showFolder() {
             let url = "/doc/showFolder";
-            axios.post(smartEnuApi + url, { id: this.folder.id }, { headers: getHeader() })
-                .then(_ => {
-                    this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
-                    this.folder.hidden = false
-                    this.selected.hidden = false
+            const req = {id: this.folder.id }
+            this.docService.showFolder(req).then(_ => {
+                this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
+                this.folder.hidden = false
+                this.selected.hidden = false
 
-                })
-                .catch(error => {
-                    console.log(error)
-                    if (error.response.status == 401) {
-                        this.$store.dispatch("logLout");
-                    } else
-                        console.error(error)
-                })
+            })
+            .catch(error => {
+                console.log(error)
+            })
         },
         showFile() {
             let url = "/doc/showFile";
-            axios.post(smartEnuApi + url, { id: this.file.id }, { headers: getHeader() })
-                .then(_ => {
-                    this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
-                    this.file.hidden = false
-                    this.selected.hidden = false
+            const req = {id: this.file.id}
+            this.docService.showFile(req).then(_ => {
+                this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
+                this.file.hidden = false
+                this.selected.hidden = false
 
-                })
-                .catch(error => {
-                    console.log(error)
-                    if (error.response.status == 401) {
-                        this.$store.dispatch("logLout");
-                    } else
-                        console.error(error)
-                })
+            })
+            .catch(error => {
+                console.log(error)
+            })
         },
         downloadFile() {
             if (this.file) {
-                axios.post(
-                        smartEnuApi + "/downloadFile", {
-                            filePath: this.file.path
-                        }, {
-                            headers: getHeader()
-                        }
-                    )
-                    .then(response => {
-                        const link = document.createElement("a");
-                        link.href = "data:application/octet-stream;base64," + response.data;
-                        link.setAttribute("download", this.file.name);
-                        link.download = this.file.name;
-                        link.click();
-                        URL.revokeObjectURL(link.href);
-                    })
-                    .catch((error) => {
-                        this.$toast.add({
-                            severity: "error",
-                            summary: "downloadFileError:\n" + error,
-                            life: 3000,
-                        });
+            const req = {
+                filePath: this.file.path
+            }
+            this.fileService.downloadFile(req).then(response => {
+                    const link = document.createElement("a");
+                    link.href = "data:application/octet-stream;base64," + response.data;
+                    link.setAttribute("download", this.file.name);
+                    link.download = this.file.name;
+                    link.click();
+                    URL.revokeObjectURL(link.href);
+                })
+                .catch((error) => {
+                    this.$toast.add({
+                        severity: "error",
+                        summary: "downloadFileError:\n" + error,
+                        life: 3000,
                     });
+                });
             }
         },
         

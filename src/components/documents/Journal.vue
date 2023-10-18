@@ -135,8 +135,9 @@
 import {smartEnuApi, getHeader, b64toBlob} from "@/config/config";
 import {getShortDateString, getLongDateString} from "@/helpers/helper";
 import {FilterMatchMode} from "primevue/api";
+import {AgreementService} from "@/service/agreement.service"
+import {DocService} from "@/service/doc.service"
 
-import axios from "axios";
 
 export default {
   data() {
@@ -201,7 +202,9 @@ export default {
         rows: 10,
         first: 0
       },
-      isFilterActive: false
+      isFilterActive: false,
+      agreementService: new AgreementService(),
+      docService: new DocService()
     }
   },
   computed: {
@@ -236,16 +239,13 @@ export default {
       if (this.filters.status.value != null && this.filters.status.value.id != null) {
         this.lazyParams.filters.status.value = this.filters.status.value.id;
       }
-      axios.post(smartEnuApi + url, this.lazyParams, {headers: getHeader()}).then((res) => {
+      this.agreementService.getJournal(this.lazyParams).then((res) => {
         this.loading = false
         this.total = res.data.total
         this.contracts = res.data.docs
       }).catch((error) => {
         console.log(error)
         this.loading = false
-        if (error.response.status == 401) {
-          this.$store.dispatch("logLout");
-        }
       });
     },
     clearFilter() {
@@ -275,8 +275,10 @@ export default {
         rejectClass: 'p-button p-button-danger',
         accept: () => {
           let url = "/doc/removeFile";
-          axios.post(smartEnuApi + url, {id: fileID, hide: false}, {headers: getHeader()})
-              .then(_ => {
+          const req = {
+            id: fileID, hide: false
+          }
+          this.docService.docRemoveFile(req).then(_ => {
                     this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
                     this.initApiCall();
 

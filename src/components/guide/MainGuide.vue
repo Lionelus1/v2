@@ -55,14 +55,13 @@
 </template>
 
 <script>
-import axios from "axios";
 import {findRole} from "../../config/config";
 import {getHeader, smartEnuApi} from "@/config/config";
 import {resizeImages} from "../../helpers/HelperUtil";
 import EditGuide from "./EditGuide";
 import AddGuide from "./AddGuide";
 import {MenuService} from "../../service/menu.service";
-
+import { ManualService } from "../../service/manual.service";
 export default {
   name: "MainGuide",
   components: {EditGuide, AddGuide},
@@ -94,55 +93,54 @@ export default {
         nameEn: null,
       },
       parentGuide: null,
-      isGlobal: true
+      isGlobal: true, 
+      manualService: new ManualService()
     };
   },
   methods: {
     getGuide() {
       this.loading = true
-      axios.post(smartEnuApi + "/manual/getContent", {pageLink: this.pageLink}, {headers: getHeader()})
-          .then((response) => {
-            this.guide = response.data;
-            if (this.guide.pageLink === "" && this.findRole(null, "manual_moderator")) {
-              this.addViewVisible = true;
-              this.guide.pageLink = this.pageLink;
-              const data = this.getPath(this.menuService.getGlobalMenu(this.$t), this.pageLink, null);
-              if (data) {
-                if (this.$i18n.locale === 'kz') {
-                  this.guide.name = data.child.label;
-                } else if (this.$i18n.locale === 'ru') {
-                  this.guide.nameRu = data.child.label;
-                } else {
-                  this.guide.nameEn = data.child.label;
-                }
-                if (data.parent)
-                  this.getGuideByPageLink(data.parent.label)
+      const req = {
+        pageLink: this.pageLink
+      }
+      this.manualService.getContent(req).then((response) => {
+          this.guide = response.data;
+          if (this.guide.pageLink === "" && this.findRole(null, "manual_moderator")) {
+            this.addViewVisible = true;
+            this.guide.pageLink = this.pageLink;
+            const data = this.getPath(this.menuService.getGlobalMenu(this.$t), this.pageLink, null);
+            if (data) {
+              if (this.$i18n.locale === 'kz') {
+                this.guide.name = data.child.label;
+              } else if (this.$i18n.locale === 'ru') {
+                this.guide.nameRu = data.child.label;
+              } else {
+                this.guide.nameEn = data.child.label;
               }
+              if (data.parent)
+                this.getGuideByPageLink(data.parent.label)
+            }
 
-              this.selectedGuide = this.guide;
+            this.selectedGuide = this.guide;
 
-            }
-            if (this.guide.pageLink === "") {
-              this.notGuide = true;
-            }
-            if (this.guide && this.isGlobal) {
-              this.isGlobal = false;
-              this.emitter.emit("expandParentGuide", this.guide.parentId);
-            }
-            this.loading = false;
-          })
-          .catch((error) => {
-            console.log(error)
-            if (error.response.status === 401) {
-              this.$store.dispatch("logLout");
-            } else {
-              this.$toast.add({
-                severity: "error",
-                summary: this.$t("common.error") + ":\n" + error,
-                life: 3000,
-              });
-            }
-          });
+          }
+          if (this.guide.pageLink === "") {
+            this.notGuide = true;
+          }
+          if (this.guide && this.isGlobal) {
+            this.isGlobal = false;
+            this.emitter.emit("expandParentGuide", this.guide.parentId);
+          }
+          this.loading = false;
+        })
+        .catch((error) => {
+          console.log(error)
+            this.$toast.add({
+              severity: "error",
+              summary: this.$t("common.error") + ":\n" + error,
+              life: 3000,
+            });
+        });
     },
     validateGuides() {
       this.formValid = [];
@@ -179,9 +177,7 @@ export default {
       this.bodyParams.name = this.guide.name
       this.bodyParams.nameRu = this.guide.nameRu
       this.bodyParams.nameEn = this.guide.nameEn
-      axios.post(smartEnuApi + "/manual/save", this.bodyParams, {
-        headers: getHeader(),
-      }).then((response) => {
+      this.manualService.manualSave(this.bodyParams).then((response) => {
         if (response.data !== null) {
           this.$toast.add({
             severity: "success",
@@ -230,8 +226,10 @@ export default {
 
     },
     getGuideByPageLink(label) {
-      axios.post(smartEnuApi + "/manual/getManuals", {manualSearch: label}, {headers: getHeader()})
-          .then((response) => {
+      const req = {
+        manualSearch: label
+      }
+      this.manualService.getManuals(req).then((response) => {
             if (response.data.manuals && response.data.manuals.length !== 0) {
               this.parentGuide = response.data.manuals[0];
               this.guide.parentId = this.parentGuide.manualId;
@@ -261,10 +259,7 @@ export default {
         nameRu: label,
         nameEn: label,
       }
-
-      axios.post(smartEnuApi + "/manual/save", d, {
-        headers: getHeader(),
-      }).then((response) => {
+      this.manualService.manualSave(d).then((response) => {
         if (response.data !== null) {
           this.guide.parentId = response.data.manualId;
         }

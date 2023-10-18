@@ -39,11 +39,9 @@
   </Dialog>
 </template>
 <script>
-import axios from 'axios';
-
 import { getHeader, smartEnuApi, apiDomain, b64toBlob } from "@/config/config";
 import Enum from "@/enum/docstates/index";
-
+import { DocService } from "@/service/doc.service";
 export default {
   name: 'ReferencesOld',
   components: {},
@@ -67,6 +65,7 @@ export default {
 
       salaryRequested: false,
       commentary: null,
+      docService: new DocService()
     }
   },
   mounted() {
@@ -116,12 +115,10 @@ export default {
     },
     share() {
       this.loading = true
-
-      axios.post(smartEnuApi + '/document/share', {
+      const req = {
         docId: this.reference.id,
-      }, {
-        headers: getHeader() 
-      }).then(res => {
+      }
+      this.docService.share(req).then(res => {
         this.url = apiDomain + '/document/' + this.reference.uuid
         this.reference.isPublic = true
 
@@ -141,21 +138,17 @@ export default {
     },
     correctionRequest() {
       this.loading = true
-
-      axios.post(smartEnuApi + '/document/newRequest', {
+      const req = {
         requestType: Enum.DocumentRequestType.ReferenceErrorCorrection,
         docId: this.reference.id,
         commentary: this.commentary,
-      }, {
-        headers: getHeader() 
-      }).then(res => {
+      }
+      this.docService.newRequest(req).then(res => {
         this.close('correctionMail')
         this.showMessage('success', this.$t('ref.sent'), null)
         this.loading = false
       }).catch(err => {
-        if (err.response && err.response.status == 401) {
-          this.$store.dispatch("logLout")
-        } else if (err.response && err.response.data && err.response.data.localized) {
+       if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
           console.log(err)
@@ -167,12 +160,10 @@ export default {
     },
     getPdf() {
       this.loading = true
-
-      axios.post(smartEnuApi + '/document/download', {
+      const req = {
         uuid: this.reference.uuid,
-      }, {
-        headers: getHeader() 
-      }).then(res => {
+      }
+      this.docService.documentDownload(req).then(res => {
         this.pdf = b64toBlob(res.data);
 
         this.loading = false

@@ -24,9 +24,8 @@
 </template>
 
 <script>
-import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
-import ResumeService from "./ResumeService";
+import ResumeService from "@/service/resume.service";
 import ResumeView from "./ResumeView";
 
 export default {

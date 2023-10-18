@@ -24,13 +24,14 @@
 
 <script>
 import { getHeader, smartEnuApi } from "@/config/config";
-import axios from "axios";
+import { DicService } from "../../service/dic.service";
 export default {
   name: "DicSpeciality",
   data() {
     return {
       value: this.modelValue,
       specialities:  null,
+      dicService: new DicService()
     }
   },
   props: {
@@ -62,15 +63,10 @@ export default {
     getSpecialities() {
       this.specialities = null
       this.value = null
-      axios.get(smartEnuApi + '/specialities')
-          .then(response=>{
+      this.dicService.getSpecialities().then(response=>{
             this.specialities = response.data;
-            console.log(response.data)
           })
           .catch((error) => {
-            if (error.response.status == 401) {
-              this.$store.dispatch("logLout");
-            }
             this.$toast.add({
               severity: "error",
               summary: "getInstitutions:\n" + error,

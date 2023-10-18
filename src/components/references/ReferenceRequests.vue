@@ -82,11 +82,10 @@
   </div>
 </template>
 <script>
-import axios from 'axios';
-
 import { getHeader, smartEnuApi, b64toBlob } from "@/config/config";
 import { getLongDateString } from "@/helpers/helper";
 import Enum from "@/enum/docstates/index";
+import { DocService } from "@/service/doc.service";
 
 export default {
   name: 'ReferenceRequests',
@@ -123,6 +122,7 @@ export default {
           Enum.DocumentRequestType.ReferenceSalaryRequest
         ],
       },
+      docService: new DocService(),
 
       menuItems: [
         {
@@ -165,10 +165,7 @@ export default {
     },
     initApiCall() {
       this.tableLoading = true
-
-      axios.post(smartEnuApi + '/docrequests', this.requestBody, {
-        headers: getHeader()
-      }).then(res => {
+      this.docService.docrequests(this.requestBody).then(res => {
         this.requests = res.data.docrequests
         this.total = res.data.total
 
@@ -195,27 +192,20 @@ export default {
         status: status,
         docParams: this.selectedRequest.doc.newParams,
       };
-
-      axios.post(smartEnuApi + '/docrequest/update', requestBody, {
-        headers: getHeader()
-      }).then(res => {
+      
+      this.docService.docrequestUpdate(requestBody).then(res => {
         this.selectedRequest.status = status
         this.selectedRequest.completedUserId = (JSON.parse(window.localStorage.getItem("loginedUser"))).userID
         this.selectedRequest.completedTime = Date.now()
 
         if (status === 1) {
-          axios.post(smartEnuApi + '/document/get', {
-            uuid: this.selectedRequest.doc.uuid,
-          }, {
-            headers: getHeader() 
-          }).then(res => {
+          const req = {uuid: this.selectedRequest.doc.uuid,}
+          this.docService.documentGet(req).then(res => {
             this.selectedRequest.doc = res.data;
             this.getParams();
             this.loading = false;
           }).catch(err => {
-            if (err.response && err.response.status == 401) {
-              this.$store.dispatch("logLout")
-            } else if (err.response && err.response.data && err.response.data.localized) {
+            if (err.response && err.response.data && err.response.data.localized) {
               this.showMessage('error', this.$t(err.response.data.localizedPath), null)
             } else {
               console.log(err)
@@ -227,10 +217,8 @@ export default {
         } else {
           this.loading = false;
         }
-      }).catch(err => {
-        if (err.response && err.response.status == 401) {
-          this.$store.dispatch("logLout")
-        } else if (err.response && err.response.data && err.response.data.localized) {
+      }).catch(err => { 
+        if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
           console.log(err)
@@ -292,22 +280,17 @@ export default {
       }
 
       this.loading = true
-
-      axios.post(smartEnuApi + '/document/download', {
+      const req = {
         uuid: this.selectedRequest.doc.uuid,
-      }, {
-        headers: getHeader() 
-      }).then(res => {
+      }
+      this.docService.documentDownload(req).then(res => {
         this.pdf = b64toBlob(res.data);
 
         this.loading = false
       }).catch(err => {
-        if (err.response && err.response.status == 401) {
-          this.$store.dispatch("logLout")
-        } else if (err.response && err.response.data && err.response.data.localized) {
+        if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
 

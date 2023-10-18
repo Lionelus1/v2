@@ -55,8 +55,8 @@
 </template>
 
 <script>
-import axios from "axios";
 import { getHeader, smartEnuApi } from "../../config/config";
+import {FaqService} from "@/service/faq.service"
 export default {
   data() {
     return {
@@ -64,6 +64,7 @@ export default {
       faq: null,
       loading: true,
       currentUser: null,
+      faqService: new FaqService()
     };
   },
   created() {
@@ -73,15 +74,10 @@ export default {
   },
   methods: {
     getFaqById() {
-      axios
-        .post(
-          smartEnuApi + "/faq/getById",
-          {
+      const req = {
             faqId: parseInt(this.faqId),
-          },
-          { headers: getHeader() }
-        )
-        .then((response) => {
+          }
+      this.faqService.getById(req).then((response) => {
           this.faq = response.data;
 
           this.loading = false;
@@ -91,15 +87,8 @@ export default {
         });
     },
     downloadFile(fileName, fileType) {
-      axios
-        .post(
-          smartEnuApi + "/faq/downloadFile",
-          { filename: fileName, fileType: fileType },
-          {
-            headers: getHeader(),
-          }
-        )
-        .then((response) => {
+      const req = { filename: fileName, fileType: fileType }
+      this.faqService.downloadFile(req).then((response) => {
           // const blob = new Blob([response.data], )
           const link = document.createElement("a");
           link.href = "data:application/octet-stream;base64," + response.data;

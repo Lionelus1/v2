@@ -26,22 +26,69 @@ export class DissertationService {
     getMemberState() {
         return api.post(`/dissertation/getMemberState`)
     }
+    getDoctorals(data){
+        return api.post(`/dissertation/getdoctorals`, data, {headers: getHeader()});
+    }
+    deleteMember(data) {
+        return api.post("/dissertation/deleteCouncilMember", data,  {headers: getHeader()});
+    }
+    addCouncilMember(data) {
+        return api.post("/dissertation/addCouncilMember", data,  {headers: getHeader()});
+    }
+    getcouncilmembers(data) {
+        return api.post("/dissertation/getcouncilmembers", data,  {headers: getHeader()});
+    }
+    startRegistration(data) {
+        return api.post("/dissertation/startRegistration", data,  {headers: getHeader()});
+    }
+    changeDissertationState(data) {
+        return api.post("/dissertation/changeDissertationState", data,  {headers: getHeader()});
+    }
+    vote(data) {
+        return api.post("/dissertation/vote", data,  {headers: getHeader()});
+    }
+    checkMyVoice(data) {
+        return api.post("/dissertation/checkMyVoice", data,  {headers: getHeader()});
+    }
+    getVoteInformation(data) {
+        return api.post("/dissertation/getVoteInformation", data,  {headers: getHeader()});
+    }
+    getRegistrationInfo(data) {
+        return api.post("/dissertation/getRegistrationInfo", data,  {headers: getHeader()});
+    }
+    setMeetingTime(data) {
+        return api.post("/dissertation/setMeetingTime", data,  {headers: getHeader()});
+    }
+    deleteDissertation(data) {
+        return api.post("/dissertation/deleteDissertation", data,  {headers: getHeader()});
+    }
+    addDoctoral(data) {
+        return api.post("/dissertation/addDoctoral", data,  {headers: getHeader()});
+    }
+    memberregister(data) {
+        return api.post("/dissertation/memberregister", data,  {headers: getHeader()});
+    }
 
     getDissertationList(params) {
         return api.post(`/dissertation/addReport`, params, {headers: getHeader()});
     }
+
     addDissertationReportByYear(params) {
         return api.post(`/dissertation/addYearReport`, params, {headers: getHeader()});
     }
+
     getDissertationHtml(params) {
         return api.post(`/dissertation/htmlcode`, params, {headers: getHeader()});
     }
+
     dissertationReport(params) {
         return api.post(`/dissertation/report`, params, {headers: getHeader()});
     }
+
     dissertationReportSendToSign(params) {
         return api.post(`/dissertation/sendToSign`, params, {headers: getHeader()});
     }
+
     deleteReport(id) {
         return api.post(`/dissertation/deleteReport`, {id: id}, {headers: getHeader()});
     }

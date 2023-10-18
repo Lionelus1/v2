@@ -62,9 +62,8 @@
 </template>
 
 <script>
-import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
-
+import {UserService} from "@/service/user.service"
 export default {
   name: "Department",
   props: {
@@ -93,7 +92,8 @@ export default {
         nameKz: false,
         name: false,
         nameEn: false,
-      }
+      },
+      userService: new UserService()
     };
   },
   methods: {
@@ -112,9 +112,7 @@ export default {
         this.value.orgType = this.orgType
         this.value.orgId = this.orgId
         let path = "/add-department"
-        axios
-            .post(smartEnuApi + path, this.value, {headers: getHeader(),})
-            .then(res => {
+        this.userService.addDepartment(this.value).then(res => {
               this.emitter.emit("department", true);
             }).catch(error => {
           this.$toast.add({

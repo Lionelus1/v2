@@ -47,6 +47,22 @@ export class NewsService {
         return api.post(`/web/getNewsFiles`, params, {headers: getHeader()});
     }
 
+    delNewsCat(data) {
+        return api.post(`/delNewsCat`, data, {headers: getHeader()});
+    }
+
+    categories(data) {
+        return api.post(`/delNewsCat`, data, {headers: getHeader()});
+    }
+
+    getAllNews(data) {
+        return api.post(`/getNews`, data, {headers: getHeader()});
+    }
+
+    getPublishEvents() {
+        return api.get(`/getPublishEvents`, {headers: getHeader()});
+    }
+
     getWelcomeNews(params) {
         return api.post("/getNews", params, {headers: getHeader()})
     }

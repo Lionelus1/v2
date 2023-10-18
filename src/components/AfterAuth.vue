@@ -2,26 +2,28 @@
   <div class="w-100">жүктелуде . . . </div>
 </template>
 <script>
-import axios from 'axios';
 import {mapActions} from 'vuex';
 import {getHeader, smartEnuApi, findRole} from "../config/config";
+import { UserService } from "@/service/user.service";
 
 export default {
   name:"Auth",
+  data() {
+    return {
+      service: new UserService(),
+    }
+  },
   methods:{
     ...mapActions([
       'setLoginedUser', 'setUserSiteSlug'
     ]),
     findRole: findRole,
     getLoginedUser(){
-      axios.get(
-        smartEnuApi +'/logineduserinfo', 
-        { headers:getHeader() }
-      ).then(response => {
-        window.localStorage.setItem("loginedUser", JSON.stringify(response.data));
+      this.service.loginedUserInfo().then(response=>{
+        window.localStorage.setItem("loginedUser",JSON.stringify(response.data));
         this.setLoginedUser();
 
-        if (response.data.organization.id || response.data.mainPosition.id || response.data.mainPosition.department.id || 
+        if (response.data.organization.id || response.data.mainPosition.id || response.data.mainPosition.department.id ||
           response.data.positions.length > 0) {
           window.localStorage.setItem("showPositionsDialog", true);
         }
@@ -42,7 +44,7 @@ export default {
       })
     },
     getUserSlug() {
-      axios.get(smartEnuApi + `/getUserSlug`, {headers: getHeader()}).then(res => {
+      this.service.getUserSlug().then(res => {
         if (res.data) {
           localStorage.setItem("userSlug", JSON.stringify(res.data))
           this.setUserSiteSlug()

@@ -49,9 +49,9 @@
 </template>
 <script>
 	import {smartEnuApi, getHeader} from "@/config/config";
-  import axios from 'axios';
 	import Bank from './Bank.vue';
 	import {FilterMatchMode,FilterOperator} from 'primevue/api'
+	import { ContragentService } from "@/service/contragent.service";
 
 	export default {
   components: { Bank },
@@ -71,6 +71,7 @@
 								matchMode: FilterMatchMode.CONTAINS
 							},
 						},
+						contragentService: new ContragentService(),
             menu: [
                 {
                   label:'',
@@ -91,11 +92,13 @@
         }
     },
 		methods: {
+			
 			initApiCall(){
+
+
         let url = "/contragent/banks";
 				var req = {"id" : 0, "count": this.bankShowCount};
-        axios.post(smartEnuApi+url, req,  {headers: getHeader()})
-        .then(res=>{
+			this.contragentService.initApiCall(req).then(res=>{
 
           this.banks =  res.data
         })

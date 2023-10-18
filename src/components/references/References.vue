@@ -119,7 +119,6 @@
   </Dialog>
 </template>
 <script>
-import axios from 'axios';
 
 import { getHeader, smartEnuApi, apiDomain } from "@/config/config";
 import { getShortDateString } from "@/helpers/helper";
@@ -127,7 +126,7 @@ import Enum from "@/enum/docstates/index";
 
 import ReferenceFolderFile from './ReferenceFolderFile.vue';
 import ReferencePage from './ReferencePage.vue';
-
+import { DocService } from '../../service/doc.service';
 export default {
   name: 'References',
   components: { ReferenceFolderFile, ReferencePage },
@@ -159,6 +158,7 @@ export default {
 
       page: 0,
       rows: 10,
+      docService: new DocService()
     }
   },
   mounted() {
@@ -206,8 +206,7 @@ export default {
     },
     getReferences() {
       this.tableLoading = true
-
-      axios.post(smartEnuApi + '/documents', {
+      const req = {
         sourceType: null,
         docType: Enum.DocType.Reference,
         lang: null,
@@ -216,17 +215,14 @@ export default {
         departmentId: null,
         page: this.page,
         rows: this.rows,
-      }, { 
-        headers: getHeader() 
-      }).then(res => {
+      }
+      this.docService.getDocuments(req).then(res => {
         this.references = res.data.documents
         this.total = res.data.total
 
         this.tableLoading = false
       }).catch(err => {
-        if (err.response && err.response.status == 401) {
-          this.$store.dispatch("logLout")
-        } else if (err.response && err.response.data && err.response.data.localized) {
+        if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
           console.log(err)
@@ -252,24 +248,20 @@ export default {
     newReference() {
       this.close('getRefStep2Dialog');
       this.loading = true
-
-      axios.post(smartEnuApi + '/document/create', {
+      const req = {
         templateId: this.selectedTemplate.id,
         folderId: null,
         docType: Enum.DocType.Reference,
         templateParams: this.selectedTemplateParams,
-      }, { 
-        headers: getHeader() 
-      }).then(res => {
+      }
+      this.docService.documentCreate(req).then(res => {
         this.getReferences();
         this.selectedReference = res.data;
         this.open('referenceSidebar');
 
         this.loading = false
       }).catch(err => {
-        if (err.response && err.response.status == 401) {
-          this.$store.dispatch("logLout")
-        } else if (err.response && err.response.data && err.response.data.localized) {
+         if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
           console.log(err)

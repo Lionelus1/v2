@@ -20,8 +20,8 @@
 
   <Sidebar v-model:visible="dialogOpenState.createDocDialog" :modal="true" :style="largeScreen ? 'width:75vw' : ''" :position="largeScreen ? 'right' : 'full'">
     <div class="flex flex-wrap justify-content-between">
-      <SelectButton :disabled="!this.$store.state.loginedUser.organization || !this.$store.state.loginedUser.organization.id || 
-        this.$store.state.loginedUser.organization.id !== 1 || this.findRole(null, 'student')" 
+      <SelectButton :disabled="!this.$store.state.loginedUser.organization || !this.$store.state.loginedUser.organization.id ||
+        this.$store.state.loginedUser.organization.id !== 1 || this.findRole(null, 'student')"
         v-model="selectedDocSourceType" :options="docSourceType" class="mb-3 mr-3">
         <template #option="slotProps">
           <div v-if="slotProps.option == Enum.DocSourceType.Template">{{$t('contracts.fromtemplate')}}</div>
@@ -47,13 +47,13 @@
   </Sidebar>
 </template>
 <script>
-  import axios from 'axios';
   
   import { smartEnuApi, getHeader, findRole } from "@/config/config";
   import Enum from "@/enum/docstates/index";
   
   import DocTemplate from "@/components/documents/DocTemplate.vue"
   import PostFile from "./PostFile.vue"
+  import { AgreementService } from "@/service/agreement.service";
 
   export default {
     components: { PostFile, DocTemplate},
@@ -88,6 +88,7 @@
           docType: Enum.DocType.Contract,
           sourceType: Enum.DocSourceType.FilledDoc,
         },
+        agreementService: new AgreementService()
       }
     },
     mounted() {
@@ -119,6 +120,30 @@
       showMessage(msgtype,message,content) {
         this.$toast.add({severity:msgtype, summary: message, detail:content, life: 3000});
       },
+      createDoc() {
+        
+        let url ="/agreement/create";
+        var req = {
+          sourceType : this.selectedDocSourceType,
+          templateId: this.selectedTemplate != null ? this.selectedTemplate.id : null,
+          creatorId: 1,
+          filePath: "",
+          lang: this.selectedDocLanguage == "kz" ? 0 : 1
+        }
+        if (this.selectedTemplate != null) {
+          req.lang = this.selectedTemplate.templateLanguage == "kz" ? 0 : 1
+        }
+        this.saving=true;
+        this.agreementService.createAgreement(req).then(responce=>{
+          this.showMessage('success', this.$t('contracts.title'), this.$t('contracts.message.created'));
+          this.saving =false;
+          this.$router.push({ path: '/documents/contract/' + responce.data});
+        })
+        .catch(error => {
+          this.saving =false;
+          console.log(error);
+        })
+      },
       createDocByTemplate(event) {
         let url ="/agreement/create";
         var req = {
@@ -131,7 +156,7 @@
         }
         this.saving = true;
         
-        axios.post(smartEnuApi+url, req, { headers: getHeader() }).then(responce=>{
+        this.agreementService.createAgreement(req).then(responce=>{
           this.saving = false;
           this.showMessage('success', this.$t('contracts.title'), this.$t('contracts.message.created'));
           this.$router.push({ path: '/documents/contract/' + responce.data.id});

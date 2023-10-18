@@ -38,9 +38,8 @@
 </template>
 
 <script>
-    import axios from "axios";
     import {getHeader, smartEnuApi} from "@/config/config";
-
+    import { ManualService } from "../../service/manual.service";
     export default {
         name: "EditGuide",
         props: ['isVisible', 'selectedGuide'],
@@ -59,6 +58,7 @@
                 lazyParams: {
                     parentId: null,
                 },
+                manualService: new ManualService()
             }
         },
         methods: {
@@ -68,9 +68,7 @@
                 if (this.formValid.length > 0) {
                     return;
                 }
-                axios.post(smartEnuApi + "/manual/save", this.bodyParams, {
-                    headers: getHeader(),
-                }).then((response) => {
+                this.manualService.manualSave(this.bodyParams).then((response) => {
                     if (response.data !== null) {
                         this.$toast.add({
                             severity: "success",
@@ -90,37 +88,33 @@
             },
             getGuides(parentId, parent) {
                 this.lazyParams.parentId = parentId
-                axios.post(smartEnuApi + "/manual/getManuals", this.lazyParams, {
-                        headers: getHeader()}).then((response) => {
-                        if (parentId !== null) {
-                            parent.children = response.data.manuals;
-                            parent.children.map(e => {
-                                e.leaf = !e.children;
-                                e.label = e.name;
-                                delete e.children
-                            })
-                        } else {
-                            this.categories = response.data.manuals;
-                            this.categories.map(e => {
-                                e.leaf = !e.children;
-                                e.label = e.name;
-                                delete e.children
-                            })
-                        }
+                this.manualService.getManuals(this.lazyParams).then((response) => {
+                    if (parentId !== null) {
+                        parent.children = response.data.manuals;
+                        parent.children.map(e => {
+                            e.leaf = !e.children;
+                            e.label = e.name;
+                            delete e.children
+                        })
+                    } else {
+                        this.categories = response.data.manuals;
+                        this.categories.map(e => {
+                            e.leaf = !e.children;
+                            e.label = e.name;
+                            delete e.children
+                        })
+                    }
 
-                        this.loading = false;
-                    })
-                    .catch((error) => {
-                        if (error.response.status === 401) {
-                            this.$store.dispatch("logLout");
-                        } else {
-                            this.$toast.add({
-                                severity: "error",
-                                summary: this.$t("smartenu.loadAllNewsError") + ":\n" + error,
-                                life: 3000,
-                            });
-                        }
-                    });
+                    this.loading = false;
+                })
+                .catch((error) => {
+                    this.loading = false;
+                        this.$toast.add({
+                            severity: "error",
+                            summary: this.$t("smartenu.loadAllNewsError") + ":\n" + error,
+                            life: 3000,
+                        });
+                });
             },
             validateGuides() {
                 this.formValid = [];

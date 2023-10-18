@@ -81,7 +81,6 @@
 
 <script>
 import WorkPlanAdd from "./WorkPlanAdd";
-import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
 import {WorkPlanService} from "@/service/work.plan.service";
 

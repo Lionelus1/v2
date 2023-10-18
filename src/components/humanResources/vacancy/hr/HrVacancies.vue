@@ -403,7 +403,6 @@
 <script>
 import {FilterMatchMode, FilterOperator} from "primevue/api";
 import ResumeView from "../../candidate/ResumeView";
-import axios from "axios";
 import {b64toBlob, getHeader, smartEnuApi} from "@/config/config";
 import Login from "../../../Login";
 import router from '@/router';
@@ -411,7 +410,8 @@ import html2pdf from "html2pdf.js";
 import {NCALayerClient} from "ncalayer-js-client";
 import {docToByteArray} from "@/helpers/SignDocFunctions";
 import {NCALayerClientExtension} from "@/helpers/ncalayer-client-ext";
-
+import { VacancyService } from "../../../../service/vacancy.service";
+import {CandidateService}  from "@/service/candidate.service"
 export default {
   name: "HrVacancies",
   components: {ResumeView},
@@ -466,6 +466,8 @@ export default {
       resumeFile: null,
       fileBlob: null,
       loading: false,
+      vacancyService: new VacancyService(),
+      candidateService: new CandidateService()
     }
   },
   methods: {
@@ -596,21 +598,17 @@ export default {
     getVacancies() {
       this.loading = true
       this.lazyParams.countMode = null;
-      axios.post(smartEnuApi + "/vacancy/public",
-          this.lazyParams, {headers: getHeader()}).then((response) => {
+      this.vacancyService.public(this.lazyParams).then((response) => {
         this.vacancies = response.data.vacancies;
         this.count = response.data.total;
         this.loading = false;
       }).catch((error) => {
-        if (error.response.status == 401) {
-          this.$store.dispatch("logLout");
-        } else {
+        console.log(error)
           this.$toast.add({
             severity: "error",
             summary: error,
             life: 3000,
           });
-        }
         this.loading = false;
       });
     },
@@ -619,8 +617,7 @@ export default {
      * *********************** ПОЛУЧЕНИЕ СПРАВОЧНИК ИСТОЧНИКОВ ВАКАНСИИ
      */
     getCatalog() {
-      axios.post(smartEnuApi + "/vacancy/sources",
-          {}, {headers: getHeader()}).then((res) => {
+      this.vacancyService.sources({}).then((res) => {
         this.vacancySources = res.data
         this.getUserCandidate()
       }).catch((error) => {
@@ -640,8 +637,7 @@ export default {
      * *********************** ПРОВЕРКА НАЛИЧИЯ РЕЗЮМЕ
      */
     getUserCandidate() {
-      axios.post(smartEnuApi + "/candidate/get",
-          {}, {headers: getHeader()}).then(res => {
+      this.candidateService.getUserCandidate({}).then(res => {
         this.visible.apply = true
         this.candidate = res.data
       }).catch(error => {
@@ -676,8 +672,7 @@ export default {
         fd.append("resumeData", this.resumeFile)
       }
       if (this.validateForm()) {
-        axios.post(smartEnuApi + "/vacancy/apply",
-            fd, {headers: getHeader()}).then((response) => {
+        this.vacancyService.vacancyApply(fd).then((response) => {
           for (let key in this.vacancies) {
             if (this.vacancies[key].id === this.relation.vacancyId) {
               this.vacancies[key].isApply = true
@@ -685,15 +680,11 @@ export default {
           }
           this.visible.apply = false;
         }).catch((error) => {
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          } else {
             this.$toast.add({
               severity: "error",
               summary: error,
               life: 3000,
             });
-          }
         });
       }
     },

@@ -62,9 +62,8 @@
 </template>
 
 <script>
-import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
-
+import {CandidateService} from "@/service/candidate.service"
 export default {
   name: "RefereeEdit",
   data() {
@@ -84,7 +83,8 @@ export default {
         fullName: false,
         position: false,
         phoneNumber: false
-      }
+      },
+      candidateService: new CandidateService()
     };
   },
   methods: {
@@ -101,9 +101,7 @@ export default {
     action() {
       if (this.validateForm()) {
         let path = !this.value.id ? "/candidate/referee/create" : "/candidate/referee/update"
-        axios
-            .post(smartEnuApi + path, this.value, {headers: getHeader(),})
-            .then(res => {
+        this.candidateService.refereeCreateOrUpdate(path, this.value).then(res => {
               this.emitter.emit("referee", true);
             }).catch(error => {
           this.$toast.add({

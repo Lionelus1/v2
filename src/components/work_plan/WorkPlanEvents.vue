@@ -171,7 +171,6 @@
 
 <script>
 import WorkPlanEventAdd from "@/components/work_plan/WorkPlanEventAdd";
-import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
 import WorkPlanEventTree from "@/components/work_plan/WorkPlanEventTree";
 import WorkPlanApprove from "@/components/work_plan/WorkPlanApprove";
@@ -180,6 +179,7 @@ import WorkPlanReportModal from "@/components/work_plan/WorkPlanReportModal";
 import WorkPlanEventResultModal from "@/components/work_plan/WorkPlanEventResultModal";
 import WorkPlanEventEditModal from "@/components/work_plan/WorkPlanEventEditModal";
 import moment from "moment";
+import {WorkPlanService} from "@/service/work.plan.service"
 
 export default {
   components: {
@@ -235,6 +235,7 @@ export default {
       isEventsNull: false,
       currentQuarter: null,
       isPlanApproved: false,
+      workPlanService: new WorkPlanService()
     }
   },
   mounted() {
@@ -300,8 +301,10 @@ export default {
   methods: {
     getWorkPlanEvents() {
       this.loading = true;
-      axios.post(smartEnuApi + `/workPlan/getEvents`, {work_plan_id: parseInt(this.work_plan_id)}, {headers: getHeader()})
-          .then(res => {
+      const req = {
+        work_plan_id: parseInt(this.work_plan_id)
+      }
+      this.workPlanService.getEvents(req).then(res => {
             this.data = res.data;
             if (this.data) {
               this.data.map(e => {
@@ -315,21 +318,18 @@ export default {
             this.getWorkPlanApprovalUsers();
             this.loading = false;
           }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
+       
           this.$toast.add({
             severity: "error",
             summary: error,
             life: 3000,
           });
-        }
+        
         this.loading = false;
       })
     },
     getWorkPlanApprovalUsers() {
-      axios.get(smartEnuApi + `/workPlan/getApprovalUsers/${parseInt(this.work_plan_id)}`)
-          .then(res => {
+      this.workPlanService.getWorkPlanApprovalUsers(this.work_plan_id).then(res => {
             if (res.data) {
               this.approval_users = res.data;
               this.isPlanApproved = res.data.some(x => x.is_success);
@@ -344,20 +344,16 @@ export default {
               this.isPlanSentApproval = false;
             }
           }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
+    
           this.$toast.add({
             severity: "error",
             summary: error,
             life: 3000,
           });
-        }
       });
     },
     getPlan() {
-      axios.get(smartEnuApi + `/workPlan/getWorkPlanById/${this.work_plan_id}`, {headers: getHeader()})
-          .then(res => {
+      this.workPlanService.getPlanById(this.work_plan_id).then(res => {
             this.plan = res.data;
             if (this.plan && this.plan.is_finish) {
               this.isFinish = this.plan.is_finish;
@@ -370,23 +366,17 @@ export default {
               //this.$router.push('/work-plan')
             }
           }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
           this.$toast.add({
             severity: "error",
             summary: error,
             life: 3000,
           });
-        }
       });
     },
     finish() {
       this.loading = true;
-      axios.post(smartEnuApi + '/workPlan/finishEvent',
-          {work_plan_id: parseInt(this.work_plan_id)},
-          {headers: getHeader()}
-      ).then(res => {
+      const req = {work_plan_id: parseInt(this.work_plan_id)}
+      this.workPlanService.finishEvent(req).then(res => {
         if (res.data.is_success) {
           this.isCreator = false;
           this.loading = false;
@@ -400,15 +390,11 @@ export default {
           });
         }
       }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
           this.$toast.add({
             severity: "error",
             summary: error,
             life: 3000,
           });
-        }
         this.loading = false;
       })
     },
@@ -486,7 +472,7 @@ export default {
       });
     },
     remove(event_id) {
-      axios.post(smartEnuApi + `/workPlan/removeEvent/${event_id}`, {}, {headers: getHeader()}).then(res => {
+      this.workPlanService.removeEvent(event_id).then(res => {
         if (res.data.is_success) {
           this.$toast.add({severity: 'success', summary: this.$t('common.success'), life: 3000});
           this.getPlan();
@@ -494,15 +480,11 @@ export default {
           this.getWorkPlanEvents();
         }
       }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
           this.$toast.add({
             severity: "error",
             summary: error,
             life: 3000,
           });
-        }
       });
     },
     navigateToReports() {

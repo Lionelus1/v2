@@ -120,8 +120,8 @@
 </template>
 
 <script>
-import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
+import {CandidateService} from "@/service/candidate.service"
 
 export default {
   name: "UploadCandidateDocuments",
@@ -131,17 +131,16 @@ export default {
   data() {
     return {
       documentsPath: this.paths,
-      disabled: false
+      disabled: false,
+      candidateService: new CandidateService()
     }
   },
   methods: {
     downloadFile(path, name) {
       this.disabled = true
-      axios.post(
-          smartEnuApi + '/candidate/documents/download',
-          {filePath: path},
-          {headers: getHeader()}
-      ).then(response => {
+      const req = {filePath: path}
+    
+      this.candidateService.documentsDownload(req).then(response => {
         var link = document.createElement('a');
         link.innerHTML = 'Download file';
         link.download = name;

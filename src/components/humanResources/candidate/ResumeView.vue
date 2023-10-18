@@ -312,7 +312,7 @@
 </template>
 
 <script>
-import ResumeService from "./ResumeService";
+import ResumeService from "@/service/resume.service";
 import ResumeEdit from "./ResumeEdit";
 
 export default {

@@ -148,9 +148,8 @@
 <script>
 import VacancyService from "./VacancyService";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo"
-import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
-
+import {WorkPlanService} from "@/service/work.plan.service"
 export default {
   name: "ApplyActionEdit",
   components: {DocSignaturesInfo},
@@ -200,6 +199,7 @@ export default {
           },
         },
       ],
+      workPlanService: new WorkPlanService()
     }
   },
   created() {
@@ -226,8 +226,10 @@ export default {
             life: 3000,
           });
         }
-        axios.post(smartEnuApi + `/workPlan/getSignatures`, {doc_id: this.documentUuid},
-            {headers: getHeader()}).then(res => {
+        const req = {
+          doc_id: this.documentUuid
+        }
+        this.workPlanService.getSignatures(req).then(res => {
           if (res.data) {
             if (res.data.length !== 0) {
               this.send()
@@ -245,9 +247,6 @@ export default {
             summary: error,
             life: 3000
           });
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          }
         })
       } else {
         this.send()

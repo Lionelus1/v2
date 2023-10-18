@@ -21,7 +21,7 @@
           <DataView :lazy="true" :value="allNews" :layout="layout" :paginator="true" :rows="10"
                     @page="onPage($event)" :totalRecords="total">
             <template #empty>{{
-                this.$t("smartenu.newsNotFound")
+              this.$t("smartenu.newsNotFound")
               }}
             </template>
             <template #list="{ data }">
@@ -31,11 +31,11 @@
                 <div class="text">
                   <strong>
                     {{
-                      $i18n.locale === "kz"
-                          ? data.titleKz
-                          : $i18n.locale === "ru"
-                              ? data.titleRu
-                              : data.titleEn
+                    $i18n.locale === "kz"
+                    ? data.titleKz
+                    : $i18n.locale === "ru"
+                    ? data.titleRu
+                    : data.titleEn
                     }}
                   </strong>
                   <div class="date">{{ formatDateMoment(data.publish_date) }}</div>
@@ -72,11 +72,11 @@
               <template #body="slotProps">
                 <a href="javascript:void(0)" @click="eventView(slotProps.data)">
                   {{
-                    $i18n.locale === "kz"
-                        ? slotProps.data.titleKz
-                        : $i18n.locale === "ru"
-                            ? slotProps.data.titleRu
-                            : slotProps.data.titleEn
+                  $i18n.locale === "kz"
+                  ? slotProps.data.titleKz
+                  : $i18n.locale === "ru"
+                  ? slotProps.data.titleRu
+                  : slotProps.data.titleEn
                   }}
                 </a>
               </template>
@@ -128,7 +128,14 @@ export default {
       eventService: new EventsService()
     };
   },
-
+  mounted() {
+    this.emitter.on('newsViewModalClose', data => {
+      this.newsViewVisible = data;
+    });
+    this.emitter.on('eventViewModalClose', data => {
+      this.eventViewVisible = data;
+    });
+  },
   methods: {
     getAllNews() {
       this.loading = true
@@ -141,13 +148,16 @@ export default {
         });
         this.total = response.data.total;
         this.loading = false;
-      }).catch((error) => {
-        this.$toast.add({
-          severity: "error",
-          summary: this.$t("smartenu.loadAllNewsError") + ":\n" + error,
-          life: 3000,
-        });
-      });
+      })
+          .catch((error) => {
+            console.log(error, 'test')
+            this.$toast.add({
+              severity: "error",
+              summary: this.$t("smartenu.loadAllNewsError") + ":\n" + error,
+              life: 3000,
+            });
+            this.loading = false;
+          });
     },
     getAllEvents() {
       this.allEvents = [];
@@ -159,13 +169,15 @@ export default {
         });
         //console.log("ddd", this.allEvents)
         this.loading = false;
-      }).catch((error) => {
-        this.$toast.add({
-          severity: "error",
-          summary: this.$t("smartenu.loadAllEventsError") + ":\n" + error,
-          life: 3000,
-        });
-      });
+      })
+          .catch((error) => {
+            this.$toast.add({
+              severity: "error",
+              summary: this.$t("smartenu.loadAllEventsError") + ":\n" + error,
+              life: 3000,
+            });
+            this.loading = false;
+          });
     },
     formatDateMoment(date) {
       return moment(new Date(date)).utc().format("DD.MM.YYYY HH:mm")
@@ -186,16 +198,6 @@ export default {
   created() {
     this.getAllNews();
     this.getAllEvents();
-  },
-  mounted() {
-    this.emitter.on('newsViewModalClose', data => {
-      this.newsViewVisible = data;
-    });
-    this.emitter.on('eventViewModalClose', data => {
-      this.eventViewVisible = data;
-    });
-
-
   },
   computed: {
     ...mapState(["loginedUser"]),

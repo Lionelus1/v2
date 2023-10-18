@@ -100,7 +100,6 @@ import SignatureQrPdf from "@/components/ncasigner/SignatureQrPdf";
 import {runNCaLayer, makeTimestampForSignature} from "@/helpers/SignDocFunctions"
 import LanguageDropdown from "@/LanguageDropdown";
 
-import axios from "axios";
 import {getHeader, smartEnuApi, socketApi, b64toBlob, findRole} from "@/config/config";
 import html2pdf from "html2pdf.js";
 import DocInfo from "@/components/ncasigner/DocInfo";
@@ -108,6 +107,13 @@ import QrcodeVue from "qrcode.vue";
 import Enum from "@/enum/docstates/index";
 import RolesEnum from "@/enum/roleControls/index";
 import QrGuideline from "./QrGuideline.vue";
+import { DocService } from "@/service/doc.service";
+import { FileService } from "@/service/file.service";
+import { AgreementService } from "@/service/agreement.service";
+import { WorkPlanService } from "@/service/work.plan.service";
+
+
+
 
 export default {
   name: "DocSignaturesInfo",
@@ -167,7 +173,11 @@ export default {
       hideDocRevision: true,
       revisionComment: null,
       mobileApp: null,
-      isIndivid: null
+      isIndivid: null,
+      docService: new DocService(),
+      fileService: new FileService(),
+      agreementService: new AgreementService(),
+      workPlanService: new WorkPlanService()
     }
   },
   created() {
@@ -191,12 +201,11 @@ export default {
     this.wsconnect()
     this.emitter.on('downloadCMS', (data) => {
       if (data !== null) {
-        axios
-            .post(smartEnuApi + "/doc/downloadCms",
-                {documentUuid: this.doc_id, signatureId: data},
-                {headers: getHeader(),})
-            .then(res => {
-              console.log(res.data)
+        const data = {
+          documentUuid: this.doc_id, 
+          signatureId: data
+        }
+        this.docService.downloadCms(data).then(res => {
               let result = res.data
               var link = document.createElement('a');
               link.innerHTML = 'Download file';
@@ -228,28 +237,20 @@ export default {
     tabChanged() {
       if (this.active == 1 && !this.file) { // showFileTab
         if (this.docInfo.isManifest === true) {
-          axios.post(
-              smartEnuApi + "/downloadManifestFiles", {
-                docId: this.docInfo.id
-              }, {
-                headers: getHeader()
-              }
-          )
-              .then(response => {
+          const data = {
+            docId: this.docInfo.id
+          }
+          this.fileService.downloadManifestFiles(data).then(response => {
                 let filesBase64Array = response.data
                 for (let i = 0; i < filesBase64Array.length; i++) {
                   this.files.push(this.b64toBlob(filesBase64Array[i]))
                 }
               })
         } else {
-          axios.post(
-              smartEnuApi + "/downloadFile", {
-                filePath: this.docInfo.filePath
-              }, {
-                headers: getHeader()
-              }
-          )
-              .then(response => {
+          const data = {
+            filePath: this.docInfo.filePath
+          }
+          this.fileService.downloadFile(data).then(response => {
                 (
                     this.files.push(this.b64toBlob(response.data))
                 )
@@ -262,11 +263,10 @@ export default {
     },
     getData() {
       this.loading = true
-      axios.post(smartEnuApi + `/agreement/getSignInfo`, {
-        doc_uuid: this.doc_id,
-      }, {
-        headers: getHeader(),
-      }).then(res => {
+      const data = {
+        doc_uuid: this.doc_id
+      }
+      this.agreementService.getSignInfo(data).then(res => {
         if (res.data) {
           this.docInfo = res.data;
           this.signatures = res.data.signatures;
@@ -342,18 +342,18 @@ export default {
 
         this.loading = false;
       }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else if (error.response && error.response.status === 403) {
-          this.$store.dispatch("solveAttemptedUrl", this.$route)
-          this.$router.push({path: '/login'});
-        } else {
+        // if (error.response && error.response.status === 401) {
+        //   this.$store.dispatch("logLout");
+        // } else if (error.response && error.response.status === 403) {
+        //   this.$store.dispatch("solveAttemptedUrl", this.$route)
+        //   this.$router.push({path: '/login'});
+        // } else {
           this.$toast.add({
             severity: "error",
             summary: error,
             life: 3000,
           });
-        }
+        // }
 
         this.loading = false;
       });
@@ -369,11 +369,10 @@ export default {
     },
     sign() {
       this.signing = true;
-      axios.post(smartEnuApi + "/downloadFile", {
+      const data = {
         filePath: this.docInfo.filePath
-      }, {
-        headers: getHeader()
-      }).then(response => {
+      }
+      this.fileService.downloadFile(data).then(response => {
         runNCaLayer(this.$t, this.$toast, response.data, 'cms', this.signerType, this.isTspRequired, this.$i18n.locale).then(sign => {
           if (sign != undefined) {
             this.sendRequest(sign)
@@ -384,9 +383,6 @@ export default {
         })
       }).catch(error => {
         this.signing = false;
-        if (error.response.status == 401) {
-          this.$store.dispatch("logLout");
-        }
       })
     },
     sendRequest(signature) {
@@ -397,9 +393,7 @@ export default {
         isTspRequired: this.isTspRequired
       };
       this.signing = true
-
-      axios.post(smartEnuApi + "/doc/sign", req, {headers: getHeader()})
-          .then(response => {
+      this.docService.docSign(req).then(response => {
             this.signing = false
             this.getData()
             this.showMessage('success', this.$t('ncasigner.signDocTitle'), this.$t('ncasigner.success.signSuccess'));
@@ -413,14 +407,14 @@ export default {
                 life: 3000,
               });
             }
-            if (error.response.status == 401) {
-              this.$store.dispatch("logLout");
-            } else
-              this.signing = false;
+            this.signing = false;
           })
     },
     getSignatures() {
-      axios.post(smartEnuApi + `/workPlan/getSignatures`, {doc_id: this.plan.doc_id}, {headers: getHeader()}).then(res => {
+      const req = {
+        doc_id: this.plan.doc_id
+      }
+      this.workPlanService.getSignatures(req).then(res => {
         if (res.data) {
           this.signatures = res.data;
           const signUser = res.data.find(x => x.userId === this.loginedUserId);
@@ -434,9 +428,6 @@ export default {
           summary: error,
           life: 3000
         });
-        if (error.response.status == 401) {
-          this.$store.dispatch("logLout");
-        }
       })
     },
     downloadSignatures() {
@@ -503,19 +494,15 @@ export default {
       }
 
       this.loading = true
-      axios.post(smartEnuApi + `/doc/sendtorevision`, {
+      const req = {
         comment: this.revisionComment,
         docID: this.docInfo.id,
-      }, {
-        headers: getHeader()
-      }).then(res => {
+      }
+
+      this.docService.docSendTorevision(req).then(res => {
         this.loading = false
         location.reload()
       }).catch(err => {
-        if (err.response.status == 401) {
-          this.$store.dispatch("logLout");
-        }
-
         this.$toast.add({
           severity: "error",
           detail: this.$t("common.message.saveError"),

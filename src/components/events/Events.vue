@@ -71,7 +71,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
 import {FilterMatchMode} from "primevue/api";
 import * as imageResizeCompress from "image-resize-compress";
@@ -242,6 +241,7 @@ export default {
          */
         getAllEvents() {
             this.allNews = [];
+            this.loading = true;
             this.eventService.getEvents().then((response) => {
                 this.allEvents = response.data;
                 this.loading = false;
@@ -264,6 +264,7 @@ export default {
                     });
                 }
             });
+            this.loading = false;
         },
 
         /**

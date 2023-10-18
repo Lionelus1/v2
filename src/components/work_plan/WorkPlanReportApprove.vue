@@ -28,7 +28,6 @@
 import ApproveComponent from "@/components/work_plan/ApproveComponent";
 import PdfContent from "@/components/work_plan/PdfContent";
 import html2pdf from "html2pdf.js";
-import axios from "axios";
 import {getHeader, getMultipartHeader, signerApi, smartEnuApi} from "@/config/config";
 import {WorkPlanService} from "@/service/work.plan.service";
 

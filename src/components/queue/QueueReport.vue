@@ -59,13 +59,14 @@
 
 <script>
 import {getHeader, smartEnuApi, findRole } from "@/config/config";
-import axios from "axios";
+import {QueueService} from "@/service/queue.service"
 export default {
  
   data() {
     return {
       reports:[],
       selectDate:null,
+      queueService: new QueueService()
       
       
     }
@@ -75,11 +76,10 @@ export default {
 
     getQueueReport(queueID) {
       this.loading = true  
-      axios
-      .post(smartEnuApi + "/queue/queueReport", {selectedDay:this.selectDate},{
-        headers: getHeader(),
-      })
-      .then((response) => {
+      const req = {
+        selectedDay:this.selectDate
+      }
+      this.queueService.queueReport(req).then((response) => {
         this.reports = response.data; 
         // alert(JSON.stringify(this.reports));        
         this.loading = false;                  
@@ -91,9 +91,6 @@ export default {
           summary: this.$t("smartenu.loadError") + ":\n" + error,
           life: 3000,
         });
-        if (error.response.status == 401) {
-          this.$store.dispatch("logLout");
-        }
       });
     },
 

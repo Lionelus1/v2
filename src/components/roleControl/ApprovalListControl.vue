@@ -154,10 +154,9 @@
   </Sidebar>
 </template>
 <script>
-import axios from "axios";
 import {getHeader, smartEnuApi} from '../../config/config';
 import Enum from '@/enum/roleControls/index'
-
+import {ApprovalListService} from "@/service/approvalList.service"
 export default {
   data() {
     return {
@@ -189,6 +188,7 @@ export default {
       },
       changed: false,
       wait: false,
+      approvalListService: new ApprovalListService()
     };
   },
   mounted() {
@@ -197,16 +197,10 @@ export default {
   methods: {
     getApprovalList() {
       this.wait = true
-
-      axios.get(smartEnuApi + '/approvalList/get', {
-        headers: getHeader()
-      }).then(res => {
+      this.approvalListService.approvalListGet().then(res => {
         this.approvalList = res.data;
         this.wait = false
       }).catch(err => {
-        if (err.response.status == 401) {
-          this.$store.dispatch("logLout")
-        }
         this.wait = false
       });
     },
@@ -244,13 +238,11 @@ export default {
       this.newApprovalList.users.forEach(elem => {
         currentUsersId.push(elem.userID)
       })
-
-      axios.post(smartEnuApi + '/approvalList/defaultUsers', {
+      const req = {
         approvalListId: this.currentApprovalList.approvalListId,
         userIds: [...currentUsersId],
-      }, {
-        headers: getHeader()
-      }).then(res => {
+      }
+      this.approvalListService.defaultUsers(req).then(res => {
         for (let i = 0; i < this.approvalList.length; i++) {
           if (this.approvalList[i].approvalListId === this.currentApprovalList.approvalListId) {
             this.approvalList[i].users = res.data.users
@@ -267,11 +259,7 @@ export default {
 
         this.wait = false
         this.close('users')
-      }).catch(err => {
-        if (err.response.status == 401) {
-          this.$store.dispatch("logLout")
-        }
-        
+      }).catch(err => {   
         this.$toast.add({
           severity: "error",
           detail: this.$t("common.message.saveError"),
@@ -283,15 +271,14 @@ export default {
     },
     saveApprovalList() {
       this.wait = true
-      axios.post(smartEnuApi + '/approvalList/create', {
+      const req = {
         titleRu: this.newApprovalList.titleRu,
         titleEn: this.newApprovalList.titleEn,
         titleKz: this.newApprovalList.titleKz,
         userChangeable: this.newApprovalList.userChangeable,
         certificate: this.newApprovalList.certificate.value
-      }, {
-        headers: getHeader()
-      }).then(res => {
+      }
+      this.approvalList.create(req).then(res => {
         this.approvalList.push(res.data)
 
         this.$toast.add({
@@ -303,11 +290,7 @@ export default {
 
         this.wait = false
         this.close('create')
-      }).catch(err => {
-        if (err.response.status == 401) {
-          this.$store.dispatch("logLout")
-        }
-        
+      }).catch(err => {   
         this.$toast.add({
           severity: "error",
           detail: this.$t("common.message.saveError"),
@@ -319,13 +302,13 @@ export default {
     },
     editApprovalList() {
       this.wait = true
-      axios.post(smartEnuApi + '/approvalList/update', {
+      const req = {
         approvalListId: this.currentApprovalList.approvalListId,
         userChangeable: this.newApprovalList.userChangeable,
         certificate: this.newApprovalList.certificate.value,
-      }, {
-        headers: getHeader()
-      }).then(res => {
+      }
+
+      this.approvalListService.update(req).then(res => {
         for (let i = 0; i < this.approvalList.length; i++) {
           if (this.approvalList[i].approvalListId === this.currentApprovalList.approvalListId) {
             this.approvalList[i].userChangeable = res.data.userChangeable
@@ -344,10 +327,6 @@ export default {
         this.wait = false
         this.close('edit')
       }).catch(err => {
-        if (err.response.status == 401) {
-          this.$store.dispatch("logLout")
-        }
-        
         this.$toast.add({
           severity: "error",
           detail: this.$t("common.message.saveError"),

@@ -541,8 +541,9 @@
 <script>
 import { FilterMatchMode, FilterOperator } from "primevue/api";
 import * as imageResizeCompress from "image-resize-compress";
-import axios from "axios";
 import { getHeader, header, smartEnuApi } from "@/config/config";
+import {VacancyService} from "@/service/vacancy.service"
+
 const VS_FirstComponent = 0;
 const VS_Vaccinated = 1;
 const VS_Planned = 2;
@@ -740,6 +741,7 @@ export default {
       usertype: ["personal", "student", "teacher"],
       vaccines: [],
       template: this.$t("common.showingRecordsCount"),
+      vacancyService: new VacancyService()
     };
   },
   created() {
@@ -780,12 +782,7 @@ export default {
         ];
         return;
       }
-
-      axios
-        .post(smartEnuApi + "/addNewVaccine", this.newVaccine, {
-          headers: getHeader(),
-        })
-        .then((response) => {
+      this.vacancyService.addNewVaccine(this.newVaccine).then((response) => {
           this.myDetails.vaccine = response.data;
           this.vaccines.splice(this.vaccines.length - 1, 1);
           this.vaccines.push(response.data);
@@ -798,15 +795,11 @@ export default {
           });
         })
         .catch((error) => {
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          } else {
             this.$toast.add({
               severity: "error",
               summary: "addNewVaccineError:\n" + error,
               life: 3000,
             });
-          }
         });
     },
     LoadConstants() {
@@ -819,24 +812,16 @@ export default {
     },
     LoadMyDetail() {
       this.myDetails = {};
-      axios
-        .get(smartEnuApi + "/getMyDetails", {
-          headers: getHeader(),
-        })
-        .then((response) => {
+      this.vacancyService.getMyDetails().then((response) => {
           this.myDetails = response.data;
         })
         .catch((error) => {
           console.log(error);
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          } else {
             this.$toast.add({
               severity: "error",
               summary: this.$t("vaccination.error.list") + ":\n" + error,
               life: 3000,
             });
-          }
         });
     },
     onPage(event) {
@@ -867,34 +852,22 @@ export default {
     },
     getDetailsCount() {
       this.lazyParams.countMode = 1;
-
-      axios
-        .post(smartEnuApi + "/getDetailsList", this.lazyParams, {
-          headers: getHeader(),
-        })
-        .then((response) => {
+      
+      this.vacancyService.getDetailsList(this.lazyParams).then((response) => {
           this.detailsCount = response.data;
           //this.detailsCount = 20000;
         })
         .catch((error) => {
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          } else {
             this.$toast.add({
               severity: "error",
               summary: this.$t("vaccination.error.list") + ":\n" + error,
               life: 3000,
             });
-          }
         });
     },
     getDetailsChart() {
       this.lazyParams.countMode = 2;
-      axios
-        .post(smartEnuApi + "/getDetailsList", this.lazyParams, {
-          headers: getHeader(),
-        })
-        .then((response) => {
+      this.vacancyService.getDetailsList(this.lazyParams).then((response) => {
           this.statistic = response.data;
 
           this.studentData.labels = [];
@@ -1035,11 +1008,7 @@ export default {
       this.loading = true;
 
       this.lazyParams.countMode = null;
-      axios
-        .post(smartEnuApi + "/getDetailsList", this.lazyParams, {
-          headers: getHeader(),
-        })
-        .then((response) => {
+      this.vacancyService.getDetailsList(this.lazyParams).then((response) => {
           this.getDetailsCount();
           this.getDetailsChart();
           this.vaccinated = response.data;
@@ -1058,11 +1027,7 @@ export default {
     },
     getVaccineCatalog() {
       this.vaccines = [];
-      axios
-        .get(smartEnuApi + "/getAllVaccines", {
-          headers: getHeader(),
-        })
-        .then((response) => {
+      this.vacancyService.getAllVaccines().then((response) => {
           this.vaccines.push({ id: -2, vname: this.$t("common.select") });
           response.data.forEach((element) => {
             this.vaccines.push(element);
@@ -1071,23 +1036,15 @@ export default {
           this.loading = false;
         })
         .catch((error) => {
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          } else {
             this.$toast.add({
               severity: "error",
               summary: this.$t("vaccination.error.list") + ":\n" + error,
               life: 3000,
             });
-          }
         });
     },
     getMyDetails() {
-      axios
-        .get(smartEnuApi + "/getMyDetails", {
-          headers: getHeader(),
-        })
-        .then((response) => {
+      this.vacancyService.getMyDetails().then((response) => {
           this.myDetails = response.data;
 
           // if (this.myDetails.vaccine.id === null) {
@@ -1121,16 +1078,7 @@ export default {
     },
     downloadFile(filename, status) {
       var req = { filename: filename, status: status };
-
-      axios
-        .post(
-          smartEnuApi + "/vaccine/downloadFile",
-          { filename: filename, status: status },
-          {
-            headers: getHeader(),
-          }
-        )
-        .then((response) => {
+      this.vacancyService.downloadFile(req).then((response) => {
           // const blob = new Blob([response.data], )
           const link = document.createElement("a");
           link.href = "data:application/octet-stream;base64," + response.data;
@@ -1143,15 +1091,11 @@ export default {
           URL.revokeObjectURL(link.href);
         })
         .catch((error) => {
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          } else {
             this.$toast.add({
               severity: "error",
               summary: "downloadFileError:\n" + error,
               life: 3000,
             });
-          }
         });
     },
     saveMyDetails() {
@@ -1268,12 +1212,7 @@ export default {
             }
 
             data.append("myDetails", JSON.stringify(this.myDetails));
-
-            axios
-              .post(smartEnuApi + "/updateMyDetails", data, {
-                headers: getHeader(),
-              })
-              .then((response) => {
+            this.vacancyService.updateMyDetails(data).then((response) => {
                 this.myDetails.doctorsNotePath = response.data.doctorsNotePath;
                 this.myDetails.pasportPath = response.data.pasportPath;
                 this.$toast.add({

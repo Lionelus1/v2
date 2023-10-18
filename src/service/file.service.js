@@ -14,5 +14,18 @@ export class FileService {
     getFile(params) {
         return api.post(`/getFile`, params, {headers: getHeader()});
     }
+    downloadManifestFiles(data) {
+        return api.post("/downloadManifestFiles", data, {headers:getHeader()})
+    }
+    downloadFile(data) {
+        return api.post("/downloadFile", data, {headers: getHeader()})
+    }
+    
+    getFilesDirName(dirName) {
+        return api.get("getFiles?dirName="+dirName, {headers: getHeader()});
+    }
 
+    upload(data) {
+        return api.post("/upload", data, {headers: getHeader()})
+    }
 }

@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from "@/service/api";
 import {getHeader, getMultipartHeader, smartEnuApi} from "@/config/config";
 
 export const RIGHTS = {
@@ -72,8 +72,9 @@ export default class VacancyService {
 
 
     getVacancies(lazyParams) {
-        return axios.post(
-            smartEnuApi + "/vacancy/all",
+        console.log('test')
+        return api.post(
+            "/vacancy/all",
             lazyParams,
             {headers: getHeader(),}
         )
@@ -81,8 +82,8 @@ export default class VacancyService {
 
 
     createOrUpdateVacancy(value, path) {
-        return axios.post(
-            smartEnuApi + path,
+        return api.post(
+            path,
             value,
             {headers: getHeader()}
         )
@@ -90,8 +91,8 @@ export default class VacancyService {
 
     vacancyAction(vacancyId, path) {
         console.log(vacancyId + ', ' + path)
-        return axios.post(
-            smartEnuApi + '/vacancy/' + path,
+        return api.post(
+            '/vacancy/' + path,
             {
                 id: vacancyId,
             },
@@ -102,16 +103,16 @@ export default class VacancyService {
     applyAction(request, path) {
         console.log(request)
         console.log(path)
-        return axios.post(
-            smartEnuApi + '/vacancy/apply/' + path,
+        return api.post(
+            '/vacancy/apply/' + path,
             request,
             {headers: getHeader()}
         )
     }
 
     downloadLetter(vacancyId, userId) {
-        return axios.post(
-            smartEnuApi + '/vacancy/download/letter',
+        return api.post(
+            '/vacancy/download/letter',
             {
                 vacancyId: vacancyId,
                 userId: userId
@@ -123,8 +124,8 @@ export default class VacancyService {
     checkAction(statusId, vacancy) {
         console.log(statusId)
         console.log(vacancy)
-        return axios.post(
-            smartEnuApi + '/vacancy/check/action',
+        return api.post(
+            '/vacancy/check/action',
             {
                 statusId: statusId,
                 vacancy: vacancy
@@ -135,8 +136,8 @@ export default class VacancyService {
 
     checkApplyAction(statusId) {
         console.log(statusId)
-        return axios.post(
-            smartEnuApi + '/vacancy/check/apply/action',
+        return api.post(
+            '/vacancy/check/apply/action',
             {
                 statusId: statusId
             },
@@ -145,33 +146,37 @@ export default class VacancyService {
     }
 
     deleteVacancy(vacancyId) {
-        return axios.post(
-            smartEnuApi + "/vacancy/delete",
+        return api.post(
+            "/vacancy/delete",
             {id: vacancyId},
             {headers: getHeader()}
         )
     }
 
     rightsValidity() {
-        return axios.get(
-            smartEnuApi + '/vacancy/rights/validity',
+        return api.get(
+            '/vacancy/rights/validity',
             {headers: getHeader()}
         )
     }
 
     generatePetitionPdf(petition) {
-        return axios.post(
-            smartEnuApi + '/vacancy/petition/pdf',
+        return api.post(
+            '/vacancy/petition/pdf',
             petition,
             {headers: getHeader()}
         )
     }
     sendSign(fd) {
-        return axios.post(
-            smartEnuApi + '/vacancy/petition/sign',
+        return api.post(
+            '/vacancy/petition/sign',
             fd,
             {headers: getMultipartHeader()}
         )
+    }
+
+    report(data) {
+        return api.post("/vacancy/report",  {headers: getHeader()})
     }
 }
 

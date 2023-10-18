@@ -21,4 +21,12 @@ export default class ReceptionService {
     deleteReceptionQuestion(id) {
         return api.post('/reception/questions/delete/id', id, {headers: getHeader()});
     }
+
+    questions(data) {
+        return api.post('/reception/questions', data, {headers: getHeader()});
+    }
+
+    sendQuestion(data) {
+        return api.post('/reception/sendQuestion', data, {headers: getHeader()});
+    }
 }

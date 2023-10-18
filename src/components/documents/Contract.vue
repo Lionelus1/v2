@@ -230,7 +230,6 @@
   </div>
 </template>
 <script>
-import axios from "axios";
 import {
   incline,
   inclineFirstname,
@@ -247,6 +246,13 @@ import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers";
 import ContragentSelect from "@/components/contragent/ContragentSelect.vue";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo";
 import PostFile from "./PostFile.vue"
+import { AgreementService } from "@/service/agreement.service";
+import { ApprovalListService } from "@/service/approvalList.service";
+import { ContragentService } from "@/service/contragent.service";
+import { DocService } from "@/service/doc.service";
+
+
+
 
 export default {
   name: "Contract",
@@ -284,6 +290,10 @@ export default {
       approvalStagesDialog: null,
       filledDocParams: [],
       ourside: null,
+      agreementService: new AgreementService(),
+      approvalListService: new ApprovalListService(),
+      contragentService: new ContragentService(),
+      docService: new DocService(),
       menu: [
         {
           label: this.$t("common.save"),
@@ -447,9 +457,7 @@ export default {
           }
 
           this.loading = true
-          axios.post(smartEnuApi + "/agreement/sendtosign", req, { 
-            headers: getHeader(),
-          }).then(response => {
+          this.agreementService.sendtosign(req).then(response => {
             this.loading = false
             this.contract.docUUID = response.data.docUUID
             this.contract.filePath = response.data.filePath
@@ -463,9 +471,6 @@ export default {
             });
           }).catch(error => {
             this.loading = false;
-            if (error.response.status == 401) {
-              this.$store.dispatch("logLout");
-            } else 
               console.log(error);
           })
         }
@@ -506,9 +511,7 @@ export default {
             req.lang = 'rus';
           }
           this.loading = true
-          axios.post(smartEnuApi + "/agreement/sendtoapprove", req, { 
-            headers: getHeader() 
-          }).then(response => {
+          this.agreementService.sendToApprove(req).then(response => {
             this.loading = false
             if (type === 1) {
               this.menu[3].items[0].disabled = true
@@ -526,9 +529,6 @@ export default {
             });
           }).catch(error => {
             this.loading = false;
-            if (error.response.status == 401) {
-              this.$store.dispatch("logLout");
-            } else 
               console.log(error);
           })
         }
@@ -600,12 +600,9 @@ export default {
       }
     },
     initApiCall() {
-      let url = "/agreement/get";
       var req = { id: parseInt(this.$route.params.id) };
       this.loading = true
-      axios
-        .post(smartEnuApi + url, req, { headers: getHeader() })
-        .then((res) => {
+      this.agreementService.getAgreement(req).then((res) => {
           this.contract = res.data;
           this.contract.params.forEach((param) => {
             if (param.name == "period") {
@@ -648,9 +645,7 @@ export default {
         }).catch((error) => {
           console.log(error)
           this.loading = false
-          if (error.response && error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          } else if (error.response && error.response.status == 405) {
+          if (error.response && error.response.status == 405) {
             this.haveAccess = false;
           }
         });
@@ -659,12 +654,10 @@ export default {
       if (!this.contract.needApproval && this.contract.sourceType !== this.Enum.DocSourceType.FilledDoc) {
         return
       }
-      
-      axios.post(smartEnuApi + "/agreement/getApprovalStages", {
+      const req = {
         docId: this.contract.id,
-      }, {
-        headers: getHeader(),
-      }).then(response => {
+      }
+      this.getApprovalStages(req).then(response => {
         if (response.status === 200) {
           this.approvalStages = response.data
 
@@ -680,12 +673,7 @@ export default {
           this.initDefaultApprovalInfo();
         }
       }).catch((error) => {
-        if (error.response && error.response.status == 401) {
-          this.$store.dispatch("logLout");
-        } else {
           console.log(error)
-        }
-
         if (this.approvalStages == null && this.contract.sourceType === this.Enum.DocSourceType.FilledDoc) {
           this.initDefaultApprovalInfo();
         }
@@ -780,9 +768,7 @@ export default {
       if (this.contract.sourceType === this.Enum.DocSourceType.FilledDoc && this.contract.docType === this.Enum.DocType.Contract) {
         req.params = this.filledDocParams[this.selectedDocParams]
       }
-      axios
-        .post(smartEnuApi + url, req, { headers: getHeader() })
-        .then((res) => {
+      this.agreementService.updatedocparams(req).then((res) => {
           this.corrected = false
           this.contract.params = res.data.params
           this.selectedDocParamsDisabled = true
@@ -800,9 +786,6 @@ export default {
         })
         .catch((error) => {
           console.log(error)
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          }
           if (error.response.status == 400) {
             this.$toast.add({
               severity: "error",
@@ -840,9 +823,7 @@ export default {
       }
 
       this.loading = true
-      axios.post(smartEnuApi + url, req, { 
-        headers: getHeader() 
-      }).then((response) => {
+      this.agreementService.getpdf(req).then((response) => {
         this.loading = false
         this.pdf = b64toBlob(response.data);
         if (saveFile) {
@@ -854,9 +835,6 @@ export default {
         }
       }).catch((error) => {
         this.loading = false
-        if (error.response.status == 401) {
-          this.$store.dispatch("logLout");
-        }
       });
     },
     registrateContract(next = false) {
@@ -867,9 +845,7 @@ export default {
         next: next,
       };
       this.loading = true
-      axios
-        .post(smartEnuApi + url, req, { headers: getHeader() })
-        .then((res) => {
+      this.agreementService.setnumber(req).then((res) => {
           this.loading = false
 		      this.reserveNumber = res.data;
           if (!next) {
@@ -887,52 +863,39 @@ export default {
         })
         .catch((error) => {
           this.loading = false
-          console.log(error);
-          if (error.response.status == 401) {
-            this.$store.dispatch("logout");
-          }
         });
     },
     initDefaultApprovalInfo() {
-      axios.post(smartEnuApi + "/approvalList/getDefault", {
+      const req = {
         type: this.Enum.DefaultApprovalListType.ReadyAgreement,
-      }, {
-        headers: getHeader(),
-      }).then(response => {
+      }
+      this.approvalListService.getDefault(req).then(response => {
         this.approvalStages = response.data
 
         if (this.approvalStages) {
           this.approvalStagesDialog = [...this.approvalStages]
         }
       }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
           this.$toast.add({
             severity: "error",
             summary: error,
             life: 3000,
           });
-        }
       })
     },
     initOurside() {
-      axios.post(smartEnuApi + '/contragent/get', {
+      const req = {
         bin: '010140003594',
         agenttype: this.Enum.ContragentType.Organization,
-      }, {
-        headers: getHeader()
-      }).then(res => {
+      }
+  
+      this.contragentService.initOurside(req).then(res => {
         if (res.status === 200) {
           this.ourside = res.data.data
         }
 
         this.initFilledDocParams();
       }).catch(error => {
-        if (error.response.status == 401) {
-          this.$store.dispatch("logLout");
-        }
-
         this.initFilledDocParams();
       })
     },
@@ -988,28 +951,25 @@ export default {
     },
     saveApprovalUser(event) {
       this.loading = true
-      
-      axios.post(smartEnuApi + '/agreement/updateApprovalStages', {
+      const req ={
         docId: this.contract.id,
         approvalStages: event,
-      }, {
-        headers: getHeader()
-      }).then(res => {
+      }
+      this.agreementService.updateApprovalStages(req).then(res => {
         this.approvalStages = event
         this.approvalStagesDialog = event
 
         this.closeForm('approvalUsers')
         this.loading = false
       }).catch(error => {
-        if (error.response.status == 401) {
-          this.$store.dispatch("logLout");
-        } else {
+        this.loading = false
+    
           this.$toast.add({
             severity: "error",
             summary: this.$t('common.message.saveError'),
             life: 3000,
           });
-        }
+        
 
         this.closeForm('approvalUsers')
         this.loading = false
@@ -1024,23 +984,18 @@ export default {
       this.corrected = true
     },
     getReadyDocCatalog() {
-      axios.post(smartEnuApi + '/doc/getFoldersByType', {
+      const req = {
         type: Enum.FolderType.FilledDoc,
         showDocs: false,
-      }, {
-        headers: getHeader()
-      }).then(res => {
+      }
+      this.docService.getFoldersByType(req).then(res => {
         res.data.forEach(el => {
           if (el.id === this.contract.folderID) {
             this.folderName = el['name' + this.$i18n.locale]
           }
         })
       }).catch(err => {
-        if (err.response.status == 401) {
-          this.$store.dispatch("logLout");
-        } else {
           console.log(err)
-        }
       })
     },
     fileUpdated() {

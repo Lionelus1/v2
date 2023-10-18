@@ -138,7 +138,6 @@
   
 </template>
 <script>
-import axios from 'axios';
 
 import { FilterMatchMode } from "primevue/api";
 import { getHeader, smartEnuApi, findRole } from "@/config/config";
@@ -147,6 +146,7 @@ import Enum from "@/enum/docstates/index"
 import DepartmentList from "@/components/smartenu/DepartmentList.vue"
 import PostFolder from "@/components/documents/PostFolder.vue"
 import PostFile from "@/components/documents/PostFile.vue"
+import { DocService } from '../../../service/doc.service';
 
 export default {
   name: 'NormativeDocuments',
@@ -201,6 +201,7 @@ export default {
         {value: 'gt'},
         {value: 'equals'}
       ],
+      docService: new DocService()
     }
   },
   mounted() { 
@@ -302,15 +303,13 @@ export default {
       if (parent === null) {
         this.expandedKeys = {}
       }
-
-      axios.post(smartEnuApi + '/folders', {
+      const req = {
         folderType: Enum.FolderType.NormativeDocuments,
         page: null,
         rows: null,
         parentId: parent !== null ? parent.id : null,
-      }, { 
-        headers: getHeader() 
-      }).then(res => {
+      }
+      this.docService.getFolders(req).then(res => {
         let data = res.data.folders
 
         if (!data) {
@@ -342,9 +341,7 @@ export default {
 
         this.loading = false
       }).catch(err => {
-        if (err.response && err.response.status == 401) {
-          this.$store.dispatch("logLout")
-        } else if (err.response && err.response.data && err.response.data.localized) {
+       if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
           console.log(err)
@@ -356,8 +353,7 @@ export default {
     },
     getFiles(parent) {
       this.loading = true;
-
-      axios.post(smartEnuApi + '/documents', {
+      const req = {
         sourceType: null,
         docType: Enum.DocType.NormativeDoc,
         lang: null,
@@ -366,9 +362,8 @@ export default {
         departmentId: null,
         page: null,
         rows: null,
-      }, { 
-        headers: getHeader() 
-      }).then(res => {
+      }
+      this.docService.getDocuments(req).then(res => {
         let data = res.data.documents
 
         if (!data) {
@@ -389,9 +384,7 @@ export default {
 
         this.loading = false
       }).catch(err => {
-        if (err.response && err.response.status == 401) {
-          this.$store.dispatch("logLout")
-        } else if (err.response && err.response.data && err.response.data.localized) {
+        if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
           console.log(err)
@@ -500,21 +493,17 @@ export default {
         icon: 'pi pi-exclamation-triangle',
         accept: () => {
           this.loading = true
-
-          axios.post(smartEnuApi + '/doc/deleteFolder', {
+          const req = {
             id: this.selectedNode.id,
             hide: false,
-          }, {
-            headers: getHeader()
-          }).then(res => {
+          }
+          this.docService.docDeleteFolder(req).then(res => {
             this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
             this.deleteNode(this.catalog[0], this.selectedNode.key)
 
             this.loading = false
           }).catch(err => {
-            if (err.response && err.response.status == 401) {
-              this.$store.dispatch("logLout")
-            } else if (err.response && err.response.data && err.response.data.localized) {
+             if (err.response && err.response.data && err.response.data.localized) {
               this.showMessage('error', this.$t(err.response.data.localizedPath), null)
             } else {
               console.log(err)
@@ -537,21 +526,17 @@ export default {
         icon: 'pi pi-exclamation-triangle',
         accept: () => {
           this.loading = true
-
-          axios.post(smartEnuApi + '/doc/deleteFolder', {
+          const req = {
             id: this.selectedNode.id,
             hide: true,
-          }, {
-            headers: getHeader()
-          }).then(res => {
+          }
+          this.docService.docDeleteFolder(req).then(res => {
             this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
             this.selectedNode.hidden = true
 
             this.loading = false
           }).catch(err => {
-            if (err.response && err.response.status == 401) {
-              this.$store.dispatch("logLout")
-            } else if (err.response && err.response.data && err.response.data.localized) {
+            if (err.response && err.response.data && err.response.data.localized) {
               this.showMessage('error', this.$t(err.response.data.localizedPath), null)
             } else {
               console.log(err)
@@ -569,20 +554,16 @@ export default {
       }
 
       this.loading = true
-
-      axios.post(smartEnuApi + '/doc/showFolder', {
+      const req = {
         id: this.selectedNode.id
-      }, {
-        headers: getHeader()
-      }).then(res => {
+      }
+      this.docService.showFolder(req).then(res => {
         this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
 
         this.selectedNode.hidden = false
         this.loading = false
       }).catch(err => {
-        if (err.response && err.response.status == 401) {
-          this.$store.dispatch("logLout")
-        } else if (err.response && err.response.data && err.response.data.localized) {
+        if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
           console.log(err)
@@ -603,21 +584,17 @@ export default {
         icon: 'pi pi-exclamation-triangle',
         accept: () => {
           this.loading = true
-
-          axios.post(smartEnuApi + '/doc/deleteFile', {
+          const req = {
             id: this.selectedNode.id,
             hide: false,
-          }, {
-            headers: getHeader()
-          }).then(res => {
+          }
+          this.docService.docDeleteFile(req).then(res => {
             this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
             this.deleteNode(this.catalog[0], this.selectedNode.key)
 
             this.loading = false
           }).catch(err => {
-            if (err.response && err.response.status == 401) {
-              this.$store.dispatch("logLout")
-            } else if (err.response && err.response.data && err.response.data.localized) {
+            if (err.response && err.response.data && err.response.data.localized) {
               this.showMessage('error', this.$t(err.response.data.localizedPath), null)
             } else {
               console.log(err)
@@ -640,21 +617,17 @@ export default {
         icon: 'pi pi-exclamation-triangle',
         accept: () => {
           this.loading = true
-
-          axios.post(smartEnuApi + '/doc/deleteFile', {
+          const req = {
             id: this.selectedNode.id,
             hide: true,
-          }, {
-            headers: getHeader()
-          }).then(res => {
+          }
+          this.docService.docDeleteFile(req).then(res => {
             this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
             this.selectedNode.isHidden = true
 
             this.loading = false
           }).catch(err => {
-            if (err.response && err.response.status == 401) {
-              this.$store.dispatch("logLout")
-            } else if (err.response && err.response.data && err.response.data.localized) {
+            if (err.response && err.response.data && err.response.data.localized) {
               this.showMessage('error', this.$t(err.response.data.localizedPath), null)
             } else {
               console.log(err)
@@ -672,20 +645,16 @@ export default {
       }
 
       this.loading = true
-
-      axios.post(smartEnuApi + '/doc/showFile', {
+      const req = {
         id: this.selectedNode.id
-      }, {
-        headers: getHeader()
-      }).then(res => {
+      }
+      this.docService.showFile(req).then(res => {
         this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
 
         this.selectedNode.isHidden = false
         this.loading = false
       }).catch(err => {
-        if (err.response && err.response.status == 401) {
-          this.$store.dispatch("logLout")
-        } else if (err.response && err.response.data && err.response.data.localized) {
+        if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
           console.log(err)
@@ -716,12 +685,10 @@ export default {
       }
 
       this.loading = true
-
-      axios.post(smartEnuApi + '/downloadFile', {
-        filePath: this.selectedNode.filePath
-      }, {
-        headers: getHeader()
-      }).then(res => {
+      const req = {
+        ilePath: this.selectedNode.filePath
+      }
+      this.docService.docDeleteFile(req).then(res => {
         let link = document.createElement("a");
         link.href = "data:application/octet-stream;base64," + res.data;
         link.setAttribute("download", this.selectedNode.name);
@@ -731,9 +698,7 @@ export default {
 
         this.loading = false
       }).catch(err => {
-        if (err.response && err.response.status == 401) {
-          this.$store.dispatch("logLout")
-        } else if (err.response && err.response.data && err.response.data.localized) {
+        if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
           console.log(err)

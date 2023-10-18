@@ -707,7 +707,6 @@
 <script>
 import {mapState} from "vuex";
 import Enums from "@/enum/docstates/index";
-import axios from "axios";
 import html2pdf from "html2pdf.js";
 
 import {downloadFile, findRole, getHeader, smartEnuApi} from "@/config/config";
@@ -865,7 +864,8 @@ export default {
         rows: 10,
       },
       dissertationService: new DissertationService(),
-      memberList: []
+      memberList: [],
+      dissertationService: new DissertationService()
     };
   },
   created() {
@@ -974,59 +974,39 @@ export default {
       this.backcolor = "background-color: var(--teal-100);";
     },
     memberRegister() {
-      axios
-        .post(
-          smartEnuApi + "/dissertation/memberregister",
-          {
-            userID: this.$store.state.loginedUser.userID,
-            dissertationID: this.selectedDoctoral.dissertation.id
-          },
-          {
-            headers: getHeader()
-          }
-        )
-        .then(response => {
-          this.currentMemberState = response.data
-        })
-        .catch((error) => {
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          }
-        });
+      const req =         {
+          userID:  this.$store.state.loginedUser.userID,
+          dissertationID: this.selectedDoctoral.dissertation.id
+        }
+        this.dissertationService.memberregister(req).then(response => {
+        this.currentMemberState = response.data
+      })
+      .catch((error) => {
+      });
     },
     getMemberState() {
-      axios
-        .post(
-          smartEnuApi + "/dissertation/getMemberState",
-          {
-            userID: this.$store.state.loginedUser.userID,
-            dissertationID: this.selectedDoctoral.dissertation.id
-          },
-          {
-            headers: getHeader()
-          }
-        )
-        .then(response => {
-          this.currentMemberState = response.data.memberState
-          this.selectedDoctoral.dissertation.state = response.data.dissertationState
-          if (this.selectedDoctoral.dissertation.state < this.dissertationState.VotingStarted) {
-            this.voteInfo = null;
-          }
-          if (this.selectedDoctoral.dissertation.state < this.dissertationState.ReadyToRegister) {
-            this.regInfo = null;
-            this.regInfoDetail = null;
-          }
-          if (this.dialog.defenseConduct) {
+      const req =    {
+          userID:  this.$store.state.loginedUser.userID,
+          dissertationID: this.selectedDoctoral.dissertation.id
+        }
+      this.dissertationService.getMemberState(req).then(response => {
+        this.currentMemberState = response.data.memberState
+        this.selectedDoctoral.dissertation.state = response.data.dissertationState
+        if (this.selectedDoctoral.dissertation.state < this.dissertationState.VotingStarted){
+          this.voteInfo = null;
+        }
+         if (this.selectedDoctoral.dissertation.state < this.dissertationState.ReadyToRegister){
+          this.regInfo = null;
+          this.regInfoDetail = null;
+        }
+        if (this.dialog.defenseConduct) {
             setTimeout(() => {
-              this.getMemberState()
-            }, 5000);
-          }
-        })
-        .catch((error) => {
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          }
-        });
+            this.getMemberState()
+          }, 5000);
+        }
+      })
+      .catch((error) => {
+      });
     },
     deleteDissertation(data) {
       if (data !== undefined) {
@@ -1037,24 +1017,14 @@ export default {
         header: this.$t("common.confirm"),
         icon: "pi pi-exclamation-triangle",
         accept: () => {
-          axios
-            .post(
-              smartEnuApi + "/dissertation/deleteDissertation",
-              { id: this.selectedDoctoral.dissertation.id },
-              {
-                headers: getHeader(),
-              }
-            )
-            .then((response) => {
+          const req =  { id: this.selectedDoctoral.dissertation.id }
+          this.dissertationService.deleteDissertation(req).then((response) => {
               this.DoctoralList.splice(
                 this.DoctoralList.indexOf(this.selectedDoctoral),
                 1
               );
             })
             .catch((error) => {
-              if (error.response.status == 401) {
-                this.$store.dispatch("logLout");
-              }
             });
         },
       });
@@ -1107,126 +1077,56 @@ export default {
       this.loading = true;
       this.lazyParams.userID = this.$store.state.loginedUser.userID
       //this.lazyParams.countMode = null;
-      axios.post(smartEnuApi + "/dissertation/getdoctorals", this.lazyParams, { headers: getHeader() }).then((response) => {
-        this.DoctoralList = response.data;
-        if (this.DoctoralList.length > 0 && this.doctoralCount < 0) {
-          this.doctoralCount = this.DoctoralList[0].count
-        }
-        this.loading = false;
-      }).catch((error) => {
-        if (error.response.status == 401) {
-          this.$store.dispatch("logLout");
-        }
-      });
+      this.dissertationService.getDoctorals(this.lazyParams).then((response) => {
+          this.DoctoralList = response.data;
+          if (this.DoctoralList.length >0 && this.doctoralCount <0)
+          {
+            this.doctoralCount = this.DoctoralList[0].count
+          }
+          this.loading = false;
+        })
+        .catch((error) => {
+        });
     },
     startRegistration() {
       var req = {
         councilID: this.selectedDoctoral.councilID,
         dissertationID: this.selectedDoctoral.dissertation.id
       }
-      axios
-        .post(
-          smartEnuApi + "/dissertation/startRegistration",
-          req,
-          { headers: getHeader() }
-        )
-        .then(response => {
-          this.regInfo = response.data
-          console.log(this.regInfo)
-          if (this.regInfo.length > 0) {
-            this.regInfoDetail = this.regInfo[0].members
-          }
-          this.selectedDoctoral.dissertation.state = this.dissertationState.ReadyToRegister
-          if (this.dialog.defenseConduct.state) {
-            setTimeout(() => {
-              this.getRegistrationInfo()
-            }, 2000);
-          }
-        })
-        .catch((error) => {
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          } else if (error.response.data && error.response.data.error) {
-            if (error.response.data.error == "dissertationMeetingDateError") {
-              this.errorRegMessage = "dissertationMeetingDateError";
-
-            }
-
-
-          }
-        });
-
-    },
-    async startNewRegistration() {
-      const req = {
-        councilID: this.selectedDoctoral.councilID,
-        dissertationID: this.selectedDoctoral.dissertation.id,
-      };
-
-      try {
-        const response = await axios.post(
-          `${smartEnuApi}/dissertation/newStartRegistration`,
-          req,
-          { headers: getHeader() }
-        );
-
-        this.regInfo = response.data;
-        console.log(this.regInfo);
-
-        if (this.regInfo.length > 0) {
-          this.regInfoDetail = this.regInfo[0].members;
+      this.dissertationService.startRegistration(req).then(response => {
+        this.regInfo = response.data
+        if (this.regInfo.length>0) {
+          this.regInfoDetail = this.regInfo[0].members
         }
-
-        this.selectedDoctoral.dissertation.state = this.dissertationState.ReadyToRegister;
-
-        // Simulate progress (adjust this logic)
-        for (let i = 0; i <= 100; i += 10) {
-          this.progress = i;
-          await this.delay(500); // Simulate a delay between progress updates
-        }
-        this.progressBarVisible = false;
-
+        this.selectedDoctoral.dissertation.state = this.dissertationState.ReadyToRegister
         if (this.dialog.defenseConduct.state) {
           setTimeout(() => {
-            this.getRegistrationInfo();
+            this.getRegistrationInfo()
           }, 2000);
         }
-      } catch (error) {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        }
-      }
-    },
-    delay(ms) {
-      return new Promise(resolve => setTimeout(resolve, ms));
+      })
+      .catch((error) => {
+        console.log(error)
+      });
     },
     ChangeDissertationState(state) {
       var req = {
         dissertationID: this.selectedDoctoral.dissertation.id,
         state: state
       }
-      axios
-        .post(
-          smartEnuApi + "/dissertation/changeDissertationState",
-          req,
-          { headers: getHeader() }
-        )
-        .then(() => {
-          this.selectedDoctoral.dissertation.state = state
-          if (state == this.dissertationState.VotingStarted ||
-            state == this.dissertationState.VotingFinished ||
-            state == this.dissertationState.VotingRestarted ||
-            state == this.dissertationState.VotinsFinishedSecondStep) {
-            this.getVotingInfo()
-          }
+      this.dissertationService.changeDissertationState(req).then(() => {
+        this.selectedDoctoral.dissertation.state = state
+        if (state == this.dissertationState.VotingStarted ||
+          state == this.dissertationState.VotingFinished ||
+          state == this.dissertationState.VotingRestarted ||
+          state == this.dissertationState.VotinsFinishedSecondStep) {
+          this.getVotingInfo()
+        }
 
 
-        })
-        .catch((error) => {
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          }
-        });
+      })
+      .catch((error) => {
+      });
     },
     vote() {
       if (!this.currentMemberVote) {
@@ -1244,27 +1144,13 @@ export default {
         password: this.password,
         vote: Number(this.currentMemberVote)
       }
-      axios
-        .post(
-          smartEnuApi + "/dissertation/vote",
-          req,
-          { headers: getHeader() }
-        )
-        .then(() => {
-          this.currentMemberState = this.memberState.Voted
-          this.getVotingInfo()
-          this.currentMemberVote = null
-        })
-        .catch((error) => {
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-            this.$toast.add({
-              severity: "error",
-              summary: error,
-              life: 3000,
-            });
-          }
-        });
+      this.dissertationService.vote(req).then(() => {
+        this.currentMemberState = this.memberState.Voted
+        this.getVotingInfo()
+        this.currentMemberVote = null
+      })
+      .catch((error) => {
+      });
 
     },
     checkMyVoice() {
@@ -1274,32 +1160,23 @@ export default {
         step: this.selectedDoctoral.dissertation.state == this.dissertationState.VotingRestarted ? 2 : 1,
         password: this.checkPassword,
       }
-      axios
-        .post(
-          smartEnuApi + "/dissertation/checkMyVoice",
-          req,
-          { headers: getHeader() }
-        )
-        .then((res) => {
-          if (!res.data || (res.data !== "1" && res.data !== "2" && res.data !== "3" && res.data != "4")) {
-            this.$toast.add({
-              severity: "error",
-              summary: this.$t('common.message.invalidkey'),
-              life: 3000,
-            });
-            return
-          }
-          this.checkedVoice = this.$t('dissertation.vote.v' + res.data)
+      this.dissertationService.checkMyVoice(req).then((res) => {
+        if (!res.data || (res.data !== "1" && res.data !== "2" && res.data !== "3" && res.data != "4")){
           this.$toast.add({
-            severity: "success",
-            summary: this.$t('common.yourVoice') + this.checkedVoice,
-            life: 3000,
-          });
-        })
-        .catch((error) => {
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          }
+                severity: "error",
+                summary: this.$t('common.message.invalidkey'),
+                life: 3000,
+              });
+            return
+        }
+        this.checkedVoice = this.$t('dissertation.vote.v' +res.data)
+        this.$toast.add({
+                severity: "success",
+                summary: this.$t('common.yourVoice') + this.checkedVoice,
+                life: 3000,
+              });
+      })
+      .catch((error) => {
           this.$toast.add({
             severity: "error",
             summary: this.$t('common.message.invalidkey'),
@@ -1315,64 +1192,48 @@ export default {
         step: this.selectedDoctoral.dissertation.state == this.dissertationState.Accepted || this.selectedDoctoral.dissertation.state == this.dissertationState.Reject ? 1 : 2,
 
       }
-      axios
-        .post(
-          smartEnuApi + "/dissertation/getVoteInformation",
-          req,
-          { headers: getHeader() }
-        )
-        .then(response => {
-          this.voteInfo = response.data
-          if (this.voteInfo) {
-            this.selectedDoctoral.dissertation.state = this.voteInfo.dissertationState
-          }
-          this.loading = false
-          var short = this.selectedDoctoral.dissertation.state == this.dissertationState.VotingStarted || this.selectedDoctoral.dissertation.state == this.dissertationState.VotingRestarted;
-          if (short && this.dialog.defenseConduct.state && this.selectedDoctoral && (this.selectedDoctoral.dissertation.state === this.dissertationState.VotingRestarted || this.selectedDoctoral.dissertation.state === this.dissertationState.VotingStarted)) {
-            setTimeout(() => {
-              this.getVotingInfo()
-            }, 5000);
-          }
+      this.dissertationService.getVoteInformation(req).then(response => {
+        this.voteInfo = response.data
+        if (this.voteInfo) {
+          this.selectedDoctoral.dissertation.state = this.voteInfo.dissertationState
+        }
+        this.loading = false
+        var short = this.selectedDoctoral.dissertation.state == this.dissertationState.VotingStarted || this.selectedDoctoral.dissertation.state == this.dissertationState.VotingRestarted;
+        if (short && this.dialog.defenseConduct.state && this.selectedDoctoral && (this.selectedDoctoral.dissertation.state === this.dissertationState.VotingRestarted || this.selectedDoctoral.dissertation.state === this.dissertationState.VotingStarted)) {
+          setTimeout(() => {
+            this.getVotingInfo()
+          }, 5000);
+        }
 
-        })
-        .catch((error) => {
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          }
-        });
+      })
+      .catch((error) => {
+      });
     },
     getRegistrationInfo() {
       this.loading = true
       var req = {
         dissertationID: this.selectedDoctoral.dissertation.id
       }
-      axios
-        .post(
-          smartEnuApi + "/dissertation/getRegistrationInfo",
-          req,
-          { headers: getHeader() }
-        )
-        .then(response => {
-          this.regInfo = response.data
-          if (this.regInfo && this.regInfo.length > 0) {
-            this.selectedDoctoral.dissertation.state = this.regInfo[0].dissertationState
-            this.regInfoDetail = this.regInfo[0].members
-          }
-          this.loading = false
-          if ((this.dialog.defenseConduct.state && this.selectedDoctoral && this.selectedDoctoral.dissertation.state === this.dissertationState.ReadyToRegister) ||
-            (this.isDissertationMember && this.dialog.defenseConduct.state && this.selectedDoctoral && this.selectedDoctoral.dissertation.state === this.dissertationState.RegistrationFinished) ||
-            (this.isDissertationAdmin && this.selectedDoctoral && this.dialog.defenseConduct.state)) {
-            setTimeout(() => {
-              this.getRegistrationInfo()
-            }, 5000);
-          }
+      this.dissertationService.getRegistrationInfo(req).then(response => {
+        this.regInfo = response.data
+         if (this.regInfo && this.regInfo.length>0) {
+          this.selectedDoctoral.dissertation.state = this.regInfo[0].dissertationState
+          this.regInfoDetail = this.regInfo[0].members
+        }
+        this.loading = false
+        if ((this.dialog.defenseConduct.state && this.selectedDoctoral && this.selectedDoctoral.dissertation.state === this.dissertationState.ReadyToRegister) ||
+        (this.isDissertationMember && this.dialog.defenseConduct.state && this.selectedDoctoral && this.selectedDoctoral.dissertation.state === this.dissertationState.RegistrationFinished) ||
+        (this.isDissertationAdmin && this.selectedDoctoral && this.dialog.defenseConduct.state))
+        {
+          setTimeout(() => {
+            this.getRegistrationInfo()
+          }, 5000);
+        }
 
-        })
-        .catch((error) => {
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          }
-        });
+      })
+      .catch((error) => {
+        this.loading = false
+      });
     },
     confirmSetMeetingTime() {
       this.submitted = true;
@@ -1392,15 +1253,7 @@ export default {
           meetingTime: this.selectedDoctoral.meetingTime,
           language: this.selectedDoctoral.dissertation.language
         }
-        axios
-          .post(
-            smartEnuApi + "/dissertation/setMeetingTime",
-            request,
-            {
-              headers: getHeader(),
-            }
-          )
-          .then((res) => {
+        this.dissertationService.setMeetingTime(request).then((res) => {
             this.submitted = false;
             this.selectedDoctoral.dissertation.state = this.dissertationState.DefenseDate
             this.hideDialog(this.dialog.setMeetingTimeConfirm)
@@ -1408,15 +1261,12 @@ export default {
             this.$toast.add({ severity: "success", summary: "Хабарландыру сәтті құрылды", life: 3000 });
           })
           .catch((error) => {
-            if (error.response.status == 401) {
-              this.$store.dispatch("logLout");
-            } else {
+            this.submitted = false;
               this.$toast.add({
                 severity: "error",
                 summary: "dissertationSetMeetingTimeError\n" + error,
                 life: 3000,
               });
-            }
           });
 
       }
@@ -1447,30 +1297,18 @@ export default {
         this.doctoral.user = this.selectedUsers[0]
         this.doctoral.speciality = this.selectedSpecialities[0]
         data.append("doctoral", JSON.stringify(this.doctoral))
-
-        axios
-          .post(
-            smartEnuApi + "/dissertation/addDoctoral",
-            data,
-            {
-              headers: getHeader(),
-            }
-          )
-          .then((res) => {
+        this.dissertationService.addDoctoral(data).then((res) => {
             this.submitted = false;
             this.DoctoralList.push(res.data)
             this.hideDialog(this.dialog.addDoctoral)
           })
           .catch((error) => {
-            if (error.response.status == 401) {
-              this.$store.dispatch("logLout");
-            } else {
+            this.submitted = false;
               this.$toast.add({
                 severity: "error",
                 summary: "dissertationNewCouncilError\n" + error,
                 life: 3000,
               });
-            }
           });
       }
     },

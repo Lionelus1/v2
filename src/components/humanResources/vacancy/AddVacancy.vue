@@ -718,8 +718,8 @@
 import ContragentSelectOrg from "../../contragent/ContragentSelectOrg";
 import DepartmentList from "../../smartenu/DepartmentList";
 import VacancyService from "./VacancyService";
-import axios from 'axios';
 import {smartEnuApi, getHeader } from "@/config/config";
+import {ContragentService} from "@/service/contragent.service"
 export default {
   components: {DepartmentList, ContragentSelectOrg},
   props: {
@@ -793,6 +793,7 @@ export default {
           },
         },
       ],
+      contragentService: new ContragentService()
     };
   },
   methods: {
@@ -933,9 +934,7 @@ export default {
       orgID: this.loginedUser.organization.id
     }
     if (this.modelValue.organization === undefined) {
-      axios
-          .post(smartEnuApi + "/contragent/organizations", request, {headers: getHeader()})
-          .then((res) => {
+      this.contragentService.organizations(request).then((res) => {
             if (res.data.organizations && res.data.organizations.length > 0) {
               this.$refs.contragent.setValue(res.data.organizations[0])
               if (res.data.organizations[0].chief) {

@@ -29,17 +29,18 @@
 
 <script>
     import {checkIdAvailability} from "../../helpers/SignDocFunctions";
-    import axios from "axios";
     import {signerApi, header} from "@/config/config";
     import DocIdNotExist from "./DocIdNotExist";
     import FileHasNoId from "./FileHasNoId";
+import { DocService } from "../../service/doc.service";
     export default {
         components: {DocIdNotExist, FileHasNoId},
         data() {
             return {
                 document: null,
                 haveId: true,
-                existId: true
+                existId: true,
+                docService: new DocService()
             }
         },
         methods: {
@@ -55,7 +56,7 @@
                 }
             },
             getDocument(docId) {
-                axios.get(signerApi + '/documents/' + docId, {headers: header}).then((response) => {
+                this.docService.getDocument(docId).then((response) => {
                     if (response.data.id !== null || response.data.id !== '') {
                         this.$router.push({path: "/ncasigner/showdoc/" + btoa(response.data.uuid)})
                     } else {

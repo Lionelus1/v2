@@ -38,9 +38,9 @@
 </template>
 
 <script>
-    import axios from "axios";
-    import {getHeader, smartEnuApi} from "@/config/config";
 
+    import {getHeader, smartEnuApi} from "@/config/config";
+    import { ManualService } from "../../service/manual.service";
     export default {
         name: "AddGuide",
         props: ['isVisible', 'selectedGuide'],
@@ -59,6 +59,7 @@
                 lazyParams: {
                     parentId: null,
                 },
+                manualService: new ManualService()
             }
         },
         methods: {
@@ -70,9 +71,7 @@
                 /*if (this.selectedGuide) {
                     this.bodyParams.parentId = this.selectedGuide.manualId
                 }*/
-                axios.post(smartEnuApi + "/manual/save", this.bodyParams, {
-                    headers: getHeader(),
-                }).then((response) => {
+                this.manualService.manualSave(this.bodyParams).then((response) => {
                     if (response.data !== null) {
                         this.$toast.add({
                             severity: "success",
@@ -92,9 +91,7 @@
             },
             getGuides(parentId, parent) {
                 this.lazyParams.parentId = parentId
-                axios.post(smartEnuApi + "/manual/getManuals", this.lazyParams, {
-                    headers: getHeader()
-                }).then((response) => {
+                this.manualService.getManuals(this.lazyParams).then((response) => {
                     if (parentId !== null) {
                         parent.children = response.data.manuals;
                         parent.children.map(e => {

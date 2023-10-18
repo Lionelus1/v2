@@ -173,8 +173,8 @@
 </template>
 
 <script>
-import axios from "axios";
 import {  getHeader, smartEnuApi, findRole } from "@/config/config";
+import {QueueService} from "@/service/queue.service"
 export default {
   name: "Queue",
   data() {
@@ -213,7 +213,7 @@ export default {
         responsible: false,
       },
       loginedUser: null,
-
+      queueService: new QueueService()
     }
   },
    
@@ -221,11 +221,7 @@ export default {
     getQueue(parentID, parent) {  
       this.submitted = true 
       this.lazyParams.parentID = parentID
-      axios
-      .post(smartEnuApi + "/queue/allQueues", this.lazyParams, {
-        headers: getHeader(),
-      })
-      .then((response) => {
+      this.queueService.allQueues(this.lazyParams).then((response) => {
 
         if (parentID !== null) {
           parent.children = response.data.queues
@@ -237,14 +233,12 @@ export default {
         this.loading = false;
       })
       .catch((error) => {
+        this.loading = false;
         this.$toast.add({
           severity: "error",
           summary: this.$t("smartenu.loadError") + ":\n" + error,
           life: 3000,
         });
-        if (error.response.status == 401) {
-          this.$store.dispatch("logLout");
-        }
       });
     },
     isOperator(queue) {
@@ -275,17 +269,10 @@ export default {
       this.getQueue(null,null)
     },
     deleteQueue() {  
-      axios
-        .post(
-          smartEnuApi + "/queue/delQueue",
-          {
-            id: this.currentNode.key,
-          },
-          {
-            headers: getHeader(),
-          }
-        )
-        .then(_ => {
+      const req = {
+        id: this.currentNode.key
+      }
+      this.queueService.delQueue(req).then(_ => {
           this.getQueue(null, null)
         })
         .catch((error) => {
@@ -311,11 +298,7 @@ export default {
       var node = this.queue
       if (!this.validate())
         return           
-        axios
-        .post(smartEnuApi + "/queue/save", this.queue, {
-          headers: getHeader(),          
-        })        
-        .then((response) => {
+      this.queueService.save(this.queue).then((response) => {
           if (response.data !== null) {
             this.$toast.add({
               severity: "success",

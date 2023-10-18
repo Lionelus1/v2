@@ -24,7 +24,7 @@
 
 <script>
 import { getHeader, smartEnuApi } from "@/config/config";
-import axios from "axios";
+import { DicService } from "@/service/dic.service";
 
 export default {
   name: "DicLanguage",
@@ -32,6 +32,7 @@ export default {
     return {
       value: this.modelValue,
       languages:  null,
+      dicService: new DicService()
     }
   },
   props: {
@@ -64,15 +65,10 @@ export default {
     getSpecialities() {
       this.specialities = null
       this.value = null
-      axios.get(smartEnuApi + '/languages')
-          .then(response=>{
+      this.dicService.getLanguages().then(response=>{
             this.languages = response.data;
-            console.log(response.data)
           })
           .catch((error) => {
-            if (error.response.status == 401) {
-              this.$store.dispatch("logLout");
-            }
             this.$toast.add({
               severity: "error",
               summary: "getInstitutions:\n" + error,

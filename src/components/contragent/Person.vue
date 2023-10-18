@@ -371,11 +371,16 @@
 <script>
 import ContragentSelectOrg from "../contragent/ContragentSelectOrg.vue";
 import PositionsList from "../smartenu/PositionsList.vue";
-import axios from "axios";
 import { getHeader, smartEnuApi, findRole } from "@/config/config";
 import Enum from "@/enum/docstates/index";
 import html2canvas from "html2canvas";
 import * as jsPDF from "jspdf";
+import { RoleControlService } from "@/service/roleControl.service";
+import { DicService } from "@/service/dic.service";
+import { UserService } from "@/service/user.service";
+
+
+
 export default {
   components: { ContragentSelectOrg, PositionsList },
   name: "Person",
@@ -439,6 +444,9 @@ export default {
           visible: !this.addMode,
         },
       ],
+      roleControlService: new RoleControlService(),
+      dicService: new DicService(),
+      userService: new UserService()
     };
   },
   props: {
@@ -478,15 +486,10 @@ export default {
       this.menu[0].disabled = false
     },
     getCatalog(name) {
-      axios
-        .post(
-          smartEnuApi + "/auth/getDictionary",
-          { name: name },
-          {
-            headers: getHeader(),
-          }
-        )
-        .then((res) => {
+      const req = {
+         name: name 
+      } 
+      this.dicService.getDictionary(req).then((res) => {
           if (name === "academic_degree") {
             this.academicDegreeDictionary = res.data
           } else {
@@ -494,30 +497,21 @@ export default {
           }
         })
         .catch((error) => {
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          } else {
             this.$toast.add({
               severity: "error",
               summary: "Dictionary load error:\n" + error,
               life: 3000,
             });
-          }
         });
     },
     insertUser() {
       this.submitted = true;
       if (this.validateAddForm()) {
-        axios
-          .post(
-            
-            smartEnuApi + (this.addMode ? "/insertUser" : "/updateUser"),
-            { user: this.value, password: this.password },
-            {
-              headers: getHeader(),
-            }
-          )
-          .then((res) => {
+        const req = {
+          user: this.value,
+          password: this.password 
+        }
+         this.userService.insertOrUpdateUser((this.addMode ? "/insertUser" : "/updateUser"), req).then((res) => {
             if (this.password != null && this.password != "") {
               this.userDetailSaved = true
             }
@@ -548,10 +542,7 @@ export default {
             });
           })
           .catch((error) => {
-            console.log(error)
-            if (error.response.status == 401) {
-              this.$store.dispatch("logLout");
-            } else if (error.response.status == 302) {
+           if (error.response.status == 302) {
               this.$toast.add({
                 severity: "error",
                 summary: "User create error: " + this.$t('common.message.userIINExists'),
@@ -568,14 +559,11 @@ export default {
       }
     },
     insertIndividualEntrepreneur() {
-      axios.post(
-        smartEnuApi + "/roleControl/add",
-        {
-          roleName: "individual_entrepreneur",
+      const req = {
+        roleName: "individual_entrepreneur",
           userId: this.value.userID ? this.value.userID : this.value.id,
-        },
-        {headers: getHeader()}
-      ).then((res) => {
+      }
+      this.roleControlService.roleControlAdd(req).then((res) => {
         this.$toast.add({
           severity: "success",
           summary:  this.$t('common.successDone'),

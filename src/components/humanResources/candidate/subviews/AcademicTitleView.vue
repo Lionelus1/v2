@@ -11,9 +11,8 @@
 </template>
 
 <script>
-import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
-
+import {CandidateService} from "@/service/candidate.service"
 export default {
   name: "AcademicTitleView",
   props: {
@@ -23,13 +22,15 @@ export default {
   data() {
     return {
       value: this.modelValue,
+      candidateService: new CandidateService()
     }
   },
   methods: {
     deleteValue() {
-      axios
-          .post(smartEnuApi + "/candidate/academic-title/delete", {id: this.value.id}, {headers: getHeader(),})
-          .then(res => {
+      const req = {
+        id: this.value.id
+      }
+      this.candidateService.academicTitleDelete(req).then(res => {
             this.emitter.emit("academicTitle", true);
           }).catch(error => {
         this.$toast.add({

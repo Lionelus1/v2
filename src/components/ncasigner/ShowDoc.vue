@@ -73,9 +73,10 @@
     import SignerInfo from "./SignerInfo";
     import {apiDomain, signerApi, header} from "../../config/config";
     import {arrayBufferToB64, checkIdAvailability, docToByteArray} from "../../helpers/SignDocFunctions";
-    import axios from "axios";
     import IncorrectFile from "./IncorrectFile";
     import {NCALayerClient} from "ncalayer-js-client";
+    import {SignatureService} from "@/service/signature.service"
+    import {DocService} from "@/service/doc.service"
     export default {
         components: {IncorrectFile, DocInfo, SignerInfo},
         data() {
@@ -91,7 +92,9 @@
                 incorrect: false,
                 docName: null,
                 CMSSignature: null,
-                isSuccess: false
+                isSuccess: false,
+                signatureService: new SignatureService(),
+                docService: new DocService()
             }
         },
         created() {
@@ -121,10 +124,11 @@
                     });
                     return
                 }
-                axios.post(signerApi + '/signature/cms/verify', {
+                const req = {
                     documentUuid: this.id,
                     plainData: arrayBufferToB64(documentByteArray)
-                }, {headers: header}).then((response) => {
+                }
+                this.signatureService.signatureCmsVerify(req).then((response) => {
                     console.log(response)
                     if (response.data.code === 1) {
                         if(!withSigning) {
@@ -158,7 +162,7 @@
                 }
             },
             getSignatures() {
-                axios.get(signerApi + '/signature/signatures/' + this.id, {headers: header}).then((response) => {
+                this.signatureService.signatures(this.id).then((response) => {
                     if (response.data !== null || response.data !== '') {
                         this.signatures = response.data
                     } else {
@@ -171,11 +175,12 @@
                 })
             },
             addSignature() {
-                axios.post(signerApi + '/signature', {
+                const req = {
                     id: null,
                     documentUuid: this.id,
                     signature: this.CMSSignature
-                }, {headers: header}).then((response) => {
+                }
+                this.signatureService.signature(req).then((response) => {
                     if (response.data.id !== null || response.data.id !== '') {
                         this.isSuccess = true
                         this.active = 0
@@ -187,7 +192,7 @@
                 });
             },
             getDocument(docId) {
-                axios.get(signerApi + '/documents/' + docId, {headers: header}).then((response) => {
+                this.docService.getDocument(docId).then((response) => {
                     if (response.data.id !== null || response.data.id !== '') {
                         this.currentDocument = response.data
                     } else {

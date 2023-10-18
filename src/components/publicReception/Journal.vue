@@ -139,7 +139,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import {FilterMatchMode, FilterOperator} from 'primevue/api';
 import {getHeader, smartEnuApi, findRole} from "@/config/config";
 import moment from "moment";
@@ -206,30 +205,16 @@ export default {
     moment: moment,
     getData() {
       this.loading = true;
-      const savedPage = localStorage.getItem('currentPage');
-      const savedPage2 = localStorage.getItem('pageFirst');
-      if (savedPage) {
-        this.currentPage = parseInt(savedPage, 10);
-        this.pageFirst = parseInt(savedPage2, 10);
-        this.lazyParams.page = this.currentPage
-        this.lazyParams.first = this.pageFirst
-      }
-      axios.post(smartEnuApi + "/reception/questions", this.lazyParams, {
-        headers: getHeader(),
-      }).then((response) => {
+      this.receptionService.questions(this.lazyParams).then((response) => {
         this.data = response.data.items;
         this.total = response.data.total;
         this.loading = false;
       }).catch((error) => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
           this.$toast.add({
             severity: "error",
             summary: error,
             life: 3000,
           });
-        }
       });
     },
     sendToResponsible() {

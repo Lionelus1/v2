@@ -45,7 +45,7 @@
           :currentPageReportTemplate="currentPageReportTemplate" :lazy="true" :loading="departmentTableLoading" scrollable scrollHeight="flex"
           v-model:selection="currentDepartment" selectionMode="single" :rowHover="true" stripedRows class="flex-grow-1"
           @page="onPageDepartment" @row-dblclick="doubleClickDepartment" @update:selection="onSelectionDepartment">
-          <Column :header="faculty ? $t('educomplex.columns.cafedras', {'faculty': getDepartmentName(faculty)}) : 
+          <Column :header="faculty ? $t('educomplex.columns.cafedras', {'faculty': getDepartmentName(faculty)}) :
             $t('educomplex.columns.faculties')" style="min-width: 250px;">
             <template #body="slotProps">
               {{ getDepartmentName(slotProps.data) }}
@@ -273,7 +273,6 @@
   </OverlayPanel>
 </template>
 <script>
-import axios from 'axios';
 
 import { getHeader, smartEnuApi } from "@/config/config";
 import Enum from "@/enum/docstates/index";
@@ -282,6 +281,9 @@ import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo";
 import DocInfo from "@/components/documents/DocInfo";
 import PostFile from "@/components/documents/PostFile.vue"
+import { DocService } from "@/service/doc.service";
+import { OrganizationService } from "@/service/organization.service";
+
 import ActionButton from "@/components/ActionButton.vue";
 
 export default {
@@ -381,6 +383,8 @@ export default {
           value: "revision"
         }
       ],
+      docService: new DocService(),
+      organizationService: new OrganizationService()
     }
   },
   computed: {
@@ -763,20 +767,18 @@ export default {
     },
     getDepartments() {
       this.departmentTableLoading = true
-
-      axios.post(smartEnuApi + '/departments', {
+      const req = {
         orgId: 1,
         parentId: this.faculty ? this.faculty.id : null,
         isFaculty: this.faculty ? false : true,
         hasManager: this.faculty ? true : false,
         page: this.departmentPage,
         rows: this.departmentRows,
-      }, { 
-        headers: getHeader() 
-      }).then(res => {
-        this.departments = res.data.departments;
-        this.totalDepartments = res.data.total;
-        this.currentDepartment = null;
+      }
+      this.organizationService.departments(req).then(res => {
+        this.departments = res.data.departments
+        this.totalDepartments = res.data.total
+        this.currentDepartment = null
 
         this.departmentTableLoading = false;
         this.filePage = 0;
@@ -786,9 +788,7 @@ export default {
         this.totalDepartments = 0
         this.currentDepartment = null
 
-        if (err.response && err.response.status == 401) {
-          this.$store.dispatch("logLout")
-        } else if (err.response && err.response.data && err.response.data.localized) {
+        if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
           console.log(err)
@@ -815,16 +815,14 @@ export default {
       }
 
       this.fileTableLoading = true
-
-      axios.post(smartEnuApi + '/documents', {
+      const req = {
         page: this.filePage,
         rows: this.fileRows,
         docType: this.Enum.DocType.EduComplex,
         departmentId: this.filter.global ? null : this.currentDepartment.id,
         filter: this.docFilter,
-      }, { 
-        headers: getHeader() 
-      }).then(res => {
+      }
+      this.docService.documents(req).then(res => {
         this.files = res.data.documents
         this.totalFiles = res.data.total
         this.currentFile = null
@@ -835,9 +833,7 @@ export default {
         this.totalFiles = 0
         this.currentFile = null
 
-        if (err.response && err.response.status == 401) {
-          this.$store.dispatch("logLout")
-        } else if (err.response && err.response.data && err.response.data.localized) {
+        if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
           console.log(err)
@@ -853,12 +849,10 @@ export default {
       }
 
       this.loading = true
-
-      axios.post(smartEnuApi + '/document/download', {
+      const req = {
         uuid: uuid,
-      }, { 
-        headers: getHeader() 
-      }).then(res => {
+      }
+      this.docService.documentDownload(req).then(res => {
         const link = document.createElement("a");
         link.href = "data:application/octet-stream;base64," + res.data;
         link.setAttribute("download", filepath);
@@ -868,9 +862,7 @@ export default {
 
         this.loading = false
       }).catch(err => {
-        if (err.response && err.response.status == 401) {
-          this.$store.dispatch("logLout")
-        } else if (err.response && err.response.data && err.response.data.localized) {
+       if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
           console.log(err)
@@ -889,20 +881,16 @@ export default {
         rejectClass: 'p-button p-button-danger',
         accept: () => {
           this.loading = true;
-          
-          axios.post(smartEnuApi + '/document/delete', {
+          const req = {
             uuid: this.currentFile.uuid,
-          }, {
-            headers: getHeader()
-          }).then(res => {
+          }
+          this.docService.documentDelete(req).then(res => {
             this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
             this.getFiles();
 
             this.loading = false
           }).catch(err => {
-            if (err.response && err.response.status == 401) {
-              this.$store.dispatch("logLout")
-            } else if (err.response && err.response.data && err.response.data.localized) {
+            if (err.response && err.response.data && err.response.data.localized) {
               this.showMessage('error', this.$t(err.response.data.localizedPath), null)
             } else {
               console.log(err)
@@ -916,13 +904,10 @@ export default {
     },
     approve(event) {
       this.loading = true;
-
-      axios.post(smartEnuApi + "/doc/sendtoapprovebystage", {
-        id: this.currentFile.id,
+      const req = {     id: this.currentFile.id,
         appUsers: event
-      }, {
-        headers: getHeader()
-      }).then(res => {
+      }
+      this.docService.sendtoapprovebystage(req).then(res => {
         this.showMessage('success', this.$t('common.success'), this.$t('common.message.succesSendToApproval'));
 
         this.close("sendToApproveDialog");
@@ -930,9 +915,7 @@ export default {
 
         this.loading = false;
       }).catch(err => {
-        if (err.response && err.response.status == 401) {
-          this.$store.dispatch("logLout")
-        } else if (err.response && err.response.data && err.response.data.localized) {
+       if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
           console.log(err)
@@ -944,24 +927,19 @@ export default {
     },
     revision() {
       this.loading = true
-
-      axios.post(smartEnuApi + '/document/revision', {
+      const req = {
         uuid: this.currentFile.uuid,
-        comment: this.revisionComment,
-      }, {
-        headers: getHeader()
-      }).then(res => {
+        comment: this.revisionComment
+      }
+      this.docService.documentRevision(req).then(res => {
         this.close('sendToRevisionDialog')
         this.getFiles();
 
         this.loading = false
       }).catch(err => {
-        if (err.response && err.response.status == 401) {
-          this.$store.dispatch("logLout")
-        } else if (err.response && err.response.data && err.response.data.localized) {
+        if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
 
