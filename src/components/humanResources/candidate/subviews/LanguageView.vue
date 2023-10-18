@@ -12,8 +12,8 @@
 </template>
 
 <script>
-import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
+import {CandidateService} from "@/service/candidate.service"
 
 export default {
   name: "LanguageView",
@@ -24,13 +24,15 @@ export default {
   data() {
     return {
       value: this.modelValue,
+      candidateService: new CandidateService()
     }
   },
   methods: {
     deleteValue() {
-      axios
-          .post(smartEnuApi + "/candidate/language/delete", {id: this.value.id}, {headers: getHeader(),})
-          .then(res => {
+      const req = {
+        id: this.value.id
+      }
+      this.candidateService.languageDelete(req).then(res => {
             this.emitter.emit("language", true);
           }).catch(error => {
         this.$toast.add({

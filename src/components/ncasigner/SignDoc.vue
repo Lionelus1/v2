@@ -33,10 +33,11 @@
 <script>
     import {NCALayerClient} from "ncalayer-js-client";
     import {checkIdAvailability, docToByteArray} from "../../helpers/SignDocFunctions";
-    import axios from "axios";
     import {signerApi, header} from "../../config/config";
     import DocIdNotExist from "./DocIdNotExist";
     import SuccessSign from "./SuccessSign";
+    import {DocService} from "@/service/doc.service"
+    import {SignatureService} from "@/service/signature.service"
 
     export default {
         components: {SuccessSign, DocIdNotExist},
@@ -50,6 +51,8 @@
                 isSuccess: false,
                 existId: true,
                 docIDName: null,
+                docService: new DocService(),
+                signatureService: new SignatureService()
             }
         },
         created() {
@@ -127,10 +130,11 @@
                 }
             },
             addDocument() {
-                axios.post(signerApi + '/documents', {
+                const req = {
                     id: null,
                     name: this.document.name
-                }, {headers: header}).then((response) => {
+                }
+                this.docService.getDocuments(req).then((response) => {
                     if (response.data.id !== null || response.data.id !== '') {
                         console.log(response.data)
                         this.documentID = response.data.uuid
@@ -147,11 +151,12 @@
             },
 
             addSignature(document) {
-                axios.post(signerApi + '/signature', {
+                const req = {
                     id: null,
                     documentUuid: document.uuid,
                     signature: this.CMSSignature
-                }, {headers: header}).then((response) => {
+                }
+                this.signatureService.signature(req).then((response) => {
                     if (response.data === '') {
                         this.$toast.add({severity: 'error', summary: this.$t('ncasigner.notEnoughRights'), life: 3000});
                     } else if (response.data.id !== null || response.data.id !== '') {
@@ -170,7 +175,7 @@
             },
 
             getDocument(docId) {
-                axios.get(signerApi + '/documents/' + docId, {headers: header}).then((response) => {
+                this.docService.getDocument(docId).then((response) => {
                     if (response.data.id !== null || response.data.id !== '') {
                         console.log(response.data)
                         this.documentID = response.data.uuid

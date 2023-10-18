@@ -43,6 +43,7 @@
 <script>
 import axios from "axios";
 import {smartEnuApi} from "@/config/config";
+import { FileService } from "../../service/file.service";
 
 export default {
   data() {
@@ -51,7 +52,8 @@ export default {
       selected: null,
       filter: {},
       loading: true,
-      dirs: []
+      dirs: [],
+      fileService: new FileService()
     };
   },
   customerService: null,
@@ -75,7 +77,7 @@ export default {
       this.tableData = [];
       if (!dirName)
         dirName = "/"
-      axios.get(smartEnuApi + "/getFiles?dirName=" + dirName).then(
+      this.fileService.getFilesDirName(dirName).then(
           (response) => {
             var pathList = response.data;
             pathList.forEach((i) => {
@@ -84,6 +86,7 @@ export default {
             this.loading = false;
           },
           (response) => {
+            this.loading = false;
             console.log(response);
           }
       );

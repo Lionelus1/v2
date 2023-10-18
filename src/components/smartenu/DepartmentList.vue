@@ -35,8 +35,8 @@
 
 <script>
 import { getHeader, smartEnuApi } from "@/config/config";
-import axios from 'axios';
 import Department from "./Department";
+import {UserService} from "@/service/user.service"
 
 export default {
   components: {Department},
@@ -46,6 +46,7 @@ export default {
       departments:  null,
       orgId: null,
       sidebar: false,
+      userService: new UserService()
     }
   },
   props: {
@@ -93,19 +94,15 @@ export default {
       this.departments = null;
       this.value = null;
       this.parentID != undefined ? this.orgId = this.parentID : (parentID != undefined ? this.orgId = parentID : this.orgId = null)
-      axios.post(smartEnuApi+"/getdepartments", {
+      
+      const req = {
         orgType: this.orgType,
         parentID: this.parentID != undefined ? this.parentID : (parentID != undefined ? parentID: undefined)
-
-        } ,{headers: getHeader()})
-        .then(response=>{
+      }
+      this.userService.getDepartments(req).then(response=>{
           this.departments = response.data;
-
         })
         .catch((error) => {
-           if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          }
           this.$toast.add({
           severity: "error",
           summary: "getDepartments:\n" + error,

@@ -71,7 +71,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import html2pdf from "html2pdf.js";
 import ReportPdf from "./RerportPdf";
 import {getHeader, signerApi, smartEnuApi} from "@/config/config";

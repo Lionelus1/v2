@@ -36,9 +36,9 @@
 </template>
 
 <script>
-import axios from "axios";
 import { getHeader, smartEnuApi, b64toBlob } from "@/config/config";
 import { getLongDateString } from "@/helpers/helper";
+import {AgreementService} from "@/service/agreement.service"
 
 export default {
     name: "DocSignaturesInfo",
@@ -55,6 +55,7 @@ export default {
             loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID,
             loading: false,
             accessDenied: false,
+            agreementService: new AgreementService()
         }
     },
     created() {
@@ -66,20 +67,15 @@ export default {
     methods: {
         getLongDateString: getLongDateString,
         getData() {
-        let url = "/agreement/get";
         var req = { id: this.docID };
         this.loading = true
-        axios
-            .post(smartEnuApi + url, req, { headers: getHeader() })
-            .then((res) => {
+        this.agreementService.getAgreement(req).then((res) => {
                 this.loading = false
                 this.doc = res.data;
             })
             .catch((error) => {
                 this.loading = false
-                if (error.response && error.response.status == 401) {
-                    this.$store.dispatch("logLout");
-                } else if (error.response && error.response.status == 405 && error.response.data && error.response.data.error === 'accessDenied') {
+                if (error.response && error.response.status == 405 && error.response.data && error.response.data.error === 'accessDenied') {
                     this.accessDenied = true
                 }
             });

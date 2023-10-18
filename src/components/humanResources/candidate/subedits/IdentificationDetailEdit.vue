@@ -95,9 +95,8 @@
 </template>
 
 <script>
-import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
-
+import {CandidateService} from "@/service/candidate.service"
 export default {
   name: "IdentificationDetailEdit",
   data() {
@@ -120,7 +119,8 @@ export default {
         issuedBy: false,
         iin: false,
         file: false
-      }
+      },
+      candidateService: new CandidateService()
     };
   },
   methods: {
@@ -148,9 +148,7 @@ export default {
       fd.append("idImage", this.file);
       if (this.validateForm()) {
         let path = !this.value.id ? "/candidate/id/create" : "/candidate/id/update"
-        axios
-            .post(smartEnuApi + path, fd, {headers: getHeader(),})
-            .then(res => {
+        this.candidateService.idCreateOrUpdate(path, fd).then(res => {
               this.emitter.emit("id", true);
             }).catch(error => {
           this.$toast.add({

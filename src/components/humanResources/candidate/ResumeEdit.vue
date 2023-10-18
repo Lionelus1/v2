@@ -159,7 +159,6 @@ import LanguageEdit from "./subedits/LanguageEdit";
 import ExperienceEdit from "./subedits/ExperienceEdit";
 import RefresherCourseEdit from "./subedits/RefresherCourseEdit";
 import RefereeEdit from "./subedits/RefereeEdit";
-import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
 import EducationView from "./subviews/EducationView";
 import AcademicDegreeView from "./subviews/AcademicDegreeView";
@@ -170,12 +169,12 @@ import RefereeView from "./subviews/RefereeView";
 import IdentificationDetailEdit from "./subedits/IdentificationDetailEdit";
 import IdentificationDetailView from "./subviews/IdentificationDetailView";
 import LanguageView from "./subviews/LanguageView";
-import ResumeService from "./ResumeService";
+import ResumeService from "@/service/resume.service";
 import AcademicDetailEdit from "./subedits/AcademicDetailEdit";
 import AcademicDetailView from "./subviews/AcademicDetailView";
 import InfoEdit from "./subedits/InfoEdit";
 import InfoView from "./subviews/InfoView";
-
+import {CandidateService} from "@/service/candidate.service";
 export default {
   name: "ResumeEdit",
   components: {
@@ -247,7 +246,8 @@ export default {
         id: 'id',
         academicDetail: 'academicDetail',
         info: 'info'
-      }
+      },
+      candidateService: new CandidateService()
     }
   },
   created() {
@@ -303,9 +303,7 @@ export default {
       this.isView.info = true
     },
     createCandidate() {
-      axios
-          .post(smartEnuApi + "/candidate/create", {}, {headers: getHeader(),})
-          .then(res => {
+      this.candidateService.create({}).then(res => {
             this.$toast.add({severity: 'success', summary: 'Success', detail: 'Резюме успешно создано', life: 3000});
             this.candidate = {}
             this.candidate = res.data
@@ -318,9 +316,7 @@ export default {
       });
     },
     deleteCandidate() {
-      axios
-          .post(smartEnuApi + "/candidate/delete", {}, {headers: getHeader(),})
-          .then(res => {
+      this.candidateService.delete({}).then(res => {
             this.$toast.add({severity: 'success', summary: 'Success', detail: 'Резюме успешно удалено', life: 3000});
             this.candidate = null
           }).catch(error => {

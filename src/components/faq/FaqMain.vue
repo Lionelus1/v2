@@ -482,10 +482,11 @@
 </template>
 
 <script>
-import axios from "axios";
 import {FilterMatchMode, FilterOperator} from 'primevue/api';
 import {getHeader, header, smartEnuApi} from "@/config/config";
 import * as imageResizeCompress from "image-resize-compress"; // ES6
+import { FaqService } from "../../service/faq.service";
+import {UserService} from "@/service/user.service"
 
 export default {
   data() {
@@ -574,7 +575,9 @@ export default {
         rows: 10,
         countMode: null,
       },
-      total: 0
+      total: 0,
+      faqService: new FaqService(),
+      userService: new UserService()
     };
   },
   created() {
@@ -585,26 +588,19 @@ export default {
   methods: {
     getData() {
       this.loading = true;
-      axios
-          .post(smartEnuApi + "/faq/getAllFaq", this.userData, {
-            headers: getHeader(),
-          })
-          .then((response) => {
-            this.data = response.data.items;
-            this.total = response.data.total;
-            this.loading = false;
-          })
-          .catch((error) => {
-            if (error.response && error.response.status === 401) {
-              this.$store.dispatch("logLout");
-            } else {
-              this.$toast.add({
-                severity: "error",
-                summary: error,
-                life: 3000,
-              });
-            }
+      this.faqService.getAllFaq(this.userData).then((response) => {
+        this.data = response.data.items;
+        this.total = response.data.total;
+        this.loading = false;
+      })
+      .catch((error) => {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
           });
+          this.loading = false;
+      });
     },
     uploadFile(event) {
       this.file = event.files[0];
@@ -624,29 +620,21 @@ export default {
       this.answerFile = event.files[0];
     },
     getDepartmentList() {
-      axios
-          .get(smartEnuApi + "/faq/getDepartmentList", {
-            headers: getHeader(),
-          })
-          .then((response) => {
-            this.departmentList = response.data;
-            response.data.map(res => {
-              if (res.nameRu !== 'Другое') {
-                this.forwardDepartmentList.push(res)
-              }
-            })
-          })
-          .catch((error) => {
-            if (error.response && error.response.status === 401) {
-              this.$store.dispatch("logLout");
-            } else {
-              this.$toast.add({
-                severity: "error",
-                summary: error,
-                life: 3000,
-              });
-            }
+      this.faqService.getDepartmentList().then((response) => {
+        this.departmentList = response.data;
+        response.data.map(res => {
+          if (res.nameRu !== 'Другое') {
+            this.forwardDepartmentList.push(res)
+          }
+        })
+      })
+      .catch((error) => {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
           });
+      });
     },
     createFaq() {
       this.faqDialog = true;
@@ -664,78 +652,57 @@ export default {
       fd.append("faqRequest", JSON.stringify(this.faq));
       fd.append("uploadedFile", this.file);
       fd.append("imageFile", this.imageFile);
-      axios
-          .post(smartEnuApi + "/faq/addFaqRequest", fd, {
-            headers: getHeader(),
-          })
-          .then((response) => {
-            this.hideDialog();
-            this.getData();
-          })
-          .catch((error) => {
-            if (error.response.status == 401) {
-              this.$store.dispatch("logLout");
-            } else {
-              console.log(error);
-              this.$toast.add({
-                severity: "error",
-                summary: error,
-                life: 3000,
-              });
-            }
-          });
-    },
-    getUserType() {
-      axios
-          .get(smartEnuApi + "/getCurrentUserType", {
-            headers: getHeader(),
-          })
-          .then((response) => {
-
-            this.userData.userType = response.data.userType;
-            this.userData.departmentId = response.data.departmentId;
-            this.userData.departmentName = response.data.departmentName;
-            this.userData.userId = response.data.userId;
-            this.faq.userId = response.data.userId;
-            this.isShowPersonal = this.accessDepList.some(function (field) {
-              return field === response.data.departmentName;
-            });
-            this.isChancery = response.data.departmentName === 'Отдел документооборота и контроля';
-            this.getData();
-          })
-          .catch((error) => {
-            if (error.response && error.response.status === 401) {
-              this.$store.dispatch("logLout");
-            } else {
-              console.log(error);
-            }
-          });
-    },
-    downloadFile(fileName, fileType) {
-      axios
-          .post(
-              smartEnuApi + "/faq/downloadFile",
-              {filename: fileName, fileType: fileType},
-              {
-                headers: getHeader(),
-              }
-          )
-          .then((response) => {
-            // const blob = new Blob([response.data], )
-            const link = document.createElement("a");
-            link.href = "data:application/octet-stream;base64," + response.data;
-            link.setAttribute("download", fileName);
-            link.download = fileName;
-            link.click();
-            URL.revokeObjectURL(link.href);
-          })
-          .catch((error) => {
+      this.faqService.addFaqRequest(fd).then((response) => {
+          this.hideDialog();
+          this.getData();
+        })
+        .catch((error) => {
+            console.log(error);
             this.$toast.add({
               severity: "error",
-              summary: "downloadFileError:\n" + error,
+              summary: error,
               life: 3000,
             });
+          
+        });
+    },
+    getUserType() {
+      this.userService.getCurrentUserType().then((response) => {
+          this.userData.userType = response.data.userType;
+          this.userData.departmentId = response.data.departmentId;
+          this.userData.departmentName = response.data.departmentName;
+          this.userData.userId = response.data.userId;
+          this.faq.userId = response.data.userId;
+          this.isShowPersonal = this.accessDepList.some(function (field) {
+            return field === response.data.departmentName;
           });
+          this.isChancery = response.data.departmentName === 'Отдел документооборота и контроля';
+          this.getData();
+        })
+        .catch((error) => { 
+            console.log(error);
+        });
+    },
+    downloadFile(fileName, fileType) {
+      const req = {
+        filename: fileName, fileType: fileType
+      }
+      this.faqService.downloadFile(req).then((response) => {
+          // const blob = new Blob([response.data], )
+          const link = document.createElement("a");
+          link.href = "data:application/octet-stream;base64," + response.data;
+          link.setAttribute("download", fileName);
+          link.download = fileName;
+          link.click();
+          URL.revokeObjectURL(link.href);
+        })
+        .catch((error) => {
+          this.$toast.add({
+            severity: "error",
+            summary: "downloadFileError:\n" + error,
+            life: 3000,
+          });
+        });
     },
     addAnswer() {
       this.faqAnswer.faqRequestId = this.selectedFaq.id;
@@ -743,33 +710,25 @@ export default {
       const fd = new FormData();
       fd.append("faqAnswer", JSON.stringify(this.faqAnswer));
       fd.append("uploadedFile", this.answerFile);
-      axios
-          .post(smartEnuApi + "/faq/addAnswer", fd, {
-            headers: getHeader(),
-          })
-          .then((response) => {
-            this.answerDialog = false;
-            this.getData();
-          })
-          .catch((error) => {
-            if (error.response.status === 401) {
-              this.$store.dispatch("logLout")
-            } else {
-              this.$toast.add({
-                severity: "error",
-                summary: error,
-                life: 3000,
-              });
-            }
-          });
+      this.faqService.addAnswer(fd).then((response) => {
+          this.answerDialog = false;
+          this.getData();
+        })
+        .catch((error) => {
+
+            this.$toast.add({
+              severity: "error",
+              summary: error,
+              life: 3000,
+            });
+        });
     },
     forwardFaq() {
-      axios.post(smartEnuApi + "/faq/forwardFaq", {
+      const req = {
         faqId: this.selectedFaq.id,
         departmentId: this.selectedForwardDep.id
-      }, {
-        headers: getHeader()
-      }).then(response => {
+      }
+      this.faqService.forwardFaq(req).then(response => {
         if (response.data.isSuccess === true) {
           this.forwardDialog = false;
           this.getData();

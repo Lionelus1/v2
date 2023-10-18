@@ -100,10 +100,9 @@ import VacancyService from "./VacancyService";
 import DocDownload from "./DownloadCandidateDocuments";
 import ApplyActionEdit from "./ApplyActionEdit";
 import html2pdf from "html2pdf.js";
-import axios from "axios";
 import {getHeader, getMultipartHeader, smartEnuApi} from "@/config/config";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo"
-
+import {CandidateService} from "@/service/candidate.service"
 
 export default {
   name: "VacancyCandidateView",
@@ -191,18 +190,17 @@ export default {
       resumeFile: null,
       docId: null,
       resumeView: false,
+      candidateService: new CandidateService()
     }
   },
   methods: {
 
     downloadSignedResume() {
-      axios.post(
-          smartEnuApi + '/candidate/resume/download',
-          {
+      const req =           {
             vacancyId: this.vacancy.id,
             candidateId: this.candidateRelation.candidate.id
-          },
-          {headers: getHeader()}).then(response => {
+          }
+      this.candidateService.resumeDownload(req).then(response => {
         console.log(response.data)
         if (response.data.docId !== null) {
           this.docId = response.data.docId
@@ -228,13 +226,11 @@ export default {
       this.sidebar = true
     },
     viewDocs(data) {
-      axios.post(
-          smartEnuApi + '/candidate/documents/existence',
-          {
-            vacancyId: this.vacancy.id,
+      const req = {
+        vacancyId: this.vacancy.id,
             candidateId: data.candidate.id
-          },
-          {headers: getHeader()}).then(response => {
+      }
+      this.candidateService.documentsExistence(req).then(response => {
         console.log(response.data)
         this.documentsPath = response.data
         this.docs = true

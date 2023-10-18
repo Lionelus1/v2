@@ -43,6 +43,7 @@
 <script>
 import {getHeader, smartEnuApi, templateApi} from "@/config/config";
 import axios from 'axios';
+import {DissertationService } from "@/service/dissertation.service"
 
 export default {
   components: {},
@@ -128,6 +129,7 @@ export default {
         name: "",
       },
       searchInProgres: false,
+      dissertationService: new DissertationService()
     };
   },
   created () {
@@ -155,20 +157,15 @@ export default {
       this.$refs.op.hide();
       this.$refs.op.toggle(event);
       this.searchInProgres = true;
-      axios
-      .post(
-          smartEnuApi + "/dissertation/getdoctorals",
-          { 
+      const req = {
+         
             page: 0,
             rows: 1000,
             userID:  this.$store.state.loginedUser.userID,
             name: inputValue
-          },
-          {
-            headers: getHeader(),
-          }
-        )
-      .then(
+        
+      }
+      this.dissertationService.getDoctorals(req).then(
         response => {
             this.foundEntities = response.data;
             this.searchInProgres = false;

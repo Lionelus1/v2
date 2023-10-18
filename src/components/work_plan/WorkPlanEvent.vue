@@ -215,7 +215,6 @@
 
 <script>
 import WorkPlanEventAdd from "@/components/work_plan/WorkPlanEventAdd";
-import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
 import WorkPlanApprove from "@/components/work_plan/WorkPlanApprove";
 import WorkPlanExecute from "@/components/work_plan/WorkPlanExecute";

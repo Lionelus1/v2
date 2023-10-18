@@ -149,7 +149,7 @@ import SpecialitySearch from "../smartenu/speciality/specialitysearch/Speciality
 import DepartmentList from "../smartenu/DepartmentList.vue"
 import Enums from "@/enum/docstates/index";
 import {getHeader, findRole, smartEnuApi} from "@/config/config";
-import {DissertationService} from "@/service/dissertation.service";
+import {DissertationService} from "@/service/dissertation.service"
 
 export default {
   components: {SpecialitySearch, DepartmentList},

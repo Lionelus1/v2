@@ -138,7 +138,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
 
 export default {

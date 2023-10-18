@@ -248,7 +248,6 @@
 <script>
 
 import {FilterMatchMode, FilterOperator} from "primevue/api";
-import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
 import AddVacancy from "./AddVacancy";
 import VacancyCandidateView from "./VacancyCandidateView";
@@ -468,11 +467,7 @@ export default {
     },
     generateReport() {
       if (this.validateReport()) {
-        axios.post(
-            smartEnuApi + '/vacancy/report',
-            this.report,
-            {responseType: "blob", headers: getHeader()},
-        ).then(response => {
+        this.vacancyService.report(this.report).then(response => {
           console.log(response)
           this.reportResponse = response
         }).catch(error => {

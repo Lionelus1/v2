@@ -100,7 +100,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
 import treeToList from "@/service/treeToList";
 import {WorkPlanService} from "@/service/work.plan.service";

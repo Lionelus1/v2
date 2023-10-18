@@ -62,11 +62,10 @@
   </div>
 </template>
 <script>
-import axios from 'axios';
 
 import { getHeader, smartEnuApi } from "@/config/config";
 import Enum from "@/enum/docstates/index";
-
+import { DocService } from '../../service/doc.service';
 export default {
   name: 'ReferenceFolderFile',
   components: {},
@@ -98,6 +97,7 @@ export default {
       folderRows: 10,
       filePage: 0,
       fileRows: 10,
+      docService: new DocService()
     }
   },
   computed: {
@@ -171,15 +171,13 @@ export default {
     },
     getFolders() {
       this.folderTableLoading = true
-
-      axios.post(smartEnuApi + '/folders', {
+      const req = {
         folderType: Enum.FolderType.References,
         page: this.folderPage,
         rows: this.folderRows,
         parentId: this.parentFolder ? this.parentFolder.id : null,
-      }, { 
-        headers: getHeader() 
-      }).then(res => {
+      }
+      this.docService.getFolders(req).then(res => {
         this.folders = res.data.folders
         this.totalFolders = res.data.total
         this.currentFolder = null
@@ -190,9 +188,7 @@ export default {
         this.totalFolders = 0
         this.currentFolder = null
 
-        if (err.response && err.response.status == 401) {
-          this.$store.dispatch("logLout")
-        } else if (err.response && err.response.data && err.response.data.localized) {
+        if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
           console.log(err)
@@ -222,14 +218,12 @@ export default {
       }
 
       this.fileTableLoading = true
-
-      axios.post(smartEnuApi + '/document/templates', {
+      const req = {
         page: this.filePage,
         rows: this.fileRows,
         folderId: this.parentFolder.id,
-      }, { 
-        headers: getHeader() 
-      }).then(res => {
+      }
+      this.docService.documentTemplates(req).then(res => {
         this.files = res.data.doctemplates
         this.totalFiles = res.data.total
         this.currentFile = null
@@ -240,9 +234,7 @@ export default {
         this.totalFiles = 0
         this.currentFile = null
 
-        if (err.response && err.response.status == 401) {
-          this.$store.dispatch("logLout")
-        } else if (err.response && err.response.data && err.response.data.localized) {
+        if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
           console.log(err)

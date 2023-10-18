@@ -116,10 +116,8 @@
   </div>
 </template>
 <script>
-
-import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
-
+import {CandidateService} from "@/service/candidate.service"
 export default {
   data() {
     return {
@@ -142,7 +140,8 @@ export default {
         speciality: false,
         receiptDate: false,
         expirationDate: false
-      }
+      },
+      candidateService: new CandidateService()
     };
   },
   methods: {
@@ -165,9 +164,7 @@ export default {
     action() {
       if (this.validateForm()) {
         let path = !this.value.id ? "/candidate/education/create" : "/candidate/education/update"
-        axios
-            .post(smartEnuApi + path, this.value, {headers: getHeader(),})
-            .then(res => {
+        this.candidateService.educationCreateOrUpdate(path, this.value).then(res => {
               this.emitter.emit("education", true);
             }).catch(error => {
           this.$toast.add({

@@ -129,9 +129,8 @@
 </template>
 
 <script>
-import axios from "axios";
 import {getHeader, smartEnuApi} from "../config/config";
-
+import { DocService } from "@/service/doc.service";
 export default {
 
   name: "DocSignatureVerification",
@@ -145,7 +144,8 @@ export default {
       validation: {
         cmsOrZip: false,
         file: false
-      }
+      },
+      docService: new DocService()
     }
   },
   mounted() {
@@ -181,8 +181,7 @@ export default {
       if (this.validateForm()) {
         const formData = new FormData();
         formData.append("cms", this.cmsOrZip)
-        axios.post(smartEnuApi + "/doc/check-data-attaching", formData, {headers: getHeader()})
-            .then((response) => {
+        this.docService.checkDataAttaching(formData).then((response) => {
               let result = response.data
               if (result.success) {
                 this.attached = true
@@ -198,10 +197,7 @@ export default {
                 }
               }
             }).catch((error) => {
-          console.error(error);
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          }
+            console.error(error);
         });
       }
     },
@@ -210,8 +206,7 @@ export default {
         const formData = new FormData();
         formData.append("mainFile", this.file)
         formData.append("cms", this.cmsOrZip)
-        axios.post(smartEnuApi + "/doc/verify", formData, {headers: getHeader()})
-            .then((response) => {
+        this.docService.docVerify(formData).then((response) => {
               let totalResult = response.data
               console.log(totalResult)
               if (totalResult.success === true) {
@@ -354,9 +349,6 @@ export default {
               }
             }).catch((error) => {
           console.error(error);
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          }
         });
       }
     }

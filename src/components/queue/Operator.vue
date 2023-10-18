@@ -72,7 +72,7 @@
 <script>
 
 import {  getHeader, smartEnuApi, findRole } from "@/config/config";
-import axios from "axios";
+import {QueueService} from "@/service/queue.service"
 export default {
 
   data() {
@@ -109,9 +109,8 @@ export default {
         state: -1,
       },
       counting: true,
-      redirectVisible:false
-
-     
+      redirectVisible:false,
+      queueService: new QueueService()
     }
   },
   methods: {   
@@ -119,11 +118,7 @@ export default {
         this.loading = true  
         this.lazyParams.parentID = parentID
          //alert(parentID)
-        axios
-        .post(smartEnuApi + "/queue/allQueues", this.lazyParams, {
-          headers: getHeader(),
-        })
-        .then((response) => {
+         this.queueService.allQueues(this.lazyParams).then((response) => {
           this.queues = response.data.queues;
           this.callNextCustomer(false, null);
           if (this.queues.length> 0) {
@@ -144,19 +139,12 @@ export default {
             summary: this.$t("smartenu.loadError") + ":\n" + error,
             life: 3000,
           });
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          }
         });
     },
     getNeigborQueue(parentID) {
         this.loading = true         
         this.lazyParams.id = parentID
-        axios
-        .post(smartEnuApi + "/queue/getneigbors", this.lazyParams, {
-          headers: getHeader(),
-        })
-        .then((response) => {
+        this.queueService.getneigbors(this.lazyParams).then((response) => {
           this.neigbors = response.data.queues;      
           this.loading = false;
         })
@@ -168,23 +156,17 @@ export default {
             summary: this.$t("smartenu.loadError") + ":\n" + error,
             life: 3000,
           });
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          }
         });
     },
     callNextCustomer(call, number) {
        this.loading = true  
-       axios
-        .post(smartEnuApi + "/queue/callCustomer", {
+       const req = {
           queueID: Number(this.$route.params.parentID),
           windowID: Number(this.$route.params.id),
           number: number!= null ? Number(number): null,
           call: call
-        }, {
-          headers: getHeader(),
-        })
-        .then((response) => {
+        }
+       this.queueService.callCustomer(req).then((response) => {
           this.service = response.data;
           // alert(JSON.stringify(this.service))
           this.service.info = {
@@ -212,9 +194,6 @@ export default {
             summary: this.$t("queue.norows"),
             life: 3000,
           });
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          }
         });
 
 
@@ -224,11 +203,8 @@ export default {
     changeState(state, redirectID){
       var workSecond=this.service.info.second+(this.service.info.minute*60)+(Number(this.service.info.hour*3600));
       this.loading = true
-      axios
-        .post(smartEnuApi + "/queue/statusChange", {serviceID: this.service.id, state: state, redirectID: redirectID,workTime: workSecond}, {
-          headers: getHeader(),
-        })
-        .then((_) => {         
+      const req = {serviceID: this.service.id, state: state, redirectID: redirectID,workTime: workSecond}
+      this.queueService.statusChange(req).then((_) => {         
           this.service = {
             state:-1,
             info:{

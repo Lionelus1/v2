@@ -68,13 +68,13 @@
 </div>
 </template>
 <script>
-  import axios from 'axios';
   
   import { smartEnuApi, getHeader, findRole } from "@/config/config";
   import Enum from "@/enum/docstates/index";
   
   import DocTemplate from "@/components/documents/DocTemplate.vue"
   import PostFile from "./PostFile.vue"
+  import { AgreementService } from "@/service/agreement.service";
 
   export default {
     components: { PostFile, DocTemplate},
@@ -107,6 +107,7 @@
           docType: Enum.DocType.Contract,
           sourceType: Enum.DocSourceType.FilledDoc,
         },
+        agreementService: new AgreementService()
       }
     },
     methods: {
@@ -142,12 +143,10 @@
           req.lang = this.selectedTemplate.templateLanguage == "kz" ? 0 : 1
         }
         this.saving=true;
-        axios.post(smartEnuApi+url, req, { headers: getHeader() }).then(responce=>{
+        this.agreementService.createAgreement(req).then(responce=>{
           this.showMessage('success', this.$t('contracts.title'), this.$t('contracts.message.created'));
           this.saving =false;
           this.$router.push({ path: '/documents/contract/' + responce.data});
-
-
         })
         .catch(error => {
           this.saving =false;
@@ -166,7 +165,7 @@
         }
         this.saving = true;
         
-        axios.post(smartEnuApi+url, req, { headers: getHeader() }).then(responce=>{
+        this.agreementService.createAgreement(req).then(responce=>{
           this.saving = false;
           this.showMessage('success', this.$t('contracts.title'), this.$t('contracts.message.created'));
           this.$router.push({ path: '/documents/contract/' + responce.data.id});

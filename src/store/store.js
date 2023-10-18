@@ -52,7 +52,20 @@ const store = createStore({
         },
         REMOVE_USER_SITE_SLUG(state) {
             state.userSlug = {}
-        }
+        },
+        REFRESH_TOKEN(state) {
+            const tokenData = JSON.parse(window.localStorage.getItem("authUser"));
+            let authUser = {}
+            axios.post("/refreshToken", {
+              refresh_token: tokenData.refresh_token,
+            }).then(res => {
+              authUser.access_token = res.data.access_token;
+              authUser.refresh_token = res.data.refresh_token;
+              window.localStorage.setItem('authUser', JSON.stringify(authUser));
+            }).catch(error => {
+                console.log('refresh token error')
+            });
+          }
     },
     actions: {
         setLoginedUser(context) {
@@ -75,6 +88,9 @@ const store = createStore({
         },
         removeUserSiteSlug(context) {
             context.commit("REMOVE_USER_SITE_SLUG")
+        },
+        refreshToken(context) {
+            context.commit('REFRESH_TOKEN')
         }
     },
     getters: {

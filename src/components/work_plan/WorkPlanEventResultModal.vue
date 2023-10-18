@@ -88,7 +88,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
 import WorkPlanEventResult from "./WorkPlanEventResult";
 import {WorkPlanService} from "@/service/work.plan.service";

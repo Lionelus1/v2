@@ -86,8 +86,8 @@
 import { mapState} from "vuex";
 import RolesByName from "../smartenu/RolesByName.vue"
 import Enums from "@/enum/docstates/index";
-import axios from 'axios';
 import {getHeader, smartEnuApi} from "@/config/config";
+import {DissertationService } from "@/service/dissertation.service"
 export default {
   components: {   RolesByName},
  data() {
@@ -120,6 +120,7 @@ export default {
       page: 0,
       rows: 10,
     },
+    dissertationService: new DissertationService()
    }
  },
  created() {
@@ -143,17 +144,14 @@ export default {
       header: this.$t("common.confirm"),
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
-        axios
-        .post(smartEnuApi + "/dissertation/deleteCouncilMember", {id : this.selectedMember.memberID},  {
-          headers: getHeader(),
-        })
-        .then((response) => {
+        const req = {
+          id : this.selectedMember.memberID
+        }
+        this.dissertationService.deleteMember(req).then((response) => {
           this.MembersList.splice(this.MembersList.indexOf(this.selectedMember),1);
         })
         .catch((error) => {
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          }
+          console.log(error)
         });
         
       },
@@ -182,18 +180,12 @@ export default {
     this.loading = true;
       let id = this.councilID
       //this.lazyParams.countMode = null;
-      axios
-        .post(smartEnuApi + "/dissertation/getcouncilmembers", {id:id},  {
-          headers: getHeader(),
-        })
-        .then((response) => {
+      this.dissertationService.getcouncilmembers({id:id}).then((response) => {
           this.MembersList = response.data;
           this.loading = false;
         })
         .catch((error) => {
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          }
+          console.log(error)
         });
   },
   
@@ -201,13 +193,8 @@ export default {
     this.submitted = true;
     
     if (this.validateAddConsulMemberForm()) {
-      axios.
-        post(smartEnuApi + "/dissertation/addCouncilMember", 
-          {userID: this.selectedMembers[0].userID, roleID: this.selectedRole.id, councilID: this.councilID}, 
-          {
-          headers: getHeader(),
-        })
-        .then((res) => {
+      const req =   {userID: this.selectedMembers[0].userID, roleID: this.selectedRole.id, councilID: this.councilID}
+      this.dissertationService.addCouncilMember(req).then((res) => {
           this.selectedMembers[0].memberUD = res.data;
           this.selectedMembers[0].roles = []
           this.selectedMembers[0].roles.push(JSON.parse(JSON.stringify(this.selectedRole)))
@@ -216,10 +203,6 @@ export default {
           this.hideDialog(this.dialog.addMember);
         })
         .catch((error) => {
-          console.log(error)
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          } 
           if (error.response.status == 302) {
             this.$toast.add({severity:"error", summary: this.$t('dissertation.title'), detail:this.$t('dissertation.message.hasSameMember'), life: 3000});
           }

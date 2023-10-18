@@ -47,11 +47,10 @@
 </template>
 
 <script>
-    import axios from "axios";
     import {findRole, getHeader, smartEnuApi} from "@/config/config";
     import AddGuide from "./AddGuide";
     import EditGuide from "./EditGuide";
-
+    import { ManualService } from "../../service/manual.service";
     export default {
         name: "MenuGuide",
         components: {AddGuide, EditGuide},
@@ -72,16 +71,15 @@
                 guides: [],
                 parent: null,
                 routePath: this.$route.params.id,
-                parentGuideId: null
+                parentGuideId: null,
+                manualService: new ManualService()
             }
         },
         methods: {
             getGuides(parentId, parent) {
                 this.lazyParams.parentId = parentId
                 this.loading = true
-                axios.post(smartEnuApi + "/manual/getManuals", this.lazyParams, {
-                    headers: getHeader(),
-                }).then((response) => {
+                this.manualService.getManuals(this.lazyParams).then((response) => {
                     if (parentId !== null) {
                         parent.children = response.data.manuals;
                         parent.children.map(e => {
@@ -111,15 +109,12 @@
 
                     this.loading = false;
                 }).catch((error) => {
-                    if (error.response.status === 401) {
-                        this.$store.dispatch("logLout");
-                    } else {
-                        this.$toast.add({
-                            severity: "error",
-                            summary: this.$t("smartenu.loadAllNewsError") + ":\n" + error,
-                            life: 3000,
-                        });
-                    }
+                    this.loading = false;
+                    this.$toast.add({
+                        severity: "error",
+                        summary: this.$t("smartenu.loadAllNewsError") + ":\n" + error,
+                        life: 3000,
+                    });
                 });
             },
             toggle(ref, event) {
@@ -149,25 +144,23 @@
                 });
             },
             delete(event) {
-                axios.post(smartEnuApi + `/manual/delManual`, {manualId: event.manualId}, {headers: getHeader()})
-                    .then(response => {
-                        this.$toast.add({
-                            severity: "success",
-                            summary: this.$t('common.success'),
-                            life: 3000,
-                        });
-                        this.getGuides(null, null);
-                        this.$router.push({path: '/guide'});
-                    }).catch(error => {
-                    if (error.response && error.response.status === 401) {
-                        this.$store.dispatch("logLout");
-                    } else {
-                        this.$toast.add({
-                            severity: "error",
-                            summary: error,
-                            life: 3000,
-                        });
-                    }
+                const req = {
+                    manualId: event.manualId 
+                }
+               this.manualService.delManual(req).then(response => {
+                    this.$toast.add({
+                        severity: "success",
+                        summary: this.$t('common.success'),
+                        life: 3000,
+                    });
+                    this.getGuides(null, null);
+                    this.$router.push({path: '/guide'});
+                }).catch(error => {
+                    this.$toast.add({
+                        severity: "error",
+                        summary: error,
+                        life: 3000,
+                    });
                 });
             },
             navigateToEvent(event) {

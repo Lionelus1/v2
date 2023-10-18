@@ -280,7 +280,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import PostFile from "../PostFile.vue"
 import DocInfo from "../DocInfo.vue"
 import {smartEnuApi, getHeader, findRole} from "@/config/config";
@@ -288,6 +287,8 @@ import DocSignaturesInfo from "@/components/DocSignaturesInfo";
 import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers";
 import Enum from "@/enum/docstates/index"
 import {FilterMatchMode} from "primevue/api";
+import { DocService } from "../../../service/doc.service";
+import {FileService} from "@/service/file.service"
 
 export default {
   components: {ApprovalUsers, DocInfo, DocSignaturesInfo, PostFile},
@@ -472,6 +473,8 @@ export default {
       ],
       approveComponentKey: 0,
       isGlobalFilter: false,
+      docService: new DocService(),
+      fileService: new FileService()
     }
   },
   created() {
@@ -507,10 +510,11 @@ export default {
     },
     approve(event) {
       this.approving = true;
-      axios.post(smartEnuApi + "/doc/sendtoapprovebystage", {
+      const req = {
         id: this.file.id,
         appUsers: event
-      }, {headers: getHeader()}).then(res => {
+      }
+      this.docService.sendtoapprovebystage(req).then(res => {
         this.$toast.add({
           severity: "success",
           summary: this.$t('common.message.succesSendToApproval'),
@@ -527,15 +531,11 @@ export default {
 
       }).catch(error => {
         this.approving = false;
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
           this.$toast.add({
             severity: "error",
             summary: error,
             life: 3000,
           });
-        }
       });
     },
     onResize() {
@@ -569,7 +569,6 @@ export default {
     },
     getFolders(parent) {
       this.loading = true;
-      let url = "/doc/getFoldersByType";
       if (parent != null) {
         this.lazyParams.depType = parent.depType
       } else if (this.isGlobalFilter) {
@@ -579,8 +578,7 @@ export default {
         this.lazyParams.parentID = null
         this.lazyParams.depType = 0
       }
-      axios.post(smartEnuApi + url, this.lazyParams, {headers: getHeader()})
-          .then(response => {
+      this.docService.getFoldersByType(this.lazyParams).then(response => {
             if (this.isGlobalFilter) {
               this.catalog = response.data;
             } else if (parent == null) {
@@ -607,11 +605,8 @@ export default {
             this.loading = false
           })
           .catch(error => {
+            this.loading = false
             console.log(error)
-            if (error.response.status == 401) {
-              this.$store.dispatch("logLout");
-            } else
-              console.error(error)
           })
     },
     resetFileInfo() {
@@ -714,18 +709,20 @@ export default {
         rejectClass: 'p-button p-button-danger',
         accept: () => {
           let url = "/doc/removeFile";
-          axios.post(smartEnuApi + url, {id: this.file.id, hide: hide}, {headers: getHeader()})
-              .then(_ => {
-                    this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
-                    this.getFolders(this.parentNode)
-                    this.file.hidden = hide
-                    if (!hide) {
-                      this.deleteChild(this.catalog[0])
-                    }
-                  },
-                  error => {
-                    console.log(error);
-                  });
+          const req = {
+            id: this.file.id, hide: hide
+          }
+          this.docService.docRemoveFile(req).then(_ => {
+              this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
+              this.getFolders(this.parentNode)
+              this.file.hidden = hide
+              if (!hide) {
+                this.deleteChild(this.catalog[0])
+              }
+            },
+            error => {
+              console.log(error);
+            });
         },
       });
     },
@@ -744,45 +741,39 @@ export default {
 
     showFile() {
       let url = "/doc/showFile";
-      axios.post(smartEnuApi + url, {id: this.file.id}, {headers: getHeader()})
-          .then(_ => {
+      const req = {
+        id: this.file.id
+      }
+      this.docService.showFile(req).then(_ => {
             this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
             this.file.hidden = false
             this.selected.hidden = false
 
           })
           .catch(error => {
-            console.log(error)
-            if (error.response.status == 401) {
-              this.$store.dispatch("logLout");
-            } else
               console.error(error)
           })
     },
     downloadFile(path = null) {
       if (this.file || path) {
-        axios.post(
-            smartEnuApi + "/downloadFile", {
-              filePath: path != null ? path : this.file.path
-            }, {
-              headers: getHeader()
-            }
-        )
-            .then(response => {
-              const link = document.createElement("a");
-              link.href = "data:application/octet-stream;base64," + response.data;
-              link.setAttribute("download", path);
-              link.download = path;
-              link.click();
-              URL.revokeObjectURL(link.href);
-            })
-            .catch((error) => {
-              this.$toast.add({
-                severity: "error",
-                summary: "downloadFileError:\n" + error,
-                life: 3000,
-              });
-            });
+        const req = {
+          filePath: path != null ? path : this.file.path
+        }
+        this.fileService.downloadFile(req).then(response => {
+          const link = document.createElement("a");
+          link.href = "data:application/octet-stream;base64," + response.data;
+          link.setAttribute("download", path);
+          link.download = path;
+          link.click();
+          URL.revokeObjectURL(link.href);
+        })
+        .catch((error) => {
+          this.$toast.add({
+            severity: "error",
+            summary: "downloadFileError:\n" + error,
+            life: 3000,
+          });
+        });
       }
     },
     toRevision() {
@@ -792,7 +783,7 @@ export default {
         comment: this.revisionComment,
       }
       this.approving = true
-      axios.post(smartEnuApi + url, req, {headers: getHeader()}).then(() => {
+      this.docService.docSendTorevision(req).then(() => {
         this.file.stateID = this.Enum.REVISION.ID;
         this.file.statekz = "түзетуге";
         this.file.stateru = "на доработку";
@@ -803,9 +794,6 @@ export default {
       })
           .catch(error => {
             this.approving = false
-            if (error.response && error.response.status == 401) {
-              this.$store.dispatch("logLout");
-            } else
               console.log(error);
           })
 

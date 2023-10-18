@@ -24,9 +24,8 @@
 </template>
 
 <script>
-import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
-
+import {CandidateService} from "@/service/candidate.service"
 export default {
   name: "AcademicDetailEdit",
   data() {
@@ -43,6 +42,7 @@ export default {
         },
       ],
       validation: false,
+      candidateService: new CandidateService()
     }
   },
   props: {
@@ -59,9 +59,7 @@ export default {
 
       if (this.validateForm()) {
         let path = !this.value.id? "/candidate/academic-detail/create" : "/candidate/academic-detail/update"
-        axios
-            .post(smartEnuApi + path, this.value, {headers: getHeader(),})
-            .then(res => {
+        this.candidateService.academicDetailCreateOrUpdate(path, this.value).then(res => {
               this.emitter.emit("academicDetail", true);
             }).catch(error => {
           this.$toast.add({

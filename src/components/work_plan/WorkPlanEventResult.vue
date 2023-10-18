@@ -249,7 +249,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
 import {getMultipartHeader} from "../../config/config";
 import RichEditor from "../documents/editor/RichEditor";

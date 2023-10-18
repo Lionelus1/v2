@@ -60,10 +60,10 @@
 </template>
 
 <script>
-import axios from 'axios';
 import {smartEnuApi, getHeader} from "@/config/config";
 
 import ApprovalListControl from '../../roleControl/ApprovalListControl.vue';
+import {ApprovalListService} from "@/service/approvalList.service"
 
 export default {
   name: "ApproveComponent",
@@ -104,6 +104,7 @@ export default {
       approvalList: [],
       approvalListItem: null,
       approvalListControl: false,
+      approvalListService: new ApprovalListService()
     }
   },
   setup(props, context) {
@@ -238,9 +239,7 @@ export default {
       this.getApprovalList()
     },
     getApprovalList() {
-      axios.get(smartEnuApi + "/approvalList/get", {
-        headers: getHeader(),
-      }).then(response => {
+      this.approvalListService.approvalListGet().then(response => {
         this.approvalList = response.data
       }).catch(error => {
         if (error.response && error.response.status === 401) {

@@ -99,13 +99,12 @@
 
 <script>
     import {mapState} from "vuex";
-    import axios from "axios";
     import {getHeader, smartEnuApi} from "@/config/config";
     import moment from "moment";
     import NewsView from "./news/NewsView.vue";
     import {fileRoute} from "../config/config";
     import EventsView from "./events/EventsView";
-
+    import {NewsService} from "@/service/news.service"
     export default {
         name: "Welcome",
         components: {EventsView, NewsView},
@@ -128,6 +127,7 @@
                 },
                 allNews: [],
                 allEvents: [],
+                newsService: new NewsService()
             };
         },
         mounted() {
@@ -140,56 +140,45 @@
         },
         methods: {
             getAllNews() {
-                this.loading = true
-                this.lazyParams.countMode = null;
-                axios
-                    .post(smartEnuApi + "/getNews", this.lazyParams, {
-                        headers: getHeader(),
-                    })
-                    .then((response) => {
-                        this.allNews = response.data.news;
-                        this.allNews.map(e => {
-                          let fileUrl = e.main_image_file ? e.main_image_file.filepath : e.image1
-                            e.imageUrl = smartEnuApi + fileRoute + fileUrl
-                        });
-                        this.total = response.data.total;
-                        this.loading = false;
-                    })
-                    .catch((error) => {
-                        if (error.response.status === 401) {
-                            this.$store.dispatch("logLout");
-                        } else {
-                            this.$toast.add({
-                                severity: "error",
-                                summary: this.$t("smartenu.loadAllNewsError") + ":\n" + error,
-                                life: 3000,
-                            });
-                        }
+            this.loading = true
+            this.lazyParams.countMode = null;
+            this.newsService.getAllNews(this.lazyParams).then((response) => {
+                    this.allNews = response.data.news;
+                    this.allNews.map(e => {
+                        let fileUrl = e.main_image_file ? e.main_image_file.filepath : e.image1
+                        e.imageUrl = smartEnuApi + fileRoute + fileUrl
                     });
+                    this.total = response.data.total;
+                    this.loading = false;
+                })
+                .catch((error) => {
+                    console.log(error, 'test')
+                    this.$toast.add({
+                        severity: "error",
+                        summary: this.$t("smartenu.loadAllNewsError") + ":\n" + error,
+                        life: 3000,
+                    });
+                    this.loading = false;
+                });
             },
             getAllEvents() {
                 this.allEvents = [];
-                axios
-                    .get(smartEnuApi + "/getPublishEvents")
-                    .then((response) => {
-                        this.allEvents = response.data;
-                        this.allEvents.map(e => {
-                            e.imageUrl = smartEnuApi + fileRoute + e.main_image_path
-                        });
-                        //console.log("ddd", this.allEvents)
-                        this.loading = false;
-                    })
-                    .catch((error) => {
-                        if (error.response.status === 401) {
-                            this.$store.dispatch("logLout");
-                        } else {
-                            this.$toast.add({
-                                severity: "error",
-                                summary: this.$t("smartenu.loadAllEventsError") + ":\n" + error,
-                                life: 3000,
-                            });
-                        }
+                this.newsService.getPublishEvents().then((response) => {
+                    this.allEvents = response.data;
+                    this.allEvents.map(e => {
+                        e.imageUrl = smartEnuApi + fileRoute + e.main_image_path
                     });
+                    //console.log("ddd", this.allEvents)
+                    this.loading = false;
+                })
+                .catch((error) => {
+                    this.$toast.add({
+                        severity: "error",
+                        summary: this.$t("smartenu.loadAllEventsError") + ":\n" + error,
+                        life: 3000,
+                    });
+                    this.loading = false;
+                });
             },
             formatDateMoment(date) {
                 return moment(new Date(date)).utc().format("DD.MM.YYYY HH:mm")

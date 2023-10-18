@@ -156,4 +156,7 @@ export class WorkPlanService {
         return api.post('/workPlan/reapprove', data, {headers: getHeader()});
     }
 
+    getEvents(data) {
+        return api.post('/workPlan/getEvents', data, {headers: getHeader()});
+    }
 }

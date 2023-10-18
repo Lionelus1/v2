@@ -461,11 +461,12 @@
 <script>
 //import WorkPlanQrPdf from "@/components/work_plan/WorkPlanQrPdf";
 import {FilterMatchMode, FilterOperator} from "primevue/api";
-import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo"
 import html2pdf from "html2pdf.js";
 import CandidateDocument from "./CandidateDocument";
+import { VacancyService } from "../../../service/vacancy.service";
+import {CandidateService} from "@/service/candidate.service"
 
 export default {
   name: "CandidateVacancy",
@@ -518,6 +519,8 @@ export default {
         psychoCert: false,
         gcCert: false,
       },
+      vacancyService: new VacancyService(),
+      candidateService: new CandidateService()
     }
   },
   methods: {
@@ -531,21 +534,16 @@ export default {
     getVacancies() {
       this.loading = true
       this.lazyParams.countMode = null;
-      axios.post(smartEnuApi + "/vacancy/user",
-          this.lazyParams, {headers: getHeader()}).then((response) => {
+      this.vacancyService.vacancyUser(this.lazyParams).then((response) => {
         this.vacancies = response.data.vacancies;
         this.count = response.data.total;
         this.loading = false;
       }).catch((error) => {
-        if (error.response.status == 401) {
-          this.$store.dispatch("logLout");
-        } else {
           this.$toast.add({
             severity: "error",
             summary: error,
             life: 3000,
           });
-        }
       });
     },
 
@@ -553,13 +551,11 @@ export default {
      ******************** GET PETITION
      */
     getPetition(data) {
-      axios.post(smartEnuApi + "/vacancy/petition",
-          {
-            candidateId: data.candidateRelation[0].candidate.id,
-            vacancyId: data.id
-          },
-          {headers: getHeader()}
-      ).then(response => {
+      const req = {
+        candidateId: data.candidateRelation[0].candidate.id,
+        vacancyId: data.id
+      }
+      this.vacancyService.petition(req).then(response => {
         this.documentUuid = response.data
         this.visible.petition = true
       }).catch(error => {
@@ -694,7 +690,8 @@ export default {
         fd.append('psychoCert', this.documents.psychoCert)
         fd.append('gcCert', this.documents.gcCert)
         fd.append('mId', this.documents.mId)
-        axios.post(smartEnuApi + '/candidate/documents/create', fd, {headers: getHeader()}).then(_ => {
+        this.candidateService.documentsCreate(fd)
+        this.candidateService.documentsCreate(fd).then(_ => {
           this.visible.documents = false
           this.vacancy = null
         }).catch(error => {

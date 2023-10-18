@@ -7,9 +7,8 @@
 </template>
 
 <script>
-import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
-
+import {CandidateService} from "@/service/candidate.service"
 export default {
   name: "InfoView",
   props: {
@@ -19,14 +18,13 @@ export default {
   data() {
     return {
       value: this.modelValue,
+      candidateService: new CandidateService()
     }
   },
   methods: {
     deleteValue() {
       this.value.info = null
-      axios
-          .post(smartEnuApi + "/candidate/info/update", this.value, {headers: getHeader(),})
-          .then(res => {
+      this.candidateService.infoUpdate(this.value).then(res => {
             this.emitter.emit("info", true);
           }).catch(error => {
         this.$toast.add({

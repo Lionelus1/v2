@@ -99,7 +99,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import {getHeader, getMultipartHeader, smartEnuApi} from "@/config/config";
 import RichEditor from "../documents/editor/RichEditor";
 import {WorkPlanService} from '../../service/work.plan.service'

@@ -53,7 +53,7 @@
 <script>
 import {getHeader, smartEnuApi, templateApi} from "@/config/config";
 import axios from 'axios';
-
+import { UserService } from "../service/user.service";
 export default {
   name: 
     'FindUser',
@@ -134,6 +134,7 @@ export default {
         bank: {}
         
       },
+      uerService: new UserService(),
       cancelToken : null,
       requests: [],
       request: null,
@@ -176,17 +177,11 @@ export default {
       this.$refs.op.hide();
       this.$refs.op.toggle(event);
       this.searchInProgres = true;
-      axios.post(
-        smartEnuApi + `/getUser`, {
+      const req = {
         "dn": inputValue,
         "userType": this.userType,
-        // "roles": this.roles
-        },
-        {
-          headers: getHeader(), cancelToken: this.cancelToken.token 
-        },
-      )
-      .then(
+      }
+      this.userService.getUser(req, this.cancelToken.token).then(
         response => {
             this.foundEntities = response.data;
             this.searchInProgres = false;

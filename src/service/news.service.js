@@ -42,4 +42,20 @@ export class NewsService {
     getNewsFiles(params) {
         return api.post(`/web/getNewsFiles`, params, {headers: getHeader()});
     }
+
+    delNewsCat(data) {
+        return api.post(`/delNewsCat`, data, {headers: getHeader()});
+    }
+
+    categories(data) {
+        return api.post(`/delNewsCat`, data, {headers: getHeader()});
+    }
+
+    getAllNews(data) {
+        return api.post(`/getNews`, data, {headers: getHeader()});
+    }
+
+    getPublishEvents() {
+        return api.get(`/getPublishEvents`, {headers: getHeader()});
+    }
 }

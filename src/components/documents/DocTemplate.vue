@@ -253,13 +253,18 @@
 <script>
   import {smartEnuApi, findRole, getHeader} from "@/config/config";
   import {runNCaLayer} from "@/helpers/SignDocFunctions"
-  import axios from 'axios';
   import RichEditor from "./editor/RichEditor.vue";
   import DocState from "@/enum/docstates/index";
   import RolesEnum from "@/enum/roleControls/index";
   import DocSignaturesInfo from "@/components/DocSignaturesInfo"
   import Enum from "@/enum/docstates/index"
   import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers";
+import {FileService} from "@/service/file.service"
+import {DocTemplateService} from "@/service/doctemplate.service"
+import {DocService} from "@/service/doc.service"
+import {ApprovalListService} from "@/service/approvalList.service"
+
+
 
   export default {
     emits: ['onselect', 'languageChanged'],
@@ -323,6 +328,10 @@
         approving: false,
         initialApprovalStages: null,
         currentApprovalStages: null,
+        fileService: new FileService(),
+        docTemplateService: new DocTemplateService(),
+        docService: new DocService(),
+        approvalListService: new ApprovalListService()
       }
     },
      props: {
@@ -394,9 +403,8 @@
           header: this.$t('common.approve'),
           icon: 'pi pi-exclamation-triangle',
           accept: () => {
-                axios.post(smartEnuApi + "/downloadFile",
-                { filePath: this.selectedNode.data.filePath},  
-                { headers: getHeader() }).then(
+            const req = { filePath: this.selectedNode.data.filePath}
+            this.fileService.downloadFile(req).then(
                   response => {
                     runNCaLayer(this.$t, this.$toast, response.data, 'cms', 'ul', false, this.$i18n.locale).then(sign=>{
                       this.signing = true
@@ -406,7 +414,7 @@
                           docUUID: this.selectedNode.data.docID,
                           sign: sign
                         };
-                        axios.post(smartEnuApi+"/doc/sign", req, { headers: getHeader() }).then(response=>{
+                        this.docService.docSign(req).then(response=>{
                         this.selectedNode.data.stateID = this.DocState.APPROVED.ID;
                         this.selectedNode.data.state =  this.$t('common.states.approved');
                         this.selectedNode.data.stateEn =  this.DocState.APPROVED.Value;
@@ -421,9 +429,6 @@
                               life: 3000,
                             });
                           }
-                          if (error.response.status == 401) {
-                            this.$store.dispatch("logLout");
-                          } else 
                           this.signing = false;
                       })
                       
@@ -431,9 +436,6 @@
                     });
                   }
                 ).catch(error => {
-                    if (error.response.status == 401) {
-                      this.$store.dispatch("logLout");
-                    }
                     console.log(error);
                 })
                 
@@ -449,16 +451,13 @@
           state: this.DocState.REVISION.ID,
           comment: this.revisionComment,
         }
-        axios.post(smartEnuApi+url, req, { headers: getHeader() }).then(()=>{
+        this.docTemplateService.updatedoсtemplatestate(req).then(()=>{
           this.selectedNode.data.stateID = this.DocState.REVISION.ID;
           this.selectedNode.data.state =  this.$t('common.states.revision');
           this.selectedNode.data.stateEn =  "revision";
           this.dialogOpenState.revision = false;
         })
         .catch(error => {
-          if (error.response && error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          } else 
           console.log(error);
         })
 
@@ -495,8 +494,7 @@
           return;
         }
         this.signing = true
-
-        axios.post(smartEnuApi+url, req, { headers: getHeader() }).then(response=>{
+        this.docTemplateService.toapproval(req).then(response=>{
           this.selectedNode.data.docID = response.data.docUUID
           this.selectedNode.data.filePath = response.data.filePath
           this.selectedNode.data.stateID = this.DocState.INAPPROVAL;
@@ -509,12 +507,8 @@
 
         })
         .catch(error => {
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          } else 
           console.log(error);
           this.signing = false
-
         })
       },
 
@@ -525,8 +519,7 @@
           this.showMessage('error', this.$t('doctemplate.download'), this.$t('doctemplate.message.downloadError'));
           this.signing = false
           return
-        }
-        let url = "/doctemplate/getpdf";
+          }
         var req = {"id" : this.selectedNode.id};
         req.lang = "kaz";
         if (this.templateLanguage != "ru") {
@@ -535,8 +528,7 @@
         if (this.templateLanguage != "kz") {
           req.lang = "rus"
         } 
-        axios.post(smartEnuApi+url, req, { headers: getHeader() })
-        .then(response=>{
+        this.docTemplateService.getpdf(req).then(response=>{
           let pdf = response.data;
           var link = document.createElement('a');
           link.innerHTML = 'Download PDF file';
@@ -575,15 +567,11 @@
           req.textRus = "";
         }
         this.signing = true
-        axios.post(smartEnuApi+url, req, { headers: getHeader() })
-        .then(()=>{
+        this.docTemplateService.update(req).then(()=>{
           this.showMessage('success', this.$t('doctemplate.updateTemplate'), this.$t('doctemplate.message.succesUpdated'));
           this.signing = false
         })
         .catch(error => {
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          } else 
           console.log(error);
           this.signing = false
         })
@@ -632,8 +620,7 @@
         this.createdTemplate.folderID = this.selectedNode.key;
         this.createdTemplate.approvalStages = [...this.initialApprovalStages]
         let url = "/doctemplate/create";
-        axios.post(smartEnuApi+url, this.createdTemplate, { headers: getHeader() })
-        .then(response=>{
+        this.docTemplateService.create(this.createdTemplate).then(response=>{
           this.templates.forEach(folder=>{
             if (folder.key == response.data.folderID) {
               var newNode = this.addTemplateNode(folder.children, response.data, folder.key);
@@ -646,9 +633,6 @@
           })
         })
         .catch(error => {
-          if (error.response && error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          } else 
             console.error(error)
         })
       },
@@ -674,9 +658,7 @@
           return
         }
         let url = "/doctemplate/createFolder";
-        axios.post(smartEnuApi+url, this.createdFolder, { headers: getHeader() })
-        .then(response=>{
-
+        this.docTemplateService.createFolder(this.createdFolder).then(response=>{
           let node = new Object();
             node.key= response.data.id;
             let nodeData = new Object();
@@ -714,9 +696,6 @@
                 life: 3000,
               });
           }
-          else if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          } else 
             console.error(error)
         })
       },
@@ -771,8 +750,8 @@
         }
         this.loading = true;
         url+= stateFilter
-        axios (smartEnuApi+url, { headers: getHeader() })
-        .then(res=>{
+        console.log(url)
+        this.docTemplateService.initApiCall(url).then(res=>{
           let treeData = [];
           res.data.forEach(el => {
             let node = new Object();
@@ -800,20 +779,16 @@
           this.loading = false;
         }).catch(error => {
           this.loading = false;
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          } else 
-            console.error(error)
+            console.error('error')
         })
 
         this.initTemplateApprovalInfo();
       },
       initTemplateApprovalInfo(openForm, node) {
-        axios.post(smartEnuApi + "/approvalList/getDefault", {
-          type: Enum.DefaultApprovalListType.DocTemplate,
-        }, {
-          headers: getHeader(),
-        }).then(response => {
+        const req = {
+          type: Enum.DefaultApprovalListType.DocTemplate
+        }
+        this.approvalListService.getDefault(req).then(response => {
           this.initialApprovalStages = []
           response.data.forEach((res) => {
             this.initialApprovalStages.push(res)
@@ -823,50 +798,40 @@
             this.openForm('addTemplate', node);
           }
         }).catch(error => {
-          if (error.response && error.response.status === 401) {
-            this.$store.dispatch("logLout");
-          } else {
             this.$toast.add({
               severity: "error",
               summary: error,
               life: 3000,
             });
-          }
         })
       },
       initApprovalInfo(openForm) {
-        axios.post(smartEnuApi + "/doctemplate/getApprovalStages", {
+        const req = {
           docTemplateId: this.selectedNode.id,
-        }, {
-          headers: getHeader(),
-        }).then(response => {
+        }
+        this.docTemplateService.getApprovalStages(req).then(response => {
           this.currentApprovalStages = response.data
 
           if (openForm) {
             this.openForm('approvalUsers')
           }
         }).catch(error => {
-          if (error.response && error.response.status === 401) {
-            this.$store.dispatch("logLout");
-          } else {
             this.$toast.add({
               severity: "error",
               summary: error,
               life: 3000,
             });
-          }
         })
       },
       updateModel(event) {
         this.initialApprovalStages = event
       },
       saveApprovalUser(event) {
-        axios.post(smartEnuApi + "/doctemplate/updateApprovalStages", {
+        const req = {
           docTemplateId: this.selectedNode.id,
           approvalStages: event,
-        }, {
-          headers: getHeader(),
-        }).then(response => {
+        }
+        this.docTemplateService.updateApprovalStages(req).then(response => {
           this.$toast.add({
             severity: "success",
             summary: this.$t("common.save"),
@@ -876,15 +841,11 @@
 
           this.closeForm('approvalUsers');
         }).catch(error => {
-          if (error.response && error.response.status === 401) {
-            this.$store.dispatch("logLout");
-          } else {
             this.$toast.add({
               severity: "error",
               summary: error,
               life: 3000,
             });
-          }
         })
       }
     },

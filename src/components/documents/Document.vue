@@ -6,7 +6,7 @@
   </div>
 </template>
 <script>
-import axios from 'axios';
+import { DocService } from "@/service/doc.service";
 
 import { getHeader, smartEnuApi, b64toBlob } from "@/config/config";
 
@@ -17,6 +17,7 @@ export default {
       loading: false,
 
       pdf: null,
+      docService: new DocService()
     }
   },
   mounted() {
@@ -33,19 +34,15 @@ export default {
     },
     getPdf() {
       this.loading = true
-
-      axios.post(smartEnuApi + '/document/download', {
+      const req = {
         uuid: this.$route.params.uuid,
-      }, {
-        headers: getHeader() 
-      }).then(res => {
+      }
+      this.docService.documentDownload(req).then(res => {
         this.pdf = b64toBlob(res.data);
 
         this.loading = false
       }).catch(err => {
-        if (err.response && err.response.status == 401) {
-          this.$store.dispatch("logLout")
-        } else if (err.response && err.response.data && err.response.data.localized) {
+        if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
           console.log(err)

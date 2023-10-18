@@ -227,9 +227,9 @@
 </template>
 
 <script>
-import axios from "axios";
 import {authHeader, getHeader, smartEnuApi} from "@/config/config";
 import {FilterMatchMode, FilterOperator} from "primevue/api";
+import {NewsService} from "@/service/news.service"
 
 export default {
   name: "CategoriesTable",
@@ -277,13 +277,14 @@ export default {
         isStudent: false,
       },
       bgColor: '0062ff',
-      textColor: 'ffffff'
+      textColor: 'ffffff',
+      newsService: new NewsService()
     };
   },
   methods: {
     getCategories() {
       this.categories = [];
-      axios.get(smartEnuApi + "/allCategories", {headers: getHeader()}).then((response) => {
+      this.newsService.getCategories().then((response) => {
         this.categories = response.data;
         this.categories = this.categories.reverse();
         this.loading = false;
@@ -293,13 +294,13 @@ export default {
           summary: this.$t("smartenu.loadAllCategoriesError") + ":\n" + error,
           life: 3000,
         });
-        if (error.response.status == 401) {
-          this.$store.dispatch("logLout");
-        }
       });
     },
     deleteNewsCategory(id) {
-      axios.post(smartEnuApi + "/delNewsCat", {id: id}, {headers: getHeader()}).then((response) => {
+      const req = {
+        id: id
+      }
+      this.newsService.delNewsCat(req).then((response) => {
         if (response.status === 200) {
           this.getCategories();
         }
@@ -319,8 +320,7 @@ export default {
         this.category.bgColor = this.bgColor;
       if (!this.category.textColor)
         this.category.textColor = this.textColor;
-      axios.post(smartEnuApi + "/categories", this.category, {headers: getHeader()})
-          .then((response) => {
+      this.newsService.categories(this.category).then((response) => {
             if (response.data !== null) {
               this.$toast.add({
                 severity: "success",
@@ -390,11 +390,7 @@ export default {
     },
     getRoles() {
       this.userRoles = [];
-      axios
-          .get(smartEnuApi + "/getroles", {
-            headers: getHeader(),
-          })
-          .then((response) => {
+      this.newsService.getRoles().then((response) => {
             this.userRoles = response.data;
             this.roles.isAdmin = this.findRole(this.userRoles, "news_administrator");
             this.roles.isPublisher = this.findRole(this.userRoles, "news_publisher");
