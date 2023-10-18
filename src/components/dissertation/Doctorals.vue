@@ -935,7 +935,8 @@ export default {
         (this.findRole(null, 'dissertation_council_permanent_member')
           || this.findRole(null, 'dissertation_council_temporary_member')
           || this.findRole(null, 'dissertation_council_reviewer')
-          || this.findRole(null, 'dissertation_council_chief'))
+          || this.findRole(null, 'dissertation_council_chief')
+          || this.findRole(null, 'dissertation_council_chief_deputy'))
 
       )
     },
