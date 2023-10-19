@@ -271,6 +271,7 @@
   import {DocTemplateService} from "@/service/doctemplate.service"
   import {DocService} from "@/service/doc.service"
   import {ApprovalListService} from "@/service/approvalList.service"
+  import TinyEditor from "@/components/TinyEditor"
 
 
 
@@ -759,7 +760,6 @@
         }
         this.loading = true;
         url+= stateFilter
-        console.log(url)
         this.docTemplateService.initApiCall(url).then(res=>{
           let treeData = [];
           res.data.forEach(el => {
