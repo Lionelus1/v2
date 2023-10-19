@@ -330,19 +330,11 @@ export default {
           })
           .catch(error => {  
             if (error.response.status === 401) {
-              if ((error.response.data.includes('no_password')) || (error.response.data.includes('password_not_set')) ||  (error.response.data.includes('incorect_password'))){
                 this.$toast.add({
-                  severity: "error",
-                  summary: this.$t('common.incorect_password'),
-                  life: 3000,
-                });
-              } else {
-                this.$toast.add({
-                  severity: this.$t('common.unauth'),
-                  summary: error,
+                  severity: 'error',
+                  summary: this.$t('common.unauth'),
                   life: 3000,
                 }); 
-              }
               return
             }
             this.$toast.add({
