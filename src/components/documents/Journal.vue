@@ -1,8 +1,8 @@
 <template>
   <div>
     <div class="content-section">
-      <div class="feature-intro ml-3">
-        <h4>{{ $t("contracts.journal") }}</h4>
+      <div class="feature-intro">
+        <h3>{{ $t("contracts.journal") }}</h3>
       </div>
       <div class="content-section implementation">
         <div class="card">

@@ -239,13 +239,13 @@ export class TinymceCustomUploadPlugin {
         editor.selection.select(anchorElm);
     }
 
-    has(obj, key){
+    has(obj, key) {
         return Object.hasOwnProperty.call(obj, key);
     }
 
     toggleActiveState(editor) {
         const self = this;
-        return function(api) {
+        return function (api) {
             function updateState() {
                 api.setActive(!editor.mode.isReadOnly() && self.isInAnchor(editor, editor.selection.getNode()));
             }
@@ -256,12 +256,50 @@ export class TinymceCustomUploadPlugin {
 
     toggleState(editor, toggler) {
         editor.on('NodeChange', toggler);
-        return function() {
+        return function () {
             editor.off('NodeChange', toggler);
         };
     }
 
     isInAnchor(editor, selectedElm) {
         return this.getAnchorElement(editor, selectedElm);
+    }
+
+    contractElementsDialog(editor, self) {
+        editor.windowManager.open({
+            title: self.$t('doctemplate.editor.addElement'),
+            body: {
+                type: 'panel',
+                items: [
+                    {
+                        type: 'input',
+                        name: 'link_input', // identifier
+                        inputMode: 'text',
+                        label: self.$t('common.description'),
+                        enabled: false
+                    },
+                ]
+            },
+            buttons: [
+                {
+                    text: self.$t('common.no'),
+                    type: 'cancel',
+                    onclick: 'close'
+                },
+                {
+                    text: self.$t('common.yes'),
+                    type: 'submit',
+                    primary: true,
+                    enabled: false
+                }
+            ],
+            onSubmit: function (api) {
+                if(api.getData().link_input === '') return
+                const enteredText = `<span style="color: blue; font-weight: bold; font-style: italic;">${`{text:` + api.getData().link_input + `}&nbsp;`}</span>`;
+                editor.selection.setContent(enteredText);
+                editor.execCommand('removeformat', false, null);
+                api.close();
+            }
+        })
     }
 }

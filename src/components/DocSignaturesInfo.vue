@@ -186,11 +186,10 @@ export default {
     }
     const tokenData = JSON.parse(window.localStorage.getItem("authUser"));
     if (tokenData !== null) {
-      let signUri = smartEnuApi + '/mobileSignParams?docUuid=' + this.doc_id +
-          "&token=" + tokenData.access_token
+      let signUri = smartEnuApi + '/mobileSignParams/' + this.doc_id + "/" + tokenData.access_token
       this.mgovSignUri = 'mobileSign:' + signUri
-      this.mgovMobileRedirectUri = "https://mgovsign.page.link/?link=" + signUri + "&apn=kz.mobile.mgov&isi=1476128386&ibi=kz.egov.mobile"
-      this.mgobBusinessRedirectUri = "https://egovbusiness.page.link/?link=" + signUri + "&apn=kz.mobile.mgov.business&isi=1597880144&ibi=kz.mobile.mgov.business"
+      this.mgovMobileRedirectUri = "https://mgovsign.page.link/?link=" + signUri + "?mgovSign&apn=kz.mobile.mgov&isi=1476128386&ibi=kz.egov.mobile"
+      this.mgobBusinessRedirectUri = "https://egovbusiness.page.link/?link=" + signUri + "?mgovSign&apn=kz.mobile.mgov.business&isi=1597880144&ibi=kz.mobile.mgov.business"
 
     }
     this.isTspRequired = this.tspParam

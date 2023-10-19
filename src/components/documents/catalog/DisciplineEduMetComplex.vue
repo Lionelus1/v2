@@ -1,9 +1,9 @@
 <template>
   <ProgressBar v-if="loading" mode="indeterminate" class="progress-bar"/>
+    <h3 v-if="screen.isLarge">{{ $t("educomplex.title") }}</h3>
+    <h3 v-else>{{ $t("educomplex.title") }}</h3>
   <BlockUI :blocked="loading" class="block-ui">
-    <h4 v-if="screen.isLarge" class="m-3">{{ $t("educomplex.title") }}</h4>
-    <h5 v-else class="m-3">{{ $t("educomplex.title") }}</h5>
-    <div ref="outerDiv" class="flex flex-grow-1" :class="{ 'flex-column': !screen.isLarge }">
+    <div ref="outerDiv" class="card flex flex-grow-1" :class="{ 'flex-column': !screen.isLarge }">
       <div :class="'flex flex-column' + getDepFlexGrow()">
         <Toolbar class="p-1">
           <template #start>
@@ -11,7 +11,7 @@
               <Button icon="fa-solid fa-home" class="menubar-icons"
                 v-tooltip="$t('educomplex.tooltip.home')"
                 @click="home" :disabled="!faculty"></Button>
-              <Button icon="fa-solid fa-turn-down" class="menubar-icons"
+              <Button icon="fa-regular fa-folder" class="menubar-icons"
                 v-tooltip="$t('educomplex.tooltip.into')"
                 @click="into" :disabled="faculty || !currentDepartment"></Button>
             </div>
@@ -45,9 +45,23 @@
           :currentPageReportTemplate="currentPageReportTemplate" :lazy="true" :loading="departmentTableLoading" scrollable scrollHeight="flex"
           v-model:selection="currentDepartment" selectionMode="single" :rowHover="true" stripedRows class="flex-grow-1"
           @page="onPageDepartment" @row-dblclick="doubleClickDepartment" @update:selection="onSelectionDepartment">
-          <Column :header="faculty ? $t('educomplex.columns.cafedras', {'faculty': getDepartmentName(faculty)}) : $t('educomplex.columns.faculties')">
+          <Column :header="faculty ? $t('educomplex.columns.cafedras', {'faculty': getDepartmentName(faculty)}) : 
+            $t('educomplex.columns.faculties')" style="min-width: 250px;">
             <template #body="slotProps">
               {{ getDepartmentName(slotProps.data) }}
+            </template>
+          </Column>
+          <Column style="min-width: 20px;justify-content: end">
+              <template #header="">
+                  <Button @click="home" icon="fa-solid fa-arrow-left" class="menubar-icons" v-if="faculty" />
+              </template>
+            <template #body="slotProps" v-if="!faculty">
+              <div style="width: 100%; display: flex; justify-content: flex-end;">
+                <Button @click="currentDepartment=slotProps.data;into()"
+                  class="p-button-text p-button-info p-1" v-tooltip="$t('educomplex.tooltip.into')">
+                  <i class="fa-regular fa-folder"></i>
+                </Button>
+              </div>
             </template>
           </Column>
         </DataTable>
@@ -132,7 +146,7 @@
           :currentPageReportTemplate="currentPageReportTemplate" :lazy="true" :loading="fileTableLoading" scrollable scrollHeight="flex"
           v-model:selection="currentFile" selectionMode="single" :rowHover="true" stripedRows class="flex-grow-1"
           @page="onPageFile">
-          <Column :header="$t('educomplex.columns.name')" style="min-width: 250px;">
+          <Column :header="$t('educomplex.columns.name')" style="min-width: 150px;">
             <template #body="slotProps">
               {{ slotProps.data['name' + $i18n.locale] }}
             </template>
@@ -164,27 +178,7 @@
           </Column>
           <Column style="min-width: 50px;">
             <template #body="slotProps">
-              <Button v-if="slotProps.data.filePath != null && slotProps.data.uuid != null" 
-                @click="downloadFile(slotProps.data.uuid, slotProps.data.filePath)"
-                class="p-button-text p-button-info p-1" v-tooltip="$t('educomplex.tooltip.download')">
-                <i class="fa-solid fa-file-arrow-down fa-xl"></i>
-              </Button>
-              <Button v-if="slotProps.data.docHistory.stateId !== Enum.REVISION.ID"
-                @click="currentFile=slotProps.data;open('documentInfoSidebar')"
-                class="p-button-text p-button-info p-1" v-tooltip="$t('educomplex.tooltip.document')">
-                <i class="fa-solid fa-eye fa-xl"></i>
-              </Button>
-              <Button v-if="slotProps.data.docHistory.stateId === Enum.REVISION.ID"
-                @click="currentFile=slotProps.data;open('revisionInfoSidebar')"
-                class="p-button-text p-button-info p-1" v-tooltip="$t('educomplex.tooltip.revision')">
-                <i class="fa-solid fa-file-circle-exclamation fa-xl"></i>
-              </Button>
-              <Button v-if="(slotProps.data.docHistory.stateId === Enum.CREATED.ID || 
-                slotProps.data.docHistory.stateId === Enum.REVISION.ID) && loginedUser.userID === slotProps.data.creatorID"
-                @click="currentFile=slotProps.data;deleteFile(false)"
-                class="p-button-text p-button-danger p-1" v-tooltip="$t('educomplex.tooltip.delete')">
-                <i class="fa-solid fa-trash fa-xl"></i>
-              </Button>
+                <ActionButton :items="initItems" :showTooltip="true" @toggle="showActions(slotProps.data)" />
             </template>
           </Column>
         </DataTable>
@@ -195,7 +189,7 @@
   <Dialog :header="$t('hdfs.uploadTitle')" v-model:visible="visibility.addDocumentDialog" 
     :style="{width: '60vw'}" :modal="true">
     <PostFile :fileUpload="true" :modelValue="newFile" directory="eduMetComplex"
-      @updated="getFiles" accept=".pdf"></PostFile>
+      @updated="close('addDocumentDialog');getFiles()" accept=".pdf"></PostFile>
   </Dialog>
   <!-- documentInfoSidebar -->
   <Sidebar v-model:visible="visibility.documentInfoSidebar" position="right" class="p-sidebar-lg"
@@ -290,13 +284,12 @@ import PostFile from "@/components/documents/PostFile.vue"
 import { DocService } from "@/service/doc.service";
 import { OrganizationService } from "@/service/organization.service";
 
+import ActionButton from "@/components/ActionButton.vue";
 
 export default {
   name: 'DisciplineEduMetComplex',
-  components: { ApprovalUsers, DocSignaturesInfo, DocInfo, PostFile },
-  props: {
-    
-  },
+  components: {ActionButton, ApprovalUsers, DocSignaturesInfo, DocInfo, PostFile },
+  props: { },
   emits: [],
   data() {
     return {
@@ -359,7 +352,7 @@ export default {
       stages: [],
       revisionComment: null,
       newFile: null,
-
+      actionsNode: null,
       statuses: [
         {
           id: 'status_created',
@@ -398,7 +391,50 @@ export default {
     disableRevisionButton() {
       let approve = this.needToApproveByMe()
       return !approve
-    }
+    },
+      initItems() {
+          return [
+              {
+                  label: this.$t('educomplex.tooltip.download'),
+                  icon: 'fa-solid fa-file-arrow-down',
+                  visible: this.actionsNode && this.actionsNode.filePath != null && this.actionsNode.uuid != null,
+                  command: () => {
+                      this.downloadFile(this.actionsNode.uuid, this.actionsNode.filePath)
+                  }
+              },
+              {
+                  label: this.$t('educomplex.tooltip.document'),
+                  icon: 'fa-solid fa-eye',
+                  visible: this.actionsNode && this.actionsNode.docHistory.stateId !== Enum.REVISION.ID,
+                  command: () => {
+                      this.currentFile = this.actionsNode;
+                      this.open('documentInfoSidebar')
+                  }
+              },
+              {
+                  label: this.$t('educomplex.tooltip.revision'),
+                  icon: 'fa-solid fa-file-circle-exclamation',
+                  visible: this.actionsNode && this.actionsNode.docHistory.stateId === Enum.REVISION.ID,
+                  command: () => {
+                      this.currentFile = this.actionsNode;
+                      this.open('revisionInfoSidebar')
+
+                  }
+              },
+              {
+                  label: this.$t('educomplex.tooltip.delete'),
+                  icon: 'fa-solid fa-trash',
+                  visible:this.actionsNode && (this.actionsNode.docHistory.stateId === Enum.CREATED.ID ||
+                      this.actionsNode.docHistory.stateId === Enum.REVISION.ID) && this.loginedUser.userID === this.actionsNode.creatorID,
+                  command: () => {
+                      console.log(this.actionsNode)
+                      this.currentFile = this.actionsNode;
+                      this.deleteFile(false)
+                  }
+              },
+
+          ];
+      }
   },
   created() {
     this.loginedUser = JSON.parse(localStorage.getItem("loginedUser"))
@@ -431,6 +467,9 @@ export default {
     },
     toggle(ref, event) {
       this.$refs[ref].toggle(event);
+    },
+    showActions(node) {
+      this.actionsNode = node;
     },
     checkScreenSize() {
       this.screen.isLarge = window.innerWidth >= 640;
@@ -558,6 +597,9 @@ export default {
     uncover(element) {
       this.neutral()
     },
+    isTest(element) {
+      console.log(element)
+    },
     cover(element) {
       if (this.screen[element].maximized) {
         this.neutral()
@@ -651,6 +693,7 @@ export default {
         namekz: "",
         nameru: "",
         nameen: "",
+        lang: {name:"kz", value: 0},
         docType: this.Enum.DocType.EduComplex,
         departmentID: this.currentDepartment.id,
         params: [
@@ -696,6 +739,7 @@ export default {
     },
     onPageDepartment(event) {
       this.departmentPage = event.page;
+      this.departmentRows = event.rows;
       this.getDepartments();
     },
     doubleClickDepartment(event) {
@@ -736,7 +780,9 @@ export default {
         this.totalDepartments = res.data.total
         this.currentDepartment = null
 
-        this.departmentTableLoading = false
+        this.departmentTableLoading = false;
+        this.filePage = 0;
+        this.getFiles();
       }).catch(err => {
         this.departments = []
         this.totalDepartments = 0
@@ -749,14 +795,14 @@ export default {
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
 
-        this.departmentTableLoading = false
+        this.departmentTableLoading = false;
+        this.filePage = 0;
+        this.getFiles();
       });
-
-      this.filePage = 0;
-      this.getFiles();
     },
     onPageFile(event) {
       this.filePage = event.page;
+      this.fileRows = event.rows
       this.getFiles();
     },
     getFiles() {
@@ -1057,6 +1103,11 @@ export default {
 .not-approved {
   color: #a6a6a6;
 }
+@media (max-width: 1550px) {
+  .customer-badge{
+    font-size: 10px;
+  }
+}
 @media (max-width: 640px) {
   .menubar-icons {
     padding: 0.25rem;
@@ -1064,6 +1115,7 @@ export default {
   :deep(.p-paginator.p-component) {
     padding: 0rem;
   }
+
 }
 @media (min-width: 640px) {
   .menubar-icons {

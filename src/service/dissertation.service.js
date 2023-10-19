@@ -56,16 +56,28 @@ export class DissertationService {
     getRegistrationInfo(data) {
         return api.post("/dissertation/getRegistrationInfo", data,  {headers: getHeader()});
     }
+    
     setMeetingTime(data) {
         return api.post("/dissertation/setMeetingTime", data,  {headers: getHeader()});
     }
+
     deleteDissertation(data) {
         return api.post("/dissertation/deleteDissertation", data,  {headers: getHeader()});
     }
+
     addDoctoral(data) {
         return api.post("/dissertation/addDoctoral", data,  {headers: getHeader()});
     }
+
     memberregister(data) {
         return api.post("/dissertation/memberregister", data,  {headers: getHeader()});
+    }
+
+    updateDoctoral(params) {
+        return api.post(`/dissertation/updateDoctoral`, params, {headers: getHeader()});
+    }
+
+    newStartRegistration(data) {
+        return api.post(`/dissertation/newStartRegistration`, data, {headers: getHeader()});
     }
 }

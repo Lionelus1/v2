@@ -1,11 +1,13 @@
 <template>
     <Dialog
             v-model:visible="eventViewVisible"
-            :closable="false"
+            :closable="true"
             :style="{ width: '1000px' }"
             :modal="true"
             class="p-fluid"
             :breakpoints="{'960px': '75vw', '640px': '90vw'}"
+            :close-on-escape="true"
+            @hide="closeModal"
     >
         <Card style="box-shadow: none">
             <template #header>

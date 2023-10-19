@@ -1,22 +1,20 @@
 <template>
-  <div class="card">
+  <div>
     <!-- TOOLBAR -->
-    <Toolbar>
-      <template #start>
-        <Dropdown class="dropdown" v-model="selectedOrganization" :options="userOrganizations" 
-          :optionLabel="itemLabel" :placeholder="$t('roleControl.selectOrg')" 
-          :filter="true" :showClear="true" @change="handleSelectionChange"
-          dataKey="id" :emptyFilterMessage="$t('roleControl.noResult')"
-          @filter="handleFilter"/>
-          <Button
-            :label="$t('roleControl.giveRole')"
-            icon="pi pi-plus"
-            class="p-button-success p-mr-2"
-            :disabled="isDisabled"
-            v-on:click="giveNewRole"
-            />
-      </template>
-    </Toolbar>
+    <div class="mb-3">
+        <Dropdown class="sm:w-fit w-full mr-2" v-model="selectedOrganization" :options="userOrganizations"
+                  :optionLabel="itemLabel" :placeholder="$t('roleControl.selectOrg')"
+                  :filter="true" :showClear="true" @change="handleSelectionChange"
+                  dataKey="id" :emptyFilterMessage="$t('roleControl.noResult')"
+                  @filter="handleFilter"/>
+        <Button
+                :label="$t('roleControl.giveRole')"
+                icon="pi pi-plus"
+                class="p-button-success p-mr-2 mt-2 lg:m-0"
+                :disabled="isDisabled"
+                v-on:click="giveNewRole"
+        />
+    </div>
     <!-- ОСНОВНАЯ ТАБЛИЦА ДАННЫХ -->
     <DataTable :lazy="true"
               :value="roles"
@@ -47,8 +45,8 @@
               @sort="onSort($event)">
       <!--  HEADER -->
       <template #header>
-        <div class="flex justify-content-between align-items-center">
-          <h5 class="m-0" v-if="selectedOrganization">{{ selectedOrganization['name'+$i18n.locale] }}</h5>
+        <div class="block lg:flex justify-content-between align-items-center">
+          <h5 class="mb-2 lg:m-0" v-if="selectedOrganization">{{ selectedOrganization['name'+$i18n.locale] }}</h5>
           <span class="p-input-icon-left" v-if="selectedOrganization">
             <i class="pi pi-search"/>
             <InputText type="search"
@@ -318,7 +316,4 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.dropdown {
-  margin-right: 0.5rem;
-}
 </style>

@@ -1,7 +1,7 @@
 <template>
+    <h3>{{ $t("smartenu.catalogNormDoc") }}</h3>
   <div class="card mb-0 flex flex-column" :style="{height: innerHeightInRem.toString()+'rem',
     minHeight: '300px'}">
-    <h4 class="ml-3">{{ $t("smartenu.catalogNormDoc") }}</h4>
     <Toolbar class="m-0 p-1">
       <template #start>
         <div v-if="findRole(null, 'normative_docs_admin')">

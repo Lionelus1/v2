@@ -1,35 +1,36 @@
 <template>
-    <div>
+    <div class="col-12">
         <BlockUI :blocked="saving" :fullScreen="true"></BlockUI>
+        <h3>{{ $t('course.categories') }}</h3>
         <div v-if="!catLazyParams.parentID"  class="surface-card p-4 mb-1 shadow-2 border-round">
-            <h4 class="mb-3">{{ $t('course.categories') }}</h4>
             <Splide v-if="courses && courses.length>0" :options="options" :extensions="extensions">
                 <SplideSlide v-for="cat of categories" :key="cat.id">
                     <div @click="selectCategory(cat)" class="item category bg-blue-500 surface-card p-4 m-2 shadow-4 border-round p-ripple" v-ripple>
-                        <div class="text-xl font-medium text-900 mb-3">{{ cat['name' + $i18n.locale] }}</div>
-                        <div class="font-medium text-700 mb-3">{{ cat['description' + $i18n.locale] }}</div>
+                        <div class="card_title text-xl font-medium text-900 mb-3">{{ cat['name' + $i18n.locale] }}</div>
+                        <div class="card_description font-medium text-700 mb-3">{{ cat['description' + $i18n.locale] }}</div>
                     </div>
                 </SplideSlide>
             </Splide>
         </div>
+        <h3>{{ $t('course.courses') }}</h3>
         <div class="surface-card p-4 shadow-2 border-round">
-            <h4 class="mb-3">{{ $t('course.courses') }}</h4>
-            <DataView class="ml-7 mr-7" :value="courses" :layout="layout" :paginator="true" :rows="9" :sortOrder="sortOrder"> 
-                 <!-- :sortField="sortField"> -->
+            <DataView class="xl:ml-7 xl:mr-7" :lazy="true" :value="courses" :layout="layout" :paginator="true" :rows="10" @page="onPage($event)" :totalRecords="total">
                 <template #list="slotProps">
                     <div class="col-12 shadow-4 border-round p-4">
-                        <div class="text-xl font-medium text-900 mb-3">{{ slotProps.data['name' + $i18n.locale] }}</div>
-                        <div class="font-medium text-700 mb-3">{{ slotProps.data['description' + $i18n.locale] }}</div>
+                        <div class="card_title text-xl font-medium text-900 mb-3">{{ slotProps.data['name' + $i18n.locale] }}</div>
+                        <div class="card_description font-medium text-700 mb-3">{{ slotProps.data['description' + $i18n.locale] }}</div>
                     </div>
                 </template>
 
-			<template #grid="slotProps">
-				<div @click="selectCourse(slotProps.data)" class="col-12 md:col-4 shadow-4 border-round p-4 item course p-ripple mr-3" v-ripple>
-                    <div class="text-xl font-medium text-900 mb-3">{{ slotProps.data['name' + $i18n.locale] }}</div>
-                    <div class="font-medium text-700 mb-3">{{ slotProps.data['description' + $i18n.locale] }}</div>
-				</div>
-			</template>
-		</DataView>
+                <template #grid="slotProps">
+                    <div class="col-12 lg:col-6 xl:col-4 p-2">
+                    <div @click="selectCourse(slotProps.data)" class="shadow-4 border-round p-4 item course p-ripple" v-ripple>
+                        <div class="card_title text-xl font-medium text-900 mb-3" :title="slotProps.data['name' + $i18n.locale]">{{ slotProps.data['name' + $i18n.locale] }}</div>
+                        <div class="card_description font-medium text-700 mb-3" :title="slotProps.data['description' + $i18n.locale]">{{ slotProps.data['description' + $i18n.locale] }}</div>
+                    </div>
+                    </div>
+                </template>
+		    </DataView>
         </div>
     </div>
   </template>
@@ -89,7 +90,7 @@
             category: null,
             courses:[],
             course:null,
-
+            total:0,
             layout: 'grid',
             sortKey: null,
             sortOrder: null,
@@ -146,6 +147,10 @@
         },
         selectCourse(course) {
             this.$router.push('/course/' + course.id)
+        },
+        onPage(event) {
+            this.courseLazyParams = event
+            this.getCourses();
         }
     }
   });
@@ -161,6 +166,12 @@
     }
     .course {
         background: linear-gradient(158.84deg, rgba(194, 121, 206, 0.28) 11.11%, rgba(255, 255, 255, 0) 86.05%);
+    }
+    .card_title,.card_description{
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        display: -webkit-box;
+        overflow: hidden;
     }
     #splide {
         height: 400px;

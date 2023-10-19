@@ -8,7 +8,7 @@
       <div :class="sidebarClass" @click="onSidebarClick" v-show="isSidebarVisible()">
         <div class="layout-logo">
           <router-link to="/">
-            <h1>SMART ENU</h1>
+            <h2 class="text-white">SMART.ENU</h2>
           </router-link>
         </div>
         <AppProfile/>
@@ -235,6 +235,7 @@ export default {
 </script>
 
 <style lang="scss">
+
 .p-toast.p-toast-topright {
   z-index: 1000;
   top: 70px;

@@ -1,6 +1,6 @@
 <template>
     <div class="col-12">
-        <h3>{{ $t("smartenu.eventsTitle") }}</h3>
+        <TitleBlock :title="$t('smartenu.eventsTitle')"/>
         <!-- BEGINNING OF TABLE -->
         <div class="card" v-if="isAdmin || isModer || selectedEvent || isEnuWebAdmin || isEnuWebFacAdmin">
             <Button v-if="isAdmin || isModer || isEnuWebAdmin || isEnuWebFacAdmin" :label="$t('common.add')" icon="pi pi-plus"
@@ -81,10 +81,11 @@ import EventsView from "./EventsView";
 import {EventsService} from "../../service/event.service";
 import {PosterService} from "../../service/poster.service";
 import AddEditEvent from "./AddEditEvent";
+import TitleBlock from "@/components/TitleBlock.vue";
 
 export default {
     name: "Events",
-    components: {AddEditEvent, EventsView},
+    components: {TitleBlock, AddEditEvent, EventsView},
     data() {
         return {
             statuses: {

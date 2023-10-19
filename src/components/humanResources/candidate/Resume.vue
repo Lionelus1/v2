@@ -14,14 +14,12 @@
     </template>
   </Toolbar>
   <!-- РЕЗЮМЕ  -->
-  <div class="card" v-if="candidate !== null && candidate !== {}">
-    <div class="card">
+  <div v-if="candidate !== null && candidate !== {}">
       <div class="grid formgrid">
         <div class="col-12 lg:col-9 card-border">
           <ResumeView  v-if="view" :value="candidate" :readonly="false"/>
         </div>
       </div>
-    </div>
   </div>
 </template>
 

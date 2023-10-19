@@ -30,6 +30,12 @@ export default {
         approveDate: "Бекітілген күні",
         approvedBy: "Бекіткен",
         notUpload: 'Құжат жүктелмеді',
+        nextIssue: 'Сертификаттың соңғы нөмірі',
+        goToTheCourse: "Курсқа өту",
+        addCertificate: "Сертификат қажет етіледі",
+        updateGES:"ЖББП тізімін жаңарту",
+        downloadCertificate:"Сертификат жүктеп алу",
+        selectAll: "Барлығын таңдау",
         action: {
             submit: 'Жіберу',
             accept: 'Қабылдау',
@@ -114,6 +120,7 @@ export default {
         code: "Коды",
         main: "Негізгі",
         more: "Толық",
+        loadMore: "Көбірек жүктеу",
         meetingUrl: "Онлайн жиналысқа сілтеме",
         meetingPlace: "Жиналыс өтетін орын",
         move: "Орнын ауыстыру",
@@ -316,9 +323,11 @@ export default {
         gallery: 'Галерея',
         faculties: 'Факультеттер',
         verify: 'Құжатқа қол қоюды тексеру',
+        address: 'Адрес',
         qrGenerator: 'QR генератор',
         generate: 'Генерациялау',
-        selectFormat: 'Форматты таңдаңыз'
+        selectFormat: 'Форматты таңдаңыз',
+        notifications: 'Хабарламалар'
     },
     bank: {
         title: "Банктер",
@@ -614,7 +623,8 @@ export default {
         loadingEvents: "Іс-шаралар жүктелуде. Өтініш, күте тұрыңыз.",
         newsCategoriesTitle: "Жаңалықтар санаттары",
         createOrEditNewsCategory: "Жаңалықтар санатын құру/өзгерту",
-        createOrEditNews: "Жаңалықтарды құру/өзгерту",
+        createNews: "Жаңалық құру",
+        editNews: "Жаңалық өзгерту",
         createOrEditEvents: "Іс-шараларды құру/өзгерту",
         chooseCategory: "санатты таңдаңыз",
         parent: "ата санаты",
@@ -792,7 +802,17 @@ export default {
         userOtherCouncils: 'Қолданушының басқа диссертациялық кеңестерге қатысы',
         closeDate: 'Тоқтатылған күні',
         councilComment: 'Бұйрық нөмірі және т. б.',
-        closeCouncil: 'Диссертациялық кеңесті тоқтату'
+        closeCouncil: 'Диссертациялық кеңесті тоқтату',
+        scientificConsultant: 'Ғылыми кеңесшінің пікірі',
+        foreignConsultant: 'Шетелдік кеңесшінің пікірі',
+        commissionConclusion: 'Этикалық бағалау комиссиясының қорытындысы',
+        reviewerComment: 'Ресми рецензенттің пікірі',
+        setMeetingTimeConfirmMsg: "Төмендегі {btn} батырмасын басу арқылы, ақпараттардың дұрыстығын растайсыз және осы ақпарат сайтқа хабарландыру болып шығарылады",
+        addMemeberToDisCouncil: 'Диссертациялық кеңеске мүше қосу',
+        meetingDateMessage: 'Қорғауды жүргізуді тек бір күн қалғанда бастай аласыз',
+        scienceConsultantInfo: 'Ғылыми кеңесші',
+        foreignConsultantInfo: 'Шетелдік кеңесші',
+        videoLink: 'Видеоға сілтеме'
     },
     faq: {
         title: "Қолдау қызметі",
@@ -920,8 +940,9 @@ export default {
         editAnswer: 'Жауапты өңдеу',
         editAnswerConfirm: 'Сіз шынымен жауапқа өзгерістер еңгізгіңіз келе ме?',
         facultyName: 'Факультет атауы',
-        menuIcon: 'Мәзір айконы'
-
+        menuIcon: 'Мәзір белгішесі',
+        uploadMenuIcon: 'Белгішені таңдау',
+        domain: 'Домен'
     },
     //Student locale
     student: {
@@ -1209,15 +1230,18 @@ export default {
             element: 'Элемент',
             elements: 'Элементтер',
             designer: 'Үлгі дизайнері',
-            issue: "Сертификат беру",
-            issueWithApp: "Сертификатқа қосымша беру",
+            issue: "Сертификатты қосымшасыз беру",
+            issueWithApp: "Сертификатты қосымшасымен беру",
             view: "Сертификатты қарау",
+            getQr: "QR алу",
+            confirm: "Сертификатты ҚОСЫМШАСЫЗ беру керек пе?",
+            confirm2: "Сертификат ҚОСЫМШАМЕН беріледі, қосымша дұрыс толтырылған ба?",
         },
         modules:'Курс модульдері',
-        module: 'Модуль', 
+        module: 'Модуль',
         modulePosition: '№',
         moduleTitle: 'Белгі',
-        moduleHours: 'Сағат', 
+        moduleHours: 'Сағат',
         moduleGrade: 'Баға',
         moduleName:'Модуль атауы',
         modulePeriod:'Модуль кезеңі',
@@ -1227,6 +1251,7 @@ export default {
         lnum: 'Соңғы нөмір',
         journal: 'Журнал',
         addCourse: 'Курсқа қосу',
+        completedTraining: 'Оқуды аяқтады',
     },
     roleControl:{
         addSidebar: 'Жаңа жазбаны қосу',

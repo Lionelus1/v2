@@ -412,6 +412,7 @@ export default {
         if (response.data === RIGHTS.MAIN_ADMINISTRATOR) {
           console.log(response.data)
           this.lazyParams.right = RIGHTS.MAIN_ADMINISTRATOR
+          this.isCareerAdmin = true
           this.getVacancies()
           this.view.modifier = true
         } else if (response.data === RIGHTS.HR_ADMINISTRATOR) {

@@ -2,7 +2,7 @@
 <div>
   <div class="content-section">
     <BlockUI :blocked="saving" :fullScreen="true"></BlockUI>
-    <div class="feature-intro ml-3">
+    <div class="feature-intro">
       <h3>{{$t('contracts.title')}}</h3>
     </div>
     <ProgressBar v-if="saving" mode="indeterminate" style="height: .5em"/>

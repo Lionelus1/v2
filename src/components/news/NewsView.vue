@@ -4,8 +4,10 @@
             :style="{ width: '1000px' }"
             :modal="true"
             class="p-fluid"
-            :closable="false"
+            :closable="true"
             :breakpoints="{'960px': '75vw', '640px': '90vw'}"
+            :close-on-escape="true"
+            @hide="closeModal"
     >
         <Card style="box-shadow: none">
             <template #header>
@@ -42,14 +44,7 @@
                 </div>
             </template>
         </Card>
-        <template #footer>
-            <Button
-                    v-bind:label="$t('common.close')"
-                    icon="pi pi-times"
-                    class="p-button p-component p-button-primary"
-                    @click="closeModal"
-            />
-        </template>
+
     </Dialog>
 </template>
 

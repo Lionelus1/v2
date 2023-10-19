@@ -335,14 +335,15 @@ export default {
          *  CREATE NEWS
          */
         createNews() {
-            this.catTreeElementsList = [];
+          this.$router.push({name: "AddNews"})
+            /*this.catTreeElementsList = [];
             this.catTree.root = this.createCatTree(null, null);
             this.newsData = {};
             this.editVisible = true;
             this.submitted = false;
             this.newsData.id = null;
             this.newsData.contentCategoryRelations = [];
-            this.selectedCatTree = [];
+            this.selectedCatTree = [];*/
         },
         newsCreated() {
             this.$toast.add({
@@ -368,7 +369,8 @@ export default {
          *  NEWS PRE EDITING
          */
         editNews(data) {
-            this.catTreeElementsList = [];
+          this.$router.push({name: 'EditNews', params: {id: data.id}})
+            /*this.catTreeElementsList = [];
             this.catTree.root = this.createCatTree(null, null);
             this.newsData = {};
             this.submitted = false;
@@ -384,7 +386,7 @@ export default {
                     }
                 }
             }
-            this.editVisible = true;
+            this.editVisible = true;*/
         },
 
         /**

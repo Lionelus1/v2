@@ -1,8 +1,7 @@
 <template>
+    <h3>{{ $t("smartenu.catalogNormDoc") }}</h3>
     <div class="card">
         <div>
-            <h4 class="ml-3">{{ $t("smartenu.catalogNormDoc") }}</h4>
-            
             <Toolbar class="m-0 p-1" style="position:relative;">
                 <template #start>
                     <div v-if="findRole(null, 'normative_docs_admin')">

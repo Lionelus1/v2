@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="col-12">
-
+        <div class="card">
       <Toolbar class="mb-4">
         <template #end>
           <Button v-if="isDissertationAdmin" icon="pi pi-plus" class="p-button-success mr-2"
@@ -53,7 +53,7 @@
         <Column field="specialitites" :header="$t('dissertation.specialityCode')" style="min-width:12rem">
           <template #body="slotProps">
              <span v-for="sp in slotProps.data.specialities" :key="sp.code">
-               {{ sp.code }}-{{ getTrainigName(sp) }}<span
+               {{ sp.code }}-{{ getProgramName(sp) }}<span
                  v-if="slotProps.data.specialities.indexOf(sp)<slotProps.data.specialities.length-1">, </span>
              </span>
           </template>
@@ -141,6 +141,7 @@
         </template>
       </Dialog>
     </div>
+  </div>
   </div>
 </template>
 <script>
@@ -306,6 +307,16 @@ export default {
           return sp.trainingDirection.nameInEn;
         case "ru":
           return sp.trainingDirection.nameInRu;
+      }
+    },
+    getProgramName(sp) {
+      switch (this.$i18n.locale) {
+        case "kz":
+          return sp.nameInKz;
+        case "en":
+          return sp.nameInEn;
+        case "ru":
+          return sp.nameInRu;
       }
     },
     showStopCouncil() {

@@ -1,4 +1,6 @@
 <template>
+	<h3>{{ $t("roleControl.menuTitle") }}</h3>
+	<div class="card">
 	<TabView>
 		<TabPanel :header="$t('roleControl.roleTitle')">
 			<RoleControl></RoleControl>
@@ -7,6 +9,7 @@
 			<RolePositionRel></RolePositionRel>
 		</TabPanel>
 	</TabView>
+	</div>
 </template>
 <script>
 import RoleControl from './RoleControl.vue';

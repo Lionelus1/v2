@@ -45,6 +45,7 @@ export default {
           this.setUserSiteSlug()
         } else {
           localStorage.removeItem("userSlug")
+          this.$store.dispatch('removeUserSiteSlug')
         }
       }).catch(error => {
         localStorage.removeItem("userSlug")

@@ -1,15 +1,12 @@
 <template>
   <div>
-    <div class="content-section introduction pb-3">
-      <div class="feature-intro ml-3">
-        <h4 style="display: inline">{{ $t("contragent.organization") }}</h4>
-        <label style="color: grey"
-          >&nbsp;{{ this.$t("common.records") }}: {{ this.count }}</label
-        >
-      </div>
+    <div class="content-section introduction">
+        <div class="flex">
+            <h3>{{ $t("contragent.organization") }}</h3>
+            <label class="text-gray-600 ml-2 mt-2">{{ this.$t("common.records") }}: {{ this.count }}</label>
+        </div>
     </div>
-    <div class="content-section implementation">
-      <div class="card p-0">
+      <div class="card">
         <div class="p-col">
           <Menubar
             :model="menu"
@@ -118,7 +115,6 @@
         </div>
       </div>
     </div>
-  </div>
 </template>
 <script>
 import { smartEnuApi, getHeader, findRole } from "@/config/config";
