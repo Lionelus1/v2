@@ -101,10 +101,6 @@ export class DissertationService {
         return api.post(`/dissertation/updateDoctoral`, params, {headers: getHeader()});
     }
 
-    updateDoctoral(params) {
-        return api.post(`/dissertation/updateDoctoral`, params, {headers: getHeader()});
-    }
-
     newStartRegistration(data) {
         return api.post(`/dissertation/newStartRegistration`, data, {headers: getHeader()});
     }

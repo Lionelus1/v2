@@ -1,5 +1,6 @@
 import api from "@/service/api";
 import {getHeader, getMultipartHeader, smartEnuApi} from "@/config/config";
+import axios from "axios";
 
 export const RIGHTS = {
     MAIN_ADMINISTRATOR: 'main_administrator',
