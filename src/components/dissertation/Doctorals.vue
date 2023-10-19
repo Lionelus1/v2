@@ -3,11 +3,12 @@
     <div class="card">
       <Toolbar class="mb-4">
         <template #end>
+
+
           <Button v-if="findRole(null, 'dissertation_council_secretary')" isSecretary icon="pi pi-plus"
                   class="p-button-success mr-2" @click="showAddCouncilDialog()"/>
-          <Button v-if="canShowUpdateDoctoral"
-                  :disabled="!selectedDoctoral" icon="pi pi-pencil" class="mr-2" @click="showDialog(dialog.updateDoctoral)"
-                  v-tooltip.top="$t('common.edit')"/>
+          <Button v-if="canShowUpdateDoctoral" :disabled="!selectedDoctoral" icon="pi pi-pencil" class="mr-2"
+                  @click="showDialog(dialog.updateDoctoral)" v-tooltip.top="$t('common.edit')"/>
           <Button v-if="findRole(null, 'dissertation_chief')"
                   :disabled="(!selectedDoctoral || (selectedDoctoral && selectedDoctoral.meetingTime))" icon="pi pi-clock"
                   class="p-button-warning mr-2" @click="showDialog(dialog.setMeetingTime)"
@@ -16,8 +17,26 @@
                   class="p-button-success mr-2" @click="showDefenseDialog()"
                   v-tooltip.top="$t('dissertation.defenseConduct')"/>
           <Button icon="pi pi-print" class="p-button-info mr-2"/>
-          <Button v-if="isSecretary" icon="pi pi-trash" class="p-button-danger" @click="deleteDissertation()"
+          <Button v-if="isSecretary" icon="pi pi-trash" class="p-button-danger mr-2" @click="deleteDissertation()"
                   :disabled="!selectedDoctoral"/>
+
+          <Button type="button" icon="pi pi-search" @click="toggle('global-filter', $event)" aria:haspopup="true"
+                  aria-controls="overlay_panel" v-tooltip.top="$t('common.search')" class="p-button-primary mr-2"/>
+          <OverlayPanel ref="global-filter">
+            <div class="flex align-items-center">
+              <div class="p-fluid">
+                <div class="field">
+                  <InputText type="search" v-model="lazyParams.search_text" :placeholder="$t('common.search')"
+                             @search="getDoctorals(null)"/>
+
+                </div>
+                <div class="field">
+                  <Button icon="pi pi-search" :label="$t('common.search')" @click="getDoctorals"/>
+                </div>
+              </div>
+            </div>
+          </OverlayPanel>
+
         </template>
         <template #start>
           <h4>{{ $t("dissertation.doctorals") }}</h4>
@@ -187,32 +206,44 @@
               }}</small>
           </div>
           <div class="col-12 pb-2 lg:col-12 mb-lg-0">
-            <label for="scienceConsultantKz">{{ $t('dissertation.scienceConsultantInfo') + ' ' + $t('common.language.kz') }}</label>
+            <label for="scienceConsultantKz">{{
+                $t('dissertation.scienceConsultantInfo') + ' ' + $t('common.language.kz')
+              }}</label>
             <Textarea :placeholder="$t('common.enter')" class="pt-1" type="text" id="scienceConsultantKz"
                       v-model="doctoral.dissertation.science_consultant_kz"/>
           </div>
           <div class="col-12 pb-2 lg:col-12 mb-lg-0">
-            <label for="scienceConsultantRu">{{ $t('dissertation.scienceConsultantInfo') + ' ' + $t('common.language.ru') }}</label>
+            <label for="scienceConsultantRu">{{
+                $t('dissertation.scienceConsultantInfo') + ' ' + $t('common.language.ru')
+              }}</label>
             <Textarea :placeholder="$t('common.enter')" class="pt-1" type="text" id="scienceConsultantRu"
                       v-model="doctoral.dissertation.science_consultant_ru"/>
           </div>
           <div class="col-12 pb-2 lg:col-12 mb-lg-0">
-            <label for="scienceConsultantEn">{{ $t('dissertation.scienceConsultantInfo') + ' ' + $t('common.language.en') }}</label>
+            <label for="scienceConsultantEn">{{
+                $t('dissertation.scienceConsultantInfo') + ' ' + $t('common.language.en')
+              }}</label>
             <Textarea :placeholder="$t('common.enter')" class="pt-1" type="text" id="scienceConsultantEn"
                       v-model="doctoral.dissertation.science_consultant_en"/>
           </div>
           <div class="col-12 pb-2 lg:col-12 mb-lg-0">
-            <label for="foreignConsultantKz">{{ $t('dissertation.foreignConsultantInfo') + ' ' + $t('common.language.kz') }}</label>
+            <label for="foreignConsultantKz">{{
+                $t('dissertation.foreignConsultantInfo') + ' ' + $t('common.language.kz')
+              }}</label>
             <Textarea :placeholder="$t('common.enter')" class="pt-1" type="text" id="foreignConsultantKz"
                       v-model="doctoral.dissertation.foreign_consultant_kz"/>
           </div>
           <div class="col-12 pb-2 lg:col-12 mb-lg-0">
-            <label for="foreignConsultantRu">{{ $t('dissertation.foreignConsultantInfo') + ' ' + $t('common.language.ru') }}</label>
+            <label for="foreignConsultantRu">{{
+                $t('dissertation.foreignConsultantInfo') + ' ' + $t('common.language.ru')
+              }}</label>
             <Textarea :placeholder="$t('common.enter')" class="pt-1" type="text" id="foreignConsultantRu"
                       v-model="doctoral.dissertation.foreign_consultant_ru"/>
           </div>
           <div class="col-12 pb-2 lg:col-12 mb-lg-0">
-            <label for="foreignConsultantEn">{{ $t('dissertation.foreignConsultantInfo') + ' ' + $t('common.language.en') }}</label>
+            <label for="foreignConsultantEn">{{
+                $t('dissertation.foreignConsultantInfo') + ' ' + $t('common.language.en')
+              }}</label>
             <Textarea :placeholder="$t('common.enter')" class="pt-1" type="text" id="foreignConsultantEn"
                       v-model="doctoral.dissertation.foreign_consultant_en"/>
           </div>
@@ -684,8 +715,9 @@
 
         </template>
       </Dialog>
-      <Dialog v-if="dialog.updateDoctoral.state && selectedDoctoral" v-model:visible="dialog.updateDoctoral.state" :style="{ width: '600px' }"
-              :header="selectedDoctoral.user.fullName" :modal="true" :maximizable="true" class="p-fluid">
+      <Dialog v-if="dialog.updateDoctoral.state && selectedDoctoral" v-model:visible="dialog.updateDoctoral.state"
+              :style="{ width: '600px' }" :header="selectedDoctoral.user.fullName" :modal="true" :maximizable="true"
+              class="p-fluid">
 
         <template v-if="selectedDoctoral.dissertation.state === 1">
           <div class="field">
@@ -709,7 +741,8 @@
         <template v-if="selectedDoctoral.dissertation.state === 6">
           <div class="field">
             <label>{{ $t('dissertation.videoLink') }}</label>
-            <InputText :placeholder="$t('common.enter')" class="pt-1" type="text" v-model="doctoral.dissertation.video_link"/>
+            <InputText :placeholder="$t('common.enter')" class="pt-1" type="text"
+                       v-model="doctoral.dissertation.video_link"/>
           </div>
           <div class="field" v-if="!selectedDoctoral.dissertation.councilConclusionFile">
             <label>{{ $t('dissertation.councilDecision') }}</label>
@@ -893,6 +926,8 @@ export default {
       lazyParams: {
         page: 0,
         rows: 10,
+        search_text: null,
+
       },
       dissertationService: new DissertationService(),
       memberList: []
@@ -916,8 +951,10 @@ export default {
 
   },
 
-
   methods: {
+    toggle(ref, event) {
+      this.$refs[ref].toggle(event);
+    },
     showMemberVisible() {
       this.addMemberVisible = true;
     },
@@ -1106,6 +1143,11 @@ export default {
     getDoctorals() {
       this.loading = true;
       this.lazyParams.userID = this.$store.state.loginedUser.userID
+      // if (this.searchedUser !== null) {
+      //   this.lazyParams.search_user_id = this.searchedUser[0]?.userID || null;
+      // }
+
+      // this.lazyParams.search_user_id =
       //this.lazyParams.countMode = null;
       this.dissertationService.getDoctorals(this.lazyParams).then((response) => {
         this.DoctoralList = response.data;
