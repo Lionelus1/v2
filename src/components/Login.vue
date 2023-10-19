@@ -1,5 +1,6 @@
 <template>
   <div style="overflow-x: hidden">
+    <Toast />
     <!-- <div class="feature-intro block">
   <h1>Smart.enu жүйесіне қош келдіңіз.</h1>
 </div> -->
@@ -35,13 +36,15 @@
             <div class="field col-12">
               <label for="inputtext">{{ $t('common.enterLogin') }}</label>
               <InputText id="inputtext" type="text" v-model="loginData.username"/>
-
-
+              <small class="p-error" v-if="loginDataCheck.username"> {{ $t("common.requiredField") }}
+              </small>
             </div>
             <div class="field col-12">
               <label for="inputpassword">{{ $t('common.enterPassword') }}</label>
               <Password :feedback="false" toggleMask v-model="loginData.password"
                         @keyup.enter="login"></Password>
+              <small class="p-error" v-if="loginDataCheck.password"> {{ $t("common.requiredField") }}
+              </small>
             </div>
           </div>
           <div class="p-w-100 text-right">
@@ -152,6 +155,11 @@ export default {
       mgovBusinessRedirectUri: null,
       active: 0,
       isNotMobile: false,
+
+      loginDataCheck: {
+        username: false,
+        password: false
+      },
     }
   },
   created() {
@@ -305,6 +313,9 @@ export default {
     },
     login() {
       //alert(JSON.stringify(header));
+      if (!this.checkLoginAndPassword()) {
+        return
+      }
       axios.post(smartEnuApi + '/login', {
         'username': this.loginData.username,
         'password': this.loginData.password
@@ -316,14 +327,40 @@ export default {
               window.localStorage.setItem('authUser', JSON.stringify(authUser));
               this.$router.push({name: 'AfterAuth'});
             }
-            if (res.status === 401) {
-              alert("Сіз енгізген ақпарат дұрыс емес.");
-            }
           })
-          .catch(error => {
-            alert("Сіз енгізген ақпарат дұрыс емес.");
-
+          .catch(error => {  
+            if (error.response.status === 401) {
+              if ((error.response.data.includes('no_password')) || (error.response.data.includes('password_not_set')) ||  (error.response.data.includes('incorect_password'))){
+                this.$toast.add({
+                  severity: "error",
+                  summary: this.$t('common.incorect_password'),
+                  life: 3000,
+                });
+              } else {
+                this.$toast.add({
+                  severity: this.$t('common.unauth'),
+                  summary: error,
+                  life: 3000,
+                }); 
+              }
+              return
+            }
+            this.$toast.add({
+              severity: "error",
+              summary: this.$t('common.unauth'),
+              life: 3000,
+            }); 
           });
+    },
+    checkLoginAndPassword() {
+      this.loginDataCheck.username = this.loginData.username.length === 0 
+      this.loginDataCheck.password = this.loginData.password.length === 0 
+      console.log(this.loginData.password.length)
+
+        return (
+            !this.loginDataCheck.username &&
+            !this.loginDataCheck.password
+        )
     }
   }
 }

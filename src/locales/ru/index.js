@@ -329,7 +329,11 @@ export default {
         qrGenerator: 'QR генератор',
         generate: 'Генерировать',
         selectFormat: 'Выберите формат',
-        notifications: 'Уведомления'
+        notifications: 'Уведомления',
+        no_password: 'Введите пароль',
+        unauth: 'Введенная вами информация неверна',
+        incorect_password: 'Неправильный пароль',
+        no_username: 'Пожалуйста, введите имя пользователя'
     },
     bank: {
         title: "Банки",

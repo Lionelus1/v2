@@ -329,7 +329,11 @@ export default {
         qrGenerator: 'QR generator',
         generate: 'Generate',
         selectFormat: 'Select format',
-        notifications: 'Notifications'
+        notifications: 'Notifications',
+        no_password: 'Please enter a password',
+        unauth: 'The information you entered is incorrect',
+        incorect_password: 'Incorrect password',
+        no_username: 'Please enter a username'
     },
     bank: {
         title: "Banks",

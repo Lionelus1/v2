@@ -327,7 +327,11 @@ export default {
         qrGenerator: 'QR генератор',
         generate: 'Генерациялау',
         selectFormat: 'Форматты таңдаңыз',
-        notifications: 'Хабарламалар'
+        notifications: 'Хабарламалар',
+        no_password: 'Please enter a password',
+        unauth: 'Сіз енгізген ақпарат дұрыс емес',
+        incorect_password: 'Қате құпия сөз',
+        no_username: 'Пайдаланушы атын енгізіңіз'
     },
     bank: {
         title: "Банктер",
