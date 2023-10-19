@@ -1,13 +1,14 @@
 <template>
-    <div class="col-12">
-        <div class="card">
+  <div class="col-12">
+    <div class="card">
       <Toolbar class="mb-4">
         <template #end>
+
+
           <Button v-if="findRole(null, 'dissertation_council_secretary')" isSecretary icon="pi pi-plus"
             class="p-button-success mr-2" @click="showAddCouncilDialog()" />
-          <Button v-if="canShowUpdateDoctoral"
-                  :disabled="!selectedDoctoral" icon="pi pi-pencil" class="mr-2" @click="showDialog(dialog.updateDoctoral)"
-                  v-tooltip.top="$t('common.edit')" />
+          <Button v-if="canShowUpdateDoctoral" :disabled="!selectedDoctoral" icon="pi pi-pencil" class="mr-2"
+            @click="showDialog(dialog.updateDoctoral)" v-tooltip.top="$t('common.edit')" />
           <Button v-if="findRole(null, 'dissertation_chief')"
             :disabled="(!selectedDoctoral || (selectedDoctoral && selectedDoctoral.meetingTime))" icon="pi pi-clock"
             class="p-button-warning mr-2" @click="showDialog(dialog.setMeetingTime)"
@@ -16,8 +17,26 @@
             class="p-button-success mr-2" @click="showDefenseDialog()"
             v-tooltip.top="$t('dissertation.defenseConduct')" />
           <Button icon="pi pi-print" class="p-button-info mr-2" />
-          <Button v-if="isSecretary" icon="pi pi-trash" class="p-button-danger" @click="deleteDissertation()"
+          <Button v-if="isSecretary" icon="pi pi-trash" class="p-button-danger mr-2" @click="deleteDissertation()"
             :disabled="!selectedDoctoral" />
+
+          <Button type="button" icon="pi pi-search" @click="toggle('global-filter', $event)" aria:haspopup="true"
+            aria-controls="overlay_panel" v-tooltip.top="$t('common.search')" class="p-button-primary mr-2" />
+          <OverlayPanel ref="global-filter">
+            <div class="flex align-items-center">
+              <div class="p-fluid">
+                <div class="field">
+                  <InputText type="search" v-model="lazyParams.search_text" :placeholder="$t('common.search')"
+                    @search="getDoctorals(null)" />
+
+                </div>
+                <div class="field">
+                  <Button icon="pi pi-search" :label="$t('common.search')" @click="getDoctorals" />
+                </div>
+              </div>
+            </div>
+          </OverlayPanel>
+
         </template>
         <template #start>
           <h4>{{ $t("dissertation.doctorals") }}</h4>
@@ -178,34 +197,40 @@
             }}</small>
           </div>
           <div class="col-12 pb-2 lg:col-12 mb-lg-0">
-            <label for="scienceConsultantKz">{{ $t('dissertation.scienceConsultantInfo') + ' ' + $t('common.language.kz') }}</label>
+            <label for="scienceConsultantKz">{{ $t('dissertation.scienceConsultantInfo') + ' ' + $t('common.language.kz')
+            }}</label>
             <Textarea :placeholder="$t('common.enter')" class="pt-1" type="text" id="scienceConsultantKz"
-                      v-model="doctoral.dissertation.science_consultant_kz" />
+              v-model="doctoral.dissertation.science_consultant_kz" />
           </div>
           <div class="col-12 pb-2 lg:col-12 mb-lg-0">
-            <label for="scienceConsultantRu">{{ $t('dissertation.scienceConsultantInfo') + ' ' + $t('common.language.ru') }}</label>
+            <label for="scienceConsultantRu">{{ $t('dissertation.scienceConsultantInfo') + ' ' + $t('common.language.ru')
+            }}</label>
             <Textarea :placeholder="$t('common.enter')" class="pt-1" type="text" id="scienceConsultantRu"
-                      v-model="doctoral.dissertation.science_consultant_ru" />
+              v-model="doctoral.dissertation.science_consultant_ru" />
           </div>
           <div class="col-12 pb-2 lg:col-12 mb-lg-0">
-            <label for="scienceConsultantEn">{{ $t('dissertation.scienceConsultantInfo') + ' ' + $t('common.language.en') }}</label>
+            <label for="scienceConsultantEn">{{ $t('dissertation.scienceConsultantInfo') + ' ' + $t('common.language.en')
+            }}</label>
             <Textarea :placeholder="$t('common.enter')" class="pt-1" type="text" id="scienceConsultantEn"
-                      v-model="doctoral.dissertation.science_consultant_en" />
+              v-model="doctoral.dissertation.science_consultant_en" />
           </div>
           <div class="col-12 pb-2 lg:col-12 mb-lg-0">
-            <label for="foreignConsultantKz">{{ $t('dissertation.foreignConsultantInfo') + ' ' + $t('common.language.kz') }}</label>
+            <label for="foreignConsultantKz">{{ $t('dissertation.foreignConsultantInfo') + ' ' + $t('common.language.kz')
+            }}</label>
             <Textarea :placeholder="$t('common.enter')" class="pt-1" type="text" id="foreignConsultantKz"
-                      v-model="doctoral.dissertation.foreign_consultant_kz" />
+              v-model="doctoral.dissertation.foreign_consultant_kz" />
           </div>
           <div class="col-12 pb-2 lg:col-12 mb-lg-0">
-            <label for="foreignConsultantRu">{{ $t('dissertation.foreignConsultantInfo') + ' ' + $t('common.language.ru') }}</label>
+            <label for="foreignConsultantRu">{{ $t('dissertation.foreignConsultantInfo') + ' ' + $t('common.language.ru')
+            }}</label>
             <Textarea :placeholder="$t('common.enter')" class="pt-1" type="text" id="foreignConsultantRu"
-                      v-model="doctoral.dissertation.foreign_consultant_ru" />
+              v-model="doctoral.dissertation.foreign_consultant_ru" />
           </div>
           <div class="col-12 pb-2 lg:col-12 mb-lg-0">
-            <label for="foreignConsultantEn">{{ $t('dissertation.foreignConsultantInfo') + ' ' + $t('common.language.en') }}</label>
+            <label for="foreignConsultantEn">{{ $t('dissertation.foreignConsultantInfo') + ' ' + $t('common.language.en')
+            }}</label>
             <Textarea :placeholder="$t('common.enter')" class="pt-1" type="text" id="foreignConsultantEn"
-                      v-model="doctoral.dissertation.foreign_consultant_en" />
+              v-model="doctoral.dissertation.foreign_consultant_en" />
           </div>
           <Fieldset :legend="'Файлы'" class="col-12" toggleable>
             <div class="field">
@@ -653,46 +678,48 @@
 
         </template>
       </Dialog>
-      <Dialog v-if="dialog.updateDoctoral.state && selectedDoctoral" v-model:visible="dialog.updateDoctoral.state" :style="{ width: '600px' }"
-              :header="selectedDoctoral.user.fullName" :modal="true" :maximizable="true" class="p-fluid">
+      <Dialog v-if="dialog.updateDoctoral.state && selectedDoctoral" v-model:visible="dialog.updateDoctoral.state"
+        :style="{ width: '600px' }" :header="selectedDoctoral.user.fullName" :modal="true" :maximizable="true"
+        class="p-fluid">
 
         <template v-if="selectedDoctoral.dissertation.state === 1">
           <div class="field">
             <label>{{ $t('dissertation.reviewerComment') + ' ' + $t('common.pdfFormat') }}</label>
             <CustomFileUpload @upload="uploadFile($event, 'reviewer1CommentFile')" v-model="reviewer1CommentFile"
-                              :accept="'application/pdf'" :multiple="false"/>
+              :accept="'application/pdf'" :multiple="false" />
             <small class="p-error" v-if="(submitted && validationErrorsUpdateDoctoral.reviewer1CommentFile)">{{
-                $t('common.requiredField')
-              }}</small>
+              $t('common.requiredField')
+            }}</small>
           </div>
           <div class="field">
             <label>{{ $t('dissertation.reviewerComment') + ' ' + $t('common.pdfFormat') }}</label>
             <CustomFileUpload @upload="uploadFile($event, 'reviewer2CommentFile')" v-model="reviewer2CommentFile"
-                              :accept="'application/pdf'" :multiple="false"/>
+              :accept="'application/pdf'" :multiple="false" />
             <small class="p-error" v-if="(submitted && validationErrorsUpdateDoctoral.reviewer2CommentFile)">{{
-                $t('common.requiredField')
-              }}</small>
+              $t('common.requiredField')
+            }}</small>
           </div>
         </template>
 
         <template v-if="selectedDoctoral.dissertation.state === 6">
           <div class="field">
             <label>{{ $t('dissertation.videoLink') }}</label>
-            <InputText :placeholder="$t('common.enter')" class="pt-1" type="text" v-model="doctoral.dissertation.video_link" />
+            <InputText :placeholder="$t('common.enter')" class="pt-1" type="text"
+              v-model="doctoral.dissertation.video_link" />
           </div>
           <div class="field" v-if="!selectedDoctoral.dissertation.councilConclusionFile">
             <label>{{ $t('dissertation.councilDecision') }}</label>
             <CustomFileUpload @upload="uploadFile($event, 'councilConclusionFile')" v-model="councilConclusionFile"
-                              :accept="'application/pdf'" :multiple="false"/>
+              :accept="'application/pdf'" :multiple="false" />
             <small class="p-error" v-if="(submitted && validationErrorsUpdateDoctoral.councilConclusionFile)">{{
-                $t('common.requiredField')
-              }}</small>
+              $t('common.requiredField')
+            }}</small>
           </div>
         </template>
 
         <template #footer>
           <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-text"
-                  @click="hideDialog(dialog.updateDoctoral)" />
+            @click="hideDialog(dialog.updateDoctoral)" />
           <Button :label="$t('common.yes')" icon="pi pi-check" class="p-button-text" @click="updateDoctoral" />
         </template>
       </Dialog>
@@ -705,20 +732,20 @@
     :members="memberList" @afterAddMember="hideDialog(dialog.addMember)" @hide="hideDialog(dialog.addMember)" />
 </template>
 <script>
-import {mapState} from "vuex";
+import { mapState } from "vuex";
 import Enums from "@/enum/docstates/index";
 import axios from "axios";
 import html2pdf from "html2pdf.js";
 
-import {downloadFile, findRole, getHeader, smartEnuApi} from "@/config/config";
+import { downloadFile, findRole, getHeader, smartEnuApi } from "@/config/config";
 import DepartmentList from '../smartenu/DepartmentList.vue';
 import SpecialitySearch from "../smartenu/speciality/specialitysearch/SpecialitySearch.vue";
 import html2canvas from "html2canvas";
 import * as jsPDF from "jspdf";
-import {getLongDateString, getShortDateString} from "@/helpers/helper";
+import { getLongDateString, getShortDateString } from "@/helpers/helper";
 import CustomFileUpload from "@/components/CustomFileUpload.vue";
-import {upFirstLetter} from "../../helpers/HelperUtil";
-import {DissertationService} from "@/service/dissertation.service";
+import { upFirstLetter } from "../../helpers/HelperUtil";
+import { DissertationService } from "@/service/dissertation.service";
 import AddMemberDialog from "@/components/dissertation/AddMemberDialog.vue";
 
 export default {
@@ -863,6 +890,8 @@ export default {
       lazyParams: {
         page: 0,
         rows: 10,
+        search_text: null,
+
       },
       dissertationService: new DissertationService(),
       memberList: []
@@ -886,8 +915,10 @@ export default {
 
   },
 
-
   methods: {
+    toggle(ref, event) {
+      this.$refs[ref].toggle(event);
+    },
     showMemberVisible() {
       this.addMemberVisible = true;
     },
@@ -1105,6 +1136,11 @@ export default {
     getDoctorals() {
       this.loading = true;
       this.lazyParams.userID = this.$store.state.loginedUser.userID
+      // if (this.searchedUser !== null) {
+      //   this.lazyParams.search_user_id = this.searchedUser[0]?.userID || null;
+      // }
+
+      // this.lazyParams.search_user_id = 
       //this.lazyParams.countMode = null;
       axios.post(smartEnuApi + "/dissertation/getdoctorals", this.lazyParams, { headers: getHeader() }).then((response) => {
         this.DoctoralList = response.data;
@@ -1554,7 +1590,7 @@ export default {
       if (this.selectedDoctoral && this.selectedDoctoral.dissertation.state === 1) {
 
         if (!this.validateUpdateDoctoral(1)) {
-          this.$toast.add({severity: "error", summary: "Validation error", life: 3000});
+          this.$toast.add({ severity: "error", summary: "Validation error", life: 3000 });
           return
         }
 
@@ -1564,7 +1600,7 @@ export default {
 
       if (this.selectedDoctoral && this.selectedDoctoral.dissertation.state === 6) {
         if (!this.validateUpdateDoctoral(6)) {
-          this.$toast.add({severity: "error", summary: "Validation error", life: 3000});
+          this.$toast.add({ severity: "error", summary: "Validation error", life: 3000 });
           return
         }
         fd.append("video_link", this.doctoral.dissertation.video_link)
@@ -1590,17 +1626,17 @@ export default {
       if (!this.selectedDoctoral) return false
 
       if (this.selectedDoctoral && this.selectedDoctoral.dissertation.state === 1 && this.selectedDoctoral.dissertation.reviewer1CommentFile
-          && this.selectedDoctoral.dissertation.reviewer2CommentFile) {
+        && this.selectedDoctoral.dissertation.reviewer2CommentFile) {
         return false
       }
 
       if (this.selectedDoctoral && this.selectedDoctoral.dissertation.state === 6 && this.selectedDoctoral.dissertation.councilConclusionFile
-          && this.selectedDoctoral.dissertation.video_link) {
+        && this.selectedDoctoral.dissertation.video_link) {
         return false
       }
 
       return (this.selectedDoctoral && (this.selectedDoctoral.dissertation.state === 1 || this.selectedDoctoral.dissertation.state === 6))
-           && (this.findRole(this.loginedUser, 'dissertation_chief') || findRole(this.loginedUser, 'dissertation_council_secretary'))
+        && (this.findRole(this.loginedUser, 'dissertation_chief') || findRole(this.loginedUser, 'dissertation_council_secretary'))
     }
   },
 };
