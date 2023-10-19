@@ -200,7 +200,11 @@ export default {
                 this.wsconnect(this.connectionId)
               })
               .catch(error => {
-                alert(error.message)
+                this.$toast.add({
+                    severity: 'error',
+                    summary: error.message,
+                    life: 3000,
+                });
               });
         } else {
           this.wsconnect(this.connectionId)
@@ -258,7 +262,11 @@ export default {
             this.xmlSignature(res.data);
           })
           .catch(error => {
-            alert(error.message)
+            this.$toast.add({
+                severity: 'error',
+                summary: error.message,
+                life: 3000,
+            });
           });
     },
     async xmlSignature(res) {
@@ -267,7 +275,11 @@ export default {
       try {
         await NCALaClient.connect();
       } catch (error) {
-        alert(error.message);
+        this.$toast.add({
+            severity: 'error',
+            summary: error.message,
+            life: 3000,
+        });
         return
       }
       try {
@@ -277,7 +289,11 @@ export default {
         this.eloginData.connectionId = res.connectionId;
         this.isSignUp = false;
       } catch (error) {
-        alert(error.message);
+        this.$toast.add({
+            severity: 'error',
+            summary: error.message,
+            life: 3000,
+        });
       }
     },
     loginVerify() {
@@ -289,7 +305,11 @@ export default {
           this.eloginData.password = this.newPass.password1;
           this.sendLoginData();
         } else {
-          alert(this.$t('common.newPasswordError'));
+          this.$toast.add({
+            severity: 'error',
+            summary: this.$t('common.newPasswordError'),
+            life: 3000,
+          });
         }
       }
     },
@@ -306,7 +326,11 @@ export default {
               }
             })
             .catch(error => {
-              alert(error.message)
+              this.$toast.add({
+                  severity: 'error',
+                  summary: error.message,
+                  life: 3000,
+                });
             });
       }
 
