@@ -174,11 +174,11 @@ export default {
       .catch(
         (error) => {
           if(!axios.isCancel(error)) {
-            this.searchInProgres = false;
             if (error.response.status === 404) {
               this.foundEntities = null;
             }
           }
+          this.searchInProgres = false;
         }
       );
     },

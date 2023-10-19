@@ -2,7 +2,7 @@
   <div>
     <div v-if="!selectMode" class="content-section introduction">
       <div class="feature-intro">
-        <h3>{{$t('doctemplate.title')}}</h3>
+        <h3>{{ $t('doctemplate.title') }}</h3>
       </div>
     </div>
     <div class="content-section implementation">
@@ -18,15 +18,15 @@
             <Dialog :modal="true" v-bind:header="$t('common.newCatalog')" :contentStyle="{overflow: 'visible'}"
                     v-model:visible="dialogOpenState.addFolder" :style="{width: '50vw'}">
               <div class="p-fluid">
-                <label for="foldername">{{$t('common.nameInQazaq')}}</label>
+                <label for="foldername">{{ $t('common.nameInQazaq') }}</label>
                 <InputText id="fodernamekaz" v-model="createdFolder.namekz" type="text"/>
-                <label for="foldernamerus">{{$t('common.nameInRussian')}}</label>
+                <label for="foldernamerus">{{ $t('common.nameInRussian') }}</label>
                 <InputText id="foldernamerus" v-model="createdFolder.nameru" type="text"/>
-                <label for="foldernameen">{{$t('common.nameInEnglish')}}</label>
+                <label for="foldernameen">{{ $t('common.nameInEnglish') }}</label>
                 <InputText id="foldernameen" v-model="createdFolder.nameen" type="text"/>
-                <label for="foldercode">{{$t('common.code')}}</label>
+                <label for="foldercode">{{ $t('common.code') }}</label>
                 <InputText id="foldercode" v-model="createdFolder.code" type="text"/>
-                <label for="foldergroup">{{$t('common.userGroup')}}</label>
+                <label for="foldergroup">{{ $t('common.userGroup') }}</label>
                 <MultiSelect v-model="createdFolder.groups" :options="groupsData" :optionLabel="'name'+$i18n.locale"
                              v-bind:placeholder="$t('common.selectGroup')" :filter="true" display="chip"/>
               </div>
@@ -40,17 +40,17 @@
                     :style="{width: '50vw'}">
               <div class="p-fluid">
                 <div class="field">
-                  <label for="dtdescriptionkz">{{$t('doctemplate.description')}} ({{$t('common.language.kz')}})</label>
+                  <label for="dtdescriptionkz">{{ $t('doctemplate.description') }} ({{ $t('common.language.kz') }})</label>
                   <InputText id="dtdescriptionkz" class="mb-2" v-bind:placeholder="$t('common.description')" v-model="createdTemplate.descriptionKaz"
                              type="text"/>
-                  <label for="dtdescriptionru">{{$t('doctemplate.description')}} ({{$t('common.language.ru')}})</label>
+                  <label for="dtdescriptionru">{{ $t('doctemplate.description') }} ({{ $t('common.language.ru') }})</label>
                   <InputText id="dtdescriptionru" class="mb-2" v-bind:placeholder="$t('common.description')" v-model="createdTemplate.descriptionRus"
                              type="text"/>
                   <div class="field-checkbox">
                     <!-- <Checkbox id="financial" class="mr-2" v-model="createdTemplate.financial" :binary="true"/>
                     <label for="financial">{{$t('hr.doc.financial')}}</label> -->
                     <Checkbox id="needApproval" class="mr-2" v-model="createdTemplate.needApproval" :binary="true"/>
-                    <label for="needApproval">{{$t('doctemplate.needsApproval')}}</label>
+                    <label for="needApproval">{{ $t('doctemplate.needsApproval') }}</label>
                   </div>
                   <div class="field" v-if="createdTemplate.needApproval">
                     <ApprovalUsers :mode="'doc_template_creating'" v-model="initialApprovalStages"
@@ -76,9 +76,9 @@
               <Column field="name" v-bind:header="$t('common.name')">
                 <template #body="slotProps">
                   <Button class="p-button-link" style="text-align:left" v-if="selectMode && slotProps.node.data.type===0"
-                          @click="select($event,slotProps.node)" v-tooltip.bottom="$t('common.choose')">{{slotProps.node.data.name}}
+                          @click="select($event,slotProps.node)" v-tooltip.bottom="$t('common.choose')">{{ slotProps.node.data.name }}
                   </Button>
-                  <span v-else>{{slotProps.node.data.name}}</span>
+                  <span v-else>{{ slotProps.node.data.name }}</span>
                   <!-- <span class="sm-visible"> /{{slotProps.node.data.typeText}}</span> -->
                   <!-- <span  v-if="slotProps.node.data.state!=null" class="sm-visible"> /{{slotProps.node.data.state}}</span> -->
                   <!-- <span v-if="slotProps.node.data.financial" class="sm-visible">/ <i class="fa-regular fa-money-bill-1"></i></span>  -->
@@ -89,7 +89,7 @@
               <Column field="code" v-bind:header="$t('common.code')" headerClass="sm-invisible" bodyClass="sm-invisible"></Column>
               <Column v-if="!selectMode" field="createdDate" v-bind:header="$t('common.created')" headerClass="sm-invisible" bodyClass="sm-invisible">
                 <template #body="slotProps">
-                  {{slotProps.node.data.createdDate ? slotProps.node.data.createdDate.replace('Z', '').replace('T', ' '): ''}}
+                  {{ slotProps.node.data.createdDate ? slotProps.node.data.createdDate.replace('Z', '').replace('T', ' ') : '' }}
                 </template>
               </Column>
               <!-- <Column field="financial"  headerStyle="width: 2em"  headerClass="sm-invisible" bodyClass="sm-invisible">
@@ -104,7 +104,7 @@
               </Column> -->
               <Column v-if="!selectMode" field="state" v-bind:header="$t('common.state')" headerClass="sm-invisible" bodyClass="sm-invisible">
                 <template #body="slotProps">
-                  <span :class="'template-status ' + slotProps.node.data.stateEn"> {{slotProps.node.data.state}}</span>
+                  <span :class="'template-status ' + slotProps.node.data.stateEn"> {{ slotProps.node.data.state }}</span>
                 </template>
 
               </Column>
@@ -163,9 +163,9 @@
 
               <SelectButton @change="languageChanged" v-model="templateLanguage" :options="language" class="mb-3">
                 <template #option="slotProps">
-                  <div v-if="slotProps.option === 'kz'">{{$t('common.language.kz')}}</div>
-                  <div v-else-if="slotProps.option === 'ru'">{{$t('common.language.ru')}}</div>
-                  <div v-else>{{$t('common.language.en')}}</div>
+                  <div v-if="slotProps.option === 'kz'">{{ $t('common.language.kz') }}</div>
+                  <div v-else-if="slotProps.option === 'ru'">{{ $t('common.language.ru') }}</div>
+                  <div v-else>{{ $t('common.language.en') }}</div>
                 </template>
               </SelectButton>
               <Button v-if="selectMode && selectedNode.data.type!=1" icon="pi pi-check-circle" class="p-button-success ml-2"
@@ -225,9 +225,9 @@
             <Dialog :modal="true" v-bind:header="$t('common.toapprove')" v-model:visible="dialogOpenState.toApproval" :style="{width: '50vw'}">
               <div class="p-fluid">
                 <div class="field">
-                  <label for="dialognote">{{$t('common.comment')}}</label>
+                  <label for="dialognote">{{ $t('common.comment') }}</label>
                   <InputText id="dialognote" class="mb-2" v-bind:placeholder="$t('common.comment')" v-model="dialogNote" type="text"/>
-                  <label for="approvingusers">{{$t('doctemplate.approvingUsers')}}</label>
+                  <label for="approvingusers">{{ $t('doctemplate.approvingUsers') }}</label>
                   <FindUser v-model="selectedUsers" :userType="2" :roles="'legal_service_head'" id="approvingusers"></FindUser>
                 </div>
               </div>
@@ -240,7 +240,7 @@
             <Dialog :modal="true" v-bind:header="$t('common.revision')" v-model:visible="dialogOpenState.revision" :style="{width: '50vw'}">
               <div class="p-fluid">
                 <div class="field">
-                  <label for="dialognote">{{$t('common.comment')}}</label>
+                  <label for="dialognote">{{ $t('common.comment') }}</label>
                   <InputText id="dialognote" class="mb-2" v-bind:placeholder="$t('common.comment')" v-model="revisionComment" type="text"/>
                 </div>
               </div>
@@ -260,7 +260,7 @@
               </div>
             </Dialog>
             <Dialog :header="$t('common.comment')" v-model:visible="dialogOpenState.dialogComment" :style="{width: '50vw'}">
-              <p>{{(selectedNode.data.comment && selectedNode.data.comment != '') ? selectedNode.data.comment : $t('common.noComment')}}</p>
+              <p>{{ (selectedNode.data.comment && selectedNode.data.comment != '') ? selectedNode.data.comment : $t('common.noComment') }}</p>
               <template #footer>
                 <div style="text-align:right">
                   <Button label="OK" icon="pi pi-check" @click="closeForm('dialogComment')" class="p-button-text"/>
@@ -787,7 +787,6 @@ export default {
       }
       this.loading = true;
       url += stateFilter
-      console.log(url)
       this.docTemplateService.initApiCall(url).then(res => {
         let treeData = [];
         res.data.forEach(el => {

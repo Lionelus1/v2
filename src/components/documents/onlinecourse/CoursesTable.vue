@@ -9,7 +9,7 @@
         @page="onPage">
         <template #header>
           <div class="sm:flex block justify-content-between">
-            <Button class="mr-2" v-if="findRole(null, 'online_course_administrator') && dic_course_type == 2" :label="$t('common.updateGES')" @click="getOod()" /> 
+            <Button class="mr-2" v-if="findRole(null, 'online_course_administrator') && dic_course_type == 2" :label="$t('common.updateGES')" @click="getOod()" />
         <div>
           <span  v-if="findRole(null,'online_course_administrator')" class="p-input-icon-left mr-2">
               <i class="pi pi-search"/>
@@ -31,7 +31,7 @@
             {{ body.data['description' + $i18n.locale] }}
           </template>
         </Column>
-        <Column v-if="findRole(null, 'online_course_administrator') && dic_course_type == 2">   
+        <Column v-if="findRole(null, 'online_course_administrator') && dic_course_type == 2">
           <template #body="body">
             <Checkbox v-model="body.data.give_certificate" @change="pushAndDeleteGiveCertificates(body.data)"
               :binary="true" />
@@ -54,11 +54,11 @@
 </template>
   
 <script>
-import axios from 'axios';
 import Checkbox from '@/main';
 import { OnlineCourseService } from "@/service/onlinecourse.service";
 import { getHeader, smartEnuApi, findRole } from "@/config/config";
 import {TitleBlock} from "@/components/TitleBlock"
+
 export default {
   name: 'CoursesTable',
   components: {},
@@ -160,16 +160,14 @@ export default {
     },
     getCourses() {
       this.tableLoading = true
-
-      axios.post(smartEnuApi + '/onlinecourse/courses', {
+      const req = {
         page: this.page,
         rows: this.rows,
         categoryID: this.categoryId,
         lang: this.$i18n.locale,
         searchText: this.searchText,
-      }, {
-        headers: getHeader()
-      }).then(res => {
+      }
+      this.service.getCourses(req).then(res => {
         let counter = 0
         this.courses = res.data.courses
         this.courses.map((e) => {
@@ -192,10 +190,7 @@ export default {
         this.courses = []
         this.total = 0
         this.selectedCourse = null
-
-        if (err.response && err.response.status == 401) {
-          this.$store.dispatch("logLout")
-        } else if (err.response && err.response.data && err.response.data.localized) {
+        if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
           console.log(err)

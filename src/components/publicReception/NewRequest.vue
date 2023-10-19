@@ -168,8 +168,7 @@ export default {
       this.request.count = 0
       this.request.language = this.$i18n.locale
       fd.append('question', JSON.stringify({question: this.request, count: this.request.count}));
-      axios.post(smartEnuApi + "/reception/sendQuestion", fd)
-          .then(resp => {
+      this.receptionService.sendQuestion(fd).then(resp => {
             this.request.number = resp.data
             this.uploading = false;
             this.$refs.captcha.reset()

@@ -205,6 +205,14 @@ export default {
     moment: moment,
     getData() {
       this.loading = true;
+      const savedPage = localStorage.getItem('currentPage');
+      const savedPage2 = localStorage.getItem('pageFirst');
+      if (savedPage) {
+        this.currentPage = parseInt(savedPage, 10);
+        this.pageFirst = parseInt(savedPage2, 10);
+        this.lazyParams.page = this.currentPage
+        this.lazyParams.first = this.pageFirst
+      }
       this.receptionService.questions(this.lazyParams).then((response) => {
         this.data = response.data.items;
         this.total = response.data.total;
