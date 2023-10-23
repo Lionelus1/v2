@@ -492,7 +492,8 @@ export default {
                 users: null,
                 courseID: this.course.id,
                 comment: "",
-                withApplication: withApplication
+                withApplication: withApplication,
+                lastNumber: parseInt(this.organizer.lastNumber)
             }).then(_ => {
                 this.saving = false;
                 this.submitted = false;

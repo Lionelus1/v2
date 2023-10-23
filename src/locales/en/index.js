@@ -1242,6 +1242,8 @@ export default {
         journal: 'Journal',
         addCourse: 'Add to the course',
         completedTraining: 'Completed training',
+        course: 'Course',
+        certName: 'Certificate'
     },
     roleControl:{
         addSidebar: 'Adding new record',

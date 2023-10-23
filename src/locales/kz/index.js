@@ -1252,6 +1252,8 @@ export default {
         journal: 'Журнал',
         addCourse: 'Курсқа қосу',
         completedTraining: 'Оқуды аяқтады',
+        course: 'Курс',
+        certName: 'Сертификат'
     },
     roleControl:{
         addSidebar: 'Жаңа жазбаны қосу',

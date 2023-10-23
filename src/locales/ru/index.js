@@ -1240,6 +1240,8 @@ export default {
         journal: 'Журнал',
         addCourse: 'Добавить в курс',
         completedTraining: 'Прошел обучение',
+        course: 'Курс',
+        certName: 'Сертификат'
     },
     roleControl: {
         addSidebar: 'Добавление новой записи',
