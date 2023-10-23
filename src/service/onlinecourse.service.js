@@ -60,21 +60,24 @@ export class OnlineCourseService {
         return api.post('/onlinecourse/deleteModule', {id: parseInt(id)}, {headers:getHeader()});
     }
     updateModuleOfCourse(data){
-        return api.post('onlinecourse/updateModule', data, {headers:getHeader()});
+        return api.post('/onlinecourse/updateModule', data, {headers:getHeader()});
     }
     updateCourseOrganizerLastNumber(data){
-        return api.post('onlinecourse/organizers/updateLastNumber', data, {headers:getHeader()});
+        return api.post('/onlinecourse/organizers/updateLastNumber', data, {headers:getHeader()});
     }
     getCourseOrganizerByCourseID(courseID) {
-        return api.get(`onlinecourse/organizers/${courseID}`, {headers: getHeader()});
+        return api.get(`/onlinecourse/organizers/${courseID}`, {headers: getHeader()});
     }
     getOod() {
-        return api.get(`onlinecourse/getOod`, {headers: getHeader()});
+        return api.get(`/onlinecourse/getOod`, {headers: getHeader()});
     }
     getStudentCertificates() {
-        return api.get('onlinecourse/getStudentCertificates', {headers: getHeader()});
+        return api.get('/onlinecourse/getStudentCertificates', {headers: getHeader()});
     }
     updateCourseGiveCertificates(data){
-        return api.post('onlinecourse/updateCourse/giveCertificate', data, {headers:getHeader()});
+        return api.post('/onlinecourse/updateCourse/giveCertificate', data, {headers:getHeader()});
+    }
+    createCourse(data) {
+        return api.post('/onlinecourse/addCourse', data, {headers:getHeader()});
     }
 }
