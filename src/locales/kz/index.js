@@ -1236,6 +1236,7 @@ export default {
             getQr: "QR алу",
             confirm: "Сертификатты ҚОСЫМШАСЫЗ беру керек пе?",
             confirm2: "Сертификат ҚОСЫМШАМЕН беріледі, қосымша дұрыс толтырылған ба?",
+            certSelect:"Сертификат сұлбасын көрсету"
         },
         modules:'Курс модульдері',
         module: 'Модуль',
@@ -1253,7 +1254,8 @@ export default {
         addCourse: 'Курсқа қосу',
         completedTraining: 'Оқуды аяқтады',
         course: 'Курс',
-        certName: 'Сертификат'
+        startDate:'Курстың басталу күні',
+        completionDate: 'Курстың аяқталу күні'
     },
     roleControl:{
         addSidebar: 'Жаңа жазбаны қосу',

@@ -82,12 +82,12 @@
                 <small v-if="courseValidate.descriptionen" class="p-error">{{$t('common.requiredField')}}</small>
               </div>
               <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-                <label>{{ $t('hr.id.startDate') }}</label>
+                <label>{{ $t('course.startDate') }}</label>
                 <PrimeCalendar v-model="courseRequest.start_time" :readonly="readonly"  class="mt-2" :placeholder="$t('hr.id.startDate')" dateFormat="dd.mm.yy"/>
                 <small v-if="courseValidate.start_time" class="p-error">{{ $t("common.requiredField") }}</small>
               </div>
               <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-                <label>{{ $t('common.endDate') }}</label>
+                <label>{{ $t('course.completionDate') }}</label>
                 <PrimeCalendar v-model="courseRequest.final_date" :readonly="readonly"  class="mt-2" :placeholder="$t('hr.id.startDate')" dateFormat="dd.mm.yy"/>
                 <small v-if="courseValidate.final_date" class="p-error">{{ $t("common.requiredField") }}</small>
               </div>
@@ -97,7 +97,7 @@
                   <small v-if="courseValidate.hours" class="p-error">{{$t('common.requiredField')}}</small>
               </div>
               <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-                    <label class="mr-2">{{ $t('course.certName') }}</label>
+                    <label class="mr-2">{{ $t('course.certificate.certSelect') }}</label>
                     <Checkbox v-model="checkedCertificate" :binary="true" />
                   <Dropdown :disabled="!checkedCertificate" v-model="courseRequest.certificate_template_id" :options="journal" class="mt-2" :optionLabel="itemLabel" optionValue="id" :placeholder="$t('common.select')"
                   @filter="handleFilter" :filter="true" :showClear="true" dataKey="id" :emptyFilterMessage="$t('roleControl.noResult')"  />

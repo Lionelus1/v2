@@ -1224,6 +1224,7 @@ export default {
             getQr: "Get QR",
             confirm: "Confirm the issuance of a certificate WITHOUT an application?",
             confirm2: "The certificate will be issued With the application, do you confirm the correctness of filling out the application?",
+            certSelect:"Specify the certificate template"
         },
 
         modules:'Сourse modules',
@@ -1243,7 +1244,8 @@ export default {
         addCourse: 'Add to the course',
         completedTraining: 'Completed training',
         course: 'Course',
-        certName: 'Certificate'
+        startDate:'Course start date',
+        completionDate: 'Course completion date'
     },
     roleControl:{
         addSidebar: 'Adding new record',
