@@ -134,7 +134,7 @@ export default {
         bank: {}
         
       },
-      uerService: new UserService(),
+      userService: new UserService(),
       cancelToken : null,
       requests: [],
       request: null,
