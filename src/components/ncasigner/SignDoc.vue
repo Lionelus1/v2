@@ -38,6 +38,7 @@
     import SuccessSign from "./SuccessSign";
     import {DocService} from "@/service/doc.service"
     import {SignatureService} from "@/service/signature.service"
+    import axios from "axios";
 
     export default {
         components: {SuccessSign, DocIdNotExist},
@@ -130,11 +131,10 @@
                 }
             },
             addDocument() {
-                const req = {
+                axios.post(signerApi + '/documents', {
                     id: null,
                     name: this.document.name
-                }
-                this.docService.getDocuments(req).then((response) => {
+                }, {headers: header}).then((response) => {
                     if (response.data.id !== null || response.data.id !== '') {
                         console.log(response.data)
                         this.documentID = response.data.uuid
@@ -156,7 +156,7 @@
                     documentUuid: document.uuid,
                     signature: this.CMSSignature
                 }
-                this.signatureService.signature(req).then((response) => {
+                axios.post(signerApi + '/signature', req, {headers: header}).then((response) => {
                     if (response.data === '') {
                         this.$toast.add({severity: 'error', summary: this.$t('ncasigner.notEnoughRights'), life: 3000});
                     } else if (response.data.id !== null || response.data.id !== '') {
@@ -175,7 +175,7 @@
             },
 
             getDocument(docId) {
-                this.docService.getDocument(docId).then((response) => {
+                axios.get(signerApi + '/documents/' + docId, {headers: header}).then((response) => {
                     if (response.data.id !== null || response.data.id !== '') {
                         console.log(response.data)
                         this.documentID = response.data.uuid

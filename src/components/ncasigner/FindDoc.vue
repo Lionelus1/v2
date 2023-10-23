@@ -32,7 +32,8 @@
     import {signerApi, header} from "@/config/config";
     import DocIdNotExist from "./DocIdNotExist";
     import FileHasNoId from "./FileHasNoId";
-import { DocService } from "../../service/doc.service";
+    import { DocService } from "../../service/doc.service";
+    import axios from "axios";  
     export default {
         components: {DocIdNotExist, FileHasNoId},
         data() {
@@ -56,7 +57,7 @@ import { DocService } from "../../service/doc.service";
                 }
             },
             getDocument(docId) {
-                this.docService.getDocument(docId).then((response) => {
+                axios.get(signerApi + '/documents/' + docId, {headers: header}).then((response) => {
                     if (response.data.id !== null || response.data.id !== '') {
                         this.$router.push({path: "/ncasigner/showdoc/" + btoa(response.data.uuid)})
                     } else {

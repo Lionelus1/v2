@@ -13,7 +13,7 @@
 import {identifyOIDs} from "../../helpers/SignDocFunctions";
 import {signerApi, header} from "@/config/config";
 import {SignatureService} from "@/service/signature.service"
-
+import axios from "axios";
 export default {
     props:['signature'],
     data() {
@@ -31,7 +31,7 @@ export default {
     },
     methods: {
         getSignerInfo() {
-            this.signatureService.signerInfo(this.signature.id).then((response) => {
+            axios.get(signerApi + '/signature/signer/info/' + this.signature.id, {headers: header}).then((response) => {
                 if(response.data.serialNumber !== null || response.data.serialNumber !=='') {
                     console.log(response.data)
                     this.identifier = response.data.serialNumber.replace('IIN', '')

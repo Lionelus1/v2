@@ -77,6 +77,7 @@
     import {NCALayerClient} from "ncalayer-js-client";
     import {SignatureService} from "@/service/signature.service"
     import {DocService} from "@/service/doc.service"
+    import axios from "axios";
     export default {
         components: {IncorrectFile, DocInfo, SignerInfo},
         data() {
@@ -128,7 +129,7 @@
                     documentUuid: this.id,
                     plainData: arrayBufferToB64(documentByteArray)
                 }
-                this.signatureService.signatureCmsVerify(req).then((response) => {
+                axios.post(signerApi + '/signature/cms/verify', req, {headers: header}).then((response) => {
                     console.log(response)
                     if (response.data.code === 1) {
                         if(!withSigning) {
@@ -162,7 +163,7 @@
                 }
             },
             getSignatures() {
-                this.signatureService.signatures(this.id).then((response) => {
+                axios.get(signerApi + '/signature/signatures/' + this.id, {headers: header}).then((response) => {
                     if (response.data !== null || response.data !== '') {
                         this.signatures = response.data
                     } else {
@@ -180,7 +181,7 @@
                     documentUuid: this.id,
                     signature: this.CMSSignature
                 }
-                this.signatureService.signature(req).then((response) => {
+                axios.post(signerApi + '/signature', req, {headers: header}).then((response) => {
                     if (response.data.id !== null || response.data.id !== '') {
                         this.isSuccess = true
                         this.active = 0
@@ -192,7 +193,7 @@
                 });
             },
             getDocument(docId) {
-                this.docService.getDocument(docId).then((response) => {
+                axios.get(signerApi + '/documents/' + docId, {headers: header}).then((response) => {
                     if (response.data.id !== null || response.data.id !== '') {
                         this.currentDocument = response.data
                     } else {
