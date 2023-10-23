@@ -33,7 +33,7 @@ export class DocService {
         return api.post("/doc/removeFile", data, {headers: getHeader()});
     }
     docUpdateFile(data) {
-        return api.post("/doc/updateFile", data, {headers: getHeader()});
+        return api.post("/doc/updateFile", data, {headers:  getFileHeader()});
     }
 
     docDeleteFile(data) {
@@ -52,7 +52,7 @@ export class DocService {
     }
 
     documents(data) {
-        return api.post("/doc/showFile", data, {headers: getHeader()});
+        return api.post("/documents", data, {headers: getHeader()});
     }
     documentDelete(data) {
         return api.post("/document/delete", data, {headers: getHeader()});

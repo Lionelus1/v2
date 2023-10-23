@@ -30,4 +30,7 @@ export class UserService {
     addDepartment(data) {
         return api.post('/add-department',data, {headers: getHeader()});
     }
+    getDepartments(data) {
+        return api.post('/getdepartments', data, {headers: getHeader()})
+    }
  }
