@@ -15,7 +15,7 @@
         <div class="p-field pb-3">
           <label>{{ this.$t("roleControl.employeeLabel") }}</label>
           <div>
-            <FindUser v-model="employee" :max="1"/>
+            <FindUser v-model="employee" :userType="3" :max="1"/>
             <!-- <InputMask v-model="iin" :placeholder="this.$t('roleControl.employeeIIN')" mask="999999999999"/>
             <Button icon="pi pi-search" class="p-button-warning" @click="searchEmployee"/> -->
           </div>
