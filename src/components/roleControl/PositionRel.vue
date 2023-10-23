@@ -69,7 +69,7 @@
 			</h5>
             <div>
                 <label>{{ $t('common.fullName') }}</label>
-                <FindUser v-model="user" :max="1"/>
+                <FindUser :userType="3"  v-model="user" :max="1"/>
             </div>
 			<div>
 				<div style="margin-bottom: 0.5rem;">
