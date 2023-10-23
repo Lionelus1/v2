@@ -166,6 +166,7 @@ import { getHeader, smartEnuApi } from "@/config/config";
 import { getShortDateString, getLongDateString } from "@/helpers/helper";
 import Enum from "@/enum/docstates/index";
 
+import { DocService } from "@/service/doc.service";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo";
 import FindUser from "@/helpers/FindUser";
 
@@ -175,6 +176,7 @@ export default {
   props: { },
   data() {
     return {
+      service: new DocService(),
       Enum: Enum,
       loginedUser: null,
       paginatorTemplate: "FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink JumpToPageDropdown CurrentPageReport RowsPerPageDropdown",
@@ -473,10 +475,10 @@ export default {
     getContracts() {
       this.tableLoading = true;
 
-      axios.post(smartEnuApi + '/documents', {
+      this.service.getDocuments({
         page: this.page,
         rows: this.rows,
-        // sourceType: this.filter.sourceType,
+        sourceType: this.filter.sourceType,
         docType: this.Enum.DocType.Contract,
         templateId: this.filter.sourceType === Enum.DocSourceType.Template && this.filter.template ? this.filter.template.id : null,
         folderId: this.filter.sourceType === Enum.DocSourceType.FilledDoc && this.filter.folder ? this.filter.folder.id : null,
@@ -487,8 +489,6 @@ export default {
           createdFrom: this.filter.createdFrom,
           createdTo: this.filter.createdTo,
         },
-      }, { 
-        headers: getHeader() 
       }).then(res => {
         this.documents = res.data.documents
         this.total = res.data.total
@@ -528,10 +528,8 @@ export default {
         accept: () => {
           this.loading = true;
           
-          axios.post(smartEnuApi + '/document/delete', {
+          this.service.documentDelete({
             uuid: this.currentDocument.uuid,
-          }, {
-            headers: getHeader()
           }).then(res => {
             this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
             this.getContracts();
@@ -579,13 +577,11 @@ export default {
       }
     },
     getTemplates() {
-      axios.post(smartEnuApi + '/document/templates', {
+      this.service.documentTemplates({
         page: 0,
         rows: 50,
         folderType: Enum.FolderType.Journals,
         searchText: this.templateSearchText,
-      }, { 
-        headers: getHeader() 
       }).then(res => {
         this.templates = res.data.doctemplates
       }).catch(err => {
@@ -602,12 +598,10 @@ export default {
       })
     },
     getFolders() {
-      axios.post(smartEnuApi + '/folders', {
+      this.service.getFolders({
         page: 0,
         rows: 10,
         folderType: Enum.FolderType.FilledDoc,
-      }, { 
-        headers: getHeader() 
       }).then(res => {
         this.folders = res.data.folders
       }).catch(err => {
