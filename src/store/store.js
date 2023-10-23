@@ -1,7 +1,7 @@
-import { createStore } from "vuex"
+import {createStore} from "vuex"
 import createPersistedState from 'vuex-persistedstate'
 import axios from "axios";
-import { getHeader, smartEnuApi } from "@/config/config";
+import {getHeader, smartEnuApi} from "@/config/config";
 import router from '@/router';
 
 
@@ -11,7 +11,7 @@ const store = createStore({
 
         loginedUser: {},
         token: "",
-        attemptedUrl:"",
+        attemptedUrl: "",
         userSlug: {}
     },
     mutations: {
@@ -22,13 +22,13 @@ const store = createStore({
             state.token = JSON.parse(window.localStorage.getItem('authUser')).access_token;
 
         },
-        SOLVE_ATTEMPT(state,data){
-            state.attemptedUrl=data;
+        SOLVE_ATTEMPT(state, data) {
+            state.attemptedUrl = data;
         },
         LOG_OUT_SYSTEM(globalState) {
-            globalState.loginedUser={};
+            globalState.loginedUser = {};
             globalState.token = "";
-            axios.post(smartEnuApi + "/logoutsystem", {}, { headers: getHeader() })
+            axios.post(smartEnuApi + "/logoutsystem", {}, {headers: getHeader()})
                 .then(() => {
                     localStorage.removeItem('authUser');
                     localStorage.removeItem('loginedUser');
@@ -36,7 +36,7 @@ const store = createStore({
                     localStorage.removeItem('contractFilters');
                     localStorage.removeItem('userSlug')
                     localStorage.removeItem('selectedSlug')
-                    router.push({ "name": "PublicVacancies" })
+                    router.push({"name": "PublicVacancies"})
                 })
                 .catch((err) => {
                     //alert(JSON.stringify(err))
@@ -44,8 +44,8 @@ const store = createStore({
                     localStorage.removeItem('loginedUser');
                     localStorage.removeItem('userSlug');
                     localStorage.removeItem('selectedSlug')
-                
-                    router.push({ "path": "/login" })
+
+                    router.push({"name": "/login"})
                 })
 
         },
@@ -59,15 +59,24 @@ const store = createStore({
             const tokenData = JSON.parse(window.localStorage.getItem("authUser"));
             let authUser = {}
             axios.post("/refreshToken", {
-              refresh_token: tokenData.refresh_token,
+                refresh_token: tokenData.refresh_token,
             }).then(res => {
-              authUser.access_token = res.data.access_token;
-              authUser.refresh_token = res.data.refresh_token;
-              window.localStorage.setItem('authUser', JSON.stringify(authUser));
+                authUser.access_token = res.data.access_token;
+                authUser.refresh_token = res.data.refresh_token;
+                window.localStorage.setItem('authUser', JSON.stringify(authUser));
             }).catch(error => {
                 console.log('refresh token error')
             });
-          }
+        },
+        GET_USER_INFO(state, context) {
+            window.localStorage.removeItem("loginedUser")
+            axios.get(smartEnuApi + '/logineduserinfo', {headers: getHeader()}).then(response => {
+                window.localStorage.setItem("loginedUser", JSON.stringify(response.data));
+                context.commit('SET_LOGINED_USER')
+            }).catch(error => {
+                this.$router.push({name: 'Login'});
+            })
+        }
     },
     actions: {
         setLoginedUser(context) {
@@ -78,13 +87,13 @@ const store = createStore({
             context.commit("LOG_OUT_SYSTEM");
             context.commit("REMOVE_USER_SITE_SLUG")
         },
-        solveAttemptedUrl(context,data){
-            if(data.fullPath){
-                context.commit("SOLVE_ATTEMPT",data.fullPath);
-            }else{
-                context.commit("SOLVE_ATTEMPT","");
+        solveAttemptedUrl(context, data) {
+            if (data.fullPath) {
+                context.commit("SOLVE_ATTEMPT", data.fullPath);
+            } else {
+                context.commit("SOLVE_ATTEMPT", "");
             }
-            
+
         },
         setUserSiteSlug(context) {
             context.commit("USER_SITE_SLUG")
@@ -94,7 +103,10 @@ const store = createStore({
         },
         refreshToken(context) {
             context.commit('REFRESH_TOKEN')
-        }
+        },
+        setNewUserInfo(context) {
+            context.commit('GET_USER_INFO')
+        },
     },
     getters: {
         isAuthenticated: state => !!state.token,

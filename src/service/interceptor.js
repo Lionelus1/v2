@@ -37,6 +37,8 @@ const setup = (store, app) => {
             window.localStorage.setItem("authUser", JSON.stringify(authUser));
             originalRequest.headers.Authorization = `Bearer ${res.data.access_token}`;
 
+            store.dispatch("setNewUserInfo")
+
             originalRequest._retry = true;
             return instance(originalRequest);
           } catch (e) {
