@@ -147,7 +147,7 @@ import DepartmentList from "@/components/smartenu/DepartmentList.vue"
 import PostFolder from "@/components/documents/PostFolder.vue"
 import PostFile from "@/components/documents/PostFile.vue"
 import { DocService } from '../../../service/doc.service';
-
+import {FileService} from "@/service/file.service"
 export default {
   name: 'NormativeDocuments',
   components: { PostFolder, PostFile, DepartmentList },
@@ -201,7 +201,8 @@ export default {
         {value: 'gt'},
         {value: 'equals'}
       ],
-      docService: new DocService()
+      docService: new DocService(),
+      fileService: new FileService()
     }
   },
   mounted() { 
@@ -686,9 +687,9 @@ export default {
 
       this.loading = true
       const req = {
-        ilePath: this.selectedNode.filePath
+        filePath: this.selectedNode.filePath
       }
-      this.docService.docDeleteFile(req).then(res => {
+      this.fileService.downloadFile(req).then(res => {
         let link = document.createElement("a");
         link.href = "data:application/octet-stream;base64," + res.data;
         link.setAttribute("download", this.selectedNode.name);

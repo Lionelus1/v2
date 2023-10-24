@@ -59,7 +59,7 @@ export class DocService {
     }
 
     sendtoapprovebystage(data) {
-        return api.post("/document/sendtoapprovebystage", data, {headers: getHeader()});
+        return api.post("/doc/sendtoapprovebystage", data, {headers: getHeader()});
     }
 
     documentRevision(data) {
