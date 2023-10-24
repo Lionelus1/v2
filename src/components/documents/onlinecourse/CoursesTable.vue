@@ -9,11 +9,11 @@
         @page="onPage">
         <template #header>
           <div class="sm:flex block justify-content-between">
-            <Button v-if="findRole(null,'online_course_administrator')"
+            <Button v-if="findRole(null,'online_course_administrator') && dic_course_type == 1"
                 class="p-button-success mb-2" icon="pi pi-plus" :label="$t('common.add')"
                 @click="addCourse"/>
-            <!-- <Button class="mr-2" v-if="findRole(null, 'online_course_administrator')" :label="$t('common.updateGES')" @click="getOod()" /> -->
-            <!-- <Button class="mt-2" v-if="findRole(null, 'online_course_administrator')" :label="$t('common.save')"
+            <!-- <Button class="mr-2" v-if="findRole(null, 'online_course_administrator')" :label="$t('common.updateGES')" @click="getOod()" />
+            <Button class="mt-2" v-if="findRole(null, 'online_course_administrator')" :label="$t('common.save')"
             @click="updateCourseGiveCertificates()" /> -->
           </div>
         </template>
@@ -149,6 +149,7 @@ export default {
       service: new OnlineCourseService(),
       give_certificates: [],
       selectAllChecked: true,
+      dic_course_type: null,
       courseDialog: false,
       courseRequest: {
         namekz: '',
@@ -279,6 +280,7 @@ export default {
             this.selectAllChecked = true
           }
         })
+        this.dic_course_type = res.data.dic_course_type
         this.total = res.data.total
         this.selectedCourse = null
 
