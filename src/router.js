@@ -696,7 +696,18 @@ const routes = [
                 component: () => import('./components/QrGenerator.vue'),
                 beforeEnter: ifAuthenticated,
             },
-                
+            {
+                path: '/integrations',
+                name: 'IntegrationList',
+                component: load('integration/IntegrationList'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/integrations/params',
+                name: 'IntegrationParams',
+                component: load('integration/IntegrationParams'),
+                beforeEnter: ifAuthenticated,
+            }
         ]
     },
    
