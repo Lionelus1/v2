@@ -37,6 +37,7 @@
 <script>
 	import {smartEnuApi, getHeader} from "@/config/config";
 	import axios from 'axios';
+    import {DicService} from "@/service/dic.service"
 
 	export default {
     inheritAttrs: false,
@@ -81,6 +82,7 @@
 							name : "",
 						},
 						searchInProgres: false,
+                        dicService: new DicService()
         };
     },
     methods: {
@@ -97,16 +99,11 @@
 			this.$refs.op.toggle(event);
 			this.searchInProgres = true;
 			let url = "/getspecialities";
-			axios.post(smartEnuApi+url, { 
+            const req = { 
                 "name" : inputValue, 
                 "level" : this.educationLevel
-                }, 
-                {
-                    headers: getHeader(),
-                    cancelToken: this.cancelToken.token 
                 }
-            )
-            .then(response=>{
+            this.dicService.getspecialities(req, this.cancelToken.token).then(response=>{
                 this.foundSpecialists = response.data;
 			    this.searchInProgres = false;
 

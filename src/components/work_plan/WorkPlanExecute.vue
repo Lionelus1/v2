@@ -102,6 +102,7 @@
 import {getHeader, getMultipartHeader, smartEnuApi} from "@/config/config";
 import RichEditor from "../documents/editor/RichEditor";
 import {WorkPlanService} from '../../service/work.plan.service'
+import { FileService } from "../../service/file.service";
 
 export default {
   name: "WorkPlanExecute",
@@ -123,7 +124,8 @@ export default {
       newResult: null,
       fact: null,
       isBlockUI: false,
-      planService: new WorkPlanService()
+      planService: new WorkPlanService(),
+      fileService: new FileService()
     }
   },
   methods: {
@@ -291,10 +293,7 @@ export default {
     },
     downloadFile(filePath) {
       this.isBlockUI = true;
-      fetch(smartEnuApi + `/serve?path=${filePath}`, {
-        method: 'GET',
-        headers: getHeader()
-      }).then(response => response.blob())
+      this.fileService.serve(filePath).then(response => response.blob())
           .then(blob => {
             var url = window.URL.createObjectURL(blob);
             var a = document.createElement('a');
