@@ -44,7 +44,7 @@ export default {
       const fd = new FormData();
       fd.append('myFile', event.files[0]);
       fd.append('filePath', this.dir ? this.dir + '/' + event.files[0].name : event.files[0].name);
-      this.fileService.upload(fd).then((r) => {
+      this.fileService.uploadFile(fd).then((r) => {
         console.log(r.data.path)
         if (r.data?.isUpload !== false) {
           this.onUpload();

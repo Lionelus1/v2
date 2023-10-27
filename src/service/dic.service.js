@@ -31,4 +31,8 @@ export class DicService {
     knowledgeLevels(data) {
         return api.post("/auth/getDictionary", data, { headers: getHeader()});
     }
+
+    getspecialities(data, cancelToken) {
+        return api.post("/getspecialities", data, { headers: getHeader(), cancelToken: cancelToken});
+    }
 }

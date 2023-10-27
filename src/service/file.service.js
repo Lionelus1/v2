@@ -26,6 +26,10 @@ export class FileService {
     }
 
     upload(data) {
-        return api.post("/upload", data, {headers: getHeader()})
+        return api.post("/upload", data, {headers: getHeader(), 'Content-Type': 'multipart/form-data'})
+    }
+
+    serve(path) {
+        return api.get("/serve?path="+path, {headers: getHeader()})
     }
 }

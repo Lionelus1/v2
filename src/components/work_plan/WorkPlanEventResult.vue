@@ -254,6 +254,7 @@ import {getMultipartHeader} from "../../config/config";
 import RichEditor from "../documents/editor/RichEditor";
 import moment from "moment";
 import {WorkPlanService} from '../../service/work.plan.service'
+import { FileService } from "../../service/file.service";
 
 export default {
   name: "WorkPlanEventResult",
@@ -288,7 +289,8 @@ export default {
       isPlanCreator: false,
       isPlanCreatorApproval: false,
       isCurrentUserApproval: false,
-      planService: new WorkPlanService()
+      planService: new WorkPlanService(),
+      fileService: new FileService()
     }
   },
   computed: {
@@ -727,11 +729,7 @@ export default {
     downloadFile(file) {
       this.isBlockUI = true;
       let url = `${smartEnuApi}/serve?path=${file.event_result_file}`
-      fetch(url, {
-        method: 'GET',
-        headers: getHeader()
-      })
-          .then(response => response.blob())
+      this.fileService.serve(this.file.event_result_file).then(response => response.blob())
           .then(blob => {
             var url = window.URL.createObjectURL(blob);
             var a = document.createElement('a');

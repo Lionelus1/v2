@@ -91,6 +91,7 @@
 import {getHeader, smartEnuApi} from "@/config/config";
 import WorkPlanEventResult from "./WorkPlanEventResult";
 import {WorkPlanService} from "@/service/work.plan.service";
+import { FileService } from "../../service/file.service";
 
 export default {
   name: "WorkPlanEventResultModal",
@@ -134,7 +135,8 @@ export default {
       loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID,
       rejectComment: null,
       isBlockUI: false,
-      planService: new WorkPlanService()
+      planService: new WorkPlanService(),
+      fileService: new FileService()
     }
   },
   methods: {
@@ -161,10 +163,7 @@ export default {
         filePath = item.event_result_file;
       }
       this.isBlockUI = true;
-      fetch(smartEnuApi + `/serve?path=${filePath}`, {
-        method: 'GET',
-        headers: getHeader()
-      }).then(response => response.blob())
+      this.fileService.serve(filePath).then(response => response.blob())
           .then(blob => {
             let url = window.URL.createObjectURL(blob);
             let a = document.createElement('a');
