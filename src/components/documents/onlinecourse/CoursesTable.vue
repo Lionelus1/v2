@@ -9,6 +9,9 @@
         @page="onPage">
         <template #header>
           <div class="sm:flex block justify-content-between">
+            <Button v-if="findRole(null,'online_course_administrator') && dic_course_type == 1"
+                    class="p-button-success mb-2" icon="pi pi-plus" :label="$t('common.add')"
+                    @click="addCourse"/>
             <Button class="mr-2" v-if="findRole(null, 'online_course_administrator') && dic_course_type == 2" :label="$t('common.updateGES')" @click="getOod()" />
         <div>
           <span  v-if="findRole(null,'online_course_administrator')" class="p-input-icon-left mr-2">
