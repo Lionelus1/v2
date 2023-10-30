@@ -64,7 +64,7 @@ const openDialog = () => {
         <label for="open_comment">{{ $t('common.comment') }}</label>
         <Textarea id="open_comment" v-model="closeCouncil.close_comment"
                   :placeholder="$t('dissertation.councilComment')" rows="3" cols="20" style="resize: vertical" />
-        <small class="p-error" v-if="submitted && closeValid.comment">{{ $t('common.required') }}</small>
+        <small class="p-error" v-if="submitted && closeValid.commen+t">{{ $t('common.required') }}</small>
       </div>
     </div>
     <template #footer>
