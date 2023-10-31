@@ -19,6 +19,8 @@ const formData = ref({})
 
 const showDialog = ref(false)
 
+const options = ref(['Off', 'On']);
+
 const lazyParams = ref({
   page: 0,
   rows: 10
@@ -103,6 +105,11 @@ onMounted(() => {
             <a href="javascript:void(0)" @click="navigateToView(data)">
               {{ data['name_' + locale] }}
             </a>
+          </template>
+        </Column>
+        <Column field="is_active">
+          <template #body="{data}">
+            <SelectButton v-model="data.is_active" :options="options" :value="'Работает'" aria-labelledby="basic" />
           </template>
         </Column>
         <Column class="text-right">
