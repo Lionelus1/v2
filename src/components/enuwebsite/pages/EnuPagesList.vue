@@ -1,28 +1,25 @@
 <template>
   <ConfirmPopup group="deleteResult"></ConfirmPopup>
   <div class="col-12">
-    <TitleBlock :title="$t('web.pageLink')"/>
-    <div class="card">
-      <Button :label="$t('web.addPage')" icon="pi pi-plus" class="ml-2" @click="createPage"/>
+    <TitleBlock :title="$t('web.pageLink')" />
+    <div class="card" v-if="isWebAdmin || isWebFacAdmin" >
+      <Button :label="$t('web.addPage')" icon="pi pi-plus" class="ml-2" @click="createPage" />
     </div>
-
-    <div class="card" v-if="findRole(null,'enu_web_admin')">
-      <SelectSiteSlug @onSelect="onSlugSelect"/>
+    <div class="card" v-if="findRole(null, 'enu_web_admin')">
+      <SelectSiteSlug @onSelect="onSlugSelect" />
     </div>
-
     <div class="card">
       <TabView>
         <TabPanel :header="$t('web.properties')">
-          <DataTable :value="pages" responsiveLayout="scroll" :lazy="true" dataKey="enu_page_id"
-                     :loading="loading" :rows="10" :rowHover="true" :paginator="true" :totalRecords="total"
-                     @page="onPage" @sort="onSort">
+          <DataTable :value="pages" responsiveLayout="scroll" :lazy="true" dataKey="enu_page_id" :loading="loading"
+            :rows="10" :rowHover="true" :paginator="true" :totalRecords="total" @page="onPage" @sort="onSort">
             <template #header>
               <div class="text-right">
                 <div class="p-input-icon-left">
-                  <i class="pi pi-search"/>
-                  <InputText type="search" v-model="lazyParams.searchText"
-                             :placeholder="$t('common.search')" @search="getPages"/>
-                  <Button icon="pi pi-search" class="ml-1" @click="getPages"/>
+                  <i class="pi pi-search" />
+                  <InputText type="search" v-model="lazyParams.searchText" :placeholder="$t('common.search')"
+                    @search="getPages" />
+                  <Button icon="pi pi-search" class="ml-1" @click="getPages" />
                 </div>
               </div>
             </template>
@@ -32,7 +29,7 @@
               <template #body="{ data }">
                 {{
                   $i18n.locale === 'kz' ? data.title_kz : $i18n.locale === 'ru' ? data.title_ru :
-                      data.title_en
+                  data.title_en
                 }}
               </template>
             </Column>
@@ -54,13 +51,13 @@
             </Column> -->
             <Column header="" style="text-align: right;">
               <template #body="{ data }">
-                  <ActionButton :show-label="true" :items="initItems" @toggle="toggle(data)" />
+                <ActionButton :show-label="true" :items="initItems" @toggle="toggle(data)" />
               </template>
             </Column>
           </DataTable>
         </TabPanel>
         <TabPanel :header="$t('web.history')" @click="getTableLogs()">
-          <WebLogs :TN="TN" :key="TN"/>
+          <WebLogs :TN="TN" :key="TN" />
         </TabPanel>
       </TabView>
 
@@ -74,11 +71,11 @@
 </template>
 
 <script>
-import {EnuWebService} from "@/service/enu.web.service";
+import { EnuWebService } from "@/service/enu.web.service";
 import PageView from "@/components/enuwebsite/PageView.vue";
-import {formatDate} from "@/helpers/HelperUtil";
-import {FileService} from "../../../service/file.service";
-import {downloadRoute, findRole, fileRoute, getHeader, smartEnuApi} from "../../../config/config";
+import { formatDate } from "@/helpers/HelperUtil";
+import { FileService } from "../../../service/file.service";
+import { downloadRoute, findRole, fileRoute, getHeader, smartEnuApi } from "../../../config/config";
 import WebLogs from "@/components/enuwebsite/EnuSiteLogs.vue";
 import AddPage from "@/components/enuwebsite/pages/AddPage.vue";
 import TitleBlock from "@/components/TitleBlock.vue";
@@ -87,7 +84,7 @@ import ActionButton from "@/components/ActionButton.vue";
 
 export default {
   name: "EnuPagesList",
-  components: {ActionButton, SelectSiteSlug, TitleBlock, AddPage, PageView, WebLogs},
+  components: { ActionButton, SelectSiteSlug, TitleBlock, AddPage, PageView, WebLogs },
   data() {
     return {
       pages: [],
@@ -104,6 +101,8 @@ export default {
       loading: false,
       enuService: new EnuWebService(),
       formValid: [],
+      isWebAdmin: findRole(this.$store.state.loginedUser, 'enu_web_admin'),
+      isWebFacAdmin: findRole(this.$store.state.loginedUser, 'enu_web_fac_admin'),
       selectedPage: {
         enu_page_id: null,
         title_kz: null,
@@ -119,7 +118,8 @@ export default {
         searchText: null,
         sortField: null,
         sortOrder: 0,
-        slug: localStorage.getItem('selectedSlug') ? JSON.parse(localStorage.getItem('selectedSlug')).slug : null
+        slug: localStorage.getItem('selectedSlug') ? JSON.parse(localStorage.getItem('selectedSlug')).slug : null,
+        responsibleUserId: this.setResponsibleUserId()
       },
       total: 0,
       fileService: new FileService(),
@@ -129,13 +129,14 @@ export default {
   },
   created() {
     this.getPages();
+    this.setResponsibleUserId()
   },
   mounted() {
     this.emitter.on('pageViewModalClose', data => {
       this.pageView = data;
     });
     this.emitter.on('pageCreateEditMsg', () => {
-      this.$toast.add({severity: "success", summary: this.$t("common.success"), life: 3000});
+      this.$toast.add({ severity: "success", summary: this.$t("common.success"), life: 3000 });
     })
     this.emitter.on('pageCreated', _ => {
       this.display = false;
@@ -145,6 +146,12 @@ export default {
   methods: {
     findRole,
     formatDate,
+    setResponsibleUserId() {
+      if (findRole(this.$store.state.loginedUser, 'enu_web_page_admin')) {
+        let userID = this.$store.state.loginedUser.userID;
+        return userID;
+      }
+    },
     getPages() {
       this.loading = true;
       this.enuService.getAllPages(this.lazyParams).then(res => {
@@ -156,7 +163,7 @@ export default {
         this.loading = false;
       }).catch(error => {
         this.loading = false;
-        this.$toast.add({severity: "error", summary: error, life: 3000});
+        this.$toast.add({ severity: "error", summary: error, life: 3000 });
       });
     },
     onPage(event) {
@@ -195,14 +202,14 @@ export default {
         }
         this.getPages();
       }).catch(error => {
-        this.$toast.add({severity: "error", summary: error, life: 3000});
+        this.$toast.add({ severity: "error", summary: error, life: 3000 });
       });
       this.deleteVisible = false;
 
     },
     onView(data) {
       if (data.is_landing) {
-        this.$router.push({name: 'LandingPageView', params: {id: data.enu_page_id}})
+        this.$router.push({ name: 'LandingPageView', params: { id: data.enu_page_id } })
       } else {
         this.selectedPage = data;
         this.pageView = true;
@@ -212,7 +219,7 @@ export default {
       /*this.addButtonName = this.onSavePage;
       this.display = true;
       this.formData = data;*/
-      this.$router.push({name: 'EditPage', params: {id: data.enu_page_id, pageData: data}});
+      this.$router.push({ name: 'EditPage', params: { id: data.enu_page_id, pageData: data } });
     },
     onSlugSelect(event) {
       this.lazyParams.slug = event.slug;
@@ -222,34 +229,36 @@ export default {
       this.actionsNode = node
     },
   },
-    computed: {
-        initItems() {
-            return [
-                {
-                    label: this.$t('common.show'),
-                    icon: 'fa-solid fa-eye',
-                    command: () => {
-                        this.onView(this.actionsNode)
-                    }
-                },
-                {
-                    label: this.$t('common.edit'),
-                    icon: 'fa-solid fa-pen',
-                    command: () => {
-                        this.onEditPage(this.actionsNode)
-                    }
-                },
-                {
-                    label: this.$t('common.delete'),
-                    icon: 'fa-solid fa-trash',
-                    command: () => {
-                        this.delPage(this.actionsNode)
-                    }
-                },
+  computed: {
+    initItems() {
+      return [
+        {
+          label: this.$t('common.show'),
+          icon: 'fa-solid fa-eye',
+          
+          command: () => {
+            this.onView(this.actionsNode)
+          }
+        },
+        {
+          label: this.$t('common.edit'),
+          icon: 'fa-solid fa-pen',
+          command: () => {
+            this.onEditPage(this.actionsNode)
+          }
+        },
+        {
+          label: this.$t('common.delete'),
+          icon: 'fa-solid fa-trash',
+          visible: this.isWebAdmin,
+          command: () => {
+            this.delPage(this.actionsNode)
+          }
+        },
 
-            ];
-        }
+      ];
     }
+  }
 }
 </script>
 
@@ -271,4 +280,5 @@ export default {
 .p-fileupload-row {
   display: flex;
   align-items: center;
-}</style>
+}
+</style>
