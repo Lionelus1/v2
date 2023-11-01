@@ -4,7 +4,7 @@
         <TitleBlock :title="pageTitle" :show-back-button="true"/>
 
         <div class="card" v-if="formData">
-            <div class="field-checkbox mt-3">
+            <div v-if="isWebAdmin || isFacultyWebAdmin" class="field-checkbox mt-3">
                 <Checkbox id="landing" name="landing" v-model="formData.is_landing" :binary="true"/>
                 <label for="landing">Landing page</label>
             </div>
@@ -75,7 +75,10 @@
                         </div>
                     </TabPanel>
                 </TabView>
-
+                <div v-if="isWebAdmin" class="field mt-3" style="margin-bottom: 1.5rem">
+                    <label>{{ $t("cafedra.responsible") }}</label>
+                    <FindUser v-model="formData.responsible_users" :editMode="false" />
+                </div>
                 <Gallery @afterUpload="afterUpload" @on-remove="onGalleryRemove" :file-list="galleryFiles"/>
 
                 <div class="field" v-if="formData.files">
@@ -119,7 +122,7 @@ import {computed, inject, ref} from "vue";
 import {EnuWebService} from "@/service/enu.web.service";
 import {useToast} from "primevue/usetoast";
 import {useI18n} from "vue-i18n";
-import {downloadRoute, getHeader, smartEnuApi} from "@/config/config";
+import {downloadRoute, getHeader, smartEnuApi, findRole} from "@/config/config";
 import {useConfirm} from "primevue/useconfirm";
 import {useStore} from "vuex";
 import CustomFileUpload from "@/components/CustomFileUpload.vue";
@@ -133,7 +136,9 @@ const confirm = useConfirm()
 const store = useStore()
 const enuService = new EnuWebService()
 const emitter = inject('emitter');
-
+const authUser = computed(() => JSON.parse(localStorage.getItem("loginedUser")))
+const isFacultyWebAdmin = computed(() => findRole(authUser.value, "enu_web_fac_admin"))
+const isWebAdmin = computed(() => findRole(authUser.value, "enu_web_admin"))
 const pageId = computed(() => route.params.id)
 const formData = ref()
 const submitted = ref(false)
