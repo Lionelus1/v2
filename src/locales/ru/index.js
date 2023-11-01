@@ -1358,5 +1358,8 @@ export default {
         stepTwo: "2. Откройте сканер QR в правом верхнем углу главной страницы",
         stepThree: "3. Наведите телефон на этот экран, чтобы считать код",
         mobileAppNotInstalled: "Если у Вас нет приложения eGov Mobile/Business, то установите его сканируя QR",
+    },
+    integration: {
+        title: 'Интеграции'
     }
 }
