@@ -4,7 +4,7 @@
       <div class="p-fluid">
         <div class="field">
           <label for="language" >{{$t('common.doclang')}}</label>
-          <SelectButton v-model="file.lang" optionLabel="name" :options="languages" dataKey="value" class="mb-3">
+          <SelectButton v-model="file.lang" optionLabel="name" :options="languages" dataKey="value" class="mb-3" :unselectable="false">
             <template #option="slotProps">
               <div>{{$t('common.language.' + slotProps.option.name)}}</div>
             </template>
