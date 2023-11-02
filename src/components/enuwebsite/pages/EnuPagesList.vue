@@ -250,6 +250,7 @@ export default {
         {
           label: this.$t('common.delete'),
           icon: 'fa-solid fa-trash',
+          visible: this.isWebAdmin,
           command: () => {
             this.delPage(this.actionsNode)
           }
