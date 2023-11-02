@@ -82,7 +82,7 @@
                 </TabView>
                 <div v-if="isAdmin" class="field mt-3" style="margin-bottom: 1.5rem">
                     <label>{{ $t("cafedra.responsible") }}</label>
-                    <FindUser v-model="formData.responsible_user" :editMode="false" />
+                    <FindUser v-model="formData.responsible_users" :editMode="false" />
                 </div>
 
 
