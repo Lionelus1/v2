@@ -337,6 +337,7 @@ export default {
         this.loading = false
       }).catch(_=> {
         this.loading = false;
+        this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
       }).finally(() => {
         this.closeCourse()
       })
