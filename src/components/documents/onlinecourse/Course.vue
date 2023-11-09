@@ -93,7 +93,7 @@
                         </div>
                         <template #footer>
                             <div class="flex flex-wrap row-gap-1">
-                                <Button :label="$t('common.save')" @click="addStudentsToCourse(4)"
+                                <Button :label="$t('common.save')" @click="addStudentsToCourse(2)"
                                         class="w-full p-button-primary"/>
                                 <Button :label="$t('common.cancel')" @click="closeStudentDialog"
                                         class="w-full p-button-secondary p-button-outlined"/>
@@ -434,6 +434,7 @@ export default {
                 this.saving = false;
                 this.submitted = false;
                 this.closeModuleDialog()
+                this.getModuleByCourseID()
             }).catch(_ => {
                 this.saving = false;
                 this.submitted = false;
