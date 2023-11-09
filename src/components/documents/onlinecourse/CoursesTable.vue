@@ -18,9 +18,6 @@
               <i class="pi pi-search"/>
               <InputText type="search" v-model="searchText" @keyup.enter="getCourseStudents"  @search="getCourses" :placeholder="$t('common.search')"/>
           </span>
-          <Button v-if="findRole(null,'online_course_administrator')"
-                  class="p-button-success mb-2" icon="pi pi-plus" :label="$t('common.add')"
-                  @click="addCourse"/>
             <Button class="mt-2" v-if="findRole(null, 'online_course_administrator') && dic_course_type == 2" :label="$t('common.save')"
             @click="updateCourseGiveCertificates()" />
         </div>
