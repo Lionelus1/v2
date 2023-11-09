@@ -30,7 +30,7 @@ export default {
         approveDate: "Бекітілген күні",
         approvedBy: "Бекіткен",
         notUpload: 'Құжат жүктелмеді',
-        nextIssue: 'Сертификаттың соңғы нөмірі',
+        nextIssue: 'Сертификаттар тізбегі осы нөмерден басталады',
         goToTheCourse: "Курсқа өту",
         addCertificate: "Сертификат қажет етіледі",
         updateGES:"ЖББП тізімін жаңарту",
