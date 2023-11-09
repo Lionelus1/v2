@@ -30,7 +30,7 @@ export default {
         approvedBy: "утвердил",
         approveDate: "Дата утверждения",
         notUpload: 'Документ не загружен',
-        nextIssue: 'Последний номер сертификата',
+        nextIssue: 'Последовательность сертификатов начинается с этого номера',
         goToTheCourse: "Перейти к курсу",
         addCertificate: "Требуется сертификат", 
         updateGES:"Обновить список ООД",

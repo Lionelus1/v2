@@ -31,7 +31,7 @@ export default {
     approveDate: "Approve date",
     approvedBy: "Approved by",
     notUpload: "Document not uploaded",
-    nextIssue: "Last certificate number",
+    nextIssue: "The certificate sequence begins with this number",
     goToTheCourse: "Go to the course",
     addCertificate: "Certificate required",
     updateGES:"Update the list of GES",

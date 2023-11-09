@@ -126,7 +126,7 @@
                         
                     </Dialog>
 
-                    <Dialog v-model:visible="issueCertificateWithDialog" :style="{ width: '450px' }">
+                    <Dialog v-model:visible="issueCertificateWithDialog" :style="{ width: '500px' }">
                         <template #header>
                             <div>
                                 <i class="pi pi-exclamation-triangle mr-2"></i>
@@ -493,7 +493,7 @@ export default {
                 courseID: this.course.id,
                 comment: "",
                 withApplication: withApplication,
-                lastNumber: parseInt(this.organizer.lastNumber)
+                lastNumber: parseInt(this.organizer.lastNumber-1)
             }).then(_ => {
                 this.saving = false;
                 this.submitted = false;
@@ -518,7 +518,7 @@ export default {
             
             this.service.getCourseOrganizerByCourseID(this.course_id).then(response => {
                 this.organizer = response.data.organizer
-      
+                this.organizer.lastNumber++
                 this.loading = false
             }).catch(_ => {
                 this.loading = false
