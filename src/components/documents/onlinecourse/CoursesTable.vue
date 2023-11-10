@@ -9,13 +9,23 @@
         @page="onPage">
         <template #header>
           <div class="sm:flex block justify-content-between">
+          <div>
             <Button v-if="findRole(null,'online_course_administrator') && dic_course_type == 1"
                 class="p-button-success mb-2" icon="pi pi-plus" :label="$t('common.add')"
                 @click="addCourse"/>
-            <!-- <Button class="mr-2" v-if="findRole(null, 'online_course_administrator')" :label="$t('common.updateGES')" @click="getOod()" />
-            <Button class="mt-2" v-if="findRole(null, 'online_course_administrator')" :label="$t('common.save')"
-            @click="updateCourseGiveCertificates()" /> -->
           </div>
+          <!-- <div>
+              <Button class="mr-2" v-if="findRole(null, 'online_course_administrator')" :label="$t('common.updateGES')" @click="getOod()" />
+              <Button class="mt-2" v-if="findRole(null, 'online_course_administrator') && dic_course_type == 2" :label="$t('common.save')"
+              @click="updateCourseGiveCertificates()" />
+          </div> -->
+          <div>
+            <span  v-if="findRole(null,'online_course_administrator')" class="p-input-icon-left mr-2">
+                <i class="pi pi-search"/>
+                <InputText type="search" v-model="searchText" @keyup.enter="getCourses"  @search="getCourses" :placeholder="$t('common.search')"/>
+            </span>
+          </div>
+        </div>
         </template>
 
         <Column :header="$t('common.name')">
@@ -259,14 +269,14 @@ export default {
     },
     getCourses() {
       this.tableLoading = true
-
-      axios.post(smartEnuApi + '/onlinecourse/courses', {
+      const req = {
         page: this.page,
         rows: this.rows,
         categoryID: this.categoryId,
-      }, {
-        headers: getHeader()
-      }).then(res => {
+        lang: this.$i18n.locale,
+        searchText: this.searchText,
+      }
+      this.service.getCourses(req).then(res => {
         let counter = 0
         this.courses = res.data.courses
         this.courses.map((e) => {
