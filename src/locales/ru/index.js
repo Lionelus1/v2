@@ -1360,6 +1360,7 @@ export default {
         mobileAppNotInstalled: "Если у Вас нет приложения eGov Mobile/Business, то установите его сканируя QR",
     },
     integration: {
-        title: 'Интеграции'
+        title: 'Интеграции',
+        updateNow: 'Обновить сейчас'
     }
 }

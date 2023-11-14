@@ -1363,6 +1363,7 @@ export default {
         mobileAppNotInstalled: "If you don't have eGov Mobile/Business application installed, scan the QR below",
     },
     integration: {
-        title: 'Integrations'
+        title: 'Integrations',
+        updateNow: 'Update now'
     }
 }

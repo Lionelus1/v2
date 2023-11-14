@@ -29,10 +29,10 @@ const lazyParams = ref({
 const initItems = computed(() => {
   return [
     {
-      label: t('common.edit'),
-      icon: 'fa-solid fa-pen',
+      label: t('integration.updateNow'),
+      icon: 'fa-solid fa-play',
       command: () => {
-        openDialog(formData.value)
+        runConfirm(formData.value)
       }
     },
     {
@@ -57,15 +57,35 @@ const getIntegrations = () => {
   })
 }
 
-const openDialog = (data) => {
-  formData.value = data || {}
-  isEdit.value = data !== null
+const openDialog = () => {
+  formData.value = {}
   showDialog.value = true
 }
 
 const hideDialog = () => {
   showDialog.value = false
   formData.value = null
+}
+
+const runConfirm = (data) => {
+  confirm.require({
+    message: t('common.confirmation'),
+    header: t('common.confirm'),
+    icon: 'pi pi-info-circle',
+    acceptClass: 'p-button-rounded p-button-success',
+    rejectClass: 'p-button-rounded p-button-danger',
+    accept: () => {
+      run(data.id)
+    },
+  });
+}
+
+const run = (id) => {
+  service.runIntegrationSync(id).then(_ => {
+    toast.add({severity: 'success', summary: t('common.success'), life: 3000})
+  }).catch(error => {
+    toast.add({severity: 'error', summary: t('common.error'), detail: error, life: 3000})
+  })
 }
 
 const deleteConfirm = (data) => {
@@ -119,7 +139,7 @@ const navigateToView = (id) => {
 }
 
 const toggleIntegration = (data) => {
-  service.editIntegration(data).then(_ => {
+  service.toggleIntegrationSync(data.id).then(_ => {
     toast.add({severity: 'success', summary: t('common.success'), life: 3000})
     getIntegrations()
   }).catch(error => {
@@ -135,10 +155,10 @@ onMounted(() => {
 <template>
   <div class="col-12">
     <TitleBlock :title="t('integration.title')" />
-    <div class="card">
+<!--    <div class="card">
       <Button @click="openDialog(null)" icon="pi pi-plus"
               class="p-button p-button-success" :label="$t('common.add')" />
-    </div>
+    </div>-->
 
     <div class="card">
       <DataTable :lazy="true" :value="list" dataKey="id" :loading="loading" responsiveLayout="scroll"
@@ -186,7 +206,6 @@ onMounted(() => {
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-text"
               @click="hideDialog" />
       <Button v-if="!isEdit" :label="$t('common.save')" icon="pi pi-check" class="p-button-text" @click="add" />
-      <Button v-if="isEdit" :label="$t('common.save')" icon="pi pi-check" class="p-button-text" @click="edit" />
     </template>
   </Dialog>
 </template>

@@ -39,4 +39,12 @@ export class IntegrationService {
         return api.get(`/ingetration/${id}`, {headers: getHeader()})
     }
 
+    toggleIntegrationSync(id) {
+        return api.post(`/integration/toggle/${id}`, {}, {headers: getHeader()})
+    }
+
+    runIntegrationSync(id) {
+        return api.post(`/integration/run/${id}`, {headers: getHeader()})
+    }
+
 }

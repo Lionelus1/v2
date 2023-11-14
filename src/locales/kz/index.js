@@ -1374,6 +1374,7 @@ export default {
         mobileAppNotInstalled: "Егер Сізде «eGov Mobile/Business» қосымшасы болмаса, оны төмендегі QR кодтың біреуін сканерлеу арқылы орнатыңыз",
     },
     integration: {
-        title: 'Интеграциялар'
+        title: 'Интеграциялар',
+        updateNow: 'Қазір жаңарту'
     }
 }

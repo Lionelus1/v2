@@ -266,12 +266,7 @@ export class MenuService {
                         label: "Интеграциялар",
                         icon: 'pi pi-fw pi-user-plus',
                         to: '/integrations'
-                    },
-                    {
-                        label: "Параметры",
-                        icon: 'pi pi-fw pi-user-plus',
-                        to: '/integrations/params'
-                    },
+                    }
                 ]
             },
         ]
