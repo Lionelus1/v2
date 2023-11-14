@@ -260,6 +260,17 @@ export class MenuService {
 
                 ]
             },
+            {
+                label: "Интеграциялар",
+                icon: 'fa-solid fa-user-graduate',
+                items: [
+                    {
+                        label: "Интеграциялар",
+                        icon: 'pi pi-fw pi-user-plus',
+                        to: '/integrations'
+                    }
+                ]
+            },
         ]
     }
 
