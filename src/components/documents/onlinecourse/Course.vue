@@ -171,10 +171,10 @@
                     <Column :field="'description_' + $i18n.locale" :header="$t('common.description')"></Column>
                     <Column field="">
                         <template #body="{data}">
-                            <Button v-if="findRole(null, 'online_course_administrator')" class="p-button-warning mb-2"
+                            <Button v-if="findRole(null, 'online_course_administrator')" class="p-button-warning mb-2 mr-2"
                                 icon="pi pi-pencil" label="" @click="updateModule(data)"/>
 
-                            <Button v-if="findRole(null,'online_course_administrator')" class="p-button-danger mr-3"
+                            <Button v-if="findRole(null,'online_course_administrator')" class="p-button-danger mb-2 mr-2"
                                     icon="fa-solid fa-trash" label="" @click="deleteModule(data.id)"/>
                         </template>
                     </Column>
