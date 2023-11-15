@@ -14,11 +14,11 @@
                 class="p-button-success mb-2" icon="pi pi-plus" :label="$t('common.add')"
                 @click="addCourse"/>
           </div>
-          <!-- <div>
-              <Button class="mr-2" v-if="findRole(null, 'online_course_administrator')" :label="$t('common.updateGES')" @click="getOod()" />
+          <div>
+              <Button class="mr-2" v-if="findRole(null, 'online_course_administrator') && dic_course_type == 2" :label="$t('common.updateGES')" @click="getOod()" />
               <Button class="mt-2" v-if="findRole(null, 'online_course_administrator') && dic_course_type == 2" :label="$t('common.save')"
               @click="updateCourseGiveCertificates()" />
-          </div> -->
+          </div>
           <div>
             <span  v-if="findRole(null,'online_course_administrator')" class="p-input-icon-left mr-2">
                 <i class="pi pi-search"/>
