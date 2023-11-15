@@ -5,27 +5,27 @@
         </div>
         <div class="col-12">
             <Menubar :model="initMenu" :key="active"
-                     style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
+                style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
 
             <div class="field-checkbox mt-3">
-                <Checkbox id="landing" name="landing" v-model="formData.is_landing" :binary="true"/>
+                <Checkbox id="landing" name="landing" v-model="formData.is_landing" :binary="true" />
                 <label for="landing">Landing page</label>
             </div>
 
             <div v-if="formData.is_landing" class="p-fluid">
                 <div class="field">
                     <label>{{ $t('common.nameInQazaq') }}</label>
-                    <InputText type="text" v-model="formData.title_kz"/>
+                    <InputText type="text" v-model="formData.title_kz" />
                     <small class="p-error" v-if="!formData.title_kz && submitted">{{ $t("common.requiredField") }}</small>
                 </div>
                 <div class="field">
                     <label>{{ $t('common.nameInRussian') }}</label>
-                    <InputText type="text" v-model="formData.title_ru"/>
+                    <InputText type="text" v-model="formData.title_ru" />
                     <small class="p-error" v-if="!formData.title_ru && submitted">{{ $t("common.requiredField") }}</small>
                 </div>
                 <div class="field">
                     <label>{{ $t('common.nameInEnglish') }}</label>
-                    <InputText type="text" v-model="formData.title_en"/>
+                    <InputText type="text" v-model="formData.title_en" />
                     <small class="p-error" v-if="!formData.title_en && submitted">{{ $t("common.requiredField") }}</small>
                 </div>
             </div>
@@ -35,20 +35,23 @@
                     <TabPanel header="Қазақша">
                         <div class="field mt-3">
                             <label for="kz-title">{{ $t("common.nameInQazaq") }}</label>
-                            <InputText v-model="formData.title_kz" rows="3" :class="{ 'p-invalid': !formData.title_kz && submitted }"/>
-                            <small v-show="!formData.title_kz && submitted" class="p-error">{{ $t("smartenu.titleKzInvalid") }}</small>
+                            <InputText v-model="formData.title_kz" rows="3"
+                                :class="{ 'p-invalid': !formData.title_kz && submitted }" />
+                            <small v-show="!formData.title_kz && submitted" class="p-error">{{ $t("smartenu.titleKzInvalid")
+                            }}</small>
                         </div>
                         <div class="field">
                             <label>{{ $t("common.contentInQazaq") }}</label>
                             <!--            <RichEditor ref="kztext" v-model="formData.content_kz" editorStyle="height: 320px"></RichEditor>-->
                             <TinyEditor v-model="formData.content_kz" :height="400" :custom-file-upload="true"
-                                        @onAfterUpload="onAfterUpload"/>
+                                @onAfterUpload="onAfterUpload" />
                         </div>
                     </TabPanel>
                     <TabPanel header="Русский">
                         <div class="field mt-3" style="margin-bottom: 1.5rem">
                             <label>{{ $t("common.nameInRussian") }}</label>
-                            <InputText v-model="formData.title_ru" rows="3" :class="{ 'p-invalid': !formData.title_ru && submitted }"/>
+                            <InputText v-model="formData.title_ru" rows="3"
+                                :class="{ 'p-invalid': !formData.title_ru && submitted }" />
                             <small v-show="!formData.title_ru && submitted" class="p-error">
                                 {{ $t("smartenu.titleRuInvalid") }}
                             </small>
@@ -57,13 +60,14 @@
                             <label for="ru-content">{{ $t("common.contentInRussian") }}</label>
                             <!--            <RichEditor id="ru-content" v-model="formData.content_ru" editorStyle="height: 320px"/>-->
                             <TinyEditor v-model="formData.content_ru" :height="400" :custom-file-upload="true"
-                                        @onAfterUpload="onAfterUpload"/>
+                                @onAfterUpload="onAfterUpload" />
                         </div>
                     </TabPanel>
                     <TabPanel header="English">
                         <div class="field mt-3" style="margin-bottom: 1.5rem">
                             <label>{{ $t("common.nameInEnglish") }}</label>
-                            <InputText v-model="formData.title_en" rows="3" :class="{ 'p-invalid': !formData.title_en && submitted }"/>
+                            <InputText v-model="formData.title_en" rows="3"
+                                :class="{ 'p-invalid': !formData.title_en && submitted }" />
                             <small v-show="!formData.title_en && submitted" class="p-error">
                                 {{ $t("smartenu.titleEnInvalid") }}
                             </small>
@@ -72,12 +76,17 @@
                             <label>{{ $t("common.contentInEnglish") }}</label>
                             <!--            <RichEditor v-model="formData.content_en" editorStyle="height: 320px"/>-->
                             <TinyEditor v-model="formData.content_en" :height="400" :custom-file-upload="true"
-                                        @onAfterUpload="onAfterUpload"/>
+                                @onAfterUpload="onAfterUpload" />
                         </div>
                     </TabPanel>
                 </TabView>
+                <div v-if="isAdmin" class="field mt-3" style="margin-bottom: 1.5rem">
+                    <label>{{ $t("cafedra.responsible") }}</label>
+                    <FindUser v-model="formData.responsible_users" :editMode="false" />
+                </div>
 
-                <Gallery @afterUpload="afterUpload" @on-remove="onGalleryRemove"/>
+
+                <Gallery @afterUpload="afterUpload" @on-remove="onGalleryRemove" />
 
                 <div class="field" v-if="formData.files">
                     <label>{{ $t('workPlan.attachments') }}</label>
@@ -92,11 +101,11 @@
                                         {{ item.file.filename ? item.file.filename : item.file.filepath }}</span>
                                     <span class="ml-2">
                                         <Button icon="pi pi-copy" class="p-button-rounded p-button-text"
-                                                v-clipboard:copy="copyToClipboard(item.file)" v-clipboard:success="onCopy"/>
+                                            v-clipboard:copy="copyToClipboard(item.file)" v-clipboard:success="onCopy" />
                                     </span>
                                     <span>
                                         <Button icon="pi pi-times" class="p-button-rounded p-button-text"
-                                                @click="deleteFileConfirm($event, item, index)"/>
+                                            @click="deleteFileConfirm($event, item, index)" />
                                     </span>
                                 </div>
                             </div>
@@ -110,16 +119,16 @@
 
 <script>
 import RichEditor from "@/components/documents/editor/RichEditor.vue";
-import {EnuWebService} from "@/service/enu.web.service";
+import { EnuWebService } from "@/service/enu.web.service";
 import TinyEditor from "../../TinyEditor.vue";
 import Gallery from "@/components/Gallery.vue";
-import {downloadRoute, getHeader, smartEnuApi} from "@/config/config";
-import {findRole} from "@/config/config";
-import {useStore} from "vuex";
+import { downloadRoute, getHeader, smartEnuApi } from "@/config/config";
+import { findRole } from "@/config/config";
+import { useStore } from "vuex";
 
 export default {
     name: "AddPage",
-    components: {Gallery, TinyEditor},
+    components: { Gallery, TinyEditor },
     data() {
         return {
             formData: {},
@@ -127,13 +136,14 @@ export default {
             enuService: new EnuWebService(),
             fileList: [],
             uploadedGalleryFiles: null,
-            store : useStore(),
+            store: useStore(),
             lazyParams: {
                 page: 1,
                 rows: 30,
                 parent_id: this.currentMenu ? this.currentMenu.menu_id : null,
                 slug: localStorage.getItem('selectedSlug') ? JSON.parse(localStorage.getItem('selectedSlug')).slug : null
             },
+
         }
     },
     computed: {
@@ -147,7 +157,11 @@ export default {
                     },
                 }
             ];
+        },
+        isAdmin() {
+            return findRole(this.store.state.loginedUser, 'enu_web_admin');
         }
+
     },
     methods: {
         save() {
@@ -157,8 +171,8 @@ export default {
             }
             if (this.lazyParams.slug && findRole(this.store.state.loginedUser, 'enu_web_admin')) (
                 this.formData.slug = this.lazyParams.slug
-            )  
-            
+            )
+
             if (this.uploadedGalleryFiles) {
                 this.uploadedGalleryFiles.forEach(item => {
                     this.formData.files = this.formData.files || []
@@ -236,19 +250,19 @@ export default {
             this.enuService.deletePageFile(id).then(res => {
                 if (res.data.is_success) {
                     this.getPageFiles();
-                    this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
+                    this.$toast.add({ severity: 'success', detail: this.$t('common.done'), life: 3000 });
                 }
             }).catch((error) => {
-                this.$toast.add({severity: "error", summary: error, life: 3000});
+                this.$toast.add({ severity: "error", summary: error, life: 3000 });
             });
         },
         onAfterUpload(item) {
             this.fileList.push(item);
             if (this.formData.files) {
-                this.formData.files.push({file_id: item.id, file: item});
+                this.formData.files.push({ file_id: item.id, file: item });
             } else {
                 this.formData.files = [];
-                this.formData.files.push({file_id: item.id, file: item});
+                this.formData.files.push({ file_id: item.id, file: item });
             }
         },
         afterUpload(files) {
@@ -270,7 +284,7 @@ export default {
             return smartEnuApi + downloadRoute + file.uuid;
         },
         onCopy() {
-            this.$toast.add({severity: 'success', summary: this.$t('ncasigner.successCopy'), life: 3000});
+            this.$toast.add({ severity: 'success', summary: this.$t('ncasigner.successCopy'), life: 3000 });
         },
         isValid() {
             let errors = [];
@@ -287,6 +301,4 @@ export default {
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

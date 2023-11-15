@@ -109,6 +109,12 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
+                path: '/documents/catalog/contracts',
+                name: '/documents/catalog/contracts',
+                component: load('documents/catalog/Contracts'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
                 path: '/documents/catalog/educomplex',
                 name: '/documents/catalog/educomplex',
                 component: load('documents/catalog/DisciplineEduMetComplex'),
@@ -121,28 +127,30 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
-
                 path: '/documents/doctemplate:',
                 name: '/documents/doctemplate',
                 component: load('documents/DocTemplate'),
                 beforeEnter: ifAuthenticated,
             },
             {
-
+                path: '/documents/contracts/:uuid',
+                name: 'ContractsByUUID',
+                component: load('documents/ContractV2'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
                 path: '/documents/contracts',
                 name: '/documents/contracts',
                 component: load('documents/Contracts'),
                 beforeEnter: ifAuthenticated,
             },
             {
-
                 path: '/documents/journal',
                 name: '/documents/journal',
                 component: load('documents/Journal'),
                 beforeEnter: ifAuthenticated,
             },
             {
-
                 path: '/documents/contract/:id',
                 name: '/documents/contract',
                 component: load('documents/Contract'),
@@ -280,6 +288,12 @@ const routes = [
                         path: 'members/:id&:role',
                         name: 'Members',
                         component: load('dissertation/Members'),
+                        beforeEnter: ifAuthenticated
+                    },
+                    {
+                        path: 'report/:id',
+                        name: 'DissertationReport',
+                        component: load('dissertation/DissertationReport'),
                         beforeEnter: ifAuthenticated
                     },
                     {

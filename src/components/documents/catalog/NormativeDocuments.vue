@@ -314,6 +314,7 @@ export default {
         let data = res.data.folders
 
         if (!data) {
+          parent.children = null
           this.getFiles(parent)
           this.loading = false
           return
