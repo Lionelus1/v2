@@ -261,12 +261,12 @@ export class MenuService {
                 ]
             },
             {
-                label: "Интеграциялар",
-                icon: 'fa-solid fa-user-graduate',
+                label: $t('integration.title'),
+                icon: 'fa-solid fa-rotate',
                 items: [
                     {
-                        label: "Интеграциялар",
-                        icon: 'pi pi-fw pi-user-plus',
+                        label: $t('integration.title'),
+                        icon: 'fa-solid fa-rotate',
                         to: '/integrations'
                     }
                 ]
