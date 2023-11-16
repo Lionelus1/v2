@@ -263,11 +263,13 @@ export class MenuService {
             {
                 label: $t('integration.title'),
                 icon: 'fa-solid fa-rotate',
+                visible: this.findRole("main_administrator"),
                 items: [
                     {
                         label: $t('integration.title'),
                         icon: 'fa-solid fa-rotate',
-                        to: '/integrations'
+                        to: '/integrations',
+                        visible: this.findRole("main_administrator")
                     }
                 ]
             },
