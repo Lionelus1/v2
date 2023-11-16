@@ -336,6 +336,10 @@ export default {
         selectFormat: 'Форматты таңдаңыз',
         notifications: 'Хабарламалар',
         noResult: 'Жазбалар табылмады',
+        no_password: 'Өтініш, Құпия сөзді енгізіңіз',
+        unauth: 'Сіз енгізген ақпарат дұрыс емес',
+        incorect_password: 'Қате құпия сөз',
+        no_username: 'Өтініш, Пайдаланушы атын енгізіңіз'
     },
     bank: {
         title: "Банктер",

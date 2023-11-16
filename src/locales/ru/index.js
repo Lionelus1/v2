@@ -338,6 +338,10 @@ export default {
         selectFormat: 'Выберите формат',
         notifications: 'Уведомления',
         noResult: 'Не найдено записей',
+        no_password: 'Пожалуйста, Введите пароль',
+        unauth: 'Введенная вами информация неверна',
+        incorect_password: 'Неправильный пароль',
+        no_username: 'Пожалуйста, введите имя пользователя'
     },
     bank: {
         title: "Банки",

@@ -1,5 +1,6 @@
 <template>
   <div style="overflow-x: hidden">
+    <Toast />
     <!-- <div class="feature-intro block">
   <h1>Smart.enu жүйесіне қош келдіңіз.</h1>
 </div> -->
@@ -35,13 +36,15 @@
             <div class="field col-12">
               <label for="inputtext">{{ $t('common.enterLogin') }}</label>
               <InputText id="inputtext" type="text" v-model="loginData.username"/>
-
-
+              <small class="p-error" v-if="loginDataCheck.username"> {{ $t("common.requiredField") }}
+              </small>
             </div>
             <div class="field col-12">
               <label for="inputpassword">{{ $t('common.enterPassword') }}</label>
               <Password :feedback="false" toggleMask v-model="loginData.password"
                         @keyup.enter="login"></Password>
+              <small class="p-error" v-if="loginDataCheck.password"> {{ $t("common.requiredField") }}
+              </small>
             </div>
           </div>
           <div class="p-w-100 text-right">
@@ -152,6 +155,11 @@ export default {
       mgovBusinessRedirectUri: null,
       active: 0,
       isNotMobile: false,
+
+      loginDataCheck: {
+        username: false,
+        password: false
+      },
     }
   },
   created() {
@@ -192,7 +200,11 @@ export default {
                 this.wsconnect(this.connectionId)
               })
               .catch(error => {
-                alert(error.message)
+                this.$toast.add({
+                    severity: 'error',
+                    summary: error.message,
+                    life: 3000,
+                });
               });
         } else {
           this.wsconnect(this.connectionId)
@@ -250,7 +262,11 @@ export default {
             this.xmlSignature(res.data);
           })
           .catch(error => {
-            alert(error.message)
+            this.$toast.add({
+                severity: 'error',
+                summary: error.message,
+                life: 3000,
+            });
           });
     },
     async xmlSignature(res) {
@@ -259,7 +275,11 @@ export default {
       try {
         await NCALaClient.connect();
       } catch (error) {
-        alert(error.message);
+        this.$toast.add({
+            severity: 'error',
+            summary: error.message,
+            life: 3000,
+        });
         return
       }
       try {
@@ -269,7 +289,11 @@ export default {
         this.eloginData.connectionId = res.connectionId;
         this.isSignUp = false;
       } catch (error) {
-        alert(error.message);
+        this.$toast.add({
+            severity: 'error',
+            summary: error.message,
+            life: 3000,
+        });
       }
     },
     loginVerify() {
@@ -281,7 +305,11 @@ export default {
           this.eloginData.password = this.newPass.password1;
           this.sendLoginData();
         } else {
-          alert(this.$t('common.newPasswordError'));
+          this.$toast.add({
+            severity: 'error',
+            summary: this.$t('common.newPasswordError'),
+            life: 3000,
+          });
         }
       }
     },
@@ -298,13 +326,20 @@ export default {
               }
             })
             .catch(error => {
-              alert(error.message)
+              this.$toast.add({
+                  severity: 'error',
+                  summary: error.message,
+                  life: 3000,
+                });
             });
       }
 
     },
     login() {
       //alert(JSON.stringify(header));
+      if (!this.checkLoginAndPassword()) {
+        return
+      }
       axios.post(smartEnuApi + '/login', {
         'username': this.loginData.username,
         'password': this.loginData.password
@@ -316,14 +351,32 @@ export default {
               window.localStorage.setItem('authUser', JSON.stringify(authUser));
               this.$router.push({name: 'AfterAuth'});
             }
-            if (res.status === 401) {
-              alert("Сіз енгізген ақпарат дұрыс емес.");
-            }
           })
-          .catch(error => {
-            alert("Сіз енгізген ақпарат дұрыс емес.");
-
+          .catch(error => {  
+            if (error.response.status === 401) {
+                this.$toast.add({
+                  severity: 'error',
+                  summary: this.$t('common.unauth'),
+                  life: 3000,
+                }); 
+              return
+            }
+            this.$toast.add({
+              severity: "error",
+              summary: this.$t('common.unauth'),
+              life: 3000,
+            }); 
           });
+    },
+    checkLoginAndPassword() {
+      this.loginDataCheck.username = this.loginData.username.length === 0 
+      this.loginDataCheck.password = this.loginData.password.length === 0 
+      console.log(this.loginData.password.length)
+
+        return (
+            !this.loginDataCheck.username &&
+            !this.loginDataCheck.password
+        )
     }
   }
 }
