@@ -1394,5 +1394,9 @@ export default {
         stepTwo: "2. Open QR-code scanner in the right-upper corner of the main page",
         stepThree: "3. Point camera on this page to scan the code",
         mobileAppNotInstalled: "If you don't have eGov Mobile/Business application installed, scan the QR below",
+    },
+    integration: {
+        title: 'Integrations',
+        updateNow: 'Update now'
     }
 }
