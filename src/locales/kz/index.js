@@ -30,7 +30,7 @@ export default {
         approveDate: "Бекітілген күні",
         approvedBy: "Бекіткен",
         notUpload: 'Құжат жүктелмеді',
-        nextIssue: 'Сертификаттың соңғы нөмірі',
+        nextIssue: 'Сертификаттар тізбегі осы нөмерден басталады',
         goToTheCourse: "Курсқа өту",
         addCertificate: "Сертификат қажет етіледі",
         updateGES:"ЖББП тізімін жаңарту",
@@ -1298,6 +1298,7 @@ export default {
             getQr: "QR алу",
             confirm: "Сертификатты ҚОСЫМШАСЫЗ беру керек пе?",
             confirm2: "Сертификат ҚОСЫМШАМЕН беріледі, қосымша дұрыс толтырылған ба?",
+            certSelect:"Сертификат сұлбасын көрсету"
         },
         modules:'Курс модульдері',
         module: 'Модуль',
@@ -1314,6 +1315,9 @@ export default {
         journal: 'Журнал',
         addCourse: 'Курсқа қосу',
         completedTraining: 'Оқуды аяқтады',
+        course: 'Курс',
+        startDate:'Курстың басталу күні',
+        completionDate: 'Курстың аяқталу күні'
     },
     roleControl:{
         addSidebar: 'Жаңа жазбаны қосу',

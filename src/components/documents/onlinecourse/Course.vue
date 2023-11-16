@@ -7,7 +7,7 @@
         </div>
         <TabView>
             <TabPanel :header="$t('course.users')">
-                <Button v-if="students.length === 0" class="btn mb-3" :label="$t('hr.sp.request')"
+                <Button v-if="students.length === 0 && dic_course_type == 1" class="btn mb-3" :label="$t('hr.sp.request')"
                         @click="sendRequestToCourse()"/>
                 <!-- курсқа қатысушылар -->
                 <div v-if="students">
@@ -26,15 +26,15 @@
                         <template #header>
                             <div class="table-header flex justify-content-between flex-wrap card-container purple-container">
                                 <div class="flex gap-2 flex-column sm:flex-row">
-                                    <Button v-if="findRole(null,'online_course_administrator')"
+                                    <Button v-if="findRole(null,'online_course_administrator') && dic_course_type == 1"
                                             class="p-button-success mb-2" icon="pi pi-plus" :label="$t('common.add')"
                                             @click="addStudent"/>
 
-                                    <Button v-if="findRole(null,'online_course_administrator')"
+                                    <Button v-if="findRole(null,'online_course_administrator') && dic_course_type == 1"
                                             class="p-button-help mb-2" icon="fa-solid fa-certificate"
                                             :label="$t('course.certificate.issue')" @click="openIssueCertificateDialog"/>
 
-                                    <Button v-if="findRole(null,'online_course_administrator')"
+                                    <Button v-if="findRole(null,'online_course_administrator') && dic_course_type == 1"
                                             class="p-button-help mb-2" icon="fa-solid fa-file-circle-check"
                                             :label="$t('course.certificate.issueWithApp')"
                                             @click="openIssueCertificateWithDialog"/>
@@ -60,7 +60,7 @@
                                         class="p-button-success mr-3" icon="fa-solid fa-check"
                                         v-tooltip.bottom="$t('course.addCourse')" label=""
                                         @click="updateUserState(slotProps.data.profile.userID, 2)"/>
-                                <Button v-if="slotProps.data.state.id != 1" class="p-button-success mr-3"
+                                <Button v-if="slotProps.data.state.id != 1 && dic_course_type == 1" class="p-button-success mr-3"
                                         icon="fa-solid fa-list-check" v-tooltip.bottom="$t('course.journal')" label=""
                                         @click="openJournal(slotProps.data.profile.userID, slotProps.data.state.id)"/>
                                 <Button v-if="slotProps.data.certificateUUID" icon="fa-solid fa-award" class="mr-3"
@@ -93,7 +93,7 @@
                         </div>
                         <template #footer>
                             <div class="flex flex-wrap row-gap-1">
-                                <Button :label="$t('common.save')" @click="addStudentsToCourse(4)"
+                                <Button :label="$t('common.save')" @click="addStudentsToCourse(2)"
                                         class="w-full p-button-primary"/>
                                 <Button :label="$t('common.cancel')" @click="closeStudentDialog"
                                         class="w-full p-button-secondary p-button-outlined"/>
@@ -126,7 +126,7 @@
                         
                     </Dialog>
 
-                    <Dialog v-model:visible="issueCertificateWithDialog" :style="{ width: '450px' }">
+                    <Dialog v-model:visible="issueCertificateWithDialog" :style="{ width: '500px' }">
                         <template #header>
                             <div>
                                 <i class="pi pi-exclamation-triangle mr-2"></i>
@@ -155,7 +155,7 @@
             </TabPanel>
 
             <!-- module қосу table -->
-            <TabPanel :header="$t('course.modules')">
+            <TabPanel :header="$t('course.modules')" v-if="dic_course_type == 1">
                 <DataTable :value="module">
                     <template #header>
                         <div
@@ -171,10 +171,10 @@
                     <Column :field="'description_' + $i18n.locale" :header="$t('common.description')"></Column>
                     <Column field="">
                         <template #body="{data}">
-                            <Button v-if="findRole(null, 'online_course_administrator')" class="p-button-warning mb-2"
+                            <Button v-if="findRole(null, 'online_course_administrator')" class="p-button-warning mb-2 mr-2"
                                 icon="pi pi-pencil" label="" @click="updateModule(data)"/>
 
-                            <Button v-if="findRole(null,'online_course_administrator')" class="p-button-danger mr-3"
+                            <Button v-if="findRole(null,'online_course_administrator')" class="p-button-danger mb-2 mr-2"
                                     icon="fa-solid fa-trash" label="" @click="deleteModule(data.id)"/>
                         </template>
                     </Column>
@@ -343,7 +343,8 @@ export default {
             userID: null,
             stateID: null, 
             searchText: '',
-            searchData: {}
+            searchData: {},
+            dic_course_type: null,
         }
     },
     created() {
@@ -434,6 +435,7 @@ export default {
                 this.saving = false;
                 this.submitted = false;
                 this.closeModuleDialog()
+                this.getModuleByCourseID()
             }).catch(_ => {
                 this.saving = false;
                 this.submitted = false;
@@ -492,7 +494,8 @@ export default {
                 users: null,
                 courseID: this.course.id,
                 comment: "",
-                withApplication: withApplication
+                withApplication: withApplication,
+                lastNumber: parseInt(this.organizer.lastNumber-1)
             }).then(_ => {
                 this.saving = false;
                 this.submitted = false;
@@ -517,7 +520,7 @@ export default {
             
             this.service.getCourseOrganizerByCourseID(this.course_id).then(response => {
                 this.organizer = response.data.organizer
-      
+                this.organizer.lastNumber++
                 this.loading = false
             }).catch(_ => {
                 this.loading = false
@@ -570,6 +573,7 @@ export default {
                     this.students = response.data.students
                 }
                 this.studentsCount = response.data.total
+                this.dic_course_type = response.data.dic_course_type
                 this.loading = false
             }).catch(_ => {
                 this.loading = false

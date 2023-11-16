@@ -30,7 +30,7 @@ export default {
     approveDate: "Approve date",
     approvedBy: "Approved by",
     notUpload: "Document not uploaded",
-    nextIssue: "Last certificate number",
+    nextIssue: "The certificate sequence begins with this number",
     goToTheCourse: "Go to the course",
     addCertificate: "Certificate required",
     updateGES:"Update the list of GES",
@@ -1286,6 +1286,7 @@ export default {
             getQr: "Get QR",
             confirm: "Confirm the issuance of a certificate WITHOUT an application?",
             confirm2: "The certificate will be issued With the application, do you confirm the correctness of filling out the application?",
+            certSelect:"Specify the certificate template"
         },
 
         modules:'Сourse modules',
@@ -1304,6 +1305,9 @@ export default {
         journal: 'Journal',
         addCourse: 'Add to the course',
         completedTraining: 'Completed training',
+        course: 'Course',
+        startDate:'Course start date',
+        completionDate: 'Course completion date'
     },
     roleControl:{
         addSidebar: 'Adding new record',
