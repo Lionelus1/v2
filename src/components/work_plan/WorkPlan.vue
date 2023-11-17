@@ -11,6 +11,7 @@
         :globalFilterFields="['question', 'recipient', 'status', 'sendDate', 'createDate']" @sort="onSort($event)">
         <template #header>
           <div class="table-header flex justify-content-end align-items-center">
+            <div v-if="isAdmin">
             <Button type="button" icon="fa-solid fa-filter" @click="toggle('global-filter', $event)" aria:haspopup="true"
               aria-controls="overlay_panel" class="p-button-outlined mr-2" />
             <OverlayPanel ref="global-filter">
@@ -31,6 +32,7 @@
                 </div>
               </div>
             </OverlayPanel>
+          </div>
             <span class="p-input-icon-left"><i class="pi pi-search" />
               <InputText type="search" v-model="lazyParams.searchText" @keyup.enter="getPlans"
                 :placeholder="$t('common.search')" @search="getPlans" />
@@ -59,7 +61,7 @@
             {{ data.user.fullName }}
           </template>
         </Column>
-        <Column field="status" :header="$t('workPlan.planType')">
+        <Column field="status" :header="$t('workPlan.planType')" v-if="isAdmin">
           <template #body="{ data }">
             <span class="customer-badge" :class="{ 'operational-plan': data.is_oper, 'simple-plan': !data.is_oper }">
               {{ data.is_oper ? $t('workPlan.operationalPlan') : $t('workPlan.simplePlan') }}
@@ -109,8 +111,8 @@
 
 <script>
 import WorkPlanAdd from "./WorkPlanAdd";
-import {getHeader, smartEnuApi} from "@/config/config";
-import {WorkPlanService} from "@/service/work.plan.service";
+import { getHeader, smartEnuApi, findRole } from "@/config/config";
+import { WorkPlanService } from "@/service/work.plan.service";
 
 export default {
   components: { WorkPlanAdd },
@@ -125,6 +127,7 @@ export default {
       comment: null,
       currentWorkPlanId: 0,
       loading: false,
+      isAdmin: false,
       loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID,
       planService: new WorkPlanService(),
       lazyParams: {
@@ -164,9 +167,11 @@ export default {
 
   },
   created() {
+    this.isAdmin = this.findRole(null, 'main_administrator')
     this.getPlans();
   },
   methods: {
+    findRole: findRole,
     toggle(ref, event) {
       this.$refs[ref].toggle(event);
     },

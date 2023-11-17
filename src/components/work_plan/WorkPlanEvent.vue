@@ -218,7 +218,7 @@
 
 <script>
 import WorkPlanEventAdd from "@/components/work_plan/WorkPlanEventAdd";
-import {getHeader, smartEnuApi} from "@/config/config";
+import { getHeader, smartEnuApi, findRole } from "@/config/config";
 import WorkPlanApprove from "@/components/work_plan/WorkPlanApprove";
 import WorkPlanExecute from "@/components/work_plan/WorkPlanExecute";
 import WorkPlanEventResultModal from "@/components/work_plan/WorkPlanEventResultModal";
