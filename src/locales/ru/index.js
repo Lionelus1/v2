@@ -1175,7 +1175,8 @@ export default {
         halfYear: "полугодие",
         simplePlan: "План",
         operationalPlan: "Операционный план",
-        planType: "Тип плана"
+        planType: "Тип плана",
+        myPlans: "Мои планы"
     },
     educomplex: {
         title: "Учебно-методический комплекс дисциплины",

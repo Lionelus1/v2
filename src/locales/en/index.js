@@ -1145,7 +1145,8 @@ export default {
         halfYear: "semi-annual",
         simplePlan: "Plan",
         operationalPlan: "Operational Plan",
-        planType: "Plan Type"
+        planType: "Plan Type",
+        myPlans: "My Plans"
     },
     queue: {
 

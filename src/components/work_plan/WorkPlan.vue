@@ -136,7 +136,8 @@ export default {
         searchText: null,
         filter: {
           is_plan: null,
-          is_oper_plan: null
+          is_oper_plan: null,
+          user_id: null,
         }
       },
       total: 0,
@@ -149,7 +150,12 @@ export default {
         {
           text: this.$t('workPlan.operationalPlan'),
           value: "oper_plan"
-        }
+        },
+        {
+          text: this.$t('workPlan.myPlans'),
+          value: "my_plan"
+        },
+
       ],
     }
   },
@@ -296,6 +302,7 @@ export default {
       this.lazyParams.filter.is_plan = null;
       this.lazyParams.filter.is_oper_plan = null;
       this.selectedPlanType = null;
+      this.lazyParams.filter.user_id = null;
       this.getPlans();
     },
     setPlanType() {
@@ -307,6 +314,11 @@ export default {
         this.lazyParams.filter.is_plan = null
         this.lazyParams.filter.is_oper_plan = true
 
+      }
+      if(this.selectedPlanType === "my_plan"){
+        this.lazyParams.filter.user_id = this.loginedUserId
+        this.lazyParams.filter.is_plan = null
+        this.lazyParams.filter.is_oper_plan = null
       }
       this.getPlans();
     },
