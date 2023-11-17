@@ -117,13 +117,13 @@
               >{{ this.$t("contact.iin")
               }}<span class="p-error" v-if="addMode || !localReadonly">*</span></label
             >
-            <InputText
+            <InputMask
               :readonly="!addMode"
               class="mt-2"
-              type="text"
+              mask="999999999999"
               :placeholder="$t('contact.iin')"
               v-model="value.IIN"
-            ></InputText>
+            ></InputMask>
             <small class="p-error" v-if="submitted && validationErrors.iin">{{
               $t("common.requiredField")
             }}</small>
@@ -554,7 +554,13 @@ export default {
             } else if (error.response.status == 302) {
               this.$toast.add({
                 severity: "error",
-                summary: "User create error: " + this.$t('common.message.userIINExists'),
+                summary: this.$t('common.message.userIINExists'),
+                life: 3000,
+              });
+            } else if (error.response.status == 400 && error.response.data && error.response.data.error === 'incorrectIIN') {
+              this.$toast.add({
+                severity: "error",
+                summary: this.$t('common.message.incorrectIIN'),
                 life: 3000,
               });
             } else {
@@ -595,7 +601,7 @@ export default {
       this.validationErrors.thirdName =
         !this.value.thirdName || this.value.thirdName == "";
       this.validationErrors.email = !this.value.email || this.value.email == "";
-      this.validationErrors.iin = !this.value.IIN || this.value.IIN == "";
+      this.validationErrors.iin = !this.value.IIN || this.value.IIN == "" || this.value.IIN.length != 12;
       this.validationErrors.password = (!this.password || this.password == "")
       
       if (this.addMode && !this.shortModeLocal)
