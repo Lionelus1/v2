@@ -27,8 +27,8 @@ export class WorkPlanService {
         return api.post(`/workPlan/getWorkPlanReportData`, data, {headers: getHeader()});
     }
 
-    getPlans(searchText) {
-        return api.post(`/workPlan/getPlans`, {search_text: searchText}, {headers: getHeader()});
+    getPlans(data) {
+        return api.post(`/workPlan/getPlans`, data, {headers: getHeader()});
     }
 
     rejectPlan(data) {

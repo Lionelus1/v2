@@ -3,7 +3,7 @@
     <div class="col-12" v-if="!loading">
       <div class="card"
            v-if="isPlanApproved && (isPlanCreator || (isApproval || isApproved)) && plan.status.work_plan_status_id === 4">
-        <Button v-if="isPlanCreator && plan && !plan.is_oper" :label="$t('common.action.reApprove')" icon="pi pi-check"
+        <Button v-if="isPlanCreator && plan" :label="$t('common.action.reApprove')" icon="pi pi-check"
                 @click="reapproveConfirmDialog"
                 class="p-button ml-2"/>
         <Button :label="$t('common.signatures')" icon="pi pi-file"
@@ -13,15 +13,16 @@
       </div>
       <div class="card" v-if="isApproval && plan.status.work_plan_status_id === 2">
         <Button :label="isLast ? $t('common.action.approve') : $t('common.action.approve') " icon="pi pi-check"
-                v-if="isApproval" @click="openApprovePlan"
+                 @click="openApprovePlan"
                 class="p-button p-button-success ml-2"/>
         <Button :label="$t('workPlan.toCorrect')" icon="pi pi-times"
-                @click="openRejectPlan" v-if="isApproval"
+                @click="openRejectPlan"
                 class="p-button p-button-danger ml-2"/>
       </div>
 
       <div class="card">
-        <h5>{{ plan.work_plan_name }} <span :class="'status-badge status-' + plan.status.work_plan_status_id">{{
+        <h5><TitleBlock :title="plan.work_plan_name" :show-back-button="true" />&nbsp;
+         <span :class="'status-badge status-' + plan.status.work_plan_status_id" style="position: relative; top: -3px;">{{
             $i18n.locale === "kz" ? plan.status.name_kk : $i18n.locale === "ru" ? plan.status.name_ru : plan.status.name_en
           }}</span></h5>
         <!--        <WorkPlanApproveStep style="height: 200px" now-step="1" direction="vertical" :step-list="approvals" />-->

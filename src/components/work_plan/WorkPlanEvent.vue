@@ -1,14 +1,16 @@
 <template>
-  <div class="col-12">
 
-    <h3 v-if="plan">{{ plan.work_plan_name }}</h3>
+  <div class="col-12">
+    <h3 v-if="plan">
+      <TitleBlock :title="plan.work_plan_name" :show-back-button="true" />
+    </h3>
     <div class="card" v-if="plan && plan.reject_history && isRejected && isPlanCreator">
       <div class="p-fluid">
         <div class="field">
           <label>{{ $t('common.state') }}:</label>
           <div>
             <span v-if="plan.status" :class="'customer-badge status-' + plan.status.work_plan_status_id">{{
-                plan.status.name_ru
+              plan.status.name_ru
               }}</span>
           </div>
         </div>
@@ -36,31 +38,29 @@
 
     <div class="card" v-if="plan">
       <work-plan-event-add v-if="(isPlanCreator || isCreator || isEventsNull) && !isFinish" :items="data" :isMain="true"
-                           :plan-data="plan"></work-plan-event-add>
+        :plan-data="plan"></work-plan-event-add>
       <Button v-if="isPlanCreator && !isFinish" :label="$t('common.complete')" icon="pi pi-check" @click="finish"
-              class="p-button p-button-danger ml-2"/>
+        class="p-button p-button-danger ml-2" />
       <work-plan-approve v-if="isPlanCreator && !isPlanSentApproval && isFinish" :plan="plan"
-                         :events="data"></work-plan-approve>
-      <Button v-if="isFinish && (isApproval || isPlanCreator) && isPlanSentApproval" :label="$t('workPlan.viewPlan')"
-              icon="pi pi-eye" @click="viewDoc"
-              class="p-button p-button-info ml-2"/>
-      <Button v-if="isFinish && (isApproval || isPlanCreator) && isPlanApproved" :label="$t('workPlan.reports')"
-              @click="navigateToReports" class="p-button p-button-info ml-2"/>
+        :events="data"></work-plan-approve>
+      <Button v-if="isFinish && (isApproval || isPlanCreator || isAdmin) && isPlanSentApproval" :label="$t('workPlan.viewPlan')"
+        icon="pi pi-eye" @click="viewDoc" class="p-button p-button-info ml-2" />
+      <Button v-if="isFinish && (isApproval || isPlanCreator || isAdmin) && isPlanApproved" :label="$t('workPlan.reports')"
+        @click="navigateToReports" class="p-button p-button-info ml-2" />
     </div>
     <div class="card">
 
       <TreeTable ref="workplantreetable" class="p-treetable-sm" :value="data" :lazy="true" :loading="loading"
-                 @nodeExpand="onExpand" scrollHeight="flex" responsiveLayout="scroll"
-                 :resizableColumns="true" columnResizeMode="fit" showGridlines
-                 :paginator="true" :rows="10" :total-records="total" @page="onPage($event)">
+        @nodeExpand="onExpand" scrollHeight="flex" responsiveLayout="scroll" :resizableColumns="true"
+        columnResizeMode="fit" showGridlines :paginator="true" :rows="10" :total-records="total" @page="onPage($event)">
         <template #header>
           <div class="flex justify-content-between align-items-center">
             <h5 class="m-0">{{ $t('workPlan.events') }} |
               <router-link tag="a" to="/work-plan">{{ $t('workPlan.plans') }}</router-link>
             </h5>
             <Button type="button" icon="pi pi-search" :label="$t('common.search')"
-                    @click="toggle('global-filter', $event)" aria:haspopup="true"
-                    aria-controls="overlay_panel" class="p-input-icon-left">
+              @click="toggle('global-filter', $event)" aria:haspopup="true" aria-controls="overlay_panel"
+              class="p-input-icon-left">
               <i class="fa-solid fa-filter fa-xl"></i>&nbsp;{{ $t('common.filter') }}
             </Button>
             <OverlayPanel ref="global-filter">
@@ -68,26 +68,25 @@
                 <div class="field">
                   <label>{{ $t('workPlan.eventName') }}</label>
                   <InputText class="mt-2" type="text" :placeholder="$t('workPlan.eventName')"
-                             v-model="filters.name.value"/>
+                    v-model="filters.name.value" />
                 </div>
                 <div class="field">
                   <label for="status-filter">{{ $t('common.status') }}</label>
-                  <Dropdown v-model="filters.status.value" optionValue=""
-                            :options="statuses" :placeholder="$t('common.select')" class="p-column-filter"
-                            :showClear="true">
+                  <Dropdown v-model="filters.status.value" optionValue="" :options="statuses"
+                    :placeholder="$t('common.select')" class="p-column-filter" :showClear="true">
                     <template #value="slotProps">
                       <span v-if="slotProps.value" :class="'customer-badge status-' + slotProps.value.id">
                         {{
-                          $i18n.locale === 'kz' ? slotProps.value.nameKz : $i18n.locale === 'ru'
-                              ? slotProps.value.nameRu : slotProps.value.nameEn
+                        $i18n.locale === 'kz' ? slotProps.value.nameKz : $i18n.locale === 'ru'
+                        ? slotProps.value.nameRu : slotProps.value.nameEn
                         }}
                       </span>
                     </template>
                     <template #option="slotProps">
                       <span :class="'customer-badge status-' + slotProps.option.id">
                         {{
-                          $i18n.locale === 'kz' ? slotProps.option.nameKz : $i18n.locale === 'ru'
-                              ? slotProps.option.nameRu : slotProps.option.nameEn
+                        $i18n.locale === 'kz' ? slotProps.option.nameKz : $i18n.locale === 'ru'
+                        ? slotProps.option.nameRu : slotProps.option.nameEn
                         }}
                       </span>
                     </template>
@@ -95,14 +94,14 @@
                 </div>
                 <div class="field">
                   <label>{{ $t('cafedra.responsible') }}</label>
-                  <FindUser v-model="filters.author.value" :max="1" :editMode="false"/>
+                  <FindUser v-model="filters.author.value" :max="1" :editMode="false" />
                   <!--                  <Dropdown v-model="filters.department.value" :options="departments" optionLabel="department_name"
                                               optionValue="department_id" :filter="true" :show-clear="true"
                                               :placeholder="$t('common.select')" />-->
                 </div>
                 <div class="field">
-                  <Button :label="$t('common.clear')" @click="clearFilter" class="mb-2 p-button-outlined"/>
-                  <Button :label="$t('common.search')" @click="initFilter" class="mt-2"/>
+                  <Button :label="$t('common.clear')" @click="clearFilter" class="mb-2 p-button-outlined" />
+                  <Button :label="$t('common.search')" @click="initFilter" class="mt-2" />
                 </div>
               </div>
             </OverlayPanel>
@@ -120,8 +119,7 @@
             {{ node.unit }}
           </template>
         </Column>
-        <Column field="plan_number" :header="$t('common.planNumber')" v-if="plan && plan.is_oper"
-                style="max-width:100px">
+        <Column field="plan_number" :header="$t('common.planNumber')" v-if="plan && plan.is_oper" style="max-width:100px">
           <template #body="{ node }">
             {{ node.plan_number }}
           </template>
@@ -144,7 +142,7 @@
         <Column field="fullName" :header="plan && plan.is_oper ? $t('workPlan.summary') : $t('workPlan.approvalUsers')">
           <template #body="{ node }">
             <div v-if="node.user && node.user.length > 2">
-              <Button type="button" @click="showRespUsers" class="p-button-rounded" icon="fa-solid fa-eye" label=""/>
+              <Button type="button" @click="showRespUsers" class="p-button-rounded" icon="fa-solid fa-eye" label="" />
               <OverlayPanel ref="op">
                 <p v-for="item in node.user" :key="item.id">{{ item.fullName }}</p>
               </OverlayPanel>
@@ -163,9 +161,9 @@
           <template #body="{ node }">
             <div v-if="node.result && node.result.length > 150">
               <Button type="button" @click="toggle('event-final-result', $event)" class="p-button-rounded"
-                      icon="fa-solid fa-eye" label=""/>
+                icon="fa-solid fa-eye" label="" />
               <OverlayPanel ref="event-final-result" :showCloseIcon="true" style="width: 450px"
-                            :breakpoints="{'960px': '75vw'}">
+                :breakpoints="{'960px': '75vw'}">
                 <div>{{ node.result }}</div>
               </OverlayPanel>
             </div>
@@ -176,9 +174,9 @@
         </Column>
         <Column field="status" :header="$t('common.status')">
           <template #body="{node}">
-            <span
-                :class="'customer-badge status-' + node.status.work_plan_event_status_id">{{
-                $i18n.locale === "kz" ? node.status.name_kz : $i18n.locale === "ru" ? node.status.name_ru : node.status.name_en
+            <span :class="'customer-badge status-' + node.status.work_plan_event_status_id">{{
+              $i18n.locale === "kz" ? node.status.name_kz : $i18n.locale === "ru" ? node.status.name_ru :
+              node.status.name_en
               }}</span>
           </template>
         </Column>
@@ -188,26 +186,31 @@
             <div>
               <!--              (parseInt(slotProps.node.quarter.String) === currentQuarter || parseInt(slotProps.node.quarter.String) === 5)-->
               <work-plan-execute
-                  v-if="isUserApproval(slotProps.node) && isPlanApproved && isPlanSentApproval && (slotProps.node.status.work_plan_event_status_id === 1 || slotProps.node.status.work_plan_event_status_id === 4 || slotProps.node.status.work_plan_event_status_id === 6)"
-                  :data="slotProps.node" :planData="plan"></work-plan-execute>
-              <work-plan-event-result-modal v-if="(isPlanCreator && !isUserResp(slotProps.node.user) &&
+                v-if="isUserApproval(slotProps.node) && isPlanApproved && isPlanSentApproval && (slotProps.node.status.work_plan_event_status_id === 1 || slotProps.node.status.work_plan_event_status_id === 4 || slotProps.node.status.work_plan_event_status_id === 6)"
+                :data="slotProps.node" :planData="plan"></work-plan-execute>
+              <work-plan-event-result-modal
+                v-if="(isPlanCreator && !isUserResp(slotProps.node.user) &&
               (slotProps.node.status.work_plan_event_status_id === 4 || slotProps.node.status.work_plan_event_status_id === 6)) || (slotProps.node.event_result && plan && !plan.is_oper) || slotProps.node.status.work_plan_event_status_id === 5 || slotProps.node.status.work_plan_event_status_id === 2"
-                                            :event-result="slotProps.node.event_result"
-                                            :eventData="slotProps.node"
-                                            :plan-data="plan"></work-plan-event-result-modal>
+                :event-result="slotProps.node.event_result" :eventData="slotProps.node"
+                :plan-data="plan"></work-plan-event-result-modal>
               <work-plan-event-add v-if="isPlanCreator && !isPlanSentApproval && !isFinish" :data="slotProps.node"
-                                   :items="slotProps.node.children" :isMain="false"
-                                   :plan-data="plan"></work-plan-event-add>
-              <work-plan-event-edit-modal v-if="isPlanCreator && !isPlanSentApproval && !isFinish"
-                                          :planData="plan"
-                                          :event="slotProps.node"
-              ></work-plan-event-edit-modal>
+                :items="slotProps.node.children" :isMain="false" :plan-data="plan"></work-plan-event-add>
+              <work-plan-event-edit-modal v-if="isPlanCreator && !isPlanSentApproval && !isFinish" :planData="plan"
+                :event="slotProps.node"></work-plan-event-edit-modal>
               <Button v-if="isPlanCreator && !isPlanSentApproval && !isFinish"
-                      @click="remove_event(slotProps.node.work_plan_event_id)" icon="pi pi-trash"
-                      class="p-button-danger ml-1 mt-1" label=""></Button>
+                @click="remove_event(slotProps.node.work_plan_event_id)" icon="pi pi-trash"
+                class="p-button-danger ml-1 mt-1" label=""></Button>
             </div>
           </template>
         </Column>
+        <!-- <Column field="actions" header="" class="text-right">
+          <div>
+            <template #body="{ node }">
+              <ActionButton :show-label="true" :items="initItems" @toggle="toggle2(node)" />
+            </template>
+          </div>
+        </Column> -->
+
       </TreeTable>
     </div>
   </div>
@@ -216,14 +219,15 @@
 <script>
 import WorkPlanEventAdd from "@/components/work_plan/WorkPlanEventAdd";
 import axios from "axios";
-import {getHeader, smartEnuApi} from "@/config/config";
+import { getHeader, smartEnuApi, findRole } from "@/config/config";
 import WorkPlanApprove from "@/components/work_plan/WorkPlanApprove";
 import WorkPlanExecute from "@/components/work_plan/WorkPlanExecute";
 import WorkPlanEventResultModal from "@/components/work_plan/WorkPlanEventResultModal";
 import WorkPlanEventEditModal from "@/components/work_plan/WorkPlanEventEditModal";
 import moment from "moment";
-import {FilterMatchMode} from "primevue/api";
-import {WorkPlanService} from "@/service/work.plan.service";
+import { FilterMatchMode } from "primevue/api";
+import { WorkPlanService } from "@/service/work.plan.service";
+import ActionButton from "@/components/ActionButton.vue";
 
 export default {
   name: "WorkPlanEvent",
@@ -232,7 +236,8 @@ export default {
     WorkPlanApprove,
     WorkPlanEventAdd,
     WorkPlanExecute,
-    WorkPlanEventResultModal
+    WorkPlanEventResultModal,
+    // ActionButton
   },
   data() {
     return {
@@ -281,15 +286,16 @@ export default {
       isRejected: false,
       isFinish: false,
       isPlanCreator: false,
+      isAdmin: false,
       isCreator: false,
       isApproval: false,
       isPlanSentApproval: false,
       isPlanApproved: false,
       isEventsNull: false,
       filters: {
-        name: {value: null, matchMode: FilterMatchMode.CONTAINS},
-        status: {value: null, matchMode: FilterMatchMode.EQUALS},
-        author: {value: null, matchMode: FilterMatchMode.EQUALS}
+        name: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        status: { value: null, matchMode: FilterMatchMode.EQUALS },
+        author: { value: null, matchMode: FilterMatchMode.EQUALS }
       },
       statuses: [
         {
@@ -329,15 +335,16 @@ export default {
         }
       ],
       numMatches: [
-        {value: 'lt'},
-        {value: 'gt'},
-        {value: 'equals'}
+        { value: 'lt' },
+        { value: 'gt' },
+        { value: 'equals' }
       ],
       planService: new WorkPlanService()
     }
   },
   created() {
     this.work_plan_id = this.$route.params.id
+    this.isAdmin = this.findRole(null, 'main_administrator')
     this.getPlan();
     this.getEventsTree(null);
   },
@@ -405,6 +412,10 @@ export default {
     });
   },
   methods: {
+    findRole: findRole,
+    toggle2(node) {
+      this.actionsNode = node
+    },
     onExpand(node) {
       this.lazyParams.parent_id = Number(node.work_plan_event_id)
       this.parentNode = node
@@ -491,6 +502,7 @@ export default {
         this.isRejected = this.plan.is_reject;
         if (this.plan && this.plan.user.id === this.loginedUserId) {
           this.isPlanCreator = true;
+        
         } else {
           this.isPlanCreator = false;
           //this.$router.push('/work-plan')
@@ -550,7 +562,7 @@ export default {
     remove(event_id) {
       this.planService.removeEvent(event_id).then(res => {
         if (res.data.is_success) {
-          this.$toast.add({severity: 'success', summary: this.$t('common.success'), life: 3000});
+          this.$toast.add({ severity: 'success', summary: this.$t('common.success'), life: 3000 });
           this.getPlan();
           this.getEventsTree(this.parentNode);
         }
@@ -576,10 +588,10 @@ export default {
       return isFound;
     },
     viewDoc() {
-      this.$router.push({name: 'WorkPlanView', params: {id: this.work_plan_id}})
+      this.$router.push({ name: 'WorkPlanView', params: { id: this.work_plan_id } })
     },
     navigateToReports() {
-      this.$router.push({name: 'WorkPlanReport', params: {id: this.work_plan_id}});
+      this.$router.push({ name: 'WorkPlanReport', params: { id: this.work_plan_id } });
     },
     isUserApproval(data) {
       let userApproval = false;
@@ -636,6 +648,37 @@ export default {
   /*unmounted() {
     localStorage.removeItem("workPlan");
   }*/
+  computed: {
+    initItems() {
+      return [
+        {
+          label: this.$t('common.add'),
+          icon: 'fa-solid fa-plus',
+          visible: this.isPlanCreator && !this.isPlanSentApproval && !this.isFinish,
+          command: () => {
+            this.WorkPlanEventAdd(this.actionsNode)
+          }
+        },
+        {
+          label: this.$t('common.edit'),
+          icon: 'fa-solid fa-pen',
+          visible: this.isPlanCreator && !this.isPlanSentApproval && !this.isFinish,
+          command: () => {
+            this.WorkPlanEventEditModal(this.actionsNode)
+          }
+        },
+        {
+          label: this.$t('common.delete'),
+          icon: 'fa-solid fa-trash',
+          visible: this.isPlanCreator && !this.isPlanSentApproval && !this.isFinish,
+          command: () => {
+            this.remove_event(this.actionsNode)
+          }
+        },
+
+      ];
+    }
+  }
 }
 </script>
 

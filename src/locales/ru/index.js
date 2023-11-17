@@ -1169,6 +1169,9 @@ export default {
         summary: "Свод/Подтверждение",
         respExecutor: "Ответственные исполнители",
         halfYear: "полугодие",
+        simplePlan: "Простой план",
+        operationalPlan: "Операционный план",
+        planType: "Тип плана"
     },
     educomplex: {
         title: "Учебно-методический комплекс дисциплины",
