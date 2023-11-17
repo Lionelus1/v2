@@ -6,6 +6,9 @@
       :label="$t('common.toapprove')"
       @click="openModal"
   ></Button>
+  <Button :label="$t('workPlan.toCorrect')" icon="pi pi-check"
+                @click="openRejectPlan"
+                class="p-button p-button-danger ml-2"/>
 
   <PdfContent ref="pdf" v-if="data" :data="data" :planId="data.work_plan_id" style="display: none;"></PdfContent>
 

@@ -24,7 +24,7 @@
                 class="p-button p-button-danger ml-2"/>
       </div>
       <div class="card" v-if="approval_users && report && report.status">
-        <h5>{{ report.report_name }}
+        <h5><TitleBlock :title="report.report_name" :show-back-button="true" />
           <span v-if="report" :class="'customer-badge status-' + report.status.work_plan_status_id">
               {{
               $i18n.locale === "kz" ? report.status.name_kk : $i18n.locale === "ru" ? report.status.name_ru : report.status.name_en
