@@ -1143,7 +1143,7 @@ export default {
         summary: "Summary/Confirmation",
         respExecutor: "Responsible performers",
         halfYear: "semi-annual",
-        simplePlan: "Simple plan",
+        simplePlan: "Plan",
         operationalPlan: "Operational Plan",
         planType: "Plan Type"
     },

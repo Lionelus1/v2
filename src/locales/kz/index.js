@@ -1185,7 +1185,7 @@ export default {
         summary: "Жинақтаушы/Растау",
         respExecutor: "Жауапты орындаушылар",
         halfYear: "жартыжылдық",
-        simplePlan: "Жай жоспар",
+        simplePlan: "Жоспар",
         operationalPlan: "Операциялық жоспар",
         planType: "Жоспар түрі"
     },

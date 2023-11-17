@@ -1173,7 +1173,7 @@ export default {
         summary: "Свод/Подтверждение",
         respExecutor: "Ответственные исполнители",
         halfYear: "полугодие",
-        simplePlan: "Простой план",
+        simplePlan: "План",
         operationalPlan: "Операционный план",
         planType: "Тип плана"
     },
