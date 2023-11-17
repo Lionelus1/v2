@@ -1,0 +1,3 @@
+User-agent: *
+Disallow: /serve?path=
+Host: https://smart.enu.kz

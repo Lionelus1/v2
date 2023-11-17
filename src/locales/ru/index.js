@@ -30,7 +30,7 @@ export default {
         approvedBy: "утвердил",
         approveDate: "Дата утверждения",
         notUpload: 'Документ не загружен',
-        nextIssue: 'Последний номер сертификата',
+        nextIssue: 'Последовательность сертификатов начинается с этого номера',
         goToTheCourse: "Перейти к курсу",
         addCertificate: "Требуется сертификат", 
         updateGES:"Обновить список ООД",
@@ -338,6 +338,10 @@ export default {
         selectFormat: 'Выберите формат',
         notifications: 'Уведомления',
         noResult: 'Не найдено записей',
+        no_password: 'Пожалуйста, Введите пароль',
+        unauth: 'Введенная вами информация неверна',
+        incorect_password: 'Неправильный пароль',
+        no_username: 'Пожалуйста, введите имя пользователя'
     },
     bank: {
         title: "Банки",
@@ -1289,6 +1293,7 @@ export default {
             getQr: "Получить QR",
             confirm: "Подтверждаете выдачу сертификата БЕЗ приложения?",
             confirm2: "Сертификат будет выдан С приложением, подтверждаете корректность заполнение приложения?",
+            certSelect:"Указать шоблон сертификата"
         },
         modules:'Модули курса',
         module: 'Модуль',
@@ -1305,6 +1310,9 @@ export default {
         journal: 'Журнал',
         addCourse: 'Добавить в курс',
         completedTraining: 'Прошел обучение',
+        course: 'Курс',
+        startDate:'Дата начала курса',
+        completionDate: 'Дата окончания курса'
     },
     roleControl: {
         addSidebar: 'Добавление новой записи',
@@ -1387,5 +1395,9 @@ export default {
         stepTwo: "2. Откройте сканер QR в правом верхнем углу главной страницы",
         stepThree: "3. Наведите телефон на этот экран, чтобы считать код",
         mobileAppNotInstalled: "Если у Вас нет приложения eGov Mobile/Business, то установите его сканируя QR",
+    },
+    integration: {
+        title: 'Интеграции',
+        updateNow: 'Обновить сейчас'
     }
 }

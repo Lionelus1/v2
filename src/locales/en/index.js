@@ -30,7 +30,7 @@ export default {
     approveDate: "Approve date",
     approvedBy: "Approved by",
     notUpload: "Document not uploaded",
-    nextIssue: "Last certificate number",
+    nextIssue: "The certificate sequence begins with this number",
     goToTheCourse: "Go to the course",
     addCertificate: "Certificate required",
     updateGES:"Update the list of GES",
@@ -337,6 +337,10 @@ export default {
         selectFormat: 'Select format',
         notifications: 'Notifications',
         noResult: 'No records found',
+        no_password: 'Please enter a password',
+        unauth: 'The information you entered is incorrect',
+        incorect_password: 'Incorrect password',
+        no_username: 'Please enter a username'
     },
     bank: {
         title: "Banks",
@@ -1289,6 +1293,7 @@ export default {
             getQr: "Get QR",
             confirm: "Confirm the issuance of a certificate WITHOUT an application?",
             confirm2: "The certificate will be issued With the application, do you confirm the correctness of filling out the application?",
+            certSelect:"Specify the certificate template"
         },
 
         modules:'Сourse modules',
@@ -1307,6 +1312,9 @@ export default {
         journal: 'Journal',
         addCourse: 'Add to the course',
         completedTraining: 'Completed training',
+        course: 'Course',
+        startDate:'Course start date',
+        completionDate: 'Course completion date'
     },
     roleControl:{
         addSidebar: 'Adding new record',
@@ -1389,5 +1397,9 @@ export default {
         stepTwo: "2. Open QR-code scanner in the right-upper corner of the main page",
         stepThree: "3. Point camera on this page to scan the code",
         mobileAppNotInstalled: "If you don't have eGov Mobile/Business application installed, scan the QR below",
+    },
+    integration: {
+        title: 'Integrations',
+        updateNow: 'Update now'
     }
 }

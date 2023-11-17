@@ -30,7 +30,7 @@ export default {
         approveDate: "Бекітілген күні",
         approvedBy: "Бекіткен",
         notUpload: 'Құжат жүктелмеді',
-        nextIssue: 'Сертификаттың соңғы нөмірі',
+        nextIssue: 'Сертификаттар тізбегі осы нөмерден басталады',
         goToTheCourse: "Курсқа өту",
         addCertificate: "Сертификат қажет етіледі",
         updateGES:"ЖББП тізімін жаңарту",
@@ -336,6 +336,10 @@ export default {
         selectFormat: 'Форматты таңдаңыз',
         notifications: 'Хабарламалар',
         noResult: 'Жазбалар табылмады',
+        no_password: 'Өтініш, Құпия сөзді енгізіңіз',
+        unauth: 'Сіз енгізген ақпарат дұрыс емес',
+        incorect_password: 'Қате құпия сөз',
+        no_username: 'Өтініш, Пайдаланушы атын енгізіңіз'
     },
     bank: {
         title: "Банктер",
@@ -1301,6 +1305,7 @@ export default {
             getQr: "QR алу",
             confirm: "Сертификатты ҚОСЫМШАСЫЗ беру керек пе?",
             confirm2: "Сертификат ҚОСЫМШАМЕН беріледі, қосымша дұрыс толтырылған ба?",
+            certSelect:"Сертификат сұлбасын көрсету"
         },
         modules:'Курс модульдері',
         module: 'Модуль',
@@ -1317,6 +1322,9 @@ export default {
         journal: 'Журнал',
         addCourse: 'Курсқа қосу',
         completedTraining: 'Оқуды аяқтады',
+        course: 'Курс',
+        startDate:'Курстың басталу күні',
+        completionDate: 'Курстың аяқталу күні'
     },
     roleControl:{
         addSidebar: 'Жаңа жазбаны қосу',
@@ -1401,5 +1409,9 @@ export default {
         stepTwo: "2. Басты беттің жоғарғы оң жақ бұрышында QR сканерін ашыңыз",
         stepThree: "3. Кодты оқу үшін телефоныңызды осы экранға бағыттаңыз",
         mobileAppNotInstalled: "Егер Сізде «eGov Mobile/Business» қосымшасы болмаса, оны төмендегі QR кодтың біреуін сканерлеу арқылы орнатыңыз",
+    },
+    integration: {
+        title: 'Интеграциялар',
+        updateNow: 'Қазір жаңарту'
     }
 }
