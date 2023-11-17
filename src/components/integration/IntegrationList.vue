@@ -167,9 +167,10 @@ onMounted(() => {
         <template #loading>{{ $t("common.loading") }}</template>
         <Column :field="'name_' + locale" :header="$t('common.nameIn')" sortable>
           <template #body="{ data }">
-            <a href="javascript:void(0)" @click="navigateToView(data)">
+            {{ data['name_' + locale] }}
+<!--            <a href="javascript:void(0)" @click="navigateToView(data)">
               {{ data['name_' + locale] }}
-            </a>
+            </a>-->
           </template>
         </Column>
         <Column field="is_active" style="width: 200px" :header="t('common.state')">

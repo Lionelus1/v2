@@ -76,6 +76,12 @@ export class MenuService {
                         to: '/docrequests',
                         visible: this.findRole("hr_manager")
                     },
+                    {
+                        label: $t('integration.title'),
+                        icon: 'fa-solid fa-rotate',
+                        to: '/integrations',
+                        visible: this.findRole("main_administrator")
+                    }
                 ]
             },
             {
@@ -259,18 +265,7 @@ export class MenuService {
                     },
 
                 ]
-            },
-            {
-                label: "Интеграциялар",
-                icon: 'fa-solid fa-user-graduate',
-                items: [
-                    {
-                        label: "Интеграциялар",
-                        icon: 'pi pi-fw pi-user-plus',
-                        to: '/integrations'
-                    }
-                ]
-            },
+            }
         ]
     }
 

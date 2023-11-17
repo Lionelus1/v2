@@ -263,6 +263,7 @@ export default {
             selectVariant: "Choose the option you need",
             selectUsers: "Please, select users",
             userIINExists: "User with same IIN already exists",
+            incorrectIIN: "IIN is incorrect",
             orgBINExists: "Organization with same BIN already exists",
             accessDenied: "You do not have permission to view this document!",
             accessDeniedAdmin: "You do not have the necesary permisions. Please contact admins",

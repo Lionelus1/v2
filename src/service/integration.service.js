@@ -44,7 +44,7 @@ export class IntegrationService {
     }
 
     runIntegrationSync(id) {
-        return api.post(`/integration/run/${id}`, {headers: getHeader()})
+        return api.post(`/integration/run/${id}`, {},{headers: getHeader()})
     }
 
 }
