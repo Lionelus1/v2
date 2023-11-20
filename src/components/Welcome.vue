@@ -1,7 +1,7 @@
 <template>
     <div class="col-12">
         <div class="card">
-            <h4 class="m-0">{{ $t("common.welcome") }}, {{ loginedUser.fullName }} !</h4>
+            <h4 class="m-0">{{ $t("common.welcome") }}, {{ getFullname(loginedUser) }} !</h4>
         </div>
         <div class="card card_bottom">
             <TabView ref="templateView" v-model:activeIndex="active">
@@ -200,6 +200,15 @@
                 this.lazyParams = event
                 this.getAllNews();
             },
+            getFullname(user) {
+                let fullname = user.thirdName + ' ' + user.firstName
+
+                if (user.lastName && user.lastName.length > 0) {
+                    fullname += user.lastName
+                }
+
+                return fullname
+            }
         },
         created() {
             this.getAllNews();

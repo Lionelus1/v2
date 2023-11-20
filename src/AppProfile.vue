@@ -6,12 +6,12 @@
       <img class="round" v-else src="assets/layout/images/default-user.jpg"/>
     </div>
     <button class="p-link layout-profile-link" @click="onClick">
-      <span class="username">{{ loginedUser.fullName }}</span>
+      <span class="username">{{ getFullname(loginedUser) }}</span>
       <i class="pi pi-fw pi-cog"></i>
     </button>
     <transition name="layout-submenu-wrapper">
       <ul v-show="expanded">
-        <li v-if="loginedUser && loginedUser.organization && loginedUser.organization.id === 1">
+        <li v-if="loginedUser && loginedUser.mainPosition && loginedUser.mainPosition.organization.id === 1">
           <button @click="sVerify = true" class="p-link">
             <i class="pi pi-fw pi-verified"></i><span>{{ $t("common.verify") }}</span>
           </button>
@@ -26,7 +26,7 @@
             <i class="fa-solid fa-user-shield"></i><span>{{ $t("positions.menuTitle") }}</span>
           </button>
         </li>
-        <li v-if="loginedUser && loginedUser.organization && loginedUser.organization.id === 1">
+        <li v-if="loginedUser && loginedUser.mainPosition && loginedUser.mainPosition.organization.id === 1">
           <button @click="myRef" class="p-link">
             <i class="pi pi-fw pi-book"></i><span>{{ $t("ref.myRefs") }}</span>
           </button>
@@ -98,6 +98,15 @@ export default {
     },
     changeRole() {
       this.$refs.positionChangeDialog.show();
+    },
+    getFullname(user) {
+      let fullname = user.thirdName + ' ' + user.firstName
+
+      if (user.lastName && user.lastName.length > 0) {
+        fullname += user.lastName
+      }
+
+      return fullname
     }
   },
   computed: {

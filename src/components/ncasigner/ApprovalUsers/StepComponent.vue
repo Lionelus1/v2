@@ -256,7 +256,7 @@ export default {
     },
     isEnuWorker() {
       let currentUser = this.$store.state.loginedUser
-      if (currentUser && currentUser.organization && currentUser.organization.iin && currentUser.organization.iin === '010140003594') {
+      if (currentUser && currentUser.mainPosition.organization && currentUser.mainPosition.organization.iin && currentUser.mainPosition.organization.iin === '010140003594') {
         return true
       }
 

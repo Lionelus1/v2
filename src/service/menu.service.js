@@ -80,7 +80,7 @@ export class MenuService {
             },
             {
                 label: $t('common.contragents'), icon: 'pi pi-fw pi-users',
-                visible: !this.findRole("student") && (this.getLoginedUser().organization && this.getLoginedUser().organization.id === 1),
+                visible: !this.findRole("student") && (this.getLoginedUser().mainPosition && this.getLoginedUser().mainPosition.organization && this.getLoginedUser().mainPosition.organization.id === 1),
 
                 items: [
                     {
