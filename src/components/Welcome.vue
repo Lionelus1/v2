@@ -39,6 +39,9 @@
                     }}
                   </strong>
                   <div class="date">{{ formatDateMoment(data.publish_date) }}</div>
+                  <div class="mt-2">
+                    <Tag severity="info" class="mt-2" :value="data.site_url"></Tag>
+                  </div>
                 </div>
               </div>
             </template>
@@ -145,6 +148,7 @@ export default {
         this.allNews.map(e => {
           let fileUrl = e.main_image_file ? e.main_image_file.filepath : e.image1
           e.imageUrl = smartEnuApi + fileRoute + fileUrl
+          e.site_url = `${e.enu_slug.slug ? e.enu_slug.slug + "." : ""}enu.kz`
         });
         this.total = response.data.total;
         this.loading = false;
