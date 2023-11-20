@@ -1200,7 +1200,8 @@ export default {
         halfYear: "жартыжылдық",
         simplePlan: "Жоспар",
         operationalPlan: "Операциялық жоспар",
-        planType: "Жоспар түрі"
+        planType: "Жоспар түрі",
+        myPlans: "Менің жоспарларым"
     },
     educomplex: {
         title: "Пәннің оқу-әдістемелік кешені",
