@@ -1,7 +1,7 @@
 <template>
   <div class="col-12">
     <TitleBlock :title="$t('common.faculties')" />
-    <div class="card">
+    <div class="card" v-if="list">
       <TabView>
         <TabPanel :header="$t('web.properties')">
           <DataTable :lazy="true" :value="list" dataKey="id" :loading="loading" responsiveLayout="scroll" :rows="10"
@@ -11,6 +11,11 @@
             <Column :field="'title_' + $i18n.locale" :header="$t('common.nameIn')">
               <template #body="{ data }">
                 {{ data['name_' + $i18n.locale] }}
+              </template>
+            </Column>
+            <Column :header="$t('web.websiteAddress')">
+              <template #body="{data}">
+                <a :href="data?.url" target="_blank">{{data?.urlTitle}}</a>
               </template>
             </Column>
             <Column :header="$t('cafedra.responsible')">
@@ -70,8 +75,13 @@ const isWebAdmin = computed(() => findRole(authUser.value, "enu_web_admin"))
 const getSlugs = () => {
   loading.value = true;
   enuService.getSlugs().then(res => {
-    if (res.data)
+    if (res.data) {
       list.value = res.data.slugs
+      list.value?.map(e => {
+        e.urlTitle = `${e.slug ? e.slug + "." : ""}enu.kz`
+        e.url = `https://${e.slug ? e.slug + "." : ""}enu.kz`
+      })
+    }
     TN.value = res.data.tn_res
     loading.value = false
   }).catch(error => {
