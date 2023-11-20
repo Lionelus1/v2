@@ -268,7 +268,6 @@ export default {
         },
       },
       loading: true,
-      userRoles: null,
       roles: {
         isAdmin: false,
         isModer: false,
@@ -389,25 +388,10 @@ export default {
       this.submitted = false;
     },
     getRoles() {
-      this.userRoles = [];
-      axios
-          .get(smartEnuApi + "/getroles", {
-            headers: getHeader(),
-          })
-          .then((response) => {
-            this.userRoles = response.data;
-            this.roles.isAdmin = this.findRole(this.userRoles, "news_administrator");
-            this.roles.isPublisher = this.findRole(this.userRoles, "news_publisher");
-            this.roles.isStudent = this.findRole(this.userRoles, "student");
-            this.roles.isModer = this.findRole(this.userRoles, "news_moderator");
-          })
-          .catch((error) => {
-            this.$toast.add({
-              severity: "error",
-              summary: this.$t("smartenu.loadAllEventsError") + ":\n" + error,
-              life: 3000,
-            });
-          });
+      this.roles.isAdmin = this.findRole(null, "news_administrator");
+      this.roles.isPublisher = this.findRole(null, "news_publisher");
+      this.roles.isStudent = this.findRole(null, "student");
+      this.roles.isModer = this.findRole(null, "news_moderator");
     },
     findRole(roles, code) {
       for (let i = 0; i < roles.length; i++) {
