@@ -7,12 +7,12 @@
       <Toolbar class="m-0 p-1" style="position:relative;">
 
         <template #start>
-          <Button v-if="findRole(null,'accreditation_rating_sector_employee')"  :disabled="selected===null || file.depType !=2" @click="resetFileInfo();openDialog('fileUpload')"
+          <Button v-if="findRole(null,'accreditation_rating_sector_employee')"  :disabled="selected===null || (file.depType !=2 && file.depType != 10)" @click="resetFileInfo();openDialog('fileUpload')"
                   class="p-button-info p-1 mr-2"><i
               class="fa-solid fa-file-circle-plus fa-xl"></i>&nbsp;{{ $t('common.add') }}
           </Button>
           <Button v-if="loginedUser != null && loginedUser.userID == file.ownerId && file.stateID == 1"
-                  :disabled="selected===null || file.depType !=3" @click="openDialog('sendToApprove')"
+                  :disabled="selected===null || file.depType != 3" @click="openDialog('sendToApprove')"
                   class=" p-button-info p-1 mr-2"><i
               class="fa-solid fa-file-contract fa-xl"></i>&nbsp;{{ $t('common.toapprove') }}
           </Button>
@@ -107,7 +107,7 @@
         <Column field="name" :header="$t('common.name')" :expander="true"  style="min-width: 10rem;">
           <template #body="slotProps">
             <span><i
-                :class="'fa-solid fa-' + (slotProps.node.depType <= 2 ? 'folder' : 'file')"></i>&nbsp;{{
+                :class="'fa-solid fa-' + ((slotProps.node.depType <= 2 || slotProps.node.depType == 10) ? 'folder' : 'file')"></i>&nbsp;{{
                 slotProps.node["name" + $i18n.locale]
               }}</span>
             <Button type="button" icon="fa-solid fa-filter fa-xl" v-if="slotProps.node.depType === 2"
@@ -195,7 +195,7 @@
           <template #body="slotProps">
             <span
                 :class="'customer-badge status-' + slotProps.node.stateen">{{
-                slotProps.node["state" + $i18n.locale]
+                slotProps.node.stateen ? $t('common.states.'+slotProps.node.stateen) : ''
               }}</span>
           </template>
         </Column>

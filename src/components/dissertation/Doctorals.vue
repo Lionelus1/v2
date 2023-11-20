@@ -1411,10 +1411,9 @@ export default {
       let data = {
         id: this.selectedDoctoral.councilID,
         page: 0,
-        rows: 10
+        rows: 50
       }
       axios.post(smartEnuApi + "/dissertation/getcouncilmembers", data, { headers: getHeader() }).then((response) => {
-        console.log(response.data)
         this.memberList = response.data;
       }).catch((error) => {
         if (error && error.response && error.response.status == 401) {
