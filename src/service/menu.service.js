@@ -158,7 +158,11 @@ export class MenuService {
 
             },
             {
-                label: $t('workPlan.plans'), icon: 'pi pi-fw pi-folder', to: '/work-plan'
+                label: $t('workPlan.plans'), 
+                icon: 'pi pi-fw pi-folder', 
+                to: '/work-plan',
+                visible: !this.findRole("student")
+                
             },
             {
                 label: $t('common.forStudentsAndGraduates'), icon: 'fa-solid fa-user-graduate',
