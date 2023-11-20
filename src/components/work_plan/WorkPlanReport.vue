@@ -1,5 +1,6 @@
 <template>
   <div class="col-12">
+    <h3 v-if="plan"><TitleBlock :title="plan.work_plan_name" :show-back-button="true" /></h3>
     <div class="card" v-if="isPlanCreator">
       <WorkPlanReportModal :plan-id="this.work_plan_id" :plan="plan"></WorkPlanReportModal>
     </div>

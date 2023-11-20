@@ -1144,6 +1144,10 @@ export default {
         summary: "Summary/Confirmation",
         respExecutor: "Responsible performers",
         halfYear: "semi-annual",
+        simplePlan: "Plan",
+        operationalPlan: "Operational Plan",
+        planType: "Plan Type",
+        myPlans: "My Plans"
     },
     queue: {
 

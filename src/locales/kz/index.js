@@ -1186,6 +1186,10 @@ export default {
         summary: "Жинақтаушы/Растау",
         respExecutor: "Жауапты орындаушылар",
         halfYear: "жартыжылдық",
+        simplePlan: "Жоспар",
+        operationalPlan: "Операциялық жоспар",
+        planType: "Жоспар түрі",
+        myPlans: "Менің жоспарларым"
     },
     educomplex: {
         title: "Пәннің оқу-әдістемелік кешені",
