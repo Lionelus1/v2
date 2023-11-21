@@ -11,6 +11,12 @@
     </button>
     <transition name="layout-submenu-wrapper">
       <ul v-show="expanded">
+<!--        <li v-if="findRole(loginedUser, 'student')">-->
+        <li>
+          <button @click="navigateToFinance" class="p-link">
+            <i class="fa-solid fa-wallet"></i><span>Мои финансы</span>
+          </button>
+        </li>
         <li>
           <button @click="sVerify = true" class="p-link">
             <i class="pi pi-fw pi-verified"></i><span>{{ $t("common.verify") }}</span>
@@ -86,6 +92,9 @@ export default {
     },
     qr() {
       this.$router.push({path: "/qr"})
+    },
+    navigateToFinance() {
+      this.$router.push({name: "Finance"})
     }
   },
   computed: {
