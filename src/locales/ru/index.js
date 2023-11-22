@@ -264,6 +264,7 @@ export default {
             selectVariant: "Выберите нужный вариант",
             selectUsers: "Выберите пользователей",
             userIINExists: "Пользователь с таким же ИИН уже имеется",
+            incorrectIIN: "Неправильный ИИН",
             orgBINExists: "Органищация с таким же БИН уже имеется",
             notAllowed: "У Вас нет полномочий для этих действий",
             CantModifyInCurrentState: "Вы не можете редактировать документ в текущем статусе",

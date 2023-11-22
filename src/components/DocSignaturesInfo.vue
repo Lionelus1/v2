@@ -48,7 +48,7 @@
                       class="p-button-primary md:col-5" @click="sign" :label="$t('ncasigner.sign')" :loading="signing"/>
             </div>
           </Panel>
-          <div class="p-mt-2">
+          <div class="p-mt-2" v-if="isIndivid">
             <Panel>
               <template #header>
                 <div class="p-d-flex p-jc-center">
