@@ -721,7 +721,13 @@ const routes = [
                 name: 'IntegrationParams',
                 component: load('integration/IntegrationParams'),
                 beforeEnter: ifAuthenticated,
-            }
+            },
+            {
+                path: '/service-catalog',
+                name: 'ServiceCatalog',
+                component: load('service-catalog/ServiceCatalog'),
+                beforeEnter: ifAuthenticated,
+            },
         ]
     },
    

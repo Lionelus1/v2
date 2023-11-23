@@ -265,6 +265,11 @@ export class MenuService {
                     },
 
                 ]
+            },
+            {
+                label: 'Каталог услуг',
+                icon: 'fa-solid fa-briefcase',
+                to: '/service-catalog'
             }
         ]
     }
