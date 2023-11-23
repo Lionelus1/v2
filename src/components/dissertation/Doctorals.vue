@@ -1513,10 +1513,9 @@ export default {
     loadCouncil() {
       let data = {
         id: this.selectedDoctoral.councilID,
-        page: 0,
-        rows: 50
+        dissertation_id: this.selectedDoctoral.dissertation.id
       }
-      axios.post(smartEnuApi + "/dissertation/getcouncilmembers", data, { headers: getHeader() }).then((response) => {
+      axios.post(smartEnuApi + "/dissertation/getdissertationmembers", data, { headers: getHeader() }).then((response) => {
         this.memberList = response.data;
       }).catch((error) => {
         if (error && error.response && error.response.status == 401) {
