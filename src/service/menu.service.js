@@ -137,10 +137,14 @@ export class MenuService {
               label:  $t('faq.title'), icon: 'pi pi-fw pi-question-circle', to: '/faq/faqmain'
             },*/
             {
-                label: $t('publicReception.title'), icon: 'fa-solid fa-person-circle-question', to: '/reception'
+                label: $t('publicReception.title'),
+                icon: 'fa-solid fa-person-circle-question',
+                to: '/reception',
+                visible: !this.findRole("student")
             },
             {
                 label: $t('dissertation.title'), icon: 'fa-solid fa-school-circle-check',
+                visible: !this.findRole("student"),
                 items: [
                     {
                         label: $t('dissertation.council.list'),
@@ -158,7 +162,10 @@ export class MenuService {
 
             },
             {
-                label: $t('workPlan.plans'), icon: 'pi pi-fw pi-folder', to: '/work-plan'
+                label: $t('workPlan.plans'),
+                icon: 'pi pi-fw pi-folder',
+                to: '/work-plan',
+                visible: !this.findRole("student")
             },
             {
                 label: $t('common.forStudentsAndGraduates'), icon: 'fa-solid fa-user-graduate',
@@ -190,6 +197,7 @@ export class MenuService {
 
             {
                 label: $t('queue.title'), icon: 'fa-solid fa-people-line',
+                visible: !this.findRole("student"),
                 items: [
                     {
                         label: $t('queue.title'), icon: 'pi pi-fw pi-plus-circle', to: '/queue'
