@@ -11,6 +11,12 @@
     </button>
     <transition name="layout-submenu-wrapper">
       <ul v-show="expanded">
+<!--        <li v-if="findRole(loginedUser, 'student')">-->
+        <li>
+          <button @click="navigateToFinance" class="p-link">
+            <i class="fa-solid fa-wallet"></i><span>Мои финансы</span>
+          </button>
+        </li>
         <li v-if="loginedUser && loginedUser.organization && loginedUser.organization.id === 1">
           <button @click="sVerify = true" class="p-link">
             <i class="pi pi-fw pi-verified"></i><span>{{ $t("common.verify") }}</span>
@@ -98,6 +104,9 @@ export default {
     },
     changeRole() {
       this.$refs.positionChangeDialog.show();
+    },
+    navigateToFinance() {
+      this.$router.push({name: "Finance"})
     }
   },
   computed: {

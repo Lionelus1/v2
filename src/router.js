@@ -103,6 +103,12 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
+                path:'/finance',
+                name:'Finance',
+                component: load('finance/Finance'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
                 path: '/documents/catalog/normdoc',
                 name: '/documents/catalog/normdoc',
                 component: load('documents/catalog/NormativeDocuments'),
@@ -715,7 +721,13 @@ const routes = [
                 name: 'IntegrationParams',
                 component: load('integration/IntegrationParams'),
                 beforeEnter: ifAuthenticated,
-            }
+            },
+            {
+                path: '/service-catalog',
+                name: 'ServiceCatalog',
+                component: load('service-catalog/ServiceCatalog'),
+                beforeEnter: ifAuthenticated,
+            },
         ]
     },
    
