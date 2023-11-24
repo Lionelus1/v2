@@ -265,6 +265,21 @@ export class MenuService {
                     },
 
                 ]
+            },
+            {
+                label: $t('Конструктор образовательных программ'), icon: 'fa-solid fa-chalkboard-user',
+                items: [
+                    {
+                        label: $t('Бакалавриат'), to: '/educational-programs/bachelor',
+                    },
+                    {
+                        label: $t('Магистратура'), to: '/educational-programs/bachelor',
+                    },
+                    {
+                        label: $t('Докторантура'), to: '/educational-programs/bachelor',
+                    },
+
+                ]
             }
         ]
     }

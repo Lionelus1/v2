@@ -12,7 +12,41 @@
                 </SplideSlide>
             </Splide>
         </div>
+      <div class="mt-5 mb-3 flex justify-content-between">
         <h3>{{ $t('course.courses') }}</h3>
+        <div>
+          <Button @click="goToAdd()" icon="pi pi-plus-circle" label="Добавить курс" />
+          <Button class="ml-2" icon="pi pi-filter" label="Фильтр" />
+        </div>
+      </div>
+      <div class="card grid pl-8 pr-8">
+        <div class="p-4 col-12 sm:col-6 lg:col-12 xl:col-3">
+          <div class="grid_item_rating">
+            <img src="https://www.hult.edu/blog/media/uploads/2020/12/photo-1503945438517-f65904a52ce6.jpg" alt="">
+            <div class="text p-3">
+              <h5 class="title font-semibold">Наука в области химии</h5>
+              <p>Автор курса: ХХХХХ</p>
+              <p>05.10.2023</p>
+              <p> <i class="pi pi-star-fill text-yellow-500"></i> 4,9</p>
+              <div class="grid_footer flex justify-content-between align-items-center">
+                <Tag value="ОПУБЛИКОВАНО" severity="success"></Tag>
+                <i class="pi pi-list"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card grid pl-8 pr-8">
+        <div  v-for="(item, index) in courses" :key="index" class="p-4 col-12 sm:col-6 lg:col-12 xl:col-3">
+          <div class="grid_item p-4 relative">
+            <div class="text-white absolute">
+              <h5 class="title">{{item['name' + $i18n.locale] }}</h5>
+              <div class="count_course">15 курс</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
         <div class="surface-card p-4 shadow-2 border-round">
             <DataView class="xl:ml-7 xl:mr-7" :lazy="true" :value="courses" :layout="layout" :paginator="true" :rows="10" @page="onPage($event)" :totalRecords="total">
                 <template #list="slotProps">
@@ -40,7 +74,7 @@
   import { Grid } from '@splidejs/splide-extension-grid';
   import {OnlineCourseService} from "@/service/onlinecourse.service";
   
-  export default({
+  export default{
     components: {
       Splide,
       SplideSlide,
@@ -151,11 +185,33 @@
         onPage(event) {
             this.courseLazyParams = event
             this.getCourses();
+        },
+        goToAdd(){
+          this.$router.push({name: "AddCourse"})
         }
     }
-  });
+  };
   </script>
-  <style>
+  <style lang="scss">
+  .grid_item{
+    background-image: url("https://bogatyr.club/uploads/posts/2023-03/thumbs/1678091024_bogatyr-club-p-selskoe-khozyaistvo-kollazh-foni-krasivo-50.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    border-radius: 3px;
+    min-height: 220px;
+    box-shadow: rgba(0, 0, 0, 0.19) 0 10px 20px, rgba(0, 0, 0, 0.23) 0 6px 6px;
+    .text-white{
+      bottom: 20px;
+    }
+  }
+  .grid_item_rating{
+    box-shadow: rgba(0, 0, 0, 0.19) 0 10px 20px, rgba(0, 0, 0, 0.23) 0 6px 6px;
+    border-radius: 3px;
+    min-height: 220px;
+    img{
+      width: 100%;
+    }
+  }
   .item {
     transition: width 1s ease;
     height: 150px;

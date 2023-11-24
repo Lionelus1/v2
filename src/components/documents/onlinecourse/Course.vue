@@ -1,11 +1,38 @@
 <template>
     <div v-if="course">
         <BlockUI :blocked="saving" :fullScreen="true"></BlockUI>
-        <div class="surface-card p-4">
-            <h3 class="mb-3">{{ course["name" + $i18n.locale] }}</h3>
-            <div class="text-500 mb-5">{{ course["description" + $i18n.locale] }}</div>
+        <TitleBlock :title="$t('Онлайн курсы - Курсы - Наука в области химии')" :show-back-button="true"/>
+        <div class="course_card flex p-4">
+          <img src="https://www.hult.edu/blog/media/uploads/2020/12/photo-1503945438517-f65904a52ce6.jpg" alt="">
+          <div class="text text-white">
+            <div class="flex mb-4">
+              <h5 class="mb-0 mr-2">{{ course["name" + $i18n.locale] }}</h5>
+              <Tag class="ql-size-small" icon="pi pi-star-fill" value="4,9"></Tag>
+            </div>
+            <p class="text-gray-400">Длительность : 15 недель</p>
+            <p class="text-gray-400">Формат обучения: смешанный</p>
+          </div>
         </div>
         <TabView>
+          <TabPanel :header="$t('О курсе')">
+            <div class="content">
+              <p class="title font-bold">Цель курса</p>
+              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam aliquid amet architecto aut consequuntur, doloremque eaque earum eligendi eum ex fugiat hic inventore ipsa laudantium, libero molestiae nam perferendis quae quibusdam quis repellat repellendus reprehenderit repudiandae sit suscipit veniam, voluptates.</p>
+              <p class="title font-bold">Краткая аннотация</p>
+              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Distinctio facere porro provident temporibus velit voluptate. A enim nihil nisi odio.</p>
+            </div>
+           <div class="course_footer">
+             <div class="footer_title font-bold mb-4">
+               Преподаватели
+             </div>
+             <div class="content">
+                <div class="img_card">
+                  <img src="https://edtech4beginnerscom.files.wordpress.com/2021/05/1.png" alt="">
+                  <div class="name">Teacher</div>
+                </div>
+             </div>
+           </div>
+          </TabPanel>
             <TabPanel :header="$t('course.users')">
                 <Button v-if="students.length === 0 && dic_course_type == 1" class="btn mb-3" :label="$t('hr.sp.request')"
                         @click="sendRequestToCourse()"/>
@@ -102,7 +129,7 @@
                         </template>
                     </Dialog>
 
-                    <Dialog v-model:visible="issueCertificateDialog" :style="{ width: '500px' }">   
+                    <Dialog v-model:visible="issueCertificateDialog" :style="{ width: '500px' }">
                         <template #header>
                             <div>
                                 <i class="pi pi-exclamation-triangle mr-2"></i>
@@ -123,7 +150,7 @@
                             </div>
 
                         </template>
-                        
+
                     </Dialog>
 
                     <Dialog v-model:visible="issueCertificateWithDialog" :style="{ width: '500px' }">
@@ -140,22 +167,27 @@
                                 <InputText type="text" v-model="organizer.lastNumber"></InputText>
                                 <div>
                                     <Button v-if="findRole(null,'online_course_administrator')"
-                                            :label="$t('common.yes')" 
+                                            :label="$t('common.yes')"
                                             @click="issueCertificate(1)"/>
                                     <Button :label="$t('common.no')" @click="closeIssueCertificateWithDialog"
                                             class="p-button-secondary p-button-outlined"/>
                                 </div>
-                                
+
                             </div>
                         </template>
-                        
+
                     </Dialog>
 
                 </div>
             </TabPanel>
-
             <!-- module қосу table -->
             <TabPanel :header="$t('course.modules')" v-if="dic_course_type == 1">
+              <div class="module_card">
+                <img src="https://www.mooc.org/hubfs/are-free-online-courses-worth-it.jpg" alt="">
+                <p>1. Основы химии: атомы и элементы.</p>
+                <hr>
+                <i class="pi pi-list"></i>
+              </div>
                 <DataTable :value="module">
                     <template #header>
                         <div
@@ -341,7 +373,7 @@ export default {
             reqBtn: true,
             statusText: false,
             userID: null,
-            stateID: null, 
+            stateID: null,
             searchText: '',
             searchData: {},
             dic_course_type: null,
@@ -517,7 +549,7 @@ export default {
         },
         getCourseOrganizerByCourseID() {
             this.loading = true
-            
+
             this.service.getCourseOrganizerByCourseID(this.course_id).then(response => {
                 this.organizer = response.data.organizer
                 this.organizer.lastNumber++
@@ -525,7 +557,7 @@ export default {
             }).catch(_ => {
                 this.loading = false
             });
-        },  
+        },
         closeStudentDialog() {
             this.studentDialog = false;
             this.newUsers = []
@@ -692,4 +724,44 @@ export default {
     },
 }
 </script>
-<style></style>
+<style lang="scss">
+.course_card{
+  background: #293042;
+  img{
+    margin-right: 20px;
+    width: 15%;
+  }
+}
+.course_footer{
+  margin-top: 40px;
+  .content{
+    padding: 40px;
+    background: #293042;
+    .img_card{
+      width: 100px;
+      height: 100px;
+      color: #fff;
+      border-radius: 50%;
+      text-align: center;
+      img{
+        width: 100%;
+        height: 100%;
+        border-radius: inherit;
+        object-fit: cover;
+      }
+    }
+  }
+}
+.module_card{
+  width: 240px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  padding: 10px;
+  img {
+    width: 100%;
+  }
+  i{
+    text-align: right;
+  }
+}
+</style>

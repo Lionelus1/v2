@@ -187,6 +187,12 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
+                path: '/courses/add',
+                name: 'AddCourse',
+                component: load('documents/onlinecourse/AddCourse'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
                 path: '/catcourses/:categoryID',
                 name: 'onlinecoursesCat',
                 component: load('documents/onlinecourse/CoursesTable'),
@@ -202,6 +208,18 @@ const routes = [
                 path: '/documents/certificate/:uuid',
                 name: 'certificate',
                 component: load('documents/certificates/Certificate'),
+            },
+            {
+                path: '/educational-programs/bachelor',
+                name: 'educationalPrograms',
+                component: load('documents/onlinecourse/EducationalPrograms'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/educational-programs/bachelor/add',
+                name: 'addEducationalPrograms',
+                component: load('documents/onlinecourse/AddEducationalProgram'),
+                beforeEnter: ifAuthenticated,
             },
             {
                 path: '/contragent/banks',
