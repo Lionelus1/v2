@@ -38,7 +38,7 @@
             {{ body.data['description' + $i18n.locale] }}
           </template>
         </Column>
-        <!-- <Column v-if="findRole(null, 'online_course_administrator')">   
+        <Column v-if="findRole(null, 'online_course_administrator') && dic_course_type == 2">   
           <template #body="body">
             <Checkbox v-model="body.data.give_certificate" @change="pushAndDeleteGiveCertificates(body.data)"
               :binary="true" />
@@ -47,7 +47,7 @@
             <Checkbox inputId="selectAll"  class="mr-2" v-model="selectAllChecked" @input="checkboxSelectAll" :binary="true"  />
             <label for="selectAll">{{$t('common.addCertificate')}}</label>
         </template>
-        </Column> -->
+        </Column>
         <Column>
           <template #body="body">
             <Button :label="$t('common.goToTheCourse')" v-model="body.Button" class="p-button-info mb-2"
@@ -254,6 +254,7 @@ export default {
       }
       this.service.updateCourseGiveCertificates(request).then(_ => {
         this.loading = false
+        this.$toast.add({severity: "success", summary: this.$t('common.success'), life: 3000});
       }).catch(_ => {
         this.loading = false
       })
