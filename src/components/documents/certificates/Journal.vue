@@ -6,10 +6,10 @@
              <div class="card">
          <div class="text-2xl font-medium text-900 mb-3">{{$t("course.certificate.title")}}</div>
          <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
-         <!-- <Button  v-if="findRole(null,'student')" @click="getStudentCertificates()"
+         <Button  v-if="findRole(null,'student')" @click="getStudentCertificates()"
             :label="$t('common.downloadCertificate')"
             type="button"
-            class="p-button-info" /> -->
+            class="p-button-info" />
          <DataTable
          v-if="journal"
          selectionMode="single"
