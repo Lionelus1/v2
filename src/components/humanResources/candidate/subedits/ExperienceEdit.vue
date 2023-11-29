@@ -1,10 +1,10 @@
 <template>
   <div id="carddiv" class="grid">
     <div class="col-12">
-      <h3>{{ $t('hr.title.experience') }}</h3>
+      <h3 v-if="customType == 'scientists'">{{ $t('science.laborActivity') }}</h3>
+      <h3 v-else>{{ $t('hr.title.experience') }}</h3>
       <div>
-        <Menubar :model="menu" :key="active"
-                 style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px"></Menubar>
+        <Menubar :model="menu" :key="active" style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px"></Menubar>
       </div>
     </div>
     <div class="col-12 md:col-12 p-fluid">
@@ -98,12 +98,14 @@
 <script>
 import {getHeader, smartEnuApi} from "@/config/config";
 import {CandidateService} from "@/service/candidate.service"
+import axios from "axios";
 export default {
   name: "ExperienceEdit",
   data() {
     return {
       value: this.modelValue,
       active: null,
+      customType: this.typeCustom,
       menu: [
         {
           label: this.$t("common.save"),
@@ -148,23 +150,47 @@ export default {
       if (this.value.isStillWorking) {
         this.value.endDate = null
       }
+
       if (this.validateForm()) {
-        let path = !this.value.id ? "/candidate/experience/create" : "/candidate/experience/update"
-        this.candidateService.experienceCreateOrUpdate(path, this.value).then(res => {
-              this.emitter.emit("experience", true);
-            }).catch(error => {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        });
+        if (this.customType=='scientists') {
+          this.savescientists()
+        } else {
+          this.saveCandidate()
+        }
       }
+    },
+    saveCandidate() {
+      let path = !this.value.id ? "/candidate/experience/create" : "/candidate/experience/update"
+      axios
+          .post(smartEnuApi + path, this.value, {headers: getHeader(),})
+          .then(res => {
+            this.emitter.emit("experience", true);
+          }).catch(error => {
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
+      });
+    },
+    savescientists() {
+      axios.post(smartEnuApi + '/science/laborActivity/create', this.value, {headers: getHeader()})
+      .then(res => {
+        this.emitter.emit("experienceScientists", true);
+      }).catch(error => {
+        console.log('asfasf')
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
+      });
     }
   },
   props: {
     modelValue: null,
     readonly: Boolean,
+    typeCustom: null
   },
 }
 </script>

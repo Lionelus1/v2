@@ -461,6 +461,9 @@ export default {
       this.interval = null;
     },
     showFile(fileData) {
+      if (fileData === 0 || !fileData) {
+        return
+      }
       this.fileData = fileData
       this.fileView = true
     },

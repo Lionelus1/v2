@@ -2,6 +2,9 @@
     <h3>{{ $t("common.cabinet") }}</h3>
 <div class="card">
   <TabView>
+    <TabPanel :header="$t('common.cabinet')">
+      <MyCabinet/>
+    </TabPanel>
     <TabPanel :header="$t('common.myResume')">
       <Resume/>
     </TabPanel>
@@ -13,14 +16,15 @@
 </template>
 
 <script>
-import CandidateVacancy from "./CandidateVacancy";
-import Resume from "./Resume";
-export default {
-  name: "Cabinet",
-  components: {Resume, CandidateVacancy}
-}
+  import CandidateVacancy from "./CandidateVacancy";
+  import Resume from "./Resume";
+  import MyCabinet from "./MyCabinet";
+
+  export default {
+    name: "Cabinet",
+    components: {Resume, CandidateVacancy, MyCabinet}
+  }
 </script>
 
 <style scoped>
-
 </style>

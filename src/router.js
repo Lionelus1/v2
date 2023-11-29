@@ -728,6 +728,19 @@ const routes = [
                 component: load('service-catalog/ServiceCatalog'),
                 beforeEnter: ifAuthenticated,
             },
+            {
+                path: '/science/scientists',
+                name:'ScientistsList',
+                component: load('science/ScientistsList'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/science/scientists/:id',
+                name:'ScientistsProfile',
+                component: load('science/ScientistsProfile'),
+                beforeEnter: ifAuthenticated,
+            },
+
         ]
     },
    
