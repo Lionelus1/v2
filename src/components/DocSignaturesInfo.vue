@@ -1,10 +1,4 @@
 <template>
-  <Toast v-if="!isInsideSidebar"/>
-  <div v-if="!isInsideSidebar" class="layout-topbar no-print">
-    <div class="layout-topbar-icons">
-      <LanguageDropdown/>
-    </div>
-  </div>
   <div>
     <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
     <BlockUI :blocked="loading" :fullScreen="true"></BlockUI>
@@ -54,12 +48,11 @@
                 <div class="p-d-flex p-jc-center">
                   <InlineMessage class="" severity="info">{{ $t('ncasigner.qrSinging') }}</InlineMessage>
                 </div>
-
               </template>
               <div class="text-center">
                 <h6><b>{{ $t('mgov.inApp') }}</b> <b style="color: red">{{ mobileApp }}</b></h6>
               </div>
-              <div class="p-d-flex p-jc-center">
+              <div v-if="mgovSignUri" class="p-d-flex p-jc-center">
                 <qrcode-vue size="350" render-as="svg" margin="2" :value="mgovSignUri"></qrcode-vue>
               </div>
               <div v-if="mgovMobileRedirectUri && isIndivid" class="p-fluid text-center">
@@ -98,7 +91,6 @@
 <script>
 import SignatureQrPdf from "@/components/ncasigner/SignatureQrPdf";
 import {runNCaLayer, makeTimestampForSignature} from "@/helpers/SignDocFunctions"
-import LanguageDropdown from "@/LanguageDropdown";
 
 import axios from "axios";
 import {getHeader, smartEnuApi, socketApi, b64toBlob, findRole} from "@/config/config";
@@ -111,7 +103,7 @@ import QrGuideline from "./QrGuideline.vue";
 
 export default {
   name: "DocSignaturesInfo",
-  components: {QrGuideline, SignatureQrPdf, DocInfo, QrcodeVue, LanguageDropdown},
+  components: {QrGuideline, SignatureQrPdf, DocInfo, QrcodeVue },
   props: {
     docIdParam: {
       type: String,
@@ -131,10 +123,6 @@ export default {
      * Для того, чтобы поставить метку времени надо задать значение true.
      */
     tspParam: {
-      type: Boolean,
-      default: false
-    },
-    isInsideSidebar: {
       type: Boolean,
       default: false
     }
@@ -180,7 +168,6 @@ export default {
       this.mgovSignUri = 'mobileSign:' + signUri
       this.mgovMobileRedirectUri = "https://mgovsign.page.link/?link=" + signUri + "?mgovSign&apn=kz.mobile.mgov&isi=1476128386&ibi=kz.egov.mobile"
       this.mgobBusinessRedirectUri = "https://egovbusiness.page.link/?link=" + signUri + "?mgovSign&apn=kz.mobile.mgov.business&isi=1597880144&ibi=kz.mobile.mgov.business"
-
     }
     this.isTspRequired = this.tspParam
     this.signerIin = this.signerIinParam
@@ -226,7 +213,7 @@ export default {
       window.open(this.mgobBusinessRedirectUri)
     },
     tabChanged() {
-      if (this.active == 1 && !this.file) { // showFileTab
+      if (this.active == 1 && this.files.length < 1) { // showFileTab
         if (this.docInfo.isManifest === true) {
           axios.post(
               smartEnuApi + "/downloadManifestFiles", {

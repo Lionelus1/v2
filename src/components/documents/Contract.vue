@@ -1,3 +1,4 @@
+<!-- further delete -->
 <template>
   <div>
     <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em" />
@@ -219,7 +220,7 @@
       class="p-sidebar-lg"
       style="overflow-y: scroll"
     >
-     <DocSignaturesInfo :docIdParam="contract.uuid" :isInsideSidebar="true"></DocSignaturesInfo>
+     <DocSignaturesInfo :docIdParam="contract.uuid"></DocSignaturesInfo>
     </Sidebar>
   </div>
   <div v-else class="content-section">

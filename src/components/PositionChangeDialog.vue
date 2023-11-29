@@ -52,7 +52,12 @@ export default {
     parse() {
       this.selectedPosition = null;
       this.positions = [];
-      this.loginedUser = JSON.parse(localStorage.getItem('loginedUser'));
+      let user = localStorage.getItem('loginedUser');
+      if (!user) {
+        return;
+      }
+
+      this.loginedUser = JSON.parse(user);
 
       if (this.loginedUser.mainPosition) {
         this.positions.push({

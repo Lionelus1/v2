@@ -129,6 +129,32 @@ export default {
     closeBasic() {
       this.showWorkPlanEventModal = false;
     },
+    getFullname(user) {
+      if (!user) {
+        return ''
+      }
+
+      let fullname = ''
+      if (this.$i18n.locale === 'en') {
+        fullname += user.lastnameEn + ' ' + user.firstnameEn
+
+        if (user.thirdnameEn) {
+          fullname += ' ' + user.thirdnameEn
+        }
+      } 
+      
+      if (fullname.length > 0) {
+        return fullname
+      }
+      
+      fullname += user.thirdName + ' ' + user.firstName 
+
+      if (user.lastName) {
+        fullname += ' ' + user.lastName 
+      }
+
+      return fullname
+    },
     createEvent() {
       this.submitted = true;
       if (!this.validateForm()) {
@@ -138,7 +164,7 @@ export default {
       this.respUsers = [];
       this.selectedUsers.forEach(e => {
         userIds.push(e.userID);
-        this.respUsers.push({id: e.userID, fullName: e.fullName});
+        this.respUsers.push({id: e.userID, fullName: this.getFullname(e)});
       });
       if (this.parentData) {
         this.parentId = parseInt(this.parentData.work_plan_event_id);

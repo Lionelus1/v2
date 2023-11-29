@@ -89,7 +89,7 @@
         class="p-sidebar-lg"
         style="overflow-y: scroll"
     >
-      <DocSignaturesInfo :docIdParam="docId" :isInsideSidebar="true"></DocSignaturesInfo>
+      <DocSignaturesInfo :docIdParam="docId"></DocSignaturesInfo>
     </Sidebar>
   </div>
 </template>

@@ -100,6 +100,8 @@ export default {
     EduComplex: 2,
     FilledDoc: 3,
     References: 4,
+    Accredation: 5,
+    RelatedDocumentTemplates: 6,
   },
 
   DocumentRequestType: {

@@ -2,31 +2,23 @@ import Enum from "../enum/docstates";
 import {useStore} from "vuex";
 
 export class MenuService {
-
     getGlobalMenu($t) {
         const store = useStore()
         return [
-
-          /*   {
-               label: $t('common.administration'), icon: 'pi pi-fw pi-shield',
-               items: [
-                 {
-                   label: $t('hr.vacancies'),
-                   icon: 'pi pi-fw pi-user-plus',
-                   to: '/human-resources/vacancies'
-                 },
-               ]ß
-
-             },*/
             {
-                label: $t('common.documents'), icon: 'pi pi-fw pi-folder',
+                label: $t('common.documents'), 
+                icon: 'pi pi-fw pi-folder',
                 items: [
                     {
-                        label: $t('contracts.template'), icon: 'pi pi-fw pi-book', to: '/documents/doctemplate',
+                        label: $t('contracts.template'), 
+                        icon: 'pi pi-fw pi-book', 
+                        to: '/documents/doctemplate',
                         visible: !this.findRole("student")
                     },
                     {
-                        label: $t('contracts.title'), icon: 'pi pi-fw pi-copy', to: '/documents/contracts'
+                        label: $t('contracts.title'), 
+                        icon: 'pi pi-fw pi-copy', 
+                        to: '/documents/contracts'
                     },
                     {
                         label: $t('smartenu.catalogNormDoc'),
@@ -39,18 +31,23 @@ export class MenuService {
                         to: '/documents/catalog/educomplex'
                     },
                     {
-                        label: $t('course.certificate.title'), icon: 'fa-solid fa-award', to: '/documents/certificates'
+                        label: $t('course.certificate.title'), 
+                        icon: 'fa-solid fa-award', 
+                        to: '/documents/certificates'
                     },
                     {
-                        label: $t('postaccmonrep.title'), icon: 'pi pi-fw pi-folder', to: '/documents/catalog/postaccmonrep'
+                        label: $t('postaccmonrep.title'), 
+                        icon: 'pi pi-fw pi-folder', 
+                        to: '/documents/catalog/postaccmonrep'
                     },
-
                 ]
-
             },
             {
-                label: $t('common.administration'), icon: 'fa-solid fa-user-shield',
-                visible: !this.findRole("student"),
+                label: $t('common.administration'), 
+                icon: 'fa-solid fa-user-shield',
+                visible: this.getLoginedUser() && this.getLoginedUser().mainPosition && this.getLoginedUser().mainPosition.organization.id === 1 && 
+                    (this.isVacancyRightsValidity() || this.findRole("dephead") || this.findRole("practice_responsible") || 
+                    this.findRole("main_administrator") || this.findRole("hr_manager")),
                 items: [
                     {
                         label: $t('hr.vacancies'),
@@ -79,15 +76,15 @@ export class MenuService {
                 ]
             },
             {
-                label: $t('common.contragents'), icon: 'pi pi-fw pi-users',
-                visible: !this.findRole("student") && (this.getLoginedUser().mainPosition && this.getLoginedUser().mainPosition.organization && this.getLoginedUser().mainPosition.organization.id === 1),
-
+                label: $t('common.contragents'),
+                icon: 'pi pi-fw pi-users',
+                visible: this.getLoginedUser() && !this.findRole("student") && (this.getLoginedUser().mainPosition && 
+                    this.getLoginedUser().mainPosition.organization && this.getLoginedUser().mainPosition.organization.id === 1),
                 items: [
                     {
                         label: $t('common.organizations'),
                         icon: 'pi pi-fw pi-home',
                         to: '/contragent/organizations'},
-                    //label: 'Банктер', icon: 'pi pi-fw pi-money-bill', to: '/contragent/banks'},
                     {
                       label: $t('common.individualEntrepreneur'),
                       icon: 'pi pi-fw pi-briefcase',
@@ -100,11 +97,9 @@ export class MenuService {
                     }
                 ]
             },
-            /*{
-                label: 'HDFS', icon: 'pi pi-fw pi-folder', to: '/hdfs/hdfsmain'
-            },*/
             {
-                label: $t('smartenu.newsTitle'), icon: 'fa-solid fa-newspaper',
+                label: $t('smartenu.newsTitle'),
+                icon: 'fa-solid fa-newspaper',
                 items: [
                     {
                         label: $t('smartenu.categories'),
@@ -118,44 +113,53 @@ export class MenuService {
                     },
                 ]
             },
-
             {
-                label: $t('smartenu.eventsTitle'), icon: 'fa-solid fa-calendar-days', to: '/events'
+                label: $t('smartenu.eventsTitle'), 
+                icon: 'fa-solid fa-calendar-days', 
+                to: '/events'
             },
-
-
-            /*{
-                label: $t('vaccination.title'), icon: 'pi pi-fw pi-check-circle', to: '/smartenu/vaccination'
-            },*/
-            /*{
-              label:  $t('faq.title'), icon: 'pi pi-fw pi-question-circle', to: '/faq/faqmain'
-            },*/
+            // {
+            //     label: $t('vaccination.title'), 
+            //     icon: 'pi pi-fw pi-check-circle', 
+            //     to: '/smartenu/vaccination'
+            // },
+            // {
+            //   label:  $t('faq.title'), 
+            //   icon: 'pi pi-fw pi-question-circle', 
+            //   to: '/faq/faqmain'
+            // },
             {
-                label: $t('publicReception.title'), icon: 'fa-solid fa-person-circle-question', to: '/reception'
+                label: $t('publicReception.title'), 
+                icon: 'fa-solid fa-person-circle-question', 
+                to: '/reception'
             },
             {
-                label: $t('dissertation.title'), icon: 'fa-solid fa-school-circle-check',
+                label: $t('dissertation.title'), 
+                icon: 'fa-solid fa-school-circle-check',
+                visible: this.findRole('dissertation_chief') || this.isRoleGroupMember("dissertation_council"),
                 items: [
                     {
                         label: $t('dissertation.council.list'),
                         icon: 'pi pi-fw pi-list',
                         to: '/dissertation',
-                        visible: this.isDissertationAdmin() || this.findRole("dissertation_council_secretary")
+                        visible: this.findRole('dissertation_chief') || this.findRole("dissertation_council_secretary")
                     },
                     {
                         label: $t('dissertation.doctoralCard'),
                         icon: 'fa-solid fa-graduation-cap',
                         to: '/dissertation/doctorals',
-                        visible: this.isRoleGroupMember("dissertation_council") || this.isDissertationAdmin()
+                        visible: this.findRole('dissertation_chief') || this.isRoleGroupMember("dissertation_council")
                     }
                 ]
-
             },
             {
-                label: $t('workPlan.plans'), icon: 'pi pi-fw pi-folder', to: '/work-plan'
+                label: $t('workPlan.plans'), 
+                icon: 'pi pi-fw pi-folder', 
+                to: '/work-plan'
             },
             {
-                label: $t('common.forStudentsAndGraduates'), icon: 'fa-solid fa-user-graduate',
+                label: $t('common.forStudentsAndGraduates'), 
+                icon: 'fa-solid fa-user-graduate',
                 items: [
                     {
                         label: $t('hr.vacancies'),
@@ -164,64 +168,56 @@ export class MenuService {
                     },
                 ]
             },
-            /*{
-
-                   label: $t('common.forStudentsAndGraduates'), icon: 'pi pi-fw pi-users',
-                   items: [
-                     {
-                       label: $t('hr.vacancies'),
-                       icon: 'pi pi-fw pi-user-plus',
-                       to: '/human-resources/public/vacancies'
-                     },
-                   ]
-                 },*/
-
             {
                 label: $t('hr.vacancies'),
                 icon: 'pi pi-fw pi-user-plus',
                 to: '/human-resources/public/vacancies'
             },
-
             {
-                label: $t('queue.title'), icon: 'fa-solid fa-people-line',
+                label: $t('queue.title'), 
+                icon: 'fa-solid fa-people-line',
                 items: [
                     {
-                        label: $t('queue.title'), icon: 'pi pi-fw pi-plus-circle', to: '/queue'
+                        label: $t('queue.title'), 
+                        icon: 'pi pi-fw pi-plus-circle', 
+                        to: '/queue'
                     },
-
-                    /* {
-                      label:  $t('queue.addService'), icon: 'pi pi-fw pi-th-large', to:'/queueCategories'
-                     },
-                    {
-                      label:  $t('queue.secretary'), icon: 'pi pi-fw pi-user-edit', to:'/queueService'
-                    },*/
-
+                    // {
+                    //   label:  $t('queue.addService'), 
+                    //   icon: 'pi pi-fw pi-th-large', 
+                    //   to:'/queueCategories'
+                    // },
+                    // {
+                    //   label:  $t('queue.secretary'), 
+                    //   icon: 'pi pi-fw pi-user-edit', 
+                    //   to:'/queueService'
+                    // },
                 ]
-
             },
-
             {
-                label: $t('web.mainMenuTitle'), icon: 'pi pi-fw pi-box ',
-                visible: (this.findRole('enu_web_admin') || this.findRole('enu_web_fac_admin')),
+                label: $t('web.mainMenuTitle'), 
+                icon: 'pi pi-fw pi-box ',
+                visible: this.findRole('enu_web_admin') || this.findRole('enu_web_fac_admin'),
                 items:  [
                     {
-                        label: $t('web.menuPage'), icon: 'pi pi-fw pi-bars', to: '/enu/menus',
-                        visible: this.findRole('enu_web_admin') || this.findRole('enu_web_fac_admin')
+                        label: $t('web.menuPage'), 
+                        icon: 'pi pi-fw pi-bars', 
+                        to: '/enu/menus',
                     },
                     {
                         label: $t('web.pageLink'), 
                         icon: 'pi pi-fw pi-external-link', 
                         to: '/enu/pages',
-                        visible: this.findRole('enu_web_admin') || this.findRole('enu_web_fac_admin')
                     },
                     {
                         label: $t('web.blocks'), 
                         icon: 'fa-solid fa-cube', 
                         to: '/enu/blocks',
-                        visible: this.findRole('enu_web_admin') || this.findRole('enu_web_fac_admin')
                     },
                     {
-                        label: $t('web.blog'), icon: 'fa-solid fa-message', to: '/blog'
+                        label: $t('web.blog'), 
+                        icon: 'fa-solid fa-message', 
+                        to: '/blog'
                     },
                     {
                         label: $t('common.faculties'),
@@ -237,32 +233,57 @@ export class MenuService {
                 ]
             },
             {
-                label: $t('course.title'), icon: 'fa-solid fa-chalkboard-user',
+                label: $t('course.title'), 
+                icon: 'fa-solid fa-chalkboard-user',
                 items: [
                     {
-                        label: $t('course.certificate.template'), icon: 'fa-solid fa-certificate', to: '/course/certificate/templates',
+                        label: $t('course.certificate.template'), 
+                        icon: 'fa-solid fa-certificate', 
+                        to: '/course/certificate/templates',
                         visible: this.findRole("main_administrator") || this.findRole("online_course_administrator")
                     },
                     {
-                        label: $t('course.organizers'), icon: 'fa-solid fa-person-chalkboard', to: '/course/organizers',
+                        label: $t('course.organizers'), 
+                        icon: 'fa-solid fa-person-chalkboard', 
+                        to: '/course/organizers',
                         visible: this.findRole("main_administrator") || this.findRole("online_course_administrator")
                     },
                     {
-                        label: $t('course.categories'), icon: 'fa-solid fa-tags', to: '/course/categories',
+                        label: $t('course.categories'), 
+                        icon: 'fa-solid fa-tags', 
+                        to: '/course/categories',
                         visible: this.findRole("main_administrator") || this.findRole("online_course_administrator")
                     },
                     {
-                        label: $t('course.courses'), icon: 'fa-solid fa-chalkboard', to: '/courses',
-
+                        label: $t('course.courses'), 
+                        icon: 'fa-solid fa-chalkboard', 
+                        to: '/courses',
                     },
-
                 ]
             },
         ]
     }
 
-    isDissertationAdmin() {
-        return this.findRole('dissertation_chief');
+    getLoginedUser() {
+        let user = window.localStorage.getItem("loginedUser");
+        if (user) {
+            return JSON.parse(user);
+        }
+
+        return null;
+    }
+
+    findRole(roleName) {
+        let loginedUser = this.getLoginedUser();
+        if (!loginedUser || !loginedUser.roles) {
+            return false;
+        }
+        for (let i = 0; i < loginedUser.roles.length; i++) {
+            if (loginedUser.roles[i].name === roleName) {
+                return true;
+            }
+        }
+        return false;
     }
 
     isVacancyRightsValidity() {
@@ -287,22 +308,4 @@ export class MenuService {
         }
         return false;
     }
-
-    getLoginedUser() {
-        return JSON.parse(window.localStorage.getItem("loginedUser"));
-    }
-
-    findRole(roleName) {
-        let loginedUser = this.getLoginedUser();
-        if (!loginedUser || !loginedUser.roles) {
-            return false;
-        }
-        for (let i = 0; i < loginedUser.roles.length; i++) {
-            if (loginedUser.roles[i].name === roleName) {
-                return true;
-            }
-        }
-        return false;
-    }
-
 }

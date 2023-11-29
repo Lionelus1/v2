@@ -228,13 +228,14 @@
 
 <script>
 import axios from "axios";
-import {authHeader, getHeader, smartEnuApi} from "@/config/config";
+import {authHeader, findRole, getHeader, smartEnuApi} from "@/config/config";
 import {FilterMatchMode, FilterOperator} from "primevue/api";
 
 export default {
   name: "CategoriesTable",
   data() {
     return {
+      findRole: findRole,
       editVisible: false,
       deleteVisible: false,
       submitted: false,
@@ -392,15 +393,7 @@ export default {
       this.roles.isPublisher = this.findRole(null, "news_publisher");
       this.roles.isStudent = this.findRole(null, "student");
       this.roles.isModer = this.findRole(null, "news_moderator");
-    },
-    findRole(roles, code) {
-      for (let i = 0; i < roles.length; i++) {
-        if (roles[i].name === code) {
-          return true;
-        }
-      }
-      return false;
-    },
+    }
   },
   created() {
     this.getCategories();

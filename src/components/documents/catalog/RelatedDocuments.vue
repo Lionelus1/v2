@@ -1,6 +1,11 @@
 <template>
-  <ProgressBar v-if="loading" mode="indeterminate" class="progress-bar"/>
-  <h3>{{ $t("contracts.journal") }}</h3>
+  <ProgressSpinner v-if="loading" class="progress-spinner" strokeWidth="5"/>
+  <div class="flex flex-row mb-3">
+    <div class="arrow-icon" @click="$router.back()">
+      <i class="fas fa-arrow-left"></i>
+    </div>
+    <h4 class="m-0">{{ $t("contracts.menu.relatedDocument") }}</h4>
+  </div>
   <BlockUI :blocked="loading" class="card">
     <Toolbar class="p-1">
       <template #start>
@@ -8,6 +13,12 @@
           <Button class="p-button-info align-items-center" style="padding: 0.25rem 1rem;"
             @click="openDocument" :disabled="!currentDocument">
             <i class="fa-regular fa-address-card" /> &nbsp;{{ $t("contracts.card") }}</Button>
+          <Button class="p-button-info align-items-center" style="padding: 0.25rem 1rem;"
+            @click="open('newDocumentDialog')">
+            <i class="fa-solid fa-file-circle-plus" /> &nbsp;{{ $t("contracts.menu.newDocument") }}</Button>
+          <!-- <Button class="p-button-info align-items-center" style="padding: 0.25rem 1rem;"
+            @click="sendForExecution" :disabled="!currentDocument">
+            <i class="fa-solid fa-envelope-circle-check" /> &nbsp;{{ $t("contracts.menu.sendForExecution") }}</Button> -->
         </div>
       </template>
       <template #end>
@@ -36,11 +47,6 @@
           {{ getFullname(slotProps.data.owner) }}
         </template>
       </Column>
-      <Column :header="$t('contracts.columns.department')" style="min-width: 200px; word-break: break-word;">
-        <template #body="slotProps">
-          {{ slotProps.data.author ? getDepartmentName(slotProps.data.author) : slotProps.data.folder ? getFolderName(slotProps.data.folder) : "" }}
-        </template>
-      </Column>
       <Column :header="$t('contracts.columns.regNumber')" style="min-width: 100px;">
         <template #body="slotProps">
           {{ slotProps.data.number ? slotProps.data.number : "" }}
@@ -53,17 +59,9 @@
       </Column>
       <Column :header="$t('contracts.columns.description')" style="min-width: 250px;">
         <template #body="slotProps">
-          {{ slotProps.data.template ? getTemplateName(slotProps.data.template) : getContractName(slotProps.data) }}
+          {{ slotProps.data.template ? getTemplateName(slotProps.data.template) : '' }}
         </template>
       </Column>
-      <!-- <Column style="min-width: 35px;">
-        <template #body="slotProps">
-          <div v-if="showMySign(slotProps.data.approvalStages)">
-            <i v-if="greenMySign(slotProps.data.approvalStages)" class="fa-solid fa-square-pen fa-xl signed"></i>
-            <i v-else class="fa-solid fa-square-pen fa-xl not-signed"></i>
-          </div>
-        </template>
-      </Column> -->
       <Column :header="$t('contracts.columns.status')" style="min-width: 150px;">
         <template #body="slotProps">
           <span :class="'customer-badge status-' + slotProps.data.docHistory.code">
@@ -74,6 +72,17 @@
       <Column style="min-width: 50px;">
         <template #body="slotProps">
           <div class="flex flex-wrap">
+            <Button v-if="(slotProps.data.docHistory.stateId === Enum.CREATED.ID || 
+              slotProps.data.docHistory.stateId === Enum.REVISION.ID) && loginedUser.userID === slotProps.data.creatorID"
+              @click="currentDocument=slotProps.data;openDocument()"
+              class="p-button-text p-button-info p-1">
+              <i class="fa-solid fa-pen fa-xl"></i>
+            </Button>
+            <Button v-if="slotProps.data.docHistory.stateId === Enum.SIGNED.ID"
+              @click="currentDocument=slotProps.data;download()"
+              class="p-button-text p-button-info p-1">
+              <i class="fa-solid fa-file-arrow-down fa-xl"></i>
+            </Button>
             <Button @click="currentDocument=slotProps.data;open('documentInfoSidebar')"
               class="p-button-text p-button-info p-1">
               <i class="fa-solid fa-eye fa-xl"></i>
@@ -88,7 +97,6 @@
       </Column>
     </DataTable>
   </BlockUI>
-  <!-- filterOverlayPanel -->
   <OverlayPanel ref="filterOverlayPanel">
     <div class="p-fluid" style="min-width: 320px;">
       <div class="field">
@@ -114,32 +122,9 @@
         </Dropdown>
       </div>
       <div class="field">
-        <label>{{ $t('contracts.filter.contractType.label') }}</label>
-        <SelectButton v-model="tempFilter.sourceType" :options="docSourceType">
-          <template #option="slotProps">
-            <div v-if="slotProps.option == Enum.DocSourceType.Template">{{$t('contracts.filter.contractType.byTemplate')}}</div>
-            <div v-else>{{$t('contracts.filter.contractType.fromReadyDoc')}}</div>
-          </template>
-        </SelectButton>
-      </div>
-      <div class="field" v-if="tempFilter.sourceType === Enum.DocSourceType.Template">
         <label>{{ $t('contracts.filter.templateType') }}</label>
         <Dropdown v-model="tempFilter.template" :options="templates" 
           :optionLabel="templateLabel" :showClear="true" dataKey="id"
-          :filter="true" :emptyFilterMessage="$t('common.noResult')"/>
-        <!-- <Dropdown v-model="tempFilter.template" :options="templates" 
-          :optionLabel="templateLabel" :filter="true" :showClear="true" 
-          dataKey="id" :emptyFilterMessage="$t('common.noResult')"
-          @filter="handleTemplateFilter"/> -->
-      </div>
-      <div class="field" v-if="tempFilter.sourceType === Enum.DocSourceType.FilledDoc">
-        <label>{{ $t('contracts.filter.documentName') }}</label>
-        <InputText type="text" v-model="tempFilter.name"/>
-      </div>
-      <div class="field" v-if="tempFilter.sourceType === Enum.DocSourceType.FilledDoc">
-        <label>{{ $t('contracts.filter.folder') }}</label>
-        <Dropdown v-model="tempFilter.folder" :options="folders" 
-          :optionLabel="folderLabel" :showClear="true" dataKey="id"
           :filter="true" :emptyFilterMessage="$t('common.noResult')"/>
       </div>
       <div class="field">
@@ -158,25 +143,28 @@
   </OverlayPanel>
   <!-- documentInfoSidebar -->
   <Sidebar v-model:visible="visibility.documentInfoSidebar" position="right" class="p-sidebar-lg" 
-    style="overflow-y: scroll" @hide="getContracts">
+    style="overflow-y: scroll" @hide="getRelatedDocuments">
     <DocSignaturesInfo :docIdParam="currentDocument.uuid"></DocSignaturesInfo>
   </Sidebar>
 </template>
 <script>
+import { b64toBlob } from "@/config/config";
 import { getShortDateString, getLongDateString } from "@/helpers/helper";
 import Enum from "@/enum/docstates/index";
 
 import { DocService } from "@/service/doc.service";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo";
-import FindUser from "@/helpers/FindUser";
 
 export default {
-  name: 'Contracts',
-  components: { DocSignaturesInfo, FindUser },
+  name: 'RelatedDocuments',
+  components: { DocSignaturesInfo },
   props: { },
   data() {
     return {
       service: new DocService(),
+      b64toBlob: b64toBlob,
+      getShortDateString: getShortDateString,
+      getLongDateString: getLongDateString,
       Enum: Enum,
       loginedUser: null,
       paginatorTemplate: "FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink JumpToPageDropdown CurrentPageReport RowsPerPageDropdown",
@@ -188,10 +176,13 @@ export default {
 
       visibility: {
         documentInfoSidebar: false,
+        newDocumentDialog: false,
       },
 
       loading: false,
       tableLoading: false,
+
+      parentUUID: null,
 
       documents: [],
       currentDocument: null,
@@ -269,12 +260,8 @@ export default {
         },
       ],
 
-      docSourceType: [Enum.DocSourceType.Template, Enum.DocSourceType.FilledDoc],
-
       templates: [],
       templateSearchText: null,
-
-      folders: [],
     }
   },
   created() {
@@ -283,35 +270,15 @@ export default {
   mounted() {
     this.$emit('apply-flex', true);
 
-    let oldPath = this.$router.options.history.state.forward;
-    if (oldPath && oldPath.indexOf('/documents/contracts/') === 0) {
-      let filter = localStorage.getItem('contractsFilter');
-      if (filter) {
-        this.filter = JSON.parse(filter);
-      }
-
-      let currentPage = localStorage.getItem('contractsCurrentPage');
-      if (currentPage) {
-        currentPage = JSON.parse(currentPage);
-        this.first = currentPage.first;
-        this.page = currentPage.page;
-        this.rows = currentPage.rows;
-      }
-    }
+    this.parentUUID = this.$route.params.uuid;
 
     this.getTemplates();
-    this.getFolders();
-    this.getContracts();
+    this.getRelatedDocuments();
   },
   beforeUnmount() {
     this.$emit('apply-flex', false);
-
-    localStorage.setItem('contractsFilter', JSON.stringify(this.filter))
-    localStorage.setItem('contractsCurrentPage', JSON.stringify({first: this.first, page: this.page, rows: this.rows}))
   },
   methods: {
-    getLongDateString: getLongDateString,
-    getShortDateString: getShortDateString,
     showMessage(msgtype, message, content) {
       this.$toast.add({
         severity: msgtype,
@@ -336,6 +303,10 @@ export default {
       this.$refs[ref].toggle(event);
     },
     getFullname(user) {
+      if (!user) {
+        return '';
+      }
+      
       let name = '';
 
       if (this.$i18n.locale === 'en' && this.validString(user.thirdnameEn) && this.validString(user.firstnameEn)) {
@@ -363,34 +334,6 @@ export default {
 
       return false;
     },
-    getFolderName(folder) {
-      let name = folder['name' + this.$i18n.locale]
-
-      if (name && name.length > 0) {
-        return name
-      }
-
-      return ''
-    },
-    getDepartmentName(department) {
-      let name = ''
-
-      if (department.cafedra) {
-        name += this.getDepartmentName(department.cafedra) + '/'
-      }
-
-      if (this.$i18n.locale === 'kz' && department.nameKz.length > 0) {
-        name += department.nameKz
-      } else if (this.$i18n.locale === 'ru' && department.nameRu.length > 0) {
-        name += department.nameRu
-      } else if (this.$i18n.locale === 'en' && department.nameEn.length > 0) {
-        name += department.nameEn
-      } else {
-        name += department.name
-      }
-
-      return name
-    },
     getTemplateName(template) {
       let name = ''
       if (this.$i18n.locale === 'en') {
@@ -400,15 +343,6 @@ export default {
       } else  {
         name = template.descriptionKaz
       }
-
-      if (name && name.length > 0) {
-        return name
-      }
-
-      return ''
-    },
-    getContractName(contract) {
-      let name = contract['name' + this.$i18n.locale]
 
       if (name && name.length > 0) {
         return name
@@ -435,63 +369,42 @@ export default {
 
       return name
     },
-    folderLabel(item) {
-      let name = ''
-
-      if (item.namekz && item.namekz.length > 0) {
-        name = item.namekz
-      } else if (item.nameru && item.nameru.length > 0) {
-        name = item.nameru
-      } else if (item.nameen && item.nameen.length > 0) {
-        name = item.nameen
-      } 
-
-      if (this.$i18n.locale === 'ru' && item.nameru && item.nameru.length > 0) {
-        name = item.nameru
-      } else if (this.$i18n.locale === 'en' && item.nameen && item.nameen.length > 0) {
-        name = item.nameen
-      } 
-
-      return name
-    },
     onPage(event) {
       this.first = event.first;
       this.page = event.page;
       this.rows = event.rows;
-      this.getContracts();
+      this.getRelatedDocuments();
     },
     openDocument() {
       if (this.currentDocument) {
-        this.$router.push('/documents/contracts/' + this.currentDocument.uuid)
+        this.$router.push('/documents/contracts/' + this.parentUUID + '/related/' + this.currentDocument.uuid)
       }
-    },  
-    getContracts() {
+    },
+    getRelatedDocuments() {
       this.tableLoading = true;
 
       this.service.getDocumentsV2({
         page: this.page,
         rows: this.rows,
-        sourceType: this.filter.sourceType,
-        docType: this.Enum.DocType.Contract,
-        templateId: this.filter.sourceType === Enum.DocSourceType.Template && this.filter.template ? this.filter.template.id : null,
-        folderId: this.filter.sourceType === Enum.DocSourceType.FilledDoc && this.filter.folder ? this.filter.folder.id : null,
+        docType: this.Enum.DocType.RelatedDoc,
+        relatedTo: this.parentUUID,
+        templateId: this.filter.template ? this.filter.template.id : null,
         filter: {
-          name: this.filter.sourceType === Enum.DocSourceType.FilledDoc && this.filter.name && this.filter.name.length > 0 ? this.filter.name : null,
           status: this.filter.status && this.filter.status.length > 0 ? this.filter.status : null,
           author: this.filter.author.length > 0 && this.filter.author[0] ? this.filter.author[0].userID : null,
           createdFrom: this.filter.createdFrom,
           createdTo: this.filter.createdTo,
         },
       }).then(res => {
-        this.documents = res.data.documents
-        this.total = res.data.total
-        this.currentDocument = null
+        this.documents = res.data.documents;
+        this.total = res.data.total;
+        this.currentDocument = null;
 
-        this.tableLoading = false
+        this.tableLoading = false;
       }).catch(err => {
-        this.documents = []
-        this.total = 0
-        this.currentDocument = null
+        this.documents = [];
+        this.total = 0;
+        this.currentDocument = null;
 
         if (err.response && err.response.status == 401) {
           this.$store.dispatch("logLout")
@@ -504,12 +417,6 @@ export default {
 
         this.tableLoading = false
       });
-    },
-    showMySign() {
-
-    },
-    greenMySign() {
-
     },
     deleteFile() {
       this.$confirm.require({
@@ -525,7 +432,7 @@ export default {
             uuid: this.currentDocument.uuid,
           }).then(res => {
             this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
-            this.getContracts();
+            this.getRelatedDocuments();
 
             this.loading = false;
           }).catch(err => {
@@ -560,21 +467,11 @@ export default {
         folder: null,
       };
     },
-    handleTemplateFilter(event) {
-      if (event.value && event.value.length > 2) {
-        this.templateSearchText = event.value;
-        this.getTemplates();
-      } else if (this.templateSearchText && this.templateSearchText.length > 2) {
-        this.templateSearchText = null;
-        this.getTemplates();
-      }
-    },
     getTemplates() {
       this.service.documentTemplatesV2({
         page: 0,
         rows: 50,
-        folderType: Enum.FolderType.Journals,
-        searchText: this.templateSearchText,
+        folderType: this.Enum.FolderType.RelatedDocumentTemplates,
       }).then(res => {
         this.templates = res.data.doctemplates
       }).catch(err => {
@@ -590,15 +487,21 @@ export default {
         }
       })
     },
-    getFolders() {
-      this.service.getFoldersV2({
-        page: 0,
-        rows: 10,
-        folderType: Enum.FolderType.FilledDoc,
+    download() {
+      if (!this.currentDocument || !this.currentDocument.filePath || this.currentDocument.filePath.length < 1) return;
+
+      this.loading = true;
+
+      this.service.downloadDocumentV2({
+        uuid: this.contract.uuid
       }).then(res => {
-        this.folders = res.data.folders
+        this.pdf = b64toBlob(res.data);
+
+        this.loading = false;
+
+        this.saveFile();
       }).catch(err => {
-        this.folders = []
+        this.loading = false;
 
         if (err.response && err.response.status == 401) {
           this.$store.dispatch("logLout")
@@ -610,15 +513,29 @@ export default {
         }
       })
     },
+    saveFile() {
+      var link = document.createElement("a");
+      link.innerHTML = "Download PDF file";
+      link.download = this.contract.id + ".pdf";
+      link.href =  this.pdf;
+      link.click();
+    },
   }
 }
 </script>
 <style scoped>
-.progress-bar {
+.progress-spinner {
   position: absolute;
-  height: 0.5rem;
-  width: 100%;
+  top: 0; bottom: 0; left: 0; right: 0;
+  margin: auto;
   z-index: 1102;
+}
+.arrow-icon {
+  cursor: pointer;
+  font-size: 1.25rem;
+  margin-right: 1rem;
+  display: flex;
+  align-items: center; 
 }
 .card {
   flex-grow: 1;
@@ -651,12 +568,6 @@ export default {
 .status-status_revision {
   background: #ffcdd2;
   color: #c63737;
-}
-.signed {
-  color: #42855B;
-}
-.not-signed {
-  color: #a6a6a6;
 }
 :deep(.p-datatable.p-datatable-scrollable > .p-datatable-wrapper > .p-datatable-table > .p-datatable-thead) {
   background: transparent;

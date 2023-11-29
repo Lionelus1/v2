@@ -330,11 +330,12 @@ export default {
         generate: 'Генерировать',
         selectFormat: 'Выберите формат',
         notifications: 'Уведомления',
-        noResult: 'Не найдено записей',,
+        noResult: 'Не найдено записей',
         continue: "Продолжить",
         changeOrganization: "Поменять организацию",
         changeSigner: "Сменить подписывающего",
         change: "Сменить",
+        unknownUser: "Гость",
     },
     positions: {
         menuTitle: 'Поменять позицию',
@@ -378,6 +379,7 @@ export default {
         message: {
             validEmail: "Введите корректный email адрес",
         },
+        nameInLatin: "ФИО на латинице",
     },
     cafedra: {
         practiceResponsibles: "Ответственные за практику",
@@ -395,7 +397,14 @@ export default {
         organization: "Организации",
         title: "Контрагенты",
         missingDetails: "Реквизиты выбранного контрагента указаны не полностью (БИН и т.п.). Пожалуйста, укажите недостающие реквизиты.",
-
+        menu: {
+            select: "Выбрать",
+        },
+        columns: {
+            name: "Имя",
+            bin: "БИН",
+        },
+        orgEmployees: "Сотрудники {org}",
     },
     doctemplate: {
         title: "Создание шаблона документа",
@@ -427,6 +436,8 @@ export default {
             place: "Место заключения договора",
             date: "Дата заключения договора",
             addElement: "Добавление элемента договора",
+            practiceType: "Вид практики",
+            educationProgram: "Образовательные программы",
             message: {}
         },
         needsApproval: "Созданный по шаблону документ требует согласования",
@@ -481,7 +492,14 @@ export default {
         },
         setnumber: "Присвоить номер",
         assigner: "Присвоил",
-        cafedraGroup: 'Кафедра/Группа'
+        cafedraGroup: 'Кафедра/Группа',
+        menu: {
+            newDocument: "Новый докумет",
+            relatedDocument: "Связанные документы",
+            journal: "Реестр документов",
+            acts: "Акт",
+            sendForExecution: "Отправить на исполнение",
+        }
     },
     hdfs: {
         archiveBtn: "Архивировать",
@@ -1305,6 +1323,7 @@ export default {
         forbidden: 'Доступ к запрашиваемому ресурсу запрещен. Это может быть связано с тем, что у вас нет необходимых разрешений для доступа к нему.',
         forbiddenAction: 'Действие запрещено. У вас нет необходимых разрешений.',
         internalServerError: 'Приносим извинения, с нашей стороны что-то пошло не так. Пожалуйста, повторите попытку позже.',
+        unauthorized: 'Пользователь не авторизован.',
     },
     blog: {
         title: 'Блог',

@@ -329,11 +329,12 @@ export default {
         generate: 'Generate',
         selectFormat: 'Select format',
         notifications: 'Notifications',
-        noResult: 'No records found',,
+        noResult: 'No records found',
         continue: "Continue",
         changeOrganization: "Change organization",
         changeSigner: "Change signer",
         change: "Change",
+        unknownUser: "Guest",
     },
     positions: {
         menuTitle: 'Change position',
@@ -376,6 +377,7 @@ export default {
         message: {
             validEmail: "Please enter a valid email address",
         },
+        nameInLatin: "Name in latin",
     },
     cafedra: {
         practiceResponsibles: "Responsible for the practice",
@@ -393,6 +395,14 @@ export default {
         organization: "Organizations",
         title: "Contragents",
         missingDetails: "Details of the selected counterparty are not fully indicated (BIN, etc.). Please provide missing details.",
+        menu: {
+            select: "Select",
+        },
+        columns: {
+            name: "Name",
+            bin: "BIN",
+        },
+        orgEmployees: "{org} employees",
     },
     doctemplate: {
         title : "Document template creation",
@@ -424,6 +434,8 @@ export default {
             place: "Place of contract",
             date: "Date of contract",
             addElement: "Adding a contract element",
+            practiceType: "Practice type",
+            educationProgram: "Educational programs",
             message: {
             }
         },
@@ -479,7 +491,14 @@ export default {
         },
         setnumber: "Set number",
         assigner: "Assigner",
-        cafedraGroup: 'Department/Group'
+        cafedraGroup: 'Department/Group',
+        menu: {
+            newDocument: "New document",
+            relatedDocument: "Related documents",
+            journal: "Register of documents",
+            acts: "Act",
+            sendForExecution: "Send for execution",
+        }
     },
     hdfs: {
         archiveBtn: "Аrchive",
@@ -1344,6 +1363,7 @@ export default {
         forbidden: 'Access to the requested resource is not allowed. This may be because you don\'t have the necessary permissions to access it.',
         forbiddenAction: 'Action prohibited. You don\'t have the required permissions.',
         internalServerError: 'We\'re sorry, something went wrong on our end. Please try again later.',
+        unauthorized: 'The user is not authorized.',
     },
     visuallyImpaired: {
         fontSize: "Font size",

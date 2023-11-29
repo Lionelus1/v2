@@ -328,11 +328,12 @@ export default {
         generate: 'Генерациялау',
         selectFormat: 'Форматты таңдаңыз',
         notifications: 'Хабарламалар',
-        noResult: 'Жазбалар табылмады',,
+        noResult: 'Жазбалар табылмады',
         continue: "Жалғастыру",
         changeOrganization: "Ұйымды ауыстыру",
         changeSigner: "Қол қоюшыны өзгерту",
         change: "Өзгерту",
+        unknownUser: "Қонақ",
     },
     positions: {
         menuTitle: 'Позицияны өзгерту',
@@ -375,14 +376,13 @@ export default {
         message: {
             validEmail: "Дұрыс email адрес көрсетіңіз",
         },
+        nameInLatin: "Аты-жөні латынша",
     },
     cafedra: {
         practiceResponsibles: "Практикаға жауаптылар",
         practiceManager: "Практика жетекшісі",
         title: "{name} кафедрасы",
         responsible: "Жауапты",
-
-
     },
     contragent: {
         form: "Ұйымдық формасы",
@@ -394,6 +394,14 @@ export default {
         organization: "Ұйымдықтар",
         title: "Контрагенттер",
         missingDetails: "Таңдалған контрагент реквизиттері толық көрсетілмеген (БСН т.с.с.). Жетіспейтін реквизиттерді көрсетуіңзді сұраймыз.",
+        menu: {
+            select: "Таңдау",
+        },
+        columns: {
+            name: "Аты",
+            bin: "БСН",
+        },
+        orgEmployees: "{org} қызметкерлері",
     },
     doctemplate: {
         title: "Құжат үлгісін жасау",
@@ -425,6 +433,8 @@ export default {
             place: "Келісім-шарт жасалған орын",
             date: "Келісім-шарт жасалған күн",
             addElement: "Келісім-шарт элементін қосу",
+            practiceType: "Практика түрі",
+            educationProgram: "Білім беру бағдарламасы",
             message: {}
         },
         needsApproval: "Үлгі бойынша жасалған құжат келісуді қажет етеді",
@@ -479,8 +489,14 @@ export default {
         },
         setnumber: "Нөмір тағайындау",
         assigner: "Тағайындаған",
-        cafedraGroup: 'Кафедра/Топ'
-
+        cafedraGroup: 'Кафедра/Топ',
+        menu: {
+            newDocument: "Жаңа құжат",
+            relatedDocument: "Байланысқан құжаттар",
+            journal: "Құжаттар реестрі",
+            acts: "Акт",
+            sendForExecution: "Орындауға жіберу",
+        }
     },
     hdfs: {
         archiveBtn: "Мұрағаттау",
@@ -1357,6 +1373,7 @@ export default {
         forbidden: 'Сұралған ресурсқа кіруге рұқсат етілмейді. Бұл оған кіру үшін қажетті рұқсаттарыңыз болмағандықтан болуы мүмкін.',
         forbiddenAction: 'Әрекетке тыйым салынады. Сізде қажетті рұқсаттар жоқ.',
         internalServerError: 'Кешіріңіз, біздің тарапымыздан бірдеңе дұрыс болмады. Әрекетті кейінірек қайталаңыз.',
+        unauthorized: 'Пайдаланушы жүйеге кірмеген.',
     },
     visuallyImpaired: {
         fontSize: "Қаріп өлшемі",

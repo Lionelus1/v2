@@ -53,6 +53,8 @@
 import {getHeader, smartEnuApi, templateApi} from "@/config/config";
 import axios from 'axios';
 
+import { ContragentService } from "@/service/contragent.service";
+
 export default {
   name: 
     'FindUser',
@@ -96,6 +98,8 @@ export default {
   },
   data() {
     return {
+      service: new ContragentService(),
+
       newUser: {
         IIN: null,
         name: null,
@@ -147,16 +151,40 @@ export default {
     };
   },
    mounted() {
-    if (this.first !== null && this.first.fullName !== null && this.first.fullName !== "" && this.max == 1) {
-      this.addItem(null, this.first,false)
+    if (this.first !== null && this.max == 1) {
+      this.addItem(null, this.first, false)
     }
-
   },
   methods: {
-    userCreated(user) {
+    userCreated(user) { 
+      const event = new Event('userCreated');
+      this.addItem(event,user,true)
+    },
+    getFullname(user) {
+      if (!user) {
+        return ''
+      }
+
+      let fullname = ''
+      if (this.$i18n.locale === 'en') {
+        fullname += user.lastnameEn + ' ' + user.firstnameEn
+
+        if (user.thirdnameEn) {
+          fullname += ' ' + user.thirdnameEn
+        }
+      } 
       
-    const event = new Event('userCreated');
-    this.addItem(event,user,true)
+      if (fullname.length > 0) {
+        return fullname
+      }
+      
+      fullname += user.thirdName + ' ' + user.firstName 
+
+      if (user.lastName) {
+        fullname += ' ' + user.lastName 
+      }
+
+      return fullname
     },
     showUserDialog() {
       this.userDialog = true;
@@ -173,19 +201,15 @@ export default {
       this.$refs.op.hide();
       this.$refs.op.toggle(event);
       this.searchInProgres = true;
-      axios.post(
-        smartEnuApi + `/getUser`, {
-          "searchText": inputValue,
-          "searchMode": this.userType == 1 ? "student" : this.userType == 2 ? "staff" : "all",
-          "ldap": this.searchMode == 'ldap' ? true : false,
-          "page": 0,
-          "rows": 15
+      this.service.getPersons({
+        "filter": {
+          "name": inputValue,
         },
-        {
-          headers: getHeader(), cancelToken: this.cancelToken.token 
-        },
-      )
-      .then(
+        "searchMode": this.userType == 1 ? "student" : this.userType == 2 ? "staff" : "all",
+        "ldap": this.searchMode == 'ldap' ? true : false,
+        "page": 0,
+        "rows": 15
+      }, this.cancelToken.token).then(
         response => {
             this.foundEntities = response.data.foundUsers;
             this.searchInProgres = false;
@@ -270,7 +294,7 @@ export default {
     updateModel(event, value, preventDefault) {
       this.$emit('update:modelValue', value);
       if (this.max == 1 && value.length >0) {
-         this.$emit('update:first', value[0]);
+        this.$emit('update:first', value[0]);
       }
       this.$emit('add', {
         originalEvent: event,
@@ -308,15 +332,6 @@ export default {
         originalEvent: event,
         value: removedItem
       });
-    },
-    getFullname(user) {
-      let fullname = user.thirdName + ' ' + user.firstName
-
-      if (user.lastName && user.lastName.length > 0) {
-        fullname += ' ' + user.lastName
-      }
-
-      return fullname
     }
   },
   computed: {
