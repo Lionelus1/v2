@@ -174,7 +174,6 @@
     }
 
     const onPage = (event)=> {
-      console.log(event.page)
       lazyParams.value.page = event.page
       getScientists();
     }

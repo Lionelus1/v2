@@ -39,15 +39,11 @@
       
       scienceService.getScientists(req).then(res => {
           scientist.value = res.data
-          console.log(scientist.value)
           loading.value = false
       }).catch(error => {
           toast.add({severity: 'error', summary: t('common.error'), life: 3000})
           loading.value = false;
       })
-  }
-  const check = (msg) => {
-    console.log(msg, 'test')
   }
   onMounted(() => {
       getScientist()
