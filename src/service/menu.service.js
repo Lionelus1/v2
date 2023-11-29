@@ -265,6 +265,19 @@ export class MenuService {
                     },
 
                 ]
+            },
+            {
+                label: $t('science.activity'), icon: '',
+                items: [
+                    {
+                        label: $t('science.profile'), icon: '', to: '/science/scientists',
+                        // visible: this.findRole("main_administrator") || !this.findRole("teacher")
+                    },
+                    {
+                        label: $t('science.scientificWorks'), icon: '', to: '/science/publications',
+                        // visible: this.findRole("main_administrator") || this.findRole("online_course_administrator")
+                    }
+                ]
             }
         ]
     }

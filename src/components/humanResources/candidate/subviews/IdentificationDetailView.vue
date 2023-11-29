@@ -17,11 +17,11 @@ export default {
   name: "IdentificationDetailView",
   props: {
     modelValue: null,
-
+    customType: null,
   },
   data() {
     return {
-      value: this.modelValue,
+      value: this.modelValue
     }
   },
   methods: {

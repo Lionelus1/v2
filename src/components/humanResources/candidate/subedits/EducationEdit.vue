@@ -2,10 +2,9 @@
   <div id="carddiv" class="grid">
     <div class="col-12">
       <h3>Создание и редактирование образования</h3>
-      <div>
-        <Menubar :model="menu" :key="active"
-                 style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px"></Menubar>
-      </div>
+    </div>
+    <div>
+      <Menubar :model="menu" :key="active" style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px"></Menubar>
     </div>
     <div class="col-12 md:col-12 p-fluid">
       <div class="card">

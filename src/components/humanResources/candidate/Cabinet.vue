@@ -16,16 +16,15 @@
 </template>
 
 <script>
-import CandidateVacancy from "./CandidateVacancy";
-import Resume from "./Resume";
-import MyCabinet from "./MyCabinet";
+  import CandidateVacancy from "./CandidateVacancy";
+  import Resume from "./Resume";
+  import MyCabinet from "./MyCabinet";
 
-export default {
-  name: "Cabinet",
-  components: {Resume, CandidateVacancy, MyCabinet}
-}
+  export default {
+    name: "Cabinet",
+    components: {Resume, CandidateVacancy, MyCabinet}
+  }
 </script>
 
 <style scoped>
-
 </style>
