@@ -204,6 +204,8 @@ export default {
         headLabel: "Жетекші:",
         report: "Есеп",
         author: "Әзірлеуші",
+        personalInfo: 'Жеке ақпарат',
+        myAddress: 'Мекенжайы',
         states: {
             created: "құрылды",
             inapproval: "келісуде",
@@ -1016,6 +1018,7 @@ export default {
         sendMessage: 'Хат жіберу',
         messageTitle: 'Хаттың тақырыбы',
         messageBody: 'Хаттың мазмұны',
+        crAndUpdEdu: 'Білімді құру және өзгерту',
         sp: {
             header: 'Бос лауазымдарға іріктеу процессі бірнеше кезеңдерден тұрады',
             label1: '– ПОҚ, ӘБҚ және ҒҚ бос лауазымдарына орналасуға кандидаттардың түйіндемелерін қарастыру',

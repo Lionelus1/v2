@@ -203,6 +203,8 @@ export default {
     departmentNameLabel: "The name of the structural unit",
     headLabel: "Head:",
     author: "Author",
+    personalInfo: 'Personal information',
+    myAddress: 'Address',
     states: {
       created: "created",
       inapproval: "in approval",
@@ -976,6 +978,7 @@ export default {
         sendMessage: 'Send email',
         messageTitle: 'Email header',
         messageBody: 'Content of the email',
+        crAndUpdEdu: 'Creating and editing education',
         sp: {
             header: 'The selection process for vacant positions takes place in several stages',
             label1: 'consideration of resumes of candidates for filling vacant positions of teaching staff, AUP and HR;',
