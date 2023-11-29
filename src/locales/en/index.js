@@ -1451,6 +1451,7 @@ export default {
             durationAndScope:'Duration and scope (hour)',
             fundingSource:'Funding source',
             typeSupportingDoc: 'Type of supporting document',
-        }
+        },
+        scientistProfile: 'Scientist Profile'
     }   
 }

@@ -229,7 +229,7 @@
         <em v-if="!qualifications">{{ t('common.noData') }}</em>
       </div>
 
-      <span v-if="qualifications.length !== 0" style="white-space: pre-line">
+      <span v-if="qualifications && qualifications.length !== 0" style="white-space: pre-line">
         <DataTable class="p-datatable-sm" selectionMode="single" v-model="qualification"
                   :lazy="true" :value="qualifications" :loading="loading" v-model:selection="qualification">
           <Column field="training_form" :header="$t('science.qualification.trainingForm')"></Column>

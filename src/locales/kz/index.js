@@ -1464,6 +1464,7 @@ export default {
             durationAndScope:'Ұзақтығы мен көлемі (сағат)',
             fundingSource:'Қаржыландыру көзі',
             typeSupportingDoc: 'Растайтын құжаттың түрі',
-        }
+        },
+        scientistProfile: 'Ғалымдардың профилі'
     }
 }

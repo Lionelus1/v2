@@ -1449,6 +1449,7 @@ export default {
             durationAndScope:'Продолжительность и объем (час)',
             fundingSource:'Источник финансирования',
             typeSupportingDoc: 'Вид подтверждающего документа',
-        }
+        },
+        scientistProfile: 'Профиль ученных'
     }    
 }

@@ -89,7 +89,6 @@ export const findRole = function(user, role) {
   if (user.roles) {
     for (let i = 0; i < user.roles.length; i++) {
       if (user.roles[i].name === role) {
-        console.log(user.roles[i].name, role)
         return true;
       }
     }
