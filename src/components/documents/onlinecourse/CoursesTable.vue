@@ -255,6 +255,7 @@ export default {
       }
       this.service.updateCourseGiveCertificates(request).then(_ => {
         this.loading = false
+        this.$toast.add({severity: "success", summary: this.$t('common.success'), life: 3000});
       }).catch(_ => {
         this.loading = false
       })
