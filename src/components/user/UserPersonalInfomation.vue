@@ -6,58 +6,58 @@
                 <!-- ИМЯ -->
                 <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
                     <label>{{ t('contact.fname') }}<span class="p-error" v-if="!readonly">*</span></label>
-                    <InputText class="mt-2" :placeholder="t('contact.fname')" v-model="user.firstName" :readonly="props.readonly"></InputText>
+                    <InputText class="mt-2" :placeholder="t('contact.fname')" v-model="user.firstName" :readonly="props.readonly" @input="updateUserData"></InputText>
                     <small class="p-error" v-if="validation.firstName">{{ t("common.requiredField") }}</small>
                 </div>
 
                 <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
                     <label>{{ t('contact.fnameLatin') }}<span class="p-error" v-if="!readonly">*</span></label>
-                    <InputText class="mt-2" :placeholder="t('contact.fnameLatin')" v-model="user.firstnameEn" :readonly="props.readonly"></InputText>
+                    <InputText class="mt-2" :placeholder="t('contact.fnameLatin')" v-model="user.firstnameEn" :readonly="props.readonly" @input="updateUserData"></InputText>
                     <small class="p-error" v-if="validation.firstNameEn">{{ t("common.requiredField") }}</small>
                 </div>
 
                 <!-- ФАМИЛИЯ -->
                 <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
                     <label>{{ t('contact.lname') }}<span class="p-error" v-if="!readonly">*</span></label>
-                    <InputText class="mt-2" :placeholder="t('contact.lname')" v-model="user.thirdName" :readonly="props.readonly"></InputText>
+                    <InputText class="mt-2" :placeholder="t('contact.lname')" v-model="user.thirdName" :readonly="props.readonly" @input="updateUserData"></InputText>
                     <small class="p-error" v-if="validation.thirdName">{{ t("common.requiredField") }}</small>
                 </div>
 
                 <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
                     <label>{{ t('contact.lnameLatin') }}<span class="p-error" v-if="!readonly">*</span></label>
-                    <InputText class="mt-2" :placeholder="t('contact.lnameLatin')" v-model="user.thirdnameEn" :readonly="props.readonly"></InputText>
+                    <InputText class="mt-2" :placeholder="t('contact.lnameLatin')" v-model="user.thirdnameEn" :readonly="props.readonly" @input="updateUserData"></InputText>
                     <small class="p-error" v-if="validation.thirdNameEn">{{ t("common.requiredField") }}</small>
                 </div>
 
                 <!-- ОТЧЕСТВО -->
                 <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
                     <label>{{ t('contact.sname') }}</label>
-                    <InputText class="mt-2" :placeholder="t('contact.sname')" v-model="user.lastName" :readonly="props.readonly"></InputText>
+                    <InputText class="mt-2" :placeholder="t('contact.sname')" v-model="user.lastName" :readonly="props.readonly" @input="updateUserData"></InputText>
                 </div>
 
                 <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
                     <label>{{ t('contact.snameLatin') }}</label>
-                    <InputText class="mt-2" :placeholder="t('contact.snameLatin')" v-model="user.lastnameEn" :readonly="props.readonly"></InputText>
+                    <InputText class="mt-2" :placeholder="t('contact.snameLatin')" v-model="user.lastnameEn" :readonly="props.readonly" @input="updateUserData"></InputText>
                 </div>
 
                 <!-- ДАТА РОЖДЕНИЯ -->
                 <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
                     <label>{{ t('contact.birthday') }}<span class="p-error" v-if="!readonly">*</span></label>
-                    <PrimeCalendar :readonly="props.readonly" class="mt-2" v-model="user.birthday" :placeholder="t('contact.birthday')" :dateFormat="'mm.dd.yy'"/>
+                    <PrimeCalendar :readonly="props.readonly" class="mt-2" v-model="user.birthday" :placeholder="t('contact.birthday')" :dateFormat="'mm.dd.yy'" @input="updateUserData"/>
                     <small class="p-error" v-if="validation.birthday">{{ t("common.requiredField") }}</small>
                 </div>
 
                 <!-- ЭЛ ПОЧТА -->
                 <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
                     <label>{{ t('contact.email') }}<span class="p-error" v-if="!readonly">*</span></label>
-                    <InputText class="mt-2" :placeholder="t('contact.email')" v-model="user.email" readonly></InputText>
+                    <InputText class="mt-2" :placeholder="t('contact.email')" v-model="user.email" readonly @input="updateUserData"></InputText>
                     <small class="p-error" v-if="validation.email">{{ t("common.requiredField") }}</small>
                 </div>
 
                 <!-- АДРЕС -->
                 <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
                     <label>{{ this.t('common.myAddress') }}</label>
-                    <InputText class="mt-2" :placeholder="t('common.myAddress')" v-model="user.address" :readonly="props.readonly"></InputText>
+                    <InputText class="mt-2" :placeholder="t('common.myAddress')" v-model="user.address" :readonly="props.readonly" @input="updateUserData"></InputText>
                     <small class="p-error" v-if="validation.address">{{ t("common.requiredField") }}</small>
                 </div>
 
@@ -80,8 +80,12 @@
     const toast = useToast()
     const user = ref({})
     const emitter = inject("emitter");
-
+    const emitPersonalInformationUpdate = defineEmits(["personal-information-updated"]);
     const userService = new UserService
+
+    const updateUserData = () => {
+      emitPersonalInformationUpdate("personal-information-updated", user.value);
+    };
 
     const props = defineProps({
       userID: {

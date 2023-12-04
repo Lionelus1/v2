@@ -16,7 +16,6 @@
   import Enum from "@/enum/roleControls/index";
   
   import { ContragentService } from "@/service/contragent.service";
-  import UserPeronalInfomation from '@/components/user/UserPeronalInfomation'
   import UserIDCard from '@/components/user/UserIDCard'
   import UserEducationEdit from '@/components/user/UserEducationEdit'
   import UserEducationView from '@/components/user/UserEducationView'
@@ -27,7 +26,7 @@
   
   export default {
     name: 'UserPage',
-    components: {UserPeronalInfomation, UserIDCard, UserService, UserEducationEdit, UserEducationView, UserRequisite },
+    components: {UserIDCard, UserService, UserEducationEdit, UserEducationView, UserRequisite },
     props: {
       person: null,
       readonly: {

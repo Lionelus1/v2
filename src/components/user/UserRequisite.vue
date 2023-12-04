@@ -9,7 +9,7 @@
                             <label>{{ $t('bank.title2') }}<span class="p-error" v-if="!readonly">*</span></label>
                             <Dropdown  v-model="bank" :optionLabel="bankLabel"
                             :options="banks" :placeholder="$t('bank.title2')" 
-                            class="dropdown w-full mt-2" :readonly="readonly"></Dropdown>
+                            class="dropdown w-full mt-2" :readonly="readonly" @input="updateUserData"></Dropdown>
                         <small class="p-error" v-if="validation.bankname">{{ $t("common.requiredField") }}</small>
                         </div>
                     </div>
@@ -22,7 +22,7 @@
                                 class="mt-2"
                                 type="text"
                                 :placeholder="$t('bank.accnumber')"
-                                v-model=" user.bankaccount"></InputText>
+                                v-model=" user.bankaccount" @input="updateUserData"></InputText>
                             <small class="p-error" v-if="validation.accnumber">{{ $t("common.requiredField") }}</small>
                         </div>
                     </div>
@@ -46,7 +46,7 @@ import { ref, defineProps, inject, onMounted } from 'vue';
     const {t, locale} = useI18n()
     const toast = useToast();
     const userService = new UserService
-
+    const emitPersonalInformationUpdate = defineEmits(["personal-information-updated"]);
     const props = defineProps({
       userID: {
         type: Number,
@@ -72,7 +72,7 @@ import { ref, defineProps, inject, onMounted } from 'vue';
     const user = ref(props.modelValue)
 
     const payload = ref({
-        userID: props.userID.userID,
+        userID: props.userID,
         bank_id: null,
         bankaccount: null,
         name: null
@@ -82,25 +82,6 @@ import { ref, defineProps, inject, onMounted } from 'vue';
         accnumber: false,
         bankname: false,
     })
-
-    const updateBank = () => {
-        if (!validateForm) {
-            return
-        }
-
-        if (bank.value) {
-            user.value.value.bank_id = bank.value.id
-        } else {
-            validation.value.bankname = false
-            return
-        }
-        
-        axios.post(smartEnuApi + '/account/bank/update', payload.value, {headers: getHeader()}).then(res  => {
-            emitter.emit('requisite', true)
-        }).catch(err => {
-            toast.add({severity: 'error', summary: t('common.error'), life: 3000})
-        })
-    }
 
     const getBanks = () => {
         var req = {"id" : 0, "count": 0};
@@ -160,6 +141,13 @@ import { ref, defineProps, inject, onMounted } from 'vue';
         })
       })
     }
+
+    const updateUserData = () => {
+      console.log(bank.value, 'asdasd');
+      user.value.bank = bank.value
+      emitPersonalInformationUpdate("personal-information-updated", user.value);
+    };
+
 
     onMounted(() => {
         getUserAccount()

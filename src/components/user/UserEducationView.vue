@@ -31,7 +31,7 @@
                         <!-- Скан копия -->
                         <Column  header="Скан копия">
                           <template #body="slotProps">
-                            <Button icon="pi pi-download" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="showFile(slotProps.data.file_path)"></Button>
+                            <Button v-if="slotProps.data.file_path !== null" icon="pi pi-download" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="showFile(slotProps.data.file_path)"></Button>
                           </template>
                         </Column>
 

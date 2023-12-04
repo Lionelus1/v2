@@ -7,21 +7,21 @@
                 <!-- НОМЕР -->
                 <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
                     <label>{{ $t('common.number') }}<span class="p-error" v-if="!readonly">*</span></label>
-                    <InputText :readonly="readonly" class="mt-2" :class="{'p-invalid': validation.number}" type="text"  :placeholder="$t('common.number')" v-if="user" v-model="user.idnumber"></InputText>
+                    <InputText :readonly="readonly" class="mt-2" :class="{'p-invalid': validation.number}" type="text"  :placeholder="$t('common.number')" v-if="user" v-model="user.idnumber" @input="updateUserData"></InputText>
                     <small class="p-error" v-if="validation.number">{{ $t("common.requiredField") }}</small>
                 </div>
 
                 <!-- ДАТА ВЫДАЧИ -->
                 <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
                     <label>{{ $t('hr.id.startDate') }}<span class="p-error" v-if="!readonly">*</span></label>
-                    <PrimeCalendar :readonly="readonly" class="mt-2" :class="{'p-invalid': validation.startDate}" :placeholder="$t('hr.id.startDate')" v-if="user" v-model="user.iddate" dateFormat="dd.mm.yy"/>
+                    <PrimeCalendar :readonly="readonly" class="mt-2" :class="{'p-invalid': validation.startDate}" :placeholder="$t('hr.id.startDate')" v-if="user" v-model="user.iddate" dateFormat="dd.mm.yy" @input="updateUserData"/>
                     <small class="p-error" v-if="validation.startDate">{{ $t("common.requiredField") }}</small>
                 </div>
 
                 <!-- КЕМ ВЫДАН -->
                 <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
                     <label>{{ $t('hr.id.issuedBy') }}<span class="p-error" v-if="!readonly">*</span></label>
-                    <InputText :readonly="readonly" class="mt-2" :class="{'p-invalid': validation.issuedBy}" type="text" :placeholder="$t('hr.id.issuedBy')" v-if="user" v-model="user.idcardgivenorg"></InputText>
+                    <InputText :readonly="readonly" class="mt-2" :class="{'p-invalid': validation.issuedBy}" type="text" :placeholder="$t('hr.id.issuedBy')" v-if="user" v-model="user.idcardgivenorg" @input="updateUserData"></InputText>
                     <small class="p-error" v-if="validation.issuedBy">{{ $t("common.requiredField") }}</small>
                 </div>
 
@@ -95,7 +95,7 @@
   
     const fileData = ref(null)
     const fileView = ref(false)
-
+    const emitPersonalInformationUpdate = defineEmits(["personal-information-updated"]);
     const showFile = (data) => {
        if (!data) {
           return
@@ -103,6 +103,10 @@
        fileData.value = data
        fileView.value = true
     }
+
+    const updateUserData = () => {
+      emitPersonalInformationUpdate("personal-information-updated", user.value);
+    };
     
     const validation = ref({
       number: false,

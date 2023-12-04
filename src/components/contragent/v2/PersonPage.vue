@@ -7,21 +7,19 @@
     <BlockUI class="card p-fluid" :blocked="loading">
       <TabView>
         <TabPanel header="Личные данные">
-          <UserPeronalInfomation :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
+          <UserPersonalInfomation @personal-information-updated="handlePersonalInformationUpdate" :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
         </TabPanel>
         <TabPanel header="Удостоверение личности">
-          <UserIDCard :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
+          <UserIDCard @personal-information-updated="handlePersonalInformationUpdate" :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
         </TabPanel>
         <TabPanel header="Образование">
           <UserEducationView  :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
         </TabPanel>
         <TabPanel header="Банковские реквизиты">
-          <UserRequisite :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
+          <UserRequisite @personal-information-updated="handlePersonalInformationUpdate" :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
         </TabPanel>
       </TabView>
-  </BlockUI>
-    
-    
+    </BlockUI>
   </div>
 </template>
 
@@ -30,7 +28,7 @@ import { findRole } from "@/config/config";
 import Enum from "@/enum/roleControls/index";
 
 import { ContragentService } from "@/service/contragent.service";
-import UserPeronalInfomation from '@/components/user/UserPeronalInfomation'
+import UserPersonalInfomation from '@/components/user/UserPersonalInfomation'
 import UserIDCard from '@/components/user/UserIDCard'
 import UserEducationEdit from '@/components/user/UserEducationEdit'
 import UserEducationView from '@/components/user/UserEducationView'
@@ -40,15 +38,16 @@ import {UserService} from "@/service/user.service"
 
 export default {
   name: 'PersonPage',
-  components: {UserPeronalInfomation, UserIDCard, UserEducationView, UserRequisite },
+  components: {UserPersonalInfomation, UserIDCard, UserEducationView, UserRequisite },
   props: {
     person: null,
+    userID: null,
     readonly: {
       type: Boolean,
       default: false
     }
   },
-  emits: ['personUpdated'],
+  emits: ['personUpdated',],
   data() {
     return {
       service: new ContragentService(),
@@ -84,7 +83,6 @@ export default {
           command: () => { this.save() },
         }
       ],
-      selectedComponent: 'UserPeronalInfomation',
       user: {},
       userService: new UserService(),
       file: null
@@ -127,7 +125,6 @@ export default {
       }
 
       this.loading = true;
-      console.log(this.per)
 
       const fd = new FormData();
       fd.append("id", JSON.stringify(this.per))
@@ -151,7 +148,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null);
         } else {
-          console.log(err);
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'));
         }
       })
@@ -171,19 +167,34 @@ export default {
       this.validation.lastnameEn =  !this.per.thirdnameEn || this.per.thirdnameEn.length < 1;
       this.validation.birthday = !this.per.birthday || this.per.birthday.id < 1;
       this.validation.email = !this.per.email || this.per.email.length < 1;
-
+      console.log(this.validation)
       return (this.validation.iin || this.validation.firstname || this.validation.lastname ||
         this.validation.birthday || this.validation.email || this.validation.firstnameEn ||
         this.validation.lastnameEn);
     },
+    handlePersonalInformationUpdate(updatedData) {
+      if (updatedData != null) {
+        this.per = updatedData;
+        console.log(updatedData)
+        this.$emit("update:modelValue", this.per);
+      }
+    },
     getUserAccount() {
       const req = {
-        userID: this.per.userID
+        userID: null
+      }
+      if (this.userID != null) {
+        req.userID = this.userID
+      } else {
+        req.userID = this.per.userID
       }
 
       this.userService.getUserAccount(req).then(response=>{
   
-        this.user = response.data.user
+        this.per = response.data.user
+        this.$emit("update:modelValue", this.per);
+        this.$emit("update:person", this.per);
+
       }).catch(err => {
 
         if (err.response && err.response.status == 401) {
@@ -194,7 +205,10 @@ export default {
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'));
         }
       })
-    }
+    },
+    onMenuItemClick() {
+      this.$emit('someEvent')
+    },
 
   }
 }
