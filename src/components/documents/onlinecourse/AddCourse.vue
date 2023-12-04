@@ -1,40 +1,45 @@
 <template>
   <TitleBlock :title="$t('Курсты құру')" :show-back-button="true"/>
-  <Menubar :model="menu"></Menubar>
-
-  <div class="grid">
+<div class="card m-0">
+  <Button class="p-button-outlined mr-2" icon="pi pi-fw pi-download" :label="$t('common.save')" @click="save()"/>
+  <Button class="p-button-outlined mr-2" icon="pi pi-fw pi-send" :label="$t('common.send')" @click="openDialog('sendToApprove')"/>
+  <Button class="p-button-outlined" icon="pi pi-fw pi-check-circle" :label="$t('common.approvalList')"/>
+</div>
+  <div class="grid" v-if="formData">
     <div class="col-12 lg:col-8">
       <div class="card p-fluid mt-3">
         <div class="field mt-3">
-          <label for="course-code">{{ $t("Область образования") }}</label>
-          <Dropdown placeholder="таңдаңыз" />
+          <label for="course-code">{{ $t("fieldEducation.title") }}</label>
+          <Dropdown optionValue="id" placeholder="таңдаңыз" :options="dataFieldEducation" :optionLabel='"name_" + $i18n.locale'/>
         </div>
         <div class="field mt-3">
-          <label for="course-code">{{ $t("Академическая степень") }}</label>
-          <Dropdown placeholder="таңдаңыз" />
+          <label for="course-code">{{ $t("web.degreeLevel") }}</label>
+          <Dropdown optionValue="id" placeholder="таңдаңыз" :options="dataAcademicDegrees" :optionLabel='"name_" + $i18n.locale'/>
         </div>
         <div class="field">
-          <label for="author">{{ $t("Автор курса") }}</label>
+          <label for="author">{{ $t("fieldEducation.courseAuthor") }}</label>
           <InputText disabled v-model="$store.state.loginedUser.fullName" id="author" rows="3"/>
         </div>
         <div class="field mt-3">
-          <label for="course-code">{{ $t("Наименование курса") }}</label>
-          <InputText id="course-code"/>
+          <label for="course-name">{{ $t("fieldEducation.courseName") }}</label>
+          <InputText id="course-name" v-model="formData.courseName"/>
+          <small class="p-error" v-if="!formData.courseName && submitted">{{ $t("common.requiredField") }}</small>
         </div>
         <div class="field mt-3">
-          <label for="course-code">{{ $t("Код курса") }}</label>
-          <InputText id="course-code"/>
+          <label for="course-code">{{ $t("fieldEducation.courseCode") }}</label>
+          <InputText id="course-code" v-model="formData.courseCode"/>
+          <small class="p-error" v-if="!formData.courseCode && submitted">{{ $t("common.requiredField") }}</small>
         </div>
         <div class="field mt-3">
-          <label for="course-code">{{ $t("Язык обучения") }}</label>
+          <label for="course-code">{{ $t("common.learnlang") }}</label>
           <Dropdown placeholder="таңдаңыз" />
         </div>
         <div class="field mt-3">
-          <label for="course-code">{{ $t("Цель курса") }}</label>
+          <label for="course-code">{{ $t("fieldEducation.purposeCourse") }}</label>
           <Textarea id="course-code" rows="5"/>
         </div>
         <div class="field mt-3">
-          <label for="course-code">{{ $t("Краткая аннотация") }}</label>
+          <label for="course-code">{{ $t("fieldEducation.briefSummary") }}</label>
           <Textarea id="course-code" rows="3"/>
         </div>
 
@@ -43,12 +48,12 @@
     <div class="col-12 lg:col-4">
       <div class="p-fluid mt-3">
         <div class="card field">
-          <label for="course-code">{{ $t("Длительность курса") }}</label>
+          <label for="course-code">{{ $t("fieldEducation.duration") }}</label>
           <InputText id="course-code"/>
 <!--          <PrimeCalendar v-model="date" selection-mode="range" :manualInput="true" dateFormat="dd.mm.yy" :showIcon="true"/>-->
         </div>
         <div class="field mt-3">
-          <Fieldset legend="Формат обучения">
+          <Fieldset :legend="$t('fieldEducation.trainingFormat')">
               <div class="field-radiobutton">
                 <RadioButton inputId="blockType1" name="blockType"/>
                 <label for="blockType1">{{ $t('Онлайн') }}</label>
@@ -64,7 +69,7 @@
           </Fieldset>
         </div>
         <div class="card field mt-3">
-          <label for="course-code">{{ $t("Картинка") }}</label>
+          <label for="course-code">{{ $t("common.image") }}</label>
           <div class="post-select-image-container">
             <div class="btn-select-image" >
               <div class="btn-select-image-inner">
@@ -78,45 +83,164 @@
         </div>
 
         <div class="card field mt-3">
-          <label for="course-code">{{ $t("Пререквизиты") }}</label>
+          <label for="course-code">{{ $t("fieldEducation.prerequisites") }}</label>
           <Dropdown placeholder="таңдаңыз" />
-          <Button label="Добавить пререквезит" class="p-button-outlined p-button-sm w-fit mt-2 mb-4" icon="pi pi-plus-circle"/>
+          <Button :label="$t('fieldEducation.addPrerequisite')" class="p-button-outlined p-button-sm w-fit mt-2 mb-4" icon="pi pi-plus-circle"/>
           <br>
-          <label for="course-code">{{ $t("Постреквизиты") }}</label>
+          <label for="course-code">{{ $t("fieldEducation.postrequisites") }}</label>
           <Dropdown placeholder="таңдаңыз" />
-          <Button label="Добавить постреквезит" class="p-button-outlined p-button-sm w-fit mt-2" icon="pi pi-plus-circle"/>
+          <Button :label="$t('fieldEducation.addPostrequisite')" class="p-button-outlined p-button-sm w-fit mt-2" icon="pi pi-plus-circle"/>
         </div>
       </div>
     </div>
   </div>
+  <Dialog :header="$t('common.action.sendToApprove')" v-model:visible="dialogOpenState.sendToApprove"
+          :style="{width: '50vw'}" class="p-fluid">
+    <ProgressBar v-if="approving" mode="indeterminate" style="height: .5em"/>
+    <div class="field">
+      <ApprovalUsers :key="approveComponentKey" :approving="approving" v-model="selectedUsers"
+                     @closed="closeDialog('sendToApprove')"
+                     @approve="approve($event)" :stages="stages" :mode="'standard'"></ApprovalUsers>
+    </div>
+  </Dialog>
 </template>
 
 <script setup>
-import {computed, ref} from "vue";
+import {ref} from "vue";
 import {useI18n} from "vue-i18n";
+import {useToast} from "primevue/usetoast";
+import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers.vue";
+import {OnlineCourseService} from "@/service/onlinecourse.service";
 const {t, locale} = useI18n()
 
-const menu = computed(() => {
-  return [
-  {
-    label: t('common.save'),
-    icon: "pi pi-fw pi-download",
-    command: () => {},
-  },
-  {
-    label: t('common.send'),
-    icon: "pi pi-fw pi-send",
-    command: () => {}
-  },
-  {
-    label: t('common.approvalList'),
-    icon: "pi pi-fw pi-check-circle",
-    visible: true,
-    command: () => {}
-  }
-]})
 const date = ref();
+const toast = useToast();
+const i18n = useI18n();
+const formData = ref({})
+const submitted = ref(false)
+const selectedUsers = ref([
+  {
+    stage: 1,
+    users: 'ss',
+    certificate: {
+      namekz: "Жеке тұлғаның сертификаты",
+      nameru: "Сертификат физического лица",
+      nameen: "Certificate of an individual",
+      value: "individual"
+    }
+  }
+])
+const approveComponentKey =  ref(0)
+const approving = ref(false)
+const stages = ref(null)
+const approvalStages = ref([
+  {
+    stage: 1,
+    users: 's',
+    certificate: {
+      namekz: "Жеке тұлғаның сертификаты",
+      nameru: "Сертификат физического лица",
+      nameen: "Certificate of an individual",
+      value: "individual"
+    },
+    titleRu: "Преподаватель",
+    titleKz: "Оқытушы",
+    titleEn: "Teacher",
+  },
+  {
+    stage: 2,
+    users: null,
+    titleRu: "Заведующий кафедры",
+    titleKz: "Кафедра меңгерушісі",
+    titleEn: "Head of Department",
+    certificate: {
+      namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+      nameru: "Для внутреннего документооборота (ГОСТ)",
+      nameen: "For internal document management (GOST)",
+      value: "internal"
+    },
+  }
+])
+const dialogOpenState = ref({
+  addFolder: false,
+  moveFolder: false,
+  fileUpload: false,
+  signerInfo: false,
+  sendToApprove: false,
+  revision: false,
+  docInfo: false,
+  umkParams: false
+})
+const service = new OnlineCourseService()
+const dataFieldEducation = ref([])
+const dataAcademicDegrees = ref([])
 
+const getFieldEducation = () => {
+      service.getFieldEducation().then(response => {
+        console.log(response.data)
+        dataFieldEducation.value = response.data
+        //this.total = response.data.total
+        //this.loading = false
+      }).catch(_=> {
+        //this.loading = false
+      });
+}
+getFieldEducation()
+
+const getEduAcademicDegrees = () => {
+  service.getEduAcademicDegrees().then(response => {
+    console.log(response.data)
+    dataAcademicDegrees.value = response.data
+    //this.total = response.data.total
+    //this.loading = false
+  }).catch(_=> {
+    //this.loading = false
+  });
+}
+getEduAcademicDegrees()
+const save = () => {
+  submitted.value = true
+  if (!isValid()) return;
+  toast.add({
+    severity: "success",
+    summary: i18n.t("common.success"),
+    life: 3000,
+  });
+}
+
+const isValid = () => {
+  let errors = [];
+  if (!formData.value.courseName) {
+    errors.push(1);
+  }
+  if (!formData.value.courseCode) {
+    errors.push(1);
+  }
+  return errors.length === 0;
+}
+const approve = (event)=> {
+  approving.value = true;
+    toast.add({
+      severity: "success",
+      summary: this.$t('common.message.succesSendToApproval'),
+      life: 3000,
+    });
+    closeDialog("sendToApprove");
+    this.approving = false;
+}
+
+const openDialog = (dialog)=> {
+  if (dialog === "sendToApprove") {
+    approveComponentKey.value++;
+    stages.value = JSON.parse(JSON.stringify(approvalStages.value));
+  }
+
+  dialogOpenState.value[dialog] = true;
+}
+const closeDialog = (dialog) => {
+  dialogOpenState[dialog] = false;
+
+}
 </script>
 
 
