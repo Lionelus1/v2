@@ -42,10 +42,11 @@ import OrganizationList from "@/components/contragent/v2/OrganizationList";
 import OrganizationPage from "@/components/contragent/v2/OrganizationPage";
 import PersonsList from "@/components/contragent/v2/PersonsList";
 import PersonPage from "@/components/contragent/v2/PersonPage";
+import {UserService} from "@/service/user.service"
 
 export default {
   name: 'ContragentSelectV2',
-  components: { OrganizationList, OrganizationPage, PersonsList, PersonPage },
+  components: { OrganizationList, OrganizationPage, PersonsList,  PersonPage },
   props: { 
     contragent: null,
     disable: {
@@ -67,6 +68,7 @@ export default {
         signerCard: false,
         signerList: false,
       },
+      userService: new UserService()
     }
   },
   computed: {
@@ -189,8 +191,31 @@ export default {
       }
       this.signer = JSON.parse(JSON.stringify(event));
 
+      this.getUserAccount(this.signer.userID)
+
       this.$emit('contragentUpdated', this.contr);
     },
+    getUserAccount(userID) {
+      const req = {
+        userID: userID
+      }
+
+      this.userService.getUserAccount(req).then(response=>{
+  
+        this.signer = response.data.user
+      }).catch(err => {
+        this.loading = false;
+
+        if (err.response && err.response.status == 401) {
+          this.$store.dispatch("logLout");
+        } else if (err.response && err.response.data && err.response.data.localized) {
+          this.showMessage('error', this.$t(err.response.data.localizedPath), null);
+        } else {
+          console.log(err);
+          this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'));
+        }
+      })
+    }
   }
 }
 </script>

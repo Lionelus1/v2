@@ -1,71 +1,46 @@
 <template>
-  <ProgressSpinner v-if="loading" class="progress-spinner" strokeWidth="5"/>
-  <Menubar :model="menu" class="m-0 pt-0 pb-0"></Menubar>
-  <BlockUI class="card p-fluid" :blocked="loading">
-    <div class="grid formgrid">
-      <div class="field col-12 md:col-6">
-        <label>{{ $t("contact.iin") }}<span class="p-error" v-if="!pageReadonly">*</span></label>
-        <InputMask :readonly="pageReadonly" type="text" :placeholder="$t('contact.iin')" 
-          v-model="per.IIN" @update:modelValue="input" mask="999999999999"></InputMask>
-        <small class="p-error" v-if="validation.iin">{{$t('common.requiredField')}}</small>
-      </div>
-      <div class="field col-12 md:col-6">
-        <label>{{ $t("contact.lname") }}<span class="p-error" v-if="!pageReadonly">*</span></label>
-        <InputText :readonly="pageReadonly" type="text" :placeholder="$t('contact.lname')" 
-          v-model="per.thirdName" @update:modelValue="input"></InputText>
-        <small class="p-error" v-if="validation.lastname">{{$t('common.requiredField')}}</small>
-      </div>
-      <div class="field col-12 md:col-6">
-        <label>{{ $t("contact.fname") }}<span class="p-error" v-if="!pageReadonly">*</span></label>
-        <InputText :readonly="pageReadonly" type="text" :placeholder="$t('contact.fname')" 
-          v-model="per.firstName" @update:modelValue="input"></InputText>
-        <small class="p-error" v-if="validation.firstname">{{$t('common.requiredField')}}</small>
-      </div>
-      <div class="field col-12 md:col-6">
-        <label>{{ $t("contact.sname") }}</label>
-        <InputText :readonly="pageReadonly" type="text" :placeholder="$t('contact.sname')" 
-          v-model="per.lastName" @update:modelValue="input"></InputText>
-      </div>
-      <div class="field col-12 md:col-6">
-        <label>{{ $t("contact.birthday") }}<span class="p-error" v-if="!pageReadonly">*</span></label>
-        <PrimeCalendar :readonly="pageReadonly" dateFormat="dd.mm.yy" :placeholder="$t('contact.birthday')" 
-          v-model="per.birthday" @date-select="input"></PrimeCalendar>
-        <small class="p-error" v-if="validation.birthday">{{$t('common.requiredField')}}</small>
-      </div>
-      <div class="field col-12 md:col-6"></div>
-      <div class="field col-12">
-        <Accordion>
-          <AccordionTab :header="$t('contact.nameInLatin')">
-            <div class="field col-12 md:col-6">
-              <label>{{ $t("contact.lname") }}</label>
-              <InputText :readonly="pageReadonly" type="text" :placeholder="$t('contact.lname')" 
-                v-model="per.thirdnameEn" @update:modelValue="input"></InputText>
-            </div>
-            <div class="field col-12 md:col-6">
-              <label>{{ $t("contact.fname") }}</label>
-              <InputText :readonly="pageReadonly" type="text" :placeholder="$t('contact.fname')" 
-                v-model="per.firstnameEn" @update:modelValue="input"></InputText>
-            </div>
-            <div class="field col-12 md:col-6">
-              <label>{{ $t("contact.sname") }}</label>
-              <InputText :readonly="pageReadonly" type="text" :placeholder="$t('contact.sname')" 
-                v-model="per.lastnameEn" @update:modelValue="input"></InputText>
-            </div>
-            <div class="field col-12 md:col-6"></div>
-          </AccordionTab>
-        </Accordion>
-      </div>
-    </div>
+  <div>
+    <ProgressSpinner v-if="loading" class="progress-spinner" strokeWidth="5"/>
+    
+    <Menubar :model="items" class="m-0 pt-0 pb-0"></Menubar>
+    
+    <BlockUI class="card p-fluid" :blocked="loading">
+      <TabView>
+        <TabPanel header="Личные данные">
+          <UserPeronalInfomation :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
+        </TabPanel>
+        <TabPanel header="Удостоверение личности">
+          <UserIDCard :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
+        </TabPanel>
+        <TabPanel header="Образование">
+          <UserEducationView  :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
+        </TabPanel>
+        <TabPanel header="Банковские реквизиты">
+          <UserRequisite :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
+        </TabPanel>
+      </TabView>
   </BlockUI>
+    
+    
+  </div>
 </template>
+
 <script>
 import { findRole } from "@/config/config";
 import Enum from "@/enum/roleControls/index";
 
 import { ContragentService } from "@/service/contragent.service";
+import UserPeronalInfomation from '@/components/user/UserPeronalInfomation'
+import UserIDCard from '@/components/user/UserIDCard'
+import UserEducationEdit from '@/components/user/UserEducationEdit'
+import UserEducationView from '@/components/user/UserEducationView'
+import UserRequisite from '@/components/user/UserRequisite'
+import {UserService} from "@/service/user.service"
+
 
 export default {
   name: 'PersonPage',
+  components: {UserPeronalInfomation, UserIDCard, UserEducationView, UserRequisite },
   props: {
     person: null,
     readonly: {
@@ -82,19 +57,26 @@ export default {
       enum: Enum,
 
       loading: false,
-      changed: false,
+      changed: true,
       pageReadonly: false,
 
-      per: JSON.parse(JSON.stringify(this.person)),
+      per: JSON.parse(JSON.stringify(this.person)) || null,
       validation: {
         iin: false,
         firstname: false,
+        firstnameEn: false,
         lastname: false, 
+        lastnameEn: false, 
         birthday: false,
         email: false,
+        idnumber: false,
+        iddate: false,
+        idcardgivenorg: false,
+        bankaccount: false,
+        bank_id: false,
       },
 
-      menu: [
+      items: [
         {
           label: this.$t("common.save"),
           icon: "pi pi-fw pi-save",
@@ -102,19 +84,32 @@ export default {
           command: () => { this.save() },
         }
       ],
+      selectedComponent: 'UserPeronalInfomation',
+      user: {},
+      userService: new UserService(),
+      file: null
     }
   },
   created() {
     this.loginedUser = JSON.parse(localStorage.getItem("loginedUser"));
   },
   mounted() {
+    this.getUserAccount()
     this.pageReadonly = true;
 
     if (!this.readonly && (this.findRole(this.loginedUser, this.enum.roles.MainAdministrator) || this.loginedUser.userID === this.per.userID)) {
         this.pageReadonly = false;
+    } else {
+      this.changed = false
     }
 
-    this.per.birthday = this.per.birthday ? new Date(this.per.birthday) : this.per.birthday;
+    this.emitter.on('idcardpath', (data) => {
+      if (data !== true) {
+        this.file = data
+        this.changed = true;
+      } 
+    });
+
   },
   methods: {
     showMessage(msgtype, message, content) {
@@ -132,14 +127,25 @@ export default {
       }
 
       this.loading = true;
+      console.log(this.per)
 
-      this.service.updateUser(this.per).then(res => {
-        this.loading = false;
+      const fd = new FormData();
+      fd.append("id", JSON.stringify(this.per))
+      if (this.file !== null) {
+        fd.append("idImage", this.file);
+      }
 
+
+      this.userService.updateUserAccountHandler(fd).then(res => {
+        this.file = null
         this.$emit('personUpdated', this.per)
+        this.getUserAccount()
+        this.showMessage('success', this.$t('common.success'));
+
+        this.loading = false;
       }).catch(err => {
         this.loading = false;
-
+        this.file = null
         if (err.response && err.response.status == 401) {
           this.$store.dispatch("logLout");
         } else if (err.response && err.response.data && err.response.data.localized) {
@@ -153,20 +159,52 @@ export default {
     input() {
       this.changed = true;
     },
+    handleModelUpdate(newValue) {
+      console.log('Новое значение model-value:', newValue);
+
+    },
     validate() {
       this.validation.iin = !this.per.IIN || this.per.IIN.length != 12;
       this.validation.firstname = !this.per.firstName || this.per.firstName.length < 1;
+      this.validation.firstnameEn = !this.per.firstnameEn || this.per.firstnameEn.length < 1;
       this.validation.lastname =  !this.per.thirdName || this.per.thirdName.length < 1;
+      this.validation.lastnameEn =  !this.per.thirdnameEn || this.per.thirdnameEn.length < 1;
       this.validation.birthday = !this.per.birthday || this.per.birthday.id < 1;
       this.validation.email = !this.per.email || this.per.email.length < 1;
 
       return (this.validation.iin || this.validation.firstname || this.validation.lastname ||
-        this.validation.birthday || this.validation.email);
+        this.validation.birthday || this.validation.email || this.validation.firstnameEn ||
+        this.validation.lastnameEn);
+    },
+    getUserAccount() {
+      const req = {
+        userID: this.per.userID
+      }
+
+      this.userService.getUserAccount(req).then(response=>{
+  
+        this.user = response.data.user
+      }).catch(err => {
+
+        if (err.response && err.response.status == 401) {
+          this.$store.dispatch("logLout");
+        } else if (err.response && err.response.data && err.response.data.localized) {
+          this.showMessage('error', this.$t(err.response.data.localizedPath), null);
+        } else {
+          this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'));
+        }
+      })
     }
+
   }
 }
 </script>
+
 <style scoped>
+
+.custom-dropdown {
+  margin-top: 8px;
+}
 .progress-spinner {
   position: absolute;
   top: 0; bottom: 0; left: 0; right: 0;

@@ -1,0 +1,163 @@
+<template>
+<div id="carddiv" class="grid">
+    <div class="col-12 md:col-12 p-fluid">
+        <div class="card">
+            <div class="grid formgrid">
+                <!-- ИМЯ -->
+                <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+                    <label>{{ t('contact.fname') }}<span class="p-error" v-if="!readonly">*</span></label>
+                    <InputText class="mt-2" :placeholder="t('contact.fname')" v-model="user.firstName" :readonly="props.readonly"></InputText>
+                    <small class="p-error" v-if="validation.firstName">{{ t("common.requiredField") }}</small>
+                </div>
+
+                <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+                    <label>{{ t('contact.fnameLatin') }}<span class="p-error" v-if="!readonly">*</span></label>
+                    <InputText class="mt-2" :placeholder="t('contact.fnameLatin')" v-model="user.firstnameEn" :readonly="props.readonly"></InputText>
+                    <small class="p-error" v-if="validation.firstNameEn">{{ t("common.requiredField") }}</small>
+                </div>
+
+                <!-- ФАМИЛИЯ -->
+                <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+                    <label>{{ t('contact.lname') }}<span class="p-error" v-if="!readonly">*</span></label>
+                    <InputText class="mt-2" :placeholder="t('contact.lname')" v-model="user.thirdName" :readonly="props.readonly"></InputText>
+                    <small class="p-error" v-if="validation.thirdName">{{ t("common.requiredField") }}</small>
+                </div>
+
+                <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+                    <label>{{ t('contact.lnameLatin') }}<span class="p-error" v-if="!readonly">*</span></label>
+                    <InputText class="mt-2" :placeholder="t('contact.lnameLatin')" v-model="user.thirdnameEn" :readonly="props.readonly"></InputText>
+                    <small class="p-error" v-if="validation.thirdNameEn">{{ t("common.requiredField") }}</small>
+                </div>
+
+                <!-- ОТЧЕСТВО -->
+                <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+                    <label>{{ t('contact.sname') }}</label>
+                    <InputText class="mt-2" :placeholder="t('contact.sname')" v-model="user.lastName" :readonly="props.readonly"></InputText>
+                </div>
+
+                <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+                    <label>{{ t('contact.snameLatin') }}</label>
+                    <InputText class="mt-2" :placeholder="t('contact.snameLatin')" v-model="user.lastnameEn" :readonly="props.readonly"></InputText>
+                </div>
+
+                <!-- ДАТА РОЖДЕНИЯ -->
+                <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+                    <label>{{ t('contact.birthday') }}<span class="p-error" v-if="!readonly">*</span></label>
+                    <PrimeCalendar :readonly="props.readonly" class="mt-2" v-model="user.birthday" :placeholder="t('contact.birthday')" :dateFormat="'mm.dd.yy'"/>
+                    <small class="p-error" v-if="validation.birthday">{{ t("common.requiredField") }}</small>
+                </div>
+
+                <!-- ЭЛ ПОЧТА -->
+                <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+                    <label>{{ t('contact.email') }}<span class="p-error" v-if="!readonly">*</span></label>
+                    <InputText class="mt-2" :placeholder="t('contact.email')" v-model="user.email" readonly></InputText>
+                    <small class="p-error" v-if="validation.email">{{ t("common.requiredField") }}</small>
+                </div>
+
+                <!-- АДРЕС -->
+                <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+                    <label>{{ this.t('common.myAddress') }}</label>
+                    <InputText class="mt-2" :placeholder="t('common.myAddress')" v-model="user.address" :readonly="props.readonly"></InputText>
+                    <small class="p-error" v-if="validation.address">{{ t("common.requiredField") }}</small>
+                </div>
+
+            </div>
+        </div>
+    </div>
+  </div>
+
+</template>
+
+<script setup>
+    import { useI18n } from "vue-i18n";
+    import { useToast } from "primevue/usetoast";
+    import { inject, ref, onMounted } from "vue";
+    import {findRole} from "@/config/config";
+    import {UserService} from "@/service/user.service"
+    import { format } from 'date-fns';
+
+    const { t } = useI18n()
+    const toast = useToast()
+    const user = ref({})
+    const emitter = inject("emitter");
+
+    const userService = new UserService
+
+    const props = defineProps({
+      userID: {
+        type: Number,
+        default: null,
+      },
+      modelValue: {
+        type: null,
+        default: null
+      },
+      readonly: {
+        type: Boolean,
+        default: true,
+      },
+      customType: {
+        type: String,
+        default: ''
+      }
+    });
+
+    const userID = ref(props.userID)
+    
+
+    const validation =  ref({
+      firstName: false,
+      thirdName: false,
+      firstNameEn: false,
+      thirdNameEn: false,
+      birthday: false,
+      email: false,
+      address: false
+    })
+
+    const validateForm = ()=> {
+      validation.value.firstName = !user.value.firstName || user.value.firstName == ""
+      validation.value.thirdName = !user.value.thirdName || user.value.thirdName == ""
+      validation.value.birthday = !user.value.birthday || user.value.birthday == ""
+      validation.value.email = !user.value.email || user.value.email == ""
+      validation.value.address = !user.value.address || user.value.address == ""
+      validation.value.firstNameEn = !user.value.firstnameEn || user.value.firstnameEn == ""
+      validation.value.thirdNameEn = !user.value.thirdnameEn || user.value.thirdnameEn == ""
+      return (
+          !validation.value.firstName &&
+          !validation.value.thirdName &&
+          !validation.value.iin &&
+          !validation.value.birthday &&
+          !validation.value.email && 
+          !validation.value.address &&
+          !validation.value.firstNameEn &&
+          !validation.value.thirdNameEn
+      )
+    }
+
+    const getUserAccount= () => {
+      if (props.modelValue !== null) {
+          user.value = props.modelValue
+          return
+      }
+      const req = {
+        userID: userID.value
+      }
+
+      userService.getUserAccount(req).then(response=>{
+  
+        user.value = response.data.user
+  
+      }).catch(error => {
+        toast.add({
+          severity: "error",
+          summary: t('message.actionError'),
+          life: 3000,
+        })
+      })
+    }
+
+    onMounted(() => {
+        getUserAccount()
+    })
+</script>
