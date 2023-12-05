@@ -1,43 +1,41 @@
 <template>
-  <div v-if="isView.check" class="card def-border"> 
-    <div id="carddiv" class="grid">  
-      
-      <div>
-        <Button v-if="!readonly" icon="pi pi-plus" class="p-button-link" :label="t('common.add')" :onclick="create"></Button>
-      </div>
-
-      <div class="card">
-        <div class="grid formgrid">
-          <span   style="white-space: pre-line">
-            <DataTable class="flex justify-content-between" selectionMode="single" v-model="qualification"
-                    :lazy="true" :value="qualifications" :loading="loading" v-model:selection="qualification">
-            <Column field="training_form" :header="$t('science.qualification.trainingForm')"></Column>
-            <Column field="country" :header="$t('science.qualification.country')"></Column>
-            <Column field="city" :header="$t('science.qualification.city')"></Column>
-            <Column field="hours" :header="$t('science.qualification.durationAndScope')"></Column>
-            <Column  field="start_date" :header="$t('science.qualification.start')"></Column>
-            <Column field="end_date" :header="$t('science.qualification.end')"></Column>
-            <Column field="funding_source" :header="$t('science.qualification.fundingSource')"></Column>
-            <Column field="proof_document_type" :header="$t('science.qualification.typeSupportingDoc')"></Column>
-
-            <Column  header="Скан документа">
-                    <template #body="slotProps">
-                        <Button v-if="slotProps.data.file_path !== null" icon="pi pi-download" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="showFile(slotProps.data.upload_path)"></Button>
-                    </template>
-                </Column>
-
-            <Column v-if="!readonly" header="Действия">
-                <template #body="slotProps">
-                    <Button icon="pi pi-pencil" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="qualification=slotProps.data;update()"></Button>
-                    <Button icon="fa-solid fa-trash" class="p-button-danger mb-2 mr-2" @click="qualification=slotProps.data;deleteValue()"></Button>
-                </template>
-            </Column>
-            </DataTable>
-          </span>
-        </div>
-      </div>
-
+  <div v-if="isView.check" id="carddiv" class="grid">  
+    
+    <div>
+      <Button v-if="!readonly" icon="pi pi-plus" class="p-button-link" :label="t('common.add')" :onclick="create"></Button>
     </div>
+
+    <div class="card">
+      <div class="grid formgrid">
+        <span   style="white-space: pre-line">
+          <DataTable class="flex justify-content-between" selectionMode="single" v-model="qualification"
+                  :lazy="true" :value="qualifications" :loading="loading" v-model:selection="qualification">
+          <Column field="training_form" :header="$t('science.qualification.trainingForm')"></Column>
+          <Column field="country" :header="$t('science.qualification.country')"></Column>
+          <Column field="city" :header="$t('science.qualification.city')"></Column>
+          <Column field="hours" :header="$t('science.qualification.durationAndScope')"></Column>
+          <Column  field="start_date" :header="$t('science.qualification.start')"></Column>
+          <Column field="end_date" :header="$t('science.qualification.end')"></Column>
+          <Column field="funding_source" :header="$t('science.qualification.fundingSource')"></Column>
+          <Column field="proof_document_type" :header="$t('science.qualification.typeSupportingDoc')"></Column>
+
+          <Column  header="Скан документа">
+                  <template #body="slotProps">
+                      <Button v-if="slotProps.data.file_path !== null" icon="pi pi-download" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="showFile(slotProps.data.upload_path)"></Button>
+                  </template>
+              </Column>
+
+          <Column v-if="!readonly" header="Действия">
+              <template #body="slotProps">
+                  <Button icon="pi pi-pencil" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="qualification=slotProps.data;update()"></Button>
+                  <Button icon="fa-solid fa-trash" class="p-button-danger mb-2 mr-2" @click="qualification=slotProps.data;deleteValue()"></Button>
+              </template>
+          </Column>
+          </DataTable>
+        </span>
+      </div>
+    </div>
+
   </div>
 
 
@@ -113,6 +111,7 @@
       }
 
       scienceService.deleteQualificationsScience(data).then(res  => {
+        toast.add({severity: "success", summary: t('common.success'), life: 3000});
         getQualificationsScience()
       }).catch(err => {
           toast.add({

@@ -123,6 +123,7 @@
     loading.value = true;
     scienceService.createOrUpdateScienceInterests(payload.value).then(res => {
         loading.value = false
+        toast.add({severity: "success", summary: t('common.success'), life: 3000});
         emitter.emit('researchInterest', true)
     }).catch(error => {
       toast.add({severity: 'error', summary: t('common.error'), life: 3000})

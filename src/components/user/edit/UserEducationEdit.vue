@@ -129,8 +129,8 @@
       }
 
       userService.createOrUpdateUserAcademicDegree(fd).then(res  => {
-        emitter.emit('academicDegree', true)
         toast.add({severity: 'success', summary: t('common.success'), life: 3000})
+        emitter.emit('academicDegree', true)
       }).catch(err => {
         toast.add({
           summary: t('message.actionError'),

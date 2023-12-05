@@ -1,33 +1,31 @@
 <template>
-  <div v-if="isView.check" class="card def-border"> 
-    <div id="carddiv" class="grid">  
-      
-    <div>
-      <Button v-if="!readonly" icon="pi pi-plus" class="p-button-link" :label="t('common.add')" :onclick="create"></Button>
-    </div>
+    <div div v-if="isView.check" id="carddiv" class="grid">  
+        
+      <div>
+        <Button v-if="!readonly" icon="pi pi-plus" class="p-button-link" :label="t('common.add')" :onclick="create"></Button>
+      </div>
 
-    <span   style="white-space: pre-line">
-          <DataTable class="flex justify-content-between" tableStyle="min-width: 50rem" selectionMode="single" v-model="researchInterest" :lazy="true" :value="researchInterests" :loading="loading" v-model:selection="researchInterest"> 
+      <span   style="white-space: pre-line">
+            <DataTable class="flex justify-content-between" tableStyle="min-width: 50rem" selectionMode="single" v-model="researchInterest" :lazy="true" :value="researchInterests" :loading="loading" v-model:selection="researchInterest"> 
 
-            <Column :header="$t('science.areaScientificInterests')">
-              <template #body="slotProps">
-                <p><b>{{ t(slotProps.data['name_'+locale]) }}</b></p>
-              </template>
-            </Column>
-            
-            <!-- Действия-->
-            <Column v-if="!readonly" header="Действия">
+              <Column :header="$t('science.areaScientificInterests')">
                 <template #body="slotProps">
-                    <Button icon="pi pi-pencil" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="researchInterest=slotProps.data;update()"></Button>
-                    <Button icon="fa-solid fa-trash" class="p-button-danger mb-2 mr-2" @click="researchInterest=slotProps.data;deleteValue()"></Button>
+                  <p><b>{{ t(slotProps.data['name_'+locale]) }}</b></p>
                 </template>
-            </Column>
-          
-          </DataTable>
-    </span>
+              </Column>
+              
+              <!-- Действия-->
+              <Column v-if="!readonly" header="Действия">
+                  <template #body="slotProps">
+                      <Button icon="pi pi-pencil" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="researchInterest=slotProps.data;update()"></Button>
+                      <Button icon="fa-solid fa-trash" class="p-button-danger mb-2 mr-2" @click="researchInterest=slotProps.data;deleteValue()"></Button>
+                  </template>
+              </Column>
+            
+            </DataTable>
+      </span>
 
-  </div>
-  </div>
+    </div>
 
   <Sidebar v-model:visible="isView.researchInterest"  position="right" class="p-sidebar-lg"  style="overflow-y: scroll">
       <ResearchInterestsEdit :modelValue=researchInterest :userID="userID" :readonly="readonly"/>
@@ -85,6 +83,7 @@
     loading.value = true
     scienceService.deleteScienceInterests(req).then(_ => {
         loading.value = false
+        toast.add({severity: "success", summary: t('common.success'), life: 3000});
         getScienceInterests()
     }).catch(error => {
         toast.add({severity: 'error', summary: t('common.error'), life: 3000})

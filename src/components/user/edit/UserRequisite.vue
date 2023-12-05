@@ -1,34 +1,33 @@
 <template>  
-  <div class="card def-border">
-    <div id="carddiv" class="grid">
-      <div class="col-12 md:col-12 p-fluid">
-        <div class="card">
-          <div class="grid formgrid">
 
-            <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-                <div class="p-field">
-                    <label>{{ $t('bank.title2') }}<span class="p-error" v-if="!readonly">*</span></label>
-                    <Dropdown  v-model="bank" :optionLabel="bankLabel"
-                    :options="banks" :placeholder="$t('bank.title2')" 
-                    class="dropdown w-full mt-2" :readonly="readonly" @input="updateUserData"></Dropdown>
-                <small class="p-error" v-if="validation.bankname">{{ $t("common.requiredField") }}</small>
-                </div>
-            </div>
+  <div id="carddiv" class="grid">
+    <div class="col-12 md:col-12 p-fluid">
+      <div class="card">
+        <div class="grid formgrid">
 
-            <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-                <div class="p-field">
-                    <label>{{ $t('bank.accnumber') }}<span class="p-error" v-if="!readonly">*</span></label>
-                    <InputText
-                        :readonly="readonly"
-                        class="mt-2"
-                        type="text"
-                        :placeholder="$t('bank.accnumber')"
-                        v-model=" user.bankaccount" @input="updateUserData"></InputText>
-                    <small class="p-error" v-if="validation.accnumber">{{ $t("common.requiredField") }}</small>
-                </div>
-            </div>
-              
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+              <div class="p-field">
+                  <label>{{ $t('bank.title2') }}<span class="p-error" v-if="!readonly">*</span></label>
+                  <Dropdown  v-model="bank" :optionLabel="bankLabel"
+                  :options="banks" :placeholder="$t('bank.title2')" 
+                  class="dropdown w-full mt-2" :readonly="readonly" @input="updateUserData"></Dropdown>
+              <small class="p-error" v-if="validation.bankname">{{ $t("common.requiredField") }}</small>
+              </div>
           </div>
+
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+              <div class="p-field">
+                  <label>{{ $t('bank.accnumber') }}<span class="p-error" v-if="!readonly">*</span></label>
+                  <InputText
+                      :readonly="readonly"
+                      class="mt-2"
+                      type="text"
+                      :placeholder="$t('bank.accnumber')"
+                      v-model=" user.bankaccount" @input="updateUserData"></InputText>
+                  <small class="p-error" v-if="validation.accnumber">{{ $t("common.requiredField") }}</small>
+              </div>
+          </div>
+            
         </div>
       </div>
     </div>

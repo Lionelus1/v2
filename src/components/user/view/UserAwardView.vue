@@ -1,41 +1,40 @@
 <template>
-  <div v-if="isView.check" class="card def-border"> 
-    <div id="carddiv" class="grid">  
-      
-      <div>
-        <Button v-if="!readonly" icon="pi pi-plus" class="p-button-link" :label="t('common.add')" :onclick="create"></Button>
-      </div>
-
-      <span   style="white-space: pre-line">
-        <DataTable class="flex justify-content-between" tableStyle="min-width: 50rem" selectionMode="single" v-model="award" :lazy="true" :value="awards" :loading="loading" v-model:selection="award"> 
-
-          <Column field="award_type" :header="$t('science.typeOfAward')">
-          </Column>
-
-          <Column field="award_name" :header="$t('science.reward')">
-          </Column>
-
-          <Column field="start_time" :header="$t('hr.id.startDate')">
-          </Column>
-
-          <Column  header="Скан документа">
-              <template #body="slotProps">
-              <Button v-if="slotProps.data.upload_path !== null" icon="pi pi-download" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="showFile(slotProps.data.upload_path)"></Button>
-              </template>
-          </Column>
-          
-          <!-- Действия-->
-          <Column v-if="!readonly" header="Действия">
-              <template #body="slotProps">
-                  <Button icon="pi pi-pencil" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="award=slotProps.data;update()"></Button>
-                  <Button icon="fa-solid fa-trash" class="p-button-danger mb-2 mr-2" @click="award=slotProps.data;deleteValue()"></Button>
-              </template>
-          </Column>
-        
-        </DataTable>
-      </span>
-
+  
+  <div v-if="isView.check" id="carddiv" class="grid">  
+    
+    <div>
+      <Button v-if="!readonly" icon="pi pi-plus" class="p-button-link" :label="t('common.add')" :onclick="create"></Button>
     </div>
+
+    <span   style="white-space: pre-line">
+      <DataTable class="flex justify-content-between" tableStyle="min-width: 50rem" selectionMode="single" v-model="award" :lazy="true" :value="awards" :loading="loading" v-model:selection="award"> 
+
+        <Column field="award_type" :header="$t('science.typeOfAward')">
+        </Column>
+
+        <Column field="award_name" :header="$t('science.reward')">
+        </Column>
+
+        <Column field="start_time" :header="$t('hr.id.startDate')">
+        </Column>
+
+        <Column  header="Скан документа">
+            <template #body="slotProps">
+            <Button v-if="slotProps.data.upload_path !== null" icon="pi pi-download" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="showFile(slotProps.data.upload_path)"></Button>
+            </template>
+        </Column>
+        
+        <!-- Действия-->
+        <Column v-if="!readonly" header="Действия">
+            <template #body="slotProps">
+                <Button icon="pi pi-pencil" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="award=slotProps.data;update()"></Button>
+                <Button icon="fa-solid fa-trash" class="p-button-danger mb-2 mr-2" @click="award=slotProps.data;deleteValue()"></Button>
+            </template>
+        </Column>
+      
+      </DataTable>
+    </span>
+
   </div>
 
 
@@ -112,6 +111,7 @@
 
     scienceService.deleteAwards(req).then(_ => {
         loading.value = false
+        toast.add({severity: "success", summary: t('common.success'), life: 3000});
         getScienceAward()
     }).catch(error => {
         toast.add({severity: 'error', summary: t('common.error'), life: 3000})

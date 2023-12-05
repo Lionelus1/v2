@@ -1,53 +1,52 @@
 <template>
-  <div class="card def-border">
-    <div id="carddiv" class="grid">
-      <div>
-        <Button v-if="!readonly" icon="pi pi-plus" class="p-button-link" :label="t('common.add')" :onclick="createEducation"></Button>
-      </div>
 
-      <div class="card">
-        <div class="grid formgrid">
-          <span  style="white-space: pre-line">
-            <DataTable class="flex justify-content-between"  selectionMode="single" v-model="academicDegree" :lazy="true" :value="academicDegrees" :loading="loading" v-model:selection="academicDegree"> 
-              <!-- Учебное заведение -->
-              <Column  field="institution_name" :header="$t('hr.edu.institution')"></Column>
+  <div id="carddiv" class="grid">
+    <div>
+      <Button v-if="!readonly" icon="pi pi-plus" class="p-button-link" :label="t('common.add')" :onclick="createEducation"></Button>
+    </div>
 
-              <!-- Факультет -->
-              <!-- <Column field="faculty" :header="$t('common.faculty')"></Column> -->
+    <div class="card">
+      <div class="grid formgrid">
+        <span  style="white-space: pre-line">
+          <DataTable class="flex justify-content-between"  selectionMode="single" v-model="academicDegree" :lazy="true" :value="academicDegrees" :loading="loading" v-model:selection="academicDegree"> 
+            <!-- Учебное заведение -->
+            <Column  field="institution_name" :header="$t('hr.edu.institution')"></Column>
 
-              <!-- Адрес учебного заведения -->
-              <Column field="location" :header="$t('hr.edu.institutionAddress')"></Column>
+            <!-- Факультет -->
+            <!-- <Column field="faculty" :header="$t('common.faculty')"></Column> -->
 
-              <!-- Специальность -->
-              <Column field="speciality" :header="$t('common.speciality')"></Column>
-              
-              <!-- Номер диплома -->
-              <Column  field="diplom_number" :header="$t('common.diplomNumber')"></Column>
+            <!-- Адрес учебного заведения -->
+            <Column field="location" :header="$t('hr.edu.institutionAddress')"></Column>
 
-              <!-- Год поступления -->
-              <Column field="start_date" :header="$t('hr.edu.receiptDate')"></Column>
-              
-              <!-- Год окончания -->
-              <Column field="final_date" :header="$t('hr.edu.expirationDate')"></Column>
+            <!-- Специальность -->
+            <Column field="speciality" :header="$t('common.speciality')"></Column>
+            
+            <!-- Номер диплома -->
+            <Column  field="diplom_number" :header="$t('common.diplomNumber')"></Column>
 
-              <!-- Скан копия -->
-              <Column  header="Скан копия">
+            <!-- Год поступления -->
+            <Column field="start_date" :header="$t('hr.edu.receiptDate')"></Column>
+            
+            <!-- Год окончания -->
+            <Column field="final_date" :header="$t('hr.edu.expirationDate')"></Column>
+
+            <!-- Скан копия -->
+            <Column  header="Скан копия">
+              <template #body="slotProps">
+                <Button v-if="slotProps.data.file_path !== null" icon="pi pi-download" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="showFile(slotProps.data.file_path)"></Button>
+              </template>
+            </Column>
+
+            <!-- Действия-->
+            <Column v-if="!readonly" header="Действия">
                 <template #body="slotProps">
-                  <Button v-if="slotProps.data.file_path !== null" icon="pi pi-download" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="showFile(slotProps.data.file_path)"></Button>
+                    <Button icon="pi pi-pencil" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="academicDegree=slotProps.data;updateEducation()"></Button>
+                    <Button icon="fa-solid fa-trash" class="p-button-danger mb-2 mr-2" @click="academicDegree=slotProps.data;deleteEducation()"></Button>
                 </template>
-              </Column>
+            </Column>
 
-              <!-- Действия-->
-              <Column v-if="!readonly" header="Действия">
-                  <template #body="slotProps">
-                      <Button icon="pi pi-pencil" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="academicDegree=slotProps.data;updateEducation()"></Button>
-                      <Button icon="fa-solid fa-trash" class="p-button-danger mb-2 mr-2" @click="academicDegree=slotProps.data;deleteEducation()"></Button>
-                  </template>
-              </Column>
-
-            </DataTable>
-          </span>     
-        </div>
+          </DataTable>
+        </span>     
       </div>
     </div>
   </div>
@@ -141,6 +140,7 @@
       }
 
       userService.deleteEducation(data).then(res  => {
+        toast.add({severity: "success", summary: t('common.success'), life: 3000});
         getUserAcademicDegree()
       }).catch(err => {
           toast.add({

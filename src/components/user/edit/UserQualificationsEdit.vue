@@ -185,6 +185,7 @@
     fd.append("idImage", file.value);  
 
     scienceService.createOrUpdateQualificationsScience(fd).then(res  => {
+        toast.add({severity: "success", summary: t('common.success'), life: 3000});
         emitter.emit('qualifications', true)
       }).catch(err => {
         toast.add({severity: 'error', summary: t('common.error'), life: 3000})

@@ -1,44 +1,43 @@
 <template>
-    <div v-if="isView.check"  class="card def-border"> 
-        <div id="carddiv" class="grid">  
-        
-            <div>
-                <Button v-if="!readonly" icon="pi pi-plus" class="p-button-link" :label="t('common.add')" :onclick="create"></Button>
-            </div>
-
-            <span   style="white-space: pre-line">
-                <DataTable class="flex justify-content-between" tableStyle="min-width: 50rem" selectionMode="single" v-model="laborActivity" :lazy="true" :value="laborActivities" :loading="loading" v-model:selection="laborActivity"> 
-                
-                    <Column field="organizationName" :header="$t('common.organizationName')">
-                    </Column>
-
-                    <Column  field="position" :header="$t('contact.position')">
-                    </Column>
-
-                    <Column  field="responsibilities" :header="$t('hr.we.responsibilities')">
-                    </Column>
-
-                    <Column  :header="$t('yearPeriod')">
-                        <template #body="slotProps"> 
-                            <div class="secondary">
-                                <em>{{ new Date(slotProps.data.startDate).toLocaleDateString() }} -
-                                {{ !slotProps.data.isStillWorking ? new Date(slotProps.data.endDate).toLocaleDateString() : $t('hr.we.untilNow') }}</em>
-                            </div>
-                        </template>
-                    </Column>
-
-                    <!-- Действия-->
-                    <Column v-if="!readonly" header="Действия">
-                        <template #body="slotProps">
-                            <Button icon="pi pi-pencil" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="laborActivity=slotProps.data;update()"></Button>
-                            <Button icon="fa-solid fa-trash" class="p-button-danger mb-2 mr-2" @click="laborActivity=slotProps.data;deleteValue()"></Button>
-                        </template>
-                    </Column>
-
-                </DataTable>
-            </span>
-        
+    
+    <div v-if="isView.check" id="carddiv" class="grid">  
+    
+        <div>
+            <Button v-if="!readonly" icon="pi pi-plus" class="p-button-link" :label="t('common.add')" :onclick="create"></Button>
         </div>
+
+        <span   style="white-space: pre-line">
+            <DataTable class="flex justify-content-between" tableStyle="min-width: 50rem" selectionMode="single" v-model="laborActivity" :lazy="true" :value="laborActivities" :loading="loading" v-model:selection="laborActivity"> 
+            
+                <Column field="organizationName" :header="$t('common.organizationName')">
+                </Column>
+
+                <Column  field="position" :header="$t('contact.position')">
+                </Column>
+
+                <Column  field="responsibilities" :header="$t('hr.we.responsibilities')">
+                </Column>
+
+                <Column  :header="$t('yearPeriod')">
+                    <template #body="slotProps"> 
+                        <div class="secondary">
+                            <em>{{ new Date(slotProps.data.startDate).toLocaleDateString() }} -
+                            {{ !slotProps.data.isStillWorking ? new Date(slotProps.data.endDate).toLocaleDateString() : $t('hr.we.untilNow') }}</em>
+                        </div>
+                    </template>
+                </Column>
+
+                <!-- Действия-->
+                <Column v-if="!readonly" header="Действия">
+                    <template #body="slotProps">
+                        <Button icon="pi pi-pencil" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="laborActivity=slotProps.data;update()"></Button>
+                        <Button icon="fa-solid fa-trash" class="p-button-danger mb-2 mr-2" @click="laborActivity=slotProps.data;deleteValue()"></Button>
+                    </template>
+                </Column>
+
+            </DataTable>
+        </span>
+    
     </div>
 
     <Sidebar v-model:visible="isView.laborActivity"  position="right" class="p-sidebar-lg"  style="overflow-y: scroll">
@@ -119,6 +118,7 @@
         loading.value = true
         scienceService.deleteLaborActivity(req).then(_ => {
             loading.value = false
+            toast.add({severity: "success", summary: t('common.success'), life: 3000});
             getLaborActivity()
         }).catch(error => {
             toast.add({severity: 'error', summary: t('common.error'), life: 3000})
