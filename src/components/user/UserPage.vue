@@ -16,10 +16,10 @@
   import Enum from "@/enum/roleControls/index";
   
   import { ContragentService } from "@/service/contragent.service";
-  import UserIDCard from '@/components/user/UserIDCard'
-  import UserEducationEdit from '@/components/user/UserEducationEdit'
-  import UserEducationView from '@/components/user/UserEducationView'
-  import UserRequisite from '@/components/user/UserRequisite'
+  import UserIDCard from '@/components/user/edit/UserIDCard'
+  import UserEducationEdit from '@/components/user/edit/UserEducationEdit'
+  import UserEducationView from '@/components/user/view/UserEducationView'
+  import UserRequisite from '@/components/user/edit/UserRequisite'
   import {UserService} from "@/service/user.service"
   
   

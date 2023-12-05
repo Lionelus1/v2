@@ -1,4 +1,5 @@
 <template>
+  <div class="card def-border">
 <div id="carddiv" class="grid">
     <div class="col-12 md:col-12 p-fluid">
         <div class="card">
@@ -65,6 +66,7 @@
         </div>
     </div>
   </div>
+</div>
 
 </template>
 

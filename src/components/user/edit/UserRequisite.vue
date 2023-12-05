@@ -1,4 +1,5 @@
 <template>
+  <div class="card def-border">
    <div id="carddiv" class="grid">
     <div class="col-12 md:col-12 p-fluid">
             <div class="card">
@@ -31,6 +32,7 @@
             </div>
         </div>
    </div>
+  </div>
 </template>
 
 <script setup>
@@ -87,7 +89,7 @@ import { ref, defineProps, inject, onMounted } from 'vue';
         var req = {"id" : 0, "count": 0};
         axios.post(smartEnuApi + '/contragent/banks', req, {headers: getHeader()}).then(res  => {
             const data = ref(null)
-            if (user.value != null && user.value.bank ) {
+            if (user.value != null && user.value.bank != null ) {
                 data.value = res.data.find(item => item.id == user.value.bank.id);
             }
             if (data.value !== null) {
@@ -104,8 +106,10 @@ import { ref, defineProps, inject, onMounted } from 'vue';
     }
 
     const bankLabel = (item) => {
-        user.value.bank.id = item.id
-        return item.organization.name
+        if (item != null && user.value.bank != null) {
+          user.value.bank.id = item.id
+          return item.organization.name
+        }
     }
 
     const validateForm = () => {
@@ -143,9 +147,10 @@ import { ref, defineProps, inject, onMounted } from 'vue';
     }
 
     const updateUserData = () => {
-      console.log(bank.value, 'asdasd');
-      user.value.bank = bank.value
-      emitPersonalInformationUpdate("personal-information-updated", user.value);
+      if (bank.value != null) {
+        user.value.bank = bank.value
+        emitPersonalInformationUpdate("personal-information-updated", user.value);
+      }
     };
 
 

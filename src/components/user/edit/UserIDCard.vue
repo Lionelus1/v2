@@ -1,5 +1,6 @@
 <template>
-
+  
+  <div class="card def-border">
     <div class="col-12 md:col-12 p-fluid">
         <div class="card">
             <div class="grid formgrid">
@@ -42,10 +43,11 @@
                     <small class="p-error"  v-if="validation.file" >{{ $t("common.requiredField") }}</small>
                 </div>
 
-                <Button v-if="user.idcardpath" :label="t('hr.title.id')" style="text-align: left" class="p-button-link" @click="showFile(user.idcardpath)" />
+                <Button :label="t('hr.title.id')" style="text-align: left" class="p-button-link" @click="showFile(user.idcardpath)" />
             </div>
         </div>
     </div>
+  </div>
 
     <Dialog v-model:visible="fileView" :style="{ width: '650px' }" :modal="true">
             <div style="padding: 0 100px">

@@ -1,12 +1,13 @@
 <template>
+  <div class="card def-border">
      <div id="carddiv" class="grid">
       <div>
-      <Button v-if="!readonly" icon="pi pi-plus" class="p-button-link" :label="t('common.add')" :onclick="createEducation"></Button>
+        <Button v-if="!readonly" icon="pi pi-plus" class="p-button-link" :label="t('common.add')" :onclick="createEducation"></Button>
       </div>
         <div class="card">
             <div class="grid formgrid">
                 <span  style="white-space: pre-line">
-                  <DataTable class="flex justify-content-between" tableStyle="min-width: 50rem" selectionMode="single" v-model="academicDegree" :lazy="true" :value="academicDegrees" :loading="loading" v-model:selection="academicDegree"> 
+                  <DataTable class="flex justify-content-between"  selectionMode="single" v-model="academicDegree" :lazy="true" :value="academicDegrees" :loading="loading" v-model:selection="academicDegree"> 
                         <!-- Учебное заведение -->
                         <Column  field="institution_name" :header="$t('hr.edu.institution')"></Column>
 
@@ -48,6 +49,7 @@
             </div>
         </div>
     </div>
+  </div>
 
 
     <Sidebar v-model:visible="isView.academicDegree"  position="right" class="p-sidebar-lg"  style="overflow-y: scroll">
@@ -78,7 +80,7 @@
     import {findRole} from "@/config/config";
     import {UserService} from "@/service/user.service"
     import { format } from 'date-fns';
-    import  UserEducationEdit from "./UserEducationEdit"
+    import  UserEducationEdit from "../edit/UserEducationEdit"
 
     const { t } = useI18n()
     const toast = useToast()

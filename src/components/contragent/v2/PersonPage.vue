@@ -6,18 +6,35 @@
     
     <BlockUI class="card p-fluid" :blocked="loading">
       <TabView>
-        <TabPanel header="Личные данные">
+        <TabPanel :header="$t('personalData')">
           <UserPersonalInfomation @personal-information-updated="handlePersonalInformationUpdate" :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
         </TabPanel>
-        <TabPanel header="Удостоверение личности">
+        <TabPanel  :header="$t('hr.title.id')">
           <UserIDCard @personal-information-updated="handlePersonalInformationUpdate" :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
         </TabPanel>
-        <TabPanel header="Образование">
+        <TabPanel :header="$t('hr.educationLabel')">
           <UserEducationView  :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
         </TabPanel>
-        <TabPanel header="Банковские реквизиты">
+        <TabPanel :header="$t('bank.requisite')">
           <UserRequisite @personal-information-updated="handlePersonalInformationUpdate" :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
         </TabPanel>
+        <TabPanel v-if="customType===chapter.scientists || findRole(null, 'teacher')" :header="$t('science.areaScientificInterests')">
+          <UserResearchInterestsView :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
+        </TabPanel>
+
+        <TabPanel v-if="customType===chapter.scientists || findRole(null, 'teacher')" :header="$t('science.laborActivity')">
+          <WorkExperienceView :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
+        </TabPanel>
+
+
+        <TabPanel v-if="customType===chapter.scientists || findRole(null, 'teacher')" :header="$t('science.awardsAndHonors')">
+          <UserAwardView :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
+        </TabPanel>
+
+        <TabPanel v-if="customType===chapter.scientists || findRole(null, 'teacher')" :header="$t('science.professionalDevelopment')">
+          <UserQualificationsView :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
+        </TabPanel>
+
       </TabView>
     </BlockUI>
   </div>
@@ -28,23 +45,32 @@ import { findRole } from "@/config/config";
 import Enum from "@/enum/roleControls/index";
 
 import { ContragentService } from "@/service/contragent.service";
-import UserPersonalInfomation from '@/components/user/UserPersonalInfomation'
-import UserIDCard from '@/components/user/UserIDCard'
-import UserEducationEdit from '@/components/user/UserEducationEdit'
-import UserEducationView from '@/components/user/UserEducationView'
-import UserRequisite from '@/components/user/UserRequisite'
+import UserPersonalInfomation from '@/components/user/edit/UserPersonalInfomation'
+import UserIDCard from '@/components/user/edit/UserIDCard'
+import UserEducationEdit from '@/components/user/edit/UserEducationEdit'
+import UserEducationView from '@/components/user/view/UserEducationView'
+import UserRequisite from '@/components/user/edit/UserRequisite'
 import {UserService} from "@/service/user.service"
+import UserResearchInterestsView from "@/components/user/view/UserResearchInterestsView"
+import WorkExperienceView from "@/components/user/view/WorkExperienceView"
+import UserAwardView from "@/components/user/view/UserAwardView"
+import UserQualificationsView from "@/components/user/view/UserQualificationsView"
+
 
 
 export default {
   name: 'PersonPage',
-  components: {UserPersonalInfomation, UserIDCard, UserEducationView, UserRequisite },
+  components: {UserPersonalInfomation, UserIDCard, UserEducationView, UserRequisite, UserResearchInterestsView, WorkExperienceView, UserAwardView, UserQualificationsView },
   props: {
     person: null,
     userID: null,
     readonly: {
       type: Boolean,
       default: false
+    },
+    customType: {
+      type: String,
+      default: ''
     }
   },
   emits: ['personUpdated',],
@@ -85,7 +111,12 @@ export default {
       ],
       user: {},
       userService: new UserService(),
-      file: null
+      file: null,
+      chapter: {
+        myAccount: 'myAccount',
+        scientists: 'scientists',
+        viewUser: 'viewUser'
+      }
     }
   },
   created() {
