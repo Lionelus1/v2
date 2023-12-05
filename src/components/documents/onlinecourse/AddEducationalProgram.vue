@@ -1,5 +1,5 @@
 <template>
-  <TitleBlock :title="$t('Создать ОП')" :show-back-button="true"/>
+  <TitleBlock :title="$t('educationalPrograms.createEP')" :show-back-button="true"/>
 
   <div class="grid">
     <div class="col-12 lg:col-3">
@@ -16,75 +16,104 @@
       </div>
     </div>
     <div class="col-12 lg:col-9">
-      <div class="card p-fluid">
-        <h4>{{ $t('Формирование ОП') }} {{items[label]}}</h4>
-        <Menubar :model="menu"></Menubar>
-        <div class="field mt-3">
-          <label for="course-code">{{ $t("Область образования") }}</label>
-          <Dropdown placeholder="таңдаңыз"/>
+      <div class="card">
+      <h4>{{ $t('educationalPrograms.formationEP') }} {{ items[label] }}</h4>
+      <div class="m-0">
+        <Button class="p-button-outlined mr-2" icon="pi pi-fw pi-download" :label="$t('common.save')" @click="save()"/>
+        <Button class="p-button-outlined mr-2" icon="pi pi-fw pi-send" :label="$t('common.send')" @click="openDialog('sendToApprove')"/>
+        <Button class="p-button-outlined" icon="pi pi-fw pi-check-circle" :label="$t('common.approvalList')"/>
+      </div>
+      <div class="p-fluid">
+        <div class="content" v-if="active === 0">
+          <div class="field mt-3">
+            <label for="course-code">{{ $t("educationalPrograms.codeAndNameGroupEP") }}</label>
+            <Dropdown :placeholder="$t('common.select')"/>
+          </div>
+          <div class="field mt-3">
+            <label for="course-code">{{ $t("educationalPrograms.codeGroupAndEP") }}</label>
+            <Dropdown :placeholder="$t('common.select')"/>
+          </div>
+          <div class="field mt-3">
+            <label for="course-code">{{ $t("educationalPrograms.directionTraining") }}</label>
+            <Dropdown :placeholder="$t('common.select')"/>
+          </div>
+          <div class="field mt-3">
+            <label for="course-code">{{ $t("educationalPrograms.fieldEducation") }}</label>
+            <Dropdown :placeholder="$t('common.select')"/>
+          </div>
+          <div class="field mt-3">
+            <label for="course-code">{{ $t("educationalPrograms.nameGroupEPKZ") }}</label>
+            <InputText/>
+          </div>
+          <div class="field mt-3">
+            <label for="course-code">{{ $t("educationalPrograms.nameGroupEPRU") }}</label>
+            <InputText/>
+          </div>
+          <div class="field mt-3">
+            <label for="course-code">{{ $t("educationalPrograms.nameGroupEPEN") }}</label>
+            <InputText/>
+          </div>
+          <div class="field mt-3">
+            <label for="course-code">{{ $t("educationalPrograms.descriptionGroupEPKZ") }}</label>
+            <InputText/>
+          </div>
+          <div class="field mt-3">
+            <label for="course-code">{{ $t("educationalPrograms.descriptionGroupEPRU") }}</label>
+            <InputText/>
+          </div>
+          <div class="field mt-3">
+            <label for="course-code">{{ $t("educationalPrograms.descriptionGroupEPEN") }}</label>
+            <InputText/>
+          </div>
         </div>
-        <div class="field mt-3">
-          <label for="course-code">{{ $t("Академическая степень") }}</label>
-          <Dropdown placeholder="таңдаңыз"/>
-        </div>
-        <div class="field">
-          <label for="author">{{ $t("Автор курса") }}</label>
-        </div>
-        <div class="field mt-3">
-          <label for="course-code">{{ $t("Наименование курса") }}</label>
-          <InputText id="course-code"/>
-        </div>
-        <div class="field mt-3">
-          <label for="course-code">{{ $t("Код курса") }}</label>
-          <InputText id="course-code"/>
-        </div>
-        <div class="field mt-3">
-          <label for="course-code">{{ $t("Язык обучения") }}</label>
-          <Dropdown placeholder="таңдаңыз"/>
-        </div>
-        <div class="field mt-3">
-          <label for="course-code">{{ $t("Цель курса") }}</label>
-          <Textarea id="course-code" rows="5"/>
-        </div>
-        <div class="field mt-3">
-          <label for="course-code">{{ $t("Краткая аннотация") }}</label>
-          <Textarea id="course-code" rows="3"/>
+        <div class="content" v-if="active === 1">
+          <div class="field mt-3">
+            <div class="field mt-3">
+              <label for="course-code">{{ $t("educationalPrograms.directionTraining") }}</label>
+              <Dropdown :placeholder="$t('common.select')"/>
+            </div>
+            <div class="field mt-3">
+              <label for="course-code">{{ $t("educationalPrograms.purposeEP") }}</label>
+              <InputText/>
+            </div>
+            <div class="field mt-3">
+              <label for="course-code">{{ $t("educationalPrograms.assignmentQualifications") }}</label>
+              <InputText/>
+            </div>
+            <div class="field mt-3">
+              <label for="course-code">{{ $t("educationalPrograms.trainingPeriod") }}</label>
+              <InputText/>
+            </div>
+            <div class="field mt-3">
+              <label for="course-code">{{ $t("educationalPrograms.degreeAwarded") }}</label>
+              <InputText/>
+            </div>
+            <div class="field mt-3">
+              <label for="course-code">{{ $t("educationalPrograms.typeEducationalProgram") }}</label>
+              <InputText/>
+            </div>
+            <div class="field-checkbox mt-3">
+                <Checkbox id="landing" name="landing"/>
+                <label for="landing">{{ $t("educationalPrograms.doubleDegreeProgram") }}</label>
+            </div>
+            <div class="field-checkbox mt-3">
+              <Checkbox name="landing" :binary="true"/>
+              <label>{{ $t("educationalPrograms.jointEducationalProgram") }}</label>
+            </div>
+          </div>
         </div>
       </div>
+    </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import {computed, ref} from "vue";
+import {ref} from "vue";
 import {useI18n} from "vue-i18n";
 
 const {t, locale} = useI18n()
-const active = ref(0);
-
-const menu = computed(() => {
-  return [
-    {
-      label: t('common.save'),
-      icon: "pi pi-fw pi-download",
-      command: () => {
-      },
-    },
-    {
-      label: t('common.send'),
-      icon: "pi pi-fw pi-send",
-      command: () => {
-      }
-    },
-    {
-      label: t('common.approvalList'),
-      icon: "pi pi-fw pi-check-circle",
-      visible: true,
-      command: () => {
-      }
-    }
-  ]
-})
+const active = ref(1);
 const items = ref([
   {
     label: 'Формирование ОП'
