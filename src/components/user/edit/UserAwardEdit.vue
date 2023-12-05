@@ -6,9 +6,11 @@
                 <Menubar :model="menu" :key="active" style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px"></Menubar>
             </div>
         </div>
+
         <div class="col-12 md:col-12 p-fluid">
             <div class="card">
                 <div class="grid formgrid">
+                    
                     <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
                         <div class="p-field">
                             <label for="awardType">{{ $t('science.typeOfAward') }}</label>

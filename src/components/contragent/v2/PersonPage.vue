@@ -1,11 +1,11 @@
 <template>
-  <div>
     <ProgressSpinner v-if="loading" class="progress-spinner" strokeWidth="5"/>
     
     <Menubar :model="items" class="m-0 pt-0 pb-0"></Menubar>
     
     <BlockUI class="card p-fluid" :blocked="loading">
-      <TabView>
+      <TabView class="custom-tabview">
+        
         <TabPanel :header="$t('personalData')">
           <UserPersonalInfomation @personal-information-updated="handlePersonalInformationUpdate" :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
         </TabPanel>
@@ -37,7 +37,6 @@
 
       </TabView>
     </BlockUI>
-  </div>
 </template>
 
 <script>
@@ -247,13 +246,25 @@ export default {
 
 <style scoped>
 
-.custom-dropdown {
-  margin-top: 8px;
-}
-.progress-spinner {
-  position: absolute;
-  top: 0; bottom: 0; left: 0; right: 0;
-  margin: auto;
-  z-index: 1102;
-}
+  .custom-dropdown {
+    margin-top: 8px;
+  }
+  .progress-spinner {
+    position: absolute;
+    top: 0; bottom: 0; left: 0; right: 0;
+    margin: auto;
+    z-index: 1102;
+  }
+
+  .custom-tabview .p-tabview-nav {
+    display: flex;
+    flex-wrap: wrap; 
+    gap: 8px;
+  }
+
+  .custom-tabview .p-tabview-nav .p-tabview-nav-link {
+    min-width: 120px; 
+    white-space: nowrap; 
+  }
+
 </style>
