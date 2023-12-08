@@ -1,5 +1,6 @@
-<template>
 
+<template>
+  <!-- {{ plan.doc_info.docHistory.stateId }} -->
   <div class="col-12">
     <h3 v-if="plan">
       <TitleBlock :title="plan.work_plan_name" :show-back-button="true" />
@@ -11,7 +12,7 @@
           <div>
             <span v-if="plan.status" :class="'customer-badge status-' + plan.status.work_plan_status_id">{{
               plan.status.name_ru
-              }}</span>
+            }}</span>
           </div>
         </div>
         <div class="field" v-if="plan.reject_history.user">
@@ -35,18 +36,18 @@
         </div>
       </div>
     </div>
-
     <div class="card" v-if="plan">
+      <!-- {{ plan.doc_info.docHistory.stateId }}{{  !(plan.doc_info.docHistory.stateId === 2) }} -->
       <work-plan-event-add v-if="(isPlanCreator || isCreator || isEventsNull) && !isFinish" :items="data" :isMain="true"
         :plan-data="plan"></work-plan-event-add>
       <Button v-if="isPlanCreator && !isFinish" :label="$t('common.complete')" icon="pi pi-check" @click="finish"
         class="p-button p-button-danger ml-2" />
-      <work-plan-approve v-if="isPlanCreator && !isPlanSentApproval && isFinish" :plan="plan"
+      <work-plan-approve v-if="isPlanCreator && (plan.doc_info.docHistory.stateId === 1) && isFinish" :plan="plan"
         :events="data"></work-plan-approve>
-      <Button v-if="isFinish && (isApproval || isPlanCreator || isAdmin) && isPlanSentApproval" :label="$t('workPlan.viewPlan')"
-        icon="pi pi-eye" @click="viewDoc" class="p-button p-button-info ml-2" />
-      <Button v-if="isFinish && (isApproval || isPlanCreator || isAdmin) && isPlanApproved" :label="$t('workPlan.reports')"
-        @click="navigateToReports" class="p-button p-button-info ml-2" />
+      <Button v-if="isFinish && !(plan.doc_info.docHistory.stateId === 1)"
+        :label="$t('workPlan.viewPlan')" icon="pi pi-eye" @click="signView" class="p-button p-button-info ml-2" />
+      <Button v-if="isFinish && (isApproval || isPlanCreator || isAdmin) && (plan.doc_info.docHistory.stateId === 3)"
+        :label="$t('workPlan.reports')" @click="navigateToReports" class="p-button p-button-info ml-2" />
     </div>
     <div class="card">
 
@@ -77,16 +78,16 @@
                     <template #value="slotProps">
                       <span v-if="slotProps.value" :class="'customer-badge status-' + slotProps.value.id">
                         {{
-                        $i18n.locale === 'kz' ? slotProps.value.nameKz : $i18n.locale === 'ru'
-                        ? slotProps.value.nameRu : slotProps.value.nameEn
+                          $i18n.locale === 'kz' ? slotProps.value.nameKz : $i18n.locale === 'ru'
+                          ? slotProps.value.nameRu : slotProps.value.nameEn
                         }}
                       </span>
                     </template>
                     <template #option="slotProps">
                       <span :class="'customer-badge status-' + slotProps.option.id">
                         {{
-                        $i18n.locale === 'kz' ? slotProps.option.nameKz : $i18n.locale === 'ru'
-                        ? slotProps.option.nameRu : slotProps.option.nameEn
+                          $i18n.locale === 'kz' ? slotProps.option.nameKz : $i18n.locale === 'ru'
+                          ? slotProps.option.nameRu : slotProps.option.nameEn
                         }}
                       </span>
                     </template>
@@ -163,7 +164,7 @@
               <Button type="button" @click="toggle('event-final-result', $event)" class="p-button-rounded"
                 icon="fa-solid fa-eye" label="" />
               <OverlayPanel ref="event-final-result" :showCloseIcon="true" style="width: 450px"
-                :breakpoints="{'960px': '75vw'}">
+                :breakpoints="{ '960px': '75vw' }">
                 <div>{{ node.result }}</div>
               </OverlayPanel>
             </div>
@@ -173,24 +174,24 @@
           </template>
         </Column>
         <Column field="status" :header="$t('common.status')">
-          <template #body="{node}">
+          <template #body="{ node }">
             <span :class="'customer-badge status-' + node.status.work_plan_event_status_id">{{
               $i18n.locale === "kz" ? node.status.name_kz : $i18n.locale === "ru" ? node.status.name_ru :
               node.status.name_en
               }}</span>
           </template>
         </Column>
-
         <Column field="actions" header="">
           <template #body="slotProps">
             <div>
               <!--              (parseInt(slotProps.node.quarter.String) === currentQuarter || parseInt(slotProps.node.quarter.String) === 5)-->
               <work-plan-execute
-                v-if="isUserApproval(slotProps.node) && isPlanApproved && isPlanSentApproval && (slotProps.node.status.work_plan_event_status_id === 1 || slotProps.node.status.work_plan_event_status_id === 4 || slotProps.node.status.work_plan_event_status_id === 6)"
+                v-if="isUserApproval(slotProps.node) && (plan.doc_info.docHistory.stateId === 3) && (slotProps.node.status.work_plan_event_status_id === 1 || slotProps.node.status.work_plan_event_status_id === 4 || slotProps.node.status.work_plan_event_status_id === 6)"
                 :data="slotProps.node" :planData="plan"></work-plan-execute>
+
               <work-plan-event-result-modal
                 v-if="(isPlanCreator && !isUserResp(slotProps.node.user) &&
-              (slotProps.node.status.work_plan_event_status_id === 4 || slotProps.node.status.work_plan_event_status_id === 6)) || (slotProps.node.event_result && plan && !plan.is_oper) || slotProps.node.status.work_plan_event_status_id === 5 || slotProps.node.status.work_plan_event_status_id === 2"
+                  (slotProps.node.status.work_plan_event_status_id === 4 || slotProps.node.status.work_plan_event_status_id === 6)) || (slotProps.node.event_result && plan && !plan.is_oper) || slotProps.node.status.work_plan_event_status_id === 5 || slotProps.node.status.work_plan_event_status_id === 2"
                 :event-result="slotProps.node.event_result" :eventData="slotProps.node"
                 :plan-data="plan"></work-plan-event-result-modal>
               <work-plan-event-add v-if="isPlanCreator && !isPlanSentApproval && !isFinish" :data="slotProps.node"
@@ -214,6 +215,10 @@
       </TreeTable>
     </div>
   </div>
+  
+  <Sidebar v-model:visible="showReportDoc" position="right" class="p-sidebar-lg" style="overflow-y: scroll">
+    <DocSignaturesInfo :docIdParam="plan.doc_id" :isInsideSidebar="true"></DocSignaturesInfo>
+  </Sidebar>
 </template>
 
 <script>
@@ -227,6 +232,7 @@ import moment from "moment";
 import { FilterMatchMode } from "primevue/api";
 import { WorkPlanService } from "@/service/work.plan.service";
 import ActionButton from "@/components/ActionButton.vue";
+import DocSignaturesInfo from "@/components/DocSignaturesInfo"
 
 export default {
   name: "WorkPlanEvent",
@@ -236,6 +242,7 @@ export default {
     WorkPlanEventAdd,
     WorkPlanExecute,
     WorkPlanEventResultModal,
+    DocSignaturesInfo,
     // ActionButton
   },
   data() {
@@ -291,6 +298,7 @@ export default {
       isPlanSentApproval: false,
       isPlanApproved: false,
       isEventsNull: false,
+      showReportDoc: false,
       filters: {
         name: { value: null, matchMode: FilterMatchMode.CONTAINS },
         status: { value: null, matchMode: FilterMatchMode.EQUALS },
@@ -412,6 +420,9 @@ export default {
   },
   methods: {
     findRole: findRole,
+    signView(node){
+        this.showReportDoc = true;
+    },
     toggle2(node) {
       this.actionsNode = node
     },
@@ -447,7 +458,7 @@ export default {
           parent.children = res.data.items;
           this.total = 0;
         }
-        this.getWorkPlanApprovalUsers();
+        // this.getWorkPlanApprovalUsers();
         this.loading = false;
       }).catch(error => {
         if (error.response && error.response.status === 401) {
@@ -501,11 +512,12 @@ export default {
         this.isRejected = this.plan.is_reject;
         if (this.plan && this.plan.user.id === this.loginedUserId) {
           this.isPlanCreator = true;
-        
+
         } else {
           this.isPlanCreator = false;
           //this.$router.push('/work-plan')
         }
+        this.isPlanApproved = this.plan.doc_info?.docHistory.stateEn == "approved"
       }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");

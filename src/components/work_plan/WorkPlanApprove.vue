@@ -6,10 +6,9 @@
       :label="$t('common.action.sendToApprove')"
       @click="openModal"
   ></Button>
-
   <PdfContent ref="pdf" v-if="data" :data="data" :planId="data.work_plan_id" style="display: none;"></PdfContent>
 
-  <Dialog :header="$t('common.action.sendToApprove')" v-model:visible="showModal" :style="{width: '450px'}" class="p-fluid">
+  <!-- <Dialog :header="$t('common.action.sendToApprove')" v-model:visible="showModal" :style="{width: '450px'}" class="p-fluid">
     <div class="field">
       <label>{{ $t('common.select') }}</label>
       <ApproveComponent @add="approveChange" :stepValue="selectedUsers" v-model="selectedUsers" @changeStep="changeStep"></ApproveComponent>
@@ -20,11 +19,21 @@
       <Button ref="approveBtn" :disabled="submitted" :label="$t('common.send')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2"
               @click="getGeneratedPdf"/>
     </template>
+  </Dialog> -->
+  <Dialog :header="$t('common.action.sendToApprove')" v-model:visible="showModal"
+            :style="{width: '50vw'}" class="p-fluid">
+      <ProgressBar v-if="approving" mode="indeterminate" style="height: .5em"/>
+      <div class="field">
+        <ApprovalUsers :approving="approving" v-model="approval_users"
+                       @closed="closeModal"
+                       @approve="approve($event)" :stages="stages" :mode="'standard'"></ApprovalUsers>
+      </div>
   </Dialog>
 </template>
 
 <script>
-import ApproveComponent from "@/components/work_plan/ApproveComponent";
+//import ApproveComponent from "@/components/work_plan/ApproveComponent";
+import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers";
 import PdfContent from "@/components/work_plan/PdfContent";
 import html2pdf from "html2pdf.js";
 import axios from "axios";
@@ -33,7 +42,7 @@ import {WorkPlanService} from "@/service/work.plan.service";
 
 export default {
   name: "WorkPlanApprove",
-  components: {ApproveComponent, PdfContent},
+  components: {PdfContent, ApprovalUsers},
   props: ['docId', 'plan', 'events'],
   data() {
     return {
@@ -42,28 +51,46 @@ export default {
       selectedUsers: null,
       steps: 3,
       step: 1,
-      approval_users: [],
+      approval_users: [
+      {
+          stage: 1,
+          users:[],
+          certificate: {
+            namekz: "Жеке тұлғаның сертификаты",
+            nameru: "Сертификат физического лица",
+            nameen: "Certificate of an individual",
+            value: "individual"
+          }
+        }
+      ],
       currentStageUsers: null,
       currentStage: 1,
       prevStage: 0,
       loginedUserId: 0,
       fd: null,
       submitted: false,
-      planService: new WorkPlanService()
+      planService: new WorkPlanService(),
+      approveComponentKey: 0,
+      approving: false,
+      stages: null
     }
   },
   created() {
     this.loginedUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
+    console.log(this.approval_users)
   },
   methods: {
     openModal() {
       this.showModal = true;
+      this.approveComponentKey++;
     },
     closeModal() {
       this.showModal = false;
     },
-    approve() {
+    approve(event) {
+      this.approval_users = event
       this.submitted = true;
+      this.approving = true;
       let workPlanId = this.data.work_plan_id;
       let pdfOptions = {
         margin: 10,
@@ -105,6 +132,7 @@ export default {
           this.emitter.emit("planSentToApprove", true);
           this.submitted = false;
         }
+        this.approving = false;
         this.showModal = false;
       }).catch(error => {
         if (error.response && error.response.status === 401) {
