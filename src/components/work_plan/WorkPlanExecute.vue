@@ -1,10 +1,10 @@
 <template>
   <div>
-    <Button :label="$t('common.perform')" icon="pi pi-check" @click="openBasic" class="mr-2" />
+    <Button :label="$t('common.perform')" icon="pi pi-pen" @click="openBasic" class="mr-2" />
   </div>
   <vue-element-loading :active="isBlockUI" is-full-screen color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)" />
   <Sidebar v-model:visible="showWorkPlanExecuteSidebar" position="right" class="p-sidebar-lg" style="overflow-y: scroll">
-    <div class="col-12" v-if="plan && plan.is_oper && resultData && resultData.reject_history">
+    <div class="col-12" v-if="resultData && resultData.reject_history">
       <label class="bold">{{ $t('common.resultSentToCorrect') }}</label>
       <Message severity="warn" :closable="false" title="">{{ resultData.reject_history.message }}</Message>
     </div>
@@ -20,9 +20,7 @@
       </div>
       <div class="field">
         <label class="bold">{{ $t('common.result') }}</label>
-        <TinyEditor v-if="plan && !plan.is_oper" v-model="result" :height="300" @selectionChange="editorChange" />
-        <div v-if="plan && resultData && plan.is_oper" v-html="resultData.event_result" class="mb-4"></div>
-        <TinyEditor v-if="plan && plan.is_oper" v-model="newResult" :height="300" @selectionChange="editorChange" />
+        <TinyEditor v-model="result" :height="300" @selectionChange="editorChange" />
       </div>
       <div class="field" v-if="resultData && resultData.result_files">
         <label class="bold">{{ $t('workPlan.attachments') }}</label>
@@ -57,7 +55,6 @@
     </div>
   </Sidebar>
   <Sidebar v-model:visible="showOperPlanExecute" position="right" style="overflow-y: scroll; width: 50%;" v-if="event" @hide="sideBarClosed">
-
     <WorkPlanEventResult :result-id="event.work_plan_event_id" />
   </Sidebar>
 </template>
@@ -99,6 +96,7 @@ export default {
         this.showOperPlanExecute = true;
       } else {
         this.showWorkPlanExecuteSidebar = true;
+        this.getData()
         this.initMenu();
       }
     },

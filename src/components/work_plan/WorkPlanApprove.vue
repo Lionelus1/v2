@@ -44,6 +44,7 @@ export default {
   name: "WorkPlanApprove",
   components: {PdfContent, ApprovalUsers},
   props: ['docId', 'plan', 'events'],
+  emits: ['isSent'],
   data() {
     return {
       data: this.plan,
@@ -129,7 +130,8 @@ export default {
             summary: this.$t('common.message.succesSendToApproval'),
             life: 3000,
           });
-          this.emitter.emit("planSentToApprove", true);
+          // this.emitter.emit("planSentToApprove", true);
+          this.$emit('isSent', true)
           this.submitted = false;
         }
         this.approving = false;

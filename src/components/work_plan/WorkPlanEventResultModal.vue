@@ -10,9 +10,8 @@
     <div class="col-12">
       <h3>{{ $t('common.result') }}</h3>
     </div>
-    {{ data.result_text }}
     <div class="col-12"
-      v-if="plan && !plan.is_oper && event && event.status.work_plan_event_status_id === 5">
+      v-if="loginedUserId === planData.user.id && event && event.status.work_plan_event_status_id === 5">
       <div>
         <Menubar :model="menu" :key="active"
           style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
@@ -57,9 +56,11 @@
           style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
       </div>
     </div>
-    <div class="p-col p-fluid">
-      <label>{{ $t('common.comment') }}</label>
-      <Textarea inputId="textarea" rows="5" cols="30" v-model="rejectComment"></Textarea>
+    <div class="p-fluid">
+      <div class="field">
+        <label>{{ $t('common.comment') }}</label>
+        <Textarea inputId="textarea" rows="5" cols="30" v-model="rejectComment"></Textarea>
+      </div>
     </div>
   </Sidebar>
   <Sidebar v-model:visible="showOperPlanExecute" position="right" class="p-sidebar-lg"

@@ -63,8 +63,8 @@ export class WorkPlanService {
         return api.get(`/workPlan/getWorkPlanEventById/${id}`, {headers: getHeader()});
     }
 
-    getEventResult(eventId, userId) {
-        return api.get(`/workPlan/getWorkPlanEventResult/${eventId}/${userId}`, {
+    getEventResult(eventId) {
+        return api.get(`/workPlan/getWorkPlanEventResult/${eventId}`, {
             headers: getHeader()
         })
     }

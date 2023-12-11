@@ -43,7 +43,7 @@
       <Button v-if="isPlanCreator && !isFinish" :label="$t('common.complete')" icon="pi pi-check" @click="finish"
         class="p-button p-button-danger ml-2" />
       <work-plan-approve v-if="isPlanCreator && (plan.doc_info.docHistory.stateId === 1) && isFinish" :plan="plan"
-        :events="data"></work-plan-approve>
+        :events="data" @isSent="planSentToApprove"></work-plan-approve>
       <Button v-if="isFinish && !(plan.doc_info.docHistory.stateId === 1)"
         :label="$t('workPlan.viewPlan')" icon="pi pi-eye" @click="signView" class="p-button p-button-info ml-2" />
       <Button v-if="isFinish && (isApproval || isPlanCreator || isAdmin) && (plan.doc_info.docHistory.stateId === 3)"
@@ -182,24 +182,26 @@
           </template>
         </Column>
         <Column field="actions" header="">
-          <template #body="slotProps">
+          <template #body="{node}">
             <div>
-              <!--              (parseInt(slotProps.node.quarter.String) === currentQuarter || parseInt(slotProps.node.quarter.String) === 5)-->
-              <work-plan-execute
-                v-if="isUserApproval(slotProps.node) && (plan.doc_info.docHistory.stateId === 3) && (slotProps.node.status.work_plan_event_status_id === 1 || slotProps.node.status.work_plan_event_status_id === 4 || slotProps.node.status.work_plan_event_status_id === 6)"
-                :data="slotProps.node" :planData="plan"></work-plan-execute>
+              <!--              (parseInt(node.quarter.String) === currentQuarter || parseInt(node.quarter.String) === 5)-->
+              <Button v-if="(isPlanCreator || isUserApproval(node)) && (plan.doc_info.docHistory.stateId === 3) &&
+              (node.status.work_plan_event_status_id === 1 ||
+              node.status.work_plan_event_status_id === 4 ||
+              node.status.work_plan_event_status_id === 5 ||
+              node.status.work_plan_event_status_id === 6)"
+                  label="" icon="pi pi-eye" @click="openPlanExecuteSidebar(node)" class="mr-2" />
 
-              <work-plan-event-result-modal
-                v-if="(isPlanCreator && !isUserResp(slotProps.node.user) &&
-                  (slotProps.node.status.work_plan_event_status_id === 4 || slotProps.node.status.work_plan_event_status_id === 6)) || (slotProps.node.event_result && plan && !plan.is_oper) || slotProps.node.status.work_plan_event_status_id === 5 || slotProps.node.status.work_plan_event_status_id === 2"
-                :event-result="slotProps.node.event_result" :eventData="slotProps.node"
-                :plan-data="plan"></work-plan-event-result-modal>
-              <work-plan-event-add v-if="isPlanCreator && !isPlanSentApproval && !isFinish" :data="slotProps.node"
-                :items="slotProps.node.children" :isMain="false" :plan-data="plan"></work-plan-event-add>
+<!--              <work-plan-event-result-modal
+                v-if="showEventResultModal(node)"
+                :event-result="node.event_result" :eventData="node"
+                :plan-data="plan"></work-plan-event-result-modal>-->
+              <work-plan-event-add v-if="isPlanCreator && !isPlanSentApproval && !isFinish" :data="node"
+                :items="node.children" :isMain="false" :plan-data="plan"></work-plan-event-add>
               <work-plan-event-edit-modal v-if="isPlanCreator && !isPlanSentApproval && !isFinish" :planData="plan"
-                :event="slotProps.node"></work-plan-event-edit-modal>
+                :event="node"></work-plan-event-edit-modal>
               <Button v-if="isPlanCreator && !isPlanSentApproval && !isFinish"
-                @click="remove_event(slotProps.node.work_plan_event_id)" icon="pi pi-trash"
+                @click="remove_event(node.work_plan_event_id)" icon="pi pi-trash"
                 class="p-button-danger ml-1 mt-1" label=""></Button>
             </div>
           </template>
@@ -219,29 +221,33 @@
   <Sidebar v-model:visible="showReportDoc" position="right" class="p-sidebar-lg" style="overflow-y: scroll">
     <DocSignaturesInfo :docIdParam="plan.doc_id" :isInsideSidebar="true"></DocSignaturesInfo>
   </Sidebar>
+
+  <Sidebar v-model:visible="isShowPlanExecute" position="right" style="overflow-y: scroll; width: 50%;" v-if="isShowPlanExecute && selectedEvent" @hide="sideBarClosed">
+    <WorkPlanEventResult :result-id="selectedEvent.work_plan_event_id" />
+  </Sidebar>
 </template>
 
 <script>
 import WorkPlanEventAdd from "@/components/work_plan/WorkPlanEventAdd";
-import { getHeader, smartEnuApi, findRole } from "@/config/config";
+import {findRole} from "@/config/config";
 import WorkPlanApprove from "@/components/work_plan/WorkPlanApprove";
 import WorkPlanExecute from "@/components/work_plan/WorkPlanExecute";
 import WorkPlanEventResultModal from "@/components/work_plan/WorkPlanEventResultModal";
 import WorkPlanEventEditModal from "@/components/work_plan/WorkPlanEventEditModal";
 import moment from "moment";
-import { FilterMatchMode } from "primevue/api";
-import { WorkPlanService } from "@/service/work.plan.service";
-import ActionButton from "@/components/ActionButton.vue";
+import {FilterMatchMode} from "primevue/api";
+import {WorkPlanService} from "@/service/work.plan.service";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo"
+import WorkPlanEventResult from "@/components/work_plan/WorkPlanEventResult.vue";
 
 export default {
   name: "WorkPlanEvent",
   components: {
+    WorkPlanEventResult,
     WorkPlanEventEditModal,
     WorkPlanApprove,
     WorkPlanEventAdd,
-    WorkPlanExecute,
-    WorkPlanEventResultModal,
+    // WorkPlanEventResultModal,
     DocSignaturesInfo,
     // ActionButton
   },
@@ -298,6 +304,7 @@ export default {
       isPlanSentApproval: false,
       isPlanApproved: false,
       isEventsNull: false,
+      isShowPlanExecute: false,
       showReportDoc: false,
       filters: {
         name: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -346,7 +353,8 @@ export default {
         { value: 'gt' },
         { value: 'equals' }
       ],
-      planService: new WorkPlanService()
+      planService: new WorkPlanService(),
+      selectedEvent: null,
     }
   },
   created() {
@@ -609,9 +617,10 @@ export default {
       data.user.forEach(e => {
         if (e.id === this.loginedUserId) {
           userApproval = true;
+          return
         }
       });
-      return this.plan && this.plan.is_oper ? userApproval && data.is_finish : userApproval && data.is_finish && !data.event_result;
+      return userApproval && data.is_finish;
     },
     initQuarter(quarter) {
       let res = '';
@@ -655,6 +664,20 @@ export default {
       this.lazyParams.rows = event.rows
       this.getEventsTree();
     },
+    planSentToApprove(data) {
+      console.log("approve data", data)
+      this.getPlan();
+      this.getEventsTree(null)
+    },
+    showEventResultModal(node) {
+      return (this.isPlanCreator && !this.isUserResp(node.user) &&
+              !(node.status.work_plan_event_status_id === 4 || node.status.work_plan_event_status_id === 6)) ||
+          node.status.work_plan_event_status_id === 5 || node.status.work_plan_event_status_id === 2;
+    },
+    openPlanExecuteSidebar(node) {
+      this.isShowPlanExecute = true;
+      this.selectedEvent = node;
+    }
   },
   /*unmounted() {
     localStorage.removeItem("workPlan");

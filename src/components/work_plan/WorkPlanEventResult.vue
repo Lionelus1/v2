@@ -49,13 +49,14 @@
             <Menubar :model="userMenuItems" :key="active" style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
           </div>
 
-          <div v-if="plan && plan.is_oper && isPlanCreator && event && event.status.work_plan_event_status_id === 5">
+          <div v-if="isPlanCreator && event && event.status.work_plan_event_status_id === 5">
             <Menubar :model="verifyMenu" :key="active" style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
           </div>
           <div class="grid mt-3">
             <!-- p-sm-12 md:col-12 lg:col-6 p-xl-6 -->
-            <div class="p-fluid" v-if="!isPlanCreator && (isPlanCreatorApproval || !isPlanCreator) && event.status.work_plan_event_status_id !== 5 &&
-              event.status.work_plan_event_status_id !== 2">
+            <div class="p-fluid" v-if="!isPlanCreator && (isPlanCreatorApproval || !isPlanCreator) &&
+            event.status.work_plan_event_status_id !== 5 &&
+              event.status.work_plan_event_status_id !== 2 && event.status.work_plan_event_status_id !== 6">
               <div class="field">
                 <label>{{ $t('workPlan.eventName') }}</label>
                 <InputText v-model="event.event_name" disabled />
@@ -68,29 +69,7 @@
                 <label>{{ $t('common.result') }}</label>
                 <TinyEditor v-if="plan && !plan.is_oper" v-model="result" :height="300" :style="{ height: '100%', width: '100%' }"
                   @selectionChange="editorChange" />
-                <!-- <RichEditor v-if="plan && !plan.is_oper" v-model="result" editorStyle="height:300px;"
-                            :clearOnPaste="true"
-                            @text-change="editorChange">
-                  <template v-slot:toolbar>
-                    <span class="ql-formats">
-                      <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
-                      <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
-                      <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
-                    </span>
-                  </template>
-                </RichEditor> -->
                 <TinyEditor v-if="plan && plan.is_oper" v-model="newResult" :height="300" @selectionChange="editorChange" />
-                <!-- <RichEditor ref="planEditor" v-if="plan && plan.is_oper" v-model="newResult" editorStyle="height:300px;"
-                            :clearOnPaste="true"
-                            @text-change="editorChange">
-                  <template v-slot:toolbar>
-                    <span class="ql-formats">
-                      <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
-                      <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
-                      <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
-                    </span>
-                  </template>
-                </RichEditor> -->
               </div>
               <div class="field">
                 <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadFile($event)" :auto="true" :multiple="true"
@@ -114,12 +93,12 @@
               </div>
             </div>
             <div class="p-sm-12 md:col-12 lg:col-12 p-xl-6">
-              <div class="field" v-if="event">
+              <div class="field" v-if="event && plan && plan.is_oper && !authUser.mainPosition.department.isFaculty">
                 <label class="bold">{{ $t('common.fact') }}: </label>
                 <div>{{ event.fact }}</div>
               </div>
               <!-- Start Editing -->
-              <div class="field" v-if="plan && resultData && plan.is_oper">
+              <div class="field" v-if="plan && resultData">
                 <!-- <label class="bold">{{ $t('common.result') }}</label> -->
                 <!-- {{ resultData[0] }} -->
                 <div v-for="(item, index) of resultData" :key="index" class="mb-2">
@@ -127,30 +106,12 @@
                     <div style="margin-bottom: 3px;">
                       <i class="fa-solid fa-user mr-1"></i><b>{{ item.user.fullName }}</b>&nbsp;
                       <span :class="'customer-badge status-' + item.plan_event_result_history[0].state_id">{{ getResultStatus(item.plan_event_result_history[0].state_id) }}</span>
-
-                      <!-- <span style="float:right;margin-top: -7px;" v-if="plan && plan.is_oper && isPlanCreator && event">
-                        <Button icon="pi pi-fw pi-check" class="p-button-rounded p-button-text" @click="verify(true)"
-                          :label="$t('common.action.accept')"></Button>
-                        <Button icon="pi pi-fw pi-times" class="p-button-rounded p-button-text" @click="showToCorrectSidebar()"
-                          :label="$t('workPlan.toCorrect')"></Button>
-                      </span> -->
                     </div>
 
                   </Divider>
-                  <!-- <div style="margin-bottom: 10px;">
-                  <i class="fa-solid fa-user mr-1"></i><b>{{ item.user.fullName }}</b>&nbsp;
-                  <span class="customer-badge status-5">{{ getResultStatus(item.plan_event_result_history[0].state_id) }}</span>
-                  
-                  <span style="padding-top: 5px;" v-if="plan && plan.is_oper && isPlanCreator && event">
-                        <Button icon="pi pi-fw pi-check" class="p-button-rounded p-button-text" @click="verify(true)"
-                          :label="$t('common.action.accept')"></Button>
-                          <Button icon="pi pi-fw pi-times" class="p-button-rounded p-button-text" @click="showToCorrectSidebar()"
-                          :label="$t('workPlan.toCorrect')"></Button>
-                  </span>
-                  </div> -->
-
-
-                  <Inplace v-if="(loginedUserId === item.result_text[0].user.userID) || isPlanCreator || isAdmin" :active="item.isActive" @open="openInplace(item)">
+                  <Inplace v-if="(loginedUserId === item.result_text[0].user.userID) && event &&
+                    (item.plan_event_result_history && item.plan_event_result_history[0].state_id === 6)"
+                           :active="item.isActive" @open="openInplace(item)">
                     <template #display>
                       <div>
                         <span class="mr-1" style="float:left;"><i class="fa-solid fa-pen color-success"></i></span>
@@ -163,25 +124,16 @@
                         <Button :label="$t('common.save')" icon="pi pi-check" class="p-button p-button-success" @click="saveEditResult(item)"
                           :loading="loading" />
                         <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button ml-1" @click="cancelEdit(item)" />
-                        <Button :label="$t('common.delete')" icon="pi pi-trash" class="p-button p-button-danger ml-1" @click="deleteConfirmItem($event, item)" />
+<!--                        <Button :label="$t('common.delete')" icon="pi pi-trash" class="p-button p-button-danger ml-1" @click="deleteConfirmItem($event, item)" />-->
                       </div>
                       <div class="field">
-
-                        <RichEditor v-model="item.result_text[0].text" v-if="(item.plan_event_result_history[0].state_id === 6) && (loginedUserId === item.result_text[0].user.userID)" editorStyle="height:200px;">
-                          <template v-slot:toolbar>
-                            <span class="ql-formats">
-                              <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
-                              <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
-                              <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
-                            </span>
-                          </template>
-                        </RichEditor>
+                        <TinyEditor v-model="item.result_text[0].text" :height="300" :style="{ height: '100%', width: '100%' }" />
                       </div>
                     </template>
                   </Inplace>
-                  <!-- <ul v-if="item.result_files">
-                    <li v-for="name in item.result_files" :key="name">{{ name.file_name }}</li>
-                  </ul> -->
+                  <div v-else class="p-0">
+                    <p v-html="item.result_text[0].text"></p>
+                  </div>
                   <br />
                   <div class="" v-if="resultData && item.result_files">
                     <label class="bold"><strong>{{ $t('workPlan.attachments') }}</strong></label>
@@ -205,42 +157,21 @@
                       </div>
                     </div>
                   </div>
-                  <span style="margin-left: -12px;" v-if="plan && plan.is_oper && isPlanCreator && event">
+                  <div style="margin-left: -12px;" v-if="isPlanCreator">
                     <!-- {{ item.result_text }} -->
                     <Button v-if="(item.plan_event_result_history[0].state_id === 5)" icon="pi pi-fw pi-check" class="p-button-rounded p-button-text" @click="confirmToInspected(isInspected, item.user.userID, item.event_result_id)" :label="$t('common.action.accept')"></Button>
                     <Button v-if="(item.plan_event_result_history[0].state_id === 5)" icon="pi pi-fw pi-times" class="p-button-rounded p-button-text" @click="showToCorrectSidebarNew(item.user.userID, item.event_result_id)"
                       :label="$t('workPlan.toCorrect')"></Button>
                     <br /><br />
                     <!-- <hr style="border-top: 1px dotted #999;"/> -->
-                  </span>
+                  </div>
                   <div v-else class="p-0">
-                    <!-- <Divider align="left">
-                      <div style="margin-bottom: 3px;">
-                      <i class="fa-solid fa-user mr-1"></i><b>{{ item.user.fullName }}</b>&nbsp;
-                      <span class="customer-badge status-5">{{ getResultStatus(item.plan_event_result_history[0].state_id) }}</span>
-                    
-                      <span style="float:right;margin-top: -7px;" v-if="plan && plan.is_oper && isPlanCreator && event">
+                     <span style="float:right;margin-top: -7px;" v-if="isPlanCreator">
                         <Button icon="pi pi-fw pi-check" class="p-button-rounded p-button-text" @click="verify(true)"
-                          :label="$t('common.action.accept')"></Button>
+                                :label="$t('common.action.accept')"></Button>
                           <Button icon="pi pi-fw pi-times" class="p-button-rounded p-button-text" @click="showToCorrectSidebar()"
-                          :label="$t('workPlan.toCorrect')"></Button>
+                                  :label="$t('workPlan.toCorrect')"></Button>
                       </span>
-                    </div>
-
-                    </Divider>
-                    <p v-html="item.result_text[0].text"></p>
-                    <span class="customer-badge status-5">{{ getResultStatus(item.plan_event_result_history[0].state_id) }}</span> -->
-                    <!-- <span v-if="event" :class="'customer-badge status-' + event.status.work_plan_event_status_id">{{ event.status.name_kz }}</span> -->
-                    <!-- <div v-if="plan && plan.is_oper && isPlanCreator && event && event.status.work_plan_event_status_id === 5">
-                      <Menubar :model="verifyMenu" :key="active"
-                        style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
-                    </div> -->
-                    <div>
-                      <div>
-                        <!-- {{ resultData }} -->
-
-                      </div>
-                    </div>
                   </div>
 
                 </div>
@@ -300,7 +231,7 @@
     <div class="col-12">
       <div>
         <Button icon="pi pi-fw pi-check" class="p-button-rounded p-button-text" @click="confirmToRevision()" :label="$t('common.action.accept')"></Button>
-                    
+
       </div>
     </div>
     <div class="p-col p-fluid">
@@ -368,7 +299,7 @@ export default {
         { name_kz: "Тексерілуде", name_ru: "На проверке", name_en: "On inspection", id: 5 },
         { name_kz: "Түзетуде", name_ru: "На доработке", name_en: "Under revision", id: 6 },
         { name_kz: "Тексерілді", name_ru: "Проверено", name_en: "Inspected", id: 7 },
-        
+
       ],
       isInspected: true,
       resultUserId: null,
@@ -410,9 +341,8 @@ export default {
       ];
     }
   },
-  created() {
+  mounted() {
     this.isAdmin = this.findRole(null, 'main_administrator')
-    console.log("this is main adminstrator:===", this.isAdmin);
     if (!this.event_id) {
       this.event_id = this.$route.params.id;
     }
@@ -434,7 +364,6 @@ export default {
           }
           if (this.event && this.event.user) {
             this.isPlanCreatorApproval = this.event.user.find(e => e.id === this.loginedUserId) !== null && this.isPlanCreator;
-            console.log(this.isPlanCreator)
             this.isCurrentUserApproval = this.event.user.find(e => e.id === this.loginedUserId);
           }
           this.getData();
@@ -452,10 +381,7 @@ export default {
       });
     },
     getData() {
-      let userID = this.isAdmin ? null : this.user_id
-      this.planService.getEventResult(this.event.work_plan_event_id, userID).then(res => {
-        console.log(res.data);
-
+      this.planService.getEventResult(this.event.work_plan_event_id).then(res => {
         if (res.data) {
           this.resultData = res.data;
 
@@ -641,12 +567,12 @@ export default {
       //   data.comment = this.rejectComment;
       //   data.result_id = this.resultData.event_result_id;
       // }
-      
+
       let comment = "";
       if (this.isInspected){
         comment = this.rejectComment
       }
-        
+
       this.planService.verifyEventResultHistory(this.isInspected, comment, this.resultUserId, this.user_id, this.eventResultId).then(res => {
         //console.log(res);
         if (res.data) {
@@ -690,7 +616,7 @@ export default {
     },
     confirmToRevision() {
       this.isInspected = false;
-      
+
       // this.resultUserId = userId;
       // this.eventResultId = resultId;
       this.$confirm.require({
@@ -706,7 +632,7 @@ export default {
           this.toCorrectSidebar = false;
         }
       });
-      
+
     },
     changeTab() {
       if (this.activeIndex === 1) {
@@ -792,6 +718,7 @@ export default {
       item.isActive = true;
     },
     saveEditResult(item) {
+      console.log(item)
       this.loading = true;
       const fd = new FormData();
       fd.append("result_id", item.event_result_id)//Number(this.resultData.event_result_id))
