@@ -5,6 +5,7 @@
       <WorkPlanAdd v-model="isAdded" />
     </div>
     <div class="card">
+      
       <DataTable :lazy="true" :rowsPerPageOptions="[5, 10, 20, 50]" :value="data" dataKey="id" :rowHover="true"
         v-model:filters="filters" filterDisplay="menu" :loading="loading" responsiveLayout="scroll" :paginator="true"
         :rows="10" :totalRecords="total" @page="onPage"
@@ -50,10 +51,9 @@
 
         <Column field="status" :header="$t('common.status')">
           <template #body="{ data }">
-            <span :class="'customer-badge status-' + data.status.work_plan_status_id">{{
-              $i18n.locale === "kz" ? data.status.name_kk : $i18n.locale === "ru" ? data.status.name_ru :
-              data.status.name_en
-            }}</span>
+            <span :class="'customer-badge status-' + data.doc_info.docHistory.stateEn">
+              {{ getDocStatus(data.doc_info.docHistory.stateEn) }}
+          </span>
           </template>
         </Column>
         <Column field="user" :header="$t('common.created')">
@@ -157,6 +157,19 @@ export default {
         },
 
       ],
+      docStatus: [
+        { name_kz: "құрылды", name_en: "created", name_ru: "создан", code: "created" },
+        { name_kz: "келісуде", name_en: "inapproval", name_ru: "на согласовании", code: "inapproval" },
+        { name_kz: "келісілді", name_en: "approved", name_ru: "согласован", code: "approved" },
+        { name_kz: "түзетуге", name_en: "revision", name_ru: "на доработку", code: "revision" },
+        { name_kz: "қайтарылды", name_en: "rejected", name_ru: "отклонен", code: "rejected" },
+        { name_kz: "қол қоюда", name_en: "signing", name_ru: "на подписи", code: "signing" },
+        { name_kz: "қол қойылды", name_en: "signed", name_ru: "подписан", code: "signed" },
+        { name_kz: "қайта бекітуге жіберілді", name_en: "sent for re-approval", name_ru: "отправлен на переутверждение", code: "sent for re-approval" },
+        { name_kz: "жаңартылды", name_en: "updated", name_ru: "обновлен", code: "updated" },
+        { name_kz: "берілді", name_en: "issued", name_ru: "выдан", code: "issued" },
+      ],
+      selectedDocStatus: null,
     }
   },
   mounted() {
@@ -322,6 +335,24 @@ export default {
       }
       this.getPlans();
     },
+    getDocStatus(code) {
+      const foundStatus = this.docStatus.find(status => status.code === code);
+
+      if (foundStatus) {
+        switch (this.$i18n.locale) {
+          case "kz":
+            return foundStatus.name_kz;
+          case "ru":
+            return foundStatus.name_ru;
+          case "en":
+            return foundStatus.name_en;
+          default:
+            return null;
+        }
+      } else {
+        return null;
+      }
+    },
   }
 }
 </script>
@@ -358,6 +389,50 @@ export default {
   &.status-1 {
     background: #B3E5FC;
     color: #23547B;
+  }
+  &.created {
+    background: #3588a8;
+    color: #fff;
+  }
+
+  &.inapproval {
+    background: #C8E6C9;
+    color: #256029;
+  }
+
+  &.approved {
+    background: #FFCDD2;
+    color: #C63737;
+  }
+
+  &.revision {
+    background: #FEEDAF;
+    color: #8A5340;
+  }
+
+  &.rejected {
+    background: #B3E5FC;
+    color: #23547B;
+  }
+  &.signing {
+    background: #2a6986;
+    color: #bfc9d1;
+  }
+  &.signed {
+    background: rgb(57, 134, 42);
+    color: #bfc9d1;
+  }
+  &.sent for re-approval {
+    background: rgb(134, 42, 119);
+    color: #bfc9d1;
+  }
+  &.updated for re-approval {
+    background: rgb(134, 42, 54);
+    color: #bfc9d1;
+  }
+  &.issued for re-approval {
+    background: rgb(42, 134, 88);
+    color: #bfc9d1;
   }
 
   &.operational-plan {

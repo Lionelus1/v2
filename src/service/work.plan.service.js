@@ -63,8 +63,10 @@ export class WorkPlanService {
         return api.get(`/workPlan/getWorkPlanEventById/${id}`, {headers: getHeader()});
     }
 
-    getEventResult(eventId) {
-        return api.get(`/workPlan/getWorkPlanEventResult/${eventId}`, {headers: getHeader()})
+    getEventResult(eventId, userId) {
+        return api.get(`/workPlan/getWorkPlanEventResult/${eventId}/${userId}`, {
+            headers: getHeader()
+        })
     }
 
     saveEventResult(fd) {
@@ -82,6 +84,11 @@ export class WorkPlanService {
     verifyEventResult(data) {
         return api.post(`/workPlan/verifyEventResult`, data, {headers: getHeader()});
     }
+
+    verifyEventResultHistory(isInspection, RejectComment, userID, SenderUserID, resultID) {
+        return api.post(`/workPlan/verifyEventResultHistory`, {is_inspection: isInspection, comment: RejectComment, user_id: parseInt(userID), sender_user_id: parseInt(SenderUserID), result_id: parseInt(resultID)}, {headers: getHeader()});
+    }
+
 
     editEventResult(fd) {
         return api.post(`/workPlan/editResult`, fd, {headers: getHeader()});
