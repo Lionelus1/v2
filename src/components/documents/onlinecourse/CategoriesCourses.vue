@@ -12,60 +12,25 @@
         </SplideSlide>
       </Splide>
     </div>
-    <div class="mt-5 mb-3 flex justify-content-between">
-      <h3>{{ $t('course.courses') }}</h3>
-      <div>
-        <Button @click="goToAdd()" icon="pi pi-plus-circle" label="Добавить курс" />
-        <Button class="ml-2" icon="pi pi-filter" label="Фильтр" />
+    <div class="mt-5 mb-3 flex align-items-center w-fit">
+      <div v-if="selectedCategory" @click="selectedCategory = false" class="inline-block mr-3">
+        <i class="fa-solid fa-arrow-left ml-2" style="font-size: 16px;cursor: pointer"></i>
       </div>
+      <h3 class="m-0">{{ $t('fieldEducation.title') }} <span v-if="selectedCategory">: {{ nameCourse }}</span></h3>
     </div>
-    <div class="card grid pl-8 pr-8">
-      <div class="p-4 col-12 sm:col-6 lg:col-12 xl:col-3">
-        <div class="grid_item_rating">
-          <img src="https://www.hult.edu/blog/media/uploads/2020/12/photo-1503945438517-f65904a52ce6.jpg" alt="">
-          <div class="text p-3">
-            <h5 class="title font-semibold">Наука в области химии</h5>
-            <p>Автор курса: ХХХХХ</p>
-            <p>05.10.2023</p>
-            <p> <i class="pi pi-star-fill text-yellow-500"></i> 4,9</p>
-            <div class="grid_footer flex justify-content-between align-items-center">
-              <Tag value="ОПУБЛИКОВАНО" severity="success"></Tag>
-              <i class="pi pi-list"></i>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="card grid pl-8 pr-8">
-      <div  v-for="(item, index) in courses" :key="index" class="p-4 col-12 sm:col-6 lg:col-12 xl:col-3">
-        <div class="grid_item p-4 relative">
+    <div class="card pl-8 pr-8 pt-5" v-if="!selectedCategory">
+      <Dropdown class="mb-4" placeholder="таңдаңыз" optionValue="id" :options="qualification" v-model="selectedItem" :optionLabel='"name"'/>
+      <div class="cat_grid">
+        <div v-for="(item, index) in filteredFieldEducation" :key="index" :style="{ 'background-image': 'url(' + item.filePath + ')' }"
+             class="grid_item p-4 relative p-4 col-12 sm:col-6 lg:col-12 xl:col-3" @click="showCourses(item)">
           <div class="text-white absolute">
-            <h5 class="title">{{item['name' + $i18n.locale] }}</h5>
-            <div class="count_course">15 курс</div>
+            <h5 class="title">{{item['name_' + $i18n.locale] }}</h5>
+            <div class="count_course">{{item.total}} {{$t('course.course')}}</div>
           </div>
         </div>
       </div>
     </div>
-
-    <div class="surface-card p-4 shadow-2 border-round">
-      <DataView class="xl:ml-7 xl:mr-7" :lazy="true" :value="courses" :layout="layout" :paginator="true" :rows="10" @page="onPage($event)" :totalRecords="total">
-        <template #list="slotProps">
-          <div class="col-12 shadow-4 border-round p-4">
-            <div class="card_title text-xl font-medium text-900 mb-3">{{ slotProps.data['name' + $i18n.locale] }}</div>
-            <div class="card_description font-medium text-700 mb-3">{{ slotProps.data['description' + $i18n.locale] }}</div>
-          </div>
-        </template>
-
-        <template #grid="slotProps">
-          <div class="col-12 lg:col-6 xl:col-4 p-2">
-            <div @click="selectCourse(slotProps.data)" class="shadow-4 border-round p-4 item course p-ripple" v-ripple>
-              <div class="card_title text-xl font-medium text-900 mb-3" :title="slotProps.data['name' + $i18n.locale]">{{ slotProps.data['name' + $i18n.locale] }}</div>
-              <div class="card_description font-medium text-700 mb-3" :title="slotProps.data['description' + $i18n.locale]">{{ slotProps.data['description' + $i18n.locale] }}</div>
-            </div>
-          </div>
-        </template>
-      </DataView>
-    </div>
+    <Courses v-if="selectedCategory"/>
   </div>
 </template>
 <script>
@@ -73,11 +38,14 @@ import { Splide, SplideSlide } from "@splidejs/vue-splide";
 import "@splidejs/splide/dist/css/splide.min.css";
 import { Grid } from '@splidejs/splide-extension-grid';
 import {OnlineCourseService} from "@/service/onlinecourse.service";
+import Courses from "@/components/documents/onlinecourse/Courses.vue";
+import {fileRoute, smartEnuApi} from "@/config/config";
 
 export default{
   components: {
     Splide,
     SplideSlide,
+    Courses
   },
   setup() {
     const options =  {
@@ -107,6 +75,8 @@ export default{
   },
   data() {
     return {
+      selectedItem: 1,
+      searchTerm: '',
       loading:false,
       service: new OnlineCourseService(),
       myOptions: null,
@@ -123,17 +93,22 @@ export default{
       categories: [],
       category: null,
       courses:[],
+      dataFieldEducation:[],
       course:null,
       total:0,
       layout: 'grid',
       sortKey: null,
       sortOrder: null,
       sortField: null,
+      selectedCategory : false,
+      nameCourse : null,
+
     }
   },
   created() {
     this.getCourseCategories();
     this.getCourses();
+    this.getFieldEducation();
   },
   watch:{
     $route (to, from){
@@ -142,11 +117,25 @@ export default{
       }
       this.getCourseCategories();
       this.getCourses();
-    }
+    },
   } ,
+  computed: {
+    filteredFieldEducation() {
+      return this.dataFieldEducation.filter(item =>
+            item.degree_id === this.selectedItem
+      );
+    },
+    qualification(){
+      return  [
+        { id: 1, name: this.$t("educationalPrograms.bachelor") },
+        { id: 2, name: this.$t("educationalPrograms.magistr") },
+        { id: 4, name: this.$t("educationalPrograms.doctoral") },
+      ]
+    },
+  },
   methods: {
     getCourseCategories() {
-      this.loading = true,
+      this.loading = true
           this.service.getCourseCategories(this.catLazyParams).then(response => {
             if (this.catLazyParams.parentID)
             {
@@ -173,6 +162,20 @@ export default{
             this.loading = false
           });
     },
+    getFieldEducation() {
+      this.service.getFieldEducation().then(response => {
+        if(response.data){
+          this.dataFieldEducation = response.data
+          this.dataFieldEducation.map(e => {
+            e.filePath = smartEnuApi + fileRoute + e.filePath
+          });
+        }
+        //this.total = response.data.total
+        //this.loading = false
+      }).catch(_=> {
+        //this.loading = false
+      });
+    },
     selectCategory(category) {
       this.$router.push('/catcourses/' + category.id)
       this.catLazyParams.parentID = category.id
@@ -188,13 +191,28 @@ export default{
     },
     goToAdd(){
       this.$router.push({name: "AddCourse"})
+    },
+    goToCourses(){
+      this.$router.push({name: "onlinecourses"})
+    },
+    showCourses(item) {
+      this.selectedCategory = true;
+      this.nameCourse = item.namekz
     }
   }
 };
 </script>
 <style lang="scss">
+.cat_grid{
+  display: grid;
+  gap: 40px;
+  grid-template-columns: repeat(4, 1fr);
+}
+
 .grid_item{
-  background-image: url("https://bogatyr.club/uploads/posts/2023-03/thumbs/1678091024_bogatyr-club-p-selskoe-khozyaistvo-kollazh-foni-krasivo-50.jpg");
+  width: 100%;
+  cursor: pointer;
+  //background-image: url("https://bogatyr.club/uploads/posts/2023-03/thumbs/1678091024_bogatyr-club-p-selskoe-khozyaistvo-kollazh-foni-krasivo-50.jpg");
   background-repeat: no-repeat;
   background-size: cover;
   border-radius: 3px;
@@ -204,13 +222,8 @@ export default{
     bottom: 20px;
   }
 }
-.grid_item_rating{
-  box-shadow: rgba(0, 0, 0, 0.19) 0 10px 20px, rgba(0, 0, 0, 0.23) 0 6px 6px;
-  border-radius: 3px;
-  min-height: 220px;
-  img{
-    width: 100%;
-  }
+.grid_item:nth-child(2){
+  //background-image: url("https://www.hult.edu/blog/media/uploads/2020/12/photo-1503945438517-f65904a52ce6.jpg");
 }
 .item {
   transition: width 1s ease;
@@ -244,7 +257,23 @@ export default{
   display: block;
   width: 100%;
 }
+@media (max-width: 1450px) {
+  .cat_grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (max-width: 1200px) {
+  .cat_grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
 
+@media (max-width: 600px) {
+  .cat_grid {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
 @media (min-width: 768px) {
   .splide__slide {
     width: 50%;
