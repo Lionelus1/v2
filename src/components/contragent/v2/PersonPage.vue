@@ -55,8 +55,6 @@ import WorkExperienceView from "@/components/user/view/WorkExperienceView"
 import UserAwardView from "@/components/user/view/UserAwardView"
 import UserQualificationsView from "@/components/user/view/UserQualificationsView"
 
-
-
 export default {
   name: 'PersonPage',
   components: {UserPersonalInfomation, UserIDCard, UserEducationView, UserRequisite, UserResearchInterestsView, WorkExperienceView, UserAwardView, UserQualificationsView },
@@ -161,7 +159,6 @@ export default {
       if (this.file !== null) {
         fd.append("idImage", this.file);
       }
-
 
       this.userService.updateUserAccountHandler(fd).then(res => {
         this.file = null

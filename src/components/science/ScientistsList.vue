@@ -54,7 +54,7 @@
       </TabPanel>  
 
       <!-- Filter Form -->
-      <OverlayPanel ref="op">
+      <OverlayPanel readonly ref="op">
           <div class="p-fluid">
             <div class="field">
               <label>{{ $t('common.fullName') }}</label>

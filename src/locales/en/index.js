@@ -207,10 +207,11 @@ export default {
     myAddress: 'Address',
     creationAndEditing:'Creation and editing',
     states: {
+      submitted: "Submitted",
+      approved: "Approved",
       created: "created",
       inapproval: "in approval",
-      approved: "approved",
-      rejected: "rejected",
+      rejected: "Rejected",
       revision: "for revision",
       registered: "Registered",
       notRegistered: "Not registered",
@@ -1243,6 +1244,7 @@ export default {
         save: 'Save and approve',
         reject: 'Reject request',
         commentary: 'Comment from requester',
+        sendRequest: 'Send request',
         types: {
             reference_error_correction: 'To correct mistakes',
             reference_info_request: 'Additional information',
@@ -1432,5 +1434,6 @@ export default {
         scientistsProfile: 'Profile Scientists'
     },
     personalData: 'Personal information',
-    yearPeriod:'Период годов',
+    yearPeriod:'Period of years',
+
 }

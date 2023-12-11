@@ -69,6 +69,10 @@
           </template>
   </Dialog>
 
+  <ConfirmDialog v-model:visible="confirmDelete" :baseZIndex="1000" @confirm="deleteEducationConfirm" @reject="confirmDelete = false">
+  </ConfirmDialog>
+
+
 </template>
 
 <script setup>
@@ -86,6 +90,7 @@
   const user = ref({})
   const emitter = inject("emitter");
   const userService = new UserService
+  const confirmDelete = ref(false);
 
   const props = defineProps({
     userID: {
@@ -131,9 +136,10 @@
       })
     })
 
+    confirmDelete.value = false;
   }
 
-  const deleteEducation = () => {
+  const deleteEducationConfirm = () => {
       const data = {
       id: Number(academicDegree.value.id),
       userId: Number(academicDegree.value.userID)
@@ -150,6 +156,12 @@
           })
       })
   }
+
+  const deleteEducation = () => {
+      confirmDelete.value = true;
+
+  }
+
   
   const createEducation=() => {
       academicDegree.value = {}

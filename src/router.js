@@ -684,6 +684,12 @@ const routes = [
                 component: load('science/ScientistsProfile'),
                 beforeEnter: ifAuthenticated,
             },
+            {
+                path: '/science/publications',
+                name:'ScienceCocksnvo',
+                component: load('science/ScienceCocksnvo'),
+                beforeEnter: ifAuthenticated,
+            },
         ]
     },
    
