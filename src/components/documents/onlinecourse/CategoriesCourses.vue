@@ -212,7 +212,7 @@ export default{
 .grid_item{
   width: 100%;
   cursor: pointer;
-  //background-image: url("https://bogatyr.club/uploads/posts/2023-03/thumbs/1678091024_bogatyr-club-p-selskoe-khozyaistvo-kollazh-foni-krasivo-50.jpg");
+  background: black;
   background-repeat: no-repeat;
   background-size: cover;
   border-radius: 3px;
@@ -221,9 +221,6 @@ export default{
   .text-white{
     bottom: 20px;
   }
-}
-.grid_item:nth-child(2){
-  //background-image: url("https://www.hult.edu/blog/media/uploads/2020/12/photo-1503945438517-f65904a52ce6.jpg");
 }
 .item {
   transition: width 1s ease;

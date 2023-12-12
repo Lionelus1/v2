@@ -9,21 +9,21 @@
               <h5 class="mb-0 mr-2">{{ course["name" + $i18n.locale] }}</h5>
               <Tag class="ql-size-small" icon="pi pi-star-fill" value="4,9"></Tag>
             </div>
-            <p class="text-gray-400">Длительность : 15 недель</p>
-            <p class="text-gray-400">Формат обучения: смешанный</p>
+            <p class="text-gray-400">{{ $t('fieldEducation.duration') }} : 15 недель</p>
+            <p class="text-gray-400">{{ $t('fieldEducation.trainingFormat') }}: смешанный</p>
           </div>
         </div>
         <TabView>
-          <TabPanel :header="$t('О курсе')">
+          <TabPanel :header="$t('fieldEducation.aboutCourse')">
             <div class="content">
-              <p class="title font-bold">Цель курса</p>
+              <p class="title font-bold">{{ $t('fieldEducation.purposeCourse') }}</p>
               <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam aliquid amet architecto aut consequuntur, doloremque eaque earum eligendi eum ex fugiat hic inventore ipsa laudantium, libero molestiae nam perferendis quae quibusdam quis repellat repellendus reprehenderit repudiandae sit suscipit veniam, voluptates.</p>
-              <p class="title font-bold">Краткая аннотация</p>
+              <p class="title font-bold">{{ $t('fieldEducation.briefSummary') }}</p>
               <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Distinctio facere porro provident temporibus velit voluptate. A enim nihil nisi odio.</p>
             </div>
            <div class="course_footer">
              <div class="footer_title font-bold mb-4">
-               Преподаватели
+               {{ $t('fieldEducation.teachers') }}
              </div>
              <div class="content">
                 <div class="img_card">
@@ -182,12 +182,23 @@
             </TabPanel>
             <!-- module қосу table -->
             <TabPanel :header="$t('course.modules')" v-if="dic_course_type == 1">
-              <div class="module_card">
-                <img src="https://www.mooc.org/hubfs/are-free-online-courses-worth-it.jpg" alt="">
-                <p>1. Основы химии: атомы и элементы.</p>
-                <hr>
-                <i class="pi pi-list"></i>
+              <div class="module_grid">
+                <div class="module_card" v-for="item of module" :key="item">
+                  <div class="content">
+                    <img src="https://www.mooc.org/hubfs/are-free-online-courses-worth-it.jpg" alt="">
+                    <p>{{ item['name_' + $i18n.locale] }}</p>
+                  </div>
+                  <div class="footer">
+                    <hr>
+                    <i class="pi pi-list" @click="toggle"></i>
+                  </div>
+                </div>
               </div>
+              <OverlayPanel ref="op">
+                <Button class="p-button-raised" icon="pi pi-fw pi-desktop" :label="$t('Презентация')"/>
+                <br>
+                <Button class="p-button-outlined w-full" icon="pi pi-fw pi-desktop" :label="$t('Тест')"/>
+              </OverlayPanel>
                 <DataTable :value="module">
                     <template #header>
                         <div
@@ -332,6 +343,7 @@ import {OnlineCourseService} from "@/service/onlinecourse.service";
 import {smartEnuApi, getHeader, findRole} from "@/config/config";
 import api from "@/service/api";
 import QrGenerator from "@/components/QrGenerator.vue";
+import {ref} from "vue";
 
 export default {
     components: {QrGenerator},
@@ -377,6 +389,7 @@ export default {
             searchText: '',
             searchData: {},
             dic_course_type: null,
+            op: ref()
         }
     },
     created() {
@@ -715,6 +728,9 @@ export default {
                 this.saving = false;
                 this.submitted = false;
             });
+        },
+        toggle (event) {
+          this.$refs.op.toggle(event);
         }
     },
     computed: {
@@ -752,11 +768,22 @@ export default {
     }
   }
 }
+.module_grid{
+  width: fit-content;
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(4, 1fr);
+}
 .module_card{
+  display: flex;
+  flex-direction: column;
   width: 240px;
   border: 1px solid #ccc;
   border-radius: 3px;
   padding: 10px;
+  .content{
+    flex: 1;
+  }
   img {
     width: 100%;
   }

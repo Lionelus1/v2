@@ -175,6 +175,12 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
+                path: '/categories-courses',
+                name: 'categoriesCourses',
+                component: load('documents/onlinecourse/CategoriesCourses'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
                 path: '/course/categories',
                 name: 'onlinecoursecategory',
                 component: load('documents/onlinecourse/Categories'),

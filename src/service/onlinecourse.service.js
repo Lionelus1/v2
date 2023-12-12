@@ -80,4 +80,10 @@ export class OnlineCourseService {
     createCourse(data) {
         return api.post('/onlinecourse/addCourse', data, {headers:getHeader()});
     }
+    getFieldEducation(data) {
+        return api.post('/onlinecourse/getCourseFields', data, {headers:getHeader()});
+    }
+    getEduAcademicDegrees(data) {
+        return api.post('/web/getEduAcademicDegrees', data, {headers:getHeader()});
+    }
 }

@@ -260,23 +260,23 @@ export class MenuService {
                         visible: this.findRole("main_administrator") || this.findRole("online_course_administrator")
                     },
                     {
-                        label: $t('course.courses'), icon: 'fa-solid fa-chalkboard', to: '/courses',
+                        label: $t('course.courses'), icon: 'fa-solid fa-chalkboard', to: '/categories-courses',
 
                     },
 
                 ]
             },
             {
-                label: $t('Конструктор образовательных программ'), icon: 'fa-solid fa-chalkboard-user',
+                label: $t('educationalPrograms.educationalProgramConstructor'), icon: 'fa-solid fa-chalkboard-user',
                 items: [
                     {
-                        label: $t('Бакалавриат'), to: '/educational-programs/bachelor',
+                        label: $t('educationalPrograms.bachelor'), to: '/educational-programs/bachelor',
                     },
                     {
-                        label: $t('Магистратура'), to: '/educational-programs/bachelor',
+                        label: $t('educationalPrograms.magistr'), to: '/educational-programs/bachelor',
                     },
                     {
-                        label: $t('Докторантура'), to: '/educational-programs/bachelor',
+                        label: $t('educationalPrograms.doctoral'), to: '/educational-programs/bachelor',
                     },
 
                 ]
