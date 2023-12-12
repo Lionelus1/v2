@@ -8,5 +8,6 @@ export default {
         LegalServiceHead : "legal_service_head",
         UMKAdministrator : "umk_administrator",
         CareerModerator : "career_moderator",
+        Teacher: "teacher",
     }
 }
