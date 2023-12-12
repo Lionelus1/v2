@@ -21,19 +21,31 @@
           <InputText disabled v-model="$store.state.loginedUser.fullName" id="author" rows="3"/>
         </div>
         <div class="field mt-3">
+          <label for="course-code">{{ $t("common.learnlang") }}</label>
+          <Dropdown @change="changeLang" placeholder="таңдаңыз" :options="listLang" option-label="lang" optionValue="id" v-model="formData.courceLanguageId"/>
+          <small class="p-error" v-if="!formData.courceLanguageId && submitted">{{ $t("common.requiredField") }}</small>
+        </div>
+        <div class="field mt-3" v-if="!boolNameRu && !boolNameEn">
           <label for="course-name">{{ $t("fieldEducation.courseName") }}</label>
-          <InputText id="course-name" v-model="formData.courseName"/>
-          <small class="p-error" v-if="!formData.courseName && submitted">{{ $t("common.requiredField") }}</small>
+          <InputText id="course-name" v-model="formData.namekz" :disabled="disabledName"/>
+          <small class="p-error" v-if="!formData.namekz && submitted">{{ $t("common.requiredField") }}</small>
+        </div>
+        <div class="field mt-3" v-if="boolNameRu">
+          <label for="course-name">ru</label>
+          <InputText id="course-name" v-model="formData.nameru" :disabled="disabledName"/>
+          <small class="p-error" v-if="!formData.nameru && submitted">{{ $t("common.requiredField") }}</small>
+        </div>
+        <div class="field mt-3" v-if="boolNameEn">
+          <label for="course-name">en</label>
+          <InputText id="course-name" v-model="formData.nameen" :disabled="disabledName"/>
+          <small class="p-error" v-if="!formData.nameen && submitted">{{ $t("common.requiredField") }}</small>
         </div>
         <div class="field mt-3">
           <label for="course-code">{{ $t("fieldEducation.courseCode") }}</label>
           <InputText id="course-code" v-model="formData.courseCode"/>
           <small class="p-error" v-if="!formData.courseCode && submitted">{{ $t("common.requiredField") }}</small>
         </div>
-        <div class="field mt-3">
-          <label for="course-code">{{ $t("common.learnlang") }}</label>
-          <Dropdown placeholder="таңдаңыз" />
-        </div>
+
         <div class="field mt-3">
           <label for="course-code">{{ $t("fieldEducation.purposeCourse") }}</label>
           <Textarea id="course-code" rows="5"/>
@@ -174,10 +186,17 @@ const dialogOpenState = ref({
 const service = new OnlineCourseService()
 const dataFieldEducation = ref([])
 const dataAcademicDegrees = ref([])
+const disabledName = ref(true)
+const boolNameRu = ref(false)
+const boolNameEn = ref(false)
+const listLang = ref([
+  {id:1, lang: 'kz'},
+  {id:2, lang: 'ru'},
+  {id:3, lang: 'en'},
+])
 
 const getFieldEducation = () => {
       service.getFieldEducation().then(response => {
-        console.log(response.data)
         dataFieldEducation.value = response.data
         //this.total = response.data.total
         //this.loading = false
@@ -189,7 +208,6 @@ getFieldEducation()
 
 const getEduAcademicDegrees = () => {
   service.getEduAcademicDegrees().then(response => {
-    console.log(response.data)
     dataAcademicDegrees.value = response.data
     //this.total = response.data.total
     //this.loading = false
@@ -210,13 +228,25 @@ const save = () => {
 
 const isValid = () => {
   let errors = [];
-  if (!formData.value.courseName) {
+  if (!formData.value.namekz || !formData.value.nameru || !formData.value.nameen) {
     errors.push(1);
   }
   if (!formData.value.courseCode) {
     errors.push(1);
   }
+  if (!formData.value.courceLanguageId) {
+    errors.push(1);
+  }
   return errors.length === 0;
+}
+const changeLang = (event) => {
+  if(event.value=== 2){
+    boolNameRu.value = true
+  }
+  if(event.value=== 3){
+    boolNameEn.value = true
+  }
+  disabledName.value = false
 }
 const approve = (event)=> {
   approving.value = true;
