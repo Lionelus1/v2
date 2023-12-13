@@ -43,15 +43,15 @@
     <div class="card">
       <TabView v-model:activeIndex="activeIndex" @tab-change="changeTab">
         <TabPanel :header="$t('common.properties')">
-          <div
+          <!-- <div
             v-if="event &&
               (isCurrentUserApproval && (event.status.work_plan_event_status_id === 1 || event.status.work_plan_event_status_id === 4 || event.status.work_plan_event_status_id === 6))">
             <Menubar :model="userMenuItems" :key="active" style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
-          </div>
+          </div> -->
 
-          <div v-if="isPlanCreator && event && event.status.work_plan_event_status_id === 5">
-            <!-- <Menubar :model="verifyMenu" :key="active" style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar> -->
-          </div>
+          <!-- <div v-if="isPlanCreator && event && event.status.work_plan_event_status_id === 5">
+            <Menubar :model="verifyMenu" :key="active" style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
+          </div> -->
           <div class="grid mt-3">
             <!-- p-sm-12 md:col-12 lg:col-6 p-xl-6 -->
             <div class="p-fluid" v-if="!isPlanCreator && (isPlanCreatorApproval || !isPlanCreator) &&
