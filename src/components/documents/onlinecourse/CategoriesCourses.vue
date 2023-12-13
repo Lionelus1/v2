@@ -22,7 +22,7 @@
       <Dropdown class="mb-4" placeholder="таңдаңыз" optionValue="id" :options="qualification" v-model="selectedItem" :optionLabel='"name"'/>
       <div class="cat_grid">
         <div v-for="(item, index) in filteredFieldEducation" :key="index" :style="{ 'background-image': 'url(' + item.filePath + ')' }"
-             class="grid_item p-4 relative p-4 col-12 sm:col-6 lg:col-12 xl:col-3" @click="showCourses(item)">
+             class="grid_item p-4 relative p-4 col-12 sm:col-6 lg:col-12 xl:col-3" @click="selectCourse(item)">
           <div class="text-white absolute">
             <h5 class="title">{{item['name_' + $i18n.locale] }}</h5>
             <div class="count_course">{{item.total}} {{$t('course.course')}}</div>
@@ -30,7 +30,7 @@
         </div>
       </div>
     </div>
-    <Courses v-if="selectedCategory"/>
+<!--    <Courses v-if="selectedCategory"/>-->
   </div>
 </template>
 <script>
@@ -44,8 +44,7 @@ import {fileRoute, smartEnuApi} from "@/config/config";
 export default{
   components: {
     Splide,
-    SplideSlide,
-    Courses
+    SplideSlide
   },
   setup() {
     const options =  {
@@ -182,8 +181,13 @@ export default{
       this.getCourseCategories();
       this.getCourses();
     },
+    selectFieldEducation(item) {
+      this.$router.push('/catcourses/' + item.id)
+      this.getCourseCategories();
+      this.getCourses();
+    },
     selectCourse(course) {
-      this.$router.push('/course/' + course.id)
+      this.$router.push('/courses/' + course.id)
     },
     onPage(event) {
       this.courseLazyParams = event
