@@ -44,7 +44,6 @@
       </div>
     </div>
   </Sidebar>
-
   <Sidebar v-model:visible="toCorrectSidebar" position="right" class="p-sidebar-lg " style="overflow-y: scroll">
     <div class="col-12">
       <h3>{{ $t('workPlan.toCorrect') }}</h3>

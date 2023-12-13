@@ -50,12 +50,12 @@
           </div>
 
           <div v-if="isPlanCreator && event && event.status.work_plan_event_status_id === 5">
-            <Menubar :model="verifyMenu" :key="active" style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
+            <!-- <Menubar :model="verifyMenu" :key="active" style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar> -->
           </div>
           <div class="grid mt-3">
             <!-- p-sm-12 md:col-12 lg:col-6 p-xl-6 -->
             <div class="p-fluid" v-if="!isPlanCreator && (isPlanCreatorApproval || !isPlanCreator) &&
-            event.status.work_plan_event_status_id !== 5 &&
+              event.status.work_plan_event_status_id !== 5 &&
               event.status.work_plan_event_status_id !== 2 && event.status.work_plan_event_status_id !== 6">
               <div class="field">
                 <label>{{ $t('workPlan.eventName') }}</label>
@@ -70,6 +70,7 @@
                 <TinyEditor v-if="plan && !plan.is_oper" v-model="result" :height="300" :style="{ height: '100%', width: '100%' }"
                   @selectionChange="editorChange" />
                 <TinyEditor v-if="plan && plan.is_oper" v-model="newResult" :height="300" @selectionChange="editorChange" />
+
               </div>
               <div class="field">
                 <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadFile($event)" :auto="true" :multiple="true"
@@ -105,13 +106,13 @@
                   <Divider align="left">
                     <div style="margin-bottom: 3px;">
                       <i class="fa-solid fa-user mr-1"></i><b>{{ item.user.fullName }}</b>&nbsp;
-                      <span :class="'customer-badge status-' + item.plan_event_result_history[0].state_id">{{ getResultStatus(item.plan_event_result_history[0].state_id) }}</span>
+                      <span :class="'customer-badge status-' + item.plan_event_result_history[0].state_id">{{
+                        getResultStatus(item.plan_event_result_history[0].state_id) }}</span>
                     </div>
 
                   </Divider>
                   <Inplace v-if="(loginedUserId === item.result_text[0].user.userID) && event &&
-                    (item.plan_event_result_history && item.plan_event_result_history[0].state_id === 6)"
-                           :active="item.isActive" @open="openInplace(item)">
+                    (item.plan_event_result_history && item.plan_event_result_history[0].state_id === 6)" :active="item.isActive" @open="openInplace(item)">
                     <template #display>
                       <div>
                         <span class="mr-1" style="float:left;"><i class="fa-solid fa-pen color-success"></i></span>
@@ -124,11 +125,49 @@
                         <Button :label="$t('common.save')" icon="pi pi-check" class="p-button p-button-success" @click="saveEditResult(item)"
                           :loading="loading" />
                         <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button ml-1" @click="cancelEdit(item)" />
-<!--                        <Button :label="$t('common.delete')" icon="pi pi-trash" class="p-button p-button-danger ml-1" @click="deleteConfirmItem($event, item)" />-->
+                        <!--                        <Button :label="$t('common.delete')" icon="pi pi-trash" class="p-button p-button-danger ml-1" @click="deleteConfirmItem($event, item)" />-->
                       </div>
                       <div class="field">
                         <TinyEditor v-model="item.result_text[0].text" :height="300" :style="{ height: '100%', width: '100%' }" />
                       </div>
+                      <!--Edit jaslaganda-->
+                      <div class="field">
+                        <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadFile($event)" :auto="true" :multiple="true"
+                          :chooseLabel="$t('smartenu.chooseAdditionalFile')"></FileUpload>
+                      </div>
+                      <div class="field">
+                        <div ref="content" class="p-fileupload-content">
+                          <div class="p-fileupload-files">
+                            <div class="p-fileupload-row" v-for="(file, index) of files" :key="index">
+                              <span class="mr-3"><i class="pi pi-paperclip"></i></span>
+                              <span>{{ file.name }}</span>
+                              <span class="ml-5">
+                                <Button icon="pi pi-times" class="p-button-rounded p-button-text" @click="removeFile(index)" />
+                              </span>
+                            </div>
+                          </div>
+                          <div class="p-fileupload-empty" v-if="files.length === 0">
+                            <slot name="empty"></slot>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="p-fileupload-files">
+                        <div class="p-fileupload-row" v-for="(file, index) of item.result_files" :key="index">
+                          <span class="mr-3" style="cursor: pointer;" @click="downloadFile(file.event_result_file)">
+                            <i class="fa-solid fa-file-arrow-down fa-lg color-success"></i></span>
+                          <span @click="downloadFile(file)" style="cursor: pointer;">{{
+                            file.file_name ? file.file_name : file.event_result_file
+                          }}</span>
+                          <span class="ml-5" v-if="file.user_id && file.user_id === loginedUserId"><Button icon="pi pi-times"
+                              class="p-button-rounded p-button-text"
+                              v-if="event && item.plan_event_result_history[0].state_id === 6"
+                              @click="deleteFileConfirm($event, file.id)" /></span>
+                        </div>
+                      </div>
+                      <div class="p-fileupload-empty" v-if="files.length === 0">
+                        <slot name="empty"></slot>
+                      </div>
+                      <!--End Edit jaslaganda-->
                     </template>
                   </Inplace>
                   <div v-else class="p-0">
@@ -159,19 +198,19 @@
                   </div>
                   <div style="margin-left: -12px;" v-if="isPlanCreator">
                     <!-- {{ item.result_text }} -->
-                    <Button v-if="(item.plan_event_result_history[0].state_id === 5)" icon="pi pi-fw pi-check" class="p-button-rounded p-button-text" @click="confirmToInspected(isInspected, item.user.userID, item.event_result_id)" :label="$t('common.action.accept')"></Button>
-                    <Button v-if="(item.plan_event_result_history[0].state_id === 5)" icon="pi pi-fw pi-times" class="p-button-rounded p-button-text" @click="showToCorrectSidebarNew(item.user.userID, item.event_result_id)"
-                      :label="$t('workPlan.toCorrect')"></Button>
+                    <Button v-if="(item.plan_event_result_history[0].state_id === 5)" icon="pi pi-fw pi-check" class="p-button-rounded p-button-text"
+                      @click="confirmToInspected(isInspected, item.user.userID, item.event_result_id)" :label="$t('common.action.accept')"></Button>
+                    <Button v-if="(item.plan_event_result_history[0].state_id === 5)" icon="pi pi-fw pi-times" class="p-button-rounded p-button-text"
+                      @click="showToCorrectSidebarNew(item.user.userID, item.event_result_id)" :label="$t('workPlan.toCorrect')"></Button>
                     <br /><br />
                     <!-- <hr style="border-top: 1px dotted #999;"/> -->
                   </div>
                   <div v-else class="p-0">
-                     <span style="float:right;margin-top: -7px;" v-if="isPlanCreator">
-                        <Button icon="pi pi-fw pi-check" class="p-button-rounded p-button-text" @click="verify(true)"
-                                :label="$t('common.action.accept')"></Button>
-                          <Button icon="pi pi-fw pi-times" class="p-button-rounded p-button-text" @click="showToCorrectSidebar()"
-                                  :label="$t('workPlan.toCorrect')"></Button>
-                      </span>
+                    <span style="float:right;margin-top: -7px;" v-if="isPlanCreator">
+                      <Button icon="pi pi-fw pi-check" class="p-button-rounded p-button-text" @click="verify(true)" :label="$t('common.action.accept')"></Button>
+                      <Button icon="pi pi-fw pi-times" class="p-button-rounded p-button-text" @click="showToCorrectSidebar()"
+                        :label="$t('workPlan.toCorrect')"></Button>
+                    </span>
                   </div>
 
                 </div>
@@ -569,7 +608,7 @@ export default {
       // }
 
       let comment = "";
-      if (this.isInspected){
+      if (this.isInspected) {
         comment = this.rejectComment
       }
 
@@ -727,9 +766,16 @@ export default {
       if (this.isFactChanged)
         fd.append("fact", this.fact)
       fd.append("text", item.result_text[0].text)
+      if (this.files.length > 0) {
+        for (let file of this.files) {
+          fd.append('files', file, this.authUser.fullName.replace(/ /g, '_') + "_" + file.name)
+        }
+      }
+      console.log("files: ", fd.files);
       this.planService.editEventResult(fd).then(res => {
         if (res.data.is_success) {
           this.getEvent();
+          this.files = [];
           this.$toast.add({ severity: 'success', detail: this.$t('common.done'), life: 3000 });
           item.isActive = false;
           this.loading = false;
@@ -948,6 +994,7 @@ export default {
     background: #10b981;
     color: #fff;
   }
+
   &.status-6 {
     background: #FFCDD2;
     color: #C63737;
