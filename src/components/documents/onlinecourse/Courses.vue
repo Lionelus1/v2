@@ -61,7 +61,8 @@ export default {
       sortOrder: null,
       sortField: null,
       courseId: null,
-      title: null
+      title: null,
+      eduFieldsId: null
     }
   },
   created() {
@@ -85,6 +86,7 @@ export default {
             this.courses.map(e => {
               e.filePath = smartEnuApi + fileRoute + e.logo
               this.title = e.field[0].name_kz
+              this.eduFieldsId = e.field[0].id
             });
             console.log(this.$i18n.locale,)
             this.total = response.data.total
@@ -97,7 +99,8 @@ export default {
       this.$router.push('/course/' + course.id)
     },
     goToAdd() {
-      this.$router.push({name: "AddCourse"})
+      console.log('9999',this.eduFieldsId)
+      this.$router.push({name: "AddCourse", params: {id: this.eduFieldsId}})
     },
     deleteCourse(data) {
       this.$confirm.require({

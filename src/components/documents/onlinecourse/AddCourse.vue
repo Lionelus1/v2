@@ -11,18 +11,18 @@
         <div class="field mt-3">
           <label for="course-code">{{ $t("fieldEducation.title") }}</label>
           <Dropdown optionValue="id" placeholder="таңдаңыз" :options="dataFieldEducation" :optionLabel='"name_" + $i18n.locale'
-                    v-model="formData.eduFieldsId"/>
+                    v-model="formData.eduFieldsId" disabled/>
           <small class="p-error" v-if="!formData.eduFieldsId && submitted">{{ $t("common.requiredField") }}</small>
+        </div>
+        <div class="field">
+          <label for="author">{{ $t("fieldEducation.courseAuthor") }}</label>
+          <InputText disabled v-model="$store.state.loginedUser.fullName" id="author" rows="3"/>
         </div>
         <div class="field mt-3">
           <label for="course-code">{{ $t("web.degreeLevel") }}</label>
           <Dropdown optionValue="id" placeholder="таңдаңыз" :options="dataAcademicDegrees" :optionLabel='"name_" + $i18n.locale'
                     v-model="formData.academicDegreeId"/>
           <small class="p-error" v-if="!formData.academicDegreeId && submitted">{{ $t("common.requiredField") }}</small>
-        </div>
-        <div class="field">
-          <label for="author">{{ $t("fieldEducation.courseAuthor") }}</label>
-          <InputText disabled v-model="$store.state.loginedUser.fullName" id="author" rows="3"/>
         </div>
         <div class="field mt-3">
           <label for="course-code">{{ $t("common.learnlang") }}</label>
@@ -87,35 +87,35 @@
               <label for="radio3">{{ $t('Смешанный') }}</label>
             </div>
           </Fieldset>
+          <small class="p-error" v-if="!formData.courseType && submitted">{{ $t("common.requiredField") }}</small>
         </div>
         <div class="card field mt-3">
           <label for="course-code">{{ $t("common.image") }}</label>
-          <div class="post-select-image-container">
+          <div class="post-select-image-container" v-if="!imagePreviewUrl">
             <div class="btn-select-image">
               <div class="btn-select-image-inner">
                 <i class="fa-regular fa-image"></i>
-                <CustomFileUpload @upload="uploadFile($event, 'abstractFile')" v-model="abstractFile" :multiple="false" />
-                {{abstractFile}}
-<!--                <small class="p-error" v-if="(!formData.hours && submitted)">{{ $t('common.requiredField')}}</small>-->
+                <CustomFileUpload @upload="handleFileChange($event)" v-model="abstractFile" :button="true" :multiple="false"/>
+                <!--                <small class="p-error" v-if="(!formData.hours && submitted)">{{ $t('common.requiredField')}}</small>-->
               </div>
             </div>
           </div>
-          <div>
-            <input type="file" @change="handleFileChange" accept="image/*" />
-            <div v-if="imagePreviewUrl">
-              <img :src="imagePreviewUrl" alt="Preview" />
-            </div>
+          <div v-if="imagePreviewUrl" class="news-image-container mt-2">
+            <img :src="imagePreviewUrl" alt="Preview"/>
+            <span class="btn-remove-image p-button p-button-danger p-button-sm" @click="delImg()">
+              <i class="fa-solid fa-xmark"></i>
+            </span>
           </div>
         </div>
 
         <div class="card field mt-3">
           <label for="course-code">{{ $t("fieldEducation.prerequisites") }}</label>
           <Dropdown placeholder="таңдаңыз" v-model="formData.prerequisitesId"/>
-          <Button :label="$t('fieldEducation.addPrerequisite')" class="p-button-outlined p-button-sm w-fit mt-2 mb-4" icon="pi pi-plus-circle"/>
+<!--          <Button :label="$t('fieldEducation.addPrerequisite')" class="p-button-outlined p-button-sm w-fit mt-2 mb-4" icon="pi pi-plus-circle"/>-->
           <br>
           <label for="course-code">{{ $t("fieldEducation.postrequisites") }}</label>
           <Dropdown placeholder="таңдаңыз" v-model="formData.postRequisitesId"/>
-          <Button :label="$t('fieldEducation.addPostrequisite')" class="p-button-outlined p-button-sm w-fit mt-2" icon="pi pi-plus-circle"/>
+<!--          <Button :label="$t('fieldEducation.addPostrequisite')" class="p-button-outlined p-button-sm w-fit mt-2" icon="pi pi-plus-circle"/>-->
         </div>
       </div>
     </div>
@@ -139,9 +139,10 @@ import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers.vu
 import {OnlineCourseService} from "@/service/onlinecourse.service";
 import CustomFileUpload from "@/components/CustomFileUpload.vue";
 import {fileRoute, smartEnuApi} from "@/config/config";
+import {useRoute} from "vue-router";
 
 const {t, locale} = useI18n()
-
+const route = useRoute()
 const date = ref();
 const toast = useToast();
 const i18n = useI18n();
@@ -214,19 +215,21 @@ const listLang = ref([
   {id: 3, lang: 'In English'},
 ])
 
+formData.value.eduFieldsId = parseInt(route.params.id)
 const handleFileChange = (event) => {
-  const file = event.target.files[0];
+  console.log(event)
+  const file = event.files[0];
   if (file) {
     previewImage(file);
   }
 }
 const previewImage = (file) => {
-  const reader = new FileReader();
+  imagePreviewUrl.value = URL.createObjectURL(file);
+}
 
-  reader.onload = () => {
-    imagePreviewUrl.value = reader.result;
-  };
-  reader.readAsDataURL(file);
+const delImg = () => {
+  imagePreviewUrl.value = URL.revokeObjectURL
+  imagePreviewUrl.value = null
 }
 
 const getFieldEducation = () => {
@@ -291,7 +294,7 @@ const isValid = () => {
 
 const uploadFile = (file, ufile) => {
   ufile = file;
-  abstractFile.value = smartEnuApi + fileRoute + file.name
+  abstractFile.value = file.files
 }
 const changeLang = (event) => {
   if (event.value === 2) {
@@ -395,5 +398,6 @@ const closeDialog = (dialog) => {
   top: 0;
   color: #fff;
   cursor: pointer;
+  width: fit-content;
 }
 </style>
