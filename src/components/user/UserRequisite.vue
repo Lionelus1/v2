@@ -99,9 +99,6 @@
               banks.value = res.data
           }
 
-          console.log(banks.value)
-          console.log(bank.value)
-
       }).catch(err => {
           toast.add({severity: 'error', summary: t('common.error'), life: 3000})
       })
@@ -140,6 +137,7 @@
         summary: t('message.actionError'),
         life: 3000,
       })
+      checkRequisite.value = true
     })
   }
 
