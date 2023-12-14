@@ -3,7 +3,7 @@
         <BlockUI :blocked="saving" :fullScreen="true"></BlockUI>
         <TitleBlock :title="$t('Онлайн курсы - Курсы - Наука в области химии')" :show-back-button="true"/>
         <div class="course_card flex p-4">
-          <img src="https://www.hult.edu/blog/media/uploads/2020/12/photo-1503945438517-f65904a52ce6.jpg" alt="">
+          <img :src="course.logo" alt="">
           <div class="text text-white">
             <div class="flex mb-4">
               <h5 class="mb-0 mr-2">{{ course["name" + $i18n.locale] }}</h5>
@@ -340,7 +340,7 @@
 </template>
 <script>
 import {OnlineCourseService} from "@/service/onlinecourse.service";
-import {smartEnuApi, getHeader, findRole} from "@/config/config";
+import {smartEnuApi, getHeader, findRole, fileRoute} from "@/config/config";
 import api from "@/service/api";
 import QrGenerator from "@/components/QrGenerator.vue";
 import {ref} from "vue";
@@ -588,6 +588,8 @@ export default {
             this.loading = true
             this.service.getCourse(this.course_id).then(response => {
                 this.course = response.data
+                this.course.logo = smartEnuApi + fileRoute + this.course.logo
+              console.log(this.course.logo)
                 /*if (this.course.students) {
                     this.course.students = response.data.students
                 } else {
@@ -745,7 +747,10 @@ export default {
   background: #293042;
   img{
     margin-right: 20px;
-    width: 15%;
+    width: 240px;
+    height: 160px;
+    object-fit: cover;
+    //object-position: bottom;
   }
 }
 .course_footer{

@@ -31,7 +31,7 @@ export class OnlineCourseService {
         return api.post('/onlinecourse/courses', data, {headers:getHeader()});
     }
     getCourseFieldId(id) {
-        return api.post(`/onlinecourse/getCourseFieldId/${id}`, {headers:getHeader()});
+        return api.post(`/onlinecourse/getCourseFieldId/${id}`, {}, {headers:getHeader()});
     }
     getModulesByCourseID(courseID) {
         return api.get(`/onlinecourse/getModulesByCourseId/${courseID}`, { headers: getHeader() });

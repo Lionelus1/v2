@@ -113,7 +113,7 @@ import {ref} from "vue";
 import {useI18n} from "vue-i18n";
 
 const {t, locale} = useI18n()
-const active = ref(1);
+const active = ref(0);
 const items = ref([
   {
     label: 'Формирование ОП'

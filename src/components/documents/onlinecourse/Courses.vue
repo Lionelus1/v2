@@ -1,6 +1,9 @@
 <template>
   <ConfirmPopup></ConfirmPopup>
-  <TitleBlock :title="$t('course.courses')" :show-back-button="true"/>
+  <div class="flex align-items-center">
+    <TitleBlock :title="$t('fieldEducation.title')" :show-back-button="true"/>
+    <h3 class="mt-0">: {{title}}</h3>
+  </div>
   <div class="card mt-3 p-5">
     <div class="right mb-4">
       <Button @click="goToAdd()" icon="pi pi-plus-circle" label="Добавить курс" />
@@ -10,9 +13,9 @@
       <div class="grid_item_rating" v-for="(item, index) in courses" :key="index">
         <img :src="item.filePath" alt="" @click="selectCourse(item)">
         <div class="text p-3 cursor-pointer" @click="selectCourse(item)">
-          <h5 class="title font-semibold">{{ item['name' + $i18n.locale] }}</h5>
+          <h5 class="title font-semibold" :title="item['name' + $i18n.locale]">{{ item['name' + $i18n.locale] }}</h5>
           <p>{{ $t('fieldEducation.courseAuthor') }}: {{ item.AutorFullName }}</p>
-          <p>05.10.2023</p>
+          <p>{{ formatDate(item.createDate) }}</p>
           <p><i class="pi pi-star-fill text-yellow-500"></i> 4,9</p>
         </div>
         <div class="grid_footer flex justify-content-between align-items-center p-3">
@@ -28,39 +31,12 @@
 
 </template>
 <script>
-import {Splide, SplideSlide} from "@splidejs/vue-splide";
 import "@splidejs/splide/dist/css/splide.min.css";
-import {Grid} from '@splidejs/splide-extension-grid';
 import {OnlineCourseService} from "@/service/onlinecourse.service";
 import {fileRoute, smartEnuApi} from "@/config/config";
+import { formatDate } from "@/helpers/HelperUtil";
 
 export default {
-  setup() {
-    const options = {
-      perPage: 3,
-      perMove: 1,
-      padding: 45,
-      grid: {
-        rows: 2,
-        cols: 1,
-      },
-      breakpoints: {
-        600: {
-          perPage: 1,
-          grid: {
-            rows: 1,
-            cols: 1,
-          },
-        },
-      },
-    };
-    return {
-      options: options,
-      extensions: {
-        Grid
-      },
-    };
-  },
   data() {
     return {
       loading: false,
@@ -76,7 +52,6 @@ export default {
         Rows: 10,
         categoryID: this.$route.params.categoryID != undefined ? Number(this.$route.params.categoryID) : null,
       },
-      categories: [],
       category: null,
       courses: [],
       course: null,
@@ -85,12 +60,12 @@ export default {
       sortKey: null,
       sortOrder: null,
       sortField: null,
-      courseId: null
+      courseId: null,
+      title: null
     }
   },
   created() {
     this.courseId = parseInt(this.$route.params.courseID)
-    this.getCourseCategories();
     this.getCourses();
   },
   watch: {
@@ -98,52 +73,28 @@ export default {
       if (to.path === '/courses') {
         this.catLazyParams.parentID = null;
       }
-      this.getCourseCategories();
       this.getCourses();
     }
   },
   methods: {
-    getCourseCategories() {
-      this.loading = true,
-          this.service.getCourseCategories(this.catLazyParams).then(response => {
-            if (this.catLazyParams.parentID) {
-              this.category.children = response.data.categories;
-            } else {
-              this.categories = response.data.categories
-              this.total = response.data.total
-            }
-            this.loading = false
-            this.myOptions - this.options
-          }).catch(_ => {
-            this.loading = false
-          });
-    },
+    formatDate,
     getCourses() {
       this.loading = true,
           this.service.getCourseFieldId(this.courseId).then(response => {
-            console.log(response)
             this.courses = response.data
             this.courses.map(e => {
               e.filePath = smartEnuApi + fileRoute + e.logo
+              this.title = e.field[0].name_kz
             });
+            console.log(this.$i18n.locale,)
             this.total = response.data.total
             this.loading = false
           }).catch(_ => {
             this.loading = false
           });
     },
-    selectCategory(category) {
-      this.$router.push('/catcourses/' + category.id)
-      this.catLazyParams.parentID = category.id
-      this.getCourseCategories();
-      this.getCourses();
-    },
     selectCourse(course) {
       this.$router.push('/course/' + course.id)
-    },
-    onPage(event) {
-      this.courseLazyParams = event
-      this.getCourses();
     },
     goToAdd() {
       this.$router.push({name: "AddCourse"})
@@ -190,6 +141,13 @@ export default {
   }
   .grid_footer{
     border-top: 1px solid #ccc
+  }
+  .title{
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    display: -webkit-box;
+    display: -moz-box;
+    overflow: hidden;
   }
 }
 
