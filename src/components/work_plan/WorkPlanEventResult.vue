@@ -43,11 +43,11 @@
     <div class="card">
       <TabView v-model:activeIndex="activeIndex" @tab-change="changeTab">
         <TabPanel :header="$t('common.properties')">
-          <!-- <div
+          <div
             v-if="event &&
               (isCurrentUserApproval && (event.status.work_plan_event_status_id === 1 || event.status.work_plan_event_status_id === 4 || event.status.work_plan_event_status_id === 6))">
             <Menubar :model="userMenuItems" :key="active" style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
-          </div> -->
+          </div>
 
           <!-- <div v-if="isPlanCreator && event && event.status.work_plan_event_status_id === 5">
             <Menubar :model="verifyMenu" :key="active" style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
@@ -159,8 +159,7 @@
                             file.file_name ? file.file_name : file.event_result_file
                           }}</span>
                           <span class="ml-5" v-if="file.user_id && file.user_id === loginedUserId"><Button icon="pi pi-times"
-                              class="p-button-rounded p-button-text"
-                              v-if="event && item.plan_event_result_history[0].state_id === 6"
+                              class="p-button-rounded p-button-text" v-if="event && item.plan_event_result_history[0].state_id === 6"
                               @click="deleteFileConfirm($event, file.id)" /></span>
                         </div>
                       </div>
@@ -240,7 +239,32 @@
           </div>
         </TabPanel>
         <TabPanel :header="$t('common.history')">
-          <DataTable :value="history" class="p-datatable-sm" responsiveLayout="scroll">
+          <!-- {{ history }} -->
+          <table>
+            <thead>
+              <tr style="font-weight: bolder;">
+                <td>ID</td>
+                <td>{{ $t('common.date') }}</td>
+                <td>{{ $t('common.user') }}</td>
+                <td>{{ $t('common.actionTitle') }}</td>
+              </tr>
+            </thead>
+            <tbody>
+              <template v-for="event in history" :key="event.event_result_id">
+                <template v-if="event.plan_event_result_history">
+                  <tr v-for="historyItem in event.plan_event_result_history" :key="historyItem.id">
+                    <td>{{ historyItem.id }}</td>
+                    <td>{{ formatDateMoment(historyItem.modi_date) }}</td>
+                    <td>{{ historyItem.modi_user.fullName }}</td>
+                    <td>{{ getHistoryStatus(historyItem.state_id) }}</td>
+                  </tr>
+                </template>
+              </template>
+            </tbody>
+          </table>
+
+
+          <!-- <DataTable :value="history" class="p-datatable-sm" responsiveLayout="scroll">
             <Column field="id" header="ID"></Column>
             <Column :header="$t('common.date')">
               <template #body="{ data }">
@@ -257,7 +281,7 @@
                 {{ data.state ? $t(`common.states.${data.state}`) : "" }}
               </template>
             </Column>
-          </DataTable>
+          </DataTable> -->
         </TabPanel>
       </TabView>
     </div>
@@ -335,6 +359,16 @@ export default {
       isCurrentUserApproval: false,
       planService: new WorkPlanService(),
       resultStatus: [
+        { name_kz: "Тексерілуде", name_ru: "На проверке", name_en: "On inspection", id: 5 },
+        { name_kz: "Түзетуде", name_ru: "На доработке", name_en: "Under revision", id: 6 },
+        { name_kz: "Тексерілді", name_ru: "Проверено", name_en: "Inspected", id: 7 },
+
+      ],
+      historyStatus: [
+        { name_kz: "Жоспарланды", name_ru: "Запланировано", name_en: "Planned", id: 1 },
+        { name_kz: "Орындалды", name_ru: "Выполнено", name_en: "Done", id: 2 },
+        { name_kz: "Орындалмады", name_ru: "Не выполнено", name_en: "Not done", id: 3 },
+        { name_kz: "Жартылай орындалды", name_ru: "Частично выполнено", name_en: "Partially completed", id: 4 },
         { name_kz: "Тексерілуде", name_ru: "На проверке", name_en: "On inspection", id: 5 },
         { name_kz: "Түзетуде", name_ru: "На доработке", name_en: "Under revision", id: 6 },
         { name_kz: "Тексерілді", name_ru: "Проверено", name_en: "Inspected", id: 7 },
@@ -462,15 +496,15 @@ export default {
             this.saveResult();
           },
         },
-        {
-          label: this.$t('common.toCorrect'),
-          icon: "pi pi-fw pi-send",
-          disabled: !this.resultData,
-          visible: !this.authUser.mainPosition.department.isFaculty,
-          command: () => {
-            this.sendResultForVerification();
-          },
-        },
+        // {
+        //   label: this.$t('common.toCorrect'),
+        //   icon: "pi pi-fw pi-send",
+        //   disabled: !this.resultData,
+        //   visible: !this.authUser.mainPosition.department.isFaculty,
+        //   command: () => {
+        //     this.sendResultForVerification();
+        //   },
+        // },
       ];
       return menu;
     },
@@ -538,21 +572,23 @@ export default {
       });
     },
     getResultHistory() {
-      this.planService.getEventResultHistory(this.resultData.event_result_id).then(res => {
-        if (res.data) {
-          this.history = res.data;
-        }
-      }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
-      });
+      this.history = this.resultData
+      // this.planService.getEventResultHistory(this.resultData[0].event_result_id).then(res => {
+      //   if (res.data) {
+      //     console.log(res.data);
+      //     this.history = res.data;
+      //   }
+      // }).catch(error => {
+      //   if (error.response && error.response.status === 401) {
+      //     this.$store.dispatch("logLout");
+      //   } else {
+      //     this.$toast.add({
+      //       severity: "error",
+      //       summary: error,
+      //       life: 3000,
+      //     });
+      //   }
+      // });
     },
     showToCorrectSidebar() {
       this.toCorrectSidebar = true;
@@ -613,7 +649,6 @@ export default {
       }
 
       this.planService.verifyEventResultHistory(this.isInspected, comment, this.resultUserId, this.user_id, this.eventResultId).then(res => {
-        //console.log(res);
         if (res.data) {
           //this.toCorrectSidebar = false;
           this.$toast.add({
@@ -771,7 +806,7 @@ export default {
           fd.append('files', file, this.authUser.fullName.replace(/ /g, '_') + "_" + file.name)
         }
       }
-      console.log("files: ", fd.files);
+      //console.log("files: ", fd.files);
       this.planService.editEventResult(fd).then(res => {
         if (res.data.is_success) {
           this.getEvent();
@@ -929,6 +964,24 @@ export default {
         return null;
       }
     },
+    getHistoryStatus(code) {
+      const foundStatus = this.historyStatus.find(status => status.id === code);
+
+      if (foundStatus) {
+        switch (this.$i18n.locale) {
+          case "kz":
+            return foundStatus.name_kz;
+          case "ru":
+            return foundStatus.name_ru;
+          case "en":
+            return foundStatus.name_en;
+          default:
+            return null;
+        }
+      } else {
+        return null;
+      }
+    },
   }
 }
 </script>
@@ -1036,5 +1089,17 @@ export default {
 
 ::v-deep(.p-divider-solid.p-divider-horizontal:before) {
   border-top-style: solid !important;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  border-bottom: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
 }
 </style>

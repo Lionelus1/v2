@@ -38,43 +38,39 @@
     </div>
     <div class="card" v-if="plan">
       <!-- {{ plan.doc_info.docHistory.stateId }}{{  !(plan.doc_info.docHistory.stateId === 2) }} -->
-      <work-plan-event-add v-if="(isPlanCreator || isCreator || isEventsNull) && !isFinish" :items="data" :isMain="true"
-        :plan-data="plan"></work-plan-event-add>
-      <Button v-if="isPlanCreator && !isFinish" :label="$t('common.complete')" icon="pi pi-check" @click="finish"
-        class="p-button p-button-danger ml-2" />
-      <work-plan-approve v-if="isPlanCreator && (plan.doc_info.docHistory.stateId === 1) && isFinish" :plan="plan"
-        :events="data" @isSent="planSentToApprove"></work-plan-approve>
-      <Button v-if="isFinish && !(plan.doc_info.docHistory.stateId === 1)"
-        :label="$t('workPlan.viewPlan')" icon="pi pi-eye" @click="signView" class="p-button p-button-info ml-2" />
-      <Button v-if="isFinish && (isApproval || isPlanCreator || isAdmin) && (plan.doc_info.docHistory.stateId === 3)"
-        :label="$t('workPlan.reports')" @click="navigateToReports" class="p-button p-button-info ml-2" />
+      <work-plan-event-add v-if="(isPlanCreator || isCreator || isEventsNull) && !isFinish" :items="data" :isMain="true" :plan-data="plan"></work-plan-event-add>
+      <Button v-if="isPlanCreator && !isFinish" :label="$t('common.complete')" icon="pi pi-check" @click="finish" class="p-button p-button-danger ml-2" />
+      <work-plan-approve v-if="isPlanCreator && (plan.doc_info.docHistory.stateId === 1) && isFinish" :plan="plan" :events="data"
+        @isSent="planSentToApprove"></work-plan-approve>
+      <Button v-if="isFinish && !(plan.doc_info.docHistory.stateId === 1)" :label="$t('workPlan.viewPlan')" icon="pi pi-eye" @click="signView"
+        class="p-button p-button-info ml-2" />
+      <Button v-if="isFinish && (isApproval || isPlanCreator || isAdmin) && (plan.doc_info.docHistory.stateId === 3)" :label="$t('workPlan.reports')"
+        @click="navigateToReports" class="p-button p-button-info ml-2" />
     </div>
     <div class="card">
 
-      <TreeTable ref="workplantreetable" class="p-treetable-sm" :value="data" :lazy="true" :loading="loading"
-        @nodeExpand="onExpand" scrollHeight="flex" responsiveLayout="scroll" :resizableColumns="true"
-        columnResizeMode="fit" showGridlines :paginator="true" :rows="10" :total-records="total" @page="onPage($event)">
+      <TreeTable ref="workplantreetable" class="p-treetable-sm" :value="data" :lazy="true" :loading="loading" @nodeExpand="onExpand" scrollHeight="flex"
+        responsiveLayout="scroll" :resizableColumns="true" columnResizeMode="fit" showGridlines :paginator="true" :rows="10" :total-records="total"
+        @page="onPage($event)">
         <template #header>
           <div class="flex justify-content-between align-items-center">
             <h5 class="m-0">{{ $t('workPlan.events') }} |
               <router-link tag="a" to="/work-plan">{{ $t('workPlan.plans') }}</router-link>
             </h5>
-            <Button type="button" icon="pi pi-search" :label="$t('common.search')"
-              @click="toggle('global-filter', $event)" aria:haspopup="true" aria-controls="overlay_panel"
-              class="p-input-icon-left">
+            <Button type="button" icon="pi pi-search" :label="$t('common.search')" @click="toggle('global-filter', $event)" aria:haspopup="true"
+              aria-controls="overlay_panel" class="p-input-icon-left">
               <i class="fa-solid fa-filter fa-xl"></i>&nbsp;{{ $t('common.filter') }}
             </Button>
             <OverlayPanel ref="global-filter">
               <div class="p-fluid">
                 <div class="field">
                   <label>{{ $t('workPlan.eventName') }}</label>
-                  <InputText class="mt-2" type="text" :placeholder="$t('workPlan.eventName')"
-                    v-model="filters.name.value" />
+                  <InputText class="mt-2" type="text" :placeholder="$t('workPlan.eventName')" v-model="filters.name.value" />
                 </div>
                 <div class="field">
                   <label for="status-filter">{{ $t('common.status') }}</label>
-                  <Dropdown v-model="filters.status.value" optionValue="" :options="statuses"
-                    :placeholder="$t('common.select')" class="p-column-filter" :showClear="true">
+                  <Dropdown v-model="filters.status.value" optionValue="" :options="statuses" :placeholder="$t('common.select')" class="p-column-filter"
+                    :showClear="true">
                     <template #value="slotProps">
                       <span v-if="slotProps.value" :class="'customer-badge status-' + slotProps.value.id">
                         {{
@@ -161,10 +157,8 @@
         <Column field="result" :header="plan && plan.is_oper ? $t('common.additionalInfo') : $t('common.result')">
           <template #body="{ node }">
             <div v-if="node.result && node.result.length > 150">
-              <Button type="button" @click="toggle('event-final-result', $event)" class="p-button-rounded"
-                icon="fa-solid fa-eye" label="" />
-              <OverlayPanel ref="event-final-result" :showCloseIcon="true" style="width: 450px"
-                :breakpoints="{ '960px': '75vw' }">
+              <Button type="button" @click="toggle('event-final-result', $event)" class="p-button-rounded" icon="fa-solid fa-eye" label="" />
+              <OverlayPanel ref="event-final-result" :showCloseIcon="true" style="width: 450px" :breakpoints="{ '960px': '75vw' }">
                 <div>{{ node.result }}</div>
               </OverlayPanel>
             </div>
@@ -178,30 +172,30 @@
             <span :class="'customer-badge status-' + node.status.work_plan_event_status_id">{{
               $i18n.locale === "kz" ? node.status.name_kz : $i18n.locale === "ru" ? node.status.name_ru :
               node.status.name_en
-              }}</span>
+            }}</span>
           </template>
         </Column>
         <Column field="actions" header="">
-          <template #body="{node}">
+          <template #body="{ node }">
             <div>
+              <Button v-if="isPlanCreator && node.status.work_plan_event_status_id == 8" @click="updateConfirmEvent(node.work_plan_event_id)" class="mr-2" icon="pi pi-check" label=""
+                severity="success" />
               <!--              (parseInt(node.quarter.String) === currentQuarter || parseInt(node.quarter.String) === 5)-->
               <Button v-if="(isPlanCreator || isUserApproval(node)) && (plan.doc_info.docHistory.stateId === 3) &&
-              (node.status.work_plan_event_status_id === 1 ||
-              node.status.work_plan_event_status_id === 4 ||
-              node.status.work_plan_event_status_id === 5 ||
-              node.status.work_plan_event_status_id === 6)"
-                  label="" icon="pi pi-eye" @click="openPlanExecuteSidebar(node)" class="mr-2" />
+                (node.status.work_plan_event_status_id === 1 ||
+                  node.status.work_plan_event_status_id === 4 ||
+                  node.status.work_plan_event_status_id === 5 ||
+                  node.status.work_plan_event_status_id === 6 ||
+                  node.status.work_plan_event_status_id === 8)" label="" icon="pi pi-eye" @click="openPlanExecuteSidebar(node)" class="mr-2" />
 
-<!--              <work-plan-event-result-modal
+              <!--              <work-plan-event-result-modal
                 v-if="showEventResultModal(node)"
                 :event-result="node.event_result" :eventData="node"
                 :plan-data="plan"></work-plan-event-result-modal>-->
-              <work-plan-event-add v-if="isPlanCreator && !isPlanSentApproval && !isFinish" :data="node"
-                :items="node.children" :isMain="false" :plan-data="plan"></work-plan-event-add>
-              <work-plan-event-edit-modal v-if="isPlanCreator && !isPlanSentApproval && !isFinish" :planData="plan"
-                :event="node"></work-plan-event-edit-modal>
-              <Button v-if="isPlanCreator && !isPlanSentApproval && !isFinish"
-                @click="remove_event(node.work_plan_event_id)" icon="pi pi-trash"
+              <work-plan-event-add v-if="isPlanCreator && !isPlanSentApproval && !isFinish" :data="node" :items="node.children" :isMain="false"
+                :plan-data="plan"></work-plan-event-add>
+              <work-plan-event-edit-modal v-if="isPlanCreator && !isPlanSentApproval && !isFinish" :planData="plan" :event="node"></work-plan-event-edit-modal>
+              <Button v-if="isPlanCreator && !isPlanSentApproval && !isFinish" @click="remove_event(node.work_plan_event_id)" icon="pi pi-trash"
                 class="p-button-danger ml-1 mt-1" label=""></Button>
             </div>
           </template>
@@ -217,26 +211,27 @@
       </TreeTable>
     </div>
   </div>
-  
+
   <Sidebar v-model:visible="showReportDoc" position="right" class="p-sidebar-lg" style="overflow-y: scroll">
     <DocSignaturesInfo :docIdParam="plan.doc_id" :isInsideSidebar="true"></DocSignaturesInfo>
   </Sidebar>
 
-  <Sidebar v-model:visible="isShowPlanExecute" position="right" style="overflow-y: scroll; width: 50%;" v-if="isShowPlanExecute && selectedEvent" @hide="sideBarClosed">
+  <Sidebar v-model:visible="isShowPlanExecute" position="right" style="overflow-y: scroll; width: 50%;" v-if="isShowPlanExecute && selectedEvent"
+    @hide="sideBarClosed">
     <WorkPlanEventResult :result-id="selectedEvent.work_plan_event_id" />
   </Sidebar>
 </template>
 
 <script>
 import WorkPlanEventAdd from "@/components/work_plan/WorkPlanEventAdd";
-import {findRole} from "@/config/config";
+import { findRole } from "@/config/config";
 import WorkPlanApprove from "@/components/work_plan/WorkPlanApprove";
 import WorkPlanExecute from "@/components/work_plan/WorkPlanExecute";
 import WorkPlanEventResultModal from "@/components/work_plan/WorkPlanEventResultModal";
 import WorkPlanEventEditModal from "@/components/work_plan/WorkPlanEventEditModal";
 import moment from "moment";
-import {FilterMatchMode} from "primevue/api";
-import {WorkPlanService} from "@/service/work.plan.service";
+import { FilterMatchMode } from "primevue/api";
+import { WorkPlanService } from "@/service/work.plan.service";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo"
 import WorkPlanEventResult from "@/components/work_plan/WorkPlanEventResult.vue";
 
@@ -428,8 +423,8 @@ export default {
   },
   methods: {
     findRole: findRole,
-    signView(node){
-        this.showReportDoc = true;
+    signView(node) {
+      this.showReportDoc = true;
     },
     toggle2(node) {
       this.actionsNode = node
@@ -671,13 +666,46 @@ export default {
     },
     showEventResultModal(node) {
       return (this.isPlanCreator && !this.isUserResp(node.user) &&
-              !(node.status.work_plan_event_status_id === 4 || node.status.work_plan_event_status_id === 6)) ||
-          node.status.work_plan_event_status_id === 5 || node.status.work_plan_event_status_id === 2;
+        !(node.status.work_plan_event_status_id === 4 || node.status.work_plan_event_status_id === 6)) ||
+        node.status.work_plan_event_status_id === 5 || node.status.work_plan_event_status_id === 2;
     },
     openPlanExecuteSidebar(node) {
       this.isShowPlanExecute = true;
       this.selectedEvent = node;
-    }
+    },
+
+    updateEventStatus(eventId) {
+      this.planService.updateEventStatus({ event_id: eventId, status_code: 2 }).then(res => {
+        if (res.data.is_success) {
+          this.$toast.add({ severity: 'success', summary: this.$t('common.success'), life: 3000 });
+          this.getPlan();
+          this.getEventsTree(this.parentNode);
+        }
+      }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+      });
+
+    },
+    updateConfirmEvent(eventId) {
+      this.$confirm.require({
+        message: this.$t('common.confirmation'),
+        header: this.$t('common.confirm'),
+        icon: 'pi pi-info-circle',
+        acceptClass: 'p-button-rounded p-button-success',
+        rejectClass: 'p-button-rounded p-button-danger',
+        accept: () => {
+          this.updateEventStatus(eventId);
+        }
+      });
+    },
   },
   /*unmounted() {
     localStorage.removeItem("workPlan");
@@ -727,6 +755,10 @@ export default {
   display: inline-block;
   text-align: center;
 
+  &.status-8 {
+    background: #66cd5e;
+    color: #faf8f8;
+  }
   &.status-6 {
     background: #FFCDD2;
     color: #C63737;

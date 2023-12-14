@@ -85,6 +85,10 @@ export class WorkPlanService {
         return api.post(`/workPlan/verifyEventResult`, data, {headers: getHeader()});
     }
 
+    updateEventStatus(data) {
+        return api.post(`/workPlan/updateEventStatus`, data, {headers: getHeader()});
+    }
+
     verifyEventResultHistory(isInspection, RejectComment, userID, SenderUserID, resultID) {
         return api.post(`/workPlan/verifyEventResultHistory`, {is_inspection: isInspection, comment: RejectComment, user_id: parseInt(userID), sender_user_id: parseInt(SenderUserID), result_id: parseInt(resultID)}, {headers: getHeader()});
     }
