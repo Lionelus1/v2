@@ -19,7 +19,7 @@
           <p><i class="pi pi-star-fill text-yellow-500"></i> 4,9</p>
         </div>
         <div class="grid_footer flex justify-content-between align-items-center p-3">
-          <Tag value="ОПУБЛИКОВАНО" severity="success"></Tag>
+          <Tag v-if="item.status" :value="item.status[0]['name' + $i18n.locale]" severity="success"></Tag>
           <i class="pi pi-pencil text-primary-500"></i>
           <i class="pi pi-trash text-red-500 cursor-pointer" @click="deleteCourse()"></i>
           <i class="pi pi-list"></i>
@@ -62,7 +62,6 @@ export default {
       sortField: null,
       courseId: null,
       title: null,
-      eduFieldsId: null
     }
   },
   created() {
@@ -86,7 +85,6 @@ export default {
             this.courses.map(e => {
               e.filePath = smartEnuApi + fileRoute + e.logo
               this.title = e.field[0].name_kz
-              this.eduFieldsId = e.field[0].id
             });
             console.log(this.$i18n.locale,)
             this.total = response.data.total
@@ -99,7 +97,7 @@ export default {
       this.$router.push('/course/' + course.id)
     },
     goToAdd() {
-      this.$router.push({name: "AddCourse", params: {id: this.eduFieldsId}})
+      this.$router.push({name: "AddCourse", params: {id: this.courseId}})
     },
     deleteCourse(data) {
       this.$confirm.require({
@@ -189,6 +187,9 @@ export default {
 .splide__slide img {
   display: block;
   width: 100%;
+}
+.p-tag-value{
+  text-transform: uppercase;
 }
 @media (max-width: 1450px) {
   .course_grid {

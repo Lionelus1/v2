@@ -32,8 +32,12 @@
         </div>
         <div class="field mt-3">
           <label for="course-name">{{ $t("fieldEducation.courseName") }}</label>
-          <InputText id="course-name" v-model="formData.namekz" :disabled="disabledName"/>
-          <small class="p-error" v-if="!formData.namekz && submitted">{{ $t("common.requiredField") }}</small>
+          <InputText v-if="formData.courceLanguageId === 1" v-model="formData.namekz" />
+          <InputText v-if="formData.courceLanguageId === 2" v-model="formData.nameru" />
+          <InputText v-if="formData.courceLanguageId === 3" v-model="formData.nameen" />
+          <small class="p-error" v-if="formData.courceLanguageId === 1 && !formData.namekz && submitted">{{ $t("common.requiredField") }}</small>
+          <small class="p-error" v-if="formData.courceLanguageId === 2 && !formData.nameru && submitted">{{ $t("common.requiredField") }}</small>
+          <small class="p-error" v-if="formData.courceLanguageId === 3 && !formData.nameen && submitted">{{ $t("common.requiredField") }}</small>
         </div>
         <!--        <div class="field mt-3" v-if="boolNameRu">
                   <label for="course-name">ru</label>
@@ -53,13 +57,21 @@
 
         <div class="field mt-3">
           <label for="course-code">{{ $t("fieldEducation.purposeCourse") }}</label>
-          <Textarea id="course-code" rows="5" v-model="formData.descriptionkz"/>
-          <small class="p-error" v-if="!formData.descriptionkz && submitted">{{ $t("common.requiredField") }}</small>
+          <Textarea v-if="formData.courceLanguageId === 1" rows="5" v-model="formData.descriptionkz"/>
+          <Textarea v-if="formData.courceLanguageId === 2" rows="5" v-model="formData.descriptionru"/>
+          <Textarea v-if="formData.courceLanguageId === 3" rows="5" v-model="formData.descriptionen"/>
+          <small class="p-error" v-if="formData.courceLanguageId === 1 && !formData.descriptionkz && submitted">{{ $t("common.requiredField") }}</small>
+          <small class="p-error" v-if="formData.courceLanguageId === 2 && !formData.descriptionru && submitted">{{ $t("common.requiredField") }}</small>
+          <small class="p-error" v-if="formData.courceLanguageId === 3 && !formData.descriptionen && submitted">{{ $t("common.requiredField") }}</small>
         </div>
         <div class="field mt-3">
           <label for="course-code">{{ $t("fieldEducation.briefSummary") }}</label>
-          <Textarea id="course-code" rows="3" v-model="formData.annotationKz"/>
-          <small class="p-error" v-if="!formData.annotationKz && submitted">{{ $t("common.requiredField") }}</small>
+          <Textarea v-if="formData.courceLanguageId === 1" rows="3" v-model="formData.annotationKz"/>
+          <Textarea v-if="formData.courceLanguageId === 2" rows="3" v-model="formData.annotationRu"/>
+          <Textarea v-if="formData.courceLanguageId === 3" rows="3" v-model="formData.annotationEN"/>
+          <small class="p-error" v-if="formData.courceLanguageId === 1 && !formData.annotationKz && submitted">{{ $t("common.requiredField") }}</small>
+          <small class="p-error" v-if="formData.courceLanguageId === 2 && !formData.annotationRu && submitted">{{ $t("common.requiredField") }}</small>
+          <small class="p-error" v-if="formData.courceLanguageId === 3 && !formData.annotationEN && submitted">{{ $t("common.requiredField") }}</small>
         </div>
       </div>
     </div>
@@ -138,17 +150,19 @@ import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers.vu
 import {OnlineCourseService} from "@/service/onlinecourse.service";
 import CustomFileUpload from "@/components/CustomFileUpload.vue";
 import {fileRoute, smartEnuApi} from "@/config/config";
-import {useRoute} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 import {useStore} from "vuex";
 
 const {t, locale} = useI18n()
 const route = useRoute()
+const router = useRouter()
 const store = useStore()
 const date = ref();
 const toast = useToast();
 const i18n = useI18n();
 const formData = ref({})
 formData.value.eduFieldsId = parseInt(route.params.id)
+formData.value.courceLanguageId = 1
 const submitted = ref(false)
 const selectedUsers = ref([
   {
@@ -216,9 +230,9 @@ const listLang = ref([
   {id: 2, lang: 'На русском'},
   {id: 3, lang: 'In English'},
 ])
-
 const handleFileChange = (event) => {
-  abstractFile.value = event
+  console.log(event.files)
+  abstractFile.value = event.files[0];
   const file = event.files[0];
   if (file) {
     previewImage(file);
@@ -255,6 +269,7 @@ const getEduAcademicDegrees = () => {
 }
 getEduAcademicDegrees()
 const save = () => {
+  console.log(formData.value)
   submitted.value = true
   if (!isValid()) return;
   formData.value.id = 0
@@ -265,24 +280,32 @@ const save = () => {
   formData.value.final_date = new Date().toISOString()
   let data = new FormData()
   data.append("abstractFile", abstractFile.value);
-  data.append("course", formData.value);
-  console.log('abstractFile ', abstractFile.value)
-  console.log('formData ',formData.value)
+  data.append("course", JSON.stringify(formData.value));
   service.createCourse(data).then(res => {
-    console.log('good')
-  }).catch(error => {
-    toast.add({severity: "error", summary: error, life: 3000});
-  });
-  /*  toast.add({
+    router.back()
+    toast.add({
       severity: "success",
       summary: i18n.t("common.success"),
       life: 3000,
-    });*/
+    });
+  }).catch(error => {
+    toast.add({severity: "error", summary: error, life: 3000});
+  });
+
 }
 
 const isValid = () => {
   let errors = [];
+
   if (!formData.value.namekz) {
+    console.log('namekz')
+    errors.push(1);
+  } else if(!formData.value.nameru){
+    console.log('nameru')
+    errors.push(1);
+  }
+  else if(!formData.value.nameen){
+    console.log('nameen')
     errors.push(1);
   }
   if (!formData.value.courseCode) {
@@ -303,16 +326,11 @@ const isValid = () => {
   if (!formData.value.hours) {
     errors.push(1);
   }
+  console.log(errors)
   return errors.length === 0;
 }
 
 const changeLang = (event) => {
-  if (event.value === 2) {
-    boolNameRu.value = true
-  }
-  if (event.value === 3) {
-    boolNameEn.value = true
-  }
   disabledName.value = false
 }
 const approve = (event) => {
