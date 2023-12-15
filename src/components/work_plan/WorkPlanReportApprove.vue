@@ -9,7 +9,6 @@
   <Button :label="$t('workPlan.toCorrect')" icon="pi pi-check"
                 @click="openRejectPlan"
                 class="p-button p-button-danger ml-2"/>
-{{ data }}
   <PdfContent ref="pdf" v-if="data" :data="data" :planId="data.work_plan_id" style="display: none;"></PdfContent>
   <Dialog :header="$t('common.action.sendToApprove')" v-model:visible="showModal"
             :style="{width: '50vw'}" class="p-fluid">
