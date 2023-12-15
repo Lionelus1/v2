@@ -99,7 +99,6 @@ export default {
       this.$router.push('/course/' + course.id)
     },
     goToAdd() {
-      console.log('9999',this.eduFieldsId)
       this.$router.push({name: "AddCourse", params: {id: this.eduFieldsId}})
     },
     deleteCourse(data) {

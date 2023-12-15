@@ -61,14 +61,13 @@
           <Textarea id="course-code" rows="3" v-model="formData.annotationKz"/>
           <small class="p-error" v-if="!formData.annotationKz && submitted">{{ $t("common.requiredField") }}</small>
         </div>
-
       </div>
     </div>
     <div class="col-12 lg:col-4">
       <div class="p-fluid mt-3">
         <div class="card field">
           <label for="course-code">{{ $t("fieldEducation.duration") }}</label>
-          <InputText id="course-code" v-model="formData.hours"/>
+          <InputText type="number" v-model="formData.hours"/>
           <small class="p-error" v-if="!formData.hours && submitted">{{ $t("common.requiredField") }}</small>
           <!--          <PrimeCalendar v-model="date" selection-mode="range" :manualInput="true" dateFormat="dd.mm.yy" :showIcon="true"/>-->
         </div>
@@ -140,13 +139,16 @@ import {OnlineCourseService} from "@/service/onlinecourse.service";
 import CustomFileUpload from "@/components/CustomFileUpload.vue";
 import {fileRoute, smartEnuApi} from "@/config/config";
 import {useRoute} from "vue-router";
+import {useStore} from "vuex";
 
 const {t, locale} = useI18n()
 const route = useRoute()
+const store = useStore()
 const date = ref();
 const toast = useToast();
 const i18n = useI18n();
 const formData = ref({})
+formData.value.eduFieldsId = parseInt(route.params.id)
 const submitted = ref(false)
 const selectedUsers = ref([
   {
@@ -215,9 +217,8 @@ const listLang = ref([
   {id: 3, lang: 'In English'},
 ])
 
-formData.value.eduFieldsId = parseInt(route.params.id)
 const handleFileChange = (event) => {
-  console.log(event)
+  abstractFile.value = event
   const file = event.files[0];
   if (file) {
     previewImage(file);
@@ -256,14 +257,27 @@ getEduAcademicDegrees()
 const save = () => {
   submitted.value = true
   if (!isValid()) return;
+  formData.value.id = 0
+  formData.value.categoryId = 1
+  formData.value.autorId = store.state.loginedUser.userID
+  formData.value.hours = parseInt(formData.value.hours)
+  formData.value.start_time = new Date().toISOString()
+  formData.value.final_date = new Date().toISOString()
   let data = new FormData()
-  data.append("abstractFile", this.abstractFile);
-  console.log(formData.value)
-  toast.add({
-    severity: "success",
-    summary: i18n.t("common.success"),
-    life: 3000,
+  data.append("abstractFile", abstractFile.value);
+  data.append("course", formData.value);
+  console.log('abstractFile ', abstractFile.value)
+  console.log('formData ',formData.value)
+  service.createCourse(data).then(res => {
+    console.log('good')
+  }).catch(error => {
+    toast.add({severity: "error", summary: error, life: 3000});
   });
+  /*  toast.add({
+      severity: "success",
+      summary: i18n.t("common.success"),
+      life: 3000,
+    });*/
 }
 
 const isValid = () => {
@@ -292,10 +306,6 @@ const isValid = () => {
   return errors.length === 0;
 }
 
-const uploadFile = (file, ufile) => {
-  ufile = file;
-  abstractFile.value = file.files
-}
 const changeLang = (event) => {
   if (event.value === 2) {
     boolNameRu.value = true
