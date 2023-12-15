@@ -24,6 +24,19 @@
         </div>
       </div>
     </div>
+
+    <Dialog v-model:visible="rejectDialogVisible" header="Отклонение запроса">
+      <div class="col-12 mb-2 pb-2 lg:col-4 mb-lg-0">
+        <label for="rejectComment">Комментарий:<span class="p-error" v-if="!readonly">*</span></label>
+        <InputText v-model="rejectComment" rows="3" id="rejectComment"></InputText>
+      </div>
+      <div>
+        <Button label="Отправить" @click="sendRejection"></Button>
+      </div>
+    </Dialog> 
+
+
+
   </template>
   
   <script>
@@ -55,7 +68,7 @@
                 {
                   label: this.$t('requests.reject'),
                   icon: "pi pi-fw pi-times",
-                  command: () => { this.updateStateEditionRequest(3) },
+                  command: () => { this.rejectRequest() },
                 },
             ]
         : []),
@@ -78,6 +91,8 @@
             },
           },
           loading: false,
+          rejectDialogVisible: false,
+          rejectComment: '',
         };
       },
       watch: {
@@ -90,6 +105,23 @@
       },
       emits: ['editions'],
       methods: {
+        rejectRequest() {
+          this.rejectDialogVisible = true;
+        },
+        sendRejection() {
+          const comment = this.rejectComment.trim();
+
+          if (!comment) {
+            // Handle validation or show an error message
+            // You can customize this based on your requirements
+            this.showMessage("error", "Ошибка", "Пожалуйста, введите комментарий");
+            return;
+          }
+
+          this.updateStateEditionRequest(3, comment);
+          this.rejectDialogVisible = false;
+        },
+
         showMessage(msgtype, message, content) {
           this.$toast.add({
             severity: msgtype,
@@ -144,6 +176,10 @@
           this.edition.status.state = state
           const req = {
             edition: this.edition
+          }
+
+          if (this.rejectComment != '' && state == 3) {
+            this.edition.comment = this.rejectComment
           }
 
           this.scienceService.updateScienceEditionsRequestStatus(req).then(res => {

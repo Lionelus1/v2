@@ -39,7 +39,7 @@
               <Button class="mr-2" @click="edition=slotProps.data;editEdition()">
                 <i class="fas fa-edit"></i>
               </Button>
-              <Button @click="edition=slotProps.datadeleteEdition">
+              <Button @click="edition=slotProps.data;deleteEdition()">
                 <i class="fas fa-trash-alt"></i> 
               </Button>
             </template>
@@ -169,27 +169,31 @@
       deleteEdition() {
         const req = {
           id: this.edition.id || null
-        }
+        } 
 
         this.scienceService.deleteScienceEdition(req).then(res  => {
           this.showMessage('success', this.$t('common.success'));
            this.getScienceEditions()
-      }).catch(err => {
-        this.loading = false;
-        this.file = null
-        if (err.response && err.response.status == 401) {
-          this.$store.dispatch("logLout");
-        } else if (err.response && err.response.data && err.response.data.localized) {
-          this.showMessage('error', this.$t(err.response.data.localizedPath), null);
-        } else {
-          this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'));
-        }
-        })
+        }).catch(err => {
+          this.loading = false;
+          this.file = null
+          if (err.response && err.response.status == 401) {
+            this.$store.dispatch("logLout");
+          } else if (err.response && err.response.data && err.response.data.localized) {
+            this.showMessage('error', this.$t(err.response.data.localizedPath), null);
+          } else {
+            this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'));
+          }
+          })
       },
       viewRequest() {
         if (this.editionRequest != null) {
           this.addEditionRequestPopupVisible = true 
         }
+      },
+      addEditionRequest() {
+        this.editionRequest = null
+        this.addEditionRequestPopupVisible = true 
       },
       saveEdition() {
       },
@@ -224,6 +228,7 @@
       handleEditionsRequestEvent(data) {
         if (data === true) {
           this.getScienceEditionsRequest()
+          this.getScienceEditions()
           this.addEditionRequestPopupVisible = false
           this.addEditionPopupVisible = false
         }

@@ -686,8 +686,8 @@ const routes = [
             },
             {
                 path: '/science/publications',
-                name:'ScienceCocksnvo',
-                component: load('science/ScienceCocksnvo'),
+                name:'ScienceKoksnvo',
+                component: load('science/ScienceKoksnvo'),
                 beforeEnter: ifAuthenticated,
             },
         ]

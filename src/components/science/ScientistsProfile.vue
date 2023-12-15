@@ -56,22 +56,22 @@
   }
 
   const getScientists = () => {
-        loading.value = true;
-        const req = {
-          userID: id
-        }
+      loading.value = true;
+      const req = {
+        userID: id
+      }
 
-        scienceService.getScientists(req).then(res => {
-          if (res.data.scientists != null) {
-            user.value = res.data.scientists[0]
-          }
-          loading.value = false
+      scienceService.getScientists(req).then(res => {
+        if (res.data.scientists != null) {
+          user.value = res.data.scientists[0]
+        }
+        loading.value = false
+        userView.value = true
+      }).catch(error => {
+          toast.add({severity: 'error', summary: t('common.error'), life: 3000})
+          loading.value = false;
           userView.value = true
-        }).catch(error => {
-            toast.add({severity: 'error', summary: t('common.error'), life: 3000})
-            loading.value = false;
-            userView.value = true
-        })
+      })
     }
 
   onMounted(() => {
