@@ -10,9 +10,9 @@
       <Dropdown v-model="lang" :options="languages" optionLabel="name" optionValue="id" :placeholder="$t('common.select')"/>
       <small class="p-error" v-if="submitted && !lang">{{ $t('workPlan.errors.langError') }}</small>
     </div>
-    <div class="field-checkbox mt-4">
-      <Checkbox v-model="isOper" id="oper" :binary="true"/>
-      <label class="ml-2" for="oper">Операционный план</label>
+    <div class="field">
+      <label>{{ $t('workPlan.planType') }}</label>
+      <Dropdown v-model="selectedType" :options="types" :optionLabel="'name_' + $i18n.locale" optionValue="id" :placeholder="$t('common.select')"/>
     </div>
     <template #footer>
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
@@ -56,13 +56,16 @@ export default {
       ],
       submitted: false,
       isOper: false,
-      planService: new WorkPlanService()
+      planService: new WorkPlanService(),
+      types: [],
+      selectedType: null,
     }
   },
   props: ['isAdded', 'isSub'],
   methods: {
     openBasic() {
       this.showModal = true;
+      this.getWorkPlanTypes();
     },
     closeBasic() {
       this.showModal = false;
@@ -71,7 +74,12 @@ export default {
       this.submitted = true;
       if (!this.validate())
         return
-      this.planService.createPlan(this.work_plan_name, this.lang, this.isOper).then(res => {
+      let data = {
+        work_plan_name: this.work_plan_name,
+        lang: this.lang,
+        plan_type: this.selectedType
+      }
+      this.planService.createPlan(data).then(res => {
         if (res.data.is_success) {
           this.emitter.emit("workPlanIsAdded", true);
           this.$toast.add({severity: 'info', summary: this.$t('common.success'), detail: this.$t('workPlan.message.planCreated'), life: 3000});
@@ -102,7 +110,15 @@ export default {
     },
     validate() {
       return this.work_plan_name && this.lang;
-    }
+    },
+    getWorkPlanTypes() {
+      this.types = []
+      this.planService.getWorkPlanTypes().then(res => {
+        this.types = res.data
+      }).catch(error => {
+        this.$toast.add({severity: "error", summary: error, life: 3000});
+      })
+    },
   }
 }
 </script>

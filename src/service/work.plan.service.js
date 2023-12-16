@@ -39,8 +39,8 @@ export class WorkPlanService {
         return api.post(`/workPlan/deletePlan/${planId}`, null, {headers: getHeader()});
     }
 
-    createPlan(planName, lang, isOper) {
-        return api.post(`/workPlan/addPlan`, {work_plan_name: planName, lang: lang, is_oper: isOper}, {headers: getHeader()});
+    createPlan(data) {
+        return api.post(`/workPlan/addPlan`, data, {headers: getHeader()});
     }
 
     savePlanFile(fd) {
@@ -165,6 +165,10 @@ export class WorkPlanService {
 
     reApprovePlan(data) {
         return api.post('/workPlan/reapprove', data, {headers: getHeader()});
+    }
+
+    getWorkPlanTypes() {
+        return api.get('/workPlan/types', {headers: getHeader()});
     }
 
 }
