@@ -1147,7 +1147,12 @@ export default {
         simplePlan: "Plan",
         operationalPlan: "Operational Plan",
         planType: "Plan Type",
-        myPlans: "My Plans"
+        myPlans: "My Plans",
+        plancontractname: "Name of the contract",
+        plancontractnumber: "Contract number",
+        plancontractdate: "Contract date",
+        plancontractprioruty: "By priority",
+        plancontracttopic: "On topic"
     },
     queue: {
 

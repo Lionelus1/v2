@@ -1177,7 +1177,12 @@ export default {
         simplePlan: "План",
         operationalPlan: "Операционный план",
         planType: "Тип плана",
-        myPlans: "Мои планы"
+        myPlans: "Мои планы",
+        plancontractname: "Наименование договора",
+        plancontractnumber: "Номер договора",
+        plancontractdate: "Дата договора",
+        plancontractprioruty: "По приоритету",
+        plancontracttopic: "По теме"
     },
     educomplex: {
         title: "Учебно-методический комплекс дисциплины",

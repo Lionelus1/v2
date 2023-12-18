@@ -14,6 +14,28 @@
       <label>{{ $t('workPlan.planType') }}</label>
       <Dropdown v-model="selectedType" :options="types" :optionLabel="'name_' + $i18n.locale" optionValue="id" :placeholder="$t('common.select')"/>
     </div>
+    <template v-if="selectedType === 3">
+      <div class="field" v-for="(param, index) of params" :key="index">
+        <template v-if="param.type === 'text'">
+          <label>{{ $t('workPlan.' + param.name) }}</label>
+          <InputText v-model="param.value" />
+        </template>
+        <template v-if="param.type === 'date'">
+          <label>{{ $t('workPlan.' + param.name) }}</label>
+          <PrimeCalendar v-model="param.value" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
+        </template>
+      </div>
+      <div class="field">
+        <label>{{ $t('contracts.contract') }}</label>
+        <FileUpload mode="basic" :customUpload="true" @uploader="uploadFile($event, 'contractFiles')" :auto="true"
+                    v-bind:chooseLabel="$t('hdfs.chooseFile')"/>
+      </div>
+      <div class="field">
+        <label>{{ $t('common.doc') }}</label>
+        <FileUpload mode="basic" :customUpload="true" @uploader="uploadFile($event, 'documentFiles')" :auto="true"
+                    v-bind:chooseLabel="$t('hdfs.chooseFile')"/>
+      </div>
+    </template>
     <template #footer>
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
               @click="closeBasic"/>
@@ -59,6 +81,40 @@ export default {
       planService: new WorkPlanService(),
       types: [],
       selectedType: null,
+      contractFiles: null,
+      documentFiles: null,
+      params: [
+        {
+          name: "plancontractname",
+          value: null,
+          description: "Contract name",
+          type: "text"
+        },
+        {
+          name: "plancontractnumber",
+          value: null,
+          description: "Contract number",
+          type: "text"
+        },
+        {
+          name: "plancontractdate",
+          value: null,
+          description: "Contract date",
+          type: "date"
+        },
+        {
+          name: "plancontractprioruty",
+          value: null,
+          description: "Contract priority",
+          type: "text"
+        },
+        {
+          name: "plancontracttopic",
+          value: null,
+          description: "Contract topic",
+          type: "text"
+        },
+      ],
     }
   },
   props: ['isAdded', 'isSub'],
@@ -74,12 +130,27 @@ export default {
       this.submitted = true;
       if (!this.validate())
         return
+
+      const fd = new FormData()
       let data = {
         work_plan_name: this.work_plan_name,
         lang: this.lang,
-        plan_type: this.selectedType
+        plan_type: this.selectedType,
+        science_params: this.selectedType === 3 ? this.params : null
       }
-      this.planService.createPlan(data).then(res => {
+      fd.append("workplan", JSON.stringify(data))
+      if (this.contractFiles) {
+        for (let file of this.contractFiles) {
+          fd.append("contract_files[]", file)
+        }
+      }
+
+      if (this.documentFiles) {
+        for (let file of this.contractFiles) {
+          fd.append("document_files[]", file)
+        }
+      }
+      this.planService.createPlan(fd).then(res => {
         if (res.data.is_success) {
           this.emitter.emit("workPlanIsAdded", true);
           this.$toast.add({severity: 'info', summary: this.$t('common.success'), detail: this.$t('workPlan.message.planCreated'), life: 3000});
@@ -104,6 +175,10 @@ export default {
         }
         this.submitted = false;
       });
+    },
+    uploadFile(event, name) {
+      console.log(event)
+      this[name] = event.files
     },
     input(event) {
       this.isDisabled = event.target.value.length <= 0;
