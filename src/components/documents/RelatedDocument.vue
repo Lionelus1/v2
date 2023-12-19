@@ -359,7 +359,7 @@ export default {
       let param = this.contract.newParams['registration_number'];
       if (param) {
         param.value = this.contract.number;
-        param.uuid = crypto.randomUUID();
+        param.uuid = this.generateUUID();
         this.contractParams.push(param);
       }
 
@@ -367,88 +367,95 @@ export default {
       if (param) {
         param.value = this.contract.registerDate;
         param.value = param.value ? new Date(param.value) : null;
-        param.uuid = crypto.randomUUID();
+        param.uuid = this.generateUUID();
         this.contractParams.push(param);
       }
 
       param = this.contract.newParams['parent_registration_number'];
       if (param) {
-        param.uuid = crypto.randomUUID();
+        param.uuid = this.generateUUID();
         this.contractParams.push(param);
       }
 
       param = this.contract.newParams['parent_registration_date'];
       if (param) {
         param.value = param.value ? new Date(param.value) : null;
-        param.uuid = crypto.randomUUID();
+        param.uuid = this.generateUUID();
         this.contractParams.push(param);
       }
 
       param = this.contract.newParams['executor'];
       if (param) {
-        param.uuid = crypto.randomUUID();
+        param.uuid = this.generateUUID();
         this.contractParams.push(param);
       }
 
       param = this.contract.newParams['sciadvisor'];
       if (param) {
-        param.uuid = crypto.randomUUID();
+        param.uuid = this.generateUUID();
         this.contractParams.push(param);
       }
 
       param = this.contract.newParams['table'];
       if (param) {
-        param.uuid = crypto.randomUUID();
+        param.uuid = this.generateUUID();
         this.contractParams.push(param);
       }
 
       param = this.contract.newParams['act_amount'];
       if (param) {
-        param.uuid = crypto.randomUUID();
+        param.uuid = this.generateUUID();
         this.contractParams.push(param);
       }
 
       param = this.contract.newParams['act_amount_words'];
       if (param) {
-        param.uuid = crypto.randomUUID();
+        param.uuid = this.generateUUID();
         this.contractParams.push(param);
       }
 
       param = this.contract.newParams['justification'];
       if (param) {
-        param.uuid = crypto.randomUUID();
+        param.uuid = this.generateUUID();
         this.contractParams.push(param);
       }
 
       param = this.contract.newParams['agreement'];
       if (param) {
-        param.uuid = crypto.randomUUID();
+        param.uuid = this.generateUUID();
         this.contractParams.push(param);
       }
 
       param = this.contract.newParams['research_topic'];
       if (param) {
-        param.uuid = crypto.randomUUID();
+        param.uuid = this.generateUUID();
         this.contractParams.push(param);
       }
 
       param = this.contract.newParams['act_amount_after'];
       if (param) {
-        param.uuid = crypto.randomUUID();
+        param.uuid = this.generateUUID();
         this.contractParams.push(param);
       }
 
       param = this.contract.newParams['act_amount_after_words'];
       if (param) {
-        param.uuid = crypto.randomUUID();
+        param.uuid = this.generateUUID();
         this.contractParams.push(param);
       }
 
       param = this.contract.newParams['attachments'];
       if (param) {
-        param.uuid = crypto.randomUUID();
+        param.uuid = this.generateUUID();
         this.contractParams.push(param);
       }
+    },
+    generateUUID() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        const r = crypto.getRandomValues(new Uint8Array(1))[0] % 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
     },
     downloadContract(saveFile) {
       if (!this.contract || !this.contract.filePath || this.contract.filePath.length < 1) return;
@@ -683,7 +690,7 @@ export default {
       this.input();
     },
     uploadAttachment(event) {
-      let uuid = crypto.randomUUID();
+      let uuid = this.generateUUID();
       this.attachments[uuid] = event.files[0];
       
       for (let i = 0; i < this.contractParams.length; i++) {

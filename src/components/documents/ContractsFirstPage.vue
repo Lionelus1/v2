@@ -53,7 +53,6 @@
 <script>
 
   import { smartEnuApi, getHeader, findRole } from "@/config/config";
-  import { findRole } from "@/config/config";
   import Enum from "@/enum/docstates/index";
   
   import { DocService } from "@/service/doc.service";
