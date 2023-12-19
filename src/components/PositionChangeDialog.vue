@@ -4,8 +4,17 @@
     <p> {{ getCurrentPosition() }} </p>
     <Dropdown v-model="selectedPosition" :options="positions" optionLabel="name"></Dropdown>
     <template #footer>
-        <Button class="p-button-help" :label="$t('positions.changePosition')" @click="visible = false;changePosition()" />
-        <Button :label="$t('positions.continue')" @click="visible = false" autofocus />
+      <div class="w-full flex justify-content-between">
+        <div class="flex align-items-center">
+          <Checkbox v-model="doNotShowAnymore" binary @update:modelValue="setDoNotShowAnymore()"/>
+          <label class="ml-2">{{ $t("common.doNotShowAnymore") }}</label>
+        </div>
+        <div>
+          <Button class="p-button-help" :label="$t('positions.changePosition')"
+            @click="visible = false;changePosition()" />
+          <Button :label="$t('positions.continue')" @click="visible = false" autofocus />
+        </div>
+      </div>
     </template>
   </Dialog>
 </template>
@@ -30,10 +39,12 @@ export default {
       positions: [],
 
       loginedUser: null,
+      doNotShowAnymore: "",
     }
   },
   mounted() {
-    this.parse(); 
+    this.doNotShowAnymore = localStorage.getItem('doNotShowWelcomePositionChangeDialog') === 'true';
+    this.parse();
   },
   methods: {
     ...mapActions(['setLoginedUser']),
@@ -246,6 +257,9 @@ export default {
         this.loading = false;
         this.visible = false;
       });
+    },
+    setDoNotShowAnymore() {
+      localStorage.setItem('doNotShowWelcomePositionChangeDialog', this.doNotShowAnymore);
     }
   },
 }

@@ -351,6 +351,7 @@ export default {
         changeSigner: "Change signer",
         change: "Change",
         unknownUser: "Guest",
+      doNotShowAnymore: "Do not show anymore",
     },
     positions: {
         menuTitle: 'Change position',
