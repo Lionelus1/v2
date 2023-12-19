@@ -116,6 +116,12 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
+                path: '/documents/catalog/acts',
+                name: '/documents/catalog/acts',
+                component: load('documents/catalog/Acts'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
                 path: '/documents/doctemplate',
                 name: '/documents/doctemplate',
                 component: load('documents/DocTemplate'),
@@ -125,6 +131,12 @@ const routes = [
                 path: '/documents/contracts/:uuid',
                 name: 'ContractsByUUID',
                 component: load('documents/ContractV2'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/documents/contracts/:uuid/request',
+                name: 'ContractRequest',
+                component: load('documents/ContractRequest'),
                 beforeEnter: ifAuthenticated,
             },
             {

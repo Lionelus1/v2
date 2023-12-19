@@ -11,41 +11,106 @@
     <TabView v-model:activeIndex="activeTab" @tab-change="tabChanged" class="flex flex-column flex-grow-1">
       <TabPanel :header="$t('common.params')">
         <div v-if="contract" class="flex flex-column flex-grow-1">
-          <div class="lg:col-6 mt-3">
+          <div class="md:col-6 mt-3">
             <p> {{ $t('common.state') + ": " }}
               <span :class="'customer-badge status-' + contract.docHistory.code">
                 {{ contract.docHistory[$i18n.locale === 'en' ? 'stateEn' : $i18n.locale === 'ru' ? 'stateRus' : 'stateKaz'] }}
               </span>
+              <span v-if="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID)" class="ml-1 customer-badge status-status_signed">
+                {{ $t('contracts.contragentRequest') }}
+              </span>
             </p>
           </div>
-          <div v-if="contract.sourceType === Enum.DocSourceType.FilledDoc">
-            
+          <div class="md:col-6" v-if="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID)">
+            <p class="mb-0">{{ $t('contracts.contragentMessage') }}</p>
+            <div class="p-inputgroup p-input-filled">
+              <InputText :modelValue="apiDomain + '/documents/contracts/' + this.contract.uuid + '/request'" :disabled="true"/>
+              <Button v-bind:label="$t('ncasigner.copy')" v-clipboard:copy="apiDomain + '/documents/contracts/' + this.contract.uuid + '/request'" 
+                v-clipboard:success="onCopy" v-clipboard:error="onFail" class="p-button-secondary" />
+            </div>
+          </div>
+          <Panel class="md:col-6 p-2" v-if="contract.sourceType === DocEnum.DocSourceType.FilledDoc"
+            :header="$t('contracts.listOfApprovals')" toggleable>
+            <StepComponent v-if="selectedUsers.length > 0 && stages.length > 0" v-model="selectedUsers" 
+              mode="standard" :stages="stages" @update:modelValue="approvalsUpdated($event)"
+              :readonly="contract.docHistory.stateId > DocEnum.CREATED.ID"></StepComponent>
+          </Panel>
+          <div class="md:col-6" v-if="contract.sourceType === DocEnum.DocSourceType.FilledDoc">
+            <SelectButton v-model="notused.selectedContragent"  :options="[0, 1]" 
+              :disabled="contract.docHistory.stateId > DocEnum.CREATED.ID"
+              :unselectable='false' style="margin-bottom: 0.75rem" 
+              @update:modelValue="updateContragentType">
+              <template #option="slotProps">
+                <div v-if="slotProps.option === 0">{{$t('common.organization')}}</div>
+                <div v-else>{{$t('common.individualEntrepreneur')}}</div>
+              </template>
+            </SelectButton>
           </div>
           <div class="flex-grow-1" style="overflow: scroll; height: 150px;" v-if="contractParams">
-            <div v-for="param in contractParams" :key="param.id">
+            <div v-for="param in contractParams" :key="param.uuid">
               <div class="p-fluid md:col-6 pb-0">
-                <label v-if="['number', 'date', 'contragent', 'ourside', 'individualEntrepreneur', 'student', 'period'].includes(param.description) ">{{ $t("doctemplate.editor." + param.name) }}</label>
-                <label v-else-if="['практика түрі', 'Вид практики'].includes(param.description)">{{ $t('doctemplate.editor.practiceType') }}</label>
-                <label v-else-if="['Білім беру бағдарламасы', 'Образовательные программы'].includes(param.description)">{{ $t('doctemplate.editor.educationProgram') }}</label>
+                <template v-if="['number', 'date', 'ourside', 'contragent', 'individualEntrepreneur', 'student', 'period',
+                  'практика түрі', 'Вид практики', 'Білім беру бағдарламасы', 'Образовательные программы'].includes(param.description)">
+                  <label v-if="['number', 'date', 'ourside', 'contragent', 'individualEntrepreneur', 'student', 'period'].includes(param.description)">{{ $t("doctemplate.editor." + param.name) }}</label>
+                  <label v-else-if="['практика түрі', 'Вид практики'].includes(param.description)">{{ $t('doctemplate.editor.practiceType') }}</label>
+                  <label v-else-if="['Білім беру бағдарламасы', 'Образовательные программы'].includes(param.description)">{{ $t('doctemplate.editor.educationProgram') }}</label>
+                </template>
                 <label v-else>{{ param.description }}</label>
               </div>
-              <div class="p-fluid lg:col-6" v-if="['text', 'number', 'date'].includes(param.name)">
+              <div class="p-fluid md:col-6" v-if="['text', 'number'].includes(param.name)">
                 <InputText v-model="param.value" type="text" @input="input()"
-                  :disabled="contract.docHistory.stateId > Enum.CREATED.ID || param.name == 'number' || param.name == 'date'"
-                  :placeholder="param.name == 'number' || param.name == 'date' ? $t('contracts.autogenerate') : ''"></InputText> 
+                  :disabled="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID) || 
+                  contract.docHistory.stateId > DocEnum.CREATED.ID || param.name == 'number'"
+                  :placeholder="param.name == 'number' ? $t('contracts.autogenerate') : ''"></InputText> 
               </div>
-              <div class="p-fluid lg:col-6" v-if="param.name == 'period'">
+              <div class="p-fluid md:col-6" v-if="param.name == 'date'">
+                <PrimeCalendar v-model="param.value" dateFormat="dd.mm.yy" :disabled="true" 
+                  :placeholder="$t('contracts.autogenerate')"></PrimeCalendar>
+              </div>
+              <div class="p-fluid md:col-6" v-if="param.name == 'period'">
                 <PrimeCalendar v-model="param.value" dateFormat="dd.mm.yy" showIcon
                   selectionMode="range" :manualInput="false" @update:modelValue="input()" 
-                  :disabled="contract.docHistory.stateId > Enum.CREATED.ID"></PrimeCalendar>
+                  :disabled="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID) || 
+                  contract.docHistory.stateId > DocEnum.CREATED.ID"></PrimeCalendar>
               </div>
-              <div class="p-fluid lg:col-6" v-if="['contragent', 'ourside', 'individualEntrepreneur'].includes(param.name)">
+              <div class="p-fluid md:col-6" v-if="['ourside', 'individualEntrepreneur'].includes(param.name)">
                 <ContragentSelectV2 :contragent="param.value" @contragentUpdated="(event) => contragentUpdated(event, param)"
-                  :disable="contract.docHistory.stateId > Enum.CREATED.ID"></ContragentSelectV2>
+                  :disable="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID) ||
+                  contract.docHistory.stateId > DocEnum.CREATED.ID"></ContragentSelectV2>
               </div>
-              <div class="p-fluid lg:col-6" v-if="param.name == 'student'">
+              <div class="p-fluid md:col-6" v-if="['contragent'].includes(param.name)">
+                <div class="flex flex-wrap gap-3 mb-2" v-if="contract.sourceType === DocEnum.DocSourceType.Template">
+                  <div class="flex align-items-center">
+                    <RadioButton v-model="contragentOption" value="email" @update:modelValue="contragentOptionChanged"
+                      :disabled="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID) || 
+                      contract.docHistory.stateId > DocEnum.CREATED.ID"></RadioButton>
+                    <label class="ml-2">{{ $t('contracts.contragentEmail') }}</label>
+                  </div>
+                  <div class="flex align-items-center">
+                    <RadioButton v-model="contragentOption" value="organization" @update:modelValue="contragentOptionChanged"
+                      :disabled="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID) || 
+                      contract.docHistory.stateId > DocEnum.CREATED.ID"></RadioButton>
+                    <label class="ml-2">{{ $t('doctemplate.editor.contragent') }}</label>
+                  </div>
+                  <div class="flex align-items-center">
+                    <RadioButton v-model="contragentOption" value="individual" @update:modelValue="contragentOptionChanged"
+                      :disabled="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID) || 
+                      contract.docHistory.stateId > DocEnum.CREATED.ID">></RadioButton>
+                    <label class="ml-2">{{ $t('doctemplate.editor.individualEntrepreneur') }}</label>
+                  </div>
+                </div>
+                <InputText v-if="contragentOption === 'email'" :modelValue="contragentEmail"
+                  :disabled="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID) || 
+                  contract.docHistory.stateId > DocEnum.CREATED.ID"></InputText>
+                <ContragentSelectV2 v-else :contragent="param.value" 
+                  @contragentUpdated="(event) => contragentUpdated(event, param)"
+                  :disable="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID) || 
+                  contract.docHistory.stateId > DocEnum.CREATED.ID"></ContragentSelectV2>
+              </div>
+              <div class="p-fluid md:col-6" v-if="param.name == 'student'">
                 <FindUser v-model:first="param.value" searchMode="ldap" :max="1" v-model="notused.users"
-                  :disabled="contract.docHistory.stateId > Enum.CREATED.ID"
+                  :disabled="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID) ||
+                  contract.docHistory.stateId > DocEnum.CREATED.ID"
                   :userType="1" @input="input()" @remove="input()"></FindUser>
               </div>
             </div>
@@ -94,25 +159,28 @@
   </Sidebar>
 </template>
 <script>
-import { b64toBlob, findRole } from "@/config/config";
+import { apiDomain, b64toBlob, findRole } from "@/config/config";
 import { getShortDateString } from "@/helpers/helper";
-import Enum from "@/enum/docstates/index";
+import DocEnum from "@/enum/docstates/index";
+import RolesEnum from "@/enum/roleControls/index";
 
 import { DocService } from "@/service/doc.service";
 import Access from "@/pages/Access";
 import ContragentSelectV2 from "@/components/contragent/v2/ContragentSelectV2";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo";
 import FindUser from "@/helpers/FindUser";
+import StepComponent from "@/components/ncasigner/ApprovalUsers/StepComponent";
 
 export default {
   name: 'ContractV2',
-  components: { Access, ContragentSelectV2, DocSignaturesInfo, FindUser },
+  components: { Access, ContragentSelectV2, DocSignaturesInfo, FindUser, StepComponent },
   props: { },
   data() {
     return {
-      users:[],
+      apiDomain: apiDomain,
       service: new DocService(),
-      Enum: Enum,
+      DocEnum: DocEnum,
+      RolesEnum: RolesEnum,
       findRole: findRole,
       getShortDateString: getShortDateString,
 
@@ -131,12 +199,19 @@ export default {
       contractParams: [],
       pdf: null,
       reserveNumber: null,
+      contragentEmail: null,
+      contragentOption: "organization",
+      contragentRequest: false,
+
+      selectedUsers: [],
+      stages: [],
 
       menu: [
         {
           label: this.$t("common.save"),
           icon: "pi pi-fw pi-save",
-          disabled: () => this.contract && this.contract.docHistory.stateId > Enum.CREATED.ID || !this.changed,
+          disabled: () => (this.contract && this.contract.docHistory.stateId > DocEnum.CREATED.ID) || !this.changed ||
+            (this.contragentRequest && this.contract.docHistory.stateId == this.DocEnum.CREATED.ID),
           command: () => { this.saveDocument() }
         },
         {
@@ -150,6 +225,8 @@ export default {
         {
           label: this.$t("common.registration"),
           icon: "pi pi-fw pi-paperclip",
+          disabled: () => (this.contragentRequest && this.contract.docHistory.stateId == this.DocEnum.CREATED.ID) || 
+            (this.contract && this.contract.docHistory.stateId > DocEnum.CREATED.ID),
           items: [
             {
               label: this.$t("contracts.setnumber"),
@@ -163,31 +240,41 @@ export default {
         {
           label: this.$t("common.send"),
           icon: "pi pi-send",
-          disabled: () => this.contract && (this.contract.docHistory.stateId === Enum.INAPPROVAL.ID
-            || this.contract.docHistory.stateId === Enum.SIGNING.ID),
+          disabled: () => this.contract && (this.contract.docHistory.stateId === DocEnum.INAPPROVAL.ID ||
+            this.contract.docHistory.stateId === DocEnum.SIGNING.ID || (this.contragentRequest && 
+            this.contract.docHistory.stateId === this.DocEnum.CREATED.ID)),
           items: [
             {
               label: this.$t("common.toapprove"),
               icon: "fa-regular fa-handshake",
-              visible: () => this.contract && (this.contract.sourceType === Enum.DocSourceType.FilledDoc || 
+              visible: () => this.contract && (this.contract.sourceType === DocEnum.DocSourceType.FilledDoc || 
                 (this.contract.template && this.contract.template.needApproval)) && 
-                this.contract.docHistory.stateId === Enum.CREATED.ID,
-                command: () => { this.sendToApprove() }
+                this.contract.docHistory.stateId === DocEnum.CREATED.ID,
+              command: () => { this.sendToApprove() }
+            },
+            {
+              label: this.$t("contracts.menu.tocontragent"),
+              icon: "fa-solid fa-square-envelope",
+              visible: () => this.contract && (this.contract.sourceType === DocEnum.DocSourceType.Template && 
+                !this.contract.template.needApproval && this.contract.docHistory.stateId === DocEnum.CREATED.ID),
+              disabled: () => this.contragentOption !== 'email',
+              command: () => { this.sendToContragent() }
             },
             {
               label: this.$t("common.tosign"),
               icon: "pi pi-user-edit",
-              visible: () => this.contract && ((this.contract.sourceType === Enum.DocSourceType.Template && 
-                !this.contract.template.needApproval && this.contract.docHistory.stateId === Enum.CREATED.ID) || 
-                this.contract.docHistory.stateId === Enum.APPROVED.ID),
-                command: () => { this.sendToSign() }
-            }
+              visible: () => this.contract && ((this.contract.sourceType === DocEnum.DocSourceType.Template && 
+                !this.contract.template.needApproval && this.contract.docHistory.stateId === DocEnum.CREATED.ID) || 
+                this.contract.docHistory.stateId === DocEnum.APPROVED.ID),
+              disabled: () => this.contragentOption === 'email',
+              command: () => { this.sendToSign() }
+            },
           ]
         },
         {
           label: this.$t('common.approvalList'),
           icon: "pi pi-user-edit",
-          disabled: () => !this.contract || !this.contract.docHistory || this.contract.docHistory.stateId < this.Enum.INAPPROVAL.ID,
+          disabled: () => !this.contract || !this.contract.docHistory || this.contract.docHistory.stateId < this.DocEnum.INAPPROVAL.ID,
           command: () => {
             this.open('documentInfoSidebar')
           }
@@ -195,12 +282,12 @@ export default {
         {
           label: this.$t('contracts.menu.relatedDocument'),
           icon: "fa-solid fa-folder-tree",
-          disabled: () => this.contract && this.contract.docHistory.stateId !== this.Enum.SIGNED.ID,
-          visible: () => this.contract && this.contract.sourceType === this.Enum.DocSourceType.FilledDoc,
+          disabled: () => this.contract && this.contract.docHistory.stateId !== this.DocEnum.SIGNED.ID,
+          visible: () => this.contract && this.contract.sourceType === this.DocEnum.DocSourceType.FilledDoc,
           items: [
             {
               label: this.$t('contracts.menu.newDocument'),
-              command: () => { this.open('newDocumentDialog') }
+              command: () => { this.newAct() }
             },
             {
               label: this.$t('contracts.menu.journal'),
@@ -212,6 +299,7 @@ export default {
 
       notused: {
         users: [],
+        selectedContragent: 0,
       }
     }
   },
@@ -261,7 +349,55 @@ export default {
           this.reserveNumber = this.contract.number;
         }
 
+        if (this.contract.requests) {
+          for (let i = 0; i < this.contract.requests.length; i++) {
+            if (this.contract.requests[i].type === this.DocEnum.DocumentRequestType.CounterpartyInfoRequest &&
+            this.contract.requests[i].status === 0) {
+              this.contragentRequest = true;
+              this.contragentOption = "email";
+            }
+          }
+        }
+
         this.getParams();
+
+        if (this.contract.sourceType === this.DocEnum.DocSourceType.FilledDoc && (!this.contract.approvalStages ||
+          this.contract.approvalStages.length < 1)) {
+          this.getDefaultApprovalList();
+        } else if (this.contract.sourceType === this.DocEnum.DocSourceType.FilledDoc) {
+          this.selectedUsers = JSON.parse(JSON.stringify(this.contract.approvalStages));
+          this.stages = JSON.parse(JSON.stringify(this.contract.approvalStages));
+        }
+
+        if (this.contract.sourceType === this.DocEnum.DocSourceType.FilledDoc && (!this.contractParams ||
+          this.contractParams.length < 1)) {
+          this.contractParams.push({
+            name: 'ourside',
+            description: 'ourside',
+            value: {
+              data: null,
+              type: this.DocEnum.ContragentType.Organization,
+            },
+          });
+          this.contractParams.push({
+            name: 'contragent',
+            description: 'contragent',
+            value: {
+              data: null,
+              type: this.DocEnum.ContragentType.Organization,
+            },
+          });
+        } else if (this.contract.sourceType === this.DocEnum.DocSourceType.FilledDoc) {
+          this.contractParams.forEach((param) => {
+            if (param.description === 'contragent') {
+              if (param.value.type === this.DocEnum.ContragentType.Organization) {
+                this.notused.selectedContragent = 0;
+              } else {
+                this.notused.selectedContragent = 1;
+              }
+            }
+          });
+        }
 
         this.loading = false;
       }).catch(err => {
@@ -270,46 +406,72 @@ export default {
         if (err.response && err.response.status == 401) {
           this.$store.dispatch("logLout");
         } else if (err.response && err.response.data && err.response.data.localized) {
-          this.showMessage('error', this.$t(err.response.data.localizedPath), null);
-          if (err.response.status == 401) {
+          this.showMessage('error', this.$t(err.response.data.localizedPath));
+          if (err.response.status == 403) {
             this.haveAccess = false;
           }
         } else {
           console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
-      })
+      });
     },
     getParams() {
       this.contractParams = [];
+      this.notused.users = [];
 
       let param = this.contract.newParams['number'];
       if (param) {
         param.value = this.contract.number;
+        param.uuid = crypto.randomUUID();
         this.contractParams.push(param);
       }
-
-      param = this.contract.newParams['практика түрі'];
-      if (param) this.contractParams.push(param);
-
-      param = this.contract.newParams['Вид практики'];
-      if (param) this.contractParams.push(param);
 
       param = this.contract.newParams['date'];
       if (param) {
         param.value = this.contract.registerDate;
-        param.value = param.value ? this.getShortDateString(param.value) : null;
+        param.value = param.value ? new Date(param.value) : null;
+        param.uuid = crypto.randomUUID();
+        this.contractParams.push(param);
+      }
+
+      param = this.contract.newParams['практика түрі'];
+      if (param) {
+        param.uuid = crypto.randomUUID();
+        this.contractParams.push(param);
+      }
+
+      param = this.contract.newParams['Вид практики'];
+      if (param) {
+        param.uuid = crypto.randomUUID();
         this.contractParams.push(param);
       }
       
       param = this.contract.newParams['ourside'];
-      if (param) this.contractParams.push(param);
+      if (param) {
+        param.uuid = crypto.randomUUID();
+        this.contractParams.push(param);
+      }
 
       param = this.contract.newParams['contragent'];
-      if (param) this.contractParams.push(param);
+      if (param) {
+        param.uuid = crypto.randomUUID();
+        this.contractParams.push(param);
+
+        if (!this.contragentRequest) {
+          this.contragentOption = "organization";
+
+          if (param.value && param.value.type === this.DocEnum.ContragentType.Person) {
+            this.contragentOption = "individual";
+          }
+        }
+      }
 
       param = this.contract.newParams['individualEntrepreneur'];
-      if (param) this.contractParams.push(param);
+      if (param) {
+        param.uuid = crypto.randomUUID();
+        this.contractParams.push(param);
+      }
 
       param = this.contract.newParams['student'];
       if (param) {
@@ -321,14 +483,21 @@ export default {
           param.value = this.$store.state.loginedUser;
         }
 
+        param.uuid = crypto.randomUUID();
         this.contractParams.push(param);
       }
 
       param = this.contract.newParams['Білім беру бағдарламасы'];
-      if (param) this.contractParams.push(param);
+      if (param) {
+        param.uuid = crypto.randomUUID();
+        this.contractParams.push(param);
+      }
 
       param = this.contract.newParams['Образовательные программы'];
-      if (param) this.contractParams.push(param);
+      if (param) {
+        param.uuid = crypto.randomUUID();
+        this.contractParams.push(param);
+      }
 
       param = this.contract.newParams['period'];
       if (param) {
@@ -336,8 +505,29 @@ export default {
           for (let i = 0; i < param.value.length; i++) {
             param.value[i] = param.value[i] ? new Date(param.value[i]) : null;
           }
+        param.uuid = crypto.randomUUID();
         this.contractParams.push(param);
       }
+    },
+    getDefaultApprovalList() {
+      this.service.getDefaultApprovalList({
+        type: 1,
+      }).then(res => {
+        this.selectedUsers = JSON.parse(JSON.stringify(res.data));
+        this.stages = JSON.parse(JSON.stringify(res.data));
+      }).catch(err => {
+        if (err.response && err.response.status == 401) {
+          this.$store.dispatch("logLout");
+        } else if (err.response && err.response.data && err.response.data.localized) {
+          this.showMessage('error', this.$t(err.response.data.localizedPath));
+          if (err.response.status == 403) {
+            this.haveAccess = false;
+          }
+        } else {
+          console.log(err)
+          this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
+        }
+      });
     },
     downloadContract(saveFile) {
       if (!this.contract || !this.contract.filePath || this.contract.filePath.length < 1) return;
@@ -383,7 +573,31 @@ export default {
         this.contract.newParams[this.contractParams[i].description] = this.contractParams[i];
       }
 
-      console.log(this.contract.newParams)
+      this.loading = true;
+
+      this.service.saveDocumentV2(this.contract).then(res => {
+        this.contract = res.data;
+        
+        if (this.contract.number) {
+          this.reserveNumber = this.contract.number;
+        }
+
+        this.getParams();
+
+        this.loading = false;
+        this.changed = false;
+      }).catch(err => {
+        this.loading = false;
+
+        if (err.response && err.response.status == 401) {
+          this.$store.dispatch("logLout")
+        } else if (err.response && err.response.data && err.response.data.localized) {
+          this.showMessage('error', this.$t(err.response.data.localizedPath), null)
+        } else {
+          console.log(err)
+          this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
+        }
+      })
     },
     registerContract(anticipatorily) {
       if (!this.contract) return;
@@ -416,17 +630,240 @@ export default {
       })
     },
     sendToApprove() {
-      
+      if (this.changed) {
+        this.showMessage("warn", this.$t("common.tosign"), this.$t("common.message.saveChanges"));
+        return;
+      }
+
+      if (!this.validate()) {
+        this.showMessage("error", this.$t("common.tosign"), this.$t("common.message.fillError"));
+        return;
+      }
+
+      this.$confirm.require({
+        message: this.$t('common.confirmation'),
+        header: this.$t('common.approve'),
+        icon: 'pi pi-exclamation-triangle',
+        accept: () => {
+          this.loading = true;
+
+          this.service.sendDocumentToApprovalV2({
+            uuid: this.contract.uuid,
+          }).then(res => {
+            this.loading = false;
+
+            this.getContract();
+          }).catch(err => {
+            this.loading = false;
+
+            if (err.response && err.response.status == 401) {
+              this.$store.dispatch("logLout")
+            } else if (err.response && err.response.data && err.response.data.localized) {
+              this.showMessage('error', this.$t(err.response.data.localizedPath), null)
+            } else {
+              console.log(err)
+              this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
+            }
+          })
+        }
+      });
     },
     sendToSign() {
+      if (this.changed) {
+        this.showMessage("warn", this.$t("common.tosign"), this.$t("common.message.saveChanges"));
+        return;
+      }
 
+      if (!this.validate()) {
+        this.showMessage("error", this.$t("common.tosign"), this.$t("common.message.fillError"));
+        return;
+      }
+
+      this.$confirm.require({
+        message: this.$t('common.confirmation'),
+        header: this.$t('common.approve'),
+        icon: 'pi pi-exclamation-triangle',
+        accept: () => {
+          this.loading = true;
+
+          this.service.sendDocumentToSignV2({
+            uuid: this.contract.uuid,
+          }).then(res => {
+            this.loading = false;
+
+            this.getContract();
+          }).catch(err => {
+            this.loading = false;
+
+            if (err.response && err.response.status == 401) {
+              this.$store.dispatch("logLout")
+            } else if (err.response && err.response.data && err.response.data.localized) {
+              this.showMessage('error', this.$t(err.response.data.localizedPath), null)
+            } else {
+              console.log(err)
+              this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
+            }
+          })
+        }
+      });
+    },
+    sendToContragent() {
+      this.loading = true;
+
+      this.service.createNewDocumentRequest({
+        requestType: this.DocEnum.DocumentRequestType.CounterpartyInfoRequest,
+        docId: this.contract.id,
+        contragentEmail: this.contragentEmail, 
+      }).then(res => {
+        this.loading = false;
+
+        this.getContract();
+      }).catch(err => {
+        this.loading = false;
+
+        if (err.response && err.response.status == 401) {
+          this.$store.dispatch("logLout")
+        } else if (err.response && err.response.data && err.response.data.localized) {
+          this.showMessage('error', this.$t(err.response.data.localizedPath), null)
+        } else {
+          console.log(err)
+          this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
+        }
+      })
     },
     input() {
       this.changed = true;
     },
     contragentUpdated(contr, param) {
+      for (let i = 0; i < this.contractParams.length; i++) {
+        if (this.contractParams[i].description === param.description) {
+          this.contractParams[i].value = contr;
+        }
+      }
+
       this.input();
     },
+    updateContragentType() {
+      for (let i = 0; i < this.contractParams.length; i++) {
+        if (this.contractParams[i].description === 'contragent') {
+          this.contractParams[i].uuid = crypto.randomUUID();
+          this.contractParams[i].value.data = null;
+          this.contractParams[i].value.type = this.notused.selectedContragent === 0 ? this.DocEnum.ContragentType.Organization : this.DocEnum.ContragentType.Person;
+          this.input();
+        }
+      }
+    },
+    validate() {
+      for (let prop in this.contract.newParams) {
+        if (['student', 'period', 'практика түрі', 'Вид практики', 'Білім беру бағдарламасы', 'Образовательные программы'].includes(prop)) {
+          if (this.isNull(this.contract.newParams[prop].value)) {
+            return false;
+          }
+        } else if (prop === 'ourside' || (['contragent', 'individualEntrepreneur'].includes(prop) && this.contragentOption !== 'email')) {
+          if (this.isNull(this.contract.newParams[prop].value) || this.isNull(this.contract.newParams[prop].value.data)) {
+            return false;
+          }
+
+          if (this.contract.newParams[prop].value.type === this.DocEnum.ContragentType.Organization &&
+            this.isNull(this.contract.newParams[prop].value.data.signer)) {
+              return false;
+          }
+        }
+      }
+
+      if (this.contract.sourceType === this.DocEnum.DocSourceType.FilledDoc) {
+        if (!this.contract.approvalStages || this.contract.approvalStages.length < 1) {
+          return false;
+        }
+
+        let filled = true;
+        this.contract.approvalStages.forEach((au) => {
+          if (au.users === null || au.users.length < 1 || au.certificate === null) {
+            filled = false;
+            return;
+          }
+        });
+
+        if (!filled) {
+          return false;
+        }
+      }
+
+      return true;
+    },
+    isNull(param) {
+      if (param === null || param === undefined || param === 'null' || param === '') {
+        return true;
+      }
+
+      return false;
+    },
+    onCopy() {
+      this.showMessage("success", this.$t('ncasigner.successCopy'));
+    },
+    onFail() {
+      this.showMessage("warn", this.$t('ncasigner.failCopy'));
+    }, 
+    approvalsUpdated(event) {
+      this.input();
+
+      this.contract.approvalStages = JSON.parse(JSON.stringify(event));
+    },
+    contragentOptionChanged() {
+      for (let i = 0; i < this.contractParams.length && this.contragentOption !== 'email'; i++) {
+        if (this.contractParams[i].description === 'contragent') {
+          this.contractParams[i].uuid = crypto.randomUUID();
+          this.contractParams[i].value.data = null;
+          this.contractParams[i].value.type = this.contragentOption === 'organization' ? this.DocEnum.ContragentType.Organization : this.DocEnum.ContragentType.Person;
+          this.input();
+        }
+      }
+    },
+    newAct() {
+      this.loading = true;
+
+      this.service.documentTemplatesV2({
+        page: 0,
+        rows: 10,
+        folderType: this.DocEnum.FolderType.RelatedDocumentTemplates,
+      }).then(res => {
+        let templates = res.data.doctemplates;
+
+        this.service.createDocumentV2({
+          templateId: templates[0].id,
+          docType: this.DocEnum.DocType.RelatedDoc,
+          parent: this.contract.uuid,
+        }).then(res => {
+          this.loading = false;
+
+          this.showMessage('success', this.$t('contracts.title'), this.$t('contracts.message.created'));
+
+          this.$router.push('/documents/contracts/' + this.contract.uuid + '/related/' + res.data.uuid);
+        }).catch(err => {
+          this.loading = false;
+
+          if (err.response && err.response.status == 401) {
+            this.$store.dispatch("logLout")
+          } else if (err.response && err.response.data && err.response.data.localized) {
+            this.showMessage('error', this.$t(err.response.data.localizedPath), null)
+          } else {
+            console.log(err)
+            this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
+          }
+        })
+      }).catch(err => {
+        this.loading = false;
+
+        if (err.response && err.response.status == 401) {
+          this.$store.dispatch("logLout")
+        } else if (err.response && err.response.data && err.response.data.localized) {
+          this.showMessage('error', this.$t(err.response.data.localizedPath), null)
+        } else {
+          console.log(err)
+          this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
+        }
+      })
+    }
   }
 }
 </script>
@@ -482,7 +919,6 @@ export default {
   flex-direction: column;
   padding: 0rem;
 }
-
 :deep(.p-tabview-panel) {
   flex-grow: 1;
   display: flex;

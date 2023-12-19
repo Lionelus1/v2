@@ -1,3 +1,4 @@
+import { getMultipartHeader } from "../config/config";
 import api from "./api";
 import {getFileHeader, getHeader} from "@/config/config";
 
@@ -35,5 +36,23 @@ export class DocService {
     }
     saveDocumentV2(data) {
         return api.post("/document/save", data, {headers: getHeader()});
+    }
+    saveDocumentMultipartV2(data) {
+        return api.post("/document/save", data, {headers: getMultipartHeader()});
+    }
+    sendDocumentToSignV2(data) {
+        return api.post("/document/sendToSign", data, {headers: getHeader()});
+    }
+    sendDocumentToApprovalV2(data) {
+        return api.post("/document/sendToApprove", data, {headers: getHeader()});
+    }
+    updateDocRequestV2(data) {
+        return api.post("/docrequest/update", data, {headers: getHeader()});
+    }
+    getDefaultApprovalList(data) {
+        return api.post("/approvalList/getDefault", data, {headers: getHeader()});
+    }
+    createNewDocumentRequest(data) {
+        return api.post("/document/newRequest", data, {headers: getHeader()});
     }
 }

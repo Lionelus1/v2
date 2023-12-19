@@ -11,5 +11,10 @@ export default {
         Signer: "signer",
         HeadOfCompany: "head_of_company",
         MainAdministrator: "main_administrator",
+        Student: "student",
+        Teacher: "teacher",
+        Prorector: "prorector",
+        ActsToExecution: "acts_to_execution",
+        Accountant: "accountant",
     }
 }

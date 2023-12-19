@@ -8,6 +8,11 @@
           <Button class="p-button-info align-items-center" style="padding: 0.25rem 1rem;"
             @click="openDocument" :disabled="!currentDocument">
             <i class="fa-regular fa-address-card" /> &nbsp;{{ $t("contracts.card") }}</Button>
+          <Button class="p-button-info align-items-center" style="padding: 0.25rem 1rem;"
+            @click="$router.push('/documents/contracts/' + this.currentDocument.uuid + '/related')" 
+            :disabled="!currentDocument || currentDocument.docHistory.stateId !== Enum.SIGNED.ID || 
+            currentDocument.sourceType !== Enum.DocSourceType.FilledDoc">
+            <i class="fa-solid fa-file-invoice" /> &nbsp;{{ $t("contracts.menu.journal") }}</Button>
         </div>
       </template>
       <template #end>
@@ -66,9 +71,15 @@
       </Column> -->
       <Column :header="$t('contracts.columns.status')" style="min-width: 150px;">
         <template #body="slotProps">
-          <span :class="'customer-badge status-' + slotProps.data.docHistory.code">
-            {{ slotProps.data.docHistory[$i18n.locale === 'en' ? 'stateEn' : $i18n.locale === 'ru' ? 'stateRus' : 'stateKaz'] }} 
-          </span>
+          <div class="flex flex-wrap column-gap-1 row-gap-1">
+            <span :class="'customer-badge status-' + slotProps.data.docHistory.code">
+              {{ slotProps.data.docHistory[$i18n.locale === 'en' ? 'stateEn' : $i18n.locale === 'ru' ? 'stateRus' : 'stateKaz'] }} 
+            </span>
+            <span v-if="haveRequest(slotProps.data) && slotProps.data.docHistory.stateId == Enum.CREATED.ID" 
+              class="customer-badge status-status_signed" style="width: min-content;">
+              {{ $t('contracts.contragentRequest') }}
+            </span>
+          </div>
         </template>
       </Column>
       <Column style="min-width: 50px;">
@@ -510,6 +521,17 @@ export default {
     },
     greenMySign() {
 
+    },
+    haveRequest(contract) {
+      if (contract.requests) {
+        for (let i = 0; i < contract.requests.length; i++) {
+          if (contract.requests[i].type === this.Enum.DocumentRequestType.CounterpartyInfoRequest) {
+            return true;
+          }
+        }
+      }
+
+      return false;
     },
     deleteFile() {
       this.$confirm.require({

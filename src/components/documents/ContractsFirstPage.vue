@@ -14,6 +14,10 @@
           <router-link to="/documents/catalog/contracts"  class="p-button p-button-link">{{$t('contracts.list')}}</router-link><br>
           <i class="mx-3">{{$t('contracts.listdesc')}}</i>
         </div>
+        <div class="fieldmenu-item pb-3" v-if="!this.findRole(null, 'student')">
+          <router-link to="/documents/catalog/acts"  class="p-button p-button-link">{{$t('contracts.menu.actsJournal')}}</router-link><br>
+          <i class="mx-3">{{$t('contracts.menu.actsJournalDesc')}}</i>
+        </div>
       </div>
     </div>
   </div>
@@ -146,7 +150,7 @@
         })
       },
       fileUpdated(event) {
-        this.$router.push({ path: '/documents/contracts/' + event.uuid });
+        this.$router.push({path: '/documents/contracts/' + event.key });
       },
     },
   }

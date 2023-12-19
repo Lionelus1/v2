@@ -1,11 +1,10 @@
 <template>
   <ProgressSpinner v-if="loading" class="progress-spinner" strokeWidth="5"/>
   <div class="flex flex-row mb-3">
-    <div class="arrow-icon" @click="(event) => {$refs.backmenu.toggle(event)}">
+    <div class="arrow-icon" @click="$router.back()">
       <i class="fas fa-arrow-left"></i>
-      <Menu ref="backmenu" :model="backmenu" :popup="true" />
     </div>
-    <h4 class="m-0">{{ $t("contracts.menu.relatedDocument") }}</h4>
+    <h4 class="m-0">{{ $t("contracts.menu.actsJournal") }}</h4>
   </div>
   <BlockUI :blocked="loading" class="card">
     <Toolbar class="p-1">
@@ -14,13 +13,14 @@
           <Button class="p-button-info align-items-center" style="padding: 0.25rem 1rem;"
             @click="openDocument" :disabled="!currentDocument">
             <i class="fa-regular fa-address-card" /> &nbsp;{{ $t("contracts.card") }}</Button>
-          <Button class="p-button-info align-items-center" style="padding: 0.25rem 1rem;"
-            @click="createAct" :disabled="!templates || templates.length < 1">
-            <i class="fa-solid fa-file-circle-plus" /> &nbsp;{{ $t("contracts.menu.newDocument") }}</Button>
-          <Button v-if="this.findRole(null, RolesEnum.roles.ActsToExecution) || this.findRole(null, RolesEnum.roles.MainAdministrator)"
+            <Button v-if="this.findRole(null, RolesEnum.roles.ActsToExecution) || this.findRole(null, RolesEnum.roles.MainAdministrator)"
             class="p-button-info align-items-center" style="padding: 0.25rem 1rem;" @click="sendForExecution(currentDocument)" 
             :disabled="!currentDocument || currentDocument.docHistory.stateId !== Enum.APPROVED.ID || executed(currentDocument) || execution(currentDocument)">
             <i class="fa-solid fa-envelope-circle-check" /> &nbsp;{{ $t("contracts.menu.sendForExecution") }}</Button>
+          <Button v-if="this.findRole(null, RolesEnum.roles.Accountant) || this.findRole(null, RolesEnum.roles.MainAdministrator)"
+            class="p-button-info align-items-center" style="padding: 0.25rem 1rem;" @click="execute(currentDocument)"
+            :disabled="!currentDocument || currentDocument.docHistory.stateId !== Enum.APPROVED.ID || executed(currentDocument) || !execution(currentDocument)">
+            <i class="fa-solid fa-envelope-circle-check" /> &nbsp;{{ $t("contracts.executed") }}</Button>
         </div>
       </template>
     </Toolbar>
@@ -52,22 +52,11 @@
           {{ slotProps.data.registerDate ? getShortDateString(slotProps.data.registerDate) : "" }}
         </template>
       </Column>
-      <!-- <Column :header="$t('contracts.columns.description')" style="min-width: 250px;">
-        <template #body="slotProps">
-          {{ slotProps.data.template ? getTemplateName(slotProps.data.template) : '' }}
-        </template>
-      </Column> -->
       <Column :header="$t('contracts.columns.status')" style="min-width: 150px;">
         <template #body="slotProps">
           <div class="flex flex-wrap column-gap-1 row-gap-1">
             <span :class="'customer-badge status-' + slotProps.data.docHistory.code">
               {{ slotProps.data.docHistory[$i18n.locale === 'en' ? 'stateEn' : $i18n.locale === 'ru' ? 'stateRus' : 'stateKaz'] }} 
-            </span>
-            <span v-if="sciadvisorRequest(slotProps.data)" class="ml-1 customer-badge status-status_inapproval">
-              {{ $t('contracts.sciadvisorRequest') }}
-            </span>
-            <span v-if="sciadvisorRevision(slotProps.data)" class="ml-1 customer-badge status-status_revision">
-              {{ $t('common.revision') }}
             </span>
             <span v-if="execution(slotProps.data)" class="ml-1 customer-badge status-status_signing">
               {{ $t('contracts.execution') }}
@@ -81,12 +70,6 @@
       <Column style="min-width: 50px;">
         <template #body="slotProps">
           <div class="flex flex-wrap">
-            <Button v-if="(slotProps.data.docHistory.stateId === Enum.CREATED.ID || 
-              slotProps.data.docHistory.stateId === Enum.REVISION.ID) && loginedUser.userID === slotProps.data.creatorID"
-              @click="currentDocument=slotProps.data;openDocument()"
-              class="p-button-text p-button-info p-1">
-              <i class="fa-solid fa-pen fa-xl"></i>
-            </Button>
             <Button v-if="slotProps.data.docHistory.stateId === Enum.APPROVED.ID"
               @click="currentDocument=slotProps.data;download()"
               class="p-button-text p-button-info p-1">
@@ -96,11 +79,6 @@
               class="p-button-text p-button-info p-1">
               <i class="fa-solid fa-eye fa-xl"></i>
             </Button>
-            <Button v-if="(slotProps.data.docHistory.stateId === Enum.CREATED.ID || 
-              slotProps.data.docHistory.stateId === Enum.REVISION.ID) && loginedUser.userID === slotProps.data.creatorID"
-              @click="currentDocument=slotProps.data;deleteFile()" class="p-button-text p-button-danger p-1">
-              <i class="fa-solid fa-trash fa-xl"></i>
-            </Button>
           </div>
         </template>
       </Column>
@@ -108,7 +86,7 @@
   </BlockUI>
   <!-- documentInfoSidebar -->
   <Sidebar v-model:visible="visibility.documentInfoSidebar" position="right" class="p-sidebar-lg" 
-    style="overflow-y: scroll" @hide="getRelatedDocuments">
+    style="overflow-y: scroll" @hide="getActs">
     <DocSignaturesInfo :docIdParam="currentDocument.uuid"></DocSignaturesInfo>
   </Sidebar>
 </template>
@@ -122,7 +100,7 @@ import { DocService } from "@/service/doc.service";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo";
 
 export default {
-  name: 'RelatedDocuments',
+  name: 'Acts',
   components: { DocSignaturesInfo },
   props: { },
   data() {
@@ -144,13 +122,10 @@ export default {
 
       visibility: {
         documentInfoSidebar: false,
-        newDocumentDialog: false,
       },
 
       loading: false,
       tableLoading: false,
-
-      parentUUID: null,
 
       documents: [],
       currentDocument: null,
@@ -158,34 +133,15 @@ export default {
       first: 0,
       page: 0,
       rows: 10,
-
-      templates: [],
-      templateSearchText: null,
-
-      backmenu: [
-        {
-          label: this.$t("educomplex.tooltip.previous"),
-          icon: "fa-solid fa-arrow-left",
-          command: () => { this.$router.back() }
-        },
-        {
-          label: this.$t("contracts.contract"),
-          icon: "fa-solid fa-file-contract",
-          command: () => { this.$router.push('/documents/contracts/' + this.parentUUID) }
-        }
-      ]
     }
   },
   created() {
     this.loginedUser = JSON.parse(localStorage.getItem("loginedUser"));
   },
-  async mounted() {
+  mounted() {
     this.$emit('apply-flex', true);
 
-    this.parentUUID = this.$route.params.uuid;
-
-    await this.getTemplates();
-    this.getRelatedDocuments();
+    this.getActs();
   },
   beforeUnmount() {
     this.$emit('apply-flex', false);
@@ -237,41 +193,24 @@ export default {
 
       return false;
     },
-    getTemplateName(template) {
-      let name = ''
-      if (this.$i18n.locale === 'en') {
-        name = template.descriptionEng
-      } else if (this.$i18n.locale === 'ru') {
-        name = template.descriptionRus
-      } else  {
-        name = template.descriptionKaz
-      }
-
-      if (name && name.length > 0) {
-        return name
-      }
-
-      return ''
-    },
     onPage(event) {
       this.first = event.first;
       this.page = event.page;
       this.rows = event.rows;
-      this.getRelatedDocuments();
+      this.getActs();
     },
     openDocument() {
-      if (this.currentDocument) {
-        this.$router.push('/documents/contracts/' + this.parentUUID + '/related/' + this.currentDocument.uuid)
+      if (this.currentDocument && this.currentDocument.parent) {
+        this.$router.push('/documents/contracts/' + this.currentDocument.parent.uuid + '/related/' + this.currentDocument.uuid)
       }
     },
-    getRelatedDocuments() {
+    getActs() {
       this.tableLoading = true;
 
       this.service.getDocumentsV2({
         page: this.page,
         rows: this.rows,
         docType: this.Enum.DocType.RelatedDoc,
-        relatedTo: this.parentUUID,
       }).then(res => {
         this.documents = res.data.documents;
         this.total = res.data.total;
@@ -294,58 +233,6 @@ export default {
 
         this.tableLoading = false
       });
-    },
-    deleteFile() {
-      this.$confirm.require({
-        message: this.$t("common.doYouWantDelete"),
-        header: this.$t("common.confirm"),
-        icon: 'pi pi-exclamation-triangle',
-        acceptClass: 'p-button p-button-success',
-        rejectClass: 'p-button p-button-danger',
-        accept: () => {
-          this.loading = true;
-          
-          this.service.documentDeleteV2({
-            uuid: this.currentDocument.uuid,
-          }).then(res => {
-            this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
-            this.getRelatedDocuments();
-
-            this.loading = false;
-          }).catch(err => {
-            if (err.response && err.response.status == 401) {
-              this.$store.dispatch("logLout")
-            } else if (err.response && err.response.data && err.response.data.localized) {
-              this.showMessage('error', this.$t(err.response.data.localizedPath), null)
-            } else {
-              console.log(err)
-              this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
-            }
-
-            this.loading = false;
-          })
-        },
-      });
-    },
-    async getTemplates() {
-      this.service.documentTemplatesV2({
-        page: 0,
-        rows: 50,
-        folderType: this.Enum.FolderType.RelatedDocumentTemplates,
-      }).then(res => {
-        this.templates = res.data.doctemplates
-      }).catch(err => {
-        this.templates = []
-
-        if (err.response && err.response.status == 401) {
-          this.$store.dispatch("logLout")
-        } else if (err.response && err.response.data && err.response.data.localized) {
-          this.showMessage('error', this.$t(err.response.data.localizedPath), null)
-        } else {
-          console.log(err)
-          this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
-        }
-      })
     },
     download() {
       if (!this.currentDocument || !this.currentDocument.filePath || this.currentDocument.filePath.length < 1) return;
@@ -376,70 +263,6 @@ export default {
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
       })
-    },
-    createAct() {
-      this.loading = true;
-
-      this.service.createDocumentV2({
-        templateId: this.templates[0].id,
-        docType: this.Enum.DocType.RelatedDoc,
-        parent: this.parentUUID,
-      }).then(res => {
-        this.loading = false;
-
-        this.showMessage('success', this.$t('contracts.title'), this.$t('contracts.message.created'));
-
-        this.$router.push('/documents/contracts/' + this.parentUUID + '/related/' + res.data.uuid);
-      }).catch(err => {
-        this.loading = false;
-
-        if (err.response && err.response.status == 401) {
-          this.$store.dispatch("logLout")
-        } else if (err.response && err.response.data && err.response.data.localized) {
-          this.showMessage('error', this.$t(err.response.data.localizedPath), null)
-        } else {
-          console.log(err)
-          this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
-        }
-      })
-    },
-    sciadvisorRequest(data) {
-      if (data.docHistory.stateId !== this.Enum.CREATED.ID) {
-        return false;
-      }
-
-      if (data.requests) {
-        for (let i = data.requests.length-1; i >= 0; i--) {
-          if (data.requests[i].type === this.Enum.DocumentRequestType.ScienceAdvisorApproval) {
-            if (data.requests[i].status === 0) {
-              return true;
-            }
-
-            break;
-          }
-        }
-      }
-
-      return false;
-    },
-    sciadvisorRevision(data) {
-      if (data.docHistory.stateId !== this.Enum.CREATED.ID) {
-        return false;
-      }
-
-      if (data.requests) {
-        for (let i = data.requests.length-1; i >= 0; i--) {
-          if (data.requests[i].type === this.Enum.DocumentRequestType.ScienceAdvisorApproval) {
-            if (data.requests[i].status === 2) {
-              return true;
-            }
-
-            break;
-          }
-        }
-      }
-
-      return false;
     },
     executed(data) {
       if (data.docHistory.stateId !== this.Enum.APPROVED.ID) {
@@ -484,7 +307,42 @@ export default {
         requestType: this.Enum.DocumentRequestType.AccountantsExecutionRequest,
         docId: contract.id,
       }).then(res => {
-        this.getRelatedDocuments();
+        this.getActs();
+      }).catch(err => {
+        if (err.response && err.response.status == 401) {
+          this.$store.dispatch("logLout")
+        } else if (err.response && err.response.data && err.response.data.localized) {
+          this.showMessage('error', this.$t(err.response.data.localizedPath), null)
+        } else {
+          console.log(err)
+          this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
+        }
+      })
+    },
+    execute(contract) {
+      let req = null;
+
+      if (contract.requests) {
+        for (let i = contract.requests.length-1; i >= 0; i--) {
+          if (contract.requests[i].type === this.Enum.DocumentRequestType.AccountantsExecutionRequest) {
+            if (contract.requests[i].status === 0) {
+              req = contract.requests[i];
+            }
+
+            break;
+          }
+        }
+      }
+
+      if (!req) {
+        return;
+      }
+
+      this.service.updateDocRequestV2({
+        requestId: req.id,
+        status: 1,
+      }).then(res => {
+        this.getActs();
       }).catch(err => {
         if (err.response && err.response.status == 401) {
           this.$store.dispatch("logLout")

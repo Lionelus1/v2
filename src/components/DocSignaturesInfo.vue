@@ -132,7 +132,7 @@ export default {
       signatures: null,
       approvalStages: null,
       plan: null,
-      doc_id: this.$route.params.uuid,
+      doc_id: null,
       isTspRequired: Boolean,
       signerIin: null,
       docInfo: null,
@@ -159,9 +159,12 @@ export default {
     }
   },
   created() {
-    if (!this.doc_id) {
-      this.doc_id = this.docIdParam
+    if (this.docIdParam) {
+      this.doc_id = this.docIdParam;
+    } else {
+      this.doc_id =this.$route.params.uuid;
     }
+    
     const tokenData = JSON.parse(window.localStorage.getItem("authUser"));
     if (tokenData !== null) {
       let signUri = smartEnuApi + '/mobileSignParams/' + this.doc_id + "/" + tokenData.access_token

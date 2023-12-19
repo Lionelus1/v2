@@ -219,7 +219,7 @@ export default {
         (error) => {
           if(!axios.isCancel(error)) {
             this.searchInProgres = false;
-            if (error.response.status === 404) {
+            if (error.response && error.response.status === 404) {
               this.foundEntities = null;
             }
           }

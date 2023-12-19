@@ -7,13 +7,14 @@
       <InputText :disabled="disable" :readonly="true" type="text" v-model="getOrganizationName"></InputText>
     </span>
   </div>
-  <div class="field mb-0" v-if="contr.data">
+  <div class="field mb-0" v-if="(contr && contr.type === Enum.ContragentType.Person) || contr.data">
     <span class="p-float-label p-input-icon-right">
       <i v-if="signer && signer.userID > 0" class="pi pi-id-card" 
-        style="right: 2.5rem;" @click="open('signerCard')"></i>
+        style="right: 2.5rem;" @click="open('signerCard')"
+        :style="{'z-index': scientist ? 1 : 0}"></i>
       <i class="pi pi-ellipsis-h" style="right: 0;" @click="open('signerList')"></i>
       <InputText :disabled="disable" :readonly="true" type="text" v-model="getSignerName"></InputText>
-      <label>{{$t('contracts.signer')}}</label>
+      <label v-if="[0, Enum.ContragentType.Organization, Enum.ContragentType.Bank].includes(contr.type)">{{$t('contracts.signer')}}</label>
     </span>
   </div>
   <Sidebar v-model:visible="visibility.organizationCard" position="right" class="p-sidebar-lg">
@@ -50,6 +51,10 @@ export default {
   props: { 
     contragent: null,
     disable: {
+      type: Boolean,
+      default: false
+    },
+    scientist: {
       type: Boolean,
       default: false
     }

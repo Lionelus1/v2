@@ -111,10 +111,10 @@ export default {
       this.$router.push({path: "/login"})
     },
     getFullname(user) {
-      let fullname = user.thirdName + ' ' + user.firstName
+      let fullname = user.thirdName + ' ' + user.firstName;
 
       if (user.lastName && user.lastName.length > 0) {
-        fullname += user.lastName
+        fullname += ' ' + user.lastName;
       }
 
       return fullname
