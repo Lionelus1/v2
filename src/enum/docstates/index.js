@@ -100,6 +100,8 @@ export default {
     EduComplex: 2,
     FilledDoc: 3,
     References: 4,
+    Accredation: 5,
+    RelatedDocumentTemplates: 7,
   },
 
   DocumentRequestType: {
@@ -107,5 +109,7 @@ export default {
     ReferenceErrorCorrection: 'reference_error_correction',
     ReferenceInfoRequest: 'reference_info_request',
     ReferenceSalaryRequest: 'reference_salary_request',
+    ScienceAdvisorApproval: 'science_advisor_approval',
+    AccountantsExecutionRequest: 'accountants_execution_request',
   },
 }

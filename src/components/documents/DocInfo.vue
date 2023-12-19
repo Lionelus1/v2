@@ -41,7 +41,7 @@ import { getLongDateString } from "@/helpers/helper";
 import {AgreementService} from "@/service/agreement.service"
 
 export default {
-    name: "DocSignaturesInfo",
+    name: "DocInfo",
     props: {
         ID: {
             type: Number,

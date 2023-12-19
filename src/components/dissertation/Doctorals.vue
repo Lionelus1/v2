@@ -104,7 +104,7 @@
         <div class="grid formgrid">
           <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
             <label for="name">{{ $t("common.fullName") }}</label>
-            <FindUser class="pt-1" v-model="selectedUsers" :max="1" :editMode="true" :user-type="0"></FindUser>
+            <FindUser class="pt-1" v-model="selectedUsers" :max="1" :editMode="true" searchMode="local"></FindUser>
             <small class="p-error" v-if="submitted && validationErrors.user">{{ $t("common.requiredField") }}</small>
           </div>
           <div class="col-12 pb-2 lg:col-6 mb-lg-0">

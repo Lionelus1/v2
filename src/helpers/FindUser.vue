@@ -4,8 +4,8 @@
       <ul style="width:100%" :class="['p-inputtext p-chips-multiple-container p-w-100', {'p-disabled': $attrs.disabled, 'p-focus': focused}]"
           @click="onWrapperClick()">
         <li v-for="(val,i) of modelValue" :key="`${i}_${val}`" class="p-chips-token">
-          <slot name="chip" :value="val.fullName">
-            <span class="p-chips-token-label">{{ val.fullName }}</span>
+          <slot name="chip" :value="getFullname(val)">
+            <span class="p-chips-token-label">{{ getFullname(val) }}</span>
             <span class="p-chips-token-icon pi pi-times-circle" @click="removeItem($event, i)"></span>
           </slot>
         </li>
@@ -24,14 +24,13 @@
               <div class="image-container lg:col-2  md:col-3 p-sm-12">
                 <img class="round" v-if="slotProps.option.photo != null && slotProps.option.photo !==''"
                      :src="'data:image/jpeg;base64,' + slotProps.option.photo "/>
-                <img class="round" v-if="!(slotProps.option.photo != null && slotProps.option.photo !=='')"
+                <img class="round" v-else
                      src="assets/layout/images/default-user.jpg"/>
               </div>
               <div class="user-list-detail lg:col-10  md:col-9 p-sm-12">
-                <h5 class="mb-2">{{ slotProps.option.fullName }}</h5>
-                <span class="product-category">{{ slotProps.option.mainPosition['name' + $i18n.locale] }}</span><br/>
+                <h5 class="mb-2">{{ getFullname(slotProps.option) }}</h5>
+                <span class="product-category">{{ slotProps.option.mainPosition['name' + $i18n.locale] ? slotProps.option.mainPosition['name' + $i18n.locale] : slotProps.option.mainPosition.name }}</span><br/>
                 <span class="product-category">{{ slotProps.option.mainPosition.department['name' + $i18n.locale.charAt(0).toUpperCase() + $i18n.locale.slice(1)] }}</span>
-
               </div>
             </div>
           </template>
@@ -54,6 +53,9 @@
 import {getHeader, smartEnuApi, templateApi} from "@/config/config";
 import axios from 'axios';
 import { UserService } from "../service/user.service";
+
+import { ContragentService } from "@/service/contragent.service";
+
 export default {
   name: 
     'FindUser',
@@ -72,11 +74,6 @@ export default {
       type: Number,
       default: 2
     },
-    roles: {
-      type: String,
-      default: null
-    },
-
     max: {
       type: Number,
       default: null
@@ -93,11 +90,17 @@ export default {
       type: Boolean,
       default: true
     },
+    searchMode: {
+      type: String,
+      default: 'ldap',
+    },
     class: null,
     style: null,
   },
   data() {
     return {
+      service: new ContragentService(),
+
       newUser: {
         IIN: null,
         name: null,
@@ -142,7 +145,7 @@ export default {
       focused: false,
       foundEntities: null,
       keyPressDate: Date.now(),
-      userDialog: false,
+      // userDialog: false,
       selectedEntity: {
         name: "",
       },
@@ -150,19 +153,42 @@ export default {
     };
   },
    mounted() {
-    if (this.first !== null && this.first.fullName !== null && this.first.fullName !== "" && this.max == 1) {
-      this.addItem(null, this.first,false)
+    if (this.first !== null && this.max == 1) {
+      this.addItem(null, this.first, false)
     }
-
   },
   methods: {
     userCreated(user) {
-      
-    const event = new Event('userCreated');
-    this.addItem(event,user,true)
+      const event = new Event('userCreated');
+      this.addItem(event,user,true)
+    },
+    getFullname(user) {
+      if (!user) {
+        return ''
+      }
+
+      let fullname = ''
+      if (this.$i18n.locale === 'en') {
+        fullname += user.lastnameEn + ' ' + user.firstnameEn
+
+        if (user.thirdnameEn) {
+          fullname += ' ' + user.thirdnameEn
+        }
+      }
+
+      if (fullname.length > 0) {
+        return fullname
+      }
+
+      fullname += user.thirdName + ' ' + user.firstName
+
+      if (user.lastName) {
+        fullname += ' ' + user.lastName
+      }
+
+      return fullname
     },
     showUserDialog() {
-    
       this.userDialog = true;
     },
     toggle(event, inputValue) {
@@ -177,13 +203,17 @@ export default {
       this.$refs.op.hide();
       this.$refs.op.toggle(event);
       this.searchInProgres = true;
-      const req = {
-        "dn": inputValue,
-        "userType": this.userType,
-      }
-      this.userService.getUser(req, this.cancelToken.token).then(
+      this.service.getPersons({
+        "filter": {
+          "name": inputValue,
+        },
+        "searchMode": this.userType == 1 ? "student" : this.userType == 2 ? "staff" : "all",
+        "ldap": this.searchMode == 'ldap' ? true : false,
+        "page": 0,
+        "rows": 15
+      }, this.cancelToken.token).then(
         response => {
-            this.foundEntities = response.data;
+            this.foundEntities = response.data.foundUsers;
             this.searchInProgres = false;
         },
       )
@@ -191,7 +221,7 @@ export default {
         (error) => {
           if(!axios.isCancel(error)) {
             this.searchInProgres = false;
-            if (error.response.status === 404) {
+            if (error.response && error.response.status === 404) {
               this.foundEntities = null;
             }
           }
@@ -266,7 +296,7 @@ export default {
     updateModel(event, value, preventDefault) {
       this.$emit('update:modelValue', value);
       if (this.max == 1 && value.length >0) {
-         this.$emit('update:first', value[0]);
+        this.$emit('update:first', value[0]);
       }
       this.$emit('add', {
         originalEvent: event,
@@ -304,8 +334,7 @@ export default {
         originalEvent: event,
         value: removedItem
       });
-    },
-  
+    }
   },
   computed: {
     maxedOut() {

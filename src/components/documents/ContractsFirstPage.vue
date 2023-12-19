@@ -14,14 +14,18 @@
           <router-link to="/documents/catalog/contracts"  class="p-button p-button-link">{{$t('contracts.list')}}</router-link><br>
           <i class="mx-3">{{$t('contracts.listdesc')}}</i>
         </div>
+        <div class="fieldmenu-item pb-3" v-if="!this.findRole(null, 'student')">
+          <router-link to="/documents/catalog/acts"  class="p-button p-button-link">{{$t('contracts.menu.actsJournal')}}</router-link><br>
+          <i class="mx-3">{{$t('contracts.menu.actsJournalDesc')}}</i>
+        </div>
       </div>
     </div>
   </div>
 
   <Sidebar v-model:visible="dialogOpenState.createDocDialog" :modal="true" :style="largeScreen ? 'width:75vw' : ''" :position="largeScreen ? 'right' : 'full'">
     <div class="flex flex-wrap justify-content-between">
-      <SelectButton :disabled="!this.$store.state.loginedUser.organization || !this.$store.state.loginedUser.organization.id ||
-        this.$store.state.loginedUser.organization.id !== 1 || this.findRole(null, 'student')"
+      <SelectButton :disabled="!this.$store.state.loginedUser.mainPosition ||
+        this.$store.state.loginedUser.mainPosition.organization.id !== 1 || this.findRole(null, 'student')"
         v-model="selectedDocSourceType" :options="docSourceType" class="mb-3 mr-3">
         <template #option="slotProps">
           <div v-if="slotProps.option == Enum.DocSourceType.Template">{{$t('contracts.fromtemplate')}}</div>
@@ -47,10 +51,12 @@
   </Sidebar>
 </template>
 <script>
-  
+
   import { smartEnuApi, getHeader, findRole } from "@/config/config";
+  import { findRole } from "@/config/config";
   import Enum from "@/enum/docstates/index";
   
+  import { DocService } from "@/service/doc.service";
   import DocTemplate from "@/components/documents/DocTemplate.vue"
   import PostFile from "./PostFile.vue"
   import { AgreementService } from "@/service/agreement.service";
@@ -59,6 +65,8 @@
     components: { PostFile, DocTemplate},
     data() {
       return {
+        service: new DocService(),
+
         largeScreen: false,
 
         dialogOpenState: {
@@ -121,7 +129,7 @@
         this.$toast.add({severity:msgtype, summary: message, detail:content, life: 3000});
       },
       createDoc() {
-        
+
         let url ="/agreement/create";
         var req = {
           sourceType : this.selectedDocSourceType,
@@ -145,28 +153,33 @@
         })
       },
       createDocByTemplate(event) {
-        let url ="/agreement/create";
-        var req = {
-          sourceType : Enum.DocSourceType.Template,
-          templateId: event.value.id,
-          creatorId: this.$store.state.loginedUser.userID,
-          filePath: "",
-          lang: this.selectedDocLanguage == "kz" ? 0 : 1,
-          byParams: true
-        }
         this.saving = true;
-        
-        this.agreementService.createAgreement(req).then(responce=>{
-          this.saving = false;
+
+        this.service.createDocumentV2({
+          templateId: event.value.id,
+          docType: Enum.DocType.Contract,
+          language: this.selectedDocLanguage == "kz" ? 0 : 1,
+        }).then(res => {
           this.showMessage('success', this.$t('contracts.title'), this.$t('contracts.message.created'));
-          this.$router.push({ path: '/documents/contract/' + responce.data.id});
-        })
-        .catch(_ => {
+
+          this.saving = false;
+
+          this.$router.push({ path: '/documents/contracts/' + res.data.uuid });
+        }).catch(err => {
+          if (err.response && err.response.status == 401) {
+            this.$store.dispatch("logLout")
+          } else if (err.response && err.response.data && err.response.data.localized) {
+            this.showMessage('error', this.$t(err.response.data.localizedPath), null)
+          } else {
+            console.log(err)
+            this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
+          }
+
           this.saving = false;
         })
       },
       fileUpdated(event) {
-        this.$router.push({ path: '/documents/contract/' + event.id });
+        this.$router.push({path: '/documents/contracts/' + event.key });
       },
     },
   }

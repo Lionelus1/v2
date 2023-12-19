@@ -20,7 +20,7 @@
     </div>
     <AppConfig :layoutMode="layoutMode" :layoutColorMode="layoutColorMode" @layout-change="onLayoutChange" @layout-color-change="onLayoutColorChange"/>
     <AppFooter/>
-    <PositionChangeDialog ref="positionChangeDialog"></PositionChangeDialog>
+    <PositionChangeDialog v-if="loginedUser && loginedUser.userID > 0" ref="positionChangeDialog"></PositionChangeDialog>
   </div>
 </template>
 

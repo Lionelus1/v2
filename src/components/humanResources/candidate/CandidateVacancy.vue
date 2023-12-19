@@ -242,7 +242,7 @@
       class="p-sidebar-lg"
       style="overflow-y: scroll"
   >
-    <DocSignaturesInfo :docIdParam="documentUuid" :showAllSignsParam="true" :isInsideSidebar="true"></DocSignaturesInfo>
+    <DocSignaturesInfo :docIdParam="documentUuid" :showAllSignsParam="true"></DocSignaturesInfo>
   </Sidebar>
   <!-- Загрузка документов -->
   <Dialog v-model:visible="visible.documents" :style="{ width: '800px' }" :modal="true" :closable="true">

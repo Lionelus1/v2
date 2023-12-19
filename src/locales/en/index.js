@@ -350,6 +350,7 @@ export default {
         changeOrganization: "Change organization",
         changeSigner: "Change signer",
         change: "Change",
+        unknownUser: "Guest",
     },
     positions: {
         menuTitle: 'Change position',
@@ -395,6 +396,7 @@ export default {
         message: {
             validEmail: "Please enter a valid email address",
         },
+        nameInLatin: "Name in latin",
     },
     cafedra: {
         practiceResponsibles: "Responsible for the practice",
@@ -412,6 +414,14 @@ export default {
         organization: "Organizations",
         title: "Contragents",
         missingDetails: "Details of the selected counterparty are not fully indicated (BIN, etc.). Please provide missing details.",
+        menu: {
+            select: "Select",
+        },
+        columns: {
+            name: "Name",
+            bin: "BIN",
+        },
+        orgEmployees: "{org} employees",
     },
     doctemplate: {
         title : "Document template creation",
@@ -443,6 +453,8 @@ export default {
             place: "Place of contract",
             date: "Date of contract",
             addElement: "Adding a contract element",
+            practiceType: "Practice type",
+            educationProgram: "Educational programs",
             message: {
             }
         },
@@ -459,6 +471,9 @@ export default {
             regDate: "Registration date",
             description: "Description",
             status: "Status",
+            number: "№",
+            work_type: "Work types",
+            results: "Results",
         },
         filter: {
             button: "Fitler",
@@ -498,7 +513,47 @@ export default {
         },
         setnumber: "Set number",
         assigner: "Assigner",
-        cafedraGroup: 'Department/Group'
+        cafedraGroup: 'Department/Group',
+        menu: {
+            newDocument: "New document",
+            relatedDocument: "Related documents",
+            journal: "Register of related documents",
+            actsJournal: "Register of acts",
+            actsJournalDesc: "List of acts to be signed and executed",
+            acts: "Act",
+            sendForExecution: "Send for execution",
+            tocontragent: "Send to counterparty",
+            toSciadvisor: "Send to the scientific supervisor",
+        },
+        contragentEmail: "Counterparty email",
+        contragentRequest: "In approval by counterparty",
+        contragentMessage: "Use the link for counterparty consent",
+        contragentWarning: "No counterparty consent has been requested for this contract or you do not have permission to view this document!",
+        contragentSigner: "Signer from your side",
+        agreeAndSign: "Agree and sign",
+        listOfApprovals: "List of approvers",
+        listOfSigners: "Signers",
+        labels: {
+            registration_number: "Registration number",
+            registration_date: "Date of registration of the act",
+            parent_registration_number: "Registration number of the agreement",
+            parent_registration_date: "Date of registration of the agreement",
+            executor: "Executor",
+            sciadvisor: "Scientific adviser",
+            table: "Completed work",
+            act_amount: "Act amount",
+            act_amount_words: "Act amount (in words)",
+            justification: "Justification",
+            agreement: "Research contract",
+            research_topic: "Research topic",
+            act_amount_after: "Act amount after taxes",
+            act_amount_after_words: "Act amount (in words) after taxes",
+            attachments: "Attachments (annotated report, anti-plagiarism, etc.)",
+        },
+        newWork: "Add a new work",
+        sciadvisorRequest: "To be approved by the scientific supervisor",
+        execution: "In execution",
+        executed: "Executed",
     },
     hdfs: {
         archiveBtn: "Аrchive",
@@ -1413,6 +1468,7 @@ export default {
         forbidden: 'Access to the requested resource is not allowed. This may be because you don\'t have the necessary permissions to access it.',
         forbiddenAction: 'Action prohibited. You don\'t have the required permissions.',
         internalServerError: 'We\'re sorry, something went wrong on our end. Please try again later.',
+        unauthorized: 'The user is not authorized.',
     },
     visuallyImpaired: {
         fontSize: "Font size",
@@ -1463,7 +1519,7 @@ export default {
         laborActivity: 'Labor activity',
         awardsAndHonors:'Awards and honors',
         professionalDevelopment: 'Professional development',
-        typeOfAward: 'Type of award', 
+        typeOfAward: 'Type of award',
         reward: 'Reward',
         qualification: {
             trainingForm: 'Form of professional development',
@@ -1476,5 +1532,5 @@ export default {
             typeSupportingDoc: 'Type of supporting document',
         },
         scientistProfile: 'Scientist Profile'
-    }   
+    }
 }

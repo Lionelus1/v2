@@ -349,6 +349,7 @@ export default {
         changeOrganization: "Ұйымды ауыстыру",
         changeSigner: "Қол қоюшыны өзгерту",
         change: "Өзгерту",
+        unknownUser: "Қонақ",
     },
     positions: {
         menuTitle: 'Позицияны өзгерту',
@@ -379,7 +380,6 @@ export default {
         mailto: "Хат жазу",
         fname: "Есімі",
         lname: "Тегі",
-
         fnameLatin: "Есімі транслитпен",
         lnameLatin: "Тегі транслитпен",
         snameLatin: "Әкесі есімі транслитпен",
@@ -395,14 +395,13 @@ export default {
         message: {
             validEmail: "Дұрыс email адрес көрсетіңіз",
         },
+        nameInLatin: "Аты-жөні латынша",
     },
     cafedra: {
         practiceResponsibles: "Практикаға жауаптылар",
         practiceManager: "Практика жетекшісі",
         title: "{name} кафедрасы",
         responsible: "Жауапты",
-
-
     },
     contragent: {
         form: "Ұйымдық формасы",
@@ -414,6 +413,14 @@ export default {
         organization: "Ұйымдықтар",
         title: "Контрагенттер",
         missingDetails: "Таңдалған контрагент реквизиттері толық көрсетілмеген (БСН т.с.с.). Жетіспейтін реквизиттерді көрсетуіңзді сұраймыз.",
+        menu: {
+            select: "Таңдау",
+        },
+        columns: {
+            name: "Аты",
+            bin: "БСН",
+        },
+        orgEmployees: "{org} қызметкерлері",
     },
     doctemplate: {
         title: "Құжат үлгісін жасау",
@@ -445,6 +452,8 @@ export default {
             place: "Келісім-шарт жасалған орын",
             date: "Келісім-шарт жасалған күн",
             addElement: "Келісім-шарт элементін қосу",
+            practiceType: "Практика түрі",
+            educationProgram: "Білім беру бағдарламасы",
             message: {}
         },
         needsApproval: "Үлгі бойынша жасалған құжат келісуді қажет етеді",
@@ -460,6 +469,9 @@ export default {
             regDate: "Тіркелген күні",
             description: "Қысқаша сипаттамасы",
             status: "Статус",
+            number: "№",
+            work_type: "Жұмыс түрлері",
+            results: "Нәтижелер",
         },
         filter: {
             button: "Фильтр",
@@ -499,8 +511,47 @@ export default {
         },
         setnumber: "Нөмір тағайындау",
         assigner: "Тағайындаған",
-        cafedraGroup: 'Кафедра/Топ'
-
+        cafedraGroup: 'Кафедра/Топ',
+        menu: {
+            newDocument: "Жаңа құжат",
+            relatedDocument: "Байланысқан құжаттар",
+            journal: "Байланысқан құжаттар реестрі",
+            actsJournal: "Актілер реестрі",
+            actsJournalDesc: "Қол қоюға және орындауға актілердің тізімі",
+            acts: "Акт",
+            sendForExecution: "Орындауға жіберу",
+            tocontragent: "Контрагентке  жіберу",
+            toSciadvisor: "Жоба жетекшісіне жіберу",
+        },
+        contragentEmail: "Контрагенттің эл.поштасы",
+        contragentRequest: "Контрагентте келісуде",
+        contragentMessage: "Сілтемені контрагент келісім беру үшін пайдаланыңыз",
+        contragentWarning: "Бұл келісім-шартқа контрагент келісімі сұратылмаған немесе сіздің бұл құжатты көруге рұқсатыңыз жоқ!",
+        contragentSigner: "Сіз жақтан қол қоюшы",
+        agreeAndSign: "Қабылдау және қол қою",
+        listOfApprovals: "Келісім берушілер тізімі",
+        listOfSigners: "Қол қоюшылар",
+        labels: {
+            registration_number: "Тіркеу нөмірі",
+            registration_date: "Актінің тіркелген күні",
+            parent_registration_number: "Шарттың тіркеу нөмірі",
+            parent_registration_date: "Шарттың тіркелген күні",
+            executor: "Орындаушы",
+            sciadvisor: "Жоба жетекшісі",
+            table: "Атқарылған жұмыстар",
+            act_amount: "Акт сомасы",
+            act_amount_words: "Акт сомасы (сөзбен)",
+            justification: "Негіздеме",
+            agreement: "Ғылыми-зерттеу келісімшарты",
+            research_topic: "Зерттеу тақырыбы",
+            act_amount_after: "Салық төленгеннен кейінгі акт сомасы",
+            act_amount_after_words: "Салық төленгеннен кейінгі акт сомасы (сөзбен)",
+            attachments: "Қосымшалар (аннотациялық есеп, антиплагиат, т.с.с.)",
+        },
+        newWork: "Жаңа жұмыс қосу",
+        sciadvisorRequest: "Жоба жетекшісінде бекітуде",
+        execution: "Орындалуда",
+        executed: "Орындалды",
     },
     hdfs: {
         archiveBtn: "Мұрағаттау",
@@ -1427,6 +1478,7 @@ export default {
         forbidden: 'Сұралған ресурсқа кіруге рұқсат етілмейді. Бұл оған кіру үшін қажетті рұқсаттарыңыз болмағандықтан болуы мүмкін.',
         forbiddenAction: 'Әрекетке тыйым салынады. Сізде қажетті рұқсаттар жоқ.',
         internalServerError: 'Кешіріңіз, біздің тарапымыздан бірдеңе дұрыс болмады. Әрекетті кейінірек қайталаңыз.',
+        unauthorized: 'Пайдаланушы жүйеге кірмеген.',
     },
     visuallyImpaired: {
         fontSize: "Қаріп өлшемі",
@@ -1477,7 +1529,7 @@ export default {
         laborActivity: 'Еңбек қызметі',
         awardsAndHonors:'Марапаттар мен құрметті атақтар',
         professionalDevelopment: 'Біліктілікті арттыру',
-        typeOfAward: 'Награда түрі', 
+        typeOfAward: 'Награда түрі',
         reward: 'Награда',
         qualification: {
             trainingForm: 'Біліктілікті арттыру нысаны',

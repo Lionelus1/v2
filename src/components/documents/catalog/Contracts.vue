@@ -8,6 +8,11 @@
           <Button class="p-button-info align-items-center" style="padding: 0.25rem 1rem;"
             @click="openDocument" :disabled="!currentDocument">
             <i class="fa-regular fa-address-card" /> &nbsp;{{ $t("contracts.card") }}</Button>
+          <Button class="p-button-info align-items-center" style="padding: 0.25rem 1rem;"
+            @click="$router.push('/documents/contracts/' + this.currentDocument.uuid + '/related')" 
+            :disabled="!currentDocument || currentDocument.docHistory.stateId !== Enum.SIGNED.ID || 
+            currentDocument.sourceType !== Enum.DocSourceType.FilledDoc">
+            <i class="fa-solid fa-file-invoice" /> &nbsp;{{ $t("contracts.menu.journal") }}</Button>
         </div>
       </template>
       <template #end>
@@ -23,6 +28,9 @@
       :currentPageReportTemplate="currentPageReportTemplate" :lazy="true" :loading="tableLoading" 
       scrollable scrollHeight="flex" v-model:selection="currentDocument" selectionMode="single" 
       :rowHover="true" stripedRows class="flex-grow-1" @page="onPage">
+      <template #empty>
+        {{ this.$t("common.recordsNotFound") }}
+      </template>
       <Column :header="$t('contracts.columns.createDate')" style="min-width: 150px;">
         <template #body="slotProps">
           {{ getLongDateString(slotProps.data.createDate) }}
@@ -33,7 +41,7 @@
           {{ getFullname(slotProps.data.owner) }}
         </template>
       </Column>
-      <Column :header="$t('contracts.columns.department')" style="min-width: 200px;">
+      <Column :header="$t('contracts.columns.department')" style="min-width: 200px; word-break: break-word;">
         <template #body="slotProps">
           {{ slotProps.data.author ? getDepartmentName(slotProps.data.author) : slotProps.data.folder ? getFolderName(slotProps.data.folder) : "" }}
         </template>
@@ -63,9 +71,15 @@
       </Column> -->
       <Column :header="$t('contracts.columns.status')" style="min-width: 150px;">
         <template #body="slotProps">
-          <span :class="'customer-badge status-' + slotProps.data.docHistory.code">
-            {{ slotProps.data.docHistory[$i18n.locale === 'en' ? 'stateEn' : $i18n.locale === 'ru' ? 'stateRus' : 'stateKaz'] }} 
-          </span>
+          <div class="flex flex-wrap column-gap-1 row-gap-1">
+            <span :class="'customer-badge status-' + slotProps.data.docHistory.code">
+              {{ slotProps.data.docHistory[$i18n.locale === 'en' ? 'stateEn' : $i18n.locale === 'ru' ? 'stateRus' : 'stateKaz'] }} 
+            </span>
+            <span v-if="haveRequest(slotProps.data) && slotProps.data.docHistory.stateId == Enum.CREATED.ID" 
+              class="customer-badge status-status_signed" style="width: min-content;">
+              {{ $t('contracts.contragentRequest') }}
+            </span>
+          </div>
         </template>
       </Column>
       <Column style="min-width: 50px;">
@@ -90,7 +104,7 @@
     <div class="p-fluid" style="min-width: 320px;">
       <div class="field">
         <label>{{ $t('contracts.filter.author') }}</label>
-        <FindUser v-model="tempFilter.author" :max="1" :editMode="false" :userType="3"></FindUser>
+        <FindUser v-model="tempFilter.author" :max="1" :userType="3"></FindUser>
       </div>
       <div class="field">
         <label>{{ $t('contracts.filter.status') }}</label>
@@ -156,13 +170,10 @@
   <!-- documentInfoSidebar -->
   <Sidebar v-model:visible="visibility.documentInfoSidebar" position="right" class="p-sidebar-lg" 
     style="overflow-y: scroll" @hide="getContracts">
-    <DocSignaturesInfo :docIdParam="currentDocument.uuid" :isInsideSidebar="true"></DocSignaturesInfo>
+    <DocSignaturesInfo :docIdParam="currentDocument.uuid"></DocSignaturesInfo>
   </Sidebar>
 </template>
 <script>
-import axios from 'axios';
-
-import { getHeader, smartEnuApi } from "@/config/config";
 import { getShortDateString, getLongDateString } from "@/helpers/helper";
 import Enum from "@/enum/docstates/index";
 
@@ -284,14 +295,13 @@ export default {
     this.$emit('apply-flex', true);
 
     let oldPath = this.$router.options.history.state.forward;
-    if (oldPath && oldPath.indexOf('/documents/contract/') === 0) {
+    if (oldPath && oldPath.indexOf('/documents/contracts/') === 0) {
       let filter = localStorage.getItem('contractsFilter');
       if (filter) {
         this.filter = JSON.parse(filter);
       }
 
       let currentPage = localStorage.getItem('contractsCurrentPage');
-      console.log(currentPage)
       if (currentPage) {
         currentPage = JSON.parse(currentPage);
         this.first = currentPage.first;
@@ -337,38 +347,32 @@ export default {
       this.$refs[ref].toggle(event);
     },
     getFullname(user) {
-      if (!user) {
-        return ''
+      let name = '';
+
+      if (this.$i18n.locale === 'en' && this.validString(user.thirdnameEn) && this.validString(user.firstnameEn)) {
+        name = user.thirdnameEn + ' ' + user.firstnameEn
+
+        if (this.validString(user.lastnameEn)) {
+          name += ' ' + user.lastnameEn
+        }
+
+        return name
       }
 
-      let fullname = ''
-      if (this.$i18n.locale === 'en') {
-        if (user.lastnameEn) {
-          fullname += user.lastnameEn + ' '
-        }
-
-        if (user.firstnameEn) {
-          fullname += user.firstnameEn + ' '
-        }
-
-        if (user.thirdnameEn) {
-          fullname += user.thirdnameEn + ' '
-        }
-      } else {
-        if (user.thirdName) {
-          fullname += user.thirdName + ' '
-        }
-
-        if (user.firstName) {
-          fullname += user.firstName + ' '
-        }
-
-        if (user.lastName) {
-          fullname += user.lastName + ' '
-        }
+      name = user.thirdName + ' ' + user.firstName 
+      
+      if (this.validString(user.lastName)) {
+        name += ' ' + user.lastName
       }
 
-      return fullname
+      return name
+    },
+    validString(str) {
+      if (str && str.length > 0) {
+        return true;
+      }
+
+      return false;
     },
     getFolderName(folder) {
       let name = folder['name' + this.$i18n.locale]
@@ -469,13 +473,13 @@ export default {
     },
     openDocument() {
       if (this.currentDocument) {
-        this.$router.push('/documents/contract/' + this.currentDocument.id)
+        this.$router.push('/documents/contracts/' + this.currentDocument.uuid)
       }
     },  
     getContracts() {
       this.tableLoading = true;
 
-      this.service.getDocuments({
+      this.service.getDocumentsV2({
         page: this.page,
         rows: this.rows,
         sourceType: this.filter.sourceType,
@@ -518,6 +522,17 @@ export default {
     greenMySign() {
 
     },
+    haveRequest(contract) {
+      if (contract.requests) {
+        for (let i = 0; i < contract.requests.length; i++) {
+          if (contract.requests[i].type === this.Enum.DocumentRequestType.CounterpartyInfoRequest) {
+            return true;
+          }
+        }
+      }
+
+      return false;
+    },
     deleteFile() {
       this.$confirm.require({
         message: this.$t("common.doYouWantDelete"),
@@ -528,7 +543,7 @@ export default {
         accept: () => {
           this.loading = true;
           
-          this.service.documentDelete({
+          this.service.documentDeleteV2({
             uuid: this.currentDocument.uuid,
           }).then(res => {
             this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
@@ -577,7 +592,7 @@ export default {
       }
     },
     getTemplates() {
-      this.service.documentTemplates({
+      this.service.documentTemplatesV2({
         page: 0,
         rows: 50,
         folderType: Enum.FolderType.Journals,
@@ -598,7 +613,7 @@ export default {
       })
     },
     getFolders() {
-      this.service.getFolders({
+      this.service.getFoldersV2({
         page: 0,
         rows: 10,
         folderType: Enum.FolderType.FilledDoc,

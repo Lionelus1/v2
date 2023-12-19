@@ -351,6 +351,7 @@ export default {
         changeOrganization: "Поменять организацию",
         changeSigner: "Сменить подписывающего",
         change: "Сменить",
+        unknownUser: "Гость",
     },
     positions: {
         menuTitle: 'Поменять позицию',
@@ -397,6 +398,7 @@ export default {
         message: {
             validEmail: "Введите корректный email адрес",
         },
+        nameInLatin: "ФИО на латинице",
     },
     cafedra: {
         practiceResponsibles: "Ответственные за практику",
@@ -414,7 +416,14 @@ export default {
         organization: "Организации",
         title: "Контрагенты",
         missingDetails: "Реквизиты выбранного контрагента указаны не полностью (БИН и т.п.). Пожалуйста, укажите недостающие реквизиты.",
-
+        menu: {
+            select: "Выбрать",
+        },
+        columns: {
+            name: "Имя",
+            bin: "БИН",
+        },
+        orgEmployees: "Сотрудники {org}",
     },
     doctemplate: {
         title: "Создание шаблона документа",
@@ -446,6 +455,8 @@ export default {
             place: "Место заключения договора",
             date: "Дата заключения договора",
             addElement: "Добавление элемента договора",
+            practiceType: "Вид практики",
+            educationProgram: "Образовательные программы",
             message: {}
         },
         needsApproval: "Созданный по шаблону документ требует согласования",
@@ -461,6 +472,9 @@ export default {
             regDate: "Дата регистрации",
             description: "Короткое описание",
             status: "Статус",
+            number: "№",
+            work_type: "Виды работ",
+            results: "Результаты",
         },
         filter: {
             button: "Фильтр",
@@ -500,7 +514,47 @@ export default {
         },
         setnumber: "Присвоить номер",
         assigner: "Присвоил",
-        cafedraGroup: 'Кафедра/Группа'
+        cafedraGroup: 'Кафедра/Группа',
+        menu: {
+            newDocument: "Новый докумет",
+            relatedDocument: "Связанные документы",
+            journal: "Реестр связанных документов",
+            actsJournal: "Реестр актов",
+            actsJournalDesc: "Список актов на подписи и на исполнении",
+            acts: "Акт",
+            sendForExecution: "Отправить на исполнение",
+            tocontragent: "Отправить контрагенту",
+            toSciadvisor: "Отправить научному руководителю",
+        },
+        contragentEmail: "Эл.почта контрагента",
+        contragentRequest: "На согласовании у контрагента",
+        contragentMessage: "Используйте ссылку для получения согласия контрагента",
+        contragentWarning: "Для этого контракта не запрашивалось согласие контрагента или у вас нет разрешения на просмотр этого документа!",
+        contragentSigner: "Подписывающий с вашей стороны",
+        agreeAndSign: "Принять и подписать",
+        listOfApprovals: "Список согласующих",
+        listOfSigners: "Подписывающие",
+        labels: {
+            registration_number: "Регистрационный номер",
+            registration_date: "Дата регистрации акта",
+            parent_registration_number: "Регистрационный номер договора",
+            parent_registration_date: "Дата регистрации договора",
+            executor: "Исполнитель",
+            sciadvisor: "Научный руководитель",
+            table: "Выполненные работы",
+            act_amount: "Сумма акта",
+            act_amount_words: "Сумма акта (прописью)",
+            justification: "Обоснование",
+            agreement: "Договор исследования",
+            research_topic: "Тема исследования",
+            act_amount_after: "Сумма акта после вычета налогов",
+            act_amount_after_words: "Сумма акта (прописью) после вычета налогов",
+            attachments: "Вложения (аннотированный отчет, антиплагиат и т.п.)",
+        },
+        newWork: "Добавить работу",
+        sciadvisorRequest: "На согласовании у научного руководителя",
+        execution: "На исполнении",
+        executed: "Исполнен",
     },
     hdfs: {
         archiveBtn: "Архивировать",
@@ -1099,7 +1153,7 @@ export default {
         },
         id: {
             startDate: 'Дата выдачи',
-            issuedBy: 'Кем выдан'
+            issuedBy: 'Кем выдан',
         },
         lang: {
             pl: 'Уровень владения',
@@ -1373,6 +1427,7 @@ export default {
         forbidden: 'Доступ к запрашиваемому ресурсу запрещен. Это может быть связано с тем, что у вас нет необходимых разрешений для доступа к нему.',
         forbiddenAction: 'Действие запрещено. У вас нет необходимых разрешений.',
         internalServerError: 'Приносим извинения, с нашей стороны что-то пошло не так. Пожалуйста, повторите попытку позже.',
+        unauthorized: 'Пользователь не авторизован.',
     },
     blog: {
         title: 'Блог',
@@ -1461,7 +1516,7 @@ export default {
         laborActivity: 'Трудовая деятельность',
         awardsAndHonors:'Награды и почетные звания',
         professionalDevelopment: 'Повышение квалификации',
-        typeOfAward: 'Вид награды', 
+        typeOfAward: 'Вид награды',
         reward: 'Награда',
         qualification: {
             trainingForm: 'Форма повышения квалификации',
@@ -1474,5 +1529,5 @@ export default {
             typeSupportingDoc: 'Вид подтверждающего документа',
         },
         scientistProfile: 'Профиль ученных'
-    }    
+    }
 }

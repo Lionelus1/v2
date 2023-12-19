@@ -71,7 +71,7 @@
         </div>
         <div v-if="showUploader" class="field">
           <label>{{$t('common.doc')}}</label>
-          <FileUpload  :showUploadButton="false" :showCancelButton="true" ref="ufile" :multiple="false"  class= "mt-1"  fileLimit="1" :accept="accept">
+          <FileUpload  :showUploadButton="false" :showCancelButton="true" ref="ufile" :multiple="false" fileLimit="1" :accept="accept">
             <template #empty>
               <p>{{$t('hdfs.dragMsg')}}</p>
             </template>

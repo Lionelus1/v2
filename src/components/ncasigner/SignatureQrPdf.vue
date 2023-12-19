@@ -24,7 +24,8 @@
           {{ $t('common.approvals') }}
         </h5>
         <div id="stage" v-for="(stage, stageInd) of approvalStages" :key="stageInd">
-          <h5> {{ stage.stage.toString() + '. ' + stage['title'+$i18n.locale[0].toUpperCase() + $i18n.locale.slice(1)]}} </h5>
+          <h5> {{ stage.stage.toString() + '. ' + (stage['title'+$i18n.locale[0].toUpperCase() + $i18n.locale.slice(1)] ? 
+            stage['title'+$i18n.locale[0].toUpperCase() + $i18n.locale.slice(1)] : '')}} </h5>
           <div id="qr" v-for="(user, userInd) of stage.users" :key="userInd"
             style="border: 1px solid #000; padding: 5px; margin: 5px;display: block;">
             <p>

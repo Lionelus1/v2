@@ -27,10 +27,6 @@ export class NewsService {
         return api.post("/reject", data, {headers: getHeader()});
     }
 
-    getRoles() {
-        return api.get("/getroles", {headers: getHeader()});
-    }
-
     deleteNews(id) {
         return api.post("/delNews",{id: id,},{headers: getHeader()});
     }

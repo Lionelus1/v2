@@ -222,8 +222,8 @@ export default {
         if (this.userOrganizations.length === 1) {
           this.selectedOrganization = this.userOrganizations[0]
           this.handleSelectionChange()
-        } else if (this.userOrganizations.length > 1) {
-          let result = this.userOrganizations.find(element => element.id === this.currentUser.organization.id);
+        } else if (this.userOrganizations.length > 1 && this.currentUser.mainPosition) {
+          let result = this.userOrganizations.find(element => element.id === this.currentUser.mainPosition.organization.id);
           if (result) {
             this.selectedOrganization = result
             this.handleSelectionChange()

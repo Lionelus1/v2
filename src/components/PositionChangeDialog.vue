@@ -52,9 +52,14 @@ export default {
     parse() {
       this.selectedPosition = null;
       this.positions = [];
-      this.loginedUser = JSON.parse(localStorage.getItem('loginedUser'));
+      let user = localStorage.getItem('loginedUser');
+      if (!user) {
+        return;
+      }
 
-      if (this.loginedUser.organization.id || this.loginedUser.mainPosition.id || this.loginedUser.mainPosition.department.id) {
+      this.loginedUser = JSON.parse(user);
+
+      if (this.loginedUser.mainPosition) {
         this.positions.push({
           id: -1,
           name: this.$t('positions.individual'),
@@ -64,7 +69,7 @@ export default {
       for (let i in this.loginedUser.positions) {
         let name = ''
 
-        let org = this.loginedUser.positions[i].department.organization
+        let org = this.loginedUser.positions[i].organization
         if (org.id) {
           let orgName = ''
 
@@ -134,19 +139,19 @@ export default {
 
       let result = this.$t('positions.beginText')
 
-      if (!this.loginedUser.organization.id && !this.loginedUser.mainPosition.id && !this.loginedUser.mainPosition.department.id) {
+      if (!this.loginedUser.mainPosition) {
         return result + this.$t('positions.individual')
       }
 
-      if (this.loginedUser.organization.id) {
+      if (this.loginedUser.mainPosition.organization.id) {
         let orgName = ''
 
         if (this.$i18n.locale === 'en') {
-          orgName = this.loginedUser.organization.nameen
+          orgName = this.loginedUser.mainPosition.organization.nameen
         } else if (this.$i18n.locale === 'ru') {
-          orgName = this.loginedUser.organization.nameru
+          orgName = this.loginedUser.mainPosition.organization.nameru
         } else {
-          orgName = this.loginedUser.organization.name
+          orgName = this.loginedUser.mainPosition.organization.name
         }
 
         if (!orgName) {
@@ -202,20 +207,14 @@ export default {
 
       this.loading = true;
 
-      let positionId = null
-      let departmentId = null
-      let organizationId = null
+      let position = null
       
       if (this.selectedPosition.id >= 0) {
-        positionId = this.loginedUser.positions[this.selectedPosition.id].id
-        departmentId = this.loginedUser.positions[this.selectedPosition.id].department.id
-        organizationId = this.loginedUser.positions[this.selectedPosition.id].department.organization.id
+        position = this.loginedUser.positions[this.selectedPosition.id]
       }
 
       axios.post(smartEnuApi + '/changePosition', {
-        positionId: positionId,
-        departmentId: departmentId,
-        organizationId: organizationId,
+        position: position,
       }, {
         headers: getHeader(),
       }).then(res => {

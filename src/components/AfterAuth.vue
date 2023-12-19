@@ -23,8 +23,7 @@ export default {
         window.localStorage.setItem("loginedUser",JSON.stringify(response.data));
         this.setLoginedUser();
 
-        if (response.data.organization.id || response.data.mainPosition.id || response.data.mainPosition.department.id ||
-          response.data.positions.length > 0) {
+        if (response.data.mainPosition || response.data.positions.length > 0) {
           window.localStorage.setItem("showPositionsDialog", true);
         }
 
@@ -40,6 +39,7 @@ export default {
           location.replace("/#"+oldPath);
         }
       }).catch(error => {
+        console.log(error)
         this.$router.push({name:'Login'});
       })
     },
@@ -60,7 +60,7 @@ export default {
   },
   created(){
     this.getLoginedUser();
-    this.getUserSlug()
+    this.getUserSlug();
   }
 }
 </script>
