@@ -1194,7 +1194,9 @@ export default {
         plancontractnumber: "Келісім-шарт номері",
         plancontractdate: "Келісім-шарт уақыты",
         plancontractprioruty: "Басымдық бойынша",
-        plancontracttopic: "Тақырып бойынша"
+        plancontracttopic: "Тақырып бойынша",
+        scienceParticipants: "Жобаға қатысушылар",
+        generateAct: "Акт жасау"
     },
     educomplex: {
         title: "Пәннің оқу-әдістемелік кешені",

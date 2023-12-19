@@ -1182,7 +1182,9 @@ export default {
         plancontractnumber: "Номер договора",
         plancontractdate: "Дата договора",
         plancontractprioruty: "По приоритету",
-        plancontracttopic: "По теме"
+        plancontracttopic: "По теме",
+        scienceParticipants: "Участники проекта",
+        generateAct: "Сформировать акт"
     },
     educomplex: {
         title: "Учебно-методический комплекс дисциплины",

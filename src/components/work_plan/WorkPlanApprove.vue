@@ -2,7 +2,7 @@
   <Button
       type="button"
       icon="pi pi-send"
-      class="p-button-success ml-2"
+      class="p-button-sm p-button-outlined ml-2"
       :label="$t('common.action.sendToApprove')"
       @click="openModal"
   ></Button>
@@ -39,6 +39,7 @@ import html2pdf from "html2pdf.js";
 import axios from "axios";
 import {getHeader, getMultipartHeader, signerApi, smartEnuApi} from "@/config/config";
 import {WorkPlanService} from "@/service/work.plan.service";
+import Enum from "@/enum/workplan/index"
 
 export default {
   name: "WorkPlanApprove",
@@ -73,15 +74,16 @@ export default {
       planService: new WorkPlanService(),
       approveComponentKey: 0,
       approving: false,
-      stages: null
+      stages: null,
+      enum: Enum,
     }
   },
   created() {
     this.loginedUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
-    console.log(this.approval_users)
   },
   methods: {
     openModal() {
+      //this.initStage();
       this.showModal = true;
       this.approveComponentKey++;
     },
@@ -210,6 +212,11 @@ export default {
       const blob = new Blob(byteArrays, {type: "application/pdf"});
       return blob;
     },
+    initStage() {
+      if (this.plan && this.plan.plan_type && this.plan.plan_type.code === this.enum.WorkPlanTypes.Science) {
+        this.stages = []
+      }
+    }
   }
 }
 </script>

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div ref="htmlToPdf" class="grid" v-if="plan && !plan.is_oper">
+    <div ref="htmlToPdf" class="grid" v-if="plan && (!plan.is_oper || plan.plan_type.code === Enum.WorkPlanTypes.Standart)">
       <h5 style="width: 100%;text-align: center;font-size: 14.0pt;text-transform: uppercase;font-weight: bold;">
         {{ plan.work_plan_name }}</h5>
       <br/>
@@ -42,7 +42,61 @@
         </table>
       </div>
     </div>
-    <div ref="htmlToPdf" class="grid" v-if="plan && plan.is_oper">
+    <div ref="htmlToPdf" class="grid" v-if="plan && (plan.is_oper || plan.plan_type.code === Enum.WorkPlanTypes.Oper)">
+      <h5 style="width: 100%;text-align: center;font-size: 14.0pt;text-transform: uppercase;font-weight: bold;">
+        {{ plan.work_plan_name }}</h5>
+      <br/>
+      <div class="col-12">
+        <table>
+          <tbody>
+          <tr>
+            <td class="header" style="font-weight: bold;">№</td>
+            <td class="header" style="font-weight: bold;">
+              {{ plan.lang === 1 ? 'Атауы' : plan.lang === 2 ? 'Наименование' : 'Name' }}
+            </td>
+            <td class="header" style="font-weight: bold;">
+              {{ plan.lang === 1 ? 'Өлшем бірлігі' : plan.lang === 2 ? 'Ед. изм.' : 'Unit' }}
+            </td>
+            <td class="header" style="font-weight: bold;">
+              {{ plan.lang === 1 ? 'Жоспар' : plan.lang === 2 ? 'План' : 'Plan' }}
+            </td>
+            <td class="header" style="font-weight: bold;">{{
+                plan.lang === 1 ? 'Жауапты орындаушылар' : plan.lang === 2 ? 'Ответственные исполнители' : 'Responsible performers'
+              }}
+            </td>
+            <td class="header" style="font-weight: bold;">{{
+                plan.lang === 1 ? 'Жинақтаушы/Растау' : plan.lang === 2 ? 'Свод/подтверждение' : 'Summary/Confirmation'
+              }}
+            </td>
+            <td class="header" style="font-weight: bold;">
+              {{ plan.lang === 1 ? 'Квартал' : plan.lang === 2 ? 'Квартал' : 'Quarter' }}
+            </td>
+            <td class="header" style="font-weight: bold;">{{
+                plan.lang === 1 ? 'Растайтын құжаттар' : plan.lang === 2 ? 'Подтверждающие документы' : 'Supporting documents'
+              }}
+            </td>
+            <td class="header" style="font-weight: bold;">{{
+                plan.lang === 1 ? 'Қосымша ақпарат' : plan.lang === 2 ? 'Дополнительная информация ' : 'Additional Information'
+              }}
+            </td>
+          </tr>
+          <tr v-for="(item, index) in items" :key="index">
+            <td class="td-va text-center">{{ item.row_number }}</td>
+            <td class="td-va" style="text-align: start;">{{ item.event_name }}</td>
+            <td class="td-va text-center">{{ item.unit }}</td>
+            <td class="td-va text-center">{{ item.plan_number }}</td>
+            <td class="td-va text-center">{{ item.responsible_executor }}</td>
+            <!--            <td class="td-va"><p v-for="(userItem, userIndex) in item.user" :key="userIndex"> {{ userItem.fullName }} </p></td>-->
+            <td class="td-va text-center">{{ item.userList }}</td>
+            <td class="td-va text-center">{{ item.quarter }}</td>
+            <td class="td-va text-center">{{ item.supporting_docs }}</td>
+            <td class="td-va text-center">{{ item.result }}</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div ref="htmlToPdf" class="grid" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Science">
       <h5 style="width: 100%;text-align: center;font-size: 14.0pt;text-transform: uppercase;font-weight: bold;">
         {{ plan.work_plan_name }}</h5>
       <br/>
@@ -104,6 +158,7 @@ import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
 import treeToList from "@/service/treeToList";
 import {WorkPlanService} from "@/service/work.plan.service";
+import Enum from "@/enum/workplan/index"
 
 export default {
   name: "PdfContent",
@@ -130,7 +185,8 @@ export default {
         pagebreak: {avoid: 'tr'},
       },
       loginedUserId: 0,
-      planService: new WorkPlanService()
+      planService: new WorkPlanService(),
+      Enum: Enum
     }
   },
   created() {

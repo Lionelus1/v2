@@ -1152,7 +1152,9 @@ export default {
         plancontractnumber: "Contract number",
         plancontractdate: "Contract date",
         plancontractprioruty: "By priority",
-        plancontracttopic: "On topic"
+        plancontracttopic: "On topic",
+        scienceParticipants: "Project participants",
+        generateAct: "Form an act"
     },
     queue: {
 

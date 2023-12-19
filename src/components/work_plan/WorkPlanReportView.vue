@@ -3,7 +3,8 @@
   <div>
     <div class="col-12">
       <div class="card" v-if="isPlanCreator && !isReportSentApproval">
-        <WorkPlanReportApprove :doc-id="report.doc_id" :report="report_id"></WorkPlanReportApprove>
+        <Button type="button" icon="pi pi-send" class="p-button-success ml-2" :label="$t('common.toapprove')" @click="openModal"></Button>
+        <WorkPlanReportApprove v-if="showModal" :visible="showModal" :doc-id="report.doc_id" :report="report_id"></WorkPlanReportApprove>
         <!--        <Button label="" icon="pi pi-download" @click="download"
                         class="p-button p-button-info ml-2"/>-->
       </div>
@@ -24,7 +25,8 @@
                 class="p-button p-button-danger ml-2"/>
       </div>
       <div class="card" v-if="approval_users && report && report.status">
-        <h5><TitleBlock :title="report.report_name" :show-back-button="true" />
+        <h5>
+          <TitleBlock :title="report.report_name" :show-back-button="true"/>
           <span v-if="report" :class="'customer-badge status-' + report.status.work_plan_status_id">
               {{
               $i18n.locale === "kz" ? report.status.name_kk : $i18n.locale === "ru" ? report.status.name_ru : report.status.name_en
@@ -89,6 +91,7 @@ export default {
   data() {
     return {
       source: null,
+      showModal: false,
       blobSource: null,
       document: null,
       isApproval: false,
@@ -515,6 +518,9 @@ export default {
     },
     closeModal() {
       this.showRejectPlan = false;
+    },
+    openModal() {
+      this.showModal = true;
     },
   }
 }
