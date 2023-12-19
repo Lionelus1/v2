@@ -338,6 +338,7 @@ export default {
         changeSigner: "Сменить подписывающего",
         change: "Сменить",
         unknownUser: "Гость",
+        doNotShowAnymore: "Больше не показывать",
     },
     positions: {
         menuTitle: 'Поменять позицию',

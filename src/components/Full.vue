@@ -221,11 +221,14 @@ export default {
     this.getLoginedUser();
   },
   mounted() {
-    let showPositionsDialog = localStorage.getItem('showPositionsDialog')
+    let showPositionsDialog = localStorage.getItem('showPositionsDialog');
+    let doNotShowAnymore = localStorage.getItem('doNotShowWelcomePositionChangeDialog') === 'true';
     
-    if (showPositionsDialog) {
+    if (showPositionsDialog && !doNotShowAnymore) {
       this.$refs.positionChangeDialog.show();
 
+      localStorage.removeItem('showPositionsDialog');
+    } else if (doNotShowAnymore) {
       localStorage.removeItem('showPositionsDialog');
     }
   },

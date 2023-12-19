@@ -336,6 +336,7 @@ export default {
         changeSigner: "Қол қоюшыны өзгерту",
         change: "Өзгерту",
         unknownUser: "Қонақ",
+        doNotShowAnymore: "Ендігіәрі көрсетпеу",
     },
     positions: {
         menuTitle: 'Позицияны өзгерту',
