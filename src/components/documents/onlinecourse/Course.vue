@@ -9,17 +9,21 @@
               <h5 class="mb-0 mr-2">{{ course["name" + $i18n.locale] }}</h5>
               <Tag class="ql-size-small" icon="pi pi-star-fill" value="4,9"></Tag>
             </div>
-            <p class="text-gray-400">{{ $t('fieldEducation.duration') }} : 15 недель</p>
-            <p class="text-gray-400">{{ $t('fieldEducation.trainingFormat') }}: смешанный</p>
+            <p class="text-gray-400">{{ $t('fieldEducation.duration') }} : {{course.hours}}</p>
+            <p class="text-gray-400">{{ $t('fieldEducation.trainingFormat') }}:
+              <span v-if="course.courseType === 1">{{ $t('fieldEducation.online') }}</span>
+              <span v-if="course.courseType === 2">{{ $t('fieldEducation.offline') }}</span>
+              <span v-if="course.courseType === 3">{{ $t('fieldEducation.mixed') }}</span>
+            </p>
           </div>
         </div>
         <TabView>
           <TabPanel :header="$t('fieldEducation.aboutCourse')">
             <div class="content">
               <p class="title font-bold">{{ $t('fieldEducation.purposeCourse') }}</p>
-              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam aliquid amet architecto aut consequuntur, doloremque eaque earum eligendi eum ex fugiat hic inventore ipsa laudantium, libero molestiae nam perferendis quae quibusdam quis repellat repellendus reprehenderit repudiandae sit suscipit veniam, voluptates.</p>
+              <p>{{course.descriptionkz}} {{course.descriptionru}} {{course.descriptionen}}</p>
               <p class="title font-bold">{{ $t('fieldEducation.briefSummary') }}</p>
-              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Distinctio facere porro provident temporibus velit voluptate. A enim nihil nisi odio.</p>
+              <p>{{course.annotationKz}} {{course.annotationRu}} {{course.annotationEn}}</p>
             </div>
            <div class="course_footer">
              <div class="footer_title font-bold mb-4">
@@ -589,7 +593,7 @@ export default {
             this.service.getCourse(this.course_id).then(response => {
                 this.course = response.data
                 this.course.logo = smartEnuApi + fileRoute + this.course.logo
-              console.log(this.course.logo)
+                console.log(this.course.logo)
                 /*if (this.course.students) {
                     this.course.students = response.data.students
                 } else {

@@ -1431,6 +1431,10 @@ export default {
         addPrerequisite: 'Пререквизитті қосу',
         postrequisites: 'Постреквизиттер',
         addPostrequisite: 'Постреквизитті қосу',
+        addCourse: 'Курсты құру',
+        online: 'Онлайн',
+        offline: 'Оффлайн',
+        mixed: 'Аралас'
     },
     educationalPrograms:{
         educationalProgramConstructor: 'Білім бағдарламаларының конструкторы',

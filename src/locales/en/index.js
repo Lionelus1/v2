@@ -1419,6 +1419,10 @@ export default {
         addPrerequisite: 'Add prerequisite',
         postrequisites: 'Postrequisites',
         addPostrequisite: 'Add postrequisite',
+        addCourse: 'Adding a course',
+        online: 'Online',
+        offline: 'Offline',
+        mixed: 'Mixed'
     },
     educationalPrograms:{
         educationalProgramConstructor: 'Educational program constructor',

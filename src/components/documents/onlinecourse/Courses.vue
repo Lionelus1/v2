@@ -6,8 +6,8 @@
   </div>
   <div class="card mt-3 p-5">
     <div class="right mb-4">
-      <Button @click="goToAdd()" icon="pi pi-plus-circle" label="Добавить курс" />
-      <Button class="ml-2" icon="pi pi-filter" label="Фильтр" />
+      <Button v-if="findRole(null,'online_course_administrator')" @click="goToAdd()" icon="pi pi-plus-circle" :label="$t('fieldEducation.addCourse')" />
+      <Button class="ml-2" icon="pi pi-filter" :label="$t('common.filter')" />
     </div>
     <div class="course_grid">
       <div class="grid_item_rating" v-for="(item, index) in courses" :key="index">
@@ -20,8 +20,8 @@
         </div>
         <div class="grid_footer flex justify-content-between align-items-center p-3">
           <Tag v-if="item.status" :value="item.status[0]['name' + $i18n.locale]" severity="success"></Tag>
-          <i class="pi pi-pencil text-primary-500"></i>
-          <i class="pi pi-trash text-red-500 cursor-pointer" @click="deleteCourse()"></i>
+          <i v-if="findRole(null,'online_course_administrator')" class="pi pi-pencil text-primary-500 cursor-pointer" @click="editCourse(item.id)"></i>
+          <i v-if="findRole(null,'online_course_administrator')" class="pi pi-trash text-red-500 cursor-pointer" @click="deleteCourse(item.id)"></i>
           <i class="pi pi-list"></i>
         </div>
       </div>
@@ -33,7 +33,7 @@
 <script>
 import "@splidejs/splide/dist/css/splide.min.css";
 import {OnlineCourseService} from "@/service/onlinecourse.service";
-import {fileRoute, smartEnuApi} from "@/config/config";
+import {fileRoute, findRole, smartEnuApi} from "@/config/config";
 import { formatDate } from "@/helpers/HelperUtil";
 
 export default {
@@ -60,12 +60,12 @@ export default {
       sortKey: null,
       sortOrder: null,
       sortField: null,
-      courseId: null,
+      fieldId: null,
       title: null,
     }
   },
   created() {
-    this.courseId = parseInt(this.$route.params.courseID)
+    this.fieldId = parseInt(this.$route.params.courseID)
     this.getCourses();
   },
   watch: {
@@ -77,16 +77,16 @@ export default {
     }
   },
   methods: {
+    findRole,
     formatDate,
     getCourses() {
       this.loading = true,
-          this.service.getCourseFieldId(this.courseId).then(response => {
+          this.service.getCourseFieldId(this.fieldId).then(response => {
             this.courses = response.data
             this.courses.map(e => {
               e.filePath = smartEnuApi + fileRoute + e.logo
-              this.title = e.field[0].name_kz
+              this.title = e.field[0]['name_' + this.$i18n.locale]
             });
-            console.log(this.$i18n.locale,)
             this.total = response.data.total
             this.loading = false
           }).catch(_ => {
@@ -97,9 +97,12 @@ export default {
       this.$router.push('/course/' + course.id)
     },
     goToAdd() {
-      this.$router.push({name: "AddCourse", params: {id: this.courseId}})
+      this.$router.push({name: "AddCourse", params: {fieldId: this.fieldId}})
     },
-    deleteCourse(data) {
+    editCourse(id){
+      this.$router.push({name: 'EditCourse', params: {fieldId : this.fieldId, courseId: id}})
+    },
+    deleteCourse(id) {
       this.$confirm.require({
         message: this.$t('common.doYouWantDelete'),
         header: this.$t('common.delete'),
@@ -107,10 +110,22 @@ export default {
         acceptClass: 'p-button-rounded p-button-success',
         rejectClass: 'p-button-rounded p-button-danger',
         accept: () => {
-
+          this.remove(id)
         },
       });
     },
+    remove(id){
+      this.service.deleteCourse(id).then(response => {
+        this.$toast.add({ severity: 'success', summary: this.$t('common.success'), life: 3000 });
+        this.getCourses()
+      }).catch(error => {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+      });
+    }
   }
 };
 </script>
@@ -125,11 +140,12 @@ export default {
 }
 
 .grid_item_rating {
+  position: relative;
   //border: 1px solid #ccc;
   box-shadow: rgba(0, 0, 0, 0.12) 0 1px 3px, rgba(0, 0, 0, 0.24) 0 1px 2px;
   border-radius: 3px;
   min-height: 220px;
-  height: 100%;
+  height: 380px;
   width: 245px;
 
   img {
@@ -140,6 +156,9 @@ export default {
     //object-position: bottom;
   }
   .grid_footer{
+    width: 100%;
+    position: absolute;
+    bottom: 0;
     border-top: 1px solid #ccc
   }
   .title{

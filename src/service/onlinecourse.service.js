@@ -89,4 +89,7 @@ export class OnlineCourseService {
     getEduAcademicDegrees(data) {
         return api.post('/web/getEduAcademicDegrees', data, {headers:getHeader()});
     }
+    deleteCourse(id) {
+        return api.post('/onlinecourse/delCourse', {courseId: parseInt(id)}, {headers:getHeader()});
+    }
 }

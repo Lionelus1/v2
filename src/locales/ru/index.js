@@ -1295,7 +1295,7 @@ export default {
             getQr: "Получить QR",
             confirm: "Подтверждаете выдачу сертификата БЕЗ приложения?",
             confirm2: "Сертификат будет выдан С приложением, подтверждаете корректность заполнение приложения?",
-            certSelect:"Указать шоблон сертификата"
+            certSelect:"Указать шаблон сертификата"
         },
         modules:'Модули курса',
         module: 'Модуль',
@@ -1417,6 +1417,10 @@ export default {
         addPrerequisite: 'Добавить пререквезит',
         postrequisites: 'Постреквизиты',
         addPostrequisite: 'Добавить постреквезит',
+        addCourse: 'Добавление курса',
+        online: 'Онлайн',
+        offline: 'Оффлайн',
+        mixed: 'Смешанный'
     },
     educationalPrograms:{
         educationalProgramConstructor: 'Конструктор образовательных программ',

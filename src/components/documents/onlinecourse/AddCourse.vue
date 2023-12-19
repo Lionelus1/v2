@@ -1,32 +1,32 @@
 <template>
-  <TitleBlock :title="$t('Курсты құру')" :show-back-button="true"/>
+  <TitleBlock :title="$t('fieldEducation.addCourse')" :show-back-button="true"/>
   <div class="card m-0">
     <Button class="p-button-outlined mr-2" icon="pi pi-fw pi-download" :label="$t('common.save')" @click="save()"/>
-    <Button class="p-button-outlined mr-2" icon="pi pi-fw pi-send" :label="$t('common.send')" @click="openDialog('sendToApprove')"/>
-    <Button class="p-button-outlined" icon="pi pi-fw pi-check-circle" :label="$t('common.approvalList')"/>
+    <Button class="p-button-outlined mr-2" icon="pi pi-fw pi-send" :label="$t('common.send')" :disabled="disabledSend" @click="openDialog('sendToApprove')"/>
+    <Button class="p-button-outlined" icon="pi pi-fw pi-check-circle" :disabled="disabledApproval" :label="$t('common.approvalList')"/>
   </div>
   <div class="grid" v-if="formData">
     <div class="col-12 lg:col-8">
       <div class="card p-fluid mt-3">
         <div class="field mt-3">
           <label for="course-code">{{ $t("fieldEducation.title") }}</label>
-          <Dropdown optionValue="id" placeholder="таңдаңыз" :options="dataFieldEducation" :optionLabel='"name_" + $i18n.locale'
+          <Dropdown optionValue="id" :placeholder="$t('common.select')" :options="dataFieldEducation" :optionLabel='"name_" + $i18n.locale'
                     v-model="formData.eduFieldsId" disabled/>
           <small class="p-error" v-if="!formData.eduFieldsId && submitted">{{ $t("common.requiredField") }}</small>
         </div>
         <div class="field">
           <label for="author">{{ $t("fieldEducation.courseAuthor") }}</label>
-          <InputText disabled v-model="$store.state.loginedUser.fullName" id="author" rows="3"/>
+          <InputText disabled v-model="fullName" id="author" rows="3"/>
         </div>
         <div class="field mt-3">
           <label for="course-code">{{ $t("web.degreeLevel") }}</label>
-          <Dropdown optionValue="id" placeholder="таңдаңыз" :options="dataAcademicDegrees" :optionLabel='"name_" + $i18n.locale'
+          <Dropdown optionValue="id" :placeholder="$t('common.select')" :options="dataAcademicDegrees" :optionLabel='"name_" + $i18n.locale'
                     v-model="formData.academicDegreeId"/>
           <small class="p-error" v-if="!formData.academicDegreeId && submitted">{{ $t("common.requiredField") }}</small>
         </div>
         <div class="field mt-3">
           <label for="course-code">{{ $t("common.learnlang") }}</label>
-          <Dropdown @change="changeLang" placeholder="таңдаңыз" :options="listLang" option-label="lang" optionValue="id"
+          <Dropdown @change="changeLang" :placeholder="$t('common.select')" :options="listLang" option-label="lang" optionValue="id"
                     v-model="formData.courceLanguageId"/>
           <small class="p-error" v-if="!formData.courceLanguageId && submitted">{{ $t("common.requiredField") }}</small>
         </div>
@@ -39,16 +39,6 @@
           <small class="p-error" v-if="formData.courceLanguageId === 2 && !formData.nameru && submitted">{{ $t("common.requiredField") }}</small>
           <small class="p-error" v-if="formData.courceLanguageId === 3 && !formData.nameen && submitted">{{ $t("common.requiredField") }}</small>
         </div>
-        <!--        <div class="field mt-3" v-if="boolNameRu">
-                  <label for="course-name">ru</label>
-                  <InputText id="course-name" v-model="formData.nameru" :disabled="disabledName"/>
-                  <small class="p-error" v-if="!formData.nameru && submitted">{{ $t("common.requiredField") }}</small>
-                </div>
-                <div class="field mt-3" v-if="boolNameEn">
-                  <label for="course-name">en</label>
-                  <InputText id="course-name" v-model="formData.nameen" :disabled="disabledName"/>
-                  <small class="p-error" v-if="!formData.nameen && submitted">{{ $t("common.requiredField") }}</small>
-                </div>-->
         <div class="field mt-3">
           <label for="course-code">{{ $t("fieldEducation.courseCode") }}</label>
           <InputText id="course-code" v-model="formData.courseCode"/>
@@ -87,15 +77,15 @@
           <Fieldset :legend="$t('fieldEducation.trainingFormat')">
             <div class="field-radiobutton">
               <RadioButton inputId="radio1" :value="1" v-model="formData.courseType"/>
-              <label for="radio1">{{ $t('Онлайн') }}</label>
+              <label for="radio1">{{ $t('fieldEducation.online') }}</label>
             </div>
             <div class="field-radiobutton">
               <RadioButton inputId="radio2" :value="2" v-model="formData.courseType"/>
-              <label for="radio2">{{ $t('Оффлайн') }}</label>
+              <label for="radio2">{{ $t('fieldEducation.offline') }}</label>
             </div>
             <div class="field-radiobutton m-0">
               <RadioButton inputId="radio3" :value="3" v-model="formData.courseType"/>
-              <label for="radio3">{{ $t('Смешанный') }}</label>
+              <label for="radio3">{{ $t('fieldEducation.mixed') }}</label>
             </div>
           </Fieldset>
           <small class="p-error" v-if="!formData.courseType && submitted">{{ $t("common.requiredField") }}</small>
@@ -107,10 +97,11 @@
               <div class="btn-select-image-inner">
                 <i class="fa-regular fa-image"></i>
                 <CustomFileUpload @upload="handleFileChange($event)" v-model="abstractFile" :button="true" :multiple="false"/>
-                <!--                <small class="p-error" v-if="(!formData.hours && submitted)">{{ $t('common.requiredField')}}</small>-->
+
               </div>
             </div>
           </div>
+          <small class="p-error" v-if="(!imagePreviewUrl && !abstractFile && submitted)">{{ $t('common.requiredField')}}</small>
           <div v-if="imagePreviewUrl" class="news-image-container mt-2">
             <img :src="imagePreviewUrl" alt="Preview"/>
             <span class="btn-remove-image p-button p-button-danger p-button-sm" @click="delImg()">
@@ -118,14 +109,24 @@
             </span>
           </div>
         </div>
-
+        <div class="card field mt-3">
+          <div class="flex align-items-center mb-4">
+            <label class="mr-2">{{ $t('course.certificate.certSelect') }}</label>
+            <Checkbox v-model="checkedCertificate" :binary="true" />
+          </div>
+          <Dropdown :disabled="!checkedCertificate" v-model="formData.certificate_template_id" :options="journal" class="mt-2" optionLabel="name" optionValue="id" :placeholder="$t('common.select')"
+                    @filter="handleFilter" :filter="true" :showClear="true" dataKey="id" :emptyFilterMessage="$t('roleControl.noResult')"  />
+          <small v-if="checkedCertificate && !formData.certificate_template_id && submitted"  class="p-error">{{$t('common.requiredField')}}</small>
+        </div>
         <div class="card field mt-3">
           <label for="course-code">{{ $t("fieldEducation.prerequisites") }}</label>
-          <Dropdown placeholder="таңдаңыз" v-model="formData.prerequisitesId"/>
+          <Dropdown optionValue="id" :placeholder="$t('common.select')" :options="dataRequisites" :optionLabel='"name" + $i18n.locale'
+                    v-model="formData.prerequisitesId"/>
 <!--          <Button :label="$t('fieldEducation.addPrerequisite')" class="p-button-outlined p-button-sm w-fit mt-2 mb-4" icon="pi pi-plus-circle"/>-->
           <br>
           <label for="course-code">{{ $t("fieldEducation.postrequisites") }}</label>
-          <Dropdown placeholder="таңдаңыз" v-model="formData.postRequisitesId"/>
+          <Dropdown optionValue="id" :placeholder="$t('common.select')" :options="dataRequisites" :optionLabel='"name" + $i18n.locale'
+                    v-model="formData.postRequisitesId"/>
 <!--          <Button :label="$t('fieldEducation.addPostrequisite')" class="p-button-outlined p-button-sm w-fit mt-2" icon="pi pi-plus-circle"/>-->
         </div>
       </div>
@@ -149,20 +150,21 @@ import {useToast} from "primevue/usetoast";
 import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers.vue";
 import {OnlineCourseService} from "@/service/onlinecourse.service";
 import CustomFileUpload from "@/components/CustomFileUpload.vue";
-import {fileRoute, smartEnuApi} from "@/config/config";
 import {useRoute, useRouter} from "vue-router";
 import {useStore} from "vuex";
+import {fileRoute, smartEnuApi} from "@/config/config";
 
 const {t, locale} = useI18n()
 const route = useRoute()
 const router = useRouter()
 const store = useStore()
-const date = ref();
 const toast = useToast();
 const i18n = useI18n();
+const courseId = route.params.courseId ? parseInt(route.params.courseId) : null
 const formData = ref({})
-formData.value.eduFieldsId = parseInt(route.params.id)
+formData.value.eduFieldsId = parseInt(route.params.fieldId)
 formData.value.courceLanguageId = 1
+formData.value.autorId = store.state.loginedUser.userID
 const submitted = ref(false)
 const selectedUsers = ref([
   {
@@ -219,19 +221,28 @@ const dialogOpenState = ref({
 })
 const service = new OnlineCourseService()
 const dataFieldEducation = ref([])
+const dataRequisites = ref([])
 const dataAcademicDegrees = ref([])
 const disabledName = ref(true)
-const boolNameRu = ref(false)
-const boolNameEn = ref(false)
+const disabledSend = ref(true)
+const disabledApproval = ref(true)
 const abstractFile = ref(null)
 const imagePreviewUrl = ref(null)
+const journal = ref(null)
 const listLang = ref([
   {id: 1, lang: 'Қазақша'},
   {id: 2, lang: 'На русском'},
   {id: 3, lang: 'In English'},
 ])
+const lazyParams = {
+  page: 0,
+  rows: 10,
+  searchText: null,
+}
+const checkedCertificate = ref(false)
+const fullName = store.state.loginedUser.thirdName + ' ' + store.state.loginedUser.firstName + ' ' + store.state.loginedUser.lastName
+
 const handleFileChange = (event) => {
-  console.log(event.files)
   abstractFile.value = event.files[0];
   const file = event.files[0];
   if (file) {
@@ -247,13 +258,34 @@ const delImg = () => {
   imagePreviewUrl.value = null
 }
 
+const getCourseById = () => {
+  if (courseId){
+    service.getCourse(courseId).then(response => {
+      formData.value = response.data
+      formData.value.eduFieldsId = parseInt(route.params.fieldId)
+      formData.value.autorId = response.data.autorId
+      imagePreviewUrl.value = smartEnuApi + fileRoute + response.data.logo
+      //formData.value.courceLanguageId = 1
+    }).catch(_ => {
+    });
+  }
+}
+getCourseById()
+const getRequisites = () => {
+  const req = {
+    page: 0,
+    rows: 10,
+  }
+  service.getCourses(req).then(response => {
+    dataRequisites.value = response.data.courses
+  }).catch(_ => {
+  });
+}
+getRequisites()
 const getFieldEducation = () => {
   service.getFieldEducation().then(response => {
     dataFieldEducation.value = response.data
-    //this.total = response.data.total
-    //this.loading = false
   }).catch(_ => {
-    //this.loading = false
   });
 }
 getFieldEducation()
@@ -261,20 +293,16 @@ getFieldEducation()
 const getEduAcademicDegrees = () => {
   service.getEduAcademicDegrees().then(response => {
     dataAcademicDegrees.value = response.data
-    //this.total = response.data.total
-    //this.loading = false
   }).catch(_ => {
-    //this.loading = false
   });
 }
 getEduAcademicDegrees()
 const save = () => {
-  console.log(formData.value)
   submitted.value = true
+  console.log(formData.value)
   if (!isValid()) return;
-  formData.value.id = 0
+  formData.value.id = courseId? courseId : 0
   formData.value.categoryId = 1
-  formData.value.autorId = store.state.loginedUser.userID
   formData.value.hours = parseInt(formData.value.hours)
   formData.value.start_time = new Date().toISOString()
   formData.value.final_date = new Date().toISOString()
@@ -282,30 +310,27 @@ const save = () => {
   data.append("abstractFile", abstractFile.value);
   data.append("course", JSON.stringify(formData.value));
   service.createCourse(data).then(res => {
-    router.back()
+    //router.back()
     toast.add({
       severity: "success",
       summary: i18n.t("common.success"),
       life: 3000,
     });
+    imagePreviewUrl.value = URL.revokeObjectURL
+    formData.value = null
   }).catch(error => {
     toast.add({severity: "error", summary: error, life: 3000});
   });
-
 }
 
 const isValid = () => {
+  let langId = formData.value.courceLanguageId
+  let lang = langId === 1 ? "kz" : langId === 2 ? "ru" : "en"
   let errors = [];
-
-  if (!formData.value.namekz) {
-    console.log('namekz')
-    errors.push(1);
-  } else if(!formData.value.nameru){
-    console.log('nameru')
+  if (!formData.value['name' + lang]) {
     errors.push(1);
   }
-  else if(!formData.value.nameen){
-    console.log('nameen')
+  if (!abstractFile.value) {
     errors.push(1);
   }
   if (!formData.value.courseCode) {
@@ -314,22 +339,39 @@ const isValid = () => {
   if (!formData.value.courceLanguageId) {
     errors.push(1);
   }
-  if (!formData.value.descriptionkz) {
+  if (!formData.value['description' + lang]) {
     errors.push(1);
   }
-  if (!formData.value.annotationKz) {
-    errors.push(1);
-  }
-  if (!formData.value.courceLanguageId) {
+  if ((!formData.value.annotationKz && langId ===1) || (!formData.value.annotationRu && langId ===2) || (!formData.value.annotationEN && langId ===3)  ) {
     errors.push(1);
   }
   if (!formData.value.hours) {
     errors.push(1);
   }
-  console.log(errors)
+  if(checkedCertificate.value && !formData.value.certificate_template_id){
+    errors.push(1);
+  }
   return errors.length === 0;
 }
+const getJournal = () => {
+  lazyParams.docType = 7
+  service.getCertificateTemplateJournal(lazyParams).then(response =>{
+    journal.value = response.data.templates;
+  }).catch(_=> {
+  }).finally(() => {
+  })
+}
+getJournal()
 
+const handleFilter = (event) => {
+  if (event.value && event.value.length > 3) {
+    lazyParams.searchText = event.value
+    getJournal()
+  } else if (lazyParams.searchText.length > 3) {
+    lazyParams.searchText = null
+    getJournal()
+  }
+}
 const changeLang = (event) => {
   disabledName.value = false
 }

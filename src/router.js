@@ -193,7 +193,13 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
-                path: '/courses/add/:id',
+                path: '/courses/edit/:fieldId/:courseId',
+                name: 'EditCourse',
+                component: load('documents/onlinecourse/AddCourse'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/courses/add/:fieldId',
                 name: 'AddCourse',
                 component: load('documents/onlinecourse/AddCourse'),
                 beforeEnter: ifAuthenticated,
