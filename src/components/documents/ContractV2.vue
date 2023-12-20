@@ -422,7 +422,7 @@ export default {
       let param = this.contract.newParams['number'];
       if (param) {
         param.value = this.contract.number;
-        param.uuid = crypto.randomUUID();
+        param.uuid = this.generateUUID();
         this.contractParams.push(param);
       }
 
@@ -430,31 +430,31 @@ export default {
       if (param) {
         param.value = this.contract.registerDate;
         param.value = param.value ? new Date(param.value) : null;
-        param.uuid = crypto.randomUUID();
+        param.uuid = this.generateUUID();
         this.contractParams.push(param);
       }
 
       param = this.contract.newParams['практика түрі'];
       if (param) {
-        param.uuid = crypto.randomUUID();
+        param.uuid = this.generateUUID();
         this.contractParams.push(param);
       }
 
       param = this.contract.newParams['Вид практики'];
       if (param) {
-        param.uuid = crypto.randomUUID();
+        param.uuid = this.generateUUID();
         this.contractParams.push(param);
       }
       
       param = this.contract.newParams['ourside'];
       if (param) {
-        param.uuid = crypto.randomUUID();
+        param.uuid = this.generateUUID();
         this.contractParams.push(param);
       }
 
       param = this.contract.newParams['contragent'];
       if (param) {
-        param.uuid = crypto.randomUUID();
+        param.uuid = this.generateUUID();
         this.contractParams.push(param);
 
         if (!this.contragentRequest) {
@@ -468,7 +468,7 @@ export default {
 
       param = this.contract.newParams['individualEntrepreneur'];
       if (param) {
-        param.uuid = crypto.randomUUID();
+        param.uuid = this.generateUUID();
         this.contractParams.push(param);
       }
 
@@ -482,19 +482,19 @@ export default {
           param.value = this.$store.state.loginedUser;
         }
 
-        param.uuid = crypto.randomUUID();
+        param.uuid = this.generateUUID();
         this.contractParams.push(param);
       }
 
       param = this.contract.newParams['Білім беру бағдарламасы'];
       if (param) {
-        param.uuid = crypto.randomUUID();
+        param.uuid = this.generateUUID();
         this.contractParams.push(param);
       }
 
       param = this.contract.newParams['Образовательные программы'];
       if (param) {
-        param.uuid = crypto.randomUUID();
+        param.uuid = this.generateUUID();
         this.contractParams.push(param);
       }
 
@@ -504,7 +504,7 @@ export default {
           for (let i = 0; i < param.value.length; i++) {
             param.value[i] = param.value[i] ? new Date(param.value[i]) : null;
           }
-        param.uuid = crypto.randomUUID();
+        param.uuid = this.generateUUID();
         this.contractParams.push(param);
       }
     },
@@ -745,7 +745,7 @@ export default {
     updateContragentType() {
       for (let i = 0; i < this.contractParams.length; i++) {
         if (this.contractParams[i].description === 'contragent') {
-          this.contractParams[i].uuid = crypto.randomUUID();
+          this.contractParams[i].uuid = this.generateUUID();
           this.contractParams[i].value.data = null;
           this.contractParams[i].value.type = this.notused.selectedContragent === 0 ? this.DocEnum.ContragentType.Organization : this.DocEnum.ContragentType.Person;
           this.input();
@@ -811,7 +811,7 @@ export default {
     contragentOptionChanged() {
       for (let i = 0; i < this.contractParams.length && this.contragentOption !== 'email'; i++) {
         if (this.contractParams[i].description === 'contragent') {
-          this.contractParams[i].uuid = crypto.randomUUID();
+          this.contractParams[i].uuid = this.generateUUID();
           this.contractParams[i].value.data = null;
           this.contractParams[i].value.type = this.contragentOption === 'organization' ? this.DocEnum.ContragentType.Organization : this.DocEnum.ContragentType.Person;
           this.input();
@@ -862,7 +862,14 @@ export default {
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
       })
-    }
+    },
+    generateUUID() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        const r = crypto.getRandomValues(new Uint8Array(1))[0] % 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    },
   }
 }
 </script>
