@@ -1429,6 +1429,9 @@ export default {
         doctoral: 'Докторантура',
         createEP: 'Создать ОП',
         formationEP: 'Формирование ОП',
+        goalsEP: 'Цели ОП',
+        competencyMapReference: 'Справочник карта компетенции',
+        creationCurriculum: 'Создание Учебного плана, КЭД',
         codeAndNameGroupEP: 'Код и наименования группы образовательных программ',
         codeGroupAndEP: 'Код группы и образовательных программ',
         directionTraining: 'Направление подготовки',
@@ -1454,7 +1457,14 @@ export default {
         typeEducationalProgram: 'Вид образовательной программы',
         doubleDegreeProgram: 'Программа двух дипломного образования',
         jointEducationalProgram: 'Совместная образовательная программа',
-        rrrrrrrerrrrr: 'sdgsdgsdg',
-        rrrrrrrrrreerr: 'sdgsdgsdg',
+        generalProfessionalCompetencieskz: 'Общепрофессиональные компетенции на казахском языке',
+        generalProfessionalCompetenciesru: 'Общепрофессиональные компетенции на русском языке',
+        generalProfessionalCompetenciesen: 'Общепрофессиональные компетенции на английском языке',
+        professionalPompetencieskz: 'Профессиональные компетенции на казахском языке',
+        professionalPompetenciesru: 'Профессиональные компетенции на русском языке',
+        professionalPompetenciesen: 'Профессиональные компетенции на английском языке',
+        addModule: 'Добавить модуль',
+        addingModule: 'Добавление модуля',
+        rrrrrrrrrreerr: 'sdgsdgsdg'
     }
 }
