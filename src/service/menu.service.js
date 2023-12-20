@@ -13,7 +13,7 @@ export class MenuService {
                         label: $t('contracts.template'), 
                         icon: 'pi pi-fw pi-book', 
                         to: '/documents/doctemplate',
-                        visible: !this.findRole("student")
+                        visible: this.isEnuWorker()
                     },
                     {
                         label: $t('contracts.title'), 
@@ -45,9 +45,8 @@ export class MenuService {
             {
                 label: $t('common.administration'), 
                 icon: 'fa-solid fa-user-shield',
-                visible: this.getLoginedUser() && this.getLoginedUser().mainPosition && this.getLoginedUser().mainPosition.organization.id === 1 && 
-                    (this.isVacancyRightsValidity() || this.findRole("dephead") || this.findRole("practice_responsible") || 
-                    this.findRole("main_administrator") || this.findRole("hr_manager")),
+                visible: this.isEnuWorker() && (this.isVacancyRightsValidity() || this.findRole("dephead") ||
+                    this.findRole("practice_responsible") || this.findRole("main_administrator") || this.findRole("hr_manager")),
                 items: [
                     {
                         label: $t('hr.vacancies'),
@@ -78,8 +77,7 @@ export class MenuService {
             {
                 label: $t('common.contragents'),
                 icon: 'pi pi-fw pi-users',
-                visible: this.getLoginedUser() && !this.findRole("student") && (this.getLoginedUser().mainPosition && 
-                    this.getLoginedUser().mainPosition.organization && this.getLoginedUser().mainPosition.organization.id === 1),
+                visible: this.isEnuWorker(),
                 items: [
                     {
                         label: $t('common.organizations'),
@@ -307,5 +305,21 @@ export class MenuService {
             }
         }
         return false;
+    }
+
+    isEnuWorker() {
+        let loginedUser = this.getLoginedUser();
+        if (!loginedUser || !loginedUser.roles || !loginedUser.mainPosition ||
+            loginedUser.mainPosition.organization.id !== 1) {
+            return false;
+        }
+
+        for (let i = 0; i < loginedUser.roles.length; i++) {
+            if (loginedUser.roles[i].name === 'student') {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

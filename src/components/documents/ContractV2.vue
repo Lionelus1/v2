@@ -240,9 +240,8 @@ export default {
         {
           label: this.$t("common.send"),
           icon: "pi pi-send",
-          disabled: () => this.contract && (this.contract.docHistory.stateId === DocEnum.INAPPROVAL.ID ||
-            this.contract.docHistory.stateId === DocEnum.SIGNING.ID || (this.contragentRequest && 
-            this.contract.docHistory.stateId === this.DocEnum.CREATED.ID)),
+          disabled: () => this.contract && (this.contract.docHistory.stateId === DocEnum.SIGNING.ID ||
+            (this.contragentRequest && this.contract.docHistory.stateId === this.DocEnum.CREATED.ID)),
           items: [
             {
               label: this.$t("common.toapprove"),
@@ -264,8 +263,8 @@ export default {
               label: this.$t("common.tosign"),
               icon: "pi pi-user-edit",
               visible: () => this.contract && ((this.contract.sourceType === DocEnum.DocSourceType.Template && 
-                !this.contract.template.needApproval && this.contract.docHistory.stateId === DocEnum.CREATED.ID) || 
-                this.contract.docHistory.stateId === DocEnum.APPROVED.ID),
+                !this.contract.template.needApproval && (this.contract.docHistory.stateId === DocEnum.CREATED.ID ||
+                this.contract.docHistory.stateId === DocEnum.INAPPROVAL.ID)) || this.contract.docHistory.stateId === DocEnum.APPROVED.ID),
               disabled: () => this.contragentOption === 'email',
               command: () => { this.sendToSign() }
             },
