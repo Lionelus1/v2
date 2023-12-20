@@ -78,25 +78,78 @@
         </div>
         <div class="content" v-if="active === 1">
           <div class="field mt-3">
+
+            <TabView>
+              <TabPanel header="Қазақша">
+                <div class="field mt-3">
+                  <label for="course-code">{{ $t("educationalPrograms.purposeEPkz") }}</label>
+                  <InputText v-model="formStep2.targetKz"/>
+                  <small class="p-error" v-if="!formStep2.targetKz && submitted">{{ $t("common.requiredField") }}</small>
+                </div>
+                <div class="field mt-3">
+                  <label for="course-code">{{ $t("educationalPrograms.assignmentQualificationskz") }}</label>
+                  <InputText v-model="formStep2.qualificationKz"/>
+                  <small class="p-error" v-if="!formStep2.qualificationKz && submitted">{{ $t("common.requiredField") }}</small>
+                </div>
+                <div class="field mt-3">
+                  <label for="course-code">{{ $t("educationalPrograms.trainingPeriodkz") }}</label>
+                  <InputText v-model="formStep2.trainingPeriodKz"/>
+                  <small class="p-error" v-if="!formStep2.trainingPeriodKz && submitted">{{ $t("common.requiredField") }}</small>
+                </div>
+                <div class="field mt-3">
+                  <label for="course-code">{{ $t("educationalPrograms.degreeAwardedkz") }}</label>
+                  <InputText v-model="formStep2.degreeAwardedKz"/>
+                  <small class="p-error" v-if="!formStep2.degreeAwardedKz && submitted">{{ $t("common.requiredField") }}</small>
+                </div>
+              </TabPanel>
+              <TabPanel header="Русский">
+                <div class="field mt-3">
+                  <label for="course-code">{{ $t("educationalPrograms.purposeEPru") }}</label>
+                  <InputText v-model="formStep2.targetRu"/>
+                  <small class="p-error" v-if="!formStep2.targetRu && submitted">{{ $t("common.requiredField") }}</small>
+                </div>
+                <div class="field mt-3">
+                  <label for="course-code">{{ $t("educationalPrograms.assignmentQualificationsru") }}</label>
+                  <InputText v-model="formStep2.qualificationRu"/>
+                  <small class="p-error" v-if="!formStep2.qualificationRu && submitted">{{ $t("common.requiredField") }}</small>
+                </div>
+                <div class="field mt-3">
+                  <label for="course-code">{{ $t("educationalPrograms.trainingPeriodru") }}</label>
+                  <InputText v-model="formStep2.trainingPeriodRu"/>
+                  <small class="p-error" v-if="!formStep2.trainingPeriodRu && submitted">{{ $t("common.requiredField") }}</small>
+                </div>
+                <div class="field mt-3">
+                  <label for="course-code">{{ $t("educationalPrograms.degreeAwardedru") }}</label>
+                  <InputText v-model="formStep2.degreeAwardedRu"/>
+                  <small class="p-error" v-if="!formStep2.degreeAwardedRu && submitted">{{ $t("common.requiredField") }}</small>
+                </div>
+              </TabPanel>
+              <TabPanel header="English">
+                <div class="field mt-3">
+                  <label for="course-code">{{ $t("educationalPrograms.purposeEPen") }}</label>
+                  <InputText v-model="formStep2.targetEn"/>
+                  <small class="p-error" v-if="!formStep2.targetEn && submitted">{{ $t("common.requiredField") }}</small>
+                </div>
+                <div class="field mt-3">
+                  <label for="course-code">{{ $t("educationalPrograms.assignmentQualificationsen") }}</label>
+                  <InputText v-model="formStep2.qualificationEn"/>
+                  <small class="p-error" v-if="!formStep2.qualificationEn && submitted">{{ $t("common.requiredField") }}</small>
+                </div>
+                <div class="field mt-3">
+                  <label for="course-code">{{ $t("educationalPrograms.trainingPerioden") }}</label>
+                  <InputText v-model="formStep2.trainingPeriodEn"/>
+                  <small class="p-error" v-if="!formStep2.trainingPeriodEn && submitted">{{ $t("common.requiredField") }}</small>
+                </div>
+                <div class="field mt-3">
+                  <label for="course-code">{{ $t("educationalPrograms.degreeAwardeden") }}</label>
+                  <InputText v-model="formStep2.degreeAwardedEn"/>
+                  <small class="p-error" v-if="!formStep2.degreeAwardedEn && submitted">{{ $t("common.requiredField") }}</small>
+                </div>
+              </TabPanel>
+            </TabView>
             <div class="field mt-3">
               <label for="course-code">{{ $t("educationalPrograms.directionTraining") }}</label>
               <Dropdown :placeholder="$t('common.select')"/>
-            </div>
-            <div class="field mt-3">
-              <label for="course-code">{{ $t("educationalPrograms.purposeEP") }}</label>
-              <InputText/>
-            </div>
-            <div class="field mt-3">
-              <label for="course-code">{{ $t("educationalPrograms.assignmentQualifications") }}</label>
-              <InputText/>
-            </div>
-            <div class="field mt-3">
-              <label for="course-code">{{ $t("educationalPrograms.trainingPeriod") }}</label>
-              <InputText/>
-            </div>
-            <div class="field mt-3">
-              <label for="course-code">{{ $t("educationalPrograms.degreeAwarded") }}</label>
-              <InputText/>
             </div>
             <div class="field mt-3">
               <label for="course-code">{{ $t("educationalPrograms.typeEducationalProgram") }}</label>
@@ -149,8 +202,25 @@ const items = ref([
     label: 'Добавление курса'
   }
 ]);
-const formData = ref({})
+const formData = ref(
+    {
+      nameKz: 'test',
+      nameRu: 'test ru',
+      nameEn: 'test en',
+      descriptionKz: 'description Kz',
+      descriptionRu: 'description Ru',
+      descriptionEn: 'description en',
+      code: 'test',
+      eduProgGroupId: 5,
+      eduProgId: 1,
+      eduFieldsId: 1,
+    })
+const formStep2 = ref(
+    {
+    }
+)
 const submitted = ref(false)
+const submittedStep2 = ref(false)
 const service = new OnlineCourseService()
 const dataFieldEducation = ref([])
 
@@ -169,23 +239,37 @@ const getFieldEducation = () => {
 }
 getFieldEducation()
 const save = () => {
-  submitted.value = true
-  if (!isValid()) return;
-  formData.value.categoryId = 1
-  formData.value.hours = parseInt(formData.value.hours)
-  formData.value.start_time = new Date().toISOString()
-  formData.value.final_date = new Date().toISOString()
-/*  service.createCourse(data).then(res => {
-    //router.back()
+  if(active.value === 0){
+    submitted.value = true
+    if (!isValid()) return;
     toast.add({
       severity: "success",
       summary: i18n.t("common.success"),
       life: 3000,
     });
-    formData.value = null
-  }).catch(error => {
-    toast.add({severity: "error", summary: error, life: 3000});
-  });*/
+    active.value = 1
+    /*  service.addEducationalProgram(formData.value).then(res => {
+        //router.back()
+        toast.add({
+          severity: "success",
+          summary: i18n.t("common.success"),
+          life: 3000,
+        });
+        formData.value = null
+      }).catch(error => {
+        toast.add({severity: "error", summary: error, life: 3000});
+      });*/
+  }
+  if(active.value === 1){
+    submitted.value = true
+    if (!isValidStep2()) return;
+    toast.add({
+      severity: "success",
+      summary: i18n.t("common.success"),
+      life: 3000,
+    });
+    active.value = 2
+  }
 }
 
 const isValid = () => {
@@ -220,6 +304,58 @@ const isValid = () => {
   if (!formData.value.eduFieldsId) {
     errors.push(1);
   }
+  return errors.length === 0;
+}
+const isValidStep2 =() => {
+  let errors = [];
+/*  if (!formStep2.value.directionOfTrainingId) {
+    errors.push(1);
+  }*/
+  if (!formStep2.value.targetKz) {
+    errors.push(1);
+  }
+  if (!formStep2.value.targetRu) {
+    errors.push(1);
+  }
+  if (!formStep2.value.targetEn) {
+    errors.push(1);
+  }
+/*  if (!formData.value.qualificationKz) {
+    errors.push(1);
+  }
+  if (!formData.value.qualificationRu) {
+    errors.push(1);
+  }
+  if (!formData.value.qualificationEn) {
+    errors.push(1);
+  }
+  if (!formData.value.trainingPeriodKz) {
+    errors.push(1);
+  }
+  if (!formData.value.trainingPeriodRu) {
+    errors.push(1);
+  }
+  if (!formData.value.trainingPeriodEn) {
+    errors.push(1);
+  }
+  if (!formData.value.degreeAwardedKz) {
+    errors.push(1);
+  }
+  if (!formData.value.degreeAwardedRu) {
+    errors.push(1);
+  }
+  if (!formData.value.degreeAwardedEn) {
+    errors.push(1);
+  }
+  if (!formData.value.typeEducationalProgram) {
+    errors.push(1);
+  }
+  if (!formData.value.doubleDegree) {
+    errors.push(1);
+  }
+  if (!formData.value.jointEducational) {
+    errors.push(1);
+  }*/
   return errors.length === 0;
 }
 </script>

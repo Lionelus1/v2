@@ -92,4 +92,13 @@ export class OnlineCourseService {
     deleteCourse(id) {
         return api.post('/onlinecourse/delCourse', {courseId: parseInt(id)}, {headers:getHeader()});
     }
+    addEducationalProgram(data) {
+        return api.post('/onlinecourse/addEducationalProgram', data, {headers:getHeader()});
+    }
+    addEduProgramTarget(data) {
+        return api.post('/onlinecourse/addEduProgramTarget', data, {headers:getHeader()});
+    }
+    addEduProgramDirectory(data) {
+        return api.post('/onlinecourse/addEduProgramDirectory', data, {headers:getHeader()});
+    }
 }
