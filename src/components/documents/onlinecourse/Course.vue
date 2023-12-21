@@ -1,11 +1,42 @@
 <template>
     <div v-if="course">
         <BlockUI :blocked="saving" :fullScreen="true"></BlockUI>
-        <div class="surface-card p-4">
-            <h3 class="mb-3">{{ course["name" + $i18n.locale] }}</h3>
-            <div class="text-500 mb-5">{{ course["description" + $i18n.locale] }}</div>
+        <TitleBlock :title="$t('Онлайн курсы - Курсы - Наука в области химии')" :show-back-button="true"/>
+        <div class="course_card flex p-4">
+          <img :src="course.logo" alt="">
+          <div class="text text-white">
+            <div class="flex mb-4">
+              <h5 class="mb-0 mr-2">{{ course["name" + $i18n.locale] }}</h5>
+              <Tag class="ql-size-small" icon="pi pi-star-fill" value="4,9"></Tag>
+            </div>
+            <p class="text-gray-400">{{ $t('fieldEducation.duration') }} : {{course.hours}}</p>
+            <p class="text-gray-400">{{ $t('fieldEducation.trainingFormat') }}:
+              <span v-if="course.courseType === 1">{{ $t('fieldEducation.online') }}</span>
+              <span v-if="course.courseType === 2">{{ $t('fieldEducation.offline') }}</span>
+              <span v-if="course.courseType === 3">{{ $t('fieldEducation.mixed') }}</span>
+            </p>
+          </div>
         </div>
         <TabView>
+          <TabPanel :header="$t('fieldEducation.aboutCourse')">
+            <div class="content">
+              <p class="title font-bold">{{ $t('fieldEducation.purposeCourse') }}</p>
+              <p>{{course.descriptionkz}} {{course.descriptionru}} {{course.descriptionen}}</p>
+              <p class="title font-bold">{{ $t('fieldEducation.briefSummary') }}</p>
+              <p>{{course.annotationKz}} {{course.annotationRu}} {{course.annotationEn}}</p>
+            </div>
+           <div class="course_footer">
+             <div class="footer_title font-bold mb-4">
+               {{ $t('fieldEducation.teachers') }}
+             </div>
+             <div class="content">
+                <div class="img_card">
+                  <img src="https://edtech4beginnerscom.files.wordpress.com/2021/05/1.png" alt="">
+                  <div class="name">Teacher</div>
+                </div>
+             </div>
+           </div>
+          </TabPanel>
             <TabPanel :header="$t('course.users')">
                 <Button v-if="students.length === 0 && dic_course_type == 1" class="btn mb-3" :label="$t('hr.sp.request')"
                         @click="sendRequestToCourse()"/>
@@ -102,7 +133,7 @@
                         </template>
                     </Dialog>
 
-                    <Dialog v-model:visible="issueCertificateDialog" :style="{ width: '500px' }">   
+                    <Dialog v-model:visible="issueCertificateDialog" :style="{ width: '500px' }">
                         <template #header>
                             <div>
                                 <i class="pi pi-exclamation-triangle mr-2"></i>
@@ -123,7 +154,7 @@
                             </div>
 
                         </template>
-                        
+
                     </Dialog>
 
                     <Dialog v-model:visible="issueCertificateWithDialog" :style="{ width: '500px' }">
@@ -140,22 +171,38 @@
                                 <InputText type="text" v-model="organizer.lastNumber"></InputText>
                                 <div>
                                     <Button v-if="findRole(null,'online_course_administrator')"
-                                            :label="$t('common.yes')" 
+                                            :label="$t('common.yes')"
                                             @click="issueCertificate(1)"/>
                                     <Button :label="$t('common.no')" @click="closeIssueCertificateWithDialog"
                                             class="p-button-secondary p-button-outlined"/>
                                 </div>
-                                
+
                             </div>
                         </template>
-                        
+
                     </Dialog>
 
                 </div>
             </TabPanel>
-
             <!-- module қосу table -->
             <TabPanel :header="$t('course.modules')" v-if="dic_course_type == 1">
+              <div class="module_grid">
+                <div class="module_card" v-for="item of module" :key="item">
+                  <div class="content">
+                    <img src="https://www.mooc.org/hubfs/are-free-online-courses-worth-it.jpg" alt="">
+                    <p>{{ item['name_' + $i18n.locale] }}</p>
+                  </div>
+                  <div class="footer">
+                    <hr>
+                    <i class="pi pi-list" @click="toggle"></i>
+                  </div>
+                </div>
+              </div>
+              <OverlayPanel ref="op">
+                <Button class="p-button-raised" icon="pi pi-fw pi-desktop" :label="$t('Презентация')"/>
+                <br>
+                <Button class="p-button-outlined w-full" icon="pi pi-fw pi-desktop" :label="$t('Тест')"/>
+              </OverlayPanel>
                 <DataTable :value="module">
                     <template #header>
                         <div
@@ -297,9 +344,10 @@
 </template>
 <script>
 import {OnlineCourseService} from "@/service/onlinecourse.service";
-import {smartEnuApi, getHeader, findRole} from "@/config/config";
+import {smartEnuApi, getHeader, findRole, fileRoute} from "@/config/config";
 import api from "@/service/api";
 import QrGenerator from "@/components/QrGenerator.vue";
+import {ref} from "vue";
 
 export default {
     components: {QrGenerator},
@@ -341,10 +389,11 @@ export default {
             reqBtn: true,
             statusText: false,
             userID: null,
-            stateID: null, 
+            stateID: null,
             searchText: '',
             searchData: {},
             dic_course_type: null,
+            op: ref()
         }
     },
     created() {
@@ -519,7 +568,7 @@ export default {
         },
         getCourseOrganizerByCourseID() {
             this.loading = true
-            
+
             this.service.getCourseOrganizerByCourseID(this.course_id).then(response => {
                 this.organizer = response.data.organizer
                 this.organizer.lastNumber++
@@ -527,7 +576,7 @@ export default {
             }).catch(_ => {
                 this.loading = false
             });
-        },  
+        },
         closeStudentDialog() {
             this.studentDialog = false;
             this.newUsers = []
@@ -545,6 +594,8 @@ export default {
             this.loading = true
             this.service.getCourse(this.course_id).then(response => {
                 this.course = response.data
+                this.course.logo = smartEnuApi + fileRoute + this.course.logo
+                console.log(this.course.logo)
                 /*if (this.course.students) {
                     this.course.students = response.data.students
                 } else {
@@ -685,6 +736,9 @@ export default {
                 this.saving = false;
                 this.submitted = false;
             });
+        },
+        toggle (event) {
+          this.$refs.op.toggle(event);
         }
     },
     computed: {
@@ -694,4 +748,58 @@ export default {
     },
 }
 </script>
-<style></style>
+<style lang="scss">
+.course_card{
+  background: #293042;
+  img{
+    margin-right: 20px;
+    width: 240px;
+    height: 160px;
+    object-fit: cover;
+    //object-position: bottom;
+  }
+}
+.course_footer{
+  margin-top: 40px;
+  .content{
+    padding: 40px;
+    background: #293042;
+    .img_card{
+      width: 100px;
+      height: 100px;
+      color: #fff;
+      border-radius: 50%;
+      text-align: center;
+      img{
+        width: 100%;
+        height: 100%;
+        border-radius: inherit;
+        object-fit: cover;
+      }
+    }
+  }
+}
+.module_grid{
+  width: fit-content;
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(4, 1fr);
+}
+.module_card{
+  display: flex;
+  flex-direction: column;
+  width: 240px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  padding: 10px;
+  .content{
+    flex: 1;
+  }
+  img {
+    width: 100%;
+  }
+  i{
+    text-align: right;
+  }
+}
+</style>

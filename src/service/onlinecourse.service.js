@@ -30,6 +30,9 @@ export class OnlineCourseService {
     getCourses(data) {
         return api.post('/onlinecourse/courses', data, {headers:getHeader()});
     }
+    getCourseFieldId(id) {
+        return api.post(`/onlinecourse/getCourseFieldId/${id}`, {}, {headers:getHeader()});
+    }
     getModulesByCourseID(courseID) {
         return api.get(`/onlinecourse/getModulesByCourseId/${courseID}`, { headers: getHeader() });
     }
@@ -79,5 +82,26 @@ export class OnlineCourseService {
     }
     createCourse(data) {
         return api.post('/onlinecourse/addCourse', data, {headers:getHeader()});
+    }
+    getFieldEducation(data) {
+        return api.post('/onlinecourse/getCourseFields', data, {headers:getHeader()});
+    }
+    getEduAcademicDegrees(data) {
+        return api.post('/web/getEduAcademicDegrees', data, {headers:getHeader()});
+    }
+    deleteCourse(id) {
+        return api.post('/onlinecourse/delCourse', {courseId: parseInt(id)}, {headers:getHeader()});
+    }
+    addEducationalProgram(data) {
+        return api.post('/onlinecourse/addEducationalProgram', data, {headers:getHeader()});
+    }
+    addEduProgramTarget(data) {
+        return api.post('/onlinecourse/addEduProgramTarget', data, {headers:getHeader()});
+    }
+    addEduProgramDirectory(data) {
+        return api.post('/onlinecourse/addEduProgramDirectory', data, {headers:getHeader()});
+    }
+    getModuleBySyllasbusId(id){
+        return api.post(`/onlinecourse/getModuleBySyllasbusId/${id}`,{}, {headers: getHeader()});
     }
 }

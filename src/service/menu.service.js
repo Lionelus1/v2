@@ -282,8 +282,23 @@ export class MenuService {
                     {
                         label: $t('course.courses'),
                         icon: 'fa-solid fa-chalkboard',
-                        to: '/courses',
+                        to: '/categories-courses',
                     },
+                ]
+            },
+            {
+                label: $t('educationalPrograms.educationalProgramConstructor'), icon: 'fa-solid fa-chalkboard-user',
+                items: [
+                    {
+                        label: $t('educationalPrograms.bachelor'), to: '/educational-programs/bachelor',
+                    },
+                    {
+                        label: $t('educationalPrograms.magistr'), to: '/educational-programs/bachelor',
+                    },
+                    {
+                        label: $t('educationalPrograms.doctoral'), to: '/educational-programs/bachelor',
+                    },
+
                 ]
             },
             {

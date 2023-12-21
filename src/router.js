@@ -187,15 +187,33 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
+                path: '/categories-courses',
+                name: 'categoriesCourses',
+                component: load('documents/onlinecourse/CategoriesCourses'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
                 path: '/course/categories',
                 name: 'onlinecoursecategory',
                 component: load('documents/onlinecourse/Categories'),
                 beforeEnter: ifAuthenticated,
             },
             {
-                path: '/courses',
+                path: '/courses/:courseID',
                 name: 'onlinecourses',
                 component: load('documents/onlinecourse/Courses'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/courses/edit/:fieldId/:courseId',
+                name: 'EditCourse',
+                component: load('documents/onlinecourse/AddCourse'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/courses/add/:fieldId',
+                name: 'AddCourse',
+                component: load('documents/onlinecourse/AddCourse'),
                 beforeEnter: ifAuthenticated,
             },
             {
@@ -214,6 +232,18 @@ const routes = [
                 path: '/documents/certificate/:uuid',
                 name: 'certificate',
                 component: load('documents/certificates/Certificate'),
+            },
+            {
+                path: '/educational-programs/bachelor',
+                name: 'educationalPrograms',
+                component: load('documents/onlinecourse/EducationalPrograms'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/educational-programs/bachelor/add',
+                name: 'addEducationalPrograms',
+                component: load('documents/onlinecourse/AddEducationalProgram'),
+                beforeEnter: ifAuthenticated,
             },
             {
                 path: '/contragent/banks',
