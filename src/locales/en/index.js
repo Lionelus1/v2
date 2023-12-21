@@ -1154,7 +1154,8 @@ export default {
         plancontractprioruty: "By priority",
         plancontracttopic: "On topic",
         scienceParticipants: "Project participants",
-        generateAct: "Form an act"
+        generateAct: "Form an act",
+        minWordCount: "It should be at least 100 words"
     },
     queue: {
 

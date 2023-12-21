@@ -48,7 +48,7 @@
         </div>
       </template>
     </div>
-    <div class="field">
+    <div class="field" v-if="plan && plan.plan_type && plan.plan_type.code !== Enum.WorkPlanTypes.Science">
       <Button :label="$t('common.add')" icon="fa-solid fa-add" class="p-button-sm p-button-outlined px-5" @click="addNewUser" />
     </div>
     <div class="p-fluid">

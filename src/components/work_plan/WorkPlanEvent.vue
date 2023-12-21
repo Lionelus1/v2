@@ -47,11 +47,11 @@
               class="p-button-sm p-button-outlined ml-2"/>
       <Button v-if="isFinish && (isApproval || isPlanCreator || isAdmin) && (plan.doc_info.docHistory.stateId === 3)" :label="$t('workPlan.reports')"
               @click="navigateToReports" class="p-button-sm p-button-outlined ml-2"/>
-      <Button v-if="isFinish && (isApproval || isPlanCreator || isAdmin) && (plan.doc_info.docHistory.stateId === 3)" :label="$t('workPlan.generateAct')"
+      <Button v-if="isFinish && isPlanCreator && (plan.doc_info.docHistory.stateId === 3)" :label="$t('workPlan.generateAct')"
               @click="generateScienceReport" class="p-button-sm p-button-outlined ml-2"/>
       <!--      <WorkPlanReportApprove v-if="isFinish && isPlanCreator && (plan.doc_info.docHistory.stateId === 3) && (plan.plan_type && plan.plan_type.code === Enum.WorkPlanTypes.Science)" :label="$t('workPlan.generateAct')"-->
       <!--                             :doc-id="report.doc_id" :report="report_id"></WorkPlanReportApprove>-->
-      <WorkPlanReportApprove v-if="showReportModal && scienceReport" :visible="showReportModal && scienceReport" :doc-id="scienceReport.doc_id" :report="scienceReport"></WorkPlanReportApprove>
+      <WorkPlanReportApprove v-if="showReportModal && scienceReport && plan" :approval-stages="approval_users" :visible="showReportModal && scienceReport" :doc-id="scienceReport.doc_id" :report="scienceReport" :plan="plan"></WorkPlanReportApprove>
 
     </div>
     <div class="card">
@@ -188,9 +188,9 @@
         <Column field="actions" header="">
           <template #body="{ node }">
             <div>
-              <Button v-if="isPlanCreator && node.status.work_plan_event_status_id == 8" @click="updateConfirmEvent(node.work_plan_event_id)"
-                      class="mr-2" icon="pi pi-check" label=""
-                      severity="success"/>
+<!--              <Button v-if="isPlanCreator && node.status.work_plan_event_status_id == 8" @click="updateConfirmEvent(node.work_plan_event_id)"-->
+<!--                      class="mr-2" icon="pi pi-check" label=""-->
+<!--                      severity="success"/>-->
               <!--              (parseInt(node.quarter.String) === currentQuarter || parseInt(node.quarter.String) === 5)-->
               <Button v-if="(isPlanCreator || isUserApproval(node)) && (plan.doc_info.docHistory.stateId === 3) &&
                 (node.status.work_plan_event_status_id === 1 ||
@@ -199,13 +199,9 @@
                   node.status.work_plan_event_status_id === 6 ||
                   node.status.work_plan_event_status_id === 8)" label="" icon="pi pi-eye" @click="openPlanExecuteSidebar(node)" class="mr-2"/>
 
-              <!--              <work-plan-event-result-modal
-                v-if="showEventResultModal(node)"
-                :event-result="node.event_result" :eventData="node"
-                :plan-data="plan"></work-plan-event-result-modal>-->
-              <work-plan-event-add v-if="isPlanCreator && !isPlanSentApproval && !isFinish" :data="node" :items="node.children" :isMain="false"
+              <work-plan-event-add v-if="(isPlanCreator || isUserResp(node.user)) && !isPlanSentApproval && !isFinish" :data="node" :items="node.children" :isMain="false"
                                    :plan-data="plan"></work-plan-event-add>
-              <work-plan-event-edit-modal v-if="isPlanCreator && !isPlanSentApproval && !isFinish" :planData="plan"
+              <work-plan-event-edit-modal v-if="(isPlanCreator || isCreator) && !isPlanSentApproval && !isFinish" :planData="plan"
                                           :event="node"></work-plan-event-edit-modal>
               <Button v-if="isPlanCreator && !isPlanSentApproval && !isFinish" @click="remove_event(node.work_plan_event_id)" icon="pi pi-trash"
                       class="p-button-danger ml-1 mt-1" label=""></Button>
@@ -238,8 +234,6 @@
 import WorkPlanEventAdd from "@/components/work_plan/WorkPlanEventAdd";
 import {findRole} from "@/config/config";
 import WorkPlanApprove from "@/components/work_plan/WorkPlanApprove";
-import WorkPlanExecute from "@/components/work_plan/WorkPlanExecute";
-import WorkPlanEventResultModal from "@/components/work_plan/WorkPlanEventResultModal";
 import WorkPlanEventEditModal from "@/components/work_plan/WorkPlanEventEditModal";
 import moment from "moment";
 import {FilterMatchMode} from "primevue/api";
@@ -475,6 +469,13 @@ export default {
         if (parent == null) {
           this.data = res.data.items;
           this.total = res.data.total;
+          if (this.data) {
+            this.data.map(e => {
+              if (e.creator_id === this.loginedUserId && e.parent_id == null) {
+                this.isCreator = true;
+              }
+            });
+          }
         } else {
           parent.children = res.data.items;
           this.total = 0;
@@ -611,13 +612,13 @@ export default {
       });
     },
     isUserResp(data) {
-      let isFound = data.some(e => {
-        if (e.id === this.loginedUserId)
-          return true;
+      if (Array.isArray(data) && data.length !== 1) return false;
 
-        return false;
+      return data.some(e => {
+        console.log("e", e.id)
+        console.log("log", this.loginedUserId)
+        return e.id === this.loginedUserId;
       });
-      return isFound;
     },
     viewDoc() {
       this.$router.push({name: 'WorkPlanView', params: {id: this.work_plan_id}})
@@ -735,6 +736,73 @@ export default {
       };
       this.planService.createWorkPlanReport(data).then(res => {
         this.scienceReport = res.data
+        this.approval_users = [
+          {
+            stage: 1,
+            users: [],
+            titleRu: "Участники проекта",
+            titleKz: "Жоба қатысушылары",
+            titleEn: "Project participants",
+            certificate: {
+              namekz: "Жеке тұлғаның сертификаты",
+              nameru: "Сертификат физического лица",
+              nameen: "Certificate of an individual",
+              value: "individual"
+            }
+          },
+          {
+            stage: 2,
+            users: [],
+            titleRu: "Руководитель проекта",
+            titleKz: "Жоба жетекшісі",
+            titleEn: "Project Manager",
+            certificate: {
+              namekz: "Жеке тұлғаның сертификаты",
+              nameru: "Сертификат физического лица",
+              nameen: "Certificate of an individual",
+              value: "individual"
+            }
+          },
+          {
+            stage: 3,
+            users: [],
+            titleRu: "Ответственные за заключение договоров и сдачу актов от Сектора поддержки научных проектов",
+            titleKz: "Ғылыми жобаларды сүйемелдеу секторынан келісім-шарттар жасауға және актілерді ұсынуға жауапты",
+            titleEn: "Responsible for concluding contracts and submitting acts from the Scientific Projects Support Sector",
+            certificate: {
+              namekz: "Жеке тұлғаның сертификаты",
+              nameru: "Сертификат физического лица",
+              nameen: "Certificate of an individual",
+              value: "individual"
+            }
+          },
+          {
+            stage: 4,
+            users: [],
+            titleRu: "Начальник Управления научных проектов",
+            titleKz: "Ғылыми жобалар бөлімінің меңгерушісі",
+            titleEn: "Head of the Scientific Projects Department",
+            certificate: {
+              namekz: "Жеке тұлғаның сертификаты",
+              nameru: "Сертификат физического лица",
+              nameen: "Certificate of an individual",
+              value: "individual"
+            }
+          },
+          {
+            stage: 5,
+            users: [],
+            titleRu: "Директор Департамента науки",
+            titleKz: "Ғылым департаментінің директоры",
+            titleEn: "Director of the Department of Science",
+            certificate: {
+              namekz: "Жеке тұлғаның сертификаты",
+              nameru: "Сертификат физического лица",
+              nameen: "Certificate of an individual",
+              value: "individual"
+            }
+          }
+        ];
         this.showReportModal = true;
       }).catch(error => {
         if (error.response && error.response.status === 401) {
