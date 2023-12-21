@@ -3,44 +3,47 @@
   <div>
     <div class="col-12">
       <div class="card" v-if="isPlanCreator && !isReportSentApproval">
-        <WorkPlanReportApprove :doc-id="report.doc_id" :report="report_id"></WorkPlanReportApprove>
+        <Button type="button" icon="pi pi-send" class="p-button-success ml-2" :label="$t('common.toapprove')" @click="openModal"></Button>
+        <Button type="button" icon="pi pi-send" class="p-button-success ml-2" :label="$t('common.toapprove')" @click="openModal"></Button>
+        <WorkPlanReportApprove v-if="showModal" :visible="showModal" :doc-id="report.doc_id" :report="report_id"></WorkPlanReportApprove>
         <!--        <Button label="" icon="pi pi-download" @click="download"
                         class="p-button p-button-info ml-2"/>-->
       </div>
-      <div class="card" v-if="isPlanReportApproved && (isPlanCreator || (isApproval || isCurrentUserApproved))">
-        <Button :label="$t('common.signatures')" icon="pi pi-file"
-                @click="viewSignatures"
-                class="p-button ml-2"/>
-        <Button label="" icon="pi pi-download" v-if="plan && plan.is_oper"
-                @click="downloadWord"
-                class="p-button p-button-info ml-2"/>
-      </div>
-      <div class="card" v-if="!isPlanReportApproved && isReportSentApproval">
-        <Button v-if="isApproval && !isRejected" :label="$t('common.action.approve')" icon="pi pi-check"
-                @click="openApprovePlan"
-                class="p-button p-button-success ml-2"/>
-        <Button v-if="isApproval && !isRejected" :label="$t('workPlan.toCorrect')" icon="pi pi-check"
-                @click="openRejectPlan"
-                class="p-button p-button-danger ml-2"/>
-      </div>
+      <!--      <div class="card" v-if="isPlanReportApproved && (isPlanCreator || (isApproval || isCurrentUserApproved))">
+              <Button :label="$t('common.signatures')" icon="pi pi-file"
+                      @click="viewSignatures"
+                      class="p-button ml-2"/>
+              <Button label="" icon="pi pi-download" v-if="plan && plan.is_oper"
+                      @click="downloadWord"
+                      class="p-button p-button-info ml-2"/>
+            </div>-->
+      <!--      <div class="card" v-if="!isPlanReportApproved && isReportSentApproval">
+              <Button v-if="isApproval && !isRejected" :label="$t('common.action.approve')" icon="pi pi-check"
+                      @click="openApprovePlan"
+                      class="p-button p-button-success ml-2"/>
+              <Button v-if="isApproval && !isRejected" :label="$t('workPlan.toCorrect')" icon="pi pi-check"
+                      @click="openRejectPlan"
+                      class="p-button p-button-danger ml-2"/>
+            </div>-->
       <div class="card" v-if="approval_users && report && report.status">
-        <h5><TitleBlock :title="report.report_name" :show-back-button="true" />
+        <div>
+          <TitleBlock :title="report.report_name" :show-back-button="true" />
           <span v-if="report" :class="'customer-badge status-' + report.status.work_plan_status_id">
               {{
               $i18n.locale === "kz" ? report.status.name_kk : $i18n.locale === "ru" ? report.status.name_ru : report.status.name_en
             }}
         </span>
-        </h5>
-        <Timeline :value="approvals">
-          <template #content="slotProps">
-            <div v-for="(item, index) of slotProps.item" :key="index">
-              {{ item.user.fullName }}
-              <i v-if="item.is_success" class="pi pi-check-circle ml-2 p-message-success"
-                 style="font-size: 1.2rem;color: #3eaf7c"></i>
-              <i v-if="!item.is_success" class="pi pi-spinner ml-2" style="font-size: 1.2rem;color: #c63737"></i>
-            </div>
-          </template>
-        </Timeline>
+        </div>
+        <!--        <Timeline :value="approvals">
+                  <template #content="slotProps">
+                    <div v-for="(item, index) of slotProps.item" :key="index">
+                      {{ item.user.fullName }}
+                      <i v-if="item.is_success" class="pi pi-check-circle ml-2 p-message-success"
+                         style="font-size: 1.2rem;color: #3eaf7c"></i>
+                      <i v-if="!item.is_success" class="pi pi-spinner ml-2" style="font-size: 1.2rem;color: #c63737"></i>
+                    </div>
+                  </template>
+                </Timeline>-->
       </div>
       <div class="card" v-if="blobSource">
         <!--        <object src="#toolbar=0" style="width: 100%; height: 1000px" v-if="source" type="application/pdf"
@@ -68,6 +71,10 @@
       </template>
     </Dialog>
   </div>
+
+  <Sidebar v-model:visible="showReportDocInfo" position="right" class="p-sidebar-lg" style="overflow-y: scroll">
+    <DocSignaturesInfo :docIdParam="this.report.doc_id" :isInsideSidebar="true"></DocSignaturesInfo>
+  </Sidebar>
 </template>
 
 <script>
@@ -83,11 +90,13 @@ import {WorkPlanService} from "@/service/work.plan.service";
 
 export default {
   name: "WorkPlanReportView",
-  components: {WorkPlanReportApprove, ReportPdf},
+  components: {WorkPlanReportApprove, ReportPdf, DocSignaturesInfo},
   props: ['id'],
   data() {
     return {
       source: null,
+      showModal: false,
+      showReportDocInfo: false,
       blobSource: null,
       document: null,
       isApproval: false,
@@ -514,6 +523,9 @@ export default {
     },
     closeModal() {
       this.showRejectPlan = false;
+    },
+    openModal() {
+      this.showModal = true;
     },
   }
 }

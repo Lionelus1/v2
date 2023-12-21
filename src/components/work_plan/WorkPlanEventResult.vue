@@ -49,9 +49,9 @@
             <Menubar :model="userMenuItems" :key="active" style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
           </div>
 
-          <!-- <div v-if="isPlanCreator && event && event.status.work_plan_event_status_id === 5">
+           <div v-if="isPlanCreator && event && event.status.work_plan_event_status_id === 5">
             <Menubar :model="verifyMenu" :key="active" style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
-          </div> -->
+          </div>
           <div class="grid mt-3">
             <!-- p-sm-12 md:col-12 lg:col-6 p-xl-6 -->
             <div class="p-fluid" v-if="!isPlanCreator && (isPlanCreatorApproval || !isPlanCreator) &&
@@ -67,9 +67,10 @@
               </div>
               <div class="field">
                 <label>{{ $t('common.result') }}</label>
-                <TinyEditor v-if="plan && !plan.is_oper" v-model="result" :height="300" :style="{ height: '100%', width: '100%' }"
+                <TinyEditor v-if="plan && !plan.is_oper" v-model="result" :min-word="wordLimit" @wordCount="initWordCount" :height="300" :style="{ height: '100%', width: '100%' }"
                   @selectionChange="editorChange" />
                 <TinyEditor v-if="plan && plan.is_oper" v-model="newResult" :height="300" @selectionChange="editorChange" />
+                <small v-if="isSciencePlan && submitted && (inputWordCount < wordLimit)" class="p-error">{{$t('workPlan.minWordCount')}}</small>
 
               </div>
               <div class="field">
@@ -321,6 +322,7 @@ import { getMultipartHeader } from "../../config/config";
 import RichEditor from "../documents/editor/RichEditor";
 import moment from "moment";
 import { WorkPlanService } from '../../service/work.plan.service'
+import Enum from "@/enum/workplan/index"
 
 export default {
   name: "WorkPlanEventResult",
@@ -375,8 +377,12 @@ export default {
 
       ],
       isInspected: true,
+      submitted: false,
       resultUserId: null,
       eventResultId: null,
+      Enum: Enum,
+      wordLimit: 100,
+      inputWordCount: 0
     }
   },
   computed: {
@@ -412,7 +418,10 @@ export default {
           },
         }
       ];
-    }
+    },
+    isSciencePlan() {
+      return this.plan && this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Science
+    },
   },
   mounted() {
     this.isAdmin = this.findRole(null, 'main_administrator')
@@ -424,6 +433,9 @@ export default {
   },
   methods: {
     findRole: findRole,
+    initWordCount(count) {
+      this.inputWordCount = count
+    },
     getEvent() {
       this.planService.getEventById(this.event_id).then(res => {
         if (res.data) {
@@ -509,8 +521,16 @@ export default {
       return menu;
     },
     saveResult() {
+      this.submitted = true
       this.isBlockUI = true;
       const fd = new FormData();
+
+      if (this.isSciencePlan && this.inputWordCount < 100) {
+        this.$toast.add({ severity: 'warn', detail: this.$t('workPlan.minWordCount', 100), life: 3000 })
+        this.isBlockUI = false;
+        return;
+      }
+
       fd.append('work_plan_event_id', this.event.work_plan_event_id);
       fd.append('result', this.plan.is_oper ? this.newResult ? this.newResult : "" : this.result);
       if (this.plan && this.plan.is_oper) {
@@ -541,18 +561,12 @@ export default {
           this.isBlockUI = false;
         }
         this.files = [];
+        this.submitted = false
         this.$toast.add({ severity: 'success', detail: this.$t('common.done'), life: 3000 });
       }).catch(error => {
         this.isBlockUI = false;
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
+        this.submitted = false
+        this.$toast.add({severity: "error", summary: error, life: 3000});
       });
     },
     sendResultForVerification() {

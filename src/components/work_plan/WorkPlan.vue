@@ -64,7 +64,7 @@
         <Column field="status" :header="$t('workPlan.planType')" v-if="isAdmin">
           <template #body="{ data }">
             <span class="customer-badge" :class="{ 'operational-plan': data.is_oper, 'simple-plan': !data.is_oper }">
-              {{ data.is_oper ? $t('workPlan.operationalPlan') : $t('workPlan.simplePlan') }}
+              {{ data.plan_type['name_' + $i18n.locale] }}
             </span>
           </template>
         </Column>

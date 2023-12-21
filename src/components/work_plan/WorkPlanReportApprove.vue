@@ -1,23 +1,13 @@
 <template>
-  <Button
-      type="button"
-      icon="pi pi-send"
-      class="p-button-success ml-2"
-      :label="$t('common.toapprove')"
-      @click="openModal"
-  ></Button>
-  <Button :label="$t('workPlan.toCorrect')" icon="pi pi-check"
-                @click="openRejectPlan"
-                class="p-button p-button-danger ml-2"/>
   <PdfContent ref="pdf" v-if="data" :data="data" :planId="data.work_plan_id" style="display: none;"></PdfContent>
   <Dialog :header="$t('common.action.sendToApprove')" v-model:visible="showModal"
-            :style="{width: '50vw'}" class="p-fluid">
-      <ProgressBar v-if="approving" mode="indeterminate" style="height: .5em"/>
-      <div class="field">
-        <ApprovalUsers :approving="approving" v-model="approval_users"
-                       @closed="closeModal"
-                       @approve="approve($event)" :stages="stages" :mode="'standard'"></ApprovalUsers>
-      </div>
+          :style="{width: '50vw'}" class="p-fluid">
+    <ProgressBar v-if="approving" mode="indeterminate" style="height: .5em"/>
+    <div class="field">
+      <ApprovalUsers :approving="approving" v-model="approval_users"
+                     @closed="closeModal"
+                     @approve="approve($event)" :stages="stages" :mode="'standard'"></ApprovalUsers>
+    </div>
   </Dialog>
   <!-- <Dialog :header="$t('common.action.sendToApprove')" v-model:visible="showModal" :style="{width: '450px'}" class="p-fluid">
     <div class="field">
@@ -39,33 +29,33 @@ import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers";
 import ApproveComponent from "@/components/work_plan/ApproveComponent";
 import PdfContent from "@/components/work_plan/PdfContent";
 import html2pdf from "html2pdf.js";
-import {getHeader, getMultipartHeader, signerApi, smartEnuApi} from "@/config/config";
 import {WorkPlanService} from "@/service/work.plan.service";
+import Enum from "@/enum/workplan/index"
 
 export default {
   name: "WorkPlanReportApprove",
   components: {ApprovalUsers},
-  props: ['docId', 'report', 'events'],
+  props: ['visible', 'docId', 'report', 'events', 'approvalStages', 'plan'],
   data() {
     return {
       data: this.report,
-      showModal: false,
+      showModal: this.visible,
       selectedUsers: null,
       steps: 3,
       step: 1,
       // approval_users: [],
       approval_users: [
-      {
-          stage: 1,
-          users:[],
-          certificate: {
-            namekz: "Жеке тұлғаның сертификаты",
-            nameru: "Сертификат физического лица",
-            nameen: "Certificate of an individual",
-            value: "individual"
-          }
-        }
-      ],
+            {
+              stage: 1,
+              users: [],
+              certificate: {
+                namekz: "Жеке тұлғаның сертификаты",
+                nameru: "Сертификат физического лица",
+                nameen: "Certificate of an individual",
+                value: "individual"
+              }
+            }
+          ],
       currentStageUsers: null,
       currentStage: 1,
       prevStage: 0,
@@ -76,11 +66,12 @@ export default {
         approvals: false
       },
       doc_id: this.docId,
-      report_id: this.report,
+      report_id: this.data ? this.data.id : null,
       planService: new WorkPlanService(),
       approveComponentKey: 0,
       approving: false,
-      stages: null
+      stages: this.approvalStages ? this.approvalStages : null,
+      Enum: Enum
     }
   },
   created() {
@@ -94,10 +85,6 @@ export default {
     });
   },
   methods: {
-    openModal() {
-      this.showModal = true;
-      this.approveComponentKey++;
-    },
     closeModal() {
       this.showModal = false;
     },
@@ -139,38 +126,45 @@ export default {
       this.approval_users = event
       this.submitted = true;
       this.approving = true;
-      let workPlanReport = this.report_id;
-      let pdfOptions = {
-        margin: 10,
-        image: {
-          type: 'jpeg',
-          quality: 0.98,
-        },
-        html2canvas: {scale: 3},
-        jsPDF: {
-          unit: 'mm',
-          format: 'a4',
-          orientation: 'landscape',
-          hotfixes: ["px_scaling"]
-        },
-        pagebreak: {avoid: 'tr'},
-        filename: "file.pdf"
-      };
-      const pdfContent = this.$refs.pdf.$refs.htmlToPdf;
-      const worker = html2pdf().set(pdfOptions).from(pdfContent);
-
-      worker.toPdf().output("blob").then((pdf) => {
+      let workPlanReport = this.data.id;
+      if (this.plan && this.plan.plan_type.code === Enum.WorkPlanTypes.Science) {
         const fd = new FormData();
-        fd.append('wpfile', pdf);
-        fd.append('fname', pdfOptions.filename)
         fd.append('report_id', workPlanReport)
         this.approvePlan(fd);
-      });
+      } else {
+        let pdfOptions = {
+          margin: 10,
+          image: {
+            type: 'jpeg',
+            quality: 0.98,
+          },
+          html2canvas: {scale: 3},
+          jsPDF: {
+            unit: 'mm',
+            format: 'a4',
+            orientation: 'landscape',
+            hotfixes: ["px_scaling"]
+          },
+          pagebreak: {avoid: 'tr'},
+          filename: "file.pdf"
+        };
+        const pdfContent = this.$refs.pdf.$refs.htmlToPdf;
+        const worker = html2pdf().set(pdfOptions).from(pdfContent);
+
+        worker.toPdf().output("blob").then((pdf) => {
+          const fd = new FormData();
+          fd.append('wpfile', pdf);
+          fd.append('fname', pdfOptions.filename)
+          fd.append('report_id', workPlanReport)
+          this.approvePlan(fd);
+        });
+      }
+
     },
     approvePlan(fd) {
       fd.append("doc_id", this.doc_id)
       fd.append("approval_users", JSON.stringify(this.approval_users))
-      this.planService.savePlanFile(fd).then(res => {
+      this.planService.approvePlan(fd).then(res => {
         if (res.data && res.data.is_success) {
           this.$toast.add({
             severity: "success",
@@ -226,6 +220,12 @@ export default {
       this.formValid.approvals = this.selectedUsers.length === 0;
 
       return !this.formValid.approvals;
+    },
+  },
+  computed: {
+    isSciencePlan() {
+      console.log(this.plan && this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Science)
+      return this.plan && this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Science
     }
   }
 }

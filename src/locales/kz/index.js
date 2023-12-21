@@ -1262,7 +1262,15 @@ export default {
         simplePlan: "Жоспар",
         operationalPlan: "Операциялық жоспар",
         planType: "Жоспар түрі",
-        myPlans: "Менің жоспарларым"
+        myPlans: "Менің жоспарларым",
+        plancontractname: "Келісім-шарттың атауы",
+        plancontractnumber: "Келісім-шарт номері",
+        plancontractdate: "Келісім-шарт уақыты",
+        plancontractprioruty: "Басымдық бойынша",
+        plancontracttopic: "Тақырып бойынша",
+        scienceParticipants: "Жобаға қатысушылар",
+        generateAct: "Акт жасау",
+        minWordCount: "Кемінде 100 сөзден тұру керек"
     },
     educomplex: {
         title: "Пәннің оқу-әдістемелік кешені",
