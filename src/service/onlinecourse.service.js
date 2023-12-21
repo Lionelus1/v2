@@ -104,4 +104,7 @@ export class OnlineCourseService {
     getModuleBySyllasbusId(id){
         return api.post(`/onlinecourse/getModuleBySyllasbusId/${id}`,{}, {headers: getHeader()});
     }
+    getSyllabusByDegree(id){
+        return api.post(`/onlinecourse/getSyllabusByDegree/${id}`,{}, {headers: getHeader()});
+    }
 }

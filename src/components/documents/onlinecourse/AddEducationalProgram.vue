@@ -202,12 +202,25 @@
           <div class="content" v-if="active === 3">
             <div class="mt-4 mb-4">
               <table>
+                <thead>
                 <tr>
                   <td>#</td>
                   <td>Наименование модуля</td>
                   <td>Шифр модуля</td>
                   <td>Наименование курса</td>
+                  <td>Код курса</td>
+                  <td>Количество академических кредитов</td>
+                  <td>Цикл</td>
+                  <td>Компоненты курса</td>
+                  <td>Язык обучения</td>
+                  <td>Курс</td>
+                  <td>Семестр</td>
+                  <td>Лек/Прак/Лаб</td>
+                  <td>ПРП/СРО</td>
+                  <td>Форма контроля</td>
                 </tr>
+                </thead>
+                <tbody>
                 <tr>
                   <template v-for="(i, index) of modules" :key="i">
                     <td rowspan="3">{{index+1}}</td>
@@ -215,12 +228,24 @@
                     <td rowspan="3">{{ i.code}}</td>
                   </template>
                 </tr>
-                <tr v-for="(i) of modules" :key="i">
-                  <td></td>
-                  <td v-for="course of i.moduleCourses" :key="course">
-                    {{course['name' + locale]}}
-                  </td>
+                <template v-for="(i) of modules" :key="i">
+                <tr v-for="course of i.moduleCourses" :key="course">
+                    <td>
+                      {{course['name' + locale]}}
+                    </td>
+                    <td>{{course.codeCourse}}</td>
+                    <td>{{course.creditCount}}</td>
+                    <td>{{course.creditCount}}</td>
+                    <td>{{course.creditCount}}</td>
+                    <td>{{course.language}}</td>
+                    <td>{{course.courseId}}</td>
+                    <td>{{course.semester}}</td>
+                    <td>{{course.Lecture}}/{{course.practice}}/{{course.laboratory}}</td>
+                    <td>{{course.prp}}/{{course.IndependentWork}}</td>
+                    <td>{{course.formControl}}</td>
                 </tr>
+                </template>
+                </tbody>
               </table>
             </div>
 
@@ -406,7 +431,7 @@ const router = useRouter()
 const store = useStore()
 const toast = useToast();
 const i18n = useI18n();
-const active = ref(0);
+const active = ref(3);
 const items = computed(() => {
   return [
     {
@@ -718,7 +743,7 @@ table {
   border-collapse: collapse;
   td{
     text-align: center;
-    padding: 0 5px;
+    padding: 5px;
   }
 }
 table, th, td {
