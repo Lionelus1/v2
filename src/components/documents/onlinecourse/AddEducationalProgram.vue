@@ -200,7 +200,30 @@
             </div>
           </div>
           <div class="content" v-if="active === 3">
-            <h3>table</h3>
+            <div class="mt-4 mb-4">
+              <table>
+                <tr>
+                  <td>#</td>
+                  <td>Наименование модуля</td>
+                  <td>Шифр модуля</td>
+                  <td>Наименование курса</td>
+                </tr>
+                <tr>
+                  <template v-for="(i, index) of modules" :key="i">
+                    <td rowspan="3">{{index+1}}</td>
+                    <td rowspan="3">{{ i['name' + locale]}}</td>
+                    <td rowspan="3">{{ i.code}}</td>
+                  </template>
+                </tr>
+                <tr v-for="(i) of modules" :key="i">
+                  <td></td>
+                  <td v-for="course of i.moduleCourses" :key="course">
+                    {{course['name' + locale]}}
+                  </td>
+                </tr>
+              </table>
+            </div>
+
             <br>
             <Button class="p-button-outlined mr-2 w-fit p-button-sm"
                     icon="pi pi-plus-circle" :label="$t('educationalPrograms.addModule')" @click="dialogModule = true"/>
@@ -215,37 +238,36 @@
         <span>{{ $t("Наименование модуля") }}</span>
       </div>
       <div class="col-12 lg:col-9">
-        <InputText v-model="formData.nameEn"/>
-        <!--    <small class="p-error">{{ $t("common.requiredField") }}</small>-->
+        <InputText v-model="formModule.namekz"/>
+            <small class="p-error" v-if="!formModule.namekz && submitted">{{ $t("common.requiredField") }}</small>
       </div>
       <div class="col-12 lg:col-3">
         <span>{{ $t("Шифр модуля") }}</span>
       </div>
       <div class="col-12 lg:col-9">
-        <InputText class="" v-model="formData.nameEn"/>
-        <!--    <small class="p-error">{{ $t("common.requiredField") }}</small>-->
+        <InputText class="" v-model="formModule.code"/>
+            <small class="p-error" v-if="!formModule.code && submitted">{{ $t("common.requiredField") }}</small>
       </div>
       <div class="col-12 lg:col-3">
         <span>{{ $t("Количество академических кредитов") }}</span>
       </div>
       <div class="col-12 lg:col-9">
-        <InputText v-model="formData.nameEn"/>
-        <!--    <small class="p-error">{{ $t("common.requiredField") }}</small>-->
+        <InputText type="number" v-model="formModule.creditCount"/>
       </div>
       <div class="col-12 lg:col-3">
         <span>{{ $t("Цикл") }}</span>
       </div>
       <div class="col-12 lg:col-9 flex gap-4">
       <div class="w-fit">
-        <Checkbox v-model="formStep2.doubleDegree" inputId="doubleDegree" :binary="true"/>
+        <Checkbox v-model="formModule.doubleDegree" inputId="doubleDegree" :binary="true"/>
         <label class="ml-2" for="doubleDegree">{{ $t("ОКК") }}</label>
       </div>
       <div class="w-fit">
-        <Checkbox v-model="formStep2.jointEducational" inputId="jointEducational" :binary="true"/>
+        <Checkbox v-model="formModule.jointEducational" inputId="jointEducational" :binary="true"/>
         <label class="ml-2" for="jointEducational">{{ $t("БК") }}</label>
       </div>
         <div class="w-fit">
-          <Checkbox v-model="formStep2.jointEducational" inputId="jointEducational" :binary="true"/>
+          <Checkbox v-model="formModule.jointEducational" inputId="jointEducational" :binary="true"/>
           <label class="ml-2" for="jointEducational">{{ $t("ПК") }}</label>
         </div>
       </div>
@@ -254,15 +276,15 @@
       </div>
       <div class="col-12 lg:col-9 flex gap-4">
         <div class="w-fit">
-          <Checkbox v-model="formStep2.doubleDegree" inputId="doubleDegree" :binary="true"/>
+          <Checkbox v-model="formModule.courseComponentType" value="1" inputId="doubleDegree" :binary="true"/>
           <label class="ml-2" for="doubleDegree">{{ $t("ОК") }}</label>
         </div>
         <div class="w-fit">
-          <Checkbox v-model="formStep2.jointEducational" inputId="jointEducational" :binary="true"/>
+          <Checkbox v-model="formModule.courseComponentType" value="2" inputId="jointEducational" :binary="true"/>
           <label class="ml-2" for="jointEducational">{{ $t("ВК") }}</label>
         </div>
         <div class="w-fit">
-          <Checkbox v-model="formStep2.jointEducational" inputId="jointEducational" :binary="true"/>
+          <Checkbox v-model="formModule.courseComponentType" value="3" inputId="jointEducational" :binary="true"/>
           <label class="ml-2" for="jointEducational">{{ $t("КВ") }}</label>
         </div>
       </div>
@@ -273,21 +295,21 @@
         <span>{{ $t("Наименование курса") }}</span>
       </div>
       <div class="col-12 lg:col-9">
-        <Dropdown v-model="formData.nameEn"/>
+        <Dropdown v-model="formModule.nameEn"/>
         <!--    <small class="p-error">{{ $t("common.requiredField") }}</small>-->
       </div>
       <div class="col-12 lg:col-3">
         <span>{{ $t("fieldEducation.courseCode") }}</span>
       </div>
       <div class="col-12 lg:col-9">
-        <InputText v-model="formData.nameEn"/>
+        <InputText v-model="formModule.nameEn"/>
         <!--    <small class="p-error">{{ $t("common.requiredField") }}</small>-->
       </div>
       <div class="col-12 lg:col-3">
         <span>{{ $t("common.learnlang") }}</span>
       </div>
       <div class="col-12 lg:col-9">
-        <InputText v-model="formData.nameEn"/>
+        <InputText v-model="formModule.nameEn"/>
         <!--    <small class="p-error">{{ $t("common.requiredField") }}</small>-->
       </div>
       <div class="col-12 lg:col-3">
@@ -295,23 +317,23 @@
       </div>
       <div class="col-12 lg:col-9 flex gap-4">
         <div class="w-fit">
-          <Checkbox v-model="formStep2.doubleDegree" inputId="doubleDegree" :binary="true"/>
+          <Checkbox v-model="formModule.doubleDegree" inputId="doubleDegree" :binary="true"/>
           <label class="ml-2" for="doubleDegree">1</label>
         </div>
         <div class="w-fit">
-          <Checkbox v-model="formStep2.jointEducational" inputId="jointEducational" :binary="true"/>
+          <Checkbox v-model="formModule.jointEducational" inputId="jointEducational" :binary="true"/>
           <label class="ml-2" for="jointEducational">2</label>
         </div>
         <div class="w-fit">
-          <Checkbox v-model="formStep2.jointEducational" inputId="jointEducational" :binary="true"/>
+          <Checkbox v-model="formModule.jointEducational" inputId="jointEducational" :binary="true"/>
           <label class="ml-2" for="jointEducational">3</label>
         </div>
         <div class="w-fit">
-          <Checkbox v-model="formStep2.jointEducational" inputId="jointEducational" :binary="true"/>
+          <Checkbox v-model="formModule.jointEducational" inputId="jointEducational" :binary="true"/>
           <label class="ml-2" for="jointEducational">4</label>
         </div>
         <div class="w-fit">
-          <Checkbox v-model="formStep2.jointEducational" inputId="jointEducational" :binary="true"/>
+          <Checkbox v-model="formModule.jointEducational" inputId="jointEducational" :binary="true"/>
           <label class="ml-2" for="jointEducational">5</label>
         </div>
       </div>
@@ -319,43 +341,43 @@
         <span>{{ $t("Семестр") }}</span>
       </div>
       <div class="col-12 lg:col-9">
-        <InputText v-model="formData.nameEn"/>
+        <InputText v-model="formModule.nameEn"/>
         <!--    <small class="p-error">{{ $t("common.requiredField") }}</small>-->
       </div>
       <div class="col-3">
         <span>{{ $t("Лекция") }}</span>
       </div>
         <div class="col-3">
-        <InputText type="number" v-model="formData.nameEn"/>
+        <InputText type="number" v-model="formModule.nameEn"/>
         <!--    <small class="p-error">{{ $t("common.requiredField") }}</small>-->
       </div>
       <div class="col-6 flex">
         <span class="mr-4">{{ $t("Практика") }}</span>
-        <InputText type="number" v-model="formData.nameEn"/>
+        <InputText type="number" v-model="formModule.nameEn"/>
         <!--    <small class="p-error">{{ $t("common.requiredField") }}</small>-->
       </div>
       <div class="col-3">
         <span>{{ $t("Лабораторные работы") }}</span>
       </div>
       <div class="col-3">
-        <InputText type="number" v-model="formData.nameEn"/>
+        <InputText type="number" v-model="formModule.nameEn"/>
         <!--    <small class="p-error">{{ $t("common.requiredField") }}</small>-->
       </div>
       <div class="col-3 flex">
         <span class="mr-4">{{ $t("ПРП") }}</span>
-        <InputText type="number" v-model="formData.nameEn"/>
+        <InputText type="number" v-model="formModule.nameEn"/>
         <!--    <small class="p-error">{{ $t("common.requiredField") }}</small>-->
       </div>
       <div class="col-3 flex">
         <span class="mr-4">{{ $t("СРО") }}</span>
-        <InputText type="number" v-model="formData.nameEn"/>
+        <InputText type="number" v-model="formModule.nameEn"/>
         <!--    <small class="p-error">{{ $t("common.requiredField") }}</small>-->
       </div>
       <div class="col-12 lg:col-3">
         <span>{{ $t("Форма контроля") }}</span>
       </div>
       <div class="col-12 lg:col-9">
-        <InputText v-model="formData.nameEn"/>
+        <InputText v-model="formModule.nameEn"/>
         <!--    <small class="p-error">{{ $t("common.requiredField") }}</small>-->
       </div>
     </div>
@@ -384,7 +406,7 @@ const router = useRouter()
 const store = useStore()
 const toast = useToast();
 const i18n = useI18n();
-const active = ref(3);
+const active = ref(0);
 const items = computed(() => {
   return [
     {
@@ -445,10 +467,23 @@ const formStep3 = ref(
       profCompetenciesEn: 'test en',
     }
 )
+const formModule = ref(
+    {
+      //namekz: 'test kz',
+      nameru: 'test ru',
+      nameen: 'test en',
+      code: 'test kz',
+      creditCount: 'test ru',
+      courseType: 3,
+      courseComponentType: 3,
+      syllabusId: 3,
+    }
+)
 const submitted = ref(false)
 const service = new OnlineCourseService()
 const dataFieldEducation = ref([])
-const dialogModule = ref(true)
+const modules = ref([])
+const dialogModule = ref(false)
 
 const getFieldEducation = () => {
   service.getFieldEducation().then(response => {
@@ -464,6 +499,15 @@ const getFieldEducation = () => {
   });
 }
 getFieldEducation()
+const getModuleBySyllasbusId= () => {
+  service.getModuleBySyllasbusId(2).then(response => {
+    if (response.data) {
+      modules.value = response.data
+    }
+  }).catch(_ => {
+  });
+}
+getModuleBySyllasbusId()
 const save = () => {
   if (active.value === 0) {
     submitted.value = true
@@ -669,5 +713,15 @@ const isValidStep3 = () => {
   .p-inputtext, .p-dropdown{
     width: 100%;
   }
+}
+table {
+  border-collapse: collapse;
+  td{
+    text-align: center;
+    padding: 0 5px;
+  }
+}
+table, th, td {
+  border: 1px solid #BDBBBB;
 }
 </style>

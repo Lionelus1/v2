@@ -101,4 +101,7 @@ export class OnlineCourseService {
     addEduProgramDirectory(data) {
         return api.post('/onlinecourse/addEduProgramDirectory', data, {headers:getHeader()});
     }
+    getModuleBySyllasbusId(id){
+        return api.post(`/onlinecourse/getModuleBySyllasbusId/${id}`,{}, {headers: getHeader()});
+    }
 }
