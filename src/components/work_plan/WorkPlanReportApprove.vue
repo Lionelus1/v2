@@ -1,13 +1,13 @@
 <template>
   <PdfContent ref="pdf" v-if="data" :data="data" :planId="data.work_plan_id" style="display: none;"></PdfContent>
   <Dialog :header="$t('common.action.sendToApprove')" v-model:visible="showModal"
-            :style="{width: '50vw'}" class="p-fluid">
-      <ProgressBar v-if="approving" mode="indeterminate" style="height: .5em"/>
-      <div class="field">
-        <ApprovalUsers :approving="approving" v-model="approval_users"
-                       @closed="closeModal"
-                       @approve="approve($event)" :stages="stages" :mode="'standard'"></ApprovalUsers>
-      </div>
+          :style="{width: '50vw'}" class="p-fluid">
+    <ProgressBar v-if="approving" mode="indeterminate" style="height: .5em"/>
+    <div class="field">
+      <ApprovalUsers :approving="approving" v-model="approval_users"
+                     @closed="closeModal"
+                     @approve="approve($event)" :stages="stages" :mode="'standard'"></ApprovalUsers>
+    </div>
   </Dialog>
   <!-- <Dialog :header="$t('common.action.sendToApprove')" v-model:visible="showModal" :style="{width: '450px'}" class="p-fluid">
     <div class="field">
@@ -35,7 +35,7 @@ import Enum from "@/enum/workplan/index"
 export default {
   name: "WorkPlanReportApprove",
   components: {ApprovalUsers},
-  props: ['visible', 'docId', 'report', 'events'],
+  props: ['visible', 'docId', 'report', 'events', 'approvalStages', 'plan'],
   data() {
     return {
       data: this.report,
@@ -45,17 +45,17 @@ export default {
       step: 1,
       // approval_users: [],
       approval_users: [
-      {
-          stage: 1,
-          users:[],
-          certificate: {
-            namekz: "Жеке тұлғаның сертификаты",
-            nameru: "Сертификат физического лица",
-            nameen: "Certificate of an individual",
-            value: "individual"
-          }
-        }
-      ],
+            {
+              stage: 1,
+              users: [],
+              certificate: {
+                namekz: "Жеке тұлғаның сертификаты",
+                nameru: "Сертификат физического лица",
+                nameen: "Certificate of an individual",
+                value: "individual"
+              }
+            }
+          ],
       currentStageUsers: null,
       currentStage: 1,
       prevStage: 0,
@@ -70,14 +70,12 @@ export default {
       planService: new WorkPlanService(),
       approveComponentKey: 0,
       approving: false,
-      stages: null,
-      Enum: Enum,
-      plan: null
+      stages: this.approvalStages ? this.approvalStages : null,
+      Enum: Enum
     }
   },
   created() {
     this.loginedUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
-    this.getPlan()
   },
   mounted() {
     this.emitter.on("reportFD", (data) => {
@@ -223,17 +221,12 @@ export default {
 
       return !this.formValid.approvals;
     },
-    getPlan() {
-      this.planService.getPlanById(this.data.work_plan_id).then(res => {
-        this.plan = res.data;
-      }).catch(error => {
-        this.$toast.add({
-          severity: "error",
-          summary: error,
-          life: 3000,
-        });
-      });
-    },
+  },
+  computed: {
+    isSciencePlan() {
+      console.log(this.plan && this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Science)
+      return this.plan && this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Science
+    }
   }
 }
 </script>

@@ -35,9 +35,13 @@ export default {
         wordformat: {
             type: Boolean,
             default: false
+        },
+        minWord: {
+          type: Number,
+          default: 0
         }
     },
-    emits: ['onAfterUpload'],
+    emits: ['onAfterUpload', 'wordCount'],
     data() {
         return {
             showModal: false,
@@ -72,6 +76,19 @@ export default {
                 setup: editor => {
                     const self = this;
                     this.content = this.value;
+                    if (this.minWord !== 0) {
+                      editor.on('KeyUp', () => {
+                        const wordcount = editor.plugins.wordcount;
+                        this.$emit('wordCount', wordcount.body.getWordCount())
+                      })
+
+                      editor.on('paste', () => {
+                        const wordcount = editor.plugins.wordcount;
+                        this.$emit('wordCount', wordcount.body.getWordCount())
+                      })
+                    }
+
+
                     editor.ui.registry.addToggleButton('fileupload', {
                         text: '<i class="fa-solid fa-file-arrow-up" style="font-size: 20px;"></i>',
                         onAction: () => {

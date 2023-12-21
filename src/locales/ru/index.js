@@ -1184,7 +1184,8 @@ export default {
         plancontractprioruty: "По приоритету",
         plancontracttopic: "По теме",
         scienceParticipants: "Участники проекта",
-        generateAct: "Сформировать акт"
+        generateAct: "Сформировать акт",
+        minWordCount: "Должно быть не менее 100 слов"
     },
     educomplex: {
         title: "Учебно-методический комплекс дисциплины",

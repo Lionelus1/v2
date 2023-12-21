@@ -1196,7 +1196,8 @@ export default {
         plancontractprioruty: "Басымдық бойынша",
         plancontracttopic: "Тақырып бойынша",
         scienceParticipants: "Жобаға қатысушылар",
-        generateAct: "Акт жасау"
+        generateAct: "Акт жасау",
+        minWordCount: "Кемінде 100 сөзден тұру керек"
     },
     educomplex: {
         title: "Пәннің оқу-әдістемелік кешені",
