@@ -5,8 +5,13 @@
         <Button v-if="!readonly" icon="pi pi-plus" class="p-button-link" :label="t('common.add')" :onclick="create"></Button>
       </div>
 
+      <BlockUI :blocked="loading" :fullScreen="true">
+          <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
+      </BlockUI>
+
       <span   style="white-space: pre-line">
-            <DataTable class="flex justify-content-between" tableStyle="min-width: 50rem" selectionMode="single" v-model="researchInterest" :lazy="true" :value="researchInterests" :loading="loading" v-model:selection="researchInterest"> 
+            <DataTable class="justify-content-between" tableStyle="min-width: 50rem" selectionMode="single" v-model="researchInterest" :lazy="true" :value="researchInterests" :loading="loading" v-model:selection="researchInterest"
+            :paginator="true" :rows="10" :totalRecords="totalRecords" @page="onPageChange"> 
 
               <Column :header="$t('science.areaScientificInterests')">
                 <template #body="slotProps">
@@ -71,10 +76,13 @@
     researchInterest: false,
     
   })
-
+  const lazyParams = ref({
+    page: 0,  
+    rows: 10, 
+  });
+  const totalRecords = ref(0)
   const researchInterests = ref([])
   const researchInterest = ref(null)
-
   const deleteValue =()=> {
     const req = {
         id: researchInterest.value.id,
@@ -99,13 +107,15 @@
 
   const getScienceInterests = () => {
     const req = {
-      userID: props.userID
+      userID: props.userID,
+      page: lazyParams.value.page,
+      rows: lazyParams.value.rows,
     }
 
     loading.value = true;
     scienceService.getScienceInterests(req).then(res => {
       researchInterests.value = res.data.interests
-      console.log(researchInterests.value)
+      totalRecords.value = res.data.total
       loading.value = false
       isView.value.check = true
     }).catch(error => {
@@ -114,6 +124,11 @@
       isView.value.check = true
     })
   }
+
+  const onPageChange = (event) => {
+    lazyParams.value.page = event.page;
+    getScienceInterests();
+  };
 
   const create=() => {
       researchInterest.value = {}

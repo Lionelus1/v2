@@ -5,11 +5,15 @@
       <Button v-if="!readonly" icon="pi pi-plus" class="p-button-link" :label="t('common.add')" :onclick="create"></Button>
     </div>
 
+    <BlockUI :blocked="loading" :fullScreen="true">
+        <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
+    </BlockUI>
     <div class="card">
       <div class="grid formgrid">
         <span   style="white-space: pre-line">
-          <DataTable class="flex justify-content-between" selectionMode="single" v-model="qualification"
-                  :lazy="true" :value="qualifications" :loading="loading" v-model:selection="qualification">
+          <DataTable class="justify-content-between" selectionMode="single" v-model="qualification"
+                  :lazy="true" :value="qualifications" :loading="loading" v-model:selection="qualification"
+                  :paginator="true" :rows="10" :totalRecords="totalRecords" @page="onPageChange">
           <Column field="training_form" :header="$t('science.qualification.trainingForm')"></Column>
           <Column field="country" :header="$t('science.qualification.country')"></Column>
           <Column field="city" :header="$t('science.qualification.city')"></Column>
@@ -97,7 +101,11 @@
     check: false,
     qualification: false,
   })
-
+  const lazyParams = ref({
+    page: 0,  
+    rows: 10, 
+  });
+  const totalRecords = ref(0)
   const qualifications = ref([])
   const qualification = ref(null)
 
@@ -130,11 +138,14 @@
 
   const getQualificationsScience = () => {
       const req = {
-          userID: props.userID
+          userID: props.userID,
+          page: lazyParams.value.page,
+          rows: lazyParams.value.rows,
       }
       loading.value = true
       scienceService.getQualificationsScience(req).then(res => {
           qualifications.value = res.data.qualifications
+          totalRecords.value = res.data.total
           loading.value = false
           isView.value.check = true
       }).catch(err => {
@@ -150,6 +161,10 @@
       isView.value.qualification = true
   }
 
+  const onPageChange = (event) => {
+    lazyParams.value.page = event.page;
+    getQualificationsScience();
+  };
   const showFile = (data) => {
       if (!data) {
         return

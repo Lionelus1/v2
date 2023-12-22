@@ -1,6 +1,12 @@
 <template>
+  <!-- <div v-if="loading" class="loading-indicator">
+    Loading...
+  </div> -->
     <div class="col-12">
       <TitleBlock :title="$t('science.scientists')" />
+      <BlockUI :blocked="loading" :fullScreen="true">
+        <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
+      </BlockUI>
       <hr>
       <div class="flex items-center justify-end mb-2">
         <a class="ml-auto" id="profile-link" href="#/cabinet">Мой профиль</a>
@@ -27,11 +33,13 @@
       </div>
 
       <!-- <div class="surface-card p-4 shadow-2 border-round"> -->
-        <DataView v-if="showGrid" class="xl:ml-10 xl:mr-10" :lazy="true" :value="list" :layout="layout" :paginator="true" :rows="12" @page="onPage($event)" :totalRecords="total">      
+        <DataView v-if="showGrid" class="xl:ml-10 xl:mr-10" :loading="loading" :lazy="true" :value="list" :layout="layout" :paginator="true" :rows="12" @page="onPage($event)" :totalRecords="total">      
             <template #grid="slotProps" v-if="showGrid">
                 <div class="col-12 sm:col-6 md:col-4 lg:col-3 p-2">
                     <div @click="selectScientist(slotProps.data)" class="shadow-4 border-round p-4 item course p-ripple" v-ripple style="text-align: center;">
-                        <Image class="mb-2" width="240" height="165" :src="slotProps.data.photo ? slotProps.data.photo : 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'" style="margin-bottom: 2mm;"/>
+                        <img width="240" height="165" class="round" v-if="slotProps.data.photo != null && slotProps.data.photo !=''"
+                          :src="'data:image/jpeg;base64,' + slotProps.data.photo "/>
+                      <img width="240" height="165" class="round" v-else src="assets/layout/images/default-user.jpg"/>
                         <p style="margin-top: 2mm; margin-bottom: 2mm;">{{getFullName(slotProps.data)}}</p>
                     </div>
                 </div>
@@ -58,15 +66,15 @@
           <div class="p-fluid">
             <div class="field">
               <label>{{ $t('common.fullName') }}</label>
-              <FindUser :placeholder="$t('common.fullName')" id="filter.fullName" v-model="filter.fullName" :userType="2" :max="1"></FindUser>
+              <FindUser :placeholder="$t('common.fullName')" id="filter.fullName" v-model="filter.user" :userType="2" :max="1"></FindUser>
               <small class="p-error" v-if="submitted && !(newUsers && newUsers.length > 0)">
                   {{$t('common.requiredField')}}
               </small>
             </div>
             <div class="field">
                 <label for="filter.areaOfInterest">{{ $t('science.areaScientificInterests') }}</label>
-                <Dropdown v-model="requestAreaOfInterest.id" :options="areaOfInterests" class="mt-2" :optionLabel="itemLabel" optionValue="id" :placeholder="$t('common.select')"
-                @filter="handleFilter" :filter="true" :showClear="true" dataKey="id" :emptyFilterMessage="$t('roleControl.noResult')"  />
+                <br>
+                <InputText :placeholder="$t('science.areaScientificInterests')" id="filter.searchText" v-model="filter.searchText"></InputText>
             </div>
             <div class="field">
               <Button :label="$t('common.clear')" @click="filter.applied = false;clear();
@@ -105,8 +113,8 @@
     const filter= ref({
         visible: false,
         applied: false,
-        fullName: null,
-        areaOfInterest: null,
+        user: null,
+        searchText: '',
 
     })
     const layout = ref('grid')
@@ -126,12 +134,24 @@
     })
 
     const getScientists = () => {
-        loading.value = true;
+      loading.value = true;
+      const userID = ref(null)
+      const searchText = ref(null)
+      if (filter.value.user != null) {
+          userID.value = filter.value.user[0].userID
+      }
+      console.log(filter.value.searchText)
+      if (filter.value.searchText != '') {
+        searchText.value = filter.value.searchText
+      }
+
         const req = { 
             page: lazyParams.value.page,
             rows: lazyParams.value.rows,
-            user: filter.value.fullName,
-            science_id: filter.value.areaOfInterest
+            filter: {
+              userID: userID.value,
+              interests: searchText.value
+            }
         }
 
         scienceService.getScientists(req).then(res => {
@@ -237,4 +257,16 @@
   font-size: 12px;
   margin-left: 5px;
 }
+.loading-indicator {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
 </style>

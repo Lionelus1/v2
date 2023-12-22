@@ -7,7 +7,8 @@
         </div>
 
         <span   style="white-space: pre-line">
-            <DataTable class="flex justify-content-between" tableStyle="min-width: 50rem" selectionMode="single" v-model="laborActivity" :lazy="true" :value="laborActivities" :loading="loading" v-model:selection="laborActivity"> 
+            <DataTable class="justify-content-between" tableStyle="min-width: 50rem" selectionMode="single" v-model="laborActivity" :lazy="true" :value="laborActivities" :loading="loading" v-model:selection="laborActivity"
+            :paginator="true" :rows="10" :totalRecords="totalRecords" @page="onPageChange"> 
             
                 <Column field="organizationName" :header="$t('common.organizationName')">
                 </Column>
@@ -66,6 +67,11 @@
         check: false,
         laborActivity: false,  
     })
+    const lazyParams = ref({
+        page: 0,  
+        rows: 10, 
+    });
+    const totalRecords = ref(0)
 
     const props = defineProps({
         userID: {
@@ -88,12 +94,15 @@
 
     const getLaborActivity=() => {
         const req = {
-            userID: props.userID || props.modelValue.userID
+            userID: props.userID || props.modelValue.userID,
+            page: lazyParams.value.page,
+            rows: lazyParams.value.rows,
         }
 
         loading.value = true
         scienceService.getLaborActivity(req).then(res => {
             laborActivities.value = res.data.laborActivities
+            totalRecords.value = res.data.total
             loading.value = false
             isView.value.check = true
         }).catch(err => {
@@ -108,6 +117,12 @@
             isView.value.laborActivity = true
         }
     }
+
+    const onPageChange = (event) => {
+        lazyParams.value.page = event.page;
+        getLaborActivity();
+    };
+
 
     const deleteValue =()=> {
         const req = {

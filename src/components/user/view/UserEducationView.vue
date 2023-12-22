@@ -1,14 +1,19 @@
 <template>
 
   <div id="carddiv" class="grid">
+
+    <BlockUI :blocked="loading" :fullScreen="true">
+        <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
+    </BlockUI>
+
     <div>
       <Button v-if="!readonly" icon="pi pi-plus" class="p-button-link" :label="t('common.add')" :onclick="createEducation"></Button>
     </div>
 
     <div class="card">
       <div class="grid formgrid">
-        <span  style="white-space: pre-line">
-          <DataTable class="flex justify-content-between"  selectionMode="single" v-model="academicDegree" :lazy="true" :value="academicDegrees" :loading="loading" v-model:selection="academicDegree"> 
+          <DataTable class="justify-content-between"  selectionMode="single" v-model="academicDegree" :lazy="true" :value="academicDegrees" :loading="loading" v-model:selection="academicDegree"
+          :paginator="true" :rows="10" :totalRecords="totalRecords" @page="onPageChange"> 
             <!-- Учебное заведение -->
             <Column  field="institution_name" :header="$t('hr.edu.institution')"></Column>
 
@@ -45,8 +50,7 @@
                 </template>
             </Column>
 
-          </DataTable>
-        </span>     
+          </DataTable> 
       </div>
     </div>
   </div>
@@ -91,6 +95,7 @@
   const emitter = inject("emitter");
   const userService = new UserService
   const confirmDelete = ref(false);
+  const loading = ref(false);
 
   const props = defineProps({
     userID: {
@@ -116,19 +121,30 @@
   const userID = ref(props.userID)
   const fileData = ref(null)
   const fileView = ref(false)
-
+  const lazyParams = ref({
+    page: 0,  
+    rows: 10, 
+  });
+  const totalRecords = ref(0)
   const isView = ref({
     academicDegree: false
   })
 
   const getUserAcademicDegree = () => {
-    const req = {userID: userID.value}
+    loading.value = true
+    const req = {
+      userID: userID.value,
+      page: lazyParams.value.page,
+      rows: lazyParams.value.rows,
+    }
   
     userService.getUserAcademicDegree(req).then(response=>{
 
       academicDegrees.value = response.data.academic_degree
-
+      totalRecords.value = response.data.total
+      loading.value = false
     }).catch(error => {
+      loading.value = false
       toast.add({
         severity: "error",
         summary: t('message.actionError'),
@@ -141,8 +157,8 @@
 
   const deleteEducationConfirm = () => {
       const data = {
-      id: Number(academicDegree.value.id),
-      userId: Number(academicDegree.value.userID)
+        id: Number(academicDegree.value.id),
+        userId: Number(academicDegree.value.userID)
       }
 
       userService.deleteEducation(data).then(res  => {
@@ -157,12 +173,16 @@
       })
   }
 
+  const onPageChange = (event) => {
+    lazyParams.value.page = event.page;
+    getUserAcademicDegree();
+  };
+
   const deleteEducation = () => {
       confirmDelete.value = true;
 
   }
 
-  
   const createEducation=() => {
       academicDegree.value = {}
       academicDegree.value.userID = props.userID

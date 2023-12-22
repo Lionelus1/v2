@@ -7,7 +7,8 @@
     </div>
 
     <span   style="white-space: pre-line">
-      <DataTable class="flex justify-content-between" tableStyle="min-width: 50rem" selectionMode="single" v-model="award" :lazy="true" :value="awards" :loading="loading" v-model:selection="award"> 
+      <DataTable class="justify-content-between" tableStyle="min-width: 50rem" selectionMode="single" v-model="award" :lazy="true" :value="awards" :loading="loading" v-model:selection="award"
+      :paginator="true" :rows="10" :totalRecords="totalRecords" @page="onPageChange"> 
 
         <Column field="award_type" :header="$t('science.typeOfAward')">
         </Column>
@@ -95,7 +96,11 @@
     check: false,
     award: false,
   })
-
+  const lazyParams = ref({
+    page: 0,  
+    rows: 10, 
+  });
+  const totalRecords = ref(0)
   const awards = ref([])
   const award = ref(null)
 
@@ -124,15 +129,23 @@
       isView.value.award = true
     }
   }
+  const onPageChange = (event) => {
+    lazyParams.value.page = event.page;
+    getScienceAward();
+  };
+
 
   const getScienceAward= () => {
     const req = {
-        userID: props.userID
+      userID: props.userID,
+      page: lazyParams.value.page,
+      rows: lazyParams.value.rows,
     }
 
     loading.value = true
     scienceService.getScienceAward(req).then(res => {
         awards.value = res.data.award
+        totalRecords.value = res.data.total
         loading.value = false
         isView.value.check = true
     }).catch(err => {
