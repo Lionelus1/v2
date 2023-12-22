@@ -132,6 +132,17 @@ export class MenuService {
                 to: '/reception'
             },
             {
+                label: $t('science.activity'), icon: 'fas fa-flask',
+                items: [
+                    {
+                        label: $t('science.scientistsProfile'), icon: 'fas fa-user', to: '/science/scientists'
+                    },
+                    {
+                        label: $t('science.scientificWorks'), icon: 'fas fa-book', to: '/science/publications',
+                    }
+                ]
+            },
+            {
                 label: $t('dissertation.title'), 
                 icon: 'fa-solid fa-school-circle-check',
                 visible: this.findRole('dissertation_chief') || this.isRoleGroupMember("dissertation_council"),

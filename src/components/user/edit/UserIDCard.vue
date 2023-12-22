@@ -1,7 +1,7 @@
 <template>
   
 
-  <div v-if="viewIDCard" class="card">
+  <div class="card">
     <div class="grid formgrid">
 
       <!-- НОМЕР -->
@@ -97,14 +97,7 @@
 
   const fileData = ref(null)
   const fileView = ref(false)
-  const viewIDCard = ref(false)
-  const emitPersonalInformationUpdate = defineEmits(["personal-information-updated"]);    const showFile = (data) => {
-       if (!data) {
-          return
-       }
-       fileData.value = data
-       fileView.value = true
-    }
+  const emitPersonalInformationUpdate = defineEmits(["personal-information-updated"]);
 
   const validation = ref({
     number: false,
@@ -125,11 +118,10 @@
 
   const getUserAccount= () => {
 
-    // if (props.modelValue != null) {
-    //   user.value = props.modelValue
-    //   viewIDCard.value = true
-    //   return
-    // }
+    if (props.modelValue != null) {
+      user.value = props.modelValue
+      return
+    }
 
     const req = {
       userID: props.userID
@@ -138,9 +130,8 @@
     userService.getUserAccount(req).then(response=>{
 
       user.value = response.data.user
-      viewIDCard.value = true
+
     }).catch(error => {
-      viewIDCard.value = true
       toast.add({
         severity: "error",
         summary: t('message.actionError'),

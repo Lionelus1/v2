@@ -683,7 +683,25 @@ const routes = [
                 name: 'QR',
                 component: () => import('./components/QrGenerator.vue'),
                 beforeEnter: ifAuthenticated,
-            }
+            },
+            {
+                path: '/science/scientists',
+                name:'ScientistsList',
+                component: load('science/ScientistsList'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/science/scientists/:id',
+                name:'ScientistsProfile',
+                component: load('science/ScientistsProfile'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/science/publications',
+                name:'ScienceKoksnvo',
+                component: load('science/ScienceKoksnvo'),
+                beforeEnter: ifAuthenticated,
+            },
         ]
     },
    
@@ -700,7 +718,7 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
         ]
-    }
+    },
 
 
 ];
