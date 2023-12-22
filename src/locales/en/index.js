@@ -1403,5 +1403,9 @@ export default {
     integration: {
         title: 'Integrations',
         updateNow: 'Update now'
+    },
+    finance: {
+        title: 'Catalog of services',
+        getService: 'Get service'
     }
 }

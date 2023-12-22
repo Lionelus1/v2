@@ -44,12 +44,13 @@ const goBack = () => {
 }
 
 const goPay = () => {
-  console.log(purchaseType.value)
+  console.log(formData.value.department)
   switch (purchaseType.value) {
     case 1:
       // eslint-disable-next-line no-case-declarations
       let url = "https://kaspi.kz/pay/EurasianUniversity?started_from=QR";
       url += `&6526=${formData.value.service_key}`;
+      url += `&6527=${formData.value.department.nameRu}`
       url += `&6530=${store.state.loginedUser?.fullName || ""}`
       url += `&6529=${store.state.loginedUser?.IIN || ""}`
       window.open(url, "_blank")
@@ -78,6 +79,7 @@ onMounted(() => {
                     :placeholder="$t('common.select')"/>
         </div>
         <div class="field">
+          {{ formData.department }}
           <label for="name">{{ $t('common.faculty') }}</label>
           <DepartmentList :autoLoad="true" v-model="formData.department" :placeHolder="t('smartenu.selectFaculty')"/>
         </div>
@@ -93,10 +95,10 @@ onMounted(() => {
           <RadioButton v-model="purchaseType" name="dynamic" input-id="kaspi" :value="1"/>
           <label for="kaspi" class="ml-2">В приложении Kaspi.kz</label>
         </div>
-        <div class="flex align-items-center">
-          <RadioButton v-model="purchaseType" name="dynamic" input-id="bank" :value="2"/>
+<!--        <div class="flex align-items-center">
+          <RadioButton v-model="purchaseType" disabled name="dynamic" input-id="bank" :value="2"/>
           <label for="bank" class="ml-2">Банковской картой</label>
-        </div>
+        </div>-->
 
         <div class="flex align-item-center">
           <Button :label="t('ref.get')" icon="pi pi-arrow-left" @click="goBack" class="mr-3"/>

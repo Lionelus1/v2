@@ -156,11 +156,11 @@ onMounted(() => {
 
 <template>
   <div class="col-12">
-    <TitleBlock title="Каталог услуг" />
+    <TitleBlock :title="$t('finance.title')" />
 
     <div class="card" v-if="findRole(store.state.loginedUser, 'main_administrator') || findRole(store.state.loginedUser, 'finance_administrator')">
-      <Button :label="t('common.add')" icon="pi pi-plus" @click="openDialog"/>
-      <Button label="Получить услугу" icon="pi pi-plus" @click="showGetService"/>
+      <Button :label="t('common.add')" icon="pi pi-plus" class="p-button-sm p-button-outlined" @click="openDialog"/>
+      <Button :label="$t('finance.getService')" class="ml-2 p-button-sm p-button-outlined" @click="showGetService"/>
     </div>
 
     <div class="card">

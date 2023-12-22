@@ -1415,5 +1415,9 @@ export default {
     integration: {
         title: 'Интеграциялар',
         updateNow: 'Қазір жаңарту'
+    },
+    finance: {
+        title: 'Қызметтер каталогы',
+        getService: 'Қызметті алу'
     }
 }
