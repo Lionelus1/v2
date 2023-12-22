@@ -284,33 +284,34 @@
       </div>
       <div class="col-12 lg:col-9 flex gap-4">
       <div class="w-fit">
-        <Checkbox v-model="formModule.doubleDegree" inputId="doubleDegree" :binary="true"/>
-        <label class="ml-2" for="doubleDegree">{{ $t("ОКК") }}</label>
+        <Checkbox v-model="courseType" :value="1" inputId="courseType1"/>
+        <label class="ml-2" for="courseType1">{{ $t("ОКК") }}</label>
       </div>
       <div class="w-fit">
-        <Checkbox v-model="formModule.jointEducational" inputId="jointEducational" :binary="true"/>
-        <label class="ml-2" for="jointEducational">{{ $t("БК") }}</label>
+        <Checkbox v-model="courseType" :value="2" inputId="courseType2"/>
+        <label class="ml-2" for="courseType2">{{ $t("БК") }}</label>
       </div>
         <div class="w-fit">
-          <Checkbox v-model="formModule.jointEducational" inputId="jointEducational" :binary="true"/>
-          <label class="ml-2" for="jointEducational">{{ $t("ПК") }}</label>
+          <Checkbox v-model="courseType" :value="3" inputId="courseType3"/>
+          <label class="ml-2" for="courseType3">{{ $t("ПК") }}</label>
         </div>
+        <small class="p-error" v-if="!formModule.courseType && submitted">{{ $t("common.requiredField") }}</small>
       </div>
       <div class="col-12 lg:col-3">
         <span>{{ $t("Компоненты курса") }}</span>
       </div>
       <div class="col-12 lg:col-9 flex gap-4">
         <div class="w-fit">
-          <Checkbox v-model="formModule.courseComponentType" value="1" inputId="doubleDegree" :binary="true"/>
-          <label class="ml-2" for="doubleDegree">{{ $t("ОК") }}</label>
+          <Checkbox v-model="courseComponentType" :value="1" inputId="courseComponentType1"/>
+          <label class="ml-2" for="courseComponentType1">{{ $t("ОК") }}</label>
         </div>
         <div class="w-fit">
-          <Checkbox v-model="formModule.courseComponentType" value="2" inputId="jointEducational" :binary="true"/>
-          <label class="ml-2" for="jointEducational">{{ $t("ВК") }}</label>
+          <Checkbox v-model="courseComponentType" :value="2" inputId="courseComponentType2"/>
+          <label class="ml-2" for="courseComponentType2">{{ $t("ВК") }}</label>
         </div>
         <div class="w-fit">
-          <Checkbox v-model="formModule.courseComponentType" value="3" inputId="jointEducational" :binary="true"/>
-          <label class="ml-2" for="jointEducational">{{ $t("КВ") }}</label>
+          <Checkbox v-model="courseComponentType" :value="3" inputId="courseComponentType3"/>
+          <label class="ml-2" for="courseComponentType3">{{ $t("КВ") }}</label>
         </div>
       </div>
       <div class="col-12">
@@ -410,7 +411,7 @@
       <Button class="p-button-outlined mr-2 w-fit"
               icon="pi pi-plus-circle" :label="$t('Добавить курс')"/>
       <Button class="w-fit"
-              icon="pi pi-download" :label="$t('common.add')"/>
+              icon="pi pi-download" :label="$t('common.add')" @click="addModuleAndCourses()"/>
     </div>
   </Dialog>
 </template>
@@ -492,23 +493,26 @@ const formStep3 = ref(
       profCompetenciesEn: 'test en',
     }
 )
+const courseType = ref([3])
+const courseComponentType = ref([1])
 const formModule = ref(
     {
       //namekz: 'test kz',
       nameru: 'test ru',
       nameen: 'test en',
       code: 'test kz',
-      creditCount: 'test ru',
-      courseType: 3,
+      creditCount: 2,
+      courseType: courseType.value[0],
       courseComponentType: 3,
       syllabusId: 3,
     }
 )
+console.log(formModule.value.courseType)
 const submitted = ref(false)
 const service = new OnlineCourseService()
 const dataFieldEducation = ref([])
 const modules = ref([])
-const dialogModule = ref(false)
+const dialogModule = ref(true)
 
 const getFieldEducation = () => {
   service.getFieldEducation().then(response => {
@@ -575,6 +579,18 @@ const save = () => {
     });
     active.value = 3
   }
+}
+const addModuleAndCourses = () => {
+  submitted.value = true
+  if (!isValidStep3()) return;
+  toast.add({
+    severity: "success",
+    summary: i18n.t("common.success"),
+    life: 3000,
+  });
+ /* service.addModuleAndCourses().then(response => {
+  }).catch(_ => {
+  });*/
 }
 
 const isValid = () => {
@@ -681,6 +697,31 @@ const isValidStep3 = () => {
     errors.push(1);
   }
   if (!formStep3.value.profCompetenciesEn) {
+    errors.push(1);
+  }
+  return errors.length === 0;
+}
+const isValidModule = () => {
+  let errors = [];
+  if (!formModule.value.namekz) {
+    errors.push(1);
+  }
+  if (!formModule.value.nameru) {
+    errors.push(1);
+  }
+  if (!formModule.value.nameen) {
+    errors.push(1);
+  }
+  if (!formModule.value.code) {
+    errors.push(1);
+  }
+  if (!formModule.value.creditCount) {
+    errors.push(1);
+  }
+  if (!formModule.value.courseType) {
+    errors.push(1);
+  }
+  if (!formModule.value.courseComponentType) {
     errors.push(1);
   }
   return errors.length === 0;
