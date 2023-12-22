@@ -2,13 +2,13 @@
   <ConfirmPopup group="deleteResult"></ConfirmPopup>
   <vue-element-loading :active="isBlockUI" is-full-screen color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)" />
   <div class="col-12" v-if="plan && event">
-    <div class="card">
+    <div>
       <div v-if="!resultId" @click="navigateToBack" class="inline-block"><i class="fa-solid fa-arrow-left mr-3" style="font-size: 16px;cursor: pointer"></i>
       </div>
       <div class="mb-0 mt-0 inline-block" style="font-size: 24px"> {{ $t('common.result') }}</div>
     </div>
 
-    <div class="card" v-if="resultData && event && resultData.reject_history">
+    <div v-if="resultData && event && resultData.reject_history">
       <div class="p-fluid">
         <div class="field">
           <label>{{ $t('common.state') }}:</label>
@@ -40,7 +40,7 @@
       </div>
     </div>
 
-    <div class="card">
+    <div>
       <TabView v-model:activeIndex="activeIndex" @tab-change="changeTab">
         <TabPanel :header="$t('common.properties')">
           <div
@@ -214,6 +214,9 @@
                   </div>
 
                 </div>
+              </div>
+              <div v-else>
+                {{ $t('common.noData') }}
               </div>
               <!-- End Editing -->
               <div class="field" v-if="resultData && resultData.result_files">
