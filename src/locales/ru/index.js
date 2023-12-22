@@ -1603,5 +1603,9 @@ export default {
         addModule: 'Добавить модуль',
         addingModule: 'Добавление модуля',
         rrrrrrrrrreerr: 'sdgsdgsdg'
+    },
+    finance: {
+        title: 'Каталог услуг',
+        getService: 'Получить услугу'
     }
 }

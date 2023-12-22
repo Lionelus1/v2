@@ -1606,5 +1606,9 @@ export default {
         addModule: 'Add module',
         addingModule: 'Adding a module',
         eeeeeeeeee: 'asdasdasd',
+    },
+    finance: {
+        title: 'Catalog of services',
+        getService: 'Get service'
     }
 }

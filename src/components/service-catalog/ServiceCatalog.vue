@@ -9,6 +9,8 @@ import {useStore} from "vuex";
 import {findRole} from "@/config/config";
 import {useConfirm} from "primevue/useconfirm";
 import {useToast} from "primevue/usetoast";
+import DocSignatureVerification from "@/components/DocSignatureVerification.vue";
+import GetService from "@/components/service-catalog/GetService.vue";
 
 const apiService = new FinanceService()
 const {t, locale} = useI18n()
@@ -18,6 +20,7 @@ const confirm = useConfirm()
 
 const loading = ref(false)
 const showDialog = ref(false)
+const visibleGetService = ref(false)
 const list = ref()
 const formData = ref()
 const selectedData = ref()
@@ -142,6 +145,10 @@ const isValid = () => {
   return errors.length === 0
 }
 
+const showGetService = () => {
+  visibleGetService.value = true
+}
+
 onMounted(() => {
   getCatalog()
 })
@@ -149,10 +156,11 @@ onMounted(() => {
 
 <template>
   <div class="col-12">
-    <TitleBlock title="Каталог услуг" />
+    <TitleBlock :title="$t('finance.title')" />
 
     <div class="card" v-if="findRole(store.state.loginedUser, 'main_administrator') || findRole(store.state.loginedUser, 'finance_administrator')">
-      <Button :label="t('common.add')" icon="pi pi-plus" @click="openDialog"/>
+      <Button :label="t('common.add')" icon="pi pi-plus" class="p-button-sm p-button-outlined" @click="openDialog"/>
+      <Button :label="$t('finance.getService')" class="ml-2 p-button-sm p-button-outlined" @click="showGetService"/>
     </div>
 
     <div class="card">
@@ -207,6 +215,10 @@ onMounted(() => {
               class="p-button-danger"/>
     </template>
   </Dialog>
+
+  <Sidebar v-model:visible="visibleGetService" position="right" class="p-sidebar-lg" style="overflow-y: scroll">
+    <GetService />
+  </Sidebar>
 </template>
 
 <style scoped>

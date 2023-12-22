@@ -1616,5 +1616,9 @@ export default {
         addModule: 'Модуль қосу',
         addingModule: 'Модульді қосу',
         sdfgdfggg: 'asdasdasd',
+    },
+    finance: {
+        title: 'Қызметтер каталогы',
+        getService: 'Қызметті алу'
     }
 }
