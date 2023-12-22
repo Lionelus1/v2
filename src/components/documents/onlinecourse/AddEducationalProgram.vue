@@ -313,6 +313,7 @@
           <Checkbox v-model="courseComponentType" :value="3" inputId="courseComponentType3"/>
           <label class="ml-2" for="courseComponentType3">{{ $t("КВ") }}</label>
         </div>
+        <small class="p-error" v-if="!formModule.courseComponentType && submitted">{{ $t("common.requiredField") }}</small>
       </div>
       <div class="col-12">
       <h4>{{ $t("Курсы") }}</h4>
@@ -321,7 +322,8 @@
         <span>{{ $t("Наименование курса") }}</span>
       </div>
       <div class="col-12 lg:col-9">
-        <Dropdown v-model="formModule.nameEn"/>
+        <Dropdown v-model="formModule.moduleCourseRel" :options="courses" class="mt-2" :optionLabel="['name' + locale]" optionValue="id" :placeholder="$t('common.select')"
+                  @filter="handleFilter" :filter="true" :showClear="true" dataKey="id" :emptyFilterMessage="$t('roleControl.noResult')"  />
         <!--    <small class="p-error">{{ $t("common.requiredField") }}</small>-->
       </div>
       <div class="col-12 lg:col-3">
@@ -343,32 +345,32 @@
       </div>
       <div class="col-12 lg:col-9 flex gap-4">
         <div class="w-fit">
-          <Checkbox v-model="formModule.doubleDegree" inputId="doubleDegree" :binary="true"/>
-          <label class="ml-2" for="doubleDegree">1</label>
+          <Checkbox v-model="whatCourse" inputId="kurs1" :value="1"/>
+          <label class="ml-2" for="kurs1">1</label>
         </div>
         <div class="w-fit">
-          <Checkbox v-model="formModule.jointEducational" inputId="jointEducational" :binary="true"/>
-          <label class="ml-2" for="jointEducational">2</label>
+          <Checkbox v-model="whatCourse" inputId="kurs2" :value="2"/>
+          <label class="ml-2" for="kurs2">2</label>
         </div>
         <div class="w-fit">
-          <Checkbox v-model="formModule.jointEducational" inputId="jointEducational" :binary="true"/>
-          <label class="ml-2" for="jointEducational">3</label>
+          <Checkbox v-model="whatCourse" inputId="kurs3" :value="3"/>
+          <label class="ml-2" for="kurs3">3</label>
         </div>
         <div class="w-fit">
-          <Checkbox v-model="formModule.jointEducational" inputId="jointEducational" :binary="true"/>
-          <label class="ml-2" for="jointEducational">4</label>
+          <Checkbox v-model="whatCourse" inputId="kurs4" :value="4"/>
+          <label class="ml-2" for="kurs4">4</label>
         </div>
         <div class="w-fit">
-          <Checkbox v-model="formModule.jointEducational" inputId="jointEducational" :binary="true"/>
-          <label class="ml-2" for="jointEducational">5</label>
+          <Checkbox v-model="whatCourse" inputId="kurs5" :value="5"/>
+          <label class="ml-2" for="kurs5">5</label>
         </div>
       </div>
       <div class="col-12 lg:col-3">
         <span>{{ $t("Семестр") }}</span>
       </div>
       <div class="col-12 lg:col-9">
-        <InputText v-model="formModule.nameEn"/>
-        <!--    <small class="p-error">{{ $t("common.requiredField") }}</small>-->
+        <InputText v-model="formModule.value.moduleCourseRel"/>
+        <small class="p-error" v-if="!formModule.value.moduleCourseRel && submitted">{{ $t("common.requiredField") }}</small>
       </div>
       <div class="col-3">
         <span>{{ $t("Лекция") }}</span>
@@ -495,6 +497,7 @@ const formStep3 = ref(
 )
 const courseType = ref([3])
 const courseComponentType = ref([1])
+const whatCourse = ref([4])
 const formModule = ref(
     {
       //namekz: 'test kz',
@@ -503,17 +506,43 @@ const formModule = ref(
       code: 'test kz',
       creditCount: 2,
       courseType: courseType.value[0],
-      courseComponentType: 3,
+      courseComponentType: courseComponentType.value[0],
       syllabusId: 3,
+      moduleCourseRel: [
+        {
+          whatCourse: whatCourse.value[0],
+          semester: 2,
+        }
+      ]
     }
 )
-console.log(formModule.value.courseType)
 const submitted = ref(false)
 const service = new OnlineCourseService()
 const dataFieldEducation = ref([])
 const modules = ref([])
+const courses = ref([])
 const dialogModule = ref(true)
-
+const lazyParams = {
+  page: 0,
+  rows: 100,
+  searchText: null,
+}
+const getCourses = () => {
+  service.getCourses(lazyParams).then(response => {
+    courses.value = response.data.courses
+  }).catch(_ => {
+  });
+}
+getCourses()
+const handleFilter = (event) => {
+  if (event.value && event.value.length > 3) {
+    lazyParams.searchText = event.value
+    getCourses()
+  } else if (lazyParams.searchText.length > 3) {
+    lazyParams.searchText = null
+    getCourses()
+  }
+}
 const getFieldEducation = () => {
   service.getFieldEducation().then(response => {
     if (response.data) {
@@ -582,7 +611,7 @@ const save = () => {
 }
 const addModuleAndCourses = () => {
   submitted.value = true
-  if (!isValidStep3()) return;
+  if (!isValidModule()) return;
   toast.add({
     severity: "success",
     summary: i18n.t("common.success"),
@@ -724,6 +753,9 @@ const isValidModule = () => {
   if (!formModule.value.courseComponentType) {
     errors.push(1);
   }
+/*  if (!formModule.value.moduleCourseRel[0].semester) {
+    errors.push(1);
+  }*/
   return errors.length === 0;
 }
 </script>
