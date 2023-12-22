@@ -23,7 +23,7 @@
         <div class="field" v-if="plan.reject_history.created_date">
           <label>{{ $t('common.date') }}:</label>
           <div>
-            <b>{{ formatDateMoment(plan.reject_history.created_date) }}</b>
+            <b>{{ formatDateMoment(plan.reject_history.created_date, true) }}</b>
           </div>
         </div>
         <div class="field">
@@ -121,32 +121,42 @@
             <span><i class="fa-solid fa-folder"></i>&nbsp;{{ node.event_name }}</span>
           </template>
         </Column>
-        <Column field="unit" :header="$t('common.unit')" v-if="plan && plan.is_oper" style="max-width: 100px">
+        <Column field="start_date" :header="$t('common.startDate')" v-if="isSciencePlan" style="max-width: 100px">
+          <template #body="{ node }">
+            {{ formatDateMoment(node.start_date) }}
+          </template>
+        </Column>
+        <Column field="end_date" :header="$t('common.startDate')" v-if="isSciencePlan" style="max-width: 100px">
+          <template #body="{ node }">
+            {{ formatDateMoment(node.end_date) }}
+          </template>
+        </Column>
+        <Column field="unit" :header="$t('common.unit')" v-if="isOperPlan" style="max-width: 100px">
           <template #body="{ node }">
             {{ node.unit }}
           </template>
         </Column>
-        <Column field="plan_number" :header="$t('common.planNumber')" v-if="plan && plan.is_oper" style="max-width:100px">
+        <Column field="plan_number" :header="$t('common.planNumber')" v-if="isOperPlan" style="max-width:100px">
           <template #body="{ node }">
             {{ node.plan_number }}
           </template>
         </Column>
-        <Column field="fact" :header="$t('common.fact')" v-if="plan && plan.is_oper">
+        <Column field="fact" :header="$t('common.fact')" v-if="isOperPlan">
           <template #body="{ node }">
             <span v-if="node.fact">{{ node.fact }}</span>
           </template>
         </Column>
-        <Column field="quarter" :header="$t('workPlan.quarter')">
+        <Column field="quarter" :header="$t('workPlan.quarter')" v-if="!isSciencePlan">
           <template #body="{ node }">
             {{ initQuarter(node.quarter) }}
           </template>
         </Column>
-        <Column field="responsible_executor" :header="$t('workPlan.respExecutor')" v-if="plan && plan.is_oper">
+        <Column field="responsible_executor" :header="$t('workPlan.respExecutor')" v-if="isOperPlan">
           <template #body="{ node }">
             {{ node.responsible_executor }}
           </template>
         </Column>
-        <Column field="fullName" :header="plan && plan.is_oper ? $t('workPlan.summary') : $t('workPlan.approvalUsers')">
+        <Column field="fullName" :header="isOperPlan ? $t('workPlan.summary') : $t('workPlan.approvalUsers')">
           <template #body="{ node }">
             <div v-if="node.user && node.user.length > 2">
               <Button type="button" @click="showRespUsers" class="p-button-rounded" icon="fa-solid fa-eye" label=""/>
@@ -660,8 +670,9 @@ export default {
     showRespUsers(event) {
       this.$refs.op.toggle(event);
     },
-    formatDateMoment(date) {
-      return moment(new Date(date)).utc().format("DD.MM.YYYY HH:mm:ss")
+    formatDateMoment(date, showHour) {
+      if (showHour) return moment(new Date(date)).utc().format("DD.MM.YYYY HH:mm:ss")
+      return moment(new Date(date)).utc().format("DD.MM.YYYY")
     },
     toggle(ref, event) {
       this.$refs[ref].toggle(event);
@@ -847,8 +858,13 @@ export default {
             this.remove_event(this.actionsNode)
           }
         },
-
       ];
+    },
+    isSciencePlan() {
+      return this.plan && this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Science
+    },
+    isOperPlan() {
+      return this.plan && ((this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Oper) || this.plan.is_oper)
     }
   }
 }
