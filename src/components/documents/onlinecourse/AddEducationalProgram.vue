@@ -204,20 +204,21 @@
               <table>
                 <thead>
                 <tr>
-                  <td>#</td>
-                  <td>Наименование модуля</td>
-                  <td>Шифр модуля</td>
-                  <td>Наименование курса</td>
-                  <td>Код курса</td>
-                  <td>Количество академических кредитов</td>
-                  <td>Цикл</td>
-                  <td>Компоненты курса</td>
-                  <td>Язык обучения</td>
-                  <td>Курс</td>
-                  <td>Семестр</td>
-                  <td>Лек/Прак/Лаб</td>
-                  <td>ПРП/СРО</td>
-                  <td>Форма контроля</td>
+                  <td>№</td>
+                  <td>{{ $t("educationalPrograms.moduleName") }}</td>
+                  <td>{{ $t("educationalPrograms.moduleCode") }}</td>
+                  <td>{{ $t("educationalPrograms.courseName") }}</td>
+                  <td>{{ $t("fieldEducation.courseCode") }}</td>
+                  <td>{{ $t("educationalPrograms.academicCredits") }}</td>
+                  <td>{{ $t("educationalPrograms.cycle") }}</td>
+                  <td>{{ $t("educationalPrograms.courseComponents") }}</td>
+                  <td>{{ $t("common.learnlang") }}</td>
+                  <td>{{ $t("course.course") }}</td>
+                  <td>{{ $t("educationalPrograms.semester") }}</td>
+                  <td>{{ $t("educationalPrograms.lecture") }}/{{ $t("educationalPrograms.practice") }}/{{ $t("educationalPrograms.laboratoryWork") }}</td>
+                  <td><span :title="$t('educationalPrograms.preGraduatePractice')">{{ $t("educationalPrograms.prp") }}</span>/
+                    <span :title="$t('educationalPrograms.independentWorkStudent')">{{ $t("educationalPrograms.sro") }}</span> </td>
+                  <td>{{ $t("educationalPrograms.formControl") }}</td>
                 </tr>
                 </thead>
                 <tbody>
@@ -260,27 +261,27 @@
   <Dialog v-model:visible="dialogModule" :style="{ width: '70%' }" :header="$t('educationalPrograms.addingModule')">
     <div class="grid module_dialog">
       <div class="col-12 lg:col-3">
-        <span>{{ $t("Наименование модуля") }}</span>
+        <span>{{ $t("educationalPrograms.moduleName") }}</span>
       </div>
       <div class="col-12 lg:col-9">
         <InputText v-model="formModule.namekz"/>
             <small class="p-error" v-if="!formModule.namekz && submitted">{{ $t("common.requiredField") }}</small>
       </div>
       <div class="col-12 lg:col-3">
-        <span>{{ $t("Шифр модуля") }}</span>
+        <span>{{ $t("educationalPrograms.moduleCode") }}</span>
       </div>
       <div class="col-12 lg:col-9">
         <InputText class="" v-model="formModule.code"/>
             <small class="p-error" v-if="!formModule.code && submitted">{{ $t("common.requiredField") }}</small>
       </div>
       <div class="col-12 lg:col-3">
-        <span>{{ $t("Количество академических кредитов") }}</span>
+        <span>{{ $t("educationalPrograms.academicCredits") }}</span>
       </div>
       <div class="col-12 lg:col-9">
         <InputText type="number" v-model="formModule.creditCount"/>
       </div>
       <div class="col-12 lg:col-3">
-        <span>{{ $t("Цикл") }}</span>
+        <span>{{ $t("educationalPrograms.cycle") }}</span>
       </div>
       <div class="col-12 lg:col-9 flex gap-4">
       <div class="w-fit">
@@ -298,7 +299,7 @@
         <small class="p-error" v-if="!formModule.courseType && submitted">{{ $t("common.requiredField") }}</small>
       </div>
       <div class="col-12 lg:col-3">
-        <span>{{ $t("Компоненты курса") }}</span>
+        <span>{{ $t("educationalPrograms.courseComponents") }}</span>
       </div>
       <div class="col-12 lg:col-9 flex gap-4">
         <div class="w-fit">
@@ -316,13 +317,14 @@
         <small class="p-error" v-if="!formModule.courseComponentType && submitted">{{ $t("common.requiredField") }}</small>
       </div>
       <div class="col-12">
-      <h4>{{ $t("Курсы") }}</h4>
+        <hr>
+        <h5 class="font-semibold">{{ $t("course.courses") }}</h5>
       </div>
       <div class="col-12 lg:col-3">
-        <span>{{ $t("Наименование курса") }}</span>
+        <span>{{ $t("educationalPrograms.courseName") }}</span>
       </div>
       <div class="col-12 lg:col-9">
-        <Dropdown v-model="formModule.moduleCourseRel[0].id" :options="courses" class="mt-2" :optionLabel="['name' + locale]" optionValue="id" :placeholder="$t('common.select')"
+        <Dropdown v-model="selectedCourse" @change="selectCourse($event)" :options="courses" class="mt-2" :optionLabel="['name' + locale]" :placeholder="$t('common.select')"
                   @filter="handleFilter" :filter="true" :showClear="true" dataKey="id" :emptyFilterMessage="$t('roleControl.noResult')"  />
         <!--    <small class="p-error">{{ $t("common.requiredField") }}</small>-->
       </div>
@@ -330,18 +332,19 @@
         <span>{{ $t("fieldEducation.courseCode") }}</span>
       </div>
       <div class="col-12 lg:col-9">
-        <InputText v-model="formModule.nameEn"/>
+        <InputText v-model="formModule.moduleCourseRel[0].codeCourse"/>
         <!--    <small class="p-error">{{ $t("common.requiredField") }}</small>-->
       </div>
       <div class="col-12 lg:col-3">
         <span>{{ $t("common.learnlang") }}</span>
       </div>
       <div class="col-12 lg:col-9">
-        <InputText v-model="formModule.nameEn"/>
+        <Dropdown :placeholder="$t('common.select')" :options="listLang" option-label="lang" optionValue="id"
+                  v-model="formModule.moduleCourseRel[0].language"/>
         <!--    <small class="p-error">{{ $t("common.requiredField") }}</small>-->
       </div>
       <div class="col-12 lg:col-3">
-        <span>{{ $t("Курс") }}</span>
+        <span>{{ $t("course.course") }}</span>
       </div>
       <div class="col-12 lg:col-9 flex gap-4">
         <div class="w-fit">
@@ -366,43 +369,43 @@
         </div>
       </div>
       <div class="col-12 lg:col-3">
-        <span>{{ $t("Семестр") }}</span>
+        <span>{{ $t("educationalPrograms.semester") }}</span>
       </div>
       <div class="col-12 lg:col-9">
         <InputText v-model="formModule.moduleCourseRel[0].semester"/>
         <small class="p-error" v-if="!formModule.moduleCourseRel[0].semester && submitted">{{ $t("common.requiredField") }}</small>
       </div>
       <div class="col-3">
-        <span>{{ $t("Лекция") }}</span>
+        <span>{{ $t("educationalPrograms.lecture") }}</span>
       </div>
         <div class="col-3">
         <InputText type="number" v-model="formModule.moduleCourseRel[0].Lecture"/>
         <!--    <small class="p-error">{{ $t("common.requiredField") }}</small>-->
       </div>
       <div class="col-6 flex">
-        <span class="mr-4">{{ $t("Практика") }}</span>
+        <span class="mr-4">{{ $t("educationalPrograms.practice") }}</span>
         <InputText type="number" v-model="formModule.moduleCourseRel[0].practice"/>
         <!--    <small class="p-error">{{ $t("common.requiredField") }}</small>-->
       </div>
       <div class="col-3">
-        <span>{{ $t("Лабораторные работы") }}</span>
+        <span>{{ $t("educationalPrograms.laboratoryWork") }}</span>
       </div>
       <div class="col-3">
         <InputText type="number" v-model="formModule.moduleCourseRel[0].laboratory"/>
         <!--    <small class="p-error">{{ $t("common.requiredField") }}</small>-->
       </div>
       <div class="col-3 flex">
-        <span class="mr-4">{{ $t("ПРП") }}</span>
+        <span class="mr-4" :title="$t('educationalPrograms.preGraduatePractice')">{{ $t("educationalPrograms.prp") }}</span>
         <InputText type="number" v-model="formModule.moduleCourseRel[0].prp"/>
         <!--    <small class="p-error">{{ $t("common.requiredField") }}</small>-->
       </div>
       <div class="col-3 flex">
-        <span class="mr-4">{{ $t("СРО") }}</span>
+        <span class="mr-4" :title="$t('educationalPrograms.independentWorkStudent')">{{ $t("educationalPrograms.sro") }}</span>
         <InputText type="number" v-model="formModule.moduleCourseRel[0].IndependentWork"/>
         <!--    <small class="p-error">{{ $t("common.requiredField") }}</small>-->
       </div>
       <div class="col-12 lg:col-3">
-        <span>{{ $t("Форма контроля") }}</span>
+        <span>{{ $t("educationalPrograms.formControl") }}</span>
       </div>
       <div class="col-12 lg:col-9">
         <InputText v-model="formModule.moduleCourseRel[0].formControl"/>
@@ -411,9 +414,18 @@
     </div>
     <div class="flex justify-content-between">
       <Button class="p-button-outlined mr-2 w-fit"
-              icon="pi pi-plus-circle" :label="$t('Добавить курс')"/>
+              icon="pi pi-plus-circle" :label="$t('educationalPrograms.addCourse')"/>
       <Button class="w-fit"
               icon="pi pi-download" :label="$t('common.add')" @click="addModuleAndCourses()"/>
+    </div>
+  </Dialog>
+  <Dialog :header="$t('common.action.sendToApprove')" v-model:visible="dialogOpenState.sendToApprove"
+          :style="{width: '50vw'}" class="p-fluid">
+    <ProgressBar v-if="approving" mode="indeterminate" style="height: .5em"/>
+    <div class="field">
+      <ApprovalUsers :key="approveComponentKey" :approving="approving" v-model="selectedUsers"
+                     @closed="closeDialog('sendToApprove')"
+                     @approve="approve($event)" :stages="stages" :mode="'standard'"></ApprovalUsers>
     </div>
   </Dialog>
 </template>
@@ -425,6 +437,7 @@ import {useRoute, useRouter} from "vue-router";
 import {useStore} from "vuex";
 import {useToast} from "primevue/usetoast";
 import {OnlineCourseService} from "@/service/onlinecourse.service";
+import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers.vue";
 
 const disabledSend = ref(true)
 const disabledApproval = ref(true)
@@ -434,7 +447,7 @@ const router = useRouter()
 const store = useStore()
 const toast = useToast();
 const i18n = useI18n();
-const active = ref(0);
+const active = ref(3);
 const items = computed(() => {
   return [
     {
@@ -498,13 +511,15 @@ const formStep3 = ref(
 const courseType = ref([3])
 const courseComponentType = ref([1])
 const whatCourse = ref([4])
+const selectedCourse = ref()
 const formModule = ref(
     {
       //namekz: 'test kz',
+      id: 15,
       nameru: 'test ru',
       nameen: 'test en',
       code: 'test kz',
-      creditCount: 2,
+      creditCount: '2',
       courseType: courseType.value[0],
       courseComponentType: courseComponentType.value[0],
       syllabusId: 3,
@@ -522,6 +537,59 @@ const formModule = ref(
       ]
     }
 )
+const approveComponentKey = ref(0)
+const approving = ref(false)
+const stages = ref(null)
+const selectedUsers = ref([
+  {
+    stage: 1,
+    users: 'ss',
+    certificate: {
+      namekz: "Жеке тұлғаның сертификаты",
+      nameru: "Сертификат физического лица",
+      nameen: "Certificate of an individual",
+      value: "individual"
+    }
+  }
+])
+const approvalStages = ref([
+  {
+    stage: 1,
+    users: 's',
+    certificate: {
+      namekz: "Жеке тұлғаның сертификаты",
+      nameru: "Сертификат физического лица",
+      nameen: "Certificate of an individual",
+      value: "individual"
+    },
+    titleRu: "Преподаватель",
+    titleKz: "Оқытушы",
+    titleEn: "Teacher",
+  },
+  {
+    stage: 2,
+    users: null,
+    titleRu: "Заведующий кафедры",
+    titleKz: "Кафедра меңгерушісі",
+    titleEn: "Head of Department",
+    certificate: {
+      namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+      nameru: "Для внутреннего документооборота (ГОСТ)",
+      nameen: "For internal document management (GOST)",
+      value: "internal"
+    },
+  }
+])
+const dialogOpenState = ref({
+  addFolder: false,
+  moveFolder: false,
+  fileUpload: false,
+  signerInfo: false,
+  sendToApprove: false,
+  revision: false,
+  docInfo: false,
+  umkParams: false
+})
 const submitted = ref(false)
 const service = new OnlineCourseService()
 const dataFieldEducation = ref([])
@@ -531,8 +599,14 @@ const dialogModule = ref(true)
 const lazyParams = {
   page: 0,
   rows: 561,
-  searchText: null,
+  searchText: '',
 }
+const listLang = ref([
+  {id: 1, lang: 'Қазақша'},
+  {id: 2, lang: 'На русском'},
+  {id: 3, lang: 'In English'},
+])
+
 const getCourses = () => {
   service.getCourses(lazyParams).then(response => {
     courses.value = response.data.courses
@@ -545,7 +619,7 @@ const handleFilter = (event) => {
     lazyParams.searchText = event.value
     getCourses()
   } else if (lazyParams.searchText.length > 3) {
-    lazyParams.searchText = null
+    lazyParams.searchText = ''
     getCourses()
   }
 }
@@ -572,6 +646,30 @@ const getModuleBySyllasbusId= () => {
   });
 }
 getModuleBySyllasbusId()
+
+const approve = (event) => {
+  approving.value = true;
+  toast.add({
+    severity: "success",
+    summary: this.$t('common.message.succesSendToApproval'),
+    life: 3000,
+  });
+  closeDialog("sendToApprove");
+  this.approving = false;
+}
+
+const openDialog = (dialog) => {
+  if (dialog === "sendToApprove") {
+    approveComponentKey.value++;
+    stages.value = JSON.parse(JSON.stringify(approvalStages.value));
+  }
+
+  dialogOpenState.value[dialog] = true;
+}
+const closeDialog = (dialog) => {
+  dialogOpenState[dialog] = false;
+
+}
 const save = () => {
   if (active.value === 0) {
     submitted.value = true
@@ -615,6 +713,12 @@ const save = () => {
     active.value = 3
   }
 }
+const selectCourse = (data) => {
+  formModule.value.moduleCourseRel[0].language = data.value.courceLanguageId
+  formModule.value.moduleCourseRel[0].codeCourse = parseInt(data.value.courseCode)
+  formModule.value.moduleCourseRel[0].id = data.value.id
+  console.log(data.value)
+}
 const addModuleAndCourses = () => {
   submitted.value = true
   if (!isValidModule()) return;
@@ -624,9 +728,9 @@ const addModuleAndCourses = () => {
     summary: i18n.t("common.success"),
     life: 3000,
   });
- /* service.addModuleAndCourses().then(response => {
+  service.addModuleAndCourses(formModule.value).then(response => {
   }).catch(_ => {
-  });*/
+  });
 }
 
 const isValid = () => {
