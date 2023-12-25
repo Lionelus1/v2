@@ -6,7 +6,7 @@
       :label="$t('common.action.sendToApprove')"
       @click="openModal"
   ></Button>
-  <PdfContent ref="pdf" v-if="data" :data="data" :planId="data.work_plan_id" style="display: none;"></PdfContent>
+  <PdfContent ref="pdf" v-if="data" :data="data" :planId="data.work_plan_id" :plan="plan" style="display: none;"></PdfContent>
 
   <!-- <Dialog :header="$t('common.action.sendToApprove')" v-model:visible="showModal" :style="{width: '450px'}" class="p-fluid">
     <div class="field">
