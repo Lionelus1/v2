@@ -2,10 +2,13 @@
   <vue-element-loading :active="loading" is-full-screen color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)"/>
   <div>
     <div class="col-12">
+      <div class="card" v-if="report && report?.doc_info && report?.doc_info.docHistory.stateId === 2">
+        <Button type="button" icon="pi pi-eye" class="p-button-outlined" :label="$t('educomplex.tooltip.document')" @click="openDoc"></Button>
+      </div>
       <div class="card" v-if="isPlanCreator && !isReportSentApproval">
         <Button type="button" icon="pi pi-send" class="p-button-success ml-2" :label="$t('common.toapprove')" @click="openModal"></Button>
-        <Button type="button" icon="pi pi-send" class="p-button-success ml-2" :label="$t('common.toapprove')" @click="openModal"></Button>
-        <WorkPlanReportApprove v-if="showModal" :visible="showModal" :doc-id="report.doc_id" :report="report_id"></WorkPlanReportApprove>
+<!--        <Button type="button" icon="pi pi-send" class="p-button-success ml-2" :label="$t('common.toapprove')" @click="openModal"></Button>-->
+        <WorkPlanReportApprove v-if="showModal" :visible="showModal" :doc-id="report.doc_id" :report="report" :plan="plan" @sent-to-approve="getReport" />
         <!--        <Button label="" icon="pi pi-download" @click="download"
                         class="p-button p-button-info ml-2"/>-->
       </div>
@@ -25,13 +28,11 @@
                       @click="openRejectPlan"
                       class="p-button p-button-danger ml-2"/>
             </div>-->
-      <div class="card" v-if="approval_users && report && report.status">
+      <div class="card" v-if="report && report?.doc_info">
         <div>
           <TitleBlock :title="report.report_name" :show-back-button="true" />
-          <span v-if="report" :class="'customer-badge status-' + report.status.work_plan_status_id">
-              {{
-              $i18n.locale === "kz" ? report.status.name_kk : $i18n.locale === "ru" ? report.status.name_ru : report.status.name_en
-            }}
+          <span v-if="report" :class="'ml-3 customer-badge status-' + report?.doc_info.docHistory.stateEn">
+              {{ $t('common.states.' + report?.doc_info.docHistory.stateEn) }}
         </span>
         </div>
         <!--        <Timeline :value="approvals">
@@ -73,7 +74,7 @@
   </div>
 
   <Sidebar v-model:visible="showReportDocInfo" position="right" class="p-sidebar-lg" style="overflow-y: scroll">
-    <DocSignaturesInfo :docIdParam="this.report.doc_id" :isInsideSidebar="true"></DocSignaturesInfo>
+    <DocSignaturesInfo :docIdParam="report.doc_id" :isInsideSidebar="true"></DocSignaturesInfo>
   </Sidebar>
 </template>
 
@@ -86,8 +87,9 @@ import treeToList from "@/service/treeToList";
 import WorkPlanReportApprove from "@/components/work_plan/WorkPlanReportApprove";
 import {NCALayerClient} from "ncalayer-js-client";
 import {runNCaLayer} from "../../helpers/SignDocFunctions";
-import DocSignaturesInfo from "../documents/DocInfo";
 import {WorkPlanService} from "@/service/work.plan.service";
+import Enum from "@/enum/workplan";
+import DocSignaturesInfo from "@/components/DocSignaturesInfo.vue";
 
 export default {
   name: "WorkPlanReportView",
@@ -154,6 +156,11 @@ export default {
       loading: false,
       planService: new WorkPlanService()
     }
+  },
+  computed: {
+    isSciencePlan() {
+      return this.plan && this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Science
+    },
   },
   created() {
     this.report_id = parseInt(this.$route.params.id);
@@ -528,46 +535,15 @@ export default {
     openModal() {
       this.showModal = true;
     },
+    openDoc() {
+      this.showReportDocInfo = true;
+    },
   }
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 ::v-deep(.p-timeline-event-opposite) {
   flex: 0;
-}
-
-.customer-badge {
-  border-radius: 2px;
-  padding: .25em .5rem;
-  text-transform: uppercase;
-  font-weight: 700;
-  font-size: 12px;
-  letter-spacing: .3px;
-
-  &.status-5 {
-    background: #ff3838;
-    color: #ffffff;
-  }
-
-  &.status-4 {
-    background: #C8E6C9;
-    color: #256029;
-  }
-
-  &.status-2 {
-    background: #FEEDAF;
-    color: #8A5340;
-  }
-
-  &.status-3 {
-    background: #FFCDD2;
-    color: #C63737;
-  }
-
-  &.status-1 {
-    background: #B3E5FC;
-    color: #23547B;
-  }
 }
 </style>

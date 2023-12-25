@@ -259,6 +259,9 @@ export default {
       this.responsible_executor = null;
       this.supporting_docs = null;
       this.selectedUsers = [];
+      this.inputSets = [{ selectedUsers: '', selectedRole: '' }]
+      this.start_date = new Date()
+      this.end_date = new Date()
     },
     addNewUser() {
       this.inputSets.push({ selectedUsers: null, selectedRole: null })

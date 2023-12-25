@@ -1132,7 +1132,7 @@ export default {
             reportSentToApprove: "The report was successfully sent for approval",
             planSentToApprove: "Plan sent for revision",
             planCreated: "Plan successfully created",
-            maxFileUploadSize: "Can't upload more than 5 files"
+            maxFileUploadSize: "You cannot upload more than 10 files at once"
         },
         reportTypes: {
             year: "Annual",
