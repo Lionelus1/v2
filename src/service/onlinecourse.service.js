@@ -39,6 +39,9 @@ export class OnlineCourseService {
     getCourse(courseID) {
         return api.get(`/onlinecourse/course/${courseID}`, {headers: getHeader()});
     }
+    getCourseById(courseID) {
+        return api.post(`/onlinecourse/getCourseById/${courseID}`, {}, {headers: getHeader()});
+    }
     getCourseStudents(data) {
         return api.post(`/onlinecourse/students`, data, { headers: getHeader()});
     }

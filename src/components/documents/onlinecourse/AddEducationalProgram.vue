@@ -322,7 +322,7 @@
         <span>{{ $t("Наименование курса") }}</span>
       </div>
       <div class="col-12 lg:col-9">
-        <Dropdown v-model="formModule.moduleCourseRel" :options="courses" class="mt-2" :optionLabel="['name' + locale]" optionValue="id" :placeholder="$t('common.select')"
+        <Dropdown v-model="formModule.moduleCourseRel[0].id" :options="courses" class="mt-2" :optionLabel="['name' + locale]" optionValue="id" :placeholder="$t('common.select')"
                   @filter="handleFilter" :filter="true" :showClear="true" dataKey="id" :emptyFilterMessage="$t('roleControl.noResult')"  />
         <!--    <small class="p-error">{{ $t("common.requiredField") }}</small>-->
       </div>
@@ -369,43 +369,43 @@
         <span>{{ $t("Семестр") }}</span>
       </div>
       <div class="col-12 lg:col-9">
-        <InputText v-model="formModule.value.moduleCourseRel"/>
-        <small class="p-error" v-if="!formModule.value.moduleCourseRel && submitted">{{ $t("common.requiredField") }}</small>
+        <InputText v-model="formModule.moduleCourseRel[0].semester"/>
+        <small class="p-error" v-if="!formModule.moduleCourseRel[0].semester && submitted">{{ $t("common.requiredField") }}</small>
       </div>
       <div class="col-3">
         <span>{{ $t("Лекция") }}</span>
       </div>
         <div class="col-3">
-        <InputText type="number" v-model="formModule.nameEn"/>
+        <InputText type="number" v-model="formModule.moduleCourseRel[0].Lecture"/>
         <!--    <small class="p-error">{{ $t("common.requiredField") }}</small>-->
       </div>
       <div class="col-6 flex">
         <span class="mr-4">{{ $t("Практика") }}</span>
-        <InputText type="number" v-model="formModule.nameEn"/>
+        <InputText type="number" v-model="formModule.moduleCourseRel[0].practice"/>
         <!--    <small class="p-error">{{ $t("common.requiredField") }}</small>-->
       </div>
       <div class="col-3">
         <span>{{ $t("Лабораторные работы") }}</span>
       </div>
       <div class="col-3">
-        <InputText type="number" v-model="formModule.nameEn"/>
+        <InputText type="number" v-model="formModule.moduleCourseRel[0].laboratory"/>
         <!--    <small class="p-error">{{ $t("common.requiredField") }}</small>-->
       </div>
       <div class="col-3 flex">
         <span class="mr-4">{{ $t("ПРП") }}</span>
-        <InputText type="number" v-model="formModule.nameEn"/>
+        <InputText type="number" v-model="formModule.moduleCourseRel[0].prp"/>
         <!--    <small class="p-error">{{ $t("common.requiredField") }}</small>-->
       </div>
       <div class="col-3 flex">
         <span class="mr-4">{{ $t("СРО") }}</span>
-        <InputText type="number" v-model="formModule.nameEn"/>
+        <InputText type="number" v-model="formModule.moduleCourseRel[0].IndependentWork"/>
         <!--    <small class="p-error">{{ $t("common.requiredField") }}</small>-->
       </div>
       <div class="col-12 lg:col-3">
         <span>{{ $t("Форма контроля") }}</span>
       </div>
       <div class="col-12 lg:col-9">
-        <InputText v-model="formModule.nameEn"/>
+        <InputText v-model="formModule.moduleCourseRel[0].formControl"/>
         <!--    <small class="p-error">{{ $t("common.requiredField") }}</small>-->
       </div>
     </div>
@@ -434,7 +434,7 @@ const router = useRouter()
 const store = useStore()
 const toast = useToast();
 const i18n = useI18n();
-const active = ref(3);
+const active = ref(0);
 const items = computed(() => {
   return [
     {
@@ -512,6 +512,12 @@ const formModule = ref(
         {
           whatCourse: whatCourse.value[0],
           semester: 2,
+          Lecture: 70,
+          practice: 75,
+          laboratory: 80,
+          prp: 50,
+          IndependentWork: 72,
+          formControl: "test",
         }
       ]
     }
@@ -524,7 +530,7 @@ const courses = ref([])
 const dialogModule = ref(true)
 const lazyParams = {
   page: 0,
-  rows: 100,
+  rows: 561,
   searchText: null,
 }
 const getCourses = () => {
@@ -612,6 +618,7 @@ const save = () => {
 const addModuleAndCourses = () => {
   submitted.value = true
   if (!isValidModule()) return;
+  console.log(formModule.value)
   toast.add({
     severity: "success",
     summary: i18n.t("common.success"),
@@ -753,9 +760,9 @@ const isValidModule = () => {
   if (!formModule.value.courseComponentType) {
     errors.push(1);
   }
-/*  if (!formModule.value.moduleCourseRel[0].semester) {
+  if (!formModule.value.moduleCourseRel[0].semester) {
     errors.push(1);
-  }*/
+  }
   return errors.length === 0;
 }
 </script>
