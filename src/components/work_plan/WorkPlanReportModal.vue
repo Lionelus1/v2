@@ -2,7 +2,7 @@
   <Button
       type="button"
       icon="pi pi-document"
-      class="p-button p-button-info ml-2"
+      class="p-button p-button-outlined ml-2"
       :label="$t('workPlan.createReport')"
       @click="openModal"
   ></Button>
@@ -47,12 +47,14 @@
 <script>
 import {getHeader, smartEnuApi} from "@/config/config";
 import {WorkPlanService} from "@/service/work.plan.service";
+import Enum from '@/enum/workplan/index'
 
 export default {
   name: "WorkPlanReportModal",
   props: ['planId', 'plan'],
   data() {
     return {
+      loginedUser: JSON.parse(localStorage.getItem("loginedUser")),
       selectQuarterModal: false,
       quarter: null,
       type: null,
@@ -87,7 +89,10 @@ export default {
         }
       ],
       isPdf: false,
-      selectedDepartment: null,
+      selectedDepartment: this.loginedUser ? {
+        department_id: this.loginedUser.mainPosition.department.id,
+        department_name: this.loginedUser.mainPosition.department.name
+      } : null,
       selectedHalfYear: null,
       selectedRespUser: null,
       halfYearTypes: [
@@ -102,7 +107,8 @@ export default {
       ],
       departments: [],
       respUsers: [],
-      planService: new WorkPlanService()
+      planService: new WorkPlanService(),
+      Enum: Enum
     }
   },
   mounted() {

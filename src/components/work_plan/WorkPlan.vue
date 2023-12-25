@@ -16,20 +16,18 @@
             <Button type="button" icon="fa-solid fa-filter" @click="toggle('global-filter', $event)" aria:haspopup="true"
               aria-controls="overlay_panel" class="p-button-outlined mr-2" />
             <OverlayPanel ref="global-filter">
-              <div v-for="text in workplan_radio_options" :key="text" class="flex align-items-center">
+              <div v-for="(item, index) in types" :key="index" class="flex align-items-center">
                 <div class="field-radiobutton">
-                  <RadioButton v-model="selectedPlanType" :value="text.value" />
-                  <label :for="text" class="ml-2">{{ text.text }}</label>
+                  <RadioButton v-model="selectedPlanType" :value="item.id" />
+                  <label :for="item" class="ml-2">{{ item['name_' + $i18n.locale] }}</label>
                 </div>
               </div>
               <div class="p-fluid">
                 <div class="field">
-                  <br />
-
-                  <Button icon="pi pi-trash" class="ml-1" @click="clearPlanTypeFilter()" :label="$t('common.clear')" />
+                  <Button icon="pi pi-search" :label="$t('common.search')" class="ml-1" @click="setPlanType(null)" />
                 </div>
                 <div class="field">
-                  <Button icon="pi pi-search" :label="$t('common.search')" class="ml-1" @click="setPlanType(null)" />
+                  <Button icon="pi pi-trash" class="ml-1" @click="clearPlanTypeFilter()" :label="$t('common.clear')" />
                 </div>
               </div>
             </OverlayPanel>
@@ -63,7 +61,7 @@
         </Column>
         <Column field="status" :header="$t('workPlan.planType')" v-if="isAdmin">
           <template #body="{ data }">
-            <span class="customer-badge" :class="{ 'operational-plan': data.is_oper, 'simple-plan': !data.is_oper }">
+            <span :class="'customer-badge ' + data.plan_type.code">
               {{ data.plan_type['name_' + $i18n.locale] }}
             </span>
           </template>
@@ -135,8 +133,7 @@ export default {
         rows: 10,
         searchText: null,
         filter: {
-          is_plan: null,
-          is_oper_plan: null,
+          plan_type: null,
           user_id: null,
         }
       },
@@ -170,6 +167,7 @@ export default {
         { name_kz: "берілді", name_en: "issued", name_ru: "выдан", code: "issued" },
       ],
       selectedDocStatus: null,
+      types: []
     }
   },
   mounted() {
@@ -188,6 +186,7 @@ export default {
   created() {
     this.isAdmin = this.findRole(null, 'main_administrator')
     this.getPlans();
+    this.getWorkPlanTypes()
   },
   methods: {
     findRole: findRole,
@@ -319,20 +318,7 @@ export default {
       this.getPlans();
     },
     setPlanType() {
-      if (this.selectedPlanType === "simple_plan") {
-        this.lazyParams.filter.is_plan = true
-        this.lazyParams.filter.is_oper_plan = null
-      }
-      if (this.selectedPlanType === "oper_plan") {
-        this.lazyParams.filter.is_plan = null
-        this.lazyParams.filter.is_oper_plan = true
-
-      }
-      if(this.selectedPlanType === "my_plan"){
-        this.lazyParams.filter.user_id = this.loginedUserId
-        this.lazyParams.filter.is_plan = null
-        this.lazyParams.filter.is_oper_plan = null
-      }
+      this.lazyParams.filter.plan_type = this.selectedPlanType
       this.getPlans();
     },
     getDocStatus(code) {
@@ -352,6 +338,15 @@ export default {
       } else {
         return null;
       }
+    },
+    getWorkPlanTypes() {
+      this.types = []
+      this.planService.getWorkPlanTypes().then(res => {
+        this.types = res.data
+        this.types.push({id: 4, code: 'mine', name_kz: 'Менің жоспарларым', name_ru: 'Мои планы', name_en: 'My Plans'})
+      }).catch(error => {
+        this.$toast.add({severity: "error", summary: error, life: 3000});
+      })
     },
   }
 }
@@ -435,16 +430,23 @@ export default {
     color: #bfc9d1;
   }
 
-  &.operational-plan {
+  &.oper {
     background-color: #3B82F6;
     color: #ffffff;
     font-weight: 500;
     border-radius: 3px;
   }
 
-  &.simple-plan {
+  &.standart {
     background-color: #10b981;
     color: #ffffff;
+    font-weight: 500;
+    border-radius: 3px;
+  }
+
+  &.science {
+    background: #3588a8;
+    color: #fff;
     font-weight: 500;
     border-radius: 3px;
   }

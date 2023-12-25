@@ -47,7 +47,7 @@
               class="p-button-sm p-button-outlined ml-2"/>
       <Button v-if="isFinish && (isApproval || isPlanCreator || isAdmin) && (plan.doc_info.docHistory.stateId === 3)" :label="$t('workPlan.reports')"
               @click="navigateToReports" class="p-button-sm p-button-outlined ml-2"/>
-      <Button v-if="isFinish && isPlanCreator && (plan.doc_info.docHistory.stateId === 3)" :label="$t('workPlan.generateAct')"
+      <Button v-if="isFinish && isPlanCreator && (plan.doc_info.docHistory.stateId === 3) && isSciencePlan" :label="$t('workPlan.generateAct')"
               @click="generateScienceReport" class="p-button-sm p-button-outlined ml-2"/>
       <!--      <WorkPlanReportApprove v-if="isFinish && isPlanCreator && (plan.doc_info.docHistory.stateId === 3) && (plan.plan_type && plan.plan_type.code === Enum.WorkPlanTypes.Science)" :label="$t('workPlan.generateAct')"-->
       <!--                             :doc-id="report.doc_id" :report="report_id"></WorkPlanReportApprove>-->
@@ -235,7 +235,7 @@
   </Sidebar>
 
   <Sidebar v-model:visible="isShowPlanExecute" position="right" style="overflow-y: scroll; width: 50%;" v-if="isShowPlanExecute && selectedEvent"
-           @hide="sideBarClosed">
+           @hide="hide">
     <WorkPlanEventResult :result-id="selectedEvent.work_plan_event_id"/>
   </Sidebar>
 </template>
@@ -703,7 +703,10 @@ export default {
       this.isShowPlanExecute = true;
       this.selectedEvent = node;
     },
-
+    closePlanExecuteSidebar() {
+      this.isShowPlanExecute = false;
+      this.getEventsTree(null)
+    },
     updateEventStatus(eventId) {
       this.planService.updateEventStatus({event_id: eventId, status_code: 2}).then(res => {
         if (res.data.is_success) {

@@ -767,7 +767,7 @@ export default {
     },
     uploadFile(event) {
       /*this.file = event.files[0];*/
-      if (event.files.length > 5) {
+      if (event.files.length > 10) {
         this.$toast.add({
           severity: "info",
           summary: this.$t('workPlan.message.maxFileUploadSize'),

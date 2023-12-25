@@ -161,12 +161,11 @@ import Enum from "@/enum/workplan/index"
 
 export default {
   name: "PdfContent",
-  props: ['planId', 'type', 'isReport', 'data'],
+  props: ['planId', 'type', 'isReport', 'data', 'plan'],
   data() {
     return {
       items: [],
       work_plan_id: this.planId,
-      plan: this.data,
       pdfType: this.isReport,
       pdfOptions: {
         margin: 10,

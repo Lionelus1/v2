@@ -1,5 +1,5 @@
 <template>
-  <PdfContent ref="pdf" v-if="data" :data="data" :planId="data.work_plan_id" style="display: none;"></PdfContent>
+  <PdfContent ref="pdf" v-if="!isSciencePlan" :data="data" :planId="data.work_plan_id" :plan="plan" style="display: none;"></PdfContent>
   <Dialog :header="$t('common.action.sendToApprove')" v-model:visible="showModal"
           :style="{width: '50vw'}" class="p-fluid">
     <ProgressBar v-if="approving" mode="indeterminate" style="height: .5em"/>
@@ -34,8 +34,9 @@ import Enum from "@/enum/workplan/index"
 
 export default {
   name: "WorkPlanReportApprove",
-  components: {ApprovalUsers},
+  components: {ApprovalUsers, PdfContent},
   props: ['visible', 'docId', 'report', 'events', 'approvalStages', 'plan'],
+  emits: ['sentToApprove'],
   data() {
     return {
       data: this.report,
@@ -127,7 +128,7 @@ export default {
       this.submitted = true;
       this.approving = true;
       let workPlanReport = this.data.id;
-      if (this.plan && this.plan.plan_type.code === Enum.WorkPlanTypes.Science) {
+      if (this.isSciencePlan) {
         const fd = new FormData();
         fd.append('report_id', workPlanReport)
         this.approvePlan(fd);
@@ -171,7 +172,7 @@ export default {
             summary: this.$t('common.message.succesSendToApproval'),
             life: 3000,
           });
-          this.emitter.emit("planSentToApprove", true);
+          this.$emit('sentToApprove')
           this.submitted = false;
         }
         this.approving = false;
@@ -224,7 +225,7 @@ export default {
   },
   computed: {
     isSciencePlan() {
-      console.log(this.plan && this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Science)
+      console.log(this.plan.plan_type.code)
       return this.plan && this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Science
     }
   }
