@@ -1162,7 +1162,7 @@ export default {
             reportSentToApprove: "Отчет успешно отправлен на согласование",
             planSentToApprove: "План отправлен на корректировку",
             planCreated: "План успешно создан",
-            maxFileUploadSize: "Невозможно загрузить более 5 файлов"
+            maxFileUploadSize: "Вы не можете загружать более 10 файлов одновременно"
         },
         reportTypes: {
             year: "Годовой",
