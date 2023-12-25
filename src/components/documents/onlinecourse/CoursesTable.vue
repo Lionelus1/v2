@@ -291,6 +291,13 @@ export default {
             this.selectAllChecked = true
           }
         })
+
+        this.courses.forEach(course => {
+          const storedCertificate = this.give_certificates.find(x => x.courseID === course.id);
+          if (storedCertificate) {
+            course.give_certificate = storedCertificate.give_certificate;
+          }
+        });
         this.dic_course_type = res.data.dic_course_type
         this.total = res.data.total
         this.selectedCourse = null
