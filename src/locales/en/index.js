@@ -1410,6 +1410,7 @@ export default {
         forbiddenAction: 'Action prohibited. You don\'t have the required permissions.',
         internalServerError: 'We\'re sorry, something went wrong on our end. Please try again later.',
         unauthorized: 'The user is not authorized.',
+        importAlreadyOnProcess: 'Import process is already on. Please wait for results.',
     },
     visuallyImpaired: {
         fontSize: "Font size",
@@ -1456,7 +1457,7 @@ export default {
         laborActivity: 'Labor activity',
         awardsAndHonors:'Awards and honors',
         professionalDevelopment: 'Professional development',
-        typeOfAward: 'Type of award', 
+        typeOfAward: 'Type of award',
         reward: 'Reward',
         qualification: {
             trainingForm: 'Form of professional development',
@@ -1472,5 +1473,71 @@ export default {
     },
     personalData: 'Personal information',
     yearPeriod:'Period of years',
-
+    scienceWorks: {
+        title: "Scientific works list",
+        publicationType: "Type of the scientific work",
+        editionTypes: {
+            digital: "Digital",
+            printed: "Printed",
+        },
+        buttons: {
+            card: "Card",
+            newPublication: "Add publication",
+            generateListDialog: "List of scientific works",
+            filter: "Filter",
+            clear: "Clear",
+            search: "Search",
+            koksnvo: "QACFSHE",
+        },
+        menu: {
+            newArticle: "Create new",
+            importFromPlatonus: "Platonus",
+            importFromScopus: "Scopus",
+            newPublicationsKoksnvo: "Request to add new publication recommended by QACFSHE",
+            publicationsKoksnvo: "Publications recommended by QACFSHE",
+            myRequests: "My requests",
+        },
+        columns: {
+            name: "Name",
+            type: "Work type",
+            author: "Author",
+            year: "Year",
+            status: "Status",
+        },
+        filter: {
+            documentName: "Name",
+            author: "Author",
+            status: "Status",
+            years: "Years",
+        },
+        types: {
+            article: "Article",
+            monograph: "Monograph",
+            scopus_article: "Publication in internationally peer-reviewed scientific journals indexed in Scopus",
+            publication_koksnvo: "Publication recommended by QACFSHE"
+        },
+        messages: {
+            successImport: "Import request sent successfully",
+            successPlatonus: "Scientific works from Platonus are imported. Results will come later!",
+            successScopus: "Scientific works from Scopus are imported. Results will come later!",
+        },
+        labels: {
+            publicationName: "Name of the publication",
+            publicationDate: "Publication year",
+            editionType: "Type of edition",
+            editionName: "Name of edition",
+            editionNumber: "Edition number",
+            editionYear: "Edition year",
+            editionPages: "Pages in edition",
+            issn: "ISSN",
+            isbn: "ISBN",
+            koksnvo: "Publication recommended QACFSHE",
+            link: "Link to publication",
+            printedPages: "Number of printed sheets",
+            recommendedBy: "Recommended by (University Academic Council)",
+            coauthorsInternal: "Internal co-authors, full name",
+            coauthorsExternal: "External co-authors, full name",
+            attachments: "Attachments"
+        }
+    }
 }

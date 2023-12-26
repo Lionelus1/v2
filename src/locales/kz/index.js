@@ -1420,6 +1420,7 @@ export default {
         forbiddenAction: 'Әрекетке тыйым салынады. Сізде қажетті рұқсаттар жоқ.',
         internalServerError: 'Кешіріңіз, біздің тарапымыздан бірдеңе дұрыс болмады. Әрекетті кейінірек қайталаңыз.',
         unauthorized: 'Пайдаланушы жүйеге кірмеген.',
+        importAlreadyOnProcess: 'Импорттау процесі жүзеге асырылуда. Нәтижелерді күтіңіз.',
     },
     visuallyImpaired: {
         fontSize: "Қаріп өлшемі",
@@ -1466,7 +1467,7 @@ export default {
         laborActivity: 'Еңбек қызметі',
         awardsAndHonors:'Марапаттар мен құрметті атақтар',
         professionalDevelopment: 'Біліктілікті арттыру',
-        typeOfAward: 'Награда түрі', 
+        typeOfAward: 'Награда түрі',
         reward: 'Награда',
         qualification: {
             trainingForm: 'Біліктілікті арттыру нысаны',
@@ -1482,5 +1483,71 @@ export default {
     },
     personalData: 'Жеке ақпарат',
     yearPeriod:'Период годов',
-
+    scienceWorks: {
+        title: "Ғылыми жұмыстар тізімі",
+        publicationType: "Ғылыми жұмыс түрі",
+        editionTypes: {
+            digital: "Электрондық",
+            printed: "Баспа",
+        },
+        buttons: {
+            card: "Карта",
+            newPublication: "Ғылыми жұмыс қосу",
+            generateListDialog: "Ғылыми жұмыстар тізімі",
+            filter: "Фильтр",
+            clear: "Тазарту",
+            search: "Іздеу",
+            koksnvo: "ҒЖБССҚК",
+        },
+        menu: {
+            newArticle: "Жаңасын қосу",
+            importFromPlatonus: "Platonus",
+            importFromScopus: "Scopus",
+            newPublicationsKoksnvo: "Жаңа ҒЖБССҚК ұсынған ғылыми басылым қосуға сұраныс",
+            publicationsKoksnvo: "ҒЖБССҚК ұсынған ғылыми басылымдар",
+            myRequests: "Менің өтініштерім",
+        },
+        columns: {
+            name: "Атауы",
+            type: "Жұмыс түрі",
+            author: "Автор",
+            year: "Жылы",
+            status: "Статус",
+        },
+        filter: {
+            documentName: "Атауы",
+            author: "Автор",
+            status: "Статус",
+            years: "Жылдар",
+        },
+        types: {
+            article: "Мақала",
+            monograph: "Монография",
+            scopus_article: "Scopus халықаралық рецензияланатын ғылыми журналдардағы мақала",
+            publication_koksnvo: "ҒЖБССҚК ұсынған ғылыми басылым"
+        },
+        messages: {
+            successImport: "Импорттау сұрауы сәтті жіберілді",
+            successPlatonus: "Platonus-тан ғылыми еңбектер импорты жүзеге асырылуда. Нәтижелер кейінірек пайда болады!",
+            successScopus: "Scopus-тан ғылыми еңбектер импорты жүзеге асырылуда. Нәтижелер кейінірек пайда болады!",
+        },
+        labels: {
+            publicationName: "Жарияланым атауы",
+            publicationDate: "Жарияланған жылы",
+            editionType: "Баспа типі",
+            editionName: "Басылым атауы",
+            editionNumber: "Басылым нөмірі",
+            editionYear: "Басылым жылы",
+            editionPages: "Басылымдағы бет нөмірлері",
+            issn: "ISSN",
+            isbn: "ISBN",
+            koksnvo: "ҒЖБССҚК ұсынған ғылыми басылым",
+            link: "Жарияланымға сілтеме",
+            printedPages: "Баспа табақтар",
+            recommendedBy: "Ұсынған (Университеттің ғылыми кеңесі)",
+            coauthorsInternal: "Ішкі авторлар, аты-жөні",
+            coauthorsExternal: "Сыртқы авторлар, аты-жөні",
+            attachments: "Қосымшалар"
+        }
+    }
 }

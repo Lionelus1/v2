@@ -154,7 +154,7 @@
     </template>
   </Dialog>
   <!-- documentInfoSidebar -->
-  <Sidebar v-model:visible="visibility.documentInfoSidebar" position="right" class="p-sidebar-lg" @hide="getContracts">
+  <Sidebar v-model:visible="visibility.documentInfoSidebar" position="right" class="p-sidebar-lg">
     <DocSignaturesInfo :docIdParam="contract.uuid"></DocSignaturesInfo>
   </Sidebar>
 </template>
