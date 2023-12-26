@@ -50,4 +50,27 @@ export class ScienceService {
         return api.post('/science/qualifications/delete', data, {headers: getHeader()})
     }
 
+    getScienceEditions(data) {
+        return api.post('/science/editions', data, {headers: getHeader()})
+    }
+    
+    addScienceEditions(data) {
+        return api.post('/science/editions/add', data, {headers: getHeader()})
+    }
+
+    getScienceEditionsRequest(data) {
+        return api.post('/science/editions/request', data, {headers: getHeader()})
+    }
+
+    addScienceEditionsRequest(data) {
+        return api.post('/science/editions/request/add', data, {headers: getHeader()})
+    }
+
+    updateScienceEditionsRequestStatus(data) {
+        return api.post('/science/editions/request/status/update', data, {headers: getHeader()})
+    }
+
+    deleteScienceEdition(data) {
+        return api.post('/science/editions/delete', data, {headers: getHeader()})
+    }
 }

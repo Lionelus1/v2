@@ -1,26 +1,42 @@
 <template>
-  <div>
     <ProgressSpinner v-if="loading" class="progress-spinner" strokeWidth="5"/>
     
     <Menubar :model="items" class="m-0 pt-0 pb-0"></Menubar>
     
     <BlockUI class="card p-fluid" :blocked="loading">
-      <TabView>
-        <TabPanel header="Личные данные">
+      <TabView class="custom-tabview">
+        
+        <TabPanel :header="$t('personalData')">
           <UserPersonalInfomation @personal-information-updated="handlePersonalInformationUpdate" :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
         </TabPanel>
-        <TabPanel header="Удостоверение личности">
+        <TabPanel  :header="$t('hr.title.id')">
           <UserIDCard @personal-information-updated="handlePersonalInformationUpdate" :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
         </TabPanel>
-        <TabPanel header="Образование">
+        <TabPanel :header="$t('hr.educationLabel')">
           <UserEducationView  :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
         </TabPanel>
-        <TabPanel header="Банковские реквизиты">
+        <TabPanel :header="$t('bank.requisite')">
           <UserRequisite @personal-information-updated="handlePersonalInformationUpdate" :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
         </TabPanel>
+        <TabPanel v-if="customType===chapter.scientists || findRole(null, 'teacher')" :header="$t('science.areaScientificInterests')">
+          <UserResearchInterestsView :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
+        </TabPanel>
+
+        <TabPanel v-if="customType===chapter.scientists || findRole(null, 'teacher')" :header="$t('science.laborActivity')">
+          <WorkExperienceView :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
+        </TabPanel>
+
+
+        <TabPanel v-if="customType===chapter.scientists || findRole(null, 'teacher')" :header="$t('science.awardsAndHonors')">
+          <UserAwardView :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
+        </TabPanel>
+
+        <TabPanel v-if="customType===chapter.scientists || findRole(null, 'teacher')" :header="$t('science.professionalDevelopment')">
+          <UserQualificationsView :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
+        </TabPanel>
+
       </TabView>
     </BlockUI>
-  </div>
 </template>
 
 <script>
@@ -28,23 +44,30 @@ import { findRole } from "@/config/config";
 import Enum from "@/enum/roleControls/index";
 
 import { ContragentService } from "@/service/contragent.service";
-import UserPersonalInfomation from '@/components/user/UserPersonalInfomation'
-import UserIDCard from '@/components/user/UserIDCard'
-import UserEducationEdit from '@/components/user/UserEducationEdit'
-import UserEducationView from '@/components/user/UserEducationView'
-import UserRequisite from '@/components/user/UserRequisite'
+import UserPersonalInfomation from '@/components/user/edit/UserPersonalInfomation'
+import UserIDCard from '@/components/user/edit/UserIDCard'
+import UserEducationEdit from '@/components/user/edit/UserEducationEdit'
+import UserEducationView from '@/components/user/view/UserEducationView'
+import UserRequisite from '@/components/user/edit/UserRequisite'
 import {UserService} from "@/service/user.service"
-
+import UserResearchInterestsView from "@/components/user/view/UserResearchInterestsView"
+import WorkExperienceView from "@/components/user/view/WorkExperienceView"
+import UserAwardView from "@/components/user/view/UserAwardView"
+import UserQualificationsView from "@/components/user/view/UserQualificationsView"
 
 export default {
   name: 'PersonPage',
-  components: {UserPersonalInfomation, UserIDCard, UserEducationView, UserRequisite },
+  components: {UserPersonalInfomation, UserIDCard, UserEducationView, UserRequisite, UserResearchInterestsView, WorkExperienceView, UserAwardView, UserQualificationsView },
   props: {
     person: null,
     userID: null,
     readonly: {
       type: Boolean,
       default: false
+    },
+    customType: {
+      type: String,
+      default: ''
     }
   },
   emits: ['personUpdated',],
@@ -85,7 +108,12 @@ export default {
       ],
       user: {},
       userService: new UserService(),
-      file: null
+      file: null,
+      chapter: {
+        myAccount: 'myAccount',
+        scientists: 'scientists',
+        viewUser: 'viewUser'
+      }
     }
   },
   created() {
@@ -131,7 +159,6 @@ export default {
       if (this.file !== null) {
         fd.append("idImage", this.file);
       }
-
 
       this.userService.updateUserAccountHandler(fd).then(res => {
         this.file = null
@@ -216,13 +243,25 @@ export default {
 
 <style scoped>
 
-.custom-dropdown {
-  margin-top: 8px;
-}
-.progress-spinner {
-  position: absolute;
-  top: 0; bottom: 0; left: 0; right: 0;
-  margin: auto;
-  z-index: 1102;
-}
+  .custom-dropdown {
+    margin-top: 8px;
+  }
+  .progress-spinner {
+    position: absolute;
+    top: 0; bottom: 0; left: 0; right: 0;
+    margin: auto;
+    z-index: 1102;
+  }
+
+  .custom-tabview .p-tabview-nav {
+    display: flex;
+    flex-wrap: wrap; 
+    gap: 8px;
+  }
+
+  .custom-tabview .p-tabview-nav .p-tabview-nav-link {
+    min-width: 120px; 
+    white-space: nowrap; 
+  }
+
 </style>

@@ -62,6 +62,7 @@ export default {
     RelatedDoc: 9,
     PostAccreditationMonitoringReport: 10,
     Reference: 11,
+    ScienceWorks: 12,
   },
 
   ContragentType: {
@@ -112,4 +113,11 @@ export default {
     ScienceAdvisorApproval: 'science_advisor_approval',
     AccountantsExecutionRequest: 'accountants_execution_request',
   },
+
+  ScienceWorkType: {
+    Article: 'article',
+    Monograph: 'monograph',
+    ScopusArticle: 'scopus_article',
+    PublicationKOKSNVO: 'publication_koksnvo',
+  }
 }

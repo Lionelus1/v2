@@ -154,7 +154,7 @@
     </template>
   </Dialog>
   <!-- documentInfoSidebar -->
-  <Sidebar v-model:visible="visibility.documentInfoSidebar" position="right" class="p-sidebar-lg" @hide="getContracts">
+  <Sidebar v-model:visible="visibility.documentInfoSidebar" position="right" class="p-sidebar-lg">
     <DocSignaturesInfo :docIdParam="contract.uuid"></DocSignaturesInfo>
   </Sidebar>
 </template>
@@ -240,9 +240,8 @@ export default {
         {
           label: this.$t("common.send"),
           icon: "pi pi-send",
-          disabled: () => this.contract && (this.contract.docHistory.stateId === DocEnum.INAPPROVAL.ID ||
-            this.contract.docHistory.stateId === DocEnum.SIGNING.ID || (this.contragentRequest && 
-            this.contract.docHistory.stateId === this.DocEnum.CREATED.ID)),
+          disabled: () => this.contract && (this.contract.docHistory.stateId === DocEnum.SIGNING.ID ||
+            (this.contragentRequest && this.contract.docHistory.stateId === this.DocEnum.CREATED.ID)),
           items: [
             {
               label: this.$t("common.toapprove"),
@@ -264,8 +263,8 @@ export default {
               label: this.$t("common.tosign"),
               icon: "pi pi-user-edit",
               visible: () => this.contract && ((this.contract.sourceType === DocEnum.DocSourceType.Template && 
-                !this.contract.template.needApproval && this.contract.docHistory.stateId === DocEnum.CREATED.ID) || 
-                this.contract.docHistory.stateId === DocEnum.APPROVED.ID),
+                !this.contract.template.needApproval && (this.contract.docHistory.stateId === DocEnum.CREATED.ID ||
+                this.contract.docHistory.stateId === DocEnum.INAPPROVAL.ID)) || this.contract.docHistory.stateId === DocEnum.APPROVED.ID),
               disabled: () => this.contragentOption === 'email',
               command: () => { this.sendToSign() }
             },
@@ -870,7 +869,14 @@ export default {
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
       })
-    }
+    },
+    generateUUID() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        const r = crypto.getRandomValues(new Uint8Array(1))[0] % 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    },
   }
 }
 </script>

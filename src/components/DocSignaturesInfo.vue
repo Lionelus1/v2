@@ -104,9 +104,6 @@ import { FileService } from "@/service/file.service";
 import { AgreementService } from "@/service/agreement.service";
 import { WorkPlanService } from "@/service/work.plan.service";
 
-
-
-
 export default {
   name: "DocSignaturesInfo",
   components: {QrGuideline, SignatureQrPdf, DocInfo, QrcodeVue },
@@ -135,6 +132,8 @@ export default {
   },
   data() {
     return {
+      service: new DocService(),
+
       signatures: null,
       approvalStages: null,
       plan: null,
@@ -192,7 +191,7 @@ export default {
     this.emitter.on('downloadCMS', (data) => {
       if (data !== null) {
         const data = {
-          documentUuid: this.doc_id, 
+          documentUuid: this.doc_id,
           signatureId: data
         }
         this.docService.downloadCms(data).then(res => {
@@ -328,6 +327,10 @@ export default {
 
           if (this.docInfo.docType === this.Enum.DocType.PostAccreditationMonitoringReport) {
             this.isShow = true
+          }
+
+          if (this.docInfo.docType === this.Enum.DocType.ScienceWorks) {
+            this.getDocNew();
           }
         }
 
@@ -503,6 +506,37 @@ export default {
         this.loading = false
       })
     },
+    getDocNew() {
+      this.loading = true;
+
+      this.service.getDocumentV2({
+        uuid: this.docInfo.uuid,
+      }).then(res => {
+        for (let element of res.data.approvalStages) {
+          console.log(element)
+          if (!element.signatures) {
+            continue;
+          }
+
+          if (this.hideDocRevision) {
+            this.hideDocRevision = !element.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));
+          }
+        }
+
+        this.loading = false;
+      }).catch(err => {
+        this.loading = false;
+
+        if (err.response && err.response.status == 401) {
+          this.$store.dispatch("logLout");
+        } else if (err.response && err.response.data && err.response.data.localized) {
+          this.showMessage('error', this.$t(err.response.data.localizedPath));
+        } else {
+          console.log(err)
+          this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
+        }
+      });
+    }
   }
 }
 </script>

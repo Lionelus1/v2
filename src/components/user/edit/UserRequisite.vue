@@ -1,6 +1,6 @@
 <template>  
 
-  <div v-if="checkRequisite" id="carddiv" class="grid">
+  <div id="carddiv" class="grid">
     <div class="col-12 md:col-12 p-fluid">
       <div class="card">
         <div class="grid formgrid">
@@ -69,7 +69,7 @@
 
   const banks = ref({})
   const bank = ref(null);
-  const checkRequisite = ref(false)
+
   const user = ref(props.modelValue)
 
   const payload = ref({
@@ -112,32 +112,27 @@
   }
 
   const getUserAccount= () => {
-    if (props.modelValue != null && props.modelValue.bank != null) {
+    if (props.modelValue != null) {
       user.value = props.modelValue
-      checkRequisite.value = true
-      getBanks()
       return
     }
-    
+
     const req = {
       userID: props.userID
     }
-    
+
     userService.getUserAccount(req).then(response=>{  
-      
-      user.value.userID = response.data.user.userID
-      user.value.bank = response.data.user.bank
-      user.value.name = response.data.user.bank.name
-      user.value.bankaccount = response.data.user.bankaccount
-      getBanks()
-      checkRequisite.value = true
+
+      payload.value.userID = response.data.user.userID
+      payload.value.bank_id = response.data.user.bank.id
+      payload.value.name = response.data.user.bank.name
+      payload.value.bankaccount = response.data.user.bankaccount
     }).catch(error => {
       toast.add({
         severity: "error",
         summary: t('message.actionError'),
         life: 3000,
       })
-      checkRequisite.value = true
     })
   }
 
@@ -150,6 +145,7 @@
 
   onMounted(() => {
       getUserAccount()
+      getBanks()
   })
 
 </script>

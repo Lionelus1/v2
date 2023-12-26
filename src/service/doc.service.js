@@ -66,7 +66,7 @@ export class DocService {
     documentRevision(data) {
         return api.post("/document/revision", data, {headers: getHeader()});
     }
-  
+
     getFolders(data) {
         return api.post("/folders", data,  {headers: getHeader()});
     }
@@ -151,4 +151,13 @@ export class DocService {
     createNewDocumentRequest(data) {
         return api.post("/document/newRequest", data, {headers: getHeader()});
     }
-}   
+    importScienceWorksFromPlatonus() {
+        return api.get("/document/scienceWorks/import/platonus", {headers: getHeader()});
+    }
+    importScienceWorksFromScopus() {
+        return api.get("/document/scienceWorks/import/scopus", {headers: getHeader()});
+    }
+    documentRevisionV2(data) {
+        return api.post("/document/revision", data, {headers:getHeader()})
+    }
+}

@@ -210,11 +210,12 @@ export default {
         dataSavedSuccessfully:'Данные успешно сохранены',
         creationAndEditing:'Создание и редактирование',
         states: {
+            submitted: "Подана",
             created: "создан",
-            inapproval: "на согласовании",
-            approved: "согласован",
-            revision: "на доработку",
-            rejected: "отклонить",
+            inapproval: "На согласовании",
+            approved: "Согласован",
+            revision: "На доработку",
+            rejected: "Отклонить",
             registered: "Зарегистрирован",
             notRegistered: "Не зарегистрирован",
             notVoted: "Не проголосовал",
@@ -1338,6 +1339,7 @@ export default {
         reference: 'Справка',
         save: 'Сохранить и одобрить',
         reject: 'Отклонить запрос',
+        sendRequest: 'Отправить запрос',
         commentary: 'Комментарий от инициатора запроса',
         types: {
             reference_error_correction: 'На исправление ошибок',
@@ -1437,6 +1439,7 @@ export default {
         forbiddenAction: 'Действие запрещено. У вас нет необходимых разрешений.',
         internalServerError: 'Приносим извинения, с нашей стороны что-то пошло не так. Пожалуйста, повторите попытку позже.',
         unauthorized: 'Пользователь не авторизован.',
+        importAlreadyOnProcess: 'Процесс импорта уже запущен. Пожалуйста, дождитесь результатов.',
     },
     blog: {
         title: 'Блог',
@@ -1607,5 +1610,74 @@ export default {
     finance: {
         title: 'Каталог услуг',
         getService: 'Получить услугу'
+    },
+    personalData: 'Персональные сведения',
+    yearPeriod:'Период годов',
+    scienceWorks: {
+        title: "Список научных работ",
+        publicationType: "Вид научной работы",
+        editionTypes: {
+            digital: "Электронный",
+            printed: "Печатный",
+        },
+        buttons: {
+            card: "Карта",
+            newPublication: "Добавить публикацию",
+            generateListDialog: "Список научных работ",
+            filter: "Фильтр",
+            clear: "Очистить",
+            search: "Поиск",
+        },
+        menu: {
+            newArticle: "Создать новую",
+            importFromPlatonus: "Platonus",
+            importFromScopus: "Scopus",
+            newPublicationsKoksnvo: "Запрос на добавление нового издания, рекомендуемого КОКСНВО",
+            publicationsKoksnvo: "Издания, рекомендуемых КОКСНВО",
+            myRequests: "Мои запросы",
+        },
+        columns: {
+            name: "Имя",
+            type: "Тип работы",
+            author: "Автор",
+            year: "Год",
+            status: "Статус",
+            koksnvo: "КОКСНВО",
+        },
+        filter: {
+            documentName: "Имя",
+            author: "Автор",
+            status: "Статус",
+            years: "Годы",
+        },
+        types: {
+            article: "Статья",
+            monograph: "Монография",
+            scopus_article: "Статья в международных рецензируемых научных журналах Scopus",
+            publication_koksnvo: "Издание, рекомендуемое КОКСНВО"
+        },
+        messages: {
+            successImport: "Запрос на импорт успешно отправлен",
+            successPlatonus: "Импортируются научные труды с Platonus. Результаты будут позже!",
+            successScopus: "Импортируются научные труды с Scopus. Результаты будут позже!",
+        },
+        labels: {
+            publicationName: "Наименование публикации",
+            publicationDate: "Дата публикации",
+            editionType: "Тип издания",
+            editionName: "Наименование издания",
+            editionNumber: "Номер издания",
+            editionYear: "Год издания",
+            editionPages: "Номера страниц в издании",
+            issn: "ISSN",
+            isbn: "ISBN",
+            koksnvo: "Издание, рекомендуемое КОКСНВО",
+            link: "Ссылка на публикацию",
+            printedPages: "Количество печатных листов",
+            recommendedBy: "Кем рекомендовано (Ученый совет ВУЗа)",
+            coauthorsInternal: "Внутренние соавторы, ФИО",
+            coauthorsExternal: "Внешние соавторы, ФИО",
+            attachments: "Вложения"
+        }
     }
 }

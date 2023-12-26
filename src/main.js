@@ -113,6 +113,9 @@ import Person from '@/components/contragent/Person.vue';
 import Organization from '@/components/contragent/Organization.vue';
 import FindUser from "@/helpers/FindUser";
 import TinyEditor from "@/components/TinyEditor.vue";
+import 'primevue/resources/primevue.min.css'
+import 'primevue/resources/themes/saga-blue/theme.css'
+import 'primeicons/primeicons.css'
 
 
 import ConfirmationService from 'primevue/confirmationservice';

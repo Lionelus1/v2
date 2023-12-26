@@ -5,7 +5,7 @@
 
     <div>
       <div class="col-12 md:col-12 p-fluid">
-        <MyCabinetView :id="id" customType="scientists"></MyCabinetView>
+        <PersonPage v-if="userView" :person="user" :sidebar="true" custom-type="scientists"/>
       </div>
     </div>
 
@@ -19,9 +19,8 @@
   import {useRouter, useRoute} from "vue-router";
   import {useConfirm} from "primevue/useconfirm";
   import {ScienceService} from "@/service/science.service";
-  import OverlayPanel from 'primevue/overlaypanel';
-  import Image from 'primevue/image';
-  import MyCabinetView from "@/components/humanResources/candidate/MyCabinetView";
+  import PersonPage from "../contragent/v2/PersonPage.vue";
+  import {UserService} from "@/service/user.service"
 
   const {t, locale} = useI18n()
   const toast = useToast()
@@ -32,21 +31,51 @@
   const loading = ref(false)
   const scienceService = new ScienceService()
   const id = parseInt(route.params.id) 
-  const getScientist = () => {
-      const req = { 
-        id: parseInt(route.params.id)
+  const user = ref({})
+
+  const userService = new UserService
+  const fileData = ref(null)
+  const userView = ref(false)
+
+  const getUserAccount= () => {
+    const req = {
+      userID: id
+    }
+
+    userService.getUserAccount(req).then(response=>{
+
+      user.value = response.data.user
+      userView.value = true
+    }).catch(error => {
+      toast.add({
+        severity: "error",
+        summary: t('message.actionError'),
+        life: 3000,
+      })
+    })
+  }
+
+  const getScientists = () => {
+      loading.value = true;
+      const req = {
+        userID: id
       }
-      
+
       scienceService.getScientists(req).then(res => {
-          scientist.value = res.data
-          loading.value = false
+        if (res.data.scientists != null) {
+          user.value = res.data.scientists[0]
+        }
+        loading.value = false
+        userView.value = true
       }).catch(error => {
           toast.add({severity: 'error', summary: t('common.error'), life: 3000})
           loading.value = false;
+          userView.value = true
       })
-  }
+    }
+
   onMounted(() => {
-      getScientist()
+    getScientists()
   })
 </script>
   

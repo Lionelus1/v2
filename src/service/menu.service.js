@@ -13,7 +13,7 @@ export class MenuService {
                         label: $t('contracts.template'),
                         icon: 'pi pi-fw pi-book',
                         to: '/documents/doctemplate',
-                        visible: !this.findRole("student")
+                        visible: this.isEnuWorker()
                     },
                     {
                         label: $t('contracts.title'),
@@ -40,13 +40,19 @@ export class MenuService {
                         icon: 'pi pi-fw pi-folder',
                         to: '/documents/catalog/postaccmonrep'
                     },
+                    {
+                        label: $t('scienceWorks.title'),
+                        icon: 'fa-solid fa-flask-vial',
+                        to: '/documents/catalog/scienceWorks',
+                        visible: this.isEnuWorker()
+                    },
                 ]
             },
             {
                 label: $t('common.administration'),
                 icon: 'fa-solid fa-user-shield',
-                visible: this.getLoginedUser() && this.getLoginedUser().mainPosition && this.getLoginedUser().mainPosition.organization.id === 1 &&
-                    (this.isVacancyRightsValidity() || this.findRole("dephead") || this.findRole("practice_responsible") ||
+                visible: this.isEnuWorker
+                    () && (this.isVacancyRightsValidity() || this.findRole("dephead") || this.findRole("practice_responsible") ||
                     this.findRole("main_administrator") || this.findRole("hr_manager")),
                 items: [
                     {
@@ -84,8 +90,7 @@ export class MenuService {
             {
                 label: $t('common.contragents'),
                 icon: 'pi pi-fw pi-users',
-                visible: this.getLoginedUser() && !this.findRole("student") && (this.getLoginedUser().mainPosition &&
-                    this.getLoginedUser().mainPosition.organization && this.getLoginedUser().mainPosition.organization.id === 1),
+                visible: this.isEnuWorker(),
                 items: [
                     {
                         label: $t('common.organizations'),
@@ -151,6 +156,23 @@ export class MenuService {
                         label: $t('science.scientificWorks'), icon: 'fas fa-book', to: '/science/publications',
                         // visible: this.findRole("main_administrator") || this.findRole("online_course_administrator")
                     }
+                ]
+            },
+            {
+                label: $t('science.activity'),
+                icon: 'fas fa-flask',
+                items: [
+                    {
+                        label: $t('science.scientistsProfile'),
+                        icon: 'fas fa-user',
+                        to: '/science/scientists'
+                    },
+                    {
+                        label: $t('scienceWorks.title'),
+                        icon: 'fa-solid fa-flask-vial',
+                        to: '/documents/catalog/scienceWorks',
+                        visible: this.isEnuWorker()
+                    },
                 ]
             },
             {
@@ -352,5 +374,21 @@ export class MenuService {
             }
         }
         return false;
+    }
+
+    isEnuWorker() {
+        let loginedUser = this.getLoginedUser();
+        if (!loginedUser || !loginedUser.roles || !loginedUser.mainPosition ||
+            loginedUser.mainPosition.organization.id !== 1) {
+            return false;
+        }
+
+        for (let i = 0; i < loginedUser.roles.length; i++) {
+            if (loginedUser.roles[i].name === 'student') {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

@@ -209,11 +209,12 @@ export default {
         dataSavedSuccessfully:'Деректер сәтті сақталды',
         creationAndEditing:'Сақтау және өңдеу',
         states: {
-            created: "құрылды",
-            inapproval: "келісуде",
-            approved: "келісілді",
-            rejected: "қайтарылды",
-            revision: "түзетуге",
+            submitted: "Берілген",
+            created: "Құрылды",
+            inapproval: "Келісуде",
+            approved: "Келісілді",
+            rejected: "Қайтарылды",
+            revision: "Түзетуге",
             registered: "Тіркелді",
             notRegistered: "Тіркелмеді",
             notVoted: "Дауыс бермеді",
@@ -1349,6 +1350,7 @@ export default {
         save: 'Сақтау және бекіту',
         reject: 'Өтінішті қабылдамау',
         commentary: 'Өтініш берушінің пікірі',
+        sendRequest: 'Жіберу',
         types: {
             reference_error_correction: 'Қателерді түзету үшін',
             reference_info_request: 'Қосымша ақпарат',
@@ -1488,6 +1490,7 @@ export default {
         forbiddenAction: 'Әрекетке тыйым салынады. Сізде қажетті рұқсаттар жоқ.',
         internalServerError: 'Кешіріңіз, біздің тарапымыздан бірдеңе дұрыс болмады. Әрекетті кейінірек қайталаңыз.',
         unauthorized: 'Пайдаланушы жүйеге кірмеген.',
+        importAlreadyOnProcess: 'Импорттау процесі жүзеге асырылуда. Нәтижелерді күтіңіз.',
     },
     visuallyImpaired: {
         fontSize: "Қаріп өлшемі",
@@ -1620,5 +1623,74 @@ export default {
     finance: {
         title: 'Қызметтер каталогы',
         getService: 'Қызметті алу'
+    },
+    personalData: 'Жеке ақпарат',
+    yearPeriod:'Период годов',
+    scienceWorks: {
+        title: "Ғылыми жұмыстар тізімі",
+        publicationType: "Ғылыми жұмыс түрі",
+        editionTypes: {
+            digital: "Электрондық",
+            printed: "Баспа",
+        },
+        buttons: {
+            card: "Карта",
+            newPublication: "Ғылыми жұмыс қосу",
+            generateListDialog: "Ғылыми жұмыстар тізімі",
+            filter: "Фильтр",
+            clear: "Тазарту",
+            search: "Іздеу",
+            koksnvo: "ҒЖБССҚК",
+        },
+        menu: {
+            newArticle: "Жаңасын қосу",
+            importFromPlatonus: "Platonus",
+            importFromScopus: "Scopus",
+            newPublicationsKoksnvo: "Жаңа ҒЖБССҚК ұсынған ғылыми басылым қосуға сұраныс",
+            publicationsKoksnvo: "ҒЖБССҚК ұсынған ғылыми басылымдар",
+            myRequests: "Менің өтініштерім",
+        },
+        columns: {
+            name: "Атауы",
+            type: "Жұмыс түрі",
+            author: "Автор",
+            year: "Жылы",
+            status: "Статус",
+        },
+        filter: {
+            documentName: "Атауы",
+            author: "Автор",
+            status: "Статус",
+            years: "Жылдар",
+        },
+        types: {
+            article: "Мақала",
+            monograph: "Монография",
+            scopus_article: "Scopus халықаралық рецензияланатын ғылыми журналдардағы мақала",
+            publication_koksnvo: "ҒЖБССҚК ұсынған ғылыми басылым"
+        },
+        messages: {
+            successImport: "Импорттау сұрауы сәтті жіберілді",
+            successPlatonus: "Platonus-тан ғылыми еңбектер импорты жүзеге асырылуда. Нәтижелер кейінірек пайда болады!",
+            successScopus: "Scopus-тан ғылыми еңбектер импорты жүзеге асырылуда. Нәтижелер кейінірек пайда болады!",
+        },
+        labels: {
+            publicationName: "Жарияланым атауы",
+            publicationDate: "Жарияланған жылы",
+            editionType: "Баспа типі",
+            editionName: "Басылым атауы",
+            editionNumber: "Басылым нөмірі",
+            editionYear: "Басылым жылы",
+            editionPages: "Басылымдағы бет нөмірлері",
+            issn: "ISSN",
+            isbn: "ISBN",
+            koksnvo: "ҒЖБССҚК ұсынған ғылыми басылым",
+            link: "Жарияланымға сілтеме",
+            printedPages: "Баспа табақтар",
+            recommendedBy: "Ұсынған (Университеттің ғылыми кеңесі)",
+            coauthorsInternal: "Ішкі авторлар, аты-жөні",
+            coauthorsExternal: "Сыртқы авторлар, аты-жөні",
+            attachments: "Қосымшалар"
+        }
     }
 }

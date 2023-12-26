@@ -1,4 +1,5 @@
 import axios from "axios";
+import store from '@/store/store';
 
 export const apiDomain = process.env.VUE_APP_API_DOMAIN
 export const signerApi = process.env.VUE_APP_SIGNER_API
@@ -84,7 +85,7 @@ export const testFunction= function(){
 //findRole ---
 export const findRole = function(user, role) {
   if (user == null) {
-    user = this.$store.state.loginedUser;
+    user = store.state.loginedUser;
   }
   if (user.roles) {
     for (let i = 0; i < user.roles.length; i++) {

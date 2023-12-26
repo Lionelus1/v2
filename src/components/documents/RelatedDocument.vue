@@ -10,7 +10,7 @@
   <BlockUI v-if="haveAccess" :blocked="loading" class="card">
     <Menubar :model="menu" class="m-0 pt-0 pb-0"></Menubar>
     <TabView v-model:activeIndex="activeTab" @tab-change="tabChanged" class="flex flex-column flex-grow-1">
-      <TabPanel :header="$t('common.params')">
+      <TabPanel :disabled="contract && contract.sourceType === Enum.DocSourceType.FilledDoc" :header="$t('common.params')">
         <div v-if="contract" class="flex flex-column flex-grow-1">
           <div class="lg:col-6 mt-3">
             <p> {{ $t('common.state') + ": " }}
@@ -42,7 +42,7 @@
                   contract.docHistory.stateId > Enum.CREATED.ID || (param.properties && param.properties.readonly)"
                   :placeholder="param.properties && param.properties.readonly ? $t('contracts.autogenerate') : ''"></InputText> 
               </div>
-              <div class="p-fluid md:col-6" v-if="param.name == 'date'">
+              <div class="p-fluid md:col-6" v-if="param.name === 'date'">
                 <PrimeCalendar v-model="param.value" dateFormat="dd.mm.yy" :disabled="true"
                  :placeholder="param.properties && param.properties.readonly ? $t('contracts.autogenerate') : ''"></PrimeCalendar>
               </div>
@@ -113,7 +113,7 @@
     <Access textMode="short" :showLogo="false" returnMode="back"></Access>
   </div>
   <!-- documentInfoSidebar -->
-  <Sidebar v-model:visible="visibility.documentInfoSidebar" position="right" class="p-sidebar-lg" @hide="getContracts">
+  <Sidebar v-model:visible="visibility.documentInfoSidebar" position="right" class="p-sidebar-lg">
     <DocSignaturesInfo :docIdParam="contract.uuid"></DocSignaturesInfo>
   </Sidebar>
   <!-- revisionDialog -->
@@ -203,7 +203,7 @@ export default {
         {
           label: this.$t("common.send"),
           icon: "pi pi-send",
-          disabled: () => !this.contract,
+          disabled: () => !this.contract || this.contract.sourceType === Enum.DocSourceType.FilledDoc,
           items: [
             {
               label: this.$t("contracts.menu.toSciadvisor"),
@@ -214,19 +214,19 @@ export default {
             {
               label: this.$t("common.tosign"),
               icon: "pi pi-user-edit",
-              visible: () => this.contract && this.contract.newParams.sciadvisor.value &&
-                this.contract.newParams.sciadvisor.value.data && 
-                this.contract.newParams.sciadvisor.value.data.userID === this.loginedUser.userID &&
-                this.contract.docHistory.stateId === Enum.CREATED.ID,
+              visible: () => this.contract && this.contract.newParams.sciadvisor &&
+                  this.contract.newParams.sciadvisor.value && this.contract.newParams.sciadvisor.value.data &&
+                  this.contract.newParams.sciadvisor.value.data.userID === this.loginedUser.userID &&
+                  this.contract.docHistory.stateId === Enum.CREATED.ID,
               command: () => { this.open('sendToApproveDialog') }
             },
             {
               label: this.$t("common.revision"),
               icon: "fa-regular fa-circle-xmark",
-              visible: () => this.contract && this.contract.newParams.sciadvisor.value &&
-                this.contract.newParams.sciadvisor.value.data && 
-                this.contract.newParams.sciadvisor.value.data.userID === this.loginedUser.userID &&
-                this.contract.docHistory.stateId === Enum.CREATED.ID && this.sciadvisorRequest,
+              visible: () => this.contract && this.contract.newParams.sciadvisor &&
+                  this.contract.newParams.sciadvisor.value && this.contract.newParams.sciadvisor.value.data &&
+                  this.contract.newParams.sciadvisor.value.data.userID === this.loginedUser.userID &&
+                  this.contract.docHistory.stateId === Enum.CREATED.ID && this.sciadvisorRequest,
               command: () => { this.open('revisionDialog') }
             },
             {
@@ -257,11 +257,13 @@ export default {
         {
           label: this.$t("contracts.contract"),
           icon: "fa-solid fa-file-contract",
+          disabled: () => this.contract.sourceType === Enum.DocSourceType.FilledDoc,
           command: () => { this.$router.push('/documents/contracts/' + this.$route.params.uuid) }
         },
         {
           label: this.$t("contracts.menu.journal"),
           icon: "fa-solid fa-file-invoice",
+          disabled: () => this.contract.sourceType === Enum.DocSourceType.FilledDoc,
           command: () => { this.$router.push('/documents/contracts/' + this.$route.params.uuid + '/related') }
         }
       ]
@@ -305,6 +307,11 @@ export default {
       }).then(res => {
         this.contract = res.data;
 
+        if (this.contract.sourceType === Enum.DocSourceType.FilledDoc) {
+          this.activeTab = 1;
+          this.tabChanged();
+        }
+
         if (this.contract.requests) {
           for (let i = this.contract.requests.length-1; i >= 0; i--) {
             if (this.contract.requests[i].type === this.Enum.DocumentRequestType.ScienceAdvisorApproval) {
@@ -331,7 +338,9 @@ export default {
           }
         }
 
-        this.getParams();
+        if (this.contract.sourceType === Enum.DocSourceType.Template) {
+          this.getParams();
+        }
 
         this.clearStages();
 
@@ -584,6 +593,16 @@ export default {
       });
     },
     sendToSign(approvalUsers) {
+      if (this.changed) {
+        this.showMessage("warn", this.$t("common.tosign"), this.$t("common.message.saveChanges"));
+        return;
+      }
+
+      if (!this.validate()) {
+        this.showMessage("error", this.$t("common.tosign"), this.$t("common.message.fillError"));
+        return;
+      }
+
       this.loading = true;
 
       let revisionRequest = null;
@@ -707,6 +726,8 @@ export default {
       }
     },
     downloadFile(filename, filepath) {
+      this.loading = true;
+
       fetch(`${smartEnuApi}/serve?path=${filepath}`, {
         method: 'GET',
         headers: getHeader(),
@@ -785,7 +806,7 @@ export default {
     clearStages() {
       this.selectedUsers = [{
           stage: 1,
-          users: [this.contract.newParams.executor.value.data],
+          users: this.contract.newParams.executor ? [this.contract.newParams.executor.value.data] : [],
           certificate: {
             namekz: "Жеке тұлғаның сертификаты",
             nameru: "Сертификат физического лица",
@@ -794,7 +815,7 @@ export default {
           }
       }, {
         stage: 2,
-          users: [this.contract.newParams.sciadvisor.value.data],
+          users: this.contract.newParams.sciadvisor ? [this.contract.newParams.sciadvisor.value.data] : [],
           certificate: {
             namekz: "Жеке тұлғаның сертификаты",
             nameru: "Сертификат физического лица",
@@ -806,7 +827,7 @@ export default {
       this.stages = [
         {
           stage: 1,
-          users: [this.contract.newParams.executor.value.data],
+          users: this.contract.newParams.executor ? [this.contract.newParams.executor.value.data] : [],
           titleRu: "Исполнитель",
           titleKz: "Орындаушы",
           titleEn: "Executor",
@@ -819,7 +840,7 @@ export default {
         },
         {
           stage: 2,
-          users: [this.contract.newParams.sciadvisor.value.data],
+          users: this.contract.newParams.sciadvisor ? [this.contract.newParams.sciadvisor.value.data] : [],
           titleRu: "Научный руководитель",
           titleKz: "Жоба жетекшісі",
           titleEn: "Scientific adviser",
@@ -900,7 +921,14 @@ export default {
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
       })
-    }
+    },
+    generateUUID() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        const r = crypto.getRandomValues(new Uint8Array(1))[0] % 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    },
   }
 }
 </script>

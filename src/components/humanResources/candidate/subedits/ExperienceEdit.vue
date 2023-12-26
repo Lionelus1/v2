@@ -150,7 +150,6 @@ export default {
       if (this.value.isStillWorking) {
         this.value.endDate = null
       }
-
       if (this.validateForm()) {
         if (this.customType=='scientists') {
           this.savescientists()
