@@ -222,34 +222,31 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-                  <template v-for="(i, index) of modules" :key="i">
-                    <td rowspan="3">{{index+1}}</td>
-                    <td rowspan="3">{{ i['name' + locale]}}</td>
-                    <td rowspan="3">{{ i.code}}</td>
-                  </template>
+                <tr v-for="(i, index) of modules" :key="i">
+                    <td :rowspan="Array.isArray(i.moduleCourses) && i.moduleCourses.length === 2 ? 3: 1">{{index+1}}</td>
+                    <td :rowspan="Array.isArray(i.moduleCourses) && i.moduleCourses.length === 2 ? 3: 1">{{ i['name' + locale]}}</td>
+                    <td :rowspan="Array.isArray(i.moduleCourses) && i.moduleCourses.length === 2 ? 3: 1">{{ i.code}}</td>
                 </tr>
                 <template v-for="(i) of modules" :key="i">
-                <tr v-for="course of i.moduleCourses" :key="course">
-                    <td>
-                      {{course['name' + locale]}}
-                    </td>
-                    <td>{{course.codeCourse}}</td>
-                    <td>{{course.creditCount}}</td>
-                    <td>{{course.creditCount}}</td>
-                    <td>{{course.creditCount}}</td>
-                    <td>{{course.language}}</td>
-                    <td>{{course.courseId}}</td>
-                    <td>{{course.semester}}</td>
-                    <td>{{course.Lecture}}/{{course.practice}}/{{course.laboratory}}</td>
-                    <td>{{course.prp}}/{{course.IndependentWork}}</td>
-                    <td>{{course.formControl}}</td>
+                  <tr  v-for="course of i.moduleCourses" :key="course">
+                  <td>
+                    {{course['name' + locale]}}
+                  </td>
+                  <td>{{course.codeCourse}}</td>
+                  <td>{{course.creditCount}}</td>
+                  <td>{{course.creditCount}}</td>
+                  <td>{{course.creditCount}}</td>
+                  <td>{{course.language}}</td>
+                  <td>{{course.courseId}}</td>
+                  <td>{{course.semester}}</td>
+                  <td>{{course.Lecture}}/{{course.practice}}/{{course.laboratory}}</td>
+                  <td>{{course.prp}}/{{course.IndependentWork}}</td>
+                  <td>{{course.formControl}}</td>
                 </tr>
                 </template>
                 </tbody>
               </table>
             </div>
-
             <br>
             <Button class="p-button-outlined mr-2 w-fit p-button-sm"
                     icon="pi pi-plus-circle" :label="$t('educationalPrograms.addModule')" @click="dialogModule = true"/>
@@ -379,29 +376,29 @@
         <span>{{ $t("educationalPrograms.lecture") }}</span>
       </div>
         <div class="col-3">
-        <InputText type="number" v-model="formModule.moduleCourseRel[0].Lecture"/>
+        <InputNumber v-model="formModule.moduleCourseRel[0].Lecture"/>
         <!--    <small class="p-error">{{ $t("common.requiredField") }}</small>-->
       </div>
       <div class="col-6 flex">
         <span class="mr-4">{{ $t("educationalPrograms.practice") }}</span>
-        <InputText type="number" v-model="formModule.moduleCourseRel[0].practice"/>
+        <InputNumber v-model="formModule.moduleCourseRel[0].practice"/>
         <!--    <small class="p-error">{{ $t("common.requiredField") }}</small>-->
       </div>
       <div class="col-3">
         <span>{{ $t("educationalPrograms.laboratoryWork") }}</span>
       </div>
       <div class="col-3">
-        <InputText type="number" v-model="formModule.moduleCourseRel[0].laboratory"/>
+        <InputNumber v-model="formModule.moduleCourseRel[0].laboratory"/>
         <!--    <small class="p-error">{{ $t("common.requiredField") }}</small>-->
       </div>
       <div class="col-3 flex">
         <span class="mr-4" :title="$t('educationalPrograms.preGraduatePractice')">{{ $t("educationalPrograms.prp") }}</span>
-        <InputText type="number" v-model="formModule.moduleCourseRel[0].prp"/>
+        <InputNumber v-model="formModule.moduleCourseRel[0].prp"/>
         <!--    <small class="p-error">{{ $t("common.requiredField") }}</small>-->
       </div>
       <div class="col-3 flex">
         <span class="mr-4" :title="$t('educationalPrograms.independentWorkStudent')">{{ $t("educationalPrograms.sro") }}</span>
-        <InputText type="number" v-model="formModule.moduleCourseRel[0].IndependentWork"/>
+        <InputNumber v-model="formModule.moduleCourseRel[0].IndependentWork"/>
         <!--    <small class="p-error">{{ $t("common.requiredField") }}</small>-->
       </div>
       <div class="col-12 lg:col-3">
@@ -515,24 +512,25 @@ const selectedCourse = ref()
 const formModule = ref(
     {
       //namekz: 'test kz',
-      id: 15,
+      id: 1,
+      syllabusId: 2,
       nameru: 'test ru',
       nameen: 'test en',
       code: 'test kz',
       creditCount: '2',
       courseType: courseType.value[0],
       courseComponentType: courseComponentType.value[0],
-      syllabusId: 3,
       moduleCourseRel: [
         {
+          syllabusModuleId: 1,
           whatCourse: whatCourse.value[0],
           semester: 2,
-          Lecture: 70,
-          practice: 75,
-          laboratory: 80,
-          prp: 50,
-          IndependentWork: 72,
-          formControl: "test",
+          Lecture: 80,
+          practice: 85,
+          laboratory: 88,
+          prp: 87,
+          IndependentWork: 90,
+          formControl: "test форм",
         }
       ]
     }
@@ -595,7 +593,7 @@ const service = new OnlineCourseService()
 const dataFieldEducation = ref([])
 const modules = ref([])
 const courses = ref([])
-const dialogModule = ref(true)
+const dialogModule = ref(false)
 const lazyParams = {
   page: 0,
   rows: 561,
@@ -723,12 +721,14 @@ const addModuleAndCourses = () => {
   submitted.value = true
   if (!isValidModule()) return;
   console.log(formModule.value)
-  toast.add({
-    severity: "success",
-    summary: i18n.t("common.success"),
-    life: 3000,
-  });
   service.addModuleAndCourses(formModule.value).then(response => {
+    toast.add({
+      severity: "success",
+      summary: i18n.t("common.success"),
+      life: 3000,
+    });
+    dialogModule.value = false
+    getModuleBySyllasbusId()
   }).catch(_ => {
   });
 }
