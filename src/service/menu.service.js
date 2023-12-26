@@ -146,24 +146,11 @@ export class MenuService {
                 visible: !this.findRole("student")
             },
             {
-                label: $t('science.activity'), icon: 'fas fa-flask',
-                items: [
-                    {
-                        label: $t('science.scientistProfile'), icon: 'fas fa-user', to: '/science/scientists',
-                        // visible: this.findRole("main_administrator") || !this.findRole("teacher")
-                    },
-                    {
-                        label: $t('science.scientificWorks'), icon: 'fas fa-book', to: '/science/publications',
-                        // visible: this.findRole("main_administrator") || this.findRole("online_course_administrator")
-                    }
-                ]
-            },
-            {
                 label: $t('science.activity'),
                 icon: 'fas fa-flask',
                 items: [
                     {
-                        label: $t('science.scientistsProfile'),
+                        label: $t('science.scientistProfile'),
                         icon: 'fas fa-user',
                         to: '/science/scientists'
                     },
