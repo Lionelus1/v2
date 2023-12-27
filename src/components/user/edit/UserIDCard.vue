@@ -21,7 +21,7 @@
       <!-- КЕМ ВЫДАН -->
       <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
         <label>{{ $t('hr.id.issuedBy') }}<span class="p-error" v-if="!readonly">*</span></label>
-        <InputText :readonly="readonly" class="mt-2" :class="{'p-invalid': validation.issuedBy}" type="text" :placeholder="$t('hr.id.issuedBy')" v-if="user" v-model="user.idcardgivenorg" @input="updateUserData"></InputText>
+        <InputText :readonly="readonly" class="mt-2" :class="{'p-invalid': validation.issuedBy}" type="text" :placeholder="$t('hr.id.issuedBy')" v-if="user" v-model="user.idissued" @input="updateUserData"></InputText>
         <small class="p-error" v-if="validation.issuedBy">{{ $t("common.requiredField") }}</small>
       </div>
 
@@ -42,7 +42,7 @@
         <small class="p-error"  v-if="validation.file" >{{ $t("common.requiredField") }}</small>
       </div>
 
-      <Button :label="t('hr.title.id')" style="text-align: left" class="p-button-link" @click="showFile(user.idcardpath)" />
+      <Button v-if="user.idcardpath" :label="t('hr.title.id')" style="text-align: left" class="p-button-link" @click="showFile(user.idcardpath)" />
 
     </div>
   </div>
@@ -143,6 +143,15 @@
   const updateUserData = () => {
     emitPersonalInformationUpdate("personal-information-updated", user.value);
   };
+
+
+  const showFile = (data) => {
+      if (!data) {
+        return
+      }
+      fileData.value = data
+      fileView.value = true
+  }
 
   onMounted(() => {
       getUserAccount()

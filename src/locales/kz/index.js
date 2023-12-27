@@ -1553,7 +1553,8 @@ export default {
             fundingSource:'Қаржыландыру көзі',
             typeSupportingDoc: 'Растайтын құжаттың түрі',
         },
-        scientistProfile: 'Ғалымдардың профилі'
+        scientistsProfile: 'Ғалымдардың профилі',
+        profileLink: 'Профильге сілтеме'
     },
     fieldEducation: {
         title: 'Білім беру саласы',

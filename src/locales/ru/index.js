@@ -1540,7 +1540,8 @@ export default {
             fundingSource:'Источник финансирования',
             typeSupportingDoc: 'Вид подтверждающего документа',
         },
-        scientistProfile: 'Профиль ученных'
+        scientistsProfile: 'Профиль ученых',
+        profileLink: 'Ссылка на профиль'
     },
     fieldEducation: {
         title: 'Область образования',

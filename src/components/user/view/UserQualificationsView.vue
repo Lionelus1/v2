@@ -1,10 +1,9 @@
 <template>
   <div v-if="isView.check" id="carddiv" class="grid">  
-    
-    <div>
-      <Button v-if="!readonly" icon="pi pi-plus" class="p-button-link" :label="t('common.add')" :onclick="create"></Button>
-    </div>
-
+    <div class="col-12">
+        <Menubar :model="menu" :key="active" style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px"></Menubar>
+      </div>
+      
     <BlockUI :blocked="loading" :fullScreen="true">
         <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
     </BlockUI>
@@ -96,6 +95,18 @@
       default: ''
     }
   });
+
+  const menu= ref([
+        {
+          label: t("common.add"),
+          icon: "pi pi-fw pi-plus",
+          disabled: () => props.readonly,
+          command: () => {
+            create()
+          },
+        },
+    ])
+
 
   const isView = ref({
     check: false,

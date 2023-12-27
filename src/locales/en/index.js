@@ -1543,7 +1543,8 @@ export default {
             fundingSource:'Funding source',
             typeSupportingDoc: 'Type of supporting document',
         },
-        scientistProfile: 'Scientist Profile'
+        scientistsProfile: 'Profile Scientists',
+        profileLink: 'Profile link'
     },
     fieldEducation: {
         title: 'Field of education',
