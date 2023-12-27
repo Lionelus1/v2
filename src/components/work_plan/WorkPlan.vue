@@ -5,38 +5,36 @@
       <WorkPlanAdd v-model="isAdded" />
     </div>
     <div class="card">
-      
-      <DataTable :lazy="true" :rowsPerPageOptions="[5, 10, 20, 50]" :value="data" dataKey="id" :rowHover="true"
-        v-model:filters="filters" filterDisplay="menu" :loading="loading" responsiveLayout="scroll" :paginator="true"
-        :rows="10" :totalRecords="total" @page="onPage"
+
+      <DataTable :lazy="true" :rowsPerPageOptions="[5, 10, 20, 50]" :value="data" dataKey="id" :rowHover="true" v-model:filters="filters" filterDisplay="menu"
+        :loading="loading" responsiveLayout="scroll" :paginator="true" :rows="10" :totalRecords="total" @page="onPage"
         :globalFilterFields="['question', 'recipient', 'status', 'sendDate', 'createDate']" @sort="onSort($event)">
         <template #header>
           <div class="table-header flex justify-content-end align-items-center">
             <div v-if="isAdmin">
-            <Button type="button" icon="fa-solid fa-filter" @click="toggle('global-filter', $event)" aria:haspopup="true"
-              aria-controls="overlay_panel" class="p-button-outlined mr-2" />
-            <OverlayPanel ref="global-filter">
-              <div v-for="text in workplan_radio_options" :key="text" class="flex align-items-center">
-                <div class="field-radiobutton">
-                  <RadioButton v-model="selectedPlanType" :value="text.value" />
-                  <label :for="text" class="ml-2">{{ text.text }}</label>
+              <Button type="button" icon="fa-solid fa-filter" @click="toggle('global-filter', $event)" aria:haspopup="true" aria-controls="overlay_panel"
+                class="p-button-outlined mr-2" />
+              <OverlayPanel ref="global-filter">
+                <div v-for="text in workplan_radio_options" :key="text" class="flex align-items-center">
+                  <div class="field-radiobutton">
+                    <RadioButton v-model="selectedPlanType" :value="text.value" />
+                    <label :for="text" class="ml-2">{{ text.text }}</label>
+                  </div>
                 </div>
-              </div>
-              <div class="p-fluid">
-                <div class="field">
-                  <br />
+                <div class="p-fluid">
+                  <div class="field">
+                    <br />
 
-                  <Button icon="pi pi-trash" class="ml-1" @click="clearPlanTypeFilter()" :label="$t('common.clear')" />
+                    <Button icon="pi pi-trash" class="ml-1" @click="clearPlanTypeFilter()" :label="$t('common.clear')" />
+                  </div>
+                  <div class="field">
+                    <Button icon="pi pi-search" :label="$t('common.search')" class="ml-1" @click="setPlanType(null)" />
+                  </div>
                 </div>
-                <div class="field">
-                  <Button icon="pi pi-search" :label="$t('common.search')" class="ml-1" @click="setPlanType(null)" />
-                </div>
-              </div>
-            </OverlayPanel>
-          </div>
+              </OverlayPanel>
+            </div>
             <span class="p-input-icon-left"><i class="pi pi-search" />
-              <InputText type="search" v-model="lazyParams.searchText" @keyup.enter="getPlans"
-                :placeholder="$t('common.search')" @search="getPlans" />
+              <InputText type="search" v-model="lazyParams.searchText" @keyup.enter="getPlans" :placeholder="$t('common.search')" @search="getPlans" />
               <Button icon="pi pi-search" class="ml-1" @click="getPlans" />
             </span>
           </div>
@@ -53,7 +51,7 @@
           <template #body="{ data }">
             <span :class="'customer-badge status-' + data.doc_info.docHistory.stateEn">
               {{ getDocStatus(data.doc_info.docHistory.stateEn) }}
-          </span>
+            </span>
           </template>
         </Column>
         <Column field="user" :header="$t('common.created')">
@@ -63,7 +61,7 @@
         </Column>
         <Column field="status" :header="$t('workPlan.planType')" v-if="isAdmin">
           <template #body="{ data }">
-            <span class="customer-badge" :class="{ 'operational-plan': data.is_oper, 'simple-plan': !data.is_oper }">
+            <span class="customer-badge" :class="getPlanType(data.plan_type.code)">
               {{ data.plan_type['name_' + $i18n.locale] }}
             </span>
           </template>
@@ -328,7 +326,7 @@ export default {
         this.lazyParams.filter.is_oper_plan = true
 
       }
-      if(this.selectedPlanType === "my_plan"){
+      if (this.selectedPlanType === "my_plan") {
         this.lazyParams.filter.user_id = this.loginedUserId
         this.lazyParams.filter.is_plan = null
         this.lazyParams.filter.is_oper_plan = null
@@ -353,6 +351,14 @@ export default {
         return null;
       }
     },
+    getPlanType(code) {
+      const classMapping = {
+        science: 'sci-plan',
+        standart: 'simple-plan',
+        oper: 'operational-plan',
+      };
+      return classMapping[code] || '';
+    }
   }
 }
 </script>
@@ -390,6 +396,7 @@ export default {
     background: #B3E5FC;
     color: #23547B;
   }
+
   &.created {
     background: #3588a8;
     color: #fff;
@@ -414,22 +421,27 @@ export default {
     background: #B3E5FC;
     color: #23547B;
   }
+
   &.signing {
     background: #2a6986;
     color: #bfc9d1;
   }
+
   &.signed {
     background: rgb(57, 134, 42);
     color: #bfc9d1;
   }
+
   &.sent for re-approval {
     background: rgb(134, 42, 119);
     color: #bfc9d1;
   }
+
   &.updated for re-approval {
     background: rgb(134, 42, 54);
     color: #bfc9d1;
   }
+
   &.issued for re-approval {
     background: rgb(42, 134, 88);
     color: #bfc9d1;
@@ -448,5 +460,17 @@ export default {
     font-weight: 500;
     border-radius: 3px;
   }
-}
-</style>
+
+  &.sci-plan {
+    background-color: #324ab2;
+    color: #ffffff;
+    font-weight: 500;
+    border-radius: 3px;
+  }
+  &.plan {
+    background-color: #002366;
+    color: #ffffff;
+    font-weight: 500;
+    border-radius: 3px;
+  }
+}</style>
