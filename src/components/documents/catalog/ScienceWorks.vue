@@ -1,6 +1,11 @@
 <template>
   <ProgressBar v-if="loading" mode="indeterminate" class="progress-bar"/>
-  <h3>{{ $t("scienceWorks.title") }}</h3>
+  <div class="flex flex-row mb-3">
+    <div class="arrow-icon" @click="$router.back()">
+      <i class="fas fa-arrow-left"></i>
+    </div>
+    <h3 class="m-0">{{ $t("scienceWorks.title") }}</h3>
+  </div>
   <BlockUI :blocked="loading" class="card">
     <Toolbar class="p-1">
       <template #start>
@@ -81,7 +86,7 @@
               <i class="fa-solid fa-pen fa-xl"></i>
             </Button>
             <Button @click="currentDocument=data;open('documentInfoSidebar')"
-                    class="p-button-text p-button-info p-1">
+                    v-if="data.docHistory.stateId >= Enum.INAPPROVAL.ID" class="p-button-text p-button-info p-1">
               <i class="fa-solid fa-eye fa-xl"></i>
             </Button>
             <Button v-if="(data.docHistory.stateId === Enum.CREATED.ID || data.docHistory.stateId === Enum.REVISION.ID)
@@ -338,7 +343,8 @@ export default {
       ],
 
       newPublicationType: null,
-      pubTypes: [Enum.ScienceWorkType.Article, Enum.ScienceWorkType.Monograph, Enum.ScienceWorkType.PublicationKOKSNVO],
+      pubTypes: [Enum.ScienceWorkType.Free, Enum.ScienceWorkType.Article, Enum.ScienceWorkType.Textbooks,
+        Enum.ScienceWorkType.Monograph, Enum.ScienceWorkType.PublicationKOKSNVO],
       newPublicationMenu: [
         {
           label: this.$t('scienceWorks.menu.newArticle'),
@@ -541,9 +547,8 @@ export default {
         return '';
       }
 
-      if (![this.Enum.ScienceWorkType.Article, this.Enum.ScienceWorkType.Monograph, this.Enum.ScienceWorkType.ScopusArticle,
-        this.Enum.ScienceWorkType.PublicationKOKSNVO].includes(doc.newParams.scienceWorkType.value)) {
-        return '';
+      if (doc.newParams.scienceWorkType.value === Enum.ScienceWorkType.Free) {
+        return doc.newParams.publicationType.value ? doc.newParams.publicationType.value : this.$t('scienceWorks.types.' + doc.newParams.scienceWorkType.value);
       }
 
       return this.$t('scienceWorks.types.' + doc.newParams.scienceWorkType.value);
@@ -823,6 +828,13 @@ export default {
   height: 0.5rem;
   width: 100%;
   z-index: 1102;
+}
+.arrow-icon {
+  cursor: pointer;
+  font-size: 1.25rem;
+  margin-right: 1rem;
+  display: flex;
+  align-items: center;
 }
 .card {
   flex-grow: 1;

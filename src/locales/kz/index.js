@@ -1490,6 +1490,10 @@ export default {
             digital: "Электрондық",
             printed: "Баспа",
         },
+        publicationCategories: {
+            beforeMastersThesis: "Магистрлік диссертация қорғауға дейін жарияланған ғылыми жұмыстар",
+            afterMastersThesis: "Магистрлік диссертация қорғағаннан кейін жарияланған ғылыми жұмыстар",
+        },
         buttons: {
             card: "Карта",
             newPublication: "Ғылыми жұмыс қосу",
@@ -1524,7 +1528,9 @@ export default {
             article: "Мақала",
             monograph: "Монография",
             scopus_article: "Scopus халықаралық рецензияланатын ғылыми журналдардағы мақала",
-            publication_koksnvo: "ҒЖБССҚК ұсынған ғылыми басылым"
+            publication_koksnvo: "ҒЖБССҚК ұсынған ғылыми басылым",
+            textbooks: "Оқулықтар / Оқыту құралдары / Оқыту құралдары / Семинарлар",
+            free: "Ғылыми еңбектер",
         },
         messages: {
             successImport: "Импорттау сұрауы сәтті жіберілді",
@@ -1535,6 +1541,7 @@ export default {
             publicationName: "Жарияланым атауы",
             publicationDate: "Жарияланған жылы",
             editionType: "Баспа типі",
+            editionFullName: "Басылым (атауы, жылы, бет нөмірі) / Авторлық куәліктің, патенттің нөмірі",
             editionName: "Басылым атауы",
             editionNumber: "Басылым нөмірі",
             editionYear: "Басылым жылы",
@@ -1547,7 +1554,9 @@ export default {
             recommendedBy: "Ұсынған (Университеттің ғылыми кеңесі)",
             coauthorsInternal: "Ішкі авторлар, аты-жөні",
             coauthorsExternal: "Сыртқы авторлар, аты-жөні",
-            attachments: "Қосымшалар"
+            attachments: "Қосымшалар",
+            publicationCategory: "Жарияланым санаты",
+            publicationType: "Жарияланым түрі",
         }
     }
 }

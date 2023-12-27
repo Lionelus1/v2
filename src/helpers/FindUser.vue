@@ -29,8 +29,8 @@
               </div>
               <div class="user-list-detail lg:col-10  md:col-9 p-sm-12">
                 <h5 class="mb-2">{{ getFullname(slotProps.option) }}</h5>
-                <span class="product-category">{{ slotProps.option.mainPosition['name' + $i18n.locale] ? slotProps.option.mainPosition['name' + $i18n.locale] : slotProps.option.mainPosition.name }}</span><br/>
-                <span class="product-category">{{ slotProps.option.mainPosition.department['name' + $i18n.locale.charAt(0).toUpperCase() + $i18n.locale.slice(1)] }}</span>
+                <span class="product-category">{{ getPosition(slotProps.option.mainPosition) }}</span><br/>
+                <span class="product-category">{{ getPositionDepartment(slotProps.option.mainPosition) }}</span>
               </div>
             </div>
           </template>
@@ -185,6 +185,28 @@ export default {
       }
 
       return fullname
+    },
+    getPosition(position) {
+      if (!position) {
+        return '';
+      }
+
+      if (position['name' + this.$i18n.locale]) {
+        return position['name' + this.$i18n.locale];
+      } else {
+        return position.name;
+      }
+    },
+    getPositionDepartment(position) {
+      if (!position) {
+        return '';
+      }
+
+      if (!position.department) {
+        return '';
+      } else {
+        return position.department['name' + this.$i18n.locale.charAt(0).toUpperCase() + this.$i18n.locale.slice(1)];
+      }
     },
     showUserDialog() {
       this.userDialog = true;
