@@ -1484,6 +1484,18 @@ export default {
         formControl: 'Form of control',
         addCourse: 'Add course',
         coursePrerequisitesCannot: 'The course you have chosen has prerequisites, so it cannot be selected',
+        ook: 'GEC',
+        generalEducationCourses: 'General education courses',
+        bc: 'BC',
+        basicCourses: 'Basic courses',
+        pc: 'PC',
+        profileCourses: 'Profile courses',
+        rc: 'RC',
+        requiredComponent: 'Required component',
+        uk: 'UK',
+        universityComponent: 'University component',
+        oc: 'OC',
+        optionalCourse: 'Optional course',
         reuuerturtu: 'erturtu',
     }
 }

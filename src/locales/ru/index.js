@@ -1482,6 +1482,17 @@ export default {
         formControl: 'Форма контроля',
         addCourse: 'Добавить курс',
         coursePrerequisitesCannot: 'Курс которого вы выбрали имеет пререквизиты, поэтому он не может быть выбран',
-        jtryjtyj: 'Доdsfggdsfg',
+        ook: 'ООК',
+        generalEducationCourses: 'Общеобразовательные курсы',
+        bc: 'БК',
+        basicCourses: 'Базовые курсы',
+        pc: 'ПК',
+        profileCourses: 'Профильные курсы',
+        rc: 'ОК',
+        requiredComponent: 'Обязательный компонент',
+        uk: 'ВК',
+        universityComponent: 'Вузовский компонент',
+        oc: 'КВ',
+        optionalCourse: 'Курс по выбору',
     }
 }

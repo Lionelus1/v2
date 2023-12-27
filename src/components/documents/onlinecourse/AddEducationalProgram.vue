@@ -283,15 +283,15 @@
       <div class="col-12 lg:col-9 flex gap-4">
       <div class="w-fit">
         <Checkbox v-model="courseType" :value="1" inputId="courseType1"/>
-        <label class="ml-2" for="courseType1">{{ $t("ОКК") }}</label>
+        <label class="ml-2" for="courseType1" :title="$t('educationalPrograms.generalEducationCourses')">{{ $t("educationalPrograms.ook") }}</label>
       </div>
       <div class="w-fit">
         <Checkbox v-model="courseType" :value="2" inputId="courseType2"/>
-        <label class="ml-2" for="courseType2">{{ $t("БК") }}</label>
+        <label class="ml-2" for="courseType2" :title="$t('educationalPrograms.basicCourses')">{{ $t("educationalPrograms.bc") }}</label>
       </div>
         <div class="w-fit">
           <Checkbox v-model="courseType" :value="3" inputId="courseType3"/>
-          <label class="ml-2" for="courseType3">{{ $t("ПК") }}</label>
+          <label class="ml-2" for="courseType3" :title="$t('educationalPrograms.profileCourses')">{{ $t("educationalPrograms.pc") }}</label>
         </div>
         <small class="p-error" v-if="!formModule.courseType && submitted">{{ $t("common.requiredField") }}</small>
       </div>
@@ -301,15 +301,15 @@
       <div class="col-12 lg:col-9 flex gap-4">
         <div class="w-fit">
           <Checkbox v-model="courseComponentType" :value="1" inputId="courseComponentType1"/>
-          <label class="ml-2" for="courseComponentType1">{{ $t("ОК") }}</label>
+          <label class="ml-2" for="courseComponentType1" :title="$t('educationalPrograms.requiredComponent')">{{ $t("educationalPrograms.rc") }}</label>
         </div>
         <div class="w-fit">
           <Checkbox v-model="courseComponentType" :value="2" inputId="courseComponentType2"/>
-          <label class="ml-2" for="courseComponentType2">{{ $t("ВК") }}</label>
+          <label class="ml-2" for="courseComponentType2" :title="$t('educationalPrograms.universityComponent')">{{ $t("educationalPrograms.uk") }}</label>
         </div>
         <div class="w-fit">
           <Checkbox v-model="courseComponentType" :value="3" inputId="courseComponentType3"/>
-          <label class="ml-2" for="courseComponentType3">{{ $t("КВ") }}</label>
+          <label class="ml-2" for="courseComponentType3" :title="$t('educationalPrograms.optionalCourse')">{{ $t("educationalPrograms.oc") }}</label>
         </div>
         <small class="p-error" v-if="!formModule.courseComponentType && submitted">{{ $t("common.requiredField") }}</small>
       </div>

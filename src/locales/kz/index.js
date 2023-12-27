@@ -1496,6 +1496,17 @@ export default {
         formControl: 'Бақылау нысаны',
         addCourse: 'Курс қосу',
         coursePrerequisitesCannot: 'Сіз таңдаған Курстың пререквизиттері бар, сондықтан оны таңдау мүмкін емес',
-        dsfsdfgdfg: 'Кывапывапывап',
+        ook: 'ЖББК',
+        generalEducationCourses: 'Жалпы білім беретін курстар',
+        bc: 'НК',
+        basicCourses: 'Негізгі курстар',
+        pc: 'ПК',
+        profileCourses: 'Профильдік курстар',
+        rc: 'МК',
+        requiredComponent: 'Міндетті компонент',
+        uk: 'УК',
+        universityComponent: 'Университет компоненті',
+        oc: 'ТК',
+        optionalCourse: 'Таңдау курсы',
     }
 }
