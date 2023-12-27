@@ -90,10 +90,7 @@ export default {
         }
       ],
       isPdf: false,
-      selectedDepartment: this.loginedUser ? {
-        department_id: this.loginedUser.mainPosition.department.id,
-        department_name: this.loginedUser.mainPosition.department.name
-      } : null,
+      selectedDepartment: this.loginedUser ? this.loginedUser.mainPosition.department.id : null,
       selectedHalfYear: null,
       selectedRespUser: null,
       halfYearTypes: [
