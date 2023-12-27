@@ -42,7 +42,7 @@
         <small class="p-error"  v-if="validation.file" >{{ $t("common.requiredField") }}</small>
       </div>
 
-      <Button v-if="idcardpath" :label="t('hr.title.id')" style="text-align: left" class="p-button-link" @click="showFile(user.idcardpath)" />
+      <Button v-if="user.idcardpath" :label="t('hr.title.id')" style="text-align: left" class="p-button-link" @click="showFile(user.idcardpath)" />
 
     </div>
   </div>

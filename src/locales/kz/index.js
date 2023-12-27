@@ -1479,7 +1479,8 @@ export default {
             fundingSource:'Қаржыландыру көзі',
             typeSupportingDoc: 'Растайтын құжаттың түрі',
         },
-        scientistsProfile: 'Ғалымдардың профилі'
+        scientistsProfile: 'Ғалымдардың профилі',
+        profileLink: 'Профильге сілтеме'
     },
     personalData: 'Жеке ақпарат',
     yearPeriod:'Период годов',
