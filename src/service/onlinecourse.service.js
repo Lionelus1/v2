@@ -113,4 +113,10 @@ export class OnlineCourseService {
     addModuleAndCourses(data) {
         return api.post('/onlinecourse/addModuleAndCourses', data, {headers:getHeader()});
     }
+    getEduProgGroups(data) {
+        return api.post('/onlinecourse/getEduProgGroups', data, {headers:getHeader()});
+    }
+    getEduPrograms(data) {
+        return api.post('/onlinecourse/getEduPrograms', data, {headers:getHeader()});
+    }
 }

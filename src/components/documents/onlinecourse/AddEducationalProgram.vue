@@ -28,13 +28,18 @@
           <div class="content" v-if="active === 0">
             <div class="field mt-3">
               <label for="course-code">{{ $t("educationalPrograms.codeAndNameGroupEP") }}</label>
-              <Dropdown :placeholder="$t('common.select')"/>
-              <small class="p-error" v-if="!formData.eduProgGroupId && submitted">{{ $t("common.requiredField") }}</small>
+              <Dropdown v-model="formData.eduProgId" optionValue="id" :placeholder="$t('common.select')" :options="codeAndNameGroup"
+                        :optionLabel='"codeAndName_" + $i18n.locale'
+                        @filter="filterCodeAndNameGroup" :filter="true" :showClear="true" dataKey="id"
+                        :emptyFilterMessage="$t('roleControl.noResult')"/>
+              <small class="p-error" v-if="!formData.eduProgId && submitted">{{ $t("common.requiredField") }}</small>
             </div>
             <div class="field mt-3">
               <label for="course-code">{{ $t("educationalPrograms.codeGroupAndEP") }}</label>
-              <Dropdown :placeholder="$t('common.select')"/>
-              <small class="p-error" v-if="!formData.eduProgId && submitted">{{ $t("common.requiredField") }}</small>
+              <Dropdown v-model="formData.eduProgGroupId" optionValue="id" :placeholder="$t('common.select')" :options="codeGroup"
+                        :optionLabel='"codeAndName_" + $i18n.locale'
+                        @filter="filterCodeGroup" :filter="true" :showClear="true" dataKey="id" :emptyFilterMessage="$t('roleControl.noResult')"/>
+              <small class="p-error" v-if="!formData.eduProgGroupId && submitted">{{ $t("common.requiredField") }}</small>
             </div>
             <!--          <div class="field mt-3">
                         <label for="course-code">{{ $t("educationalPrograms.directionTraining") }}</label>
@@ -158,7 +163,7 @@
                 <Dropdown :placeholder="$t('common.select')" v-model="formStep2.typeEducationalProgram"/>
               </div>
               <div class="field-checkbox mt-3">
-                <Checkbox v-model="formStep2.doubleDegree" inputId="doubleDegree" :binary="true"/>
+                <Checkbox v-model="checkedDouble" @change="onDoubleChange" inputId="doubleDegree" :binary="true"/>
                 <label for="doubleDegree">{{ $t("educationalPrograms.doubleDegreeProgram") }}</label>
               </div>
               <div class="field-checkbox mt-3">
@@ -207,42 +212,73 @@
                   <td>№</td>
                   <td>{{ $t("educationalPrograms.moduleName") }}</td>
                   <td>{{ $t("educationalPrograms.moduleCode") }}</td>
-                  <td>{{ $t("educationalPrograms.courseName") }}</td>
-                  <td>{{ $t("fieldEducation.courseCode") }}</td>
                   <td>{{ $t("educationalPrograms.academicCredits") }}</td>
                   <td>{{ $t("educationalPrograms.cycle") }}</td>
                   <td>{{ $t("educationalPrograms.courseComponents") }}</td>
+                  <td>{{ $t("educationalPrograms.courseName") }}</td>
+                  <td>{{ $t("fieldEducation.courseCode") }}</td>
                   <td>{{ $t("common.learnlang") }}</td>
                   <td>{{ $t("course.course") }}</td>
                   <td>{{ $t("educationalPrograms.semester") }}</td>
-                  <td>{{ $t("educationalPrograms.lecture") }}/{{ $t("educationalPrograms.practice") }}/{{ $t("educationalPrograms.laboratoryWork") }}</td>
+                  <td>{{ $t("educationalPrograms.lecture") }}/{{ $t("educationalPrograms.practice") }}/{{
+                      $t("educationalPrograms.laboratoryWork")
+                    }}
+                  </td>
                   <td><span :title="$t('educationalPrograms.preGraduatePractice')">{{ $t("educationalPrograms.prp") }}</span>/
-                    <span :title="$t('educationalPrograms.independentWorkStudent')">{{ $t("educationalPrograms.sro") }}</span> </td>
+                    <span :title="$t('educationalPrograms.independentWorkStudent')">{{ $t("educationalPrograms.sro") }}</span></td>
                   <td>{{ $t("educationalPrograms.formControl") }}</td>
                 </tr>
                 </thead>
                 <tbody>
-                <tr v-for="(i, index) of modules" :key="i">
-                    <td :rowspan="Array.isArray(i.moduleCourses) && i.moduleCourses.length === 2 ? 3: 1">{{index+1}}</td>
-                    <td :rowspan="Array.isArray(i.moduleCourses) && i.moduleCourses.length === 2 ? 3: 1">{{ i['name' + locale]}}</td>
-                    <td :rowspan="Array.isArray(i.moduleCourses) && i.moduleCourses.length === 2 ? 3: 1">{{ i.code}}</td>
-                </tr>
-                <template v-for="(i) of modules" :key="i">
-                  <tr  v-for="course of i.moduleCourses" :key="course">
-                  <td>
-                    {{course['name' + locale]}}
-                  </td>
-                  <td>{{course.codeCourse}}</td>
-                  <td>{{course.creditCount}}</td>
-                  <td>{{course.creditCount}}</td>
-                  <td>{{course.creditCount}}</td>
-                  <td>{{course.language}}</td>
-                  <td>{{course.courseId}}</td>
-                  <td>{{course.semester}}</td>
-                  <td>{{course.Lecture}}/{{course.practice}}/{{course.laboratory}}</td>
-                  <td>{{course.prp}}/{{course.IndependentWork}}</td>
-                  <td>{{course.formControl}}</td>
-                </tr>
+                <template v-for="(i, index) in modules" :key="i">
+                  <tr v-if="!i.moduleCourseRel || i.moduleCourseRel.length === 0">
+                    <td>{{ index + 1 }}</td>
+                    <td>{{ i['name' + locale] }}</td>
+                    <td>{{ i.code }}</td>
+                  </tr>
+                  <template v-else>
+                    <tr>
+                      <td :rowspan="i.moduleCourseRel.length + 1">{{ index + 1 }}</td>
+                      <td :rowspan="i.moduleCourseRel.length + 1">{{ i['name' + locale] }}</td>
+                      <td :rowspan="i.moduleCourseRel.length + 1">{{ i.code }}</td>
+                      <td :rowspan="i.moduleCourseRel.length + 1">{{ i.creditCount }}</td>
+                      <td :rowspan="i.moduleCourseRel.length + 1">
+                        <template v-if="i.courseType === 1">
+                          <span :title="$t('educationalPrograms.generalEducationCourses')">{{ $t("educationalPrograms.ook") }}</span>
+                        </template>
+                        <template v-if="i.courseType === 2">
+                          <span :title="$t('educationalPrograms.basicCourses')">{{ $t("educationalPrograms.bc") }}</span>
+                        </template>
+                        <template v-if="i.courseType === 3">
+                          <span :title="$t('educationalPrograms.profileCourses')">{{ $t("educationalPrograms.pc") }}</span>
+                        </template>
+                      </td>
+                      <td :rowspan="i.moduleCourseRel.length + 1">
+                        <template v-if="i.courseComponentType === 1">
+                          <span :title="$t('educationalPrograms.requiredComponent')">{{ $t("educationalPrograms.rc") }}</span>
+                        </template>
+                        <template v-if="i.courseComponentType === 2">
+                          <span :title="$t('educationalPrograms.universityComponent')">{{ $t("educationalPrograms.uk") }}</span>
+                        </template>
+                        <template v-if="i.courseComponentType === 3">
+                          <span :title="$t('educationalPrograms.optionalCourse')">{{ $t("educationalPrograms.oc") }}</span>
+                        </template>
+                      </td>
+                    </tr>
+                    <tr v-for="(course, moduleIndex) in i.moduleCourseRel" :key="'module-' + moduleIndex">
+                      <td>
+                        {{ course['name' + locale] }}
+                      </td>
+                      <td>{{ course.codeCourse }}</td>
+                      <td>{{ course.language === 1 ? 'Қазақша' : course.language === 2 ? 'На русском' : course.language === 3 ? 'In English' : '' }}
+                      </td>
+                      <td>{{ course.whatCourse }}</td>
+                      <td>{{ course.semester }}</td>
+                      <td>{{ course.Lecture }}/{{ course.practice }}/{{ course.laboratory }}</td>
+                      <td>{{ course.prp }}/{{ course.IndependentWork }}</td>
+                      <td>{{ course.formControl }}</td>
+                    </tr>
+                  </template>
                 </template>
                 </tbody>
               </table>
@@ -262,14 +298,14 @@
       </div>
       <div class="col-12 lg:col-9">
         <InputText v-model="formModule.namekz"/>
-            <small class="p-error" v-if="!formModule.namekz && submitted">{{ $t("common.requiredField") }}</small>
+        <small class="p-error" v-if="!formModule.namekz && submitted">{{ $t("common.requiredField") }}</small>
       </div>
       <div class="col-12 lg:col-3">
         <span>{{ $t("educationalPrograms.moduleCode") }}</span>
       </div>
       <div class="col-12 lg:col-9">
         <InputText class="" v-model="formModule.code"/>
-            <small class="p-error" v-if="!formModule.code && submitted">{{ $t("common.requiredField") }}</small>
+        <small class="p-error" v-if="!formModule.code && submitted">{{ $t("common.requiredField") }}</small>
       </div>
       <div class="col-12 lg:col-3">
         <span>{{ $t("educationalPrograms.academicCredits") }}</span>
@@ -281,14 +317,14 @@
         <span>{{ $t("educationalPrograms.cycle") }}</span>
       </div>
       <div class="col-12 lg:col-9 flex gap-4">
-      <div class="w-fit">
-        <Checkbox v-model="courseType" :value="1" inputId="courseType1"/>
-        <label class="ml-2" for="courseType1" :title="$t('educationalPrograms.generalEducationCourses')">{{ $t("educationalPrograms.ook") }}</label>
-      </div>
-      <div class="w-fit">
-        <Checkbox v-model="courseType" :value="2" inputId="courseType2"/>
-        <label class="ml-2" for="courseType2" :title="$t('educationalPrograms.basicCourses')">{{ $t("educationalPrograms.bc") }}</label>
-      </div>
+        <div class="w-fit">
+          <Checkbox v-model="courseType" :value="1" inputId="courseType1"/>
+          <label class="ml-2" for="courseType1" :title="$t('educationalPrograms.generalEducationCourses')">{{ $t("educationalPrograms.ook") }}</label>
+        </div>
+        <div class="w-fit">
+          <Checkbox v-model="courseType" :value="2" inputId="courseType2"/>
+          <label class="ml-2" for="courseType2" :title="$t('educationalPrograms.basicCourses')">{{ $t("educationalPrograms.bc") }}</label>
+        </div>
         <div class="w-fit">
           <Checkbox v-model="courseType" :value="3" inputId="courseType3"/>
           <label class="ml-2" for="courseType3" :title="$t('educationalPrograms.profileCourses')">{{ $t("educationalPrograms.pc") }}</label>
@@ -301,11 +337,15 @@
       <div class="col-12 lg:col-9 flex gap-4">
         <div class="w-fit">
           <Checkbox v-model="courseComponentType" :value="1" inputId="courseComponentType1"/>
-          <label class="ml-2" for="courseComponentType1" :title="$t('educationalPrograms.requiredComponent')">{{ $t("educationalPrograms.rc") }}</label>
+          <label class="ml-2" for="courseComponentType1" :title="$t('educationalPrograms.requiredComponent')">{{
+              $t("educationalPrograms.rc")
+            }}</label>
         </div>
         <div class="w-fit">
           <Checkbox v-model="courseComponentType" :value="2" inputId="courseComponentType2"/>
-          <label class="ml-2" for="courseComponentType2" :title="$t('educationalPrograms.universityComponent')">{{ $t("educationalPrograms.uk") }}</label>
+          <label class="ml-2" for="courseComponentType2" :title="$t('educationalPrograms.universityComponent')">{{
+              $t("educationalPrograms.uk")
+            }}</label>
         </div>
         <div class="w-fit">
           <Checkbox v-model="courseComponentType" :value="3" inputId="courseComponentType3"/>
@@ -321,8 +361,9 @@
         <span>{{ $t("educationalPrograms.courseName") }}</span>
       </div>
       <div class="col-12 lg:col-9">
-        <Dropdown v-model="selectedCourse" @change="selectCourse($event)" :options="courses" class="mt-2" :optionLabel="['name' + locale]" :placeholder="$t('common.select')"
-                  @filter="handleFilter" :filter="true" :showClear="true" dataKey="id" :emptyFilterMessage="$t('roleControl.noResult')"  />
+        <Dropdown v-model="selectedCourse" @change="selectCourse($event)" :options="courses" class="mt-2" :optionLabel="['name' + locale]"
+                  :placeholder="$t('common.select')"
+                  @filter="handleFilter" :filter="true" :showClear="true" dataKey="id" :emptyFilterMessage="$t('roleControl.noResult')"/>
         <!--    <small class="p-error">{{ $t("common.requiredField") }}</small>-->
       </div>
       <div class="col-12 lg:col-3">
@@ -375,7 +416,7 @@
       <div class="col-3">
         <span>{{ $t("educationalPrograms.lecture") }}</span>
       </div>
-        <div class="col-3">
+      <div class="col-3">
         <InputNumber v-model="formModule.moduleCourseRel[0].Lecture"/>
         <!--    <small class="p-error">{{ $t("common.requiredField") }}</small>-->
       </div>
@@ -461,9 +502,11 @@ const items = computed(() => {
     }
   ];
 })
-
+const checkedDouble = ref(false)
 const formData = ref(
     {
+      id: 0,
+      status: [],
       nameKz: 'test kz',
       nameRu: 'test ru',
       nameEn: 'test en',
@@ -491,8 +534,8 @@ const formStep2 = ref(
       degreeAwardedEn: 'test en',
       directionOfTrainingId: 2,
       typeEducationalProgram: 3,
-      doubleDegree: 4,
-      jointEducational: 5,
+      doubleDegree: checkedDouble.value ? 1:0,
+      jointEducational: false,
     }
 )
 const formStep3 = ref(
@@ -512,7 +555,7 @@ const selectedCourse = ref()
 const formModule = ref(
     {
       //namekz: 'test kz',
-      id: 1,
+      id: 0,
       syllabusId: 2,
       nameru: 'test ru',
       nameen: 'test en',
@@ -522,7 +565,8 @@ const formModule = ref(
       courseComponentType: courseComponentType.value[0],
       moduleCourseRel: [
         {
-          syllabusModuleId: 1,
+          syllabusModuleId: 0,
+          courseId: 10,
           whatCourse: whatCourse.value[0],
           semester: 2,
           Lecture: 80,
@@ -591,12 +635,14 @@ const dialogOpenState = ref({
 const submitted = ref(false)
 const service = new OnlineCourseService()
 const dataFieldEducation = ref([])
+const codeAndNameGroup = ref([])
+const codeGroup = ref([])
 const modules = ref([])
 const courses = ref([])
 const dialogModule = ref(false)
 const lazyParams = {
   page: 0,
-  rows: 561,
+  rows: 1000,
   searchText: '',
 }
 const listLang = ref([
@@ -635,7 +681,61 @@ const getFieldEducation = () => {
   });
 }
 getFieldEducation()
-const getModuleBySyllasbusId= () => {
+
+const getEduPrograms = () => {
+  service.getEduPrograms(lazyParams).then(response => {
+    if (response.data) {
+      codeAndNameGroup.value = response.data
+      codeAndNameGroup.value.map(e => {
+        e.codeAndName_kz = e.code + ' ' + e.name_kz
+        e.codeAndName_ru = e.code + ' ' + e.name_ru
+        e.codeAndName_en = e.code + ' ' + e.name_en
+      })
+    }
+  }).catch(_ => {
+  });
+}
+getEduPrograms()
+
+const onDoubleChange = () => {
+  formStep2.value.doubleDegree = checkedDouble.value ? 1 : 0
+}
+
+const filterCodeAndNameGroup = (event) => {
+  if (event.value && event.value.length > 3) {
+    lazyParams.searchText = event.value
+    getEduPrograms()
+  } else if (lazyParams.searchText.length > 3) {
+    lazyParams.searchText = ''
+    getEduPrograms()
+  }
+}
+
+const getEduProgGroups = () => {
+  service.getEduProgGroups(lazyParams).then(response => {
+    if (response.data) {
+      codeGroup.value = response.data
+      codeGroup.value.map(e => {
+        e.codeAndName_kz = e.code + ' ' + e.name_kz
+        e.codeAndName_ru = e.code + ' ' + e.name_ru
+        e.codeAndName_en = e.code + ' ' + e.name_en
+      })
+    }
+  }).catch(_ => {
+  });
+}
+getEduProgGroups()
+
+const filterCodeGroup = (event) => {
+  if (event.value && event.value.length > 3) {
+    lazyParams.searchText = event.value
+    getEduProgGroups()
+  } else if (lazyParams.searchText.length > 3) {
+    lazyParams.searchText = ''
+    getEduProgGroups()
+  }
+}
+const getModuleBySyllasbusId = () => {
   service.getModuleBySyllasbusId(2).then(response => {
     if (response.data) {
       modules.value = response.data
@@ -672,27 +772,22 @@ const save = () => {
   if (active.value === 0) {
     submitted.value = true
     if (!isValid()) return;
-    toast.add({
-      severity: "success",
-      summary: i18n.t("common.success"),
-      life: 3000,
+    service.addEducationalProgram(formData.value).then(res => {
+      toast.add({
+        severity: "success",
+        summary: i18n.t("common.success"),
+        life: 3000,
+      });
+      formData.value = null
+      active.value = 1
+    }).catch(error => {
+      toast.add({severity: "error", summary: error, life: 3000});
     });
-    active.value = 1
-    /*  service.addEducationalProgram(formData.value).then(res => {
-        //router.back()
-        toast.add({
-          severity: "success",
-          summary: i18n.t("common.success"),
-          life: 3000,
-        });
-        formData.value = null
-      }).catch(error => {
-        toast.add({severity: "error", summary: error, life: 3000});
-      });*/
   }
   if (active.value === 1) {
     submitted.value = true
     if (!isValidStep2()) return;
+    console.log(formStep2.value)
     toast.add({
       severity: "success",
       summary: i18n.t("common.success"),
@@ -714,7 +809,8 @@ const save = () => {
 const selectCourse = (data) => {
   formModule.value.moduleCourseRel[0].language = data.value.courceLanguageId
   formModule.value.moduleCourseRel[0].codeCourse = parseInt(data.value.courseCode)
-  formModule.value.moduleCourseRel[0].id = data.value.id
+  formModule.value.moduleCourseRel[0].courseId = data.value.id
+  formModule.value.moduleCourseRel[0].id = 0
   console.log(data.value)
 }
 const addModuleAndCourses = () => {
@@ -811,12 +907,7 @@ const isValidStep2 = () => {
   if (!formStep2.value.typeEducationalProgram) {
     errors.push(1);
   }
-  if (!formStep2.value.doubleDegree) {
-    errors.push(1);
-  }
-  if (!formStep2.value.jointEducational) {
-    errors.push(1);
-  }
+
   return errors.length === 0;
 }
 const isValidStep3 = () => {
@@ -917,19 +1008,28 @@ const isValidModule = () => {
 :deep(.p-tabview .p-tabview-panels) {
   padding: 0;
 }
-.module_dialog{
+
+.module_dialog {
   width: 80%;
-  .p-inputtext, .p-dropdown{
+
+  .p-inputtext, .p-dropdown {
     width: 100%;
   }
 }
+
 table {
   border-collapse: collapse;
-  td{
+
+  thead {
+    font-weight: 500;
+  }
+
+  td {
     text-align: center;
     padding: 5px;
   }
 }
+
 table, th, td {
   border: 1px solid #BDBBBB;
 }
