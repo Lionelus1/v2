@@ -247,7 +247,9 @@ import MyEditionRequestView from "@/components/science/view/MyEditionRequestView
 export default {
   name: 'ScienceWorks',
   components: {MyEditionRequestView, EditionRequestFormEdit, EditionFormEdit, DocSignaturesInfo, FindUser },
-  props: { },
+  props: {
+    scientist: null,
+  },
   data() {
     return {
       service: new DocService(),
@@ -417,6 +419,9 @@ export default {
         this.page = currentPage.page;
         this.rows = currentPage.rows;
       }
+    } else if (this.scientist) {
+      this.filter.author = [this.scientist];
+      this.filter.applied = true;
     }
 
     this.getScienceWorks();
