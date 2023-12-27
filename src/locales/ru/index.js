@@ -1467,7 +1467,8 @@ export default {
             fundingSource:'Источник финансирования',
             typeSupportingDoc: 'Вид подтверждающего документа',
         },
-        scientistsProfile: 'Профиль ученых'
+        scientistsProfile: 'Профиль ученых',
+        profileLink: 'Ссылка на профиль'
     },
     personalData: 'Персональные сведения',
     yearPeriod:'Период годов',

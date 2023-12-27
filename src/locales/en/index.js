@@ -1469,7 +1469,8 @@ export default {
             fundingSource:'Funding source',
             typeSupportingDoc: 'Type of supporting document',
         },
-        scientistsProfile: 'Profile Scientists'
+        scientistsProfile: 'Profile Scientists',
+        profileLink: 'Profile link'
     },
     personalData: 'Personal information',
     yearPeriod:'Period of years',

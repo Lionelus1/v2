@@ -1,8 +1,8 @@
 <template>
     <div div v-if="isView.check" id="carddiv" class="grid">  
-        
-      <div>
-        <Button v-if="!readonly" icon="pi pi-plus" class="p-button-link" :label="t('common.add')" :onclick="create"></Button>
+      
+      <div class="col-12">
+        <Menubar :model="menu" :key="active" style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px"></Menubar>
       </div>
 
       <BlockUI :blocked="loading" :fullScreen="true">
@@ -35,6 +35,11 @@
   <Sidebar v-model:visible="isView.researchInterest"  position="right" class="p-sidebar-lg"  style="overflow-y: scroll">
       <ResearchInterestsEdit :modelValue=researchInterest :userID="userID" :readonly="readonly"/>
   </Sidebar>
+
+  <Sidebar v-model:visible="showScientificWorks" position="right" class="p-sidebar-lg">
+    <!-- <ScientificWorksList />  ОСЫ ЖЕРДЕ ШАҚЫРАМЫН КОМПОНЕНТ--> 
+  </Sidebar>
+
 
 </template>
 
@@ -83,6 +88,7 @@
   const totalRecords = ref(0)
   const researchInterests = ref([])
   const researchInterest = ref(null)
+  const showScientificWorks = ref(false)
   const deleteValue =()=> {
     const req = {
         id: researchInterest.value.id,
@@ -97,6 +103,47 @@
         toast.add({severity: 'error', summary: t('common.error'), life: 3000})
         loading.value = false;
     })
+  }
+
+  const menu= ref([
+        {
+          label: t("common.add"),
+          icon: "pi pi-fw pi-plus",
+          disabled: () => props.readonly,
+          command: () => {
+            create()
+          },
+        },
+        {
+            label: t("science.profileLink"),
+            icon: "pi pi-fw pi-user",
+            command: () => {
+              redirectToProfile();
+            },
+        },
+        {
+          label: t("dissertation.swList"),
+          icon: "pi pi-fw pi-search",
+          command: () => {
+            openScientificWorksList();
+          },
+        },
+    ])
+
+    const redirectToProfile = () => {
+      if (props.modelValue.profile_links != null) {
+        const firstLink = props.modelValue.profile_links[0]; 
+
+        if (firstLink) {
+          window.open(firstLink, '_blank'); 
+        } 
+      } else {
+          console.error("Ссылка на профиль отсутствует");
+        } 
+    }
+
+  const openScientificWorksList = () => {
+      showScientificWorks.value = true
   }
 
   const update = () => {
