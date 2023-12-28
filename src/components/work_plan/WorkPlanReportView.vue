@@ -5,7 +5,7 @@
       <div class="card" v-if="report && report?.doc_info && report?.doc_info.docHistory.stateId === 2">
         <Button type="button" icon="pi pi-eye" class="p-button-outlined" :label="$t('educomplex.tooltip.document')" @click="openDoc"></Button>
       </div>
-      <div class="card" v-if="isPlanCreator && !isReportSentApproval">
+      <div class="card" v-if="!isReportSentApproval && visibleSendToApprove">
         <Button v-if="visibleSendToApprove" type="button" icon="pi pi-send" class="p-button-success ml-2" :label="$t('common.toapprove')" @click="openModal"></Button>
 <!--        <Button type="button" icon="pi pi-send" class="p-button-success ml-2" :label="$t('common.toapprove')" @click="openModal"></Button>-->
         <WorkPlanReportApprove v-if="showModal" :visible="showModal" :doc-id="report.doc_id" :approvalStages="approval_users" :report="report" :plan="plan" @sent-to-approve="getReport" />
@@ -117,6 +117,7 @@ export default {
       items: null,
       report_id: null,
       doc_id: null,
+      work_plan_id: null,
       report: {
         work_plan_id: null,
         quarter: null,
@@ -145,6 +146,8 @@ export default {
         filename: "work_plan_report.pdf",
       },
       approval_users: [],
+      respUsers: [],
+      planCreator: null,
       approvals: [],
       reject: {
         report_id: 0,
@@ -160,15 +163,26 @@ export default {
 
     }
   },
+  mounted() {
+    this.emitter.on("reportSentToApprove", (data) => {
+      if (data) {
+        this.getReport();
+      }
+    });
+    //this.work_plan_id = parseInt(this.report.work_plan_id);
+    //this.getRespUsers(this.report.work_plan_id);
+  },
   computed: {
     isSciencePlan() {
       return this.plan && this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Science
     },
     visibleSendToApprove() {
-      return this.loginedUser && (this.plan.user.id === this.loginedUser.userID);
+      return (this.loginedUser && this.respUsers.some(user => user.id === this.loginedUser.userID)) || (this.plan && this.plan.user.id === this.loginedUser.userID);
     },
+    
   },
   created() {
+    this.getRespUsers();
     this.report_id = parseInt(this.$route.params.id);
     this.report.work_plan_id = parseInt(this.$route.params.work_plan_id);
     this.report.quarter = parseInt(this.$route.params.quarter);
@@ -177,18 +191,15 @@ export default {
     this.report.doc_id = this.$route.params.doc_id;
     this.report.halfYearType = this.$route.params.halfYearType;
     this.report.department_id = this.$route.params.department_id;
+    //this.work_plan_id = parseInt(this.$route.params.work_plan_id);
     this.loginedUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
     //this.plan = JSON.parse(localStorage.getItem("workPlan"));
     //this.getReport();
     this.getReport();
+    this.getRespUsers(this.report.work_plan_id);
+    this.respUsers = this.respUsers || [];
   },
-  mounted() {
-    this.emitter.on("reportSentToApprove", (data) => {
-      if (data) {
-        this.getReport();
-      }
-    });
-  },
+
   methods: {
     getPlan() {
       this.planService.getPlanById(this.report.work_plan_id).then(res => {
@@ -211,10 +222,31 @@ export default {
         }
       });
     },
+    getRespUsers(workPlanId) {
+      //this.respUsers = [];
+      //let wp_id = this.report.work_plan_id
+      this.planService.getRespUsers(workPlanId).then(res => {
+        if (res.data) {
+          this.respUsers = res.data
+          this.planCreator = this.plan.user.id
+        }
+      }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+      });
+    },
     getReport() {
       this.planService.getPlanReportById(this.report_id).then(res => {
         this.report = res.data;
         this.getPlan();
+        //this.getRespUsers();
         this.getFile();
         this.getReportApprovalUsers();
         this.getSignatures();
@@ -571,7 +603,7 @@ export default {
     },
     openDoc() {
       this.showReportDocInfo = true;
-    },
+    }
   }
 }
 </script>
