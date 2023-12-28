@@ -1490,6 +1490,7 @@ export default {
             filter: "Фильтр",
             clear: "Очистить",
             search: "Поиск",
+            koksnvo: "КОКСНВО"
         },
         menu: {
             newArticle: "Создать новую",
@@ -1505,7 +1506,6 @@ export default {
             author: "Автор",
             year: "Год",
             status: "Статус",
-            koksnvo: "КОКСНВО",
         },
         filter: {
             documentName: "Имя",

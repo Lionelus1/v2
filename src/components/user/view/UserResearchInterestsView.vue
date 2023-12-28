@@ -37,7 +37,7 @@
   </Sidebar>
 
   <Sidebar v-model:visible="showScientificWorks" position="right" class="p-sidebar-lg">
-    <!-- <ScientificWorksList />  ОСЫ ЖЕРДЕ ШАҚЫРАМЫН КОМПОНЕНТ--> 
+    <ScienceWorks :scientist="props.modelValue"/>
   </Sidebar>
 
 
@@ -50,7 +50,7 @@
   import {ScienceService} from "@/service/science.service";
   import {  findRole } from "@/config/config";
   import ResearchInterestsEdit from "../edit/ResearchInterestsEdit"
-
+  import ScienceWorks from "@/components/documents/catalog/ScienceWorks.vue"
   const emitter = inject("emitter");
   const {t, locale} = useI18n()
   const toast = useToast()
@@ -117,6 +117,8 @@
         {
             label: t("science.profileLink"),
             icon: "pi pi-fw pi-user",
+            disabled: () => !props.modelValue || !props.modelValue.profile_links || props.modelValue.profile_links.length < 1 ||
+              props.modelValue.profile_links[0].length < 1,
             command: () => {
               redirectToProfile();
             },
