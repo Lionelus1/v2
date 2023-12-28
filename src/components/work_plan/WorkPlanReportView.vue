@@ -6,9 +6,9 @@
         <Button type="button" icon="pi pi-eye" class="p-button-outlined" :label="$t('educomplex.tooltip.document')" @click="openDoc"></Button>
       </div>
       <div class="card" v-if="isPlanCreator && !isReportSentApproval">
-        <Button type="button" icon="pi pi-send" class="p-button-success ml-2" :label="$t('common.toapprove')" @click="openModal"></Button>
+        <Button v-if="visibleSendToApprove" type="button" icon="pi pi-send" class="p-button-success ml-2" :label="$t('common.toapprove')" @click="openModal"></Button>
 <!--        <Button type="button" icon="pi pi-send" class="p-button-success ml-2" :label="$t('common.toapprove')" @click="openModal"></Button>-->
-        <WorkPlanReportApprove v-if="showModal" :visible="showModal" :doc-id="report.doc_id" :report="report" :plan="plan" @sent-to-approve="getReport" />
+        <WorkPlanReportApprove v-if="showModal" :visible="showModal" :doc-id="report.doc_id" :approvalStages="approval_users" :report="report" :plan="plan" @sent-to-approve="getReport" />
         <!--        <Button label="" icon="pi pi-download" @click="download"
                         class="p-button p-button-info ml-2"/>-->
       </div>
@@ -96,7 +96,9 @@ export default {
   components: {WorkPlanReportApprove, ReportPdf, DocSignaturesInfo},
   props: ['id'],
   data() {
+    const loginedUser = JSON.parse(localStorage.getItem("loginedUser"));
     return {
+      loginedUser: loginedUser,
       source: null,
       showModal: false,
       showReportDocInfo: false,
@@ -154,12 +156,16 @@ export default {
       isCurrentUserApproved: false,
       isPlanReportApproved: false,
       loading: false,
-      planService: new WorkPlanService()
+      planService: new WorkPlanService(),
+
     }
   },
   computed: {
     isSciencePlan() {
       return this.plan && this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Science
+    },
+    visibleSendToApprove() {
+      return this.loginedUser && (this.plan.user.id === this.loginedUser.userID);
     },
   },
   created() {
@@ -534,6 +540,34 @@ export default {
     },
     openModal() {
       this.showModal = true;
+      this.approval_users = [
+      {
+            stage: 1,
+            users: [this.loginedUser],
+            titleRu: "Создатель плана",
+            titleKz: "Жоспар құрушы",
+            titleEn: "Plan creator",
+            certificate: {
+              namekz: "Жеке тұлғаның сертификаты",
+              nameru: "Сертификат физического лица",
+              nameen: "Certificate of an individual",
+              value: "individual"
+            }
+          },
+          {
+            stage: 2,
+            users: [],
+            titleRu: "Администратор плана",
+            titleKz: "Жоспар әкімшісі",
+            titleEn: "Plan admin",
+            certificate: {
+              namekz: "Жеке тұлғаның сертификаты",
+              nameru: "Сертификат физического лица",
+              nameen: "Certificate of an individual",
+              value: "individual"
+            }
+          }
+      ]
     },
     openDoc() {
       this.showReportDocInfo = true;
