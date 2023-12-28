@@ -228,7 +228,7 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
-                path: '/educational-programs/bachelor/add',
+                path: '/educational-programs/bachelor/add/:degreeID',
                 name: 'addEducationalPrograms',
                 component: load('documents/onlinecourse/AddEducationalProgram'),
                 beforeEnter: ifAuthenticated,

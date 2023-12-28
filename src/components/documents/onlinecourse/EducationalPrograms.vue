@@ -64,7 +64,7 @@ const id = computed(()=>{
 
 console.log(id.value)
 const getSyllabusByDegree = () => {
-  service.getSyllabusByDegree(1).then(response => {
+  service.getSyllabusByDegree(id.value).then(response => {
     if (response.data) {
       educationalPrograms.value = response.data
     }
@@ -73,7 +73,7 @@ const getSyllabusByDegree = () => {
 }
 getSyllabusByDegree()
 const goToAdd = () => {
-  router.push({name: "addEducationalPrograms"})
+  router.push({name: "addEducationalPrograms", params: {degreeID: id.value}})
 }
 </script>
 

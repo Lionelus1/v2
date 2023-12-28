@@ -155,7 +155,10 @@
               </TabView>
               <div class="field mt-3">
                 <label for="course-code">{{ $t("educationalPrograms.directionTraining") }}</label>
-                <Dropdown :placeholder="$t('common.select')" v-model="formStep2.directionOfTrainingId"/>
+                <Dropdown v-model="formStep2.directionOfTrainingId" optionValue="id" :placeholder="$t('common.select')" :options="trainingDirections"
+                          :optionLabel='"codeAndName_" + $i18n.locale'
+                          @filter="filterTrainingDirections" :filter="true" :showClear="true" dataKey="id"
+                          :emptyFilterMessage="$t('roleControl.noResult')"/>
                 <small class="p-error" v-if="!formStep2.directionOfTrainingId && submitted">{{ $t("common.requiredField") }}</small>
               </div>
               <div class="field mt-3">
@@ -163,11 +166,11 @@
                 <Dropdown :placeholder="$t('common.select')" v-model="formStep2.typeEducationalProgram"/>
               </div>
               <div class="field-checkbox mt-3">
-                <Checkbox v-model="checkedDouble" @change="onDoubleChange" inputId="doubleDegree" :binary="true"/>
+                <Checkbox v-model="checkedDouble" @change="onDoubleChange(1)" inputId="doubleDegree" :binary="true"/>
                 <label for="doubleDegree">{{ $t("educationalPrograms.doubleDegreeProgram") }}</label>
               </div>
               <div class="field-checkbox mt-3">
-                <Checkbox v-model="formStep2.jointEducational" inputId="jointEducational" :binary="true"/>
+                <Checkbox v-model="checkedJointEducational" @change="onDoubleChange(2)" inputId="jointEducational" :binary="true"/>
                 <label for="jointEducational">{{ $t("educationalPrograms.jointEducationalProgram") }}</label>
               </div>
             </div>
@@ -503,11 +506,12 @@ const items = computed(() => {
   ];
 })
 const checkedDouble = ref(false)
+const checkedJointEducational = ref(false)
+const stepID = ref()
 const formData = ref(
     {
       id: 0,
-      status: [],
-      nameKz: 'test kz',
+      //nameKz: 'test kz',
       nameRu: 'test ru',
       nameEn: 'test en',
       descriptionKz: 'description Kz',
@@ -535,7 +539,7 @@ const formStep2 = ref(
       directionOfTrainingId: 2,
       typeEducationalProgram: 3,
       doubleDegree: checkedDouble.value ? 1:0,
-      jointEducational: false,
+      jointEducational: checkedJointEducational.value ? 1:0,
     }
 )
 const formStep3 = ref(
@@ -556,7 +560,7 @@ const formModule = ref(
     {
       //namekz: 'test kz',
       id: 0,
-      syllabusId: 2,
+      syllabusId: 16,
       nameru: 'test ru',
       nameen: 'test en',
       code: 'test kz',
@@ -579,6 +583,7 @@ const formModule = ref(
       ]
     }
 )
+
 const approveComponentKey = ref(0)
 const approving = ref(false)
 const stages = ref(null)
@@ -639,6 +644,7 @@ const codeAndNameGroup = ref([])
 const codeGroup = ref([])
 const modules = ref([])
 const courses = ref([])
+const trainingDirections = ref([])
 const dialogModule = ref(false)
 const lazyParams = {
   page: 0,
@@ -697,8 +703,13 @@ const getEduPrograms = () => {
 }
 getEduPrograms()
 
-const onDoubleChange = () => {
-  formStep2.value.doubleDegree = checkedDouble.value ? 1 : 0
+const onDoubleChange = (data) => {
+  if(data === 1){
+    formStep2.value.doubleDegree = checkedDouble.value ? 1 : 0
+  }
+  if(data === 2){
+    formStep2.value.jointEducational = checkedJointEducational.value ? 1 : 0
+  }
 }
 
 const filterCodeAndNameGroup = (event) => {
@@ -735,8 +746,33 @@ const filterCodeGroup = (event) => {
     getEduProgGroups()
   }
 }
+
+const getTrainingDirections= () => {
+  service.getTrainingDirections(lazyParams).then(response => {
+    if (response) {
+      trainingDirections.value = response.data
+      trainingDirections.value.map(e => {
+        e.codeAndName_kz = e.code + ' ' + e.name_kz
+        e.codeAndName_ru = e.code + ' ' + e.name_ru
+        e.codeAndName_en = e.code + ' ' + e.name_en
+      })
+    }
+  }).catch(_ => {
+  });
+}
+getTrainingDirections()
+
+const filterTrainingDirections = (event) => {
+  if (event.value && event.value.length > 3) {
+    lazyParams.searchText = event.value
+    getTrainingDirections()
+  } else if (lazyParams.searchText.length > 3) {
+    lazyParams.searchText = ''
+    getTrainingDirections()
+  }
+}
 const getModuleBySyllasbusId = () => {
-  service.getModuleBySyllasbusId(2).then(response => {
+  service.getModuleBySyllasbusId(16).then(response => {
     if (response.data) {
       modules.value = response.data
     }
@@ -772,7 +808,9 @@ const save = () => {
   if (active.value === 0) {
     submitted.value = true
     if (!isValid()) return;
+    formData.value.eduDegree = parseInt(route.params.degreeID)
     service.addEducationalProgram(formData.value).then(res => {
+      stepID.value = res
       toast.add({
         severity: "success",
         summary: i18n.t("common.success"),
@@ -787,23 +825,36 @@ const save = () => {
   if (active.value === 1) {
     submitted.value = true
     if (!isValidStep2()) return;
+    formStep2.value.id = stepID.value.data
     console.log(formStep2.value)
-    toast.add({
-      severity: "success",
-      summary: i18n.t("common.success"),
-      life: 3000,
+    service.addEduProgramTarget(formStep2.value).then(res => {
+      toast.add({
+        severity: "success",
+        summary: i18n.t("common.success"),
+        life: 3000,
+      });
+      formStep2.value = null
+      active.value = 2
+    }).catch(error => {
+      toast.add({severity: "error", summary: error, life: 3000});
     });
-    active.value = 2
   }
   if (active.value === 2) {
     submitted.value = true
     if (!isValidStep3()) return;
-    toast.add({
-      severity: "success",
-      summary: i18n.t("common.success"),
-      life: 3000,
+    formStep3.value.id = stepID.value.data
+    console.log(formStep3.value)
+    service.addEduProgramDirectory(formStep3.value).then(res => {
+      toast.add({
+        severity: "success",
+        summary: i18n.t("common.success"),
+        life: 3000,
+      });
+      formStep2.value = null
+      active.value = 3
+    }).catch(error => {
+      toast.add({severity: "error", summary: error, life: 3000});
     });
-    active.value = 3
   }
 }
 const selectCourse = (data) => {

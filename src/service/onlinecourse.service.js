@@ -119,4 +119,7 @@ export class OnlineCourseService {
     getEduPrograms(data) {
         return api.post('/onlinecourse/getEduPrograms', data, {headers:getHeader()});
     }
+    getTrainingDirections(data) {
+        return api.post('/onlinecourse/getTrainingDirections', {data}, {headers:getHeader()});
+    }
 }
