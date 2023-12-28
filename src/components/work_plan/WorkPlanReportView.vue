@@ -544,9 +544,9 @@ export default {
       {
             stage: 1,
             users: [this.loginedUser],
-            titleRu: "Создатель плана",
-            titleKz: "Жоспар құрушы",
-            titleEn: "Plan creator",
+            titleRu: "",
+            titleKz: "",
+            titleEn: "",
             certificate: {
               namekz: "Жеке тұлғаның сертификаты",
               nameru: "Сертификат физического лица",
@@ -557,9 +557,9 @@ export default {
           {
             stage: 2,
             users: [],
-            titleRu: "Администратор плана",
-            titleKz: "Жоспар әкімшісі",
-            titleEn: "Plan admin",
+            titleRu: "",
+            titleKz: "",
+            titleEn: "",
             certificate: {
               namekz: "Жеке тұлғаның сертификаты",
               nameru: "Сертификат физического лица",
