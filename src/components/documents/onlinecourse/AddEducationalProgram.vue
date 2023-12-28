@@ -163,7 +163,8 @@
               </div>
               <div class="field mt-3">
                 <label for="course-code">{{ $t("educationalPrograms.typeEducationalProgram") }}</label>
-                <Dropdown :placeholder="$t('common.select')" v-model="formStep2.typeEducationalProgram"/>
+                <Dropdown :placeholder="$t('common.select')" v-model="formStep2.typeEducationalProgram"
+                          :options="typesEduProgram" option-label="label" optionValue="id"/>
               </div>
               <div class="field-checkbox mt-3">
                 <Checkbox v-model="checkedDouble" @change="onDoubleChange(1)" inputId="doubleDegree" :binary="true"/>
@@ -340,15 +341,13 @@
       <div class="col-12 lg:col-9 flex gap-4">
         <div class="w-fit">
           <Checkbox v-model="courseComponentType" :value="1" inputId="courseComponentType1"/>
-          <label class="ml-2" for="courseComponentType1" :title="$t('educationalPrograms.requiredComponent')">{{
-              $t("educationalPrograms.rc")
-            }}</label>
+          <label class="ml-2" for="courseComponentType1" :title="$t('educationalPrograms.requiredComponent')">
+            {{$t("educationalPrograms.rc")}}</label>
         </div>
         <div class="w-fit">
           <Checkbox v-model="courseComponentType" :value="2" inputId="courseComponentType2"/>
-          <label class="ml-2" for="courseComponentType2" :title="$t('educationalPrograms.universityComponent')">{{
-              $t("educationalPrograms.uk")
-            }}</label>
+          <label class="ml-2" for="courseComponentType2" :title="$t('educationalPrograms.universityComponent')">
+            {{$t("educationalPrograms.uk")}}</label>
         </div>
         <div class="w-fit">
           <Checkbox v-model="courseComponentType" :value="3" inputId="courseComponentType3"/>
@@ -413,7 +412,7 @@
         <span>{{ $t("educationalPrograms.semester") }}</span>
       </div>
       <div class="col-12 lg:col-9">
-        <InputText v-model="formModule.moduleCourseRel[0].semester"/>
+        <InputNumber v-model="formModule.moduleCourseRel[0].semester"/>
         <small class="p-error" v-if="!formModule.moduleCourseRel[0].semester && submitted">{{ $t("common.requiredField") }}</small>
       </div>
       <div class="col-3">
@@ -505,6 +504,23 @@ const items = computed(() => {
     }
   ];
 })
+const typesEduProgram = computed(() => {
+  return [
+    {
+      label: t('educationalPrograms.currentEP'),
+      id: 1
+    },
+    {
+      label: t('educationalPrograms.newEP'),
+      id: 2
+    },
+    {
+      label: t('educationalPrograms.innovativeEP'),
+      id: 3
+    }
+  ];
+})
+
 const checkedDouble = ref(false)
 const checkedJointEducational = ref(false)
 const stepID = ref()
@@ -517,7 +533,7 @@ const formData = ref(
       descriptionKz: 'description Kz',
       descriptionRu: 'description Ru',
       descriptionEn: 'description en',
-      code: 'test',
+      //code: 'test',
       eduProgGroupId: 5,
       eduProgId: 1,
       eduFieldsId: 1,
@@ -538,8 +554,8 @@ const formStep2 = ref(
       degreeAwardedEn: 'test en',
       directionOfTrainingId: 2,
       typeEducationalProgram: 3,
-      doubleDegree: checkedDouble.value ? 1:0,
-      jointEducational: checkedJointEducational.value ? 1:0,
+      doubleDegree: checkedDouble.value ? 1 : 0,
+      jointEducational: checkedJointEducational.value ? 1 : 0,
     }
 )
 const formStep3 = ref(
@@ -552,26 +568,22 @@ const formStep3 = ref(
       profCompetenciesEn: 'test en',
     }
 )
-const courseType = ref([3])
-const courseComponentType = ref([1])
-const whatCourse = ref([4])
+const courseType = ref([])
+const courseComponentType = ref([])
+const whatCourse = ref([])
 const selectedCourse = ref()
 const formModule = ref(
     {
       //namekz: 'test kz',
       id: 0,
-      syllabusId: 16,
       nameru: 'test ru',
       nameen: 'test en',
       code: 'test kz',
       creditCount: '2',
-      courseType: courseType.value[0],
-      courseComponentType: courseComponentType.value[0],
       moduleCourseRel: [
         {
           syllabusModuleId: 0,
           courseId: 10,
-          whatCourse: whatCourse.value[0],
           semester: 2,
           Lecture: 80,
           practice: 85,
@@ -704,10 +716,10 @@ const getEduPrograms = () => {
 getEduPrograms()
 
 const onDoubleChange = (data) => {
-  if(data === 1){
+  if (data === 1) {
     formStep2.value.doubleDegree = checkedDouble.value ? 1 : 0
   }
-  if(data === 2){
+  if (data === 2) {
     formStep2.value.jointEducational = checkedJointEducational.value ? 1 : 0
   }
 }
@@ -747,7 +759,7 @@ const filterCodeGroup = (event) => {
   }
 }
 
-const getTrainingDirections= () => {
+const getTrainingDirections = () => {
   service.getTrainingDirections(lazyParams).then(response => {
     if (response) {
       trainingDirections.value = response.data
@@ -772,7 +784,7 @@ const filterTrainingDirections = (event) => {
   }
 }
 const getModuleBySyllasbusId = () => {
-  service.getModuleBySyllasbusId(16).then(response => {
+  service.getModuleBySyllasbusId(stepID.value ? stepID.value.data : 0).then(response => {
     if (response.data) {
       modules.value = response.data
     }
@@ -826,7 +838,6 @@ const save = () => {
     submitted.value = true
     if (!isValidStep2()) return;
     formStep2.value.id = stepID.value.data
-    console.log(formStep2.value)
     service.addEduProgramTarget(formStep2.value).then(res => {
       toast.add({
         severity: "success",
@@ -843,7 +854,6 @@ const save = () => {
     submitted.value = true
     if (!isValidStep3()) return;
     formStep3.value.id = stepID.value.data
-    console.log(formStep3.value)
     service.addEduProgramDirectory(formStep3.value).then(res => {
       toast.add({
         severity: "success",
@@ -866,8 +876,12 @@ const selectCourse = (data) => {
 }
 const addModuleAndCourses = () => {
   submitted.value = true
+  formModule.value.courseType = courseType.value[0]
+  formModule.value.courseComponentType = courseComponentType.value[0]
+  formModule.value.moduleCourseRel[0].whatCourse = whatCourse.value[0]
   if (!isValidModule()) return;
   console.log(formModule.value)
+/*  formModule.value.syllabusId = stepID.value ? stepID.value.data : null
   service.addModuleAndCourses(formModule.value).then(response => {
     toast.add({
       severity: "success",
@@ -877,7 +891,7 @@ const addModuleAndCourses = () => {
     dialogModule.value = false
     getModuleBySyllasbusId()
   }).catch(_ => {
-  });
+  });*/
 }
 
 const isValid = () => {

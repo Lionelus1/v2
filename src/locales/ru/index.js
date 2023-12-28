@@ -1494,5 +1494,8 @@ export default {
         universityComponent: 'Вузовский компонент',
         oc: 'КВ',
         optionalCourse: 'Курс по выбору',
+        currentEP: 'Действующая ОП',
+        newEP: 'Новая ОП',
+        innovativeEP: 'Инновационная ОП',
     }
 }

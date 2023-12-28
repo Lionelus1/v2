@@ -1508,5 +1508,8 @@ export default {
         universityComponent: 'Университет компоненті',
         oc: 'ТК',
         optionalCourse: 'Таңдау курсы',
+        currentEP: 'Ағымдағы ББ',
+        newEP: 'Жаңа ББ',
+        innovativeEP: 'Инновациялық ББ',
     }
 }

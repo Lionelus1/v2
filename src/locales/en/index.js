@@ -1496,6 +1496,8 @@ export default {
         universityComponent: 'University component',
         oc: 'OC',
         optionalCourse: 'Optional course',
-        reuuerturtu: 'erturtu',
+        currentEP: 'Current EP',
+        newEP: 'New EP',
+        innovativeEP: 'Innovative EP',
     }
 }
