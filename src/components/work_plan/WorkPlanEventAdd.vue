@@ -57,12 +57,12 @@
         <Dropdown v-model="quarter" :options="quarters" optionLabel="name" optionValue="id" :placeholder="$t('common.select')" />
         <small class="p-error" v-if="submitted && formValid.quarter">{{ $t('workPlan.errors.quarterError') }}</small>
       </div>
-      <div class="field" v-if="plan && (plan.is_oper || plan.plan_type.code === Enum.WorkPlanTypes.Oper)">
+      <div class="field" v-if="isOperPlan">
         <label>{{ $t('common.suppDocs') }}</label>
         <Textarea v-model="supporting_docs" rows="3" style="resize: vertical" />
       </div>
       <div class="field">
-        <label>{{ plan && plan.is_oper ? $t('common.additionalInfo') : $t('common.result') }}</label>
+        <label>{{ isOperPlan ? $t('common.additionalInfo') : $t('common.result') }}</label>
         <Textarea v-model="result" rows="3" style="resize: vertical"/>
       </div>
     </div>
@@ -155,6 +155,14 @@ export default {
   },
   created() {
     this.work_plan_id = parseInt(this.$route.params.id);
+  },
+  computed: {
+    isSciencePlan() {
+      return this.plan && this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Science
+    },
+    isOperPlan() {
+      return this.plan && ((this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Oper) || this.plan.is_oper)
+    }
   },
   methods: {
     openBasic() {
