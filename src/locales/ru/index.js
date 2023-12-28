@@ -354,6 +354,7 @@ export default {
         change: "Сменить",
         unknownUser: "Гость",
         doNotShowAnymore: "Больше не показывать",
+        addPost: 'Добавить публикацию'
     },
     positions: {
         menuTitle: 'Поменять позицию',

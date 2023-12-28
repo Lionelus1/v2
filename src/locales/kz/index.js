@@ -352,6 +352,7 @@ export default {
         change: "Өзгерту",
         unknownUser: "Қонақ",
         doNotShowAnymore: "Ендігіәрі көрсетпеу",
+        addPost: 'Пост қосу'
     },
     positions: {
         menuTitle: 'Позицияны өзгерту',

@@ -46,6 +46,9 @@ export class MenuService {
                         to: '/documents/catalog/scienceWorks',
                         visible: this.isEnuWorker()
                     },
+                    {
+                        label: $t('dissertation.swList'), icon: 'pi pi-fw pi-folder', to: '/documents/scientific-works'
+                    },
                 ]
             },
             {
