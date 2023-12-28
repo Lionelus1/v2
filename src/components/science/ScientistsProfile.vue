@@ -74,8 +74,21 @@
       })
     }
 
+    const importSciencePublicationOfScientist = () => {
+      const req = {
+        userID: id
+      }
+
+      scienceService.importSciencePublicationOfScientist(req).then(res => {
+
+      }).catch(error => {
+          toast.add({severity: 'error', summary: t('common.error'), life: 3000})
+      })
+    }
+
   onMounted(() => {
     getScientists()
+    importSciencePublicationOfScientist()
   })
 </script>
   

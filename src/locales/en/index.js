@@ -1624,6 +1624,10 @@ export default {
             digital: "Digital",
             printed: "Printed",
         },
+        publicationCategories: {
+            beforeMastersThesis: "Scientific works published before the defense of the master's thesis",
+            afterMastersThesis: "Scientific works published after the defense of the master's thesis",
+        },
         buttons: {
             card: "Card",
             newPublication: "Add publication",
@@ -1658,7 +1662,9 @@ export default {
             article: "Article",
             monograph: "Monograph",
             scopus_article: "Publication in internationally peer-reviewed scientific journals indexed in Scopus",
-            publication_koksnvo: "Publication recommended by QACFSHE"
+            publication_koksnvo: "Publication recommended by QACFSHE",
+            textbooks: "Textbooks / Teaching aids / Teaching aids / Workshops",
+            free: "Scientific works",
         },
         messages: {
             successImport: "Import request sent successfully",
@@ -1669,6 +1675,7 @@ export default {
             publicationName: "Name of the publication",
             publicationDate: "Publication year",
             editionType: "Type of edition",
+            editionFullName: "Edition (title, year, page number) / No. of copyright certificate, patent",
             editionName: "Name of edition",
             editionNumber: "Edition number",
             editionYear: "Edition year",
@@ -1681,7 +1688,9 @@ export default {
             recommendedBy: "Recommended by (University Academic Council)",
             coauthorsInternal: "Internal co-authors, full name",
             coauthorsExternal: "External co-authors, full name",
-            attachments: "Attachments"
+            attachments: "Attachments",
+            publicationCategory: "Publication category",
+            publicationType: "Publication type",
         }
     }
 }

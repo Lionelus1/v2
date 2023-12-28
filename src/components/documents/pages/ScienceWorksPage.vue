@@ -48,6 +48,19 @@
                 </template>
               </SelectButton>
             </template>
+            <template v-if="'publicationCategory' === param.description">
+              <Dropdown v-model="param.value" :options="publicationCategories" class="w-full" @change="input"
+                        :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID && scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)">
+                <template #value="slotProps">
+                  <template v-if="slotProps.value">
+                    {{ $t('scienceWorks.publicationCategories.' + slotProps.value) }}
+                  </template>
+                </template>
+                <template #option="slotProps">
+                  {{ $t('scienceWorks.publicationCategories.' + slotProps.option) }}
+                </template>
+              </Dropdown>
+            </template>
           </div>
           <div class="md:col-6" v-if="'koksnvo' === param.name">
             <Dropdown v-model="param.value" :options="koksnvoEditions" class="w-full" optionValue="id" :optionLabel="'name_' + $i18n.locale" @change="input"
@@ -164,15 +177,15 @@ export default {
             {
               label: this.$t("common.tosign"),
               icon: "pi pi-user-edit",
-              visible: () => this.scienceWork && (this.scienceWork.docHistory.stateId === DocEnum.CREATED.ID
-              || this.scienceWork.docHistory.stateId === DocEnum.REVISION.ID),
+              visible: () => this.scienceWork && (this.scienceWork.docHistory.stateId === DocEnum.CREATED.ID ||
+                  this.scienceWork.docHistory.stateId === DocEnum.REVISION.ID),
               command: () => { this.open('sendToApproveDialog') }
             },
             {
               label: this.$t("common.revision"),
               icon: "fa-regular fa-circle-xmark",
-              visible: () => this.scienceWork && this.scienceWork.docHistory.stateId === DocEnum.INAPPROVAL.ID
-              && this.needMySign(),
+              visible: () => this.scienceWork && this.scienceWork.docHistory.stateId === DocEnum.INAPPROVAL.ID &&
+                  this.needMySign(),
               command: () => { this.open('revisionDialog') }
             },
           ]
@@ -189,6 +202,7 @@ export default {
 
       editionTypes: ['digital', 'printed'],
       koksnvoEditions: [],
+      publicationCategories: ['beforeMastersThesis', 'afterMastersThesis'],
     }
   },
   mounted() {
@@ -404,9 +418,9 @@ export default {
       this.contractParams = [];
       this.attachments = {};
 
-      let paramsName = ["publicationName", "publicationDate", "editionType",
-        "editionName", "editionNumber", "editionYear", "editionPages", "issn", "isbn",
-        "koksnvo", "link", "printedPages", "recommendedBy", "coauthorsInternal",
+      let paramsName = ["publicationType", "publicationCategory", "publicationName", "publicationDate",
+        "editionType", "editionFullName",  "editionName", "editionNumber", "editionYear", "editionPages",
+        "issn", "isbn", "koksnvo", "link", "printedPages", "recommendedBy", "coauthorsInternal",
         "coauthorsExternal", "attachments"];
 
       for (let name of paramsName) {
@@ -493,47 +507,91 @@ export default {
     clearStages() {
       this.selectedUsers = [];
 
-      this.stages = [
-        {
-          stage: 1,
-          users: null,
-          titleRu: "Соискатель",
-          titleKz: "Соискатель",
-          titleEn: "Соискатель",
-          certificate: {
-            namekz: "Жеке тұлғаның сертификаты",
-            nameru: "Сертификат физического лица",
-            nameen: "Certificate of an individual",
-            value: "individual"
+      if ([DocEnum.ScienceWorkType.Monograph, DocEnum.ScienceWorkType.ScopusArticle].includes(this.getScienceWorkType())) {
+        this.stages = [
+          {
+            stage: 1,
+            users: null,
+            titleRu: "Соискатель",
+            titleKz: "Соискатель",
+            titleEn: "Соискатель",
+            certificate: {
+              namekz: "Жеке тұлғаның сертификаты",
+              nameru: "Сертификат физического лица",
+              nameen: "Certificate of an individual",
+              value: "individual"
+            },
           },
-        },
-        {
-          stage: 2,
-          users: null,
-          titleRu: "Начальник Управление научных изданий и наукометрических ресурсов",
-          titleKz: "Начальник Управление научных изданий и наукометрических ресурсов",
-          titleEn: "Начальник Управление научных изданий и наукометрических ресурсов",
-          certificate: {
-            namekz: "Жеке тұлғаның сертификаты",
-            nameru: "Сертификат физического лица",
-            nameen: "Certificate of an individual",
-            value: "individual"
+          {
+            stage: 2,
+            users: null,
+            titleRu: "Начальник Управление научных изданий и наукометрических ресурсов",
+            titleKz: "Начальник Управление научных изданий и наукометрических ресурсов",
+            titleEn: "Начальник Управление научных изданий и наукометрических ресурсов",
+            certificate: {
+              namekz: "Жеке тұлғаның сертификаты",
+              nameru: "Сертификат физического лица",
+              nameen: "Certificate of an individual",
+              value: "individual"
+            },
           },
-        },
-        {
-          stage: 3,
-          users: null,
-          titleRu: "Директор Департамента науки",
-          titleKz: "Директор Департамента науки",
-          titleEn: "Директор Департамента науки",
-          certificate: {
-            namekz: "Жеке тұлғаның сертификаты",
-            nameru: "Сертификат физического лица",
-            nameen: "Certificate of an individual",
-            value: "individual"
+          {
+            stage: 3,
+            users: null,
+            titleRu: "Директор Департамента науки",
+            titleKz: "Директор Департамента науки",
+            titleEn: "Директор Департамента науки",
+            certificate: {
+              namekz: "Жеке тұлғаның сертификаты",
+              nameru: "Сертификат физического лица",
+              nameen: "Certificate of an individual",
+              value: "individual"
+            },
           },
-        },
-      ];
+        ];
+      } else {
+        this.stages = [
+          {
+            stage: 1,
+            users: null,
+            titleRu: "Соискатель",
+            titleKz: "Соискатель",
+            titleEn: "Соискатель",
+            certificate: {
+              namekz: "Жеке тұлғаның сертификаты",
+              nameru: "Сертификат физического лица",
+              nameen: "Certificate of an individual",
+              value: "individual"
+            },
+          },
+          {
+            stage: 2,
+            users: null,
+            titleRu: "Заведующий кафедры",
+            titleKz: "Кафедра меңгерушісі",
+            titleEn: "Head of Department",
+            certificate: {
+              namekz: "Жеке тұлғаның сертификаты",
+              nameru: "Сертификат физического лица",
+              nameen: "Certificate of an individual",
+              value: "individual"
+            },
+          },
+          {
+            stage: 3,
+            users: null,
+            titleRu: "Секретарь Правления - Ученый секретарь",
+            titleKz: "Кеңес хатшысы – Ғылыми хатшы",
+            titleEn: "Secretary of the Board - Scientific Secretary",
+            certificate: {
+              namekz: "Жеке тұлғаның сертификаты",
+              nameru: "Сертификат физического лица",
+              nameen: "Certificate of an individual",
+              value: "individual"
+            },
+          },
+        ];
+      }
     },
   }
 }

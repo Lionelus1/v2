@@ -119,5 +119,7 @@ export default {
     Monograph: 'monograph',
     ScopusArticle: 'scopus_article',
     PublicationKOKSNVO: 'publication_koksnvo',
+    Textbooks: 'textbooks',
+    Free: 'free',
   }
 }

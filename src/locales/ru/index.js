@@ -1622,6 +1622,10 @@ export default {
             digital: "Электронный",
             printed: "Печатный",
         },
+        publicationCategories: {
+            beforeMastersThesis: "Научные труды, опубликованные до защиты магистерской диссертации",
+            afterMastersThesis: "Научные труды, опубликованные после защиты магистерской диссертации",
+        },
         buttons: {
             card: "Карта",
             newPublication: "Добавить публикацию",
@@ -1629,6 +1633,7 @@ export default {
             filter: "Фильтр",
             clear: "Очистить",
             search: "Поиск",
+            koksnvo: "КОКСНВО"
         },
         menu: {
             newArticle: "Создать новую",
@@ -1644,7 +1649,6 @@ export default {
             author: "Автор",
             year: "Год",
             status: "Статус",
-            koksnvo: "КОКСНВО",
         },
         filter: {
             documentName: "Имя",
@@ -1656,7 +1660,9 @@ export default {
             article: "Статья",
             monograph: "Монография",
             scopus_article: "Статья в международных рецензируемых научных журналах Scopus",
-            publication_koksnvo: "Издание, рекомендуемое КОКСНВО"
+            publication_koksnvo: "Издание, рекомендуемое КОКСНВО",
+            textbooks: "Учебники / Учебные пособия / Учебно-методические пособия / Практикумы",
+            free: "Научные труды",
         },
         messages: {
             successImport: "Запрос на импорт успешно отправлен",
@@ -1667,6 +1673,7 @@ export default {
             publicationName: "Наименование публикации",
             publicationDate: "Дата публикации",
             editionType: "Тип издания",
+            editionFullName: "Издание (название, год, № страницы) / № авторского свидетельства, патента",
             editionName: "Наименование издания",
             editionNumber: "Номер издания",
             editionYear: "Год издания",
@@ -1679,7 +1686,9 @@ export default {
             recommendedBy: "Кем рекомендовано (Ученый совет ВУЗа)",
             coauthorsInternal: "Внутренние соавторы, ФИО",
             coauthorsExternal: "Внешние соавторы, ФИО",
-            attachments: "Вложения"
+            attachments: "Вложения",
+            publicationCategory: "Категория публикации",
+            publicationType: "Тип публикации",
         }
     }
 }

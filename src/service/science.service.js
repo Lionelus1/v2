@@ -73,4 +73,8 @@ export class ScienceService {
     deleteScienceEdition(data) {
         return api.post('/science/editions/delete', data, {headers: getHeader()})
     }
+
+    importSciencePublicationOfScientist(data) {
+        return api.post('/science/editions/import', data, {headers: getHeader()})
+    }
 }
