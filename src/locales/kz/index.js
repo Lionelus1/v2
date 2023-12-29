@@ -1657,7 +1657,9 @@ export default {
     finance: {
         title: 'Қызметтер каталогы',
         getService: 'Қызметті алу',
-        chooseService: 'Получить услугу',
+        chooseService: 'Қызметті таңдаңыз',
+        choosePayment: 'Төлем әдісін таңдаңыз',
+        kaspiApp: 'Kaspi.kz қосымшасы арқылы',
     },
     personalData: 'Жеке ақпарат',
     yearPeriod:'Период годов',

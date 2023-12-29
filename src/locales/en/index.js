@@ -1645,7 +1645,10 @@ export default {
     },
     finance: {
         title: 'Catalog of services',
-        getService: 'Get service'
+        getService: 'Get service',
+        chooseService: 'Select a service',
+        choosePayment: 'Select a Payment Method',
+        kaspiApp: 'In the Kaspi.kz application',
     },
     personalData: 'Personal information',
     yearPeriod: 'Period of years',
