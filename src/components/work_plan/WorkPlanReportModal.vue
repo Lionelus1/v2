@@ -121,7 +121,8 @@ export default {
       return this.plan && ((this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Oper) || this.plan.is_oper)
     },
     showCreateReportButton() {
-      return this.loginedUser && this.respUsers.some(user => user.id === this.loginedUser.userID) || (this.plan.user.id === this.loginedUser.userID);
+      // return this.loginedUser && this.respUsers.some(user => user.id === this.loginedUser.userID) || (this.plan.user.id === this.loginedUser.userID);
+      return this.plan.user.id === this.loginedUser.userID;
     },
   },
   created() {

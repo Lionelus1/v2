@@ -1,14 +1,16 @@
 <template>
-  <vue-element-loading :active="loading" is-full-screen color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)"/>
+  <vue-element-loading :active="loading" is-full-screen color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)" />
   <div>
     <div class="col-12">
       <div class="card" v-if="report && report?.doc_info && report?.doc_info.docHistory.stateId === 2">
         <Button type="button" icon="pi pi-eye" class="p-button-outlined" :label="$t('educomplex.tooltip.document')" @click="openDoc"></Button>
       </div>
       <div class="card" v-if="!isReportSentApproval && visibleSendToApprove">
-        <Button v-if="visibleSendToApprove" type="button" icon="pi pi-send" class="p-button-success ml-2" :label="$t('common.toapprove')" @click="openModal"></Button>
-<!--        <Button type="button" icon="pi pi-send" class="p-button-success ml-2" :label="$t('common.toapprove')" @click="openModal"></Button>-->
-        <WorkPlanReportApprove v-if="showModal" :visible="showModal" :doc-id="report.doc_id" :approvalStages="approval_users" :report="report" :plan="plan" @sent-to-approve="getReport" />
+        <Button v-if="visibleSendToApprove" type="button" icon="pi pi-send" class="p-button-success ml-2" :label="$t('common.toapprove')"
+          @click="openModal"></Button>
+        <!--        <Button type="button" icon="pi pi-send" class="p-button-success ml-2" :label="$t('common.toapprove')" @click="openModal"></Button>-->
+        <WorkPlanReportApprove v-if="showModal" :visible="showModal" :doc-id="report.doc_id" :approvalStages="approval_users" :report="report" :plan="plan"
+          @sent-to-approve="getReport" @closed="closeApproveModal" />
         <!--        <Button label="" icon="pi pi-download" @click="download"
                         class="p-button p-button-info ml-2"/>-->
       </div>
@@ -32,8 +34,8 @@
         <div>
           <TitleBlock :title="report.report_name" :show-back-button="true" />
           <span v-if="report" :class="'ml-3 customer-badge status-' + report?.doc_info.docHistory.stateEn">
-              {{ $t('common.states.' + report?.doc_info.docHistory.stateEn) }}
-        </span>
+            {{ $t('common.states.' + report?.doc_info.docHistory.stateEn) }}
+          </span>
         </div>
         <!--        <Timeline :value="approvals">
                   <template #content="slotProps">
@@ -49,26 +51,22 @@
       <div class="card" v-if="blobSource">
         <!--        <object src="#toolbar=0" style="width: 100%; height: 1000px" v-if="source" type="application/pdf"
                         :data="source"></object>-->
-        <embed :src="blobSource" style="width: 100%; height: 1000px" type="application/pdf"/>
+        <embed :src="blobSource" style="width: 100%; height: 1000px" type="application/pdf" />
       </div>
     </div>
 
     <div v-if="items">
-      <ReportPdf ref="report" :data="items" :report-title="report.report_name" :plan="plan"
-                 style="display: none;"></ReportPdf>
+      <ReportPdf ref="report" :data="items" :report-title="report.report_name" :plan="plan" style="display: none;"></ReportPdf>
     </div>
 
-    <Dialog :header="$t('workPlan.toCorrect')" v-model:visible="showRejectPlan" :style="{width: '450px'}"
-            class="p-fluid">
+    <Dialog :header="$t('workPlan.toCorrect')" v-model:visible="showRejectPlan" :style="{ width: '450px' }" class="p-fluid">
       <div class="field">
         <label>{{ $t('common.comment') }}</label>
         <Textarea inputId="textarea" rows="3" cols="30" v-model="rejectComment"></Textarea>
       </div>
       <template #footer>
-        <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
-                @click="closeModal"/>
-        <Button :label="$t('common.send')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2"
-                @click="rejectPlan"/>
+        <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger" @click="closeModal" />
+        <Button :label="$t('common.send')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2" @click="rejectPlan" />
       </template>
     </Dialog>
   </div>
@@ -82,18 +80,18 @@
 import axios from "axios";
 import html2pdf from "html2pdf.js";
 import ReportPdf from "./RerportPdf";
-import {getHeader, signerApi, smartEnuApi} from "@/config/config";
+import { getHeader, signerApi, smartEnuApi } from "@/config/config";
 import treeToList from "@/service/treeToList";
 import WorkPlanReportApprove from "@/components/work_plan/WorkPlanReportApprove";
-import {NCALayerClient} from "ncalayer-js-client";
-import {runNCaLayer} from "../../helpers/SignDocFunctions";
-import {WorkPlanService} from "@/service/work.plan.service";
+import { NCALayerClient } from "ncalayer-js-client";
+import { runNCaLayer } from "../../helpers/SignDocFunctions";
+import { WorkPlanService } from "@/service/work.plan.service";
 import Enum from "@/enum/workplan";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo.vue";
 
 export default {
   name: "WorkPlanReportView",
-  components: {WorkPlanReportApprove, ReportPdf, DocSignaturesInfo},
+  components: { WorkPlanReportApprove, ReportPdf, DocSignaturesInfo },
   props: ['id'],
   data() {
     const loginedUser = JSON.parse(localStorage.getItem("loginedUser"));
@@ -126,7 +124,7 @@ export default {
           type: 'jpeg',
           quality: 0.98,
         },
-        html2canvas: {scale: 2.8,},
+        html2canvas: { scale: 2.8, },
         jsPDF: {
           unit: 'in',
           format: 'letter',
@@ -171,7 +169,8 @@ export default {
     visibleSendToApprove() {
       return (this.loginedUser && this.respUsers.some(user => user.id === this.loginedUser.userID)) || (this.plan && this.plan.user.id === this.loginedUser.userID);
     },
-    
+
+
   },
   created() {
     this.getReport();
@@ -189,7 +188,7 @@ export default {
           //this.getFile();
         }
       }).catch(error => {
-        this.$toast.add({severity: "error", summary: error, life: 3000});
+        this.$toast.add({ severity: "error", summary: error, life: 3000 });
       });
     },
     getRespUsers() {
@@ -198,7 +197,7 @@ export default {
         this.respUsers = res.data
       }).catch(error => {
         console.log(error);
-        this.$toast.add({severity: "error", summary: error, life: 3000}); 
+        this.$toast.add({ severity: "error", summary: error, life: 3000 });
       });
     },
     getReport() {
@@ -358,7 +357,7 @@ export default {
       }
     },
     getSignatures() {
-      let data = {doc_id: this.report.doc_id};
+      let data = { doc_id: this.report.doc_id };
       this.planService.getSignatures(data).then(res => {
         if (res.data) {
           this.signatures = res.data;
@@ -383,14 +382,14 @@ export default {
     },
     openApprovePlan() {
       runNCaLayer(this.$t, this.$toast, this.document, 'cms', null, false, this.$i18n.locale)
-          .then(sign => {
-            if (sign !== undefined) {
-              this.CMSSignature = sign;
-              this.sendSignature();
-            }
-          }).catch(error => {
-        this.$toast.add({severity: 'error', summary: error, life: 3000});
-      });
+        .then(sign => {
+          if (sign !== undefined) {
+            this.CMSSignature = sign;
+            this.sendSignature();
+          }
+        }).catch(error => {
+          this.$toast.add({ severity: 'error', summary: error, life: 3000 });
+        });
     },
     sendSignature() {
       let data = {
@@ -441,7 +440,7 @@ export default {
         if (res.data.is_success) {
           this.showRejectPlan = false;
           this.emitter.emit("planRejected", true);
-          this.$router.push({name: 'WorkPlanReport', params: {id: this.report.work_plan_id}});
+          this.$router.push({ name: 'WorkPlanReport', params: { id: this.report.work_plan_id } });
         }
       }).catch(error => {
         if (error.response && error.response.status === 401) {
@@ -460,12 +459,12 @@ export default {
       const header = `<html>`;
       const html = this.$refs.report.$refs.toPdf.innerHTML;
       let css = (
-          '<style>' +
-          '@page WordSection1{size: 841.9pt 595.3pt;mso-page-orientation: landscape;}' +
-          'div.WordSection1 {page:WordSection1;}' +
-          'table{width:100%;border-collapse:collapse;border:1px gray solid;font-size: 10.0pt !important;}td{border:1px gray solid;padding:0cm 5.4pt 0cm 5.4pt;}' +
-          '.header {font-weight: bold}' +
-          '</style>'
+        '<style>' +
+        '@page WordSection1{size: 841.9pt 595.3pt;mso-page-orientation: landscape;}' +
+        'div.WordSection1 {page:WordSection1;}' +
+        'table{width:100%;border-collapse:collapse;border:1px gray solid;font-size: 10.0pt !important;}td{border:1px gray solid;padding:0cm 5.4pt 0cm 5.4pt;}' +
+        '.header {font-weight: bold}' +
+        '</style>'
       );
 
       let blob = new Blob(['\ufeff', header + css + '</head><body>' + html + "</body></html>"], {
@@ -517,11 +516,11 @@ export default {
         byteArrays.push(byteArray);
       }
 
-      const blob = new Blob(byteArrays, {type: "application/pdf"});
+      const blob = new Blob(byteArrays, { type: "application/pdf" });
       return blob;
     },
     viewSignatures() {
-      this.$router.push({name: 'DocSignaturesInfo', params: {uuid: this.report.doc_id, isInsideSidebar: true}})
+      this.$router.push({ name: 'DocSignaturesInfo', params: { uuid: this.report.doc_id, isInsideSidebar: true } })
     },
     openRejectPlan() {
       this.showRejectPlan = true;
@@ -531,8 +530,9 @@ export default {
     },
     openModal() {
       this.showModal = true;
-      this.approval_users = [
-      {
+      if (this.plan.plan_type.id === 2) {
+        this.approval_users = [
+          {
             stage: 1,
             users: [this.loginedUser],
             titleRu: "",
@@ -558,10 +558,47 @@ export default {
               value: "individual"
             }
           }
-      ]
+        ]
+      } else {
+        this.approval_users = [
+          {
+            stage: 1,
+            users: [],
+            titleRu: "",
+            titleKz: "",
+            titleEn: "",
+            certificate: {
+              namekz: "Жеке тұлғаның сертификаты",
+              nameru: "Сертификат физического лица",
+              nameen: "Certificate of an individual",
+              value: "individual"
+            }
+          },
+          {
+            stage: 2,
+            users: [],
+            titleRu: "",
+            titleKz: "",
+            titleEn: "",
+            certificate: {
+              namekz: "Жеке тұлғаның сертификаты",
+              nameru: "Сертификат физического лица",
+              nameen: "Certificate of an individual",
+              value: "individual"
+            }
+          }
+        ]
+      }
+
     },
     openDoc() {
       this.showReportDocInfo = true;
+    },
+    reloadPage() {
+      window.location.reload();
+    },
+    closeApproveModal() {
+      this.showModal = false
     }
   }
 }
