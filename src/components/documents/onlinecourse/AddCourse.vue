@@ -242,6 +242,7 @@ const lazyParams = {
 const checkedCertificate = ref(false)
 const fullName = store.state.loginedUser.thirdName + ' ' + store.state.loginedUser.firstName + ' ' + store.state.loginedUser.lastName
 
+console.log(formData.value)
 const handleFileChange = (event) => {
   abstractFile.value = event.files[0];
   const file = event.files[0];
@@ -260,8 +261,8 @@ const delImg = () => {
 
 const getCourseById = () => {
   if (courseId){
-    service.getCourse(courseId).then(response => {
-      formData.value = response.data
+    service.getCourseById(courseId).then(response => {
+      formData.value = response
       formData.value.eduFieldsId = parseInt(route.params.fieldId)
       formData.value.autorId = response.data.autorId
       imagePreviewUrl.value = smartEnuApi + fileRoute + response.data.logo

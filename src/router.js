@@ -252,13 +252,13 @@ const routes = [
                 component: load('documents/certificates/Certificate'),
             },
             {
-                path: '/educational-programs/bachelor',
+                path: '/educational-programs/:id',
                 name: 'educationalPrograms',
                 component: load('documents/onlinecourse/EducationalPrograms'),
                 beforeEnter: ifAuthenticated,
             },
             {
-                path: '/educational-programs/bachelor/add',
+                path: '/educational-programs/bachelor/add/:degreeID',
                 name: 'addEducationalPrograms',
                 component: load('documents/onlinecourse/AddEducationalProgram'),
                 beforeEnter: ifAuthenticated,

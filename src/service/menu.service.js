@@ -305,10 +305,10 @@ export class MenuService {
                         label: $t('educationalPrograms.bachelor'), to: '/educational-programs/bachelor',
                     },
                     {
-                        label: $t('educationalPrograms.magistr'), to: '/educational-programs/bachelor',
+                        label: $t('educationalPrograms.magistr'), to: '/educational-programs/magistr',
                     },
                     {
-                        label: $t('educationalPrograms.doctoral'), to: '/educational-programs/bachelor',
+                        label: $t('educationalPrograms.doctoral'), to: '/educational-programs/doctoral',
                     },
 
                 ]

@@ -39,6 +39,9 @@ export class OnlineCourseService {
     getCourse(courseID) {
         return api.get(`/onlinecourse/course/${courseID}`, {headers: getHeader()});
     }
+    getCourseById(courseID) {
+        return api.post(`/onlinecourse/getCourseById/${courseID}`, {}, {headers: getHeader()});
+    }
     getCourseStudents(data) {
         return api.post(`/onlinecourse/students`, data, { headers: getHeader()});
     }
@@ -103,5 +106,20 @@ export class OnlineCourseService {
     }
     getModuleBySyllasbusId(id){
         return api.post(`/onlinecourse/getModuleBySyllasbusId/${id}`,{}, {headers: getHeader()});
+    }
+    getSyllabusByDegree(id){
+        return api.post(`/onlinecourse/getSyllabusByDegree/${id}`,{}, {headers: getHeader()});
+    }
+    addModuleAndCourses(data) {
+        return api.post('/onlinecourse/addModuleAndCourses', data, {headers:getHeader()});
+    }
+    getEduProgGroups(data) {
+        return api.post('/onlinecourse/getEduProgGroups', data, {headers:getHeader()});
+    }
+    getEduPrograms(data) {
+        return api.post('/onlinecourse/getEduPrograms', data, {headers:getHeader()});
+    }
+    getTrainingDirections(data) {
+        return api.post('/onlinecourse/getTrainingDirections', {data}, {headers:getHeader()});
     }
 }
