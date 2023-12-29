@@ -1,7 +1,7 @@
 <template>
   <PdfContent ref="pdf" v-if="!isSciencePlan" :data="data" :planId="data.work_plan_id" :plan="plan" style="display: none;"></PdfContent>
   <Dialog :header="$t('common.action.sendToApprove')" v-model:visible="showModal"
-          :style="{width: '50vw'}" class="p-fluid">
+          :style="{width: '50vw'}" class="p-fluid" @hide="closeModal" :closeOnEscape="true">
     <ProgressBar v-if="approving" mode="indeterminate" style="height: .5em"/>
     <div class="field">
       <ApprovalUsers :approving="approving" v-model="approval_users"
@@ -36,7 +36,7 @@ export default {
   name: "WorkPlanReportApprove",
   components: {ApprovalUsers, PdfContent},
   props: ['visible', 'docId', 'report', 'events', 'approvalStages', 'plan'],
-  emits: ['sentToApprove'],
+  emits: ['sentToApprove', 'closed'],
   data() {
     return {
       data: this.report,
@@ -88,6 +88,7 @@ export default {
   methods: {
     closeModal() {
       this.showModal = false;
+      this.$emit('closed', true)
     },
     // approvePlan() {
     //   this.submitted = true;
