@@ -106,7 +106,7 @@ export default {
       document: null,
       isApproval: false,
       isRejected: false,
-      loginedUserId: 0,
+      loginedUserId: loginedUser.userID,
       plan: null,
       rejectComment: "",
       showRejectPlan: false,
@@ -115,18 +115,10 @@ export default {
       isApproved: false,
       quarter: null,
       items: null,
-      report_id: null,
+      report_id: parseInt(this.$route.params.id),
       doc_id: null,
       work_plan_id: null,
-      report: {
-        work_plan_id: null,
-        quarter: null,
-        report_name: null,
-        report_type: null,
-        doc_id: null,
-        halfYearType: null,
-        respUserId: null
-      },
+      report: null,
       isPlanCreator: false,
       pdfOptions: {
         margin: 0.5,
@@ -182,22 +174,7 @@ export default {
     
   },
   created() {
-    this.getRespUsers();
-    this.report_id = parseInt(this.$route.params.id);
-    this.report.work_plan_id = parseInt(this.$route.params.work_plan_id);
-    this.report.quarter = parseInt(this.$route.params.quarter);
-    this.report.report_name = this.$route.params.name;
-    this.report.report_type = parseInt(this.$route.params.type);
-    this.report.doc_id = this.$route.params.doc_id;
-    this.report.halfYearType = this.$route.params.halfYearType;
-    this.report.department_id = this.$route.params.department_id;
-    //this.work_plan_id = parseInt(this.$route.params.work_plan_id);
-    this.loginedUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
-    //this.plan = JSON.parse(localStorage.getItem("workPlan"));
-    //this.getReport();
     this.getReport();
-    this.getRespUsers(this.report.work_plan_id);
-    this.respUsers = this.respUsers || [];
   },
 
   methods: {
@@ -207,39 +184,21 @@ export default {
           this.plan = res.data;
           if (this.plan && this.plan.user.id === this.loginedUserId) {
             this.isPlanCreator = true;
+            this.planCreator = this.plan.user.id
           }
           //this.getFile();
         }
       }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
+        this.$toast.add({severity: "error", summary: error, life: 3000});
       });
     },
-    getRespUsers(workPlanId) {
-      //this.respUsers = [];
-      //let wp_id = this.report.work_plan_id
-      this.planService.getRespUsers(workPlanId).then(res => {
-        if (res.data) {
-          this.respUsers = res.data
-          this.planCreator = this.plan.user.id
-        }
+    getRespUsers() {
+      console.log(this.report);
+      this.planService.getRespUsers(this.report.work_plan_id).then(res => {
+        this.respUsers = res.data
       }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
+        console.log(error);
+        this.$toast.add({severity: "error", summary: error, life: 3000}); 
       });
     },
     getReport() {
@@ -249,7 +208,7 @@ export default {
         //this.getRespUsers();
         this.getFile();
         this.getReportApprovalUsers();
-        this.getSignatures();
+        this.getRespUsers()
       }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
