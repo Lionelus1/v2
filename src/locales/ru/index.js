@@ -1643,7 +1643,10 @@ export default {
     },
     finance: {
         title: 'Каталог услуг',
-        getService: 'Получить услугу'
+        getService: 'Получить услугу',
+        chooseService: 'Выберите услугу',
+        choosePayment: 'Выберите способо оплаты',
+        kaspiApp: 'В приложении Kaspi.kz',
     },
     personalData: 'Персональные сведения',
     yearPeriod:'Период годов',
