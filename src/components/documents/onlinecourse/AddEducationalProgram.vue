@@ -487,7 +487,7 @@ const router = useRouter()
 const store = useStore()
 const toast = useToast();
 const i18n = useI18n();
-const active = ref(3);
+const active = ref(0);
 const items = computed(() => {
   return [
     {
