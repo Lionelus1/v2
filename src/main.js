@@ -373,5 +373,4 @@ app.component('TinyEditor', TinyEditor)
 app.component('TitleBlock', TitleBlock)
 
 interceptor(store,app);
-
 app.mount('#app');

@@ -1418,6 +1418,7 @@ export default {
     },
     finance: {
         title: 'Қызметтер каталогы',
-        getService: 'Қызметті алу'
+        getService: 'Қызметті алу',
+        chooseService: 'Получить услугу',
     }
 }

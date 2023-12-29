@@ -8,6 +8,7 @@ import {useToast} from "primevue/usetoast";
 import {useConfirm} from "primevue/useconfirm";
 import {onMounted, ref} from "vue";
 import DepartmentList from "@/components/smartenu/DepartmentList.vue";
+import {isMobile} from "@/helpers/helper";
 
 const apiService = new FinanceService()
 const {t, locale} = useI18n()
@@ -69,17 +70,16 @@ onMounted(() => {
 
 <template>
   <div class="col-12">
-    <TitleBlock title="Получить услугу"/>
+    <TitleBlock :title="t('finance.getService')"/>
 
     <div v-if="!showPaymentList">
       <div class="p-fluid">
         <div class="field">
-          <label>Выберите услугу</label>
+          <label>{{ t('finance.chooseService') }}</label>
           <Dropdown v-model="formData.service_key" :options="serviceList" :optionLabel="'title_' + locale" optionValue="key"
                     :placeholder="$t('common.select')"/>
         </div>
         <div class="field">
-          {{ formData.department }}
           <label for="name">{{ $t('common.faculty') }}</label>
           <DepartmentList :autoLoad="true" v-model="formData.department" :placeHolder="t('smartenu.selectFaculty')"/>
         </div>
@@ -89,11 +89,11 @@ onMounted(() => {
     </div>
 
     <div class="mt-3" v-if="showPaymentList">
-      <h4>Выберите способо оплаты</h4>
+      <h4>{{ t('finance.choosePayment') }}</h4>
       <div class="flex flex-column flex-wrap gap-3">
         <div class="flex align-items-center">
           <RadioButton v-model="purchaseType" name="dynamic" input-id="kaspi" :value="1"/>
-          <label for="kaspi" class="ml-2">В приложении Kaspi.kz</label>
+          <label for="kaspi" class="ml-2">{{ t('finance.kaspiApp') }}</label>
         </div>
 <!--        <div class="flex align-items-center">
           <RadioButton v-model="purchaseType" disabled name="dynamic" input-id="bank" :value="2"/>
