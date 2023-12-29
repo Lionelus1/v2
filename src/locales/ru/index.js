@@ -1406,7 +1406,7 @@ export default {
         title: 'Каталог услуг',
         getService: 'Получить услугу',
         chooseService: 'Выберите услугу',
-        choosePayment: 'Выберите способо оплаты',
+        choosePayment: 'Выберите способ оплаты',
         kaspiApp: 'В приложении Kaspi.kz',
     }
 }
