@@ -24,6 +24,7 @@ const showPaymentList = ref(false)
 const formData = ref({})
 
 const purchaseType = ref(-1)
+const submitted = ref(false)
 
 const getCatalog = () => {
   loading.value = true
@@ -37,6 +38,10 @@ const getCatalog = () => {
 }
 
 const purchaseService = () => {
+  submitted.value = true
+  if (!isServiceValid()) {
+    return
+  }
   showPaymentList.value = true
 }
 
@@ -45,7 +50,6 @@ const goBack = () => {
 }
 
 const goPay = () => {
-  console.log(formData.value.department)
   switch (purchaseType.value) {
     case 1:
       // eslint-disable-next-line no-case-declarations
@@ -60,6 +64,18 @@ const goPay = () => {
 
       break;
   }
+}
+
+const isServiceValid = () => {
+  let errors = []
+  if (!formData.value.department) {
+    errors.push(1)
+  }
+
+  if (!formData.value.service_key) {
+    errors.push(1)
+  }
+  return errors.length === 0
 }
 
 onMounted(() => {
@@ -77,11 +93,13 @@ onMounted(() => {
         <div class="field">
           <label>{{ t('finance.chooseService') }}</label>
           <Dropdown v-model="formData.service_key" :options="serviceList" :optionLabel="'title_' + locale" optionValue="key"
-                    :placeholder="$t('common.select')"/>
+                    :placeholder="$t('common.select')" />
+          <small class="p-error" v-if="!formData.service_key && submitted">{{ $t("common.requiredField") }}</small>
         </div>
         <div class="field">
           <label for="name">{{ $t('common.faculty') }}</label>
           <DepartmentList :autoLoad="true" v-model="formData.department" :placeHolder="t('smartenu.selectFaculty')"/>
+          <small class="p-error" v-if="!formData.department && submitted">{{ $t("common.requiredField") }}</small>
         </div>
       </div>
 
@@ -101,7 +119,7 @@ onMounted(() => {
         </div>-->
 
         <div class="flex align-item-center">
-          <Button :label="t('ref.get')" icon="pi pi-arrow-left" @click="goBack" class="mr-3"/>
+          <Button :label="t('common.cancel')" icon="pi pi-arrow-left" @click="goBack" class="mr-3"/>
           <Button :label="t('ref.get')" icon="pi pi-plus" @click="goPay"/>
         </div>
       </div>
