@@ -1,7 +1,7 @@
 <template>
   <ProgressBar v-if="loading" mode="indeterminate" class="progress-bar"/>
   <div class="flex flex-row mb-3">
-    <div class="arrow-icon" @click="$router.back()">
+    <div v-if="!scientist" class="arrow-icon" @click="$router.back()">
       <i class="fas fa-arrow-left"></i>
     </div>
     <h3 class="m-0">{{ $t("scienceWorks.title") }}</h3>
@@ -14,7 +14,8 @@
                   @click="openDocument" :disabled="!currentDocument">
             <i class="fa-regular fa-address-card" /> &nbsp;{{ $t("scienceWorks.buttons.card") }}</Button>
           <Button class="p-button-info align-items-center" style="padding: 0.25rem 1rem;"
-                  @click="(event) => this.$refs.newPublicationMenu.toggle(event)">
+                  @click="(event) => this.$refs.newPublicationMenu.toggle(event)"
+                  v-if="!scientist">
             <i class="fa-solid fa-plus" /> &nbsp;{{ $t("scienceWorks.buttons.newPublication") }}</Button>
 <!--          <Button class="p-button-info align-items-center" style="padding: 0.25rem 1rem;"-->
 <!--                  @click="open('generateListDialog')">-->
@@ -24,7 +25,8 @@
       <template #end>
         <div class="flex flex-wrap gap-2">
           <Button class="p-button-info align-items-center" style="padding: 0.25rem 1rem;"
-                  @click="(event) => this.$refs.koksnvoMenu.toggle(event)">
+                  @click="(event) => this.$refs.koksnvoMenu.toggle(event)"
+                  v-if="!scientist">
             <i class="fa-solid fa-book" /> &nbsp;{{ $t("scienceWorks.buttons.koksnvo") }}</Button>
           <Button class="align-items-center" :class="{'p-button-success': filter.applied, 'p-button-info': !filter.applied}"
                   style="padding: 0.25rem 1rem;" @click="toggle('filterOverlayPanel', $event)">
@@ -74,6 +76,7 @@
             <span :class="'customer-badge status-' + data.docHistory.code">
               {{ data.docHistory[$i18n.locale === 'en' ? 'stateEn' : $i18n.locale === 'ru' ? 'stateRus' : 'stateKaz'] }}
             </span>
+            <span v-if="getScienceWorkTypeRaw(data) === Enum.ScienceWorkType.ScopusArticle" class="customer-badge status-status_signed">SCOPUS</span>
           </div>
         </template>
       </Column>
@@ -85,7 +88,7 @@
                     class="p-button-text p-button-info p-1">
               <i class="fa-solid fa-pen fa-xl"></i>
             </Button>
-            <Button @click="currentDocument=data;open('documentInfoSidebar')"
+            <Button @click="currentDocument=data;openSignInfo()"
                     v-if="data.docHistory.stateId >= Enum.INAPPROVAL.ID" class="p-button-text p-button-info p-1">
               <i class="fa-solid fa-eye fa-xl"></i>
             </Button>
@@ -149,6 +152,12 @@
            style="overflow-y: scroll" @hide="getScienceWorks">
     <DocSignaturesInfo :docIdParam="currentDocument.uuid"></DocSignaturesInfo>
   </Sidebar>
+  <!-- scienceWorksPageSidebar -->
+  <Sidebar v-model:visible="visibility.scienceWorksPageSidebar" position="right" class="p-sidebar-lg">
+    <div class="h-full flex flex-column">
+      <ScienceWorksPage :uuid="currentDocument.uuid"></ScienceWorksPage>
+    </div>
+  </Sidebar>
   <!-- newPublicationDialog -->
   <Dialog :header="$t('scienceWorks.buttons.newPublication')" :modal="true"
     v-model:visible="visibility.newPublicationDialog" style="width: 30vw">
@@ -176,7 +185,7 @@
 
   <!-- newPublicationMenu -->
   <Menu ref="newPublicationMenu" :model="newPublicationMenu" :popup="true" />
-  <!-- newPublicationMenu -->
+  <!-- koksnvoMenu -->
   <Menu ref="koksnvoMenu" :model="koksnvoMenu" :popup="true" />
   <!-- koksnvoEditionsSidebar -->
   <Sidebar v-model:visible="visibility.koksnvoEditionsSidebar" :title="$t('science.publicationsRecommendedQACFSHE')" position="right" class="p-sidebar-lg"  style="overflow-y: scroll">
@@ -243,12 +252,24 @@ import FindUser from "@/helpers/FindUser";
 import EditionFormEdit from "@/components/science/edit/EditionFormEdit.vue";
 import EditionRequestFormEdit from "@/components/science/edit/EditionRequestFormEdit.vue";
 import MyEditionRequestView from "@/components/science/view/MyEditionRequestView.vue";
+import ScienceWorksPage from "@/components/documents/pages/ScienceWorksPage.vue";
 
 export default {
   name: 'ScienceWorks',
-  components: {MyEditionRequestView, EditionRequestFormEdit, EditionFormEdit, DocSignaturesInfo, FindUser },
+  components: {
+    ScienceWorksPage,
+    MyEditionRequestView,
+    EditionRequestFormEdit,
+    EditionFormEdit,
+    DocSignaturesInfo,
+    FindUser
+  },
   props: {
     scientist: null,
+    openCardInSidebar: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {
@@ -265,6 +286,7 @@ export default {
 
       visibility: {
         documentInfoSidebar: false,
+        scienceWorksPageSidebar: false,
         newPublicationDialog: false,
         generateListDialog: false,
         koksnvoEditionsSidebar: false,
@@ -459,6 +481,13 @@ export default {
 
       this.$refs[ref].toggle(event);
     },
+    openSignInfo() {
+      if (this.getScienceWorkTypeRaw(this.currentDocument) === Enum.ScienceWorkType.ScopusArticle) {
+        this.open('scienceWorksPageSidebar');
+      } else {
+        this.open('documentInfoSidebar');
+      }
+    },
     onPage(event) {
       this.first = event.first;
       this.page = event.page;
@@ -467,7 +496,11 @@ export default {
     },
     openDocument() {
       if (this.currentDocument) {
-        this.$router.push('/documents/scienceWorks/' + this.currentDocument.uuid)
+        if (this.openCardInSidebar) {
+          this.open('scienceWorksPageSidebar');
+        } else {
+          this.$router.push('/documents/scienceWorks/' + this.currentDocument.uuid);
+        }
       }
     },
     getScienceWorks() {
@@ -545,6 +578,14 @@ export default {
       }
 
       return doc.newParams.publicationName.value;
+    },
+    getScienceWorkTypeRaw(doc) {
+      if (!doc.newParams || !doc.newParams.scienceWorkType ||
+          !this.validString(doc.newParams.scienceWorkType.value)) {
+        return '';
+      }
+
+      return doc.newParams.scienceWorkType.value;
     },
     getScienceWorkType(doc) {
       if (!doc.newParams || !doc.newParams.scienceWorkType ||

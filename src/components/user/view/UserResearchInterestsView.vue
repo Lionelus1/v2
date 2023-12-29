@@ -37,7 +37,7 @@
   </Sidebar>
 
   <Sidebar v-model:visible="showScientificWorks" position="right" class="p-sidebar-lg">
-    <ScienceWorks :scientist="props.modelValue"/>
+    <ScienceWorks :scientist="props.modelValue" :openCardInSidebar="true"/>
   </Sidebar>
 
 
