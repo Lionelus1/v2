@@ -1,10 +1,9 @@
 <template>
   <ConfirmPopup></ConfirmPopup>
-  <div class="flex align-items-center">
-    <TitleBlock :title="$t('fieldEducation.title')" :show-back-button="true"/>
-    <h3 class="mt-0">: {{title}}</h3>
+  <div class="flex align-items-center content_title">
+    <TitleBlock :title="$t('fieldEducation.title') + ': ' +title" :show-back-button="true"/>
   </div>
-  <div class="card mt-3 p-5">
+  <div class="card p-5">
     <div class="right mb-4">
       <Button v-if="findRole(null,'online_course_administrator')" @click="goToAdd()" icon="pi pi-plus-circle" :label="$t('fieldEducation.addCourse')" />
       <Button class="ml-2" icon="pi pi-filter" :label="$t('common.filter')" />
@@ -209,6 +208,11 @@ export default {
 }
 .p-tag-value{
   text-transform: uppercase;
+}
+.content_title{
+  h3{
+    font-size: 20px;
+  }
 }
 @media (max-width: 1450px) {
   .course_grid {

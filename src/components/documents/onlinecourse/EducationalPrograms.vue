@@ -4,7 +4,7 @@
     <div class="card">
       <Button @click="goToAdd()" icon="pi pi-plus-circle" :label="$t('educationalPrograms.createEP')"/>
       <Button class="ml-2" icon="pi pi-filter" label="Фильтр"/>
-      <DataTable :value="educationalPrograms" tableStyle="min-width: 50rem">
+      <DataTable :value="educationalPrograms">
         <Column :field="['name'+locale]" header="СПЕЦИАЛЬНОСТЬ/ГРУППА ОБРАЗОВАТЕЛЬНЫХ ПРОГРАММ"></Column>
         <Column field="name" header="МОП (СПЕЦИАЛИЗАЦИЯ)">
           <template #body="s">
@@ -61,8 +61,6 @@ const id = computed(()=>{
   }
   return st
 })
-
-console.log(id.value)
 const getSyllabusByDegree = () => {
   service.getSyllabusByDegree(id.value).then(response => {
     if (response.data) {
