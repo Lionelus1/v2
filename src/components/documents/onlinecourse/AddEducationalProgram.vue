@@ -533,7 +533,6 @@ const formData = ref(
       descriptionKz: 'description Kz',
       descriptionRu: 'description Ru',
       descriptionEn: 'description en',
-      //code: 'test',
       eduProgGroupId: 5,
       eduProgId: 1,
       eduFieldsId: 1,
@@ -881,7 +880,7 @@ const addModuleAndCourses = () => {
   formModule.value.moduleCourseRel[0].whatCourse = whatCourse.value[0]
   if (!isValidModule()) return;
   console.log(formModule.value)
-/*  formModule.value.syllabusId = stepID.value ? stepID.value.data : null
+  formModule.value.syllabusId = stepID.value ? stepID.value.data : null
   service.addModuleAndCourses(formModule.value).then(response => {
     toast.add({
       severity: "success",
@@ -891,7 +890,7 @@ const addModuleAndCourses = () => {
     dialogModule.value = false
     getModuleBySyllasbusId()
   }).catch(_ => {
-  });*/
+  });
 }
 
 const isValid = () => {
@@ -918,9 +917,6 @@ const isValid = () => {
     errors.push(1);
   }
   if (!formData.value.eduProgId) {
-    errors.push(1);
-  }
-  if (!formData.value.code) {
     errors.push(1);
   }
   if (!formData.value.eduFieldsId) {
