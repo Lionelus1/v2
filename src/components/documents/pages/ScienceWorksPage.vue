@@ -1,7 +1,7 @@
 <template>
   <ProgressSpinner v-if="loading" class="progress-spinner" strokeWidth="5"/>
   <div class="flex flex-row mb-3">
-    <div class="arrow-icon" @click="$router.back()">
+    <div v-if="!uuid" class="arrow-icon" @click="$router.back()">
       <i class="fas fa-arrow-left"></i>
     </div>
     <h4 class="m-0">{{ $t("scienceWorks.types." + getScienceWorkType()) }}</h4>
@@ -24,8 +24,12 @@
             <label>{{ $t('scienceWorks.labels.' + param.description) }}</label>
           </div>
           <div class="p-fluid md:col-6" v-if="'text' === param.name">
-            <InputText v-model="param.value" type="text" @input="input()" :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
-              scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)"></InputText>
+            <div class="p-inputgroup p-input-filled">
+              <InputText v-model="param.value" type="text" @input="input()" :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
+                scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)"></InputText>
+              <Button v-if="param.description === 'link'" icon="fa-solid fa-copy"
+                      v-clipboard:copy="param.value" v-clipboard:success="onCopy"></Button>
+            </div>
           </div>
           <div class="p-fluid md:col-6" v-if="'number' === param.name">
             <InputNumber v-model="param.value"  :minFractionDigits="0" :maxFractionDigits="2" :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
@@ -136,7 +140,12 @@ import {ScienceService} from "@/service/science.service";
 export default {
   name: 'ScienceWorksPage',
   components: {Access, ApprovalUsers, DocSignaturesInfo, FindUser},
-  props: { },
+  props: {
+    uuid: {
+      type: String,
+      default: null
+    }
+  },
   data() {
     return {
       service: new DocService(),
@@ -228,11 +237,14 @@ export default {
     close(name) {
       this.visibility[name] = false
     },
+    onCopy() {
+      this.showMessage("success", this.$t('ncasigner.successCopy'));
+    },
     getScienceWork() {
       this.loading = true;
 
       this.service.getDocumentV2({
-        uuid: this.$route.params.uuid
+        uuid: this.uuid ? this.uuid : this.$route.params.uuid
       }).then(res => {
         this.scienceWork = res.data;
 

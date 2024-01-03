@@ -512,14 +512,16 @@ export default {
       this.service.getDocumentV2({
         uuid: this.docInfo.uuid,
       }).then(res => {
-        for (let element of res.data.approvalStages) {
-          console.log(element)
-          if (!element.signatures) {
-            continue;
-          }
+        if (res.data.approvalStages) {
+          for (let element of res.data.approvalStages) {
+            console.log(element)
+            if (!element.signatures) {
+              continue;
+            }
 
-          if (this.hideDocRevision) {
-            this.hideDocRevision = !element.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));
+            if (this.hideDocRevision) {
+              this.hideDocRevision = !element.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));
+            }
           }
         }
 
