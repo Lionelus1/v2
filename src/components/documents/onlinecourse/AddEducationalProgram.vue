@@ -19,8 +19,8 @@
       <div class="card">
         <h4>{{ items[active].label }}</h4>
         <div class="m-0">
-          <Button class="p-button-outlined mr-2" icon="pi pi-fw pi-download" :label="$t('common.save')" @click="save()"/>
-          <Button :disabled="disabledSend" class="p-button-outlined mr-2" icon="pi pi-fw pi-send" :label="$t('common.send')"
+          <Button class="p-button-outlined mr-2 mb-2 sm:mb-0" icon="pi pi-fw pi-download" :label="$t('common.save')" @click="save()"/>
+          <Button :disabled="disabledSend" class="p-button-outlined mr-2 mb-2 sm:mb-0" icon="pi pi-fw pi-send" :label="$t('common.send')"
                   @click="openDialog('sendToApprove')"/>
           <Button :disabled="disabledApproval" class="p-button-outlined" icon="pi pi-fw pi-check-circle" :label="$t('common.approvalList')"/>
         </div>
@@ -209,7 +209,7 @@
             </div>
           </div>
           <div class="content" v-if="active === 3">
-            <div class="mt-4 mb-4">
+            <div class="table mt-4 mb-4">
               <table>
                 <thead>
                 <tr>
@@ -422,19 +422,19 @@
         <InputNumber v-model="formModule.moduleCourseRel[0].Lecture"/>
         <!--    <small class="p-error">{{ $t("common.requiredField") }}</small>-->
       </div>
-      <div class="col-6 flex">
+      <div class="col-12 lg:col-6 flex">
         <span class="mr-4">{{ $t("educationalPrograms.practice") }}</span>
         <InputNumber v-model="formModule.moduleCourseRel[0].practice"/>
         <!--    <small class="p-error">{{ $t("common.requiredField") }}</small>-->
       </div>
-      <div class="col-3">
+      <div class="col-12 lg:col-3">
         <span>{{ $t("educationalPrograms.laboratoryWork") }}</span>
       </div>
-      <div class="col-3">
+      <div class="col-12 lg:col-3">
         <InputNumber v-model="formModule.moduleCourseRel[0].laboratory"/>
         <!--    <small class="p-error">{{ $t("common.requiredField") }}</small>-->
       </div>
-      <div class="col-3 flex">
+      <div class="col-12 lg:col-3 flex">
         <span class="mr-4" :title="$t('educationalPrograms.preGraduatePractice')">{{ $t("educationalPrograms.prp") }}</span>
         <InputNumber v-model="formModule.moduleCourseRel[0].prp"/>
         <!--    <small class="p-error">{{ $t("common.requiredField") }}</small>-->
@@ -479,6 +479,7 @@ import {useToast} from "primevue/usetoast";
 import {OnlineCourseService} from "@/service/onlinecourse.service";
 import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers.vue";
 
+const active = ref(0);
 const disabledSend = ref(true)
 const disabledApproval = ref(true)
 const {t, locale} = useI18n()
@@ -487,7 +488,6 @@ const router = useRouter()
 const store = useStore()
 const toast = useToast();
 const i18n = useI18n();
-const active = ref(0);
 const items = computed(() => {
   return [
     {
@@ -1093,5 +1093,15 @@ table {
 
 table, th, td {
   border: 1px solid #BDBBBB;
+}
+@media (max-width: 1535px) {
+  .table{
+    overflow-x: scroll;
+  }
+}
+@media (max-width: 500px) {
+  .module_dialog {
+    width: 100%;
+  }
 }
 </style>

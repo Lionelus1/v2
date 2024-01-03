@@ -2,23 +2,23 @@
   <h3>{{ $t('educationalPrograms.educationalProgramConstructor') }} - {{ $t('educationalPrograms.bachelor') }}</h3>
   <div>
     <div class="card">
-      <Button @click="goToAdd()" icon="pi pi-plus-circle" :label="$t('educationalPrograms.createEP')"/>
+      <Button @click="goToAdd()" icon="pi pi-plus-circle" :label="$t('educationalPrograms.createEP')" :title="$t('educationalPrograms.name')"/>
       <Button class="ml-2" icon="pi pi-filter" label="Фильтр"/>
       <DataTable :value="educationalPrograms">
-        <Column :field="['name'+locale]" header="СПЕЦИАЛЬНОСТЬ/ГРУППА ОБРАЗОВАТЕЛЬНЫХ ПРОГРАММ"></Column>
-        <Column field="name" header="МОП (СПЕЦИАЛИЗАЦИЯ)">
+        <Column :field="['name'+locale]" :header="$t('common.speciality') + '/' + $t('educationalPrograms.groupEP')"></Column>
+        <Column field="name" :header="$t('educationalPrograms.specialization')">
           <template #body="s">
             <div v-for="i of s.data.eduProg" :key="i">
               {{ i['name_' + locale] }}
             </div>
           </template>
         </Column>
-        <Column field="category" header="ФОРМА ОБУЧЕНИЯ">
+        <Column field="category" :header="$t('educationalPrograms.formStudy')">
           <template #body="s">
             {{ locale === "kz" ? s.data.trainingPeriodKz : locale === "ru" ? s.data.trainingPeriodRu : s.data.trainingPeriodEn }}
           </template>
         </Column>
-        <Column field="createdDate" header="ДАТА СОЗДАНИЯ">
+        <Column field="createdDate" :header="$t('contracts.columns.createDate')">
           <template #body="s">
             {{ moment(new Date(s.data.createdDate)).utc().format("DD.MM.YYYY") }}
           </template>

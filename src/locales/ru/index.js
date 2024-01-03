@@ -1423,6 +1423,7 @@ export default {
         mixed: 'Смешанный'
     },
     educationalPrograms:{
+        name: 'Образовательная программа',
         educationalProgramConstructor: 'Конструктор образовательных программ',
         bachelor: 'Бакалавриат',
         magistr: 'Магистратура',
@@ -1497,5 +1498,9 @@ export default {
         currentEP: 'Действующая ОП',
         newEP: 'Новая ОП',
         innovativeEP: 'Инновационная ОП',
+        formStudy: 'Форма обучения',
+        specialization: 'Специализация',
+        groupEP: 'Группа образовательных программ',
+        ssdfgsdfg: 'sdfgsdfg',
     }
 }

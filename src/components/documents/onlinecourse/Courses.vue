@@ -1,7 +1,7 @@
 <template>
   <ConfirmPopup></ConfirmPopup>
   <div class="flex align-items-center content_title">
-    <TitleBlock :title="$t('fieldEducation.title') + ': ' +title" :show-back-button="true"/>
+    <TitleBlock :title="$t('fieldEducation.title') + ': ' + title" :show-back-button="true"/>
   </div>
   <div class="card p-5">
     <div class="right mb-4">

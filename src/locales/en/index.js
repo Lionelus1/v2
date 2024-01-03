@@ -1425,6 +1425,7 @@ export default {
         mixed: 'Mixed'
     },
     educationalPrograms:{
+        name: 'Educational program',
         educationalProgramConstructor: 'Educational program constructor',
         bachelor: 'Bachelor',
         magistr: 'Master',
@@ -1499,5 +1500,9 @@ export default {
         currentEP: 'Current EP',
         newEP: 'New EP',
         innovativeEP: 'Innovative EP',
+        formStudy: 'Form of study',
+        specialization: 'Specialization',
+        groupEP: 'Group of educational programs',
+        ssdfgsdfg: 'sdfgsdfg',
     }
 }
