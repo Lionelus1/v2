@@ -399,6 +399,7 @@ export default {
           summary: error,
           life: 3000,
         });
+        this.loading = false;
       });
     },
 

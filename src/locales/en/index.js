@@ -1727,5 +1727,6 @@ export default {
             publicationCategory: "Publication category",
             publicationType: "Publication type",
         }
-    }
+    },
+    supportingDocument: "Supporting document"
 }

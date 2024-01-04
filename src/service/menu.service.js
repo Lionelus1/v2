@@ -44,7 +44,6 @@ export class MenuService {
                         label: $t('scienceWorks.title'),
                         icon: 'fa-solid fa-flask-vial',
                         to: '/documents/catalog/scienceWorks',
-                        visible: this.isEnuWorker()
                     },
                     {
                         label: $t('dissertation.swList'), icon: 'pi pi-fw pi-folder', to: '/documents/scientific-works'

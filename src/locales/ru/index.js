@@ -371,7 +371,6 @@ export default {
         account: "Корреспондентский счет",
         requisite: "Банковские реквизиты",
         accnumber: "Номер счета"
-
     },
     contact: {
         title: "Контактная информация",
@@ -1725,5 +1724,6 @@ export default {
             publicationCategory: "Категория публикации",
             publicationType: "Тип публикации",
         }
-    }
+    },
+    supportingDocument: "Подтверждающий документ"
 }

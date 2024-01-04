@@ -37,6 +37,10 @@
 
       </TabView>
     </BlockUI>
+
+    <Sidebar v-model:visible="viewResume" position="right" class="p-sidebar-lg" style="overflow-y: scroll">
+      <ResumeView :userID="per.userID" :readonly="true"/>
+    </Sidebar>
 </template>
 
 <script>
@@ -54,10 +58,10 @@ import UserResearchInterestsView from "@/components/user/view/UserResearchIntere
 import WorkExperienceView from "@/components/user/view/WorkExperienceView"
 import UserAwardView from "@/components/user/view/UserAwardView"
 import UserQualificationsView from "@/components/user/view/UserQualificationsView"
-
+import  ResumeView  from "@/components/humanResources/vacancy/ResumeView.vue";
 export default {
   name: 'PersonPage',
-  components: {UserPersonalInfomation, UserIDCard, UserEducationView, UserRequisite, UserResearchInterestsView, WorkExperienceView, UserAwardView, UserQualificationsView },
+  components: {UserPersonalInfomation, UserIDCard, UserEducationView, UserRequisite, UserResearchInterestsView, WorkExperienceView, UserAwardView, UserQualificationsView, ResumeView },
   props: {
     person: null,
     userID: null,
@@ -104,16 +108,18 @@ export default {
           icon: "pi pi-fw pi-save",
           disabled: () => !this.changed,
           command: () => { this.save() },
-        }
+        },
       ],
       user: {},
       userService: new UserService(),
       file: null,
+      fileBankRequisite: null,
       chapter: {
         myAccount: 'myAccount',
         scientists: 'scientists',
         viewUser: 'viewUser'
-      }
+      },
+      viewResume: false
     }
   },
   created() {
@@ -132,6 +138,13 @@ export default {
     this.emitter.on('idcardpath', (data) => {
       if (data !== true) {
         this.file = data
+        this.changed = true;
+      } 
+    });
+    
+    this.emitter.on('bankrequisite', (data) => {
+      if (data !== true) {
+        this.fileBankRequisite = data
         this.changed = true;
       } 
     });
@@ -159,7 +172,9 @@ export default {
       if (this.file !== null) {
         fd.append("idImage", this.file);
       }
-
+      if (this.fileBankRequisite !== null) {
+        fd.append("bankRequisiteImage", this.fileBankRequisite)
+      }
       this.userService.updateUserAccountHandler(fd).then(res => {
         this.file = null
         this.$emit('personUpdated', this.per)
@@ -221,7 +236,6 @@ export default {
         this.per = response.data.user
         this.$emit("update:modelValue", this.per);
         this.$emit("update:person", this.per);
-
       }).catch(err => {
 
         if (err.response && err.response.status == 401) {
@@ -236,7 +250,9 @@ export default {
     onMenuItemClick() {
       this.$emit('someEvent')
     },
-
+    openResume() {
+      this.viewResume = true
+    },
   }
 }
 </script>

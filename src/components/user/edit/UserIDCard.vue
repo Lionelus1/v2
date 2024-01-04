@@ -35,14 +35,14 @@
       <!-- ФОТО ЗАГРУЗИТЬ-->
       <div v-if="!readonly" class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
         <label>{{ $t('hr.title.id') }}</label>
-        <FileUpload ref="form" mode="basic" class="mt-2" :customUpload="true" accept="image/*" :class="{'p-invalid': validation.file}" @uploader="upload($event)" :auto="true" v-bind:chooseLabel="$t('ncasigner.chooseFile')"/>
+        <FileUpload ref="form" mode="basic" class="mt-2" :customUpload="true" accept=".pdf, image/*" :class="{'p-invalid': validation.file}" @uploader="upload($event)" :auto="true" v-bind:chooseLabel="$t('ncasigner.chooseFile')"/>
         <InlineMessage severity="info" class="mt-2" show v-if="file">
             {{ $t('ncasigner.chosenFile', {fn: file ? file.name : ""}) }}
         </InlineMessage>
         <small class="p-error"  v-if="validation.file" >{{ $t("common.requiredField") }}</small>
       </div>
 
-      <Button v-if="user.idcardpath" :label="t('hr.title.id')" style="text-align: left" class="p-button-link" @click="showFile(user.idcardpath)" />
+      <Button v-if="user.idcardpath" :label="t('hr.title.id')" style="text-align: left" class="p-button-link" @click="downloadFile(t('hr.title.id'), user.idcardpath)" />
 
     </div>
   </div>
@@ -70,11 +70,13 @@
   import {useToast} from "primevue/usetoast";
   import axios from "axios";
   import {UserService} from "@/service/user.service"
+  import {useStore} from "vuex";
 
   const userService = new UserService
   const {t, locale} = useI18n()
   const toast = useToast()
   const emitter = inject("emitter");
+  const store = useStore()
 
   const props = defineProps({
     userID: {
@@ -106,7 +108,7 @@
     iin: false,
     file: false
   })  
-
+  const loading = ref(false)
   const file = ref(null)
 
   const user = ref(props.modelValue)
@@ -153,6 +155,43 @@
       fileView.value = true
   }
 
+  const downloadFile= (filename, filepath)=> {
+      loading.value = true;
+
+      fetch(`${smartEnuApi}/serve?path=${filepath}`, {
+        method: 'GET',
+        headers: getHeader(),
+      }).then(res => res.blob()).then(blob => {
+        loading.value = false;
+
+        var url = window.URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
+        a.click();
+        a.remove();
+      }).catch(err => {
+        loading.value = false;
+
+        if (err.response && err.response.status == 401) {
+          store.dispatch("logLout")
+        } else if (err.response && err.response.data && err.response.data.localized) {
+          toast.add({
+            severity: "error",
+            summary: t('message.actionError'),
+            life: 3000,
+          })
+        } else {
+          console.log(err)
+          toast.add({
+            severity: "error",
+            summary: t('message.actionError'),
+            life: 3000,
+          })
+        }
+      })
+    }
   onMounted(() => {
       getUserAccount()
   })

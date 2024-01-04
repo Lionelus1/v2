@@ -1738,5 +1738,6 @@ export default {
             publicationCategory: "Жарияланым санаты",
             publicationType: "Жарияланым түрі",
         }
-    }
+    },
+    supportingDocument: "Растайтын құжат"
 }
