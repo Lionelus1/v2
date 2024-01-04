@@ -222,7 +222,7 @@ const routes = [
                 component: load('documents/certificates/Certificate'),
             },
             {
-                path: '/educational-programs/:id',
+                path: '/educational-programs/:slug',
                 name: 'educationalPrograms',
                 component: load('documents/onlinecourse/EducationalPrograms'),
                 beforeEnter: ifAuthenticated,

@@ -19,9 +19,11 @@
         </div>
         <div class="grid_footer flex justify-content-between align-items-center p-3">
           <Tag v-if="item.status" :value="item.status[0]['name' + $i18n.locale]" severity="success"></Tag>
-          <i v-if="findRole(null,'online_course_administrator')" class="pi pi-pencil text-primary-500 cursor-pointer" @click="editCourse(item.id)"></i>
-          <i v-if="findRole(null,'online_course_administrator')" class="pi pi-trash text-red-500 cursor-pointer" @click="deleteCourse(item.id)"></i>
-          <i class="pi pi-list"></i>
+          <div class="icons">
+            <i v-if="findRole(null,'online_course_administrator')" class="pi pi-pencil text-primary-500 cursor-pointer mr-4" @click="editCourse(item.id)"></i>
+            <i v-if="findRole(null,'online_course_administrator')" class="pi pi-trash text-red-500 cursor-pointer mr-4" @click="deleteCourse(item.id)"></i>
+            <i class="pi pi-list"></i>
+          </div>
         </div>
       </div>
     </div>
