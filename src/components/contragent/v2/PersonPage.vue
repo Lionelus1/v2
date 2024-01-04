@@ -3,7 +3,7 @@
     
     <Menubar :model="items" class="m-0 pt-0 pb-0"></Menubar>
     
-    <BlockUI class="card p-fluid" :blocked="loading">
+    <BlockUI v-if="viewPersonPage" class="card p-fluid" :blocked="loading">
       <TabView class="custom-tabview">
         
         <TabPanel :header="$t('personalData')">
@@ -37,6 +37,10 @@
 
       </TabView>
     </BlockUI>
+
+    <Sidebar v-model:visible="viewResume" position="right" class="p-sidebar-lg" style="overflow-y: scroll">
+      <ResumeView :userID="per.userID" :readonly="true"/>
+    </Sidebar>
 </template>
 
 <script>
@@ -54,10 +58,10 @@ import UserResearchInterestsView from "@/components/user/view/UserResearchIntere
 import WorkExperienceView from "@/components/user/view/WorkExperienceView"
 import UserAwardView from "@/components/user/view/UserAwardView"
 import UserQualificationsView from "@/components/user/view/UserQualificationsView"
-
+import  ResumeView  from "@/components/humanResources/vacancy/ResumeView.vue";
 export default {
   name: 'PersonPage',
-  components: {UserPersonalInfomation, UserIDCard, UserEducationView, UserRequisite, UserResearchInterestsView, WorkExperienceView, UserAwardView, UserQualificationsView },
+  components: {UserPersonalInfomation, UserIDCard, UserEducationView, UserRequisite, UserResearchInterestsView, WorkExperienceView, UserAwardView, UserQualificationsView, ResumeView },
   props: {
     person: null,
     userID: null,
@@ -104,16 +108,19 @@ export default {
           icon: "pi pi-fw pi-save",
           disabled: () => !this.changed,
           command: () => { this.save() },
-        }
+        },
       ],
       user: {},
       userService: new UserService(),
       file: null,
+      fileBankRequisite: null,
       chapter: {
         myAccount: 'myAccount',
         scientists: 'scientists',
         viewUser: 'viewUser'
-      }
+      },
+      viewResume: false,
+      viewPersonPage: false
     }
   },
   created() {
@@ -132,6 +139,13 @@ export default {
     this.emitter.on('idcardpath', (data) => {
       if (data !== true) {
         this.file = data
+        this.changed = true;
+      } 
+    });
+    
+    this.emitter.on('bankrequisite', (data) => {
+      if (data !== true) {
+        this.fileBankRequisite = data
         this.changed = true;
       } 
     });
@@ -159,7 +173,9 @@ export default {
       if (this.file !== null) {
         fd.append("idImage", this.file);
       }
-
+      if (this.fileBankRequisite !== null) {
+        fd.append("bankRequisiteImage", this.fileBankRequisite)
+      }
       this.userService.updateUserAccountHandler(fd).then(res => {
         this.file = null
         this.$emit('personUpdated', this.per)
@@ -221,7 +237,7 @@ export default {
         this.per = response.data.user
         this.$emit("update:modelValue", this.per);
         this.$emit("update:person", this.per);
-
+        this.viewPersonPage = true
       }).catch(err => {
 
         if (err.response && err.response.status == 401) {
@@ -231,12 +247,15 @@ export default {
         } else {
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'));
         }
+        this.viewPersonPage = true
       })
     },
     onMenuItemClick() {
       this.$emit('someEvent')
     },
-
+    openResume() {
+      this.viewResume = true
+    },
   }
 }
 </script>

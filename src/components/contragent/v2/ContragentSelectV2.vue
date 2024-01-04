@@ -12,10 +12,11 @@
       <i v-if="signer && signer.userID > 0" class="pi pi-id-card" 
         style="right: 2.5rem;" @click="open('signerCard')"
         :style="{'z-index': scientist ? 1 : 0}"></i>
-      <i class="pi pi-ellipsis-h" style="right: 0;" @click="open('signerList')"></i>
-      <InputText :disabled="disable" :readonly="true" type="text" v-model="getSignerName"></InputText>
-      <label v-if="[0, Enum.ContragentType.Organization, Enum.ContragentType.Bank].includes(contr.type)">{{$t('contracts.signer')}}</label>
-    </span>
+        <i class="pi pi-ellipsis-h" style="right: 0;" @click="open('signerList')"></i>
+        <i v-if="signer && signer.userID > 0" class="pi pi-cloud-download" @click="open('viewResume')" style="right: 65px;"></i>
+        <InputText :disabled="disable" :readonly="true" type="text" v-model="getSignerName"></InputText>
+        <label v-if="[0, Enum.ContragentType.Organization, Enum.ContragentType.Bank].includes(contr.type)">{{$t('contracts.signer')}}</label>
+      </span>
   </div>
   <Sidebar v-model:visible="visibility.organizationCard" position="right" class="p-sidebar-lg">
     <OrganizationPage :organization="this.contr.data" :sidebar="true" @organizationUpdated="organizationUpdated"></OrganizationPage>
@@ -35,6 +36,10 @@
         @personSelected="personSelected"></PersonsList>
     </div>
   </Sidebar>
+
+  <Sidebar v-model:visible="visibility.viewResume" position="right" class="p-sidebar-lg" style="overflow-y: scroll">
+      <ResumeView :userID="signer.userID" :readonly="true"/>
+    </Sidebar>
 </template>
 <script>
 import Enum from "@/enum/docstates/index";
@@ -44,10 +49,11 @@ import OrganizationPage from "@/components/contragent/v2/OrganizationPage";
 import PersonsList from "@/components/contragent/v2/PersonsList";
 import PersonPage from "@/components/contragent/v2/PersonPage";
 import {UserService} from "@/service/user.service"
+import  ResumeView  from "@/components/humanResources/vacancy/ResumeView.vue";
 
 export default {
   name: 'ContragentSelectV2',
-  components: { OrganizationList, OrganizationPage, PersonsList,  PersonPage },
+  components: { OrganizationList, OrganizationPage, PersonsList,  PersonPage, ResumeView },
   props: { 
     contragent: null,
     disable: {
@@ -72,6 +78,7 @@ export default {
         organizationList: false,
         signerCard: false,
         signerList: false,
+        viewResume: false
       },
       userService: new UserService()
     }
