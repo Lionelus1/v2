@@ -1,10 +1,9 @@
 <template>
   <ConfirmPopup></ConfirmPopup>
-  <div class="flex align-items-center">
-    <TitleBlock :title="$t('fieldEducation.title')" :show-back-button="true"/>
-    <h3 class="mt-0">: {{title}}</h3>
+  <div class="flex align-items-center content_title">
+    <TitleBlock :title="$t('fieldEducation.title') + ': ' + title" :show-back-button="true"/>
   </div>
-  <div class="card mt-3 p-5">
+  <div class="card p-5">
     <div class="right mb-4">
       <Button v-if="findRole(null,'online_course_administrator')" @click="goToAdd()" icon="pi pi-plus-circle" :label="$t('fieldEducation.addCourse')" />
       <Button class="ml-2" icon="pi pi-filter" :label="$t('common.filter')" />
@@ -20,9 +19,11 @@
         </div>
         <div class="grid_footer flex justify-content-between align-items-center p-3">
           <Tag v-if="item.status" :value="item.status[0]['name' + $i18n.locale]" severity="success"></Tag>
-          <i v-if="findRole(null,'online_course_administrator')" class="pi pi-pencil text-primary-500 cursor-pointer" @click="editCourse(item.id)"></i>
-          <i v-if="findRole(null,'online_course_administrator')" class="pi pi-trash text-red-500 cursor-pointer" @click="deleteCourse(item.id)"></i>
-          <i class="pi pi-list"></i>
+          <div class="icons">
+            <i v-if="findRole(null,'online_course_administrator')" class="pi pi-pencil text-primary-500 cursor-pointer mr-4" @click="editCourse(item.id)"></i>
+            <i v-if="findRole(null,'online_course_administrator')" class="pi pi-trash text-red-500 cursor-pointer mr-4" @click="deleteCourse(item.id)"></i>
+            <i class="pi pi-list"></i>
+          </div>
         </div>
       </div>
     </div>
@@ -209,6 +210,11 @@ export default {
 }
 .p-tag-value{
   text-transform: uppercase;
+}
+.content_title{
+  h3{
+    font-size: 20px;
+  }
 }
 @media (max-width: 1450px) {
   .course_grid {

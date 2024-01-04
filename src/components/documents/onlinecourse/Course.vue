@@ -1,8 +1,8 @@
 <template>
     <div v-if="course">
         <BlockUI :blocked="saving" :fullScreen="true"></BlockUI>
-        <TitleBlock :title="$t('Онлайн курсы - Курсы - Наука в области химии')" :show-back-button="true"/>
-        <div class="course_card flex p-4">
+        <TitleBlock class="content_title" :title="$t('Онлайн курсы - Курсы - Наука в области химии')" :show-back-button="true"/>
+        <div class="course_card block sm:flex p-4">
           <img :src="course.logo" alt="">
           <div class="text text-white">
             <div class="flex mb-4">
@@ -593,9 +593,9 @@ export default {
         getCourse() {
             this.loading = true
             this.service.getCourse(this.course_id).then(response => {
+              console.log(response)
                 this.course = response.data
                 this.course.logo = smartEnuApi + fileRoute + this.course.logo
-                console.log(this.course.logo)
                 /*if (this.course.students) {
                     this.course.students = response.data.students
                 } else {
@@ -800,6 +800,18 @@ export default {
   }
   i{
     text-align: right;
+  }
+}
+.content_title{
+  h3{
+    font-size: 20px;
+  }
+}
+@media (max-width: 500px) {
+  .course_card{
+    img{
+      width: 100%;
+    }
   }
 }
 </style>

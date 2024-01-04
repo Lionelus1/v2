@@ -1581,6 +1581,7 @@ export default {
         mixed: 'Аралас'
     },
     educationalPrograms:{
+        name: 'Білім бағдарламасы',
         educationalProgramConstructor: 'Білім бағдарламаларының конструкторы',
         bachelor: 'Бакалавриат',
         magistr: 'Магистратура',
@@ -1655,6 +1656,9 @@ export default {
         currentEP: 'Ағымдағы ББ',
         newEP: 'Жаңа ББ',
         innovativeEP: 'Инновациялық ББ',
+        formStudy: 'Оқыту нысаны',
+        specialization: 'Мамандандыру',
+        groupEP: 'ББ тобы',
         sdfgdfggg: 'asdasdasd',
     },
     finance: {

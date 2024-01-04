@@ -1,8 +1,8 @@
 <template>
   <TitleBlock :title="$t('fieldEducation.addCourse')" :show-back-button="true"/>
   <div class="card m-0">
-    <Button class="p-button-outlined mr-2" icon="pi pi-fw pi-download" :label="$t('common.save')" @click="save()"/>
-    <Button class="p-button-outlined mr-2" icon="pi pi-fw pi-send" :label="$t('common.send')" :disabled="disabledSend" @click="openDialog('sendToApprove')"/>
+    <Button class="p-button-outlined mr-2 mb-2 sm:mb-0" icon="pi pi-fw pi-download" :label="$t('common.save')" @click="save()"/>
+    <Button class="p-button-outlined mr-2  mb-2 sm:mb-0" icon="pi pi-fw pi-send" :label="$t('common.send')" :disabled="disabledSend" @click="openDialog('sendToApprove')"/>
     <Button class="p-button-outlined" icon="pi pi-fw pi-check-circle" :disabled="disabledApproval" :label="$t('common.approvalList')"/>
   </div>
   <div class="grid" v-if="formData">
