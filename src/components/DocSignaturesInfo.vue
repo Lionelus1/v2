@@ -80,7 +80,7 @@
         </div>
       </TabPanel>
       <TabPanel v-if="docInfo && docInfo.docHistory.stateId === Enum.INAPPROVAL.ID && (docInfo.sourceType === Enum.DocSourceType.FilledDoc ||
-        (docInfo.docType && docInfo.docType === Enum.DocType.Contract))" :header="$t('common.revision')" :disabled="hideDocRevision">
+        (docInfo.docType && (docInfo.docType === Enum.DocType.Contract || docInfo.docType === Enum.DocType.WorkPlan)))" :header="$t('common.revision')" :disabled="hideDocRevision">
         <div class="card">
           <label> {{ this.$t('common.comment') }} </label>
           <InputText v-model="revisionComment" style="width: 100%; margin-bottom: 2rem;"></InputText>
@@ -139,6 +139,7 @@ export default {
       default: false
     }
   },
+  emits: ['sentToRevision'],
   data() {
     return {
       signatures: null,
@@ -510,6 +511,7 @@ export default {
         headers: getHeader()
       }).then(res => {
         this.loading = false
+        this.$emit('sentToRevision')
         location.reload()
       }).catch(err => {
         if (err.response.status == 401) {
