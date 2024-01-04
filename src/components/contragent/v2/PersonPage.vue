@@ -3,7 +3,7 @@
     
     <Menubar :model="items" class="m-0 pt-0 pb-0"></Menubar>
     
-    <BlockUI v-if="viewPersonPage" class="card p-fluid" :blocked="loading">
+    <BlockUI class="card p-fluid" :blocked="loading">
       <TabView class="custom-tabview">
         
         <TabPanel :header="$t('personalData')">
@@ -119,8 +119,7 @@ export default {
         scientists: 'scientists',
         viewUser: 'viewUser'
       },
-      viewResume: false,
-      viewPersonPage: false
+      viewResume: false
     }
   },
   created() {
@@ -237,7 +236,6 @@ export default {
         this.per = response.data.user
         this.$emit("update:modelValue", this.per);
         this.$emit("update:person", this.per);
-        this.viewPersonPage = true
       }).catch(err => {
 
         if (err.response && err.response.status == 401) {
@@ -247,7 +245,6 @@ export default {
         } else {
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'));
         }
-        this.viewPersonPage = true
       })
     },
     onMenuItemClick() {
