@@ -34,7 +34,7 @@
            responsiveLayout="scroll"
            @sort="onSort($event)"
            @filter="onFilter($event)">
-           <Column :field="'course.name' + $i18n.locale" :header="$t('common.name')"></Column>
+           <Column :field="'course.name' + $i18n.locale" :header="$t('common.nameIn')"></Column>
            <Column :field="'course.organizer.name' + $i18n.locale" :header="$t('course.organizers')"></Column>
            <Column field="number" :header="$t('common.number')"></Column>
            <Column :header="$t('course.certificate.issueDate')">

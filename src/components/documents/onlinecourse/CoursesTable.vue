@@ -1,5 +1,5 @@
 <template>
-  <TitleBlock :title="$t('course.courses')" />
+  <TitleBlock :title="dic_course_type === 2 ? $t('course.oodCourseName') : $t('course.courses')" />
   <div class="surface-card p-4 shadow-2 border-round">
     <TabPanel>
       <DataTable :value="courses" dataKey="id" :rows="rows" :totalRecords="total" :paginator="true"
@@ -28,12 +28,12 @@
         </div>
         </template>
 
-        <Column :header="$t('common.name')">
+        <Column :header="dic_course_type === 2 ? $t('course.disciplineCode') : $t('common.name')">
           <template #body="body">
             {{ body.data['name' + $i18n.locale] }}
           </template>
         </Column>
-        <Column :header="$t('common.description')">
+        <Column :header="dic_course_type === 2 ? $t('course.disciplineName') : $t('common.description')">
           <template #body="body">
             {{ body.data['description' + $i18n.locale] }}
           </template>
@@ -50,7 +50,7 @@
         </Column>
         <Column>
           <template #body="body">
-            <Button :label="$t('common.goToTheCourse')" v-model="body.Button" class="p-button-info mb-2"
+            <Button v-if="dic_course_type == 1" :label="$t('common.goToTheCourse')" v-model="body.Button" class="p-button-info mb-2"
               @click="selectCourse(body.data)" />
           </template>
         </Column>

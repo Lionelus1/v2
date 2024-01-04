@@ -1400,7 +1400,10 @@ export default {
         completedTraining: 'Прошел обучение',
         course: 'Курс',
         startDate:'Дата начала курса',
-        completionDate: 'Дата окончания курса'
+        completionDate: 'Дата окончания курса',
+        disciplineCode: "Код дисциплины",
+        disciplineName: "Наименование дисциплины",
+        oodCourseName: "Курсы по общеобразовательным дисциплинам (ООД)"
     },
     roleControl: {
         addSidebar: 'Добавление новой записи',
