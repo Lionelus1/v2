@@ -3,7 +3,7 @@
     
     <Menubar :model="items" class="m-0 pt-0 pb-0"></Menubar>
     
-    <BlockUI class="card p-fluid" :blocked="loading">
+    <BlockUI v-if="!loading" class="card p-fluid" :blocked="loading">
       <TabView class="custom-tabview">
         
         <TabPanel :header="$t('personalData')">
@@ -230,15 +230,17 @@ export default {
       } else {
         req.userID = this.per.userID
       }
-
+      this.loading = true
       this.userService.getUserAccount(req).then(response=>{
   
         this.per = response.data.user
         this.$emit("update:modelValue", this.per);
         this.$emit("update:person", this.per);
+        this.loading = false
       }).catch(err => {
 
         if (err.response && err.response.status == 401) {
+          this.loading = false
           this.$store.dispatch("logLout");
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null);
