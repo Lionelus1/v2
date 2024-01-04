@@ -1316,7 +1316,10 @@ export default {
         completedTraining: 'Completed training',
         course: 'Course',
         startDate:'Course start date',
-        completionDate: 'Course completion date'
+        completionDate: 'Course completion date',
+        disciplineCode: "Subject code",
+        disciplineName: "Subject name",
+        oodCourseName: "Courses in general education disciplines"
     },
     roleControl:{
         addSidebar: 'Adding new record',
