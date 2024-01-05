@@ -2,7 +2,7 @@
 
     <div class="card">
       <div class="grid formgrid">
-          <!-- ИМЯ -->
+        <!-- ИМЯ -->
         <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ t('contact.fname') }}<span class="p-error" v-if="!readonly">*</span></label>
             <InputText class="mt-2" :placeholder="t('contact.fname')" v-model="user.firstName" :readonly="props.readonly" @input="updateUserData"></InputText>
@@ -55,7 +55,7 @@
 
         <!-- АДРЕС -->
         <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-            <label>{{ this.t('common.myAddress') }}</label>
+            <label>{{ t('common.myAddress') }}</label>
             <InputText class="mt-2" :placeholder="t('common.myAddress')" v-model="user.address" :readonly="props.readonly" @input="updateUserData"></InputText>
             <small class="p-error" v-if="validation.address">{{ t("common.requiredField") }}</small>
         </div>
