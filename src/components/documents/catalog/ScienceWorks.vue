@@ -76,7 +76,8 @@
             <span :class="'customer-badge status-' + data.docHistory.code">
               {{ data.docHistory[$i18n.locale === 'en' ? 'stateEn' : $i18n.locale === 'ru' ? 'stateRus' : 'stateKaz'] }}
             </span>
-            <span v-if="getScienceWorkTypeRaw(data) === Enum.ScienceWorkType.ScopusArticle" class="customer-badge status-status_signed">SCOPUS</span>
+            <span v-if="getScienceWorkTypeRaw(data) === Enum.ScienceWorkType.ScopusArticle" class="customer-badge status-status_signed">Scopus</span>
+            <span v-if="isFromPlatonus(data)" class="customer-badge status-status_signing">Platonus</span>
           </div>
         </template>
       </Column>
@@ -93,7 +94,7 @@
               <i class="fa-solid fa-eye fa-xl"></i>
             </Button>
             <Button v-if="(data.docHistory.stateId === Enum.CREATED.ID || data.docHistory.stateId === Enum.REVISION.ID)
-                    && loginedUser.userID === data.creatorID" @click="currentDocument=data;deleteFile()"
+                    && loginedUser.userID === data.creatorID && !isFromPlatonus(data)" @click="currentDocument=data;deleteFile()"
                     class="p-button-text p-button-danger p-1">
               <i class="fa-solid fa-trash fa-xl"></i>
             </Button>
@@ -321,50 +322,8 @@ export default {
         years: [],
       },
 
-      statuses: [
-        {
-          id: 'status_created',
-          nameRu: "Создан",
-          nameKz: "Құрылды",
-          nameEn: "Created",
-          value: "created"
-        },
-        {
-          id: 'status_inapproval',
-          nameRu: "На согласовании",
-          nameKz: "Келісуде",
-          nameEn: "In approval",
-          value: "inapproval"
-        },
-        {
-          id: 'status_approved',
-          nameRu: "Согласован",
-          nameKz: "Келісілді",
-          nameEn: "Approved",
-          value: "approved"
-        },
-        {
-          id: 'status_revision',
-          nameRu: "На доработке",
-          nameKz: "Түзетуде",
-          nameEn: "Revision",
-          value: "revision"
-        },
-        {
-          id: 'status_signing',
-          nameKz: "Қол қоюда",
-          nameRu: "На подписи",
-          nameEn: "Signing",
-          value: "signing"
-        },
-        {
-          id: 'status_signed',
-          nameRu: "Подписан",
-          nameKz: "Қол қойылды",
-          nameEn: "Signed",
-          value: "signed"
-        },
-      ],
+      statuses: [Enum.StatusesArray.StatusCreated, Enum.StatusesArray.StatusInapproval, Enum.StatusesArray.StatusApproved,
+        Enum.StatusesArray.StatusRevision, Enum.StatusesArray.StatusSigning, Enum.StatusesArray.StatusSigned],
 
       newPublicationType: null,
       pubTypes: [Enum.ScienceWorkType.Free, Enum.ScienceWorkType.Article, Enum.ScienceWorkType.Textbooks,
@@ -375,13 +334,18 @@ export default {
           command: () => { this.open('newPublicationDialog') },
         },
         {
-          label: this.$t('scienceWorks.menu.importFromPlatonus'),
-          command: () => { this.importFromPlatonus(); },
+          label: this.$t('scienceWorks.menu.import'),
+          items: [
+            {
+              label: this.$t('scienceWorks.menu.importFromPlatonus'),
+              command: () => { this.importFromPlatonus(); },
+            },
+            {
+              label: this.$t('scienceWorks.menu.importFromScopus'),
+              command: () => { this.importFromScopus(); },
+            }
+          ]
         },
-        {
-          label: this.$t('scienceWorks.menu.importFromScopus'),
-          command: () => { this.importFromScopus(); },
-        }
       ],
       koksnvoMenu: [
         {
@@ -685,6 +649,13 @@ export default {
       }
 
       return green;
+    },
+    isFromPlatonus(doc) {
+      if (doc && doc.newParams && doc.newParams.pub_platonus_id) {
+        return true;
+      }
+
+      return false;
     },
     validString(str) {
       if (str && str.length > 0) {

@@ -235,50 +235,8 @@ export default {
         folder: null,
       },
 
-      statuses: [
-        {
-          id: 'status_created',
-          nameRu: "Создан",
-          nameKz: "Құрылды",
-          nameEn: "Created",
-          value: "created"
-        },
-        {
-          id: 'status_inapproval',
-          nameRu: "На согласовании",
-          nameKz: "Келісуде",
-          nameEn: "In approval",
-          value: "inapproval"
-        },
-        {
-          id: 'status_approved',
-          nameRu: "Согласован",
-          nameKz: "Келісілді",
-          nameEn: "Approved",
-          value: "approved"
-        },
-        {
-          id: 'status_revision',
-          nameRu: "На доработке",
-          nameKz: "Түзетуде",
-          nameEn: "Revision",
-          value: "revision"
-        },
-        {
-          id: 'status_signing',
-          nameKz: "Қол қоюда",
-          nameRu: "На подписи",
-          nameEn: "Signing",
-          value: "signing"
-        },
-        {
-          id: 'status_signed',
-          nameRu: "Подписан",
-          nameKz: "Қол қойылды",
-          nameEn: "Signed",
-          value: "signed"
-        },
-      ],
+      statuses: [Enum.StatusesArray.StatusCreated, Enum.StatusesArray.StatusInapproval, Enum.StatusesArray.StatusApproved,
+        Enum.StatusesArray.StatusRevision, Enum.StatusesArray.StatusSigning, Enum.StatusesArray.StatusSigned],
 
       docSourceType: [Enum.DocSourceType.Template, Enum.DocSourceType.FilledDoc],
 

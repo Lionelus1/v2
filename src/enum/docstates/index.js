@@ -121,5 +121,50 @@ export default {
     PublicationKOKSNVO: 'publication_koksnvo',
     Textbooks: 'textbooks',
     Free: 'free',
+  },
+
+  StatusesArray: {
+    StatusCreated: {
+      id: 'status_created',
+      nameRu: "Создан",
+      nameKz: "Құрылды",
+      nameEn: "Created",
+      value: "created"
+    },
+    StatusInapproval: {
+      id: 'status_inapproval',
+      nameRu: "На согласовании",
+      nameKz: "Келісуде",
+      nameEn: "In approval",
+      value: "inapproval"
+    },
+    StatusApproved: {
+      id: 'status_approved',
+      nameRu: "Согласован",
+      nameKz: "Келісілді",
+      nameEn: "Approved",
+      value: "approved"
+    },
+    StatusRevision: {
+      id: 'status_revision',
+      nameRu: "На доработке",
+      nameKz: "Түзетуде",
+      nameEn: "Revision",
+      value: "revision"
+    },
+    StatusSigning: {
+      id: 'status_signing',
+      nameKz: "Қол қоюда",
+      nameRu: "На подписи",
+      nameEn: "Signing",
+      value: "signing"
+    },
+    StatusSigned: {
+      id: 'status_signed',
+      nameRu: "Подписан",
+      nameKz: "Қол қойылды",
+      nameEn: "Signed",
+      value: "signed"
+    },
   }
 }

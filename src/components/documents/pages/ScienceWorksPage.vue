@@ -432,8 +432,8 @@ export default {
 
       let paramsName = ["publicationType", "publicationCategory", "publicationName", "publicationDate",
         "editionType", "editionFullName",  "editionName", "editionNumber", "editionYear", "editionPages",
-        "issn", "isbn", "koksnvo", "link", "printedPages", "recommendedBy", "coauthorsInternal",
-        "coauthorsExternal", "attachments"];
+        "issn", "isbn", "koksnvo", "link", "printedPages", "participationInGroup", "recommendedBy",
+        "coauthorsInternal", "coauthorsExternal", "attachments"];
 
       for (let name of paramsName) {
         let param = this.scienceWork.newParams[name];
