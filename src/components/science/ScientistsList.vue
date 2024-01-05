@@ -36,10 +36,10 @@
         <DataView v-if="showGrid" class="xl:ml-10 xl:mr-10" :loading="loading" :lazy="true" :value="list" :layout="layout" :paginator="true" :rows="12" @page="onPage($event)" :totalRecords="total">      
             <template #grid="slotProps" v-if="showGrid">
                 <div class="col-12 sm:col-6 md:col-4 lg:col-3 p-2">
-                    <div @click="selectScientist(slotProps.data)" class="shadow-4 border-round p-4 item course p-ripple" v-ripple style="text-align: center;">
-                        <img width="240" height="165" class="round" v-if="slotProps.data.photo != null && slotProps.data.photo !=''"
+                    <div @click="selectScientist(slotProps.data)" class="card shadow-1 m-0" v-ripple style="text-align: center;">
+                        <img class="card_img round" v-if="slotProps.data.photo != null && slotProps.data.photo !=''"
                           :src="'data:image/jpeg;base64,' + slotProps.data.photo "/>
-                      <img width="240" height="165" class="round" v-else src="assets/layout/images/default-user.jpg"/>
+                      <img class="card_img round" v-else src="assets/layout/images/default-user.jpg"/>
                         <p style="margin-top: 2mm; margin-bottom: 2mm;">{{getFullName(slotProps.data)}}</p>
                     </div>
                 </div>
@@ -268,5 +268,14 @@
     align-items: center;
     justify-content: center;
     z-index: 1000;
+  }
+
+  .card_img{
+    width: 150px;
+    max-height: 150px;
+    height: auto;
+  }
+  :deep(.p-dataview .p-dataview-content){
+    background: transparent;
   }
 </style>

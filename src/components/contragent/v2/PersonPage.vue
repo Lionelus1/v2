@@ -7,7 +7,9 @@
       <TabView class="custom-tabview">
         
         <TabPanel :header="$t('personalData')">
-          <UserPersonalInfomation @personal-information-updated="handlePersonalInformationUpdate" :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
+          <template v-if="per && per.userID">
+            <UserPersonalInfomation @personal-information-updated="handlePersonalInformationUpdate" :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
+          </template>
         </TabPanel>
         <TabPanel  :header="$t('hr.title.id')">
           <UserIDCard @personal-information-updated="handlePersonalInformationUpdate" :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
@@ -239,8 +241,8 @@ export default {
         this.loading = false
       }).catch(err => {
 
+        this.this.loading = false
         if (err.response && err.response.status == 401) {
-          this.loading = false
           this.$store.dispatch("logLout");
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null);
