@@ -1,5 +1,5 @@
 <template>
-  <TitleBlock :title="$t('educationalPrograms.createEP')" :show-back-button="true"/>
+  <TitleBlock :title="$t('educationalPrograms.createEP')" :show-back-button="arrow"/>
 
   <div class="grid">
     <div class="col-12 lg:col-3">
@@ -333,7 +333,11 @@
           <Checkbox v-model="courseType" :value="3" inputId="courseType3"/>
           <label class="ml-2" for="courseType3" :title="$t('educationalPrograms.profileCourses')">{{ $t("educationalPrograms.pc") }}</label>
         </div>
-        <small class="p-error" v-if="!formModule.courseType && submitted">{{ $t("common.requiredField") }}</small>
+      </div>
+      <div class="col-0 lg:col-3" v-if="!formModule.courseType && submitted">
+      </div>
+      <div class="col-12 lg:col-9" v-if="!formModule.courseType && submitted">
+      <small class="p-error" v-if="!formModule.courseType && submitted">{{ $t("common.requiredField") }}</small>
       </div>
       <div class="col-12 lg:col-3">
         <span>{{ $t("educationalPrograms.courseComponents") }}</span>
@@ -353,6 +357,10 @@
           <Checkbox v-model="courseComponentType" :value="3" inputId="courseComponentType3"/>
           <label class="ml-2" for="courseComponentType3" :title="$t('educationalPrograms.optionalCourse')">{{ $t("educationalPrograms.oc") }}</label>
         </div>
+      </div>
+      <div class="col-0 lg:col-3" v-if="!formModule.courseComponentType && submitted">
+      </div>
+      <div class="col-12 lg:col-9" v-if="!formModule.courseComponentType && submitted">
         <small class="p-error" v-if="!formModule.courseComponentType && submitted">{{ $t("common.requiredField") }}</small>
       </div>
       <div class="col-12">
@@ -452,7 +460,7 @@
         <!--    <small class="p-error">{{ $t("common.requiredField") }}</small>-->
       </div>
     </div>
-    <div class="flex justify-content-between">
+    <div class="flex justify-content-between mt-2">
       <Button class="p-button-outlined mr-2 w-fit"
               icon="pi pi-plus-circle" :label="$t('educationalPrograms.addCourse')"/>
       <Button class="w-fit"
@@ -667,6 +675,7 @@ const listLang = ref([
   {id: 2, lang: 'На русском'},
   {id: 3, lang: 'In English'},
 ])
+const arrow = ref(false)
 
 const getCourses = () => {
   service.getCourses(lazyParams).then(response => {
@@ -888,6 +897,7 @@ const addModuleAndCourses = () => {
       life: 3000,
     });
     dialogModule.value = false
+    arrow.value = true
     getModuleBySyllasbusId()
   }).catch(_ => {
   });

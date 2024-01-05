@@ -4,7 +4,7 @@
     <div class="card">
       <Button @click="goToAdd()" icon="pi pi-plus-circle" :label="$t('educationalPrograms.createEP')" :title="$t('educationalPrograms.name')"/>
       <Button class="ml-2" icon="pi pi-filter" label="Фильтр"/>
-      <DataTable :value="educationalPrograms">
+      <DataTable class="mt-4" :value="educationalPrograms" responsiveLayout="scroll" :resizableColumns="true" show-gridlines columnResizeMode="fit">
         <Column :field="['name'+locale]" :header="$t('common.speciality') + '/' + $t('educationalPrograms.groupEP')"></Column>
         <Column field="name" :header="$t('educationalPrograms.specialization')">
           <template #body="s">
