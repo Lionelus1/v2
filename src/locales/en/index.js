@@ -1686,6 +1686,7 @@ export default {
             newPublicationsKoksnvo: "Request to add new publication recommended by QACFSHE",
             publicationsKoksnvo: "Publications recommended by QACFSHE",
             myRequests: "My requests",
+            import: "Import",
         },
         columns: {
             name: "Name",
@@ -1733,6 +1734,7 @@ export default {
             attachments: "Attachments",
             publicationCategory: "Publication category",
             publicationType: "Publication type",
+            participationInGroup: "Participation in the team of authors",
         }
     },
     supportingDocument: "Supporting document"

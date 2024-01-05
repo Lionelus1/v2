@@ -1683,6 +1683,7 @@ export default {
             newPublicationsKoksnvo: "Запрос на добавление нового издания, рекомендуемого КОКСНВО",
             publicationsKoksnvo: "Издания, рекомендуемых КОКСНВО",
             myRequests: "Мои запросы",
+            import: "Импорт",
         },
         columns: {
             name: "Имя",
@@ -1730,6 +1731,7 @@ export default {
             attachments: "Вложения",
             publicationCategory: "Категория публикации",
             publicationType: "Тип публикации",
+            participationInGroup: "Участие в коллективе авторов",
         }
     },
     supportingDocument: "Подтверждающий документ"

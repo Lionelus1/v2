@@ -40,14 +40,6 @@ export class MenuService {
                         icon: 'pi pi-fw pi-folder',
                         to: '/documents/catalog/postaccmonrep'
                     },
-                    {
-                        label: $t('scienceWorks.title'),
-                        icon: 'fa-solid fa-flask-vial',
-                        to: '/documents/catalog/scienceWorks',
-                    },
-                    {
-                        label: $t('dissertation.swList'), icon: 'pi pi-fw pi-folder', to: '/documents/scientific-works'
-                    },
                 ]
             },
             {
@@ -159,8 +151,7 @@ export class MenuService {
                     {
                         label: $t('scienceWorks.title'),
                         icon: 'fa-solid fa-flask-vial',
-                        to: '/documents/catalog/scienceWorks',
-                        visible: this.isEnuWorker()
+                        to: '/documents/catalog/scienceWorks'
                     },
                 ]
             },

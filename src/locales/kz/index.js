@@ -1697,6 +1697,7 @@ export default {
             newPublicationsKoksnvo: "Жаңа ҒЖБССҚК ұсынған ғылыми басылым қосуға сұраныс",
             publicationsKoksnvo: "ҒЖБССҚК ұсынған ғылыми басылымдар",
             myRequests: "Менің өтініштерім",
+            import: "Импорт",
         },
         columns: {
             name: "Атауы",
@@ -1744,6 +1745,7 @@ export default {
             attachments: "Қосымшалар",
             publicationCategory: "Жарияланым санаты",
             publicationType: "Жарияланым түрі",
+            participationInGroup: "Авторлар ұжымына қатысу",
         }
     },
     supportingDocument: "Растайтын құжат"
