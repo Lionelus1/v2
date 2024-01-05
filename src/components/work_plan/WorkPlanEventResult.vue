@@ -433,8 +433,14 @@ export default {
       if (this.plan && this.plan.is_oper && this.resultData)
         fd.append("result_id", this.resultData.event_result_id);
       if (this.files.length > 0) {
+        let fullName = this.authUser.thirdName + ' ' + this.authUser.firstName
+  
+        if (this.authUser.lastName && this.authUser.lastName.length > 0) {
+          fullName += ' ' + this.authUser.lastName
+        }
+
         for (let file of this.files) {
-          fd.append('files', file, this.authUser.fullName.replace(/ /g, '_') + "_" + file.name)
+          fd.append('files', file, fullName.replace(/ /g, '_') + "_" + file.name)
         }
       }
       this.planService.saveEventResult(fd).then(res => {

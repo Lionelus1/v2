@@ -202,7 +202,7 @@
                     <label for="dialognote">{{$t('common.comment')}}</label>
                     <InputText id="dialognote" class="mb-2" v-bind:placeholder="$t('common.comment')" v-model="dialogNote" type="text" />
                     <label for="approvingusers">{{$t('doctemplate.approvingUsers')}}</label>
-                    <FindUser v-model="selectedUsers" :userType="2" :roles="'legal_service_head'" id="approvingusers"></FindUser>
+                    <FindUser v-model="selectedUsers" :userType="2" id="approvingusers"></FindUser>
                 </div>
               </div>
               <template #footer>
@@ -248,7 +248,7 @@
               class="p-sidebar-lg"
               style="overflow-y: scroll"
           >
-            <DocSignaturesInfo :docIdParam="selectedNode.data.docID" :isInsideSidebar="true"></DocSignaturesInfo>
+            <DocSignaturesInfo :docIdParam="selectedNode.data.docID"></DocSignaturesInfo>
           </Sidebar>
       </div>
 

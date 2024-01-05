@@ -62,6 +62,7 @@ export default {
     RelatedDoc: 9,
     PostAccreditationMonitoringReport: 10,
     Reference: 11,
+    ScienceWorks: 12,
   },
 
   ContragentType: {
@@ -100,6 +101,8 @@ export default {
     EduComplex: 2,
     FilledDoc: 3,
     References: 4,
+    Accredation: 5,
+    RelatedDocumentTemplates: 7,
   },
 
   DocumentRequestType: {
@@ -107,5 +110,61 @@ export default {
     ReferenceErrorCorrection: 'reference_error_correction',
     ReferenceInfoRequest: 'reference_info_request',
     ReferenceSalaryRequest: 'reference_salary_request',
+    ScienceAdvisorApproval: 'science_advisor_approval',
+    AccountantsExecutionRequest: 'accountants_execution_request',
   },
+
+  ScienceWorkType: {
+    Article: 'article',
+    Monograph: 'monograph',
+    ScopusArticle: 'scopus_article',
+    PublicationKOKSNVO: 'publication_koksnvo',
+    Textbooks: 'textbooks',
+    Free: 'free',
+  },
+
+  StatusesArray: {
+    StatusCreated: {
+      id: 'status_created',
+      nameRu: "Создан",
+      nameKz: "Құрылды",
+      nameEn: "Created",
+      value: "created"
+    },
+    StatusInapproval: {
+      id: 'status_inapproval',
+      nameRu: "На согласовании",
+      nameKz: "Келісуде",
+      nameEn: "In approval",
+      value: "inapproval"
+    },
+    StatusApproved: {
+      id: 'status_approved',
+      nameRu: "Согласован",
+      nameKz: "Келісілді",
+      nameEn: "Approved",
+      value: "approved"
+    },
+    StatusRevision: {
+      id: 'status_revision',
+      nameRu: "На доработке",
+      nameKz: "Түзетуде",
+      nameEn: "Revision",
+      value: "revision"
+    },
+    StatusSigning: {
+      id: 'status_signing',
+      nameKz: "Қол қоюда",
+      nameRu: "На подписи",
+      nameEn: "Signing",
+      value: "signing"
+    },
+    StatusSigned: {
+      id: 'status_signed',
+      nameRu: "Подписан",
+      nameKz: "Қол қойылды",
+      nameEn: "Signed",
+      value: "signed"
+    },
+  }
 }

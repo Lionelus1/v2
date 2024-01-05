@@ -14,7 +14,6 @@ var configG = app.config.globalProperties
     
     instance.interceptors.response.use((response) => {
         if(response.status === 401) {
-            console.log(response)
             store.dispatch('logLout')
         }
         return response;
@@ -23,8 +22,9 @@ var configG = app.config.globalProperties
             if (error.response.status === 401) {
                 store.dispatch('solveAttemptedUrl', router.currentRoute.value)
                 store.dispatch('logLout')
-            } else 
-            if (error.response.status === 405) {
+            } else if (error.response.data.localized) {
+                return Promise.reject(error);
+            } else if (error.response.status === 405) {
                 console.log(error.response)
                 configG.$toast.add({
                     severity: "error",
@@ -37,6 +37,7 @@ var configG = app.config.globalProperties
                 return Promise.reject(error.response.data);
             }
         }
+        
         return Promise.reject(error.message);
     });
 };

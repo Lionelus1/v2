@@ -14,23 +14,30 @@ export default {
     ]),
     findRole: findRole,
     getLoginedUser(){
-      axios.get(smartEnuApi +'/logineduserinfo',{headers:getHeader()})
-      .then(response=>{
-        window.localStorage.setItem("loginedUser",JSON.stringify(response.data));
+      axios.get(
+        smartEnuApi +'/logineduserinfo', 
+        { headers:getHeader() }
+      ).then(response => {
+        window.localStorage.setItem("loginedUser", JSON.stringify(response.data));
         this.setLoginedUser();
-        let oldPath = this.$store.state.attemptedUrl;
-        if(oldPath.length==0){
-          if(this.findRole(null,"student")){
 
+        if (response.data.mainPosition || response.data.positions.length > 0) {
+          window.localStorage.setItem("showPositionsDialog", true);
+        }
+        
+        let oldPath = this.$store.state.attemptedUrl;
+        if (oldPath.length == 0) {
+          if (this.findRole(null, "student")) {
             location.replace('/#/human-resources/career/vacancies');
-          }else
-          location.replace('/#/');
-        }else{
-          this.$store.dispatch("solveAttemptedUrl","");
+          } else {
+            location.replace('/#/');
+          }
+        } else {
+          this.$store.dispatch("solveAttemptedUrl", "");
           location.replace("/#"+oldPath);
         }
-      })
-      .catch(error => {
+      }).catch(error => {
+        console.log(error)
         this.$router.push({name:'Login'});
       })
     },
@@ -51,7 +58,7 @@ export default {
   },
   created(){
     this.getLoginedUser();
-    this.getUserSlug()
+    this.getUserSlug();
   }
 }
 </script>
