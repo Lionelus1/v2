@@ -82,6 +82,7 @@ export default {
             newCount: 0,
             firstShown: false,
             notificationService: new NotificationService(),
+            loginedUser: null,
         }
     },
     methods: {
@@ -120,40 +121,40 @@ export default {
             });
         },
         loadNotifications() {
+          if (this.loginedUser) {
             this.notLoading = true;
             this.notificationService.getNotifications(this.pageNum, this.itemsPerPage).then(response => {
-                this.newCount = response.data.NewCount ? response.data.NewCount : 0;
-                let recordCount = response.data.RecordCount;
-                this.pageCount = recordCount % this.itemsPerPage == 0 ? parseInt(recordCount / this.itemsPerPage) : parseInt(recordCount / this.itemsPerPage) + 1;
-                //alert("private len "+response.data.private.length+" "+" general len"+response.data.general.length);
-                if (!response.data.private) {
-                    response.data.private = [];
-                }
-                if (!response.data.general) {
-                    response.data.general = [];
-                }
-                let nots = response.data.private.concat(response.data.general);
-                nots.forEach(n => {
-                    if (n) {
-                        n.senderObject = JSON.parse(n.senderJSON);
-                        if (!n.isSeen) {
-                            n.isSeen = 0;
-                        }
-                    }
+              this.newCount = response.data.NewCount ? response.data.NewCount : 0;
+              let recordCount = response.data.RecordCount;
+              this.pageCount = recordCount % this.itemsPerPage == 0 ? parseInt(recordCount / this.itemsPerPage) : parseInt(recordCount / this.itemsPerPage) + 1;
+              //alert("private len "+response.data.private.length+" "+" general len"+response.data.general.length);
+              if (!response.data.private) {
+                  response.data.private = [];
+              }
+              if (!response.data.general) {
+                  response.data.general = [];
+              }
+              let nots = response.data.private.concat(response.data.general);
+              nots.forEach(n => {
+                  if (n) {
+                      n.senderObject = JSON.parse(n.senderJSON);
+                      if (!n.isSeen) {
+                          n.isSeen = 0;
+                      }
+                  }
 
-                });
-                this.notifications = this.notifications.concat(nots);
-                this.pageNum = this.pageNum + 1;
-                this.notLoading = false;
-                let newNots = this.notifications.filter(f => parseInt(f.isSeen) == 0);
-                if (newNots.length > 0) {
-                    this.ViewNotification(newNots);
-                }
-
+              });
+              this.notifications = this.notifications.concat(nots);
+              this.pageNum = this.pageNum + 1;
+              this.notLoading = false;
+              let newNots = this.notifications.filter(f => parseInt(f.isSeen) == 0);
+              if (newNots.length > 0) {
+                  this.ViewNotification(newNots);
+              }
+            }).catch(error => {
+              console.log(error)
             })
-                .catch(error => {
-                    console.log(error)
-                })
+          }
         },
         timeDifference(givenDate) {
 
@@ -206,15 +207,17 @@ export default {
         }
     },
     mounted() {
+      this.loginedUser = localStorage.getItem("loginedUser");
+      if (this.loginedUser) {
         this.notLoading = true;
         this.notificationService.getNotifications(this.pageNum, this.itemsPerPage).then(response => {
-            this.newCount = response.data.NewCount ? response.data.NewCount : 0;
-            let recordCount = response.data.RecordCount;
-            this.pageCount = recordCount % this.itemsPerPage == 0 ? parseInt(recordCount / this.itemsPerPage) : parseInt(recordCount / this.itemsPerPage) + 1;
+          this.newCount = response.data.NewCount ? response.data.NewCount : 0;
+          let recordCount = response.data.RecordCount;
+          this.pageCount = recordCount % this.itemsPerPage == 0 ? parseInt(recordCount / this.itemsPerPage) : parseInt(recordCount / this.itemsPerPage) + 1;
+        }).catch(error => {
+          this.$toast.add({severity: "error", summary: error, life: 3000});
         })
-            .catch(error => {
-                this.$toast.add({severity: "error", summary: error, life: 3000});
-            })
+      }
     },
     async created() {
 

@@ -930,7 +930,7 @@ export default {
       page: 0,
       rows: 1,
       sortLang: this.$i18n.locale,
-      orgID: this.loginedUser.organization.id
+      orgID: this.loginedUser.mainPosition.organization.id
     }
     if (this.modelValue.organization === undefined) {
       axios

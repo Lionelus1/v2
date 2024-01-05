@@ -396,7 +396,7 @@ export default {
       });
     },
     viewSignatures() {
-      this.$router.push({name: 'DocSignaturesInfo', params: {uuid: this.plan.doc_id, isInsideSidebar: true}})
+      this.$router.push({name: 'DocSignaturesInfo', params: {docIdParam: this.plan.doc_id}})
     },
   }
 }

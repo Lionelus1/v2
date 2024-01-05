@@ -145,6 +145,7 @@ export default {
     },
     onPageFolder(event) {
       this.folderPage = event.page;
+      this.folderRows = event.rows;
       this.getFolders();
     },
     doubleClickFolder(event) {
@@ -204,6 +205,7 @@ export default {
     },
     onPageFile(event) {
       this.filePage = event.page;
+      this.fileRows = event.rows;
       this.getFiles();
     },
     doubleClickFile(event) {

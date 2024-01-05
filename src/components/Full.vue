@@ -20,18 +20,21 @@
     </div>
     <AppConfig :layoutMode="layoutMode" :layoutColorMode="layoutColorMode" @layout-change="onLayoutChange" @layout-color-change="onLayoutColorChange"/>
     <AppFooter/>
-
+    <PositionChangeDialog v-if="loginedUser && loginedUser.userID > 0" ref="positionChangeDialog"></PositionChangeDialog>
   </div>
 </template>
 
 <script>
+import {useRoute} from "vue-router"
+
+import {MenuService} from "../service/menu.service";
+
 import AppTopBar from '../AppTopbar.vue';
 import AppProfile from '../AppProfile.vue';
 import AppMenu from '../AppMenu.vue';
 import AppConfig from '../AppConfig.vue';
 import AppFooter from '../AppFooter.vue';
-import {useRoute} from "vue-router"
-import {MenuService} from "../service/menu.service";
+import PositionChangeDialog from './PositionChangeDialog.vue';
 
 export default {
   setup() {
@@ -217,8 +220,19 @@ export default {
   created() {
     this.getLoginedUser();
   },
-  beforeUpdate() {
+  mounted() {
+    let showPositionsDialog = localStorage.getItem('showPositionsDialog');
+    let doNotShowAnymore = localStorage.getItem('doNotShowWelcomePositionChangeDialog') === 'true';
+    
+    if (showPositionsDialog && !doNotShowAnymore) {
+      this.$refs.positionChangeDialog.show();
 
+      localStorage.removeItem('showPositionsDialog');
+    } else if (doNotShowAnymore) {
+      localStorage.removeItem('showPositionsDialog');
+    }
+  },
+  beforeUpdate() {
     if (this.mobileMenuActive)
       this.addClass(document.body, 'body-overflow-hidden');
     else
@@ -230,6 +244,7 @@ export default {
     'AppMenu': AppMenu,
     'AppConfig': AppConfig,
     'AppFooter': AppFooter,
+    PositionChangeDialog,
   }
 }
 </script>

@@ -172,6 +172,32 @@ export default {
     closeBasic() {
       this.showWorkPlanEventModal = false;
     },
+    getFullname(user) {
+      if (!user) {
+        return ''
+      }
+
+      let fullname = ''
+      if (this.$i18n.locale === 'en') {
+        fullname += user.lastnameEn + ' ' + user.firstnameEn
+
+        if (user.thirdnameEn) {
+          fullname += ' ' + user.thirdnameEn
+        }
+      }
+
+      if (fullname.length > 0) {
+        return fullname
+      }
+
+      fullname += user.thirdName + ' ' + user.firstName
+
+      if (user.lastName) {
+        fullname += ' ' + user.lastName
+      }
+
+      return fullname
+    },
     createEvent() {
       this.submitted = true;
 
