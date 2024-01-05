@@ -72,8 +72,8 @@
           </div>
         </div>
       </TabPanel>
-      <TabPanel v-if="docInfo && docInfo.docHistory.stateId === Enum.INAPPROVAL.ID && (docInfo.sourceType === Enum.DocSourceType.FilledDoc ||
-        (docInfo.docType && (docInfo.docType === Enum.DocType.Contract || docInfo.docType === Enum.DocType.WorkPlan)))" :header="$t('common.revision')" :disabled="hideDocRevision">
+      <TabPanel v-if="docInfo && docInfo.docHistory.stateId === Enum.INAPPROVAL.ID && ((docInfo.sourceType === Enum.DocSourceType.FilledDoc ||
+        (docInfo.docType && (docInfo.docType === Enum.DocType.Contract))) || docInfo.docType === Enum.DocType.WorkPlan)" :header="$t('common.revision')" :disabled="hideDocRevision">
         <div class="card">
           <label> {{ this.$t('common.comment') }} </label>
           <InputText v-model="revisionComment" style="width: 100%; margin-bottom: 2rem;"></InputText>
