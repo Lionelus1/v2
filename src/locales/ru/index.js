@@ -1426,7 +1426,7 @@ export default {
         name: 'Образовательная программа',
         educationalProgramConstructor: 'Конструктор образовательных программ',
         bachelor: 'Бакалавриат',
-        magistr: 'Магистратура',
+        master: 'Магистратура',
         doctoral: 'Докторантура',
         createEP: 'Создать ОП',
         formationEP: 'Формирование ОП',

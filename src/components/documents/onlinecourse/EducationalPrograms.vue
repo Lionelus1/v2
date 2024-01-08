@@ -63,7 +63,7 @@ const id = computed(()=>{
   if(route.path === '/educational-programs/bachelor'){
     st = 1
   }
-  if(route.path === '/educational-programs/magistr'){
+  if(route.path === '/educational-programs/master'){
     st = 2
   }
   if(route.path === '/educational-programs/doctoral'){
@@ -113,7 +113,7 @@ watch(() => route.params.slug, (old, newVal) => {
     if(newVal === 'bachelor'){
       id.value = 1
     }
-    if(newVal === 'magistr'){
+    if(newVal === 'master'){
       id.value = 2
     }
     if(newVal === 'doctoral'){

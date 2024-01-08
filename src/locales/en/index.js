@@ -1428,7 +1428,7 @@ export default {
         name: 'Educational program',
         educationalProgramConstructor: 'Educational program constructor',
         bachelor: 'Bachelor',
-        magistr: 'Master',
+        master: 'Master',
         doctoral: 'Doctoral',
         createEP: 'Create EP',
         formationEP: 'Formation of EP',

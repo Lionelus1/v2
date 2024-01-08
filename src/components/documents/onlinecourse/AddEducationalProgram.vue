@@ -20,7 +20,7 @@
         <h4>{{ items[active].label }}</h4>
         <div class="m-0">
           <Button class="p-button-outlined mr-2 mb-2 sm:mb-0" icon="pi pi-fw pi-download" :label="$t('common.save')" @click="save()"/>
-          <Button :disabled="disabledSend" class="p-button-outlined mr-2 mb-2 sm:mb-0" icon="pi pi-fw pi-send" :label="$t('common.send')"
+          <Button class="p-button-outlined mr-2 mb-2 sm:mb-0" icon="pi pi-fw pi-send" :label="$t('common.send')"
                   @click="openDialog('sendToApprove')"/>
           <Button :disabled="disabledApproval" class="p-button-outlined" icon="pi pi-fw pi-check-circle" :label="$t('common.approvalList')"/>
         </div>
@@ -487,7 +487,7 @@ import {useToast} from "primevue/usetoast";
 import {OnlineCourseService} from "@/service/onlinecourse.service";
 import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers.vue";
 
-const active = ref(0);
+const active = ref(3);
 const disabledSend = ref(true)
 const disabledApproval = ref(true)
 const {t, locale} = useI18n()
@@ -621,23 +621,62 @@ const selectedUsers = ref([
 const approvalStages = ref([
   {
     stage: 1,
-    users: 's',
+    users: null,
+    titleRu: "Член академического комитета",
+    titleKz: "Член академического комитета",
+    titleEn: "Член академического комитета",
     certificate: {
       namekz: "Жеке тұлғаның сертификаты",
       nameru: "Сертификат физического лица",
       nameen: "Certificate of an individual",
       value: "individual"
     },
-    titleRu: "Преподаватель",
-    titleKz: "Оқытушы",
-    titleEn: "Teacher",
   },
   {
     stage: 2,
     users: null,
-    titleRu: "Заведующий кафедры",
-    titleKz: "Кафедра меңгерушісі",
-    titleEn: "Head of Department",
+    titleRu: "Сотрудник отдела ОП.",
+    titleKz: "Сотрудник отдела ОП.",
+    titleEn: "Сотрудник отдела ОП.",
+    certificate: {
+      namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+      nameru: "Для внутреннего документооборота (ГОСТ)",
+      nameen: "For internal document management (GOST)",
+      value: "internal"
+    },
+  },
+  {
+    stage: 3,
+    users: null,
+    titleRu: "Внешний эксперт",
+    titleKz: "Внешний эксперт",
+    titleEn: "Внешний эксперт",
+    certificate: {
+      namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+      nameru: "Для внутреннего документооборота (ГОСТ)",
+      nameen: "For internal document management (GOST)",
+      value: "internal"
+    },
+  },
+  {
+    stage: 4,
+    users: null,
+    titleRu: "Внутрений эксперт",
+    titleKz: "Внутрений эксперт",
+    titleEn: "Внутрений эксперт",
+    certificate: {
+      namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+      nameru: "Для внутреннего документооборота (ГОСТ)",
+      nameen: "For internal document management (GOST)",
+      value: "internal"
+    },
+  },
+  {
+    stage: 5,
+    users: null,
+    titleRu: "Ректор",
+    titleKz: "Ректор",
+    titleEn: "Ректор",
     certificate: {
       namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
       nameru: "Для внутреннего документооборота (ГОСТ)",
@@ -837,10 +876,14 @@ const save = () => {
         life: 3000,
       });
       formData.value = null
+      submitted.value = false
       active.value = 1
     }).catch(error => {
+      submitted.value = false
       toast.add({severity: "error", summary: error, life: 3000});
+      return;
     });
+    return;
   }
   if (active.value === 1) {
     submitted.value = true
@@ -853,10 +896,14 @@ const save = () => {
         life: 3000,
       });
       formStep2.value = null
+      submitted.value = false
       active.value = 2
     }).catch(error => {
+      submitted.value = false
       toast.add({severity: "error", summary: error, life: 3000});
+      return
     });
+    return;
   }
   if (active.value === 2) {
     submitted.value = true
@@ -869,10 +916,14 @@ const save = () => {
         life: 3000,
       });
       formStep2.value = null
+      submitted.value = false
       active.value = 3
     }).catch(error => {
+      submitted.value = false
       toast.add({severity: "error", summary: error, life: 3000});
+    return
     });
+    return;
   }
 }
 const selectCourse = (data) => {

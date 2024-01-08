@@ -273,7 +273,7 @@ export class MenuService {
                         label: $t('educationalPrograms.bachelor'), to: '/educational-programs/bachelor',
                     },
                     {
-                        label: $t('educationalPrograms.magistr'), to: '/educational-programs/magistr',
+                        label: $t('educationalPrograms.master'), to: '/educational-programs/master',
                     },
                     {
                         label: $t('educationalPrograms.doctoral'), to: '/educational-programs/doctoral',

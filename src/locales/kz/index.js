@@ -1440,7 +1440,7 @@ export default {
         name: 'Білім бағдарламасы',
         educationalProgramConstructor: 'Білім бағдарламаларының конструкторы',
         bachelor: 'Бакалавриат',
-        magistr: 'Магистратура',
+        master: 'Магистратура',
         doctoral: 'Докторантура',
         createEP: 'ББ құру',
         formationEP: 'ББ қалыптастыру',
