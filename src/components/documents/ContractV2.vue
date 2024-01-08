@@ -25,21 +25,29 @@
             <p class="mb-0">{{ $t('contracts.contragentMessage') }}</p>
             <div class="p-inputgroup p-input-filled">
               <InputText :modelValue="apiDomain + '/documents/contracts/' + this.contract.uuid + '/request'" :disabled="true"/>
-              <Button v-bind:label="$t('ncasigner.copy')" v-clipboard:copy="apiDomain + '/documents/contracts/' + this.contract.uuid + '/request'" 
-                v-clipboard:success="onCopy" v-clipboard:error="onFail" class="p-button-secondary" />
+              <Button v-bind:label="$t('ncasigner.copy')" v-clipboard:copy="apiDomain + '/documents/contracts/' + this.contract.uuid + '/request'"
+                      v-clipboard:success="onCopy" v-clipboard:error="onFail" class="p-button-secondary" />
+              <Button type="button" @click="showSocials" class="p-button-rounded ml-4" icon="fa-solid fa-share-nodes" label="" />
+              <OverlayPanel ref="op">
+                <div class="flex flex-column gap-2">
+                  <Button type="button" @click="shareWhatsApp" class="p-button-success" icon="fa-brands fa-whatsapp" label="Whats App" />
+                  <Button type="button" @click="shareFacebook" class="" icon="fa-brands fa-facebook" label="Facebook" />
+                  <Button type="button" @click="shareTelegram" class="" icon="fa-brands fa-telegram" label="Telegram" />
+                </div>
+              </OverlayPanel>
             </div>
           </div>
           <Panel class="md:col-6 p-2" v-if="contract.sourceType === DocEnum.DocSourceType.FilledDoc"
-            :header="$t('contracts.listOfApprovals')" toggleable>
-            <StepComponent v-if="selectedUsers.length > 0 && stages.length > 0" v-model="selectedUsers" 
-              mode="standard" :stages="stages" @update:modelValue="approvalsUpdated($event)"
-              :readonly="contract.docHistory.stateId > DocEnum.CREATED.ID"></StepComponent>
+                 :header="$t('contracts.listOfApprovals')" toggleable>
+            <StepComponent v-if="selectedUsers.length > 0 && stages.length > 0" v-model="selectedUsers"
+                           mode="standard" :stages="stages" @update:modelValue="approvalsUpdated($event)"
+                           :readonly="contract.docHistory.stateId > DocEnum.CREATED.ID"></StepComponent>
           </Panel>
           <div class="md:col-6" v-if="contract.sourceType === DocEnum.DocSourceType.FilledDoc">
-            <SelectButton v-model="notused.selectedContragent"  :options="[0, 1]" 
-              :disabled="contract.docHistory.stateId > DocEnum.CREATED.ID"
-              :unselectable='false' style="margin-bottom: 0.75rem" 
-              @update:modelValue="updateContragentType">
+            <SelectButton v-model="notused.selectedContragent"  :options="[0, 1]"
+                          :disabled="contract.docHistory.stateId > DocEnum.CREATED.ID"
+                          :unselectable='false' style="margin-bottom: 0.75rem"
+                          @update:modelValue="updateContragentType">
               <template #option="slotProps">
                 <div v-if="slotProps.option === 0">{{$t('common.organization')}}</div>
                 <div v-else>{{$t('common.individualEntrepreneur')}}</div>
@@ -59,59 +67,59 @@
               </div>
               <div class="p-fluid md:col-6" v-if="['text', 'number'].includes(param.name)">
                 <InputText v-model="param.value" type="text" @input="input()"
-                  :disabled="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID) || 
+                           :disabled="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID) ||
                   contract.docHistory.stateId > DocEnum.CREATED.ID || param.name == 'number'"
-                  :placeholder="param.name == 'number' ? $t('contracts.autogenerate') : ''"></InputText> 
+                           :placeholder="param.name == 'number' ? $t('contracts.autogenerate') : ''"></InputText>
               </div>
               <div class="p-fluid md:col-6" v-if="param.name == 'date'">
-                <PrimeCalendar v-model="param.value" dateFormat="dd.mm.yy" :disabled="true" 
-                  :placeholder="$t('contracts.autogenerate')"></PrimeCalendar>
+                <PrimeCalendar v-model="param.value" dateFormat="dd.mm.yy" :disabled="true"
+                               :placeholder="$t('contracts.autogenerate')"></PrimeCalendar>
               </div>
               <div class="p-fluid md:col-6" v-if="param.name == 'period'">
                 <PrimeCalendar v-model="param.value" dateFormat="dd.mm.yy" showIcon
-                  selectionMode="range" :manualInput="false" @update:modelValue="input()" 
-                  :disabled="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID) || 
+                               selectionMode="range" :manualInput="false" @update:modelValue="input()"
+                               :disabled="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID) ||
                   contract.docHistory.stateId > DocEnum.CREATED.ID"></PrimeCalendar>
               </div>
               <div class="p-fluid md:col-6" v-if="['ourside', 'individualEntrepreneur'].includes(param.name)">
                 <ContragentSelectV2 :contragent="param.value" @contragentUpdated="(event) => contragentUpdated(event, param)"
-                  :disable="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID) ||
+                                    :disable="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID) ||
                   contract.docHistory.stateId > DocEnum.CREATED.ID"></ContragentSelectV2>
               </div>
               <div class="p-fluid md:col-6" v-if="['contragent'].includes(param.name)">
                 <div class="flex flex-wrap gap-3 mb-2" v-if="contract.sourceType === DocEnum.DocSourceType.Template">
                   <div class="flex align-items-center">
                     <RadioButton v-model="contragentOption" value="email" @update:modelValue="contragentOptionChanged"
-                      :disabled="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID) || 
+                                 :disabled="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID) ||
                       contract.docHistory.stateId > DocEnum.CREATED.ID"></RadioButton>
                     <label class="ml-2">{{ $t('contracts.contragentEmail') }}</label>
                   </div>
                   <div class="flex align-items-center">
                     <RadioButton v-model="contragentOption" value="organization" @update:modelValue="contragentOptionChanged"
-                      :disabled="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID) || 
+                                 :disabled="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID) ||
                       contract.docHistory.stateId > DocEnum.CREATED.ID"></RadioButton>
                     <label class="ml-2">{{ $t('doctemplate.editor.contragent') }}</label>
                   </div>
                   <div class="flex align-items-center">
                     <RadioButton v-model="contragentOption" value="individual" @update:modelValue="contragentOptionChanged"
-                      :disabled="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID) || 
+                                 :disabled="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID) ||
                       contract.docHistory.stateId > DocEnum.CREATED.ID"></RadioButton>
                     <label class="ml-2">{{ $t('doctemplate.editor.individualEntrepreneur') }}</label>
                   </div>
                 </div>
                 <InputText v-if="contragentOption === 'email'" v-model="contragentEmail"
-                  :disabled="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID) || 
+                           :disabled="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID) ||
                   contract.docHistory.stateId > DocEnum.CREATED.ID"></InputText>
-                <ContragentSelectV2 v-else :contragent="param.value" 
-                  @contragentUpdated="(event) => contragentUpdated(event, param)"
-                  :disable="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID) || 
+                <ContragentSelectV2 v-else :contragent="param.value"
+                                    @contragentUpdated="(event) => contragentUpdated(event, param)"
+                                    :disable="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID) ||
                   contract.docHistory.stateId > DocEnum.CREATED.ID"></ContragentSelectV2>
               </div>
               <div class="p-fluid md:col-6" v-if="param.name == 'student'">
                 <FindUser v-model:first="param.value" searchMode="ldap" :max="1" v-model="notused.users"
-                  :disabled="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID) ||
+                          :disabled="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID) ||
                   contract.docHistory.stateId > DocEnum.CREATED.ID"
-                  :userType="1" @input="input()" @remove="input()"></FindUser>
+                          :userType="1" @input="input()" @remove="input()"></FindUser>
               </div>
             </div>
           </div>
@@ -211,7 +219,7 @@ export default {
           label: this.$t("common.save"),
           icon: "pi pi-fw pi-save",
           disabled: () => (this.contract && this.contract.docHistory.stateId > DocEnum.CREATED.ID) || !this.changed ||
-            (this.contragentRequest && this.contract.docHistory.stateId == this.DocEnum.CREATED.ID),
+              (this.contragentRequest && this.contract.docHistory.stateId == this.DocEnum.CREATED.ID),
           command: () => { this.saveDocument() }
         },
         {
@@ -225,8 +233,8 @@ export default {
         {
           label: this.$t("common.registration"),
           icon: "pi pi-fw pi-paperclip",
-          disabled: () => (this.contragentRequest && this.contract.docHistory.stateId == this.DocEnum.CREATED.ID) || 
-            (this.contract && this.contract.docHistory.stateId > DocEnum.CREATED.ID),
+          disabled: () => (this.contragentRequest && this.contract.docHistory.stateId == this.DocEnum.CREATED.ID) ||
+              (this.contract && this.contract.docHistory.stateId > DocEnum.CREATED.ID),
           items: [
             {
               label: this.$t("contracts.setnumber"),
@@ -241,30 +249,30 @@ export default {
           label: this.$t("common.send"),
           icon: "pi pi-send",
           disabled: () => this.contract && (this.contract.docHistory.stateId === DocEnum.SIGNING.ID ||
-            (this.contragentRequest && this.contract.docHistory.stateId === this.DocEnum.CREATED.ID)),
+              (this.contragentRequest && this.contract.docHistory.stateId === this.DocEnum.CREATED.ID)),
           items: [
             {
               label: this.$t("common.toapprove"),
               icon: "fa-regular fa-handshake",
-              visible: () => this.contract && (this.contract.sourceType === DocEnum.DocSourceType.FilledDoc || 
-                (this.contract.template && this.contract.template.needApproval)) && 
-                this.contract.docHistory.stateId === DocEnum.CREATED.ID,
+              visible: () => this.contract && (this.contract.sourceType === DocEnum.DocSourceType.FilledDoc ||
+                      (this.contract.template && this.contract.template.needApproval)) &&
+                  this.contract.docHistory.stateId === DocEnum.CREATED.ID,
               command: () => { this.sendToApprove() }
             },
             {
               label: this.$t("contracts.menu.tocontragent"),
               icon: "fa-solid fa-square-envelope",
-              visible: () => this.contract && (this.contract.sourceType === DocEnum.DocSourceType.Template && 
-                !this.contract.template.needApproval && this.contract.docHistory.stateId === DocEnum.CREATED.ID),
+              visible: () => this.contract && (this.contract.sourceType === DocEnum.DocSourceType.Template &&
+                  !this.contract.template.needApproval && this.contract.docHistory.stateId === DocEnum.CREATED.ID),
               disabled: () => this.contragentOption !== 'email',
               command: () => { this.sendToContragent() }
             },
             {
               label: this.$t("common.tosign"),
               icon: "pi pi-user-edit",
-              visible: () => this.contract && ((this.contract.sourceType === DocEnum.DocSourceType.Template && 
-                !this.contract.template.needApproval && (this.contract.docHistory.stateId === DocEnum.CREATED.ID ||
-                this.contract.docHistory.stateId === DocEnum.INAPPROVAL.ID)) || this.contract.docHistory.stateId === DocEnum.APPROVED.ID),
+              visible: () => this.contract && ((this.contract.sourceType === DocEnum.DocSourceType.Template &&
+                  !this.contract.template.needApproval && (this.contract.docHistory.stateId === DocEnum.CREATED.ID ||
+                      this.contract.docHistory.stateId === DocEnum.INAPPROVAL.ID)) || this.contract.docHistory.stateId === DocEnum.APPROVED.ID),
               disabled: () => this.contragentOption === 'email',
               command: () => { this.sendToSign() }
             },
@@ -343,7 +351,7 @@ export default {
         uuid: this.$route.params.uuid
       }).then(res => {
         this.contract = res.data;
-        
+
         if (this.contract.number) {
           this.reserveNumber = this.contract.number;
         }
@@ -351,7 +359,7 @@ export default {
         if (this.contract.requests) {
           for (let i = 0; i < this.contract.requests.length; i++) {
             if (this.contract.requests[i].type === this.DocEnum.DocumentRequestType.CounterpartyInfoRequest &&
-            this.contract.requests[i].status === 0) {
+                this.contract.requests[i].status === 0) {
               this.contragentRequest = true;
               this.contragentOption = "email";
             }
@@ -361,7 +369,7 @@ export default {
         this.getParams();
 
         if (this.contract.sourceType === this.DocEnum.DocSourceType.FilledDoc && (!this.contract.approvalStages ||
-          this.contract.approvalStages.length < 1)) {
+            this.contract.approvalStages.length < 1)) {
           this.getDefaultApprovalList();
         } else if (this.contract.sourceType === this.DocEnum.DocSourceType.FilledDoc) {
           this.selectedUsers = JSON.parse(JSON.stringify(this.contract.approvalStages));
@@ -369,7 +377,7 @@ export default {
         }
 
         if (this.contract.sourceType === this.DocEnum.DocSourceType.FilledDoc && (!this.contractParams ||
-          this.contractParams.length < 1)) {
+            this.contractParams.length < 1)) {
           this.contractParams.push({
             name: 'ourside',
             description: 'ourside',
@@ -445,7 +453,7 @@ export default {
         param.uuid = this.generateUUID();
         this.contractParams.push(param);
       }
-      
+
       param = this.contract.newParams['ourside'];
       if (param) {
         param.uuid = this.generateUUID();
@@ -500,7 +508,7 @@ export default {
 
       param = this.contract.newParams['period'];
       if (param) {
-        if (param.value) 
+        if (param.value)
           for (let i = 0; i < param.value.length; i++) {
             param.value[i] = param.value[i] ? new Date(param.value[i]) : null;
           }
@@ -533,7 +541,7 @@ export default {
 
       if (this.pdf) {
         if (saveFile) this.saveFile();
-          
+
         return;
       }
 
@@ -576,7 +584,7 @@ export default {
 
       this.service.saveDocumentV2(this.contract).then(res => {
         this.contract = res.data;
-        
+
         if (this.contract.number) {
           this.reserveNumber = this.contract.number;
         }
@@ -608,7 +616,7 @@ export default {
         anticipatorily: anticipatorily, //предварительно
       }).then(res => {
         this.reserveNumber = res.data;
-        
+
         if (!anticipatorily) {
           this.contract.number = res.data;
           this.showMessage("success", this.$t("common.save"), this.$t("common.message.succesRegistered"));
@@ -764,8 +772,8 @@ export default {
           }
 
           if (this.contract.newParams[prop].value.type === this.DocEnum.ContragentType.Organization &&
-            this.isNull(this.contract.newParams[prop].value.data.signer)) {
-              return false;
+              this.isNull(this.contract.newParams[prop].value.data.signer)) {
+            return false;
           }
         }
       }
@@ -802,7 +810,7 @@ export default {
     },
     onFail() {
       this.showMessage("warn", this.$t('ncasigner.failCopy'));
-    }, 
+    },
     approvalsUpdated(event) {
       this.input();
 
@@ -870,6 +878,24 @@ export default {
         return v.toString(16);
       });
     },
+    showSocials(event) {
+      this.$refs.op.toggle(event);
+    },
+    shareWhatsApp()  {
+      const text = apiDomain + '/documents/contracts/' + this.contract.uuid + '/request';
+      const whatsAppUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+      window.open(whatsAppUrl);
+    },
+    shareFacebook() {
+      const text = apiDomain + '/documents/contracts/' + this.contract.uuid + '/request';
+      const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(text)}`
+      window.open(facebookUrl)
+    },
+    shareTelegram() {
+      const text = apiDomain + '/documents/contracts/' + this.contract.uuid + '/request';
+      const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(text)}`;
+      window.open(telegramUrl);
+    },
   }
 }
 </script>
@@ -885,7 +911,7 @@ export default {
   font-size: 1.25rem;
   margin-right: 1rem;
   display: flex;
-  align-items: center; 
+  align-items: center;
 }
 .card {
   flex-grow: 1;
