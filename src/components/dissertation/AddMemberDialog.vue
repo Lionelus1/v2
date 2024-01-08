@@ -4,7 +4,7 @@
     <div class="p-fluid">
       <div class="field">
         <label for="name">{{ $t('common.fullName') }}</label>
-        <FindUser v-model="selectedMembers" :max="1" :editMode="true" @add="onUserSelected"></FindUser>
+        <FindUser v-model="selectedMembers" searchMode="local" :max="1" :editMode="true" @add="onUserSelected"></FindUser>
         <small class="p-error" v-if="submitted && validationErrors.members">{{ $t('dissertation.validationErrors.selectSecretary') }}</small>
       </div>
       <div class="field">
