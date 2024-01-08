@@ -1,7 +1,7 @@
 <template>
   <div class="col-12">
     <div class="card">
-      <h4 class="m-0">{{ $t("common.welcome") }}, {{ getFullname(loginedUser) }} !</h4>
+      <h4 class="m-0">{{ $t("common.welcome") }}, {{ loginedUser.fullName }} !</h4>
     </div>
     <div class="card card_bottom">
       <TabView ref="templateView" v-model:activeIndex="active">
@@ -21,7 +21,7 @@
           <DataView :lazy="true" :value="allNews" :layout="layout" :paginator="true" :rows="10"
                     @page="onPage($event)" :totalRecords="total">
             <template #empty>{{
-              this.$t("smartenu.newsNotFound")
+                this.$t("smartenu.newsNotFound")
               }}
             </template>
             <template #list="{ data }">
@@ -31,11 +31,11 @@
                 <div class="text">
                   <strong>
                     {{
-                    $i18n.locale === "kz"
-                    ? data.titleKz
-                    : $i18n.locale === "ru"
-                    ? data.titleRu
-                    : data.titleEn
+                      $i18n.locale === "kz"
+                          ? data.titleKz
+                          : $i18n.locale === "ru"
+                              ? data.titleRu
+                              : data.titleEn
                     }}
                   </strong>
                   <div class="date">{{ formatDateMoment(data.publish_date) }}</div>
@@ -131,14 +131,7 @@ export default {
       eventService: new EventsService()
     };
   },
-  mounted() {
-    this.emitter.on('newsViewModalClose', data => {
-      this.newsViewVisible = data;
-    });
-    this.emitter.on('eventViewModalClose', data => {
-      this.eventViewVisible = data;
-    });
-  },
+
   methods: {
     getAllNews() {
       this.loading = true

@@ -23,7 +23,7 @@ export default {
         window.localStorage.setItem("loginedUser",JSON.stringify(response.data));
         this.setLoginedUser();
 
-        if (response.data.mainPosition || response.data.positions.length > 0) {
+        if (response.data.mainPosition || (response.data.positions && response.data.positions.length > 0)) {
           window.localStorage.setItem("showPositionsDialog", true);
         }
 

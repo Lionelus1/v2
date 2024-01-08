@@ -9,8 +9,8 @@
             @click="openDocument" :disabled="!currentDocument">
             <i class="fa-regular fa-address-card" /> &nbsp;{{ $t("contracts.card") }}</Button>
           <Button class="p-button-info align-items-center" style="padding: 0.25rem 1rem;"
-            @click="$router.push('/documents/contracts/' + this.currentDocument.uuid + '/related')" 
-            :disabled="!currentDocument || currentDocument.docHistory.stateId !== Enum.SIGNED.ID || 
+            @click="$router.push('/documents/contracts/' + this.currentDocument.uuid + '/related')"
+            :disabled="!currentDocument || currentDocument.docHistory.stateId !== Enum.SIGNED.ID ||
             currentDocument.sourceType !== Enum.DocSourceType.FilledDoc">
             <i class="fa-solid fa-file-invoice" /> &nbsp;{{ $t("contracts.menu.journal") }}</Button>
         </div>
@@ -73,9 +73,9 @@
         <template #body="slotProps">
           <div class="flex flex-wrap column-gap-1 row-gap-1">
             <span :class="'customer-badge status-' + slotProps.data.docHistory.code">
-              {{ slotProps.data.docHistory[$i18n.locale === 'en' ? 'stateEn' : $i18n.locale === 'ru' ? 'stateRus' : 'stateKaz'] }} 
+              {{ slotProps.data.docHistory[$i18n.locale === 'en' ? 'stateEn' : $i18n.locale === 'ru' ? 'stateRus' : 'stateKaz'] }}
             </span>
-            <span v-if="haveRequest(slotProps.data) && slotProps.data.docHistory.stateId == Enum.CREATED.ID" 
+            <span v-if="haveRequest(slotProps.data) && slotProps.data.docHistory.stateId == Enum.CREATED.ID"
               class="customer-badge status-status_signed" style="width: min-content;">
               {{ $t('contracts.contragentRequest') }}
             </span>
@@ -317,8 +317,8 @@ export default {
         return name
       }
 
-      name = user.thirdName + ' ' + user.firstName 
-      
+      name = user.thirdName + ' ' + user.firstName
+
       if (this.validString(user.lastName)) {
         name += ' ' + user.lastName
       }
