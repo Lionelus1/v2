@@ -95,11 +95,11 @@
                   <div class="flex align-items-center">
                     <RadioButton v-model="contragentOption" value="individual" @update:modelValue="contragentOptionChanged"
                       :disabled="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID) || 
-                      contract.docHistory.stateId > DocEnum.CREATED.ID">></RadioButton>
+                      contract.docHistory.stateId > DocEnum.CREATED.ID"></RadioButton>
                     <label class="ml-2">{{ $t('doctemplate.editor.individualEntrepreneur') }}</label>
                   </div>
                 </div>
-                <InputText v-if="contragentOption === 'email'" :modelValue="contragentEmail"
+                <InputText v-if="contragentOption === 'email'" v-model="contragentEmail"
                   :disabled="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID) || 
                   contract.docHistory.stateId > DocEnum.CREATED.ID"></InputText>
                 <ContragentSelectV2 v-else :contragent="param.value" 
@@ -712,7 +712,7 @@ export default {
       this.service.createNewDocumentRequest({
         requestType: this.DocEnum.DocumentRequestType.CounterpartyInfoRequest,
         docId: this.contract.id,
-        contragentEmail: this.contragentEmail, 
+        contragentEmail: this.contragentEmail,
       }).then(res => {
         this.loading = false;
 
