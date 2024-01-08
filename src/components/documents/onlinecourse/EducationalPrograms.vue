@@ -2,7 +2,7 @@
   <h3>{{ $t('educationalPrograms.educationalProgramConstructor') }} - {{ $t('educationalPrograms.bachelor') }}</h3>
   <div>
     <div class="card">
-      <Button @click="goToAdd()" icon="pi pi-plus-circle" :label="$t('educationalPrograms.createEP')" :title="$t('educationalPrograms.name')"/>
+      <Button @click="goToAdd()" icon="pi pi-plus-circle" :label="$t('common.add')"/>
       <Button class="ml-2" icon="pi pi-filter" label="Фильтр"/>
       <DataTable class="mt-4" :value="educationalPrograms" responsiveLayout="scroll" :resizableColumns="true" show-gridlines columnResizeMode="fit">
         <Column :field="['name'+locale]" :header="$t('common.speciality') + '/' + $t('educationalPrograms.groupEP')"></Column>

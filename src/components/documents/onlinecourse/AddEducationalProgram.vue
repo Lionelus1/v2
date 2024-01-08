@@ -1,5 +1,5 @@
 <template>
-  <TitleBlock :title="$t('educationalPrograms.createEP')" :show-back-button="arrow"/>
+  <TitleBlock :title="$t('educationalPrograms.name')" :show-back-button="arrow"/>
 
   <div class="grid">
     <div class="col-12 lg:col-3">
@@ -487,7 +487,7 @@ import {useToast} from "primevue/usetoast";
 import {OnlineCourseService} from "@/service/onlinecourse.service";
 import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers.vue";
 
-const active = ref(3);
+const active = ref(0);
 const disabledSend = ref(true)
 const disabledApproval = ref(true)
 const {t, locale} = useI18n()
