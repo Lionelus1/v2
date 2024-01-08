@@ -17,7 +17,7 @@
       </ul>
       <OverlayPanel ref="op" appendTo="body" id="overlay_panel" style="width: 45vw">
         <p v-if="searchInProgres">{{ $t('common.loading') }}...</p>
-        <Listbox v-else-if="(foundEntities != null)" v-model="selectedEntity" :options="foundEntities"
+        <Listbox v-else-if="foundEntities && foundEntities.length > 0" v-model="selectedEntity" :options="foundEntities"
                  listStyle="max-height:250px" @change="addItemMouseExt($event)">
           <template #option="slotProps">
             <div class="user-item grid">
