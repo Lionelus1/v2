@@ -164,19 +164,8 @@
         })
     }
 
-    const getScienceInterests = () => {
-      loading.value = true;
-      scienceService.getScienceInterests(requestAreaOfInterest.value).then(res => {
-        areaOfInterests.value = res.data.interests
-        loading.value = false
-      }).catch(error => {
-        toast.add({severity: 'error', summary: t('common.error'), life: 3000})
-        loading.value = false;
-      })
-    }
 
     const toggleFilter=(event) => {
-      getScienceInterests()
       op.value.toggle(event);
     }
 
@@ -208,16 +197,6 @@
       showGrid.value = false;
       showList.value = true;
       getScientists()
-    }
-
-    const handleFilter = (event) => {
-      if (event.value && event.value.length > 2) {
-        requestAreaOfInterest.value.searchText = event.value
-        getScienceInterests()
-      } else if (requestAreaOfInterest.value.searchText.length > 3) {
-        requestAreaOfInterest.value.searchText = null
-        getScienceInterests()
-      }
     }
 
     const itemLabel=(item)=> {

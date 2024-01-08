@@ -43,7 +43,7 @@
   </div>
   <!-- personPage -->
   <Sidebar v-model:visible="visibility.personPage" position="right" class="p-sidebar-lg">
-    <PersonPage :person="currentPerson" @personUpdated="personUpdated"></PersonPage>
+    <PersonPage :person="currentPerson" @personUpdated="personUpdated" custom-type="viewUser"></PersonPage>
   </Sidebar>
 </template>
 <script>

@@ -138,7 +138,7 @@ export class MenuService {
                 to: '/reception',
                 visible: !this.findRole("student")
             },
-            /*{
+            {
                 label: $t('science.activity'),
                 icon: 'fas fa-flask',
                 items: [
@@ -153,7 +153,7 @@ export class MenuService {
                         to: '/documents/catalog/scienceWorks'
                     },
                 ]
-            },*/
+            },
             {
                 label: $t('dissertation.title'),
                 icon: 'fa-solid fa-school-circle-check',

@@ -17,8 +17,19 @@
           <Column field="country" :header="$t('science.qualification.country')"></Column>
           <Column field="city" :header="$t('science.qualification.city')"></Column>
           <Column field="hours" :header="$t('science.qualification.durationAndScope')"></Column>
-          <Column  field="start_date" :header="$t('science.qualification.start')"></Column>
-          <Column field="end_date" :header="$t('science.qualification.end')"></Column>
+          
+          <Column field="start_date" :header="$t('science.qualification.start')">
+              <template #body="slotProps">
+                  {{ formatDate(slotProps.data.start_date) }}
+              </template>
+          </Column>
+
+          <Column field="end_date" :header="$t('science.qualification.end')">
+              <template #body="slotProps">
+                  {{ formatDate(slotProps.data.end_date) }}
+              </template>
+          </Column>
+
           <Column field="funding_source" :header="$t('science.qualification.fundingSource')"></Column>
           <Column field="proof_document_type" :header="$t('science.qualification.typeSupportingDoc')"></Column>
 
@@ -97,14 +108,14 @@
   });
 
   const menu= ref([
-        {
-          label: t("common.add"),
-          icon: "pi pi-fw pi-plus",
-          disabled: () => props.readonly,
-          command: () => {
-            create()
-          },
+      {
+        label: t("common.add"),
+        icon: "pi pi-fw pi-plus",
+        disabled: () => props.readonly,
+        command: () => {
+          create()
         },
+      },
     ])
 
 
@@ -182,6 +193,15 @@
       }
       fileData.value = data
       fileView.value = true
+  }
+
+  const formatDate = (dateString) => {
+      if (!dateString) {
+          return '';
+      }
+
+      const dateObject = new Date(dateString);
+      return dateObject.toLocaleDateString(); 
   }
 
   onMounted(() => {

@@ -47,14 +47,14 @@
 
           <!-- Год поступления -->
           <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-            <label>{{ $t('hr.edu.receiptDate') }}<span class="p-error" v-if="!readonly">*</span></label>
+            <label>{{ $t('common.startDate') }}<span class="p-error" v-if="!readonly">*</span></label>
             <PrimeCalendar :readonly="readonly" class="mt-2" v-model="academicDegree.start_date" :placeholder="$t('hr.edu.receiptDate')" :dateFormat="'mm.dd.yy'"/>
             <small class="p-error" v-if="validation.receiptDate">{{ $t("common.requiredField") }}</small>
           </div>
 
           <!-- Год окончания -->
           <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-            <label>{{$t('hr.edu.expirationDate')}}</label>
+            <label>{{$t('common.endDate')}}</label>
             <PrimeCalendar :readonly="readonly" class="mt-2" v-model="academicDegree.final_date" :placeholder="$t('hr.edu.expirationDate')" :dateFormat="'mm.dd.yy'"/>
             <!-- <small class="p-error" v-if="validation.expirationDate">{{ $t("common.requiredField") }}</small> -->
           </div>

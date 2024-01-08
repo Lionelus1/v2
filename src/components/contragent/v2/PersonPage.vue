@@ -11,29 +11,32 @@
             <UserPersonalInfomation @personal-information-updated="handlePersonalInformationUpdate" :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
           </template>
         </TabPanel>
-        <TabPanel  :header="$t('hr.title.id')">
+
+        <TabPanel v-if="customType===chapter.myAccount || customType=== chapter.viewUser"  :header="$t('hr.title.id')">
           <UserIDCard @personal-information-updated="handlePersonalInformationUpdate" :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
         </TabPanel>
+
         <TabPanel :header="$t('hr.educationLabel')">
           <UserEducationView  :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
         </TabPanel>
-        <TabPanel :header="$t('bank.requisite')">
+        
+        <TabPanel v-if="customType===chapter.myAccount || customType=== chapter.viewUser" :header="$t('bank.requisite')">
           <UserRequisite @personal-information-updated="handlePersonalInformationUpdate" :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
         </TabPanel>
-        <TabPanel v-if="customType===chapter.scientists || findRole(null, 'teacher')" :header="$t('science.areaScientificInterests')">
+        
+        <TabPanel v-if="customType != chapter.viewUser && (customType===chapter.scientists || findRole(null, 'teacher') || findRole(null, 'personal'))" :header="$t('science.areaScientificInterests')">
           <UserResearchInterestsView :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
         </TabPanel>
 
-        <TabPanel v-if="customType===chapter.scientists || findRole(null, 'teacher')" :header="$t('science.laborActivity')">
+        <TabPanel v-if="customType != chapter.viewUser && (customType===chapter.scientists || findRole(null, 'teacher') || findRole(null, 'personal'))" :header="$t('science.laborActivity')">
           <WorkExperienceView :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
         </TabPanel>
 
-
-        <TabPanel v-if="customType===chapter.scientists || findRole(null, 'teacher')" :header="$t('science.awardsAndHonors')">
+        <TabPanel v-if="customType != chapter.viewUser && (customType===chapter.scientists || findRole(null, 'teacher') || findRole(null, 'personal'))" :header="$t('science.awardsAndHonors')">
           <UserAwardView :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
         </TabPanel>
 
-        <TabPanel v-if="customType===chapter.scientists || findRole(null, 'teacher')" :header="$t('science.professionalDevelopment')">
+        <TabPanel v-if="customType != chapter.viewUser && (customType===chapter.scientists || findRole(null, 'teacher') || findRole(null, 'personal'))" :header="$t('science.professionalDevelopment')">
           <UserQualificationsView :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
         </TabPanel>
 
