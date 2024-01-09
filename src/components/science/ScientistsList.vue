@@ -33,7 +33,9 @@
       </div>
 
       <!-- <div class="surface-card p-4 shadow-2 border-round"> -->
-        <DataView v-if="showGrid" class="xl:ml-10 xl:mr-10" :loading="loading" :lazy="true" :value="list" :layout="layout" :paginator="true" :rows="12" @page="onPage($event)" :totalRecords="total">      
+        <DataView v-if="showGrid" class="xl:ml-10 xl:mr-10" :loading="loading" :lazy="true" :value="list" :layout="layout" :paginator="true" 
+        :rows="lazyParams.rows" @page="onPage($event)" :totalRecords="total" :first="first" scrollable scrollHeight="flex"
+        selectionMode="single" :rowHover="true" stripedRows>      
             <template #grid="slotProps" v-if="showGrid">
                 <div class="col-12 sm:col-6 md:col-4 lg:col-3 p-2">
                     <div @click="selectScientist(slotProps.data)" class="card shadow-1 m-0" v-ripple style="text-align: center;">
@@ -48,7 +50,9 @@
       <!-- </div> -->
 
       <TabPanel v-if="showList">
-        <DataTable :lazy="true" :value="list" :layout="layout" :paginator="true" :rows="12" @page="onPage($event)" :totalRecords="total">
+        <DataTable :lazy="true" class="xl:ml-10 xl:mr-10" :loading="loading" :value="list" :layout="layout" :paginator="true" 
+        :rows="lazyParams.rows" @page="onPage($event)" :totalRecords="total" :first="first" scrollable scrollHeight="flex"
+        selectionMode="single" :rowHover="true" stripedRows>
           <div v-if="showList">
             <Column :header="$t('common.fullName')">
               <template #body="body">
@@ -87,7 +91,7 @@
 </template>
   
 <script setup>
-    import {computed, onMounted, ref} from "vue";
+    import {computed, onMounted, ref, onBeforeUnmount} from "vue";
     import {useI18n} from "vue-i18n";
     import {useToast} from "primevue/usetoast";
     import {useRouter} from "vue-router";
@@ -109,6 +113,7 @@
     const list = ref([])
     const loading = ref(false)
     const scienceService = new ScienceService()
+    const emit = defineEmits(['toggle'])
 
     const filter= ref({
         visible: false,
@@ -125,6 +130,7 @@
     const showGrid = ref(false)
     const showList= ref(false)
     const areaOfInterests = ref([])
+    const first =  ref(0)
 
     const requestAreaOfInterest = ref({
         page: 0,
@@ -183,6 +189,8 @@
 
     const onPage = (event)=> {
       lazyParams.value.page = event.page
+      lazyParams.value.rows = event.rows
+      first.value = event.first
       getScientists();
     }
 
@@ -221,9 +229,33 @@
       return fullName.trim();
     }
 
+    onBeforeUnmount(() => {
+      emit('apply-flex', false);
+
+      localStorage.setItem('scientistsCurrentPage', JSON.stringify({first: first.value, page: lazyParams.value.page, rows: lazyParams.value.rows, isShowGrid: showGrid.value}))
+    
+    }) 
 
     onMounted(() => {
-        showGrid.value = true
+        emit('apply-flex', true);
+
+        
+        let currentPage = localStorage.getItem('scientistsCurrentPage');
+        if (currentPage) {
+          currentPage = JSON.parse(currentPage);
+        
+          first.value = currentPage.first;
+          lazyParams.value.page = currentPage.page;
+          lazyParams.value.rows = currentPage.rows;
+          if (currentPage.isShowGrid) {
+            showGrid.value = true
+          } else {
+            showList.value = true
+          }
+        } else {
+          showGrid.value = true
+        }
+
         getScientists()
     })
 
