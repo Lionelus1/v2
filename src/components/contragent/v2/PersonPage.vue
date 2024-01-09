@@ -11,29 +11,32 @@
             <UserPersonalInfomation @personal-information-updated="handlePersonalInformationUpdate" :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
           </template>
         </TabPanel>
-        <TabPanel  :header="$t('hr.title.id')">
+
+        <TabPanel v-if="customType===chapter.myAccount || customType=== chapter.viewUser"  :header="$t('hr.title.id')">
           <UserIDCard @personal-information-updated="handlePersonalInformationUpdate" :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
         </TabPanel>
+
         <TabPanel :header="$t('hr.educationLabel')">
           <UserEducationView  :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
         </TabPanel>
-        <TabPanel :header="$t('bank.requisite')">
+        
+        <TabPanel v-if="customType===chapter.myAccount || customType=== chapter.viewUser" :header="$t('bank.requisite')">
           <UserRequisite @personal-information-updated="handlePersonalInformationUpdate" :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
         </TabPanel>
-        <TabPanel v-if="customType===chapter.scientists || findRole(null, 'teacher')" :header="$t('science.areaScientificInterests')">
+        
+        <TabPanel v-if="customType != chapter.viewUser && (customType===chapter.scientists || findRole(null, 'teacher') || findRole(null, 'personal'))" :header="$t('science.areaScientificInterests')">
           <UserResearchInterestsView :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
         </TabPanel>
 
-        <TabPanel v-if="customType===chapter.scientists || findRole(null, 'teacher')" :header="$t('science.laborActivity')">
+        <TabPanel v-if="customType != chapter.viewUser && (customType===chapter.scientists || findRole(null, 'teacher') || findRole(null, 'personal'))" :header="$t('science.laborActivity')">
           <WorkExperienceView :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
         </TabPanel>
 
-
-        <TabPanel v-if="customType===chapter.scientists || findRole(null, 'teacher')" :header="$t('science.awardsAndHonors')">
+        <TabPanel v-if="customType != chapter.viewUser && (customType===chapter.scientists || findRole(null, 'teacher') || findRole(null, 'personal'))" :header="$t('science.awardsAndHonors')">
           <UserAwardView :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
         </TabPanel>
 
-        <TabPanel v-if="customType===chapter.scientists || findRole(null, 'teacher')" :header="$t('science.professionalDevelopment')">
+        <TabPanel v-if="customType != chapter.viewUser && (customType===chapter.scientists || findRole(null, 'teacher') || findRole(null, 'personal'))" :header="$t('science.professionalDevelopment')">
           <UserQualificationsView :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
         </TabPanel>
 
@@ -43,7 +46,12 @@
     <Sidebar v-model:visible="viewResume" position="right" class="p-sidebar-lg" style="overflow-y: scroll">
       <ResumeView :userID="per.userID" :readonly="true"/>
     </Sidebar>
+
+  <Sidebar v-model:visible="showScientificWorks" position="right" class="p-sidebar-lg">
+    <ScienceWorks :scientist="per" :openCardInSidebar="true" />
+  </Sidebar>
 </template>
+
 
 <script>
 import { findRole } from "@/config/config";
@@ -61,9 +69,11 @@ import WorkExperienceView from "@/components/user/view/WorkExperienceView"
 import UserAwardView from "@/components/user/view/UserAwardView"
 import UserQualificationsView from "@/components/user/view/UserQualificationsView"
 import  ResumeView  from "@/components/humanResources/vacancy/ResumeView.vue";
+import ScienceWorks from "@/components/documents/catalog/ScienceWorks.vue"
+
 export default {
   name: 'PersonPage',
-  components: {UserPersonalInfomation, UserIDCard, UserEducationView, UserRequisite, UserResearchInterestsView, WorkExperienceView, UserAwardView, UserQualificationsView, ResumeView },
+  components: {UserPersonalInfomation, UserIDCard, UserEducationView, UserRequisite, UserResearchInterestsView, WorkExperienceView, UserAwardView, UserQualificationsView, ResumeView, ScienceWorks },
   props: {
     person: null,
     userID: null,
@@ -111,6 +121,24 @@ export default {
           disabled: () => !this.changed,
           command: () => { this.save() },
         },
+        {
+            label: this.$t("science.profileLink"),
+            icon: "pi pi-fw pi-user",
+            disabled: () => !this.per || !this.per.profile_links || this.per.profile_links.length < 1 ||
+              this.per.profile_links[0].length < 1,
+            command: () => {
+              this.redirectToProfile();
+            },
+            visible: this.customType != 'viewUser' && (this.customType === 'scientists' || (findRole(null, 'teacher') || findRole(null, 'personal')))
+        },
+        {
+          label: this.$t("dissertation.swList"),
+          icon: "pi pi-fw pi-search",
+          command: () => {
+            this.openScientificWorksList();
+          },
+          visible: this.customType != 'viewUser' && (this.customType === 'scientists' || (findRole(null, 'teacher') || findRole(null, 'personal')))
+        },
       ],
       user: {},
       userService: new UserService(),
@@ -121,7 +149,8 @@ export default {
         scientists: 'scientists',
         viewUser: 'viewUser'
       },
-      viewResume: false
+      viewResume: false,
+      showScientificWorks: false
     }
   },
   created() {
@@ -250,6 +279,20 @@ export default {
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'));
         }
       })
+    },
+    openScientificWorksList() {
+        this.showScientificWorks = true
+    },
+    redirectToProfile() {
+      if (this.per.profile_links != null) {
+        const firstLink = this.per.profile_links[0]; 
+
+        if (firstLink) {
+          window.open(firstLink, '_blank'); 
+        } 
+      } else {
+          console.error("Ссылка на профиль отсутствует");
+      } 
     },
     onMenuItemClick() {
       this.$emit('someEvent')

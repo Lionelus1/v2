@@ -18,6 +18,9 @@
         </Column>
 
         <Column field="start_time" :header="$t('hr.id.startDate')">
+            <template #body="slotProps">
+                {{ formatDate(slotProps.data.start_time) }}
+            </template>
         </Column>
 
         <Column  header="Скан документа">
@@ -178,6 +181,15 @@
       }
       fileData.value = data
       fileView.value = true
+  }
+
+  const formatDate = (dateString) => {
+      if (!dateString) {
+          return '';
+      }
+
+      const dateObject = new Date(dateString);
+      return dateObject.toLocaleDateString(); 
   }
 
   onMounted(() => {

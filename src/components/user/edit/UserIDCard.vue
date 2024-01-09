@@ -1,7 +1,7 @@
 <template>
   
 
-  <div class="card">
+  <div v-if="!loading" class="card">
     <div class="grid formgrid">
 
       <!-- НОМЕР -->
@@ -119,9 +119,15 @@
   }
 
   const getUserAccount= () => {
-
+    loading.value = true
     if (props.modelValue != null) {
       user.value = props.modelValue
+      if (user.value.iddate) {
+        const dateObject = new Date(user.value.iddate)
+  
+        user.value.iddate = dateObject.toLocaleDateString()
+      }
+      loading.value = false
       return
     }
 
@@ -133,7 +139,14 @@
 
       user.value = response.data.user
 
+      if (user.value.iddate) {
+        const dateObject = new Date(user.value.iddate)
+  
+        user.value.iddate = dateObject.toLocaleDateString()
+      }
+      loading.value = false
     }).catch(error => {
+      loading.value = false
       toast.add({
         severity: "error",
         summary: t('message.actionError'),

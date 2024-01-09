@@ -114,22 +114,22 @@
             create()
           },
         },
-        {
-            label: t("science.profileLink"),
-            icon: "pi pi-fw pi-user",
-            disabled: () => !props.modelValue || !props.modelValue.profile_links || props.modelValue.profile_links.length < 1 ||
-              props.modelValue.profile_links[0].length < 1,
-            command: () => {
-              redirectToProfile();
-            },
-        },
-        {
-          label: t("dissertation.swList"),
-          icon: "pi pi-fw pi-search",
-          command: () => {
-            openScientificWorksList();
-          },
-        },
+        // {
+        //     label: t("science.profileLink"),
+        //     icon: "pi pi-fw pi-user",
+        //     disabled: () => !props.modelValue || !props.modelValue.profile_links || props.modelValue.profile_links.length < 1 ||
+        //       props.modelValue.profile_links[0].length < 1,
+        //     command: () => {
+        //       redirectToProfile();
+        //     },
+        // },
+        // {
+        //   label: t("dissertation.swList"),
+        //   icon: "pi pi-fw pi-search",
+        //   command: () => {
+        //     openScientificWorksList();
+        //   },
+        // },
     ])
 
     const redirectToProfile = () => {

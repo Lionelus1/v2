@@ -1,6 +1,6 @@
 <template>
 
-    <div class="card">
+    <div v-if="!loading" class="card">
       <div class="grid formgrid">
         <!-- ИМЯ -->
         <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
@@ -96,7 +96,7 @@
   });
   
   const userID = ref(props.userID)
-  
+  const loading = ref(false)
   
   const validation =  ref({
     firstName: false,
@@ -109,8 +109,15 @@
   })
 
   const getUserAccount= () => {
+    loading.value = true
     if (props.modelValue !== null) {
       user.value = props.modelValue
+      if (user.value.birthday) {
+        const dateObject = new Date(user.value.birthday)
+  
+        user.value.birthday = dateObject.toLocaleDateString()
+      }
+      loading.value = false
       return
     }
     const req = {
@@ -119,7 +126,14 @@
     
     userService.getUserAccount(req).then(response=>{
       user.value = response.data.user
+      if (user.value.birthday) {
+        const dateObject = new Date(user.value.birthday)
+  
+        user.value.birthday = dateObject.toLocaleDateString()
+      }
+      loading.value = false
     }).catch(error => {
+      loading.value = false
       toast.add({
         severity: "error",
         summary: t('message.actionError'),
@@ -132,6 +146,18 @@
     emitPersonalInformationUpdate("personal-information-updated", user.value);
   };
   
+  const formatBirthday = (userBirthday) => {
+    if (userBirthday) {
+        const dateObject = new Date(userBirthday);
+        
+        const formattedDate = dateObject.toLocaleDateString();
+        
+        return formattedDate;
+    } else {
+        return;
+    }
+  }
+
   onMounted(() => {
     getUserAccount()
   })
