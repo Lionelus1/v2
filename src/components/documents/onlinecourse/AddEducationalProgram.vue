@@ -622,22 +622,22 @@ const approvalStages = ref([
   {
     stage: 1,
     users: null,
+    titleKz: "Академиялық комитет мүшесі",
     titleRu: "Член академического комитета",
-    titleKz: "Член академического комитета",
-    titleEn: "Член академического комитета",
+    titleEn: "Academic committee member",
     certificate: {
-      namekz: "Жеке тұлғаның сертификаты",
-      nameru: "Сертификат физического лица",
-      nameen: "Certificate of an individual",
-      value: "individual"
+      namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+      nameru: "Для внутреннего документооборота (ГОСТ)",
+      nameen: "For internal document management (GOST)",
+      value: "internal"
     },
   },
   {
     stage: 2,
     users: null,
+    titleKz: "ББ бөлімінің қызметкері",
     titleRu: "Сотрудник отдела ОП.",
-    titleKz: "Сотрудник отдела ОП.",
-    titleEn: "Сотрудник отдела ОП.",
+    titleEn: "EP department employee",
     certificate: {
       namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
       nameru: "Для внутреннего документооборота (ГОСТ)",
@@ -648,9 +648,9 @@ const approvalStages = ref([
   {
     stage: 3,
     users: null,
+    titleKz: "Сыртқы эксперт",
     titleRu: "Внешний эксперт",
-    titleKz: "Внешний эксперт",
-    titleEn: "Внешний эксперт",
+    titleEn: "External expert",
     certificate: {
       namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
       nameru: "Для внутреннего документооборота (ГОСТ)",
@@ -661,9 +661,9 @@ const approvalStages = ref([
   {
     stage: 4,
     users: null,
-    titleRu: "Внутрений эксперт",
-    titleKz: "Внутрений эксперт",
-    titleEn: "Внутрений эксперт",
+    titleKz: "Ішкі эксперт",
+    titleRu: "Внутренний эксперт",
+    titleEn: "Internal Expert",
     certificate: {
       namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
       nameru: "Для внутреннего документооборота (ГОСТ)",
@@ -674,9 +674,9 @@ const approvalStages = ref([
   {
     stage: 5,
     users: null,
-    titleRu: "Ректор",
     titleKz: "Ректор",
-    titleEn: "Ректор",
+    titleRu: "Ректор",
+    titleEn: "Rector",
     certificate: {
       namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
       nameru: "Для внутреннего документооборота (ГОСТ)",
@@ -841,14 +841,15 @@ const getModuleBySyllasbusId = () => {
 getModuleBySyllasbusId()
 
 const approve = (event) => {
-  approving.value = true;
+  console.log(event)
+/*  approving.value = true;
   toast.add({
     severity: "success",
     summary: this.$t('common.message.succesSendToApproval'),
     life: 3000,
   });
   closeDialog("sendToApprove");
-  this.approving = false;
+  this.approving = false;*/
 }
 
 const openDialog = (dialog) => {

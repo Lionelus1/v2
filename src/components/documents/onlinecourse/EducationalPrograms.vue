@@ -23,14 +23,16 @@
             {{ moment(new Date(s.data.createdDate)).utc().format("DD.MM.YYYY") }}
           </template>
         </Column>
-        <Column field="status" header="">
+        <Column field="status" :header="$t('common.status')">
           <template #body="s">
-            <div class="flex align-items-center">
               <div v-for="i of s.data.status" :key="i">
-                {{ i['name' + locale] }}
+                <span :class="'mr-2 customer-badge status-' + i.code">{{ i['name' + locale] }}</span>
               </div>
-              <i v-if="isAdmin" class="pi pi-trash text-red-500 cursor-pointer ml-4" @click="deleteEP(s.data.id)"></i>
-            </div>
+          </template>
+        </Column>
+        <Column field="status">
+          <template #body="s">
+              <ActionButton :show-label="true" :items="initItems" @toggle="toggle(s.data.id)" />
           </template>
         </Column>
       </DataTable>
@@ -48,6 +50,7 @@ import moment from "moment";
 import {useToast} from "primevue/usetoast";
 import {useConfirm} from "primevue/useconfirm";
 import {findRole} from "@/config/config";
+import ActionButton from "@/components/ActionButton.vue";
 
 const {t, locale} = useI18n()
 const router = useRouter()
@@ -71,6 +74,28 @@ const id = computed(()=>{
   }
   return st
 })
+const initItems = computed(() =>
+    {
+      return [
+        {
+          label: t('common.edit'),
+          icon: 'fa-solid fa-pen',
+          command: () => {
+            //openEdit(actionsNode.value)
+          }
+        },
+        {
+          label: t('common.delete'),
+          icon: 'fa-solid fa-trash',
+          command: () => {
+            deleteEP(actionsNode.value)
+          }
+        },
+
+      ];
+    }
+)
+const actionsNode = ref(null)
 const getSyllabusByDegree = () => {
   service.getSyllabusByDegree(id.value).then(response => {
     if (response.data) {
@@ -96,9 +121,8 @@ const deleteEP = (id) => {
   });
 }
 const remove = (id) =>{
-  console.log(id)
-  /*service.deleteCourse(id).then(response => {
-    toast.add({ severity: 'success', summary: this.$t('common.success'), life: 3000 });
+  service.deleteSyllabus(id).then(response => {
+    toast.add({ severity: 'success', summary: t('common.success'), life: 3000 });
     getSyllabusByDegree()
   }).catch(error => {
     toast.add({
@@ -106,7 +130,7 @@ const remove = (id) =>{
       summary: error,
       life: 3000,
     });
-  });*/
+  });
 }
 
 watch(() => route.params.slug, (old, newVal) => {
@@ -122,6 +146,10 @@ watch(() => route.params.slug, (old, newVal) => {
 
     getSyllabusByDegree()
 })
+
+const toggle = (node) => {
+  actionsNode.value = node
+}
 
 onMounted(() => {
   getSyllabusByDegree()

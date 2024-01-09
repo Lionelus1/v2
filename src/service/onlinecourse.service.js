@@ -122,4 +122,7 @@ export class OnlineCourseService {
     getTrainingDirections(data) {
         return api.post('/onlinecourse/getTrainingDirections', {data}, {headers:getHeader()});
     }
+    deleteSyllabus(id) {
+        return api.post('/onlinecourse/delSyllabus', {opId: id}, {headers:getHeader()});
+    }
 }
