@@ -1622,8 +1622,7 @@ export default {
             participationInGroup: "Авторлар ұжымына қатысу",
         }
     },
-    supportingDocument: "Растайтын құжат"
-    },
+    supportingDocument: "Растайтын құжат",
     fieldEducation: {
         title: 'Білім беру саласы',
         courseAuthor: 'Курс авторы',
