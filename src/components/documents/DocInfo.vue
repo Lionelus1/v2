@@ -41,7 +41,7 @@ import { getHeader, smartEnuApi, b64toBlob } from "@/config/config";
 import { getLongDateString } from "@/helpers/helper";
 
 export default {
-    name: "DocSignaturesInfo",
+    name: "DocInfo",
     props: {
         ID: {
             type: Number,

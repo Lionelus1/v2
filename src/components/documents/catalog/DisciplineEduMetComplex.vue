@@ -194,7 +194,7 @@
   <!-- documentInfoSidebar -->
   <Sidebar v-model:visible="visibility.documentInfoSidebar" position="right" class="p-sidebar-lg"
     style="overflow-y: scroll" @hide="getFiles">
-    <DocSignaturesInfo :docIdParam="currentFile.uuid" :isInsideSidebar="true"></DocSignaturesInfo>
+    <DocSignaturesInfo :docIdParam="currentFile.uuid"></DocSignaturesInfo>
   </Sidebar>
   <!-- revisionInfoSidebar -->
   <Sidebar v-model:visible="visibility.revisionInfoSidebar" position="right" class="p-sidebar-lg" 

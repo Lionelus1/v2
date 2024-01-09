@@ -4,8 +4,8 @@
       <ul style="width:100%" :class="['p-inputtext p-chips-multiple-container p-w-100', {'p-disabled': $attrs.disabled, 'p-focus': focused}]"
           @click="onWrapperClick()">
         <li v-for="(val,i) of modelValue" :key="`${i}_${val}`" class="p-chips-token">
-          <slot name="chip" :value="val.fullName">
-            <span class="p-chips-token-label">{{ val.fullName }}</span>
+          <slot name="chip" :value="getFullname(val)">
+            <span class="p-chips-token-label">{{ getFullname(val) }}</span>
             <span class="p-chips-token-icon pi pi-times-circle" @click="removeItem($event, i)"></span>
           </slot>
         </li>
@@ -17,21 +17,20 @@
       </ul>
       <OverlayPanel ref="op" appendTo="body" id="overlay_panel" style="width: 45vw">
         <p v-if="searchInProgres">{{ $t('common.loading') }}...</p>
-        <Listbox v-else-if="(foundEntities != null)" v-model="selectedEntity" :options="foundEntities"
+        <Listbox v-else-if="foundEntities && foundEntities.length > 0" v-model="selectedEntity" :options="foundEntities"
                  listStyle="max-height:250px" @change="addItemMouseExt($event)">
           <template #option="slotProps">
             <div class="user-item grid">
               <div class="image-container lg:col-2  md:col-3 p-sm-12">
                 <img class="round" v-if="slotProps.option.photo != null && slotProps.option.photo !==''"
                      :src="'data:image/jpeg;base64,' + slotProps.option.photo "/>
-                <img class="round" v-if="!(slotProps.option.photo != null && slotProps.option.photo !=='')"
+                <img class="round" v-else
                      src="assets/layout/images/default-user.jpg"/>
               </div>
               <div class="user-list-detail lg:col-10  md:col-9 p-sm-12">
-                <h5 class="mb-2">{{ slotProps.option.fullName }}</h5>
-                <span class="product-category">{{ slotProps.option.mainPosition['name' + $i18n.locale] }}</span><br/>
-                <span class="product-category">{{ slotProps.option.mainPosition.department['name' + $i18n.locale.charAt(0).toUpperCase() + $i18n.locale.slice(1)] }}</span>
-
+                <h5 class="mb-2">{{ getFullname(slotProps.option) }}</h5>
+                <span class="product-category">{{ getPosition(slotProps.option.mainPosition) }}</span><br/>
+                <span class="product-category">{{ getPositionDepartment(slotProps.option.mainPosition) }}</span>
               </div>
             </div>
           </template>
@@ -54,6 +53,8 @@
 import {getHeader, smartEnuApi, templateApi} from "@/config/config";
 import axios from 'axios';
 
+import { ContragentService } from "@/service/contragent.service";
+
 export default {
   name: 
     'FindUser',
@@ -72,11 +73,6 @@ export default {
       type: Number,
       default: 2
     },
-    roles: {
-      type: String,
-      default: null
-    },
-
     max: {
       type: Number,
       default: null
@@ -93,11 +89,17 @@ export default {
       type: Boolean,
       default: true
     },
+    searchMode: {
+      type: String,
+      default: 'ldap',
+    },
     class: null,
     style: null,
   },
   data() {
     return {
+      service: new ContragentService(),
+
       newUser: {
         IIN: null,
         name: null,
@@ -141,7 +143,7 @@ export default {
       focused: false,
       foundEntities: null,
       keyPressDate: Date.now(),
-      userDialog: false,
+      // userDialog: false,
       selectedEntity: {
         name: "",
       },
@@ -149,19 +151,64 @@ export default {
     };
   },
    mounted() {
-    if (this.first !== null && this.first.fullName !== null && this.first.fullName !== "" && this.max == 1) {
-      this.addItem(null, this.first,false)
+    if (this.first !== null && this.max == 1) {
+      this.addItem(null, this.first, false)
     }
-
   },
   methods: {
-    userCreated(user) {
+    userCreated(user) { 
+      const event = new Event('userCreated');
+      this.addItem(event,user,true)
+    },
+    getFullname(user) {
+      if (!user) {
+        return ''
+      }
+
+      let fullname = ''
+      if (this.$i18n.locale === 'en') {
+        fullname += user.lastnameEn + ' ' + user.firstnameEn
+
+        if (user.thirdnameEn) {
+          fullname += ' ' + user.thirdnameEn
+        }
+      } 
       
-    const event = new Event('userCreated');
-    this.addItem(event,user,true)
+      if (fullname.length > 0) {
+        return fullname
+      }
+      
+      fullname += user.thirdName + ' ' + user.firstName 
+
+      if (user.lastName) {
+        fullname += ' ' + user.lastName 
+      }
+
+      return fullname
+    },
+    getPosition(position) {
+      if (!position) {
+        return '';
+      }
+
+      if (position['name' + this.$i18n.locale]) {
+        return position['name' + this.$i18n.locale];
+      } else {
+        return position.name;
+      }
+    },
+    getPositionDepartment(position) {
+      if (!position) {
+        return '';
+      }
+
+      if (!position.department) {
+        return '';
+      } else {
+        return position.department['name' + this.$i18n.locale.charAt(0).toUpperCase() + this.$i18n.locale.slice(1)];
+      }
     },
     showUserDialog() {
-    
       this.userDialog = true;
     },
     toggle(event, inputValue) {
@@ -176,19 +223,17 @@ export default {
       this.$refs.op.hide();
       this.$refs.op.toggle(event);
       this.searchInProgres = true;
-      axios.post(
-        smartEnuApi + `/getUser`, {
-        "dn": inputValue,
-        "userType": this.userType,
-        // "roles": this.roles
+      this.service.getPersons({
+        "filter": {
+          "name": inputValue,
         },
-        {
-          headers: getHeader(), cancelToken: this.cancelToken.token 
-        },
-      )
-      .then(
+        "searchMode": this.userType == 1 ? "student" : this.userType == 2 ? "staff" : "all",
+        "ldap": this.searchMode == 'ldap' ? true : false,
+        "page": 0,
+        "rows": 15
+      }, this.cancelToken.token).then(
         response => {
-            this.foundEntities = response.data;
+            this.foundEntities = response.data.foundUsers;
             this.searchInProgres = false;
         },
       )
@@ -196,7 +241,7 @@ export default {
         (error) => {
           if(!axios.isCancel(error)) {
             this.searchInProgres = false;
-            if (error.response.status === 404) {
+            if (error.response && error.response.status === 404) {
               this.foundEntities = null;
             }
           }
@@ -271,7 +316,7 @@ export default {
     updateModel(event, value, preventDefault) {
       this.$emit('update:modelValue', value);
       if (this.max == 1 && value.length >0) {
-         this.$emit('update:first', value[0]);
+        this.$emit('update:first', value[0]);
       }
       this.$emit('add', {
         originalEvent: event,
@@ -309,8 +354,7 @@ export default {
         originalEvent: event,
         value: removedItem
       });
-    },
-  
+    }
   },
   computed: {
     maxedOut() {

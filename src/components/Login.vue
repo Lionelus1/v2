@@ -190,7 +190,7 @@ export default {
           this.qrSignUri = ""
           this.mgovMobileRedirectUri = null
           this.mgovBusinessRedirectUri = null
-          axios.post(smartEnuApi + "/etsptokenid", {}, {headers: getHeader()})
+          axios.post(smartEnuApi + "/etsptoken", {}, {headers: getHeader()})
               .then(res => {
                 this.connectionId = res.data.connectionId;
                 let mgovSignUri = smartEnuApi + '/mobileAuthParams/' + this.connectionId

@@ -6,10 +6,10 @@
              <div class="card">
          <div class="text-2xl font-medium text-900 mb-3">{{$t("course.certificate.title")}}</div>
          <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
-         <!-- <Button  v-if="findRole(null,'student')" @click="getStudentCertificates()"
+         <Button  v-if="findRole(null,'student')" @click="getStudentCertificates()"
             :label="$t('common.downloadCertificate')"
             type="button"
-            class="p-button-info" /> -->
+            class="p-button-info" />
          <DataTable
          v-if="journal"
          selectionMode="single"
@@ -34,7 +34,7 @@
            responsiveLayout="scroll"
            @sort="onSort($event)"
            @filter="onFilter($event)">
-           <Column :field="'course.name' + $i18n.locale" :header="$t('common.name')"></Column>
+           <Column :field="'course.name' + $i18n.locale" :header="$t('common.nameIn')"></Column>
            <Column :field="'course.organizer.name' + $i18n.locale" :header="$t('course.organizers')"></Column>
            <Column field="number" :header="$t('common.number')"></Column>
 

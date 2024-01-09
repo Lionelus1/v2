@@ -1,10 +1,4 @@
 <template>
-  <Toast v-if="!isInsideSidebar"/>
-  <div v-if="!isInsideSidebar" class="layout-topbar no-print">
-    <div class="layout-topbar-icons">
-      <LanguageDropdown/>
-    </div>
-  </div>
   <div>
     <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
     <BlockUI :blocked="loading" :fullScreen="true"></BlockUI>
@@ -48,18 +42,17 @@
                       class="p-button-primary md:col-5" @click="sign" :label="$t('ncasigner.sign')" :loading="signing"/>
             </div>
           </Panel>
-          <div class="p-mt-2" v-if="isIndivid">
+          <div class="p-mt-2">
             <Panel>
               <template #header>
                 <div class="p-d-flex p-jc-center">
                   <InlineMessage class="" severity="info">{{ $t('ncasigner.qrSinging') }}</InlineMessage>
                 </div>
-
               </template>
               <div class="text-center">
                 <h6><b>{{ $t('mgov.inApp') }}</b> <b style="color: red">{{ mobileApp }}</b></h6>
               </div>
-              <div class="p-d-flex p-jc-center">
+              <div v-if="mgovSignUri" class="p-d-flex p-jc-center">
                 <qrcode-vue size="350" render-as="svg" margin="2" :value="mgovSignUri"></qrcode-vue>
               </div>
               <div v-if="mgovMobileRedirectUri && isIndivid" class="p-fluid text-center">
@@ -98,7 +91,6 @@
 <script>
 import SignatureQrPdf from "@/components/ncasigner/SignatureQrPdf";
 import {runNCaLayer, makeTimestampForSignature} from "@/helpers/SignDocFunctions"
-import LanguageDropdown from "@/LanguageDropdown";
 
 import axios from "axios";
 import {getHeader, smartEnuApi, socketApi, b64toBlob, findRole} from "@/config/config";
@@ -108,10 +100,11 @@ import QrcodeVue from "qrcode.vue";
 import Enum from "@/enum/docstates/index";
 import RolesEnum from "@/enum/roleControls/index";
 import QrGuideline from "./QrGuideline.vue";
+import {DocService} from "@/service/doc.service";
 
 export default {
   name: "DocSignaturesInfo",
-  components: {QrGuideline, SignatureQrPdf, DocInfo, QrcodeVue, LanguageDropdown},
+  components: {QrGuideline, SignatureQrPdf, DocInfo, QrcodeVue },
   props: {
     docIdParam: {
       type: String,
@@ -133,18 +126,16 @@ export default {
     tspParam: {
       type: Boolean,
       default: false
-    },
-    isInsideSidebar: {
-      type: Boolean,
-      default: false
     }
   },
   data() {
     return {
+      service: new DocService(),
+
       signatures: null,
       approvalStages: null,
       plan: null,
-      doc_id: this.$route.params.uuid,
+      doc_id: null,
       isTspRequired: Boolean,
       signerIin: null,
       docInfo: null,
@@ -171,16 +162,18 @@ export default {
     }
   },
   created() {
-    if (!this.doc_id) {
-      this.doc_id = this.docIdParam
+    if (this.docIdParam) {
+      this.doc_id = this.docIdParam;
+    } else {
+      this.doc_id =this.$route.params.uuid;
     }
+    
     const tokenData = JSON.parse(window.localStorage.getItem("authUser"));
     if (tokenData !== null) {
       let signUri = smartEnuApi + '/mobileSignParams/' + this.doc_id + "/" + tokenData.access_token
       this.mgovSignUri = 'mobileSign:' + signUri
       this.mgovMobileRedirectUri = "https://mgovsign.page.link/?link=" + signUri + "?mgovSign&apn=kz.mobile.mgov&isi=1476128386&ibi=kz.egov.mobile"
       this.mgobBusinessRedirectUri = "https://egovbusiness.page.link/?link=" + signUri + "?mgovSign&apn=kz.mobile.mgov.business&isi=1597880144&ibi=kz.mobile.mgov.business"
-
     }
     this.isTspRequired = this.tspParam
     this.signerIin = this.signerIinParam
@@ -226,7 +219,7 @@ export default {
       window.open(this.mgobBusinessRedirectUri)
     },
     tabChanged() {
-      if (this.active == 1 && !this.file) { // showFileTab
+      if (this.active == 1 && this.files.length < 1) { // showFileTab
         if (this.docInfo.isManifest === true) {
           axios.post(
               smartEnuApi + "/downloadManifestFiles", {
@@ -275,6 +268,7 @@ export default {
             this.isShow = true;
           } else {
             this.isShow = this.findRole(null, RolesEnum.roles.CareerModerator) || this.findRole(null, RolesEnum.roles.UMKAdministrator) ||
+              (this.findRole(null, RolesEnum.roles.Teacher) && this.docInfo.docType === Enum.DocType.Contract) ||
               (this.signatures && this.signatures.some(x => x.userId === this.loginedUserId)) ||
               this.docInfo.docHistory.setterId === this.loginedUserId || this.docInfo.creatorID === this.loginedUserId;
           }
@@ -337,6 +331,10 @@ export default {
 
           if (this.docInfo.docType === this.Enum.DocType.PostAccreditationMonitoringReport) {
             this.isShow = true
+          }
+
+          if (this.docInfo.docType === this.Enum.DocType.ScienceWorks) {
+            this.getDocNew();
           }
         }
 
@@ -525,6 +523,39 @@ export default {
         this.loading = false
       })
     },
+    getDocNew() {
+      this.loading = true;
+
+      this.service.getDocumentV2({
+        uuid: this.docInfo.uuid,
+      }).then(res => {
+        if (res.data.approvalStages) {
+          for (let element of res.data.approvalStages) {
+            console.log(element)
+            if (!element.signatures) {
+              continue;
+            }
+
+            if (this.hideDocRevision) {
+              this.hideDocRevision = !element.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));
+            }
+          }
+        }
+
+        this.loading = false;
+      }).catch(err => {
+        this.loading = false;
+
+        if (err.response && err.response.status == 401) {
+          this.$store.dispatch("logLout");
+        } else if (err.response && err.response.data && err.response.data.localized) {
+          this.showMessage('error', this.$t(err.response.data.localizedPath));
+        } else {
+          console.log(err)
+          this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
+        }
+      });
+    }
   }
 }
 </script>

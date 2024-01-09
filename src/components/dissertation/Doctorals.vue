@@ -102,7 +102,7 @@
         <div class="grid formgrid">
           <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
             <label for="name">{{ $t("common.fullName") }}</label>
-            <FindUser class="pt-1" v-model="selectedUsers" :max="1" :editMode="true" :user-type="0"></FindUser>
+            <FindUser class="pt-1" v-model="selectedUsers" :max="1" :editMode="true" searchMode="local"></FindUser>
             <small class="p-error" v-if="submitted && validationErrors.user">{{ $t("common.requiredField") }}</small>
           </div>
           <div class="col-12 pb-2 lg:col-6 mb-lg-0">
@@ -1513,10 +1513,9 @@ export default {
     loadCouncil() {
       let data = {
         id: this.selectedDoctoral.councilID,
-        page: 0,
-        rows: 50
+        dissertation_id: this.selectedDoctoral.dissertation.id
       }
-      axios.post(smartEnuApi + "/dissertation/getcouncilmembers", data, { headers: getHeader() }).then((response) => {
+      axios.post(smartEnuApi + "/dissertation/getdissertationmembers", data, { headers: getHeader() }).then((response) => {
         this.memberList = response.data;
       }).catch((error) => {
         if (error && error.response && error.response.status == 401) {

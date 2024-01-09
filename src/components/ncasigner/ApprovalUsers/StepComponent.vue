@@ -14,15 +14,16 @@
           <div class="pt-2">{{ $i18n.locale === 'kz'? step.titleKz : $i18n.locale === 'en' ? step.titleEn : step.titleRu }}</div>
         </li>
       </ul>
-      <div class="steps-content">
-        <FindUser @add="updateModel" @remove="updateModel" v-model="selectedUsers"></FindUser>
-        <Dropdown :disabled="!isNewStage" @change="updateModel" class="mt-2" v-model="certificate" :options="certificates" :optionLabel="'name' + $i18n.locale" :placeholder="$t('ncasigner.certType')" />
+      <div class="steps-content p-fluid">
+        <FindUser @add="updateModel" @remove="updateModel" v-model="selectedUsers" :disabled="readonly"></FindUser>
+        <Dropdown :disabled="!isNewStage || readonly" @change="updateModel" class="mt-2" v-model="certificate" dataKey="value"
+          :options="certificates" :optionLabel="'name' + $i18n.locale" :placeholder="$t('ncasigner.certType')" />
       </div>
 
       <div>
-        <Button :disabled="!(isNewStage && steps.length < 10)" icon="pi pi-plus" class="p-button-rounded p-button-success"
+        <Button v-if="!readonly" :disabled="!(isNewStage && steps.length < 10)" icon="pi pi-plus" class="p-button-rounded p-button-success"
                 @click="addStep"/>
-        <Button @click="clearSteps" class="btn danger ml-2"> {{ $t('common.clearApprovalList') }} </Button>
+        <Button v-if="!readonly" @click="clearSteps" class="btn danger ml-2"> {{ $t('common.clearApprovalList') }} </Button>
       </div>
     </div>
     <div class="steps" v-else>
@@ -39,7 +40,7 @@
           <div class="pt-2">{{ $i18n.locale === 'kz'? approvalStage.titleKz : $i18n.locale === 'en' ? approvalStage.titleEn : approvalStage.titleRu }}</div>
         </li>
       </ul>
-      <div class="steps-content">
+      <div class="steps-content p-fluid">
         <Dropdown v-if="isNewStage" @change="approvalListChanged" v-model="approvalListItem" :options="approvalList" :optionLabel="'title' + $i18n.locale.charAt(0).toUpperCase() + $i18n.locale.slice(1)" :placeholder="$t('roleControl.instance')"></Dropdown>
         <FindUser :disabled="readonly || !approvalStages[activeIndex].userChangeable" class="mt-2" @add="updateModel" @remove="updateModel" v-model="selectedUsers"></FindUser>
         <Dropdown :disabled="true" @change="updateModel" class="mt-2" v-model="certificate" :options="certificates" optionValue="value" :optionLabel="'name' + $i18n.locale" :placeholder="$t('ncasigner.certType')" />
@@ -138,7 +139,7 @@ export default {
       this.activeIndex = index;
       if (this.mode == 'standard') {
         this.stage = index + 1;
-        this.selectedUsers = this.result[index].users != null ? this.result[index].users : null;
+        this.selectedUsers = this.result ? this.result[index].users != null ? this.result[index].users : null : null;
         this.certificate = this.result[index].certificate;
       } else {
         this.approvalListItem = null
@@ -256,7 +257,7 @@ export default {
     },
     isEnuWorker() {
       let currentUser = this.$store.state.loginedUser
-      if (currentUser && currentUser.organization && currentUser.organization.iin && currentUser.organization.iin === '010140003594') {
+      if (currentUser && currentUser.mainPosition.organization && currentUser.mainPosition.organization.iin && currentUser.mainPosition.organization.iin === '010140003594') {
         return true
       }
 

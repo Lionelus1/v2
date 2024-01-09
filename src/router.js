@@ -1,15 +1,10 @@
 import {createRouter, createWebHashHistory} from 'vue-router';
 import Full from './components/Full.vue';
-import store from '@/store/store'
-import AdmissionInfoList from "@/components/enuwebsite/blocks/admission.info/AdmissionInfoList.vue";
-import EduPriceCategoryList from "@/components/enuwebsite/blocks/edu.price/EduPriceCategoryList.vue";
-import EduPriceComponent from "@/components/enuwebsite/blocks/edu.price/EduPriceComponent.vue";
-import EduScoreComponent from "@/components/enuwebsite/blocks/edu.score/EduScoreComponent.vue"
+import store from '@/store/store';
 
 function load(component) {
     return () => import(`./components/${component}.vue`)
 }
-
 
 const ifNotAuthenticated = (to, from, next) => {
     if (!store.getters.isAuthenticated) {
@@ -47,7 +42,6 @@ const ifMainAdministrator = (to, from, next) => {
     }
 }
 
-
 const routes = [
     {
         path:'/login',
@@ -67,17 +61,12 @@ const routes = [
     {
         path: '/reception/request',
         name: "receptionRequest",
-        component: load('publicReception/NewRequest')
+        component: load('publicReception/Request')
     },
     {
         path: '/document/:uuid',
         name: 'Document',
         component: load('documents/Document'),
-    },
-    {
-        path: '/sign/:uuid',
-        name: 'DocSignaturesInfo',
-        component: load('DocSignaturesInfo'),
     },
     {
         path: '/afterauth',
@@ -127,7 +116,19 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
-                path: '/documents/doctemplate:',
+path: '/documents/catalog/acts',
+                name: '/documents/catalog/acts',
+                component: load('documents/catalog/Acts'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/documents/catalog/scienceWorks',
+                name: 'ScienceWorks',
+                component: load('documents/catalog/ScienceWorks'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/documents/doctemplate',
                 name: '/documents/doctemplate',
                 component: load('documents/DocTemplate'),
                 beforeEnter: ifAuthenticated,
@@ -139,22 +140,39 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
+                path: '/documents/contracts/:uuid/request',
+                name: 'ContractRequest',
+                component: load('documents/ContractRequest'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/documents/contracts/:uuid/related',
+                name: 'ContractsRelatedDocuments',
+                component: load('documents/catalog/RelatedDocuments'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/documents/contracts/:uuid/related/:relatedUUID',
+                name: 'RelatedDocument',
+                component: load('documents/RelatedDocument'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/documents/scienceWorks/:uuid',
+                name: 'ScienceWorksPage',
+                component: load('documents/pages/ScienceWorksPage'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
                 path: '/documents/contracts',
                 name: '/documents/contracts',
-                component: load('documents/Contracts'),
+                component: load('documents/ContractsFirstPage'),
                 beforeEnter: ifAuthenticated,
             },
             {
-                path: '/documents/journal',
-                name: '/documents/journal',
-                component: load('documents/Journal'),
-                beforeEnter: ifAuthenticated,
-            },
-            {
-                path: '/documents/contract/:id',
-                name: '/documents/contract',
-                component: load('documents/Contract'),
-                beforeEnter: ifAuthenticated,
+                path: '/sign/:uuid',
+                name: 'DocSignaturesInfo',
+                component: load('DocSignaturesInfo'),
             },
             {
                 path: '/documents/certificates',
@@ -745,7 +763,19 @@ const routes = [
                 name: 'IntegrationParams',
                 component: load('integration/IntegrationParams'),
                 beforeEnter: ifAuthenticated,
-            }
+            },
+            {
+                path: '/science/scientists',
+                name:'ScientistsList',
+                component: load('science/ScientistsList'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/science/scientists/:id',
+                name:'ScientistsProfile',
+                component: load('science/ScientistsProfile'),
+                beforeEnter: ifAuthenticated,
+            },
         ]
     },
    
@@ -762,7 +792,7 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
         ]
-    }
+    },
 
 
 ];
