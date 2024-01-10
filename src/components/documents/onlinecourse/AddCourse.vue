@@ -298,16 +298,18 @@ const getEduAcademicDegrees = () => {
 getEduAcademicDegrees()
 const save = () => {
   submitted.value = true
-  if(courseId) {
+  /*if(courseId) {
     abstractFile.value = imagePreviewUrl.value
-  }
+  }*/
   if (!isValid()) return;
   formData.value.id = courseId? courseId : 0
   formData.value.categoryId = 1
   formData.value.start_time = new Date().toISOString()
   formData.value.final_date = new Date().toISOString()
   let data = new FormData()
-  data.append("abstractFile", abstractFile.value);
+  if (abstractFile.value) {
+    data.append("abstractFile", abstractFile.value);
+  }
   data.append("course", JSON.stringify(formData.value));
   service.createCourse(data).then(res => {
     router.back()
@@ -330,7 +332,7 @@ const isValid = () => {
   if (!formData.value['name' + lang]) {
     errors.push(1);
   }
-  if (!abstractFile.value) {
+  if (!courseId && !abstractFile.value) {
     errors.push(1);
   }
   if (!formData.value.courseCode) {
