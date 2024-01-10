@@ -22,7 +22,7 @@
           <label for="course-code">{{ $t("web.degreeLevel") }}</label>
           <Dropdown optionValue="id" :placeholder="$t('common.select')" :options="dataAcademicDegrees" :optionLabel='"name_" + $i18n.locale'
                     v-model="formData.academicDegreeId"/>
-          <small class="p-error" v-if="!formData.academicDegreeId && submitted">{{ $t("common.requiredField") }}</small>
+<!--          <small class="p-error" v-if="!formData.academicDegreeId && submitted">{{ $t("common.requiredField") }}</small>-->
         </div>
         <div class="field mt-3">
           <label for="course-code">{{ $t("common.learnlang") }}</label>
@@ -97,7 +97,6 @@
               <div class="btn-select-image-inner">
                 <i class="fa-regular fa-image"></i>
                 <CustomFileUpload @upload="handleFileChange($event)" v-model="abstractFile" :button="true" :multiple="false"/>
-
               </div>
             </div>
           </div>
@@ -300,7 +299,6 @@ getEduAcademicDegrees()
 const save = () => {
   submitted.value = true
   if(courseId) {
-    console.log(imagePreviewUrl.value)
     abstractFile.value = imagePreviewUrl.value
   }
   if (!isValid()) return;

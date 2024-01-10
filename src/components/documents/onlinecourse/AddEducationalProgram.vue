@@ -589,7 +589,7 @@ const formModule = ref(
       creditCount: '2',
       moduleCourseRel: [
         {
-          syllabusModuleId: 0,
+          moduleId: 0,
           courseId: 10,
           semester: 2,
           Lecture: 80,
@@ -830,15 +830,15 @@ const filterTrainingDirections = (event) => {
     getTrainingDirections()
   }
 }
-const getModuleBySyllasbusId = () => {
-  service.getModuleBySyllasbusId(stepID.value ? stepID.value.data : 0).then(response => {
+const getModuleByEduProgId = () => {
+  service.getModuleByEduProgId(stepID.value ? stepID.value.data : 0).then(response => {
     if (response.data) {
       modules.value = response.data
     }
   }).catch(_ => {
   });
 }
-getModuleBySyllasbusId()
+getModuleByEduProgId()
 
 const approve = (event) => {
   console.log(event)
@@ -941,7 +941,7 @@ const addModuleAndCourses = () => {
   formModule.value.moduleCourseRel[0].whatCourse = whatCourse.value[0]
   if (!isValidModule()) return;
   console.log(formModule.value)
-  formModule.value.syllabusId = stepID.value ? stepID.value.data : null
+  formModule.value.eduProgId = stepID.value ? stepID.value.data : null
   service.addModuleAndCourses(formModule.value).then(response => {
     toast.add({
       severity: "success",
@@ -950,7 +950,7 @@ const addModuleAndCourses = () => {
     });
     dialogModule.value = false
     arrow.value = true
-    getModuleBySyllasbusId()
+    getModuleByEduProgId()
   }).catch(_ => {
   });
 }

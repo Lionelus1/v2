@@ -96,8 +96,8 @@ const initItems = computed(() =>
     }
 )
 const actionsNode = ref(null)
-const getSyllabusByDegree = () => {
-  service.getSyllabusByDegree(id.value).then(response => {
+const getEduProgByDegree = () => {
+  service.getEduProgByDegree(id.value).then(response => {
     if (response.data) {
       educationalPrograms.value = response.data
     }
@@ -121,9 +121,9 @@ const deleteEP = (id) => {
   });
 }
 const remove = (id) =>{
-  service.deleteSyllabus(id).then(response => {
+  service.delEduProg(id).then(response => {
     toast.add({ severity: 'success', summary: t('common.success'), life: 3000 });
-    getSyllabusByDegree()
+    getEduProgByDegree()
   }).catch(error => {
     toast.add({
       severity: "error",
@@ -144,7 +144,7 @@ watch(() => route.params.slug, (old, newVal) => {
       id.value = 3
     }
 
-    getSyllabusByDegree()
+  getEduProgByDegree()
 })
 
 const toggle = (node) => {
@@ -152,7 +152,7 @@ const toggle = (node) => {
 }
 
 onMounted(() => {
-  getSyllabusByDegree()
+  getEduProgByDegree()
 })
 
 </script>
