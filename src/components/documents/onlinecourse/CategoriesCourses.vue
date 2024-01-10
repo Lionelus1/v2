@@ -127,7 +127,7 @@ export default{
     qualification(){
       return  [
         { id: 1, name: this.$t("educationalPrograms.bachelor") },
-        { id: 2, name: this.$t("educationalPrograms.magistr") },
+        { id: 2, name: this.$t("educationalPrograms.master") },
         { id: 4, name: this.$t("educationalPrograms.doctoral") },
       ]
     },

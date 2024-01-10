@@ -14,7 +14,7 @@
         <div class="text p-3 cursor-pointer" @click="selectCourse(item)">
           <h5 class="title font-semibold" :title="item['name' + $i18n.locale]">{{ item['name' + $i18n.locale] }}</h5>
           <p>{{ $t('fieldEducation.courseAuthor') }}: {{ item.AutorFullName }}</p>
-          <p>{{ formatDate(item.createDate) }}</p>
+          <p>{{ formatDateMoment(item.createDate) }}</p>
           <p><i class="pi pi-star-fill text-yellow-500"></i> 4,9</p>
         </div>
         <div class="grid_footer flex justify-content-between align-items-center p-3">
@@ -36,6 +36,7 @@ import "@splidejs/splide/dist/css/splide.min.css";
 import {OnlineCourseService} from "@/service/onlinecourse.service";
 import {fileRoute, findRole, smartEnuApi} from "@/config/config";
 import { formatDate } from "@/helpers/HelperUtil";
+import moment from "moment/moment";
 
 export default {
   data() {
@@ -126,7 +127,10 @@ export default {
             life: 3000,
           });
       });
-    }
+    },
+    formatDateMoment(date) {
+      return moment(new Date(date)).utc().format("DD.MM.YYYY")
+    },
   }
 };
 </script>

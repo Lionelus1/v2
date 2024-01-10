@@ -22,7 +22,7 @@
           <label for="course-code">{{ $t("web.degreeLevel") }}</label>
           <Dropdown optionValue="id" :placeholder="$t('common.select')" :options="dataAcademicDegrees" :optionLabel='"name_" + $i18n.locale'
                     v-model="formData.academicDegreeId"/>
-          <small class="p-error" v-if="!formData.academicDegreeId && submitted">{{ $t("common.requiredField") }}</small>
+<!--          <small class="p-error" v-if="!formData.academicDegreeId && submitted">{{ $t("common.requiredField") }}</small>-->
         </div>
         <div class="field mt-3">
           <label for="course-code">{{ $t("common.learnlang") }}</label>
@@ -69,7 +69,7 @@
       <div class="p-fluid mt-3">
         <div class="card field">
           <label for="course-code">{{ $t("fieldEducation.duration") }}</label>
-          <InputText type="number" v-model="formData.hours"/>
+          <InputNumber type="number" v-model="formData.hours"/>
           <small class="p-error" v-if="!formData.hours && submitted">{{ $t("common.requiredField") }}</small>
           <!--          <PrimeCalendar v-model="date" selection-mode="range" :manualInput="true" dateFormat="dd.mm.yy" :showIcon="true"/>-->
         </div>
@@ -97,7 +97,6 @@
               <div class="btn-select-image-inner">
                 <i class="fa-regular fa-image"></i>
                 <CustomFileUpload @upload="handleFileChange($event)" v-model="abstractFile" :button="true" :multiple="false"/>
-
               </div>
             </div>
           </div>
@@ -242,7 +241,6 @@ const lazyParams = {
 const checkedCertificate = ref(false)
 const fullName = store.state.loginedUser.thirdName + ' ' + store.state.loginedUser.firstName + ' ' + store.state.loginedUser.lastName
 
-console.log(formData.value)
 const handleFileChange = (event) => {
   abstractFile.value = event.files[0];
   const file = event.files[0];
@@ -262,10 +260,10 @@ const delImg = () => {
 const getCourseById = () => {
   if (courseId){
     service.getCourseById(courseId).then(response => {
-      formData.value = response
+      formData.value = response.data[0]
       formData.value.eduFieldsId = parseInt(route.params.fieldId)
       formData.value.autorId = response.data.autorId
-      imagePreviewUrl.value = smartEnuApi + fileRoute + response.data.logo
+      imagePreviewUrl.value = smartEnuApi + fileRoute + response.data[0].logo
       //formData.value.courceLanguageId = 1
     }).catch(_ => {
     });
@@ -300,18 +298,21 @@ const getEduAcademicDegrees = () => {
 getEduAcademicDegrees()
 const save = () => {
   submitted.value = true
-  console.log(formData.value)
+  /*if(courseId) {
+    abstractFile.value = imagePreviewUrl.value
+  }*/
   if (!isValid()) return;
   formData.value.id = courseId? courseId : 0
   formData.value.categoryId = 1
-  formData.value.hours = parseInt(formData.value.hours)
   formData.value.start_time = new Date().toISOString()
   formData.value.final_date = new Date().toISOString()
   let data = new FormData()
-  data.append("abstractFile", abstractFile.value);
+  if (abstractFile.value) {
+    data.append("abstractFile", abstractFile.value);
+  }
   data.append("course", JSON.stringify(formData.value));
   service.createCourse(data).then(res => {
-    //router.back()
+    router.back()
     toast.add({
       severity: "success",
       summary: i18n.t("common.success"),
@@ -331,7 +332,7 @@ const isValid = () => {
   if (!formData.value['name' + lang]) {
     errors.push(1);
   }
-  if (!abstractFile.value) {
+  if (!courseId && !abstractFile.value) {
     errors.push(1);
   }
   if (!formData.value.courseCode) {

@@ -1,5 +1,5 @@
 <template>
-  <TitleBlock :title="$t('educationalPrograms.createEP')" :show-back-button="true"/>
+  <TitleBlock :title="$t('educationalPrograms.name')" :show-back-button="arrow"/>
 
   <div class="grid">
     <div class="col-12 lg:col-3">
@@ -20,7 +20,7 @@
         <h4>{{ items[active].label }}</h4>
         <div class="m-0">
           <Button class="p-button-outlined mr-2 mb-2 sm:mb-0" icon="pi pi-fw pi-download" :label="$t('common.save')" @click="save()"/>
-          <Button :disabled="disabledSend" class="p-button-outlined mr-2 mb-2 sm:mb-0" icon="pi pi-fw pi-send" :label="$t('common.send')"
+          <Button class="p-button-outlined mr-2 mb-2 sm:mb-0" icon="pi pi-fw pi-send" :label="$t('common.send')"
                   @click="openDialog('sendToApprove')"/>
           <Button :disabled="disabledApproval" class="p-button-outlined" icon="pi pi-fw pi-check-circle" :label="$t('common.approvalList')"/>
         </div>
@@ -333,7 +333,11 @@
           <Checkbox v-model="courseType" :value="3" inputId="courseType3"/>
           <label class="ml-2" for="courseType3" :title="$t('educationalPrograms.profileCourses')">{{ $t("educationalPrograms.pc") }}</label>
         </div>
-        <small class="p-error" v-if="!formModule.courseType && submitted">{{ $t("common.requiredField") }}</small>
+      </div>
+      <div class="col-0 lg:col-3" v-if="!formModule.courseType && submitted">
+      </div>
+      <div class="col-12 lg:col-9" v-if="!formModule.courseType && submitted">
+      <small class="p-error" v-if="!formModule.courseType && submitted">{{ $t("common.requiredField") }}</small>
       </div>
       <div class="col-12 lg:col-3">
         <span>{{ $t("educationalPrograms.courseComponents") }}</span>
@@ -353,6 +357,10 @@
           <Checkbox v-model="courseComponentType" :value="3" inputId="courseComponentType3"/>
           <label class="ml-2" for="courseComponentType3" :title="$t('educationalPrograms.optionalCourse')">{{ $t("educationalPrograms.oc") }}</label>
         </div>
+      </div>
+      <div class="col-0 lg:col-3" v-if="!formModule.courseComponentType && submitted">
+      </div>
+      <div class="col-12 lg:col-9" v-if="!formModule.courseComponentType && submitted">
         <small class="p-error" v-if="!formModule.courseComponentType && submitted">{{ $t("common.requiredField") }}</small>
       </div>
       <div class="col-12">
@@ -452,7 +460,7 @@
         <!--    <small class="p-error">{{ $t("common.requiredField") }}</small>-->
       </div>
     </div>
-    <div class="flex justify-content-between">
+    <div class="flex justify-content-between mt-2">
       <Button class="p-button-outlined mr-2 w-fit"
               icon="pi pi-plus-circle" :label="$t('educationalPrograms.addCourse')"/>
       <Button class="w-fit"
@@ -581,7 +589,7 @@ const formModule = ref(
       creditCount: '2',
       moduleCourseRel: [
         {
-          syllabusModuleId: 0,
+          moduleId: 0,
           courseId: 10,
           semester: 2,
           Lecture: 80,
@@ -613,23 +621,62 @@ const selectedUsers = ref([
 const approvalStages = ref([
   {
     stage: 1,
-    users: 's',
+    users: null,
+    titleKz: "Академиялық комитет мүшесі",
+    titleRu: "Член академического комитета",
+    titleEn: "Academic committee member",
     certificate: {
-      namekz: "Жеке тұлғаның сертификаты",
-      nameru: "Сертификат физического лица",
-      nameen: "Certificate of an individual",
-      value: "individual"
+      namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+      nameru: "Для внутреннего документооборота (ГОСТ)",
+      nameen: "For internal document management (GOST)",
+      value: "internal"
     },
-    titleRu: "Преподаватель",
-    titleKz: "Оқытушы",
-    titleEn: "Teacher",
   },
   {
     stage: 2,
     users: null,
-    titleRu: "Заведующий кафедры",
-    titleKz: "Кафедра меңгерушісі",
-    titleEn: "Head of Department",
+    titleKz: "ББ бөлімінің қызметкері",
+    titleRu: "Сотрудник отдела ОП.",
+    titleEn: "EP department employee",
+    certificate: {
+      namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+      nameru: "Для внутреннего документооборота (ГОСТ)",
+      nameen: "For internal document management (GOST)",
+      value: "internal"
+    },
+  },
+  {
+    stage: 3,
+    users: null,
+    titleKz: "Сыртқы эксперт",
+    titleRu: "Внешний эксперт",
+    titleEn: "External expert",
+    certificate: {
+      namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+      nameru: "Для внутреннего документооборота (ГОСТ)",
+      nameen: "For internal document management (GOST)",
+      value: "internal"
+    },
+  },
+  {
+    stage: 4,
+    users: null,
+    titleKz: "Ішкі эксперт",
+    titleRu: "Внутренний эксперт",
+    titleEn: "Internal Expert",
+    certificate: {
+      namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+      nameru: "Для внутреннего документооборота (ГОСТ)",
+      nameen: "For internal document management (GOST)",
+      value: "internal"
+    },
+  },
+  {
+    stage: 5,
+    users: null,
+    titleKz: "Ректор",
+    titleRu: "Ректор",
+    titleEn: "Rector",
     certificate: {
       namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
       nameru: "Для внутреннего документооборота (ГОСТ)",
@@ -667,6 +714,7 @@ const listLang = ref([
   {id: 2, lang: 'На русском'},
   {id: 3, lang: 'In English'},
 ])
+const arrow = ref(false)
 
 const getCourses = () => {
   service.getCourses(lazyParams).then(response => {
@@ -782,25 +830,26 @@ const filterTrainingDirections = (event) => {
     getTrainingDirections()
   }
 }
-const getModuleBySyllasbusId = () => {
-  service.getModuleBySyllasbusId(stepID.value ? stepID.value.data : 0).then(response => {
+const getModuleByEduProgId = () => {
+  service.getModuleByEduProgId(stepID.value ? stepID.value.data : 0).then(response => {
     if (response.data) {
       modules.value = response.data
     }
   }).catch(_ => {
   });
 }
-getModuleBySyllasbusId()
+getModuleByEduProgId()
 
 const approve = (event) => {
-  approving.value = true;
+  console.log(event)
+/*  approving.value = true;
   toast.add({
     severity: "success",
     summary: this.$t('common.message.succesSendToApproval'),
     life: 3000,
   });
   closeDialog("sendToApprove");
-  this.approving = false;
+  this.approving = false;*/
 }
 
 const openDialog = (dialog) => {
@@ -828,10 +877,14 @@ const save = () => {
         life: 3000,
       });
       formData.value = null
+      submitted.value = false
       active.value = 1
     }).catch(error => {
+      submitted.value = false
       toast.add({severity: "error", summary: error, life: 3000});
+      return;
     });
+    return;
   }
   if (active.value === 1) {
     submitted.value = true
@@ -844,10 +897,14 @@ const save = () => {
         life: 3000,
       });
       formStep2.value = null
+      submitted.value = false
       active.value = 2
     }).catch(error => {
+      submitted.value = false
       toast.add({severity: "error", summary: error, life: 3000});
+      return
     });
+    return;
   }
   if (active.value === 2) {
     submitted.value = true
@@ -860,10 +917,14 @@ const save = () => {
         life: 3000,
       });
       formStep2.value = null
+      submitted.value = false
       active.value = 3
     }).catch(error => {
+      submitted.value = false
       toast.add({severity: "error", summary: error, life: 3000});
+    return
     });
+    return;
   }
 }
 const selectCourse = (data) => {
@@ -880,7 +941,7 @@ const addModuleAndCourses = () => {
   formModule.value.moduleCourseRel[0].whatCourse = whatCourse.value[0]
   if (!isValidModule()) return;
   console.log(formModule.value)
-  formModule.value.syllabusId = stepID.value ? stepID.value.data : null
+  formModule.value.eduProgId = stepID.value ? stepID.value.data : null
   service.addModuleAndCourses(formModule.value).then(response => {
     toast.add({
       severity: "success",
@@ -888,7 +949,8 @@ const addModuleAndCourses = () => {
       life: 3000,
     });
     dialogModule.value = false
-    getModuleBySyllasbusId()
+    arrow.value = true
+    getModuleByEduProgId()
   }).catch(_ => {
   });
 }
