@@ -35,6 +35,7 @@
         <div>
           <!-- <Button v-for="(item, index) of data.result_files" :key="index" icon="pi pi-download"
             class="p-button-rounded p-button-success" @click="downloadFile(item)" /> -->
+            
           <ul style="padding-inline-start: 0;">
             <li v-for="(item, index) of data.result_files" :key="index" style="list-style: none;" class="mb-2"><span
                 @click="downloadFile(item)" > <i class="fa-solid fa-file-arrow-down download-link"

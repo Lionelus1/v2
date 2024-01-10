@@ -41,7 +41,7 @@
                            :plan-data="plan"></work-plan-event-add>
       <Button v-if="isPlanCreator && !isFinish" :label="$t('common.complete')" icon="pi pi-check" @click="finish"
               class="p-button-sm p-button-danger ml-2"/>
-      <work-plan-approve v-if="isPlanCreator && (plan.doc_info.docHistory.stateId === 1) && isFinish" :plan="plan" :events="data"
+      <work-plan-approve v-if="(plan.doc_info.docHistory.stateId === 1 || plan.doc_info.docHistory.stateId === 4) && isPlanCreator && isFinish" :plan="plan" :events="data"
                          @isSent="planSentToApprove"></work-plan-approve>
       <Button v-if="isFinish && !(plan.doc_info.docHistory.stateId === 1)" :label="$t('workPlan.viewPlan')" icon="pi pi-eye" @click="signView"
               class="p-button-sm p-button-outlined ml-2"/>
@@ -231,7 +231,7 @@
   </div>
 
   <Sidebar v-model:visible="showReportDoc" position="right" class="p-sidebar-lg" style="overflow-y: scroll">
-    <DocSignaturesInfo :docIdParam="plan.doc_id" :isInsideSidebar="true"></DocSignaturesInfo>
+    <DocSignaturesInfo :docIdParam="plan.doc_id" :isInsideSidebar="true" @sentToRevision="rejectPlan($event)"></DocSignaturesInfo>
   </Sidebar>
 
   <Sidebar v-model:visible="isShowPlanExecute" position="right" style="overflow-y: scroll; width: 50%;" v-if="isShowPlanExecute && selectedEvent"
@@ -829,7 +829,26 @@ export default {
           });
         }
       })
-    }
+    },
+    rejectPlan(comment) {
+      this.loading = true;
+      let data = {
+        comment: comment,
+        work_plan_id: parseInt(this.work_plan_id),
+        doc_id: this.plan.doc_id,
+        work_plan_name: this.plan.work_plan_name
+      };
+      this.planService.rejectPlan(data).then(res => {
+        if (res.data.is_success) {
+          this.loading = false;
+          this.getEventsTree(null)
+          window.location.reload();
+        }
+      }).catch(error => {
+        this.$toast.add({severity: "error", summary: error, life: 3000});
+        this.loading = false;
+      })
+    },
   },
   /*unmounted() {
     localStorage.removeItem("workPlan");
@@ -868,7 +887,7 @@ export default {
     },
     isOperPlan() {
       return this.plan && ((this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Oper) || this.plan.is_oper)
-    }
+    },
   }
 }
 </script>

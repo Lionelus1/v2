@@ -1,4 +1,6 @@
 <template>
+  <!-- {{ report.doc_info.docHistory.stateId}} -->
+  <!-- {{ plan.doc_info.docHistory.stateId }} -->
   <vue-element-loading :active="loading" is-full-screen color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)" />
   <div>
     <div class="col-12">
@@ -148,6 +150,7 @@ export default {
       isReportSentApproval: false,
       isCurrentUserApproved: false,
       isPlanReportApproved: false,
+      isPlanReportRevision: false,
       loading: false,
       planService: new WorkPlanService(),
 
@@ -169,11 +172,15 @@ export default {
     visibleSendToApprove() {
       return (this.loginedUser && this.respUsers.some(user => user.id === this.loginedUser.userID)) || (this.plan && this.plan.user.id === this.loginedUser.userID);
     },
+    
 
 
   },
   created() {
     this.getReport();
+    if (this.doc_info && this.doc_info.docHistory.stateId === 4){
+      this.isPlanReportRevision = true
+    }
   },
 
   methods: {
