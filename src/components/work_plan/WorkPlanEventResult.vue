@@ -54,9 +54,12 @@
           </div>
           <div class="grid mt-3">
             <!-- p-sm-12 md:col-12 lg:col-6 p-xl-6 -->
-            <div class="p-fluid" v-if="!isPlanCreator && (isPlanCreatorApproval || !isPlanCreator) &&
+            <div class="p-fluid" v-if="(!isPlanCreator && (isPlanCreatorApproval || !isPlanCreator) &&
               event.status.work_plan_event_status_id !== 5 &&
-              event.status.work_plan_event_status_id !== 2 && event.status.work_plan_event_status_id !== 6">
+              event.status.work_plan_event_status_id !== 2 && event.status.work_plan_event_status_id !== 6) || (isRespUser && isPlanCreator && (isPlanCreatorApproval || !isPlanCreator) &&
+              event.status.work_plan_event_status_id !== 5 &&
+              event.status.work_plan_event_status_id !== 2 && event.status.work_plan_event_status_id !== 6)">
+              
               <div class="field">
                 <label>{{ $t('workPlan.eventName') }}</label>
                 <InputText v-model="event.event_name" disabled />
@@ -185,10 +188,7 @@
                           <span @click="downloadFile(file)" style="cursor: pointer;">{{
                             file.file_name ? file.file_name : file.event_result_file
                           }}</span>
-                          <span class="ml-5" v-if="file.user_id && file.user_id === loginedUserId"><Button icon="pi pi-times"
-                              class="p-button-rounded p-button-text"
-                              v-if="event && (event.status.work_plan_event_status_id !== 5 && event.status.work_plan_event_status_id !== 2)"
-                              @click="deleteFileConfirm($event, file.id)" /></span>
+                         
                         </div>
                       </div>
                       <div class="p-fileupload-empty" v-if="files.length === 0">
@@ -425,6 +425,9 @@ export default {
     isSciencePlan() {
       return this.plan && this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Science
     },
+    isRespUser(){
+      return this.event && this.respUserExists(this.loginedUserId) && this.plan.plan_type_id === 3
+    }
   },
   mounted() {
     this.isAdmin = this.findRole(null, 'main_administrator')
@@ -438,6 +441,9 @@ export default {
     findRole: findRole,
     initWordCount(count) {
       this.inputWordCount = count
+    },
+    respUserExists(id){
+      return this.event.user.some(user => user.id === id)
     },
     getEvent() {
       this.planService.getEventById(this.event_id).then(res => {

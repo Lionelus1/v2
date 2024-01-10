@@ -147,6 +147,7 @@ export default {
       isReportSentApproval: false,
       isCurrentUserApproved: false,
       isPlanReportApproved: false,
+      isPlanReportRevision: false,
       loading: false,
       planService: new WorkPlanService(),
 
@@ -171,6 +172,9 @@ export default {
   },
   created() {
     this.getReport();
+    if (this.doc_info && this.doc_info.docHistory.stateId === 4){
+      this.isPlanReportRevision = true
+    }
   },
 
   methods: {
