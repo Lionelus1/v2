@@ -47,7 +47,7 @@
 
           <Column  header="Скан документа">
                   <template #body="slotProps">
-                      <Button v-if="slotProps.data.file_path !== null" icon="pi pi-download" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="showFile(slotProps.data.upload_path)"></Button>
+                      <Button v-if="slotProps.data.upload_path !== null && slotProps.data.upload_path != ''" icon="pi pi-download" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="showFile(slotProps.data.upload_path)"></Button>
                   </template>
               </Column>
 

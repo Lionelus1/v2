@@ -45,7 +45,7 @@
 
               <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
                 <label>{{ t('science.qualification.end') }}</label>
-                <PrimeCalendar class="mt-2" :class="{'p-invalid': payload.end_date}" :placeholder="$t('hr.id.startDate')" v-model="payload.end_date" dateFormat="dd.mm.yy"/>
+                <PrimeCalendar class="mt-2" :class="{'p-invalid': payload.end_date}" :placeholder="$t('common.endDate')" v-model="payload.end_date" dateFormat="dd.mm.yy"/>
                 <small class="p-error" v-if="validation.end_date">{{ $t("common.requiredField")}}</small>
               </div>
 

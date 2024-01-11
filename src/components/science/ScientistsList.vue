@@ -91,7 +91,7 @@
 </template>
   
 <script setup>
-    import {computed, onMounted, ref, onBeforeUnmount} from "vue";
+    import {computed, onMounted, ref, onUnmounted, defineEmits} from "vue";
     import {useI18n} from "vue-i18n";
     import {useToast} from "primevue/usetoast";
     import {useRouter} from "vue-router";
@@ -143,7 +143,7 @@
       loading.value = true;
       const userID = ref(null)
       const searchText = ref(null)
-      if (filter.value.user != null) {
+      if (filter.value.user != null && filter.value.user.length > 0) {
           userID.value = filter.value.user[0].userID
       }
 
@@ -172,7 +172,9 @@
 
 
     const toggleFilter=(event) => {
+      console.log('test-1')
       op.value.toggle(event);
+      console.log('asdasdasd')
     }
 
     const clear =()=> {
@@ -207,9 +209,6 @@
       getScientists()
     }
 
-    const itemLabel=(item)=> {
-      return item['name_'+locale.value]
-    }
 
     const getFullName = (data) => {
       let fullName = "";
@@ -229,17 +228,23 @@
       return fullName.trim();
     }
 
-    onBeforeUnmount(() => {
+    onUnmounted(() => {
+      console.log('test-2');
       emit('apply-flex', false);
 
-      localStorage.setItem('scientistsCurrentPage', JSON.stringify({first: first.value, page: lazyParams.value.page, rows: lazyParams.value.rows, isShowGrid: showGrid.value}))
-    
-    }) 
+      localStorage.setItem('scientistsCurrentPage', JSON.stringify({
+        first: first.value,
+        page: lazyParams.value.page,
+        rows: lazyParams.value.rows,
+        isShowGrid: showGrid.value
+      }));
+    });
+
 
     onMounted(() => {
         emit('apply-flex', true);
 
-        
+        console.log('test-3')
         let currentPage = localStorage.getItem('scientistsCurrentPage');
         if (currentPage) {
           currentPage = JSON.parse(currentPage);
@@ -257,6 +262,7 @@
         }
 
         getScientists()
+        console.log('test-4')
     })
 
     
