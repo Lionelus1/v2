@@ -1520,6 +1520,9 @@ export default {
         professionalDevelopment: 'Professional development',
         typeOfAward: 'Type of award',
         reward: 'Reward',
+        rewardKz: 'Name of the award in Kazakh',
+        rewardRu: 'Name of the award in Russian',
+        rewardEn: 'Name of the award in English',
         qualification: {
             trainingForm: 'Form of professional development',
             country:'Country',

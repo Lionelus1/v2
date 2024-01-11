@@ -1516,6 +1516,9 @@ export default {
         professionalDevelopment: 'Повышение квалификации',
         typeOfAward: 'Вид награды',
         reward: 'Награда',
+        rewardKz: 'Название награды на казахском языке',
+        rewardRu: 'Название награды на русском языке',
+        rewardEn: 'Название награды на английском языке',
         qualification: {
             trainingForm: 'Форма повышения квалификации',
             country:'Страна',

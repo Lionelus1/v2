@@ -12,9 +12,15 @@
       :paginator="true" :rows="10" :totalRecords="totalRecords" @page="onPageChange"> 
 
         <Column field="award_type" :header="$t('science.typeOfAward')">
+          <template #body="slotProps">
+            {{ t(slotProps.data.award_type['name_'+locale]) }}  
+          </template>
         </Column>
 
         <Column field="award_name" :header="$t('science.reward')">
+          <template #body="slotProps">
+            {{ t(slotProps.data['award_name_'+locale]) }}  
+          </template>
         </Column>
 
         <Column field="start_time" :header="$t('hr.id.startDate')">
@@ -25,7 +31,7 @@
 
         <Column  header="Скан документа">
             <template #body="slotProps">
-            <Button v-if="slotProps.data.upload_path !== null" icon="pi pi-download" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="showFile(slotProps.data.upload_path)"></Button>
+            <Button v-if="slotProps.data.upload_path !== null && slotProps.data.upload_path !== ''" icon="pi pi-download" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="showFile(slotProps.data.upload_path)"></Button>
             </template>
         </Column>
         
@@ -33,7 +39,7 @@
         <Column v-if="!readonly" header="Действия">
             <template #body="slotProps">
                 <Button icon="pi pi-pencil" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="award=slotProps.data;update()"></Button>
-                <Button icon="fa-solid fa-trash" class="p-button-danger mb-2 mr-2" @click="award=slotProps.data;deleteValue()"></Button>
+                <Button v-if="!slotProps.data.platonus_award_id" icon="fa-solid fa-trash" class="p-button-danger mb-2 mr-2" @click="award=slotProps.data;deleteValue()"></Button>
             </template>
         </Column>
       

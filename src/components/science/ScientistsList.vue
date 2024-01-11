@@ -146,7 +146,7 @@
       if (filter.value.user != null) {
           userID.value = filter.value.user[0].userID
       }
-      console.log(filter.value.searchText)
+
       if (filter.value.searchText != '') {
         searchText.value = filter.value.searchText
       }
@@ -165,8 +165,8 @@
             total.value = res.data.total
             loading.value = false
         }).catch(error => {
-            toast.add({severity: 'error', summary: t('common.error'), life: 3000})
             loading.value = false;
+            toast.add({severity: 'error', summary: t('common.error'), life: 3000})
         })
     }
 

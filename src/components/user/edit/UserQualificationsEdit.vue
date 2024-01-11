@@ -1,5 +1,5 @@
 <template>
-    <div id="carddiv" class="grid">
+    <div v-if="!loading" id="carddiv" class="grid">
       <div class="col-12">
         <h3>{{ t('science.professionalDevelopment') }}</h3>
         <div>
@@ -14,25 +14,25 @@
                 
               <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
                   <label>{{ t('science.qualification.trainingForm') }}</label>
-                  <InputText  :readonly="readonly"  class="mt-2"  type="text" :placeholder="t('science.qualification.trainingForm')" v-model="payload.training_form"></InputText>
+                  <Dropdown :options="trainingForm" v-model="payload.training_form" :option-label="'name_' + locale" :placeholder="t('science.qualification.trainingForm')" @change="selectTrainingForm" />                       
                   <small class="p-error" v-if="validation.training_form">{{ $t("common.requiredField") }}</small>
               </div>
 
               <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
                   <label>{{ t('science.qualification.country') }}</label>
-                  <InputText  :readonly="readonly"  class="mt-2"  type="text" :placeholder="t('science.qualification.trainingForm')" v-model="payload.country"></InputText>
+                  <InputText  :readonly="readonly"  class="mt-2"  type="text" :placeholder="t('science.qualification.country')" v-model="payload.country"></InputText>
                   <small class="p-error" v-if="validation.country">{{ $t("common.requiredField") }}</small>
               </div>
 
               <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
                   <label>{{ t('science.qualification.city') }}</label>
-                  <InputText  :readonly="readonly"  class="mt-2"  type="text" :placeholder="t('science.qualification.trainingForm')" v-model="payload.city"></InputText>
+                  <InputText  :readonly="readonly"  class="mt-2"  type="text" :placeholder="t('science.qualification.city')" v-model="payload.city"></InputText>
                   <small class="p-error" v-if="validation.city">{{ $t("common.requiredField")}}</small>
               </div>
 
               <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
                   <label>{{ t('science.qualification.durationAndScope') }}</label>
-                  <InputText  :readonly="readonly"  class="mt-2" :min="0"  type="number" :placeholder="t('science.qualification.trainingForm')" v-model="payload.hours"></InputText>
+                  <InputText  :readonly="readonly"  class="mt-2" :min="0"  type="number" :placeholder="t('science.qualification.durationAndScope')" v-model="payload.hours"></InputText>
                   <small class="p-error" v-if="validation.hours">{{ $t("common.requiredField")}}</small>
               </div>
 
@@ -51,13 +51,14 @@
 
               <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
                 <label>{{ t('science.qualification.fundingSource') }}</label>
-                <InputText  :readonly="readonly"  class="mt-2"  type="text" :placeholder="t('science.qualification.trainingForm')" v-model="payload.funding_source"></InputText>
+                <Dropdown :options="fundingSource" v-model="payload.funding_source" :option-label="'name_' + locale" :placeholder="t('science.qualification.fundingSource')" @change="selectFundingSource" />                       
                 <small class="p-error" v-if="validation.funding_source">{{ $t("common.requiredField")}}</small>
               </div>
               
               <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
                   <label>{{ t('science.qualification.typeSupportingDoc') }}</label>
-                  <InputText  :readonly="readonly"  class="mt-2"  type="text" :placeholder="t('science.qualification.trainingForm')" v-model="payload.proof_document_type"></InputText>
+                  <Dropdown :options="proofDocumentType" v-model="payload.proof_document_type" :option-label="'name_' + locale" :placeholder="t('science.qualification.typeSupportingDoc')" @change="selectProfDocumentType" />                       
+
                   <small class="p-error" v-if="validation.proof_document_type">{{ $t("common.requiredField")}}</small>
               </div>
 
@@ -94,6 +95,9 @@
   const scienceService = new ScienceService()
   const file = ref(null)
   const emitter = inject("emitter");
+  const fundingSource = ref([])
+  const trainingForm = ref([])
+  const proofDocumentType = ref([])
 
   const props = defineProps({
     modelValue: {
@@ -101,14 +105,14 @@
       default: () => ({
         id: null,
         userID:null,
-        training_form: null,
+        training_form: {},
         country: null,
         city: null,
         start_date: null,
         end_date: null,
         hours: 0,
-        funding_source: null,
-        proof_document_type: null,
+        funding_source: {},
+        proof_document_type: {},
         upload_path: null
       })
       }
@@ -193,9 +197,108 @@
     
   }
 
+  const getSourceOfFinance = () => {
+    loading.value = true;
+
+    scienceService.getSourceOfFinance().then(res => {
+      fundingSource.value = res.data.funding_source;
+
+        if (payload.value.funding_source) {
+            selectFundingSource(); 
+        }else {
+            payload.value.funding_source = {}
+        }
+
+        loading.value = false;
+      }).catch(err => {
+          loading.value = false;
+          toast.add({ severity: 'error', summary: t('common.error'), life: 3000 });
+      });
+  }
+
+  const getQualificationForms = () => {
+    loading.value = true;
+    scienceService.getQualificationForms().then(res => {
+      trainingForm.value = res.data.training_form;
+
+        if (payload.value.training_form) {
+          selectTrainingForm(); 
+        }else {
+            payload.value.training_form = {}
+        }
+
+        loading.value = false;
+      }).catch(err => {
+          loading.value = false;
+          toast.add({ severity: 'error', summary: t('common.error'), life: 3000 });
+      });
+  }
+
+  const getProfDocumentType = () => {
+    loading.value = true;
+    scienceService.getProfDocumentType().then(res => {
+      proofDocumentType.value = res.data.proof_document_type;
+
+        if (payload.value.proof_document_type) {
+          selectProfDocumentType(); 
+        }else {
+            payload.value.proof_document_type = {}
+        }
+
+        loading.value = false;
+      }).catch(err => {
+          loading.value = false;
+          toast.add({ severity: 'error', summary: t('common.error'), life: 3000 });
+      });
+  }
+
+  const selectFundingSource = () => {
+    if (payload.value.funding_source && fundingSource) {
+      const selectedFundingSource = fundingSource.value.find(type => type.id === payload.value.funding_source.id)
+
+      if (selectedFundingSource) {
+          payload.value.funding_source = selectedFundingSource;
+      } else {
+          console.error("Selected award type not found in awardTypes array");
+      }
+    }
+  }
+
+  const selectTrainingForm = () => {
+    if (payload.value.training_form) {
+      const selectedtrainingForm = trainingForm.value.find(type => type.id === payload.value.training_form.id)
+
+      if (selectedtrainingForm) {
+          payload.value.training_form = selectedtrainingForm;
+      } else {
+          console.error("Selected award type not found in awardTypes array");
+      }
+    }
+  } 
+
+  const selectProfDocumentType = () => {
+    if (payload.value.proof_document_type) {
+      const selectedproofDocumentType = proofDocumentType.value.find(type => type.id === payload.value.proof_document_type.id)
+
+      if (selectedproofDocumentType) {
+          payload.value.proof_document_type = selectedproofDocumentType;
+      } else {
+          console.error("Selected award type not found in awardTypes array");
+      }
+    }
+  }
+
   const onIconUpload = (event) => {
       console.log(event)
       file.value = event.files[0];
   };
+
+  onMounted(() => {
+    getQualificationForms()
+    getSourceOfFinance()
+    getProfDocumentType()
+
+  })
+
 
 </script>

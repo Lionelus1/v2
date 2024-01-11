@@ -1529,6 +1529,10 @@ export default {
         professionalDevelopment: 'Біліктілікті арттыру',
         typeOfAward: 'Награда түрі',
         reward: 'Награда',
+        rewardKz: 'Қазақ тіліндегі марапат атауы',
+        rewardRu: 'Орыс тіліндегі марапат атауы',
+        rewardEn: 'Ағылшын тіліндегі марапат атауы',
+        reqardLocale: '',
         qualification: {
             trainingForm: 'Біліктілікті арттыру нысаны',
             country:'Ел',
