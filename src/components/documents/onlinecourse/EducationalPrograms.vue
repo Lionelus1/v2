@@ -1,5 +1,15 @@
 <template>
-  <h3>{{ $t('educationalPrograms.educationalProgramConstructor') }} - {{ $t('educationalPrograms.bachelor') }}</h3>
+  <h3>{{ $t('educationalPrograms.educationalProgramConstructor') }} -
+    <template v-if="id === 1">
+      {{ $t('educationalPrograms.bachelor') }}
+    </template>
+    <template v-if="id === 2">
+      {{ $t('educationalPrograms.master') }}
+    </template>
+    <template v-if="id === 3">
+      {{ $t('educationalPrograms.doctoral') }}
+    </template>
+  </h3>
   <div>
     <div class="card">
       <Button @click="goToAdd()" icon="pi pi-plus-circle" :label="$t('common.add')"/>
