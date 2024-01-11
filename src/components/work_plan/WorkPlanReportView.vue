@@ -1,6 +1,4 @@
 <template>
-  <!-- {{ report.doc_info.docHistory.stateId}} -->
-  <!-- {{ plan.doc_info.docHistory.stateId }} -->
   <vue-element-loading :active="loading" is-full-screen color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)" />
   <div>
     <div class="col-12">
