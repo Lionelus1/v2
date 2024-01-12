@@ -9,7 +9,7 @@
         <Button v-if="visibleSendToApprove" type="button" icon="pi pi-send" class="p-button-success ml-2" :label="$t('common.toapprove')"
           @click="openModal"></Button>
         <!--        <Button type="button" icon="pi pi-send" class="p-button-success ml-2" :label="$t('common.toapprove')" @click="openModal"></Button>-->
-        <WorkPlanReportApprove v-if="showModal" :visible="showModal" :doc-id="report.doc_id" :approvalStages="approval_users" :report="report" :plan="plan"
+        <WorkPlanReportApprove v-if="showModal" :report-fd="this.fd" :visible="showModal" :doc-id="report.doc_id" :approvalStages="approval_users" :report="report" :plan="plan"
           @sent-to-approve="getReport" @closed="closeApproveModal" />
         <!--        <Button label="" icon="pi pi-download" @click="download"
                         class="p-button p-button-info ml-2"/>-->
@@ -48,6 +48,15 @@
                   </template>
                 </Timeline>-->
       </div>
+      <div class="card">
+      osy jerge reject history keledi
+      <div class="field">
+          <label>{{ $t('contracts.assigner') }}:</label>
+          <div>
+            <b></b>
+          </div>
+        </div>
+    </div>
       <div class="card" v-if="blobSource">
         <!--        <object src="#toolbar=0" style="width: 100%; height: 1000px" v-if="source" type="application/pdf"
                         :data="source"></object>-->
@@ -71,8 +80,8 @@
     </Dialog>
   </div>
 
-  <Sidebar v-model:visible="showReportDocInfo" position="right" class="p-sidebar-lg" style="overflow-y: scroll">
-    <DocSignaturesInfo :docIdParam="report.doc_id" :isInsideSidebar="true"></DocSignaturesInfo>
+  <Sidebar v-model:visible="showReportDocInfo" position="right" class="p-sidebar-lg" style="overflow-y: scroll" @hide="closeSideModal">
+    <DocSignaturesInfo :docIdParam="report.doc_id" :isInsideSidebar="true" @sentToRevision="rejectPlanReport($event)"></DocSignaturesInfo>
   </Sidebar>
 </template>
 
@@ -151,7 +160,7 @@ export default {
       isPlanReportRevision: false,
       loading: false,
       planService: new WorkPlanService(),
-
+      fd: new FormData()
     }
   },
   mounted() {
@@ -182,6 +191,10 @@ export default {
   },
 
   methods: {
+    closeSideModal() {
+      this.showReportDocInfo = false;
+      this.$emit('closed', true)
+    },
     getPlan() {
       this.planService.getPlanById(this.report.work_plan_id).then(res => {
         if (res.data) {
@@ -282,13 +295,16 @@ export default {
         department_id: this.report.department_id ? this.report.department_id : null,
         //eventUserId: this.report.respUserId ? Number(this.report.respUserId) : null
       };
+      console.log("HERE");
       this.planService.getWorkPlanData(data).then(res => {
         ///// FLATTEN ARRAY
         this.items = treeToList(res.data, 'children', this.plan.lang);
+        console.log(this.source);
         if (!this.source) {
           this.$nextTick(() => {
+            console.log("nexttick");
             this.getGeneratedPdf();
-            //this.initReportFile();
+            this.initReportFile();
             this.loading = false;
           });
         }
@@ -434,7 +450,7 @@ export default {
         }
       });
     },
-    rejectPlan() {
+    rejectPlanReport() {
       if (this.rejectComment) {
         this.reject.comment = this.rejectComment;
       }
@@ -489,10 +505,8 @@ export default {
         this.blobSource = URL.createObjectURL(blob);
         this.source = "data:application/pdf;base64," + res.data;
         this.document = res.data;
-        const fd = new FormData();
-        fd.append('file', blob);
-        fd.append('filename', this.pdfOptions.filename)
-        this.emitter.emit("reportFD", fd);
+        this.fd.append('file', blob);
+        this.fd.append('filename', this.pdfOptions.filename)
       }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");

@@ -842,8 +842,8 @@ export default {
         if (res.data.is_success) {
           this.loading = false;
           this.getEventsTree(null)
-          window.location.reload();
         }
+        
       }).catch(error => {
         this.$toast.add({severity: "error", summary: error, life: 3000});
         this.loading = false;
