@@ -165,6 +165,7 @@
                 <label for="course-code">{{ $t("educationalPrograms.typeEducationalProgram") }}</label>
                 <Dropdown :placeholder="$t('common.select')" v-model="formStep2.typeEducationalProgram"
                           :options="typesEduProgram" option-label="label" optionValue="id"/>
+                <small class="p-error" v-if="!formStep2.typeEducationalProgram && submitted">{{ $t("common.requiredField") }}</small>
               </div>
               <div class="field-checkbox mt-3">
                 <Checkbox v-model="checkedDouble" @change="onDoubleChange(1)" inputId="doubleDegree" :binary="true"/>
@@ -535,44 +536,15 @@ const stepID = ref()
 const formData = ref(
     {
       id: 0,
-      //nameKz: 'test kz',
-      nameRu: 'test ru',
-      nameEn: 'test en',
-      descriptionKz: 'description Kz',
-      descriptionRu: 'description Ru',
-      descriptionEn: 'description en',
-      eduProgGroupId: 5,
-      eduProgId: 1,
-      eduFieldsId: 1,
     })
 const formStep2 = ref(
     {
-      //targetKz: 'test',
-      targetRu: 'test ru',
-      targetEn: 'test en',
-      qualificationKz: 'test Kz',
-      qualificationRu: 'test Ru',
-      qualificationEn: 'test en',
-      trainingPeriodKz: 'test kz',
-      trainingPeriodRu: 'test ru',
-      trainingPeriodEn: 'test en',
-      degreeAwardedKz: 'test Kz',
-      degreeAwardedRu: 'test Ru',
-      degreeAwardedEn: 'test en',
-      directionOfTrainingId: 2,
-      typeEducationalProgram: 3,
       doubleDegree: checkedDouble.value ? 1 : 0,
       jointEducational: checkedJointEducational.value ? 1 : 0,
     }
 )
 const formStep3 = ref(
     {
-      //genProfCompetenciesKz: 'test kz',
-      genProfCompetenciesRu: 'test ru',
-      genProfCompetenciesEn: 'test en',
-      profCompetenciesKz: 'test kz',
-      profCompetenciesRu: 'test ru',
-      profCompetenciesEn: 'test en',
     }
 )
 const courseType = ref([])
@@ -581,23 +553,18 @@ const whatCourse = ref([])
 const selectedCourse = ref()
 const formModule = ref(
     {
-      //namekz: 'test kz',
       id: 0,
-      nameru: 'test ru',
-      nameen: 'test en',
-      code: 'test kz',
-      creditCount: '2',
       moduleCourseRel: [
         {
-          moduleId: 0,
-          courseId: 10,
-          semester: 2,
-          Lecture: 80,
-          practice: 85,
-          laboratory: 88,
-          prp: 87,
-          IndependentWork: 90,
-          formControl: "test форм",
+          moduleId: null,
+          courseId: null,
+          semester: null,
+          Lecture: null,
+          practice: null,
+          laboratory: null,
+          prp: null,
+          IndependentWork: null,
+          formControl: null,
         }
       ]
     }
@@ -916,7 +883,7 @@ const save = () => {
         summary: i18n.t("common.success"),
         life: 3000,
       });
-      formStep2.value = null
+      formStep3.value = null
       submitted.value = false
       active.value = 3
     }).catch(error => {
@@ -932,7 +899,6 @@ const selectCourse = (data) => {
   formModule.value.moduleCourseRel[0].codeCourse = parseInt(data.value.courseCode)
   formModule.value.moduleCourseRel[0].courseId = data.value.id
   formModule.value.moduleCourseRel[0].id = 0
-  console.log(data.value)
 }
 const addModuleAndCourses = () => {
   submitted.value = true
@@ -940,7 +906,6 @@ const addModuleAndCourses = () => {
   formModule.value.courseComponentType = courseComponentType.value[0]
   formModule.value.moduleCourseRel[0].whatCourse = whatCourse.value[0]
   if (!isValidModule()) return;
-  console.log(formModule.value)
   formModule.value.eduProgId = stepID.value ? stepID.value.data : null
   service.addModuleAndCourses(formModule.value).then(response => {
     toast.add({
@@ -948,6 +913,7 @@ const addModuleAndCourses = () => {
       summary: i18n.t("common.success"),
       life: 3000,
     });
+    formModule.value = null
     dialogModule.value = false
     arrow.value = true
     getModuleByEduProgId()
@@ -1058,12 +1024,6 @@ const isValidStep3 = () => {
 const isValidModule = () => {
   let errors = [];
   if (!formModule.value.namekz) {
-    errors.push(1);
-  }
-  if (!formModule.value.nameru) {
-    errors.push(1);
-  }
-  if (!formModule.value.nameen) {
     errors.push(1);
   }
   if (!formModule.value.code) {
