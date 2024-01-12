@@ -1,5 +1,4 @@
 <template>
-
     <div v-if="!loading" class="card">
       <div class="grid formgrid">
         <!-- ИМЯ -->
@@ -41,15 +40,13 @@
 
         <!-- Текущая должность -->
         <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-            <!-- <label>{{ t('contact.snameLatin') }}</label> -->
-            <label>Текущая должность</label>
-            <InputText class="mt-2 gray-background" placeholder="Текущая должность" :value="user && user.mainPosition && getPosition(user.mainPosition)" :readonly="true" @input="updateUserData"></InputText>
+            <label>{{ t('science.currentPosition') }}</label>
+            <InputText class="mt-2 gray-background" :placeholder="t('science.currentPosition')" :value="user && getPosition(user.mainPosition)" :readonly="true" @input="updateUserData"></InputText>
         </div>
 
         <!-- Ученая степень, ученое звание -->
-        <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-            <!-- <label>{{ t('contact.snameLatin') }}</label> -->
-            <label>Ученая степень, ученое звание</label>
+        <div v-if="user && user.academicDegree && user.academicTitle" class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+            <label>{{ t('science.academicDegAndAcademicTit')}}</label>
             <InputText class="mt-2 gray-background" :placeholder="t('science.academicDegAndAcademicTit')" :value="getCombinedDegreeAndTitle()" :readonly="true" @input="updateUserData"></InputText>
         </div>
 
@@ -174,15 +171,21 @@
 
   const getPosition = (position) => {
 
-  if (position) {
-    const propertyName = 'name' + locale.value;
-    const capitalizedPropertyName = capitalize(t(position[propertyName]))
-   
-
-    return capitalizedPropertyName
-  } else {
-    return '';
-  }
+    if (position) {
+      if (position.namekz) {
+        const propertyName = 'name' + locale.value;
+        const capitalizedPropertyName = capitalize(t(position[propertyName]))
+      
+  
+        return capitalizedPropertyName
+      } else if (position.name) {
+        return capitalize(position.name)
+      } else {
+        return ''
+      }
+    } else {
+      return '';
+    }
   }
 
   const capitalize = (str) => {
