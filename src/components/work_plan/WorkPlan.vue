@@ -5,7 +5,7 @@
       <WorkPlanAdd v-model="isAdded" />
     </div>
     <div class="card">
-      
+
       <DataTable :lazy="true" :rowsPerPageOptions="[5, 10, 20, 50]" :value="data" dataKey="id" :rowHover="true"
         v-model:filters="filters" filterDisplay="menu" :loading="loading" responsiveLayout="scroll" :paginator="true"
         :rows="10" :totalRecords="total" @page="onPage"
@@ -381,56 +381,7 @@ export default {
     color: #8A5340;
   }
 
-  &.status-1 {
-    background: #B3E5FC;
-    color: #23547B;
-  }
-  &.created {
-    background: #3588a8;
-    color: #fff;
-  }
-
-  &.inapproval {
-    background: #C8E6C9;
-    color: #256029;
-  }
-
-  &.approved {
-    background: #FFCDD2;
-    color: #C63737;
-  }
-
-  &.revision {
-    background: #FEEDAF;
-    color: #8A5340;
-  }
-
-  &.rejected {
-    background: #B3E5FC;
-    color: #23547B;
-  }
-  &.signing {
-    background: #2a6986;
-    color: #bfc9d1;
-  }
-  &.signed {
-    background: rgb(57, 134, 42);
-    color: #bfc9d1;
-  }
-  &.sent for re-approval {
-    background: rgb(134, 42, 119);
-    color: #bfc9d1;
-  }
-  &.updated for re-approval {
-    background: rgb(134, 42, 54);
-    color: #bfc9d1;
-  }
-  &.issued for re-approval {
-    background: rgb(42, 134, 88);
-    color: #bfc9d1;
-  }
-
-  &.oper {
+  &.operational-plan {
     background-color: #3B82F6;
     color: #ffffff;
     font-weight: 500;

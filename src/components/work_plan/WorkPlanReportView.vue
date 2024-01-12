@@ -609,4 +609,27 @@ export default {
 ::v-deep(.p-timeline-event-opposite) {
   flex: 0;
 }
+
+.customer-badge {
+
+  &.status-5 {
+    background: #ff3838;
+    color: #ffffff;
+  }
+
+  &.status-4 {
+    background: #C8E6C9;
+    color: #256029;
+  }
+
+  &.status-2 {
+    background: #FEEDAF;
+    color: #8A5340;
+  }
+
+  &.status-3 {
+    background: #FFCDD2;
+    color: #C63737;
+  }
+}
 </style>

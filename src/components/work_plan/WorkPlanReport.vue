@@ -237,37 +237,4 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.customer-badge {
-  border-radius: 2px;
-  padding: .25em .5rem;
-  text-transform: uppercase;
-  font-weight: 700;
-  font-size: 12px;
-  letter-spacing: .3px;
-
-  &.status-5 {
-    background: #ff3838;
-    color: #ffffff;
-  }
-
-  &.status-4 {
-    background: #C8E6C9;
-    color: #256029;
-  }
-
-  &.status-2 {
-    background: #FEEDAF;
-    color: #8A5340;
-  }
-
-  &.status-3 {
-    background: #FFCDD2;
-    color: #C63737;
-  }
-
-  &.status-1 {
-    background: #B3E5FC;
-    color: #23547B;
-  }
-}
 </style>

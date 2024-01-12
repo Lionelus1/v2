@@ -337,36 +337,10 @@ export default {
 
 <style lang="scss" scoped>
 .customer-badge {
-  border-radius: 2px;
-  padding: 0.25em 0.5rem;
-  text-transform: uppercase;
-  font-weight: 700;
-  font-size: 12px;
-  letter-spacing: 0.3px;
-
   &.status-8 {
     background: #b3e5fc;
     color: #23547b;
   }
 
-  &.status-9 {
-    background: #eccfff;
-    color: #694382;
-  }
-
-  &.status-10 {
-    background: #c8e6c9;
-    color: #256029;
-  }
-
-  &.status-11 {
-    background: #ffcdd2;
-    color: #c63737;
-  }
-
-  &.status-12 {
-    background: #ffd8b2;
-    color: #805b36;
-  }
 }
 </style>
