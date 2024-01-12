@@ -440,7 +440,7 @@
             <small class="p-error" v-if="(submitted && validationErrorsSetMeetingTime.meetingUrl)">{{
               $t('common.requiredField') }}</small>
           </div>
-          <div v-if="memberList && !regInfoDetail">
+          <div v-if="memberList && !regInfoDetail && isDissertationAdmin && selectedDoctoral.dissertation.state === 1">
             <b>{{ $t('dissertation.members') }}</b>
             <DataTable class="pt-2" v-if="memberList && !regInfoDetail" :loading="loading" :value="memberList"
               showGridlines responsiveLayout="scroll">
@@ -473,7 +473,7 @@
         </div>
 
         <div class="pt-2"
-          v-if="regInfo && (selectedDoctoral.dissertation.state == dissertationState.ReadyToRegister || selectedDoctoral.dissertation.state == dissertationState.RegistrationFinished)">
+          v-if="regInfo && (selectedDoctoral.dissertation.state == dissertationState.ReadyToRegister)">
           <a href="javascript:void(0)" @click="startNewRegistration">{{ $t('dissertation.addMemeberToDisCouncil') }}</a>
           <div class="pt-2"></div>
           <ProgressBar v-if="progress < 100" :value="progress"></ProgressBar>
