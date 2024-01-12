@@ -49,7 +49,6 @@
                 </Timeline>-->
       </div>
       <div class="card">
-      osy jerge reject history keledi
       <div class="field">
           <label>{{ $t('contracts.assigner') }}:</label>
           <div>
