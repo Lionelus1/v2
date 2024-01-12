@@ -1614,5 +1614,7 @@ export default {
             participationInGroup: "Участие в коллективе авторов",
         }
     },
-    supportingDocument: "Подтверждающий документ"
+    supportingDocument: "Подтверждающий документ",
+    documentScan: 'Сканирование документа'
+
 }

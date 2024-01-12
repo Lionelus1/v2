@@ -45,13 +45,13 @@
             </template>
           </Column>
 
-          <Column  header="Скан документа">
+          <Column  :header="t('documentScan')">
                   <template #body="slotProps">
                       <Button v-if="slotProps.data.upload_path !== null && slotProps.data.upload_path != ''" icon="pi pi-download" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="showFile(slotProps.data.upload_path)"></Button>
                   </template>
               </Column>
 
-          <Column v-if="!readonly" header="Действия">
+          <Column v-if="!readonly" :header="t('dissertation.dissReportActions')">
               <template #body="slotProps">
                   <Button icon="pi pi-pencil" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="qualification=slotProps.data;update()"></Button>
                   <Button v-if="!slotProps.data.platonus_qualification_id" icon="fa-solid fa-trash" class="p-button-danger mb-2 mr-2" @click="qualification=slotProps.data;deleteValue()"></Button>

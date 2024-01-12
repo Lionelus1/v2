@@ -1618,5 +1618,6 @@ export default {
             participationInGroup: "Participation in the team of authors",
         }
     },
-    supportingDocument: "Supporting document"
+    supportingDocument: "Supporting document",
+    documentScan: 'Document Scan'
 }

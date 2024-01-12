@@ -1628,5 +1628,6 @@ export default {
             participationInGroup: "Авторлар ұжымына қатысу",
         }
     },
-    supportingDocument: "Растайтын құжат"
+    supportingDocument: "Растайтын құжат",
+    documentScan: 'Құжатты сканерлеу'
 }
