@@ -1547,6 +1547,10 @@ export default {
         professionalDevelopment: 'Біліктілікті арттыру',
         typeOfAward: 'Награда түрі',
         reward: 'Награда',
+        rewardKz: 'Қазақ тіліндегі марапат атауы',
+        rewardRu: 'Орыс тіліндегі марапат атауы',
+        rewardEn: 'Ағылшын тіліндегі марапат атауы',
+        reqardLocale: '',
         qualification: {
             trainingForm: 'Біліктілікті арттыру нысаны',
             country:'Ел',
@@ -1558,7 +1562,9 @@ export default {
             typeSupportingDoc: 'Растайтын құжаттың түрі',
         },
         scientistsProfile: 'Ғалымдардың профилі',
-        profileLink: 'Профильге сілтеме'
+        profileLink: 'Профильге сілтеме',
+        academicDegAndAcademicTit: 'Ғылыми дәрежесі және ғылыми атағы',
+        currentPosition:'Ағымдағы лауазым'
     },
     fieldEducation: {
         title: 'Білім беру саласы',
@@ -1748,5 +1754,11 @@ export default {
             participationInGroup: "Авторлар ұжымына қатысу",
         }
     },
+<<<<<<< HEAD
     supportingDocument: "Растайтын құжат"
 }
+=======
+    supportingDocument: "Растайтын құжат",
+    documentScan: 'Құжатты сканерлеу'
+}
+>>>>>>> origin/fix_personpage

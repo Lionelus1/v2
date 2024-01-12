@@ -1,5 +1,4 @@
 <template>
-
     <div v-if="!loading" class="card">
       <div class="grid formgrid">
         <!-- ИМЯ -->
@@ -39,6 +38,18 @@
             <InputText class="mt-2" :placeholder="t('contact.snameLatin')" v-model="user.lastnameEn" :readonly="props.readonly" @input="updateUserData"></InputText>
         </div>
 
+        <!-- Текущая должность -->
+        <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+            <label>{{ t('science.currentPosition') }}</label>
+            <InputText class="mt-2 gray-background" :placeholder="t('science.currentPosition')" :value="user && getPosition(user.mainPosition)" :readonly="true" @input="updateUserData"></InputText>
+        </div>
+
+        <!-- Ученая степень, ученое звание -->
+        <div v-if="(user && user.academicDegree || user.academicTitle) || customType == 'scientists'" class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+            <label>{{ t('science.academicDegAndAcademicTit')}}</label>
+            <InputText class="mt-2 gray-background" :placeholder="t('science.academicDegAndAcademicTit')" :value="getCombinedDegreeAndTitle()" :readonly="true" @input="updateUserData"></InputText>
+        </div>
+
         <!-- ДАТА РОЖДЕНИЯ -->
         <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ t('contact.birthday') }}<span class="p-error" v-if="!readonly">*</span></label>
@@ -66,12 +77,12 @@
 </template>
 
 <script setup>
-  import { useI18n } from "vue-i18n";
+  import {useI18n} from "vue-i18n";
   import { useToast } from "primevue/usetoast";
   import { inject, ref, onMounted } from "vue";
   import {UserService} from "@/service/user.service"
 
-  const { t } = useI18n()
+  const {t, locale} = useI18n()
   const toast = useToast()
   const user = ref({})
   const emitPersonalInformationUpdate = defineEmits(["personal-information-updated"]);
@@ -158,7 +169,52 @@
     }
   }
 
+  const getPosition = (position) => {
+
+    if (position) {
+      if (position.namekz) {
+        const propertyName = 'name' + locale.value;
+        const capitalizedPropertyName = capitalize(t(position[propertyName]))
+      
+  
+        return capitalizedPropertyName
+      } else if (position.name) {
+        return capitalize(position.name)
+      } else {
+        return ''
+      }
+    } else {
+      return '';
+    }
+  }
+
+  const capitalize = (str) => {
+    if (typeof str !== 'string') return '';
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
+
+  const getCombinedDegreeAndTitle = () => {
+        const degree = (user.value && user.value.academicDegree) ? capitalize(t(user.value.academicDegree['name'+locale.value])) : '';
+        const title = (user.value && user.value.academicTitle) ? capitalize(t(user.value.academicTitle['name'+locale.value])) : '';
+
+        if (degree && title) {
+        return `${degree}, ${title}`.trim();
+        } else if (degree) {
+            return degree.trim();
+        } else if (title) {
+            return title.trim();
+        } else {
+            return ''; 
+        }
+
+    }
+
+
   onMounted(() => {
     getUserAccount()
   })
 </script>
+
+<style scoped>
+
+</style>
