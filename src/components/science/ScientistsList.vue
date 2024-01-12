@@ -1,17 +1,15 @@
 <template>
-  <!-- <div v-if="loading" class="loading-indicator">
-    Loading...
-  </div> -->
     <div class="col-12">
       <TitleBlock :title="$t('science.scientists')" />
-      <BlockUI :blocked="loading" :fullScreen="true">
-        <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
-      </BlockUI>
+      <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em">
+        <BlockUI  :blocked="loading" :fullScreen="true">
+        </BlockUI>
+      </ProgressBar>
       <hr>
       <div class="flex items-center justify-end mb-2">
         <a class="ml-auto" id="profile-link" href="#/cabinet">Мой профиль</a>
       </div>
-  
+
       <div class="flex items-center justify-end">
         <Button
           class="align-items-center mr-1 ml-auto"
@@ -31,7 +29,6 @@
         </Tooltip>
 
       </div>
-
       <!-- <div class="surface-card p-4 shadow-2 border-round"> -->
         <DataView v-if="showGrid" class="xl:ml-10 xl:mr-10" :loading="loading" :lazy="true" :value="list" :layout="layout" :paginator="true" 
         :rows="lazyParams.rows" @page="onPage($event)" :totalRecords="total" :first="first" scrollable scrollHeight="flex"
@@ -56,11 +53,10 @@
           <div v-if="showList">
             <Column :header="$t('common.fullName')">
               <template #body="body">
-                <router-link :to="'/science/scientists/' + body.data.userID">
-                  {{ getFullName(body.data) }}
-                </router-link>
+                  <span @click="selectScientist(body.data)" class="blu-link">{{ getFullName(body.data) }}</span>
               </template>
             </Column>
+
           </div>
         </DataTable>
       </TabPanel>  
@@ -91,10 +87,10 @@
 </template>
   
 <script setup>
-    import {computed, onMounted, ref, onUnmounted, defineEmits} from "vue";
+    import {computed, onMounted, ref} from "vue";
     import {useI18n} from "vue-i18n";
     import {useToast} from "primevue/usetoast";
-    import {useRouter} from "vue-router";
+    import {useRouter, useRoute} from "vue-router";
     import {useConfirm} from "primevue/useconfirm";
     import {ScienceService} from "@/service/science.service";
     import OverlayPanel from 'primevue/overlaypanel';
@@ -104,6 +100,7 @@
     const {t, locale} = useI18n()
     const toast = useToast()
     const router = useRouter()
+    const route = useRoute()
     const confirm = useConfirm()
     
     const lazyParams = ref({
@@ -167,14 +164,24 @@
         }).catch(error => {
             loading.value = false;
             toast.add({severity: 'error', summary: t('common.error'), life: 3000})
+        }).finally(() => {
+          const query = {
+            first: first.value,
+            page: lazyParams.value.page,
+            rows: lazyParams.value.rows,
+            isShowGrid: showGrid.value
+          };
+
+
+          router.push({
+            query: query
+          });
         })
     }
 
 
     const toggleFilter=(event) => {
-      console.log('test-1')
       op.value.toggle(event);
-      console.log('asdasdasd')
     }
 
     const clear =()=> {
@@ -228,43 +235,43 @@
       return fullName.trim();
     }
 
-    onUnmounted(() => {
-      console.log('test-2');
-      emit('apply-flex', false);
-
-      localStorage.setItem('scientistsCurrentPage', JSON.stringify({
-        first: first.value,
-        page: lazyParams.value.page,
-        rows: lazyParams.value.rows,
-        isShowGrid: showGrid.value
-      }));
-    });
 
 
     onMounted(() => {
-        emit('apply-flex', true);
-
-        console.log('test-3')
-        let currentPage = localStorage.getItem('scientistsCurrentPage');
-        if (currentPage) {
-          currentPage = JSON.parse(currentPage);
-        
-          first.value = currentPage.first;
-          lazyParams.value.page = currentPage.page;
-          lazyParams.value.rows = currentPage.rows;
-          if (currentPage.isShowGrid) {
-            showGrid.value = true
+      
+      const currentPage = route.query
+        if (route.query) {
+          first.value = currentPage.first ? parseInt(currentPage.first) : first.value;          
+          lazyParams.value.page = currentPage.page ? parseInt(currentPage.page) : lazyParams.value.page;        
+          lazyParams.value.rows = currentPage.rows ? parseInt(currentPage.rows) : lazyParams.value.rows;
+          if (currentPage.isShowGrid === 'false') {
+            showGrid.value = false;
+            showList.value = true;
           } else {
-            showList.value = true
+            showGrid.value = true;
+            showList.value = false;
           }
-        } else {
-          showGrid.value = true
-        }
 
-        getScientists()
-        console.log('test-4')
+
+      }
+
+      applyFilters();
     })
 
+    const applyFilters = () => {
+      const query = {
+        first: first.value,
+        page: lazyParams.value.page,
+        rows: lazyParams.value.rows,
+        isShowGrid: showGrid.value.toString(),
+      };
+
+      router.push({
+        query: query,
+      });
+
+      getScientists();
+    };
     
 
 </script>
@@ -295,4 +302,10 @@
   :deep(.p-dataview .p-dataview-content){
     background: transparent;
   }
+
+  .blue-link {
+      color: rgb(0, 13, 255);
+      text-decoration: underline;
+      cursor: pointer;
+    }
 </style>

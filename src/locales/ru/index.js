@@ -1530,7 +1530,9 @@ export default {
             typeSupportingDoc: 'Вид подтверждающего документа',
         },
         scientistsProfile: 'Профиль ученых',
-        profileLink: 'Ссылка на профиль'
+        profileLink: 'Ссылка на профиль',
+        academicDegAndAcademicTit: 'Ученая степень и ученое звание',
+        currentPosition:'Текущая должность'
     },
     personalData: 'Персональные сведения',
     yearPeriod:'Период годов',

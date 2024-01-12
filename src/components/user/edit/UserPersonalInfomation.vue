@@ -50,7 +50,7 @@
         <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
             <!-- <label>{{ t('contact.snameLatin') }}</label> -->
             <label>Ученая степень, ученое звание</label>
-            <InputText class="mt-2 gray-background" placeholder="Ученая степень, ученое звание"  :readonly="true" @input="updateUserData"></InputText>
+            <InputText class="mt-2 gray-background" :placeholder="t('science.academicDegAndAcademicTit')" :value="getCombinedDegreeAndTitle()" :readonly="true" @input="updateUserData"></InputText>
         </div>
 
         <!-- ДАТА РОЖДЕНИЯ -->
@@ -189,6 +189,22 @@
     if (typeof str !== 'string') return '';
     return str.charAt(0).toUpperCase() + str.slice(1);
   };
+
+  const getCombinedDegreeAndTitle = () => {
+        const degree = (user.value && user.value.academicDegree) ? capitalize(t(user.value.academicDegree['name'+locale.value])) : '';
+        const title = (user.value && user.value.academicTitle) ? capitalize(t(user.value.academicTitle['name'+locale.value])) : '';
+
+        if (degree && title) {
+        return `${degree}, ${title}`.trim();
+        } else if (degree) {
+            return degree.trim();
+        } else if (title) {
+            return title.trim();
+        } else {
+            return ''; 
+        }
+
+    }
 
 
   onMounted(() => {

@@ -1544,7 +1544,9 @@ export default {
             typeSupportingDoc: 'Растайтын құжаттың түрі',
         },
         scientistsProfile: 'Ғалымдардың профилі',
-        profileLink: 'Профильге сілтеме'
+        profileLink: 'Профильге сілтеме',
+        academicDegAndAcademicTit: 'Ғылыми дәрежесі және ғылыми атағы',
+        currentPosition:'Ағымдағы лауазым'
     },
     personalData: 'Жеке ақпарат',
     yearPeriod:'Период годов',

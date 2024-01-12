@@ -1534,7 +1534,9 @@ export default {
             typeSupportingDoc: 'Type of supporting document',
         },
         scientistsProfile: 'Profile Scientists',
-        profileLink: 'Profile link'
+        profileLink: 'Profile link',
+        academicDegAndAcademicTit: 'Academic degree and academic title',
+        currentPosition:'Current position'
     },
     personalData: 'Personal information',
     yearPeriod:'Period of years',
