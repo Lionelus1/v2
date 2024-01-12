@@ -45,7 +45,7 @@
         </div>
 
         <!-- Ученая степень, ученое звание -->
-        <div v-if="user && user.academicDegree && user.academicTitle" class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+        <div v-if="(user && user.academicDegree || user.academicTitle) || customType == 'scientists'" class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ t('science.academicDegAndAcademicTit')}}</label>
             <InputText class="mt-2 gray-background" :placeholder="t('science.academicDegAndAcademicTit')" :value="getCombinedDegreeAndTitle()" :readonly="true" @input="updateUserData"></InputText>
         </div>
