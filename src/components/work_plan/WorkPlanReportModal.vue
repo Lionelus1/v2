@@ -1,5 +1,5 @@
 <template>
-  <Button v-if="showCreateReportButton" type="button" icon="pi pi-document" class="p-button p-button-outlined ml-2" :label="$t('workPlan.createReport')"
+  <Button type="button" icon="pi pi-document" class="p-button p-button-outlined ml-2" :label="$t('workPlan.createReport')"
     @click="openModal"></Button>
 
   <Dialog :header="$t('workPlan.reports')" v-model:visible="selectQuarterModal" :style="{ width: '450px' }" class="p-fluid">
@@ -47,9 +47,8 @@ export default {
   name: "WorkPlanReportModal",
   props: ['planId', 'plan'],
   data() {
-    const loginedUser = JSON.parse(localStorage.getItem("loginedUser"));
     return {
-      loginedUser: loginedUser,
+      loginedUser: JSON.parse(localStorage.getItem("loginedUser")),
       selectQuarterModal: false,
       quarter: null,
       type: null,
@@ -84,7 +83,7 @@ export default {
         }
       ],
       isPdf: false,
-      selectedDepartment: loginedUser ? loginedUser.mainPosition.department.id : null,
+      selectedDepartment: !this.isPlanCreator && this.loginedUser ? this.loginedUser.mainPosition.department.id : null,
       selectedHalfYear: null,
       selectedRespUser: null,
       halfYearTypes: [
@@ -122,8 +121,11 @@ export default {
     },
     showCreateReportButton() {
       //return this.loginedUser && this.respUsers.some(user => user.id === this.loginedUser.userID) || (this.plan.user.id === this.loginedUser.userID);
-      return (this.plan.user.id === this.loginedUser.userID) || this.getResposiveUser;
+      return (this.plan && this.plan.user.id === this.loginedUser.userID) || this.getResposiveUser;
     },
+    isPlanCreator() {
+      return this.plan && this.plan.user && this.plan.user.id === this.loginedUser.userID
+    }
   },
   created() {
     this.respUsers = this.respUsers || [];
@@ -219,6 +221,8 @@ export default {
     },
 
     openModal() {
+      this.loginedUser = JSON.parse(localStorage.getItem("loginedUser"))
+      this.selectedDepartment = !this.isPlanCreator ? this.loginedUser.mainPosition.department.id : null,
       this.selectQuarterModal = true;
     },
     closeModal() {

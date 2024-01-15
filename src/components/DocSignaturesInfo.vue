@@ -272,10 +272,8 @@ export default {
 
 
           if (this.signatures) {
+            this.hideDocSign = !this.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));
             this.hideDocRevision = !this.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));
-            // console.log(this.hideDocRevision);
-            // this.hideDocRevision = !this.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));
-            // console.log("AFTER", this.hideDocRevision);
 
             let usersign = this.signatures.filter(x => x.userId === this.loginedUserId &&
               (!x.signature || x.signature === '') && (x.signRight && x.signRight !== ''))
