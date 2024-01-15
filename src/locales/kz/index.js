@@ -1754,11 +1754,6 @@ export default {
             participationInGroup: "Авторлар ұжымына қатысу",
         }
     },
-<<<<<<< HEAD
-    supportingDocument: "Растайтын құжат"
-}
-=======
     supportingDocument: "Растайтын құжат",
     documentScan: 'Құжатты сканерлеу'
 }
->>>>>>> origin/fix_personpage
