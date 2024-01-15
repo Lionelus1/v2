@@ -1,17 +1,15 @@
 <template>
-  <!-- <div v-if="loading" class="loading-indicator">
-    Loading...
-  </div> -->
     <div class="col-12">
       <TitleBlock :title="$t('science.scientists')" />
-      <BlockUI :blocked="loading" :fullScreen="true">
-        <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
-      </BlockUI>
+      <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em">
+        <BlockUI  :blocked="loading" :fullScreen="true">
+        </BlockUI>
+      </ProgressBar>
       <hr>
       <div class="flex items-center justify-end mb-2">
         <a class="ml-auto" id="profile-link" href="#/cabinet">Мой профиль</a>
       </div>
-  
+
       <div class="flex items-center justify-end">
         <Button
           class="align-items-center mr-1 ml-auto"
@@ -31,9 +29,10 @@
         </Tooltip>
 
       </div>
-
       <!-- <div class="surface-card p-4 shadow-2 border-round"> -->
-        <DataView v-if="showGrid" class="xl:ml-10 xl:mr-10" :loading="loading" :lazy="true" :value="list" :layout="layout" :paginator="true" :rows="12" @page="onPage($event)" :totalRecords="total">      
+        <DataView v-if="showGrid" class="xl:ml-10 xl:mr-10" :loading="loading" :lazy="true" :value="list" :layout="layout" :paginator="true" 
+        :rows="lazyParams.rows" @page="onPage($event)" :totalRecords="total" :first="first" scrollable scrollHeight="flex"
+        selectionMode="single" :rowHover="true" stripedRows>      
             <template #grid="slotProps" v-if="showGrid">
                 <div class="col-12 sm:col-6 md:col-4 lg:col-3 p-2">
                     <div @click="selectScientist(slotProps.data)" class="card shadow-1 m-0" v-ripple style="text-align: center;">
@@ -48,15 +47,16 @@
       <!-- </div> -->
 
       <TabPanel v-if="showList">
-        <DataTable :lazy="true" :value="list" :layout="layout" :paginator="true" :rows="12" @page="onPage($event)" :totalRecords="total">
+        <DataTable :lazy="true" class="xl:ml-10 xl:mr-10" :loading="loading" :value="list" :layout="layout" :paginator="true" 
+        :rows="lazyParams.rows" @page="onPage($event)" :totalRecords="total" :first="first" scrollable scrollHeight="flex"
+        selectionMode="single" :rowHover="true" stripedRows>
           <div v-if="showList">
             <Column :header="$t('common.fullName')">
               <template #body="body">
-                <router-link :to="'/science/scientists/' + body.data.userID">
-                  {{ getFullName(body.data) }}
-                </router-link>
+                  <span @click="selectScientist(body.data)" class="blu-link">{{ getFullName(body.data) }}</span>
               </template>
             </Column>
+
           </div>
         </DataTable>
       </TabPanel>  
@@ -90,7 +90,7 @@
     import {computed, onMounted, ref} from "vue";
     import {useI18n} from "vue-i18n";
     import {useToast} from "primevue/usetoast";
-    import {useRouter} from "vue-router";
+    import {useRouter, useRoute} from "vue-router";
     import {useConfirm} from "primevue/useconfirm";
     import {ScienceService} from "@/service/science.service";
     import OverlayPanel from 'primevue/overlaypanel';
@@ -100,6 +100,7 @@
     const {t, locale} = useI18n()
     const toast = useToast()
     const router = useRouter()
+    const route = useRoute()
     const confirm = useConfirm()
     
     const lazyParams = ref({
@@ -109,6 +110,7 @@
     const list = ref([])
     const loading = ref(false)
     const scienceService = new ScienceService()
+    const emit = defineEmits(['toggle'])
 
     const filter= ref({
         visible: false,
@@ -125,6 +127,7 @@
     const showGrid = ref(false)
     const showList= ref(false)
     const areaOfInterests = ref([])
+    const first =  ref(0)
 
     const requestAreaOfInterest = ref({
         page: 0,
@@ -137,10 +140,10 @@
       loading.value = true;
       const userID = ref(null)
       const searchText = ref(null)
-      if (filter.value.user != null) {
+      if (filter.value.user != null && filter.value.user.length > 0) {
           userID.value = filter.value.user[0].userID
       }
-      console.log(filter.value.searchText)
+
       if (filter.value.searchText != '') {
         searchText.value = filter.value.searchText
       }
@@ -159,24 +162,25 @@
             total.value = res.data.total
             loading.value = false
         }).catch(error => {
-            toast.add({severity: 'error', summary: t('common.error'), life: 3000})
             loading.value = false;
+            toast.add({severity: 'error', summary: t('common.error'), life: 3000})
+        }).finally(() => {
+          const query = {
+            first: first.value,
+            page: lazyParams.value.page,
+            rows: lazyParams.value.rows,
+            isShowGrid: showGrid.value
+          };
+
+
+          router.push({
+            query: query
+          });
         })
     }
 
-    const getScienceInterests = () => {
-      loading.value = true;
-      scienceService.getScienceInterests(requestAreaOfInterest.value).then(res => {
-        areaOfInterests.value = res.data.interests
-        loading.value = false
-      }).catch(error => {
-        toast.add({severity: 'error', summary: t('common.error'), life: 3000})
-        loading.value = false;
-      })
-    }
 
     const toggleFilter=(event) => {
-      getScienceInterests()
       op.value.toggle(event);
     }
 
@@ -194,6 +198,8 @@
 
     const onPage = (event)=> {
       lazyParams.value.page = event.page
+      lazyParams.value.rows = event.rows
+      first.value = event.first
       getScientists();
     }
 
@@ -210,19 +216,6 @@
       getScientists()
     }
 
-    const handleFilter = (event) => {
-      if (event.value && event.value.length > 2) {
-        requestAreaOfInterest.value.searchText = event.value
-        getScienceInterests()
-      } else if (requestAreaOfInterest.value.searchText.length > 3) {
-        requestAreaOfInterest.value.searchText = null
-        getScienceInterests()
-      }
-    }
-
-    const itemLabel=(item)=> {
-      return item['name_'+locale.value]
-    }
 
     const getFullName = (data) => {
       let fullName = "";
@@ -243,11 +236,42 @@
     }
 
 
+
     onMounted(() => {
-        showGrid.value = true
-        getScientists()
+      
+      const currentPage = route.query
+        if (route.query) {
+          first.value = currentPage.first ? parseInt(currentPage.first) : first.value;          
+          lazyParams.value.page = currentPage.page ? parseInt(currentPage.page) : lazyParams.value.page;        
+          lazyParams.value.rows = currentPage.rows ? parseInt(currentPage.rows) : lazyParams.value.rows;
+          if (currentPage.isShowGrid === 'false') {
+            showGrid.value = false;
+            showList.value = true;
+          } else {
+            showGrid.value = true;
+            showList.value = false;
+          }
+
+
+      }
+
+      applyFilters();
     })
 
+    const applyFilters = () => {
+      const query = {
+        first: first.value,
+        page: lazyParams.value.page,
+        rows: lazyParams.value.rows,
+        isShowGrid: showGrid.value.toString(),
+      };
+
+      router.push({
+        query: query,
+      });
+
+      getScientists();
+    };
     
 
 </script>
@@ -278,4 +302,10 @@
   :deep(.p-dataview .p-dataview-content){
     background: transparent;
   }
+
+  .blue-link {
+      color: rgb(0, 13, 255);
+      text-decoration: underline;
+      cursor: pointer;
+    }
 </style>

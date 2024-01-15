@@ -13,25 +13,48 @@
           <DataTable class="justify-content-between" selectionMode="single" v-model="qualification"
                   :lazy="true" :value="qualifications" :loading="loading" v-model:selection="qualification"
                   :paginator="true" :rows="10" :totalRecords="totalRecords" @page="onPageChange">
-          <Column field="training_form" :header="$t('science.qualification.trainingForm')"></Column>
+          <Column field="training_form" :header="$t('science.qualification.trainingForm')">
+            <template #body="slotProps">
+                {{ t(slotProps.data.training_form['name_'+locale]) }}
+            </template>
+          </Column>
           <Column field="country" :header="$t('science.qualification.country')"></Column>
           <Column field="city" :header="$t('science.qualification.city')"></Column>
           <Column field="hours" :header="$t('science.qualification.durationAndScope')"></Column>
-          <Column  field="start_date" :header="$t('science.qualification.start')"></Column>
-          <Column field="end_date" :header="$t('science.qualification.end')"></Column>
-          <Column field="funding_source" :header="$t('science.qualification.fundingSource')"></Column>
-          <Column field="proof_document_type" :header="$t('science.qualification.typeSupportingDoc')"></Column>
+          
+          <Column field="start_date" :header="$t('science.qualification.start')">
+              <template #body="slotProps">
+                  {{ formatDate(slotProps.data.start_date) }}
+              </template>
+          </Column>
 
-          <Column  header="Скан документа">
+          <Column field="end_date" :header="$t('science.qualification.end')">
+              <template #body="slotProps">
+                  {{ formatDate(slotProps.data.end_date) }}
+              </template>
+          </Column>
+
+          <Column field="funding_source" :header="$t('science.qualification.fundingSource')">
+              <template #body="slotProps">
+              {{ t(slotProps.data.funding_source['name_'+locale]) }}  
+            </template>
+          </Column>
+          <Column field="proof_document_type" :header="$t('science.qualification.typeSupportingDoc')">
+            <template #body="slotProps">
+              {{ t(slotProps.data.proof_document_type['name_'+locale]) }}  
+            </template>
+          </Column>
+
+          <Column  :header="t('documentScan')">
                   <template #body="slotProps">
-                      <Button v-if="slotProps.data.file_path !== null" icon="pi pi-download" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="showFile(slotProps.data.upload_path)"></Button>
+                      <Button v-if="slotProps.data.upload_path !== null && slotProps.data.upload_path != ''" icon="pi pi-download" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="showFile(slotProps.data.upload_path)"></Button>
                   </template>
               </Column>
 
-          <Column v-if="!readonly" header="Действия">
+          <Column v-if="!readonly" :header="t('dissertation.dissReportActions')">
               <template #body="slotProps">
                   <Button icon="pi pi-pencil" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="qualification=slotProps.data;update()"></Button>
-                  <Button icon="fa-solid fa-trash" class="p-button-danger mb-2 mr-2" @click="qualification=slotProps.data;deleteValue()"></Button>
+                  <Button v-if="!slotProps.data.platonus_qualification_id" icon="fa-solid fa-trash" class="p-button-danger mb-2 mr-2" @click="qualification=slotProps.data;deleteValue()"></Button>
               </template>
           </Column>
           </DataTable>
@@ -97,14 +120,14 @@
   });
 
   const menu= ref([
-        {
-          label: t("common.add"),
-          icon: "pi pi-fw pi-plus",
-          disabled: () => props.readonly,
-          command: () => {
-            create()
-          },
+      {
+        label: t("common.add"),
+        icon: "pi pi-fw pi-plus",
+        disabled: () => props.readonly,
+        command: () => {
+          create()
         },
+      },
     ])
 
 
@@ -182,6 +205,15 @@
       }
       fileData.value = data
       fileView.value = true
+  }
+
+  const formatDate = (dateString) => {
+      if (!dateString) {
+          return '';
+      }
+
+      const dateObject = new Date(dateString);
+      return dateObject.toLocaleDateString(); 
   }
 
   onMounted(() => {

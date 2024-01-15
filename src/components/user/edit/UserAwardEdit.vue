@@ -1,5 +1,5 @@
 <template>
-    <div id="carddiv" class="grid">
+    <div v-if="!loading" id="carddiv" class="grid">
         <div class="col-12">
             <h3>{{ $t('science.awardsAndHonors') }}</h3>
             <div>
@@ -14,16 +14,32 @@
                     <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
                         <div class="p-field">
                             <label for="awardType">{{ $t('science.typeOfAward') }}</label>
-                            <InputText :placeholder="t('science.typeOfAward')" v-model="payload.award_type" id="awardType" />
-                            <small class="p-error" v-if="validation.award_type">{{ $t("common.requiredField") }}</small>
+                            <Dropdown :options="awardTypes" v-model="payload.award_type" :option-label="'name_' + locale" id="awardType" :placeholder="t('science.typeOfAward')" @change="selectAwardTypes" />                            <small class="p-error" v-if="validation.award_type">{{ $t("common.requiredField") }}</small>
                         </div>
                     </div>
 
                     <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
                         <div class="p-field">
-                            <label for="awardName">{{ $t('science.reward') }}</label>
-                            <InputText :placeholder="t('science.reward')" v-model="payload.award_name" id="awardName" />
-                            <small class="p-error" v-if="validation.award_name">{{ $t("common.requiredField") }}</small>
+                            <label for="awardName">{{ $t('science.rewardKz') }}</label>
+                            <InputText :placeholder="t('science.rewardKz')" v-model="payload.award_name_kz" id="awardName" />
+                            <small class="p-error" v-if="validation.award_name_kz">{{ $t("common.requiredField") }}</small>
+                        </div>
+                    </div>
+
+                    <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+                        <div class="p-field">
+                            <label for="awardName">{{ $t('science.rewardRu') }}</label>
+                            <InputText :placeholder="t('science.rewardRu')" v-model="payload.award_name_ru" id="awardName" />
+                            <small class="p-error" v-if="validation.award_name_ru">{{ $t("common.requiredField") }}</small>
+                        </div>
+                    </div>
+
+
+                    <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+                        <div class="p-field">
+                            <label for="awardName">{{ $t('science.rewardEn') }}</label>
+                            <InputText :placeholder="t('science.rewardEn')" v-model="payload.award_name_en" id="awardName" />
+                            <small class="p-error" v-if="validation.award_name_en">{{ $t("common.requiredField") }}</small>
                         </div>
                     </div>
                     
@@ -53,10 +69,10 @@
 <script setup>
     import { useI18n } from "vue-i18n";
     import { useToast } from "primevue/usetoast";
-    import { ref, inject } from "vue";
+    import { ref, inject, onMounted } from "vue";
     import {ScienceService} from "@/service/science.service";
 
-    const { t } = useI18n();
+    const { t, locale } = useI18n();
     const toast = useToast();
     const file = ref(null)
     const scienceService = new ScienceService()
@@ -67,8 +83,10 @@
         type: Object,
         default: () => ({
           id: null,
-          award_type: null,
-          award_name: null,
+          award_type: {},
+          award_name_kz: null,
+          award_name_ru: null,
+          award_name_en: null,
           start_time: null,
           upload_path: null
         })
@@ -82,15 +100,19 @@
     const payload = ref({
         id: props.modelValue.id,
         userID: props.userID,
-        award_type: props.modelValue.award_type,
-        award_name: props.modelValue.award_name,
+        award_type: (props.modelValue.award_type),
+        award_name_kz: props.modelValue.award_name_kz,
+        award_name_ru: props.modelValue.award_name_ru,
+        award_name_en: props.modelValue.award_name_en,
         start_time: props.modelValue.start_time,
         upload_path:  props.modelValue.upload_path,
     });
 
     const validation = ref({
         award_type: false,
-        award_name: false,
+        award_name_kz: false,
+        award_name_ru: false,
+        award_name_en: false,
         year: false,
         upload_path: false
     })  
@@ -104,6 +126,11 @@
           },
         },
     ])
+
+    const loading = ref(false)
+
+    const awardTypes = ref([]) 
+    
 
     const createAward = () => {
         if (!validateForm()) {
@@ -124,7 +151,10 @@
 
     const validateForm = () => {
         validation.value.award_type = !payload.value.award_type || payload.value.award_type == ""
-        validation.value.award_name = !payload.value.award_name || payload.value.award_name == ""
+        validation.value.award_name_kz = !payload.value.award_name_kz || payload.value.award_name_kz == ""
+        validation.value.award_name_ru = !payload.value.award_name_ru || payload.value.award_name_ru == ""
+        validation.value.award_name_en = !payload.value.award_name_en || payload.value.award_name_en == ""
+
         validation.value.start_time = !payload.value.start_time || payload.value.start_time == ""
         validation.value.upload_path = !file.value || file.value == ""
         return (
@@ -135,8 +165,42 @@
         )
     }
 
+    const selectAwardTypes = () => {
+        if (payload.value.award_type) {
+            const selectedAwardType = awardTypes.value.find(type => type.id === payload.value.award_type.id);
+
+            if (selectedAwardType) {
+                payload.value.award_type = selectedAwardType;
+            } else {
+                console.error("Selected award type not found in awardTypes array");
+            }
+        }
+    };
+
+    const getAwardTypes = () => {
+        loading.value = true;
+        scienceService.getAwardTypes().then(res => {
+            awardTypes.value = res.data.award_type;
+
+            if (payload.value.award_type) {
+                selectAwardTypes(); 
+            }else {
+                payload.value.award_type = {}
+            }
+
+            loading.value = false;
+        }).catch(err => {
+            loading.value = false;
+            toast.add({ severity: 'error', summary: t('common.error'), life: 3000 });
+        });
+    };
+
     const onIconUpload = (event) => {
         file.value = event.files[0];
     };
+
+    onMounted(() => {
+        getAwardTypes()
+    })
 
 </script>

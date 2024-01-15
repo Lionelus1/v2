@@ -38,7 +38,7 @@
     <OrganizationPage :organization="contragent" :sidebar="true" @organizationUpdated="organizationUpdated"></OrganizationPage>
   </Sidebar>
   <Sidebar v-model:visible="visibility.signerCard" position="right" class="p-sidebar-lg">
-    <PersonPage :person="signer" :sidebar="true" @organizationUpdated="personUpdated"></PersonPage>
+    <PersonPage :person="signer" :sidebar="true" @organizationUpdated="personUpdated" custom-type="viewUser"></PersonPage>
   </Sidebar>
   <Sidebar v-model:visible="visibility.signerList" position="right" class="p-sidebar-lg">
     <div class="flex flex-column" style="width: 100%; height: 100%;">

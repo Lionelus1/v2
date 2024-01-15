@@ -1516,6 +1516,9 @@ export default {
         professionalDevelopment: 'Повышение квалификации',
         typeOfAward: 'Вид награды',
         reward: 'Награда',
+        rewardKz: 'Название награды на казахском языке',
+        rewardRu: 'Название награды на русском языке',
+        rewardEn: 'Название награды на английском языке',
         qualification: {
             trainingForm: 'Форма повышения квалификации',
             country:'Страна',
@@ -1527,7 +1530,9 @@ export default {
             typeSupportingDoc: 'Вид подтверждающего документа',
         },
         scientistsProfile: 'Профиль ученых',
-        profileLink: 'Ссылка на профиль'
+        profileLink: 'Ссылка на профиль',
+        academicDegAndAcademicTit: 'Ученая степень и ученое звание',
+        currentPosition:'Текущая должность'
     },
     personalData: 'Персональные сведения',
     yearPeriod:'Период годов',
@@ -1609,5 +1614,7 @@ export default {
             participationInGroup: "Участие в коллективе авторов",
         }
     },
-    supportingDocument: "Подтверждающий документ"
+    supportingDocument: "Подтверждающий документ",
+    documentScan: 'Сканирование документа'
+
 }

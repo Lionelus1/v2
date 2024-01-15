@@ -20,7 +20,7 @@
               </Column>
               
               <!-- Действия-->
-              <Column v-if="!readonly" header="Действия">
+              <Column v-if="!readonly" :header="t('dissertation.dissReportActions')">
                   <template #body="slotProps">
                       <Button icon="pi pi-pencil" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="researchInterest=slotProps.data;update()"></Button>
                       <Button icon="fa-solid fa-trash" class="p-button-danger mb-2 mr-2" @click="researchInterest=slotProps.data;deleteValue()"></Button>
@@ -114,22 +114,22 @@
             create()
           },
         },
-        {
-            label: t("science.profileLink"),
-            icon: "pi pi-fw pi-user",
-            disabled: () => !props.modelValue || !props.modelValue.profile_links || props.modelValue.profile_links.length < 1 ||
-              props.modelValue.profile_links[0].length < 1,
-            command: () => {
-              redirectToProfile();
-            },
-        },
-        {
-          label: t("dissertation.swList"),
-          icon: "pi pi-fw pi-search",
-          command: () => {
-            openScientificWorksList();
-          },
-        },
+        // {
+        //     label: t("science.profileLink"),
+        //     icon: "pi pi-fw pi-user",
+        //     disabled: () => !props.modelValue || !props.modelValue.profile_links || props.modelValue.profile_links.length < 1 ||
+        //       props.modelValue.profile_links[0].length < 1,
+        //     command: () => {
+        //       redirectToProfile();
+        //     },
+        // },
+        // {
+        //   label: t("dissertation.swList"),
+        //   icon: "pi pi-fw pi-search",
+        //   command: () => {
+        //     openScientificWorksList();
+        //   },
+        // },
     ])
 
     const redirectToProfile = () => {

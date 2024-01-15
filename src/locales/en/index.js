@@ -1520,6 +1520,9 @@ export default {
         professionalDevelopment: 'Professional development',
         typeOfAward: 'Type of award',
         reward: 'Reward',
+        rewardKz: 'Name of the award in Kazakh',
+        rewardRu: 'Name of the award in Russian',
+        rewardEn: 'Name of the award in English',
         qualification: {
             trainingForm: 'Form of professional development',
             country:'Country',
@@ -1531,7 +1534,9 @@ export default {
             typeSupportingDoc: 'Type of supporting document',
         },
         scientistsProfile: 'Profile Scientists',
-        profileLink: 'Profile link'
+        profileLink: 'Profile link',
+        academicDegAndAcademicTit: 'Academic degree and academic title',
+        currentPosition:'Current position'
     },
     personalData: 'Personal information',
     yearPeriod:'Period of years',
@@ -1613,5 +1618,6 @@ export default {
             participationInGroup: "Participation in the team of authors",
         }
     },
-    supportingDocument: "Supporting document"
+    supportingDocument: "Supporting document",
+    documentScan: 'Document Scan'
 }

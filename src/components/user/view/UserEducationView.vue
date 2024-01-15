@@ -30,10 +30,19 @@
             <Column  field="diplom_number" :header="$t('common.diplomNumber')"></Column>
 
             <!-- Год поступления -->
-            <Column field="start_date" :header="$t('hr.edu.receiptDate')"></Column>
+            <Column field="start_date" :header="$t('common.startDate')">
+                <template #body="slotProps">
+                    {{ formatDate(slotProps.data.start_date) }}
+                </template>
+            </Column>
+
             
             <!-- Год окончания -->
-            <Column field="final_date" :header="$t('hr.edu.expirationDate')"></Column>
+            <Column field="final_date" :header="$t('common.endDate')">
+                <template #body="slotProps">
+                    {{ formatDate(slotProps.data.final_date) }}
+                </template>
+            </Column>
 
             <!-- Скан копия -->
             <Column  header="Скан копия">
@@ -43,7 +52,7 @@
             </Column>
 
             <!-- Действия-->
-            <Column v-if="!readonly" header="Действия">
+            <Column v-if="!readonly" :header="t('dissertation.dissReportActions')">
                 <template #body="slotProps">
                     <Button icon="pi pi-pencil" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="academicDegree=slotProps.data;updateEducation()"></Button>
                     <Button icon="fa-solid fa-trash" class="p-button-danger mb-2 mr-2" @click="academicDegree=slotProps.data;deleteEducation()"></Button>
@@ -142,6 +151,7 @@
 
       academicDegrees.value = response.data.academic_degree
       totalRecords.value = response.data.total
+      
       loading.value = false
     }).catch(error => {
       loading.value = false
@@ -213,6 +223,15 @@
       }
       fileData.value = data
       fileView.value = true
+  }
+
+  const formatDate = (dateString) => {
+      if (!dateString) {
+          return '';
+      }
+
+      const dateObject = new Date(dateString);
+      return dateObject.toLocaleDateString(); 
   }
 
   onMounted(() => {
