@@ -43,7 +43,7 @@
               class="p-button-sm p-button-danger ml-2"/>
       <work-plan-approve v-if="(plan.doc_info.docHistory.stateId === 1 || plan.doc_info.docHistory.stateId === 4) && isPlanCreator && isFinish" :plan="plan" :events="data"
                          @isSent="planSentToApprove"></work-plan-approve>
-      <Button v-if="isFinish && !(plan.doc_info.docHistory.stateId === 1)" :label="$t('workPlan.viewPlan')" icon="pi pi-eye" @click="signView"
+      <Button v-if="isFinish && !(plan.doc_info.docHistory.stateId === 1 || plan.doc_info.docHistory.stateId === 4)" :label="$t('workPlan.viewPlan')" icon="pi pi-eye" @click="signView"
               class="p-button-sm p-button-outlined ml-2"/>
       <Button v-if="isFinish && (isApproval || isPlanCreator || isAdmin) && (plan.doc_info.docHistory.stateId === 3)" :label="$t('workPlan.reports')"
               @click="navigateToReports" class="p-button-sm p-button-outlined ml-2"/>
@@ -625,8 +625,6 @@ export default {
       if (Array.isArray(data) && data.length !== 1) return false;
 
       return data.some(e => {
-        console.log("e", e.id)
-        console.log("log", this.loginedUserId)
         return e.id === this.loginedUserId;
       });
     },
@@ -842,8 +840,8 @@ export default {
         if (res.data.is_success) {
           this.loading = false;
           this.getEventsTree(null)
-          window.location.reload();
         }
+        
       }).catch(error => {
         this.$toast.add({severity: "error", summary: error, life: 3000});
         this.loading = false;

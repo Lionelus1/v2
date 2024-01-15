@@ -1,22 +1,20 @@
 <template>
   <div>
-    <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
+    <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em" />
     <BlockUI :blocked="loading" :fullScreen="true"></BlockUI>
   </div>
   <div>
-    <ProgressBar v-if="signing" mode="indeterminate" style="height: .5em"/>
+    <ProgressBar v-if="signing" mode="indeterminate" style="height: .5em" />
     <BlockUI :blocked="signing" :fullScreen="true"></BlockUI>
   </div>
   <div v-if="!loading">
-    <DocInfo :document="docInfo" v-if="!incorrect" :docID="doc_id"/>
+    <DocInfo :document="docInfo" v-if="!incorrect" :docID="doc_id" />
     <TabView v-model:activeIndex="active" @tab-change="tabChanged">
       <TabPanel v-bind:header="$t('ncasigner.signatureListTitle')">
         <div class="col-12" v-if="isShow">
-          <Button v-if="signatures && signatures.length > 0 || approvalStages && showSign()"
-                  :label="$t('common.downloadSignaturesPdf')" icon="pi pi-download" @click="downloadSignatures"
-                  class="p-button ml-2"/>
-          <SignatureQrPdf ref="qrToPdf" :showSign="showSign()" :signatures="signatures" :title="docInfo.name"
-                          :approvalStages="approvalStages"></SignatureQrPdf>
+          <Button v-if="signatures && signatures.length > 0 || approvalStages && showSign()" :label="$t('common.downloadSignaturesPdf')" icon="pi pi-download"
+            @click="downloadSignatures" class="p-button ml-2" />
+          <SignatureQrPdf ref="qrToPdf" :showSign="showSign()" :signatures="signatures" :title="docInfo.name" :approvalStages="approvalStages"></SignatureQrPdf>
         </div>
         <div class="col-12" v-else>
           <div class="card">
@@ -26,20 +24,19 @@
       </TabPanel>
       <TabPanel :header="$t('ncasigner.goToDoc')" :disabled="!isShow">
         <div class="card" v-for="(item, index) of files" :key="index">
-          <embed :src="item" style="width: 100%; height: 1000px" v-if="files.length > 0" type="application/pdf"/>
+          <embed :src="item" style="width: 100%; height: 1000px" v-if="files.length > 0" type="application/pdf" />
 
         </div>
       </TabPanel>
-      <TabPanel v-if="docInfo && (docInfo.docHistory.stateId==2 ||docInfo.docHistory.stateId==6)"
-                :header="$t('ncasigner.sign')">
+      <TabPanel v-if="docInfo && (docInfo.docHistory.stateId == 2 || docInfo.docHistory.stateId == 6)" :header="$t('ncasigner.sign')">
         <div class="mt-2">
           <Panel>
             <template #header>
               <InlineMessage severity="info">{{ $t('ncasigner.noteMark') }}</InlineMessage>
             </template>
             <div class="flex justify-content-center">
-              <Button icon="pi pi-user-edit" :disabled="hideDocSign"
-                      class="p-button-primary md:col-5" @click="sign" :label="$t('ncasigner.sign')" :loading="signing"/>
+              <Button icon="pi pi-user-edit" :disabled="hideDocSign" class="p-button-primary md:col-5" @click="sign" :label="$t('ncasigner.sign')"
+                :loading="signing" />
             </div>
           </Panel>
           <div class="p-mt-2">
@@ -56,31 +53,30 @@
                 <qrcode-vue size="350" render-as="svg" margin="2" :value="mgovSignUri"></qrcode-vue>
               </div>
               <div v-if="mgovMobileRedirectUri && isIndivid" class="p-fluid text-center">
-                <Button class="p-button-outlined" :label="$t('common.mgovMobile')" @click="redirectToMgovMobile"/>
+                <Button class="p-button-outlined" :label="$t('common.mgovMobile')" @click="redirectToMgovMobile" />
               </div>
               <div v-if="mgovMobileRedirectUri && isIndivid">
                 <hr>
               </div>
               <div v-if="mgobBusinessRedirectUri && !isIndivid" class="p-fluid text-center">
-                <Button class="p-button-outlined" :label="$t('common.mgovBusiness')" @click="redirectToMgovBusiness"/>
+                <Button class="p-button-outlined" :label="$t('common.mgovBusiness')" @click="redirectToMgovBusiness" />
               </div>
               <div v-if="mgobBusinessRedirectUri && !isIndivid">
                 <hr>
               </div>
-              <QrGuideline/>
+              <QrGuideline />
             </Panel>
           </div>
         </div>
       </TabPanel>
       <TabPanel v-if="docInfo && docInfo.docHistory.stateId === Enum.INAPPROVAL.ID && ((docInfo.sourceType === Enum.DocSourceType.FilledDoc ||
-        (docInfo.docType && (docInfo.docType === Enum.DocType.Contract))) || docInfo.docType === Enum.DocType.WorkPlan)" :header="$t('common.revision')" :disabled="hideDocRevision">
+        (docInfo.docType && (docInfo.docType === Enum.DocType.Contract))) || docInfo.docType === Enum.DocType.WorkPlan)" :header="$t('common.revision')"
+        :disabled="hideDocRevision">
         <div class="card">
           <label> {{ this.$t('common.comment') }} </label>
           <InputText v-model="revisionComment" style="width: 100%; margin-bottom: 2rem;"></InputText>
           <div class="flex justify-content-center">
-            <Button icon="fa-regular fa-circle-xmark"
-                    class="p-button-danger md:col-3" @click="revision" :label="$t('common.revision')"
-                    :loading="loading"/>
+            <Button icon="fa-regular fa-circle-xmark" class="p-button-danger md:col-3" @click="revision" :label="$t('common.revision')" :loading="loading" />
           </div>
         </div>
       </TabPanel>
@@ -90,7 +86,7 @@
 
 <script>
 import SignatureQrPdf from "@/components/ncasigner/SignatureQrPdf";
-import {runNCaLayer, makeTimestampForSignature} from "@/helpers/SignDocFunctions"
+import { runNCaLayer, makeTimestampForSignature } from "@/helpers/SignDocFunctions"
 
 import {getHeader, smartEnuApi, socketApi, b64toBlob, findRole} from "@/config/config";
 import html2pdf from "html2pdf.js";
@@ -106,7 +102,7 @@ import { WorkPlanService } from "@/service/work.plan.service";
 
 export default {
   name: "DocSignaturesInfo",
-  components: {QrGuideline, SignatureQrPdf, DocInfo, QrcodeVue },
+  components: { QrGuideline, SignatureQrPdf, DocInfo, QrcodeVue },
   props: {
     docIdParam: {
       type: String,
@@ -172,9 +168,9 @@ export default {
     if (this.docIdParam) {
       this.doc_id = this.docIdParam;
     } else {
-      this.doc_id =this.$route.params.uuid;
+      this.doc_id = this.$route.params.uuid;
     }
-    
+
     const tokenData = JSON.parse(window.localStorage.getItem("authUser"));
     if (tokenData !== null) {
       let signUri = smartEnuApi + '/mobileSignParams/' + this.doc_id + "/" + tokenData.access_token
@@ -216,7 +212,7 @@ export default {
     findRole: findRole,
     b64toBlob: b64toBlob,
     showMessage(msgtype, message, content) {
-      this.$toast.add({severity: msgtype, summary: message, detail: content, life: 3000});
+      this.$toast.add({ severity: msgtype, summary: message, detail: content, life: 3000 });
     },
     redirectToMgovMobile() {
       window.open(this.mgovMobileRedirectUri)
@@ -248,7 +244,7 @@ export default {
         }
       } else if (this.active == 2 && this.loginedUserId === null) {
         this.$store.dispatch("solveAttemptedUrl", this.$route)
-        this.$router.push({path: '/login'});
+        this.$router.push({ path: '/login' });
       }
     },
     getData() {
@@ -273,10 +269,12 @@ export default {
 
           if (this.signatures) {
             this.hideDocSign = !this.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));
+            this.hideDocRevision = !this.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));
+
             let usersign = this.signatures.filter(x => x.userId === this.loginedUserId &&
-                (!x.signature || x.signature === '') && (x.signRight && x.signRight !== ''))
+              (!x.signature || x.signature === '') && (x.signRight && x.signRight !== ''))
             if (usersign.length !== 0) {
-              if ( usersign[0].signRight === "individual") {
+              if (usersign[0].signRight === "individual") {
                 this.mobileApp = "eGov Mobile";
                 this.isIndivid = true
               } else {
@@ -432,14 +430,14 @@ export default {
           type: 'jpeg',
           quality: 0.95,
         },
-        html2canvas: {scale: 3, letterRendering: true},
+        html2canvas: { scale: 3, letterRendering: true },
         jsPDF: {
           unit: 'mm',
           format: 'a4',
           orientation: 'portrait',
           hotfixes: ["px_scaling"]
         },
-        pagebreak: {avoid: ['#qr']},
+        pagebreak: { avoid: ['#qr'] },
         filename: this.docInfo.name + ".pdf"
       };
       const pdfContent = this.$refs.qrToPdf.$refs.qrToPdf;
@@ -545,13 +543,17 @@ export default {
 </script>
 <style scoped>
 @media print {
-  .no-print, .no-print * {
+
+  .no-print,
+  .no-print * {
     display: none !important;
   }
 }
 
 @media print {
-  .show-print, .show-print * {
+
+  .show-print,
+  .show-print * {
     display: block !important;
     width: 100% !important;
   }

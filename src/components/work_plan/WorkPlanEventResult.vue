@@ -108,10 +108,15 @@
                 <!-- {{ resultData[0] }} -->
                 <div v-for="(item, index) of resultData" :key="index" class="mb-2">
                   <Divider align="left">
-                    <div style="margin-bottom: 3px;">
-                      <i class="fa-solid fa-user mr-1"></i><b>{{ item.user.fullName }}</b>&nbsp;
-                      <span :class="'customer-badge status-' + item.plan_event_result_history[0].state_id">{{
-                        getResultStatus(item.plan_event_result_history[0].state_id) }}</span>
+                    <div class="flex justify-content-center align-items-center">
+                      <div class="flex flex-column justify-content-center align-items-start">
+                        <span class="pb-2"><i class="fa-solid fa-user mr-1"></i><b>{{ item.user.fullName }}</b></span>
+                        <span class="pb-2">{{ formatDateMoment(item.plan_event_result_history[0].create_date) }}</span>
+                      </div>
+                      <div class="ml-3">
+                        <span :class="'customer-badge status-' + item.plan_event_result_history[0].state_id">{{
+                            getResultStatus(item.plan_event_result_history[0].state_id) }}</span>
+                      </div>
                     </div>
 
                   </Divider>

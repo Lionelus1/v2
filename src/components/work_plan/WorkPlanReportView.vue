@@ -1,35 +1,19 @@
 <template>
   <vue-element-loading :active="loading" is-full-screen color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)" />
   <div>
-    <div class="col-12">
-      <div class="card" v-if="report && report?.doc_info && report?.doc_info.docHistory.stateId === 2">
+    <div class="col-12" v-if="report && plan">
+      <div class="card" v-if="report && report?.doc_info && !(report?.doc_info.docHistory.stateId === 1 || report?.doc_info.docHistory.stateId === 4)">
         <Button type="button" icon="pi pi-eye" class="p-button-outlined" :label="$t('educomplex.tooltip.document')" @click="openDoc"></Button>
       </div>
       <div class="card" v-if="!isReportSentApproval && visibleSendToApprove">
         <Button v-if="visibleSendToApprove" type="button" icon="pi pi-send" class="p-button-success ml-2" :label="$t('common.toapprove')"
           @click="openModal"></Button>
         <!--        <Button type="button" icon="pi pi-send" class="p-button-success ml-2" :label="$t('common.toapprove')" @click="openModal"></Button>-->
-        <WorkPlanReportApprove v-if="showModal" :visible="showModal" :doc-id="report.doc_id" :approvalStages="approval_users" :report="report" :plan="plan"
+        <WorkPlanReportApprove v-if="showModal" :report-fd="this.fd" :visible="showModal" :doc-id="report.doc_id" :approvalStages="approval_users" :report="report" :plan="plan"
           @sent-to-approve="getReport" @closed="closeApproveModal" />
         <!--        <Button label="" icon="pi pi-download" @click="download"
                         class="p-button p-button-info ml-2"/>-->
       </div>
-      <!--      <div class="card" v-if="isPlanReportApproved && (isPlanCreator || (isApproval || isCurrentUserApproved))">
-              <Button :label="$t('common.signatures')" icon="pi pi-file"
-                      @click="viewSignatures"
-                      class="p-button ml-2"/>
-              <Button label="" icon="pi pi-download" v-if="plan && plan.is_oper"
-                      @click="downloadWord"
-                      class="p-button p-button-info ml-2"/>
-            </div>-->
-      <!--      <div class="card" v-if="!isPlanReportApproved && isReportSentApproval">
-              <Button v-if="isApproval && !isRejected" :label="$t('common.action.approve')" icon="pi pi-check"
-                      @click="openApprovePlan"
-                      class="p-button p-button-success ml-2"/>
-              <Button v-if="isApproval && !isRejected" :label="$t('workPlan.toCorrect')" icon="pi pi-check"
-                      @click="openRejectPlan"
-                      class="p-button p-button-danger ml-2"/>
-            </div>-->
       <div class="card" v-if="report && report?.doc_info">
         <div>
           <TitleBlock :title="report.report_name" :show-back-button="true" />
@@ -37,20 +21,10 @@
             {{ $t('common.states.' + report?.doc_info.docHistory.stateEn) }}
           </span>
         </div>
-        <!--        <Timeline :value="approvals">
-                  <template #content="slotProps">
-                    <div v-for="(item, index) of slotProps.item" :key="index">
-                      {{ item.user.fullName }}
-                      <i v-if="item.is_success" class="pi pi-check-circle ml-2 p-message-success"
-                         style="font-size: 1.2rem;color: #3eaf7c"></i>
-                      <i v-if="!item.is_success" class="pi pi-spinner ml-2" style="font-size: 1.2rem;color: #c63737"></i>
-                    </div>
-                  </template>
-                </Timeline>-->
       </div>
-      <div class="card" v-if="blobSource">
-        <!--        <object src="#toolbar=0" style="width: 100%; height: 1000px" v-if="source" type="application/pdf"
-                        :data="source"></object>-->
+<!--      <div class="card" v-if="blobSource">-->
+<!--      Уақытша -->
+      <div class="card" v-if="blobSource && (isSciencePlan && report?.doc_info.docHistory.stateId !== 4)">
         <embed :src="blobSource" style="width: 100%; height: 1000px" type="application/pdf" />
       </div>
     </div>
@@ -71,8 +45,8 @@
     </Dialog>
   </div>
 
-  <Sidebar v-model:visible="showReportDocInfo" position="right" class="p-sidebar-lg" style="overflow-y: scroll">
-    <DocSignaturesInfo :docIdParam="report.doc_id" :isInsideSidebar="true"></DocSignaturesInfo>
+  <Sidebar v-model:visible="showReportDocInfo" position="right" class="p-sidebar-lg" style="overflow-y: scroll" @hide="closeSideModal">
+    <DocSignaturesInfo :docIdParam="report.doc_id" :isInsideSidebar="true" @sentToRevision="rejectPlanReport($event)"></DocSignaturesInfo>
   </Sidebar>
 </template>
 
@@ -150,7 +124,7 @@ export default {
       isPlanReportRevision: false,
       loading: false,
       planService: new WorkPlanService(),
-
+      fd: new FormData()
     }
   },
   mounted() {
@@ -167,7 +141,8 @@ export default {
       return this.plan && this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Science
     },
     visibleSendToApprove() {
-      return (this.loginedUser && this.respUsers.some(user => user.id === this.loginedUser.userID)) || (this.plan && this.plan.user.id === this.loginedUser.userID);
+      return ((this.loginedUser && this.respUsers.some(user => user.id === this.loginedUser.userID)) ||
+          (this.plan && this.plan.user.id === this.loginedUser.userID) && (this.report && this.report.doc_info && (this.report.doc_info.docHistory.stateId === 1 || this.report.docInfo.docHistory.stateId === 4)));
     },
   },
   created() {
@@ -178,6 +153,10 @@ export default {
   },
 
   methods: {
+    closeSideModal() {
+      this.showReportDocInfo = false;
+      this.$emit('closed', true)
+    },
     getPlan() {
       this.planService.getPlanById(this.report.work_plan_id).then(res => {
         if (res.data) {
@@ -193,7 +172,6 @@ export default {
       });
     },
     getRespUsers() {
-      console.log(this.report);
       this.planService.getRespUsers(this.report.work_plan_id).then(res => {
         this.respUsers = res.data
       }).catch(error => {
@@ -223,7 +201,7 @@ export default {
     },
     getFile() {
       this.planService.getPlanReportFile(this.report.doc_id).then(res => {
-        if (res.data) {
+        if (res.data && this.report && this.report.doc_info.docHistory.stateId !== 4) {
           this.source = `data:application/pdf;base64,${res.data}`;
           this.blobSource = URL.createObjectURL(this.b64toBlob(res.data));
           this.document = res.data;
@@ -284,7 +262,7 @@ export default {
         if (!this.source) {
           this.$nextTick(() => {
             this.getGeneratedPdf();
-            //this.initReportFile();
+            this.initReportFile();
             this.loading = false;
           });
         }
@@ -430,7 +408,7 @@ export default {
         }
       });
     },
-    rejectPlan() {
+    rejectPlanReport() {
       if (this.rejectComment) {
         this.reject.comment = this.rejectComment;
       }
@@ -485,10 +463,8 @@ export default {
         this.blobSource = URL.createObjectURL(blob);
         this.source = "data:application/pdf;base64," + res.data;
         this.document = res.data;
-        const fd = new FormData();
-        fd.append('file', blob);
-        fd.append('filename', this.pdfOptions.filename)
-        this.emitter.emit("reportFD", fd);
+        this.fd.append('file', blob);
+        this.fd.append('filename', this.pdfOptions.filename)
       }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
@@ -531,7 +507,7 @@ export default {
     },
     openModal() {
       this.showModal = true;
-      if (this.plan.plan_type.id === 2) {
+      if (this.plan.plan_type.id === 2 && !this.isPlanCreator) {
         this.approval_users = [
           {
             stage: 1,
@@ -564,20 +540,7 @@ export default {
         this.approval_users = [
           {
             stage: 1,
-            users: [],
-            titleRu: "",
-            titleKz: "",
-            titleEn: "",
-            certificate: {
-              namekz: "Жеке тұлғаның сертификаты",
-              nameru: "Сертификат физического лица",
-              nameen: "Certificate of an individual",
-              value: "individual"
-            }
-          },
-          {
-            stage: 2,
-            users: [],
+            users: [this.loginedUser],
             titleRu: "",
             titleKz: "",
             titleEn: "",
