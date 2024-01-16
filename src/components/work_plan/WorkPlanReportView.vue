@@ -24,7 +24,7 @@
       </div>
 <!--      <div class="card" v-if="blobSource">-->
 <!--      Уақытша -->
-      <div class="card" v-if="blobSource && (isSciencePlan && report?.doc_info.docHistory.stateId !== 4)">
+      <div class="card" v-if="blobSource && (isSciencePlan && report?.doc_info && report?.doc_info.docHistory && report?.doc_info.docHistory.stateId !== 4)">
         <embed :src="blobSource" style="width: 100%; height: 1000px" type="application/pdf" />
       </div>
     </div>
@@ -124,7 +124,8 @@ export default {
       isPlanReportRevision: false,
       loading: false,
       planService: new WorkPlanService(),
-      fd: new FormData()
+      fd: new FormData(),
+      isSciencePlan: false
     }
   },
   mounted() {
@@ -137,9 +138,6 @@ export default {
     //this.getRespUsers(this.report.work_plan_id);
   },
   computed: {
-    isSciencePlan() {
-      return this.plan && this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Science
-    },
     visibleSendToApprove() {
       return ((this.loginedUser && this.respUsers.some(user => user.id === this.loginedUser.userID)) ||
           (this.plan && this.plan.user.id === this.loginedUser.userID) && (this.report && this.report.doc_info && (this.report.doc_info.docHistory.stateId === 1 || this.report.docInfo.docHistory.stateId === 4)));
@@ -164,6 +162,7 @@ export default {
           if (this.plan && this.plan.user.id === this.loginedUserId) {
             this.isPlanCreator = true;
             this.planCreator = this.plan.user.id
+            this.isSciencePlan = this.plan && this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Science
           }
           //this.getFile();
         }
