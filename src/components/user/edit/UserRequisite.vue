@@ -118,7 +118,9 @@
           }
 
       }).catch(err => {
-          toast.add({severity: 'error', summary: t('common.error'), life: 3000})
+          if (err.data.status != 404) {
+            toast.add({severity: 'error', summary: t('common.error'), life: 3000})
+          }
       })
   }
 
