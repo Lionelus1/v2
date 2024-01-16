@@ -55,7 +55,7 @@
             <Column v-if="!readonly" :header="t('dissertation.dissReportActions')">
                 <template #body="slotProps">
                     <Button icon="pi pi-pencil" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="academicDegree=slotProps.data;updateEducation()"></Button>
-                    <Button icon="fa-solid fa-trash" class="p-button-danger mb-2 mr-2" @click="academicDegree=slotProps.data;deleteEducation()"></Button>
+                    <Button icon="fa-solid fa-trash" class="p-button-danger mb-2 mr-2" @click="academicDegree=slotProps.data;deleteEducationConfirm()"></Button>
                 </template>
             </Column>
 
