@@ -8,7 +8,7 @@
         
         <TabPanel :header="$t('personalData')">
           <template v-if="per && per.userID">
-            <UserPersonalInfomation @personal-information-updated="handlePersonalInformationUpdate" :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
+            <UserPersonalInfomation @personal-information-updated="handlePersonalInformationUpdate" :model-value="per" :custom-type="customType" :userID="per.userID" :readonly="pageReadonly"/>
           </template>
         </TabPanel>
 

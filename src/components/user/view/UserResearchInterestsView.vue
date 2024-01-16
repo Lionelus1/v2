@@ -20,7 +20,7 @@
               </Column>
               
               <!-- Действия-->
-              <Column v-if="!readonly" header="Действия">
+              <Column v-if="!readonly" :header="t('dissertation.dissReportActions')">
                   <template #body="slotProps">
                       <Button icon="pi pi-pencil" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="researchInterest=slotProps.data;update()"></Button>
                       <Button icon="fa-solid fa-trash" class="p-button-danger mb-2 mr-2" @click="researchInterest=slotProps.data;deleteValue()"></Button>

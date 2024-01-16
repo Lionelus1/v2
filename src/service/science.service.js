@@ -77,4 +77,20 @@ export class ScienceService {
     importSciencePublicationOfScientist(data) {
         return api.post('/science/editions/import', data, {headers: getHeader()})
     }
+
+    getAwardTypes() {
+        return api.get("/science/award/awardType", {headers: getHeader()})
+    }
+
+    getSourceOfFinance() {
+        return api.get("/science/qualifications/fundingSource", {headers: getHeader()})
+    }
+
+    getQualificationForms() {
+        return api.get("/science/qualifications/trainingForm", {headers: getHeader()})
+    }
+
+    getProfDocumentType() {
+        return api.get("/science/qualifications/profDocumentType", {headers: getHeader()})
+    }
 }
