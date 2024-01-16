@@ -41,13 +41,13 @@
                            :plan-data="plan"></work-plan-event-add>
       <Button v-if="isPlanCreator && !isFinish" :label="$t('common.complete')" icon="pi pi-check" @click="finish"
               class="p-button-sm p-button-danger ml-2"/>
-      <work-plan-approve v-if="(plan.doc_info.docHistory.stateId === 1 || plan.doc_info.docHistory.stateId === 4) && isPlanCreator && isFinish" :plan="plan" :events="data"
+      <work-plan-approve v-if="(plan.doc_info?.docHistory?.stateId === 1 || plan.doc_info?.docHistory?.stateId === 4) && isPlanCreator && isFinish" :plan="plan" :events="data"
                          @isSent="planSentToApprove"></work-plan-approve>
-      <Button v-if="isFinish && !(plan.doc_info.docHistory.stateId === 1 || plan.doc_info.docHistory.stateId === 4)" :label="$t('workPlan.viewPlan')" icon="pi pi-eye" @click="signView"
+      <Button v-if="isFinish && !(plan.doc_info?.docHistory?.stateId === 1 || plan.doc_info?.docHistory?.stateId === 4)" :label="$t('workPlan.viewPlan')" icon="pi pi-eye" @click="signView"
               class="p-button-sm p-button-outlined ml-2"/>
-      <Button v-if="isFinish && (isApproval || isPlanCreator || isAdmin) && (plan.doc_info.docHistory.stateId === 3)" :label="$t('workPlan.reports')"
+      <Button v-if="isFinish && (isApproval || isPlanCreator || isAdmin) && (plan.doc_info?.docHistory?.stateId === 3)" :label="$t('workPlan.reports')"
               @click="navigateToReports" class="p-button-sm p-button-outlined ml-2"/>
-      <Button v-if="isFinish && isPlanCreator && (plan.doc_info.docHistory.stateId === 3) && isSciencePlan" :label="$t('workPlan.generateAct')"
+      <Button v-if="isFinish && isPlanCreator && (plan.doc_info?.docHistory?.stateId === 3) && isSciencePlan" :label="$t('workPlan.generateAct')"
               @click="generateScienceReport" class="p-button-sm p-button-outlined ml-2"/>
       <!--      <WorkPlanReportApprove v-if="isFinish && isPlanCreator && (plan.doc_info.docHistory.stateId === 3) && (plan.plan_type && plan.plan_type.code === Enum.WorkPlanTypes.Science)" :label="$t('workPlan.generateAct')"-->
       <!--                             :doc-id="report.doc_id" :report="report_id"></WorkPlanReportApprove>-->
@@ -202,7 +202,7 @@
 <!--                      class="mr-2" icon="pi pi-check" label=""-->
 <!--                      severity="success"/>-->
               <!--              (parseInt(node.quarter.String) === currentQuarter || parseInt(node.quarter.String) === 5)-->
-              <Button v-if="(isPlanCreator || isUserApproval(node)) && (plan.doc_info.docHistory.stateId === 3) &&
+              <Button v-if="(isPlanCreator || isUserApproval(node)) && (plan.doc_info?.docHistory?.stateId === 3) &&
                 (node.status.work_plan_event_status_id === 1 ||
                   node.status.work_plan_event_status_id === 4 ||
                   node.status.work_plan_event_status_id === 5 ||
