@@ -24,7 +24,7 @@
       </div>
 <!--      <div class="card" v-if="blobSource">-->
 <!--      Уақытша -->
-      <div class="card" v-if="blobSource && (isSciencePlan && report?.doc_info && report?.doc_info.docHistory && report?.doc_info.docHistory.stateId !== 4)">
+      <div class="card" v-if="blobSource && !(isSciencePlan && report?.doc_info && report?.doc_info.docHistory && report?.doc_info.docHistory.stateId === 4)">
         <embed :src="blobSource" style="width: 100%; height: 1000px" type="application/pdf" />
       </div>
     </div>

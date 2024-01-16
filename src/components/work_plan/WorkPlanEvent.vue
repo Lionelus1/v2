@@ -36,7 +36,6 @@
       </div>
     </div>
     <div class="card" v-if="plan">
-      <!-- {{ plan.doc_info.docHistory.stateId }}{{  !(plan.doc_info.docHistory.stateId === 2) }} -->
       <work-plan-event-add v-if="(isPlanCreator || isCreator || isEventsNull) && !isFinish" :items="data" :isMain="true"
                            :plan-data="plan"></work-plan-event-add>
       <Button v-if="isPlanCreator && !isFinish" :label="$t('common.complete')" icon="pi pi-check" @click="finish"
@@ -51,10 +50,11 @@
               @click="generateScienceReport" class="p-button-sm p-button-outlined ml-2"/>
       <!--      <WorkPlanReportApprove v-if="isFinish && isPlanCreator && (plan.doc_info.docHistory.stateId === 3) && (plan.plan_type && plan.plan_type.code === Enum.WorkPlanTypes.Science)" :label="$t('workPlan.generateAct')"-->
       <!--                             :doc-id="report.doc_id" :report="report_id"></WorkPlanReportApprove>-->
-      <WorkPlanReportApprove v-if="showReportModal && scienceReport && plan" :approval-stages="approval_users" :visible="showReportModal && scienceReport" :doc-id="scienceReport.doc_id" :report="scienceReport" :plan="plan"></WorkPlanReportApprove>
+      <WorkPlanReportApprove v-if="showReportModal && scienceReport && plan" :approval-stages="approval_users" :visible="showReportModal && scienceReport"
+                             :doc-id="scienceReport.doc_id" :report="scienceReport" :plan="plan"></WorkPlanReportApprove>
 
     </div>
-    <div class="card">
+    <div class="card" v-if="plan">
 
       <TreeTable ref="workplantreetable" class="p-treetable-sm" :value="data" :lazy="true" :loading="loading" @nodeExpand="onExpand"
                  scrollHeight="flex"
@@ -198,9 +198,9 @@
         <Column field="actions" header="">
           <template #body="{ node }">
             <div>
-<!--              <Button v-if="isPlanCreator && node.status.work_plan_event_status_id == 8" @click="updateConfirmEvent(node.work_plan_event_id)"-->
-<!--                      class="mr-2" icon="pi pi-check" label=""-->
-<!--                      severity="success"/>-->
+              <!--              <Button v-if="isPlanCreator && node.status.work_plan_event_status_id == 8" @click="updateConfirmEvent(node.work_plan_event_id)"-->
+              <!--                      class="mr-2" icon="pi pi-check" label=""-->
+              <!--                      severity="success"/>-->
               <!--              (parseInt(node.quarter.String) === currentQuarter || parseInt(node.quarter.String) === 5)-->
               <Button v-if="(isPlanCreator || isUserApproval(node)) && (plan.doc_info && plan.doc_info.docHistory && plan.doc_info?.docHistory?.stateId === 3) &&
                 (node.status.work_plan_event_status_id === 1 ||
@@ -269,7 +269,7 @@ export default {
     return {
       data: [],
       Enum: Enum,
-      work_plan_id: null,
+      work_plan_id: parseInt(this.$route.params.id),
       searchText: null,
       lastEvent: null,
       quarters: [
@@ -375,7 +375,6 @@ export default {
     }
   },
   created() {
-    this.work_plan_id = this.$route.params.id
     this.isAdmin = this.findRole(null, 'main_administrator')
     this.getPlan();
     this.getEventsTree(null);
@@ -841,7 +840,7 @@ export default {
           this.loading = false;
           this.getEventsTree(null)
         }
-        
+
       }).catch(error => {
         this.$toast.add({severity: "error", summary: error, life: 3000});
         this.loading = false;
@@ -931,9 +930,5 @@ export default {
     color: #256029;
   }
 
-  &.status-1 {
-    background: #B3E5FC;
-    color: #23547B;
-  }
 }
 </style>
