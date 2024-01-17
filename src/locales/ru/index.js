@@ -1509,7 +1509,7 @@ export default {
         selectedRequest:'Выбранный запрос',
         yourRequestHasBeenApproved:'Ваш запрос одобрен',
         yourRequestHasBeenRejected:'Ваш запрос отклонен',
-        scientists:'Ученые ЕНУ им. Л.Н.Гумилева',
+        scientists:'Ученые университета',
         areaScientificInterests: 'Область научных интересов',
         laborActivity: 'Трудовая деятельность',
         awardsAndHonors:'Награды и почетные звания',

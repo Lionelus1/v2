@@ -1513,7 +1513,7 @@ export default {
         selectedRequest:'ВыбSelected requestс',
         yourRequestHasBeenApproved:'Your request has been approved',
         yourRequestHasBeenRejected:'Your request has been approved',
-        scientists:'Scientists of L.N.Gumilev ENU',
+        scientists:'Scientists university',
         areaScientificInterests: 'Area of scientific interests',
         laborActivity: 'Labor activity',
         awardsAndHonors:'Awards and honors',
