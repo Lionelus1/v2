@@ -161,11 +161,11 @@
             <div v-if="node.user && node.user.length > 2">
               <Button type="button" @click="showRespUsers" class="p-button-rounded" icon="fa-solid fa-eye" label=""/>
               <OverlayPanel ref="op">
-                <p v-for="item in node.user" :key="item.id">{{ item.fullName }}</p>
+                <p v-for="item in node.user" :key="item.id">{{ item.user.fullName }}</p>
               </OverlayPanel>
             </div>
             <div v-else>
-              <p v-for="item in node.user" :key="item.id">{{ item.fullName }}</p>
+              <p v-for="item in node.user" :key="item.id">{{ item.user.fullName }}</p>
             </div>
           </template>
         </Column>
@@ -687,7 +687,6 @@ export default {
       this.getEventsTree();
     },
     planSentToApprove(data) {
-      console.log("approve data", data)
       this.getPlan();
       this.getEventsTree(null)
     },
@@ -839,6 +838,7 @@ export default {
         if (res.data.is_success) {
           this.loading = false;
           this.getEventsTree(null)
+          this.getPlan()
         }
 
       }).catch(error => {
