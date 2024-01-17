@@ -526,12 +526,6 @@ export default {
 }
 
 .customer-badge {
-  border-radius: 2px;
-  padding: .25em .5rem;
-  text-transform: uppercase;
-  font-weight: 700;
-  font-size: 12px;
-  letter-spacing: .3px;
 
   &.status-5 {
     background: #ff3838;
@@ -551,11 +545,6 @@ export default {
   &.status-3 {
     background: #FFCDD2;
     color: #C63737;
-  }
-
-  &.status-1 {
-    background: #B3E5FC;
-    color: #23547B;
   }
 }
 </style>

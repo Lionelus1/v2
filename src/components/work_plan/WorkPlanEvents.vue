@@ -556,10 +556,5 @@ export default {
     background: #C8E6C9;
     color: #256029;
   }
-
-  &.status-1 {
-    background: #B3E5FC;
-    color: #23547B;
-  }
 }
 </style>

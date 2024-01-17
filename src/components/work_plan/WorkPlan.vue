@@ -355,11 +355,6 @@ export default {
     color: #8A5340;
   }
 
-  &.status-1 {
-    background: #B3E5FC;
-    color: #23547B;
-  }
-
   &.operational-plan {
     background-color: #3B82F6;
     color: #ffffff;

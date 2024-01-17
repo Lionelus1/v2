@@ -32,12 +32,13 @@
 
         &.layout-static {
             .layout-topbar {
-                left: 250px;
+                left: 85px;
             }
 
             .layout-main, .layout-footer {
-                margin-left: 250px;
+                margin-left: 85px;
             }
+
 
             &.layout-static-sidebar-inactive {
                 .layout-topbar  {
@@ -47,6 +48,17 @@
                 .layout-main, .layout-footer {
                     margin-left: 0;
                 }
+            }
+        }
+        &.fixed_container {
+            .layout-topbar {
+                left: 250px;
+                transition: .5s ease-in;
+            }
+
+            .layout-main, .layout-footer {
+                margin-left: 250px;
+                transition: .5s ease-in;
             }
         }
     }

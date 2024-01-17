@@ -409,7 +409,7 @@ h3 {
   margin-bottom: 1rem;
   padding: 0;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
 }
 
 .steps-item {
@@ -425,6 +425,8 @@ h3 {
 }
 
 .steps-item span {
+  width: 38px;
+  height: 38px;
   cursor: pointer;
   border-radius: 50%;
   padding: .75rem 1rem;
