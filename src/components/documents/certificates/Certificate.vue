@@ -32,9 +32,9 @@
                 :style="'z-index:'+element.value.rectelement.z"
                 :parent="true">
                 <Button v-if="!readonly" :ref="'btn'+ lang+template.params.indexOf(element)" style="position:absolute;right:-20px;top:0px;width:15px;height:15px;padding: 0px;" icon="pi pi-cog" @click="toggle($event,element)" class="button1 p-button-rounded p-button-text p-button-sm" />
-                <Button v-if="element.description !== 'common' && !readonly" style="position:absolute; right:-20px;top:20px;width:15px;height:15px;padding: 0px;" icon="pi pi-trash" @click="removeElement(template.params,element)" class="button1 p-button-rounded p-button-text p-button-danger p-button-sm" />
+                <Button v-if="!readonly" style="position:absolute; right:-20px;top:20px;width:15px;height:15px;padding: 0px;" icon="pi pi-trash" @click="removeElement(template.params,element)" class="button1 p-button-rounded p-button-text p-button-danger p-button-sm" />
                 <img v-if="element.name=='img'" style="width:100%;height: 100%;" :src="imageUrl + element.value.url">
-                <div  v-if="element.name=='txt'">
+                <div v-if="element.name=='txt'">
                   <p  :style="element.value.style" v-html="element.value['title' + lang] ? element.value['title' + lang] : element.value.title"></p>
                 </div>
               </Vue3DraggableResizable>
@@ -398,7 +398,7 @@ export default {
               }
             });
         }
-     
+      
           this.$refs.op.toggle(event);
         },
         getZ() {
