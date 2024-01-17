@@ -1540,7 +1540,7 @@ export default {
         selectedRequest:'Таңдалған өтініш',
         yourRequestHasBeenApproved:'Сіздің сұранысыңыз мақұлданды',
         yourRequestHasBeenRejected:'Сіздің сұранысыңыз қабылданбады',
-        scientists:'ЕҰУ Л.H.Гумилева ғалымдары',
+        scientists:'Университет ғалымдары',
         areaScientificInterests: 'Ғылыми қызығушылықтар саласы',
         laborActivity: 'Еңбек қызметі',
         awardsAndHonors:'Марапаттар мен құрметті атақтар',

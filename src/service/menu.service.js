@@ -17,7 +17,7 @@ export class MenuService {
                     },
                     {
                         label: $t('contracts.title'),
-                        icon: 'pi pi-fw pi-copy',
+                        icon: 'fa-solid fa-file-signature',
                         to: '/documents/contracts'
                     },
                     {
@@ -141,42 +141,41 @@ export class MenuService {
             },
             {
                 label: $t('science.activity'),
-                icon: 'fas fa-flask',
+                icon: 'fa-solid fa-atom',
                 items: [
                     {
-                        label: $t('science.scientistProfile'),
-                        icon: 'fas fa-user',
+                        label: $t('science.scientistsProfile'),
+                        icon: 'fa-solid fa-user-tie',
                         to: '/science/scientists'
                     },
                     {
                         label: $t('scienceWorks.title'),
-                        icon: 'fa-solid fa-flask-vial',
+                        icon: 'fa-solid fa-file-lines',
                         to: '/documents/catalog/scienceWorks'
                     },
-                ]
-            },
-            {
-                label: $t('dissertation.title'),
-                icon: 'fa-solid fa-school-circle-check',
-                visible: this.findRole('dissertation_chief') || this.isRoleGroupMember("dissertation_council") || this.findRole('main_administrator'),
-                items: [
                     {
-                        label: $t('dissertation.council.list'),
-                        icon: 'pi pi-fw pi-list',
-                        to: '/dissertation',
-                        visible: this.findRole('dissertation_chief') || this.findRole("dissertation_council_secretary") || this.findRole('main_administrator')
+                        label: $t('dissertation.title'),
+                        icon: 'fa-solid fa-landmark',
+                        visible: this.findRole('dissertation_chief') || this.isRoleGroupMember("dissertation_council") || this.findRole('main_administrator'),
+                        items: [
+                            {
+                                label: $t('dissertation.council.list'),
+                                icon: 'pi pi-fw pi-list',
+                                to: '/dissertation',
+                                visible: this.findRole('dissertation_chief') || this.findRole("dissertation_council_secretary") || this.findRole('main_administrator')
+                            },
+                            {
+                                label: $t('dissertation.doctoralCard'),
+                                icon: 'fa-solid fa-graduation-cap',
+                                to: '/dissertation/doctorals',
+                                visible: this.findRole('dissertation_chief') || this.isRoleGroupMember("dissertation_council") || this.findRole('main_administrator')
+                            }
+                        ]
                     },
-                    {
-                        label: $t('dissertation.doctoralCard'),
-                        icon: 'fa-solid fa-graduation-cap',
-                        to: '/dissertation/doctorals',
-                        visible: this.findRole('dissertation_chief') || this.isRoleGroupMember("dissertation_council") || this.findRole('main_administrator')
-                    }
-                ]
-            },
+                ]},
             {
                 label: $t('workPlan.plans'),
-                icon: 'pi pi-fw pi-folder',
+                icon: 'fa-solid fa-list-check',
                 to: '/work-plan',
                 visible: !this.findRole("student")
             },

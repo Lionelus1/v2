@@ -1526,7 +1526,7 @@ export default {
         recommendedByQACFSHERussian: 'Edition of the publication recommended by QACFSHE in Russian',
         recommendedByQACFSHEEnglish: 'Edition of the publication recommended by QACFSHE in English',
         requester: 'Requester',
-        selectedRequest: 'ВыбSelected requestс',
+        selectedRequest: 'Selected request',
         yourRequestHasBeenApproved: 'Your request has been approved',
         yourRequestHasBeenRejected: 'Your request has been approved',
         scientists: 'Scientists of L.N.Gumilev ENU',
