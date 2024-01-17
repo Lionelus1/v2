@@ -290,7 +290,7 @@ export class MenuService {
                 ]
             },
             {
-                label: $t('educationalPrograms.educationalProgramConstructor'), icon: 'fa-solid fa-chalkboard-user',
+                label: $t('educationalPrograms.educationalProgramConstructor'), icon: 'fa-solid fa-diagram-project',
                 items: [
                     {
                         label: $t('educationalPrograms.bachelor'), to: '/educational-programs/bachelor',
