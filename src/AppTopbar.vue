@@ -1,7 +1,7 @@
 <template>
     <div class="layout-topbar no-print">
         <div>
-            <button class="p-link layout-menu-button" @click="onMenuToggle">
+            <button v-if="isMobile()" class="p-link layout-menu-button" @click="onMenuToggle">
                 <span class="pi pi-bars"></span>
             </button>
             <Button v-if="($route.name=='organizations') || ($route.name=='persons')" class="add_new p-button"
@@ -186,6 +186,9 @@ export default {
             return moment.duration(given.diff(now)).humanize();
 
         },
+      isMobile() {
+        return window.innerWidth < 500;
+      },
     },
     computed: {
         ...mapState(["loginedUser"]),

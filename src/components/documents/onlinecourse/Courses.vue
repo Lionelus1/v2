@@ -15,14 +15,16 @@
           <h5 class="title font-semibold" :title="item['name' + $i18n.locale]">{{ item['name' + $i18n.locale] }}</h5>
           <p>{{ $t('fieldEducation.courseAuthor') }}: {{ item.AutorFullName }}</p>
           <p>{{ formatDateMoment(item.createDate) }}</p>
-          <p><i class="pi pi-star-fill text-yellow-500"></i> 4,9</p>
         </div>
-        <div class="grid_footer flex justify-content-between align-items-center p-3">
+        <div class="grid_footer p-3">
+          <p><i class="pi pi-star-fill text-yellow-500"></i> 4,9</p>
+          <div class="flex justify-content-between align-items-center">
           <Tag v-if="item.status" :value="item.status[0]['name' + $i18n.locale]" severity="success"></Tag>
           <div class="icons">
             <i v-if="findRole(null,'online_course_administrator')" class="pi pi-pencil text-primary-500 cursor-pointer mr-4" @click="editCourse(item.id)"></i>
             <i v-if="findRole(null,'online_course_administrator')" class="pi pi-trash text-red-500 cursor-pointer mr-4" @click="deleteCourse(item.id)"></i>
             <i class="pi pi-list"></i>
+          </div>
           </div>
         </div>
       </div>
@@ -164,7 +166,6 @@ export default {
     width: 100%;
     position: absolute;
     bottom: 0;
-    border-top: 1px solid #ccc
   }
   .title{
     -webkit-line-clamp: 2;
