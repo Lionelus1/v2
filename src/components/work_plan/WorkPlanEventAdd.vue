@@ -5,7 +5,7 @@
   <Dialog :header="$t('workPlan.addEvent')" v-model:visible="showWorkPlanEventModal" :style="{width: '600px'}">
     <div class="p-fluid">
       <div class="field">
-        <label>{{ plan && (plan.is_oper || plan.plan_type.code === Enum.WorkPlanTypes.Oper) ? $t('workPlan.resultIndicator') : $t('workPlan.eventName') }}</label>
+        <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('workPlan.resultIndicator') : $t('workPlan.eventName') }}</label>
         <InputText v-model="event_name" />
         <small class="p-error" v-if="submitted && formValid.event_name">{{ $t('workPlan.errors.eventNameError') }}</small>
       </div>
@@ -17,20 +17,20 @@
         <label>{{ $t('common.endDate') }}</label>
         <PrimeCalendar v-model="end_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
       </div>
-      <div class="field" v-if="plan && (plan.is_oper || plan.plan_type.code === Enum.WorkPlanTypes.Oper)">
+      <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
         <label>{{ $t('common.unit') }}</label>
         <InputText v-model="unit" />
       </div>
-      <div class="field" v-if="plan && (plan.is_oper || plan.plan_type.code === Enum.WorkPlanTypes.Oper)">
+      <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
         <label>{{ $t('common.planNumber') }}</label>
         <InputText v-model="plan_number" />
       </div>
-      <div class="field" v-if="plan && (plan.is_oper || plan.plan_type.code === Enum.WorkPlanTypes.Oper)">
+      <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
         <label>{{ $t('workPlan.approvalUsers') }}</label>
         <InputText v-model="responsible_executor" />
       </div>
       <div class="field" v-if="plan && plan.plan_type && plan.plan_type.code !== Enum.WorkPlanTypes.Science">
-        <label>{{ plan && (plan.is_oper || plan.plan_type.code === Enum.WorkPlanTypes.Oper) ? $t('workPlan.summary') : $t('workPlan.approvalUsers') }}</label>
+        <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('workPlan.summary') : $t('workPlan.approvalUsers') }}</label>
         <FindUser v-model="selectedUsers" :editMode="true"></FindUser>
         <small class="p-error" v-if="submitted && formValid.users">{{ $t('workPlan.errors.approvalUserError') }}</small>
       </div>
@@ -234,7 +234,7 @@ export default {
         result: this.result,
         resp_person_ids: userIds
       };
-      if (this.plan && ((this.plan.plan_type && this.plan.plan_type.code === 2) || this.plan.is_oper)) {
+      if (this.plan && this.plan.plan_type && this.plan.plan_type.code === this.Enum.WorkPlanTypes.Oper) {
         data.unit = this.unit;
         data.plan_number = this.plan_number;
         data.responsible_executor = this.responsible_executor;

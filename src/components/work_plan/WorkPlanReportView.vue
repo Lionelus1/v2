@@ -2,18 +2,6 @@
   <vue-element-loading :active="loading" is-full-screen color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)" />
   <div>
     <div class="col-12" v-if="report && plan">
-      <div class="card" v-if="report && report?.doc_info && !(report?.doc_info.docHistory.stateId === 1 || report?.doc_info.docHistory.stateId === 4)">
-        <Button type="button" icon="pi pi-eye" class="p-button-outlined" :label="$t('educomplex.tooltip.document')" @click="openDoc"></Button>
-      </div>
-      <div class="card" v-if="!isReportSentApproval && visibleSendToApprove">
-        <Button v-if="visibleSendToApprove" type="button" icon="pi pi-send" class="p-button-success ml-2" :label="$t('common.toapprove')"
-          @click="openModal"></Button>
-        <!--        <Button type="button" icon="pi pi-send" class="p-button-success ml-2" :label="$t('common.toapprove')" @click="openModal"></Button>-->
-        <WorkPlanReportApprove v-if="showModal" :report-fd="this.fd" :visible="showModal" :doc-id="report.doc_id" :approvalStages="approval_users" :report="report" :plan="plan"
-          @sent-to-approve="getReport" @closed="closeApproveModal" />
-        <!--        <Button label="" icon="pi pi-download" @click="download"
-                        class="p-button p-button-info ml-2"/>-->
-      </div>
       <div class="card" v-if="report && report?.doc_info">
         <div>
           <TitleBlock :title="report.report_name" :show-back-button="true" />
@@ -21,6 +9,18 @@
             {{ $t('common.states.' + report?.doc_info.docHistory.stateEn) }}
           </span>
         </div>
+      </div>
+      <div class="card" v-if="report && report?.doc_info && !(report?.doc_info.docHistory.stateId === 1 || report?.doc_info.docHistory.stateId === 4)">
+        <Button type="button" icon="pi pi-eye" class="p-button-outlined" :label="$t('educomplex.tooltip.document')" @click="openDoc"></Button>
+      </div>
+      <div class="card" v-if="!isReportSentApproval && visibleSendToApprove">
+        <Button type="button" icon="pi pi-send" class="p-button-success ml-2" :label="$t('common.toapprove')"
+                @click="openModal"></Button>
+        <!--        <Button type="button" icon="pi pi-send" class="p-button-success ml-2" :label="$t('common.toapprove')" @click="openModal"></Button>-->
+        <WorkPlanReportApprove v-if="showModal" :report-fd="this.fd" :visible="showModal" :doc-id="report.doc_id" :approvalStages="approval_users" :report="report" :plan="plan"
+                               @sent-to-approve="getReport" @closed="closeApproveModal" />
+        <!--        <Button label="" icon="pi pi-download" @click="download"
+                        class="p-button p-button-info ml-2"/>-->
       </div>
 <!--      <div class="card" v-if="blobSource">-->
 <!--      Уақытша -->
@@ -139,8 +139,7 @@ export default {
   },
   computed: {
     visibleSendToApprove() {
-      return ((this.loginedUser && this.respUsers.some(user => user.id === this.loginedUser.userID)) ||
-          (this.plan && this.plan.user.id === this.loginedUser.userID) && (this.report && this.report.doc_info && (this.report.doc_info.docHistory.stateId === 1 || this.report.docInfo.docHistory.stateId === 4)));
+      return ((this.loginedUser && this.respUsers.some(user => user.id === this.loginedUser.userID)) || this.isPlanCreator) && (this.report && this.report.doc_info && (this.report.doc_info.docHistory.stateId === 1 || this.report.doc_info.docHistory.stateId === 4));
     },
   },
   created() {

@@ -68,7 +68,7 @@
                 <label>{{ $t('common.fact') }}</label>
                 <InputText v-model="fact" @input="factChange" />
               </div>
-              <div class="field">
+              <div class="field" v-if="!hasResultToApprove">
                 <label>{{ $t('common.result') }}</label>
                 <TinyEditor v-if="plan && !plan.is_oper" v-model="result" :min-word="wordLimit" @wordCount="initWordCount" :height="300" :style="{ height: '100%', width: '100%' }"
                   @selectionChange="editorChange" />
@@ -297,27 +297,16 @@
   </div>
 
   <Sidebar v-model:visible="toCorrectSidebar" position="right" class="p-sidebar-lg " style="overflow-y: scroll">
-    <div class="col-12">
-      <h3>{{ $t('workPlan.toCorrect') }}</h3>
-    </div>
-    <div class="col-12">
+    <h3>{{ $t('workPlan.toCorrect') }}</h3>
+    <div class="field">
       <div>
-        <Button icon="pi pi-fw pi-check" class="p-button-rounded p-button-text" @click="confirmToRevision()" :label="$t('common.action.accept')"></Button>
-
+        <Button icon="pi pi-fw pi-check" class="p-button-outlined" @click="confirmToRevision()" :label="$t('common.send')"></Button>
       </div>
     </div>
     <div class="p-col p-fluid">
       <div class="field">
         <label>{{ $t('common.comment') }}</label>
-        <RichEditor v-model="rejectComment" editorStyle="height:300px;">
-          <template v-slot:toolbar>
-            <span class="ql-formats">
-              <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
-              <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
-              <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
-            </span>
-          </template>
-        </RichEditor>
+        <TinyEditor v-model="rejectComment" :height="500"></TinyEditor>
       </div>
     </div>
   </Sidebar>
@@ -334,7 +323,6 @@ import Enum from "@/enum/workplan/index"
 
 export default {
   name: "WorkPlanEventResult",
-  components: { RichEditor },
   props: ['resultId'],
   data() {
     return {
@@ -390,7 +378,8 @@ export default {
       eventResultId: null,
       Enum: Enum,
       wordLimit: 100,
-      inputWordCount: 0
+      inputWordCount: 0,
+      hasResultToApprove: false
     }
   },
   computed: {
@@ -490,6 +479,11 @@ export default {
             });
           }
           this.fact = this.resultData.fact;
+          this.resultData.forEach(e => {
+            if (e.plan_event_result_history && e.plan_event_result_history.some(x => (x.state_id === 5 || x.state_id === 6))) {
+              this.hasResultToApprove = !this.isPlanCreator && e.plan_event_result_history.some(x => (x.state_id === 5 || x.state_id === 6))
+            }
+          })
         }
       }).catch(error => {
         if (error.response && error.response.status === 401) {
@@ -826,7 +820,6 @@ export default {
       item.isActive = true;
     },
     saveEditResult(item) {
-      console.log(item)
       this.loading = true;
       const fd = new FormData();
       fd.append("result_id", item.event_result_id)//Number(this.resultData.event_result_id))
