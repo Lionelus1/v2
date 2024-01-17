@@ -17,7 +17,7 @@ export class MenuService {
                     },
                     {
                         label: $t('contracts.title'),
-                        icon: 'pi pi-fw pi-copy',
+                        icon: 'fa-solid fa-file-signature',
                         to: '/documents/contracts'
                     },
                     {
@@ -140,21 +140,21 @@ export class MenuService {
             },
             {
                 label: $t('science.activity'),
-                icon: 'fa-solid fa-microscope',
+                icon: 'fa-solid fa-atom',
                 items: [
                     {
                         label: $t('science.scientistsProfile'),
-                        icon: 'fas fa-user',
+                        icon: 'fa-solid fa-user-tie',
                         to: '/science/scientists'
                     },
                     {
                         label: $t('scienceWorks.title'),
-                        icon: 'fa-solid fa-atom',
+                        icon: 'fa-solid fa-file-lines',
                         to: '/documents/catalog/scienceWorks'
                     },
                     {
                         label: $t('dissertation.title'),
-                        icon: 'fa-solid fa-school-circle-check',
+                        icon: 'fa-solid fa-landmark',
                         visible: this.findRole('dissertation_chief') || this.isRoleGroupMember("dissertation_council") || this.findRole('main_administrator'),
                         items: [
                             {
@@ -174,7 +174,7 @@ export class MenuService {
                 ]},
             {
                 label: $t('workPlan.plans'),
-                icon: 'pi pi-fw pi-folder',
+                icon: 'fa-solid fa-list-check',
                 to: '/work-plan',
                 visible: !this.findRole("student")
             },
