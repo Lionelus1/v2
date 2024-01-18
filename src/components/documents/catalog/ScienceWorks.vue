@@ -1,5 +1,5 @@
 <template>
-  <ProgressBar v-if="loading" mode="indeterminate" class="progress-bar"/>
+  <ProgressSpinner v-if="loading" class="progress-spinner" strokeWidth="5"/>
   <div class="flex flex-row mb-3">
     <div v-if="!scientist" class="arrow-icon" @click="$router.back()">
       <i class="fas fa-arrow-left"></i>
@@ -7,33 +7,13 @@
     <h3 class="m-0">{{ $t("scienceWorks.title") }}</h3>
   </div>
   <BlockUI :blocked="loading" class="card">
-    <Toolbar class="p-1">
-      <template #start>
-        <div class="flex flex-wrap gap-2">
-          <Button class="p-button-info align-items-center" style="padding: 0.25rem 1rem;"
-                  @click="openDocument" :disabled="!currentDocument">
-            <i class="fa-regular fa-address-card" /> &nbsp;{{ $t("scienceWorks.buttons.card") }}</Button>
-          <Button class="p-button-info align-items-center" style="padding: 0.25rem 1rem;"
-                  @click="(event) => this.$refs.newPublicationMenu.toggle(event)"
-                  v-if="!scientist">
-            <i class="fa-solid fa-plus" /> &nbsp;{{ $t("scienceWorks.buttons.newPublication") }}</Button>
-<!--          <Button class="p-button-info align-items-center" style="padding: 0.25rem 1rem;"-->
-<!--                  @click="open('generateListDialog')">-->
-<!--            <i class="fa-solid fa-print" /> &nbsp;{{ $t("scienceWorks.buttons.generateListDialog") }}</Button>-->
-        </div>
-      </template>
+    <Menubar class="p-1" :model="mainMenu" style="z-index: 2">
       <template #end>
-        <div class="flex flex-wrap gap-2">
-          <Button class="p-button-info align-items-center" style="padding: 0.25rem 1rem;"
-                  @click="(event) => this.$refs.koksnvoMenu.toggle(event)"
-                  v-if="!scientist">
-            <i class="fa-solid fa-book" /> &nbsp;{{ $t("scienceWorks.buttons.koksnvo") }}</Button>
-          <Button class="align-items-center" :class="{'p-button-success': filter.applied, 'p-button-info': !filter.applied}"
-                  style="padding: 0.25rem 1rem;" @click="toggle('filterOverlayPanel', $event)">
-            <i class="fa-solid fa-filter" /> &nbsp;{{ $t("scienceWorks.buttons.filter") }}</Button>
-        </div>
+        <Button class="align-items-center" :class="{'p-button-success p-button-outlined': filter.applied,
+          'p-button-secondary p-button-text': !filter.applied}" @click="toggle('filterOverlayPanel', $event)">
+          <i class="fa-solid fa-filter" /> &nbsp;{{ $t("scienceWorks.buttons.filter") }}</Button>
       </template>
-    </Toolbar>
+    </Menubar>
     <DataTable :value="documents" dataKey="id" :rows="rows" :totalRecords="total" :first="first"
                :paginator="true" :paginatorTemplate="paginatorTemplate" :rowsPerPageOptions="[10, 25, 50]"
                :currentPageReportTemplate="currentPageReportTemplate" :lazy="true" :loading="tableLoading"
@@ -73,7 +53,7 @@
       <Column :header="$t('scienceWorks.columns.status')" style="min-width: 150px;">
         <template #body="{data}">
           <div class="flex flex-wrap column-gap-1 row-gap-1">
-            <span :class="'customer-badge status-' + data.docHistory.code">
+            <span v-if="getScienceWorkTypeRaw(data) !== Enum.ScienceWorkType.ScopusArticle" :class="'customer-badge status-' + data.docHistory.code">
               {{ data.docHistory[$i18n.locale === 'en' ? 'stateEn' : $i18n.locale === 'ru' ? 'stateRus' : 'stateKaz'] }}
             </span>
             <span v-if="getScienceWorkTypeRaw(data) === Enum.ScienceWorkType.ScopusArticle" class="customer-badge status-status_signed">Scopus</span>
@@ -182,12 +162,6 @@
       <Button class="p-button-secondary" :label="$t('common.cancel')" @click="close('newPublicationDialog')" />
     </template>
   </Dialog>
-  <!-- generateListDialog -->
-
-  <!-- newPublicationMenu -->
-  <Menu ref="newPublicationMenu" :model="newPublicationMenu" :popup="true" />
-  <!-- koksnvoMenu -->
-  <Menu ref="koksnvoMenu" :model="koksnvoMenu" :popup="true" />
   <!-- koksnvoEditionsSidebar -->
   <Sidebar v-model:visible="visibility.koksnvoEditionsSidebar" :title="$t('science.publicationsRecommendedQACFSHE')" position="right" class="p-sidebar-lg"  style="overflow-y: scroll">
     <TabView>
@@ -289,7 +263,6 @@ export default {
         documentInfoSidebar: false,
         scienceWorksPageSidebar: false,
         newPublicationDialog: false,
-        generateListDialog: false,
         koksnvoEditionsSidebar: false,
         newKoksnvoEdition: false,
         koksnvoRequest: false,
@@ -325,42 +298,67 @@ export default {
       statuses: [Enum.StatusesArray.StatusCreated, Enum.StatusesArray.StatusInapproval, Enum.StatusesArray.StatusApproved,
         Enum.StatusesArray.StatusRevision, Enum.StatusesArray.StatusSigning, Enum.StatusesArray.StatusSigned],
 
+      mainMenu: [
+        {
+          label: this.$t("scienceWorks.buttons.card"),
+          icon: "fa-regular fa-address-card",
+          command: () => { this.openDocument() },
+          disabled: () => !this.currentDocument,
+        },
+        {
+          label: this.$t("scienceWorks.buttons.newPublication"),
+          icon: "fa-solid fa-plus",
+          items: [
+            {
+              label: this.$t('scienceWorks.menu.newArticle'),
+              command: () => { this.open('newPublicationDialog') },
+            },
+            {
+              label: this.$t('scienceWorks.menu.import'),
+              items: [
+                {
+                  label: this.$t('scienceWorks.menu.importFromPlatonus'),
+                  command: () => { this.importFromPlatonus(); },
+                },
+                {
+                  label: this.$t('scienceWorks.menu.importFromScopus'),
+                  command: () => { this.importFromScopus(); },
+                }
+              ]
+            },
+          ],
+          visible: !this.scientist,
+        },
+        {
+          label: this.$t("scienceWorks.buttons.generateListDialog"),
+          icon: "fa-solid fa-print",
+          command: () => { this.$router.push('/documents/catalog/scienceWorksList'); },
+          visible: !this.scientist,
+        },
+        {
+          label: this.$t("scienceWorks.buttons.koksnvo"),
+          icon: "fa-solid fa-book",
+          items: [
+            {
+              label: this.$t('scienceWorks.menu.newPublicationsKoksnvo'),
+              command: () => { this.open('koksnvoRequest'); },
+            },
+            {
+              label: this.$t('scienceWorks.menu.publicationsKoksnvo'),
+              command: () => { this.open('koksnvoEditionsSidebar'); this.getKoksnvoEditions(); this.getKoksnvoRequests() },
+            },
+            {
+              label: this.$t('scienceWorks.menu.myRequests'),
+              command: () => { this.open('myKoksnvoRequests'); },
+            },
+          ],
+          visible: !this.scientist,
+        }
+      ],
+
       newPublicationType: null,
       pubTypes: [Enum.ScienceWorkType.Free, Enum.ScienceWorkType.Article, Enum.ScienceWorkType.Textbooks,
         Enum.ScienceWorkType.Monograph, Enum.ScienceWorkType.PublicationKOKSNVO],
-      newPublicationMenu: [
-        {
-          label: this.$t('scienceWorks.menu.newArticle'),
-          command: () => { this.open('newPublicationDialog') },
-        },
-        {
-          label: this.$t('scienceWorks.menu.import'),
-          items: [
-            {
-              label: this.$t('scienceWorks.menu.importFromPlatonus'),
-              command: () => { this.importFromPlatonus(); },
-            },
-            {
-              label: this.$t('scienceWorks.menu.importFromScopus'),
-              command: () => { this.importFromScopus(); },
-            }
-          ]
-        },
-      ],
-      koksnvoMenu: [
-        {
-          label: this.$t('scienceWorks.menu.newPublicationsKoksnvo'),
-          command: () => { this.open('koksnvoRequest'); },
-        },
-        {
-          label: this.$t('scienceWorks.menu.publicationsKoksnvo'),
-          command: () => { this.open('koksnvoEditionsSidebar'); this.getKoksnvoEditions(); this.getKoksnvoRequests() },
-        },
-        {
-          label: this.$t('scienceWorks.menu.myRequests'),
-          command: () => { this.open('myKoksnvoRequests'); },
-        },
-      ],
 
       koksnvo: {
         loading: false,
@@ -386,7 +384,8 @@ export default {
     this.$emit('apply-flex', true);
 
     let oldPath = this.$router.options.history.state.forward;
-    if (oldPath && oldPath.indexOf('/documents/scienceWorks/') === 0) {
+    if (oldPath && (oldPath.indexOf('/documents/scienceWorks/') === 0 ||
+      oldPath.indexOf('/documents/catalog/scienceWorksList') === 0)) {
       let filter = localStorage.getItem('scienceWorksFilter');
       if (filter) {
         this.filter = JSON.parse(filter);
@@ -405,6 +404,9 @@ export default {
         this.page = currentPage.page;
         this.rows = currentPage.rows;
       }
+    } else if (this.$route.path === '/documents/catalog/scienceWorks') {
+      this.filter.author = [JSON.parse(localStorage.getItem("loginedUser"))];
+      this.filter.applied = true;
     } else if (this.scientist) {
       this.filter.author = [this.scientist];
       this.filter.applied = true;
@@ -840,10 +842,10 @@ export default {
 }
 </script>
 <style scoped>
-.progress-bar {
+.progress-spinner {
   position: absolute;
-  height: 0.5rem;
-  width: 100%;
+  top: 0; bottom: 0; left: 0; right: 0;
+  margin: auto;
   z-index: 1102;
 }
 .arrow-icon {

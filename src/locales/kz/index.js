@@ -1677,7 +1677,8 @@ export default {
     personalData: 'Жеке ақпарат',
     yearPeriod:'Период годов',
     scienceWorks: {
-        title: "Ғылыми жұмыстар тізімі",
+        title: "Ғылыми жұмыстар",
+        titleList: "Ғылыми жұмыстар тізімі",
         publicationType: "Ғылыми жұмыс түрі",
         editionTypes: {
             digital: "Электрондық",
@@ -1695,6 +1696,7 @@ export default {
             clear: "Тазарту",
             search: "Іздеу",
             koksnvo: "ҒЖБССҚК",
+            newList: "Жаңа тізім",
         },
         menu: {
             newArticle: "Жаңасын қосу",
@@ -1706,14 +1708,14 @@ export default {
             import: "Импорт",
         },
         columns: {
-            name: "Атауы",
-            type: "Жұмыс түрі",
+            name: "Жарияланым атауы",
+            type: "Жарияланым түрі",
             author: "Автор",
             year: "Жылы",
             status: "Статус",
         },
         filter: {
-            documentName: "Атауы",
+            documentName: "Жарияланым атауы",
             author: "Автор",
             status: "Статус",
             years: "Жылдар",
@@ -1721,7 +1723,7 @@ export default {
         types: {
             article: "Мақала",
             monograph: "Монография",
-            scopus_article: "Scopus халықаралық рецензияланатын ғылыми журналдардағы мақала",
+            scopus_article: "Scopus-тағы жарияланымдар",
             publication_koksnvo: "ҒЖБССҚК ұсынған ғылыми басылым",
             textbooks: "Оқулықтар / Оқыту құралдары / Оқыту құралдары / Семинарлар",
             free: "Ғылыми еңбектер",

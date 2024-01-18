@@ -103,8 +103,8 @@
         </div>
       </TabPanel>
       <TabPanel :header="$t('common.show')" :disabled="!contract || !contract.filePath || contract.filePath.length < 1">
-        <div class="flex-grow-1">
-          <embed :src="pdf" style="width: 100%; height: 100%" v-if="pdf" type="application/pdf"/>
+        <div class="flex-grow-1 flex flex-row align-items-stretch">
+          <embed :src="pdf" style="width: 100%;" v-if="pdf" type="application/pdf"/>
         </div>
       </TabPanel>
     </TabView>

@@ -134,6 +134,12 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
+                path: '/documents/catalog/scienceWorksList',
+                name: 'ScienceWorksList',
+                component: load('documents/catalog/ScienceWorksList'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
                 path: '/documents/doctemplate',
                 name: '/documents/doctemplate',
                 component: load('documents/DocTemplate'),
@@ -167,6 +173,12 @@ const routes = [
                 path: '/documents/scienceWorks/:uuid',
                 name: 'ScienceWorksPage',
                 component: load('documents/pages/ScienceWorksPage'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/documents/scienceWorksList/:uuid',
+                name: 'ScienceWorksListPage',
+                component: load('documents/pages/ScienceWorksListPage'),
                 beforeEnter: ifAuthenticated,
             },
             {

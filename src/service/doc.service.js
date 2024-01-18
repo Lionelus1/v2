@@ -118,6 +118,11 @@ export class DocService {
     getDocumentsV2(data) {
         return api.post("/documents", data, {headers: getHeader()});
     }
+
+    getDocumentsIdsV2(data) {
+        return api.post("/documents/ids", data, {headers: getHeader()});
+    }
+
     getDocumentV2(data) {
         return api.post("/document/get", data, {headers: getHeader()});
     }
