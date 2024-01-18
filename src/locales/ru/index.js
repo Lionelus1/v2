@@ -1532,7 +1532,8 @@ export default {
     personalData: 'Персональные сведения',
     yearPeriod:'Период годов',
     scienceWorks: {
-        title: "Список научных работ",
+        title: "Научные работы",
+        titleList: "Список научных работ",
         publicationType: "Вид научной работы",
         editionTypes: {
             digital: "Электронный",
@@ -1549,7 +1550,8 @@ export default {
             filter: "Фильтр",
             clear: "Очистить",
             search: "Поиск",
-            koksnvo: "КОКСНВО"
+            koksnvo: "КОКСНВО",
+            newList: "Новый список",
         },
         menu: {
             newArticle: "Создать новую",
@@ -1561,14 +1563,14 @@ export default {
             import: "Импорт",
         },
         columns: {
-            name: "Имя",
-            type: "Тип работы",
+            name: "Название публикации",
+            type: "Тип публикации",
             author: "Автор",
             year: "Год",
             status: "Статус",
         },
         filter: {
-            documentName: "Имя",
+            documentName: "Название публикации",
             author: "Автор",
             status: "Статус",
             years: "Годы",
@@ -1576,7 +1578,7 @@ export default {
         types: {
             article: "Статья",
             monograph: "Монография",
-            scopus_article: "Статья в международных рецензируемых научных журналах Scopus",
+            scopus_article: "Публикации в Scopus",
             publication_koksnvo: "Издание, рекомендуемое КОКСНВО",
             textbooks: "Учебники / Учебные пособия / Учебно-методические пособия / Практикумы",
             free: "Научные труды",
