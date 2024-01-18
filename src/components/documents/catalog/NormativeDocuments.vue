@@ -138,7 +138,7 @@
   
 </template>
 <script>
-import axios from 'axios';
+import api from '@/service/api';
 
 import { FilterMatchMode } from "primevue/api";
 import { getHeader, smartEnuApi, findRole } from "@/config/config";
@@ -303,7 +303,7 @@ export default {
         this.expandedKeys = {}
       }
 
-      axios.post(smartEnuApi + '/folders', {
+      api.post('/folders', {
         folderType: Enum.FolderType.NormativeDocuments,
         page: null,
         rows: null,
@@ -358,7 +358,7 @@ export default {
     getFiles(parent) {
       this.loading = true;
 
-      axios.post(smartEnuApi + '/documents', {
+      api.post('/documents', {
         sourceType: null,
         docType: Enum.DocType.NormativeDoc,
         lang: null,
@@ -502,7 +502,7 @@ export default {
         accept: () => {
           this.loading = true
 
-          axios.post(smartEnuApi + '/doc/deleteFolder', {
+          api.post('/doc/deleteFolder', {
             id: this.selectedNode.id,
             hide: false,
           }, {
@@ -539,7 +539,7 @@ export default {
         accept: () => {
           this.loading = true
 
-          axios.post(smartEnuApi + '/doc/deleteFolder', {
+          api.post('/doc/deleteFolder', {
             id: this.selectedNode.id,
             hide: true,
           }, {
@@ -571,7 +571,7 @@ export default {
 
       this.loading = true
 
-      axios.post(smartEnuApi + '/doc/showFolder', {
+      api.post('/doc/showFolder', {
         id: this.selectedNode.id
       }, {
         headers: getHeader()
@@ -605,7 +605,7 @@ export default {
         accept: () => {
           this.loading = true
 
-          axios.post(smartEnuApi + '/doc/deleteFile', {
+          api.post('/doc/deleteFile', {
             id: this.selectedNode.id,
             hide: false,
           }, {
@@ -642,7 +642,7 @@ export default {
         accept: () => {
           this.loading = true
 
-          axios.post(smartEnuApi + '/doc/deleteFile', {
+          api.post('/doc/deleteFile', {
             id: this.selectedNode.id,
             hide: true,
           }, {
@@ -674,7 +674,7 @@ export default {
 
       this.loading = true
 
-      axios.post(smartEnuApi + '/doc/showFile', {
+      api.post('/doc/showFile', {
         id: this.selectedNode.id
       }, {
         headers: getHeader()
@@ -718,7 +718,7 @@ export default {
 
       this.loading = true
 
-      axios.post(smartEnuApi + '/downloadFile', {
+      api.post('/downloadFile', {
         filePath: this.selectedNode.filePath
       }, {
         headers: getHeader()

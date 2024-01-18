@@ -119,7 +119,7 @@
   </Dialog>
 </template>
 <script>
-import axios from 'axios';
+import api from '@/service/api';
 
 import { getHeader, smartEnuApi, apiDomain } from "@/config/config";
 import { getShortDateString } from "@/helpers/helper";
@@ -207,7 +207,7 @@ export default {
     getReferences() {
       this.tableLoading = true
 
-      axios.post(smartEnuApi + '/documents', {
+      api.post('/documents', {
         sourceType: null,
         docType: Enum.DocType.Reference,
         lang: null,
@@ -253,7 +253,7 @@ export default {
       this.close('getRefStep2Dialog');
       this.loading = true
 
-      axios.post(smartEnuApi + '/document/create', {
+      api.post('/document/create', {
         templateId: this.selectedTemplate.id,
         folderId: null,
         docType: Enum.DocType.Reference,

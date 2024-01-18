@@ -62,7 +62,7 @@
   </div>
 </template>
 <script>
-import axios from 'axios';
+import api from '@/service/api';
 
 import { getHeader, smartEnuApi } from "@/config/config";
 import Enum from "@/enum/docstates/index";
@@ -173,7 +173,7 @@ export default {
     getFolders() {
       this.folderTableLoading = true
 
-      axios.post(smartEnuApi + '/folders', {
+      api.post('/folders', {
         folderType: Enum.FolderType.References,
         page: this.folderPage,
         rows: this.folderRows,
@@ -225,7 +225,7 @@ export default {
 
       this.fileTableLoading = true
 
-      axios.post(smartEnuApi + '/document/templates', {
+      api.post('/document/templates', {
         page: this.filePage,
         rows: this.fileRows,
         folderId: this.parentFolder.id,

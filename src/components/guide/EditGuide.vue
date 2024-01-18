@@ -38,7 +38,7 @@
 </template>
 
 <script>
-    import axios from "axios";
+    import api from "@/service/api";
     import {getHeader, smartEnuApi} from "@/config/config";
 
     export default {
@@ -68,7 +68,7 @@
                 if (this.formValid.length > 0) {
                     return;
                 }
-                axios.post(smartEnuApi + "/manual/save", this.bodyParams, {
+                api.post("/manual/save", this.bodyParams, {
                     headers: getHeader(),
                 }).then((response) => {
                     if (response.data !== null) {
@@ -90,7 +90,7 @@
             },
             getGuides(parentId, parent) {
                 this.lazyParams.parentId = parentId
-                axios.post(smartEnuApi + "/manual/getManuals", this.lazyParams, {
+                api.post("/manual/getManuals", this.lazyParams, {
                         headers: getHeader()}).then((response) => {
                         if (parentId !== null) {
                             parent.children = response.data.manuals;

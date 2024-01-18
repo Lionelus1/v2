@@ -36,7 +36,7 @@
 
 <script>
 	import {smartEnuApi, getHeader} from "@/config/config";
-	import axios from 'axios';
+	import api from '@/service/api';
 
 	export default {
     inheritAttrs: false,
@@ -91,13 +91,13 @@
             if (this.cancelToken && typeof this.cancelToken != typeof undefined) {
                 this.cancelToken.cancel("Operation canceled due to new request.")
             }
-            this.cancelToken = axios.CancelToken.source()
+            this.cancelToken = api.CancelToken.source()
 			this.foundSpecialists = null;
 			this.$refs.op.hide();
 			this.$refs.op.toggle(event);
 			this.searchInProgres = true;
 			let url = "/getspecialities";
-			axios.post(smartEnuApi+url, { 
+			api.post(url, { 
                 "name" : inputValue, 
                 "level" : this.educationLevel
                 }, 
@@ -112,7 +112,7 @@
 
             })
 			.catch((error) => {
-                if(!axios.isCancel(error)) {
+                if(!api.isCancel(error)) {
                 this.$toast.add({
                 severity: "error",
                 summary: "getSpeciliatyListError:\n" + error,

@@ -461,12 +461,12 @@
 <script>
 //import WorkPlanQrPdf from "@/components/work_plan/WorkPlanQrPdf";
 import {FilterMatchMode, FilterOperator} from "primevue/api";
-import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo"
 import html2pdf from "html2pdf.js";
 import CandidateDocument from "./CandidateDocument";
-
+import { CandidateVacancyService } from "../../../service/candidate.vacancy.service";
+import {CandidateService} from "../../../service/candidate.service"
 export default {
   name: "CandidateVacancy",
   components: {DocSignaturesInfo},
@@ -518,6 +518,8 @@ export default {
         psychoCert: false,
         gcCert: false,
       },
+      candidateVacancy: new CandidateVacancyService(),
+      candidateService: new CandidateService()
     }
   },
   methods: {
@@ -531,8 +533,7 @@ export default {
     getVacancies() {
       this.loading = true
       this.lazyParams.countMode = null;
-      axios.post(smartEnuApi + "/vacancy/user",
-          this.lazyParams, {headers: getHeader()}).then((response) => {
+      this.candidateVacancy.getVacancies(this.lazyParams).then((response) => {
         this.vacancies = response.data.vacancies;
         this.count = response.data.total;
         this.loading = false;
@@ -553,7 +554,7 @@ export default {
      ******************** GET PETITION
      */
     getPetition(data) {
-      axios.post(smartEnuApi + "/vacancy/petition",
+      this.candidateVacancy.getPetition(
           {
             candidateId: data.candidateRelation[0].candidate.id,
             vacancyId: data.id
@@ -694,7 +695,7 @@ export default {
         fd.append('psychoCert', this.documents.psychoCert)
         fd.append('gcCert', this.documents.gcCert)
         fd.append('mId', this.documents.mId)
-        axios.post(smartEnuApi + '/candidate/documents/create', fd, {headers: getHeader()}).then(_ => {
+        this.candidateService.documentsCreate(fd).then(_ => {
           this.visible.documents = false
           this.vacancy = null
         }).catch(error => {

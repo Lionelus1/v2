@@ -95,7 +95,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "@/service/api";
 import {getHeader, smartEnuApi} from "@/config/config";
 
 export default {
@@ -148,8 +148,8 @@ export default {
       fd.append("idImage", this.file);
       if (this.validateForm()) {
         let path = !this.value.id ? "/candidate/id/create" : "/candidate/id/update"
-        axios
-            .post(smartEnuApi + path, fd, {headers: getHeader(),})
+        api
+            .post(path, fd, {headers: getHeader(),})
             .then(res => {
               this.emitter.emit("id", true);
             }).catch(error => {

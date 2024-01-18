@@ -28,7 +28,6 @@
 
 <script>
 
-  import axios from 'axios';
   import {getHeader,header, smartEnuApi,etspTokenEndPoint,socketApi} from "../config/config";
   import QrcodeVue from "qrcode.vue";
 

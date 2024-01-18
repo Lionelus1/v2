@@ -227,7 +227,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "@/service/api";
 import {authHeader, findRole, getHeader, smartEnuApi} from "@/config/config";
 import {FilterMatchMode, FilterOperator} from "primevue/api";
 
@@ -283,7 +283,7 @@ export default {
   methods: {
     getCategories() {
       this.categories = [];
-      axios.get(smartEnuApi + "/allCategories", {headers: getHeader()}).then((response) => {
+      api.get("/allCategories", {headers: getHeader()}).then((response) => {
         this.categories = response.data;
         this.categories = this.categories.reverse();
         this.loading = false;
@@ -299,7 +299,7 @@ export default {
       });
     },
     deleteNewsCategory(id) {
-      axios.post(smartEnuApi + "/delNewsCat", {id: id}, {headers: getHeader()}).then((response) => {
+      api.post("/delNewsCat", {id: id}, {headers: getHeader()}).then((response) => {
         if (response.status === 200) {
           this.getCategories();
         }
@@ -319,7 +319,7 @@ export default {
         this.category.bgColor = this.bgColor;
       if (!this.category.textColor)
         this.category.textColor = this.textColor;
-      axios.post(smartEnuApi + "/categories", this.category, {headers: getHeader()})
+        api.post("/categories", this.category, {headers: getHeader()})
           .then((response) => {
             if (response.data !== null) {
               this.$toast.add({

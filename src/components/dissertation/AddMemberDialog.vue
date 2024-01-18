@@ -64,7 +64,7 @@
 import RolesByName from "@/components/smartenu/RolesByName.vue";
 import FindDoctorals from "@/components/dissertation/FindDoctorals.vue";
 import {ref} from "vue";
-import axios from "axios";
+import api from "@/service/api";
 import {getHeader, smartEnuApi} from "@/config/config";
 import {useStore} from "vuex";
 import {useToast} from "primevue/usetoast";
@@ -103,7 +103,7 @@ const addMember = () => {
       });
       request.is_reviewer = selectedRole.value.name !== "dissertation_council_consultant"
     }
-    axios.post(smartEnuApi + "/dissertation/addCouncilMember", request, {headers: getHeader()}).then((res) => {
+    api.post("/dissertation/addCouncilMember", request, {headers: getHeader()}).then((res) => {
       selectedMembers.value[0].memberID = res.data;
       selectedMembers.value[0].roles = []
       selectedMembers.value[0].roles.push(JSON.parse(JSON.stringify(selectedRole.value)))

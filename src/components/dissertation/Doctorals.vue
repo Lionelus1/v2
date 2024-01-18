@@ -734,7 +734,7 @@
 <script>
 import { mapState } from "vuex";
 import Enums from "@/enum/docstates/index";
-import axios from "axios";
+import api from "@/service/api";
 import html2pdf from "html2pdf.js";
 
 import { downloadFile, findRole, getHeader, smartEnuApi } from "@/config/config";
@@ -933,7 +933,7 @@ export default {
         header: this.$t("common.confirm"),
         icon: 'pi pi-exclamation-triangle',
         accept: () => {
-          axios.post(smartEnuApi + "/dissertation/deleteCouncilMember",
+          api.post("/dissertation/deleteCouncilMember",
             { id: memeberId }, { headers: getHeader(), }).then((response) => {
               this.loadCouncil();
             }).catch((error) => {
@@ -1005,9 +1005,9 @@ export default {
       this.backcolor = "background-color: var(--teal-100);";
     },
     memberRegister() {
-      axios
+      api
         .post(
-          smartEnuApi + "/dissertation/memberregister",
+          "/dissertation/memberregister",
           {
             userID: this.$store.state.loginedUser.userID,
             dissertationID: this.selectedDoctoral.dissertation.id
@@ -1026,9 +1026,9 @@ export default {
         });
     },
     getMemberState() {
-      axios
+      api
         .post(
-          smartEnuApi + "/dissertation/getMemberState",
+          "/dissertation/getMemberState",
           {
             userID: this.$store.state.loginedUser.userID,
             dissertationID: this.selectedDoctoral.dissertation.id
@@ -1068,9 +1068,9 @@ export default {
         header: this.$t("common.confirm"),
         icon: "pi pi-exclamation-triangle",
         accept: () => {
-          axios
+          api
             .post(
-              smartEnuApi + "/dissertation/deleteDissertation",
+              "/dissertation/deleteDissertation",
               { id: this.selectedDoctoral.dissertation.id },
               {
                 headers: getHeader(),
@@ -1143,7 +1143,7 @@ export default {
 
       // this.lazyParams.search_user_id = 
       //this.lazyParams.countMode = null;
-      axios.post(smartEnuApi + "/dissertation/getdoctorals", this.lazyParams, { headers: getHeader() }).then((response) => {
+      api.post("/dissertation/getdoctorals", this.lazyParams, { headers: getHeader() }).then((response) => {
         this.DoctoralList = response.data;
         if (this.DoctoralList.length > 0 && this.doctoralCount < 0) {
           this.doctoralCount = this.DoctoralList[0].count
@@ -1160,9 +1160,9 @@ export default {
         councilID: this.selectedDoctoral.councilID,
         dissertationID: this.selectedDoctoral.dissertation.id
       }
-      axios
+      api
         .post(
-          smartEnuApi + "/dissertation/startRegistration",
+          "/dissertation/startRegistration",
           req,
           { headers: getHeader() }
         )
@@ -1200,8 +1200,8 @@ export default {
       };
 
       try {
-        const response = await axios.post(
-          `${smartEnuApi}/dissertation/newStartRegistration`,
+        const response = await api.post(
+          `/dissertation/newStartRegistration`,
           req,
           { headers: getHeader() }
         );
@@ -1241,9 +1241,9 @@ export default {
         dissertationID: this.selectedDoctoral.dissertation.id,
         state: state
       }
-      axios
+      api
         .post(
-          smartEnuApi + "/dissertation/changeDissertationState",
+          "/dissertation/changeDissertationState",
           req,
           { headers: getHeader() }
         )
@@ -1280,9 +1280,9 @@ export default {
         password: this.password,
         vote: Number(this.currentMemberVote)
       }
-      axios
+      api
         .post(
-          smartEnuApi + "/dissertation/vote",
+          "/dissertation/vote",
           req,
           { headers: getHeader() }
         )
@@ -1310,9 +1310,9 @@ export default {
         step: this.selectedDoctoral.dissertation.state == this.dissertationState.VotingRestarted ? 2 : 1,
         password: this.checkPassword,
       }
-      axios
+      api
         .post(
-          smartEnuApi + "/dissertation/checkMyVoice",
+          "/dissertation/checkMyVoice",
           req,
           { headers: getHeader() }
         )
@@ -1351,9 +1351,9 @@ export default {
         step: this.selectedDoctoral.dissertation.state == this.dissertationState.Accepted || this.selectedDoctoral.dissertation.state == this.dissertationState.Reject ? 1 : 2,
 
       }
-      axios
+      api
         .post(
-          smartEnuApi + "/dissertation/getVoteInformation",
+          "/dissertation/getVoteInformation",
           req,
           { headers: getHeader() }
         )
@@ -1382,9 +1382,9 @@ export default {
       var req = {
         dissertationID: this.selectedDoctoral.dissertation.id
       }
-      axios
+      api
         .post(
-          smartEnuApi + "/dissertation/getRegistrationInfo",
+          "/dissertation/getRegistrationInfo",
           req,
           { headers: getHeader() }
         )
@@ -1428,9 +1428,9 @@ export default {
           meetingTime: this.selectedDoctoral.meetingTime,
           language: this.selectedDoctoral.dissertation.language
         }
-        axios
+        api
           .post(
-            smartEnuApi + "/dissertation/setMeetingTime",
+            "/dissertation/setMeetingTime",
             request,
             {
               headers: getHeader(),
@@ -1484,9 +1484,9 @@ export default {
         this.doctoral.speciality = this.selectedSpecialities[0]
         data.append("doctoral", JSON.stringify(this.doctoral))
 
-        axios
+        api
           .post(
-            smartEnuApi + "/dissertation/addDoctoral",
+            "/dissertation/addDoctoral",
             data,
             {
               headers: getHeader(),
@@ -1515,7 +1515,7 @@ export default {
         id: this.selectedDoctoral.councilID,
         dissertation_id: this.selectedDoctoral.dissertation.id
       }
-      axios.post(smartEnuApi + "/dissertation/getdissertationmembers", data, { headers: getHeader() }).then((response) => {
+      api.post("/dissertation/getdissertationmembers", data, { headers: getHeader() }).then((response) => {
         this.memberList = response.data;
       }).catch((error) => {
         if (error && error.response && error.response.status == 401) {

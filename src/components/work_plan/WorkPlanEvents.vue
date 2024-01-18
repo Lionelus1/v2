@@ -171,7 +171,7 @@
 
 <script>
 import WorkPlanEventAdd from "@/components/work_plan/WorkPlanEventAdd";
-import axios from "axios";
+import api from "@/service/api";
 import {getHeader, smartEnuApi} from "@/config/config";
 import WorkPlanEventTree from "@/components/work_plan/WorkPlanEventTree";
 import WorkPlanApprove from "@/components/work_plan/WorkPlanApprove";
@@ -300,7 +300,7 @@ export default {
   methods: {
     getWorkPlanEvents() {
       this.loading = true;
-      axios.post(smartEnuApi + `/workPlan/getEvents`, {work_plan_id: parseInt(this.work_plan_id)}, {headers: getHeader()})
+      api.post(`/workPlan/getEvents`, {work_plan_id: parseInt(this.work_plan_id)}, {headers: getHeader()})
           .then(res => {
             this.data = res.data;
             if (this.data) {
@@ -328,7 +328,7 @@ export default {
       })
     },
     getWorkPlanApprovalUsers() {
-      axios.get(smartEnuApi + `/workPlan/getApprovalUsers/${parseInt(this.work_plan_id)}`)
+      api.get(`/workPlan/getApprovalUsers/${parseInt(this.work_plan_id)}`)
           .then(res => {
             if (res.data) {
               this.approval_users = res.data;
@@ -356,7 +356,7 @@ export default {
       });
     },
     getPlan() {
-      axios.get(smartEnuApi + `/workPlan/getWorkPlanById/${this.work_plan_id}`, {headers: getHeader()})
+      api.get(`/workPlan/getWorkPlanById/${this.work_plan_id}`, {headers: getHeader()})
           .then(res => {
             this.plan = res.data;
             if (this.plan && this.plan.is_finish) {
@@ -383,7 +383,7 @@ export default {
     },
     finish() {
       this.loading = true;
-      axios.post(smartEnuApi + '/workPlan/finishEvent',
+      api.post('/workPlan/finishEvent',
           {work_plan_id: parseInt(this.work_plan_id)},
           {headers: getHeader()}
       ).then(res => {
@@ -486,7 +486,7 @@ export default {
       });
     },
     remove(event_id) {
-      axios.post(smartEnuApi + `/workPlan/removeEvent/${event_id}`, {}, {headers: getHeader()}).then(res => {
+      api.post(`/workPlan/removeEvent/${event_id}`, {}, {headers: getHeader()}).then(res => {
         if (res.data.is_success) {
           this.$toast.add({severity: 'success', summary: this.$t('common.success'), life: 3000});
           this.getPlan();

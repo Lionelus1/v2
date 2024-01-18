@@ -71,7 +71,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
 import {FilterMatchMode} from "primevue/api";
 import * as imageResizeCompress from "image-resize-compress";

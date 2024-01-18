@@ -100,7 +100,7 @@ import VacancyService from "./VacancyService";
 import DocDownload from "./DownloadCandidateDocuments";
 import ApplyActionEdit from "./ApplyActionEdit";
 import html2pdf from "html2pdf.js";
-import axios from "axios";
+import api from "@/service/api";
 import {getHeader, getMultipartHeader, smartEnuApi} from "@/config/config";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo"
 
@@ -196,8 +196,8 @@ export default {
   methods: {
 
     downloadSignedResume() {
-      axios.post(
-          smartEnuApi + '/candidate/resume/download',
+      api.post(
+          '/candidate/resume/download',
           {
             vacancyId: this.vacancy.id,
             candidateId: this.candidateRelation.candidate.id
@@ -228,8 +228,8 @@ export default {
       this.sidebar = true
     },
     viewDocs(data) {
-      axios.post(
-          smartEnuApi + '/candidate/documents/existence',
+      api.post(
+         '/candidate/documents/existence',
           {
             vacancyId: this.vacancy.id,
             candidateId: data.candidate.id

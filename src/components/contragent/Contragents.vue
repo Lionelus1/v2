@@ -227,7 +227,7 @@
 </template>
 <script>
 import { getHeader, smartEnuApi } from "@/config/config";
-import axios from "axios";
+import api from "@/service/api";
 import Bank from "./Bank.vue";
 import Enum from "@/enum/docstates/index";
 import { FilterMatchMode, FilterOperator } from "primevue/api";
@@ -310,8 +310,8 @@ export default {
         agenttype: this.agentType.value,
       };
       this.loading = true
-      axios
-        .post(smartEnuApi + url, req, { headers: getHeader() })
+      api
+        .post(url, req, { headers: getHeader() })
         .then((res) => {
           this.contragents = res.data;
           this.loading = false;

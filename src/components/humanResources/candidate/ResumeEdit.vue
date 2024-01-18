@@ -159,7 +159,7 @@ import LanguageEdit from "./subedits/LanguageEdit";
 import ExperienceEdit from "./subedits/ExperienceEdit";
 import RefresherCourseEdit from "./subedits/RefresherCourseEdit";
 import RefereeEdit from "./subedits/RefereeEdit";
-import axios from "axios";
+import api from "@/service/api";
 import {getHeader, smartEnuApi} from "@/config/config";
 import EducationView from "./subviews/EducationView";
 import AcademicDegreeView from "./subviews/AcademicDegreeView";
@@ -303,8 +303,8 @@ export default {
       this.isView.info = true
     },
     createCandidate() {
-      axios
-          .post(smartEnuApi + "/candidate/create", {}, {headers: getHeader(),})
+      api
+          .post("/candidate/create", {}, {headers: getHeader(),})
           .then(res => {
             this.$toast.add({severity: 'success', summary: 'Success', detail: 'Резюме успешно создано', life: 3000});
             this.candidate = {}
@@ -318,8 +318,8 @@ export default {
       });
     },
     deleteCandidate() {
-      axios
-          .post(smartEnuApi + "/candidate/delete", {}, {headers: getHeader(),})
+      api
+          .post("/candidate/delete", {}, {headers: getHeader(),})
           .then(res => {
             this.$toast.add({severity: 'success', summary: 'Success', detail: 'Резюме успешно удалено', life: 3000});
             this.candidate = null

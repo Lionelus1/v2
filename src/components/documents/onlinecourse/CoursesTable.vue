@@ -129,7 +129,6 @@
 </template>
   
 <script>
-import axios from 'axios';
 import Checkbox from '@/main';
 import { OnlineCourseService } from "@/service/onlinecourse.service";
 import { getHeader, smartEnuApi, findRole } from "@/config/config";

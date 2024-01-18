@@ -88,7 +88,7 @@
 </template>
 <script>
 	import { smartEnuApi, getHeader } from "@/config/config";
-  import axios from 'axios';
+  import api from '@/service/api';
 
 	export default {
 		data() {
@@ -116,7 +116,7 @@
 			initRolePositionRels() {
 				this.loading = true
 
-				axios.post(smartEnuApi + '/positionRoleRel', this.getParams, {
+				api.post('/positionRoleRel', this.getParams, {
 					headers: getHeader()
 				}).then(res => {
 					this.rolePositionRels = res.data.positionRoleRel
@@ -155,7 +155,7 @@
 
 				this.loading = true
 
-				axios.post(smartEnuApi + '/positionRoleRel/create', {
+				api.post('/positionRoleRel/create', {
 					positionId: this.position.id,
 					roleId: this.role.id,
 				}, {
@@ -184,7 +184,7 @@
 
 				this.loading = true
 
-				axios.post(smartEnuApi + '/positionRoleRel/delete', {
+				api.post('/positionRoleRel/delete', {
 					id: this.forDeleting.positionRoleRelId
 				}, {
 					headers: getHeader()
@@ -207,7 +207,7 @@
 				})
 			},
 			initPositions() {
-				axios.get(smartEnuApi + '/positionRoleRel/positions', {
+				api.get('/positionRoleRel/positions', {
 					headers: getHeader()
 				}).then(res => {
 					this.positions = res.data
@@ -224,7 +224,7 @@
 				})
 			},
 			initRoles() {
-				axios.get(smartEnuApi + '/positionRoleRel/roles', {
+				api.get('/positionRoleRel/roles', {
 					headers: getHeader()
 				}).then(res => {
 					this.roles = res.data

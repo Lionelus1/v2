@@ -118,7 +118,7 @@
 </template>
 <script>
 import { smartEnuApi, getHeader, findRole } from "@/config/config";
-import axios from "axios";
+import api from "@/service/api";
 import Enum from "@/enum/docstates/index";
 import { FilterMatchMode, FilterOperator } from "primevue/api";
 
@@ -224,8 +224,8 @@ export default {
       let url = "/contragent/organizations";
       this.loading =true;
       this.lazyParams.filters = this.filters
-      axios
-        .post(smartEnuApi + url, this.lazyParams,  {headers: getHeader()})
+      api
+        .post(url, this.lazyParams,  {headers: getHeader()})
         .then((res) => {
           this.organizations = res.data.organizations;
           this.total = res.data.count

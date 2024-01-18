@@ -92,7 +92,7 @@
 import SignatureQrPdf from "@/components/ncasigner/SignatureQrPdf";
 import {runNCaLayer, makeTimestampForSignature} from "@/helpers/SignDocFunctions"
 
-import axios from "axios";
+import api from "@/service/api";
 import {getHeader, smartEnuApi, socketApi, b64toBlob, findRole} from "@/config/config";
 import html2pdf from "html2pdf.js";
 import DocInfo from "@/components/ncasigner/DocInfo";
@@ -184,8 +184,8 @@ export default {
     this.wsconnect()
     this.emitter.on('downloadCMS', (data) => {
       if (data !== null) {
-        axios
-            .post(smartEnuApi + "/doc/downloadCms",
+        api
+            .post("/doc/downloadCms",
                 {documentUuid: this.doc_id, signatureId: data},
                 {headers: getHeader(),})
             .then(res => {
@@ -221,8 +221,8 @@ export default {
     tabChanged() {
       if (this.active == 1 && this.files.length < 1) { // showFileTab
         if (this.docInfo.isManifest === true) {
-          axios.post(
-              smartEnuApi + "/downloadManifestFiles", {
+          api.post(
+              "/downloadManifestFiles", {
                 docId: this.docInfo.id
               }, {
                 headers: getHeader()
@@ -235,8 +235,8 @@ export default {
                 }
               })
         } else {
-          axios.post(
-              smartEnuApi + "/downloadFile", {
+          api.post(
+              "/downloadFile", {
                 filePath: this.docInfo.filePath
               }, {
                 headers: getHeader()
@@ -255,7 +255,7 @@ export default {
     },
     getData() {
       this.loading = true
-      axios.post(smartEnuApi + `/agreement/getSignInfo`, {
+      api.post(`/agreement/getSignInfo`, {
         doc_uuid: this.doc_id,
       }, {
         headers: getHeader(),
@@ -367,7 +367,7 @@ export default {
     },
     sign() {
       this.signing = true;
-      axios.post(smartEnuApi + "/downloadFile", {
+      api.post("/downloadFile", {
         filePath: this.docInfo.filePath
       }, {
         headers: getHeader()
@@ -396,7 +396,7 @@ export default {
       };
       this.signing = true
 
-      axios.post(smartEnuApi + "/doc/sign", req, {headers: getHeader()})
+      api.post("/doc/sign", req, {headers: getHeader()})
           .then(response => {
             this.signing = false
             this.getData()
@@ -418,7 +418,7 @@ export default {
           })
     },
     getSignatures() {
-      axios.post(smartEnuApi + `/workPlan/getSignatures`, {doc_id: this.plan.doc_id}, {headers: getHeader()}).then(res => {
+      api.post(`/workPlan/getSignatures`, {doc_id: this.plan.doc_id}, {headers: getHeader()}).then(res => {
         if (res.data) {
           this.signatures = res.data;
           const signUser = res.data.find(x => x.userId === this.loginedUserId);
@@ -501,7 +501,7 @@ export default {
       }
 
       this.loading = true
-      axios.post(smartEnuApi + `/doc/sendtorevision`, {
+      api.post(`/doc/sendtorevision`, {
         comment: this.revisionComment,
         docID: this.docInfo.id,
       }, {

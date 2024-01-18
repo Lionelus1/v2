@@ -82,7 +82,7 @@
   </div>
 </template>
 <script>
-import axios from 'axios';
+import api from '@/service/api';
 
 import { getHeader, smartEnuApi, b64toBlob } from "@/config/config";
 import { getLongDateString } from "@/helpers/helper";
@@ -166,7 +166,7 @@ export default {
     initApiCall() {
       this.tableLoading = true
 
-      axios.post(smartEnuApi + '/docrequests', this.requestBody, {
+      api.post('/docrequests', this.requestBody, {
         headers: getHeader()
       }).then(res => {
         this.requests = res.data.docrequests
@@ -196,7 +196,7 @@ export default {
         docParams: this.selectedRequest.doc.newParams,
       };
 
-      axios.post(smartEnuApi + '/docrequest/update', requestBody, {
+      api.post('/docrequest/update', requestBody, {
         headers: getHeader()
       }).then(res => {
         this.selectedRequest.status = status
@@ -204,7 +204,7 @@ export default {
         this.selectedRequest.completedTime = Date.now()
 
         if (status === 1) {
-          axios.post(smartEnuApi + '/document/get', {
+          api.post('/document/get', {
             uuid: this.selectedRequest.doc.uuid,
           }, {
             headers: getHeader() 
@@ -293,7 +293,7 @@ export default {
 
       this.loading = true
 
-      axios.post(smartEnuApi + '/document/download', {
+      api.post('/document/download', {
         uuid: this.selectedRequest.doc.uuid,
       }, {
         headers: getHeader() 

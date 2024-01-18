@@ -61,7 +61,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import api from '@/service/api';
 import {smartEnuApi, getHeader} from "@/config/config";
 
 import ApprovalListControl from '../../roleControl/ApprovalListControl.vue';
@@ -239,7 +239,7 @@ export default {
       this.getApprovalList()
     },
     getApprovalList() {
-      axios.get(smartEnuApi + "/approvalList/get", {
+      api.get("/approvalList/get", {
         headers: getHeader(),
       }).then(response => {
         this.approvalList = response.data

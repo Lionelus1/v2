@@ -48,7 +48,7 @@
 <script setup>
 
   import { ref, defineProps, inject, onMounted } from 'vue';
-  import axios from "axios";
+  import api from "@/service/api";
   import {getHeader, smartEnuApi} from "@/config/config";
   import {useI18n} from "vue-i18n";
   import { useToast } from "primevue/usetoast";
@@ -104,7 +104,7 @@
 
   const getBanks = () => {
       var req = {"id" : 0, "count": 0};
-      axios.post(smartEnuApi + '/contragent/banks', req, {headers: getHeader()}).then(res  => {
+      api.post('/contragent/banks', req, {headers: getHeader()}).then(res  => {
           const data = ref(null)
           if (user.value != null && user.value.bank != null ) {
               data.value = res.data.find(item => item.id == user.value.bank.id);

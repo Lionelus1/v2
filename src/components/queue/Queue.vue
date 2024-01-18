@@ -173,7 +173,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "@/service/api";
 import {  getHeader, smartEnuApi, findRole } from "@/config/config";
 export default {
   name: "Queue",
@@ -221,8 +221,8 @@ export default {
     getQueue(parentID, parent) {  
       this.submitted = true 
       this.lazyParams.parentID = parentID
-      axios
-      .post(smartEnuApi + "/queue/allQueues", this.lazyParams, {
+      api
+      .post("/queue/allQueues", this.lazyParams, {
         headers: getHeader(),
       })
       .then((response) => {
@@ -275,9 +275,9 @@ export default {
       this.getQueue(null,null)
     },
     deleteQueue() {  
-      axios
+      api
         .post(
-          smartEnuApi + "/queue/delQueue",
+          "/queue/delQueue",
           {
             id: this.currentNode.key,
           },
@@ -311,8 +311,8 @@ export default {
       var node = this.queue
       if (!this.validate())
         return           
-        axios
-        .post(smartEnuApi + "/queue/save", this.queue, {
+        api
+        .post("/queue/save", this.queue, {
           headers: getHeader(),          
         })        
         .then((response) => {

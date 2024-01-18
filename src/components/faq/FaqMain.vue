@@ -482,7 +482,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "@/service/api";
 import {FilterMatchMode, FilterOperator} from 'primevue/api';
 import {getHeader, header, smartEnuApi} from "@/config/config";
 import * as imageResizeCompress from "image-resize-compress"; // ES6
@@ -585,8 +585,8 @@ export default {
   methods: {
     getData() {
       this.loading = true;
-      axios
-          .post(smartEnuApi + "/faq/getAllFaq", this.userData, {
+      api
+          .post("/faq/getAllFaq", this.userData, {
             headers: getHeader(),
           })
           .then((response) => {
@@ -624,8 +624,8 @@ export default {
       this.answerFile = event.files[0];
     },
     getDepartmentList() {
-      axios
-          .get(smartEnuApi + "/faq/getDepartmentList", {
+      api
+          .get("/faq/getDepartmentList", {
             headers: getHeader(),
           })
           .then((response) => {
@@ -664,8 +664,8 @@ export default {
       fd.append("faqRequest", JSON.stringify(this.faq));
       fd.append("uploadedFile", this.file);
       fd.append("imageFile", this.imageFile);
-      axios
-          .post(smartEnuApi + "/faq/addFaqRequest", fd, {
+      api
+          .post("/faq/addFaqRequest", fd, {
             headers: getHeader(),
           })
           .then((response) => {
@@ -686,8 +686,8 @@ export default {
           });
     },
     getUserType() {
-      axios
-          .get(smartEnuApi + "/getCurrentUserType", {
+      api
+          .get("/getCurrentUserType", {
             headers: getHeader(),
           })
           .then((response) => {
@@ -712,9 +712,9 @@ export default {
           });
     },
     downloadFile(fileName, fileType) {
-      axios
+      api
           .post(
-              smartEnuApi + "/faq/downloadFile",
+              "/faq/downloadFile",
               {filename: fileName, fileType: fileType},
               {
                 headers: getHeader(),
@@ -743,8 +743,8 @@ export default {
       const fd = new FormData();
       fd.append("faqAnswer", JSON.stringify(this.faqAnswer));
       fd.append("uploadedFile", this.answerFile);
-      axios
-          .post(smartEnuApi + "/faq/addAnswer", fd, {
+      api
+          .post("/faq/addAnswer", fd, {
             headers: getHeader(),
           })
           .then((response) => {
@@ -764,7 +764,7 @@ export default {
           });
     },
     forwardFaq() {
-      axios.post(smartEnuApi + "/faq/forwardFaq", {
+      api.post("/faq/forwardFaq", {
         faqId: this.selectedFaq.id,
         departmentId: this.selectedForwardDep.id
       }, {

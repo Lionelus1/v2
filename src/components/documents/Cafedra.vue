@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import api from '@/service/api';
 import {getHeader, findRole, smartEnuApi} from "@/config/config";
 
 export default {
@@ -89,9 +89,9 @@ export default {
     },
     getPracticeResponsibles() {
         this.respLoading = true;
-        axios
+        api
         .post(
-          smartEnuApi + "/dic/getPracticeResponsibles",{},
+          "/dic/getPracticeResponsibles",{},
           {
             headers: getHeader(),
           }
@@ -122,9 +122,9 @@ export default {
     },
     getPracticeManagers(node) {
         this.managersLoading = true;
-        axios
+        api
         .post(
-          smartEnuApi + "/dic/getPracticeManagers",{groupID: node !=null ? Number(node.key) : null},
+          "/dic/getPracticeManagers",{groupID: node !=null ? Number(node.key) : null},
           {
             headers: getHeader(),
           }
@@ -183,9 +183,9 @@ export default {
             req.groupID = node.id
         }
       
-        axios
+        api
         .post(
-          smartEnuApi + "/dic/setPracticeManager",
+          "/dic/setPracticeManager",
          req,
           {
             headers: getHeader(),
@@ -221,9 +221,9 @@ export default {
             responsibleID: responsibleID,
             eduLevelID: eduLevelID
         }
-        axios
+        api
         .post(
-          smartEnuApi + "/dic/updatePracticeResponsible",
+          "/dic/updatePracticeResponsible",
          req,
           {
             headers: getHeader(),
