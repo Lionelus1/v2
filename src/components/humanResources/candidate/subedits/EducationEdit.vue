@@ -2,9 +2,10 @@
   <div id="carddiv" class="grid">
     <div class="col-12">
       <h3>Создание и редактирование образования</h3>
-    </div>
-    <div>
-      <Menubar :model="menu" :key="active" style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px"></Menubar>
+      <div>
+        <Menubar :model="menu" :key="active"
+                 style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px"></Menubar>
+      </div>
     </div>
     <div class="col-12 md:col-12 p-fluid">
       <div class="card">
@@ -115,8 +116,10 @@
   </div>
 </template>
 <script>
+
+import api from "@/service/api";
 import {getHeader, smartEnuApi} from "@/config/config";
-import {CandidateService} from "@/service/candidate.service"
+
 export default {
   data() {
     return {
@@ -139,8 +142,7 @@ export default {
         speciality: false,
         receiptDate: false,
         expirationDate: false
-      },
-      candidateService: new CandidateService()
+      }
     };
   },
   methods: {
@@ -163,7 +165,9 @@ export default {
     action() {
       if (this.validateForm()) {
         let path = !this.value.id ? "/candidate/education/create" : "/candidate/education/update"
-        this.candidateService.educationCreateOrUpdate(path, this.value).then(res => {
+        api
+            .post(path, this.value, {headers: getHeader(),})
+            .then(res => {
               this.emitter.emit("education", true);
             }).catch(error => {
           this.$toast.add({

@@ -1,10 +1,10 @@
-import axios from "axios";
+import api from "@/service/api";
 import {getHeader, smartEnuApi} from "../config/config";
 
 export class ClubService {
 
     getClubs(params) {
-        return axios.post(smartEnuApi + "/allClubs", params, {headers: getHeader()});
+        return api.post(smartEnuApi + "/allClubs", params, {headers: getHeader()});
     }
 
     

@@ -61,10 +61,10 @@
 </template>
 
 <script>
+import api from '@/service/api';
 import {smartEnuApi, getHeader} from "@/config/config";
 
 import ApprovalListControl from '../../roleControl/ApprovalListControl.vue';
-import {ApprovalListService} from "@/service/approvalList.service"
 
 export default {
   name: "ApproveComponent",
@@ -105,7 +105,6 @@ export default {
       approvalList: [],
       approvalListItem: null,
       approvalListControl: false,
-      approvalListService: new ApprovalListService()
     }
   },
   setup(props, context) {
@@ -240,7 +239,9 @@ export default {
       this.getApprovalList()
     },
     getApprovalList() {
-      this.approvalListService.approvalListGet().then(response => {
+      api.get("/approvalList/get", {
+        headers: getHeader(),
+      }).then(response => {
         this.approvalList = response.data
       }).catch(error => {
         if (error.response && error.response.status === 401) {
@@ -408,7 +409,7 @@ h3 {
   margin-bottom: 1rem;
   padding: 0;
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
 }
 
 .steps-item {
@@ -424,8 +425,6 @@ h3 {
 }
 
 .steps-item span {
-  width: 38px;
-  height: 38px;
   cursor: pointer;
   border-radius: 50%;
   padding: .75rem 1rem;

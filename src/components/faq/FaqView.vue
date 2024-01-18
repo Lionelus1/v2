@@ -55,8 +55,8 @@
 </template>
 
 <script>
+import api from "@/service/api";
 import { getHeader, smartEnuApi } from "../../config/config";
-import {FaqService} from "@/service/faq.service"
 export default {
   data() {
     return {
@@ -64,7 +64,6 @@ export default {
       faq: null,
       loading: true,
       currentUser: null,
-      faqService: new FaqService()
     };
   },
   created() {
@@ -74,10 +73,15 @@ export default {
   },
   methods: {
     getFaqById() {
-      const req = {
+      api
+        .post(
+          "/faq/getById",
+          {
             faqId: parseInt(this.faqId),
-          }
-      this.faqService.getById(req).then((response) => {
+          },
+          { headers: getHeader() }
+        )
+        .then((response) => {
           this.faq = response.data;
 
           this.loading = false;
@@ -87,8 +91,15 @@ export default {
         });
     },
     downloadFile(fileName, fileType) {
-      const req = { filename: fileName, fileType: fileType }
-      this.faqService.downloadFile(req).then((response) => {
+      api
+        .post(
+          "/faq/downloadFile",
+          { filename: fileName, fileType: fileType },
+          {
+            headers: getHeader(),
+          }
+        )
+        .then((response) => {
           // const blob = new Blob([response.data], )
           const link = document.createElement("a");
           link.href = "data:application/octet-stream;base64," + response.data;
@@ -123,6 +134,55 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.customer-badge {
+  border-radius: 2px;
+  padding: 0.25em 0.5rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.3px;
+
+  &.status-2 {
+    background: #c8e6c9;
+    color: #256029;
+  }
+
+  &.status-3 {
+    background: #ffcdd2;
+    color: #c63737;
+  }
+
+  &.status-negotiation {
+    background: #feedaf;
+    color: #8a5340;
+  }
+
+  &.status-1 {
+    background: #b3e5fc;
+    color: #23547b;
+  }
+
+  &.status-4 {
+    background: #eccfff;
+    color: #694382;
+  }
+
+  &.status-proposal {
+    background: #ffd8b2;
+    color: #805b36;
+  }
+
+  &.online {
+    background: #c8e6c9;
+    color: #256029;
+  }
+
+  &.offline {
+    background: #ffcdd2;
+    color: #c63737;
+  }
+}
+
 .card-title {
   color: #495057;
   font-weight: 500;

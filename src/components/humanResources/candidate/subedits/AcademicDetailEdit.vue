@@ -24,8 +24,9 @@
 </template>
 
 <script>
+import api from "@/service/api";
 import {getHeader, smartEnuApi} from "@/config/config";
-import {CandidateService} from "@/service/candidate.service"
+
 export default {
   name: "AcademicDetailEdit",
   data() {
@@ -42,7 +43,6 @@ export default {
         },
       ],
       validation: false,
-      candidateService: new CandidateService()
     }
   },
   props: {
@@ -59,7 +59,9 @@ export default {
 
       if (this.validateForm()) {
         let path = !this.value.id? "/candidate/academic-detail/create" : "/candidate/academic-detail/update"
-        this.candidateService.academicDetailCreateOrUpdate(path, this.value).then(res => {
+        api
+            .post(path, this.value, {headers: getHeader(),})
+            .then(res => {
               this.emitter.emit("academicDetail", true);
             }).catch(error => {
           this.$toast.add({

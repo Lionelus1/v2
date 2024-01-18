@@ -55,8 +55,8 @@
 
 <script>
 import { authHeader, getHeader, smartEnuApi, findRole, b64toBlob } from "@/config/config";
+import api from "@/service/api";
 import { Socket } from "dgram";
-import {QueueService} from "@/service/queue.service"
 
 export default {
  
@@ -84,7 +84,7 @@ export default {
 				{name: 'English', code: 'en'}
 			],
       selectedlanguage: {name: 'Қазақ тілі', code: 'kz'},
-      queueService: new QueueService()
+      
     }
   },
   methods: {   
@@ -111,7 +111,11 @@ export default {
     getQueue(parentID) {
         this.loading = true  
         this.lazyParams.parentID = parentID
-        this.queueService.allQueues(this.lazyParams).then((response) => {
+        api
+        .post("/queue/allQueues", this.lazyParams, {
+          headers: getHeader(),
+        })
+        .then((response) => {
           this.queues = response.data.queues;
           this.loading = false;          
         })
@@ -122,6 +126,9 @@ export default {
             summary: this.$t("smartenu.loadError") + ":\n" + error,
             life: 3000,
           });
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          }
         });
     },
     registerQueue(queue) {
@@ -130,7 +137,11 @@ export default {
       var req = {
         queueID: queue.key, lang: this.selectedlanguage.code
       }
-      this.queueService.registerService(req).then(response => {
+      api
+      .post("/queue/registerService", req,  {
+          headers: getHeader(),
+        })
+      .then(response => {
         this.printVisibleStartedTime = Date.now()
         this.queinfob64 = response.data
         this.queinfo = this.b64toBlob(response.data)

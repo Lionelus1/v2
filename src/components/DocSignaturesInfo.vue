@@ -1,20 +1,22 @@
 <template>
   <div>
-    <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em" />
+    <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
     <BlockUI :blocked="loading" :fullScreen="true"></BlockUI>
   </div>
   <div>
-    <ProgressBar v-if="signing" mode="indeterminate" style="height: .5em" />
+    <ProgressBar v-if="signing" mode="indeterminate" style="height: .5em"/>
     <BlockUI :blocked="signing" :fullScreen="true"></BlockUI>
   </div>
   <div v-if="!loading">
-    <DocInfo :document="docInfo" v-if="!incorrect" :docID="doc_id" />
+    <DocInfo :document="docInfo" v-if="!incorrect" :docID="doc_id"/>
     <TabView v-model:activeIndex="active" @tab-change="tabChanged">
       <TabPanel v-bind:header="$t('ncasigner.signatureListTitle')">
         <div class="col-12" v-if="isShow">
-          <Button v-if="signatures && signatures.length > 0 || approvalStages && showSign()" :label="$t('common.downloadSignaturesPdf')" icon="pi pi-download"
-            @click="downloadSignatures" class="p-button ml-2" />
-          <SignatureQrPdf ref="qrToPdf" :showSign="showSign()" :signatures="signatures" :title="docInfo.name" :approvalStages="approvalStages"></SignatureQrPdf>
+          <Button v-if="signatures && signatures.length > 0 || approvalStages && showSign()"
+                  :label="$t('common.downloadSignaturesPdf')" icon="pi pi-download" @click="downloadSignatures"
+                  class="p-button ml-2"/>
+          <SignatureQrPdf ref="qrToPdf" :showSign="showSign()" :signatures="signatures" :title="docInfo.name"
+                          :approvalStages="approvalStages"></SignatureQrPdf>
         </div>
         <div class="col-12" v-else>
           <div class="card">
@@ -24,19 +26,20 @@
       </TabPanel>
       <TabPanel :header="$t('ncasigner.goToDoc')" :disabled="!isShow">
         <div class="card" v-for="(item, index) of files" :key="index">
-          <embed :src="item" style="width: 100%; height: 1000px" v-if="files.length > 0" type="application/pdf" />
+          <embed :src="item" style="width: 100%; height: 1000px" v-if="files.length > 0" type="application/pdf"/>
 
         </div>
       </TabPanel>
-      <TabPanel v-if="docInfo && (docInfo.docHistory.stateId == 2 || docInfo.docHistory.stateId == 6)" :header="$t('ncasigner.sign')">
+      <TabPanel v-if="docInfo && (docInfo.docHistory.stateId==2 ||docInfo.docHistory.stateId==6)"
+                :header="$t('ncasigner.sign')">
         <div class="mt-2">
           <Panel>
             <template #header>
               <InlineMessage severity="info">{{ $t('ncasigner.noteMark') }}</InlineMessage>
             </template>
             <div class="flex justify-content-center">
-              <Button icon="pi pi-user-edit" :disabled="hideDocSign" class="p-button-primary md:col-5" @click="sign" :label="$t('ncasigner.sign')"
-                :loading="signing" />
+              <Button icon="pi pi-user-edit" :disabled="hideDocSign"
+                      class="p-button-primary md:col-5" @click="sign" :label="$t('ncasigner.sign')" :loading="signing"/>
             </div>
           </Panel>
           <div class="p-mt-2">
@@ -53,30 +56,31 @@
                 <qrcode-vue size="350" render-as="svg" margin="2" :value="mgovSignUri"></qrcode-vue>
               </div>
               <div v-if="mgovMobileRedirectUri && isIndivid" class="p-fluid text-center">
-                <Button class="p-button-outlined" :label="$t('common.mgovMobile')" @click="redirectToMgovMobile" />
+                <Button class="p-button-outlined" :label="$t('common.mgovMobile')" @click="redirectToMgovMobile"/>
               </div>
               <div v-if="mgovMobileRedirectUri && isIndivid">
                 <hr>
               </div>
               <div v-if="mgobBusinessRedirectUri && !isIndivid" class="p-fluid text-center">
-                <Button class="p-button-outlined" :label="$t('common.mgovBusiness')" @click="redirectToMgovBusiness" />
+                <Button class="p-button-outlined" :label="$t('common.mgovBusiness')" @click="redirectToMgovBusiness"/>
               </div>
               <div v-if="mgobBusinessRedirectUri && !isIndivid">
                 <hr>
               </div>
-              <QrGuideline />
+              <QrGuideline/>
             </Panel>
           </div>
         </div>
       </TabPanel>
-      <TabPanel v-if="docInfo && docInfo.docHistory.stateId === Enum.INAPPROVAL.ID && ((docInfo.sourceType === Enum.DocSourceType.FilledDoc ||
-        (docInfo.docType && (docInfo.docType === Enum.DocType.Contract))) || docInfo.docType === Enum.DocType.WorkPlan)" :header="$t('common.revision')"
-        :disabled="hideDocRevision">
+      <TabPanel v-if="docInfo && docInfo.docHistory.stateId === Enum.INAPPROVAL.ID && (docInfo.sourceType === Enum.DocSourceType.FilledDoc ||
+        (docInfo.docType && docInfo.docType === Enum.DocType.Contract))" :header="$t('common.revision')" :disabled="hideDocRevision">
         <div class="card">
           <label> {{ this.$t('common.comment') }} </label>
           <InputText v-model="revisionComment" style="width: 100%; margin-bottom: 2rem;"></InputText>
           <div class="flex justify-content-center">
-            <Button icon="fa-regular fa-circle-xmark" class="p-button-danger md:col-3" @click="revision" :label="$t('common.revision')" :loading="loading" />
+            <Button icon="fa-regular fa-circle-xmark"
+                    class="p-button-danger md:col-3" @click="revision" :label="$t('common.revision')"
+                    :loading="loading"/>
           </div>
         </div>
       </TabPanel>
@@ -86,8 +90,9 @@
 
 <script>
 import SignatureQrPdf from "@/components/ncasigner/SignatureQrPdf";
-import { runNCaLayer, makeTimestampForSignature } from "@/helpers/SignDocFunctions"
+import {runNCaLayer, makeTimestampForSignature} from "@/helpers/SignDocFunctions"
 
+import api from "@/service/api";
 import {getHeader, smartEnuApi, socketApi, b64toBlob, findRole} from "@/config/config";
 import html2pdf from "html2pdf.js";
 import DocInfo from "@/components/ncasigner/DocInfo";
@@ -95,14 +100,11 @@ import QrcodeVue from "qrcode.vue";
 import Enum from "@/enum/docstates/index";
 import RolesEnum from "@/enum/roleControls/index";
 import QrGuideline from "./QrGuideline.vue";
-import { DocService } from "@/service/doc.service";
-import { FileService } from "@/service/file.service";
-import { AgreementService } from "@/service/agreement.service";
-import { WorkPlanService } from "@/service/work.plan.service";
+import {DocService} from "@/service/doc.service";
 
 export default {
   name: "DocSignaturesInfo",
-  components: { QrGuideline, SignatureQrPdf, DocInfo, QrcodeVue },
+  components: {QrGuideline, SignatureQrPdf, DocInfo, QrcodeVue },
   props: {
     docIdParam: {
       type: String,
@@ -126,7 +128,6 @@ export default {
       default: false
     }
   },
-  emits: ['sentToRevision'],
   data() {
     return {
       service: new DocService(),
@@ -157,20 +158,16 @@ export default {
       hideDocRevision: true,
       revisionComment: null,
       mobileApp: null,
-      isIndivid: null,
-      docService: new DocService(),
-      fileService: new FileService(),
-      agreementService: new AgreementService(),
-      workPlanService: new WorkPlanService()
+      isIndivid: null
     }
   },
   created() {
     if (this.docIdParam) {
       this.doc_id = this.docIdParam;
     } else {
-      this.doc_id = this.$route.params.uuid;
+      this.doc_id =this.$route.params.uuid;
     }
-
+    
     const tokenData = JSON.parse(window.localStorage.getItem("authUser"));
     if (tokenData !== null) {
       let signUri = smartEnuApi + '/mobileSignParams/' + this.doc_id + "/" + tokenData.access_token
@@ -187,11 +184,12 @@ export default {
     this.wsconnect()
     this.emitter.on('downloadCMS', (data) => {
       if (data !== null) {
-        const data = {
-          documentUuid: this.doc_id,
-          signatureId: data
-        }
-        this.docService.downloadCms(data).then(res => {
+        api
+            .post("/doc/downloadCms",
+                {documentUuid: this.doc_id, signatureId: data},
+                {headers: getHeader(),})
+            .then(res => {
+              console.log(res.data)
               let result = res.data
               var link = document.createElement('a');
               link.innerHTML = 'Download file';
@@ -212,7 +210,7 @@ export default {
     findRole: findRole,
     b64toBlob: b64toBlob,
     showMessage(msgtype, message, content) {
-      this.$toast.add({ severity: msgtype, summary: message, detail: content, life: 3000 });
+      this.$toast.add({severity: msgtype, summary: message, detail: content, life: 3000});
     },
     redirectToMgovMobile() {
       window.open(this.mgovMobileRedirectUri)
@@ -223,20 +221,28 @@ export default {
     tabChanged() {
       if (this.active == 1 && this.files.length < 1) { // showFileTab
         if (this.docInfo.isManifest === true) {
-          const data = {
-            docId: this.docInfo.id
-          }
-          this.fileService.downloadManifestFiles(data).then(response => {
+          api.post(
+              "/downloadManifestFiles", {
+                docId: this.docInfo.id
+              }, {
+                headers: getHeader()
+              }
+          )
+              .then(response => {
                 let filesBase64Array = response.data
                 for (let i = 0; i < filesBase64Array.length; i++) {
                   this.files.push(this.b64toBlob(filesBase64Array[i]))
                 }
               })
         } else {
-          const data = {
-            filePath: this.docInfo.filePath
-          }
-          this.fileService.downloadFile(data).then(response => {
+          api.post(
+              "/downloadFile", {
+                filePath: this.docInfo.filePath
+              }, {
+                headers: getHeader()
+              }
+          )
+              .then(response => {
                 (
                     this.files.push(this.b64toBlob(response.data))
                 )
@@ -244,15 +250,16 @@ export default {
         }
       } else if (this.active == 2 && this.loginedUserId === null) {
         this.$store.dispatch("solveAttemptedUrl", this.$route)
-        this.$router.push({ path: '/login' });
+        this.$router.push({path: '/login'});
       }
     },
     getData() {
       this.loading = true
-      const data = {
-        doc_uuid: this.doc_id
-      }
-      this.agreementService.getSignInfo(data).then(res => {
+      api.post(`/agreement/getSignInfo`, {
+        doc_uuid: this.doc_id,
+      }, {
+        headers: getHeader(),
+      }).then(res => {
         if (res.data) {
           this.docInfo = res.data;
           this.signatures = res.data.signatures;
@@ -269,12 +276,10 @@ export default {
 
           if (this.signatures) {
             this.hideDocSign = !this.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));
-            this.hideDocRevision = !this.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));
-
             let usersign = this.signatures.filter(x => x.userId === this.loginedUserId &&
-              (!x.signature || x.signature === '') && (x.signRight && x.signRight !== ''))
+                (!x.signature || x.signature === '') && (x.signRight && x.signRight !== ''))
             if (usersign.length !== 0) {
-              if (usersign[0].signRight === "individual") {
+              if ( usersign[0].signRight === "individual") {
                 this.mobileApp = "eGov Mobile";
                 this.isIndivid = true
               } else {
@@ -335,18 +340,18 @@ export default {
 
         this.loading = false;
       }).catch(error => {
-        // if (error.response && error.response.status === 401) {
-        //   this.$store.dispatch("logLout");
-        // } else if (error.response && error.response.status === 403) {
-        //   this.$store.dispatch("solveAttemptedUrl", this.$route)
-        //   this.$router.push({path: '/login'});
-        // } else {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else if (error.response && error.response.status === 403) {
+          this.$store.dispatch("solveAttemptedUrl", this.$route)
+          this.$router.push({path: '/login'});
+        } else {
           this.$toast.add({
             severity: "error",
             summary: error,
             life: 3000,
           });
-        // }
+        }
 
         this.loading = false;
       });
@@ -362,10 +367,11 @@ export default {
     },
     sign() {
       this.signing = true;
-      const data = {
+      api.post("/downloadFile", {
         filePath: this.docInfo.filePath
-      }
-      this.fileService.downloadFile(data).then(response => {
+      }, {
+        headers: getHeader()
+      }).then(response => {
         runNCaLayer(this.$t, this.$toast, response.data, 'cms', this.signerType, this.isTspRequired, this.$i18n.locale).then(sign => {
           if (sign != undefined) {
             this.sendRequest(sign)
@@ -376,6 +382,9 @@ export default {
         })
       }).catch(error => {
         this.signing = false;
+        if (error.response.status == 401) {
+          this.$store.dispatch("logLout");
+        }
       })
     },
     sendRequest(signature) {
@@ -386,7 +395,9 @@ export default {
         isTspRequired: this.isTspRequired
       };
       this.signing = true
-      this.docService.docSign(req).then(response => {
+
+      api.post("/doc/sign", req, {headers: getHeader()})
+          .then(response => {
             this.signing = false
             this.getData()
             this.showMessage('success', this.$t('ncasigner.signDocTitle'), this.$t('ncasigner.success.signSuccess'));
@@ -400,14 +411,14 @@ export default {
                 life: 3000,
               });
             }
-            this.signing = false;
+            if (error.response.status == 401) {
+              this.$store.dispatch("logLout");
+            } else
+              this.signing = false;
           })
     },
     getSignatures() {
-      const req = {
-        doc_id: this.plan.doc_id
-      }
-      this.workPlanService.getSignatures(req).then(res => {
+      api.post(`/workPlan/getSignatures`, {doc_id: this.plan.doc_id}, {headers: getHeader()}).then(res => {
         if (res.data) {
           this.signatures = res.data;
           const signUser = res.data.find(x => x.userId === this.loginedUserId);
@@ -421,6 +432,9 @@ export default {
           summary: error,
           life: 3000
         });
+        if (error.response.status == 401) {
+          this.$store.dispatch("logLout");
+        }
       })
     },
     downloadSignatures() {
@@ -430,14 +444,14 @@ export default {
           type: 'jpeg',
           quality: 0.95,
         },
-        html2canvas: { scale: 3, letterRendering: true },
+        html2canvas: {scale: 3, letterRendering: true},
         jsPDF: {
           unit: 'mm',
           format: 'a4',
           orientation: 'portrait',
           hotfixes: ["px_scaling"]
         },
-        pagebreak: { avoid: ['#qr'] },
+        pagebreak: {avoid: ['#qr']},
         filename: this.docInfo.name + ".pdf"
       };
       const pdfContent = this.$refs.qrToPdf.$refs.qrToPdf;
@@ -487,15 +501,19 @@ export default {
       }
 
       this.loading = true
-      const req = {
+      api.post(`/doc/sendtorevision`, {
         comment: this.revisionComment,
         docID: this.docInfo.id,
-      }
-
-      this.docService.docSendTorevision(req).then(res => {
+      }, {
+        headers: getHeader()
+      }).then(res => {
         this.loading = false
-        this.$emit('sentToRevision', this.revisionComment)
+        location.reload()
       }).catch(err => {
+        if (err.response.status == 401) {
+          this.$store.dispatch("logLout");
+        }
+
         this.$toast.add({
           severity: "error",
           detail: this.$t("common.message.saveError"),
@@ -543,17 +561,13 @@ export default {
 </script>
 <style scoped>
 @media print {
-
-  .no-print,
-  .no-print * {
+  .no-print, .no-print * {
     display: none !important;
   }
 }
 
 @media print {
-
-  .show-print,
-  .show-print * {
+  .show-print, .show-print * {
     display: block !important;
     width: 100% !important;
   }

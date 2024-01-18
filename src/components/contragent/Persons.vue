@@ -171,9 +171,9 @@
 
 <script>
 import { smartEnuApi, getHeader, findRole } from "@/config/config";
+import api from "@/service/api";
 import Enum from "@/enum/docstates/index";
 import { FilterMatchMode, FilterOperator } from "primevue/api";
-import { ContragentService } from "../../service/contragent.service";
 
 export default {
   data() {
@@ -263,7 +263,6 @@ export default {
           }
           ]
       }],
-      contragentService: new ContragentService()
     };
   },
   emits: ['userCreated'],
@@ -339,7 +338,9 @@ export default {
 
       this.loading = true
       this.lazyParams.orgID = this.organization != null ? this.organization.id : null
-      this.contragentService.persons(this.lazyParams).then((res) => {
+      api
+        .post(url, this.lazyParams, { headers: getHeader() })
+        .then((res) => {
           this.persons = res.data.persons;
           this.count = res.data.count;
           if (!this.persons) {
@@ -348,6 +349,9 @@ export default {
           this.loading = false
         })
         .catch((error) => {
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          }
           if (error.response.status == 404) {
             this.persons = [];
             this.count = 0;

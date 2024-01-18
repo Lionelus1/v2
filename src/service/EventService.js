@@ -1,10 +1,10 @@
-    import axios from 'axios';
+    import api from '@/service/api';
 
 export default class EventService {
 
     getEvents() {
 
-        return axios.get('assets/layout/data/events.json').then(res => res.data.data);
+        return api.get('assets/layout/data/events.json').then(res => res.data.data);
     }
 }
     

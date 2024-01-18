@@ -371,16 +371,11 @@
 <script>
 import ContragentSelectOrg from "../contragent/ContragentSelectOrg.vue";
 import PositionsList from "../smartenu/PositionsList.vue";
+import api from "@/service/api";
 import { getHeader, smartEnuApi, findRole } from "@/config/config";
 import Enum from "@/enum/docstates/index";
 import html2canvas from "html2canvas";
 import * as jsPDF from "jspdf";
-import { RoleControlService } from "@/service/roleControl.service";
-import { DicService } from "@/service/dic.service";
-import { UserService } from "@/service/user.service";
-
-
-
 export default {
   components: { ContragentSelectOrg, PositionsList },
   name: "Person",
@@ -444,9 +439,6 @@ export default {
           visible: !this.addMode,
         },
       ],
-      roleControlService: new RoleControlService(),
-      dicService: new DicService(),
-      userService: new UserService()
     };
   },
   props: {
@@ -486,10 +478,15 @@ export default {
       this.menu[0].disabled = false
     },
     getCatalog(name) {
-      const req = {
-         name: name 
-      } 
-      this.dicService.getDictionary(req).then((res) => {
+      api
+        .post(
+          "/auth/getDictionary",
+          { name: name },
+          {
+            headers: getHeader(),
+          }
+        )
+        .then((res) => {
           if (name === "academic_degree") {
             this.academicDegreeDictionary = res.data
           } else {
@@ -497,21 +494,30 @@ export default {
           }
         })
         .catch((error) => {
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          } else {
             this.$toast.add({
               severity: "error",
               summary: "Dictionary load error:\n" + error,
               life: 3000,
             });
+          }
         });
     },
     insertUser() {
       this.submitted = true;
       if (this.validateAddForm()) {
-        const req = {
-          user: this.value,
-          password: this.password 
-        }
-         this.userService.insertOrUpdateUser((this.addMode ? "/insertUser" : "/updateUser"), req).then((res) => {
+        api
+          .post(
+            
+            (this.addMode ? "/insertUser" : "/updateUser"),
+            { user: this.value, password: this.password },
+            {
+              headers: getHeader(),
+            }
+          )
+          .then((res) => {
             if (this.password != null && this.password != "") {
               this.userDetailSaved = true
             }
@@ -542,7 +548,10 @@ export default {
             });
           })
           .catch((error) => {
-           if (error.response.status == 302) {
+            console.log(error)
+            if (error.response.status == 401) {
+              this.$store.dispatch("logLout");
+            } else if (error.response.status == 302) {
               this.$toast.add({
                 severity: "error",
                 summary: this.$t('common.message.userIINExists'),
@@ -565,11 +574,14 @@ export default {
       }
     },
     insertIndividualEntrepreneur() {
-      const req = {
-        roleName: "individual_entrepreneur",
+      api.post(
+        "/roleControl/add",
+        {
+          roleName: "individual_entrepreneur",
           userId: this.value.userID ? this.value.userID : this.value.id,
-      }
-      this.roleControlService.roleControlAdd(req).then((res) => {
+        },
+        {headers: getHeader()}
+      ).then((res) => {
         this.$toast.add({
           severity: "success",
           summary:  this.$t('common.successDone'),

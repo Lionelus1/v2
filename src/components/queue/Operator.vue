@@ -72,7 +72,7 @@
 <script>
 
 import {  getHeader, smartEnuApi, findRole } from "@/config/config";
-import {QueueService} from "@/service/queue.service"
+import api from "@/service/api";
 export default {
 
   data() {
@@ -109,8 +109,9 @@ export default {
         state: -1,
       },
       counting: true,
-      redirectVisible:false,
-      queueService: new QueueService()
+      redirectVisible:false
+
+     
     }
   },
   methods: {   
@@ -118,7 +119,11 @@ export default {
         this.loading = true  
         this.lazyParams.parentID = parentID
          //alert(parentID)
-         this.queueService.allQueues(this.lazyParams).then((response) => {
+        api
+        .post("/queue/allQueues", this.lazyParams, {
+          headers: getHeader(),
+        })
+        .then((response) => {
           this.queues = response.data.queues;
           this.callNextCustomer(false, null);
           if (this.queues.length> 0) {
@@ -139,12 +144,19 @@ export default {
             summary: this.$t("smartenu.loadError") + ":\n" + error,
             life: 3000,
           });
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          }
         });
     },
     getNeigborQueue(parentID) {
         this.loading = true         
         this.lazyParams.id = parentID
-        this.queueService.getneigbors(this.lazyParams).then((response) => {
+        api
+        .post("/queue/getneigbors", this.lazyParams, {
+          headers: getHeader(),
+        })
+        .then((response) => {
           this.neigbors = response.data.queues;      
           this.loading = false;
         })
@@ -156,17 +168,23 @@ export default {
             summary: this.$t("smartenu.loadError") + ":\n" + error,
             life: 3000,
           });
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          }
         });
     },
     callNextCustomer(call, number) {
        this.loading = true  
-       const req = {
+       api
+        .post("/queue/callCustomer", {
           queueID: Number(this.$route.params.parentID),
           windowID: Number(this.$route.params.id),
           number: number!= null ? Number(number): null,
           call: call
-        }
-       this.queueService.callCustomer(req).then((response) => {
+        }, {
+          headers: getHeader(),
+        })
+        .then((response) => {
           this.service = response.data;
           // alert(JSON.stringify(this.service))
           this.service.info = {
@@ -194,6 +212,9 @@ export default {
             summary: this.$t("queue.norows"),
             life: 3000,
           });
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          }
         });
 
 
@@ -203,8 +224,11 @@ export default {
     changeState(state, redirectID){
       var workSecond=this.service.info.second+(this.service.info.minute*60)+(Number(this.service.info.hour*3600));
       this.loading = true
-      const req = {serviceID: this.service.id, state: state, redirectID: redirectID,workTime: workSecond}
-      this.queueService.statusChange(req).then((_) => {         
+      api
+        .post("/queue/statusChange", {serviceID: this.service.id, state: state, redirectID: redirectID,workTime: workSecond}, {
+          headers: getHeader(),
+        })
+        .then((_) => {         
           this.service = {
             state:-1,
             info:{

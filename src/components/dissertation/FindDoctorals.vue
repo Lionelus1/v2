@@ -42,8 +42,7 @@
 
 <script>
 import {getHeader, smartEnuApi, templateApi} from "@/config/config";
-import axios from 'axios';
-import {DissertationService } from "@/service/dissertation.service"
+import api from '@/service/api';
 
 export default {
   components: {},
@@ -129,7 +128,6 @@ export default {
         name: "",
       },
       searchInProgres: false,
-      dissertationService: new DissertationService()
     };
   },
   created () {
@@ -152,20 +150,25 @@ export default {
       if (this.cancelToken && typeof this.cancelToken != typeof undefined) {
         this.cancelToken.cancel("Operation canceled due to new request.")
       }
-      this.cancelToken = axios.CancelToken.source()
+      this.cancelToken = api.CancelToken.source()
       this.foundEntities = null;
       this.$refs.op.hide();
       this.$refs.op.toggle(event);
       this.searchInProgres = true;
-      const req = {
-         
+      api
+      .post(
+          "/dissertation/getdoctorals",
+          { 
             page: 0,
             rows: 1000,
             userID:  this.$store.state.loginedUser.userID,
             name: inputValue
-        
-      }
-      this.dissertationService.getDoctorals(req).then(
+          },
+          {
+            headers: getHeader(),
+          }
+        )
+      .then(
         response => {
             this.foundEntities = response.data;
             this.searchInProgres = false;
@@ -173,12 +176,12 @@ export default {
       )
       .catch(
         (error) => {
-          if(!axios.isCancel(error)) {
+          if(!api.isCancel(error)) {
+            this.searchInProgres = false;
             if (error.response.status === 404) {
               this.foundEntities = null;
             }
           }
-          this.searchInProgres = false;
         }
       );
     },

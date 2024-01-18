@@ -89,9 +89,9 @@
 </template>
 
 <script>
+import api from "@/service/api";
 import {getHeader, smartEnuApi} from "@/config/config";
-import {UserService} from "@/service/user.service"
-import {CandidateService} from "@/service/candidate.service"
+
 export default {
   name: "AcademicDegreeEdit",
   data() {
@@ -114,9 +114,7 @@ export default {
         defensePlace: false,
         defenseDate: false,
         diplomaNumber: false,
-      },
-      userService: new UserService(),
-      candidateService: new CandidateService()
+      }
     };
   },
   props: {
@@ -128,24 +126,32 @@ export default {
   },
   methods: {
     getCatalog(name) {
-      const req =  {name: name}
-      this.userService.getDictionary(req).then((res) => {
+      api.post("/auth/getDictionary",
+          {name: name},
+          {
+            headers: getHeader(),
+          }).then((res) => {
         if (name === "academic_degree") {
           this.academicDegreeDictionary = res.data
         }
       }).catch((error) => {
+        if (error.response.status == 401) {
+          this.$store.dispatch("logLout");
+        } else {
           this.$toast.add({
             severity: "error",
             summary: "Dictionary load error:\n" + error,
             life: 3000,
           });
+        }
       });
     },
     action() {
       if (this.validateForm()) {
         let path = !this.value.id ? "/candidate/academic-degree/create" : "/candidate/academic-degree/update"
-        
-        this.candidateService.academicTitleCreateOrUpdate(path, this.value).then(res => {
+        api
+            .post(path, this.value, {headers: getHeader(),})
+            .then(res => {
               this.emitter.emit("academicDegree", true);
             }).catch(error => {
           this.$toast.add({

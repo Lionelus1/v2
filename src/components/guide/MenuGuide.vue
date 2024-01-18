@@ -47,10 +47,11 @@
 </template>
 
 <script>
+    import api from "@/service/api";
     import {findRole, getHeader, smartEnuApi} from "@/config/config";
     import AddGuide from "./AddGuide";
     import EditGuide from "./EditGuide";
-    import { ManualService } from "../../service/manual.service";
+
     export default {
         name: "MenuGuide",
         components: {AddGuide, EditGuide},
@@ -71,15 +72,16 @@
                 guides: [],
                 parent: null,
                 routePath: this.$route.params.id,
-                parentGuideId: null,
-                manualService: new ManualService()
+                parentGuideId: null
             }
         },
         methods: {
             getGuides(parentId, parent) {
                 this.lazyParams.parentId = parentId
                 this.loading = true
-                this.manualService.getManuals(this.lazyParams).then((response) => {
+                api.post("/manual/getManuals", this.lazyParams, {
+                    headers: getHeader(),
+                }).then((response) => {
                     if (parentId !== null) {
                         parent.children = response.data.manuals;
                         parent.children.map(e => {
@@ -109,12 +111,15 @@
 
                     this.loading = false;
                 }).catch((error) => {
-                    this.loading = false;
-                    this.$toast.add({
-                        severity: "error",
-                        summary: this.$t("smartenu.loadAllNewsError") + ":\n" + error,
-                        life: 3000,
-                    });
+                    if (error.response.status === 401) {
+                        this.$store.dispatch("logLout");
+                    } else {
+                        this.$toast.add({
+                            severity: "error",
+                            summary: this.$t("smartenu.loadAllNewsError") + ":\n" + error,
+                            life: 3000,
+                        });
+                    }
                 });
             },
             toggle(ref, event) {
@@ -144,23 +149,25 @@
                 });
             },
             delete(event) {
-                const req = {
-                    manualId: event.manualId 
-                }
-               this.manualService.delManual(req).then(response => {
-                    this.$toast.add({
-                        severity: "success",
-                        summary: this.$t('common.success'),
-                        life: 3000,
-                    });
-                    this.getGuides(null, null);
-                    this.$router.push({path: '/guide'});
-                }).catch(error => {
-                    this.$toast.add({
-                        severity: "error",
-                        summary: error,
-                        life: 3000,
-                    });
+                api.post(`/manual/delManual`, {manualId: event.manualId}, {headers: getHeader()})
+                    .then(response => {
+                        this.$toast.add({
+                            severity: "success",
+                            summary: this.$t('common.success'),
+                            life: 3000,
+                        });
+                        this.getGuides(null, null);
+                        this.$router.push({path: '/guide'});
+                    }).catch(error => {
+                    if (error.response && error.response.status === 401) {
+                        this.$store.dispatch("logLout");
+                    } else {
+                        this.$toast.add({
+                            severity: "error",
+                            summary: error,
+                            life: 3000,
+                        });
+                    }
                 });
             },
             navigateToEvent(event) {

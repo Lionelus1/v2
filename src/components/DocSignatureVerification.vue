@@ -129,8 +129,9 @@
 </template>
 
 <script>
+import api from "@/service/api";
 import {getHeader, smartEnuApi} from "../config/config";
-import { DocService } from "@/service/doc.service";
+
 export default {
 
   name: "DocSignatureVerification",
@@ -144,8 +145,7 @@ export default {
       validation: {
         cmsOrZip: false,
         file: false
-      },
-      docService: new DocService()
+      }
     }
   },
   mounted() {
@@ -181,7 +181,8 @@ export default {
       if (this.validateForm()) {
         const formData = new FormData();
         formData.append("cms", this.cmsOrZip)
-        this.docService.checkDataAttaching(formData).then((response) => {
+        api.post("/doc/check-data-attaching", formData, {headers: getHeader()})
+            .then((response) => {
               let result = response.data
               if (result.success) {
                 this.attached = true
@@ -197,7 +198,10 @@ export default {
                 }
               }
             }).catch((error) => {
-            console.error(error);
+          console.error(error);
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          }
         });
       }
     },
@@ -206,7 +210,8 @@ export default {
         const formData = new FormData();
         formData.append("mainFile", this.file)
         formData.append("cms", this.cmsOrZip)
-        this.docService.docVerify(formData).then((response) => {
+        api.post("/doc/verify", formData, {headers: getHeader()})
+            .then((response) => {
               let totalResult = response.data
               console.log(totalResult)
               if (totalResult.success === true) {
@@ -349,6 +354,9 @@ export default {
               }
             }).catch((error) => {
           console.error(error);
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          }
         });
       }
     }

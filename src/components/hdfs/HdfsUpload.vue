@@ -17,16 +17,16 @@
 </template>
 
 <script>
+import api from "@/service/api";
 import {smartEnuApi} from "@/config/config";
-import {FileService} from "@/service/file.service"
+
 export default {
   data() {
     return {
       loading: false,
       dir: '',
       uploadedPath: null,
-      isHidden: true,
-      fileService: new FileService()
+      isHidden: true
     }
   },
   mounted() {
@@ -44,7 +44,11 @@ export default {
       const fd = new FormData();
       fd.append('myFile', event.files[0]);
       fd.append('filePath', this.dir ? this.dir + '/' + event.files[0].name : event.files[0].name);
-      this.fileService.uploadFile(fd).then((r) => {
+      api.post("/upload", fd, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }, ).then((r) => {
         console.log(r.data.path)
         if (r.data?.isUpload !== false) {
           this.onUpload();

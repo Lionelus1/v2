@@ -62,10 +62,11 @@
   </div>
 </template>
 <script>
+import api from '@/service/api';
 
 import { getHeader, smartEnuApi } from "@/config/config";
 import Enum from "@/enum/docstates/index";
-import { DocService } from '../../service/doc.service';
+
 export default {
   name: 'ReferenceFolderFile',
   components: {},
@@ -97,7 +98,6 @@ export default {
       folderRows: 10,
       filePage: 0,
       fileRows: 10,
-      docService: new DocService()
     }
   },
   computed: {
@@ -172,13 +172,15 @@ export default {
     },
     getFolders() {
       this.folderTableLoading = true
-      const req = {
+
+      api.post('/folders', {
         folderType: Enum.FolderType.References,
         page: this.folderPage,
         rows: this.folderRows,
         parentId: this.parentFolder ? this.parentFolder.id : null,
-      }
-      this.docService.getFolders(req).then(res => {
+      }, { 
+        headers: getHeader() 
+      }).then(res => {
         this.folders = res.data.folders
         this.totalFolders = res.data.total
         this.currentFolder = null
@@ -189,7 +191,9 @@ export default {
         this.totalFolders = 0
         this.currentFolder = null
 
-        if (err.response && err.response.data && err.response.data.localized) {
+        if (err.response && err.response.status == 401) {
+          this.$store.dispatch("logLout")
+        } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
           console.log(err)
@@ -220,12 +224,14 @@ export default {
       }
 
       this.fileTableLoading = true
-      const req = {
+
+      api.post('/document/templates', {
         page: this.filePage,
         rows: this.fileRows,
         folderId: this.parentFolder.id,
-      }
-      this.docService.documentTemplates(req).then(res => {
+      }, { 
+        headers: getHeader() 
+      }).then(res => {
         this.files = res.data.doctemplates
         this.totalFiles = res.data.total
         this.currentFile = null
@@ -236,7 +242,9 @@ export default {
         this.totalFiles = 0
         this.currentFile = null
 
-        if (err.response && err.response.data && err.response.data.localized) {
+        if (err.response && err.response.status == 401) {
+          this.$store.dispatch("logLout")
+        } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
           console.log(err)

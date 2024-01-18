@@ -31,9 +31,8 @@
     </div>
 </template>
 <script>
+import api from "@/service/api";
 import {smartEnuApi, getHeader} from "@/config/config";
-import {DocTemplateService} from "@/service/doctemplate.service"
-import {DocService} from "@/service/doc.service"
 
 export default {
     
@@ -57,10 +56,7 @@ export default {
                 nameen: false,
                 code: false,
                 groups: false,
-            },
-            docTemplateService: new DocTemplateService(),
-            docService: new DocService()
-
+            }
     }
   },
     props: {
@@ -103,7 +99,9 @@ export default {
         if (this.notValid()) {
             return
         }
-        this.docTemplateService.createFolder(this.folder).then(response=>{
+        let url = "/doctemplate/createFolder";
+        api.post(url, this.folder, { headers: getHeader() })
+        .then(response=>{
             this.folder.id = response.data.id
             this.folder.key = response.data.id + "";
             this.showMessage('success', this.$t('common.message.title.docCreation'),this.$t('common.message.catSuccesCreated'));
@@ -116,8 +114,9 @@ export default {
     deleteFolder(hide) {
       
         let url = "/doc/deleteFolder";
-        const req = {id: this.folder.id, hide: hide}
-        this.docService.docDeleteFolder(req).then(response=>{
+
+        api.post(url, {id: this.folder.id, hide: hide}, { headers: getHeader() })
+        .then(response=>{
            
             this.showMessage('success', this.$t('common.message.title.docCreation'),this.$t('common.message.catSuccesCreated'));
             this.$emit("updated", this.folder);

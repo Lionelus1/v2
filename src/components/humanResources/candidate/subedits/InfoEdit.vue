@@ -24,8 +24,8 @@
 </template>
 
 <script>
+import api from "@/service/api";
 import {getHeader, smartEnuApi} from "@/config/config";
-import {CandidateService} from "@/service/candidate.service"
 
 export default {
   name: "InfoEdit",
@@ -43,7 +43,6 @@ export default {
         },
       ],
       validation: false,
-      candidateService: new CandidateService()
     }
   },
   props: {
@@ -59,7 +58,10 @@ export default {
     action() {
 
       if (this.validateForm()) {
-        this.candidateService.infoUpdate(this.value).then(res => {
+        let path = "/candidate/info/update"
+        api
+            .post(path, this.value, {headers: getHeader(),})
+            .then(res => {
               this.emitter.emit("info", true);
             }).catch(error => {
           this.$toast.add({

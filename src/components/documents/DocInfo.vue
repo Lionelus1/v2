@@ -36,9 +36,9 @@
 </template>
 
 <script>
+import api from "@/service/api";
 import { getHeader, smartEnuApi, b64toBlob } from "@/config/config";
 import { getLongDateString } from "@/helpers/helper";
-import {AgreementService} from "@/service/agreement.service"
 
 export default {
     name: "DocInfo",
@@ -55,7 +55,6 @@ export default {
             loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID,
             loading: false,
             accessDenied: false,
-            agreementService: new AgreementService()
         }
     },
     created() {
@@ -67,15 +66,20 @@ export default {
     methods: {
         getLongDateString: getLongDateString,
         getData() {
+        let url = "/agreement/get";
         var req = { id: this.docID };
         this.loading = true
-        this.agreementService.getAgreement(req).then((res) => {
+        api
+            .post(url, req, { headers: getHeader() })
+            .then((res) => {
                 this.loading = false
                 this.doc = res.data;
             })
             .catch((error) => {
                 this.loading = false
-                if (error.response && error.response.status == 405 && error.response.data && error.response.data.error === 'accessDenied') {
+                if (error.response && error.response.status == 401) {
+                    this.$store.dispatch("logLout");
+                } else if (error.response && error.response.status == 405 && error.response.data && error.response.data.error === 'accessDenied') {
                     this.accessDenied = true
                 }
             });

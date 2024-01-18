@@ -482,11 +482,10 @@
 </template>
 
 <script>
+import api from "@/service/api";
 import {FilterMatchMode, FilterOperator} from 'primevue/api';
 import {getHeader, header, smartEnuApi} from "@/config/config";
 import * as imageResizeCompress from "image-resize-compress"; // ES6
-import { FaqService } from "../../service/faq.service";
-import {UserService} from "@/service/user.service"
 
 export default {
   data() {
@@ -575,9 +574,7 @@ export default {
         rows: 10,
         countMode: null,
       },
-      total: 0,
-      faqService: new FaqService(),
-      userService: new UserService()
+      total: 0
     };
   },
   created() {
@@ -588,19 +585,26 @@ export default {
   methods: {
     getData() {
       this.loading = true;
-      this.faqService.getAllFaq(this.userData).then((response) => {
-        this.data = response.data.items;
-        this.total = response.data.total;
-        this.loading = false;
-      })
-      .catch((error) => {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
+      api
+          .post("/faq/getAllFaq", this.userData, {
+            headers: getHeader(),
+          })
+          .then((response) => {
+            this.data = response.data.items;
+            this.total = response.data.total;
+            this.loading = false;
+          })
+          .catch((error) => {
+            if (error.response && error.response.status === 401) {
+              this.$store.dispatch("logLout");
+            } else {
+              this.$toast.add({
+                severity: "error",
+                summary: error,
+                life: 3000,
+              });
+            }
           });
-          this.loading = false;
-      });
     },
     uploadFile(event) {
       this.file = event.files[0];
@@ -620,21 +624,29 @@ export default {
       this.answerFile = event.files[0];
     },
     getDepartmentList() {
-      this.faqService.getDepartmentList().then((response) => {
-        this.departmentList = response.data;
-        response.data.map(res => {
-          if (res.nameRu !== 'Другое') {
-            this.forwardDepartmentList.push(res)
-          }
-        })
-      })
-      .catch((error) => {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
+      api
+          .get("/faq/getDepartmentList", {
+            headers: getHeader(),
+          })
+          .then((response) => {
+            this.departmentList = response.data;
+            response.data.map(res => {
+              if (res.nameRu !== 'Другое') {
+                this.forwardDepartmentList.push(res)
+              }
+            })
+          })
+          .catch((error) => {
+            if (error.response && error.response.status === 401) {
+              this.$store.dispatch("logLout");
+            } else {
+              this.$toast.add({
+                severity: "error",
+                summary: error,
+                life: 3000,
+              });
+            }
           });
-      });
     },
     createFaq() {
       this.faqDialog = true;
@@ -652,57 +664,78 @@ export default {
       fd.append("faqRequest", JSON.stringify(this.faq));
       fd.append("uploadedFile", this.file);
       fd.append("imageFile", this.imageFile);
-      this.faqService.addFaqRequest(fd).then((response) => {
-          this.hideDialog();
-          this.getData();
-        })
-        .catch((error) => {
-            console.log(error);
-            this.$toast.add({
-              severity: "error",
-              summary: error,
-              life: 3000,
-            });
-          
-        });
+      api
+          .post("/faq/addFaqRequest", fd, {
+            headers: getHeader(),
+          })
+          .then((response) => {
+            this.hideDialog();
+            this.getData();
+          })
+          .catch((error) => {
+            if (error.response.status == 401) {
+              this.$store.dispatch("logLout");
+            } else {
+              console.log(error);
+              this.$toast.add({
+                severity: "error",
+                summary: error,
+                life: 3000,
+              });
+            }
+          });
     },
     getUserType() {
-      this.userService.getCurrentUserType().then((response) => {
-          this.userData.userType = response.data.userType;
-          this.userData.departmentId = response.data.departmentId;
-          this.userData.departmentName = response.data.departmentName;
-          this.userData.userId = response.data.userId;
-          this.faq.userId = response.data.userId;
-          this.isShowPersonal = this.accessDepList.some(function (field) {
-            return field === response.data.departmentName;
+      api
+          .get("/getCurrentUserType", {
+            headers: getHeader(),
+          })
+          .then((response) => {
+
+            this.userData.userType = response.data.userType;
+            this.userData.departmentId = response.data.departmentId;
+            this.userData.departmentName = response.data.departmentName;
+            this.userData.userId = response.data.userId;
+            this.faq.userId = response.data.userId;
+            this.isShowPersonal = this.accessDepList.some(function (field) {
+              return field === response.data.departmentName;
+            });
+            this.isChancery = response.data.departmentName === 'Отдел документооборота и контроля';
+            this.getData();
+          })
+          .catch((error) => {
+            if (error.response && error.response.status === 401) {
+              this.$store.dispatch("logLout");
+            } else {
+              console.log(error);
+            }
           });
-          this.isChancery = response.data.departmentName === 'Отдел документооборота и контроля';
-          this.getData();
-        })
-        .catch((error) => { 
-            console.log(error);
-        });
     },
     downloadFile(fileName, fileType) {
-      const req = {
-        filename: fileName, fileType: fileType
-      }
-      this.faqService.downloadFile(req).then((response) => {
-          // const blob = new Blob([response.data], )
-          const link = document.createElement("a");
-          link.href = "data:application/octet-stream;base64," + response.data;
-          link.setAttribute("download", fileName);
-          link.download = fileName;
-          link.click();
-          URL.revokeObjectURL(link.href);
-        })
-        .catch((error) => {
-          this.$toast.add({
-            severity: "error",
-            summary: "downloadFileError:\n" + error,
-            life: 3000,
+      api
+          .post(
+              "/faq/downloadFile",
+              {filename: fileName, fileType: fileType},
+              {
+                headers: getHeader(),
+              }
+          )
+          .then((response) => {
+            // const blob = new Blob([response.data], )
+            const link = document.createElement("a");
+            link.href = "data:application/octet-stream;base64," + response.data;
+            link.setAttribute("download", fileName);
+            link.download = fileName;
+            link.click();
+            URL.revokeObjectURL(link.href);
+          })
+          .catch((error) => {
+            this.$toast.add({
+              severity: "error",
+              summary: "downloadFileError:\n" + error,
+              life: 3000,
+            });
           });
-        });
     },
     addAnswer() {
       this.faqAnswer.faqRequestId = this.selectedFaq.id;
@@ -710,25 +743,33 @@ export default {
       const fd = new FormData();
       fd.append("faqAnswer", JSON.stringify(this.faqAnswer));
       fd.append("uploadedFile", this.answerFile);
-      this.faqService.addAnswer(fd).then((response) => {
-          this.answerDialog = false;
-          this.getData();
-        })
-        .catch((error) => {
-
-            this.$toast.add({
-              severity: "error",
-              summary: error,
-              life: 3000,
-            });
-        });
+      api
+          .post("/faq/addAnswer", fd, {
+            headers: getHeader(),
+          })
+          .then((response) => {
+            this.answerDialog = false;
+            this.getData();
+          })
+          .catch((error) => {
+            if (error.response.status === 401) {
+              this.$store.dispatch("logLout")
+            } else {
+              this.$toast.add({
+                severity: "error",
+                summary: error,
+                life: 3000,
+              });
+            }
+          });
     },
     forwardFaq() {
-      const req = {
+      api.post("/faq/forwardFaq", {
         faqId: this.selectedFaq.id,
         departmentId: this.selectedForwardDep.id
-      }
-      this.faqService.forwardFaq(req).then(response => {
+      }, {
+        headers: getHeader()
+      }).then(response => {
         if (response.data.isSuccess === true) {
           this.forwardDialog = false;
           this.getData();
@@ -816,9 +857,34 @@ export default {
     color: #c63737;
   }
 
+  &.status-negotiation {
+    background: #feedaf;
+    color: #8a5340;
+  }
+
+  &.status-1 {
+    background: #b3e5fc;
+    color: #23547b;
+  }
+
   &.status-4 {
     background: #eccfff;
     color: #694382;
+  }
+
+  &.status-proposal {
+    background: #ffd8b2;
+    color: #805b36;
+  }
+
+  &.online {
+    background: #c8e6c9;
+    color: #256029;
+  }
+
+  &.offline {
+    background: #ffcdd2;
+    color: #c63737;
   }
 }
 </style>

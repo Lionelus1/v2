@@ -28,13 +28,12 @@
 </template>
 <script>
 import { getHeader, smartEnuApi } from "@/config/config";
-import {PositionService} from "@/service/position.service"
+import api from "@/service/api";
 export default {
   data() {
     return {
       positions: [],
       value: null,
-      positionService: new PositionService()
     };
   },
   props: {
@@ -58,10 +57,15 @@ export default {
   },
   methods: {
     getPositions() {
-      this.positionService.getpositions().then((response) => {
+      api
+        .get("/getpositions", { headers: getHeader() })
+        .then((response) => {
           this.positions = response.data;
         })
         .catch((error) => {
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          }
           this.$toast.add({
             severity: "error",
             summary: "getDepattments:\n" + error,

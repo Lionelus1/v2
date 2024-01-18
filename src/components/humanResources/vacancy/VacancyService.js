@@ -72,7 +72,6 @@ export default class VacancyService {
 
 
     getVacancies(lazyParams) {
-        console.log('test')
         return api.post(
             "/vacancy/all",
             lazyParams,
@@ -173,10 +172,6 @@ export default class VacancyService {
             fd,
             {headers: getMultipartHeader()}
         )
-    }
-
-    report(data) {
-        return api.post("/vacancy/report",  {headers: getHeader()})
     }
 }
 

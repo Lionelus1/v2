@@ -223,8 +223,9 @@
 </template>
 
 <script>
+import api from "@/service/api";
 import {getHeader, smartEnuApi} from "@/config/config";
-import { CandidateService } from "../../../service/candidate.service";
+
 
 export default {
   name: "CandidateDocument",
@@ -256,7 +257,6 @@ export default {
         gcCert: false,
         mId: false
       },
-      candidateService: new CandidateService()
     }
   },
   mounted() {
@@ -335,7 +335,7 @@ export default {
         fd.append('psychoCert', this.documents.psychoCert)
         fd.append('gcCert', this.documents.gcCert)
         fd.append('mId', this.documents.mId)
-        this.candidateService.documentsCreate(fd).then(_ => {
+        api.post('/candidate/documents/create', fd, {headers: getHeader()}).then(_ => {
           this.emitter.emit('closeDoc', true)
         }).catch(error => {
           this.$toast.add({

@@ -62,8 +62,9 @@
 </template>
 
 <script>
+import api from "@/service/api";
 import {getHeader, smartEnuApi} from "@/config/config";
-import {CandidateService} from "@/service/candidate.service"
+
 export default {
   name: "RefereeEdit",
   data() {
@@ -83,8 +84,7 @@ export default {
         fullName: false,
         position: false,
         phoneNumber: false
-      },
-      candidateService: new CandidateService()
+      }
     };
   },
   methods: {
@@ -101,7 +101,9 @@ export default {
     action() {
       if (this.validateForm()) {
         let path = !this.value.id ? "/candidate/referee/create" : "/candidate/referee/update"
-        this.candidateService.refereeCreateOrUpdate(path, this.value).then(res => {
+        api
+            .post(path, this.value, {headers: getHeader(),})
+            .then(res => {
               this.emitter.emit("referee", true);
             }).catch(error => {
           this.$toast.add({

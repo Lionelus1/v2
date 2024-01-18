@@ -120,8 +120,8 @@
 </template>
 
 <script>
+import api from "@/service/api";
 import {getHeader, smartEnuApi} from "@/config/config";
-import {CandidateService} from "@/service/candidate.service"
 
 export default {
   name: "UploadCandidateDocuments",
@@ -131,16 +131,17 @@ export default {
   data() {
     return {
       documentsPath: this.paths,
-      disabled: false,
-      candidateService: new CandidateService()
+      disabled: false
     }
   },
   methods: {
     downloadFile(path, name) {
       this.disabled = true
-      const req = {filePath: path}
-    
-      this.candidateService.documentsDownload(req).then(response => {
+      api.post(
+          '/candidate/documents/download',
+          {filePath: path},
+          {headers: getHeader()}
+      ).then(response => {
         var link = document.createElement('a');
         link.innerHTML = 'Download file';
         link.download = name;

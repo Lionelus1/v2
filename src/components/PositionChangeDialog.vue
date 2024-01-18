@@ -19,7 +19,7 @@
   </Dialog>
 </template>
 <script>
-import axios from 'axios';
+import api from '@/service/api';
 
 import { mapActions } from 'vuex';
 
@@ -224,12 +224,12 @@ export default {
         position = this.loginedUser.positions[this.selectedPosition.id]
       }
 
-      axios.post(smartEnuApi + '/changePosition', {
+      api.post('/changePosition', {
         position: position,
       }, {
         headers: getHeader(),
       }).then(res => {
-        axios.get(smartEnuApi + '/logineduserinfo', {
+        api.get('/logineduserinfo', {
           headers: getHeader(),
         }).then(res => {
           localStorage.setItem("loginedUser", JSON.stringify(res.data));

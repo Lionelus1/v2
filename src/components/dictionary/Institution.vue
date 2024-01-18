@@ -24,15 +24,13 @@
 
 <script>
 import { getHeader, smartEnuApi } from "@/config/config";
-import { DicService } from "@/service/dic.service";
-
+import api from "@/service/api";
 export default {
   name: "Institution",
   data() {
     return {
       value: this.modelValue,
       institutions:  null,
-      dicService: new DicService()
     }
   },
   props: {
@@ -64,20 +62,25 @@ export default {
     getInstitutions() {
       this.institutions = null
       this.value = null
-      this.dicService.getInstitutions().then(response=>{
-        this.institutions = response.data;
-      })
-      .catch((error) => {
-        this.$toast.add({
-          severity: "error",
-          summary: "getInstitutions:\n" + error,
-          life: 3000,
-        });
+      api.get('/institutions')
+          .then(response=>{
+            this.institutions = response.data;
+            console.log(response.data)
+          })
+          .catch((error) => {
+            if (error.response.status == 401) {
+              this.$store.dispatch("logLout");
+            }
+            this.$toast.add({
+              severity: "error",
+              summary: "getInstitutions:\n" + error,
+              life: 3000,
+            });
 
-        if (error.response.status === 404) {
-          this.institutions = null;
-        }
-      })
+            if (error.response.status === 404) {
+              this.institutions = null;
+            }
+          })
     },
     updateModel(event) {
       this.$emit('update:modelValue', this.value);

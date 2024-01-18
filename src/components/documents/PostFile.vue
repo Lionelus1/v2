@@ -92,12 +92,12 @@
 
 </template>
 <script>
+import api from "@/service/api";
 import Files from "@/components/documents/Files.vue"
 
 import {smartEnuApi, getHeader, getFileHeader, fileRoute} from "@/config/config";
 import DepartmentList from "../smartenu/DepartmentList.vue"
 import Enum from "@/enum/docstates/index";
-import { DocService } from "../../service/doc.service";
 
 export default {
     components: {DepartmentList,Files},
@@ -124,8 +124,7 @@ export default {
             approveDate: false,
             author: false,
             catalog: false,
-        },
-        docService: new DocService()
+        }
       }
     },
     props: {
@@ -228,7 +227,10 @@ export default {
           fcount = this.$refs.ufile.files.length
         }
         fd.append('info', JSON.stringify({directory: this.directory, count: fcount, folderID: locFolderId, fileInfo: this.file}));
-        this.docService.docUpdateFile(fd).then(resp => {
+        api.post("/doc/updateFile", fd, {
+          headers: getFileHeader()
+        })
+        .then(resp => {
           if (this.file.id === null && resp.data.length>0) {
               this.file.id = resp.data[0].id
               this.file.key = resp.data[0].uuid
@@ -251,8 +253,8 @@ export default {
     },
     deleteFile(hide) {
       let url = "/doc/deleteFile";
-      const req = {id: this.folder.id, hide: hide}
-      this.docService.docDeleteFile(req).then(response=>{
+      api.post(url, {id: this.folder.id, hide: hide}, { headers: getHeader() })
+      .then(response=>{
           this.folder.key = response.data.id;
           this.showMessage('success', this.$t('common.message.title.docCreation'),this.$t('common.message.catSuccesCreated'));
           this.$emit("updated", this.folder);
@@ -262,14 +264,19 @@ export default {
       })
     },
     getReadyDocCatalog() {
-      const req = {
+      api.post('/doc/getFoldersByType', {
         type: Enum.FolderType.FilledDoc,
         showDocs: false,
-      }
-      this.docService.getFoldersByType(req).then(res => {
+      }, {
+        headers: getHeader()
+      }).then(res => {
         this.catalogs = res.data
       }).catch(err => {
+        if (err.response.status == 401) {
+          this.$store.dispatch("logLout");
+        } else {
           console.log(err)
+        }
       })
     },
   },

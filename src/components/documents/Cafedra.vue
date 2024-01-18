@@ -52,8 +52,9 @@
 </template>
 
 <script>
+import api from '@/service/api';
 import {getHeader, findRole, smartEnuApi} from "@/config/config";
-import { DicService } from "@/service/dic.service";
+
 export default {
   data() {
     return {
@@ -66,7 +67,8 @@ export default {
         respLoading: false,
         managersLoading: false,
         selected: null,
-        dicService: new DicService()
+
+
     }
   },
   created() {
@@ -87,7 +89,14 @@ export default {
     },
     getPracticeResponsibles() {
         this.respLoading = true;
-        this.dicService.getPracticeResponsibles().then(res => {
+        api
+        .post(
+          "/dic/getPracticeResponsibles",{},
+          {
+            headers: getHeader(),
+          }
+        )
+        .then(res => {
           this.responsibles = res.data
           this.respLoading = false;
         })
@@ -96,13 +105,15 @@ export default {
         if (error.response == null || error.response == undefined) {
             console.log(error)
         }
-
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          } else {
             this.$toast.add({
               severity: "error",
               summary: "Dictionary load error:\n" + error,
               life: 3000,
             });
-      
+          }
         });
         
     },
@@ -111,10 +122,14 @@ export default {
     },
     getPracticeManagers(node) {
         this.managersLoading = true;
-        const req = {
-          groupID: node !=null ? Number(node.key) : null
-        }
-        this.dicService.getPracticeManagers(req).then(res => {
+        api
+        .post(
+          "/dic/getPracticeManagers",{groupID: node !=null ? Number(node.key) : null},
+          {
+            headers: getHeader(),
+          }
+        )
+        .then(res => {
             if (node == null) {
                 this.managers = res.data
             } else {
@@ -127,11 +142,15 @@ export default {
         if (error.response == null || error.response == undefined) {
             console.log(error)
         }
-          this.$toast.add({
-            severity: "error",
-            summary: "Dictionary load error:\n" + error,
-            life: 3000,
-          });
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          } else {
+            this.$toast.add({
+              severity: "error",
+              summary: "Dictionary load error:\n" + error,
+              life: 3000,
+            });
+          }
         });
 
     },
@@ -163,18 +182,31 @@ export default {
         } else {
             req.groupID = node.id
         }
-        this.dicService.setPracticeManager(req).then(res => {
+      
+        api
+        .post(
+          "/dic/setPracticeManager",
+         req,
+          {
+            headers: getHeader(),
+          }
+        )
+        .then(res => {
             if (node.isStudent) {
                 node.children = res.data
             }
          
         })
         .catch((error) => {
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          } else {
             this.$toast.add({
               severity: "error",
               summary: "Dictionary load error:\n" + error,
               life: 3000,
             });
+          }
         });
         node.users = []
 
@@ -189,15 +221,28 @@ export default {
             responsibleID: responsibleID,
             eduLevelID: eduLevelID
         }
-        this.dicService.updatePracticeResponsible(req).then(res => {
+        api
+        .post(
+          "/dic/updatePracticeResponsible",
+         req,
+          {
+            headers: getHeader(),
+          }
+        )
+        .then(res => {
           console.log(res.data)
+         
         })
         .catch((error) => {
-          this.$toast.add({
-            severity: "error",
-            summary: "Dictionary load error:\n" + error,
-            life: 3000,
-          });
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          } else {
+            this.$toast.add({
+              severity: "error",
+              summary: "Dictionary load error:\n" + error,
+              life: 3000,
+            });
+          }
         });
     }
   }

@@ -60,7 +60,7 @@
   <Toast/>
 </template>
 <script>
-import axios from "axios";
+import api from "@/service/api";
 import {smartEnuApi} from "@/config/config";
 import {VueRecaptcha} from "vue-recaptcha";
 import ReceptionService from "@/service/reception.service";
@@ -168,7 +168,8 @@ export default {
       this.request.count = 0
       this.request.language = this.$i18n.locale
       fd.append('question', JSON.stringify({question: this.request, count: this.request.count}));
-      this.receptionService.sendQuestion(fd).then(resp => {
+      api.post("/reception/sendQuestion", fd)
+          .then(resp => {
             this.request.number = resp.data
             this.uploading = false;
             this.$refs.captcha.reset()

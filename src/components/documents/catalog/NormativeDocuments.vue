@@ -138,6 +138,7 @@
   
 </template>
 <script>
+import api from '@/service/api';
 
 import { FilterMatchMode } from "primevue/api";
 import { getHeader, smartEnuApi, findRole } from "@/config/config";
@@ -146,8 +147,7 @@ import Enum from "@/enum/docstates/index"
 import DepartmentList from "@/components/smartenu/DepartmentList.vue"
 import PostFolder from "@/components/documents/PostFolder.vue"
 import PostFile from "@/components/documents/PostFile.vue"
-import { DocService } from '../../../service/doc.service';
-import {FileService} from "@/service/file.service"
+
 export default {
   name: 'NormativeDocuments',
   components: { PostFolder, PostFile, DepartmentList },
@@ -201,8 +201,6 @@ export default {
         {value: 'gt'},
         {value: 'equals'}
       ],
-      docService: new DocService(),
-      fileService: new FileService()
     }
   },
   mounted() { 
@@ -304,13 +302,15 @@ export default {
       if (parent === null) {
         this.expandedKeys = {}
       }
-      const req = {
+
+      api.post('/folders', {
         folderType: Enum.FolderType.NormativeDocuments,
         page: null,
         rows: null,
         parentId: parent !== null ? parent.id : null,
-      }
-      this.docService.getFolders(req).then(res => {
+      }, { 
+        headers: getHeader() 
+      }).then(res => {
         let data = res.data.folders
 
         if (!data) {
@@ -343,7 +343,9 @@ export default {
 
         this.loading = false
       }).catch(err => {
-       if (err.response && err.response.data && err.response.data.localized) {
+        if (err.response && err.response.status == 401) {
+          this.$store.dispatch("logLout")
+        } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
           console.log(err)
@@ -355,7 +357,8 @@ export default {
     },
     getFiles(parent) {
       this.loading = true;
-      const req = {
+
+      api.post('/documents', {
         sourceType: null,
         docType: Enum.DocType.NormativeDoc,
         lang: null,
@@ -364,8 +367,9 @@ export default {
         departmentId: null,
         page: null,
         rows: null,
-      }
-      this.docService.getDocuments(req).then(res => {
+      }, { 
+        headers: getHeader() 
+      }).then(res => {
         let data = res.data.documents
 
         if (!data) {
@@ -386,7 +390,9 @@ export default {
 
         this.loading = false
       }).catch(err => {
-        if (err.response && err.response.data && err.response.data.localized) {
+        if (err.response && err.response.status == 401) {
+          this.$store.dispatch("logLout")
+        } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
           console.log(err)
@@ -495,17 +501,21 @@ export default {
         icon: 'pi pi-exclamation-triangle',
         accept: () => {
           this.loading = true
-          const req = {
+
+          api.post('/doc/deleteFolder', {
             id: this.selectedNode.id,
             hide: false,
-          }
-          this.docService.docDeleteFolder(req).then(res => {
+          }, {
+            headers: getHeader()
+          }).then(res => {
             this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
             this.deleteNode(this.catalog[0], this.selectedNode.key)
 
             this.loading = false
           }).catch(err => {
-             if (err.response && err.response.data && err.response.data.localized) {
+            if (err.response && err.response.status == 401) {
+              this.$store.dispatch("logLout")
+            } else if (err.response && err.response.data && err.response.data.localized) {
               this.showMessage('error', this.$t(err.response.data.localizedPath), null)
             } else {
               console.log(err)
@@ -528,17 +538,21 @@ export default {
         icon: 'pi pi-exclamation-triangle',
         accept: () => {
           this.loading = true
-          const req = {
+
+          api.post('/doc/deleteFolder', {
             id: this.selectedNode.id,
             hide: true,
-          }
-          this.docService.docDeleteFolder(req).then(res => {
+          }, {
+            headers: getHeader()
+          }).then(res => {
             this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
             this.selectedNode.hidden = true
 
             this.loading = false
           }).catch(err => {
-            if (err.response && err.response.data && err.response.data.localized) {
+            if (err.response && err.response.status == 401) {
+              this.$store.dispatch("logLout")
+            } else if (err.response && err.response.data && err.response.data.localized) {
               this.showMessage('error', this.$t(err.response.data.localizedPath), null)
             } else {
               console.log(err)
@@ -556,16 +570,20 @@ export default {
       }
 
       this.loading = true
-      const req = {
+
+      api.post('/doc/showFolder', {
         id: this.selectedNode.id
-      }
-      this.docService.showFolder(req).then(res => {
+      }, {
+        headers: getHeader()
+      }).then(res => {
         this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
 
         this.selectedNode.hidden = false
         this.loading = false
       }).catch(err => {
-        if (err.response && err.response.data && err.response.data.localized) {
+        if (err.response && err.response.status == 401) {
+          this.$store.dispatch("logLout")
+        } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
           console.log(err)
@@ -586,17 +604,21 @@ export default {
         icon: 'pi pi-exclamation-triangle',
         accept: () => {
           this.loading = true
-          const req = {
+
+          api.post('/doc/deleteFile', {
             id: this.selectedNode.id,
             hide: false,
-          }
-          this.docService.docDeleteFile(req).then(res => {
+          }, {
+            headers: getHeader()
+          }).then(res => {
             this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
             this.deleteNode(this.catalog[0], this.selectedNode.key)
 
             this.loading = false
           }).catch(err => {
-            if (err.response && err.response.data && err.response.data.localized) {
+            if (err.response && err.response.status == 401) {
+              this.$store.dispatch("logLout")
+            } else if (err.response && err.response.data && err.response.data.localized) {
               this.showMessage('error', this.$t(err.response.data.localizedPath), null)
             } else {
               console.log(err)
@@ -619,17 +641,21 @@ export default {
         icon: 'pi pi-exclamation-triangle',
         accept: () => {
           this.loading = true
-          const req = {
+
+          api.post('/doc/deleteFile', {
             id: this.selectedNode.id,
             hide: true,
-          }
-          this.docService.docDeleteFile(req).then(res => {
+          }, {
+            headers: getHeader()
+          }).then(res => {
             this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
             this.selectedNode.isHidden = true
 
             this.loading = false
           }).catch(err => {
-            if (err.response && err.response.data && err.response.data.localized) {
+            if (err.response && err.response.status == 401) {
+              this.$store.dispatch("logLout")
+            } else if (err.response && err.response.data && err.response.data.localized) {
               this.showMessage('error', this.$t(err.response.data.localizedPath), null)
             } else {
               console.log(err)
@@ -647,16 +673,20 @@ export default {
       }
 
       this.loading = true
-      const req = {
+
+      api.post('/doc/showFile', {
         id: this.selectedNode.id
-      }
-      this.docService.showFile(req).then(res => {
+      }, {
+        headers: getHeader()
+      }).then(res => {
         this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
 
         this.selectedNode.isHidden = false
         this.loading = false
       }).catch(err => {
-        if (err.response && err.response.data && err.response.data.localized) {
+        if (err.response && err.response.status == 401) {
+          this.$store.dispatch("logLout")
+        } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
           console.log(err)
@@ -687,10 +717,12 @@ export default {
       }
 
       this.loading = true
-      const req = {
+
+      api.post('/downloadFile', {
         filePath: this.selectedNode.filePath
-      }
-      this.fileService.downloadFile(req).then(res => {
+      }, {
+        headers: getHeader()
+      }).then(res => {
         let link = document.createElement("a");
         link.href = "data:application/octet-stream;base64," + res.data;
         link.setAttribute("download", this.selectedNode.name);
@@ -700,7 +732,9 @@ export default {
 
         this.loading = false
       }).catch(err => {
-        if (err.response && err.response.data && err.response.data.localized) {
+        if (err.response && err.response.status == 401) {
+          this.$store.dispatch("logLout")
+        } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
           console.log(err)

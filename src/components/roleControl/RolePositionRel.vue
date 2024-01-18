@@ -88,7 +88,7 @@
 </template>
 <script>
 	import { smartEnuApi, getHeader } from "@/config/config";
-  import {PositionService} from "@/service/position.service"
+  import api from '@/service/api';
 
 	export default {
 		data() {
@@ -110,17 +110,23 @@
 				roles: [],
 				position: null,
 				positions: [],
-				positionService: new PositionService()
 			}
 		},
 		methods: {
 			initRolePositionRels() {
 				this.loading = true
-				this.positionService.getPositionRoleRel(this.getParams).then(res => {
+
+				api.post('/positionRoleRel', this.getParams, {
+					headers: getHeader()
+				}).then(res => {
 					this.rolePositionRels = res.data.positionRoleRel
         	this.count = res.data.total
 					this.loading = false
 				}).catch(err => {
+					if (err.response.status == 401) {
+						this.$store.dispatch("logLout")
+					}
+					
 					this.$toast.add({
 						severity: "error",
 						detail: this.$t("roleControl.noResult"),
@@ -148,14 +154,20 @@
 				}
 
 				this.loading = true
-				const req =  {
+
+				api.post('/positionRoleRel/create', {
 					positionId: this.position.id,
 					roleId: this.role.id,
-				}
-				this.positionService.create(req).then(res => {
+				}, {
+					headers: getHeader()
+				}).then(res => {
 					this.close('create')
 					this.initRolePositionRels()
 				}).catch(err => {
+					if (err.response.status == 401) {
+						this.$store.dispatch("logLout")
+					}
+					
 					this.$toast.add({
 						severity: "error",
 						detail: this.$t("common.message.saveError"),
@@ -171,13 +183,19 @@
 				}
 
 				this.loading = true
-				const req =  {
+
+				api.post('/positionRoleRel/delete', {
 					id: this.forDeleting.positionRoleRelId
-				}
-				this.positionService.delete(req).then(res => {
-					close('delete')
+				}, {
+					headers: getHeader()
+				}).then(res => {
+					this.close('delete')
 					this.initRolePositionRels()
 				}).catch(err => {
+					if (err.response.status == 401) {
+						this.$store.dispatch("logLout")
+					}
+					
 					this.$toast.add({
 						severity: "error",
 						detail: this.$t("roleControl.failedToDelete"),
@@ -189,9 +207,15 @@
 				})
 			},
 			initPositions() {
-				this.positionService.getPositions().then(res => {
+				api.get('/positionRoleRel/positions', {
+					headers: getHeader()
+				}).then(res => {
 					this.positions = res.data
 				}).catch(err => {
+					if (err.response.status == 401) {
+						this.$store.dispatch("logLout")
+					}
+
 					this.$toast.add({
 						severity: "error",
 						detail: this.$t("roleControl.failedToLoad"),
@@ -200,9 +224,15 @@
 				})
 			},
 			initRoles() {
-				this.positionService.getRoles().then(res => {
+				api.get('/positionRoleRel/roles', {
+					headers: getHeader()
+				}).then(res => {
 					this.roles = res.data
 				}).catch(err => {
+					if (err.response.status == 401) {
+						this.$store.dispatch("logLout")
+					}
+
 					this.$toast.add({
 						severity: "error",
 						detail: this.$t("roleControl.failedToLoad"),

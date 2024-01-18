@@ -227,9 +227,9 @@
 </template>
 
 <script>
+import api from "@/service/api";
 import {authHeader, findRole, getHeader, smartEnuApi} from "@/config/config";
 import {FilterMatchMode, FilterOperator} from "primevue/api";
-import {NewsService} from "@/service/news.service"
 
 export default {
   name: "CategoriesTable",
@@ -277,14 +277,13 @@ export default {
         isStudent: false,
       },
       bgColor: '0062ff',
-      textColor: 'ffffff',
-      newsService: new NewsService()
+      textColor: 'ffffff'
     };
   },
   methods: {
     getCategories() {
       this.categories = [];
-      this.newsService.getCategories().then((response) => {
+      api.get("/allCategories", {headers: getHeader()}).then((response) => {
         this.categories = response.data;
         this.categories = this.categories.reverse();
         this.loading = false;
@@ -294,13 +293,13 @@ export default {
           summary: this.$t("smartenu.loadAllCategoriesError") + ":\n" + error,
           life: 3000,
         });
+        if (error.response.status == 401) {
+          this.$store.dispatch("logLout");
+        }
       });
     },
     deleteNewsCategory(id) {
-      const req = {
-        id: id
-      }
-      this.newsService.delNewsCat(req).then((response) => {
+      api.post("/delNewsCat", {id: id}, {headers: getHeader()}).then((response) => {
         if (response.status === 200) {
           this.getCategories();
         }
@@ -320,7 +319,8 @@ export default {
         this.category.bgColor = this.bgColor;
       if (!this.category.textColor)
         this.category.textColor = this.textColor;
-      this.newsService.categories(this.category).then((response) => {
+        api.post("/categories", this.category, {headers: getHeader()})
+          .then((response) => {
             if (response.data !== null) {
               this.$toast.add({
                 severity: "success",

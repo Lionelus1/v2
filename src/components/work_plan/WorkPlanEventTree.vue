@@ -101,9 +101,10 @@
 import WorkPlanEventAdd from "@/components/work_plan/WorkPlanEventAdd";
 import WorkPlanExecute from "@/components/work_plan/WorkPlanExecute";
 import WorkPlanEventResultModal from "@/components/work_plan/WorkPlanEventResultModal";
+import api from "@/service/api";
 import {getHeader, smartEnuApi} from "@/config/config";
 import WorkPlanEventEditModal from "@/components/work_plan/WorkPlanEventEditModal";
-import {WorkPlanService} from "@/service/work.plan.service"
+
 export default {
   name: "WorkPlanEventTree",
   components: {WorkPlanEventResultModal, WorkPlanEventAdd, WorkPlanExecute, WorkPlanEventEditModal},
@@ -116,8 +117,7 @@ export default {
       loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID,
       isPlanCreator: this.planCreator,
       isFinish: false,
-      isPlanSentApproval: this.approvalSent,
-      workPlanService: new WorkPlanService()
+      isPlanSentApproval: this.approvalSent
     }
   },
   created() {
@@ -207,17 +207,21 @@ export default {
       this.$refs.op.toggle(event);
     },
     remove(event_id) {
-      this.workPlanService.removeEvent(event_id).then(res => {
+      api.post(`/workPlan/removeEvent/${event_id}`, {}, {headers: getHeader()}).then(res => {
         if (res.data.is_success) {
           this.$toast.add({severity: 'success', summary: this.$t('common.success'), life: 3000});
           this.emitter.emit("workPlanChildEventIsDeleted", true);
         }
       }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
           this.$toast.add({
             severity: "error",
             summary: error,
             life: 3000,
           });
+        }
       });
     }
   }
@@ -258,6 +262,11 @@ export default {
   &.status-2 {
     background: #C8E6C9;
     color: #256029;
+  }
+
+  &.status-1 {
+    background: #B3E5FC;
+    color: #23547B;
   }
 }
 </style>

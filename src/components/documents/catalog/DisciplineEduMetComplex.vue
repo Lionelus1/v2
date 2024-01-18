@@ -45,7 +45,7 @@
           :currentPageReportTemplate="currentPageReportTemplate" :lazy="true" :loading="departmentTableLoading" scrollable scrollHeight="flex"
           v-model:selection="currentDepartment" selectionMode="single" :rowHover="true" stripedRows class="flex-grow-1"
           @page="onPageDepartment" @row-dblclick="doubleClickDepartment" @update:selection="onSelectionDepartment">
-          <Column :header="faculty ? $t('educomplex.columns.cafedras', {'faculty': getDepartmentName(faculty)}) :
+          <Column :header="faculty ? $t('educomplex.columns.cafedras', {'faculty': getDepartmentName(faculty)}) : 
             $t('educomplex.columns.faculties')" style="min-width: 250px;">
             <template #body="slotProps">
               {{ getDepartmentName(slotProps.data) }}
@@ -273,6 +273,7 @@
   </OverlayPanel>
 </template>
 <script>
+import api from '@/service/api';
 
 import { getHeader, smartEnuApi } from "@/config/config";
 import Enum from "@/enum/docstates/index";
@@ -281,9 +282,6 @@ import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo";
 import DocInfo from "@/components/documents/DocInfo";
 import PostFile from "@/components/documents/PostFile.vue"
-import { DocService } from "@/service/doc.service";
-import { OrganizationService } from "@/service/organization.service";
-
 import ActionButton from "@/components/ActionButton.vue";
 
 export default {
@@ -383,8 +381,6 @@ export default {
           value: "revision"
         }
       ],
-      docService: new DocService(),
-      organizationService: new OrganizationService()
     }
   },
   computed: {
@@ -767,18 +763,20 @@ export default {
     },
     getDepartments() {
       this.departmentTableLoading = true
-      const req = {
+
+      api.post('/departments', {
         orgId: 1,
         parentId: this.faculty ? this.faculty.id : null,
         isFaculty: this.faculty ? false : true,
         hasManager: this.faculty ? true : false,
         page: this.departmentPage,
         rows: this.departmentRows,
-      }
-      this.organizationService.departments(req).then(res => {
-        this.departments = res.data.departments
-        this.totalDepartments = res.data.total
-        this.currentDepartment = null
+      }, { 
+        headers: getHeader() 
+      }).then(res => {
+        this.departments = res.data.departments;
+        this.totalDepartments = res.data.total;
+        this.currentDepartment = null;
 
         this.departmentTableLoading = false;
         this.filePage = 0;
@@ -788,7 +786,9 @@ export default {
         this.totalDepartments = 0
         this.currentDepartment = null
 
-        if (err.response && err.response.data && err.response.data.localized) {
+        if (err.response && err.response.status == 401) {
+          this.$store.dispatch("logLout")
+        } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
           console.log(err)
@@ -815,14 +815,16 @@ export default {
       }
 
       this.fileTableLoading = true
-      const req = {
+
+      api.post('/documents', {
         page: this.filePage,
         rows: this.fileRows,
         docType: this.Enum.DocType.EduComplex,
         departmentId: this.filter.global ? null : this.currentDepartment.id,
         filter: this.docFilter,
-      }
-      this.docService.documents(req).then(res => {
+      }, { 
+        headers: getHeader() 
+      }).then(res => {
         this.files = res.data.documents
         this.totalFiles = res.data.total
         this.currentFile = null
@@ -833,7 +835,9 @@ export default {
         this.totalFiles = 0
         this.currentFile = null
 
-        if (err.response && err.response.data && err.response.data.localized) {
+        if (err.response && err.response.status == 401) {
+          this.$store.dispatch("logLout")
+        } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
           console.log(err)
@@ -849,10 +853,12 @@ export default {
       }
 
       this.loading = true
-      const req = {
+
+      api.post('/document/download', {
         uuid: uuid,
-      }
-      this.docService.documentDownload(req).then(res => {
+      }, { 
+        headers: getHeader() 
+      }).then(res => {
         const link = document.createElement("a");
         link.href = "data:application/octet-stream;base64," + res.data;
         link.setAttribute("download", filepath);
@@ -862,7 +868,9 @@ export default {
 
         this.loading = false
       }).catch(err => {
-       if (err.response && err.response.data && err.response.data.localized) {
+        if (err.response && err.response.status == 401) {
+          this.$store.dispatch("logLout")
+        } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
           console.log(err)
@@ -881,16 +889,20 @@ export default {
         rejectClass: 'p-button p-button-danger',
         accept: () => {
           this.loading = true;
-          const req = {
+          
+          api.post('/document/delete', {
             uuid: this.currentFile.uuid,
-          }
-          this.docService.documentDelete(req).then(res => {
+          }, {
+            headers: getHeader()
+          }).then(res => {
             this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
             this.getFiles();
 
             this.loading = false
           }).catch(err => {
-            if (err.response && err.response.data && err.response.data.localized) {
+            if (err.response && err.response.status == 401) {
+              this.$store.dispatch("logLout")
+            } else if (err.response && err.response.data && err.response.data.localized) {
               this.showMessage('error', this.$t(err.response.data.localizedPath), null)
             } else {
               console.log(err)
@@ -904,10 +916,13 @@ export default {
     },
     approve(event) {
       this.loading = true;
-      const req = {     id: this.currentFile.id,
+
+      api.post("/doc/sendtoapprovebystage", {
+        id: this.currentFile.id,
         appUsers: event
-      }
-      this.docService.sendtoapprovebystage(req).then(res => {
+      }, {
+        headers: getHeader()
+      }).then(res => {
         this.showMessage('success', this.$t('common.success'), this.$t('common.message.succesSendToApproval'));
 
         this.close("sendToApproveDialog");
@@ -915,7 +930,9 @@ export default {
 
         this.loading = false;
       }).catch(err => {
-       if (err.response && err.response.data && err.response.data.localized) {
+        if (err.response && err.response.status == 401) {
+          this.$store.dispatch("logLout")
+        } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
           console.log(err)
@@ -927,19 +944,24 @@ export default {
     },
     revision() {
       this.loading = true
-      const req = {
+
+      api.post('/document/revision', {
         uuid: this.currentFile.uuid,
-        comment: this.revisionComment
-      }
-      this.docService.documentRevision(req).then(res => {
+        comment: this.revisionComment,
+      }, {
+        headers: getHeader()
+      }).then(res => {
         this.close('sendToRevisionDialog')
         this.getFiles();
 
         this.loading = false
       }).catch(err => {
-        if (err.response && err.response.data && err.response.data.localized) {
+        if (err.response && err.response.status == 401) {
+          this.$store.dispatch("logLout")
+        } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
+          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
 

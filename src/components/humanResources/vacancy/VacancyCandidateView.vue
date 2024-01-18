@@ -100,9 +100,10 @@ import VacancyService from "./VacancyService";
 import DocDownload from "./DownloadCandidateDocuments";
 import ApplyActionEdit from "./ApplyActionEdit";
 import html2pdf from "html2pdf.js";
+import api from "@/service/api";
 import {getHeader, getMultipartHeader, smartEnuApi} from "@/config/config";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo"
-import {CandidateService} from "@/service/candidate.service"
+
 
 export default {
   name: "VacancyCandidateView",
@@ -190,17 +191,18 @@ export default {
       resumeFile: null,
       docId: null,
       resumeView: false,
-      candidateService: new CandidateService()
     }
   },
   methods: {
 
     downloadSignedResume() {
-      const req =           {
+      api.post(
+          '/candidate/resume/download',
+          {
             vacancyId: this.vacancy.id,
             candidateId: this.candidateRelation.candidate.id
-          }
-      this.candidateService.resumeDownload(req).then(response => {
+          },
+          {headers: getHeader()}).then(response => {
         console.log(response.data)
         if (response.data.docId !== null) {
           this.docId = response.data.docId
@@ -226,11 +228,13 @@ export default {
       this.sidebar = true
     },
     viewDocs(data) {
-      const req = {
-        vacancyId: this.vacancy.id,
+      api.post(
+         '/candidate/documents/existence',
+          {
+            vacancyId: this.vacancy.id,
             candidateId: data.candidate.id
-      }
-      this.candidateService.documentsExistence(req).then(response => {
+          },
+          {headers: getHeader()}).then(response => {
         console.log(response.data)
         this.documentsPath = response.data
         this.docs = true
@@ -337,10 +341,36 @@ export default {
 
 <style lang="scss" scoped>
 .customer-badge {
+  border-radius: 2px;
+  padding: 0.25em 0.5rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.3px;
+
   &.status-8 {
     background: #b3e5fc;
     color: #23547b;
   }
 
+  &.status-9 {
+    background: #eccfff;
+    color: #694382;
+  }
+
+  &.status-10 {
+    background: #c8e6c9;
+    color: #256029;
+  }
+
+  &.status-11 {
+    background: #ffcdd2;
+    color: #c63737;
+  }
+
+  &.status-12 {
+    background: #ffd8b2;
+    color: #805b36;
+  }
 }
 </style>

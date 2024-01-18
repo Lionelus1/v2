@@ -24,7 +24,7 @@
 
 <script>
 import { getHeader, smartEnuApi } from "@/config/config";
-import { DicService } from "@/service/dic.service";
+import api from "@/service/api";
 
 export default {
   name: "DicLanguage",
@@ -32,7 +32,6 @@ export default {
     return {
       value: this.modelValue,
       languages:  null,
-      dicService: new DicService()
     }
   },
   props: {
@@ -65,10 +64,15 @@ export default {
     getSpecialities() {
       this.specialities = null
       this.value = null
-      this.dicService.getLanguages().then(response=>{
+      api.get('/languages')
+          .then(response=>{
             this.languages = response.data;
+            console.log(response.data)
           })
           .catch((error) => {
+            if (error.response.status == 401) {
+              this.$store.dispatch("logLout");
+            }
             this.$toast.add({
               severity: "error",
               summary: "getInstitutions:\n" + error,

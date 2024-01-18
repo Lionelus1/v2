@@ -41,9 +41,8 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "@/service/api";
 import {smartEnuApi} from "@/config/config";
-import { FileService } from "../../service/file.service";
 
 export default {
   data() {
@@ -52,8 +51,7 @@ export default {
       selected: null,
       filter: {},
       loading: true,
-      dirs: [],
-      fileService: new FileService()
+      dirs: []
     };
   },
   customerService: null,
@@ -77,7 +75,7 @@ export default {
       this.tableData = [];
       if (!dirName)
         dirName = "/"
-      this.fileService.getFilesDirName(dirName).then(
+        api.get("/getFiles?dirName=" + dirName).then(
           (response) => {
             var pathList = response.data;
             pathList.forEach((i) => {
@@ -86,7 +84,6 @@ export default {
             this.loading = false;
           },
           (response) => {
-            this.loading = false;
             console.log(response);
           }
       );
@@ -100,7 +97,7 @@ export default {
     },
     remove(fileName) {
       let fname = this.selected ? this.selected + "/" + fileName : fileName;
-      axios.post(smartEnuApi + "/remove?fileName=" + fname, {}).then((r) => {
+      api.post("/remove?fileName=" + fname, {}).then((r) => {
         if (r.status === 200) {
           this.$toast.add({severity: 'info', summary: this.$t('hdfs.success'), detail: this.$t('hdfs.fileRemoved'), life: 3000});
           this.getData(this.selected);
@@ -109,7 +106,7 @@ export default {
     },
     getDirectories() {
       this.dirs = [];
-      axios.get(smartEnuApi + "/getDirs").then(response => {
+      api.get("/getDirs").then(response => {
         response.data.forEach((r) => {
           this.dirs.push({dirName: r});
         });

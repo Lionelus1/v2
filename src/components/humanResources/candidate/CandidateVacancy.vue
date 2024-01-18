@@ -465,9 +465,8 @@ import {getHeader, smartEnuApi} from "@/config/config";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo"
 import html2pdf from "html2pdf.js";
 import CandidateDocument from "./CandidateDocument";
-import { VacancyService } from "../../../service/vacancy.service";
-import {CandidateService} from "@/service/candidate.service"
-
+import { CandidateVacancyService } from "../../../service/candidate.vacancy.service";
+import {CandidateService} from "../../../service/candidate.service"
 export default {
   name: "CandidateVacancy",
   components: {DocSignaturesInfo},
@@ -519,7 +518,7 @@ export default {
         psychoCert: false,
         gcCert: false,
       },
-      vacancyService: new VacancyService(),
+      candidateVacancy: new CandidateVacancyService(),
       candidateService: new CandidateService()
     }
   },
@@ -534,16 +533,20 @@ export default {
     getVacancies() {
       this.loading = true
       this.lazyParams.countMode = null;
-      this.vacancyService.vacancyUser(this.lazyParams).then((response) => {
+      this.candidateVacancy.getVacancies(this.lazyParams).then((response) => {
         this.vacancies = response.data.vacancies;
         this.count = response.data.total;
         this.loading = false;
       }).catch((error) => {
+        if (error.response.status == 401) {
+          this.$store.dispatch("logLout");
+        } else {
           this.$toast.add({
             severity: "error",
             summary: error,
             life: 3000,
           });
+        }
       });
     },
 
@@ -551,11 +554,13 @@ export default {
      ******************** GET PETITION
      */
     getPetition(data) {
-      const req = {
-        candidateId: data.candidateRelation[0].candidate.id,
-        vacancyId: data.id
-      }
-      this.vacancyService.petition(req).then(response => {
+      this.candidateVacancy.getPetition(
+          {
+            candidateId: data.candidateRelation[0].candidate.id,
+            vacancyId: data.id
+          },
+          {headers: getHeader()}
+      ).then(response => {
         this.documentUuid = response.data
         this.visible.petition = true
       }).catch(error => {
@@ -690,7 +695,6 @@ export default {
         fd.append('psychoCert', this.documents.psychoCert)
         fd.append('gcCert', this.documents.gcCert)
         fd.append('mId', this.documents.mId)
-        this.candidateService.documentsCreate(fd)
         this.candidateService.documentsCreate(fd).then(_ => {
           this.visible.documents = false
           this.vacancy = null
@@ -717,9 +721,36 @@ export default {
 }
 
 .customer-badge {
+  border-radius: 2px;
+  padding: 0.25em 0.5rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.3px;
+
   &.status-8 {
     background: #b3e5fc;
     color: #23547b;
+  }
+
+  &.status-9 {
+    background: #eccfff;
+    color: #694382;
+  }
+
+  &.status-10 {
+    background: #c8e6c9;
+    color: #256029;
+  }
+
+  &.status-11 {
+    background: #ffcdd2;
+    color: #c63737;
+  }
+
+  &.status-12 {
+    background: #ffd8b2;
+    color: #805b36;
   }
 }
 </style>

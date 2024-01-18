@@ -6,7 +6,7 @@
   </div>
 </template>
 <script>
-import { DocService } from "@/service/doc.service";
+import api from '@/service/api';
 
 import { getHeader, smartEnuApi, b64toBlob } from "@/config/config";
 
@@ -17,7 +17,6 @@ export default {
       loading: false,
 
       pdf: null,
-      docService: new DocService()
     }
   },
   mounted() {
@@ -34,15 +33,19 @@ export default {
     },
     getPdf() {
       this.loading = true
-      const req = {
+
+      api.post('/document/download', {
         uuid: this.$route.params.uuid,
-      }
-      this.docService.documentDownload(req).then(res => {
+      }, {
+        headers: getHeader() 
+      }).then(res => {
         this.pdf = b64toBlob(res.data);
 
         this.loading = false
       }).catch(err => {
-        if (err.response && err.response.data && err.response.data.localized) {
+        if (err.response && err.response.status == 401) {
+          this.$store.dispatch("logLout")
+        } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
           console.log(err)

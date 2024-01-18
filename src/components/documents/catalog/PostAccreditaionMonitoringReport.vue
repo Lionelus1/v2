@@ -260,6 +260,7 @@
 </template>
 
 <script>
+import api from "@/service/api";
 import PostFile from "../PostFile.vue"
 import DocInfo from "../DocInfo.vue"
 import {smartEnuApi, getHeader, findRole} from "@/config/config";
@@ -267,8 +268,6 @@ import DocSignaturesInfo from "@/components/DocSignaturesInfo";
 import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers";
 import DocState from "@/enum/docstates/index"
 import {FilterMatchMode} from "primevue/api";
-import { DocService } from "../../../service/doc.service";
-import { FileService } from "@/service/file.service";
 
 export default {
   components: {ApprovalUsers, DocInfo, DocSignaturesInfo, PostFile},
@@ -429,8 +428,6 @@ export default {
       ],
       approveComponentKey: 0,
       isGlobalFilter: false,
-      docService: new DocService(),
-      fileService: new FileService()
     }
   },
   created() {
@@ -466,11 +463,10 @@ export default {
     },
     approve(event) {
       this.approving = true;
-      const req = {
+      api.post("/doc/sendtoapprovebystage", {
         id: this.file.id,
         appUsers: event
-      }
-      this.docService.sendtoapprovebystage(req).then(res => {
+      }, {headers: getHeader()}).then(res => {
         this.$toast.add({
           severity: "success",
           summary: this.$t('common.message.succesSendToApproval'),
@@ -487,11 +483,15 @@ export default {
 
       }).catch(error => {
         this.approving = false;
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
           this.$toast.add({
             severity: "error",
             summary: error,
             life: 3000,
           });
+        }
       });
     },
     onResize() {
@@ -534,7 +534,8 @@ export default {
         this.lazyParams.parentID = null
         this.lazyParams.depType = 0
       }
-      this.docService.getFoldersByType(this.lazyParams).then(response => {
+      api.post(url, this.lazyParams, {headers: getHeader()})
+          .then(response => {
             if (this.isGlobalFilter) {
               this.catalog = response.data;
             } else if (parent == null) {
@@ -562,7 +563,10 @@ export default {
           })
           .catch(error => {
             console.log(error)
-            this.loading = false
+            if (error.response.status == 401) {
+              this.$store.dispatch("logLout");
+            } else
+              console.error(error)
           })
     },
     resetFileInfo() {
@@ -667,20 +671,19 @@ export default {
         acceptClass: 'p-button p-button-success',
         rejectClass: 'p-button p-button-danger',
         accept: () => {
-          const req = {
-            id: this.file.id, hide: hide
-          }
-          this.docService.docRemoveFile(req).then(_ => {
-              this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
-              this.getFolders(this.parentNode)
-              this.file.hidden = hide
-              if (!hide) {
-                this.deleteChild(this.catalog[0])
-              }
-            },
-            error => {
-              console.log(error);
-            });
+          let url = "/doc/removeFile";
+          api.post(url, {id: this.file.id, hide: hide}, {headers: getHeader()})
+              .then(_ => {
+                    this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
+                    this.getFolders(this.parentNode)
+                    this.file.hidden = hide
+                    if (!hide) {
+                      this.deleteChild(this.catalog[0])
+                    }
+                  },
+                  error => {
+                    console.log(error);
+                  });
         },
       });
     },
@@ -699,39 +702,45 @@ export default {
 
     showFile() {
       let url = "/doc/showFile";
-      const req = {
-        id: this.file.id
-      }
-      this.docService.showFile(req).then(_ => {
-        this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
-        this.file.hidden = false
-        this.selected.hidden = false
+      api.post(url, {id: this.file.id}, {headers: getHeader()})
+          .then(_ => {
+            this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
+            this.file.hidden = false
+            this.selected.hidden = false
 
-      })
-      .catch(error => {
-        console.log(error)
-      })
+          })
+          .catch(error => {
+            console.log(error)
+            if (error.response.status == 401) {
+              this.$store.dispatch("logLout");
+            } else
+              console.error(error)
+          })
     },
     downloadFile(path = null) {
       if (this.file || path) {
-        const req = {
-          filePath: path != null ? path : this.file.path
-        }
-        this.fileService.downloadFile(req).then(response => {
-          const link = document.createElement("a");
-          link.href = "data:application/octet-stream;base64," + response.data;
-          link.setAttribute("download", path);
-          link.download = path;
-          link.click();
-          URL.revokeObjectURL(link.href);
-        })
-        .catch((error) => {
-          this.$toast.add({
-            severity: "error",
-            summary: "downloadFileError:\n" + error,
-            life: 3000,
-          });
-        });
+        api.post(
+            "/downloadFile", {
+              filePath: path != null ? path : this.file.path
+            }, {
+              headers: getHeader()
+            }
+        )
+            .then(response => {
+              const link = document.createElement("a");
+              link.href = "data:application/octet-stream;base64," + response.data;
+              link.setAttribute("download", path);
+              link.download = path;
+              link.click();
+              URL.revokeObjectURL(link.href);
+            })
+            .catch((error) => {
+              this.$toast.add({
+                severity: "error",
+                summary: "downloadFileError:\n" + error,
+                life: 3000,
+              });
+            });
       }
     },
     toRevision() {
@@ -741,7 +750,7 @@ export default {
         comment: this.revisionComment,
       }
       this.approving = true
-      this.docService.docSendTorevision(req).then(() => {
+      api.post(url, req, {headers: getHeader()}).then(() => {
         this.file.stateID = this.DocState.REVISION.ID;
         this.file.statekz = "түзетуге";
         this.file.stateru = "на доработку";
@@ -750,10 +759,13 @@ export default {
         this.file.revision = false;
         this.approving = false
       })
-      .catch(error => {
-        this.approving = false
-          console.log(error);
-      })
+          .catch(error => {
+            this.approving = false
+            if (error.response && error.response.status == 401) {
+              this.$store.dispatch("logLout");
+            } else
+              console.log(error);
+          })
 
       this.dialogOpenState.revision = false;
     },

@@ -10,8 +10,9 @@
 </template>
 
 <script>
+import api from "@/service/api";
 import {getHeader, smartEnuApi} from "@/config/config";
-import {CandidateService} from "@/service/candidate.service"
+
 export default {
   name: "RefresherCourseView",
   props: {
@@ -20,12 +21,13 @@ export default {
   data() {
     return {
       value: this.modelValue,
-      candidateService: new CandidateService()
     }
   },
   methods: {
     deleteValue() {
-      this.candidateService.refresherCourse().then(res => {
+      api
+          .post("/candidate/refresher-course/delete", {id: this.value.id}, {headers: getHeader(),})
+          .then(res => {
             this.emitter.emit("refresherCourse", true);
           }).catch(error => {
         this.$toast.add({

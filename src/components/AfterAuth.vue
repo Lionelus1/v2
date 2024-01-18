@@ -2,31 +2,28 @@
   <div class="w-100">жүктелуде . . . </div>
 </template>
 <script>
+import api from '@/service/api';
 import {mapActions} from 'vuex';
 import {getHeader, smartEnuApi, findRole} from "../config/config";
-import { UserService } from "@/service/user.service";
 
 export default {
   name:"Auth",
-  data() {
-    return {
-      service: new UserService(),
-    }
-  },
   methods:{
     ...mapActions([
       'setLoginedUser', 'setUserSiteSlug'
     ]),
     findRole: findRole,
     getLoginedUser(){
-      this.service.loginedUserInfo().then(response=>{
-        window.localStorage.setItem("loginedUser",JSON.stringify(response.data));
+      api.get('/logineduserinfo', 
+        { headers:getHeader() }
+      ).then(response => {
+        window.localStorage.setItem("loginedUser", JSON.stringify(response.data));
         this.setLoginedUser();
 
         if (response.data.mainPosition || (response.data.positions && response.data.positions.length > 0)) {
           window.localStorage.setItem("showPositionsDialog", true);
         }
-
+        
         let oldPath = this.$store.state.attemptedUrl;
         if (oldPath.length == 0) {
           if (this.findRole(null, "student")) {
@@ -44,7 +41,7 @@ export default {
       })
     },
     getUserSlug() {
-      this.service.getUserSlug().then(res => {
+      api.get(`/getUserSlug`, {headers: getHeader()}).then(res => {
         if (res.data) {
           localStorage.setItem("userSlug", JSON.stringify(res.data))
           this.setUserSiteSlug()

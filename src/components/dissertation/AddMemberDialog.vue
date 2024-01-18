@@ -64,13 +64,12 @@
 import RolesByName from "@/components/smartenu/RolesByName.vue";
 import FindDoctorals from "@/components/dissertation/FindDoctorals.vue";
 import {ref} from "vue";
-import axios from "axios";
+import api from "@/service/api";
 import {getHeader, smartEnuApi} from "@/config/config";
 import {useStore} from "vuex";
 import {useToast} from "primevue/usetoast";
 import {useI18n} from "vue-i18n";
-import {DissertationService} from "@/service/dissertation.service"
-import {OnlineCourseService} from "@/service/onlinecourse.service"
+
 const props = defineProps(['councilID', 'show', 'members'])
 const emits = defineEmits(['hide'])
 
@@ -90,8 +89,7 @@ const validationErrors = ref({
   role: false,
   doctorals: false,
 })
-const dissertationService = new DissertationService()
-const onlinecourseService = new OnlineCourseService()
+
 const addMember = () => {
   submitted.value = true;
   let request = {userID: selectedMembers.value[0].userID, roleID: selectedRole.value.id, councilID: props.councilID}
@@ -105,7 +103,7 @@ const addMember = () => {
       });
       request.is_reviewer = selectedRole.value.name !== "dissertation_council_consultant"
     }
-    dissertationService.addCouncilMember(request).then((res) => {
+    api.post("/dissertation/addCouncilMember", request, {headers: getHeader()}).then((res) => {
       selectedMembers.value[0].memberID = res.data;
       selectedMembers.value[0].roles = []
       selectedMembers.value[0].roles.push(JSON.parse(JSON.stringify(selectedRole.value)))
@@ -113,18 +111,14 @@ const addMember = () => {
       submitted.value = false;
       hideDialog();
     }).catch((error) => {
+      if (error.response.status == 401) {
+        store.dispatch("logLout");
+      }
       if (error.response.status == 302) {
         toast.add({
           severity: "error",
           summary: i18n.t('dissertation.title'),
           detail: i18n.t('dissertation.message.hasSameMember'),
-          life: 3000
-        });
-      } else if (error && error.response.status == 500) {
-        toast.add({
-          severity: "error",
-          summary: i18n.t('dissertation.title'),
-          detail: i18n.t('dissertation.message.' + error.response.data.error),
           life: 3000
         });
       } else {

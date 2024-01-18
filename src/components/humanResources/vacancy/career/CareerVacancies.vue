@@ -345,11 +345,10 @@
 
 <script>
 import {FilterMatchMode, FilterOperator} from "primevue/api";
-import {getHeader, smartEnuApi} from "@/config/config";
+import api from "@/service/api";
+import {getHeader} from "@/config/config";
 import Login from "../../../Login";
 import router from '@/router';
-import { VacancyService } from "../../../../service/vacancy.service";
-import {CandidateService}  from "@/service/candidate.service"
 export default {
   name: "CareerVacancies",
   components: {Login},
@@ -392,8 +391,6 @@ export default {
       agreement: false,
       candidate: null,
       loading: false,
-      vacancyService: new VacancyService(),
-      candidateService: new CandidateService()
     }
   },
   methods: {
@@ -406,17 +403,21 @@ export default {
     getVacancies() {
       this.loading = true
       this.lazyParams.countMode = null;
-      this.vacancyService.public(this.lazyParams).then((response) => {
+      api.post("/vacancy/public",
+          this.lazyParams, {headers: getHeader()}).then((response) => {
         this.vacancies = response.data.vacancies;
         this.count = response.data.total;
         this.loading = false;
       }).catch((error) => {
-        console.log(error)
+        if (error.response.status == 401) {
+          this.$store.dispatch("logLout");
+        } else {
           this.$toast.add({
             severity: "error",
             summary: error,
             life: 3000,
-          });   
+          });
+        }
         this.loading = false;
       });
     },
@@ -425,15 +426,20 @@ export default {
      * *********************** ПОЛУЧЕНИЕ СПРАВОЧНИК ИСТОЧНИКОВ ВАКАНСИИ
      */
     getCatalog() {
-      this.vacancyService.sources({}).then((res) => {
+      api.post("/vacancy/sources",
+          {}, {headers: getHeader()}).then((res) => {
         this.vacancySources = res.data
         this.getUserCandidate()
       }).catch((error) => {
+        if (error.response.status == 401) {
+          this.visible.login = true
+        } else {
           this.$toast.add({
             severity: "error",
             summary: error,
             life: 3000,
           });
+        }
       });
     },
 
@@ -441,7 +447,8 @@ export default {
      * *********************** ПРОВЕРКА НАЛИЧИЯ РЕЗЮМЕ
      */
     getUserCandidate() {
-      this.candidateService.getUserCandidate({}).then(res => {
+      api.post("/candidate/get",
+          {}, {headers: getHeader()}).then(res => {
         this.visible.apply = true
       }).catch(error => {
         if (error.response.status === 404) {
@@ -465,7 +472,8 @@ export default {
       fd.append("rel", JSON.stringify(this.relation))
       fd.append("ml", this.file);
       if (this.validateForm()) {
-        this.vacancyService.vacancyApply(fd).then((response) => {
+        api.post("/vacancy/apply",
+            fd, {headers: getHeader()}).then((response) => {
           for (let key in this.vacancies) {
             if (this.vacancies[key].id === this.relation.vacancyId) {
               this.vacancies[key].isApply = true
@@ -473,11 +481,15 @@ export default {
           }
           this.visible.apply = false;
         }).catch((error) => {
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          } else {
             this.$toast.add({
               severity: "error",
               summary: error,
               life: 3000,
             });
+          }
         });
       }
     },

@@ -20,27 +20,31 @@ const setup = (store, app) => {
       const originalRequest = error.config;
 
       if (error.response && error.response.status === 401 && !originalRequest._retry) {
-        if (!isRefreshing) {
-          isRefreshing = true;
+          if (!isRefreshing) {
+            isRefreshing = true;
 
           try {
-            const tokenData = JSON.parse(window.localStorage.getItem("authUser"));
-            const res = await axios.post(smartEnuApi + "/refreshToken", {
-              refresh_token: tokenData.refresh_token,
-            });
+            const tokenDataString = window.localStorage.getItem("authUser");
+            const tokenData = tokenDataString ? JSON.parse(tokenDataString) : null; 
+            if (tokenData && tokenData.refresh_token) {
 
-            const authUser = {
-              access_token: res.data.access_token,
-              refresh_token: res.data.refresh_token,
-            };
+              const res = await axios.post(smartEnuApi + "/refreshToken", {
+                refresh_token: tokenData.refresh_token,
+              });
 
-            window.localStorage.setItem("authUser", JSON.stringify(authUser));
-            originalRequest.headers.Authorization = `Bearer ${res.data.access_token}`;
+              const authUser = {
+                access_token: res.data.access_token,
+                refresh_token: res.data.refresh_token,
+              };
 
-            store.dispatch("setNewUserInfo")
+              window.localStorage.setItem("authUser", JSON.stringify(authUser));
+              originalRequest.headers.Authorization = `Bearer ${res.data.access_token}`;
 
-            originalRequest._retry = true;
-            return instance(originalRequest);
+              store.dispatch("setNewUserInfo")
+
+              originalRequest._retry = true;
+              return instance(originalRequest);
+            }
           } catch (e) {
             return Promise.reject(error);
           } finally {

@@ -126,6 +126,7 @@
 import {mapState} from "vuex";
 import RolesByName from "../smartenu/RolesByName.vue"
 import Enums from "@/enum/docstates/index";
+import api from '@/service/api';
 import {getHeader, smartEnuApi, findRole} from "@/config/config";
 import FindDoctorals from "./FindDoctorals.vue"
 import {DissertationService} from "@/service/dissertation.service";
@@ -184,13 +185,13 @@ export default {
         header: this.$t("common.confirm"),
         icon: 'pi pi-exclamation-triangle',
         accept: () => {
-          const req = {
-            id: this.selectedMember.memberID
-          }
-          this.dissertationService.deleteMember(req).then((response) => {
+          api.post("/dissertation/deleteCouncilMember",
+              {id: this.selectedMember.memberID}, {headers: getHeader(),}).then((response) => {
             this.MembersList.splice(this.MembersList.indexOf(this.selectedMember), 1);
           }).catch((error) => {
-            console.log(error)
+            if (error.response.status == 401) {
+              this.$store.dispatch("logLout");
+            }
           });
         }
       });
@@ -216,16 +217,22 @@ export default {
     loadCouncil() {
       this.loading = true;
       this.lazyParams.id = this.councilID
-      this.dissertationService.getcouncilmembers(this.lazyParams).then((response) => {
-          this.MembersList = response.data;
-          if (this.MembersList.length > 0 && this.membersCount < 0) {
-            this.membersCount = this.MembersList[0].count;
-          }
-          this.loading = false;
-        })
-        .catch((error) => {
-          console.log(error)
-        });
+      api
+          .post("/dissertation/getcouncilmembers", this.lazyParams, {
+            headers: getHeader(),
+          })
+          .then((response) => {
+            this.MembersList = response.data;
+            if (this.MembersList.length > 0 && this.membersCount < 0) {
+              this.membersCount = this.MembersList[0].count;
+            }
+            this.loading = false;
+          })
+          .catch((error) => {
+            if (error.response.status == 401) {
+              this.$store.dispatch("logLout");
+            }
+          });
     },
 
     addMember() {
@@ -239,30 +246,38 @@ export default {
             request.dissertations.push(element.dissertation.id)
           });
         }
-        this.dissertationService.addCouncilMember(request).then((res) => {
-            this.selectedMembers[0].memberID = res.data;
-            this.selectedMembers[0].roles = []
-            this.selectedMembers[0].roles.push(JSON.parse(JSON.stringify(this.selectedRole)))
-            this.MembersList.push(JSON.parse(JSON.stringify(this.selectedMembers[0])));
-            this.submitted = false;
-            this.hideDialog(this.dialog.addMember);
-          })
-          .catch((error) => {
-            if (error.response.status == 302) {
-              this.$toast.add({
-                severity: "error",
-                summary: this.$t('dissertation.title'),
-                detail: this.$t('dissertation.message.hasSameMember'),
-                life: 3000
-              });
-            } else {
-              this.$toast.add({
-                severity: "error",
-                summary: "dissertationNewCouncilError\n" + error,
-                life: 3000
-              })
-            }
-          })
+        api.post("/dissertation/addCouncilMember",
+            request,
+            {
+              headers: getHeader(),
+            })
+            .then((res) => {
+              this.selectedMembers[0].memberID = res.data;
+              this.selectedMembers[0].roles = []
+              this.selectedMembers[0].roles.push(JSON.parse(JSON.stringify(this.selectedRole)))
+              this.MembersList.push(JSON.parse(JSON.stringify(this.selectedMembers[0])));
+              this.submitted = false;
+              this.hideDialog(this.dialog.addMember);
+            })
+            .catch((error) => {
+              if (error.response.status == 401) {
+                this.$store.dispatch("logLout");
+              }
+              if (error.response.status == 302) {
+                this.$toast.add({
+                  severity: "error",
+                  summary: this.$t('dissertation.title'),
+                  detail: this.$t('dissertation.message.hasSameMember'),
+                  life: 3000
+                });
+              } else {
+                this.$toast.add({
+                  severity: "error",
+                  summary: "dissertationNewCouncilError\n" + error,
+                  life: 3000
+                })
+              }
+            })
       }
 
     },

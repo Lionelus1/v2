@@ -104,9 +104,9 @@
 
 <script>
 import DicLanguage from "../../../dictionary/DicLanguage";
+import api from "@/service/api";
 import {getHeader, smartEnuApi} from "@/config/config";
-import {DicService} from "@/service/dic.service" 
-import {CandidateService} from "@/service/candidate.service"
+
 export default {
   name: "LanguageEdit",
   components: {DicLanguage},
@@ -138,9 +138,7 @@ export default {
         readingLevel: false,
         speakingLevel: false,
         writingLevel: false
-      },
-      dicService: new DicService(),
-      candidateService: new CandidateService()
+      }
     };
   },
   methods: {
@@ -161,14 +159,19 @@ export default {
       )
     },
     getCatalog() {
-      this.dicService.knowledgeLevels().then((res) => {
+      api.post(
+          "/knowledge/levels", {}, {headers: getHeader()}).then((res) => {
         this.knowledgeLevels = res.data
       }).catch((error) => {
+        if (error.response.status == 401) {
+          this.$store.dispatch("logLout");
+        } else {
           this.$toast.add({
             severity: "error",
             summary: "Dictionary load error:\n" + error,
             life: 3000,
           });
+        }
       });
     },
     action() {
@@ -177,15 +180,17 @@ export default {
       fd.append("cert", this.file);
       if (this.validateForm()) {
         let path = !this.value.id ? "/candidate/language/create" : "/candidate/language/update"
-      this.candidateService.candidateLanguageCreateOrUpdate(path, fd).then(res => {
-          this.emitter.emit("language", true);
-        }).catch(error => {
-      this.$toast.add({
-        severity: "error",
-        summary: error,
-        life: 3000,
+        api
+            .post(path, fd, {headers: getHeader(),})
+            .then(res => {
+              this.emitter.emit("language", true);
+            }).catch(error => {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
         });
-      });
       }
     }
   },

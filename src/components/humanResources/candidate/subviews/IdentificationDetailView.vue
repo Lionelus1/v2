@@ -10,26 +10,25 @@
 </template>
 
 <script>
-import {getHeader, smartEnuApi} from "@/config/config";
-import {CandidateService} from "@/service/candidate.service"
+import api from "@/service/api";
+import {getHeader} from "@/config/config";
+
 export default {
   name: "IdentificationDetailView",
   props: {
     modelValue: null,
-    customType: null,
+
   },
   data() {
     return {
       value: this.modelValue,
-      candidateService: new CandidateService()
     }
   },
   methods: {
     deleteValue() {
-      const req = {
-        id: this.value.id
-      }
-      this.candidateService.idDelete(req).then(res => {
+      api
+          .post("/candidate/id/delete", {id: this.value.id}, {headers: getHeader(),})
+          .then(res => {
             this.emitter.emit("id", true);
           }).catch(error => {
         this.$toast.add({

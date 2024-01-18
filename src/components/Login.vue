@@ -118,7 +118,7 @@
 
 <script>
 
-import axios from 'axios';
+import api from '@/service/api';
 import {getHeader, header, smartEnuApi, socketApi, etspTokenEndPoint} from "../config/config";
 import {NCALayerClient} from "ncalayer-js-client";
 import {NCALayerClientExtension} from "@/helpers/ncalayer-client-ext";
@@ -190,7 +190,7 @@ export default {
           this.qrSignUri = ""
           this.mgovMobileRedirectUri = null
           this.mgovBusinessRedirectUri = null
-          axios.post(smartEnuApi + "/etsptoken", {}, {headers: getHeader()})
+          api.post("/etsptoken", {}, {headers: getHeader()})
               .then(res => {
                 this.connectionId = res.data.connectionId;
                 let mgovSignUri = smartEnuApi + '/mobileAuthParams/' + this.connectionId
@@ -257,7 +257,7 @@ export default {
       this.etspToken();
     },
     etspToken() {
-      axios.post(smartEnuApi + "/etsptoken", {}, {headers: getHeader()})
+      api.post("/etsptoken", {}, {headers: getHeader()})
           .then(res => {
             this.xmlSignature(res.data);
           })
@@ -316,7 +316,7 @@ export default {
     sendLoginData() {
       if (this.eloginData.connectionId.length > 4 && this.eloginData.xmlSignature.length > 10) {
         this.isSignUp = true;
-        axios.post(smartEnuApi + "/etspverify", this.eloginData, {headers: getHeader()})
+        api.post("/etspverify", this.eloginData, {headers: getHeader()})
             .then(res => {
               if (res.status === 200) {
                 authUser.access_token = res.data.access_token;
@@ -340,7 +340,7 @@ export default {
       if (!this.checkLoginAndPassword()) {
         return
       }
-      axios.post(smartEnuApi + '/login', {
+      api.post('/login', {
         'username': this.loginData.username,
         'password': this.loginData.password
       }, {headers: getHeader()})

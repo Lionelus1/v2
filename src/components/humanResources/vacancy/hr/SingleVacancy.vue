@@ -284,14 +284,13 @@
 </template>
 
 <script>
+import api from "@/service/api";
 import {b64toBlob, getHeader, smartEnuApi} from "@/config/config";
 import ResumeView from "../../candidate/ResumeView.vue";
 import html2pdf from "html2pdf.js";
 import {NCALayerClientExtension} from "../../../../helpers/ncalayer-client-ext";
 import store from "../../../../store/store";
 import router from '@/router';
-import {VacancyService} from "@/service/vacancy.service"
-import {CandidateService} from "@/service/candidate.service"
 
 export default {
   components: {ResumeView},
@@ -324,9 +323,7 @@ export default {
       fileBlob: null,
       file: null,
       signWay: 0,
-      loginedUser: JSON.parse(localStorage.getItem("loginedUser")),
-      vacancyService: new VacancyService(),
-      candidateService: new CandidateService()
+      loginedUser: JSON.parse(localStorage.getItem("loginedUser"))
     }
   },
   created() {
@@ -471,10 +468,11 @@ export default {
       }
     },
     getVacancy(vacancyId) {
-      const req = {
-        vacancyId: parseInt(vacancyId)
-      }
-      this.vacancyService.single(req).then((response) => {
+      api.post("/vacancy/single",
+          {
+            vacancyId: parseInt(vacancyId)
+          },
+          {headers: getHeader()}).then((response) => {
         this.vacancy = response.data;
       }).catch((error) => {
         this.$toast.add({
@@ -485,15 +483,20 @@ export default {
       });
     },
     getCatalog() {
-      this.vacancyService.sources({}).then((res) => {
+      api.post("/vacancy/sources",
+          {}, {headers: getHeader()}).then((res) => {
         this.vacancySources = res.data
         this.getUserCandidate()
       }).catch((error) => {
+        if (error.response.status == 401) {
+          this.visible.login = true
+        } else {
           this.$toast.add({
             severity: "error",
             summary: error,
             life: 3000,
           });
+        }
       });
     },
 
@@ -501,7 +504,8 @@ export default {
      * *********************** ПРОВЕРКА НАЛИЧИЯ РЕЗЮМЕ
      */
     getUserCandidate() {
-      this.candidateService.getUserCandidate({}).then(res => {
+      api.post("/candidate/get",
+          {}, {headers: getHeader()}).then(res => {
         this.visible.apply = true
         this.candidate = res.data
       }).catch(error => {
@@ -536,15 +540,20 @@ export default {
         fd.append("resumeData", this.resumeFile)
       }
       if (this.validateForm()) {
-        this.vacancyService.vacancyApply(fd).then((response) => {
+        api.post("/vacancy/apply",
+            fd, {headers: getHeader()}).then((response) => {
           this.visible.apply = false;
           this.vacancy.isApply = true
         }).catch((error) => {
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          } else {
             this.$toast.add({
               severity: "error",
               summary: error,
               life: 3000,
             });
+          }
         });
       }
     },

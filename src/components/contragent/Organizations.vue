@@ -118,9 +118,10 @@
 </template>
 <script>
 import { smartEnuApi, getHeader, findRole } from "@/config/config";
+import api from "@/service/api";
 import Enum from "@/enum/docstates/index";
 import { FilterMatchMode, FilterOperator } from "primevue/api";
-import {ContragentService} from "@/service/contragent.service"
+
 export default {
   data() {
     return {
@@ -189,7 +190,6 @@ export default {
           }
         }
       ],
-      contragentService: new ContragentService()
     };
   },
   props: {
@@ -224,7 +224,9 @@ export default {
       let url = "/contragent/organizations";
       this.loading =true;
       this.lazyParams.filters = this.filters
-      this.contragentService.organizations(this.lazyParams).then((res) => {
+      api
+        .post(url, this.lazyParams,  {headers: getHeader()})
+        .then((res) => {
           this.organizations = res.data.organizations;
           this.total = res.data.count
           this.loading = false;

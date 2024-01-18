@@ -96,9 +96,9 @@
 </template>
 
 <script>
+import api from "@/service/api";
 import {getHeader, smartEnuApi} from "@/config/config";
-import {CandidateService} from "@/service/candidate.service"
-import axios from "axios";
+
 export default {
   name: "ExperienceEdit",
   data() {
@@ -121,8 +121,7 @@ export default {
         organizationName: false,
         position: false,
         responsibilities: false,
-      },
-      candidateService: new CandidateService()
+      }
     };
   },
   created() {
@@ -149,7 +148,8 @@ export default {
       }
       if (this.value.isStillWorking) {
         this.value.endDate = null
-      }
+      } 
+
       if (this.validateForm()) {
         if (this.customType=='scientists') {
           this.savescientists()
@@ -160,8 +160,8 @@ export default {
     },
     saveCandidate() {
       let path = !this.value.id ? "/candidate/experience/create" : "/candidate/experience/update"
-      axios
-          .post(smartEnuApi + path, this.value, {headers: getHeader(),})
+      api
+          .post(path, this.value, {headers: getHeader(),})
           .then(res => {
             this.emitter.emit("experience", true);
           }).catch(error => {
@@ -173,7 +173,7 @@ export default {
       });
     },
     savescientists() {
-      axios.post(smartEnuApi + '/science/laborActivity/create', this.value, {headers: getHeader()})
+      api.post('/science/laborActivity/create', this.value, {headers: getHeader()})
       .then(res => {
         this.emitter.emit("experienceScientists", true);
       }).catch(error => {

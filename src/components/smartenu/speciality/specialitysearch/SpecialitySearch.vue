@@ -36,8 +36,7 @@
 
 <script>
 	import {smartEnuApi, getHeader} from "@/config/config";
-	import axios from 'axios';
-    import {DicService} from "@/service/dic.service"
+	import api from '@/service/api';
 
 	export default {
     inheritAttrs: false,
@@ -82,7 +81,6 @@
 							name : "",
 						},
 						searchInProgres: false,
-                        dicService: new DicService()
         };
     },
     methods: {
@@ -93,23 +91,28 @@
             if (this.cancelToken && typeof this.cancelToken != typeof undefined) {
                 this.cancelToken.cancel("Operation canceled due to new request.")
             }
-            this.cancelToken = axios.CancelToken.source()
+            this.cancelToken = api.CancelToken.source()
 			this.foundSpecialists = null;
 			this.$refs.op.hide();
 			this.$refs.op.toggle(event);
 			this.searchInProgres = true;
 			let url = "/getspecialities";
-            const req = { 
+			api.post(url, { 
                 "name" : inputValue, 
                 "level" : this.educationLevel
+                }, 
+                {
+                    headers: getHeader(),
+                    cancelToken: this.cancelToken.token 
                 }
-            this.dicService.getspecialities(req, this.cancelToken.token).then(response=>{
+            )
+            .then(response=>{
                 this.foundSpecialists = response.data;
 			    this.searchInProgres = false;
 
             })
 			.catch((error) => {
-                if(!axios.isCancel(error)) {
+                if(!api.isCancel(error)) {
                 this.$toast.add({
                 severity: "error",
                 summary: "getSpeciliatyListError:\n" + error,

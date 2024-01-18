@@ -6,15 +6,13 @@
 
 <script>
 import { getHeader, smartEnuApi } from "@/config/config";
-import axios from 'axios';
-import {RoleControlService} from "@/service/roleControl.service"
+import api from '@/service/api';
 
 export default {
    data() {
     return {
       value: this.modelValue,
       roles:  null,
-      roleControlService: new RoleControlService()
       
     }
   },
@@ -40,12 +38,18 @@ export default {
   methods: {
     getRoles() {
       //this.lazyParams.countMode = null;
-      const req = {name: this.roleGroupName}
-      this.roleControlService.getrolesbyname(req).then((response) => {
+      api
+        .post("/getrolesbyname", {name: this.roleGroupName},  {
+          headers: getHeader(),
+        })
+        .then((response) => {
           
           this.roles = response.data;
         })
         .catch((error) => {
+          if (error.response.status == 401) {
+            this.$store.dispatch("logLout");
+          }
         });
       },
       

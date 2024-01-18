@@ -9,8 +9,9 @@
 </template>
 
 <script>
+import api from "@/service/api";
 import {getHeader, smartEnuApi} from "@/config/config";
-import {CandidateService} from "@/service/candidate.service"
+
 export default {
   name: "RefereeView",
   props: {
@@ -19,15 +20,13 @@ export default {
   data() {
     return {
       value: this.modelValue,
-      candidateService: new CandidateService()
     }
   },
   methods: {
     deleteValue() {
-      const req = {
-        id: this.value.id
-      }
-      this.candidateService.refereeDelete(req).then(res => {
+      api
+          .post("/candidate/referee/delete", {id: this.value.id}, {headers: getHeader(),})
+          .then(res => {
             this.emitter.emit("referee", true);
           }).catch(error => {
         this.$toast.add({

@@ -202,8 +202,8 @@
 <script>
 import TopMenuBar from "./TopMenuBar.vue";
 import { getHeader, smartEnuApi,findRole } from "@/config/config";
-import { ContragentService } from "@/service/contragent.service";
 
+import api from "@/service/api";
 
 export default {
   components: { TopMenuBar },
@@ -254,7 +254,6 @@ export default {
         address: false,
         addressru: false,
       },
-      contragentService: new ContragentService()
     };
   },
   created() {
@@ -274,10 +273,14 @@ export default {
       this.menu[0].disabled = false
     },
     getOrgForms() {
-      this.contragentService.getOrgForms().then(response=>{
+      api.get("/contragent/orgforms", {headers: getHeader()})
+      .then(response=>{
         this.orgforms = response.data;
       })
       .catch((error) => {
+        if (error.response.status == 401) {
+          this.$store.dispatch("logLout");
+        }
         this.$toast.add({
           severity: "error",
           summary: "getOrgForms:\n" + error,
@@ -316,7 +319,9 @@ export default {
               });
         return
       }
-      this.contragentService.updateOrg(this.value).then(response=> {
+      
+      api.post("/contragent/updateorg", this.value, {headers: getHeader()})
+      .then(response=> {
         console.log("sasa:", response.data)
         this.menu[0].disabled = true
         if (this.value.id == null) { 
@@ -339,6 +344,9 @@ export default {
             summary: this.$t('common.message.' + error.response.data.error),
             life: 3000,
           });
+        } else
+        if (error.response.status == 401) {
+          this.$store.dispatch("logLout");
         } else
         this.$toast.add({
           severity: "error",

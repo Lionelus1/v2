@@ -227,10 +227,10 @@
 </template>
 <script>
 import { getHeader, smartEnuApi } from "@/config/config";
+import api from "@/service/api";
 import Bank from "./Bank.vue";
 import Enum from "@/enum/docstates/index";
 import { FilterMatchMode, FilterOperator } from "primevue/api";
-import {ContragentService} from "@/service/contragent.service"
 export default {
   components: { Bank },
   data() {
@@ -286,7 +286,6 @@ export default {
           icon: "pi pi-fw pi-user",
         },
       ],
-      contragentService: new ContragentService()
     };
   },
   props: {
@@ -311,7 +310,9 @@ export default {
         agenttype: this.agentType.value,
       };
       this.loading = true
-      this.contragentService.contragents(req).then((res) => {
+      api
+        .post(url, req, { headers: getHeader() })
+        .then((res) => {
           this.contragents = res.data;
           this.loading = false;
         })

@@ -19,8 +19,8 @@
         <InputText :disabled="true" :value="url"/>
         <Button v-bind:label="$t('ncasigner.copy')" v-clipboard:copy="url" v-clipboard:success="onCopy" v-clipboard:error="onFail" class="p-button-secondary"/>
       </div>
-      <div class="flex-grow-1 flex flew-row align-items-stretch">
-        <embed :src="pdf" style="width: 100%;" v-if="pdf" type="application/pdf"/>
+      <div class="flex-grow-1">
+        <embed :src="pdf" style="width: 100%; height: 100%" v-if="pdf" type="application/pdf"/>
       </div>
     </div>
     <div class="flex flex-column" style="height: 100%;" v-else>
@@ -39,9 +39,11 @@
   </Dialog>
 </template>
 <script>
+import api from '@/service/api';
+
 import { getHeader, smartEnuApi, apiDomain, b64toBlob } from "@/config/config";
 import Enum from "@/enum/docstates/index";
-import { DocService } from "@/service/doc.service";
+
 export default {
   name: 'ReferencesOld',
   components: {},
@@ -65,7 +67,6 @@ export default {
 
       salaryRequested: false,
       commentary: null,
-      docService: new DocService()
     }
   },
   mounted() {
@@ -115,10 +116,12 @@ export default {
     },
     share() {
       this.loading = true
-      const req = {
+
+      api.post('/document/share', {
         docId: this.reference.id,
-      }
-      this.docService.share(req).then(res => {
+      }, {
+        headers: getHeader() 
+      }).then(res => {
         this.url = apiDomain + '/document/' + this.reference.uuid
         this.reference.isPublic = true
 
@@ -138,17 +141,21 @@ export default {
     },
     correctionRequest() {
       this.loading = true
-      const req = {
+
+      api.post('/document/newRequest', {
         requestType: Enum.DocumentRequestType.ReferenceErrorCorrection,
         docId: this.reference.id,
         commentary: this.commentary,
-      }
-      this.docService.newRequest(req).then(res => {
+      }, {
+        headers: getHeader() 
+      }).then(res => {
         this.close('correctionMail')
         this.showMessage('success', this.$t('ref.sent'), null)
         this.loading = false
       }).catch(err => {
-       if (err.response && err.response.data && err.response.data.localized) {
+        if (err.response && err.response.status == 401) {
+          this.$store.dispatch("logLout")
+        } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
           console.log(err)
@@ -160,10 +167,12 @@ export default {
     },
     getPdf() {
       this.loading = true
-      const req = {
+
+      api.post('/document/download', {
         uuid: this.reference.uuid,
-      }
-      this.docService.documentDownload(req).then(res => {
+      }, {
+        headers: getHeader() 
+      }).then(res => {
         this.pdf = b64toBlob(res.data);
 
         this.loading = false
