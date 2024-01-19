@@ -40,9 +40,12 @@
                            :plan-data="plan"></work-plan-event-add>
       <Button v-if="isPlanCreator && !isFinish" :label="$t('common.complete')" icon="pi pi-check" @click="finish"
               class="p-button-sm p-button-danger ml-2"/>
-      <work-plan-approve v-if="plan.doc_info && plan.doc_info.docHistory && (plan.doc_info?.docHistory?.stateId === 1 || plan.doc_info?.docHistory?.stateId === 4) && isPlanCreator && isFinish" :plan="plan" :events="data"
-                         @isSent="planSentToApprove"></work-plan-approve>
-      <Button v-if="isFinish && plan.doc_info && plan.doc_info.docHistory && !(plan.doc_info?.docHistory?.stateId === 1 || plan.doc_info?.docHistory?.stateId === 4)" :label="$t('workPlan.viewPlan')" icon="pi pi-eye" @click="signView"
+      <work-plan-approve
+          v-if="plan.doc_info && plan.doc_info.docHistory && (plan.doc_info?.docHistory?.stateId === 1 || plan.doc_info?.docHistory?.stateId === 4) && isPlanCreator && isFinish"
+          :plan="plan" :events="data"
+          @isSent="planSentToApprove"></work-plan-approve>
+      <Button v-if="isFinish && plan.doc_info && plan.doc_info.docHistory && !(plan.doc_info?.docHistory?.stateId === 1 || plan.doc_info?.docHistory?.stateId === 4)"
+              :label="$t('workPlan.viewPlan')" icon="pi pi-eye" @click="signView"
               class="p-button-sm p-button-outlined ml-2"/>
       <Button v-if="isFinish && (isApproval || isPlanCreator || isAdmin) && (plan.doc_info?.docHistory?.stateId === 3)" :label="$t('workPlan.reports')"
               @click="navigateToReports" class="p-button-sm p-button-outlined ml-2"/>
@@ -252,6 +255,7 @@ import DocSignaturesInfo from "@/components/DocSignaturesInfo"
 import WorkPlanEventResult from "@/components/work_plan/WorkPlanEventResult.vue";
 import Enum from "@/enum/workplan/index"
 import WorkPlanReportApprove from "@/components/work_plan/WorkPlanReportApprove.vue";
+import {DocService} from "@/service/doc.service";
 
 export default {
   name: "WorkPlanEvent",
@@ -371,7 +375,8 @@ export default {
       ],
       planService: new WorkPlanService(),
       selectedEvent: null,
-      scienceReport: null
+      scienceReport: null,
+      docService: new DocService(),
     }
   },
   created() {
@@ -548,6 +553,7 @@ export default {
           this.isPlanCreator = false;
           //this.$router.push('/work-plan')
         }
+        this.getRelatedFiles()
         this.isPlanApproved = this.plan.doc_info?.docHistory.stateEn == "approved"
       }).catch(error => {
         if (error.response && error.response.status === 401) {
@@ -560,6 +566,13 @@ export default {
           });
         }
       });
+    },
+    getRelatedFiles() {
+      this.docService.getRelatedDocs({fileID: this.plan.doc_info.id, uuid: this.plan.doc_id}).then(response => {
+        console.log(response)
+      }).catch(_ => {
+        this.uploading = false;
+      })
     },
     finish() {
       this.planService.finishEvent(this.work_plan_id).then(res => {
