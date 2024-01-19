@@ -189,6 +189,7 @@ export default {
         revision: "На доработку",
         teacher: "ППС",
         student: "Обучающийся",
+        students: "Обучающиеся",
         doYouWantDelete: "Вы действительно хотите удалить",
         publish: "Опубликовать",
         reject: "Отказать",

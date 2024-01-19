@@ -170,6 +170,7 @@ export default {
     revision: "To revision",
     teacher: "Academic personnel",
     student: "Student",
+    students: "Students",
     registration: "Registration",
     total: "Total",
     register: "Check in",

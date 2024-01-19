@@ -310,10 +310,20 @@ export default {
         }
       }
 
-      this.filters.userType.value =
-        this.personType  === Enum.PersonType.OrganizationMember
-          ? "student"
-          : "individual_entrepreneur";
+      if (this.personType === 1) {
+        this.filters.userType.value = "individual_entrepreneur"
+      } else if (this.personType === 2) {
+        this.filters.userType.value = "student"
+      } else if (this.personType == 3) {
+        this.filters.userType.value = "student"
+      } else {
+        this.filters.userType.value = "individual_entrepreneur"
+      }
+ 
+      // this.filters.userType.value =
+      //   this.personType  === Enum.PersonType.OrganizationMember
+      //     ? "student"
+      //     : "individual_entrepreneur";
       
       this.filters.userType.matchMode =
         this.personType  === Enum.PersonType.OrganizationMember
