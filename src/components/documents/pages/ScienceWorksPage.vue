@@ -26,7 +26,13 @@
             <label>{{ $t('scienceWorks.labels.' + param.description) }}</label>
           </div>
           <div class="p-fluid md:col-6" v-if="'text' === param.name">
-            <div class="p-inputgroup p-input-filled">
+            <template v-if="'publicationCategory' === param.description">
+              <Dropdown v-model="param.value" :options="publicationCategories" class="w-full" @change="input" editable
+                        :option-label="publicationCategoriesLabel" :option-value="publicationCategoriesLabel"
+                        :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID && scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)">
+              </Dropdown>
+            </template>
+            <div v-else class="p-inputgroup p-input-filled">
               <InputText v-model="param.value" type="text" @input="input()" :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
                 scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)"></InputText>
               <Button v-if="param.description === 'link'" icon="fa-solid fa-copy"
@@ -53,19 +59,6 @@
                   {{ $t('scienceWorks.editionTypes.' + slotProps.option) }}
                 </template>
               </SelectButton>
-            </template>
-            <template v-if="'publicationCategory' === param.description">
-              <Dropdown v-model="param.value" :options="publicationCategories" class="w-full" @change="input"
-                        :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID && scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)">
-                <template #value="slotProps">
-                  <template v-if="slotProps.value">
-                    {{ $t('scienceWorks.publicationCategories.' + slotProps.value) }}
-                  </template>
-                </template>
-                <template #option="slotProps">
-                  {{ $t('scienceWorks.publicationCategories.' + slotProps.option) }}
-                </template>
-              </Dropdown>
             </template>
           </div>
           <div class="md:col-6" v-if="'koksnvo' === param.name">
@@ -568,6 +561,9 @@ export default {
           },
         );
       }
+    },
+    publicationCategoriesLabel(data) {
+      return this.$t('scienceWorks.publicationCategories.' + data);
     },
   }
 }
