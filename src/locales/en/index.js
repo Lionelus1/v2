@@ -1541,7 +1541,8 @@ export default {
     personalData: 'Personal information',
     yearPeriod:'Period of years',
     scienceWorks: {
-        title: "Scientific works list",
+        title: "Scientific works",
+        titleList: "Scientific works list",
         publicationType: "Type of the scientific work",
         editionTypes: {
             digital: "Digital",
@@ -1559,6 +1560,7 @@ export default {
             clear: "Clear",
             search: "Search",
             koksnvo: "QACFSHE",
+            newList: "New list",
         },
         menu: {
             newArticle: "Create new",
@@ -1570,14 +1572,14 @@ export default {
             import: "Import",
         },
         columns: {
-            name: "Name",
-            type: "Work type",
+            name: "Publication title",
+            type: "Publication type",
             author: "Author",
             year: "Year",
             status: "Status",
         },
         filter: {
-            documentName: "Name",
+            documentName: "Publication title",
             author: "Author",
             status: "Status",
             years: "Years",
@@ -1585,7 +1587,7 @@ export default {
         types: {
             article: "Article",
             monograph: "Monograph",
-            scopus_article: "Publication in internationally peer-reviewed scientific journals indexed in Scopus",
+            scopus_article: "Publications in Scopus",
             publication_koksnvo: "Publication recommended by QACFSHE",
             textbooks: "Textbooks / Teaching aids / Teaching aids / Workshops",
             free: "Scientific works",
