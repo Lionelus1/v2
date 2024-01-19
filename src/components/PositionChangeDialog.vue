@@ -10,9 +10,9 @@
           <label class="ml-2">{{ $t("common.doNotShowAnymore") }}</label>
         </div>
         <div>
-          <Button class="p-button-help sm:my-0 my-2" :label="$t('positions.changePosition')"
+          <Button class="p-button-help sm:mt-0 mt-4" :label="$t('positions.changePosition')"
             @click="visible = false;changePosition()" />
-          <Button :label="$t('positions.continue')" @click="visible = false" autofocus />
+          <Button class="sm:mt-0 mt-4" :label="$t('positions.continue')" @click="visible = false" autofocus />
         </div>
       </div>
     </template>

@@ -251,7 +251,7 @@ const items = ref([
   {
     label: t("common.send"),
     icon: "pi pi-fw pi-send",
-    //disabled: disabledSend,
+    disabled: disabledSend,
     command: ()=> { openDialog('sendToApprove') },
   },
   {
@@ -260,14 +260,14 @@ const items = ref([
     disabled: disabledApproval,
     //command: null,
   },
-  {
+/*  {
     label: t("Какой то текст"),
     icon: "pi pi-fw  pi-check",
   },
   {
     label: "Тестовый тест",
     icon: "pi pi-fw  pi-cog",
-  },
+  },*/
 ])
 
 const handleFileChange = (event) => {

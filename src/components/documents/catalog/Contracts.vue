@@ -170,7 +170,7 @@
   <!-- documentInfoSidebar -->
   <Sidebar v-model:visible="visibility.documentInfoSidebar" position="right" class="p-sidebar-lg" 
     style="overflow-y: scroll" @hide="getContracts">
-    <DocSignaturesInfo :docIdParam="currentDocument.uuid"></DocSignaturesInfo>
+    <DocSignaturesInfo :docIdParam="currentDocument?.uuid"></DocSignaturesInfo>
   </Sidebar>
 </template>
 <script>
