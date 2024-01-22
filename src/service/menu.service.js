@@ -98,6 +98,11 @@ export class MenuService {
                         label: $t('common.personal'),
                         icon: 'fa-solid fa-person-shelter',
                         to: '/contragent/persons/' + Enum.PersonType.OrganizationMember
+                    },
+                    {
+                        label: $t('common.students'),
+                        icon: 'fa-solid fa-graduation-cap',
+                        to: '/contragent/persons/' + Enum.PersonType.Student
                     }
                 ]
             },
