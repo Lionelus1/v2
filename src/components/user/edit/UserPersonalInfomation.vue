@@ -1,5 +1,5 @@
 <template>
-    <div v-if="!loading" class="card">
+    <div v-if="!loading">
       <div class="grid formgrid">
         <!-- ИМЯ -->
         <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
