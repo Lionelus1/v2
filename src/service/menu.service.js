@@ -45,9 +45,8 @@ export class MenuService {
             {
                 label: $t('common.administration'),
                 icon: 'fa-solid fa-user-shield',
-                visible: this.isEnuWorker
-                    () && (this.isVacancyRightsValidity() || this.findRole("dephead") || this.findRole("practice_responsible") ||
-                    this.findRole("main_administrator") || this.findRole("hr_manager")),
+                visible: this.isEnuWorker() && (this.isVacancyRightsValidity() || this.findRole("dephead") ||
+                    this.findRole("practice_responsible") || this.findRole("main_administrator") || this.findRole("hr_manager")),
                 items: [
                     {
                         label: $t('hr.vacancies'),
@@ -99,6 +98,11 @@ export class MenuService {
                         label: $t('common.personal'),
                         icon: 'fa-solid fa-person-shelter',
                         to: '/contragent/persons/' + Enum.PersonType.OrganizationMember
+                    },
+                    {
+                        label: $t('common.students'),
+                        icon: 'fa-solid fa-graduation-cap',
+                        to: '/contragent/persons/' + Enum.PersonType.Student
                     }
                 ]
             },

@@ -188,6 +188,7 @@ export default {
         requiredField: "Міндетті түрде толтыру керек",
         teacher: "ПОҚ",
         student: "Білім алушы",
+        students: "Білім алушылар",
         doYouWantDelete: "Сіз шынымен жойғыңыз келе ме",
         publish: "Жариялау",
         reject: "Қайтару",
