@@ -1,10 +1,5 @@
 <template>
   <TitleBlock :title="$t('fieldEducation.addCourse')" :show-back-button="true"/>
-<!--  <div class="card m-0">
-    <Button class="p-button-outlined mr-2 mb-2 sm:mb-0" icon="pi pi-fw pi-download" :label="$t('common.save')" @click="save()"/>
-    <Button class="p-button-outlined mr-2  mb-2 sm:mb-0" icon="pi pi-fw pi-send" :label="$t('common.send')" :disabled="disabledSend" @click="openDialog('sendToApprove')"/>
-    <Button class="p-button-outlined" icon="pi pi-fw pi-check-circle" :disabled="disabledApproval" :label="$t('common.approvalList')"/>
-  </div>-->
   <ToolbarMenu :items="items"/>
   <div class="grid" v-if="formData">
     <div class="col-12 lg:col-8">
@@ -260,14 +255,14 @@ const items = ref([
     disabled: disabledApproval,
     //command: null,
   },
-/*  {
+  {
     label: t("Какой то текст"),
     icon: "pi pi-fw  pi-check",
   },
   {
     label: "Тестовый тест",
     icon: "pi pi-fw  pi-cog",
-  },*/
+  },
 ])
 
 const handleFileChange = (event) => {
