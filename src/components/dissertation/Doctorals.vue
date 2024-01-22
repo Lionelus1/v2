@@ -1603,7 +1603,7 @@ export default {
           this.$toast.add({ severity: "error", summary: "Validation error", life: 3000 });
           return
         }
-        fd.append("video_link", this.doctoral.dissertation.video_link)
+        fd.append("video_link", this.doctoral.dissertation.video_link || null)
         fd.append("councilConclusionFile", this.councilConclusionFile)
       }
       this.dissertationService.updateDoctoral(fd).then(_ => {
@@ -1630,8 +1630,8 @@ export default {
         return false
       }
 
-      if (this.selectedDoctoral && this.selectedDoctoral.dissertation.state === 6 && this.selectedDoctoral.dissertation.councilConclusionFile
-        && this.selectedDoctoral.dissertation.video_link) {
+      if (this.selectedDoctoral && this.selectedDoctoral.dissertation.state === 6 && (this.selectedDoctoral.dissertation.councilConclusionFile
+        || this.selectedDoctoral.dissertation.video_link)) {
         return false
       }
 
