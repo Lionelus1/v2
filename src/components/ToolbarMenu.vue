@@ -66,7 +66,8 @@ onBeforeUnmount(() => {
 
 .scroll-left,
 .scroll-right {
-  background: rgba(0, 0, 0, 0.40);
+  background: #fff;
+  color: black;
   border: none;
   position: sticky;
   cursor: pointer;
@@ -74,11 +75,13 @@ onBeforeUnmount(() => {
 }
 
 :deep(.scroll-right.p-button:enabled:hover){
-  background: rgba(0, 0, 0, 0.55);
+  background: #fff;
+  color: black;
   box-shadow: none;
 }
 :deep(.scroll-left.p-button:enabled:hover){
-  background: rgba(0, 0, 0, 0.55);
+  background: #fff;
+  color: black;
   box-shadow: none;
 }
 .scroll-left {
