@@ -1,10 +1,10 @@
 <template>
   <div class="toolbar_menu" ref="containerRef" :class="{ 'scrollable': isScrollable }">
-    <Button v-if="isScrollable" class="scroll-left" icon="pi pi-angle-left" @click="scrollLeft"/>
+    <Button v-if="isScrollable" :class="['scroll-left', {'p-button-lg': isScrollable}]" icon="pi pi-angle-left" @click="scrollLeft"/>
     <div class="button-scroll-content" >
-      <Button v-for="(i,index) of items" :key="i" class="p-button-outlined" :icon="i.icon" :label="label(i.label)" :disabled="i.disabled" @click="i.command(index)"/>
+      <Button v-for="(i,index) of items" :key="i" :class="['p-button-outlined', {'p-button-lg': isScrollable}]" :icon="i.icon" :label="label(i.label)" :disabled="i.disabled" @click="i.command(index)"/>
     </div>
-    <Button v-if="isScrollable" class="scroll-right" icon="pi pi-angle-right" @click="scrollRight"/>
+    <Button v-if="isScrollable" :class="['scroll-right', {'p-button-lg': isScrollable}]" icon="pi pi-angle-right" @click="scrollRight"/>
   </div>
 </template>
 
@@ -66,7 +66,7 @@ onBeforeUnmount(() => {
 
 .scroll-left,
 .scroll-right {
-  background: rgba(0, 0, 0, 0.50);
+  background: rgba(0, 0, 0, 0.40);
   border: none;
   position: sticky;
   cursor: pointer;
@@ -74,11 +74,11 @@ onBeforeUnmount(() => {
 }
 
 :deep(.scroll-right.p-button:enabled:hover){
-  background: rgba(0, 0, 0, 0.70);
+  background: rgba(0, 0, 0, 0.55);
   box-shadow: none;
 }
 :deep(.scroll-left.p-button:enabled:hover){
-  background: rgba(0, 0, 0, 0.70);
+  background: rgba(0, 0, 0, 0.55);
   box-shadow: none;
 }
 .scroll-left {
