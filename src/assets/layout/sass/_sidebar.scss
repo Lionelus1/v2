@@ -76,6 +76,9 @@
 		li ul a{
 			padding-left: 10px;
 		}
+		li ul li ul{
+			padding-left: 0;
+		}
 		span{
 			display: none;
 		}
@@ -135,6 +138,9 @@
 	.layout-menu{
 		li ul a{
 			padding-left: 2.3em;
+		}
+		li ul li ul{
+			padding-left: 1.5em;
 		}
 		span{
 			display: block;

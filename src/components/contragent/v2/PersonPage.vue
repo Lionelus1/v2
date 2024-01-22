@@ -2,8 +2,7 @@
     <ProgressSpinner v-if="loading" class="progress-spinner" strokeWidth="5"/>
     
     <Menubar :model="items" class="m-0 pt-0 pb-0"></Menubar>
-    
-    <BlockUI v-if="!loading" class="card p-fluid" :blocked="loading">
+    <BlockUI v-if="!loading" class="p-fluid" :blocked="loading">
       <TabView class="custom-tabview">
         
         <TabPanel :header="$t('personalData')">
@@ -70,10 +69,12 @@ import UserAwardView from "@/components/user/view/UserAwardView"
 import UserQualificationsView from "@/components/user/view/UserQualificationsView"
 import  ResumeView  from "@/components/humanResources/vacancy/ResumeView.vue";
 import ScienceWorks from "@/components/documents/catalog/ScienceWorks.vue"
+import ToolbarMenu from "@/components/ToolbarMenu.vue";
 
 export default {
   name: 'PersonPage',
-  components: {UserPersonalInfomation, UserIDCard, UserEducationView, UserRequisite, UserResearchInterestsView, WorkExperienceView, UserAwardView, UserQualificationsView, ResumeView, ScienceWorks },
+  components: {
+    UserPersonalInfomation, UserIDCard, UserEducationView, UserRequisite, UserResearchInterestsView, WorkExperienceView, UserAwardView, UserQualificationsView, ResumeView, ScienceWorks },
   props: {
     person: null,
     userID: null,

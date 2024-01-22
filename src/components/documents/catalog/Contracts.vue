@@ -5,10 +5,10 @@
     <Toolbar class="p-1">
       <template #start>
         <div class="flex flex-wrap gap-2">
-          <Button class="p-button-info align-items-center" style="padding: 0.25rem 1rem;"
+          <Button class="align-items-center" style="padding: 0.25rem 1rem;"
             @click="openDocument" :disabled="!currentDocument">
             <i class="fa-regular fa-address-card" /> &nbsp;{{ $t("contracts.card") }}</Button>
-          <Button class="p-button-info align-items-center" style="padding: 0.25rem 1rem;"
+          <Button class="align-items-center" style="padding: 0.25rem 1rem;"
             @click="$router.push('/documents/contracts/' + this.currentDocument.uuid + '/related')"
             :disabled="!currentDocument || currentDocument.docHistory.stateId !== Enum.SIGNED.ID ||
             currentDocument.sourceType !== Enum.DocSourceType.FilledDoc">
@@ -17,7 +17,7 @@
       </template>
       <template #end>
         <div class="flex flex-wrap gap-2">
-          <Button class="align-items-center" :class="{'p-button-success': filter.applied, 'p-button-info': !filter.applied}"
+          <Button class="align-items-center" :class="{'p-button-success': filter.applied, 'p-button': !filter.applied}"
             style="padding: 0.25rem 1rem;" @click="toggle('filterOverlayPanel', $event)"> 
             <i class="fa-solid fa-filter" /> &nbsp;{{ $t("contracts.filter.button") }}</Button>
         </div>
@@ -170,7 +170,7 @@
   <!-- documentInfoSidebar -->
   <Sidebar v-model:visible="visibility.documentInfoSidebar" position="right" class="p-sidebar-lg" 
     style="overflow-y: scroll" @hide="getContracts">
-    <DocSignaturesInfo :docIdParam="currentDocument.uuid"></DocSignaturesInfo>
+    <DocSignaturesInfo :docIdParam="currentDocument?.uuid"></DocSignaturesInfo>
   </Sidebar>
 </template>
 <script>

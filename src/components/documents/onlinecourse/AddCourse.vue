@@ -1,10 +1,11 @@
 <template>
   <TitleBlock :title="$t('fieldEducation.addCourse')" :show-back-button="true"/>
-  <div class="card m-0">
+<!--  <div class="card m-0">
     <Button class="p-button-outlined mr-2 mb-2 sm:mb-0" icon="pi pi-fw pi-download" :label="$t('common.save')" @click="save()"/>
     <Button class="p-button-outlined mr-2  mb-2 sm:mb-0" icon="pi pi-fw pi-send" :label="$t('common.send')" :disabled="disabledSend" @click="openDialog('sendToApprove')"/>
     <Button class="p-button-outlined" icon="pi pi-fw pi-check-circle" :disabled="disabledApproval" :label="$t('common.approvalList')"/>
-  </div>
+  </div>-->
+  <ToolbarMenu :items="items"/>
   <div class="grid" v-if="formData">
     <div class="col-12 lg:col-8">
       <div class="card p-fluid mt-3">
@@ -151,7 +152,8 @@ import {OnlineCourseService} from "@/service/onlinecourse.service";
 import CustomFileUpload from "@/components/CustomFileUpload.vue";
 import {useRoute, useRouter} from "vue-router";
 import {useStore} from "vuex";
-import {fileRoute, smartEnuApi} from "@/config/config";
+import {fileRoute, findRole, smartEnuApi} from "@/config/config";
+import ToolbarMenu from "@/components/ToolbarMenu.vue";
 
 const {t, locale} = useI18n()
 const route = useRoute()
@@ -240,6 +242,33 @@ const lazyParams = {
 }
 const checkedCertificate = ref(false)
 const fullName = store.state.loginedUser.thirdName + ' ' + store.state.loginedUser.firstName + ' ' + store.state.loginedUser.lastName
+const items = ref([
+  {
+    label: t("common.save"),
+    icon: "pi pi-fw pi-save",
+    command: () => {  save()},
+  },
+  {
+    label: t("common.send"),
+    icon: "pi pi-fw pi-send",
+    disabled: disabledSend,
+    command: ()=> { openDialog('sendToApprove') },
+  },
+  {
+    label: t("common.approvalList"),
+    icon: "pi pi-fw  pi-check-circle",
+    disabled: disabledApproval,
+    //command: null,
+  },
+/*  {
+    label: t("Какой то текст"),
+    icon: "pi pi-fw  pi-check",
+  },
+  {
+    label: "Тестовый тест",
+    icon: "pi pi-fw  pi-cog",
+  },*/
+])
 
 const handleFileChange = (event) => {
   abstractFile.value = event.files[0];
@@ -398,7 +427,6 @@ const openDialog = (dialog) => {
 }
 const closeDialog = (dialog) => {
   dialogOpenState[dialog] = false;
-
 }
 </script>
 

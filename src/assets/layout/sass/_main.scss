@@ -59,6 +59,13 @@ a {
     margin-bottom: .7rem;
 }
 
+.p-menubar,.p-toolbar{
+    background: #fff;
+}
+.p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-content .p-menuitem-link:hover{
+    background: #d0f1ff;
+}
+
 .customer-badge {
     border-radius: 2px;
     padding: 0.25em 0.5rem;

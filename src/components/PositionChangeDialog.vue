@@ -4,15 +4,15 @@
     <p> {{ getCurrentPosition() }} </p>
     <Dropdown v-model="selectedPosition" :options="positions" optionLabel="name"></Dropdown>
     <template #footer>
-      <div class="w-full flex justify-content-between">
+      <div class="w-full sm:flex block justify-content-between">
         <div class="flex align-items-center">
           <Checkbox v-model="doNotShowAnymore" binary @update:modelValue="setDoNotShowAnymore()"/>
           <label class="ml-2">{{ $t("common.doNotShowAnymore") }}</label>
         </div>
         <div>
-          <Button class="p-button-help" :label="$t('positions.changePosition')"
+          <Button class="p-button-help sm:mt-0 mt-4" :label="$t('positions.changePosition')"
             @click="visible = false;changePosition()" />
-          <Button :label="$t('positions.continue')" @click="visible = false" autofocus />
+          <Button class="sm:mt-0 mt-4" :label="$t('positions.continue')" @click="visible = false" autofocus />
         </div>
       </div>
     </template>
