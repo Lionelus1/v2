@@ -1,7 +1,6 @@
 <template>
     <ProgressSpinner v-if="loading" class="progress-spinner" strokeWidth="5"/>
-    
-    <Menubar :model="items" class="m-0 pt-0 pb-0"></Menubar>
+    <ToolbarMenu :items="items"/>
     <BlockUI v-if="!loading" class="p-fluid" :blocked="loading">
       <TabView class="custom-tabview">
         
@@ -74,6 +73,7 @@ import ToolbarMenu from "@/components/ToolbarMenu.vue";
 export default {
   name: 'PersonPage',
   components: {
+    ToolbarMenu,
     UserPersonalInfomation, UserIDCard, UserEducationView, UserRequisite, UserResearchInterestsView, WorkExperienceView, UserAwardView, UserQualificationsView, ResumeView, ScienceWorks },
   props: {
     person: null,
@@ -119,13 +119,13 @@ export default {
         {
           label: this.$t("common.save"),
           icon: "pi pi-fw pi-save",
-          disabled: () => !this.changed,
+          disabled: this.changed,
           command: () => { this.save() },
         },
         {
             label: this.$t("science.profileLink"),
             icon: "pi pi-fw pi-user",
-            disabled: () => !this.per || !this.per.profile_links || this.per.profile_links.length < 1 ||
+            disabled: !this.per || !this.per.profile_links || this.per.profile_links.length < 1 ||
               this.per.profile_links[0].length < 1,
             command: () => {
               this.redirectToProfile();

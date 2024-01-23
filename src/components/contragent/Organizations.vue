@@ -8,7 +8,7 @@
     </div>
       <div class="card">
         <div class="p-col">
-          <Menubar
+<!--          <Menubar
             :model="menu"
             :key="active"
             style="height: 36px;
@@ -28,7 +28,8 @@
                 />
               </span>
             </template>
-          </Menubar>
+          </Menubar>-->
+          <ToolbarMenu :items="menu" @search="initApiCall" search="true"/>
           <div class="box">
             <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
             <DataTable
@@ -121,8 +122,10 @@ import { smartEnuApi, getHeader, findRole } from "@/config/config";
 import axios from "axios";
 import Enum from "@/enum/docstates/index";
 import { FilterMatchMode, FilterOperator } from "primevue/api";
+import ToolbarMenu from "@/components/ToolbarMenu.vue";
 
 export default {
+  components: {ToolbarMenu},
   data() {
     return {
       localmenu: [{
@@ -217,12 +220,13 @@ export default {
       this.organizations.push(value.value);
       this.$emit("changed",value)
     },
-    initApiCall() {
+    initApiCall(data) {
       this.isAdmin = this.findRole(null, 'main_administrator') || this.findRole(null, "career_administrator")
       this.localmenu[0].items[0].disabled = !this.isAdmin
       this.$emit("update:pagemenu", this.localmenu)
       let url = "/contragent/organizations";
       this.loading =true;
+      this.filters.global.value = data
       this.lazyParams.filters = this.filters
       axios
         .post(smartEnuApi + url, this.lazyParams,  {headers: getHeader()})
