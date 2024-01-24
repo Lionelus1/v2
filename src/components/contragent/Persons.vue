@@ -15,23 +15,7 @@
     <div class="card implementation">
       <div class="card p-0">
         <div class="p-col">
-          <Menubar
-            :model="menu"
-            :key="active"
-            style="height: 36px;margin-top: -7px;margin-right: -7px;margin-left: -7px;"
-          >
-            <template #end>
-              <span class="p-input-icon-left">
-                <i class="pi pi-search" />
-                <InputText
-                  @keyup.enter="initApiCall"
-                  style="height: 30px"
-                  v-model="filters['global'].value"
-                  :placeholder="$t('common.search')"
-                />
-              </span>
-            </template>
-          </Menubar>
+          <ToolbarMenu :items="menu" @search="initApiCall" search="true"/>
           <div class="box">
             <DataTable
               class="p-datatable-sm"
@@ -174,8 +158,10 @@ import { smartEnuApi, getHeader, findRole } from "@/config/config";
 import axios from "axios";
 import Enum from "@/enum/docstates/index";
 import { FilterMatchMode, FilterOperator } from "primevue/api";
+import ToolbarMenu from "@/components/ToolbarMenu.vue";
 
 export default {
+  components: {ToolbarMenu},
   data() {
     return {
       active: null,
@@ -296,7 +282,7 @@ export default {
 
   methods: {
     findRole: findRole,
-    initApiCall() {
+    initApiCall(data) {
       this.isAdmin = this.findRole(null, 'main_administrator')
       this.localmenu[0].items[0].disabled = !this.isAdmin
       this.$emit("update:pagemenu", this.localmenu)
@@ -324,6 +310,7 @@ export default {
         this.personType === Enum.PersonType.IndividualEntrepreneur
           ? "dnone"
           : "";
+      this.filters.global.value = data
       this.lazyParams.filters = this.filters;
       if (
         this.filters.global.value != null &&

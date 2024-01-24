@@ -8,27 +8,6 @@
     </div>
       <div class="card">
         <div class="p-col">
-<!--          <Menubar
-            :model="menu"
-            :key="active"
-            style="height: 36px;
-              margin-top: -7px;
-              margin-right: -7px;
-              margin-left: -7px;
-            "
-          >
-            <template #end>
-              <span class="p-input-icon-left">
-                <i class="pi pi-search" />
-                <InputText
-                  @keyup.enter="initApiCall"
-                  style="height: 30px"
-                  v-model="filters['global'].value"
-                  :placeholder="$t('common.search')"
-                />
-              </span>
-            </template>
-          </Menubar>-->
           <ToolbarMenu :items="menu" @search="initApiCall" search="true"/>
           <div class="box">
             <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>

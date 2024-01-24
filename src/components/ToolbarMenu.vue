@@ -1,7 +1,7 @@
 <template>
   <div class="toolbar_menu" ref="containerRef" :class="{ 'scrollable': isScrollable && !search }">
     <Button v-if="isScrollable && !search" :class="['scroll-left']" icon="pi pi-angle-left" @click="scrollLeft"/>
-    <div class="inline-flex justify-content-between">
+    <div :class="['justify-content-between', {'flex': search},{'inline-flex': isScrollable && !search}]">
       <div v-if="search && isScrollable">
         <Button
             icon="pi pi-bars"

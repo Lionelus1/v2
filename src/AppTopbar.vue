@@ -187,7 +187,7 @@ export default {
 
         },
       isMobile() {
-        return window.innerWidth < 500;
+        return window.innerWidth <= 1024;
       },
     },
     computed: {
