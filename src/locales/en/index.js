@@ -912,7 +912,7 @@ export default {
         addReport: 'Add Report',
         sendReportForSign: 'Send the report for signature',
         doYouWantSendReport: "Are you sure to submit this report for signature?",
-
+        videoValid: 'Only videos from the YouTube platform are allowed'
     },
     faq: {
         title: "Help desk",
