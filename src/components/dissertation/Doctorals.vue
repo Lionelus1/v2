@@ -1141,7 +1141,7 @@ export default {
       //   this.lazyParams.search_user_id = this.searchedUser[0]?.userID || null;
       // }
 
-      // this.lazyParams.search_user_id = 
+      // this.lazyParams.search_user_id =
       //this.lazyParams.countMode = null;
       api.post("/dissertation/getdoctorals", this.lazyParams, { headers: getHeader() }).then((response) => {
         this.DoctoralList = response.data;
@@ -1565,7 +1565,7 @@ export default {
       }
 
       if (state === 6) {
-        this.validationErrorsUpdateDoctoral.councilConclusionFile = !this.councilConclusionFile
+        this.validationErrorsUpdateDoctoral.councilConclusionFile = this.selectedDoctoral.dissertation.councilConclusionFile ? !this.selectedDoctoral.dissertation.councilConclusionFile : !this.councilConclusionFile
 
         return !this.validationErrorsUpdateDoctoral.councilConclusionFile
       }
@@ -1603,6 +1603,14 @@ export default {
           this.$toast.add({ severity: "error", summary: "Validation error", life: 3000 });
           return
         }
+        if (this.doctoral.dissertation.video_link) {
+          const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+          console.log(this.doctoral.dissertation.video_link.match(youtubeRegex))
+          if (!this.doctoral.dissertation.video_link.match(youtubeRegex)) {
+            this.$toast.add({ severity: "error", summary: this.$t('dissertation.videoValid'), life: 3000 });
+            return
+          }
+        }
         fd.append("video_link", this.doctoral.dissertation.video_link)
         fd.append("councilConclusionFile", this.councilConclusionFile)
       }
@@ -1630,13 +1638,14 @@ export default {
         return false
       }
 
-      if (this.selectedDoctoral && this.selectedDoctoral.dissertation.state === 6 && this.selectedDoctoral.dissertation.councilConclusionFile
-        && this.selectedDoctoral.dissertation.video_link) {
+      if (this.selectedDoctoral && this.selectedDoctoral.dissertation.state === 6 && (this.selectedDoctoral.dissertation.councilConclusionFile
+        && this.selectedDoctoral.dissertation.video_link)) {
         return false
       }
+      console.log(this.selectedDoctoral.dissertation)
 
       return (this.selectedDoctoral && (this.selectedDoctoral.dissertation.state === 1 || this.selectedDoctoral.dissertation.state === 6))
-        && (this.findRole(this.loginedUser, 'dissertation_chief') || findRole(this.loginedUser, 'dissertation_council_secretary'))
+        && (this.findRole(this.loginedUser, 'dissertation_chief') || this.findRole(this.loginedUser, 'dissertation_council_secretary'))
     }
   },
 };

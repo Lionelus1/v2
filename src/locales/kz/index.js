@@ -955,6 +955,7 @@ export default {
         addReport: 'Есепті қосу',
         sendReportForSign: 'Есепті қол қоюға жіберу',
         doYouWantSendReport: "Бұл есепті қол қоюға жіберуге сенімдісіз бе?",
+        videoValid: 'Тек YouTube платформасынан бейнелер жарайды'
     },
     faq: {
         title: "Қолдау қызметі",
