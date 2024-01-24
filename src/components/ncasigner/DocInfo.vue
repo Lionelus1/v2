@@ -8,6 +8,7 @@
             <div class="p-inputgroup p-input-filled">
                 <InputText v-model="url" :disabled="true"/>
                 <Button v-bind:label="$t('ncasigner.copy')" v-clipboard:copy="url" v-clipboard:success="onCopy" v-clipboard:error="onFail" class="p-button-secondary"/>
+                <Share :data="url"/>
             </div>
         </template>
     </Card>
@@ -15,8 +16,10 @@
 
 <script>
     import {apiDomain} from "../../config/config";
+    import Share from "@/components/Share.vue";
 
     export default {
+      components: {Share},
         props: ['document', 'docID'],
         
         data() {
