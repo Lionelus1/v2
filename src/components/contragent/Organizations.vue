@@ -8,7 +8,7 @@
     </div>
       <div class="card">
         <div class="p-col">
-          <ToolbarMenu :items="menu" @search="initApiCall" search="true"/>
+          <ToolbarMenu :data="menu" @search="initApiCall" :search="true"/>
           <div class="box">
             <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
             <DataTable

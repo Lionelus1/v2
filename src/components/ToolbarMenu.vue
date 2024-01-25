@@ -11,7 +11,7 @@
         <Menu ref="menu" id="overlay_menu" :model="actionList" :popup="true" />
       </div>
       <div class="" v-else>
-        <template v-for="(i,index) of items" :key="i">
+        <template v-for="(i,index) of data" :key="i">
           <Button
               v-if="i.visible !== false"
               :class="['p-button-outlined']"
@@ -40,14 +40,14 @@
 <script setup>
 import {computed, onBeforeUnmount, onMounted, ref} from "vue";
 
-const props = defineProps(['items', 'notShowLabel','search'])
+const props = defineProps(['data', 'notShowLabel','search'])
 const containerRef = ref(null);
 const scrollStep = 50;
 const isScrollable = ref(false);
 const emit = defineEmits(['search'])
 const searchModel = ref()
 const menu = ref()
-const actionList = computed(() => props.items)
+const actionList = computed(() => props.data)
 const onClick = (event) => {
   menu.value.toggle(event);
   emit('toggle')
@@ -83,6 +83,7 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .toolbar_menu {
+  margin-bottom: 30px;
   position: relative;
   white-space: nowrap;
   max-width: 100%;

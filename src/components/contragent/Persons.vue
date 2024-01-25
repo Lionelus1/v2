@@ -13,9 +13,9 @@
         </h3>
     </div>
     <div class="card implementation">
-      <div class="card p-0">
+      <div class="p-0">
         <div class="p-col">
-          <ToolbarMenu :items="menu" @search="initApiCall" search="true"/>
+          <ToolbarMenu :data="menu" @search="initApiCall" :search="true"/>
           <div class="box">
             <DataTable
               class="p-datatable-sm"
@@ -216,10 +216,12 @@ export default {
         {
           label: this.$t("bank.card"),
           icon: "pi pi-fw pi-id-card",
+          command: ()=> {},
         },
         {
           label: this.$t("common.contacts"),
           icon: "pi pi-fw pi-user",
+          command: ()=> {},
         },
         {
           label: this.$t("common.createNew"),

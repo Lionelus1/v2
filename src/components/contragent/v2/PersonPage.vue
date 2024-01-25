@@ -1,6 +1,6 @@
 <template>
     <ProgressSpinner v-if="loading" class="progress-spinner" strokeWidth="5"/>
-    <ToolbarMenu :items="items"/>
+    <ToolbarMenu :data="menu"/>
     <BlockUI v-if="!loading" class="p-fluid" :blocked="loading">
       <TabView class="custom-tabview">
         
@@ -115,7 +115,7 @@ export default {
         bank_id: false,
       },
 
-      items: [
+      menu: [
         {
           label: this.$t("common.save"),
           icon: "pi pi-fw pi-save",

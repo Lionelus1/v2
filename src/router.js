@@ -776,6 +776,12 @@ path: '/documents/catalog/acts',
                 component: load('science/ScientistsProfile'),
                 beforeEnter: ifAuthenticated,
             },
+            {
+                path: '/demo',
+                name: 'demos',
+                component: load('DemoTemplate'),
+                beforeEnter: ifAuthenticated,
+            },
         ]
     },
    
@@ -793,8 +799,6 @@ path: '/documents/catalog/acts',
             },
         ]
     },
-
-
 ];
 
 const router = createRouter({
