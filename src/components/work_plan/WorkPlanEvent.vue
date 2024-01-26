@@ -56,9 +56,9 @@
       <WorkPlanReportApprove v-if="showReportModal && scienceReport && plan" :approval-stages="approval_users" :visible="showReportModal && scienceReport"
                              :doc-id="scienceReport.doc_id" :report="scienceReport" :plan="plan"></WorkPlanReportApprove>
 
-      <Button v-if="isSciencePlan && scienceDocs" :label="$t('contracts.contract')" class="p-button-sm p-button-outlined ml-2" icon="fa-solid fa-download"
+      <Button v-if="isSciencePlan && scienceDocs && scienceDocs.some(e => e.docType === docEnum.DocType.Contract)" :label="$t('contracts.contract')" class="p-button-sm p-button-outlined ml-2" icon="fa-solid fa-download"
               @click="downloadContract('contract')"/>
-      <Button v-if="isSciencePlan && scienceDocs" :label="$t('common.additionalInfo')" class="p-button-sm p-button-outlined ml-2" icon="fa-solid fa-download"
+      <Button v-if="isSciencePlan && scienceDocs && scienceDocs.some(e => e.docType === docEnum.DocType.RelatedDoc)" :label="$t('common.additionalInfo')" class="p-button-sm p-button-outlined ml-2" icon="fa-solid fa-download"
               @click="downloadContract('additional')"/>
     </div>
     <div class="card" v-if="plan">
@@ -872,7 +872,7 @@ export default {
         this.scienceDocs.forEach(e => {
           if (type === "contract" && e.docType === this.docEnum.DocType.Contract) {
             url = e.filePath;
-            return
+            return;
           }
 
           if (type === "additional" && e.docType === this.docEnum.DocType.RelatedDoc) {
@@ -882,11 +882,17 @@ export default {
         })
       }
 
+      if (!url) {
+        this.$toast.add({severity: "info", summary: this.$t('common.noData'), life: 3000})
+        return
+      }
+
       url = smartEnuApi + fileRoute + url
 
       const link = document.createElement("a");
       link.href = url;
       link.setAttribute("download", url);
+      link.setAttribute("target", "_blank");
       link.download = url;
       link.click();
       URL.revokeObjectURL(link.href);
