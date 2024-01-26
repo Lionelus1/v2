@@ -24,10 +24,8 @@
           <div class="md:col-6" v-if="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID)">
             <p class="mb-0">{{ $t('contracts.contragentMessage') }}</p>
             <div class="p-inputgroup p-input-filled">
-              <InputText :modelValue="apiDomain + '/documents/contracts/' + this.contract.uuid + '/request'" :disabled="true"/>
-              <Button v-bind:label="$t('ncasigner.copy')" v-clipboard:copy="apiDomain + '/documents/contracts/' + this.contract.uuid + '/request'"
-                      v-clipboard:success="onCopy" v-clipboard:error="onFail" class="p-button-secondary" />
-              <Share :data="apiDomain + '/documents/contracts/' + this.contract.uuid + '/request'"/>
+              <Share :data="apiDomain + '/documents/contracts/' + this.contract.uuid + '/request'"
+                     :disabled="true" :param="true" :label="$t('ncasigner.copy')" @copy="onCopy()" @error="onFail()"/>
             </div>
           </div>
           <Panel class="md:col-6 p-2" v-if="contract.sourceType === DocEnum.DocSourceType.FilledDoc"

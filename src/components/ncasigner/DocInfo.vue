@@ -6,9 +6,7 @@
         <template #content>
             <p>{{$t('ncasigner.linkForOthersTitle')}}</p>
             <div class="p-inputgroup p-input-filled">
-                <InputText v-model="url" :disabled="true"/>
-                <Button v-bind:label="$t('ncasigner.copy')" v-clipboard:copy="url" v-clipboard:success="onCopy" v-clipboard:error="onFail" class="p-button-secondary"/>
-                <Share :data="url"/>
+              <Share :data="url" :disabled="true" :param="true" :label="$t('ncasigner.copy')" @copy="onCopy()" @error="onFail()"/>
             </div>
         </template>
     </Card>

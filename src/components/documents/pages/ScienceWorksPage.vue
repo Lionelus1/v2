@@ -25,11 +25,8 @@
           </div>
           <div class="p-fluid md:col-6" v-if="'text' === param.name">
             <div class="p-inputgroup p-input-filled">
-              <InputText v-model="param.value" type="text" @input="input()" :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
-                scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)"></InputText>
-              <Button v-if="param.description === 'link'" icon="fa-solid fa-copy"
-                      v-clipboard:copy="param.value" v-clipboard:success="onCopy"></Button>
-              <Share v-if="param.description === 'link'" :data="param.value"/>
+              <Share v-if="param.description === 'link'" :data="param.value" @copy="onCopy()" :param="param.description === 'link'"
+                     :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID && scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)"/>
             </div>
           </div>
           <div class="p-fluid md:col-6" v-if="'number' === param.name">

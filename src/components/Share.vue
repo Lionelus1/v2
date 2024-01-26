@@ -1,4 +1,7 @@
 <template>
+  <InputText v-model="dataInput" type="text" :disabled="disabled"></InputText>
+  <Button v-if="param" icon="fa-solid fa-copy" :label="label" class="p-button-secondary"
+          v-clipboard:copy="dataInput" v-clipboard:success="onClick" v-clipboard:error="error"></Button>
   <Button type="button" @click="showSocials" class="p-button-rounded ml-4" icon="fa-solid fa-share-nodes" label=""/>
   <OverlayPanel ref="op">
     <div class="flex flex-column gap-2">
@@ -12,8 +15,16 @@
 <script setup>
 import {ref} from "vue";
 
-const props = defineProps(['data'])
+const props = defineProps(['data','disabled','param','label'])
+const dataInput = ref(props.data)
 const op = ref()
+const emit = defineEmits(['copy','error'])
+const onClick = () => {
+  emit('copy')
+}
+const error = () => {
+  emit('error')
+}
 const showSocials = (event) => {
   console.log(props.data)
   op.value.toggle(event);
