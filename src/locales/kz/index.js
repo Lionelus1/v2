@@ -1449,6 +1449,11 @@ export default {
         positionName: 'Позиция атауы',
         selectDep: 'Бөлімді таңдаңыз',
 
+        departmentRoleRel: 'Департамент-ролді басқару',
+        giveDepartmentRoleRel: 'Жаңа Департамент-роль қарым-қатынасын беру',
+        nameDepartment: 'Департамент атауы',
+        selectDepartment: 'Департаментті таңдаңыз',
+
     },
     blog: {
         title: 'Блог',

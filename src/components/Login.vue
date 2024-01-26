@@ -353,19 +353,26 @@ export default {
             }
           })
           .catch(error => {  
-            if (error.response.status === 401) {
+            if (error.response && error.response.status === 401) {
                 this.$toast.add({
                   severity: 'error',
                   summary: this.$t('common.unauth'),
                   life: 3000,
                 }); 
               return
+            }else if (error.response) {
+              this.$toast.add({
+                severity: "error",
+                summary: this.$t('common.unauth'),
+                life: 3000,
+              });
+            } else {
+              this.$toast.add({
+                severity: "error",
+                summary: this.$t('responseExplanations.internalServerError'),
+                life: 3000,
+              });
             }
-            this.$toast.add({
-              severity: "error",
-              summary: this.$t('common.unauth'),
-              life: 3000,
-            }); 
           });
     },
     checkLoginAndPassword() {

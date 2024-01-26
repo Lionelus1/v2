@@ -8,8 +8,8 @@
 		<TabPanel :header="$t('roleControl.rolePosRelTitle')">
 			<RolePositionRel></RolePositionRel>
 		</TabPanel>
-		<TabPanel :header="$t('roleControl.rolePosRel')">
-			<PositionRel></PositionRel>
+		<TabPanel :header="$t('roleControl.departmentRoleRel')">
+			<RoleDepartmentRel></RoleDepartmentRel>
 		</TabPanel>
 	</TabView>
 	</div>
@@ -17,9 +17,9 @@
 <script>
 import RoleControl from './RoleControl.vue';
 import RolePositionRel from './RolePositionRel.vue';
-import PositionRel from './PositionRel.vue';
+import RoleDepartmentRel from './RoleDepartmentRel.vue'
 
 export default {
-	components: { RoleControl, RolePositionRel, PositionRel },
+	components: { RoleControl, RolePositionRel, RoleDepartmentRel },
 }
 </script>

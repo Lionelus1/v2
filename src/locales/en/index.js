@@ -1438,6 +1438,10 @@ export default {
         departmentName: 'Name of departments',
         positionName: 'Name of Position',
         selectDep: 'Select department',
+        departmentRoleRel: 'Department-role management',
+        giveDepartmentRoleRel: 'Give new department-role relation',
+        nameDepartment: 'Name of department',
+        selectDepartment: 'Select department',
     },
     blog: {
         title: 'Blog',

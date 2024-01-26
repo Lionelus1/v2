@@ -1437,6 +1437,11 @@ export default {
         departmentName: 'Название департамента',
         positionName: 'Название позицией',
         selectDep: 'Выберите департамента',
+        departmentRoleRel: 'Управление департамент-ролями',
+        giveDepartmentRoleRel: 'Дать новое отношение департамент-роль',
+        nameDepartment: 'Название департамента',
+        selectDepartment: 'Выберите департамента',
+
     },
     responseExplanations: {
         badRequest: 'Ваш запрос не был понят или в нем отсутствовали необходимые параметры.',
