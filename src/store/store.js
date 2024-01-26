@@ -8,7 +8,7 @@ import router from '@/router';
 const store = createStore({
     plugins: [createPersistedState()],
     state: {
-
+        activeItem: "",
         loginedUser: {},
         token: "",
         attemptedUrl: "",
@@ -76,7 +76,10 @@ const store = createStore({
             }).catch(error => {
                 this.$router.push({name: 'Login'});
             })
-        }
+        },
+        updateParentVariable(state, newValue) {
+            state.activeItem = newValue;
+        },
     },
     actions: {
         setLoginedUser(context) {
@@ -107,10 +110,17 @@ const store = createStore({
         setNewUserInfo(context) {
             context.commit('GET_USER_INFO')
         },
+        updateParentVariable({commit}, newValue) {
+            commit('updateParentVariable', newValue);
+        },
+
     },
     getters: {
         isAuthenticated: state => !!state.token,
-        isMainAdministrator: state => state.loginedUser && state.loginedUser.roles && state.loginedUser.roles.some(role => role.name === 'main_administrator')
+        isMainAdministrator: state => state.loginedUser && state.loginedUser.roles && state.loginedUser.roles.some(role => role.name === 'main_administrator'),
+        getParentVariable(state) {
+            return state.activeItem;
+        },
     }
 
 })

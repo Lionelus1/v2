@@ -26,6 +26,9 @@
 	</ul>
 </template>
 <script>
+
+import {mapActions, mapState} from "vuex";
+
 export default {
 	name: 'appsubmenu',
 	props: {
@@ -40,7 +43,8 @@ export default {
 			activeIndex : null
 		}
 	},
-	methods: {
+	methods: {    
+		...mapActions(['updateParentVariable']),
 		onMenuItemClick(event, item, index) {
 			if (item.disabled) {
 				event.preventDefault();
@@ -61,12 +65,21 @@ export default {
 			this.$emit('menuitem-click', {
 				originalEvent: event,
 				item: item
-			});
+			})
+			this.updateParentVariable(null);
+			
 		},
 		visible(item) {
 			return (typeof item.visible === 'function' ? item.visible() : item.visible !== false);
-		}
-	}
+		},
+		
+
+		
+	},
+	computed: {
+    ...mapState(['activeItem']),
+  }
+	
 }
 </script>
 
