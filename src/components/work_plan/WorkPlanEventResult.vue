@@ -1,23 +1,21 @@
 <template>
   <ConfirmPopup group="deleteResult"></ConfirmPopup>
-  <vue-element-loading :active="isBlockUI" is-full-screen color="#FFF" size="80" :text="$t('common.loading')"
-                       backgroundColor="rgba(0, 0, 0, 0.4)"/>
+  <vue-element-loading :active="isBlockUI" is-full-screen color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)" />
   <div class="col-12" v-if="plan && event">
-    <div class="card">
-      <div v-if="!resultId" @click="navigateToBack" class="inline-block"><i class="fa-solid fa-arrow-left mr-3"
-                                                                                style="font-size: 16px;cursor: pointer"></i>
+    <div>
+      <div v-if="!resultId" @click="navigateToBack" class="inline-block"><i class="fa-solid fa-arrow-left mr-3" style="font-size: 16px;cursor: pointer"></i>
       </div>
       <div class="mb-0 mt-0 inline-block" style="font-size: 24px"> {{ $t('common.result') }}</div>
     </div>
 
-    <div class="card" v-if="resultData && event && resultData.reject_history">
+    <div v-if="resultData && event && resultData.reject_history">
       <div class="p-fluid">
         <div class="field">
           <label>{{ $t('common.state') }}:</label>
           <div>
             <span v-if="event" :class="'customer-badge status-' + event.status.work_plan_event_status_id">{{
-                event.status.name_ru
-              }}</span>
+              event.status.name_ru
+            }}</span>
           </div>
         </div>
         <div class="field" v-if="resultData.reject_history.user">
@@ -42,67 +40,45 @@
       </div>
     </div>
 
-    <div class="card">
+    <div>
       <TabView v-model:activeIndex="activeIndex" @tab-change="changeTab">
         <TabPanel :header="$t('common.properties')">
           <div
-              v-if="event &&
+            v-if="event &&
               (isCurrentUserApproval && (event.status.work_plan_event_status_id === 1 || event.status.work_plan_event_status_id === 4 || event.status.work_plan_event_status_id === 6))">
-            <Menubar :model="userMenuItems" :key="active"
-                     style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
+            <Menubar :model="userMenuItems" :key="active" style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
           </div>
-          <div
-              v-if="plan && plan.is_oper && isPlanCreator && event && event.status.work_plan_event_status_id === 5">
-            <Menubar :model="verifyMenu" :key="active"
-                     style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
+
+           <div v-if="isPlanCreator && event && event.status.work_plan_event_status_id === 5">
+            <Menubar :model="verifyMenu" :key="active" style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
           </div>
           <div class="grid mt-3">
-            <div class="p-fluid p-sm-12 md:col-12 lg:col-6 p-xl-6"
-                 v-if="(isPlanCreatorApproval || !isPlanCreator) && event.status.work_plan_event_status_id !== 5 &&
-                 event.status.work_plan_event_status_id !== 2">
+            <!-- p-sm-12 md:col-12 lg:col-6 p-xl-6 -->
+            <div class="p-fluid" v-if="(!isPlanCreator && (isPlanCreatorApproval || !isPlanCreator) &&
+              event.status.work_plan_event_status_id !== 5 &&
+              event.status.work_plan_event_status_id !== 2 && event.status.work_plan_event_status_id !== 6) || (isRespUser && isPlanCreator && (isPlanCreatorApproval || !isPlanCreator) &&
+              event.status.work_plan_event_status_id !== 5 &&
+              event.status.work_plan_event_status_id !== 2 && event.status.work_plan_event_status_id !== 6)">
+              
               <div class="field">
                 <label>{{ $t('workPlan.eventName') }}</label>
-                <InputText v-model="event.event_name" disabled/>
+                <InputText v-model="event.event_name" disabled />
               </div>
               <div class="field" v-if="plan && plan.is_oper && !authUser.mainPosition.department.isFaculty">
                 <label>{{ $t('common.fact') }}</label>
-                <InputText v-model="fact" @input="factChange"/>
+                <InputText v-model="fact" @input="factChange" />
               </div>
-              <div class="field">
+              <div class="field" v-if="!hasResultToApprove">
                 <label>{{ $t('common.result') }}</label>
-                <RichEditor v-if="plan && !plan.is_oper" v-model="result" editorStyle="height:300px;"
-                            :clearOnPaste="true"
-                            @text-change="editorChange">
-                  <template v-slot:toolbar>
-                    <span class="ql-formats">
-                      <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
-                      <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
-                      <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
-                    </span>
-                  </template>
-                </RichEditor>
-                <RichEditor ref="planEditor" v-if="plan && plan.is_oper" v-model="newResult" editorStyle="height:300px;"
-                            :clearOnPaste="true"
-                            @text-change="editorChange">
-                  <template v-slot:toolbar>
-                    <span class="ql-formats">
-                      <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
-                      <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
-                      <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
-                    </span>
-                  </template>
-                </RichEditor>
+                <TinyEditor v-if="plan && !plan.is_oper" v-model="result" :min-word="wordLimit" @wordCount="initWordCount" :height="300" :style="{ height: '100%', width: '100%' }"
+                  @selectionChange="editorChange" />
+                <TinyEditor v-if="plan && plan.is_oper" v-model="newResult" :height="300" @selectionChange="editorChange" />
+                <small v-if="isSciencePlan && submitted && (inputWordCount < wordLimit)" class="p-error">{{$t('workPlan.minWordCount')}}</small>
+
               </div>
               <div class="field">
-                <FileUpload
-                    ref="form"
-                    mode="basic"
-                    :customUpload="true"
-                    @uploader="uploadFile($event)"
-                    :auto="true"
-                    :multiple="true"
-                    :chooseLabel="$t('smartenu.chooseAdditionalFile')"
-                ></FileUpload>
+                <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadFile($event)" :auto="true" :multiple="true"
+                  :chooseLabel="$t('smartenu.chooseAdditionalFile')"></FileUpload>
               </div>
               <div class="field">
                 <div ref="content" class="p-fileupload-content">
@@ -111,8 +87,8 @@
                       <span class="mr-3"><i class="pi pi-paperclip"></i></span>
                       <span>{{ file.name }}</span>
                       <span class="ml-5">
-                <Button icon="pi pi-times" class="p-button-rounded p-button-text" @click="removeFile(index)"/>
-              </span>
+                        <Button icon="pi pi-times" class="p-button-rounded p-button-text" @click="removeFile(index)" />
+                      </span>
                     </div>
                   </div>
                   <div class="p-fileupload-empty" v-if="files.length === 0">
@@ -122,68 +98,145 @@
               </div>
             </div>
             <div class="p-sm-12 md:col-12 lg:col-12 p-xl-6">
-              <div class="field" v-if="event">
+              <div class="field" v-if="event && plan && plan.is_oper && !authUser.mainPosition.department.isFaculty">
                 <label class="bold">{{ $t('common.fact') }}: </label>
                 <div>{{ event.fact }}</div>
               </div>
-              <div class="field" v-if="plan && resultData && plan.is_oper">
-                <label class="bold">{{ $t('common.result') }}</label>
-                <div v-for="(item, index) of resultData.result_text" :key="index" class="mb-2">
-                  <Inplace
-                      v-if="item.userId === loginedUserId && event && (event.status.work_plan_event_status_id !== 5 && event.status.work_plan_event_status_id !== 2)"
-                      :active="item.isActive" @open="openInplace(item)">
+              <!-- Start Editing -->
+              <div class="field" v-if="plan && resultData">
+                <!-- <label class="bold">{{ $t('common.result') }}</label> -->
+                <!-- {{ resultData[0] }} -->
+                <div v-for="(item, index) of resultData" :key="index" class="mb-2">
+                  <Divider align="left">
+                    <div class="flex justify-content-center align-items-center">
+                      <div class="flex flex-column justify-content-center align-items-start">
+                        <span class="pb-2"><i class="fa-solid fa-user mr-1"></i><b>{{ item.user.fullName }}</b></span>
+                        <span class="pb-2">{{ formatDateMoment(item.plan_event_result_history[0].create_date) }}</span>
+                      </div>
+                      <div class="ml-3">
+                        <span :class="'customer-badge status-' + item.plan_event_result_history[0].state_id">{{
+                            getResultStatus(item.plan_event_result_history[0].state_id) }}</span>
+                      </div>
+                    </div>
+
+                  </Divider>
+                  <Inplace v-if="(loginedUserId === item.result_text[0].user.userID) && event &&
+                    (item.plan_event_result_history && item.plan_event_result_history[0].state_id === 6)" :active="item.isActive" @open="openInplace(item)">
                     <template #display>
                       <div>
                         <span class="mr-1" style="float:left;"><i class="fa-solid fa-pen color-success"></i></span>
-                        <p class="p-0 m-0" v-html="item.text"></p>
+                        <p class="p-0 m-0" v-html="item.result_text[0].text"></p>
                       </div>
+
                     </template>
                     <template #content>
-                      <div class="py-2">
-                        <Button :label="$t('common.save')" icon="pi pi-check" class="p-button p-button-success"
-                                @click="saveEditResult(item)" :loading="loading"/>
-                        <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button ml-1"
-                                @click="cancelEdit(item)"/>
-                        <Button :label="$t('common.delete')" icon="pi pi-trash" class="p-button p-button-danger ml-1"
-                                @click="deleteConfirmItem($event, item)"/>
+                      <div class="py-2" v-if="(item.plan_event_result_history[0].state_id === 6) && (loginedUserId === item.result_text[0].user.userID)">
+                        <Button :label="$t('common.save')" icon="pi pi-check" class="p-button p-button-success" @click="saveEditResult(item)"
+                          :loading="loading" />
+                        <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button ml-1" @click="cancelEdit(item)" />
+                        <!--                        <Button :label="$t('common.delete')" icon="pi pi-trash" class="p-button p-button-danger ml-1" @click="deleteConfirmItem($event, item)" />-->
                       </div>
                       <div class="field">
-                        <RichEditor v-model="item.text" editorStyle="height:200px;">
-                          <template v-slot:toolbar>
-                            <span class="ql-formats">
-                              <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
-                              <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
-                              <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
-                            </span>
-                          </template>
-                        </RichEditor>
+                        <TinyEditor v-model="item.result_text[0].text" :height="300" :style="{ height: '100%', width: '100%' }" />
                       </div>
+                      <!--Edit jaslaganda-->
+                      <div class="field">
+                        <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadFile($event)" :auto="true" :multiple="true"
+                          :chooseLabel="$t('smartenu.chooseAdditionalFile')"></FileUpload>
+                      </div>
+                      <div class="field">
+                        <div ref="content" class="p-fileupload-content">
+                          <div class="p-fileupload-files">
+                            <div class="p-fileupload-row" v-for="(file, index) of files" :key="index">
+                              <span class="mr-3"><i class="pi pi-paperclip"></i></span>
+                              <span>{{ file.name }}</span>
+                              <span class="ml-5">
+                                <Button icon="pi pi-times" class="p-button-rounded p-button-text" @click="removeFile(index)" />
+                              </span>
+                            </div>
+                          </div>
+                          <div class="p-fileupload-empty" v-if="files.length === 0">
+                            <slot name="empty"></slot>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="p-fileupload-files">
+                        <div class="p-fileupload-row" v-for="(file, index) of item.result_files" :key="index">
+                          <span class="mr-3" style="cursor: pointer;" @click="downloadFile(file.event_result_file)">
+                            <i class="fa-solid fa-file-arrow-down fa-lg color-success"></i></span>
+                          <span @click="downloadFile(file)" style="cursor: pointer;">{{
+                            file.file_name ? file.file_name : file.event_result_file
+                          }}</span>
+                          <span class="ml-5" v-if="file.user_id && file.user_id === loginedUserId"><Button icon="pi pi-times"
+                              class="p-button-rounded p-button-text" v-if="event && item.plan_event_result_history[0].state_id === 6"
+                              @click="deleteFileConfirm($event, file.id)" /></span>
+                        </div>
+                      </div>
+                      <div class="p-fileupload-empty" v-if="files.length === 0">
+                        <slot name="empty"></slot>
+                      </div>
+                      <!--End Edit jaslaganda-->
                     </template>
                   </Inplace>
                   <div v-else class="p-0">
-                    <Divider align="left">
-                      <i class="fa-solid fa-user mr-1"></i><b>{{ item.user.fullName }}</b>
-                    </Divider>
-                    <p v-html="item.text"></p>
+                    <p v-html="item.result_text[0].text"></p>
+                  </div>
+                  <br />
+                  <div class="" v-if="resultData && item.result_files">
+                    <label class="bold"><strong>{{ $t('workPlan.attachments') }}</strong></label>
+                    <div ref="content" class="p-fileupload-content" style="padding-top: 7px;">
+
+                      <div class="p-fileupload-files">
+                        <div class="p-fileupload-row" v-for="(file, index) of item.result_files" :key="index">
+                          <span class="mr-3" style="cursor: pointer;" @click="downloadFile(file.event_result_file)">
+                            <i class="fa-solid fa-file-arrow-down fa-lg color-success"></i></span>
+                          <span @click="downloadFile(file)" style="cursor: pointer;">{{
+                            file.file_name ? file.file_name : file.event_result_file
+                          }}</span>
+                         
+                        </div>
+                      </div>
+                      <div class="p-fileupload-empty" v-if="files.length === 0">
+                        <slot name="empty"></slot>
+                      </div>
+                    </div>
+                  </div>
+                  <div style="margin-left: -12px;" v-if="isPlanCreator">
+                    <!-- {{ item.result_text }} -->
+                    <Button v-if="(item.plan_event_result_history[0].state_id === 5)" icon="pi pi-fw pi-check" class="p-button-rounded p-button-text"
+                      @click="confirmToInspected(isInspected, item.user.userID, item.event_result_id)" :label="$t('common.action.accept')"></Button>
+                    <Button v-if="(item.plan_event_result_history[0].state_id === 5)" icon="pi pi-fw pi-times" class="p-button-rounded p-button-text"
+                      @click="showToCorrectSidebarNew(item.user.userID, item.event_result_id)" :label="$t('workPlan.toCorrect')"></Button>
+                    <br /><br />
+                    <!-- <hr style="border-top: 1px dotted #999;"/> -->
+                  </div>
+                  <div v-else class="p-0">
+                    <span style="float:right;margin-top: -7px;" v-if="isPlanCreator">
+                      <Button icon="pi pi-fw pi-check" class="p-button-rounded p-button-text" @click="verify(true)" :label="$t('common.action.accept')"></Button>
+                      <Button icon="pi pi-fw pi-times" class="p-button-rounded p-button-text" @click="showToCorrectSidebar()"
+                        :label="$t('workPlan.toCorrect')"></Button>
+                    </span>
                   </div>
 
                 </div>
               </div>
+              <div v-else>
+                {{ $t('common.noData') }}
+              </div>
+              <!-- End Editing -->
               <div class="field" v-if="resultData && resultData.result_files">
                 <label class="bold">{{ $t('workPlan.attachments') }}</label>
                 <div ref="content" class="p-fileupload-content">
                   <div class="p-fileupload-files">
                     <div class="p-fileupload-row" v-for="(file, index) of resultData.result_files" :key="index">
-                      <span class="mr-3" style="cursor: pointer;" @click="downloadFile(file.event_result_file)"><i
-                          class="fa-solid fa-file-arrow-down fa-2x color-success"></i></span>
-                      <span @click="downloadFile(file)"
-                            style="cursor: pointer;">{{
-                          file.file_name ? file.file_name : file.event_result_file
-                        }}</span>
-                      <span class="ml-5" v-if="file.user_id && file.user_id === loginedUserId"><Button
-                          icon="pi pi-times" class="p-button-rounded p-button-text"
+                      <span class="mr-3" style="cursor: pointer;" @click="downloadFile(file.event_result_file)">
+                        <i class="fa-solid fa-file-arrow-down fa-2x color-success"></i></span>
+                      <span @click="downloadFile(file)" style="cursor: pointer;">{{
+                        file.file_name ? file.file_name : file.event_result_file
+                      }}</span>
+                      <span class="ml-5" v-if="file.user_id && file.user_id === loginedUserId"><Button icon="pi pi-times" class="p-button-rounded p-button-text"
                           v-if="event && (event.status.work_plan_event_status_id !== 5 && event.status.work_plan_event_status_id !== 2)"
-                          @click="deleteFileConfirm($event, file.id)"/></span>
+                          @click="deleteFileConfirm($event, file.id)" /></span>
                     </div>
                   </div>
                   <div class="p-fileupload-empty" v-if="files.length === 0">
@@ -195,7 +248,32 @@
           </div>
         </TabPanel>
         <TabPanel :header="$t('common.history')">
-          <DataTable :value="history" class="p-datatable-sm" responsiveLayout="scroll">
+          <!-- {{ history }} -->
+          <table>
+            <thead>
+              <tr style="font-weight: bolder;">
+                <td>ID</td>
+                <td>{{ $t('common.date') }}</td>
+                <td>{{ $t('common.user') }}</td>
+                <td>{{ $t('common.actionTitle') }}</td>
+              </tr>
+            </thead>
+            <tbody>
+              <template v-for="event in history" :key="event.event_result_id">
+                <template v-if="event.plan_event_result_history">
+                  <tr v-for="historyItem in event.plan_event_result_history" :key="historyItem.id">
+                    <td>{{ historyItem.id }}</td>
+                    <td>{{ formatDateMoment(historyItem.modi_date) }}</td>
+                    <td>{{ historyItem.modi_user.fullName }}</td>
+                    <td>{{ getHistoryStatus(historyItem.state_id) }}</td>
+                  </tr>
+                </template>
+              </template>
+            </tbody>
+          </table>
+
+
+          <!-- <DataTable :value="history" class="p-datatable-sm" responsiveLayout="scroll">
             <Column field="id" header="ID"></Column>
             <Column :header="$t('common.date')">
               <template #body="{ data }">
@@ -212,37 +290,23 @@
                 {{ data.state ? $t(`common.states.${data.state}`) : "" }}
               </template>
             </Column>
-          </DataTable>
+          </DataTable> -->
         </TabPanel>
       </TabView>
     </div>
   </div>
 
-  <Sidebar v-model:visible="toCorrectSidebar"
-           position="right"
-           class="p-sidebar-lg "
-           style="overflow-y: scroll">
-    <div class="col-12">
-      <h3>{{ $t('workPlan.toCorrect') }}</h3>
-    </div>
-    <div class="col-12">
+  <Sidebar v-model:visible="toCorrectSidebar" position="right" class="p-sidebar-lg " style="overflow-y: scroll">
+    <h3>{{ $t('workPlan.toCorrect') }}</h3>
+    <div class="field">
       <div>
-        <Menubar :model="rejectMenu" :key="active"
-                 style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
+        <Button icon="pi pi-fw pi-check" class="p-button-outlined" @click="confirmToRevision()" :label="$t('common.send')"></Button>
       </div>
     </div>
     <div class="p-col p-fluid">
       <div class="field">
         <label>{{ $t('common.comment') }}</label>
-        <RichEditor v-model="rejectComment" editorStyle="height:300px;">
-          <template v-slot:toolbar>
-            <span class="ql-formats">
-              <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
-              <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
-              <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
-            </span>
-          </template>
-        </RichEditor>
+        <TinyEditor v-model="rejectComment" :height="500"></TinyEditor>
       </div>
     </div>
   </Sidebar>
@@ -250,15 +314,15 @@
 
 <script>
 import axios from "axios";
-import {getHeader, smartEnuApi} from "@/config/config";
-import {getMultipartHeader} from "../../config/config";
+import { getHeader, smartEnuApi, findRole } from "@/config/config";
+import { getMultipartHeader } from "../../config/config";
 import RichEditor from "../documents/editor/RichEditor";
 import moment from "moment";
-import {WorkPlanService} from '../../service/work.plan.service'
+import { WorkPlanService } from '../../service/work.plan.service'
+import Enum from "@/enum/workplan/index"
 
 export default {
   name: "WorkPlanEventResult",
-  components: {RichEditor},
   props: ['resultId'],
   data() {
     return {
@@ -274,6 +338,8 @@ export default {
       newResult: null,
       fact: null,
       event_id: this.resultId,
+      user_id: JSON.parse(localStorage.getItem("loginedUser")).userID,
+      isAdmin: false,
       activeIndex: 0,
       history: null,
       toCorrectSidebar: false,
@@ -289,7 +355,31 @@ export default {
       isPlanCreator: false,
       isPlanCreatorApproval: false,
       isCurrentUserApproval: false,
-      planService: new WorkPlanService()
+      planService: new WorkPlanService(),
+      resultStatus: [
+        { name_kz: "Тексерілуде", name_ru: "На проверке", name_en: "On inspection", id: 5 },
+        { name_kz: "Түзетуде", name_ru: "На доработке", name_en: "Under revision", id: 6 },
+        { name_kz: "Тексерілді", name_ru: "Проверено", name_en: "Inspected", id: 7 },
+
+      ],
+      historyStatus: [
+        { name_kz: "Жоспарланды", name_ru: "Запланировано", name_en: "Planned", id: 1 },
+        { name_kz: "Орындалды", name_ru: "Выполнено", name_en: "Done", id: 2 },
+        { name_kz: "Орындалмады", name_ru: "Не выполнено", name_en: "Not done", id: 3 },
+        { name_kz: "Жартылай орындалды", name_ru: "Частично выполнено", name_en: "Partially completed", id: 4 },
+        { name_kz: "Тексерілуде", name_ru: "На проверке", name_en: "On inspection", id: 5 },
+        { name_kz: "Түзетуде", name_ru: "На доработке", name_en: "Under revision", id: 6 },
+        { name_kz: "Тексерілді", name_ru: "Проверено", name_en: "Inspected", id: 7 },
+
+      ],
+      isInspected: true,
+      submitted: false,
+      resultUserId: null,
+      eventResultId: null,
+      Enum: Enum,
+      wordLimit: 100,
+      inputWordCount: 0,
+      hasResultToApprove: false
     }
   },
   computed: {
@@ -325,21 +415,35 @@ export default {
           },
         }
       ];
+    },
+    isSciencePlan() {
+      return this.plan && this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Science
+    },
+    isRespUser(){
+      return this.event && this.respUserExists(this.loginedUserId) && this.plan.plan_type_id === 3
     }
   },
-  created() {
+  mounted() {
+    this.isAdmin = this.findRole(null, 'main_administrator')
     if (!this.event_id) {
       this.event_id = this.$route.params.id;
     }
     this.getEvent();
+
   },
   methods: {
+    findRole: findRole,
+    initWordCount(count) {
+      this.inputWordCount = count
+    },
+    respUserExists(id){
+      return this.event.user.some(user => user.id === id)
+    },
     getEvent() {
       this.planService.getEventById(this.event_id).then(res => {
         if (res.data) {
           this.event = res.data.event;
           this.plan = res.data.plan;
-          console.log(this.plan)
           if (this.plan && this.plan.user.id === this.loginedUserId) {
             this.isPlanCreator = true;
           } else {
@@ -348,7 +452,6 @@ export default {
           }
           if (this.event && this.event.user) {
             this.isPlanCreatorApproval = this.event.user.find(e => e.id === this.loginedUserId) !== null && this.isPlanCreator;
-            console.log(this.isPlanCreator)
             this.isCurrentUserApproval = this.event.user.find(e => e.id === this.loginedUserId);
           }
           this.getData();
@@ -369,12 +472,18 @@ export default {
       this.planService.getEventResult(this.event.work_plan_event_id).then(res => {
         if (res.data) {
           this.resultData = res.data;
+
           if (this.resultData.result_text != null) {
             this.resultData.result_text.map(e => {
               e.isActive = false;
             });
           }
           this.fact = this.resultData.fact;
+          this.resultData.forEach(e => {
+            if (e.plan_event_result_history && e.plan_event_result_history.some(x => (x.state_id === 5 || x.state_id === 6))) {
+              this.hasResultToApprove = !this.isPlanCreator && e.plan_event_result_history.some(x => (x.state_id === 5 || x.state_id === 6))
+            }
+          })
         }
       }).catch(error => {
         if (error.response && error.response.status === 401) {
@@ -387,6 +496,7 @@ export default {
           });
         }
       });
+
     },
     initMenu() {
       let menu = [
@@ -395,7 +505,7 @@ export default {
           icon: "pi pi-fw pi-refresh",
           command: () => {
             this.getEvent();
-            this.$toast.add({severity: 'success', detail: this.$t('common.success'), life: 3000});
+            this.$toast.add({ severity: 'success', detail: this.$t('common.success'), life: 3000 });
           },
         },
         {
@@ -406,21 +516,29 @@ export default {
             this.saveResult();
           },
         },
-        {
-          label: this.$t('common.toCorrect'),
-          icon: "pi pi-fw pi-send",
-          disabled: !this.resultData,
-          visible: !this.authUser.mainPosition.department.isFaculty,
-          command: () => {
-            this.sendResultForVerification();
-          },
-        },
+        // {
+        //   label: this.$t('common.toCorrect'),
+        //   icon: "pi pi-fw pi-send",
+        //   disabled: !this.resultData,
+        //   visible: !this.authUser.mainPosition.department.isFaculty,
+        //   command: () => {
+        //     this.sendResultForVerification();
+        //   },
+        // },
       ];
       return menu;
     },
     saveResult() {
+      this.submitted = true
       this.isBlockUI = true;
       const fd = new FormData();
+
+      if (this.isSciencePlan && this.inputWordCount < 100) {
+        this.$toast.add({ severity: 'warn', detail: this.$t('workPlan.minWordCount', 100), life: 3000 })
+        this.isBlockUI = false;
+        return;
+      }
+
       fd.append('work_plan_event_id', this.event.work_plan_event_id);
       fd.append('result', this.plan.is_oper ? this.newResult ? this.newResult : "" : this.result);
       if (this.plan && this.plan.is_oper) {
@@ -451,18 +569,12 @@ export default {
           this.isBlockUI = false;
         }
         this.files = [];
-        this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
+        this.submitted = false
+        this.$toast.add({ severity: 'success', detail: this.$t('common.done'), life: 3000 });
       }).catch(error => {
         this.isBlockUI = false;
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
+        this.submitted = false
+        this.$toast.add({severity: "error", summary: error, life: 3000});
       });
     },
     sendResultForVerification() {
@@ -472,7 +584,7 @@ export default {
       }
       this.planService.sendResultToVerify(data).then(res => {
         if (res.data.is_success) {
-          this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
+          this.$toast.add({ severity: 'success', detail: this.$t('common.done'), life: 3000 });
           this.getEvent();
         }
       }).catch(error => {
@@ -488,24 +600,34 @@ export default {
       });
     },
     getResultHistory() {
-      this.planService.getEventResultHistory(this.resultData.event_result_id).then(res => {
-        if (res.data) {
-          this.history = res.data;
-        }
-      }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
-      });
+      this.history = this.resultData
+      // this.planService.getEventResultHistory(this.resultData[0].event_result_id).then(res => {
+      //   if (res.data) {
+      //     console.log(res.data);
+      //     this.history = res.data;
+      //   }
+      // }).catch(error => {
+      //   if (error.response && error.response.status === 401) {
+      //     this.$store.dispatch("logLout");
+      //   } else {
+      //     this.$toast.add({
+      //       severity: "error",
+      //       summary: error,
+      //       life: 3000,
+      //     });
+      //   }
+      // });
     },
     showToCorrectSidebar() {
       this.toCorrectSidebar = true;
+    },
+    showToCorrectSidebarNew(resultUserID, resultID) {
+      this.toCorrectSidebar = true;
+      // this.rejectResultId = parseInt(resultID);
+      // this.resultUserId = parseInt(resultUserID)
+      this.isInspected = false;
+      this.resultUserId = parseInt(resultUserID)
+      this.eventResultId = parseInt(resultID)
     },
     verify(status) {
       const data = {};
@@ -540,6 +662,80 @@ export default {
         }
       });
     },
+    verifyHistory(isInspected, userId, resultId) {
+      // const data = {};
+      // data.is_success = status;
+      // data.event_id = this.event.work_plan_event_id;
+      // if (!status) {
+      //   data.comment = this.rejectComment;
+      //   data.result_id = this.resultData.event_result_id;
+      // }
+
+      let comment = "";
+      if (this.isInspected) {
+        comment = this.rejectComment
+      }
+
+      this.planService.verifyEventResultHistory(this.isInspected, comment, this.resultUserId, this.user_id, this.eventResultId).then(res => {
+        if (res.data) {
+          //this.toCorrectSidebar = false;
+          this.$toast.add({
+            severity: 'success',
+            summary: this.$t('common.success'),
+            life: 3000,
+          });
+          this.getEvent();
+          //this.$router.push({name: 'WorkPlanEvent', params: {id: this.event.work_plan_id}});
+        }
+      }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+      });
+    },
+    confirmToInspected(isInspected, userId, resultId) {
+      this.isInspected = true;
+      this.resultUserId = userId;
+      this.eventResultId = resultId;
+      this.$confirm.require({
+        target: event.currentTarget,
+        message: this.$t('common.confirmation'),
+        header: this.$t('common.confirm'),
+        group: 'deleteResult',
+        icon: 'pi pi-info-circle',
+        acceptClass: 'p-button-rounded p-button-success',
+        rejectClass: 'p-button-rounded p-button-danger',
+        accept: () => {
+          this.verifyHistory(this.isInspected, null, this.resultUserId, this.user_id, this.eventResultId);
+        }
+      });
+    },
+    confirmToRevision() {
+      this.isInspected = false;
+
+      // this.resultUserId = userId;
+      // this.eventResultId = resultId;
+      this.$confirm.require({
+        target: event.currentTarget,
+        message: this.$t('common.confirmation'),
+        header: this.$t('common.confirm'),
+        group: 'deleteResult',
+        icon: 'pi pi-info-circle',
+        acceptClass: 'p-button-rounded p-button-success',
+        rejectClass: 'p-button-rounded p-button-danger',
+        accept: () => {
+          this.verifyHistory(this.isInspected, null, this.resultUserId, this.user_id, this.eventResultId);
+          this.toCorrectSidebar = false;
+        }
+      });
+
+    },
     changeTab() {
       if (this.activeIndex === 1) {
         this.getResultHistory();
@@ -572,11 +768,11 @@ export default {
       this.selectedUsers = null;
     },
     navigateToBack() {
-      this.$router.push({name: 'WorkPlanEvent', params: {id: this.plan.work_plan_id}});
+      this.$router.push({ name: 'WorkPlanEvent', params: { id: this.plan.work_plan_id } });
     },
     uploadFile(event) {
       /*this.file = event.files[0];*/
-      if (event.files.length > 5) {
+      if (event.files.length > 10) {
         this.$toast.add({
           severity: "info",
           summary: this.$t('workPlan.message.maxFileUploadSize'),
@@ -585,12 +781,20 @@ export default {
         this.clearFiles();
         return;
       }
-      this.files = [];
-      let files = event.files;
-      for (let file of files) {
+      // this.files = [];
+      // let files = event.files;
+      // for (let file of files) {
+      //   this.files.push(file);
+      // }
+      // this.clearFiles();
+
+      // this.files = [];
+      // let files = event.files;
+      for (let file of event.files) {
         this.files.push(file);
       }
       this.clearFiles();
+      this.isDisabled = false;
 
     },
     resizeArea() {
@@ -618,16 +822,23 @@ export default {
     saveEditResult(item) {
       this.loading = true;
       const fd = new FormData();
-      fd.append("result_id", Number(this.resultData.event_result_id))
-      fd.append("result_text_id", Number(item.id))
-      fd.append("work_plan_event_id", this.event.work_plan_event_id)
+      fd.append("result_id", item.event_result_id)//Number(this.resultData.event_result_id))
+      fd.append("result_text_id", item.result_text[0].id)//Number(item.id))
+      fd.append("work_plan_event_id", item.work_plan_event_id)//this.event.work_plan_event_id)
       if (this.isFactChanged)
         fd.append("fact", this.fact)
-      fd.append("text", item.text)
+      fd.append("text", item.result_text[0].text)
+      if (this.files.length > 0) {
+        for (let file of this.files) {
+          fd.append('files', file, this.authUser.fullName.replace(/ /g, '_') + "_" + file.name)
+        }
+      }
+      //console.log("files: ", fd.files);
       this.planService.editEventResult(fd).then(res => {
         if (res.data.is_success) {
           this.getEvent();
-          this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
+          this.files = [];
+          this.$toast.add({ severity: 'success', detail: this.$t('common.done'), life: 3000 });
           item.isActive = false;
           this.loading = false;
         }
@@ -657,7 +868,7 @@ export default {
         acceptClass: 'p-button-rounded p-button-success',
         rejectClass: 'p-button-rounded p-button-danger',
         accept: () => {
-          this.deleteItem(item.id);
+          this.deleteItem(item.event_result_id);
         }
       });
     },
@@ -665,7 +876,7 @@ export default {
       this.planService.deleteEventResult(id).then(res => {
         if (res.data.is_success) {
           this.getEvent();
-          this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
+          this.$toast.add({ severity: 'success', detail: this.$t('common.done'), life: 3000 });
         }
       }).catch((error) => {
         if (error.response && error.response.status === 401) {
@@ -693,11 +904,12 @@ export default {
         }
       });
     },
+
     deleteFile(id) {
       this.planService.deleteResultFile(id).then(res => {
         if (res.data.is_success) {
           this.getEvent();
-          this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
+          this.$toast.add({ severity: 'success', detail: this.$t('common.done'), life: 3000 });
         }
       }).catch((error) => {
         if (error.response && error.response.status === 401) {
@@ -738,28 +950,64 @@ export default {
         method: 'GET',
         headers: getHeader()
       })
-          .then(response => response.blob())
-          .then(blob => {
-            var url = window.URL.createObjectURL(blob);
-            var a = document.createElement('a');
-            a.href = url;
-            a.download = file.file_name;
-            document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
-            a.click();
-            a.remove();
-            this.isBlockUI = false;
-          }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
+        .then(response => response.blob())
+        .then(blob => {
+          var url = window.URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url;
+          a.download = file.file_name;
+          document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
+          a.click();
+          a.remove();
+          this.isBlockUI = false;
+        }).catch(error => {
+          if (error.response && error.response.status === 401) {
+            this.$store.dispatch("logLout");
+          } else {
+            this.$toast.add({
+              severity: "error",
+              summary: error,
+              life: 3000,
+            });
+          }
+          this.isBlockUI = false;
+        });
+    },
+    getResultStatus(code) {
+      const foundStatus = this.resultStatus.find(status => status.id === code);
+
+      if (foundStatus) {
+        switch (this.$i18n.locale) {
+          case "kz":
+            return foundStatus.name_kz;
+          case "ru":
+            return foundStatus.name_ru;
+          case "en":
+            return foundStatus.name_en;
+          default:
+            return null;
         }
-        this.isBlockUI = false;
-      });
+      } else {
+        return null;
+      }
+    },
+    getHistoryStatus(code) {
+      const foundStatus = this.historyStatus.find(status => status.id === code);
+
+      if (foundStatus) {
+        switch (this.$i18n.locale) {
+          case "kz":
+            return foundStatus.name_kz;
+          case "ru":
+            return foundStatus.name_ru;
+          case "en":
+            return foundStatus.name_en;
+          default:
+            return null;
+        }
+      } else {
+        return null;
+      }
     },
   }
 }
@@ -776,12 +1024,12 @@ export default {
   padding: 5px;
 }
 
-.p-fileupload-row > div {
+.p-fileupload-row>div {
   flex: 1 1 auto;
   width: 25%;
 }
 
-.p-fileupload-row > div:last-child {
+.p-fileupload-row>div:last-child {
   text-align: right;
 }
 
@@ -822,6 +1070,11 @@ export default {
   display: inline-block;
   text-align: center;
 
+  &.status-7 {
+    background: #10b981;
+    color: #fff;
+  }
+
   &.status-6 {
     background: #FFCDD2;
     color: #C63737;
@@ -858,5 +1111,17 @@ export default {
 
 ::v-deep(.p-divider-solid.p-divider-horizontal:before) {
   border-top-style: solid !important;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  border-bottom: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
 }
 </style>

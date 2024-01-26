@@ -1237,7 +1237,7 @@ export default {
             reportSentToApprove: "Отчет успешно отправлен на согласование",
             planSentToApprove: "План отправлен на корректировку",
             planCreated: "План успешно создан",
-            maxFileUploadSize: "Невозможно загрузить более 5 файлов"
+            maxFileUploadSize: "Вы не можете загружать более 10 файлов одновременно"
         },
         reportTypes: {
             year: "Годовой",
@@ -1252,7 +1252,15 @@ export default {
         simplePlan: "План",
         operationalPlan: "Операционный план",
         planType: "Тип плана",
-        myPlans: "Мои планы"
+        myPlans: "Мои планы",
+        plancontractname: "Наименование договора",
+        plancontractnumber: "Номер договора",
+        plancontractdate: "Дата договора",
+        plancontractprioruty: "По приоритету",
+        plancontracttopic: "По теме",
+        scienceParticipants: "Участники проекта",
+        generateAct: "Сформировать акт",
+        minWordCount: "Должно быть не менее 100 слов"
     },
     educomplex: {
         title: "Учебно-методический комплекс дисциплины",

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div ref="toPdf" class="WordSection1 grid" v-if="plan && !plan.is_oper">
+    <div ref="toPdf" class="WordSection1 grid" v-if="plan && plan.plan_type.id === 1">
       <h5 style="width: 100%;text-align: center;font-size: 14.0pt;text-transform: uppercase;font-weight: bold;">
         {{ reportTitle }}</h5>
       <br/>
@@ -56,7 +56,7 @@
         </table>
       </div>
     </div>
-    <div ref="toPdf" class="grid" v-if="plan && plan.is_oper">
+    <div ref="toPdf" class="grid" v-if="plan && plan.plan_type.id === 2">
       <div class="WordSection1">
         <h5 style="width: 100%;text-align: center;font-size: 14.0pt;text-transform: uppercase;font-weight: 700;">
           {{ reportTitle }}</h5>
@@ -131,6 +131,16 @@
             </tr>
             </tbody>
           </table>
+        </div>
+      </div>
+    </div>
+    <div ref="toPdf" class="grid" v-if="plan && plan.plan_type.id === 3">
+      <div class="WordSection1">
+        <h5 style="width: 100%;text-align: center;font-size: 14.0pt;text-transform: uppercase;font-weight: 700;">
+          {{ reportTitle }}</h5>
+        <br/>
+        <div class="col-12">
+          <p style="text-align: center;"><strong>Орындалған жұмыстар актісі</strong></p>
         </div>
       </div>
     </div>

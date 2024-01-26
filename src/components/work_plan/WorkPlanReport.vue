@@ -1,7 +1,7 @@
 <template>
-  <div class="col-12">
-    <h3 v-if="plan"><TitleBlock :title="plan.work_plan_name" :show-back-button="true" /></h3>
-    <div class="card" v-if="isPlanCreator">
+  <div class="col-12" v-if="plan">
+    <TitleBlock v-if="plan" :title="plan.work_plan_name" :show-back-button="true" />
+    <div class="card" v-if="showCreateReportButton">
       <WorkPlanReportModal :plan-id="this.work_plan_id" :plan="plan"></WorkPlanReportModal>
     </div>
     <div class="card">
@@ -26,11 +26,9 @@
         </Column>
         <Column field="status" :header="$t('common.status')">
           <template #body="slotProps">
-            <span
-                :class="'customer-badge status-' + slotProps.data.status.work_plan_status_id">
-              {{
-                $i18n.locale === "kz" ? slotProps.data.status.name_kk : $i18n.locale === "ru" ? slotProps.data.status.name_ru : slotProps.data.status.name_en
-              }}</span>
+            <span v-if="slotProps.data.doc_info && slotProps.data.doc_info.docHistory" :class="'customer-badge status-' + slotProps.data.doc_info.docHistory.stateEn">
+              {{ $t('common.states.' + slotProps.data.doc_info?.docHistory.stateEn) }}
+            </span>
           </template>
         </Column>
         <Column :header="$t('common.type')">
@@ -55,7 +53,7 @@
         </Column>
         <Column>
           <template #body="{ data }">
-            <Button type="button" v-if="data.creator_id === loginedUserId && data.status.work_plan_status_id === 1"
+            <Button type="button" v-if="data.creator_id === loginedUserId && (data.doc_info && data.doc_info.docHistory.stateId === 1)"
                     icon="pi pi-trash" class="p-button-danger mr-2"
                     label="" @click="deleteConfirm(data)"></Button>
           </template>
@@ -71,6 +69,7 @@ import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
 import moment from "moment/moment";
 import {WorkPlanService} from "@/service/work.plan.service";
+import Enum from "@/enum/workplan";
 
 export default {
   name: "WorkPlanReport",
@@ -78,13 +77,22 @@ export default {
   data() {
     return {
       data: null,
-      work_plan_id: null,
+      work_plan_id: parseInt(this.$route.params.id),
       plan: null,
       isPlanCreator: false,
       loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID,
+      loginedUser: JSON.parse(localStorage.getItem("loginedUser")),
       loading: false,
       planService: new WorkPlanService()
     }
+  },
+  computed: {
+    isSciencePlan() {
+      return this.plan && this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Science
+    },
+    showCreateReportButton() {
+      return this.plan && (this.isPlanCreator || this.getResponsiveUser());
+    },
   },
   mounted() {
     this.emitter.on("isReportCreated", (data) => {
@@ -95,7 +103,6 @@ export default {
     });
   },
   created() {
-    this.work_plan_id = this.$route.params.id;
     this.getPlan();
     this.getReports();
   },
@@ -127,15 +134,7 @@ export default {
           }
         }
       }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
+        this.$toast.add({severity: "error", summary: error, life: 3000});
       });
     },
     navigate(data) {
@@ -207,6 +206,9 @@ export default {
           break;
       }
       return result;
+    },
+    getResponsiveUser(){
+      return this.plan.responsive_users.some(user => user.id === this.loginedUser.userID)
     },
     initQuarter(quarter) {
       let res = '';

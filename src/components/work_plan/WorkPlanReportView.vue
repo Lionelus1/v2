@@ -1,99 +1,84 @@
 <template>
-  <vue-element-loading :active="loading" is-full-screen color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)"/>
+  <vue-element-loading :active="loading" is-full-screen color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)" />
   <div>
-    <div class="col-12">
-      <div class="card" v-if="isPlanCreator && !isReportSentApproval">
-        <WorkPlanReportApprove :doc-id="report.doc_id" :report="report_id"></WorkPlanReportApprove>
+    <div class="col-12" v-if="report && plan">
+      <div class="card" v-if="report && report?.doc_info">
+        <div>
+          <TitleBlock :title="report.report_name" :show-back-button="true" />
+          <span v-if="report" :class="'ml-3 customer-badge status-' + report?.doc_info.docHistory.stateEn">
+            {{ $t('common.states.' + report?.doc_info.docHistory.stateEn) }}
+          </span>
+        </div>
+      </div>
+      <div class="card" v-if="report && report?.doc_info && !(report?.doc_info.docHistory.stateId === 1 || report?.doc_info.docHistory.stateId === 4)">
+        <Button type="button" icon="pi pi-eye" class="p-button-outlined" :label="$t('educomplex.tooltip.document')" @click="openDoc"></Button>
+      </div>
+      <div class="card" v-if="!isReportSentApproval && visibleSendToApprove">
+        <Button type="button" icon="pi pi-send" class="p-button-success ml-2" :label="$t('common.toapprove')"
+                @click="openModal"></Button>
+        <!--        <Button type="button" icon="pi pi-send" class="p-button-success ml-2" :label="$t('common.toapprove')" @click="openModal"></Button>-->
+        <WorkPlanReportApprove v-if="showModal" :report-fd="this.fd" :visible="showModal" :doc-id="report.doc_id" :approvalStages="approval_users" :report="report" :plan="plan"
+                               @sent-to-approve="getReport" @closed="closeApproveModal" />
         <!--        <Button label="" icon="pi pi-download" @click="download"
                         class="p-button p-button-info ml-2"/>-->
       </div>
-      <div class="card" v-if="isPlanReportApproved && (isPlanCreator || (isApproval || isCurrentUserApproved))">
-        <Button :label="$t('common.signatures')" icon="pi pi-file"
-                @click="viewSignatures"
-                class="p-button ml-2"/>
-        <Button label="" icon="pi pi-download" v-if="plan && plan.is_oper"
-                @click="downloadWord"
-                class="p-button p-button-info ml-2"/>
-      </div>
-      <div class="card" v-if="!isPlanReportApproved && isReportSentApproval">
-        <Button v-if="isApproval && !isRejected" :label="$t('common.action.approve')" icon="pi pi-check"
-                @click="openApprovePlan"
-                class="p-button p-button-success ml-2"/>
-        <Button v-if="isApproval && !isRejected" :label="$t('workPlan.toCorrect')" icon="pi pi-check"
-                @click="openRejectPlan"
-                class="p-button p-button-danger ml-2"/>
-      </div>
-      <div class="card" v-if="approval_users && report && report.status">
-        <h5><TitleBlock :title="report.report_name" :show-back-button="true" />
-          <span v-if="report" :class="'customer-badge status-' + report.status.work_plan_status_id">
-              {{
-              $i18n.locale === "kz" ? report.status.name_kk : $i18n.locale === "ru" ? report.status.name_ru : report.status.name_en
-            }}
-        </span>
-        </h5>
-        <Timeline :value="approvals">
-          <template #content="slotProps">
-            <div v-for="(item, index) of slotProps.item" :key="index">
-              {{ item.user.fullName }}
-              <i v-if="item.is_success" class="pi pi-check-circle ml-2 p-message-success"
-                 style="font-size: 1.2rem;color: #3eaf7c"></i>
-              <i v-if="!item.is_success" class="pi pi-spinner ml-2" style="font-size: 1.2rem;color: #c63737"></i>
-            </div>
-          </template>
-        </Timeline>
-      </div>
-      <div class="card" v-if="blobSource">
-        <!--        <object src="#toolbar=0" style="width: 100%; height: 1000px" v-if="source" type="application/pdf"
-                        :data="source"></object>-->
-        <embed :src="blobSource" style="width: 100%; height: 1000px" type="application/pdf"/>
+<!--      <div class="card" v-if="blobSource">-->
+<!--      Уақытша -->
+      <div class="card" v-if="blobSource && !(isSciencePlan && report?.doc_info && report?.doc_info.docHistory && report?.doc_info.docHistory.stateId === 4)">
+        <embed :src="blobSource" style="width: 100%; height: 1000px" type="application/pdf" />
       </div>
     </div>
 
     <div v-if="items">
-      <ReportPdf ref="report" :data="items" :report-title="report.report_name" :plan="plan"
-                 style="display: none;"></ReportPdf>
+      <ReportPdf ref="report" :data="items" :report-title="report.report_name" :plan="plan" style="display: none;"></ReportPdf>
     </div>
 
-    <Dialog :header="$t('workPlan.toCorrect')" v-model:visible="showRejectPlan" :style="{width: '450px'}"
-            class="p-fluid">
+    <Dialog :header="$t('workPlan.toCorrect')" v-model:visible="showRejectPlan" :style="{ width: '450px' }" class="p-fluid">
       <div class="field">
         <label>{{ $t('common.comment') }}</label>
         <Textarea inputId="textarea" rows="3" cols="30" v-model="rejectComment"></Textarea>
       </div>
       <template #footer>
-        <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
-                @click="closeModal"/>
-        <Button :label="$t('common.send')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2"
-                @click="rejectPlan"/>
+        <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger" @click="closeModal" />
+        <Button :label="$t('common.send')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2" @click="rejectPlan" />
       </template>
     </Dialog>
   </div>
+
+  <Sidebar v-model:visible="showReportDocInfo" position="right" class="p-sidebar-lg" style="overflow-y: scroll" @hide="closeSideModal">
+    <DocSignaturesInfo :docIdParam="report.doc_id" :isInsideSidebar="true" @sentToRevision="rejectPlanReport($event)"></DocSignaturesInfo>
+  </Sidebar>
 </template>
 
 <script>
 import axios from "axios";
 import html2pdf from "html2pdf.js";
 import ReportPdf from "./RerportPdf";
-import {getHeader, signerApi, smartEnuApi} from "@/config/config";
+import { getHeader, signerApi, smartEnuApi } from "@/config/config";
 import treeToList from "@/service/treeToList";
 import WorkPlanReportApprove from "@/components/work_plan/WorkPlanReportApprove";
-import {NCALayerClient} from "ncalayer-js-client";
-import {runNCaLayer} from "../../helpers/SignDocFunctions";
-import DocSignaturesInfo from "../documents/DocInfo";
-import {WorkPlanService} from "@/service/work.plan.service";
+import { NCALayerClient } from "ncalayer-js-client";
+import { runNCaLayer } from "../../helpers/SignDocFunctions";
+import { WorkPlanService } from "@/service/work.plan.service";
+import Enum from "@/enum/workplan";
+import DocSignaturesInfo from "@/components/DocSignaturesInfo.vue";
 
 export default {
   name: "WorkPlanReportView",
-  components: {WorkPlanReportApprove, ReportPdf},
+  components: { WorkPlanReportApprove, ReportPdf, DocSignaturesInfo },
   props: ['id'],
   data() {
+    const loginedUser = JSON.parse(localStorage.getItem("loginedUser"));
     return {
+      loginedUser: loginedUser,
       source: null,
+      showModal: false,
+      showReportDocInfo: false,
       blobSource: null,
       document: null,
       isApproval: false,
       isRejected: false,
-      loginedUserId: 0,
+      loginedUserId: loginedUser.userID,
       plan: null,
       rejectComment: "",
       showRejectPlan: false,
@@ -102,17 +87,10 @@ export default {
       isApproved: false,
       quarter: null,
       items: null,
-      report_id: null,
+      report_id: parseInt(this.$route.params.id),
       doc_id: null,
-      report: {
-        work_plan_id: null,
-        quarter: null,
-        report_name: null,
-        report_type: null,
-        doc_id: null,
-        halfYearType: null,
-        respUserId: null
-      },
+      work_plan_id: null,
+      report: null,
       isPlanCreator: false,
       pdfOptions: {
         margin: 0.5,
@@ -120,7 +98,7 @@ export default {
           type: 'jpeg',
           quality: 0.98,
         },
-        html2canvas: {scale: 2.8,},
+        html2canvas: { scale: 2.8, },
         jsPDF: {
           unit: 'in',
           format: 'letter',
@@ -132,6 +110,8 @@ export default {
         filename: "work_plan_report.pdf",
       },
       approval_users: [],
+      respUsers: [],
+      planCreator: null,
       approvals: [],
       reject: {
         report_id: 0,
@@ -142,23 +122,12 @@ export default {
       isReportSentApproval: false,
       isCurrentUserApproved: false,
       isPlanReportApproved: false,
+      isPlanReportRevision: false,
       loading: false,
-      planService: new WorkPlanService()
+      planService: new WorkPlanService(),
+      fd: new FormData(),
+      isSciencePlan: false
     }
-  },
-  created() {
-    this.report_id = parseInt(this.$route.params.id);
-    this.report.work_plan_id = parseInt(this.$route.params.work_plan_id);
-    this.report.quarter = parseInt(this.$route.params.quarter);
-    this.report.report_name = this.$route.params.name;
-    this.report.report_type = parseInt(this.$route.params.type);
-    this.report.doc_id = this.$route.params.doc_id;
-    this.report.halfYearType = this.$route.params.halfYearType;
-    this.report.department_id = this.$route.params.department_id;
-    this.loginedUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
-    //this.plan = JSON.parse(localStorage.getItem("workPlan"));
-    //this.getReport();
-    this.getReport();
   },
   mounted() {
     this.emitter.on("reportSentToApprove", (data) => {
@@ -166,36 +135,60 @@ export default {
         this.getReport();
       }
     });
+    //this.work_plan_id = parseInt(this.report.work_plan_id);
+    //this.getRespUsers(this.report.work_plan_id);
   },
+  computed: {
+    visibleSendToApprove() {
+      return ((this.loginedUser && this.respUsers.some(user => user.id === this.loginedUser.userID)) || this.isPlanCreator) && (this.report && this.report.doc_info && (this.report.doc_info.docHistory.stateId === 1 || this.report.doc_info.docHistory.stateId === 4));
+    },
+
+
+
+  },
+  created() {
+    this.getReport();
+    if (this.doc_info && this.doc_info.docHistory.stateId === 4){
+      this.isPlanReportRevision = true
+    }
+  },
+
   methods: {
+    closeSideModal() {
+      this.showReportDocInfo = false;
+      this.$emit('closed', true)
+    },
     getPlan() {
       this.planService.getPlanById(this.report.work_plan_id).then(res => {
         if (res.data) {
           this.plan = res.data;
           if (this.plan && this.plan.user.id === this.loginedUserId) {
             this.isPlanCreator = true;
+            this.planCreator = this.plan.user.id
+            this.isSciencePlan = this.plan && this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Science
           }
           //this.getFile();
         }
       }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
+        this.$toast.add({ severity: "error", summary: error, life: 3000 });
+      });
+    },
+    getRespUsers() {
+      this.planService.getRespUsers(this.report.work_plan_id).then(res => {
+        this.respUsers = res.data
+      }).catch(error => {
+        console.log(error);
+        this.$toast.add({ severity: "error", summary: error, life: 3000 });
       });
     },
     getReport() {
       this.planService.getPlanReportById(this.report_id).then(res => {
         this.report = res.data;
         this.getPlan();
+        //this.getRespUsers();
         this.getFile();
         this.getReportApprovalUsers();
-        this.getSignatures();
+        this.getRespUsers()
       }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
@@ -210,7 +203,7 @@ export default {
     },
     getFile() {
       this.planService.getPlanReportFile(this.report.doc_id).then(res => {
-        if (res.data) {
+        if (res.data && this.report && this.report.doc_info.docHistory.stateId !== 4) {
           this.source = `data:application/pdf;base64,${res.data}`;
           this.blobSource = URL.createObjectURL(this.b64toBlob(res.data));
           this.document = res.data;
@@ -271,7 +264,7 @@ export default {
         if (!this.source) {
           this.$nextTick(() => {
             this.getGeneratedPdf();
-            //this.initReportFile();
+            this.initReportFile();
             this.loading = false;
           });
         }
@@ -345,7 +338,7 @@ export default {
       }
     },
     getSignatures() {
-      let data = {doc_id: this.report.doc_id};
+      let data = { doc_id: this.report.doc_id };
       this.planService.getSignatures(data).then(res => {
         if (res.data) {
           this.signatures = res.data;
@@ -370,14 +363,14 @@ export default {
     },
     openApprovePlan() {
       runNCaLayer(this.$t, this.$toast, this.document, 'cms', null, false, this.$i18n.locale)
-          .then(sign => {
-            if (sign !== undefined) {
-              this.CMSSignature = sign;
-              this.sendSignature();
-            }
-          }).catch(error => {
-        this.$toast.add({severity: 'error', summary: error, life: 3000});
-      });
+        .then(sign => {
+          if (sign !== undefined) {
+            this.CMSSignature = sign;
+            this.sendSignature();
+          }
+        }).catch(error => {
+          this.$toast.add({ severity: 'error', summary: error, life: 3000 });
+        });
     },
     sendSignature() {
       let data = {
@@ -417,7 +410,7 @@ export default {
         }
       });
     },
-    rejectPlan() {
+    rejectPlanReport() {
       if (this.rejectComment) {
         this.reject.comment = this.rejectComment;
       }
@@ -428,7 +421,7 @@ export default {
         if (res.data.is_success) {
           this.showRejectPlan = false;
           this.emitter.emit("planRejected", true);
-          this.$router.push({name: 'WorkPlanReport', params: {id: this.report.work_plan_id}});
+          this.$router.push({ name: 'WorkPlanReport', params: { id: this.report.work_plan_id } });
         }
       }).catch(error => {
         if (error.response && error.response.status === 401) {
@@ -447,12 +440,12 @@ export default {
       const header = `<html>`;
       const html = this.$refs.report.$refs.toPdf.innerHTML;
       let css = (
-          '<style>' +
-          '@page WordSection1{size: 841.9pt 595.3pt;mso-page-orientation: landscape;}' +
-          'div.WordSection1 {page:WordSection1;}' +
-          'table{width:100%;border-collapse:collapse;border:1px gray solid;font-size: 10.0pt !important;}td{border:1px gray solid;padding:0cm 5.4pt 0cm 5.4pt;}' +
-          '.header {font-weight: bold}' +
-          '</style>'
+        '<style>' +
+        '@page WordSection1{size: 841.9pt 595.3pt;mso-page-orientation: landscape;}' +
+        'div.WordSection1 {page:WordSection1;}' +
+        'table{width:100%;border-collapse:collapse;border:1px gray solid;font-size: 10.0pt !important;}td{border:1px gray solid;padding:0cm 5.4pt 0cm 5.4pt;}' +
+        '.header {font-weight: bold}' +
+        '</style>'
       );
 
       let blob = new Blob(['\ufeff', header + css + '</head><body>' + html + "</body></html>"], {
@@ -472,10 +465,8 @@ export default {
         this.blobSource = URL.createObjectURL(blob);
         this.source = "data:application/pdf;base64," + res.data;
         this.document = res.data;
-        const fd = new FormData();
-        fd.append('file', blob);
-        fd.append('filename', this.pdfOptions.filename)
-        this.emitter.emit("reportFD", fd);
+        this.fd.append('file', blob);
+        this.fd.append('filename', this.pdfOptions.filename)
       }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
@@ -504,7 +495,7 @@ export default {
         byteArrays.push(byteArray);
       }
 
-      const blob = new Blob(byteArrays, {type: "application/pdf"});
+      const blob = new Blob(byteArrays, { type: "application/pdf" });
       return blob;
     },
     viewSignatures() {
@@ -516,11 +507,70 @@ export default {
     closeModal() {
       this.showRejectPlan = false;
     },
+    openModal() {
+      this.showModal = true;
+      if (this.plan.plan_type.id === 2 && !this.isPlanCreator) {
+        this.approval_users = [
+          {
+            stage: 1,
+            users: [this.loginedUser],
+            titleRu: "",
+            titleKz: "",
+            titleEn: "",
+            certificate: {
+              namekz: "Жеке тұлғаның сертификаты",
+              nameru: "Сертификат физического лица",
+              nameen: "Certificate of an individual",
+              value: "individual"
+            }
+          },
+          {
+            stage: 2,
+            users: [],
+            titleRu: "",
+            titleKz: "",
+            titleEn: "",
+            certificate: {
+              namekz: "Жеке тұлғаның сертификаты",
+              nameru: "Сертификат физического лица",
+              nameen: "Certificate of an individual",
+              value: "individual"
+            }
+          }
+        ]
+      } else {
+        this.approval_users = [
+          {
+            stage: 1,
+            users: [this.loginedUser],
+            titleRu: "",
+            titleKz: "",
+            titleEn: "",
+            certificate: {
+              namekz: "Жеке тұлғаның сертификаты",
+              nameru: "Сертификат физического лица",
+              nameen: "Certificate of an individual",
+              value: "individual"
+            }
+          }
+        ]
+      }
+
+    },
+    openDoc() {
+      this.showReportDocInfo = true;
+    },
+    reloadPage() {
+      window.location.reload();
+    },
+    closeApproveModal() {
+      this.showModal = false
+    }
   }
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 ::v-deep(.p-timeline-event-opposite) {
   flex: 0;
 }

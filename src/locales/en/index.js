@@ -1208,7 +1208,7 @@ export default {
             reportSentToApprove: "The report was successfully sent for approval",
             planSentToApprove: "Plan sent for revision",
             planCreated: "Plan successfully created",
-            maxFileUploadSize: "Can't upload more than 5 files"
+            maxFileUploadSize: "You cannot upload more than 10 files at once"
         },
         reportTypes: {
             year: "Annual",
@@ -1223,7 +1223,15 @@ export default {
         simplePlan: "Plan",
         operationalPlan: "Operational Plan",
         planType: "Plan Type",
-        myPlans: "My Plans"
+        myPlans: "My Plans",
+        plancontractname: "Name of the contract",
+        plancontractnumber: "Contract number",
+        plancontractdate: "Contract date",
+        plancontractprioruty: "By priority",
+        plancontracttopic: "On topic",
+        scienceParticipants: "Project participants",
+        generateAct: "Form an act",
+        minWordCount: "It should be at least 100 words"
     },
     queue: {
 

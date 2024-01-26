@@ -5,6 +5,7 @@
       <WorkPlanAdd v-model="isAdded" />
     </div>
     <div class="card">
+
       <DataTable :lazy="true" :rowsPerPageOptions="[5, 10, 20, 50]" :value="data" dataKey="id" :rowHover="true"
         v-model:filters="filters" filterDisplay="menu" :loading="loading" responsiveLayout="scroll" :paginator="true"
         :rows="10" :totalRecords="total" @page="onPage"
@@ -15,20 +16,18 @@
             <Button type="button" icon="fa-solid fa-filter" @click="toggle('global-filter', $event)" aria:haspopup="true"
               aria-controls="overlay_panel" class="p-button-outlined mr-2" />
             <OverlayPanel ref="global-filter">
-              <div v-for="text in workplan_radio_options" :key="text" class="flex align-items-center">
+              <div v-for="(item, index) in types" :key="index" class="flex align-items-center">
                 <div class="field-radiobutton">
-                  <RadioButton v-model="selectedPlanType" :value="text.value" />
-                  <label :for="text" class="ml-2">{{ text.text }}</label>
+                  <RadioButton v-model="selectedPlanType" :value="item.id" />
+                  <label :for="item" class="ml-2">{{ item['name_' + $i18n.locale] }}</label>
                 </div>
               </div>
               <div class="p-fluid">
                 <div class="field">
-                  <br />
-
-                  <Button icon="pi pi-trash" class="ml-1" @click="clearPlanTypeFilter()" :label="$t('common.clear')" />
+                  <Button icon="pi pi-search" :label="$t('common.search')" class="ml-1" @click="setPlanType(null)" />
                 </div>
                 <div class="field">
-                  <Button icon="pi pi-search" :label="$t('common.search')" class="ml-1" @click="setPlanType(null)" />
+                  <Button icon="pi pi-trash" class="ml-1" @click="clearPlanTypeFilter()" :label="$t('common.clear')" />
                 </div>
               </div>
             </OverlayPanel>
@@ -50,10 +49,9 @@
 
         <Column field="status" :header="$t('common.status')">
           <template #body="{ data }">
-            <span :class="'customer-badge status-' + data.status.work_plan_status_id">{{
-              $i18n.locale === "kz" ? data.status.name_kk : $i18n.locale === "ru" ? data.status.name_ru :
-              data.status.name_en
-            }}</span>
+            <span :class="'customer-badge status-' + data.doc_info.docHistory.stateEn">
+              {{ getDocStatus(data.doc_info.docHistory.stateEn) }}
+          </span>
           </template>
         </Column>
         <Column field="user" :header="$t('common.created')">
@@ -63,8 +61,8 @@
         </Column>
         <Column field="status" :header="$t('workPlan.planType')" v-if="isAdmin">
           <template #body="{ data }">
-            <span class="customer-badge" :class="{ 'operational-plan': data.is_oper, 'simple-plan': !data.is_oper }">
-              {{ data.is_oper ? $t('workPlan.operationalPlan') : $t('workPlan.simplePlan') }}
+            <span :class="'customer-badge ' + data.plan_type.code">
+              {{ data.plan_type['name_' + $i18n.locale] }}
             </span>
           </template>
         </Column>
@@ -135,8 +133,7 @@ export default {
         rows: 10,
         searchText: null,
         filter: {
-          is_plan: null,
-          is_oper_plan: null,
+          plan_type: null,
           user_id: null,
         }
       },
@@ -157,6 +154,20 @@ export default {
         },
 
       ],
+      docStatus: [
+        { name_kz: "құрылды", name_en: "created", name_ru: "создан", code: "created" },
+        { name_kz: "келісуде", name_en: "inapproval", name_ru: "на согласовании", code: "inapproval" },
+        { name_kz: "келісілді", name_en: "approved", name_ru: "согласован", code: "approved" },
+        { name_kz: "түзетуге", name_en: "revision", name_ru: "на доработку", code: "revision" },
+        { name_kz: "қайтарылды", name_en: "rejected", name_ru: "отклонен", code: "rejected" },
+        { name_kz: "қол қоюда", name_en: "signing", name_ru: "на подписи", code: "signing" },
+        { name_kz: "қол қойылды", name_en: "signed", name_ru: "подписан", code: "signed" },
+        { name_kz: "қайта бекітуге жіберілді", name_en: "sent for re-approval", name_ru: "отправлен на переутверждение", code: "sent for re-approval" },
+        { name_kz: "жаңартылды", name_en: "updated", name_ru: "обновлен", code: "updated" },
+        { name_kz: "берілді", name_en: "issued", name_ru: "выдан", code: "issued" },
+      ],
+      selectedDocStatus: null,
+      types: []
     }
   },
   mounted() {
@@ -175,6 +186,7 @@ export default {
   created() {
     this.isAdmin = this.findRole(null, 'main_administrator')
     this.getPlans();
+    this.getWorkPlanTypes()
   },
   methods: {
     findRole: findRole,
@@ -306,21 +318,35 @@ export default {
       this.getPlans();
     },
     setPlanType() {
-      if (this.selectedPlanType === "simple_plan") {
-        this.lazyParams.filter.is_plan = true
-        this.lazyParams.filter.is_oper_plan = null
-      }
-      if (this.selectedPlanType === "oper_plan") {
-        this.lazyParams.filter.is_plan = null
-        this.lazyParams.filter.is_oper_plan = true
-
-      }
-      if(this.selectedPlanType === "my_plan"){
-        this.lazyParams.filter.user_id = this.loginedUserId
-        this.lazyParams.filter.is_plan = null
-        this.lazyParams.filter.is_oper_plan = null
-      }
+      this.lazyParams.filter.plan_type = this.selectedPlanType
       this.getPlans();
+    },
+    getDocStatus(code) {
+      const foundStatus = this.docStatus.find(status => status.code === code);
+
+      if (foundStatus) {
+        switch (this.$i18n.locale) {
+          case "kz":
+            return foundStatus.name_kz;
+          case "ru":
+            return foundStatus.name_ru;
+          case "en":
+            return foundStatus.name_en;
+          default:
+            return null;
+        }
+      } else {
+        return null;
+      }
+    },
+    getWorkPlanTypes() {
+      this.types = []
+      this.planService.getWorkPlanTypes().then(res => {
+        this.types = res.data
+        this.types.push({id: 4, code: 'mine', name_kz: 'Менің жоспарларым', name_ru: 'Мои планы', name_en: 'My Plans'})
+      }).catch(error => {
+        this.$toast.add({severity: "error", summary: error, life: 3000});
+      })
     },
   }
 }
@@ -362,9 +388,16 @@ export default {
     border-radius: 3px;
   }
 
-  &.simple-plan {
+  &.standart {
     background-color: #10b981;
     color: #ffffff;
+    font-weight: 500;
+    border-radius: 3px;
+  }
+
+  &.science {
+    background: #3588a8;
+    color: #fff;
     font-weight: 500;
     border-radius: 3px;
   }
