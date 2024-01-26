@@ -1,9 +1,10 @@
 <template>
-  <div class="toolbar_menu" ref="containerRef" :class="{ 'scrollable': isScrollable && !search }">
+  <div class="toolbar_menu card p-0 mb-3" ref="containerRef" :class="{ 'scrollable': isScrollable && !search }">
     <Button v-if="isScrollable && !search" :class="['scroll-left']" icon="pi pi-angle-left" @click="scrollLeft"/>
     <div :class="['justify-content-between', {'flex': search},{'inline-flex': isScrollable && !search}]">
       <div v-if="search && isScrollable">
         <Button
+            class="p-button-text p-button-secondary"
             icon="pi pi-bars"
             @click="onClick($event)"
             aria-haspopup="true"
@@ -21,8 +22,13 @@
               @click="i.command(index)" />
         </template>
       </div>
-      <div>
-        <span class="p-input-icon-left" v-if="search">
+      <div class="flex" v-if="search">
+        <Button
+            class="p-button-text p-button-secondary"
+            icon="fa-solid fa-filter"
+            @click="onClick($event)"/>
+        <div class="vertical_line"></div>
+        <span class="p-input-icon-left">
                 <i class="pi pi-search"/>
                 <InputText
                     class="search_toolbar"
@@ -83,29 +89,31 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .toolbar_menu {
-  margin-bottom: 30px;
   position: relative;
   white-space: nowrap;
   max-width: 100%;
   background: #fff;
   color: #495057;
-  border: 1px solid #dee2e6;
+  //border: 1px solid #dee2e6;
   border-radius: 3px;
 
   .p-button.p-button-outlined {
     color: #495057;
     border: none;
-
   }
 
   .p-button.p-button-outlined:hover {
     background: #d0f1ff;
   }
 }
+.vertical_line{
+  margin: 5px 5px;
+  padding: 5px 1px;
+  border-right: 1px solid #ccc;
+}
+
 .search_toolbar{
-  border-bottom: none;
-  border-top: none;
-  border-right: none;
+  border: none;
 }
 .scroll-left,
 .scroll-right {
