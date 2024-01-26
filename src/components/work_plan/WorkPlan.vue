@@ -430,7 +430,7 @@ export default {
     color: #bfc9d1;
   }
 
-  &.oper {
+  &.oper  {
     background-color: #3B82F6;
     color: #ffffff;
     font-weight: 500;
