@@ -560,7 +560,9 @@ export default {
           this.isPlanCreator = false;
           //this.$router.push('/work-plan')
         }
-        this.getRelatedFiles()
+        if (this.isSciencePlan) {
+          this.getRelatedFiles()
+        }
         this.isPlanApproved = this.plan.doc_info?.docHistory.stateEn == "approved"
       }).catch(error => {
         if (error.response && error.response.status === 401) {
