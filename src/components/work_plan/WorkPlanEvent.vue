@@ -40,9 +40,12 @@
                            :plan-data="plan"></work-plan-event-add>
       <Button v-if="isPlanCreator && !isFinish" :label="$t('common.complete')" icon="pi pi-check" @click="finish"
               class="p-button-sm p-button-danger ml-2"/>
-      <work-plan-approve v-if="plan.doc_info && plan.doc_info.docHistory && (plan.doc_info?.docHistory?.stateId === 1 || plan.doc_info?.docHistory?.stateId === 4) && isPlanCreator && isFinish" :plan="plan" :events="data"
-                         @isSent="planSentToApprove"></work-plan-approve>
-      <Button v-if="isFinish && plan.doc_info && plan.doc_info.docHistory && !(plan.doc_info?.docHistory?.stateId === 1 || plan.doc_info?.docHistory?.stateId === 4)" :label="$t('workPlan.viewPlan')" icon="pi pi-eye" @click="signView"
+      <work-plan-approve
+          v-if="plan.doc_info && plan.doc_info.docHistory && (plan.doc_info?.docHistory?.stateId === 1 || plan.doc_info?.docHistory?.stateId === 4) && isPlanCreator && isFinish"
+          :plan="plan" :events="data"
+          @isSent="planSentToApprove"></work-plan-approve>
+      <Button v-if="isFinish && plan.doc_info && plan.doc_info.docHistory && !(plan.doc_info?.docHistory?.stateId === 1 || plan.doc_info?.docHistory?.stateId === 4)"
+              :label="$t('workPlan.viewPlan')" icon="pi pi-eye" @click="signView"
               class="p-button-sm p-button-outlined ml-2"/>
       <Button v-if="isFinish && (isApproval || isPlanCreator || isAdmin) && (plan.doc_info?.docHistory?.stateId === 3)" :label="$t('workPlan.reports')"
               @click="navigateToReports" class="p-button-sm p-button-outlined ml-2"/>
@@ -53,6 +56,10 @@
       <WorkPlanReportApprove v-if="showReportModal && scienceReport && plan" :approval-stages="approval_users" :visible="showReportModal && scienceReport"
                              :doc-id="scienceReport.doc_id" :report="scienceReport" :plan="plan"></WorkPlanReportApprove>
 
+      <Button v-if="isSciencePlan && scienceDocs" :label="$t('contracts.contract')" class="p-button-sm p-button-outlined ml-2" icon="fa-solid fa-download"
+              @click="downloadContract('contract')"/>
+      <Button v-if="isSciencePlan && scienceDocs" :label="$t('common.additionalInfo')" class="p-button-sm p-button-outlined ml-2" icon="fa-solid fa-download"
+              @click="downloadContract('additional')"/>
     </div>
     <div class="card" v-if="plan">
 
@@ -242,7 +249,7 @@
 
 <script>
 import WorkPlanEventAdd from "@/components/work_plan/WorkPlanEventAdd";
-import {findRole} from "@/config/config";
+import {fileRoute, findRole, smartEnuApi} from "@/config/config";
 import WorkPlanApprove from "@/components/work_plan/WorkPlanApprove";
 import WorkPlanEventEditModal from "@/components/work_plan/WorkPlanEventEditModal";
 import moment from "moment";
@@ -251,7 +258,9 @@ import {WorkPlanService} from "@/service/work.plan.service";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo"
 import WorkPlanEventResult from "@/components/work_plan/WorkPlanEventResult.vue";
 import Enum from "@/enum/workplan/index"
+import DocEnum from "@/enum/docstates/index"
 import WorkPlanReportApprove from "@/components/work_plan/WorkPlanReportApprove.vue";
+import {DocService} from "@/service/doc.service";
 
 export default {
   name: "WorkPlanEvent",
@@ -371,7 +380,10 @@ export default {
       ],
       planService: new WorkPlanService(),
       selectedEvent: null,
-      scienceReport: null
+      scienceReport: null,
+      docService: new DocService(),
+      scienceDocs: null,
+      docEnum: DocEnum
     }
   },
   created() {
@@ -548,6 +560,7 @@ export default {
           this.isPlanCreator = false;
           //this.$router.push('/work-plan')
         }
+        this.getRelatedFiles()
         this.isPlanApproved = this.plan.doc_info?.docHistory.stateEn == "approved"
       }).catch(error => {
         if (error.response && error.response.status === 401) {
@@ -560,6 +573,13 @@ export default {
           });
         }
       });
+    },
+    getRelatedFiles() {
+      this.docService.getRelatedDocs({fileID: this.plan.doc_info.id, uuid: null}).then(response => {
+        this.scienceDocs = response.data;
+      }).catch(_ => {
+        this.uploading = false;
+      })
     },
     finish() {
       this.planService.finishEvent(this.work_plan_id).then(res => {
@@ -846,6 +866,31 @@ export default {
         this.loading = false;
       })
     },
+    downloadContract(type) {
+      let url = ""
+      if (this.scienceDocs) {
+        this.scienceDocs.forEach(e => {
+          if (type === "contract" && e.docType === this.docEnum.DocType.Contract) {
+            url = e.filePath;
+            return
+          }
+
+          if (type === "additional" && e.docType === this.docEnum.DocType.RelatedDoc) {
+            url = e.filePath;
+            return
+          }
+        })
+      }
+
+      url = smartEnuApi + fileRoute + url
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", url);
+      link.download = url;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }
   },
   /*unmounted() {
     localStorage.removeItem("workPlan");
