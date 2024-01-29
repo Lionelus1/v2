@@ -1,20 +1,17 @@
 <template>
     <ProgressSpinner v-if="loading" class="progress-spinner" strokeWidth="5"/>
-    <div id="carddiv" class="grid">
-        <div class="card">
-            <div class="grid formgrid">
-                <DataTable :value="editionsRequest" :paginator="true" @page="editionTableOnPageEditionRequest($event)" 
-                :rows="10" :totalRecords="totalRequest" :lazy="true">
-                    <Column :field="'name_'+($i18n.locale)" :header="$t('science.edition')"></Column>
-                    
-                    <Column field="create_date" :header="$t('common.date')"></Column>
-                    
-                    <Column :field="'status.name_'+($i18n.locale)" :header="$t('contracts.columns.status')">
-                    </Column>
 
-                </DataTable>
-            </div>
-        </div>
+    <div class="card">
+        <DataTable :value="editionsRequest" :paginator="true" @page="editionTableOnPageEditionRequest($event)" 
+        :rows="10" :totalRecords="totalRequest" :lazy="true">
+            <Column :field="'name_'+($i18n.locale)" :header="$t('science.edition')"></Column>
+            
+            <Column field="create_date" :header="$t('common.date')"></Column>
+            
+            <Column :field="'status.name_'+($i18n.locale)" :header="$t('contracts.columns.status')">
+            </Column>
+
+        </DataTable>
     </div>
 
     
