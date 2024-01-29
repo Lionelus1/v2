@@ -1,15 +1,12 @@
 <template>
   <ConfirmPopup></ConfirmPopup>
   <div class="flex align-items-center content_title">
-    <TitleBlock :title="$t('fieldEducation.title') + ': ' + title" :show-back-button="true"/>
+    <TitleBlock v-if="title" :title="$t('fieldEducation.title') + ': ' + title" :show-back-button="true"/>
+    <TitleBlock v-else :title="$t('fieldEducation.title') + ': ' + $t('common.all')" :show-back-button="true"/>
   </div>
   <div class="card p-5">
-    <div class="right mb-4">
-      <Button v-if="findRole(null,'online_course_administrator')" @click="goToAdd()" icon="pi pi-plus-circle" :label="$t('fieldEducation.addCourse')" />
-      <Button class="ml-2" icon="pi pi-filter" :label="$t('common.filter')" />
-    </div>
-    <div class="course_grid">
-      <div class="grid_item_rating" v-for="(item, index) in courses" :key="index">
+    <div class="">
+<!--      <div class="grid_item_rating" v-for="(item, index) in courses" :key="index">
         <img :src="item.filePath" alt="" @click="selectCourse(item)">
         <div class="text p-3 cursor-pointer" @click="selectCourse(item)">
           <h5 class="title font-semibold" :title="item['name' + $i18n.locale]">{{ item['name' + $i18n.locale] }}</h5>
@@ -27,9 +24,140 @@
           </div>
           </div>
         </div>
-      </div>
+      </div>-->
+      <template v-if="allCourses">
+        <DataView :value="allCourses.courses" :layout="layout" :loading="loading" :lazy="true" :paginator="true"
+                  :rows="lazyParams.rows" @page="onPage($event)" :totalRecords="total" :first="first">
+          <template #header>
+            <div class="flex justify-content-between">
+              <Button v-if="findRole(null,'online_course_administrator')" @click="goToAdd()" icon="pi pi-plus-circle" :label="$t('fieldEducation.addCourse')" />
+              <DataViewLayoutOptions v-model="layout" />
+            </div>
+          </template>
+
+          <template #list="slotProps">
+              <div class="col-12">
+                <div class="flex flex-column sm:flex-row sm:align-items-center p-3 gap-3">
+                  <div class="md:w-10rem relative">
+                    <div class="cursor-pointer" v-if="slotProps.data.logo" @click="selectCourse(slotProps.data)">
+                      <img class="border-round w-full" src="https://thesette.co/wp-content/uploads/sites/9173/2017/09/graduation-cap.png"/>
+                    </div>
+                    <div v-else class="cursor-pointer flex justify-content-center bg-blue-50 py-5" @click="selectCourse(slotProps.data)">
+                      <i class="fa-solid fa-chalkboard-user size text-blue-100" style="font-size: 30px"></i>
+                    </div>
+                  </div>
+                  <div class="flex flex-column md:flex-row justify-content-between md:align-items-center flex-1 gap-4">
+                    <div class="flex flex-row md:flex-column justify-content-between align-items-start gap-2">
+                      <div>
+                        <span class="font-medium text-secondary text-sm" v-if="slotProps.data.AutorFullName">
+                          {{ $t('fieldEducation.courseAuthor') }}: {{ slotProps.data.AutorFullName }}
+                        </span>
+                        <div>
+                        <div @click="selectCourse(slotProps.data)" v-if="slotProps.data['name' + $i18n.locale]" class="title cursor-pointer text-lg font-medium text-900 mt-1 mb-2" :title="slotProps.data['name' + $i18n.locale]">
+                          {{ slotProps.data['name' + $i18n.locale] }}
+                        </div>
+                        <div @click="selectCourse(slotProps.data)" v-else class="cursor-pointer title text-lg font-medium text-900 mt-2 mb-2" :title="slotProps.data['description' + $i18n.locale]">
+                          {{ slotProps.data['description' + $i18n.locale] }}
+                        </div>
+                        </div>
+                      </div>
+                      <div class="surface-100 p-1" style="border-radius: 30px">
+                        <div class="surface-0 flex align-items-center gap-2 justify-content-center py-1 px-2" style="border-radius: 30px; box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.04), 0px 1px 2px 0px rgba(0, 0, 0, 0.06)">
+                          <i class="pi pi-star-fill text-yellow-500"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="flex flex-column md:align-items-end gap-5">
+                      <div class="flex align-items-center">
+                        <span class="font-medium text-secondary text-sm mr-2" v-if="slotProps.data.history[0].createDate">
+                          {{ formatDateMoment(slotProps.data.history[0].createDate) }}
+                        </span>
+                        <Tag v-if="slotProps.data.history[0].state" :value="slotProps.data.history[0].state['name' + $i18n.locale]" severity="success"></Tag>
+                      </div>
+                      <div class="flex flex-row-reverse md:flex-row gap-2">
+                        <div class="icons">
+                          <i v-if="findRole(null,'online_course_administrator')" class="pi pi-pencil text-primary-500 cursor-pointer mr-4" @click="editCourse(slotProps.data.id)"></i>
+                          <i v-if="findRole(null,'online_course_administrator')" class="pi pi-trash text-red-500 cursor-pointer" @click="deleteCourse(slotProps.data.id)"></i>
+                          <!--                          <i class="pi pi-list"></i>-->
+                        </div>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+          </template>
+
+          <template #grid="slotProps">
+              <div class="col-12 sm:col-6 md:col-4 xl:col-3 p-2">
+                <div class="course_grid_card p-3 border-1 surface-border surface-card border-round flex flex-column justify-content-between">
+                  <div class="cursor-pointer" @click="selectCourse(slotProps.data)">
+                  <div class="" v-if="slotProps.data.logo">
+                      <img style="height: 170px" class="border-round w-full" src="https://thesette.co/wp-content/uploads/sites/9173/2017/09/graduation-cap.png"/>
+                  </div>
+                  <div v-else class="flex justify-content-center bg-blue-50 py-8 cursor-pointer" @click="selectCourse(slotProps.data)">
+                    <i class="fa-solid fa-chalkboard-user size text-blue-100" style="font-size: 30px"></i>
+                  </div>
+                  </div>
+                  <div class="pt-3">
+                    <div class="flex flex-row justify-content-between align-items-start gap-2">
+                      <div>
+                        <span class="font-medium text-secondary text-sm" v-if="slotProps.data.AutorFullName">
+                          {{ $t('fieldEducation.courseAuthor') }}: {{ slotProps.data.AutorFullName }}
+                        </span>
+                        <div v-if="slotProps.data['name' + $i18n.locale]" class="title cursor-pointer text-lg font-medium text-900 mt-1 mb-2"
+                             @click="selectCourse(slotProps.data)" :title="slotProps.data['name' + $i18n.locale]">
+                          {{ slotProps.data['name' + $i18n.locale] }}
+                        </div>
+                        <div v-else class="title cursor-pointer text-lg font-medium text-900 mt-1 mb-2" :title="slotProps.data['description' + $i18n.locale]" @click="selectCourse(slotProps.data)">
+                          {{ slotProps.data['description' + $i18n.locale] }}
+                        </div>
+                        <span class="font-medium text-secondary text-sm" v-if="slotProps.data.history[0].createDate">
+                          {{ formatDateMoment(slotProps.data.history[0].createDate) }}
+                        </span>
+                      </div>
+                    </div>
+                    <div class="flex flex-column gap-4 mt-auto">
+                      <div class="surface-100 p-1 w-fit" style="border-radius: 30px">
+                        <div class="surface-0 flex align-items-center gap-2 justify-content-center py-1 px-2" style="border-radius: 30px; box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.04), 0px 1px 2px 0px rgba(0, 0, 0, 0.06)">
+                          <i class="pi pi-star-fill text-yellow-500"></i>
+                        </div>
+                      </div>
+                      <div class="flex justify-content-between align-items-center">
+                        <Tag v-if="slotProps.data.history[0].state" :value="slotProps.data.history[0].state['name' + $i18n.locale]" severity="success"></Tag>
+                        <div class="icons">
+                          <i v-if="findRole(null,'online_course_administrator')" class="pi pi-pencil text-primary-500 cursor-pointer mr-4" @click="editCourse(slotProps.data.id)"></i>
+                          <i v-if="findRole(null,'online_course_administrator')" class="pi pi-trash text-red-500 cursor-pointer" @click="deleteCourse(slotProps.data.id)"></i>
+<!--                          <i class="pi pi-list"></i>-->
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+          </template>
+        </DataView>
+<!--      <div class="grid_item_rating" v-for="(item, index) in allCourses" :key="index">
+        <img :src="item.filePath" alt="" @click="selectCourse(item)">
+        <div class="text p-3 cursor-pointer" @click="selectCourse(item)">
+          <h5 class="title font-semibold" :title="item['name' + $i18n.locale]">{{ item['name' + $i18n.locale] }}</h5>
+          <p>{{ $t('fieldEducation.courseAuthor') }}: {{ item.AutorFullName }}</p>
+          <p>{{ formatDateMoment(item.createDate) }}</p>
+        </div>
+        <div class="grid_footer p-3">
+          <p><i class="pi pi-star-fill text-yellow-500"></i> 4,9</p>
+          <div class="flex justify-content-between align-items-center">
+            <Tag v-if="item.status" :value="item.status[0]['name' + $i18n.locale]" severity="success"></Tag>
+            <div class="icons">
+              <i v-if="findRole(null,'online_course_administrator')" class="pi pi-pencil text-primary-500 cursor-pointer mr-4" @click="editCourse(item.id)"></i>
+              <i v-if="findRole(null,'online_course_administrator')" class="pi pi-trash text-red-500 cursor-pointer mr-4" @click="deleteCourse(item.id)"></i>
+              <i class="pi pi-list"></i>
+            </div>
+          </div>
+        </div>
+      </div>-->
+      </template>
     </div>
-    <div v-if="!courses.length" class="text-center">{{ $t('common.noData') }}</div>
+    <div v-if="!courses.length && allCourses" class="text-center">{{ $t('common.noData') }}</div>
   </div>
 
 </template>
@@ -56,8 +184,15 @@ export default {
         Rows: 10,
         categoryID: this.$route.params.categoryID != undefined ? Number(this.$route.params.categoryID) : null,
       },
+      lazyParams: {
+        page: 0,
+        rows: 10,
+        categoryID: this.$route.params.categoryID != undefined ? Number(this.$route.params.categoryID) : null,
+      },
+      first: null,
       category: null,
       courses: [],
+      allCourses: [],
       course: null,
       total: 0,
       layout: 'grid',
@@ -71,6 +206,7 @@ export default {
   created() {
     this.fieldId = parseInt(this.$route.params.courseID)
     this.getCourses();
+    this.getAllCourses();
   },
   watch: {
     $route(to, from) {
@@ -96,6 +232,22 @@ export default {
           }).catch(_ => {
             this.loading = false
           });
+    },
+    getAllCourses() {
+      this.service.getCourses(this.lazyParams).then(response => {
+        this.allCourses = response.data
+        this.total = response.data.total
+        this.allCourses.map(e => {
+          e.filePath = smartEnuApi + fileRoute + e.logo
+        });
+      }).catch(_ => {
+      });
+    },
+    onPage(event){
+      this.lazyParams.page = event.page
+      this.lazyParams.rows = event.rows
+      this.first = event.first
+      this.getAllCourses();
     },
     selectCourse(course) {
       this.$router.push('/course/' + course.id)
@@ -167,15 +319,18 @@ export default {
     position: absolute;
     bottom: 0;
   }
-  .title{
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    display: -webkit-box;
-    display: -moz-box;
-    overflow: hidden;
-  }
-}
 
+}
+.course_grid_card{
+  min-height: 364px;
+}
+.title{
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  display: -webkit-box;
+  display: -moz-box;
+  overflow: hidden;
+}
 .item {
   transition: width 1s ease;
   height: 150px;

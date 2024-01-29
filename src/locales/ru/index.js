@@ -159,6 +159,7 @@ export default {
         refinf: "Справочная информация",
         registration: "Регистрация",
         total: "Всего",
+        all: "Все",
         register: "Зарегистрироваться",
         registered: "Зарегистрированы",
         reserve: "Зарезервировать",
