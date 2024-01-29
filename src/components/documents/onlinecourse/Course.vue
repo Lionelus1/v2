@@ -1,7 +1,7 @@
 <template>
     <div v-if="course">
         <BlockUI :blocked="saving" :fullScreen="true"></BlockUI>
-        <TitleBlock class="content_title" :title="$t('Онлайн курсы - Курсы - Наука в области химии')" :show-back-button="true"/>
+        <TitleBlock class="content_title" :title="$t('Онлайн курс')" :show-back-button="true"/>
         <div class="course_card block sm:flex p-4">
           <img :src="course.logo" alt="">
           <div class="text text-white">
