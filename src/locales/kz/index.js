@@ -1450,10 +1450,6 @@ export default {
         failedToDelete: 'Жазба өшірілмеді',
         failedToLoad: 'Деректерді жүктеу сәтсіз аяқталды',
         rolePosRel: 'Позиция басқару',
-        givePosRel: 'Жаңа позиция',
-        departmentName: 'Бөлім атауы',
-        positionName: 'Позиция атауы',
-        selectDep: 'Бөлімді таңдаңыз',
 
         departmentRoleRel: 'Департамент-ролді басқару',
         giveDepartmentRoleRel: 'Жаңа Департамент-роль қарым-қатынасын беру',
