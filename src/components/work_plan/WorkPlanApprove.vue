@@ -1,11 +1,4 @@
 <template>
-  <Button
-      type="button"
-      icon="pi pi-send"
-      class="p-button-sm p-button-outlined ml-2"
-      :label="$t('common.action.sendToApprove')"
-      @click="openModal"
-  ></Button>
   <PdfContent ref="pdf" v-if="data" :data="data" :planId="data.work_plan_id" :plan="plan" style="display: none;"></PdfContent>
 
   <!-- <Dialog :header="$t('common.action.sendToApprove')" v-model:visible="showModal" :style="{width: '450px'}" class="p-fluid">
@@ -43,12 +36,12 @@ import Enum from "@/enum/workplan/index"
 export default {
   name: "WorkPlanApprove",
   components: {PdfContent, ApprovalUsers},
-  props: ['docId', 'plan', 'events'],
-  emits: ['isSent'],
+  props: ['visible', 'docId', 'plan', 'events'],
+  emits: ['isSent', 'hide'],
   data() {
     return {
       data: this.plan,
-      showModal: false,
+      showModal: this.visible,
       selectedUsers: null,
       steps: 3,
       step: 1,
@@ -79,15 +72,11 @@ export default {
   },
   created() {
     this.loginedUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
+    this.approveComponentKey++;
   },
   methods: {
-    openModal() {
-      //this.initStage();
-      this.showModal = true;
-      this.approveComponentKey++;
-    },
     closeModal() {
-      this.showModal = false;
+      this.$emit('hide')
     },
     approve(event) {
       this.approval_users = event

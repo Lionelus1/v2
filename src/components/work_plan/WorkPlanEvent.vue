@@ -36,16 +36,16 @@
       </div>
     </div>
     <div class="card" v-if="plan">
-      <work-plan-event-add v-if="(isPlanCreator || isCreator || isEventsNull) && !isFinish" :items="data" :isMain="true"
-                           :plan-data="plan"></work-plan-event-add>
+      <Button v-if="((isPlanCreator || isCreator || isEventsNull) && !isFinish)"
+              :label="$t('common.add')" icon="pi pi-plus" @click="showDialog(dialog.add)"
+              class="p-button-sm ml-2"/>
+      <Button v-if="plan && plan.doc_info && plan.doc_info?.docHistory && (plan.doc_info?.docHistory?.stateId === 1 || plan.doc_info?.docHistory?.stateId === 4) && isPlanCreator && isFinish"
+          type="button" icon="pi pi-send" class="p-button-sm p-button-outlined ml-2"
+          :label="$t('common.action.sendToApprove')" @click="showDialog(dialog.planApprove)"></Button>
       <Button v-if="isPlanCreator && !isFinish" :label="$t('common.complete')" icon="pi pi-check" @click="finish"
-              class="p-button-sm p-button-danger ml-2"/>
-      <work-plan-approve
-          v-if="plan.doc_info && plan.doc_info.docHistory && (plan.doc_info?.docHistory?.stateId === 1 || plan.doc_info?.docHistory?.stateId === 4) && isPlanCreator && isFinish"
-          :plan="plan" :events="data"
-          @isSent="planSentToApprove"></work-plan-approve>
+              class="p-button-sm p-button-success ml-2"/>
       <Button v-if="isFinish && plan.doc_info && plan.doc_info.docHistory && !(plan.doc_info?.docHistory?.stateId === 1 || plan.doc_info?.docHistory?.stateId === 4)"
-              :label="$t('workPlan.viewPlan')" icon="pi pi-eye" @click="signView"
+              :label="$t('workPlan.viewPlan')" icon="pi pi-eye" @click="showDialog(dialog.planView)"
               class="p-button-sm p-button-outlined ml-2"/>
       <Button v-if="isFinish && (isApproval || isPlanCreator || isAdmin) && (plan.doc_info?.docHistory?.stateId === 3)" :label="$t('workPlan.reports')"
               @click="navigateToReports" class="p-button-sm p-button-outlined ml-2"/>
@@ -53,8 +53,6 @@
               @click="generateScienceReport" class="p-button-sm p-button-outlined ml-2"/>
       <!--      <WorkPlanReportApprove v-if="isFinish && isPlanCreator && (plan.doc_info.docHistory.stateId === 3) && (plan.plan_type && plan.plan_type.code === Enum.WorkPlanTypes.Science)" :label="$t('workPlan.generateAct')"-->
       <!--                             :doc-id="report.doc_id" :report="report_id"></WorkPlanReportApprove>-->
-      <WorkPlanReportApprove v-if="showReportModal && scienceReport && plan" :approval-stages="approval_users" :visible="showReportModal && scienceReport"
-                             :doc-id="scienceReport.doc_id" :report="scienceReport" :plan="plan"></WorkPlanReportApprove>
 
       <Button v-if="isSciencePlan && scienceDocs && scienceDocs.some(e => e.docType === docEnum.DocType.Contract)" :label="$t('contracts.contract')" class="p-button-sm p-button-outlined ml-2" icon="fa-solid fa-download"
               @click="downloadContract('contract')"/>
@@ -209,19 +207,7 @@
               <!--                      class="mr-2" icon="pi pi-check" label=""-->
               <!--                      severity="success"/>-->
               <!--              (parseInt(node.quarter.String) === currentQuarter || parseInt(node.quarter.String) === 5)-->
-              <Button v-if="(isPlanCreator || isUserApproval(node)) && (plan.doc_info && plan.doc_info.docHistory && plan.doc_info?.docHistory?.stateId === 3) &&
-                (node.status.work_plan_event_status_id === 1 ||
-                  node.status.work_plan_event_status_id === 4 ||
-                  node.status.work_plan_event_status_id === 5 ||
-                  node.status.work_plan_event_status_id === 6 ||
-                  node.status.work_plan_event_status_id === 8)" label="" icon="pi pi-eye" @click="openPlanExecuteSidebar(node)" class="mr-2"/>
-
-              <work-plan-event-add v-if="(isPlanCreator || isUserResp(node.user)) && !isPlanSentApproval && !isFinish" :data="node" :items="node.children" :isMain="false"
-                                   :plan-data="plan"></work-plan-event-add>
-              <work-plan-event-edit-modal v-if="(isPlanCreator || isCreator) && !isPlanSentApproval && !isFinish" :planData="plan"
-                                          :event="node"></work-plan-event-edit-modal>
-              <Button v-if="isPlanCreator && !isPlanSentApproval && !isFinish" @click="remove_event(node.work_plan_event_id)" icon="pi pi-trash"
-                      class="p-button-danger ml-1 mt-1" label=""></Button>
+              <ActionButton :items="initItems" :show-label="true" @toggle="actionsToggle(node)" />
             </div>
           </template>
         </Column>
@@ -237,14 +223,23 @@
     </div>
   </div>
 
-  <Sidebar v-model:visible="showReportDoc" position="right" class="p-sidebar-lg" style="overflow-y: scroll">
+  <Sidebar v-model:visible="dialog.planView.state" position="right" class="p-sidebar-lg" style="overflow-y: scroll" @hide="hideDialog(dialog.planView)">
     <DocSignaturesInfo :docIdParam="plan.doc_id" :isInsideSidebar="true" @sentToRevision="rejectPlan($event)"></DocSignaturesInfo>
   </Sidebar>
 
-  <Sidebar v-model:visible="isShowPlanExecute" position="right" style="overflow-y: scroll; width: 50%;" v-if="isShowPlanExecute && selectedEvent"
-           @hide="hide">
-    <WorkPlanEventResult :result-id="selectedEvent.work_plan_event_id"/>
+  <Sidebar v-model:visible="isShowPlanExecute" position="right" style="overflow-y: scroll; width: 50%;"
+           @hide="closePlanExecuteSidebar">
+    <WorkPlanEventResult v-if="isShowPlanExecute && selectedEvent" :result-id="selectedEvent.work_plan_event_id"/>
   </Sidebar>
+
+  <work-plan-event-add v-if="dialog.add.state" :visible="dialog.add.state" :data="selectedEvent" :items="selectedEvent ? selectedEvent.children : null" :isMain="!!selectedEvent"
+                       :plan-data="plan" @hide="hideDialog(dialog.add)" />
+  <work-plan-event-edit-modal v-if="dialog.edit.state" :visible="dialog.edit.state" :planData="plan"
+                              :event="selectedEvent" @hide="hideDialog(dialog.edit)" />
+  <WorkPlanReportApprove v-if="showReportModal && scienceReport && plan" :approval-stages="approval_users" :visible="showReportModal && scienceReport"
+                         :doc-id="scienceReport.doc_id" :report="scienceReport" :plan="plan"></WorkPlanReportApprove>
+  <work-plan-approve v-if="dialog.planApprove.state" :visible="dialog.planApprove.state"
+      :plan="plan" :events="data" @hide="hideDialog(dialog.planApprove)" @isSent="planSentToApprove"></work-plan-approve>
 </template>
 
 <script>
@@ -261,6 +256,7 @@ import Enum from "@/enum/workplan/index"
 import DocEnum from "@/enum/docstates/index"
 import WorkPlanReportApprove from "@/components/work_plan/WorkPlanReportApprove.vue";
 import {DocService} from "@/service/doc.service";
+import ActionButton from "@/components/ActionButton.vue";
 
 export default {
   name: "WorkPlanEvent",
@@ -272,7 +268,7 @@ export default {
     WorkPlanEventAdd,
     // WorkPlanEventResultModal,
     DocSignaturesInfo,
-    // ActionButton
+    ActionButton
   },
   data() {
     return {
@@ -383,7 +379,27 @@ export default {
       scienceReport: null,
       docService: new DocService(),
       scienceDocs: null,
-      docEnum: DocEnum
+      docEnum: DocEnum,
+      dialog: {
+        add: {
+          state: false
+        },
+        edit: {
+          state: false
+        },
+        remove: {
+          state: false
+        },
+        planApprove: {
+          state: false
+        },
+        reportApprove: {
+          state: false
+        },
+        planView: {
+          state: false
+        }
+      }
     }
   },
   created() {
@@ -418,12 +434,6 @@ export default {
       }
     })
     this.emitter.on('workPlanChildEventIsDeleted', (data) => {
-      if (data) {
-        this.getPlan();
-        this.getEventsTree(this.parentNode);
-      }
-    });
-    this.emitter.on('planEventChanged', (data) => {
       if (data) {
         this.getPlan();
         this.getEventsTree(this.parentNode);
@@ -560,7 +570,9 @@ export default {
           this.isPlanCreator = false;
           //this.$router.push('/work-plan')
         }
-        this.getRelatedFiles()
+        if (this.isSciencePlan) {
+          this.getRelatedFiles()
+        }
         this.isPlanApproved = this.plan.doc_info?.docHistory.stateEn == "approved"
       }).catch(error => {
         if (error.response && error.response.status === 401) {
@@ -606,7 +618,7 @@ export default {
         }
       })
     },
-    remove_event(event_id) {
+    remove_event() {
       this.$confirm.require({
         message: this.$t('common.doYouWantDelete'),
         header: this.$t('common.delete'),
@@ -614,10 +626,7 @@ export default {
         acceptClass: 'p-button-rounded p-button-success',
         rejectClass: 'p-button-rounded p-button-danger',
         accept: () => {
-          this.remove(event_id);
-        },
-        reject: () => {
-          //callback to execute when user rejects the action
+          this.remove(this.selectedEvent.work_plan_event_id);
         }
       });
     },
@@ -715,13 +724,14 @@ export default {
               !(node.status.work_plan_event_status_id === 4 || node.status.work_plan_event_status_id === 6)) ||
           node.status.work_plan_event_status_id === 5 || node.status.work_plan_event_status_id === 2;
     },
-    openPlanExecuteSidebar(node) {
+    openPlanExecuteSidebar() {
       this.isShowPlanExecute = true;
-      this.selectedEvent = node;
     },
     closePlanExecuteSidebar() {
+      this.selectedEvent = null
       this.isShowPlanExecute = false;
       this.getEventsTree(null)
+      this.getPlan()
     },
     updateEventStatus(eventId) {
       this.planService.updateEventStatus({event_id: eventId, status_code: 2}).then(res => {
@@ -896,6 +906,25 @@ export default {
       link.download = url;
       link.click();
       URL.revokeObjectURL(link.href);
+    },
+    actionsToggle(node) {
+      this.selectedEvent = node
+    },
+    showDialog(dialog) {
+      dialog.state = true
+    },
+    hideDialog(dialog) {
+      this.selectedEvent = null
+      dialog.state = false
+      this.getPlan()
+      this.getEventsTree(this.parentNode)
+    },
+    canExecuteEvent() {
+      const isDocumentApproved = this.plan.doc_info?.docHistory?.stateId === 3;
+      const isStatusValid = [1, 4, 5, 6, 8].includes(this.selectedEvent.status.work_plan_event_status_id);
+      return (this.isPlanCreator || this.isUserApproval(this.selectedEvent)) &&
+          isDocumentApproved &&
+          isStatusValid;
     }
   },
   /*unmounted() {
@@ -905,27 +934,39 @@ export default {
     initItems() {
       return [
         {
+          label: this.$t('common.show'),
+          icon: 'fa-solid fa-eye',
+          disabled: !(this.selectedEvent && this.canExecuteEvent),
+          visible: this.isFinish,
+          command: () => {
+            this.openPlanExecuteSidebar()
+          }
+        },
+        {
           label: this.$t('common.add'),
           icon: 'fa-solid fa-plus',
-          visible: this.isPlanCreator && !this.isPlanSentApproval && !this.isFinish,
+          disabled: !(this.selectedEvent && (this.isPlanCreator || this.isUserResp(this.selectedEvent.user)) && !this.isPlanSentApproval && !this.isFinish),
+          visible: !this.isFinish,
           command: () => {
-            this.WorkPlanEventAdd(this.actionsNode)
+            this.showDialog(this.dialog.add)
           }
         },
         {
           label: this.$t('common.edit'),
           icon: 'fa-solid fa-pen',
-          visible: this.isPlanCreator && !this.isPlanSentApproval && !this.isFinish,
+          disabled: !((this.isPlanCreator || this.isCreator) && !this.isPlanSentApproval && !this.isFinish),
+          visible: !this.isFinish,
           command: () => {
-            this.WorkPlanEventEditModal(this.actionsNode)
+            this.showDialog(this.dialog.edit)
           }
         },
         {
           label: this.$t('common.delete'),
           icon: 'fa-solid fa-trash',
-          visible: this.isPlanCreator && !this.isPlanSentApproval && !this.isFinish,
+          disabled: !(this.isPlanCreator && !this.isPlanSentApproval && !this.isFinish),
+          visible: !this.isFinish,
           command: () => {
-            this.remove_event(this.actionsNode)
+            this.remove_event()
           }
         },
       ];

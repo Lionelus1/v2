@@ -1,8 +1,6 @@
 <template>
-  <Button label="" icon="pi pi-pencil" class="p-button-info ml-1 mt-1" @click="openBasic"/>
-
-  <Dialog v-if="showWorkPlanEventEditModal" :header="$t('workPlan.editEvent')" v-model:visible="showWorkPlanEventEditModal" :style="{width: '450px'}"
-          class="p-fluid">
+  <Dialog :header="$t('workPlan.editEvent')" v-model:visible="showWorkPlanEventEditModal" :style="{width: '450px'}"
+          class="p-fluid" @hide="closeBasic">
     <div class="field">
       <label>{{ plan && plan.is_oper ? $t('workPlan.resultIndicator') : $t('workPlan.eventName') }}</label>
       <InputText v-model="editData.event_name"/>
@@ -73,7 +71,6 @@
 </template>
 
 <script>
-import {getHeader, smartEnuApi} from "@/config/config";
 import {WorkPlanService} from "@/service/work.plan.service";
 import Enum from "@/enum/workplan/index"
 import RolesByName from "@/components/smartenu/RolesByName.vue";
@@ -81,11 +78,11 @@ import RolesByName from "@/components/smartenu/RolesByName.vue";
 export default {
   name: "WorkPlanEventEditModal",
   components: {RolesByName},
-  props: ['event', 'planData', 'parent'],
+  props: ['visible', 'event', 'planData', 'parent'],
+  emits: ['hide'],
   data() {
-    console.log(this.event)
     return {
-      showWorkPlanEventEditModal: false,
+      showWorkPlanEventEditModal: this.visible,
       editData: JSON.parse(JSON.stringify(this.event)),
       plan: this.planData,
       quarters: [
@@ -123,40 +120,34 @@ export default {
       inputSets: null,
     }
   },
-  created() {
-    //console.log(this.editData)
-  },
   mounted() {
+    if (this.editData !== null) {
+      this.selectedUsers = [];
+      this.editData.quarter = parseInt(this.editData.quarter);
+      this.editData.user.forEach(e => {
+        this.selectedUsers.push(e.user);
+      });
+      if (this.plan && this.plan.plan_type.code === this.Enum.WorkPlanTypes.Science) {
+        const roleMap = new Map();
 
+        this.editData.user.forEach(item => {
+          const {role, user} = item;
+          if (roleMap.has(role.id)) {
+            roleMap.get(role.id).users.push(user);
+          } else {
+            roleMap.set(role.id, {selectedRole: role, selectedUsers: [user]});
+          }
+        });
+        this.inputSets = Array.from(roleMap.values());
+      }
+    }
   },
   unmounted() {
+    this.showWorkPlanEventEditModal = false
   },
   methods: {
-    openBasic() {
-      this.showWorkPlanEventEditModal = true;
-      if (this.editData !== null) {
-        this.selectedUsers = [];
-        this.editData.quarter = parseInt(this.editData.quarter);
-        this.editData.user.forEach(e => {
-          this.selectedUsers.push(e.user);
-        });
-        if (this.plan && this.plan.plan_type.code === this.Enum.WorkPlanTypes.Science) {
-          const roleMap = new Map();
-
-          this.editData.user.forEach(item => {
-            const {role, user} = item;
-            if (roleMap.has(role.id)) {
-              roleMap.get(role.id).users.push(user);
-            } else {
-              roleMap.set(role.id, {selectedRole: role, selectedUsers: [user]});
-            }
-          });
-          this.inputSets = Array.from(roleMap.values());
-        }
-      }
-    },
     closeBasic() {
-      this.showWorkPlanEventEditModal = false;
+      this.$emit('hide')
     },
     edit() {
       this.submitted = true;
@@ -176,9 +167,9 @@ export default {
           return acc;
         }, []);
       } else {
-        let userIds = [];
+        userIds = [];
         this.selectedUsers.forEach(e => {
-          userIds.push(e.userID)
+          userIds.push({user: e, role: null})
         });
       }
 
@@ -190,21 +181,12 @@ export default {
             summary: this.$t('workPlan.message.eventChanged'),
             life: 3000,
           });
-          this.emitter.emit("planEventChanged", true)
           this.closeBasic();
           this.submitted = false;
         }
       }).catch(error => {
         this.submitted = false;
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
+        this.$toast.add({severity: "error", summary: error, life: 3000});
       });
     },
     notValid() {
