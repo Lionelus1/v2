@@ -1,8 +1,5 @@
 <template>
-  <Button v-if="isMain" :label="$t('workPlan.addEvent')" class="p-button-sm p-button-outlined ml-1" icon="pi pi-plus" @click="openBasic"/>
-  <Button v-else label="" class="p-button-info ml-1" icon="pi pi-plus" @click="openBasic"/>
-
-  <Dialog :header="$t('workPlan.addEvent')" v-model:visible="showWorkPlanEventModal" :style="{width: '600px'}">
+  <Dialog :header="$t('workPlan.addEvent')" v-model:visible="showWorkPlanEventModal" :style="{width: '600px'}" @hide="closeBasic" :close-on-escape="true">
     <div class="p-fluid">
       <div class="field">
         <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('workPlan.resultIndicator') : $t('workPlan.eventName') }}</label>
@@ -84,12 +81,13 @@ import RolesByName from "@/components/smartenu/RolesByName.vue";
 
 export default {
   name: 'WorkPlanEventAdd',
-  props: ['data', 'isMain', 'items', 'planData'],
+  props: ['visible', 'data', 'isMain', 'items', 'planData'],
   components: {RolesByName},
+  emits: ['hide'],
   data() {
     return {
       formData: {},
-      showWorkPlanEventModal: false,
+      showWorkPlanEventModal: this.visible,
       work_plan_id: null,
       event_name: null,
       resp_person_id: null,
@@ -166,12 +164,6 @@ export default {
     }
   },
   methods: {
-    openBasic() {
-      this.showWorkPlanEventModal = true;
-    },
-    closeBasic() {
-      this.showWorkPlanEventModal = false;
-    },
     getFullname(user) {
       if (!user) {
         return ''
@@ -254,15 +246,7 @@ export default {
         this.clearModel();
         //this.addToArray(res.data);
       }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
+        this.$toast.add({severity: "error", summary: error, life: 3000});
       });
     },
     addToArray(data) {
@@ -296,6 +280,10 @@ export default {
       this.inputSets = [{ selectedUsers: '', selectedRole: '' }]
       this.start_date = new Date()
       this.end_date = new Date()
+      this.closeBasic()
+    },
+    closeBasic() {
+      this.$emit('hide')
     },
     addNewUser() {
       this.inputSets.push({ selectedUsers: null, selectedRole: null })

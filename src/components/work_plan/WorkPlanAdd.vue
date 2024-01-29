@@ -1,6 +1,5 @@
 <template>
-  <Button :label="$t('workPlan.addPlan')" icon="pi pi-plus" @click="openBasic" class="ml-2 p-button-outlined"/>
-  <Dialog :header="$t('workPlan.addPlan')" v-model:visible="showModal" :style="{width: '450px'}" class="p-fluid">
+  <Dialog :header="$t('workPlan.addPlan')" v-model:visible="showModal" :style="{width: '450px'}" class="p-fluid" @hide="closeBasic">
     <div class="field">
       <label>{{ $t('workPlan.planName') }}</label>
       <InputText v-model="work_plan_name" @input="input" v-on:keyup.enter="createPlan"/>
@@ -27,13 +26,11 @@
       </div>
       <div class="field">
         <label>{{ $t('contracts.contract') }}</label>
-        <FileUpload mode="basic" :customUpload="true" @uploader="uploadFile($event, 'contractFiles')" :auto="true"
-                    v-bind:chooseLabel="$t('hdfs.chooseFile')"/>
+        <CustomFileUpload @upload="uploadFile($event, 'contractFiles')" v-model="contractFiles" :multiple="false" :button="true" />
       </div>
       <div class="field">
         <label>{{ $t('common.doc') }}</label>
-        <FileUpload mode="basic" :customUpload="true" @uploader="uploadFile($event, 'documentFiles')" :auto="true"
-                    v-bind:chooseLabel="$t('hdfs.chooseFile')"/>
+        <CustomFileUpload @upload="uploadFile($event, 'documentFiles')" v-model="documentFiles" :multiple="false" :button="true" />
       </div>
     </template>
     <template #footer>
@@ -47,15 +44,17 @@
 </template>
 
 <script>
-import axios from "axios";
-import {getHeader, signerApi, smartEnuApi} from "@/config/config";
 import {WorkPlanService} from "@/service/work.plan.service";
+import CustomFileUpload from "@/components/CustomFileUpload.vue";
 
 export default {
   name: 'WorkPlanAdd',
+  components: {CustomFileUpload},
+  props: ['visible', 'isAdded', 'isSub'],
+  emits: ['hide'],
   data() {
     return {
-      showModal: false,
+      showModal: this.visible,
       position: 'center',
       work_plan_name: null,
       documentID: null,
@@ -117,14 +116,12 @@ export default {
       ],
     }
   },
-  props: ['isAdded', 'isSub'],
+  mounted() {
+    this.getWorkPlanTypes();
+  },
   methods: {
-    openBasic() {
-      this.showModal = true;
-      this.getWorkPlanTypes();
-    },
     closeBasic() {
-      this.showModal = false;
+      this.$emit('hide')
     },
     createPlan() {
       this.submitted = true;
@@ -152,8 +149,7 @@ export default {
       }
       this.planService.createPlan(fd).then(res => {
         if (res.data.is_success) {
-          this.emitter.emit("workPlanIsAdded", true);
-          this.$toast.add({severity: 'info', summary: this.$t('common.success'), detail: this.$t('workPlan.message.planCreated'), life: 3000});
+          this.$toast.add({severity: 'success', summary: this.$t('common.success'), detail: this.$t('workPlan.message.planCreated'), life: 3000});
         } else {
           this.$toast.add({
             severity: "error",
@@ -163,6 +159,7 @@ export default {
         }
         this.showModal = false;
         this.submitted = false;
+        this.closeBasic()
       }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
@@ -177,7 +174,6 @@ export default {
       });
     },
     uploadFile(event, name) {
-      console.log(event)
       this[name] = event.files
     },
     input(event) {

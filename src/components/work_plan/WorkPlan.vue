@@ -2,10 +2,9 @@
   <div class="col-12">
     <h3>{{ $t('workPlan.plans') }}</h3>
     <div class="card">
-      <WorkPlanAdd v-model="isAdded" />
+      <Button :label="$t('workPlan.addPlan')" icon="pi pi-plus" @click="openBasic" class="ml-2 p-button-outlined"/>
     </div>
     <div class="card">
-
       <DataTable :lazy="true" :rowsPerPageOptions="[5, 10, 20, 50]" :value="data" dataKey="id" :rowHover="true"
         v-model:filters="filters" filterDisplay="menu" :loading="loading" responsiveLayout="scroll" :paginator="true"
         :rows="10" :totalRecords="total" @page="onPage"
@@ -104,6 +103,8 @@
                     @click="rejectPlan"/>
           </template>
         </Dialog>-->
+
+    <WorkPlanAdd v-if="showAddPlanDialog" :visible="showAddPlanDialog" @hide="closeBasic" />
   </div>
 </template>
 
@@ -167,7 +168,8 @@ export default {
         { name_kz: "берілді", name_en: "issued", name_ru: "выдан", code: "issued" },
       ],
       selectedDocStatus: null,
-      types: []
+      types: [],
+      showAddPlanDialog: false
     }
   },
   mounted() {
@@ -193,8 +195,12 @@ export default {
     toggle(ref, event) {
       this.$refs[ref].toggle(event);
     },
-    onSort() {
-
+    openBasic() {
+      this.showAddPlanDialog = true
+    },
+    closeBasic() {
+      this.showAddPlanDialog = false
+      this.getPlans()
     },
     getPlans() {
       this.loading = true;

@@ -313,12 +313,9 @@
 </template>
 
 <script>
-import axios from "axios";
-import { getHeader, smartEnuApi, findRole } from "@/config/config";
-import { getMultipartHeader } from "../../config/config";
-import RichEditor from "../documents/editor/RichEditor";
+import {findRole, getHeader, smartEnuApi} from "@/config/config";
 import moment from "moment";
-import { WorkPlanService } from '../../service/work.plan.service'
+import {WorkPlanService} from '../../service/work.plan.service'
 import Enum from "@/enum/workplan/index"
 
 export default {
@@ -533,8 +530,8 @@ export default {
       this.isBlockUI = true;
       const fd = new FormData();
 
-      if (this.isSciencePlan && this.inputWordCount < 100) {
-        this.$toast.add({ severity: 'warn', detail: this.$t('workPlan.minWordCount', 100), life: 3000 })
+      if (this.isSciencePlan && this.inputWordCount < 150) {
+        this.$toast.add({ severity: 'warn', detail: this.$t('workPlan.minWordCount', 150), life: 3000 })
         this.isBlockUI = false;
         return;
       }
