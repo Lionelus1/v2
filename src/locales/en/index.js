@@ -173,6 +173,7 @@ export default {
     students: "Students",
     registration: "Registration",
     total: "Total",
+    all: "All",
     register: "Check in",
     registered: "Rgistered",
     vote: "Vote",

@@ -159,6 +159,7 @@ export default {
         refinf: "Анықтамалық мәліметтер",
         registration: "Тіркеу",
         total: "Барлығы",
+        all: "Барлығы",
         register: "Тіркелу",
         registered: "Тіркелгендер",
         protocol: "Хаттама",
