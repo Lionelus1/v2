@@ -92,7 +92,7 @@
                 <div class="course_grid_card p-3 border-1 surface-border surface-card border-round flex flex-column justify-content-between">
                   <div class="cursor-pointer" @click="selectCourse(slotProps.data)">
                   <div class="" v-if="slotProps.data.logo">
-                      <img style="height: 170px" class="border-round w-full" src="https://thesette.co/wp-content/uploads/sites/9173/2017/09/graduation-cap.png"/>
+                      <img style="height: 170px" class="border-round w-full" :src="slotProps.data.filePath"/>
                   </div>
                   <div v-else class="flex justify-content-center bg-blue-50 py-8 cursor-pointer" @click="selectCourse(slotProps.data)">
                     <i class="fa-solid fa-chalkboard-user size text-blue-100" style="font-size: 30px"></i>
@@ -157,7 +157,7 @@
       </div>-->
       </template>
     </div>
-    <div v-if="!courses.length && allCourses" class="text-center">{{ $t('common.noData') }}</div>
+    <div v-if="!courses && allCourses" class="text-center">{{ $t('common.noData') }}</div>
   </div>
 
 </template>
@@ -205,7 +205,7 @@ export default {
   },
   created() {
     this.fieldId = parseInt(this.$route.params.courseID)
-    this.getCourses();
+    if(this.fieldId !== 777)this.getCourses();
     this.getAllCourses();
   },
   watch: {
@@ -237,9 +237,10 @@ export default {
       this.service.getCourses(this.lazyParams).then(response => {
         this.allCourses = response.data
         this.total = response.data.total
-        this.allCourses.map(e => {
+        this.allCourses.courses.map(e => {
           e.filePath = smartEnuApi + fileRoute + e.logo
         });
+
       }).catch(_ => {
       });
     },
@@ -274,6 +275,7 @@ export default {
       this.service.deleteCourse(id).then(response => {
         this.$toast.add({ severity: 'success', summary: this.$t('common.success'), life: 3000 });
         this.getCourses()
+        this.getAllCourses()
       }).catch(error => {
           this.$toast.add({
             severity: "error",
