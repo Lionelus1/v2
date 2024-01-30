@@ -42,7 +42,7 @@
       <Button v-if="plan && plan.doc_info && plan.doc_info?.docHistory && (plan.doc_info?.docHistory?.stateId === 1 || plan.doc_info?.docHistory?.stateId === 4) && isPlanCreator && isFinish"
           type="button" icon="pi pi-send" class="p-button-sm p-button-outlined ml-2"
           :label="$t('common.action.sendToApprove')" @click="showDialog(dialog.planApprove)"></Button>
-      <Button v-if="isPlanCreator && !isFinish" :label="$t('common.complete')" icon="pi pi-check" @click="finish"
+      <Button v-if="plan && isPlanCreator && !isFinish" :label="$t('common.complete')" icon="pi pi-check" @click="finish"
               class="p-button-sm p-button-success ml-2"/>
       <Button v-if="isFinish && plan.doc_info && plan.doc_info.docHistory && !(plan.doc_info?.docHistory?.stateId === 1 || plan.doc_info?.docHistory?.stateId === 4)"
               :label="$t('workPlan.viewPlan')" icon="pi pi-eye" @click="showDialog(dialog.planView)"
@@ -730,7 +730,7 @@ export default {
     closePlanExecuteSidebar() {
       this.selectedEvent = null
       this.isShowPlanExecute = false;
-      this.getEventsTree(null)
+      this.getEventsTree(this.parentNode)
       this.getPlan()
     },
     updateEventStatus(eventId) {
@@ -867,10 +867,9 @@ export default {
       this.planService.rejectPlan(data).then(res => {
         if (res.data.is_success) {
           this.loading = false;
-          this.getEventsTree(null)
-          this.getPlan()
         }
-
+        this.getPlan();
+        this.getEventsTree(null);
       }).catch(error => {
         this.$toast.add({severity: "error", summary: error, life: 3000});
         this.loading = false;

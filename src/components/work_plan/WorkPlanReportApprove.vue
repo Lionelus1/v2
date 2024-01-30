@@ -1,12 +1,14 @@
 <template>
   <!-- <ReportPdf ref="pdf" v-if="!isSciencePlan" :data="data" :report-title="r" :plan="plan" style="display: none;"></ReportPdf> -->
   <Dialog :header="$t('common.action.sendToApprove')" v-model:visible="showModal" :style="{ width: '50vw' }" class="p-fluid" @closed="closeModal" @hide="closeModal"
-    :closeOnEscape="true">
-    <ProgressBar v-if="approving" mode="indeterminate" style="height: .5em" />
-    <div class="field">
-      <ApprovalUsers :approving="approving" v-model="approval_users" @closed="closeModal" @approve="approve($event)" :stages="stages" :mode="'standard'">
-      </ApprovalUsers>
-    </div>
+          :closeOnEscape="true">
+    <ProgressBar v-if="approving" mode="indeterminate" style="height: .5em"/>
+    <BlockUI :blocked="approving">
+      <div class="field">
+        <ApprovalUsers :approving="approving" v-model="approval_users" @closed="closeModal" @approve="approve($event)" :stages="stages" :mode="'standard'">
+        </ApprovalUsers>
+      </div>
+    </BlockUI>
   </Dialog>
   <!-- <Dialog :header="$t('common.action.sendToApprove')" v-model:visible="showModal" :style="{width: '450px'}" class="p-fluid">
     <div class="field">
@@ -28,12 +30,12 @@ import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers";
 import ApproveComponent from "@/components/work_plan/ApproveComponent";
 import ReportPdf from "@/components/work_plan/RerportPdf";
 import html2pdf from "html2pdf.js";
-import { WorkPlanService } from "@/service/work.plan.service";
+import {WorkPlanService} from "@/service/work.plan.service";
 import Enum from "@/enum/workplan/index"
 
 export default {
   name: "WorkPlanReportApprove",
-  components: { ApprovalUsers },
+  components: {ApprovalUsers},
   props: ['visible', 'docId', 'report', 'events', 'approvalStages', 'plan', 'reportFd'],
   emits: ['sentToApprove', 'closed'],
   data() {
@@ -125,23 +127,23 @@ export default {
     //   });
     // },
     approve(event) {
+      this.approving = true;
       this.approval_users = event
-      this.submitted = true;
-      console.log(this.fd);
+      this.submitted = true
       this.fd.append("report_id", this.data.id)
 
       this.fd.append("doc_id", this.doc_id)
       this.fd.append("approval_users", JSON.stringify(this.approval_users))
       this.planService.approvePlan(this.fd).then(res => {
         if (res.data && res.data.is_success) {
-          this.$toast.add({ severity: "success", summary: this.$t('common.message.succesSendToApproval'), life: 3000 });
+          this.$toast.add({severity: "success", summary: this.$t('common.message.succesSendToApproval'), life: 3000});
           this.$emit('sentToApprove')
           this.submitted = false;
         }
         this.approving = false;
         this.showModal = false;
       }).catch(error => {
-        this.$toast.add({ severity: "error", summary: error, life: 3000 });
+        this.$toast.add({severity: "error", summary: error, life: 3000});
         this.submitted = false;
       });
 

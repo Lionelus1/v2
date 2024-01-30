@@ -52,7 +52,46 @@
            <div v-if="isPlanCreator && event && event.status.work_plan_event_status_id === 5">
             <Menubar :model="verifyMenu" :key="active" style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
           </div>
-          <div class="grid mt-3">
+          <div class="grid mt-3" v-if="plan && (new Date(plan.create_date).getFullYear() < new Date().getFullYear())">
+            <div class="p-sm-12 md:col-12 lg:col-12 p-xl-6">
+              <div class="field" v-if="event">
+                <label class="bold">{{ $t('common.fact') }}: </label>
+                <div>{{ event.fact }}</div>
+              </div>
+              <div class="field" v-if="plan && resultData && isOperPlan">
+                <label class="bold">{{ $t('common.result') }}</label>
+                <div v-for="(item, index) of resultData[0].result_text" :key="index" class="mb-2">
+                  <Divider align="left">
+                    <i class="fa-solid fa-user mr-1"></i><b>{{ item.user.fullName }}</b>
+                  </Divider>
+                  <p v-html="item.text"></p>
+                </div>
+              </div>
+              <div class="field" v-if="resultData && resultData.result_files">
+                <label class="bold">{{ $t('workPlan.attachments') }}</label>
+                <div ref="content" class="p-fileupload-content">
+                  <div class="p-fileupload-files">
+                    <div class="p-fileupload-row" v-for="(file, index) of resultData.result_files" :key="index">
+                      <span class="mr-3" style="cursor: pointer;" @click="downloadFile(file.event_result_file)"><i
+                          class="fa-solid fa-file-arrow-down fa-2x color-success"></i></span>
+                      <span @click="downloadFile(file)"
+                            style="cursor: pointer;">{{
+                          file.file_name ? file.file_name : file.event_result_file
+                        }}</span>
+                      <span class="ml-5" v-if="file.user_id && file.user_id === loginedUserId"><Button
+                          icon="pi pi-times" class="p-button-rounded p-button-text"
+                          v-if="event && (event.status.work_plan_event_status_id !== 5 && event.status.work_plan_event_status_id !== 2)"
+                          @click="deleteFileConfirm($event, file.id)"/></span>
+                    </div>
+                  </div>
+                  <div class="p-fileupload-empty" v-if="files.length === 0">
+                    <slot name="empty"></slot>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="grid mt-3" v-else>
             <!-- p-sm-12 md:col-12 lg:col-6 p-xl-6 -->
             <div class="p-fluid" v-if="(!isPlanCreator && (isPlanCreatorApproval || !isPlanCreator) &&
               event.status.work_plan_event_status_id !== 5 &&
@@ -106,6 +145,7 @@
               <div class="field" v-if="plan && resultData">
                 <!-- <label class="bold">{{ $t('common.result') }}</label> -->
                 <!-- {{ resultData[0] }} -->
+
                 <div v-for="(item, index) of resultData" :key="index" class="mb-2">
                   <Divider align="left">
                     <div class="flex justify-content-center align-items-center">
@@ -120,7 +160,7 @@
                     </div>
 
                   </Divider>
-                  <Inplace v-if="(loginedUserId === item.result_text[0].user.userID) && event &&
+                  <Inplace v-if="item.result_text && (loginedUserId === item.result_text[0].user.userID) && event &&
                     (item.plan_event_result_history && item.plan_event_result_history[0].state_id === 6)" :active="item.isActive" @open="openInplace(item)">
                     <template #display>
                       <div>
@@ -415,6 +455,9 @@ export default {
     },
     isSciencePlan() {
       return this.plan && this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Science
+    },
+    isOperPlan() {
+      return this.plan && ((this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Oper) || this.plan.is_oper)
     },
     isRespUser(){
       return this.event && this.respUserExists(this.loginedUserId) && this.plan.plan_type_id === 3

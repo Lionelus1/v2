@@ -1,6 +1,5 @@
 <template>
   <PdfContent ref="pdf" v-if="data" :data="data" :planId="data.work_plan_id" :plan="plan" style="display: none;"></PdfContent>
-
   <!-- <Dialog :header="$t('common.action.sendToApprove')" v-model:visible="showModal" :style="{width: '450px'}" class="p-fluid">
     <div class="field">
       <label>{{ $t('common.select') }}</label>
@@ -14,13 +13,14 @@
     </template>
   </Dialog> -->
   <Dialog :header="$t('common.action.sendToApprove')" v-model:visible="showModal"
-            :style="{width: '50vw'}" class="p-fluid">
-      <ProgressBar v-if="approving" mode="indeterminate" style="height: .5em"/>
+          :style="{width: '50vw'}" class="p-fluid">
+    <ProgressBar v-if="approving" mode="indeterminate" style="height: .5em"/>
+    <BlockUI :blocked="approving">
       <div class="field">
-        <ApprovalUsers :approving="approving" v-model="approval_users"
-                       @closed="closeModal"
+        <ApprovalUsers :approving="approving" v-model="approval_users" @closed="closeModal"
                        @approve="approve($event)" :stages="stages" :mode="'standard'"></ApprovalUsers>
       </div>
+    </BlockUI>
   </Dialog>
 </template>
 
@@ -47,9 +47,9 @@ export default {
       steps: 3,
       step: 1,
       approval_users: [
-      {
+        {
           stage: 1,
-          users:[],
+          users: [],
           certificate: {
             namekz: "Жеке тұлғаның сертификаты",
             nameru: "Сертификат физического лица",
@@ -80,9 +80,9 @@ export default {
       this.$emit('hide')
     },
     approve(event) {
-      this.approval_users = event
-      this.submitted = true;
       this.approving = true;
+      this.submitted = true;
+      this.approval_users = event
       let workPlanId = this.data.work_plan_id;
       let pdfOptions = {
         margin: 10,
