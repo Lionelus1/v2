@@ -2,7 +2,7 @@
   <Dialog :header="$t('workPlan.addPlan')" v-model:visible="showModal" :style="{width: '450px'}" class="p-fluid" @hide="closeBasic">
     <div class="field">
       <label>{{ $t('workPlan.planName') }}</label>
-      <InputText v-model="work_plan_name" @input="input" v-on:keyup.enter="createPlan"/>
+      <InputText v-model="work_plan_name" v-on:keyup.enter="createPlan"/>
     </div>
     <div class="field">
       <label>{{ $t('common.lang') }}</label>
@@ -37,7 +37,7 @@
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
               @click="closeBasic"/>
       <Button :label="$t('common.add')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2"
-              :disabled="isDisabled && lang" @click="createPlan"/>
+              :disabled="!isDisabled" @click="createPlan"/>
     </template>
   </Dialog>
 
@@ -59,7 +59,6 @@ export default {
       work_plan_name: null,
       documentID: null,
       isDocCreated: false,
-      isDisabled: true,
       lang: null,
       languages: [
         {
@@ -119,6 +118,15 @@ export default {
   mounted() {
     this.getWorkPlanTypes();
   },
+  computed: {
+    isDisabled() {
+      if (!this.submitted) {
+        return this.work_plan_name && this.lang && this.selectedType
+      } else {
+        return false
+      }
+    }
+  },
   methods: {
     closeBasic() {
       this.$emit('hide')
@@ -175,9 +183,6 @@ export default {
     },
     uploadFile(event, name) {
       this[name] = event.files
-    },
-    input(event) {
-      this.isDisabled = event.target.value.length <= 0;
     },
     validate() {
       return this.work_plan_name && this.lang;

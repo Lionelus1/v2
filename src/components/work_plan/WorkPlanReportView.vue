@@ -406,10 +406,8 @@ export default {
         }
       });
     },
-    rejectPlanReport() {
-      if (this.rejectComment) {
-        this.reject.comment = this.rejectComment;
-      }
+    rejectPlanReport(comment) {
+      this.reject.comment = comment;
       this.reject.doc_id = this.report.doc_id;
       this.reject.report_id = this.report_id;
       this.reject.report_name = this.report.report_name;
@@ -419,6 +417,7 @@ export default {
           this.emitter.emit("planRejected", true);
           this.$router.push({ name: 'WorkPlanReport', params: { id: this.report.work_plan_id } });
         }
+        this.getReport()
       }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
