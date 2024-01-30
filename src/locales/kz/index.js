@@ -1439,6 +1439,11 @@ export default {
         instance: 'Мақұлдаушы/қол қоюшы',
         failedToDelete: 'Жазба өшірілмеді',
         failedToLoad: 'Деректерді жүктеу сәтсіз аяқталды',
+        departmentRoleRel: 'Департамент-ролді басқару',
+        giveDepartmentRoleRel: 'Жаңа Департамент-роль қарым-қатынасын беру',
+        nameDepartment: 'Департамент атауы',
+        selectDepartment: 'Департаментті таңдаңыз',
+
     },
     blog: {
         title: 'Блог',

@@ -1428,6 +1428,11 @@ export default {
         instance: 'Согласующее лицо/подписант',
         failedToDelete: 'Не удалось удалить запись',
         failedToLoad: 'Не удалось загрузить данные',
+        departmentRoleRel: 'Управление департамент-ролями',
+        giveDepartmentRoleRel: 'Дать новое отношение департамент-роль',
+        nameDepartment: 'Название департамента',
+        selectDepartment: 'Выберите департамента',
+
     },
     responseExplanations: {
         badRequest: 'Ваш запрос не был понят или в нем отсутствовали необходимые параметры.',

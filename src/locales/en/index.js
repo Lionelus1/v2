@@ -1431,6 +1431,10 @@ export default {
         instance: 'Appover/signer',
         failedToDelete: 'Failed to delete',
         failedToLoad: 'Failed to load data',
+        departmentRoleRel: 'Department-role management',
+        giveDepartmentRoleRel: 'Give new department-role relation',
+        nameDepartment: 'Name of department',
+        selectDepartment: 'Select department',
     },
     blog: {
         title: 'Blog',
