@@ -810,11 +810,11 @@ export default {
             titleKz: "Ғылыми жобаларды сүйемелдеу секторынан келісім-шарттар жасауға және актілерді ұсынуға жауапты",
             titleEn: "Responsible for concluding contracts and submitting acts from the Scientific Projects Support Sector",
             certificate: {
-              namekz: "Жеке тұлғаның сертификаты",
-              nameru: "Сертификат физического лица",
-              nameen: "Certificate of an individual",
-              value: "individual"
-            }
+              namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+              nameru: "Для внутреннего документооборота (ГОСТ)",
+              nameen: "For internal document management (GOST)",
+              value: "internal"
+            },
           },
           {
             stage: 4,
@@ -823,11 +823,11 @@ export default {
             titleKz: "Ғылыми жобалар бөлімінің меңгерушісі",
             titleEn: "Head of the Scientific Projects Department",
             certificate: {
-              namekz: "Жеке тұлғаның сертификаты",
-              nameru: "Сертификат физического лица",
-              nameen: "Certificate of an individual",
-              value: "individual"
-            }
+              namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+              nameru: "Для внутреннего документооборота (ГОСТ)",
+              nameen: "For internal document management (GOST)",
+              value: "internal"
+            },
           },
           {
             stage: 5,
@@ -836,11 +836,11 @@ export default {
             titleKz: "Ғылым департаментінің директоры",
             titleEn: "Director of the Department of Science",
             certificate: {
-              namekz: "Жеке тұлғаның сертификаты",
-              nameru: "Сертификат физического лица",
-              nameen: "Certificate of an individual",
-              value: "individual"
-            }
+              namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+              nameru: "Для внутреннего документооборота (ГОСТ)",
+              nameen: "For internal document management (GOST)",
+              value: "internal"
+            },
           }
         ];
         this.showReportModal = true;
