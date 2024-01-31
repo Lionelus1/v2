@@ -1,6 +1,6 @@
 <template>
-  <div class="card">
-    <div
+  <div>
+    <div class="mb-3"
       style="display: flex; justify-content: space-between; margin-bottom: 20px"
     >
       <Button

@@ -8,11 +8,11 @@
 		<TabPanel :header="$t('roleControl.rolePosRelTitle')">
 			<RolePositionRel></RolePositionRel>
 		</TabPanel>
-		<TabPanel :header="$t('roleControl.departmentRoleRel')">
-			<RoleDepartmentRel></RoleDepartmentRel>
-		</TabPanel>
 		<TabPanel :header="$t('roleControl.rolePosTitle')">
 			<RolePosition></RolePosition>
+		</TabPanel>
+		<TabPanel :header="$t('roleControl.departmentRoleRel')">
+			<RoleDepartmentRel></RoleDepartmentRel>
 		</TabPanel>
 	</TabView>
 	</div>

@@ -1,14 +1,13 @@
 <template>
     <div>
         <div class="mb-3"> 
+        <div class="block lg:flex justify-content-between align-items-center">
         <Button
                 :label="$t('roleControl.giveDepartmentRoleRel')"
                 icon="pi pi-plus"
                 class="p-button-success p-mr-2 mt-2 lg:m-0"
                 v-on:click="giveNewRole"
         />
-        <div class="block lg:flex justify-content-between align-items-center">
-            <h5 class="mb-2 lg:m-0">{{  }}</h5>
             <span class="p-input-icon-left">
                 <i class="pi pi-search"/>
                 <InputText type="search"
@@ -19,7 +18,7 @@
                 <Button icon="pi pi-search" class="p-ml-1" @click="searchDepartmentRoleRel"/>
             </span>
         </div>
-    </div>
+         </div>
     <DataTable :lazy="true"
               :value="departments_role_rel"
               @page="onPage($event)"

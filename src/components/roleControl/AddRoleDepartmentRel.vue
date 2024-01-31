@@ -1,8 +1,7 @@
 <template>
-    <h1></h1>
-    <div id="carddiv" class="p-grid">
-        <div class="p-col-12">
-            <h3>{{ this.$t("roleControl.giveRole")}}</h3>
+  <div id="carddiv" class="p-grid">
+    <div class="p-col-12">
+          <h3>{{ t("roleControl.giveDepartmentRoleRel")}}</h3>
             <div>
                 <Menubar :model="menu" style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px"></Menubar>
             </div>
@@ -10,27 +9,27 @@
         <div class="p-col-12 p-md-12 p-fluid">
           <div class="card w-full">
               <div class="p-field pb-3">
-                  <label>{{ this.$t("common.organizationNameLabel") }}</label>
+                  <label>{{ t("common.organizationNameLabel") }}</label>
                   <Dropdown class="w-full mr-2" v-model="selectedOrganization" :options="userOrganizations"
-                      :optionLabel="itemLabel" :placeholder="$t('roleControl.selectOrg')" :filter="true" :showClear="true"
-                      @change="handleSelectionChange" dataKey="id" :emptyFilterMessage="$t('roleControl.noResult')" @filter="handleFilter"/>
+                      :optionLabel="itemLabel" :placeholder="t('roleControl.selectOrg')" :filter="true" :showClear="true"
+                      @change="handleSelectionChange" dataKey="id" :emptyFilterMessage="t('roleControl.noResult')" @filter="handleFilter"/>
               </div>
 
               <div class="p-field pb-3">
-                  <label>{{ $t('roleControl.nameDepartment') }}</label>
+                  <label>{{ t('roleControl.nameDepartment') }}</label>
                   <Dropdown class="dropdown" v-model="selectedDepartment" :options="departments" 
-                      :optionLabel="localizeDepartment" :placeholder="$t('roleControl.selectDepartment')" 
+                      :optionLabel="localizeDepartment" :placeholder="t('roleControl.selectDepartment')" 
                       :filter="true" :showClear="true"
-                      dataKey="id" :emptyFilterMessage="$t('roleControl.noResult')"
+                      dataKey="id" :emptyFilterMessage="t('roleControl.noResult')"
                       @filter="handleFilterDepartment"/>
               </div>
 
               <div class="p-field">
-                <label>{{ this.$t("roleControl.roleLabel") }}</label>
+                <label>{{ t("roleControl.roleLabel") }}</label>
                 <Dropdown class="dropdown" v-model="role" :options="roles" 
-                  :optionLabel="localizeRole" :placeholder="$t('roleControl.selectRole')" 
+                  :optionLabel="localizeRole" :placeholder="t('roleControl.selectRole')" 
                   :filter="true" :showClear="true" dataKey="id" 
-                  :emptyFilterMessage="$t('roleControl.noResult')"/>
+                  :emptyFilterMessage="t('roleControl.noResult')"/>
               </div>
           </div>
         </div>
