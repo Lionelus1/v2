@@ -208,6 +208,7 @@ export default {
         personalInfo: 'Жеке ақпарат',
         myAddress: 'Мекенжайы',
         creationAndEditing:'Сақтау және өңдеу',
+        users:'Пайдаланушылар',
         states: {
             submitted: "Берілген",
             created: "Құрылды",

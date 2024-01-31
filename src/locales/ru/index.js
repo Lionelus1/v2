@@ -209,6 +209,7 @@ export default {
         personalInfo: 'Личная информация',
         myAddress: 'Адрес',
         creationAndEditing:'Создание и редактирование',
+        users:'Пользователи',
         states: {
             submitted: "Подана",
             created: "создан",

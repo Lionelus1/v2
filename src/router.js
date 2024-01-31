@@ -277,8 +277,8 @@ const routes = [
             },
             {
                 path: '/contragent/persons/:type',
-                name: 'persons',
-                component: load('contragent/Persons'),
+                name: 'PersonsList',
+                component: load('contragent/v2/PersonsList'),
                 beforeEnter: ifAuthenticated,
             },
             {

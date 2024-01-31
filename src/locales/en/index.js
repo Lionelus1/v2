@@ -207,6 +207,7 @@ export default {
     personalInfo: 'Personal information',
     myAddress: 'Address',
     creationAndEditing:'Creation and editing',
+    users:'Users',
     states: {
       submitted: "Submitted",
       approved: "Approved",

@@ -6,40 +6,40 @@
 
       <!-- НОМЕР -->
       <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-        <label>{{ $t('common.number') }}<span class="p-error" v-if="!readonly">*</span></label>
-        <InputText :readonly="readonly" class="mt-2" :class="{'p-invalid': validation.number}" type="text"  :placeholder="$t('common.number')" v-if="user" v-model="user.idnumber" @input="updateUserData"></InputText>
-        <small class="p-error" v-if="validation.number">{{ $t("common.requiredField") }}</small>
+        <label>{{ t('common.number') }}</label>
+        <InputText :readonly="readonly" class="mt-2" :class="{'p-invalid': validation.number}" type="text"  :placeholder="t('common.number')" v-if="user" v-model="user.idnumber" @input="updateUserData"></InputText>
+        <small class="p-error" v-if="validation.number">{{ t("common.requiredField") }}</small>
       </div>
 
       <!-- ДАТА ВЫДАЧИ -->
       <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-        <label>{{ $t('hr.id.startDate') }}<span class="p-error" v-if="!readonly">*</span></label>
-        <PrimeCalendar :readonly="readonly" class="mt-2" :class="{'p-invalid': validation.startDate}" :placeholder="$t('hr.id.startDate')" v-if="user" v-model="user.iddate" dateFormat="dd.mm.yy" @input="updateUserData"/>
-        <small class="p-error" v-if="validation.startDate">{{ $t("common.requiredField") }}</small>
+        <label>{{ t('hr.id.startDate') }}</label>
+        <PrimeCalendar :readonly="readonly" class="mt-2" :class="{'p-invalid': validation.startDate}" :placeholder="t('hr.id.startDate')" v-if="user" v-model="user.iddate" dateFormat="dd.mm.yy" @input="updateUserData"/>
+        <small class="p-error" v-if="validation.startDate">{{ t("common.requiredField") }}</small>
       </div>
 
       <!-- КЕМ ВЫДАН -->
       <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-        <label>{{ $t('hr.id.issuedBy') }}<span class="p-error" v-if="!readonly">*</span></label>
-        <InputText :readonly="readonly" class="mt-2" :class="{'p-invalid': validation.issuedBy}" type="text" :placeholder="$t('hr.id.issuedBy')" v-if="user" v-model="user.idissued" @input="updateUserData"></InputText>
-        <small class="p-error" v-if="validation.issuedBy">{{ $t("common.requiredField") }}</small>
+        <label>{{ t('hr.id.issuedBy') }}</label>
+        <InputText :readonly="readonly" class="mt-2" :class="{'p-invalid': validation.issuedBy}" type="text" :placeholder="t('hr.id.issuedBy')" v-if="user" v-model="user.idissued" @input="updateUserData"></InputText>
+        <small class="p-error" v-if="validation.issuedBy">{{ t("common.requiredField") }}</small>
       </div>
 
       <!-- ИИН -->
       <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-        <label>{{ $t('contact.iin') }}<span class="p-error" v-if="!readonly">*</span></label>
-        <InputText class="mt-2" :class="{'p-invalid': validation.iin}" type="text" :placeholder="$t('contact.iin')"  v-if="user" v-model="user.IIN" readonly></InputText>
-        <small class="p-error" v-if="validation.iin">{{ $t("common.requiredField") }}</small>
+        <label>{{ t('contact.iin') }}<span class="p-error" v-if="!readonly">*</span></label>
+        <InputMask mask="999999999999" class="mt-2" :class="{'p-invalid': validation.iin}" type="text" :placeholder="t('contact.iin')" v-if="user" v-model="user.IIN"  :readonly="customType != 'createUser'" @input="updateUserData"></InputMask>
+        <small class="p-error" v-if="validation.iin">{{ t("common.requiredField") }}</small>
       </div>
 
       <!-- ФОТО ЗАГРУЗИТЬ-->
       <div v-if="!readonly" class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-        <label>{{ $t('hr.title.id') }}</label>
-        <FileUpload ref="form" mode="basic" class="mt-2" :customUpload="true" accept=".pdf, image/*" :class="{'p-invalid': validation.file}" @uploader="upload($event)" :auto="true" v-bind:chooseLabel="$t('ncasigner.chooseFile')"/>
+        <label>{{ t('hr.title.id') }}</label>
+        <FileUpload ref="form" mode="basic" class="mt-2" :customUpload="true" accept=".pdf, image/*" :class="{'p-invalid': validation.file}" @uploader="upload($event)" :auto="true" v-bind:chooseLabel="t('ncasigner.chooseFile')"/>
         <InlineMessage severity="info" class="mt-2" show v-if="file">
-            {{ $t('ncasigner.chosenFile', {fn: file ? file.name : ""}) }}
+            {{ t('ncasigner.chosenFile', {fn: file ? file.name : ""}) }}
         </InlineMessage>
-        <small class="p-error"  v-if="validation.file" >{{ $t("common.requiredField") }}</small>
+        <small class="p-error"  v-if="validation.file" >{{ t("common.requiredField") }}</small>
       </div>
 
       <Button v-if="user.idcardpath" :label="t('hr.title.id')" style="text-align: left" class="p-button-link" @click="downloadFile(t('hr.title.id'), user.idcardpath)" />
@@ -123,9 +123,11 @@
     if (props.modelValue != null) {
       user.value = props.modelValue
       if (user.value.iddate) {
-        const dateObject = new Date(user.value.iddate)
+        const dateObject = new Date(user.value.iddate);
+        
+        const formattedBirthday = `${(dateObject.getMonth() + 1).toString().padStart(2, '0')}.${dateObject.getDate().toString().padStart(2, '0')}.${dateObject.getFullYear().toString().padStart(4, '0')}`;
   
-        user.value.iddate = dateObject.toLocaleDateString()
+        user.value.iddate = dateObject
       }
       loading.value = false
       return
@@ -140,9 +142,11 @@
       user.value = response.data.user
 
       if (user.value.iddate) {
-        const dateObject = new Date(user.value.iddate)
+        const dateObject = new Date(user.value.iddate);
+        
+        const formattedBirthday = `${(dateObject.getMonth() + 1).toString().padStart(2, '0')}.${dateObject.getDate().toString().padStart(2, '0')}.${dateObject.getFullYear().toString().padStart(4, '0')}`;
   
-        user.value.iddate = dateObject.toLocaleDateString()
+        user.value.iddate = dateObject
       }
       loading.value = false
     }).catch(error => {
