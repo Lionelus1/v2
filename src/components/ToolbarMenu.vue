@@ -1,61 +1,89 @@
 <template>
-  <div class="toolbar_menu card p-0 mb-3" ref="containerRef" :class="{ 'scrollable': isScrollable && !search }">
-    <Button v-if="isScrollable && !search" :class="['scroll-left']" icon="pi pi-angle-left" @click="scrollLeft"/>
-    <div :class="['justify-content-between', {'flex': search},{'inline-flex': isScrollable && !search}]">
-      <div v-if="search && isScrollable">
+  <div class="toolbar_menu card p-0 mb-3" ref="containerRef" :class="{ 'scrollable': isScrollable && (!search || !filter) }">
+    <Button v-if="isScrollable && (!search || !filter)" :class="['scroll-left']" icon="pi pi-angle-left" @click="scrollLeft"/>
+    <div :class="['justify-content-between', {'flex': search || filter},{'inline-flex': isScrollable && (!search || !filter)}]">
+      <div v-if="(search || filter) && isScrollable">
         <Button
             class="p-button-text p-button-secondary"
             icon="pi pi-bars"
             @click="onClick($event)"
             aria-haspopup="true"
             aria-controls="overlay_menu" />
-        <Menu ref="menu" id="overlay_menu" :model="actionList" :popup="true" />
+        <Menu ref="mobilemenu" id="overlay_menu" :model="actionList" :popup="true" />
       </div>
       <div class="" v-else>
         <template v-for="(i,index) of data" :key="i">
+            <Button
+                v-if="i.visible !== false && !i.right && !i.filter && !i.items"
+                :class="['p-button-outlined']"
+                :icon="i.icon"
+                :label="label(i.label)"
+                :disabled="i.disabled"
+                @click="i.command(index)" />
+          <template v-if="i.right || i.filter">
+              <Button
+                  v-if="!(i.visible !== undefined && i.visible === false) && i.right"
+                  :class="['p-button-outlined', {'float_right' : !isScrollable}]"
+                  :icon="i.icon"
+                  :label="label(i.label)"
+                  :disabled="i.disabled"
+                  @click="i.command(index)" />
+            <Button
+                v-if="!(i.visible !== undefined && i.visible === false) && i.filter"
+                :style="{color: i.filtered? '#2196f3':'#495057'}"
+                class="p-button-outlined"
+                :icon="i.icon"
+                :label="label(i.label)"
+                :disabled="i.disabled"
+                @click="i.command(index)" />
+            </template>
           <Button
-              v-if="i.visible !== false"
+              v-if="i.items"
               :class="['p-button-outlined']"
-              :icon="i.icon"
+              icon="pi pi-angle-down"
+              iconPos="right"
               :label="label(i.label)"
               :disabled="i.disabled"
-              @click="i.command(index)" />
+              @click="subMenu.toggle($event)"/>
+          <Menu v-if="i.items" ref="subMenu" :model="i.items" :popup="true" />
         </template>
       </div>
-      <div class="flex" v-if="search">
-        <Button
+      <div class="flex" v-if="search || filter">
+        <Button v-if="filter"
             class="p-button-text p-button-secondary"
             icon="fa-solid fa-filter"
-            @click="onClick($event)"/>
-        <div class="vertical_line"></div>
-        <span class="p-input-icon-left">
+            @click="filterClick($event)"/>
+        <template v-if="search">
+          <div class="vertical_line"></div>
+          <span class="p-input-icon-left" >
                 <i class="pi pi-search"/>
                 <InputText
                     class="search_toolbar"
                     @keyup.enter="searchClick()"
                     v-model="searchModel"
                     :placeholder="$t('common.search')"
-                />
-    </span>
+                /></span>
+        </template>
       </div>
     </div>
-    <Button v-if="isScrollable && !search" :class="['scroll-right']" icon="pi pi-angle-right" @click="scrollRight"/>
+    <Button v-if="isScrollable && (!search || !filter)" :class="['scroll-right']" icon="pi pi-angle-right" @click="scrollRight"/>
   </div>
 </template>
 
 <script setup>
 import {computed, onBeforeUnmount, onMounted, ref} from "vue";
 
-const props = defineProps(['data', 'notShowLabel','search'])
+const props = defineProps(['data', 'notShowLabel','search','filter'])
 const containerRef = ref(null);
 const scrollStep = 50;
 const isScrollable = ref(false);
-const emit = defineEmits(['search'])
+const emit = defineEmits(['search','filter'])
 const searchModel = ref()
-const menu = ref()
+const mobilemenu = ref()
+const subMenu = ref()
 const actionList = computed(() => props.data)
 const onClick = (event) => {
-  menu.value.toggle(event);
+  mobilemenu.value.toggle(event);
   emit('toggle')
 }
 const checkScroll = () => {
@@ -75,6 +103,9 @@ const scrollRight = () => {
 };
 const searchClick = () => {
   emit('search', searchModel.value)
+}
+const filterClick = (event) => {
+  emit('filter', event)
 }
 
 onMounted(() => {
@@ -105,6 +136,9 @@ onBeforeUnmount(() => {
   .p-button.p-button-outlined:hover {
     background: #d0f1ff;
   }
+}
+.float_right{
+  float: right;
 }
 .vertical_line{
   margin: 5px 5px;

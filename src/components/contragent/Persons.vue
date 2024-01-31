@@ -12,10 +12,10 @@
           }}
         </h3>
     </div>
+    <ToolbarMenu :data="menu" @search="initApiCall" :search="true"/>
     <div class="card implementation">
       <div class="p-0">
         <div class="p-col">
-          <ToolbarMenu :data="menu" @search="initApiCall" :search="true"/>
           <div class="box">
             <DataTable
               class="p-datatable-sm"

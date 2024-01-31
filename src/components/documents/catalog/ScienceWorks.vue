@@ -6,7 +6,6 @@
     </div>
     <h3 class="m-0">{{ $t("scienceWorks.title") }}</h3>
   </div>
-<!--  <ToolbarMenu :data="initMenu"/>-->
   <BlockUI :blocked="loading" class="card">
     <Toolbar class="p-1">
       <template #start>
@@ -255,12 +254,10 @@ import EditionFormEdit from "@/components/science/edit/EditionFormEdit.vue";
 import EditionRequestFormEdit from "@/components/science/edit/EditionRequestFormEdit.vue";
 import MyEditionRequestView from "@/components/science/view/MyEditionRequestView.vue";
 import ScienceWorksPage from "@/components/documents/pages/ScienceWorksPage.vue";
-import ToolbarMenu from "@/components/ToolbarMenu.vue";
 
 export default {
   name: 'ScienceWorks',
   components: {
-    ToolbarMenu,
     ScienceWorksPage,
     MyEditionRequestView,
     EditionRequestFormEdit,

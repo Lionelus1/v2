@@ -6,9 +6,9 @@
             <label class="text-gray-600 ml-2 mt-2">{{ this.$t("common.records") }}: {{ this.count }}</label>
         </div>
     </div>
+    <ToolbarMenu :data="menu" @search="initApiCall" :search="true"/>
       <div class="card">
         <div class="p-col">
-          <ToolbarMenu :data="menu" @search="initApiCall" :search="true"/>
           <div class="box">
             <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
             <DataTable
