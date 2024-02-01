@@ -236,7 +236,7 @@
                               :event="selectedEvent" @hide="hideDialog(dialog.edit)" />
   <WorkPlanReportApprove v-if="showReportModal && scienceReport && plan" :approval-stages="approval_users" :visible="showReportModal && scienceReport"
                          :doc-id="scienceReport.doc_id" :report="scienceReport" :plan="plan"></WorkPlanReportApprove>
-  <work-plan-approve v-if="dialog.planApprove.state" :visible="dialog.planApprove.state"
+  <work-plan-approve v-if="dialog.planApprove.state" :visible="dialog.planApprove.state" :approval-stages="planApprovalStage"
       :plan="plan" :events="data" @hide="hideDialog(dialog.planApprove)" @isSent="planSentToApprove"></work-plan-approve>
 </template>
 
@@ -397,7 +397,8 @@ export default {
         planView: {
           state: false
         }
-      }
+      },
+      planApprovalStage: null
     }
   },
   created() {
@@ -582,6 +583,60 @@ export default {
           //this.$router.push('/work-plan')
         }
         if (this.isSciencePlan) {
+          this.planApprovalStage = [
+            {
+              stage: 1,
+              users: [],
+              titleRu: "Научный руководитель проекта",
+              titleKz: "Жобаның ғылыми жетекшісі",
+              titleEn: "Project Scientific Director",
+              certificate: {
+                namekz: "Жеке тұлғаның сертификаты",
+                nameru: "Сертификат физического лица",
+                nameen: "Certificate of an individual",
+                value: "individual"
+              }
+            },
+            {
+              stage: 2,
+              users: [],
+              titleRu: "Ответственные от управления научных проектов",
+              titleKz: "Ғылыми жобалар басқармасынан жауапты тұлға",
+              titleEn: "Employee of Scientific Projects Management",
+              certificate: {
+                namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+                nameru: "Для внутреннего документооборота (ГОСТ)",
+                nameen: "For internal document management (GOST)",
+                value: "internal"
+              },
+            },
+            {
+              stage: 3,
+              users: [],
+              titleRu: "Начальник Управления научных проектов",
+              titleKz: "Ғылыми жобалар бөлімінің меңгерушісі",
+              titleEn: "Head of the Scientific Projects Department",
+              certificate: {
+                namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+                nameru: "Для внутреннего документооборота (ГОСТ)",
+                nameen: "For internal document management (GOST)",
+                value: "internal"
+              },
+            },
+            {
+              stage: 4,
+              users: [],
+              titleRu: "Директор Департамента науки",
+              titleKz: "Ғылым департаментінің директоры",
+              titleEn: "Director of the Department of Science",
+              certificate: {
+                namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+                nameru: "Для внутреннего документооборота (ГОСТ)",
+                nameen: "For internal document management (GOST)",
+                value: "internal"
+              },
+            }
+          ];
           this.getRelatedFiles()
         }
         this.isPlanApproved = this.plan.doc_info?.docHistory.stateEn == "approved"
@@ -813,9 +868,9 @@ export default {
           {
             stage: 2,
             users: [],
-            titleRu: "Руководитель проекта",
-            titleKz: "Жоба жетекшісі",
-            titleEn: "Project Manager",
+            titleRu: "Научный руководитель проекта",
+            titleKz: "Жобаның ғылыми жетекшісі",
+            titleEn: "Project Scientific Director",
             certificate: {
               namekz: "Жеке тұлғаның сертификаты",
               nameru: "Сертификат физического лица",
@@ -826,9 +881,9 @@ export default {
           {
             stage: 3,
             users: [],
-            titleRu: "Ответственные за заключение договоров и сдачу актов от Сектора поддержки научных проектов",
-            titleKz: "Ғылыми жобаларды сүйемелдеу секторынан келісім-шарттар жасауға және актілерді ұсынуға жауапты",
-            titleEn: "Responsible for concluding contracts and submitting acts from the Scientific Projects Support Sector",
+            titleRu: "Ответственные от управления научных проектов",
+            titleKz: "Ғылыми жобалар басқармасынан жауапты тұлға",
+            titleEn: "Employee of Scientific Projects Management",
             certificate: {
               namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
               nameru: "Для внутреннего документооборота (ГОСТ)",
