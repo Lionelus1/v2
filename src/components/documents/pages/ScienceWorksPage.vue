@@ -26,71 +26,69 @@
             <label>{{ $t('scienceWorks.labels.' + param.description) }}</label>
           </div>
           <div class="p-fluid md:col-6" v-if="'text' === param.name">
-            <template v-if="'publicationCategory' === param.description">
-              <Dropdown v-model="param.value" :options="publicationCategories" class="w-full" @change="input" editable
-                        :option-label="publicationCategoriesLabel" :option-value="publicationCategoriesLabel"
-                        :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID && scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)">
-              </Dropdown>
-            </template>
-            <div v-else class="p-inputgroup p-input-filled">
-              <InputText v-model="param.value" type="text" @input="input()" :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
-                scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)"></InputText>
-              <Button v-if="param.description === 'link'" icon="fa-solid fa-copy"
-                      v-clipboard:copy="param.value" v-clipboard:success="onCopy"></Button>
-            </div>
-          </div>
-          <div class="p-fluid md:col-6" v-if="'number' === param.name">
-            <InputNumber v-model="param.value"  :minFractionDigits="0" :maxFractionDigits="2" :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
-              scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)" @input="input"/>
-          </div>
-          <div class="p-fluid md:col-6" v-if="'date' === param.name">
-            <PrimeCalendar v-model="param.value" dateFormat="dd.mm.yy" :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
-              scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)" @dateSelect="input"></PrimeCalendar>
-          </div>
-          <div class="p-fluid md:col-6" v-if="'persons' === param.name">
-            <FindUser searchMode="ldap" v-model="param.value" :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
-              scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)" :userType="0" @input="input()" @remove="input()"></FindUser>
-          </div>
-          <div class="md:col-6" v-if="'options' === param.name">
-            <template v-if="'editionType' === param.description">
-              <SelectButton v-model="param.value" :options="editionTypes" :allowEmpty="false" :unselectable="false" @change="input"
-                :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID && scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)">
-                <template #option="slotProps">
-                  {{ $t('scienceWorks.editionTypes.' + slotProps.option) }}
-                </template>
-              </SelectButton>
-            </template>
-          </div>
-          <div class="md:col-6" v-if="'koksnvo' === param.name">
-            <Dropdown v-model="param.value" :options="koksnvoEditions" class="w-full" optionValue="id" :optionLabel="'name_' + $i18n.locale" @change="input"
-                      :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID && scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)"></Dropdown>
-          </div>
-          <div class="md:col-6" v-if="'attachments' === param.name">
-            <DataTable :value="param.value" class="p-datatable-small w-full">
-              <template v-if="scienceWork.docHistory.stateId === DocEnum.CREATED.ID || scienceWork.docHistory.stateId === DocEnum.REVISION.ID" #footer>
-                <FileUpload mode="basic" accept=".pdf" :customUpload="true" @uploader="uploadAttachment($event)"
-                            :auto="true" :chooseLabel="$t('ncasigner.chooseFile')" ref="attachmentUploader"/>
+            <div class="p-inputgroup p-input-filled">
+              <template v-if="'publicationCategory' === param.description">
+                <Dropdown v-model="param.value" :options="publicationCategories" class="w-full" @change="input" editable
+                          :option-label="publicationCategoriesLabel" :option-value="publicationCategoriesLabel"
+                          :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID && scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)">
+                </Dropdown>
               </template>
-              <Column :header="$t('hdfs.fileName')">
-                <template #body="{data}">
-                  <template v-if="!data.filepath">{{ data.filename }}</template>
-                  <a v-else style="cursor: pointer;" @click="downloadFile(data.filename, data.filepath)">{{ data.filename }}</a>
+              <Share v-else :data="param.value" @copy="onCopy()" :param="param.description === 'link'"
+                     :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID && scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)"/>
+            </div>
+            <div class="p-fluid md:col-6" v-if="'number' === param.name">
+              <InputNumber v-model="param.value" :minFractionDigits="0" :maxFractionDigits="2" :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
+              scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)" @input="input"/>
+            </div>
+            <div class="p-fluid md:col-6" v-if="'date' === param.name">
+              <PrimeCalendar v-model="param.value" dateFormat="dd.mm.yy" :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
+              scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)" @dateSelect="input"></PrimeCalendar>
+            </div>
+            <div class="p-fluid md:col-6" v-if="'persons' === param.name">
+              <FindUser searchMode="ldap" v-model="param.value" :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
+              scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)" :userType="0" @input="input()" @remove="input()"></FindUser>
+            </div>
+            <div class="md:col-6" v-if="'options' === param.name">
+              <template v-if="'editionType' === param.description">
+                <SelectButton v-model="param.value" :options="editionTypes" :allowEmpty="false" :unselectable="false" @change="input"
+                              :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID && scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)">
+                  <template #option="slotProps">
+                    {{ $t('scienceWorks.editionTypes.' + slotProps.option) }}
+                  </template>
+                </SelectButton>
+              </template>
+            </div>
+            <div class="md:col-6" v-if="'koksnvo' === param.name">
+              <Dropdown v-model="param.value" :options="koksnvoEditions" class="w-full" optionValue="id" :optionLabel="'name_' + $i18n.locale" @change="input"
+                        :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID && scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)"></Dropdown>
+            </div>
+            <div class="md:col-6" v-if="'attachments' === param.name">
+              <DataTable :value="param.value" class="p-datatable-small w-full">
+                <template v-if="scienceWork.docHistory.stateId === DocEnum.CREATED.ID || scienceWork.docHistory.stateId === DocEnum.REVISION.ID" #footer>
+                  <FileUpload mode="basic" accept=".pdf" :customUpload="true" @uploader="uploadAttachment($event)"
+                              :auto="true" :chooseLabel="$t('ncasigner.chooseFile')" ref="attachmentUploader"/>
                 </template>
-              </Column>
-              <Column :header="$t('hdfs.toastMsg')">
-                <template #body="{data}">
-                  <i class="fa-solid fa-check fa-xl" v-if="data.filepath"></i>
-                </template>
-              </Column>
-              <Column>
-                <template #body="{data, index}">
-                  <Button v-if="scienceWork.docHistory.stateId === DocEnum.CREATED.ID || scienceWork.docHistory.stateId === DocEnum.REVISION.ID"
-                          @click="param.value.splice(index, 1); removeAttachment(data)" class="p-button-text p-button-danger p-1">
-                    <i class="fa-solid fa-trash fa-xl"></i>
-                  </Button>
-                </template>
-              </Column>
-            </DataTable>
+                <Column :header="$t('hdfs.fileName')">
+                  <template #body="{data}">
+                    <template v-if="!data.filepath">{{ data.filename }}</template>
+                    <a v-else style="cursor: pointer;" @click="downloadFile(data.filename, data.filepath)">{{ data.filename }}</a>
+                  </template>
+                </Column>
+                <Column :header="$t('hdfs.toastMsg')">
+                  <template #body="{data}">
+                    <i class="fa-solid fa-check fa-xl" v-if="data.filepath"></i>
+                  </template>
+                </Column>
+                <Column>
+                  <template #body="{data, index}">
+                    <Button v-if="scienceWork.docHistory.stateId === DocEnum.CREATED.ID || scienceWork.docHistory.stateId === DocEnum.REVISION.ID"
+                            @click="param.value.splice(index, 1); removeAttachment(data)" class="p-button-text p-button-danger p-1">
+                      <i class="fa-solid fa-trash fa-xl"></i>
+                    </Button>
+                  </template>
+                </Column>
+              </DataTable>
+            </div>
           </div>
         </div>
       </div>
@@ -114,11 +112,11 @@
   <!-- revisionDialog -->
   <Dialog :header="$t('common.revision')" :modal="true" v-model:visible="visibility.revisionDialog" style="width: 30vw;">
     <div class="p-fluid col-12">
-      <Textarea v-model="revisionText" autoResize rows="5" cols="30" />
+      <Textarea v-model="revisionText" autoResize rows="5" cols="30"/>
     </div>
     <template #footer>
-      <Button class="p-button-danger" :disabled="!revisionText" :label="$t('common.revision')" @click="revision()" />
-      <Button :label="$t('common.cancel')" @click="close('revisionDialog')" />
+      <Button class="p-button-danger" :disabled="!revisionText" :label="$t('common.revision')" @click="revision()"/>
+      <Button :label="$t('common.cancel')" @click="close('revisionDialog')"/>
     </template>
   </Dialog>
 </template>
@@ -131,10 +129,11 @@ import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo.vue";
 import FindUser from "@/helpers/FindUser";
 import {ScienceService} from "@/service/science.service";
+import Share from "@/components/Share.vue";
 
 export default {
   name: 'ScienceWorksPage',
-  components: {Access, ApprovalUsers, DocSignaturesInfo, FindUser},
+  components: {Share, Access, ApprovalUsers, DocSignaturesInfo, FindUser},
   props: {
     uuid: {
       type: String,
@@ -171,7 +170,9 @@ export default {
           icon: "pi pi-fw pi-save",
           disabled: () => !this.scienceWork || (this.scienceWork.docHistory.stateId != DocEnum.CREATED.ID &&
               this.scienceWork.docHistory.stateId != DocEnum.REVISION.ID) || !this.changed,
-          command: () => { this.saveDocument() }
+          command: () => {
+            this.saveDocument()
+          }
         },
         {
           label: this.$t("common.send"),
@@ -183,14 +184,18 @@ export default {
               icon: "pi pi-user-edit",
               visible: () => this.scienceWork && (this.scienceWork.docHistory.stateId === DocEnum.CREATED.ID ||
                   this.scienceWork.docHistory.stateId === DocEnum.REVISION.ID),
-              command: () => { this.open('sendToApproveDialog') }
+              command: () => {
+                this.open('sendToApproveDialog')
+              }
             },
             {
               label: this.$t("common.revision"),
               icon: "fa-regular fa-circle-xmark",
               visible: () => this.scienceWork && this.scienceWork.docHistory.stateId === DocEnum.INAPPROVAL.ID &&
                   this.needMySign(),
-              command: () => { this.open('revisionDialog') }
+              command: () => {
+                this.open('revisionDialog')
+              }
             },
           ]
         },
@@ -198,7 +203,9 @@ export default {
           label: this.$t('common.approvalList'),
           icon: "pi pi-user-edit",
           disabled: () => !this.scienceWork || !this.scienceWork.docHistory || this.scienceWork.docHistory.stateId < DocEnum.INAPPROVAL.ID,
-          command: () => { this.open('documentInfoSidebar') }
+          command: () => {
+            this.open('documentInfoSidebar')
+          }
         },
       ],
 
@@ -431,7 +438,7 @@ export default {
       this.attachments = {};
 
       let paramsName = ["publicationType", "publicationCategory", "publicationName", "publicationDate",
-        "editionType", "editionFullName",  "editionName", "editionNumber", "editionYear", "editionPages",
+        "editionType", "editionFullName", "editionName", "editionNumber", "editionYear", "editionPages",
         "issn", "isbn", "koksnvo", "link", "printedPages", "participationInGroup", "recommendedBy",
         "coauthorsInternal", "coauthorsExternal", "attachments"];
 
@@ -543,22 +550,22 @@ export default {
         );
       } else {
         this.stages.push(
-          {
-            stage: 2,
-            users: null,
-            titleRu: "Заведующий кафедры",
-            titleKz: "Кафедра меңгерушісі",
-            titleEn: "Head of Department",
-            certificate: DocEnum.CertificatesArray.Internal,
-          },
-          {
-            stage: 3,
-            users: null,
-            titleRu: "Секретарь Правления - Ученый секретарь",
-            titleKz: "Кеңес хатшысы – Ғылыми хатшы",
-            titleEn: "Secretary of the Board - Scientific Secretary",
-            certificate: DocEnum.CertificatesArray.Internal,
-          },
+            {
+              stage: 2,
+              users: null,
+              titleRu: "Заведующий кафедры",
+              titleKz: "Кафедра меңгерушісі",
+              titleEn: "Head of Department",
+              certificate: DocEnum.CertificatesArray.Internal,
+            },
+            {
+              stage: 3,
+              users: null,
+              titleRu: "Секретарь Правления - Ученый секретарь",
+              titleKz: "Кеңес хатшысы – Ғылыми хатшы",
+              titleEn: "Secretary of the Board - Scientific Secretary",
+              certificate: DocEnum.CertificatesArray.Internal,
+            },
         );
       }
     },
@@ -571,10 +578,14 @@ export default {
 <style scoped>
 .progress-spinner {
   position: absolute;
-  top: 0; bottom: 0; left: 0; right: 0;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
   margin: auto;
   z-index: 1102;
 }
+
 .arrow-icon {
   cursor: pointer;
   font-size: 1.25rem;
@@ -582,6 +593,7 @@ export default {
   display: flex;
   align-items: center;
 }
+
 .card {
   flex-grow: 1;
   background-color: #ffffff;
@@ -590,30 +602,37 @@ export default {
   padding: 1rem;
   margin-bottom: 0px;
 }
+
 .status-status_created {
   background: #6c757d;
   color: #fff;
 }
+
 .status-status_signing {
   background: #17a2b8;
   color: #fff;
 }
+
 .status-status_signed {
   background: #28a745;
   color: #fff;
 }
+
 .status-status_inapproval {
   background: #9317b8;
   color: #ffffff;
 }
+
 .status-status_approved {
   background: #007bff;
   color: #ffffff;
 }
+
 .status-status_revision {
   background: #ffcdd2;
   color: #c63737;
 }
+
 :deep(.p-datatable-footer),
 :deep(.p-button-link),
 :deep(.p-datatable-thead > tr > th) {

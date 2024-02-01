@@ -1,6 +1,6 @@
 <template>
   <TitleBlock :title="$t('fieldEducation.addCourse')" :show-back-button="true"/>
-  <ToolbarMenu :items="items"/>
+  <ToolbarMenu :data="menu"/>
   <div class="grid" v-if="formData">
     <div class="col-12 lg:col-8">
       <div class="card p-fluid mt-3">
@@ -237,7 +237,7 @@ const lazyParams = {
 }
 const checkedCertificate = ref(false)
 const fullName = store.state.loginedUser.thirdName + ' ' + store.state.loginedUser.firstName + ' ' + store.state.loginedUser.lastName
-const items = ref([
+const menu = ref([
   {
     label: t("common.save"),
     icon: "pi pi-fw pi-save",
@@ -253,16 +253,8 @@ const items = ref([
     label: t("common.approvalList"),
     icon: "pi pi-fw  pi-check-circle",
     disabled: disabledApproval,
-    //command: null,
-  },
-  {
-    label: t("Какой то текст"),
-    icon: "pi pi-fw  pi-check",
-  },
-  {
-    label: "Тестовый тест",
-    icon: "pi pi-fw  pi-cog",
-  },
+    command: ()=> {},
+  }
 ])
 
 const handleFileChange = (event) => {

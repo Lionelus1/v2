@@ -6,7 +6,7 @@
     <div :class="[sidebarClass,{ 'hide_items': hasClass }]" @click="onSidebarClick" v-show="isSidebarVisible()" :style="{ width: menuWidth + 'px' }"
          @mouseover="expandMenu" @mouseleave="collapseMenu">
       <div class="relative fixed_icon">
-        <div class="absolute right-0 top-0" v-if="isMobile()" @click="toggleMenuWidth" :style="{color: fixedMenu? '#2196f3':'#ced4da'}">
+        <div class="absolute right-0 top-0" v-if="isDesktop()" @click="toggleMenuWidth" :style="{color: fixedMenu? '#2196f3':'#ced4da'}">
           <i class="fa-solid fa-thumbtack"></i>
         </div>
       </div>
@@ -202,9 +202,6 @@ export default {
     },
     isDesktop() {
       return window.innerWidth > 1024;
-    },
-    isMobile() {
-      return window.innerWidth > 500;
     },
     isSidebarVisible() {
       if (this.isDesktop()) {
