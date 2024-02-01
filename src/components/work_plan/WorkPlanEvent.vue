@@ -60,7 +60,6 @@
               @click="downloadContract('additional')"/>
     </div>
     <div class="card" v-if="plan">
-
       <TreeTable ref="workplantreetable" class="p-treetable-sm" :value="data" :lazy="true" :loading="loading" @nodeExpand="onExpand"
                  scrollHeight="flex"
                  responsiveLayout="scroll" :resizableColumns="true" columnResizeMode="fit" showGridlines :paginator="true" :rows="10"
@@ -107,9 +106,6 @@
                 <div class="field">
                   <label>{{ $t('cafedra.responsible') }}</label>
                   <FindUser v-model="filters.author.value" :max="1" :editMode="false"/>
-                  <!--                  <Dropdown v-model="filters.department.value" :options="departments" optionLabel="department_name"
-                                              optionValue="department_id" :filter="true" :show-clear="true"
-                                              :placeholder="$t('common.select')" />-->
                 </div>
                 <div class="field">
                   <Button :label="$t('common.clear')" @click="clearFilter" class="mb-2 p-button-outlined"/>
@@ -164,9 +160,9 @@
         <Column field="fullName" :header="isOperPlan ? $t('workPlan.summary') : $t('workPlan.approvalUsers')">
           <template #body="{ node }">
             <div v-if="node.user && node.user.length > 2">
-              <Button type="button" @click="showRespUsers" class="p-button-rounded" icon="fa-solid fa-eye" label=""/>
-              <OverlayPanel ref="op">
-                <p v-for="item in node.user" :key="item.id">{{ item.user.fullName }}</p>
+              <Button type="button" @click="showRespUsers($event, node)" class="p-button-text" icon="fa-solid fa-eye fa-xl" label=""/>
+              <OverlayPanel ref="op" @hide="closeOverlay">
+                <p v-for="item in selectedEvent.user" :key="item.id">{{ item.user.fullName }}</p>
               </OverlayPanel>
             </div>
             <div v-else>
@@ -181,11 +177,11 @@
         </Column>
         <Column field="result" :header="isOperPlan ? $t('common.additionalInfo') : $t('common.result')" style="width: 15%;">
           <template #body="{ node }">
-            <div v-if="node.result && node.result.length > 10">
+            <div v-if="node.result && node.result.length > 100">
               {{ node.result_short }}
 <!--              <Button type="button" @click="toggle('event-final-result', $event)" class="p-button-text" icon="fa-solid fa-eye" label=""/>-->
               <a href="javascript:void(0);" @click="toggle('event-final-result', $event, node)">{{ $t('common.showMore').toLowerCase() }}</a>
-              <OverlayPanel ref="event-final-result" :showCloseIcon="true" style="width: 450px" :breakpoints="{ '960px': '75vw' }">
+              <OverlayPanel ref="event-final-result" :showCloseIcon="true" style="width: 450px" :breakpoints="{ '960px': '75vw' }" @hide="closeOverlay">
                 <div>{{ selectedEvent.result }}</div>
               </OverlayPanel>
             </div>
@@ -708,8 +704,14 @@ export default {
       }
       return res;
     },
-    showRespUsers(event) {
+    showRespUsers(event, node) {
+      if (node) {
+        this.selectedEvent = node
+      }
       this.$refs.op.toggle(event);
+    },
+    closeOverlay() {
+      this.selectedEvent = null
     },
     formatDateMoment(date, showHour) {
       if (showHour) return moment(new Date(date)).utc().format("DD.MM.YYYY HH:mm:ss")
