@@ -1,67 +1,94 @@
 <template>
 
-  <div id="carddiv" class="grid">
-
-    <div class="col-12">
-        <Menubar :model="menu" :key="active" style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px"></Menubar>
-      </div>
+  <div>
 
     <BlockUI :blocked="loading" :fullScreen="true">
         <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
     </BlockUI>
+    
+    <Accordion :activeIndex="0">
+      <AccordionTab>
+        <template #header>
+            <div class="uppercase">
+              {{ t("hr.title.general") }}
+            </div>
+        </template>
+        <div class="grid formgrid">
+        <div  class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+            <label>{{ t("common.academicDegree") }}</label>
+            <Dropdown   @input="updateUserData" class="mt-2" :disabled="readonly"  v-model="user.academicDegree" :options="academicDegreeDictionary" :optionLabel="('name'+locale)" :placeholder="t('common.select')" />
 
-    <div class="card">
-      <div class="grid formgrid">
-          <DataTable class="justify-content-between"  selectionMode="single" v-model="academicDegree" :lazy="true" :value="academicDegrees" :loading="loading" v-model:selection="academicDegree"
-          :paginator="true" :rows="10" :totalRecords="totalRecords" @page="onPageChange"> 
-            <!-- Учебное заведение -->
-            <Column  field="institution_name" :header="$t('hr.edu.institution')"></Column>
+          </div>
+          <div  class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+            <label>{{ t("common.academicTitle") }}</label>
+            <Dropdown   @input="updateUserData" class="mt-2" :disabled="readonly" v-model="user.academicTitle" :options="academicTitleDictionary" :optionLabel="('name'+$i18n.locale)" :placeholder="t('common.select')" />
+          </div>
+        </div>
+      </AccordionTab>
+      <AccordionTab>
+        <template #header>
+            <div class="uppercase">
+              {{ t("hr.title.education") }}
+            </div>
+        </template>
 
-            <!-- Факультет -->
-            <!-- <Column field="faculty" :header="$t('common.faculty')"></Column> -->
+        <div class="col-12">
+            <Menubar :model="menu" :key="active" style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px"></Menubar>
+        </div>
+        <div class="card">
+          <div class="grid formgrid">
+              <DataTable class="justify-content-between"  selectionMode="single" v-model="academicDegree" :lazy="true" :value="academicDegrees" :loading="loading" v-model:selection="academicDegree"
+              :paginator="true" :rows="10" :totalRecords="totalRecords" @page="onPageChange"> 
+                <!-- Учебное заведение -->
+                <Column  field="institution_name" :header="t('hr.edu.institution')"></Column>
 
-            <!-- Адрес учебного заведения -->
-            <Column field="location" :header="$t('hr.edu.institutionAddress')"></Column>
+                <!-- Факультет -->
+                <!-- <Column field="faculty" :header="t('common.faculty')"></Column> -->
 
-            <!-- Специальность -->
-            <Column field="speciality" :header="$t('common.speciality')"></Column>
-            
-            <!-- Номер диплома -->
-            <Column  field="diplom_number" :header="$t('common.diplomNumber')"></Column>
+                <!-- Адрес учебного заведения -->
+                <Column field="location" :header="t('hr.edu.institutionAddress')"></Column>
 
-            <!-- Год поступления -->
-            <Column field="start_date" :header="$t('common.startDate')">
-                <template #body="slotProps">
-                    {{ formatDate(slotProps.data.start_date) }}
-                </template>
-            </Column>
+                <!-- Специальность -->
+                <Column field="speciality" :header="t('common.speciality')"></Column>
+                
+                <!-- Номер диплома -->
+                <Column  field="diplom_number" :header="t('common.diplomNumber')"></Column>
 
-            
-            <!-- Год окончания -->
-            <Column field="final_date" :header="$t('common.endDate')">
-                <template #body="slotProps">
-                    {{ formatDate(slotProps.data.final_date) }}
-                </template>
-            </Column>
+                <!-- Год поступления -->
+                <Column field="start_date" :header="t('common.startDate')">
+                    <template #body="slotProps">
+                        {{ formatDate(slotProps.data.start_date) }}
+                    </template>
+                </Column>
 
-            <!-- Скан копия -->
-            <Column  header="Скан копия">
-              <template #body="slotProps">
-                <Button v-if="slotProps.data.file_path !== null" icon="pi pi-download" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="showFile(slotProps.data.file_path)"></Button>
-              </template>
-            </Column>
+                
+                <!-- Год окончания -->
+                <Column field="final_date" :header="t('common.endDate')">
+                    <template #body="slotProps">
+                        {{ formatDate(slotProps.data.final_date) }}
+                    </template>
+                </Column>
 
-            <!-- Действия-->
-            <Column v-if="!readonly" :header="t('dissertation.dissReportActions')">
-                <template #body="slotProps">
-                    <Button icon="pi pi-pencil" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="academicDegree=slotProps.data;updateEducation()"></Button>
-                    <Button icon="fa-solid fa-trash" class="p-button-danger mb-2 mr-2" @click="academicDegree=slotProps.data;deleteEducationConfirm()"></Button>
-                </template>
-            </Column>
+                <!-- Скан копия -->
+                <Column  header="Скан копия">
+                  <template #body="slotProps">
+                    <Button v-if="slotProps.data.file_path !== null" icon="pi pi-download" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="showFile(slotProps.data.file_path)"></Button>
+                  </template>
+                </Column>
 
-          </DataTable> 
-      </div>
-    </div>
+                <!-- Действия-->
+                <Column v-if="!readonly" :header="t('dissertation.dissReportActions')">
+                    <template #body="slotProps">
+                        <Button icon="pi pi-pencil" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="academicDegree=slotProps.data;updateEducation()"></Button>
+                        <Button icon="fa-solid fa-trash" class="p-button-danger mb-2 mr-2" @click="academicDegree=slotProps.data;deleteEducationConfirm()"></Button>
+                    </template>
+                </Column>
+
+              </DataTable> 
+          </div>
+        </div>
+    </AccordionTab>
+    </Accordion>
   </div>
 
 
@@ -97,15 +124,18 @@
   import {UserService} from "@/service/user.service"
   import { format } from 'date-fns';
   import  UserEducationEdit from "../edit/UserEducationEdit"
+  import {getHeader} from "@/config/config";
+  import api from "@/service/api"
 
-  const { t } = useI18n()
+  const {t, locale} = useI18n()
   const toast = useToast()
-  const user = ref({})
+  const user = ref(props.modelValue)
   const emitter = inject("emitter");
   const userService = new UserService
   const confirmDelete = ref(false);
   const loading = ref(false);
-
+  const academicDegreeDictionary = ref([])
+  const academicTitleDictionary = ref([])
   const props = defineProps({
     userID: {
       type: Number,
@@ -124,7 +154,6 @@
       default: ''
     }
   });
-
   const academicDegrees = ref([])
   const academicDegree = ref(null)
   const userID = ref(props.userID)
@@ -138,6 +167,7 @@
   const isView = ref({
     academicDegree: false
   })
+  const emitPersonalInformationUpdate = defineEmits(["personal-information-updated"]);
 
   const getUserAcademicDegree = () => {
     loading.value = true
@@ -205,7 +235,6 @@
     }
   }
 
-
   const menu= ref([
         {
           label: t("common.add"),
@@ -234,7 +263,58 @@
       return dateObject.toLocaleDateString(); 
   }
 
+
+  const capitalize = (str) => {
+    if (typeof str !== 'string') return '';
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
+
+  const getCombinedDegreeAndTitle = () => {
+        const degree = (user.value && user.value.academicDegree) ? capitalize(t(user.value.academicDegree['name'+locale.value])) : '';
+        const title = (user.value && user.value.academicTitle) ? capitalize(t(user.value.academicTitle['name'+locale.value])) : '';
+
+        if (degree && title) {
+        return `${degree}, ${title}`.trim();
+        } else if (degree) {
+            return degree.trim();
+        } else if (title) {
+            return title.trim();
+        } else {
+            return ''; 
+        }
+
+  }
+
+  const getCatalog = (name) => {
+      api.post( "/auth/getDictionary",
+          { name: name },
+          {
+            headers: getHeader(),
+          }
+        )
+        .then((res) => {
+          if (name === "academic_degree") {
+            academicDegreeDictionary.value = res.data
+          } else {
+            academicTitleDictionary.value = res.data
+          }
+        })
+        .catch((error) => {
+            toast.add({
+              severity: "error",
+              summary: "Dictionary load error:\n" + error,
+              life: 3000,
+            })
+        });
+    }
+
+  const updateUserData = () => {
+    emitPersonalInformationUpdate("personal-information-updated", user.value);
+  };
+
   onMounted(() => {
+    getCatalog("academic_degree");
+    getCatalog("academic_title")
       getUserAcademicDegree()
 
       emitter.on('academicDegree', (data) => {

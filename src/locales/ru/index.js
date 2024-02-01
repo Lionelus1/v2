@@ -211,6 +211,7 @@ export default {
         myAddress: 'Адрес',
         dataSavedSuccessfully:'Данные успешно сохранены',
         creationAndEditing:'Создание и редактирование',
+        users:'Пользователи',
         states: {
             submitted: "Подана",
             created: "создан",

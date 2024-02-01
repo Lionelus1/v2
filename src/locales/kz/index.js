@@ -210,6 +210,7 @@ export default {
         myAddress: 'Мекенжайы',
         dataSavedSuccessfully:'Деректер сәтті сақталды',
         creationAndEditing:'Сақтау және өңдеу',
+        users:'Пайдаланушылар',
         states: {
             submitted: "Берілген",
             created: "Құрылды",
