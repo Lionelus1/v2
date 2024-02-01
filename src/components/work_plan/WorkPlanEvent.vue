@@ -121,7 +121,7 @@
         </template>
         <template #empty> {{ $t('common.noData') }}</template>
         <template #loading> {{ $t('common.loading') }}</template>
-        <Column field="event_name" :header="$t('workPlan.eventName')" :expander="true" style="min-width:300px">
+        <Column field="event_name" :header="$t('workPlan.eventName')" :expander="true" style="min-width:300px;width: 30%;">
           <template #body="{ node }">
             <span><i class="fa-solid fa-folder"></i>&nbsp;{{ node.event_name }}</span>
           </template>
@@ -131,7 +131,7 @@
             {{ formatDateMoment(node.start_date) }}
           </template>
         </Column>
-        <Column field="end_date" :header="$t('common.startDate')" v-if="isSciencePlan" style="max-width: 100px">
+        <Column field="end_date" :header="$t('common.endDate')" v-if="isSciencePlan" style="max-width: 100px">
           <template #body="{ node }">
             {{ formatDateMoment(node.end_date) }}
           </template>
@@ -179,12 +179,14 @@
             {{ node.supporting_docs }}
           </template>
         </Column>
-        <Column field="result" :header="plan && plan.is_oper ? $t('common.additionalInfo') : $t('common.result')">
+        <Column field="result" :header="isOperPlan ? $t('common.additionalInfo') : $t('common.result')" style="width: 15%;">
           <template #body="{ node }">
-            <div v-if="node.result && node.result.length > 150">
-              <Button type="button" @click="toggle('event-final-result', $event)" class="p-button-rounded" icon="fa-solid fa-eye" label=""/>
+            <div v-if="node.result && node.result.length > 10">
+              {{ node.result_short }}
+<!--              <Button type="button" @click="toggle('event-final-result', $event)" class="p-button-text" icon="fa-solid fa-eye" label=""/>-->
+              <a href="javascript:void(0);" @click="toggle('event-final-result', $event, node)">{{ $t('common.showMore').toLowerCase() }}</a>
               <OverlayPanel ref="event-final-result" :showCloseIcon="true" style="width: 450px" :breakpoints="{ '960px': '75vw' }">
-                <div>{{ node.result }}</div>
+                <div>{{ selectedEvent.result }}</div>
               </OverlayPanel>
             </div>
             <div v-else>
@@ -505,10 +507,23 @@ export default {
               if (e.creator_id === this.loginedUserId && e.parent_id == null) {
                 this.isCreator = true;
               }
+              if (e.result && e.result.length > 100) {
+                e.result_short = `${e.result.substring(0, 100)}...`
+              }
             });
           }
         } else {
           parent.children = res.data.items;
+          if (parent.children) {
+            parent.children.map(e => {
+              if (e.creator_id === this.loginedUserId && e.parent_id == null) {
+                this.isCreator = true;
+              }
+              if (e.result && e.result.length > 100) {
+                e.result_short = `${e.result.substring(0, 100)}...`
+              }
+            });
+          }
           this.total = 0;
         }
         // this.getWorkPlanApprovalUsers();
@@ -700,7 +715,10 @@ export default {
       if (showHour) return moment(new Date(date)).utc().format("DD.MM.YYYY HH:mm:ss")
       return moment(new Date(date)).utc().format("DD.MM.YYYY")
     },
-    toggle(ref, event) {
+    toggle(ref, event, node) {
+      if (node) {
+        this.selectedEvent = node;
+      }
       this.$refs[ref].toggle(event);
     },
     clearFilter() {
