@@ -355,7 +355,8 @@ export default {
         change: "Change",
         unknownUser: "Guest",
         doNotShowAnymore: "Do not show anymore",
-        addPost: 'Add post'
+        addPost: 'Add post',
+        showMore: "Show more",
     },
     positions: {
         menuTitle: 'Change position',
@@ -1404,7 +1405,7 @@ export default {
         addCourse: 'Add to the course',
         completedTraining: 'Completed training',
         course: 'Course',
-        startDate:'Course start date',
+        startDate: 'Course start date',
         completionDate: 'Course completion date',
         disciplineCode: "Subject code",
         disciplineName: "Subject name",
@@ -1421,7 +1422,7 @@ export default {
         rolePosTitle: 'Position management',
         giveRole: 'Give new role',
         givePosRoleRel: 'Give new position-role relation',
-        givePosRel:'Create a position',
+        givePosRel: 'Create a position',
         selectOrg: 'Select organization',
         selectPosition: 'Select a position',
         selectDep: 'Select department',
@@ -1434,7 +1435,7 @@ export default {
         roleName: 'Role name',
         roleLabel: 'Role',
         departmentName: 'Name of the department',
-        positionName:'Position name',
+        positionName: 'Position name',
         noResult: 'No records found',
         cantDelete: 'Cant delete the record',
         addNewInstance: 'Adding new approvers/signers',
@@ -1442,10 +1443,6 @@ export default {
         failedToDelete: 'Failed to delete',
         failedToLoad: 'Failed to load data',
         rolePosRel: 'Position management',
-        givePosRel: 'Create a position',
-        departmentName: 'Name of departments',
-        positionName: 'Name of Position',
-        selectDep: 'Select department',
         departmentRoleRel: 'Department-role management',
         giveDepartmentRoleRel: 'Give new department-role relation',
         nameDepartment: 'Name of department',
@@ -1564,7 +1561,7 @@ export default {
         scientistsProfile: 'Profile Scientists',
         profileLink: 'Profile link',
         academicDegAndAcademicTit: 'Academic degree and academic title',
-        currentPosition:'Current position'
+        currentPosition: 'Current position'
     },
     fieldEducation: {
         title: 'Field of education',
@@ -1586,7 +1583,7 @@ export default {
         offline: 'Offline',
         mixed: 'Mixed'
     },
-    educationalPrograms:{
+    educationalPrograms: {
         name: 'Educational program',
         educationalProgramConstructor: 'Educational program constructor',
         bachelor: 'Bachelor',

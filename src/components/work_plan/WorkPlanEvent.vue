@@ -60,7 +60,6 @@
               @click="downloadContract('additional')"/>
     </div>
     <div class="card" v-if="plan">
-
       <TreeTable ref="workplantreetable" class="p-treetable-sm" :value="data" :lazy="true" :loading="loading" @nodeExpand="onExpand"
                  scrollHeight="flex"
                  responsiveLayout="scroll" :resizableColumns="true" columnResizeMode="fit" showGridlines :paginator="true" :rows="10"
@@ -107,9 +106,6 @@
                 <div class="field">
                   <label>{{ $t('cafedra.responsible') }}</label>
                   <FindUser v-model="filters.author.value" :max="1" :editMode="false"/>
-                  <!--                  <Dropdown v-model="filters.department.value" :options="departments" optionLabel="department_name"
-                                              optionValue="department_id" :filter="true" :show-clear="true"
-                                              :placeholder="$t('common.select')" />-->
                 </div>
                 <div class="field">
                   <Button :label="$t('common.clear')" @click="clearFilter" class="mb-2 p-button-outlined"/>
@@ -121,7 +117,7 @@
         </template>
         <template #empty> {{ $t('common.noData') }}</template>
         <template #loading> {{ $t('common.loading') }}</template>
-        <Column field="event_name" :header="$t('workPlan.eventName')" :expander="true" style="min-width:300px">
+        <Column field="event_name" :header="$t('workPlan.eventName')" :expander="true" style="min-width:300px;width: 30%;">
           <template #body="{ node }">
             <span><i class="fa-solid fa-folder"></i>&nbsp;{{ node.event_name }}</span>
           </template>
@@ -131,7 +127,7 @@
             {{ formatDateMoment(node.start_date) }}
           </template>
         </Column>
-        <Column field="end_date" :header="$t('common.startDate')" v-if="isSciencePlan" style="max-width: 100px">
+        <Column field="end_date" :header="$t('common.endDate')" v-if="isSciencePlan" style="max-width: 100px">
           <template #body="{ node }">
             {{ formatDateMoment(node.end_date) }}
           </template>
@@ -164,9 +160,9 @@
         <Column field="fullName" :header="isOperPlan ? $t('workPlan.summary') : $t('workPlan.approvalUsers')">
           <template #body="{ node }">
             <div v-if="node.user && node.user.length > 2">
-              <Button type="button" @click="showRespUsers" class="p-button-rounded" icon="fa-solid fa-eye" label=""/>
-              <OverlayPanel ref="op">
-                <p v-for="item in node.user" :key="item.id">{{ item.user.fullName }}</p>
+              <Button type="button" @click="showRespUsers($event, node)" class="p-button-text" icon="fa-solid fa-eye fa-xl" label=""/>
+              <OverlayPanel ref="op" @hide="closeOverlay">
+                <p v-for="item in selectedEvent.user" :key="item.id">{{ item.user.fullName }}</p>
               </OverlayPanel>
             </div>
             <div v-else>
@@ -179,12 +175,14 @@
             {{ node.supporting_docs }}
           </template>
         </Column>
-        <Column field="result" :header="plan && plan.is_oper ? $t('common.additionalInfo') : $t('common.result')">
+        <Column field="result" :header="isOperPlan ? $t('common.additionalInfo') : $t('common.result')" style="width: 15%;">
           <template #body="{ node }">
-            <div v-if="node.result && node.result.length > 150">
-              <Button type="button" @click="toggle('event-final-result', $event)" class="p-button-rounded" icon="fa-solid fa-eye" label=""/>
-              <OverlayPanel ref="event-final-result" :showCloseIcon="true" style="width: 450px" :breakpoints="{ '960px': '75vw' }">
-                <div>{{ node.result }}</div>
+            <div v-if="node.result && node.result.length > 100">
+              {{ node.result_short }}
+<!--              <Button type="button" @click="toggle('event-final-result', $event)" class="p-button-text" icon="fa-solid fa-eye" label=""/>-->
+              <a href="javascript:void(0);" @click="toggle('event-final-result', $event, node)">{{ $t('common.showMore').toLowerCase() }}</a>
+              <OverlayPanel ref="event-final-result" :showCloseIcon="true" style="width: 450px" :breakpoints="{ '960px': '75vw' }" @hide="closeOverlay">
+                <div>{{ selectedEvent.result }}</div>
               </OverlayPanel>
             </div>
             <div v-else>
@@ -238,7 +236,7 @@
                               :event="selectedEvent" @hide="hideDialog(dialog.edit)" />
   <WorkPlanReportApprove v-if="showReportModal && scienceReport && plan" :approval-stages="approval_users" :visible="showReportModal && scienceReport"
                          :doc-id="scienceReport.doc_id" :report="scienceReport" :plan="plan"></WorkPlanReportApprove>
-  <work-plan-approve v-if="dialog.planApprove.state" :visible="dialog.planApprove.state"
+  <work-plan-approve v-if="dialog.planApprove.state" :visible="dialog.planApprove.state" :approval-stages="planApprovalStage"
       :plan="plan" :events="data" @hide="hideDialog(dialog.planApprove)" @isSent="planSentToApprove"></work-plan-approve>
 </template>
 
@@ -399,7 +397,8 @@ export default {
         planView: {
           state: false
         }
-      }
+      },
+      planApprovalStage: null
     }
   },
   created() {
@@ -505,10 +504,23 @@ export default {
               if (e.creator_id === this.loginedUserId && e.parent_id == null) {
                 this.isCreator = true;
               }
+              if (e.result && e.result.length > 100) {
+                e.result_short = `${e.result.substring(0, 100)}...`
+              }
             });
           }
         } else {
           parent.children = res.data.items;
+          if (parent.children) {
+            parent.children.map(e => {
+              if (e.creator_id === this.loginedUserId && e.parent_id == null) {
+                this.isCreator = true;
+              }
+              if (e.result && e.result.length > 100) {
+                e.result_short = `${e.result.substring(0, 100)}...`
+              }
+            });
+          }
           this.total = 0;
         }
         // this.getWorkPlanApprovalUsers();
@@ -571,6 +583,60 @@ export default {
           //this.$router.push('/work-plan')
         }
         if (this.isSciencePlan) {
+          this.planApprovalStage = [
+            {
+              stage: 1,
+              users: [],
+              titleRu: "Научный руководитель проекта",
+              titleKz: "Жобаның ғылыми жетекшісі",
+              titleEn: "Project Scientific Director",
+              certificate: {
+                namekz: "Жеке тұлғаның сертификаты",
+                nameru: "Сертификат физического лица",
+                nameen: "Certificate of an individual",
+                value: "individual"
+              }
+            },
+            {
+              stage: 2,
+              users: [],
+              titleRu: "Ответственные от управления научных проектов",
+              titleKz: "Ғылыми жобалар басқармасынан жауапты тұлға",
+              titleEn: "Employee of Scientific Projects Management",
+              certificate: {
+                namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+                nameru: "Для внутреннего документооборота (ГОСТ)",
+                nameen: "For internal document management (GOST)",
+                value: "internal"
+              },
+            },
+            {
+              stage: 3,
+              users: [],
+              titleRu: "Начальник Управления научных проектов",
+              titleKz: "Ғылыми жобалар бөлімінің меңгерушісі",
+              titleEn: "Head of the Scientific Projects Department",
+              certificate: {
+                namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+                nameru: "Для внутреннего документооборота (ГОСТ)",
+                nameen: "For internal document management (GOST)",
+                value: "internal"
+              },
+            },
+            {
+              stage: 4,
+              users: [],
+              titleRu: "Директор Департамента науки",
+              titleKz: "Ғылым департаментінің директоры",
+              titleEn: "Director of the Department of Science",
+              certificate: {
+                namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+                nameru: "Для внутреннего документооборота (ГОСТ)",
+                nameen: "For internal document management (GOST)",
+                value: "internal"
+              },
+            }
+          ];
           this.getRelatedFiles()
         }
         this.isPlanApproved = this.plan.doc_info?.docHistory.stateEn == "approved"
@@ -693,14 +759,23 @@ export default {
       }
       return res;
     },
-    showRespUsers(event) {
+    showRespUsers(event, node) {
+      if (node) {
+        this.selectedEvent = node
+      }
       this.$refs.op.toggle(event);
+    },
+    closeOverlay() {
+      this.selectedEvent = null
     },
     formatDateMoment(date, showHour) {
       if (showHour) return moment(new Date(date)).utc().format("DD.MM.YYYY HH:mm:ss")
       return moment(new Date(date)).utc().format("DD.MM.YYYY")
     },
-    toggle(ref, event) {
+    toggle(ref, event, node) {
+      if (node) {
+        this.selectedEvent = node;
+      }
       this.$refs[ref].toggle(event);
     },
     clearFilter() {
@@ -793,9 +868,9 @@ export default {
           {
             stage: 2,
             users: [],
-            titleRu: "Руководитель проекта",
-            titleKz: "Жоба жетекшісі",
-            titleEn: "Project Manager",
+            titleRu: "Научный руководитель проекта",
+            titleKz: "Жобаның ғылыми жетекшісі",
+            titleEn: "Project Scientific Director",
             certificate: {
               namekz: "Жеке тұлғаның сертификаты",
               nameru: "Сертификат физического лица",
@@ -806,9 +881,9 @@ export default {
           {
             stage: 3,
             users: [],
-            titleRu: "Ответственные за заключение договоров и сдачу актов от Сектора поддержки научных проектов",
-            titleKz: "Ғылыми жобаларды сүйемелдеу секторынан келісім-шарттар жасауға және актілерді ұсынуға жауапты",
-            titleEn: "Responsible for concluding contracts and submitting acts from the Scientific Projects Support Sector",
+            titleRu: "Ответственные от управления научных проектов",
+            titleKz: "Ғылыми жобалар басқармасынан жауапты тұлға",
+            titleEn: "Employee of Scientific Projects Management",
             certificate: {
               namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
               nameru: "Для внутреннего документооборота (ГОСТ)",

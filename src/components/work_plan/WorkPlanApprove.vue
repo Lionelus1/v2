@@ -36,7 +36,7 @@ import Enum from "@/enum/workplan/index"
 export default {
   name: "WorkPlanApprove",
   components: {PdfContent, ApprovalUsers},
-  props: ['visible', 'docId', 'plan', 'events'],
+  props: ['visible', 'docId', 'plan', 'events', 'approvalStages'],
   emits: ['isSent', 'hide'],
   data() {
     return {
@@ -66,7 +66,7 @@ export default {
       planService: new WorkPlanService(),
       approveComponentKey: 0,
       approving: false,
-      stages: null,
+      stages: this.approvalStages || null,
       enum: Enum,
     }
   },
