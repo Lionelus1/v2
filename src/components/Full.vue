@@ -36,7 +36,8 @@
 import {useRoute} from "vue-router"
 
 import {MenuService} from "../service/menu.service";
-
+import { smartEnuApi, getHeader } from "@/config/config";
+import axios from 'axios';
 import AppTopBar from '../AppTopbar.vue';
 import AppProfile from '../AppProfile.vue';
 import AppMenu from '../AppMenu.vue';
@@ -67,7 +68,7 @@ export default {
       applyFlex: false,
       menuWidth: 85,
       hasClass: false,
-      fixedMenu: localStorage.getItem('fixedMenu') === 'true' || false
+      fixedMenu:  false,
     }
   },
 
@@ -167,6 +168,29 @@ export default {
       this.menuWidth = this.menuWidth === 85 ? 250 : 85;
       this.fixedMenu = !this.fixedMenu
       localStorage.setItem("fixedMenu", this.fixedMenu)
+
+      axios
+					.post(smartEnuApi + "/smartenu/settings/insert",{
+						fixed_menu: this.fixedMenu,
+					},
+					{
+						headers: getHeader()
+					},).then((res) => {
+
+					}).catch((err) => {
+						if (err.response.status == 401) {
+							this.$store.dispatch("logLout");
+						}
+
+						this.$toast.add({
+							severity: "error",
+							detail: this.$t("common.message.saveError"),
+							life: 3000,
+						});
+
+						this.loading = false;
+						});
+      
     },
     expandMenu() {
       if (this.fixedMenu) return;
@@ -218,6 +242,39 @@ export default {
     applyFlexHandler(value) {
       this.applyFlex = value;
     },
+    loadMenuIcon() {
+
+  const fixedMenu = localStorage.getItem("fixedMenu");
+
+  
+  const isValueMissing = fixedMenu === null || fixedMenu === undefined || fixedMenu === 'null' || fixedMenu === 'undefined';
+
+  if (isValueMissing) {
+
+    axios
+      .get(smartEnuApi + "/smartenu/settings/get", {
+        headers: getHeader()
+      })
+      .then((res) => {
+
+        localStorage.setItem("fixedMenu", res.data.enu_settings.fixed_menu);
+        this.fixedMenu = res.data.enu_settings.fixed_menu;
+      })
+      .catch((err) => {
+
+        console.error('Ошибка при получении значения fixedMenu из бэкенда:', err);
+
+        this.fixedMenu = false;
+      });
+  } else {
+
+    this.fixedMenu = fixedMenu === 'true';
+  }
+},
+				
+			saveMenuIcon(){
+
+			},
   },
   computed: {
     containerClass() {
@@ -264,6 +321,7 @@ export default {
     } else if (doNotShowAnymore) {
       localStorage.removeItem('showPositionsDialog');
     }
+    this.loadMenuIcon()
   },
   beforeUpdate() {
     if (this.mobileMenuActive)

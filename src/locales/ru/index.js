@@ -1754,5 +1754,15 @@ export default {
         }
     },
     supportingDocument: "Подтверждающий документ",
-    documentScan: 'Сканирование документа'
+    documentScan: 'Сканирование документа',
+    enuTopicSettings: {
+        normalVersion: 'Нормальный вариант',
+        inputType: 'Стиль ввода',
+        inputOutlined: 'Упомянутый',
+        inputFilled: 'Заполненный',
+        rippleEffect: 'Волновой эффект',
+        menuColor: 'Цвет меню',
+        menuColorDark: 'Темный',
+        menuColorLight: 'Светлый',
+    },
 }

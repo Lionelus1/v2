@@ -1754,5 +1754,15 @@ export default {
         }
     },
     supportingDocument: "Supporting document",
-    documentScan: 'Document Scan'
+    documentScan: 'Document Scan',
+    enuTopicSettings: {
+        normalVersion:'Normal version',
+        inputType: 'Input Style',
+        inputOutlined: 'Outlined',
+        inputFilled: 'Filled',
+        rippleEffect: 'Ripple Effect',
+        menuColor: 'Menu Color',
+        menuColorDark: 'Dark',
+        menuColorLight: 'Light',
+    },
 }

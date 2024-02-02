@@ -1769,5 +1769,16 @@ export default {
         }
     },
     supportingDocument: "Растайтын құжат",
-    documentScan: 'Құжатты сканерлеу'
+    documentScan: 'Құжатты сканерлеу',
+    enuTopicSettings: {
+        normalVersion:'Қалыпты нұсқа',
+        inputType: 'Енгізу Стилі',
+        inputOutlined: 'Көрсетілген',
+        inputFilled: 'Толтырылған',
+        rippleEffect: 'Толқындық Әсер',
+        menuColor: 'Мәзір Түсі',
+        menuColorDark: 'Қараңғы',
+        menuColorLight: 'Жарық',
+    }
+
 }
