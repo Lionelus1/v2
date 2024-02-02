@@ -1,8 +1,8 @@
 <template>
-  <div class="toolbar_menu card p-0 mb-3" ref="containerRef" :class="{ 'scrollable': isScrollable && (!search || !filter) }">
+  <div class="toolbar_menu card p-0 mb-3" ref="containerRef" :class="{ 'scrollable':!search || !filter }">
     <Button v-if="isScrollable && (!search || !filter)" :class="['scroll-left']" icon="pi pi-angle-left" @click="scrollLeft"/>
     <div :class="['justify-content-between', {'flex': search || filter},{'inline-flex': isScrollable && (!search || !filter)}]">
-      <div v-if="(search || filter) && isScrollable">
+      <div class="toolbar_bars" v-if="(search || filter)">
         <Button
             class="p-button-text p-button-secondary"
             icon="pi pi-bars"
@@ -11,31 +11,23 @@
             aria-controls="overlay_menu" />
         <Menu ref="mobilemenu" id="overlay_menu" :model="actionList" :popup="true" />
       </div>
-      <div class="" v-else>
+      <div :class="{'button_list': (search || filter)}">
         <template v-for="(i,index) of data" :key="i">
             <Button
-                v-if="i.visible !== false && !i.right && !i.filter && !i.items"
+                v-if="i.visible !== false && !i.right && !i.items"
                 :class="['p-button-outlined']"
                 :icon="i.icon"
                 :label="label(i.label)"
                 :disabled="i.disabled"
                 @click="i.command(index)" />
-          <template v-if="i.right || i.filter">
+          <template v-if="i.right">
               <Button
-                  v-if="!(i.visible !== undefined && i.visible === false) && i.right"
-                  :class="['p-button-outlined', {'float_right' : !isScrollable}]"
+                  v-if="i.visible !== false && i.right"
+                  :class="['p-button-outlined', 'float_right']"
                   :icon="i.icon"
                   :label="label(i.label)"
                   :disabled="i.disabled"
                   @click="i.command(index)" />
-            <Button
-                v-if="!(i.visible !== undefined && i.visible === false) && i.filter"
-                :style="{color: i.filtered? '#2196f3':'#495057'}"
-                class="p-button-outlined"
-                :icon="i.icon"
-                :label="label(i.label)"
-                :disabled="i.disabled"
-                @click="i.command(index)" />
             </template>
           <Button
               v-if="i.items"
@@ -50,6 +42,7 @@
       </div>
       <div class="flex" v-if="search || filter">
         <Button v-if="filter"
+            :style="{color: filtered ? '#2196f3':'#495057'}"
             class="p-button-text p-button-secondary"
             icon="fa-solid fa-filter"
             @click="filterClick($event)"/>
@@ -73,7 +66,7 @@
 <script setup>
 import {computed, onBeforeUnmount, onMounted, ref} from "vue";
 
-const props = defineProps(['data', 'notShowLabel','search','filter'])
+const props = defineProps(['data', 'notShowLabel','search','filter','filtered'])
 const containerRef = ref(null);
 const scrollStep = 50;
 const isScrollable = ref(false);
@@ -137,6 +130,9 @@ onBeforeUnmount(() => {
     background: #d0f1ff;
   }
 }
+.toolbar_bars{
+  display: none;
+}
 .float_right{
   float: right;
 }
@@ -179,7 +175,20 @@ onBeforeUnmount(() => {
   right: 0;
 }
 
-.scrollable {
-  overflow-x: scroll;
+
+@media (max-width: 960px) {
+  .toolbar_bars{
+    display: block;
+  }
+  .button_list{
+    display: none;
+  }
+  .scrollable {
+    overflow-x: scroll;
+  }
+  .float_right{
+    float: none;
+  }
+
 }
 </style>

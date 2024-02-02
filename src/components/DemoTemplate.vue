@@ -1,12 +1,9 @@
 <template>
   <TitleBlock :title="'Title'"/>
-  <ToolbarMenu :data="menu" @search="search" :search="true" @filter="toggleFilter($event)" :filter="true"/>
+  <ToolbarMenu :data="menu" @search="search" :search="true" @filter="toggleFilter($event)" :filter="true" :filtered="filtered"/>
   <ToolbarMenu :data="menu2"/>
   <div class="card">
     <div class="mb-3">
-      <!--    <Button type="button" icon="fa-solid fa-filter" :label="$t('common.filter')"
-                  @click="toggleFilter( $event)" aria:haspopup="true" aria-controls="overlay_panel"
-                  class="p-button-outlined mr-2" />-->
       <OverlayPanel ref="filter">
         <div v-for="text in menu_radio_options" :key="text" class="flex align-items-center">
           <div class="field-radiobutton">
@@ -26,30 +23,30 @@
         </div>
       </OverlayPanel>
     </div>
-    <DataTable :value="tableData" class="p-datatable-sm" responsiveLayout="scroll">
+    <DataTable :value="tableData" class="p-datatable-sm" responsiveLayout="scroll" :lazy="true">
       <Column field="name" header="Name"></Column>
       <Column field="year" header="Year"></Column>
       <Column field="capacity" header="Capacity"></Column>
-      <Column headerStyle="width: 20rem">
-        <template #body="{data}">
-          <div :class="{'test': data.id}"></div>
-          <Button class="p-button-text p-1 mr-2">
+      <Column headerStyle="width: 10rem">
+        <template #body="">
+          <div class="inline-flex">
+          <Button class="p-button-text p-1 mr-2"  @click="toolbarCommand()">
             <i class="fa-solid fa-eye fa-xl"></i>
           </Button>
-          <Button class="p-button-text p-button-warning p-1 mr-2">
+          <Button class="p-button-text p-button-warning p-1 mr-2" @click="toolbarCommand()">
             <i class="fa-solid fa-pencil fa-xl"></i>
           </Button>
-          <Button class="p-button-text p-button-danger p-1 mr-6">
+          <Button class="p-button-text p-button-danger p-1 mr-2"  @click="toolbarCommand()">
             <i class="fa-solid fa-trash-can fa-xl"></i>
           </Button>
+          </div>
+          <!--          <Button class="p-button-outlined p-button-sm mr-2" icon="pi pi-eye"/>
+                    <Button class="p-button-outlined p-button-sm p-button-warning mr-2" icon="pi pi-pencil"/>
+                    <Button class="p-button-outlined p-button-sm text-red-500 mr-6" icon="pi pi-trash"/>
 
-<!--          <Button class="p-button-outlined p-button-sm mr-2" icon="pi pi-eye"/>
-          <Button class="p-button-outlined p-button-sm p-button-warning mr-2" icon="pi pi-pencil"/>
-          <Button class="p-button-outlined p-button-sm text-red-500 mr-6" icon="pi pi-trash"/>
-
-          <Button class="p-button-sm mr-2" icon="pi pi-eye"/>
-          <Button class="p-button-warning p-button-sm mr-2" icon="pi pi-pencil"/>
-          <Button class="p-button-danger p-button-sm mr-2" icon="pi pi-trash"/>-->
+                    <Button class="p-button-sm mr-2" icon="pi pi-eye"/>
+                    <Button class="p-button-warning p-button-sm mr-2" icon="pi pi-pencil"/>
+                    <Button class="p-button-danger p-button-sm mr-2" icon="pi pi-trash"/>-->
         </template>
       </Column>
       <Column headerStyle="width: 10rem">
@@ -114,7 +111,8 @@ const menu = ref([
       {
         label: t("contracts.menu.tocontragent"),
         icon: "fa-solid fa-square-envelope",
-        command: () => {  }
+        command: () => {
+        }
       },
     ],
   },
@@ -131,32 +129,40 @@ const menu = ref([
     command: null,
   },
 ])
-const menu2 = computed(()=> {
+const menu2 = computed(() => {
   return [
-      {
-        label: 'Modal',
-        icon: "fa-solid fa-image",
-        disabled: false,
-        command: () => {
-          openDialog()
-        },
+    {
+      label: t('common.add'),
+      icon: "pi pi-plus",
+      command: () => {
       },
-      {
-        label: 'Батырма',
-        icon: "pi pi-fw pi-send",
-        visible: false,
-        command: () => {},
+    },
+    {
+      label: 'Modal',
+      icon: "fa-solid fa-image",
+      disabled: false,
+      command: () => {
+        openDialog()
       },
+    },
+    {
+      label: 'Батырма',
+      icon: "pi pi-fw pi-send",
+      visible: false,
+      command: () => {
+      },
+    },
     {
       label: 'Екінші батырма',
       icon: "pi pi-fw pi-user",
-      command: () => {},
+      command: () => {
+      },
     },
-      {
-        label: t("common.approvalList"),
-        icon: "pi pi-fw  pi-check-circle",
-        right: true,
-      }
+    {
+      label: t("common.approvalList"),
+      icon: "pi pi-fw  pi-check-circle",
+      right: true,
+    }
   ]
 })
 const tableData = [
