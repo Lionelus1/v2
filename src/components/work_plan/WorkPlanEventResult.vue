@@ -60,7 +60,13 @@
               </div>
               <div class="field" v-if="plan && resultData && !isSciencePlan">
                 <label class="bold">{{ $t('common.result') }}</label>
-                <div v-for="(item, index) of resultData[0].result_text" :key="index" class="mb-2">
+                <div v-if="resultData[0].event_result" class="mb-2">
+                  <Divider align="left">
+                    <i class="fa-solid fa-user mr-1"></i><b>{{ item.user.fullName }}</b>
+                  </Divider>
+                  <p v-html="resultData[0].event_result"></p>
+                </div>
+                <div v-else v-for="(item, index) of resultData[0].result_text" :key="index" class="mb-2">
                   <Divider align="left">
                     <i class="fa-solid fa-user mr-1"></i><b>{{ item.user.fullName }}</b>
                   </Divider>
