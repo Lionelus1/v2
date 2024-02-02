@@ -52,13 +52,13 @@
            <div v-if="isPlanCreator && event && event.status.work_plan_event_status_id === 5">
             <Menubar :model="verifyMenu" :key="active" style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
           </div>
-          <div class="grid mt-3" v-if="plan && (new Date(plan.create_date).getFullYear() < new Date().getFullYear())">
+          <div class="grid mt-3" v-if="plan && resultData && (new Date(plan.create_date).getFullYear() < new Date().getFullYear())">
             <div class="p-sm-12 md:col-12 lg:col-12 p-xl-6">
-              <div class="field" v-if="event">
+              <div class="field" v-if="event && isOperPlan">
                 <label class="bold">{{ $t('common.fact') }}: </label>
                 <div>{{ event.fact }}</div>
               </div>
-              <div class="field" v-if="plan && resultData && isOperPlan">
+              <div class="field" v-if="plan && resultData && !isSciencePlan">
                 <label class="bold">{{ $t('common.result') }}</label>
                 <div v-for="(item, index) of resultData[0].result_text" :key="index" class="mb-2">
                   <Divider align="left">
@@ -67,12 +67,12 @@
                   <p v-html="item.text"></p>
                 </div>
               </div>
-              <div class="field" v-if="resultData && resultData.result_files">
+              <div class="field" v-if="resultData && resultData[0].result_files">
                 <label class="bold">{{ $t('workPlan.attachments') }}</label>
                 <div ref="content" class="p-fileupload-content">
                   <div class="p-fileupload-files">
-                    <div class="p-fileupload-row" v-for="(file, index) of resultData.result_files" :key="index">
-                      <span class="mr-3" style="cursor: pointer;" @click="downloadFile(file.event_result_file)"><i
+                    <div class="p-fileupload-row" v-for="(file, index) of resultData[0].result_files" :key="index">
+                      <span class="mr-3" style="cursor: pointer;" @click="downloadFile(file)"><i
                           class="fa-solid fa-file-arrow-down fa-2x color-success"></i></span>
                       <span @click="downloadFile(file)"
                             style="cursor: pointer;">{{
