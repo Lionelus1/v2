@@ -1724,5 +1724,16 @@ export default {
         specialization: 'Специализация',
         groupEP: 'Группа образовательных программ',
         ssdfgsdfg: 'sdfgsdfg',
-    }
+    },
+
+    enuTopicSettings: {
+        normalVersion: 'Нормальный вариант',
+        inputType: 'Стиль ввода',
+        inputOutlined: 'Упомянутый',
+        inputFilled: 'Заполненный',
+        rippleEffect: 'Волновой эффект',
+        menuColor: 'Цвет меню',
+        menuColorDark: 'Темный',
+        menuColorLight: 'Светлый',
+    },
 }

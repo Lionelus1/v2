@@ -1728,5 +1728,16 @@ export default {
         specialization: 'Specialization',
         groupEP: 'Group of educational programs',
         ssdfgsdfg: 'sdfgsdfg',
-    }
+    },
+
+    enuTopicSettings: {
+        normalVersion:'Normal version',
+        inputType: 'Input Style',
+        inputOutlined: 'Outlined',
+        inputFilled: 'Filled',
+        rippleEffect: 'Ripple Effect',
+        menuColor: 'Menu Color',
+        menuColorDark: 'Dark',
+        menuColorLight: 'Light',
+    },
 }

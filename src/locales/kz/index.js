@@ -1738,5 +1738,17 @@ export default {
         specialization: 'Мамандандыру',
         groupEP: 'ББ тобы',
         ssdfgsdfg: 'sdfgsdfg',
+    },
+
+    enuTopicSettings: {
+        normalVersion:'Қалыпты нұсқа',
+        inputType: 'Енгізу Стилі',
+        inputOutlined: 'Көрсетілген',
+        inputFilled: 'Толтырылған',
+        rippleEffect: 'Толқындық Әсер',
+        menuColor: 'Мәзір Түсі',
+        menuColorDark: 'Қараңғы',
+        menuColorLight: 'Жарық',
     }
+
 }
