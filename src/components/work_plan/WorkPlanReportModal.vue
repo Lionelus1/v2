@@ -130,16 +130,7 @@ export default {
   created() {
     this.respUsers = this.respUsers || [];
     this.isAdmin = this.findRole(null, 'main_administrator')
-    // if (this.plan.user && this.plan.user.id) {
-    //   const newElement = {
-    //     id: this.plan.user.id,
-    //     fullName: "Creator",
-    //     role_rel_id: null,
-    //     role: null,
-    //     user: null
-    //   };
-    //   this.respUsers.push(newElement);
-    // }
+    
   },
   methods: {
     findRole: findRole,

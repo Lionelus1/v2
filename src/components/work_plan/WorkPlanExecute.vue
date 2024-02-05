@@ -63,12 +63,10 @@
 import { watch } from 'vue'
 import axios from "axios";
 import { getHeader, getMultipartHeader, smartEnuApi } from "@/config/config";
-//import RichEditor from "../documents/editor/RichEditor";
 import { WorkPlanService } from '../../service/work.plan.service'
 
 export default {
   name: "WorkPlanExecute",
-  //components: { RichEditor },
   props: ['data', 'planData'],
   data() {
     return {

@@ -1,4 +1,5 @@
 <template>
+  <!-- {{ events[0].event_results }} -->
   <vue-element-loading :active="loading" is-full-screen color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)" />
   <div>
     <div class="col-12" v-if="report && plan">
@@ -14,23 +15,14 @@
         <Button type="button" icon="pi pi-eye" class="p-button-outlined" :label="$t('educomplex.tooltip.document')" @click="openDoc"></Button>
       </div>
       <div class="card" v-if="!isReportSentApproval && visibleSendToApprove">
-        <Button type="button" icon="pi pi-send" class="p-button-success ml-2" :label="$t('common.toapprove')"
-                @click="openModal"></Button>
-        <!--        <Button type="button" icon="pi pi-send" class="p-button-success ml-2" :label="$t('common.toapprove')" @click="openModal"></Button>-->
-        <WorkPlanReportApprove v-if="showModal" :report-fd="this.fd" :visible="showModal" :doc-id="report.doc_id" :approvalStages="approval_users" :report="report" :plan="plan"
-                               @sent-to-approve="getReport" @closed="closeApproveModal" />
-        <!--        <Button label="" icon="pi pi-download" @click="download"
-                        class="p-button p-button-info ml-2"/>-->
+        <Button type="button" icon="pi pi-send" class="p-button-success ml-2" :label="$t('common.toapprove')" @click="openModal"></Button>
+        <WorkPlanReportApprove v-if="showModal" :report-fd="this.fd" :visible="showModal" :doc-id="report.doc_id" :approvalStages="approval_users"
+          :report="report" :plan="plan" @sent-to-approve="getReport" @closed="closeApproveModal" />
+     
       </div>
-<!--      <div class="card" v-if="blobSource">-->
-<!--      Уақытша -->
       <div class="card" v-if="blobSource && !(isSciencePlan && report?.doc_info && report?.doc_info.docHistory && report?.doc_info.docHistory.stateId === 4)">
         <embed :src="blobSource" style="width: 100%; height: 1000px" type="application/pdf" />
       </div>
-    </div>
-
-    <div v-if="items">
-      <ReportPdf ref="report" :data="items" :report-title="report.report_name" :plan="plan" style="display: none;"></ReportPdf>
     </div>
 
     <Dialog :header="$t('workPlan.toCorrect')" v-model:visible="showRejectPlan" :style="{ width: '450px' }" class="p-fluid">
@@ -51,21 +43,15 @@
 </template>
 
 <script>
-import axios from "axios";
 import html2pdf from "html2pdf.js";
-import ReportPdf from "./RerportPdf";
-import { getHeader, signerApi, smartEnuApi } from "@/config/config";
-import treeToList from "@/service/treeToList";
 import WorkPlanReportApprove from "@/components/work_plan/WorkPlanReportApprove";
-import { NCALayerClient } from "ncalayer-js-client";
-import { runNCaLayer } from "../../helpers/SignDocFunctions";
 import { WorkPlanService } from "@/service/work.plan.service";
 import Enum from "@/enum/workplan";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo.vue";
 
 export default {
   name: "WorkPlanReportView",
-  components: { WorkPlanReportApprove, ReportPdf, DocSignaturesInfo },
+  components: { WorkPlanReportApprove, DocSignaturesInfo },
   props: ['id'],
   data() {
     const loginedUser = JSON.parse(localStorage.getItem("loginedUser"));
@@ -126,7 +112,9 @@ export default {
       loading: false,
       planService: new WorkPlanService(),
       fd: new FormData(),
-      isSciencePlan: false
+      isSciencePlan: false,
+      reportPath: null,
+      events:null
     }
   },
   mounted() {
@@ -135,8 +123,6 @@ export default {
         this.getReport();
       }
     });
-    //this.work_plan_id = parseInt(this.report.work_plan_id);
-    //this.getRespUsers(this.report.work_plan_id);
   },
   computed: {
     visibleSendToApprove() {
@@ -148,7 +134,7 @@ export default {
   },
   created() {
     this.getReport();
-    if (this.doc_info && this.doc_info.docHistory.stateId === 4){
+    if (this.doc_info && this.doc_info.docHistory.stateId === 4) {
       this.isPlanReportRevision = true
     }
   },
@@ -204,6 +190,7 @@ export default {
     getFile() {
       this.planService.getPlanReportFile(this.report.doc_id).then(res => {
         if (res.data && this.report && this.report.doc_info.docHistory.stateId !== 4) {
+          //kelisimge jiberilger bolsa daiyn filedi alam
           this.source = `data:application/pdf;base64,${res.data}`;
           this.blobSource = URL.createObjectURL(this.b64toBlob(res.data));
           this.document = res.data;
@@ -222,33 +209,6 @@ export default {
         }
       });
     },
-    initReportFile() {
-      //let workPlanId = this.data.work_plan_id;
-      const pdfContent = this.$refs.report.$refs.toPdf;
-      this.getGeneratedPdf();
-
-      /*const worker = html2pdf().set(this.pdfOptions).from(pdfContent);
-      const worker1 = html2pdf().set(this.pdfOptions).from(pdfContent);
-
-      worker.toPdf().output("datauristring").then((pdf, item) => {
-        if (!this.source) {
-          let pdfSplit = pdf.split(',');
-          this.blobSource = this.b64toBlob(pdfSplit[1])
-          this.source = pdf;
-        }
-
-        if (!this.document)
-          this.document = pdf.replace("data:application/pdf;base64,", "")
-      });
-
-      worker1.toPdf().output("blob").then((pdf) => {
-        const fd = new FormData();
-        fd.append('file', pdf);
-        fd.append('filename', this.pdfOptions.filename)
-        //this.fileFd.append('work_plan_id', workPlanId)
-        this.emitter.emit("reportFD", fd);
-      });*/
-    },
     getData() {
       this.loading = true;
       let data = {
@@ -257,17 +217,13 @@ export default {
         halfYearType: this.report.report_type === 3 ? this.report.halfYearType : null,
         department_id: this.report.department_id ? this.report.department_id : null,
         //eventUserId: this.report.respUserId ? Number(this.report.respUserId) : null
+        report_id: this.report_id
       };
       this.planService.getWorkPlanData(data).then(res => {
-        ///// FLATTEN ARRAY
-        this.items = treeToList(res.data, 'children', this.plan.lang);
-        if (!this.source) {
-          this.$nextTick(() => {
-            this.getGeneratedPdf();
-            this.initReportFile();
-            this.loading = false;
-          });
-        }
+        this.source = `data:application/pdf;base64,${res.data}`;
+        this.blobSource = URL.createObjectURL(this.b64toBlob(res.data));
+        this.events = res.data
+        this.loading = false;
       }).catch(error => {
         this.loading = false;
         if (error.response && error.response.status === 401) {
@@ -292,7 +248,6 @@ export default {
           this.isReportSentApproval = true;
           const d = res.data;
           this.isPlanReportApproved = d.every(x => x.is_success);
-          //console.log(d.every(x => x.is_success === true));
           const unique = [...new Set(d.map(item => item.stage))];
           unique.forEach(r => {
             let f = d.filter(x => x.stage === r);
@@ -302,103 +257,6 @@ export default {
           this.init();
         }
       }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
-      });
-    },
-    init() {
-      const currentUser = this.approval_users.findIndex(x => x.user.id === this.loginedUserId);
-      if (currentUser !== -1) {
-        const last = this.approval_users?.at(-1);
-        const prevObj = this.approval_users[currentUser - 1];
-        const currentObj = this.approval_users[currentUser];
-        const findUserFromSignatures = this.signatures && prevObj ? this.signatures.find(x => x.userId === prevObj.user.id) : null;
-        if (prevObj == null && !currentObj.is_success) {
-          this.isApproval = true;
-        } else if (prevObj && currentObj.stage === prevObj.stage && !findUserFromSignatures) {
-          this.isApproval = true;
-        } else if (prevObj && prevObj.is_success && !currentObj.is_success && prevObj.stage === currentObj.stage) {
-          this.isApproval = true;
-        } else if (prevObj && currentObj.stage !== prevObj.stage && this.approval_users.filter(x => x.stage === 1 && x.is_success === true).length > 0) {
-          this.isApproval = true;
-        } else {
-          this.isApproval = false;
-        }
-
-        if (last.stage === currentObj.stage) {
-          this.isLast = true;
-        }
-      }
-    },
-    getSignatures() {
-      let data = { doc_id: this.report.doc_id };
-      this.planService.getSignatures(data).then(res => {
-        if (res.data) {
-          this.signatures = res.data;
-          const signUser = res.data.find(x => x.userId === this.loginedUserId);
-          if (signUser) {
-            this.isCurrentUserApproved = true;
-          }
-        } else {
-          this.$toast.add({
-            severity: 'error',
-            summary: this.$t('common.noData'),
-            life: 3000
-          });
-        }
-      }).catch(error => {
-        this.$toast.add({
-          severity: 'error',
-          summary: error,
-          life: 3000
-        });
-      })
-    },
-    openApprovePlan() {
-      runNCaLayer(this.$t, this.$toast, this.document, 'cms', null, false, this.$i18n.locale)
-        .then(sign => {
-          if (sign !== undefined) {
-            this.CMSSignature = sign;
-            this.sendSignature();
-          }
-        }).catch(error => {
-          this.$toast.add({ severity: 'error', summary: error, life: 3000 });
-        });
-    },
-    sendSignature() {
-      let data = {
-        uuid: this.report.doc_id,
-        sign: this.CMSSignature,
-        report_id: this.report_id,
-        is_last: this.isLast
-      };
-      this.planService.signPlanReport(data).then((response) => {
-        if (response.data.is_success) {
-          this.$toast.add({
-            severity: "success",
-            summary: this.$t('ncasigner.success.signSuccess'),
-            life: 3000,
-          });
-          this.getReport();
-          this.getSignatures();
-          this.getReportApprovalUsers();
-        }
-      }).catch(error => {
-        if (error.response.status === 405) {
-          this.CMSSignature = null;
-          this.$toast.add({
-            severity: "error",
-            summary: this.$t(error.response.data),
-            life: 3000,
-          });
-        }
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
@@ -456,28 +314,6 @@ export default {
       link.download = this.report.report_name + '.docx';
       link.click();
     },
-    getGeneratedPdf() {
-      let html = this.$refs.report.$refs.toPdf.innerHTML;
-      html = html.replace(/<h1[^>]*>/g, '<p>').replace(/<\/h1>/g, '</p>');
-      this.planService.generatePdf(html).then(res => {
-        const blob = this.b64toBlob(res.data);
-        this.blobSource = URL.createObjectURL(blob);
-        this.source = "data:application/pdf;base64," + res.data;
-        this.document = res.data;
-        this.fd.append('file', blob);
-        this.fd.append('filename', this.pdfOptions.filename)
-      }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
-      })
-    },
     b64toBlob(b64Data, sliceSize = 512) {
       const byteCharacters = window.atob(b64Data);
       const byteArrays = [];
@@ -496,12 +332,6 @@ export default {
 
       const blob = new Blob(byteArrays, { type: "application/pdf" });
       return blob;
-    },
-    viewSignatures() {
-      this.$router.push({name: 'DocSignaturesInfo', params: {docIdParam: this.report.doc_id}})
-    },
-    openRejectPlan() {
-      this.showRejectPlan = true;
     },
     closeModal() {
       this.showRejectPlan = false;

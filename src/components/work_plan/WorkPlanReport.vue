@@ -97,7 +97,6 @@ export default {
   mounted() {
     this.emitter.on("isReportCreated", (data) => {
       if (data) {
-        // get all reports
         this.getReports();
       }
     });
@@ -167,7 +166,6 @@ export default {
       });
     },
     delete(event) {
-      //console.log(event)
       this.planService.deletePlanReport(event.id).then(response => {
         if (response.data.is_success) {
           this.$toast.add({

@@ -80,30 +80,6 @@
 
       </DataTable>
     </div>
-
-    <!--    <Dialog :header="$t('common.action.accept')" v-model:visible="isAcceptModal" :style="{width: '450px'}" class="p-fluid">
-          <div class="field">
-          </div>
-          <template #footer>
-            <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
-                    @click="closeModal"/>
-            <Button :label="$t('ncasigner.sign')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2" @click="approve"/>
-          </template>
-        </Dialog>
-
-        <Dialog header="На доработку" v-model:visible="isRejectModal" :style="{width: '450px'}" class="p-fluid">
-          <div class="field">
-            <label>Комментарий</label>
-            <Textarea v-model="comment" rows="3" style="resize: vertical"/>
-          </div>
-          <template #footer>
-            <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
-                    @click="closeModal"/>
-            <Button label="Отправить" icon="pi pi-check" class="p-button-rounded p-button-success mr-2"
-                    @click="rejectPlan"/>
-          </template>
-        </Dialog>-->
-
     <WorkPlanAdd v-if="showAddPlanDialog" :visible="showAddPlanDialog" @hide="closeBasic" />
   </div>
 </template>
@@ -118,7 +94,6 @@ export default {
   data() {
     return {
       data: [],
-      //searchText: null,
       isAdded: null,
       isCurrentUserApprove: false,
       isAcceptModal: false,
