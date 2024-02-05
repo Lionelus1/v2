@@ -33,8 +33,8 @@
               </Dropdown>
             </template>
             <div v-else class="p-inputgroup p-input-filled">
-              <Share v-if="param.value && param.description === 'link'" :data="param.value" :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
-                scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)" :param="true" :label="$t('ncasigner.copy')" @copy="onCopy()"/>
+              <Share :data="param.value" :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
+                scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)" :param="param.value && param.description === 'link'" :label="$t('ncasigner.copy')" @copy="onCopy()"/>
             </div>
           </div>
           <div class="p-fluid md:col-6" v-if="'number' === param.name">
