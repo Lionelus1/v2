@@ -62,7 +62,6 @@
 <script>
 import {WorkPlanService} from '../../service/work.plan.service'
 import { FileService } from "../../service/file.service";
-import { WorkPlanService } from '../../service/work.plan.service'
 
 export default {
   name: "WorkPlanExecute",
