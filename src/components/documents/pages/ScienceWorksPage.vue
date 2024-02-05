@@ -33,10 +33,8 @@
               </Dropdown>
             </template>
             <div v-else class="p-inputgroup p-input-filled">
-              <InputText v-model="param.value" type="text" @input="input()" :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
-                scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)"></InputText>
-              <Button v-if="param.description === 'link'" icon="fa-solid fa-copy"
-                      v-clipboard:copy="param.value" v-clipboard:success="onCopy"></Button>
+              <Share v-if="param.value && param.description === 'link'" :data="param.value" :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
+                scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)" :param="true" :label="$t('ncasigner.copy')" @copy="onCopy()"/>
             </div>
           </div>
           <div class="p-fluid md:col-6" v-if="'number' === param.name">
@@ -131,10 +129,11 @@ import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo.vue";
 import FindUser from "@/helpers/FindUser";
 import {ScienceService} from "@/service/science.service";
+import Share from "@/components/Share.vue";
 
 export default {
   name: 'ScienceWorksPage',
-  components: {Access, ApprovalUsers, DocSignaturesInfo, FindUser},
+  components: {Share, Access, ApprovalUsers, DocSignaturesInfo, FindUser},
   props: {
     uuid: {
       type: String,
