@@ -92,10 +92,14 @@ export default {
     getWorkPlanReportData() {
       let data = {
         work_plan_id: parseInt(this.plan.work_plan_id),
+        quarter: this.report.report_type === 2 ? this.report.quarter : null,
+        halfYearType: this.report.report_type === 3 ? this.report.halfYearType : null,
+        department_id: this.report.department_id ? this.report.department_id : null,
         report_id: this.report.id
       };
       this.planService.getWorkPlanData(data).then(res => {
         this.file = this.b64toBlob(res.data);
+        console.log("approve data: ", res.data);
       }).catch(error => {
         this.loading = false;
         if (error.response && error.response.status === 401) {
