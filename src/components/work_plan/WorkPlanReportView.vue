@@ -251,7 +251,6 @@ export default {
             this.approvals.push(f);
           });
           this.approval_users = res.data;
-          this.init();
         }
       }).catch(error => {
         if (error.response && error.response.status === 401) {
