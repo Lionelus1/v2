@@ -47,9 +47,9 @@ export class WorkPlanService {
         return api.post(`/workPlan/savePlanFile`, fd, {headers: getMultipartHeader()});
     }
 
-    generatePdf(pdfContent) {
-        return api.post(`/workPlan/generatePdf`, {text: pdfContent}, {headers: getHeader()});
-    }
+    // generatePdf(pdfContent) {
+    //     return api.post(`/workPlan/generatePdf`, {text: pdfContent}, {headers: getHeader()});
+    // }
 
     createEvent(data) {
         return api.post(`/workPlan/addEvent`, data, {headers: getHeader()})
@@ -143,13 +143,12 @@ export class WorkPlanService {
         return api.get(`/workPlan/getReportApprovalUsers/${id}`, {headers: getHeader()});
     }
 
-    getSignatures(data) {
-        return api.post(`/workPlan/getSignatures`, data, {headers: getHeader()});
-    }
-
-    signPlanReport(data) {
-        return api.post('/workPlan/reportSignature', data, {headers: getHeader()});
-    }
+    // getSignatures(data) {
+    //     return api.post(`/workPlan/getSignatures`, data, {headers: getHeader()});
+    // }
+    // signPlanReport(data) {
+    //     return api.post('/workPlan/reportSignature', data, {headers: getHeader()});
+    // }
 
     rejectReport(data) {
         return api.post('/workPlan/rejectReport', data, {headers: getHeader()});
