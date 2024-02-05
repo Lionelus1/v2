@@ -2,7 +2,7 @@
   <InputText v-model="dataInput" type="text" :disabled="disabled"></InputText>
   <Button v-if="param" icon="fa-solid fa-copy" :label="label" class="p-button-secondary"
           v-clipboard:copy="dataInput" v-clipboard:success="onClick" v-clipboard:error="error"></Button>
-  <Button type="button" @click="showSocials" class="p-button-rounded ml-2" icon="fa-solid fa-share-nodes" label=""/>
+  <Button v-if="param" type="button" @click="showSocials" class="p-button-rounded ml-2" icon="fa-solid fa-share-nodes" label=""/>
   <OverlayPanel ref="op">
     <div class="flex flex-column gap-2">
       <Button type="button" @click="shareWhatsApp" class="p-button-success" icon="fa-brands fa-whatsapp" label="Whats App"/>
