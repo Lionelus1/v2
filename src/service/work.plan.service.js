@@ -39,8 +39,8 @@ export class WorkPlanService {
         return api.post(`/workPlan/deletePlan/${planId}`, null, {headers: getHeader()});
     }
 
-    createPlan(planName, lang, isOper) {
-        return api.post(`/workPlan/addPlan`, {work_plan_name: planName, lang: lang, is_oper: isOper}, {headers: getHeader()});
+    createPlan(data) {
+        return api.post(`/workPlan/addPlan`, data, {headers: getHeader()});
     }
 
     savePlanFile(fd) {
@@ -64,7 +64,9 @@ export class WorkPlanService {
     }
 
     getEventResult(eventId) {
-        return api.get(`/workPlan/getWorkPlanEventResult/${eventId}`, {headers: getHeader()})
+        return api.get(`/workPlan/getWorkPlanEventResult/${eventId}`, {
+            headers: getHeader()
+        })
     }
 
     saveEventResult(fd) {
@@ -82,6 +84,15 @@ export class WorkPlanService {
     verifyEventResult(data) {
         return api.post(`/workPlan/verifyEventResult`, data, {headers: getHeader()});
     }
+
+    updateEventStatus(data) {
+        return api.post(`/workPlan/updateEventStatus`, data, {headers: getHeader()});
+    }
+
+    verifyEventResultHistory(isInspection, RejectComment, userID, SenderUserID, resultID) {
+        return api.post(`/workPlan/verifyEventResultHistory`, {is_inspection: isInspection, comment: RejectComment, user_id: parseInt(userID), sender_user_id: parseInt(SenderUserID), result_id: parseInt(resultID)}, {headers: getHeader()});
+    }
+
 
     editEventResult(fd) {
         return api.post(`/workPlan/editResult`, fd, {headers: getHeader()});
@@ -154,6 +165,10 @@ export class WorkPlanService {
 
     reApprovePlan(data) {
         return api.post('/workPlan/reapprove', data, {headers: getHeader()});
+    }
+
+    getWorkPlanTypes() {
+        return api.get('/workPlan/types', {headers: getHeader()});
     }
 
 }

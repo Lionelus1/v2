@@ -170,8 +170,10 @@ export default {
     revision: "To revision",
     teacher: "Academic personnel",
     student: "Student",
+    students: "Students",
     registration: "Registration",
     total: "Total",
+    all: "All",
     register: "Check in",
     registered: "Rgistered",
     vote: "Vote",
@@ -911,7 +913,7 @@ export default {
         addReport: 'Add Report',
         sendReportForSign: 'Send the report for signature',
         doYouWantSendReport: "Are you sure to submit this report for signature?",
-
+        videoValid: 'Only videos from the YouTube platform are allowed'
     },
     faq: {
         title: "Help desk",
@@ -1207,7 +1209,7 @@ export default {
             reportSentToApprove: "The report was successfully sent for approval",
             planSentToApprove: "Plan sent for revision",
             planCreated: "Plan successfully created",
-            maxFileUploadSize: "Can't upload more than 5 files"
+            maxFileUploadSize: "You cannot upload more than 10 files at once"
         },
         reportTypes: {
             year: "Annual",
@@ -1222,7 +1224,15 @@ export default {
         simplePlan: "Plan",
         operationalPlan: "Operational Plan",
         planType: "Plan Type",
-        myPlans: "My Plans"
+        myPlans: "My Plans",
+        plancontractname: "Name of the contract",
+        plancontractnumber: "Contract number",
+        plancontractdate: "Contract date",
+        plancontractprioruty: "By priority",
+        plancontracttopic: "On topic",
+        scienceParticipants: "Project participants",
+        generateAct: "Form an act",
+        minWordCount: "It should be at least 100 words"
     },
     queue: {
 
@@ -1405,9 +1415,13 @@ export default {
         menuTitle: 'Organization management',
         roleTitle: 'Role management',
         rolePosRelTitle: 'Position-role management',
+        rolePosTitle: 'Position management',
         giveRole: 'Give new role',
         givePosRoleRel: 'Give new position-role relation',
+        givePosRel:'Create a position',
         selectOrg: 'Select organization',
+        selectPosition: 'Select a position',
+        selectDep: 'Select department',
         selectRole: 'Select role',
         selectEmployee: 'Select employee',
         employeeIIN: 'IIN',
@@ -1416,12 +1430,18 @@ export default {
         employeeNotFound: 'Employee with such IIN does not found',
         roleName: 'Role name',
         roleLabel: 'Role',
+        departmentName: 'Name of the department',
+        positionName:'Position name',
         noResult: 'No records found',
         cantDelete: 'Cant delete the record',
         addNewInstance: 'Adding new approvers/signers',
         instance: 'Appover/signer',
         failedToDelete: 'Failed to delete',
         failedToLoad: 'Failed to load data',
+        departmentRoleRel: 'Department-role management',
+        giveDepartmentRoleRel: 'Give new department-role relation',
+        nameDepartment: 'Name of department',
+        selectDepartment: 'Select department',
     },
     blog: {
         title: 'Blog',
@@ -1541,7 +1561,8 @@ export default {
     personalData: 'Personal information',
     yearPeriod:'Period of years',
     scienceWorks: {
-        title: "Scientific works list",
+        title: "Scientific works",
+        titleList: "Scientific works list",
         publicationType: "Type of the scientific work",
         editionTypes: {
             digital: "Digital",
@@ -1559,6 +1580,7 @@ export default {
             clear: "Clear",
             search: "Search",
             koksnvo: "QACFSHE",
+            newList: "New list",
         },
         menu: {
             newArticle: "Create new",
@@ -1570,14 +1592,14 @@ export default {
             import: "Import",
         },
         columns: {
-            name: "Name",
-            type: "Work type",
+            name: "Publication title",
+            type: "Publication type",
             author: "Author",
             year: "Year",
             status: "Status",
         },
         filter: {
-            documentName: "Name",
+            documentName: "Publication title",
             author: "Author",
             status: "Status",
             years: "Years",
@@ -1585,7 +1607,7 @@ export default {
         types: {
             article: "Article",
             monograph: "Monograph",
-            scopus_article: "Publication in internationally peer-reviewed scientific journals indexed in Scopus",
+            scopus_article: "Publications in Scopus",
             publication_koksnvo: "Publication recommended by QACFSHE",
             textbooks: "Textbooks / Teaching aids / Teaching aids / Workshops",
             free: "Scientific works",

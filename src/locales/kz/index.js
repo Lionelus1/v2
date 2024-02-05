@@ -159,6 +159,7 @@ export default {
         refinf: "Анықтамалық мәліметтер",
         registration: "Тіркеу",
         total: "Барлығы",
+        all: "Барлығы",
         register: "Тіркелу",
         registered: "Тіркелгендер",
         protocol: "Хаттама",
@@ -188,6 +189,7 @@ export default {
         requiredField: "Міндетті түрде толтыру керек",
         teacher: "ПОҚ",
         student: "Білім алушы",
+        students: "Білім алушылар",
         doYouWantDelete: "Сіз шынымен жойғыңыз келе ме",
         publish: "Жариялау",
         reject: "Қайтару",
@@ -951,6 +953,7 @@ export default {
         addReport: 'Есепті қосу',
         sendReportForSign: 'Есепті қол қоюға жіберу',
         doYouWantSendReport: "Бұл есепті қол қоюға жіберуге сенімдісіз бе?",
+        videoValid: 'Тек YouTube платформасынан бейнелер жарайды'
     },
     faq: {
         title: "Қолдау қызметі",
@@ -1246,7 +1249,7 @@ export default {
             reportSentToApprove: "Есеп келісуге сәтті жіберілді",
             planSentToApprove: "Жоспар қайта қарауға жіберілді",
             planCreated: "Жоспар сәтті құрылды",
-            maxFileUploadSize: "5 файлдан артық жүктеуге болмайды"
+            maxFileUploadSize: "Бір уақытта 10 файлдан артық жүктеуге болмайды"
         },
         reportTypes: {
             year: "Жылдық",
@@ -1261,7 +1264,15 @@ export default {
         simplePlan: "Жоспар",
         operationalPlan: "Операциялық жоспар",
         planType: "Жоспар түрі",
-        myPlans: "Менің жоспарларым"
+        myPlans: "Менің жоспарларым",
+        plancontractname: "Келісім-шарттың атауы",
+        plancontractnumber: "Келісім-шарт номері",
+        plancontractdate: "Келісім-шарт уақыты",
+        plancontractprioruty: "Басымдық бойынша",
+        plancontracttopic: "Тақырып бойынша",
+        scienceParticipants: "Жобаға қатысушылар",
+        generateAct: "Акт жасау",
+        minWordCount: "Кемінде 100 сөзден тұру керек"
     },
     educomplex: {
         title: "Пәннің оқу-әдістемелік кешені",
@@ -1412,9 +1423,13 @@ export default {
         menuTitle: 'Ұйымды басқару',
         roleTitle: 'Рөлді басқару',
         rolePosRelTitle: 'Позиция-рөлді басқару',
+        rolePosTitle: 'Позицияны басқару',
         giveRole: 'Жаңа роль беру',
         givePosRoleRel: 'Жаңа позиция-роль қарым-қатынасын беру',
+        givePosRel:'Жаңа позиция',
         selectOrg: 'Ұйымды таңдаңыз',
+        selectPosition: 'Позицияны таңдаңыз',
+        selectDep: 'Бөлімді таңдаңыз',
         selectRole: 'Рольді таңдаңыз',
         selectEmployee: 'Қызметкерді таңдаңыз',
         employeeIIN: 'ЖСН',
@@ -1423,12 +1438,19 @@ export default {
         employeeNotFound: 'Мұндай ЖСН-мен қызметкер табылмады',
         roleName: 'Роль аты',
         roleLabel: 'Роль',
+        departmentName: 'Департамент атауы',
+        positionName:'Позиция атауы',
         noResult: 'Жазбалар табылмады',
         cantDelete: 'Жазбаны өшіру мүмкін емес',
         addNewInstance: 'Жаңа мақұлдаушыларды/қол қоюшыларды қосу',
         instance: 'Мақұлдаушы/қол қоюшы',
         failedToDelete: 'Жазба өшірілмеді',
         failedToLoad: 'Деректерді жүктеу сәтсіз аяқталды',
+        departmentRoleRel: 'Департамент-ролді басқару',
+        giveDepartmentRoleRel: 'Жаңа Департамент-роль қарым-қатынасын беру',
+        nameDepartment: 'Департамент атауы',
+        selectDepartment: 'Департаментті таңдаңыз',
+
     },
     blog: {
         title: 'Блог',
@@ -1551,7 +1573,8 @@ export default {
     personalData: 'Жеке ақпарат',
     yearPeriod:'Период годов',
     scienceWorks: {
-        title: "Ғылыми жұмыстар тізімі",
+        title: "Ғылыми жұмыстар",
+        titleList: "Ғылыми жұмыстар тізімі",
         publicationType: "Ғылыми жұмыс түрі",
         editionTypes: {
             digital: "Электрондық",
@@ -1569,6 +1592,7 @@ export default {
             clear: "Тазарту",
             search: "Іздеу",
             koksnvo: "ҒЖБССҚК",
+            newList: "Жаңа тізім",
         },
         menu: {
             newArticle: "Жаңасын қосу",
@@ -1580,14 +1604,14 @@ export default {
             import: "Импорт",
         },
         columns: {
-            name: "Атауы",
-            type: "Жұмыс түрі",
+            name: "Жарияланым атауы",
+            type: "Жарияланым түрі",
             author: "Автор",
             year: "Жылы",
             status: "Статус",
         },
         filter: {
-            documentName: "Атауы",
+            documentName: "Жарияланым атауы",
             author: "Автор",
             status: "Статус",
             years: "Жылдар",
@@ -1595,7 +1619,7 @@ export default {
         types: {
             article: "Мақала",
             monograph: "Монография",
-            scopus_article: "Scopus халықаралық рецензияланатын ғылыми журналдардағы мақала",
+            scopus_article: "Scopus-тағы жарияланымдар",
             publication_koksnvo: "ҒЖБССҚК ұсынған ғылыми басылым",
             textbooks: "Оқулықтар / Оқыту құралдары / Оқыту құралдары / Семинарлар",
             free: "Ғылыми еңбектер",

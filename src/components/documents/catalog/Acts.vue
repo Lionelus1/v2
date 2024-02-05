@@ -10,9 +10,9 @@
     <Toolbar class="p-1">
       <template #start>
         <div class="flex flex-wrap gap-2">
-          <Button class="p-button-info align-items-center" style="padding: 0.25rem 1rem;"
-            @click="openDocument" :disabled="!currentDocument">
-            <i class="fa-regular fa-address-card" /> &nbsp;{{ $t("contracts.card") }}</Button>
+<!--          <Button class="p-button-info align-items-center" style="padding: 0.25rem 1rem;"-->
+<!--            @click="openDocument" :disabled="!currentDocument">-->
+<!--            <i class="fa-regular fa-address-card" /> &nbsp;{{ $t("contracts.card") }}</Button>-->
             <Button v-if="this.findRole(null, RolesEnum.roles.ActsToExecution) || this.findRole(null, RolesEnum.roles.MainAdministrator)"
             class="p-button-info align-items-center" style="padding: 0.25rem 1rem;" @click="sendForExecution(currentDocument)" 
             :disabled="!currentDocument || currentDocument.docHistory.stateId !== Enum.APPROVED.ID || executed(currentDocument) || execution(currentDocument)">
@@ -200,9 +200,9 @@ export default {
       this.getActs();
     },
     openDocument() {
-      if (this.currentDocument && this.currentDocument.parent) {
+      /*if (this.currentDocument && this.currentDocument.parent) {
         this.$router.push('/documents/contracts/' + this.currentDocument.parent.uuid + '/related/' + this.currentDocument.uuid)
-      }
+      }*/
     },
     getActs() {
       this.tableLoading = true;
@@ -210,7 +210,7 @@ export default {
       this.service.getDocumentsV2({
         page: this.page,
         rows: this.rows,
-        docType: this.Enum.DocType.RelatedDoc,
+        docType: this.Enum.DocType.ActCompletedWorks,
       }).then(res => {
         this.documents = res.data.documents;
         this.total = res.data.total;

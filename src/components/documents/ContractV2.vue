@@ -117,8 +117,8 @@
         </div>
       </TabPanel>
       <TabPanel :header="$t('common.show')" :disabled="!contract || !contract.filePath || contract.filePath.length < 1">
-        <div class="flex-grow-1">
-          <embed :src="pdf" style="width: 100%; height: 100%" v-if="pdf" type="application/pdf"/>
+        <div class="flex-grow-1 flex flex-row align-items-stretch">
+          <embed :src="pdf" style="width: 100%;" v-if="pdf" type="application/pdf"/>
         </div>
       </TabPanel>
     </TabView>
@@ -457,7 +457,7 @@ export default {
         param.uuid = this.generateUUID();
         this.contractParams.push(param);
 
-        if (!this.contragentRequest) {
+        if (this.contragentOption !== 'email' && !this.contragentRequest) {
           this.contragentOption = "organization";
 
           if (param.value && param.value.type === this.DocEnum.ContragentType.Person) {
@@ -707,6 +707,16 @@ export default {
       });
     },
     sendToContragent() {
+      if (this.changed) {
+        this.showMessage("warn", this.$t("common.tosign"), this.$t("common.message.saveChanges"));
+        return;
+      }
+
+      if (!this.validate()) {
+        this.showMessage("error", this.$t("common.tosign"), this.$t("common.message.fillError"));
+        return;
+      }
+
       this.loading = true;
 
       this.service.createNewDocumentRequest({

@@ -159,6 +159,7 @@ export default {
         refinf: "Справочная информация",
         registration: "Регистрация",
         total: "Всего",
+        all: "Все",
         register: "Зарегистрироваться",
         registered: "Зарегистрированы",
         reserve: "Зарезервировать",
@@ -189,6 +190,7 @@ export default {
         revision: "На доработку",
         teacher: "ППС",
         student: "Обучающийся",
+        students: "Обучающиеся",
         doYouWantDelete: "Вы действительно хотите удалить",
         publish: "Опубликовать",
         reject: "Отказать",
@@ -941,6 +943,7 @@ export default {
         addReport: 'Добавить отчет',
         sendReportForSign: 'Отправить отчет на подпись',
         doYouWantSendReport: "Вы уверены, что отправите этот отчет на подпись?",
+        videoValid: 'Принимаются только видеоролики с платформы YouTube'
     },
     faq: {
         title: "Служба поддержки",
@@ -1235,7 +1238,7 @@ export default {
             reportSentToApprove: "Отчет успешно отправлен на согласование",
             planSentToApprove: "План отправлен на корректировку",
             planCreated: "План успешно создан",
-            maxFileUploadSize: "Невозможно загрузить более 5 файлов"
+            maxFileUploadSize: "Вы не можете загружать более 10 файлов одновременно"
         },
         reportTypes: {
             year: "Годовой",
@@ -1250,7 +1253,15 @@ export default {
         simplePlan: "План",
         operationalPlan: "Операционный план",
         planType: "Тип плана",
-        myPlans: "Мои планы"
+        myPlans: "Мои планы",
+        plancontractname: "Наименование договора",
+        plancontractnumber: "Номер договора",
+        plancontractdate: "Дата договора",
+        plancontractprioruty: "По приоритету",
+        plancontracttopic: "По теме",
+        scienceParticipants: "Участники проекта",
+        generateAct: "Сформировать акт",
+        minWordCount: "Должно быть не менее 100 слов"
     },
     educomplex: {
         title: "Учебно-методический комплекс дисциплины",
@@ -1401,9 +1412,13 @@ export default {
         menuTitle: 'Управление организацией',
         roleTitle: 'Управление ролями',
         rolePosRelTitle: 'Управление позицией-ролями',
+        rolePosTitle: 'Управление позицией',
         giveRole: 'Дать новую роль',
         givePosRoleRel: 'Дать новое отношение позиция-роль',
+        givePosRel:'Создать Позицию',
         selectOrg: 'Выберите организацию',
+        selectPosition: 'Выберите должность',
+        selectDep: 'Выберите департамента',
         selectRole: 'Выберите роль',
         selectEmployee: 'Выберите сотрудника',
         employeeIIN: 'ИИН',
@@ -1412,12 +1427,19 @@ export default {
         employeeNotFound: 'Сотрудник с таким ИИН не найдено',
         roleName: 'Имя роля',
         roleLabel: 'Роль',
+        departmentName: 'Название департамента',
+        positionName:'Название позицией',
         noResult: 'Не найдено записей',
         cantDelete: 'Невозможно удалить запись',
         addNewInstance: 'Добавление новых согласующих лиц/подписантов',
         instance: 'Согласующее лицо/подписант',
         failedToDelete: 'Не удалось удалить запись',
         failedToLoad: 'Не удалось загрузить данные',
+        departmentRoleRel: 'Управление департамент-ролями',
+        giveDepartmentRoleRel: 'Дать новое отношение департамент-роль',
+        nameDepartment: 'Название департамента',
+        selectDepartment: 'Выберите департамента',
+
     },
     responseExplanations: {
         badRequest: 'Ваш запрос не был понят или в нем отсутствовали необходимые параметры.',
@@ -1537,7 +1559,8 @@ export default {
     personalData: 'Персональные сведения',
     yearPeriod:'Период годов',
     scienceWorks: {
-        title: "Список научных работ",
+        title: "Научные работы",
+        titleList: "Список научных работ",
         publicationType: "Вид научной работы",
         editionTypes: {
             digital: "Электронный",
@@ -1554,7 +1577,8 @@ export default {
             filter: "Фильтр",
             clear: "Очистить",
             search: "Поиск",
-            koksnvo: "КОКСНВО"
+            koksnvo: "КОКСНВО",
+            newList: "Новый список",
         },
         menu: {
             newArticle: "Создать новую",
@@ -1566,14 +1590,14 @@ export default {
             import: "Импорт",
         },
         columns: {
-            name: "Имя",
-            type: "Тип работы",
+            name: "Название публикации",
+            type: "Тип публикации",
             author: "Автор",
             year: "Год",
             status: "Статус",
         },
         filter: {
-            documentName: "Имя",
+            documentName: "Название публикации",
             author: "Автор",
             status: "Статус",
             years: "Годы",
@@ -1581,7 +1605,7 @@ export default {
         types: {
             article: "Статья",
             monograph: "Монография",
-            scopus_article: "Статья в международных рецензируемых научных журналах Scopus",
+            scopus_article: "Публикации в Scopus",
             publication_koksnvo: "Издание, рекомендуемое КОКСНВО",
             textbooks: "Учебники / Учебные пособия / Учебно-методические пособия / Практикумы",
             free: "Научные труды",

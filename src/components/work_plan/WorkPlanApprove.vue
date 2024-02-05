@@ -1,15 +1,6 @@
 <template>
-  <Button
-      type="button"
-      icon="pi pi-send"
-      class="p-button-success ml-2"
-      :label="$t('common.action.sendToApprove')"
-      @click="openModal"
-  ></Button>
-
-  <PdfContent ref="pdf" v-if="data" :data="data" :planId="data.work_plan_id" style="display: none;"></PdfContent>
-
-  <Dialog :header="$t('common.action.sendToApprove')" v-model:visible="showModal" :style="{width: '450px'}" class="p-fluid">
+  <PdfContent ref="pdf" v-if="data" :data="data" :planId="data.work_plan_id" :plan="plan" style="display: none;"></PdfContent>
+  <!-- <Dialog :header="$t('common.action.sendToApprove')" v-model:visible="showModal" :style="{width: '450px'}" class="p-fluid">
     <div class="field">
       <label>{{ $t('common.select') }}</label>
       <ApproveComponent @add="approveChange" :stepValue="selectedUsers" v-model="selectedUsers" @changeStep="changeStep"></ApproveComponent>
@@ -20,50 +11,78 @@
       <Button ref="approveBtn" :disabled="submitted" :label="$t('common.send')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2"
               @click="getGeneratedPdf"/>
     </template>
+  </Dialog> -->
+  <Dialog :header="$t('common.action.sendToApprove')" v-model:visible="showModal"
+          :style="{width: '50vw'}" class="p-fluid">
+    <ProgressBar v-if="approving" mode="indeterminate" style="height: .5em"/>
+    <BlockUI :blocked="approving">
+      <div class="field">
+        <ApprovalUsers :approving="approving" v-model="approval_users" @closed="closeModal"
+                       @approve="approve($event)" :stages="stages" :mode="'standard'"></ApprovalUsers>
+      </div>
+    </BlockUI>
   </Dialog>
 </template>
 
 <script>
-import ApproveComponent from "@/components/work_plan/ApproveComponent";
+//import ApproveComponent from "@/components/work_plan/ApproveComponent";
+import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers";
 import PdfContent from "@/components/work_plan/PdfContent";
 import html2pdf from "html2pdf.js";
 import axios from "axios";
 import {getHeader, getMultipartHeader, signerApi, smartEnuApi} from "@/config/config";
 import {WorkPlanService} from "@/service/work.plan.service";
+import Enum from "@/enum/workplan/index"
 
 export default {
   name: "WorkPlanApprove",
-  components: {ApproveComponent, PdfContent},
-  props: ['docId', 'plan', 'events'],
+  components: {PdfContent, ApprovalUsers},
+  props: ['visible', 'docId', 'plan', 'events'],
+  emits: ['isSent', 'hide'],
   data() {
     return {
       data: this.plan,
-      showModal: false,
+      showModal: this.visible,
       selectedUsers: null,
       steps: 3,
       step: 1,
-      approval_users: [],
+      approval_users: [
+        {
+          stage: 1,
+          users: [],
+          certificate: {
+            namekz: "Жеке тұлғаның сертификаты",
+            nameru: "Сертификат физического лица",
+            nameen: "Certificate of an individual",
+            value: "individual"
+          }
+        }
+      ],
       currentStageUsers: null,
       currentStage: 1,
       prevStage: 0,
       loginedUserId: 0,
       fd: null,
       submitted: false,
-      planService: new WorkPlanService()
+      planService: new WorkPlanService(),
+      approveComponentKey: 0,
+      approving: false,
+      stages: null,
+      enum: Enum,
     }
   },
   created() {
     this.loginedUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
+    this.approveComponentKey++;
   },
   methods: {
-    openModal() {
-      this.showModal = true;
-    },
     closeModal() {
-      this.showModal = false;
+      this.$emit('hide')
     },
-    approve() {
+    approve(event) {
+      this.approving = true;
       this.submitted = true;
+      this.approval_users = event
       let workPlanId = this.data.work_plan_id;
       let pdfOptions = {
         margin: 10,
@@ -102,9 +121,11 @@ export default {
             summary: this.$t('common.message.succesSendToApproval'),
             life: 3000,
           });
-          this.emitter.emit("planSentToApprove", true);
+          // this.emitter.emit("planSentToApprove", true);
+          this.$emit('isSent', true)
           this.submitted = false;
         }
+        this.approving = false;
         this.showModal = false;
       }).catch(error => {
         if (error.response && error.response.status === 401) {
@@ -180,6 +201,11 @@ export default {
       const blob = new Blob(byteArrays, {type: "application/pdf"});
       return blob;
     },
+    initStage() {
+      if (this.plan && this.plan.plan_type && this.plan.plan_type.code === this.enum.WorkPlanTypes.Science) {
+        this.stages = []
+      }
+    }
   }
 }
 </script>
