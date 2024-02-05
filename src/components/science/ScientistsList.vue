@@ -34,7 +34,7 @@
         :rows="lazyParams.rows" @page="onPage($event)" :totalRecords="total" :first="first" scrollable scrollHeight="flex"
         selectionMode="single" :rowHover="true" stripedRows>      
             <template #grid="slotProps" v-if="showGrid">
-                <div class="col-12 sm:col-6 md:col-4 lg:col-3 p-2">
+                <div class="col-12 sm:col-6 md:col-4 lg:col-2 p-2">
                     <div @click="selectScientist(slotProps.data)" class="card shadow-1 m-0" v-ripple style="text-align: center;">
                         <img class="card_img round" v-if="slotProps.data.photo != null && slotProps.data.photo !=''"
                           :src="'data:image/jpeg;base64,' + slotProps.data.photo "/>

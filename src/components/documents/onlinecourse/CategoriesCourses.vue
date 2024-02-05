@@ -29,6 +29,21 @@
           </div>
         </div>
       </div>
+      <div class="cat_grid" v-if="selectedItem === 0">
+        <div :style="{ 'background-image': 'url(https://www.mooc.org/hubfs/are-free-online-courses-worth-it.jpg)' }"
+             class="grid_item p-4 relative p-4 col-12 sm:col-6 lg:col-12 xl:col-3" @click="selectCourse(777)">
+          <div class="text-white absolute">
+            <h5 class="title">{{
+                $i18n.locale === "kz"
+                    ? "Барлық курстар"
+                    : $i18n.locale === "ru"
+                        ? "Все курсы"
+                        : "All courses"
+              }}</h5>
+            <div class="count_course">{{total}} {{$t('course.course')}}</div>
+          </div>
+        </div>
+      </div>
     </div>
 <!--    <Courses v-if="selectedCategory"/>-->
   </div>
@@ -74,7 +89,7 @@ export default{
   },
   data() {
     return {
-      selectedItem: 1,
+      selectedItem: 0,
       searchTerm: '',
       loading:false,
       service: new OnlineCourseService(),
@@ -126,6 +141,7 @@ export default{
     },
     qualification(){
       return  [
+        { id: 0, name: this.$t("common.all") },
         { id: 1, name: this.$t("educationalPrograms.bachelor") },
         { id: 2, name: this.$t("educationalPrograms.master") },
         { id: 4, name: this.$t("educationalPrograms.doctoral") },
@@ -187,7 +203,11 @@ export default{
       this.getCourses();
     },
     selectCourse(course) {
-      this.$router.push('/courses/' + course.id)
+      if(course === 777){
+        this.$router.push('/courses/' + 777)
+      }else {
+        this.$router.push('/courses/' + course.id)
+      }
     },
     onPage(event) {
       this.courseLazyParams = event
