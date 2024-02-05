@@ -1,5 +1,4 @@
 <template>
-  <!-- {{ events[0].event_results }} -->
   <vue-element-loading :active="loading" is-full-screen color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)" />
   <div>
     <div class="col-12" v-if="report && plan">
@@ -114,7 +113,6 @@ export default {
       fd: new FormData(),
       isSciencePlan: false,
       reportPath: null,
-      events:null
     }
   },
   mounted() {
@@ -219,7 +217,6 @@ export default {
       this.planService.getWorkPlanData(data).then(res => {
         this.source = `data:application/pdf;base64,${res.data}`;
         this.blobSource = URL.createObjectURL(this.b64toBlob(res.data));
-        this.events = res.data
         this.loading = false;
       }).catch(error => {
         this.loading = false;
