@@ -115,13 +115,13 @@
               </div>
               <div class="field" v-if="!hasResultToApprove">
                 <label>{{ $t('common.result') }}</label>
-                <TinyEditor v-if="plan && !plan.is_oper" v-model="result" :min-word="wordLimit" @wordCount="initWordCount" :height="300" :style="{ height: '100%', width: '100%' }"
+                <TinyEditor v-if="plan && !plan.is_oper && isRespUserForWrite" v-model="result" :min-word="wordLimit" @wordCount="initWordCount" :height="300" :style="{ height: '100%', width: '100%' }"
                   @selectionChange="editorChange" />
-                <TinyEditor v-if="plan && plan.is_oper" v-model="newResult" :height="300" @selectionChange="editorChange" />
+                <TinyEditor v-if="plan && plan.is_oper && isRespUserForWrite" v-model="newResult" :height="300" @selectionChange="editorChange" />
                 <small v-if="isSciencePlan && submitted && (inputWordCount < wordLimit)" class="p-error">{{$t('workPlan.minWordCount')}}</small>
 
               </div>
-              <div class="field">
+              <div class="field" v-if="plan && isRespUserForWrite">
                 <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadFile($event)" :auto="true" :multiple="true"
                   :chooseLabel="$t('smartenu.chooseAdditionalFile')"></FileUpload>
               </div>
@@ -467,6 +467,9 @@ export default {
     },
     isRespUser(){
       return this.event && this.respUserExists(this.loginedUserId) && this.plan.plan_type_id === 3
+    },
+    isRespUserForWrite(){
+      return this.respUserExists(this.loginedUserId)
     }
   },
   mounted() {
@@ -868,9 +871,9 @@ export default {
     saveEditResult(item) {
       this.loading = true;
       const fd = new FormData();
-      fd.append("result_id", item.event_result_id)//Number(this.resultData.event_result_id))
-      fd.append("result_text_id", item.result_text[0].id)//Number(item.id))
-      fd.append("work_plan_event_id", item.work_plan_event_id)//this.event.work_plan_event_id)
+      fd.append("result_id", item.event_result_id)
+      fd.append("result_text_id", item.result_text[0].id)
+      fd.append("work_plan_event_id", item.work_plan_event_id)
       if (this.isFactChanged)
         fd.append("fact", this.fact)
       fd.append("text", item.result_text[0].text)
@@ -879,7 +882,6 @@ export default {
           fd.append('files', file, this.authUser.fullName.replace(/ /g, '_') + "_" + file.name)
         }
       }
-      //console.log("files: ", fd.files);
       this.planService.editEventResult(fd).then(res => {
         if (res.data.is_success) {
           this.getEvent();
