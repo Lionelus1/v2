@@ -1,5 +1,5 @@
 <template>
-  <div class="toolbar_menu card p-0 mb-3" ref="containerRef" :class="{ 'scrollable':!search || !filter }">
+  <div class="toolbar_menu card p-0 mb-3" ref="containerRef" :class="{ 'scrollable':!search || !filter,'toolbar_border': border }">
     <Button v-if="isScrollable && (!search || !filter)" :class="['scroll-left']" icon="pi pi-angle-left" @click="scrollLeft"/>
     <div :class="['justify-content-between', {'flex': search || filter},{'inline-flex': isScrollable && (!search || !filter)}]">
       <div class="toolbar_bars" v-if="(search || filter)">
@@ -66,7 +66,7 @@
 <script setup>
 import {computed, onBeforeUnmount, onMounted, ref} from "vue";
 
-const props = defineProps(['data', 'notShowLabel','search','filter','filtered'])
+const props = defineProps(['data', 'notShowLabel','search','filter','filtered','border'])
 const containerRef = ref(null);
 const scrollStep = 50;
 const isScrollable = ref(false);
@@ -118,7 +118,6 @@ onBeforeUnmount(() => {
   max-width: 100%;
   background: #fff;
   color: #495057;
-  //border: 1px solid #dee2e6;
   border-radius: 3px;
 
   .p-button.p-button-outlined {
@@ -129,6 +128,10 @@ onBeforeUnmount(() => {
   .p-button.p-button-outlined:hover {
     background: #d0f1ff;
   }
+}
+.toolbar_border{
+  border: 1px solid #dee2e6;
+  box-shadow: none;
 }
 .toolbar_bars{
   display: none;
