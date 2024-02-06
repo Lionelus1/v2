@@ -167,7 +167,7 @@ export default {
     } else {
       this.doc_id =this.$route.params.uuid;
     }
-    
+
     const tokenData = JSON.parse(window.localStorage.getItem("authUser"));
     if (tokenData !== null) {
       let signUri = smartEnuApi + '/mobileSignParams/' + this.doc_id + "/" + tokenData.access_token
@@ -509,7 +509,8 @@ export default {
         headers: getHeader()
       }).then(res => {
         this.loading = false
-        location.reload()
+        this.$emit('sentToRevision', this.revisionComment)
+
       }).catch(err => {
         if (err.response.status == 401) {
           this.$store.dispatch("logLout");
