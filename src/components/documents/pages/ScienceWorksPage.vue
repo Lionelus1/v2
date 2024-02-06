@@ -521,7 +521,7 @@ export default {
         }
       ];
 
-      if ([DocEnum.ScienceWorkType.Monograph, DocEnum.ScienceWorkType.ScopusArticle].includes(this.getScienceWorkType())) {
+      if ([DocEnum.ScienceWorkType.Monograph, DocEnum.ScienceWorkType.ScopusArticle, DocEnum.ScienceWorkType.PublicationKOKSNVO].includes(this.getScienceWorkType())) {
         this.stages.push(
             {
               stage: 2,

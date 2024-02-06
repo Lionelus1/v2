@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Dropdown :class="{'p-invalid': validation}"
+    <Dropdown :class="{'p-invalid': validation}" show-clear
      @change="sayChange($event)" v-model="value" :options="departments" :optionLabel="($i18n.locale == 'kz'? 'nameKz' : $i18n.locale == 'en' ? 'nameEn': 'name')" :filter="true" :placeholder="(placeHolder != undefined ? placeHolder: $t('common.select'))">
       <template #value="slotProps">
         <span v-if="slotProps.value">
