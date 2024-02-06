@@ -1,6 +1,6 @@
 <template>
     <ProgressSpinner v-if="loading" class="progress-spinner" strokeWidth="5"/>
-
+    <h3>{{ this.$t('science.myRequests') }}</h3>
     <div class="card">
         <DataTable :value="editionsRequest" :paginator="true" @page="editionTableOnPageEditionRequest($event)" 
         :rows="10" :totalRecords="totalRequest" :lazy="true">
