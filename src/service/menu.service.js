@@ -45,8 +45,8 @@ export class MenuService {
             {
                 label: $t('common.administration'),
                 icon: 'fa-solid fa-user-shield',
-                visible: this.isEnuWorker() && (this.isVacancyRightsValidity() || this.findRole("dephead") ||
-                    this.findRole("practice_responsible") || this.findRole("main_administrator") || this.findRole("hr_manager")),
+                visible: this.isVacancyRightsValidity() || (this.isEnuWorker() && (this.findRole("dephead") ||
+                    this.findRole("practice_responsible") || this.findRole("main_administrator") || this.findRole("hr_manager"))),
                 items: [
                     {
                         label: $t('hr.vacancies'),
