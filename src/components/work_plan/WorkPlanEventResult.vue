@@ -115,12 +115,25 @@
               </div>
               <div class="field" v-if="!hasResultToApprove">
                 <label>{{ $t('common.result') }}</label>
-                <TinyEditor v-if="plan && !plan.is_oper && isRespUserForWrite" v-model="result" :min-word="wordLimit" @wordCount="initWordCount" :height="300" :style="{ height: '100%', width: '100%' }"
+                <TinyEditor v-if="plan && isRespUserForWrite" v-model="result" :min-word="wordLimit" @wordCount="initWordCount" :height="300" :style="{ height: '100%', width: '100%' }"
                   @selectionChange="editorChange" />
-                <TinyEditor v-if="plan && plan.is_oper && isRespUserForWrite" v-model="newResult" :height="300" @selectionChange="editorChange" />
-                <small v-if="isSciencePlan && submitted && (inputWordCount < wordLimit)" class="p-error">{{$t('workPlan.minWordCount')}}</small>
-
+                <TinyEditor v-if="plan && isRespUserForWrite && !isSciencePlan" v-model="newResult" :height="300" @selectionChange="editorChange" />
+                <small v-if="isSciencePlan && submitted && (wordCount < wordLimit)" class="p-error">{{$t('workPlan.minWordCount')}}</small>
               </div>
+              <!-- <div class="field" v-if="!hasResultToApprove && plan && isRespUserForWrite">
+                <label>{{ $t('common.result') }}</label>
+
+                <TinyEditor
+                  :v-model="newResult || result"
+                  :min-word="wordLimit"
+                  @wordCount="initWordCount"
+                  :height="300"
+                  :style="{ height: '100%', width: '100%' }"
+                  @selectionChange="editorChange"
+                />
+
+                <small v-if="isSciencePlan && submitted && (inputWordCount < wordLimit)" class="p-error">{{$t('workPlan.minWordCount')}}</small>
+              </div> -->
               <div class="field" v-if="plan && isRespUserForWrite">
                 <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadFile($event)" :auto="true" :multiple="true"
                   :chooseLabel="$t('smartenu.chooseAdditionalFile')"></FileUpload>
@@ -420,12 +433,18 @@ export default {
       resultUserId: null,
       eventResultId: null,
       Enum: Enum,
-      wordLimit: 100,
-      inputWordCount: 0,
+      wordLimit: 50,
+      wordMaxLimit: 250,
+      wordCounter:0,
       hasResultToApprove: false
     }
   },
+
   computed: {
+    wordCount() {
+      if (!this.result) return 0; 
+      return this.result.trim().split(/\s+/).length;
+    },
     userMenuItems() {
       return this.initMenu();
     },
@@ -472,12 +491,18 @@ export default {
       return this.respUserExists(this.loginedUserId)
     }
   },
+  watch: {
+    result(newValue) {
+      this.wordCounter = this.wordCount;
+    },
+  },
   mounted() {
     this.isAdmin = this.findRole(null, 'main_administrator')
     if (!this.event_id) {
       this.event_id = this.$route.params.id;
     }
     this.getEvent();
+  
 
   },
   methods: {
@@ -582,8 +607,8 @@ export default {
       this.isBlockUI = true;
       const fd = new FormData();
 
-      if (this.isSciencePlan && this.inputWordCount < 150) {
-        this.$toast.add({ severity: 'warn', detail: this.$t('workPlan.minWordCount', 150), life: 3000 })
+      if ((this.isSciencePlan && this.wordCount > this.wordMaxLimit) || (this.isSciencePlan && this.wordCount < this.wordLimit)) {
+        this.$toast.add({ severity: 'warn', detail: this.$t('workPlan.maxWordCount', this.wordMaxLimit), life: 3000 })
         this.isBlockUI = false;
         return;
       }
