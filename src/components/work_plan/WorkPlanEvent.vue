@@ -46,7 +46,7 @@
       <Button
         v-if="isFinish && plan.doc_info && plan.doc_info.docHistory && !(plan.doc_info?.docHistory?.stateId === 1 || plan.doc_info?.docHistory?.stateId === 4)"
         :label="$t('workPlan.viewPlan')" icon="pi pi-eye" @click="showDialog(dialog.planView)" class="p-button-sm p-button-outlined ml-2" />
-      <Button v-if="isFinish && (isApproval || isPlanCreator || isAdmin) && (plan.doc_info?.docHistory?.stateId === 3)" :label="$t('workPlan.reports')"
+      <Button v-if="isFinish && (isApproval || isPlanCreator || isAdmin) && (plan.doc_info?.docHistory?.stateId === 3 || oldPlan)" :label="$t('workPlan.reports')"
         @click="navigateToReports" class="p-button-sm p-button-outlined ml-2" />
       <Button v-if="isFinish && isPlanCreator && (plan.doc_info?.docHistory?.stateId === 3) && isSciencePlan" :label="$t('workPlan.generateAct')"
         @click="generateScienceReport" class="p-button-sm p-button-outlined ml-2" />
@@ -378,7 +378,8 @@ export default {
           state: false
         }
       },
-      planApprovalStage: null
+      planApprovalStage: null,
+      oldPlan: false
     }
   },
   created() {
@@ -551,6 +552,9 @@ export default {
     getPlan() {
       this.planService.getPlanById(this.work_plan_id).then(res => {
         this.plan = res.data;
+        console.log("old", new Date(this.plan.create_date).getFullYear())
+        console.log("currnet", new Date().getFullYear())
+        this.oldPlan = new Date(this.plan.create_date).getFullYear() < new Date().getFullYear()
         if (this.plan && this.plan.is_finish) {
           this.isFinish = this.plan.is_finish;
         }
