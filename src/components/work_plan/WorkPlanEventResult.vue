@@ -115,7 +115,7 @@
               </div>
               <div class="field" v-if="!hasResultToApprove">
                 <label>{{ $t('common.result') }}</label>
-                <TinyEditor v-if="plan && isRespUserForWrite" v-model="result" :min-word="wordLimit" @wordCount="initWordCount" :height="300" :style="{ height: '100%', width: '100%' }"
+                <TinyEditor v-if="plan && isRespUserForWrite && !isOperPlan" v-model="result" :min-word="wordLimit" @wordCount="initWordCount" :height="300" :style="{ height: '100%', width: '100%' }"
                   @selectionChange="editorChange" />
                 <TinyEditor v-if="plan && isRespUserForWrite && !isSciencePlan" v-model="newResult" :height="300" @selectionChange="editorChange" />
                 <small v-if="isSciencePlan && submitted && (wordCount < wordLimit)" class="p-error">{{$t('workPlan.minWordCount')}}</small>
