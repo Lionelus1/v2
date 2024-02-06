@@ -1,5 +1,6 @@
 <template>
   <TitleBlock :title="'Title'"/>
+  <!-- filtered - іздеу батырмасын басқан кезде иконка түсі өзгереді-->
   <ToolbarMenu :data="menu" @search="search" :search="true" @filter="toggleFilter($event)" :filter="true" :filtered="filtered"/>
   <ToolbarMenu :data="menu2"/>
   <div class="card">
@@ -75,13 +76,13 @@ import ToolbarMenu from "@/components/ToolbarMenu.vue";
 import {computed, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import ActionButton from "@/components/ActionButton.vue";
-import DocEnum from "@/enum/docstates";
 import Share from "@/components/Share.vue";
 import {useToast} from "primevue/usetoast";
 
 const {t, locale} = useI18n()
 const filtered = ref(false)
-const menu = ref([
+const menu = computed(() => {
+  return [
   {
     label: t("common.save"),
     icon: "pi pi-fw pi-save",
@@ -128,7 +129,7 @@ const menu = ref([
     disabled: false,
     command: null,
   },
-])
+]})
 const menu2 = computed(() => {
   return [
     {
