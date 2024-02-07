@@ -4,6 +4,7 @@ stages:
 
 build_stage:
   stage: build
+  image: node:lts
   script:
     - git clone -b test https://gitlab.enu.kz/enu/mobilefrontend.git && cd mobilefrontend
     - npm install
