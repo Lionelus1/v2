@@ -1,7 +1,6 @@
 <template>
   <Button type="button" icon="pi pi-document" class="p-button p-button-outlined ml-2" :label="$t('workPlan.createReport')"
     @click="openModal"></Button>
-
   <Dialog :header="$t('workPlan.reports')" v-model:visible="selectQuarterModal" :style="{ width: '450px' }" class="p-fluid">
     <div class="field">
       <label>{{ $t('workPlan.reportName') }}</label>
@@ -21,7 +20,6 @@
       <Dropdown v-model="selectedHalfYear" :options="halfYearTypes" optionLabel="name" optionValue="id" :placeholder="$t('common.select')" />
     </div>
     <div class="field" v-if="isOperPlan">
-
       <label>{{ $t('common.department') }}</label>
       <Dropdown v-model="selectedDepartment" :options="departments" optionLabel="department_name" optionValue="department_id" :filter="true" :show-clear="true"
         :placeholder="$t('common.select')" />
@@ -101,7 +99,8 @@ export default {
       planCreator: null,
       isAdmin: false,
       planService: new WorkPlanService(),
-      Enum: Enum
+      Enum: Enum,
+      departmentId:null
     }
   },
   mounted() {
@@ -130,6 +129,7 @@ export default {
   created() {
     this.respUsers = this.respUsers || [];
     this.isAdmin = this.findRole(null, 'main_administrator')
+    this.getDepartments();
     
   },
   methods: {
@@ -184,15 +184,17 @@ export default {
     },
 
     create() {
-
       //this.$router.push({ name: 'WorkPlanReportView', params: { id: this.work_plan_id, type: this.type, name: this.report_name, quarter: this.quarter }})
+      if (this.plan.plan_type.code === Enum.WorkPlanTypes.Oper){
+        this.departmentId = this.selectedDepartment ? this.selectedDepartment : null
+      }
       let data = {
         work_plan_id: parseInt(this.work_plan_id),
         report_name: this.report_name,
         report_type: this.type,
         quarter: this.type === 2 ? this.quarter : null,
         halfYearType: this.type === 3 ? this.selectedHalfYear : null,
-        department_id: this.selectedDepartment ? this.selectedDepartment : null,
+        department_id: this.departmentId,
         //respUserId: this.selectedRespUser ? Number(this.selectedRespUser) : null
       };
       this.planService.createWorkPlanReport(data).then(res => {
