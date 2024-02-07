@@ -5,7 +5,7 @@ stages:
 build_stage:
   stage: build
   script:
-    - cd ~//WebstormProjects/mobilefrontend
+    - cd ~/WebstormProjects/mobilefrontend
     - npm install
     - npm run build:stage
   only:
