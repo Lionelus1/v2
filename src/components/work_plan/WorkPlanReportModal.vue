@@ -146,7 +146,6 @@ export default {
     },
     getDepartments() {
       this.departments = [];
-      alert(this.work_plan_id)
       this.planService.getDepartments(parseInt(this.work_plan_id)).then(res => {
         if (res.data) {
           this.departments = res.data
