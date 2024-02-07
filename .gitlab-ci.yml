@@ -7,6 +7,7 @@ build_stage:
   image: node:lts
   script:
     - git clone -b test https://gitlab.enu.kz/enu/mobilefrontend.git && cd mobilefrontend
+    - export NODE_OPTIONS=--openssl-legacy-provider
     - npm install
     - npm run build:stage
   only:
