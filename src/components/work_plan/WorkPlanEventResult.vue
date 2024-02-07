@@ -117,7 +117,7 @@
                 <label>{{ $t('common.result') }}</label>
                 <TinyEditor v-if="plan && isRespUserForWrite && !isOperPlan" v-model="result" :min-word="wordLimit" @wordCount="initWordCount" :height="300" :style="{ height: '100%', width: '100%' }"
                   @selectionChange="editorChange" />
-                <TinyEditor v-if="plan && isRespUserForWrite && !isSciencePlan" v-model="newResult" :height="300" @selectionChange="editorChange" />
+                <TinyEditor v-if="plan && isRespUserForWrite && !isSciencePlan && isOperPlan" v-model="newResult" :height="300" @selectionChange="editorChange" />
                 <small v-if="isSciencePlan && submitted && (wordCount < wordLimit)" class="p-error">{{$t('workPlan.minWordCount')}}</small>
               </div>
               <!-- <div class="field" v-if="!hasResultToApprove && plan && isRespUserForWrite">
@@ -614,15 +614,15 @@ export default {
       }
 
       fd.append('work_plan_event_id', this.event.work_plan_event_id);
-      fd.append('result', this.plan.is_oper ? this.newResult ? this.newResult : "" : this.result);
-      if (this.plan && this.plan.is_oper) {
+      fd.append('result', this.isOperPlan ? this.newResult ? this.newResult : "" : this.result);
+      if (this.plan && this.isOperPlan) {
         fd.append("is_partially", true);
       }
 
       if (!this.authUser.mainPosition.department.isFaculty)
         fd.append("fact", this.fact)
 
-      if (this.plan && this.plan.is_oper && this.resultData)
+      if (this.plan && this.isOperPlan && this.resultData)
         fd.append("result_id", this.resultData.event_result_id);
       if (this.files.length > 0) {
         let fullName = this.authUser.thirdName + ' ' + this.authUser.firstName
