@@ -1,14 +1,14 @@
 stages:
-  - build
-  - deploy
+#  - build
+#  - deploy
 
 build_stage:
   stage: build
   script:
-    - git pull origin test
-    - cd ~/WebstormProjects/mobilefrontend
+#    - git pull origin test
+#    - cd ~/WebstormProjects/mobilefrontend
 #    - npm install
-    - npm run build:stage
+#    - npm run build:stage
   only:
     - test
 
