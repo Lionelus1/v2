@@ -14,7 +14,7 @@
                 
               <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
                   <label>{{ t('science.qualification.trainingForm') }}</label>
-                  <Dropdown :options="trainingForm" v-model="payload.training_form" :option-label="'name_' + locale" :placeholder="t('science.qualification.trainingForm')" @change="selectTrainingForm" />                       
+                  <Dropdown class="mt-2" :options="trainingForm" v-model="payload.training_form" :option-label="'name_' + locale" :placeholder="t('science.qualification.trainingForm')" @change="selectTrainingForm" />                       
                   <small class="p-error" v-if="validation.training_form">{{ $t("common.requiredField") }}</small>
               </div>
 
@@ -175,6 +175,15 @@
       command: () => {
         create()
       },
+      disabled: () => (!payload.value.training_form || payload.value.training_form == "")
+      || (!payload.value.country || payload.value.country == "")
+      || (!payload.value.city || payload.value.city == "")
+      || (!payload.value.start_date || payload.value.start_date == "")
+      || (!payload.value.end_date || payload.value.end_date == "")
+      || (!payload.value.hours || payload.value.hours == 0)
+      || (!payload.value.funding_source || payload.value.funding_source == "")
+      || (!payload.value.proof_document_type || payload.value.proof_document_type == "")
+      || (!file.value || file.value == "")
     },
   ])
 

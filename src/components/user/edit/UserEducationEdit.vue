@@ -170,6 +170,11 @@
       command: () => {
         create()
       },
+      disabled: () => (academicDegree.value.institution_name == null || academicDegree.value.institution_name == '')
+      || (academicDegree.value.location == null || academicDegree.value.location == '')
+      || (academicDegree.value.speciality == null || academicDegree.value.speciality == '')
+      || (!academicDegree.value.start_date || academicDegree.value.start_date == "")
+      || (!academicDegree.value.diplom_number || academicDegree.value.diplom_number == "")
     },
   ])
     

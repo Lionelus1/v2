@@ -51,7 +51,7 @@
     </DataTable>
   </div>
   <!-- personPage -->
-  <Sidebar v-model:visible="visibility.personPage" position="right" class="p-sidebar-lg">
+  <Sidebar v-model:visible="visibility.personPage" position="right" style="width: 60%;" class="p-sidebar-lg">    
     <PersonPage :person="currentPerson" @personUpdated="personUpdated" :custom-type="customType" :personType="personType"></PersonPage>
   </Sidebar>
 </template>
@@ -353,4 +353,14 @@ export default {
 :deep(.p-datatable.p-datatable-scrollable > .p-datatable-wrapper > .p-datatable-table > .p-datatable-thead) {
   background: transparent;
 }
+
+.p-sidebar-lg {
+    width: 300px; 
+  }
+
+  @media only screen and (max-width: 1024px) {
+    .p-sidebar {
+      width: 100%;
+    }
+  }
 </style>

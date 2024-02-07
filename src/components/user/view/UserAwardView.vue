@@ -1,14 +1,14 @@
 <template>
   
-  <div v-if="isView.check" id="carddiv" class="grid">  
-    
-
+  <div v-if="isView.check">  
+  
     <div class="col-12">
-        <Menubar :model="menu" :key="active" style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px"></Menubar>
-      </div>
-      
-    <span   style="white-space: pre-line">
-      <DataTable class="justify-content-between" tableStyle="min-width: 50rem" selectionMode="single" v-model="award" :lazy="true" :value="awards" :loading="loading" v-model:selection="award"
+      <Menubar :model="menu" :key="active" style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px"></Menubar>
+    </div>
+     
+      <DataTable selectionMode="single" 
+      v-model="award" :lazy="true" :value="awards" 
+      :loading="loading" v-model:selection="award"
       :paginator="true" :rows="10" :totalRecords="totalRecords" @page="onPageChange"> 
 
         <Column field="award_type" :header="$t('science.typeOfAward')">
@@ -38,15 +38,14 @@
         <!-- Действия-->
         <Column v-if="!readonly" :header="t('dissertation.dissReportActions')">
             <template #body="slotProps">
-                <Button icon="pi pi-pencil" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="award=slotProps.data;update()"></Button>
-                <Button v-if="!slotProps.data.platonus_award_id" icon="fa-solid fa-trash" class="p-button-danger mb-2 mr-2" @click="award=slotProps.data;deleteValue()"></Button>
+                <Button icon="fa-solid fa-pencil fa-xl" class="p-button-text p-button-warning p-1 mr-2" @click="award=slotProps.data;update()"></Button>
+                <Button v-if="!slotProps.data.platonus_award_id" icon="fa-solid fa-trash-can fa-xl" class="p-button-text p-button-danger p-1 mr-2" @click="award=slotProps.data;deleteValue()"></Button>
             </template>
         </Column>
       
       </DataTable>
-    </span>
+    </div>
 
-  </div>
 
 
   <Sidebar v-model:visible="isView.award"  position="right" class="p-sidebar-lg"  style="overflow-y: scroll">

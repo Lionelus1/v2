@@ -35,58 +35,55 @@
         <div class="col-12">
             <Menubar :model="menu" :key="active" style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px"></Menubar>
         </div>
-        <div class="card">
-          <div class="grid formgrid">
-              <DataTable class="justify-content-between"  selectionMode="single" v-model="academicDegree" :lazy="true" :value="academicDegrees" :loading="loading" v-model:selection="academicDegree"
-              :paginator="true" :rows="10" :totalRecords="totalRecords" @page="onPageChange"> 
-                <!-- Учебное заведение -->
-                <Column  field="institution_name" :header="t('hr.edu.institution')"></Column>
 
-                <!-- Факультет -->
-                <!-- <Column field="faculty" :header="t('common.faculty')"></Column> -->
+        <DataTable :style="{ width: '75vw' }" maximizable modal :contentStyle="{ height: '300px' }"  selectionMode="single" v-model="academicDegree" :lazy="true" :value="academicDegrees" :loading="loading" v-model:selection="academicDegree"
+        :paginator="true" :rows="10" :totalRecords="totalRecords" @page="onPageChange"> 
+          <!-- Учебное заведение -->
+          <Column  field="institution_name" :header="t('hr.edu.institution')"></Column>
 
-                <!-- Адрес учебного заведения -->
-                <Column field="location" :header="t('hr.edu.institutionAddress')"></Column>
+          <!-- Факультет -->
+          <!-- <Column field="faculty" :header="t('common.faculty')"></Column> -->
 
-                <!-- Специальность -->
-                <Column field="speciality" :header="t('common.speciality')"></Column>
-                
-                <!-- Номер диплома -->
-                <Column  field="diplom_number" :header="t('common.diplomNumber')"></Column>
+          <!-- Адрес учебного заведения -->
+          <Column field="location" :header="t('hr.edu.institutionAddress')"></Column>
 
-                <!-- Год поступления -->
-                <Column field="start_date" :header="t('common.startDate')">
-                    <template #body="slotProps">
-                        {{ formatDate(slotProps.data.start_date) }}
-                    </template>
-                </Column>
+          <!-- Специальность -->
+          <Column field="speciality" :header="t('common.speciality')"></Column>
+          
+          <!-- Номер диплома -->
+          <Column  field="diplom_number" :header="t('common.diplomNumber')"></Column>
 
-                
-                <!-- Год окончания -->
-                <Column field="final_date" :header="t('common.endDate')">
-                    <template #body="slotProps">
-                        {{ formatDate(slotProps.data.final_date) }}
-                    </template>
-                </Column>
+          <!-- Год поступления -->
+          <Column field="start_date" :header="t('common.startDate')">
+              <template #body="slotProps">
+                  {{ formatDate(slotProps.data.start_date) }}
+              </template>
+          </Column>
 
-                <!-- Скан копия -->
-                <Column  header="Скан копия">
-                  <template #body="slotProps">
-                    <Button v-if="slotProps.data.file_path !== null" icon="pi pi-download" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="showFile(slotProps.data.file_path)"></Button>
-                  </template>
-                </Column>
+          
+          <!-- Год окончания -->
+          <Column field="final_date" :header="t('common.endDate')">
+              <template #body="slotProps">
+                  {{ formatDate(slotProps.data.final_date) }}
+              </template>
+          </Column>
 
-                <!-- Действия-->
-                <Column v-if="!readonly" :header="t('dissertation.dissReportActions')">
-                    <template #body="slotProps">
-                        <Button icon="pi pi-pencil" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="academicDegree=slotProps.data;updateEducation()"></Button>
-                        <Button icon="fa-solid fa-trash" class="p-button-danger mb-2 mr-2" @click="academicDegree=slotProps.data;deleteEducationConfirm()"></Button>
-                    </template>
-                </Column>
+          <!-- Скан копия -->
+          <Column  header="Скан копия">
+            <template #body="slotProps">
+              <Button v-if="slotProps.data.file_path !== null" icon="pi pi-download" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="showFile(slotProps.data.file_path)"></Button>
+            </template>
+          </Column>
 
-              </DataTable> 
-          </div>
-        </div>
+          <!-- Действия-->
+          <Column v-if="!readonly" :header="t('dissertation.dissReportActions')">
+              <template #body="slotProps">
+                  <Button icon="fa-solid fa-pencil fa-xl" class="p-button-text p-button-warning p-1 mr-2" @click="academicDegree=slotProps.data;updateEducation()"></Button>
+                  <Button icon="fa-solid fa-trash-can fa-xl" class="p-button-text p-button-danger p-1 mr-2" @click="academicDegree=slotProps.data;deleteEducationConfirm()"></Button>
+              </template>
+          </Column>
+
+        </DataTable> 
     </AccordionTab>
     </Accordion>
   </div>
