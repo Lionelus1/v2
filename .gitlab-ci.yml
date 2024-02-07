@@ -5,7 +5,7 @@ stages:
 build_stage:
   stage: build
   script:
-    - cd ~/WebstormProjects/mobilefrontend
+    - git clone -b test https://gitlab.enu.kz/enu/mobilefrontend.git && cd mobilefrontend
     - npm install
     - npm run build:stage
   only:
