@@ -6,7 +6,6 @@
       <label>{{ $t('workPlan.reportName') }}</label>
       <InputText v-model="report_name" />
     </div>
-    <!-- {{ respUsers }} -->
     <div class="field">
       <label>{{ $t('common.type') }}</label>
       <Dropdown v-model="type" :options="reportTypes" optionLabel="name" optionValue="id" :placeholder="$t('common.select')" @select="selectReportType" />
@@ -24,10 +23,6 @@
       <Dropdown v-model="selectedDepartment" :options="departments" optionLabel="department_name" optionValue="department_id" :filter="true" :show-clear="true"
         :placeholder="$t('common.select')" />
     </div>
-    <!--<div class="field" v-if="plan && plan.is_oper">
-      <label>{{ $t('workPlan.respExecutor') }}</label>
-      <Dropdown v-model="selectedRespUser" :options="respUsers" optionLabel="fullName" optionValue="id" :placeholder="$t('common.select')" />
-    </div>-->
     <template #footer>
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger" @click="closeModal" />
       <Button label="Ок" icon="pi pi-check" class="p-button-rounded p-button-success mr-2" @click="create" />
@@ -119,7 +114,6 @@ export default {
       return this.plan && ((this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Oper) || this.plan.is_oper)
     },
     showCreateReportButton() {
-      //return this.loginedUser && this.respUsers.some(user => user.id === this.loginedUser.userID) || (this.plan.user.id === this.loginedUser.userID);
       return (this.plan && this.plan.user.id === this.loginedUser.userID) || this.getResposiveUser;
     },
     isPlanCreator() {
@@ -146,7 +140,6 @@ export default {
     },
     getDepartments() {
       this.departments = [];
-      alert(this.work_plan_id)
       this.planService.getDepartments(parseInt(this.work_plan_id)).then(res => {
         if (res.data) {
           this.departments = res.data
@@ -164,7 +157,6 @@ export default {
       });
     },
     getRespUsers() {
-      //this.respUsers = [];
       this.planService.getRespUsers(parseInt(this.work_plan_id)).then(res => {
         if (res.data) {
           console.log(res.data);
@@ -185,7 +177,6 @@ export default {
     },
 
     create() {
-      //this.$router.push({ name: 'WorkPlanReportView', params: { id: this.work_plan_id, type: this.type, name: this.report_name, quarter: this.quarter }})
       if (this.plan.plan_type.code === Enum.WorkPlanTypes.Oper){
         this.departmentId = this.selectedDepartment ? this.selectedDepartment : null
       }
@@ -196,7 +187,6 @@ export default {
         quarter: this.type === 2 ? this.quarter : null,
         halfYearType: this.type === 3 ? this.selectedHalfYear : null,
         department_id: this.departmentId,
-        //respUserId: this.selectedRespUser ? Number(this.selectedRespUser) : null
       };
       this.planService.createWorkPlanReport(data).then(res => {
         this.emitter.emit("isReportCreated", true);

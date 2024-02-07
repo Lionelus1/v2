@@ -1261,8 +1261,8 @@ export default {
         plancontracttopic: "По теме",
         scienceParticipants: "Участники проекта",
         generateAct: "Сформировать акт",
-        minWordCount: "Должно быть не менее 50 слов",
-        maxWordCount: "Должно быть не более 250 слов"
+        minWordCount: "Должно быть от 50 до 250 слов",
+        maxWordCount: "Должно быть от 50 до 250 слов"
     },
     educomplex: {
         title: "Учебно-методический комплекс дисциплины",
