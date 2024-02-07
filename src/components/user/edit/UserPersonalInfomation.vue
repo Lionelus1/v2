@@ -85,13 +85,13 @@
             ></PositionsList>
           </div>
 
-        <div v-if="(user && user.academicDegree || user.academicTitle) || customType == 'scientists'" class="col-12 mb-2 mt-2 pb-2 lg:col-6 mb-lg-0">
+        <div v-if="(user && user.academicDegree || user.academicTitle) || customType === 'scientists'" class="col-12 mb-2 mt-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ t('science.academicDegAndAcademicTit')}}</label>
             <InputText class="mt-2 gray-background" :placeholder="t('science.academicDegAndAcademicTit')" :value="getCombinedDegreeAndTitle()" :readonly="true" @input="updateUserData"></InputText>
         </div>
 
 
-        <div v-if="customType=='myAccount' || customType == 'viewUser' || customType == 'createUser'" class="col-12 mb-2 mt-2 pb-2 lg:col-6 mb-lg-0">
+        <div v-if="customType === 'myAccount' || customType === 'viewUser' || customType === 'createUser'" class="col-12 mb-2 mt-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ t("common.workPlace")}}</label>
             <span class="p-input-icon-right mt-2"> 
               <i class="pi pi-id-card" v-if="user.mainPosition && user.mainPosition.organization && user.mainPosition.organization.id > 0" 
@@ -110,19 +110,19 @@
         <!-- АДРЕС -->
         <div class="col-12 mb-2 mt-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ t('common.myAddress') }}</label>
-            <InputText class="mt-2" :placeholder="t('common.myAddress')" v-model="user.address" :readonly="props.readonly" @input="updateUserData"></InputText>
+            <InputText class="mt-2" :plceholder="t('common.myAddress')" v-model="user.address" :readonly="props.readonly" @input="updateUserData"></InputText>
             <small class="p-error" v-if="validation.address">{{ t("common.requiredField") }}</small>
         </div>
   
         <!-- ТЕЛЕФОН НОМЕР -->
-        <div v-if="customType=='myAccount'" class="col-12 mb-2 mt-2 pb-2 lg:col-6 mb-lg-0">
+        <div v-if="customType === 'myAccount' || customType === 'viewUser' || customType === 'createUser'" class="col-12 mb-2 mt-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ t('contact.phone') }}</label>
-            <InputText class="mt-2" :placeholder="t('common.myAddress')" v-model="user.address" :readonly="props.readonly" @input="updateUserData"></InputText>
+            <InputText class="mt-2" :placeholder="t('common.myAddress')" v-model="user.phoneNumber" :readonly="props.readonly" @input="updateUserData"></InputText>
             <small class="p-error" v-if="validation.address">{{ t("common.requiredField") }}</small>
         </div>
         
           <!-- Пол -->
-        <div v-if="customType=='myAccount' || customType == 'viewUser'" class="col-12 mb-2 mt-2 pb-2 lg:col-6 mb-lg-0">
+           <div v-if="customType === 'myAccount' || customType === 'viewUser' || customType === 'createUser'" class="col-12 mb-2 mt-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ t("contact.gender") }}</label>
             <Dropdown
               class="mt-2"
