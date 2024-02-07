@@ -290,12 +290,21 @@ import axios from 'axios';
 						},
 					)
 					.then((res) => {
-						this.setTheme(res.data.enu_settings.user_theme)
-						this.setFz(res.data.enu_settings.user_font_size)
-						this.changeInputStyle(res.data.enu_settings.input_style)
-						this.changeRipple(res.data.enu_settings.change_ripple)
+						if (res.data && res.data.enu_settings){
+							this.setTheme(res.data.enu_settings.user_theme)
+							this.setFz(res.data.enu_settings.user_font_size)
+							this.changeInputStyle(res.data.enu_settings.input_style)
+							this.changeRipple(res.data.enu_settings.change_ripple)
 						// this.changeLayoutColor(res.data.enu_settings.layout_mode)
-						this.changeLayoutColor(res.data.enu_settings.layout_color_mode) 
+							this.changeLayoutColor(res.data.enu_settings.layout_color_mode) 
+						} else{
+							this.setFz("default");
+							this.setTheme("default-theme");
+							this.changeInputStyle('outlined');
+							this.changeRipple(true);
+							// this.changeLayout('static');
+							this.changeLayoutColor('dark')
+						}
 
 					})
 					.catch((err) => {

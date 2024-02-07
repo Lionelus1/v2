@@ -260,8 +260,12 @@ export default {
       })
       .then((res) => {
 
+        if(res.data && res.data.enu_settings){
         localStorage.setItem("fixedMenu", res.data.enu_settings.fixed_menu);
         this.fixedMenu = res.data.enu_settings.fixed_menu;
+        }else{
+          this.fixedMenu = false
+        }
       })
       .catch((err) => {
 
