@@ -2,15 +2,7 @@
     <div class="col-12">
         <TitleBlock :title="$t('smartenu.eventsTitle')"/>
         <!-- BEGINNING OF TABLE -->
-        <div class="card" v-if="isAdmin || isModer || selectedEvent || isEnuWebAdmin || isEnuWebFacAdmin">
-            <Button v-if="isAdmin || isModer || isEnuWebAdmin || isEnuWebFacAdmin" :label="$t('common.add')" icon="pi pi-plus"
-                    class="p-button-success mr-2" v-on:click="createEvent"/>
-            <Button :label="$t('common.publish')" v-if="isCreated && (isAdmin || isPublisher || isEnuWebAdmin || isEnuWebFacAdmin)" icon="pi pi-check"
-                    class="p-button-help mr-2" v-on:click="publishEvent"/>
-            <Button :label="$t('common.show')" v-if="selectedEvent" icon="pi pi-eye"
-                    class="p-button-secondary mr-2" v-on:click="eventView"/>
-        </div>
-
+      <ToolbarMenu :data="menu"/>
         <!-- BEGINNING OF TABLE -->
         <div class="card">
             <DataTable :value="allEvents" :paginator="true" class="p-datatable-customers" :rows="10" dataKey="id"
@@ -55,15 +47,11 @@
                 </Column>
                 <Column headerStyle="width:120px">
                     <template #body="{ data }">
-                        <Button icon="pi pi-pencil" class="p-button-rounded p-button-success" @click="editEvent(data)"
-                                v-if="data?.history.status.id === statuses.created || userHasAdmin || isEnuWebAdmin || isEnuWebFacAdmin "/>
-                        <Button icon="pi pi-trash" class="p-button-rounded p-button-warning ml-2" @click="deleteConfirm(data)"
-                                v-if="data?.history.status.id === statuses.created || isAdmin || isEnuWebAdmin || isEnuWebFacAdmin"/>
+                        <ActionButton :show-label="true" :items="actions" @toggle="toggle(data)" />
                     </template>
                 </Column>
             </DataTable>
         </div>
-
 
         <EventsView v-if="eventViewVisible" :is-visible="eventViewVisible" :selected-event="selectedEvent"/>
         <AddEditEvent v-if="editVisible" :is-visible="editVisible" :selectedEvent="event" :partCats="participantsCategories"/>
@@ -71,21 +59,20 @@
 </template>
 
 <script>
-import {getHeader, smartEnuApi} from "@/config/config";
+import {smartEnuApi} from "@/config/config";
 import {FilterMatchMode} from "primevue/api";
-import * as imageResizeCompress from "image-resize-compress";
-import RichEditor from "../documents/editor/RichEditor";
-import {resizeImages} from "../../helpers/HelperUtil";
 import {fileRoute, findRole} from "../../config/config";
 import EventsView from "./EventsView";
 import {EventsService} from "../../service/event.service";
 import {PosterService} from "../../service/poster.service";
 import AddEditEvent from "./AddEditEvent";
 import TitleBlock from "@/components/TitleBlock.vue";
+import ToolbarMenu from "@/components/ToolbarMenu.vue";
+import ActionButton from "@/components/ActionButton.vue";
 
 export default {
     name: "Events",
-    components: {TitleBlock, AddEditEvent, EventsView},
+    components: {ActionButton, ToolbarMenu, TitleBlock, AddEditEvent, EventsView},
     data() {
         return {
             statuses: {
@@ -119,7 +106,7 @@ export default {
             submitted: false,
             event: null,
             allEvents: [],
-            selectedEvent: null,
+            selectedEvent: false,
             filters: {
                 global: {
                     value: null,
@@ -173,6 +160,7 @@ export default {
             eventService: new EventsService(),
             posterService: new PosterService(),
             loggedUser: JSON.parse(window.localStorage.getItem('loginedUser')),
+            actionsNode: null
         };
     },
     mounted() {
@@ -247,6 +235,7 @@ export default {
                 this.loading = false;
                 this.allEvents.map(e => {
                     e.imageUrl = smartEnuApi + fileRoute + e.main_image_path;
+                    e.imageBool = e.main_image_path;
                     if (e.poster) {
                         e.poster.imageKkUrl = smartEnuApi + fileRoute + e.poster.imageKk;
                         e.poster.imageRuUrl = smartEnuApi + fileRoute + e.poster.imageRu;
@@ -373,7 +362,8 @@ export default {
         /**
          * VIEW NEWS DIALOG VISIBILITY
          */
-        eventView() {
+        eventView(data) {
+            this.selectedEvent = data;
             this.eventViewVisible = true;
         },
 
@@ -425,17 +415,57 @@ export default {
         },
         isCreator(row) {
             return row.history.userId === this.loggedUser.userID;
-        }
+        },
+        toggle(node) {
+          this.actionsNode = node
+        },
     },
 
     created() {
         this.getAllEvents();
         this.getParticipantsCategories();
         this.getRoles();
-
     },
 
     computed: {
+      menu () {
+        return [
+          {
+            label: this.$t('common.add'),
+            icon: "pi pi-plus",
+            visible: this.isAdmin || this.isModer || this.isEnuWebAdmin || this.isEnuWebFacAdmin,
+            command: () => {this.createEvent()},
+          },
+          {
+            label: this.$t('common.publish'),
+            icon: "pi pi-check",
+            visible: this.isCreated && (this.isAdmin || this.isPublisher || this.isEnuWebAdmin || this.isEnuWebFacAdmin),
+            command: () => {this.publishEvent()},
+          }
+        ]
+      },
+      actions () {
+        return [
+          {
+            label: this.$t('common.show'),
+            icon: "pi pi-eye",
+            command: () => {this.eventView(this.actionsNode)},
+          },
+          {
+            label: this.$t('common.edit'),
+            icon: "pi pi-pencil",
+            visible: this.actionsNode?.history.status.id ===this.statuses.created || this.userHasAdmin || this.isEnuWebAdmin || this.isEnuWebFacAdmin,
+            command: () => {this.editEvent(this.actionsNode)},
+          },
+          {
+            label: this.$t('common.delete'),
+            icon: "pi pi-trash",
+            visible: this.actionsNode?.history.status.id ===this.statuses.created || this.isAdmin|| this.isEnuWebAdmin || this.isEnuWebFacAdmin,
+            command: () => {this.deleteConfirm(this.actionsNode)},
+          },
+
+        ]
+      },
         isMaster: function () {
             if (this.selectedMainCategories === null) {
                 return false;
@@ -476,8 +506,7 @@ export default {
 
         isCreated: function () {
             return (
-                this.selectedEvent &&
-                this.selectedEvent.history.status.id === this.statuses.created
+                this.selectedEvent && this.selectedEvent.history.status.id === this.statuses.created
             );
         },
         isAdmin: function () {
