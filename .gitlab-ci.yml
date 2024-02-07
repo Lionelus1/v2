@@ -4,10 +4,8 @@ stages:
 
 build_stage:
   stage: build
-  image: node:lts
   script:
-    - git clone -b test https://gitlab.enu.kz/enu/mobilefrontend.git && cd mobilefrontend
-    - export NODE_OPTIONS=--openssl-legacy-provider
+    - cd ~//WebstormProjects/mobilefrontend
     - npm install
     - npm run build:stage
   only:
