@@ -1,0 +1,19 @@
+stages:
+  - build
+  - deploy
+
+build_stage:
+  stage: build
+  script:
+    - npm install
+    - npm run build:stage
+  only:
+    - test
+
+deploy_stage:
+  stage: deploy
+  script:
+    - ssh root@smart.enu.kz "rm -rf /local/testhtml/*"
+    - scp -r dist/* root@smart.enu.kz:/local/testhtml
+  only:
+    - test
