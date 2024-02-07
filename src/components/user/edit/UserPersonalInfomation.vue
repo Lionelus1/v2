@@ -404,4 +404,28 @@
 .p-input-icon-right > i:hover {
   background-color: #edf0f5;
 }
+
+
+  @media only screen and (min-width: 320px) and (max-width: 600px) {
+    .grid.formgrid {
+      grid-template-columns: repeat(1, 1fr);
+    }
+
+    .col-12 {
+      width: 100%;
+    }
+
+    .flex.flex-col {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .card_img {
+      order: -1;
+      margin-bottom: 1rem; 
+    }
+  }
+
+  
+
 </style>
