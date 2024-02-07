@@ -7,7 +7,7 @@ build_stage:
   script:
     - git pull origin test
     - cd ~/WebstormProjects/mobilefrontend
-    - npm install
+#    - npm install
     - npm run build:stage
   only:
     - test
