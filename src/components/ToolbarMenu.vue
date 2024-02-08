@@ -1,5 +1,5 @@
 <template>
-  <div class="toolbar_menu card p-0 mb-3" ref="containerRef" :class="{ 'scrollable':!search || !filter,'toolbar_border': border }">
+  <div class="toolbar_menu card mb-3" ref="containerRef" :class="{ 'scrollable':!search || !filter,'toolbar_border': border }">
     <Button v-if="isScrollable && (!search || !filter)" :class="['scroll-left']" icon="pi pi-angle-left" @click="scrollLeft"/>
     <div :class="['justify-content-between', {'flex': search || filter},{'inline-flex': isScrollable && (!search || !filter)}]">
       <div class="toolbar_bars" v-if="(search || filter)">
@@ -15,7 +15,11 @@
         <template v-for="(i,index) of data" :key="i">
             <Button
                 v-if="i.visible !== false && !i.right && !i.items"
-                :class="['p-button-outlined']"
+                :class="['p-button-outlined',
+                {'button_blue': i.color === 'blue'},
+                {'button_purple': i.color === 'purple'},
+                {'button_red': i.color === 'red'}
+                ]"
                 :icon="i.icon"
                 :label="label(i.label)"
                 :disabled="i.disabled"
@@ -119,6 +123,7 @@ onBeforeUnmount(() => {
   background: #fff;
   color: #495057;
   border-radius: 3px;
+  padding: 5px!important;
 
   .p-button.p-button-outlined {
     color: #495057;
@@ -177,8 +182,30 @@ onBeforeUnmount(() => {
 .scroll-right {
   right: 0;
 }
-
-
+.button_blue{
+  color: #0d89ec !important;
+  background: rgba(13, 137, 236, 0.15);
+  margin-right: 5px;
+}
+.button_blue:hover{
+  background: rgba(13, 137, 236, 0.30)!important;
+}
+.button_purple{
+  color: purple!important;
+  background: rgba(128, 0, 128, 0.15);
+  margin-right: 5px;
+}
+.button_purple:hover{
+  background: rgba(128, 0, 128, 0.30)!important;
+}
+.button_red{
+  color: red!important;
+  background: rgba(255, 0, 0, 0.15);
+  margin-right: 5px;
+}
+.button_red:hover{
+  background: rgba(255, 0, 0, 0.30)!important;
+}
 @media (max-width: 960px) {
   .toolbar_bars{
     display: block;
