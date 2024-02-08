@@ -110,7 +110,7 @@
         <!-- АДРЕС -->
         <div class="col-12 mb-2 mt-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ t('common.myAddress') }}</label>
-            <InputText class="mt-2" :plceholder="t('common.myAddress')" v-model="user.address" :readonly="props.readonly" @input="updateUserData"></InputText>
+            <InputText class="mt-2" :placeholder="t('common.myAddress')" v-model="user.address" :readonly="props.readonly" @input="updateUserData"></InputText>
             <small class="p-error" v-if="validation.address">{{ t("common.requiredField") }}</small>
         </div>
   
