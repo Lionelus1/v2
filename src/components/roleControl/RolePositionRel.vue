@@ -112,6 +112,9 @@
           <Dropdown
 		  	:placeholder="$t('roleControl.selectPosition')"
             v-model="position"
+            :filter="true"
+            :showClear="true"
+            :emptyFilterMessage="$t('roleControl.noResult')"
             :optionLabel="positionLabel"
             :options="positions"
             class="w-full md:w-full"
@@ -125,6 +128,9 @@
             v-model="role"
             :optionLabel="roleLabel"
             :options="roles"
+            :filter="true"
+            :showClear="true"
+            :emptyFilterMessage="$t('roleControl.noResult')"
             class="w-full md:w-full"
           ></Dropdown>
         </div>
