@@ -117,7 +117,7 @@
                         <div class="field">
                             <label for="newUsers">{{ $t('common.fullName') }}</label>
 
-                            <FindUser id="newUsers" v-model="newUsers" :userType="2"></FindUser>
+                            <FindUser id="newUsers" v-model="newUsers" userType="3"></FindUser>
                             <small class="p-error" v-if="submitted && !(newUsers && newUsers.length > 0)">{{
                                 $t('common.requiredField')
                                 }}</small>

@@ -552,8 +552,6 @@ export default {
     getPlan() {
       this.planService.getPlanById(this.work_plan_id).then(res => {
         this.plan = res.data;
-        console.log("old", new Date(this.plan.create_date).getFullYear())
-        console.log("currnet", new Date().getFullYear())
         this.oldPlan = new Date(this.plan.create_date).getFullYear() < new Date().getFullYear()
         if (this.plan && this.plan.is_finish) {
           this.isFinish = this.plan.is_finish;

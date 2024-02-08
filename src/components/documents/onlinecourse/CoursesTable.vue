@@ -102,8 +102,9 @@
                 <small v-if="courseValidate.final_date" class="p-error">{{ $t("common.requiredField") }}</small>
               </div>
               <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-                  <label>{{ $t('course.moduleHours') }}</label>
-                  <InputNumber v-model="courseRequest.hours" class="mt-2"></InputNumber>
+                  <label class="mr-2">{{ $t('course.moduleHours') }}</label>
+                <Checkbox v-model="checkedHours" :binary="true" />
+                <InputNumber :disabled="!checkedHours" v-model="courseRequest.hours" class="mt-2"></InputNumber>
                   <small v-if="courseValidate.hours" class="p-error">{{$t('common.requiredField')}}</small>
               </div>
               <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
@@ -197,6 +198,7 @@ export default {
       loading: true,
       count: 0,
       checkedCertificate: false,
+      checkedHours: false,
     }
   },
   created() {
@@ -368,7 +370,7 @@ export default {
       this.courseValidate.descriptionen = this.courseRequest.descriptionen === ''
       this.courseValidate.start_time = this.courseRequest.start_time === null
       this.courseValidate.final_date = this.courseRequest.final_date === null
-      this.courseValidate.hours = this.courseRequest.hours <= 0
+      this.courseValidate.hours = (this.courseRequest.hours <= 0 && this.checkedHours)
       if (this.checkedCertificate) {
         this.courseValidate.certificate_template_id = this.courseRequest.certificate_template_id === null
       } else {
