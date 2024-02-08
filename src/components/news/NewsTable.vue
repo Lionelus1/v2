@@ -582,7 +582,7 @@ export default {
             label: this.$t('common.delete'),
             icon: "pi pi-trash",
             visible: this.actionsNode?.history.status.id ===this.statuses.created || this.isAdmin|| this.isEnuWebAdmin || this.isEnuWebFacAdmin,
-            command: () => {this.delNews(this.actionsNode)},
+            command: () => {this.delNews(this.actionsNode.id)},
           },
         ]
       },
