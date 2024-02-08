@@ -1,20 +1,7 @@
 <template>
     <div class="col-12">
         <h3>{{ $t("smartenu.newsTitle") }}</h3>
-        <div class="card">
-            <Button :label="$t('common.add')" icon="pi pi-plus" class="p-button-success mr-2" v-on:click="createNews"/>
-            <Button :label="$t('common.send')" icon="pi pi-send" class="mr-2" v-on:click="sendNews"
-                    v-if="selectedNews && selectedNews.history.status.id === statuses.created && (!isModer || !isPublisher || !isAdmin || !isEnuWebAdmin || !isEnuWebFacAdmin)"/>
-            <Button :label="$t('common.publish')"
-                    v-if="selectedNews && (selectedNews.history.status.id === statuses.sent || selectedNews.history.status.id === statuses.created) &&
-            (isModer || isPublisher || isAdmin || isEnuWebAdmin || isEnuWebFacAdmin)"
-                    icon="pi pi-check" class="p-button-help mr-2" v-on:click="publishNews"/>
-            <Button :label="$t('common.reject')"
-                    v-if="selectedNews && selectedNews.history.status.id === statuses.sent && (isModer || isPublisher || isAdmin)"
-                    icon="pi pi-check" class="p-button-danger mr-2" v-on:click="rejectReason"/>
-            <Button :label="$t('common.show')" v-if="selectedNews" icon="pi pi-eye"
-                    class="p-button-secondary mr-2" v-on:click="newsView"/>
-        </div>
+        <ToolbarMenu :data="menu" @search="getAllNews" :search="true"/>
         <div class="card">
             <DataTable :lazy="true" :value="allNews" @page="onPage($event)" :totalRecords="newsCount" :paginator="true"
                        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
@@ -23,15 +10,6 @@
                        class="p-datatable-customers" :rows="10" dataKey="id" :rowHover="true" v-model:selection="selectedNews"
                        :filters="filters" filterDisplay="menu" :showFilterMatchModes="false" :loading="loading"
                        responsiveLayout="scroll" @sort="onSort($event)" selectionMode="single">
-                <template #header>
-                    <div class="table-header flex justify-content-end align-items-center">
-            <span class="p-input-icon-left"><i class="pi pi-search"/>
-              <InputText type="search" v-model="lazyParams.searchText" :placeholder="$t('common.search')"
-                         @keyup.enter="getAllNews" @click="clearData"/>
-              <Button icon="pi pi-search" class="ml-1" @click="getAllNews"/>
-            </span>
-                    </div>
-                </template>
                 <template #empty>{{ $t("smartenu.newsNotFound") }}</template>
                 <template #loading>{{ $t("smartenu.loadingNews") }}</template>
                 <Column field="titleKz" v-bind:header="$t('common.nameIn')" :sortable="true" style="width: 40%">
@@ -67,12 +45,8 @@
                 </template>
               </Column>
                 <Column>
-                    <template #body="slotProps">
-                        <Button icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2"
-                                @click="editNews(slotProps.data)"
-                                v-if="slotProps.data.history.status.id === statuses.created || isAdmin || isModer || isEnuWebAdmin || isEnuWebFacAdmin"/>
-                        <Button icon="pi pi-trash" class="p-button-rounded p-button-warning" @click="delNews(slotProps.data.id)"
-                                v-if="slotProps.data.history.status.id === statuses.created || isAdmin || isEnuWebAdmin || isEnuWebFacAdmin"/>
+                    <template #body="{data}">
+                      <ActionButton :show-label="true" :items="actions" @toggle="toggle(data)" />
                     </template>
                 </Column>
             </DataTable>
@@ -146,10 +120,12 @@ import {PosterService} from "../../service/poster.service";
 import NewsView from "./NewsView";
 import AddEditNews from "./AddEditNews";
 import {formatDate, upFirstLetter} from "@/helpers/HelperUtil";
+import ToolbarMenu from "@/components/ToolbarMenu.vue";
+import ActionButton from "@/components/ActionButton.vue";
 
 export default {
     name: "NewsTable",
-    components: {AddEditNews, NewsView},
+    components: {ActionButton, ToolbarMenu, AddEditNews, NewsView},
     data() {
         return {
             lazyParams: {
@@ -175,7 +151,7 @@ export default {
             newsData: null,
             allNews: [],
             newsCount: 0,
-            selectedNews: null,
+            selectedNews: false,
             filters: {
                 'global': {value: null, matchMode: FilterMatchMode.CONTAINS},
                 'question': {value: null, matchMode: FilterMatchMode.CONTAINS},
@@ -213,7 +189,8 @@ export default {
             imageFileMain: null,
             imageFileAdd: null,
             newsService: new NewsService(),
-            posterService: new PosterService()
+            posterService: new PosterService(),
+            actionsNode: null
         }
     },
     mounted() {
@@ -276,9 +253,10 @@ export default {
         /**
          *  GET ALL NEWS
          */
-        getAllNews() {
+        getAllNews(data) {
             this.loading = true
             // this.allNews = [];
+            this.lazyParams.searchText = data;
             this.lazyParams.countMode = null;
             this.newsService.getNews(this.lazyParams).then((response) => {
                 if (response.data && response.data.news) {
@@ -411,7 +389,8 @@ export default {
         /**
          * VIEW NEWS DIALOG VISIBILITY
          */
-        newsView() {
+        newsView(data) {
+            this.selectedNews = data;
             this.newsViewVisible = true;
         },
 
@@ -426,7 +405,7 @@ export default {
                         summary: this.$t("smartenu.saveSuccess"),
                         life: 3000,
                     });
-                    this.selectedNews = null;
+                    this.selectedNews = false;
                     this.getAllNews();
                 }
             }).catch((error) => {
@@ -453,7 +432,7 @@ export default {
                         summary: this.$t("smartenu.saveSuccess"),
                         life: 3000,
                     });
-                    this.selectedNews = null;
+                    this.selectedNews = false;
                     this.getAllNews();
                 }
             }).catch((error) => {
@@ -541,7 +520,9 @@ export default {
             this.roles.isEnuWebAdmin = this.findRole(null, "enu_web_admin");
             this.roles.isEnuWebFacAdmin = this.findRole(null, "enu_web_fac_admin");
         },
-        
+      toggle(node) {
+        this.actionsNode = node
+      },
     },
 
     created() {
@@ -552,6 +533,59 @@ export default {
     },
 
     computed: {
+      menu () {
+        return [
+          {
+            label: this.$t('common.add'),
+            icon: "pi pi-plus",
+            command: () => {this.createNews()},
+          },
+          {
+            label: this.$t('common.send'),
+            icon: "pi pi-send",
+            color: "blue",
+            visible: this.selectedNews && this.selectedNews.history.status.id === this.statuses.created && (!this.isModer ||
+                !this.isPublisher || !this.isAdmin || !this.isEnuWebAdmin || !this.isEnuWebFacAdmin),
+            command: () => {this.sendNews()},
+          },
+          {
+            label: this.$t('common.publish'),
+            icon: "pi pi-check",
+            color: "purple",
+            visible: this.selectedNews && (this.selectedNews.history.status.id === this.statuses.sent || this.selectedNews.history.status.id === this.statuses.created) &&
+                (this.isModer || this.isPublisher || this.isAdmin || this.isEnuWebAdmin || this.isEnuWebFacAdmin),
+            command: () => {this.publishNews()},
+          },
+          {
+            label: this.$t('common.reject'),
+            icon: "pi pi-check",
+            color: "red",
+            visible: this.selectedNews && this.selectedNews.history.status.id === this.statuses.sent && (this.isModer || this.isPublisher || this.isAdmin),
+            command: () => {this.rejectReason()},
+          }
+        ]
+      },
+      actions () {
+        return [
+          {
+            label: this.$t('common.show'),
+            icon: "pi pi-eye",
+            command: () => {this.newsView(this.actionsNode)},
+          },
+          {
+            label: this.$t('common.edit'),
+            icon: "pi pi-pencil",
+            visible: this.actionsNode?.history.status.id ===this.statuses.created || this.isAdmin || this.isModer || this.isEnuWebAdmin || this.isEnuWebFacAdmin,
+            command: () => {this.editNews(this.actionsNode)},
+          },
+          {
+            label: this.$t('common.delete'),
+            icon: "pi pi-trash",
+            visible: this.actionsNode?.history.status.id ===this.statuses.created || this.isAdmin|| this.isEnuWebAdmin || this.isEnuWebFacAdmin,
+            command: () => {this.delNews(this.actionsNode.id)},
+          },
+        ]
+      },
         isAdmin: function () {
             return this.roles.isAdmin;
         },

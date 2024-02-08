@@ -1,5 +1,5 @@
 <template>
-    <Dialog
+    <Dialog header=" "
             v-model:visible="newsViewVisible"
             :style="{ width: '1000px' }"
             :modal="true"
