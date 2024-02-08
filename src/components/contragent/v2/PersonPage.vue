@@ -252,14 +252,24 @@ export default {
       
       if (this.per.birthday) {
         const formattedBirthday = this.per.birthday;
-        const dateObject = new Date(formattedBirthday);
-        this.per.birthday = dateObject;
+        const birthdayDateObject = this.parseDate(formattedBirthday);
+
+        if (birthdayDateObject) {
+          this.per.birthday = birthdayDateObject;
+        } else {
+          this.per.birthday = null
+        }
       }
 
       if (this.per.iddate) {
-        const formattedBirthday = this.per.iddate;
-        const dateObject = new Date(formattedBirthday);
-        this.per.iddate = dateObject;
+        const formattedIdDate = this.per.iddate;
+        const idDateObject = this.parseDate(formattedIdDate);
+
+        if (idDateObject) {
+          this.per.iddate = idDateObject;
+        } else {
+          this.per.iddate = null
+        }
       }
 
       const fd = new FormData();
@@ -402,6 +412,27 @@ export default {
       this.backcolor = "background-color: var(--teal-100);";
       this.userDetailSaved = false;
     },
+    parseDate(dateString) {
+      let dateObject;
+
+      if (/^[a-zA-Z]{3} [a-zA-Z]{3} \d{2} \d{4} \d{2}:\d{2}:\d{2} GMT[+-]\d{4} \(.+\)$/.test(dateString)) {
+        dateObject = new Date(dateString);
+      } else {
+        const parts = dateString.split('.');
+        if (parts.length === 3) {
+          const day = parseInt(parts[0], 10);
+          const month = parseInt(parts[1], 10) - 1;
+          const year = parseInt(parts[2], 10);
+          dateObject = new Date(year, month, day);
+        }
+      }
+
+      if (dateObject instanceof Date && !isNaN(dateObject)) {
+        return dateObject;
+      } else {
+        return null;
+      }
+    }
   }
 }
 </script>
