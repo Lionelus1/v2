@@ -145,7 +145,7 @@ export default {
       focused: false,
       foundEntities: null,
       keyPressDate: Date.now(),
-      // userDialog: false,
+      userDialog: false,
       selectedEntity: {
         name: "",
       },
