@@ -3,8 +3,8 @@
      <BlockUI :blocked="loading" :fullScreen="true">
      </BlockUI>
          <div class="col-12">
+           <TitleBlock :title="$t('course.certificate.title')" />
              <div class="card">
-         <div class="text-2xl font-medium text-900 mb-3">{{$t("course.certificate.title")}}</div>
          <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
          <Button  v-if="findRole(null,'student')" @click="getStudentCertificates()"
             :label="$t('common.downloadCertificate')"
@@ -45,9 +45,9 @@
 
            <Column headerStyle="width:60px;">
              <template #body="slotProps">
-               <Button @click="openCertificate(slotProps.data.uuid);"
-                        type="button"
-                       icon="pi pi-eye" class="p-button-info"></Button>
+               <Button class="p-button-text p-1 mr-2"  @click="openCertificate(slotProps.data.uuid)">
+                 <i class="fa-solid fa-eye fa-xl"></i>
+               </Button>
              </template>
            </Column>
          </DataTable>

@@ -2,7 +2,7 @@
     <div class="col-12">
         <TitleBlock :title="$t('smartenu.eventsTitle')"/>
         <!-- BEGINNING OF TABLE -->
-      <ToolbarMenu :data="menu"/>
+      <ToolbarMenu v-if="isAdmin || isModer || isEnuWebAdmin || isEnuWebFacAdmin" :data="menu"/>
         <!-- BEGINNING OF TABLE -->
         <div class="card">
             <DataTable :value="allEvents" :paginator="true" class="p-datatable-customers" :rows="10" dataKey="id"
