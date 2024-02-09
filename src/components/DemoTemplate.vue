@@ -3,6 +3,7 @@
   <!-- filtered - іздеу батырмасын басқан кезде иконка түсі өзгереді-->
   <ToolbarMenu :data="menu" @search="search" :search="true" @filter="toggleFilter($event)" :filter="true" :filtered="filtered"/>
   <ToolbarMenu :data="menu2"/>
+  <ToolbarMenu :data="menuColor"/>
   <div class="card">
     <div class="mb-3">
       <OverlayPanel ref="filter">
@@ -28,6 +29,13 @@
       <Column field="name" header="Name"></Column>
       <Column field="year" header="Year"></Column>
       <Column field="capacity" header="Capacity"></Column>
+      <Column field="status" header="Status">
+        <template #body="{data}">
+          <span :class="'customer-badge status-' + data.status[0].id">
+            {{data.status[0].name}}
+          </span>
+        </template>
+      </Column>
       <Column headerStyle="width: 10rem">
         <template #body="">
           <div class="inline-flex">
@@ -166,26 +174,89 @@ const menu2 = computed(() => {
     }
   ]
 })
+const menuColor = computed(() => {
+  return [
+    {
+      label: t('common.add'),
+      icon: "pi pi-plus",
+      color: "blue",
+      command: () => {
+      },
+    },
+    {
+      label: t('common.cancel'),
+      icon: "fa-solid fa-times",
+      disabled: false,
+      color: "red",
+      command: () => {
+        openDialog()
+      },
+    },
+    {
+      label: 'Батырма',
+      icon: "pi pi-fw pi-send",
+      color: "purple",
+      command: () => {
+      },
+    },
+    {
+      label: 'Екінші батырма',
+      icon: "pi pi-fw pi-user",
+      color: "green",
+      command: () => {
+      },
+    },
+    {
+      label: 'Үшінші батырма',
+      icon: "pi pi-fw  pi-check-circle",
+      color: "yellow",
+    }
+  ]
+})
 const tableData = [
   {
     name: "Audi",
     year: 2013,
     capacity: 1.6,
+    status: [
+      {
+        id: 1,
+        name: 'ҚҰРЫЛДЫ',
+      }
+    ],
   },
   {
     name: "BMW",
     year: 2002,
     capacity: 3.5,
+    status: [
+      {
+        id: 2,
+        name: 'КЕЛІСУДЕ',
+      }
+    ],
   },
   {
     name: "Mercedes Benz",
     year: 2021,
     capacity: 3.5,
+    status: [
+      {
+        id: 3,
+        name: 'КЕЛІСІЛДІ',
+      }
+    ],
   },
   {
     name: "Toyota",
     year: 2023,
     capacity: 2.5,
+    status: [
+      {
+        id: 4,
+        name: 'ҚАБЫЛДАНБАДЫ',
+      }
+    ],
   }
 ]
 const buttons = computed(() => {

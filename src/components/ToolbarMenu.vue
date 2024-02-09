@@ -15,9 +15,11 @@
         <template v-for="(i,index) of data" :key="i">
             <Button
                 v-if="i.visible !== false && !i.right && !i.items"
-                :class="['p-button-outlined',
+                :class="['p-button-outlined','toolbar_btn',
+                {'button_green': i.color},
                 {'button_blue': i.color === 'blue'},
                 {'button_purple': i.color === 'purple'},
+                {'button_yellow': i.color === 'yellow'},
                 {'button_red': i.color === 'red'}
                 ]"
                 :icon="i.icon"
@@ -182,10 +184,19 @@ onBeforeUnmount(() => {
 .scroll-right {
   right: 0;
 }
+.toolbar_btn{
+  margin-right: 5px;
+}
+.button_green{
+  color: green !important;
+  background: rgba(0, 128, 0, 0.15);
+}
+.button_green:hover{
+  background: rgba(0, 128, 0, 0.30)!important;
+}
 .button_blue{
   color: #0d89ec !important;
   background: rgba(13, 137, 236, 0.15);
-  margin-right: 5px;
 }
 .button_blue:hover{
   background: rgba(13, 137, 236, 0.30)!important;
@@ -193,15 +204,20 @@ onBeforeUnmount(() => {
 .button_purple{
   color: purple!important;
   background: rgba(128, 0, 128, 0.15);
-  margin-right: 5px;
 }
 .button_purple:hover{
   background: rgba(128, 0, 128, 0.30)!important;
 }
+.button_yellow{
+  color: #FBC02D !important;
+  background: rgba(255, 217, 0, 0.15);
+}
+.button_yellow:hover{
+  background: rgba(255, 217, 0, 0.30)!important;
+}
 .button_red{
   color: red!important;
   background: rgba(255, 0, 0, 0.15);
-  margin-right: 5px;
 }
 .button_red:hover{
   background: rgba(255, 0, 0, 0.30)!important;
