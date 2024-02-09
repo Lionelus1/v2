@@ -3,11 +3,11 @@
         <BlockUI :blocked="saving" :fullScreen="true"></BlockUI>
         <TitleBlock class="content_title" :title="$t('Онлайн курс')" :show-back-button="true"/>
         <div class="course_card block sm:flex p-4">
-          <img :src="course.logo" alt="">
+<!--          <img :src="course.logo" alt="">-->
           <div class="text text-white">
             <div class="flex mb-4">
               <h5 class="mb-0 mr-2">{{ course["name" + $i18n.locale] }}</h5>
-              <Tag class="ql-size-small" icon="pi pi-star-fill" value="4,9"></Tag>
+<!--              <Tag class="ql-size-small" icon="pi pi-star-fill" value="4,9"></Tag>-->
             </div>
             <p class="text-gray-400">{{ $t('fieldEducation.duration') }} : {{course.hours}}</p>
             <p class="text-gray-400">{{ $t('fieldEducation.trainingFormat') }}:
@@ -25,7 +25,7 @@
               <p class="title font-bold">{{ $t('fieldEducation.briefSummary') }}</p>
               <p>{{course.annotationKz}} {{course.annotationRu}} {{course.annotationEn}}</p>
             </div>
-           <div class="course_footer">
+<!--           <div class="course_footer">
              <div class="footer_title font-bold mb-4">
                {{ $t('fieldEducation.teachers') }}
              </div>
@@ -35,7 +35,7 @@
                   <div class="name">Teacher</div>
                 </div>
              </div>
-           </div>
+           </div>-->
           </TabPanel>
             <TabPanel :header="$t('course.users')">
                 <Button v-if="students.length === 0 && dic_course_type == 1" class="btn mb-3" :label="$t('hr.sp.request')"
