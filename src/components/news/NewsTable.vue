@@ -558,7 +558,7 @@ export default {
           },
           {
             label: this.$t('common.reject'),
-            icon: "pi pi-check",
+            icon: "pi pi-times",
             color: "red",
             visible: this.selectedNews && this.selectedNews.history.status.id === this.statuses.sent && (this.isModer || this.isPublisher || this.isAdmin),
             command: () => {this.rejectReason()},

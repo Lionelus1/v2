@@ -4,11 +4,9 @@
     </BlockUI>
 		<div class="col-12">
       <TitleBlock :title="$t('course.certificate.template')" />
+      <ToolbarMenu :data="menu"/>
 			<div class="card">
         <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
-
-          <Button :label="$t('common.add')" @click="this.inittialNewTemplate();templateEditorVisilble=true;" icon="pi pi-plus" />
-  
         <DataTable
           v-if="journal"
           selectionMode="single"
@@ -39,9 +37,9 @@
           <Column field="name" :header="$t('common.name')"></Column>
           <Column headerStyle="width:60px;">
             <template #body="slotProps">
-              <Button @click="template=slotProps.data;templateEditorVisilble = true"
-                       type="button"
-                      icon="pi pi-eye" class="p-button-info"></Button>
+              <Button class="p-button-text p-1 mr-2"  @click="template=slotProps.data;templateEditorVisilble = true">
+                <i class="fa-solid fa-eye fa-xl"></i>
+              </Button>
             </template>
           </Column>
         </DataTable>
@@ -74,9 +72,10 @@
 import {OnlineCourseService} from "@/service/onlinecourse.service";
 import Certificate from './Certificate.vue';
 import TitleBlock from "@/components/TitleBlock"
+import ToolbarMenu from "@/components/ToolbarMenu.vue";
 export default {
     name: "Templates",
-    components: {Certificate},
+    components: {ToolbarMenu, Certificate},
     data() {
         return {
             journal: null,
@@ -148,6 +147,15 @@ export default {
       this.getJournal()
     },
     computed: {
+      menu () {
+        return [
+          {
+            label: this.$t('common.add'),
+            icon: "pi pi-plus",
+            command: () => {this.inittialNewTemplate();this.templateEditorVisilble=true;},
+          },
+        ]
+      },
       justifyOptions() { return [
         {icon: 'pi pi-align-left', value: 'Left', command: () => { this.activeElement.textAlign = "left"; this.calcStyle() }},
         {icon: 'pi pi-align-right', value: 'Right', command: () => { this.activeElement.textAlign = "right"; this.calcStyle() }},
