@@ -7,39 +7,44 @@
       </div>
       <div class="mb-0 mt-0 inline-block" style="font-size: 24px"> {{ $t('common.result') }}</div>
     </div>
-
-    <div v-if="resultData && event && resultData.reject_history">
+    <div v-if="resultData && resultData[0].plan_event_result_history[0].state_id === 6">
+    <div v-if="resultData && event && resultData[0].reject_history">
       <div class="p-fluid">
+        <br/>
         <div class="field">
           <label>{{ $t('common.state') }}:</label>
           <div>
-            <span v-if="event" :class="'customer-badge status-' + event.status.work_plan_event_status_id">{{
-              event.status.name_ru
-            }}</span>
+            <span v-if="event" :class="'customer-badge status-' + event.status.work_plan_event_status_id">
+            {{
+              $i18n.locale === "kz" ? event.status.name_kz : $i18n.locale === "ru" ? event.status.name_ru :
+              event.status.name_en
+            }}
+          </span>
+
           </div>
         </div>
-        <div class="field" v-if="resultData.reject_history.user">
+        <div class="field" v-if="resultData[0].reject_history.user">
           <label>{{ $t('contracts.assigner') }}:</label>
           <div>
-            <b>{{ resultData.reject_history.user.fullName }}</b>
+            <b>{{ resultData[0].reject_history.user.fullName }}</b>
           </div>
         </div>
-        <div class="field" v-if="resultData.reject_history.created_date">
+        <div class="field" v-if="resultData[0].reject_history.created_date">
           <label>{{ $t('common.date') }}:</label>
           <div>
-            <b>{{ formatDateMoment(resultData.reject_history.created_date) }}</b>
+            <b>{{ formatDateMoment(resultData[0].reject_history.created_date) }}</b>
           </div>
         </div>
         <div class="field">
           <label>{{ $t('common.comment') }}:</label>
           <div>
-            <Message :closable="false" severity="warn"><span v-html="resultData.reject_history.message"></span>
+            <Message :closable="false" severity="warn"><span v-html="resultData[0].reject_history.message"></span>
             </Message>
           </div>
         </div>
       </div>
     </div>
-
+  </div>
     <div>
       <TabView v-model:activeIndex="activeIndex" @tab-change="changeTab">
         <TabPanel :header="$t('common.properties')">
@@ -179,8 +184,9 @@
                     </div>
 
                   </Divider>
-                  <Inplace v-if="item.result_text && (loginedUserId === item.result_text[0].user.userID) && event &&
-                    (item.plan_event_result_history && item.plan_event_result_history[0].state_id === 6)" :active="item.isActive" @open="openInplace(item)">
+                  <Inplace v-if="(item.result_text && (loginedUserId === item.result_text[0].user.userID) && event &&
+                    (item.plan_event_result_history && item.plan_event_result_history[0].state_id === 6)) || (item.result_text && isPlanCreator && event &&
+                    (item.plan_event_result_history && item.plan_event_result_history[0].state_id === 5) && isSciencePlan)" :active="item.isActive" @open="openInplace(item)">
                     <template #display>
                       <div>
                         <span class="mr-1" style="float:left;"><i class="fa-solid fa-pen color-success"></i></span>
@@ -189,7 +195,7 @@
 
                     </template>
                     <template #content>
-                      <div class="py-2" v-if="(item.plan_event_result_history[0].state_id === 6) && (loginedUserId === item.result_text[0].user.userID)">
+                      <div class="py-2" v-if="((item.plan_event_result_history[0].state_id === 6) && (loginedUserId === item.result_text[0].user.userID)) || (isPlanCreator && isSciencePlan && (item.plan_event_result_history[0].state_id === 5))">
                         <Button :label="$t('common.save')" icon="pi pi-check" class="p-button p-button-success" @click="saveEditResult(item)"
                           :loading="loading" />
                         <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button ml-1" @click="cancelEdit(item)" />
@@ -746,9 +752,7 @@ export default {
       // }
 
       let comment = "";
-      if (this.isInspected) {
-        comment = this.rejectComment
-      }
+      comment = this.rejectComment
 
       this.planService.verifyEventResultHistory(this.isInspected, comment, this.resultUserId, this.user_id, this.eventResultId).then(res => {
         if (res.data) {
