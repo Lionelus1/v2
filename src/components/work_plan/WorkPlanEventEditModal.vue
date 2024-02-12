@@ -119,6 +119,8 @@ export default {
   },
   mounted() {
     if (this.editData !== null) {
+      this.editData.start_date = this.editData.start_date ? new Date(this.editData.start_date) : null
+      this.editData.end_date = this.editData.end_date ? new Date(this.editData.end_date) : null
       this.selectedUsers = [];
       this.editData.quarter = parseInt(this.editData.quarter);
       this.editData.user.forEach(e => {
