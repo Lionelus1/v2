@@ -37,38 +37,39 @@
              </div>
            </div>-->
           </TabPanel>
-            <TabPanel :header="$t('course.users')">
-                <Button v-if="students.length === 0 && dic_course_type == 1" class="btn mb-3" :label="$t('hr.sp.request')"
-                        @click="sendRequestToCourse()"/>
-                <!-- курсқа қатысушылар -->
-                <div v-if="students">
-                    <DataTable class="p-datatable-sm" selectionMode="single" v-model:selection="student" :lazy="true"
-                               :totalRecords="studentsCount" :value="students"
-                               @page="studentTableOnPage($event)" :first="studentLazyParams.first"
-                               :paginator="true" :rows="studentLazyParams.rows"
-                               dataKey="profile.userID" :rowHover="true" :loading="loading"
-                               paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink JumpToPageDropdown CurrentPageReport RowsPerPageDropdown"
-                               :rowsPerPageOptions="[10, 25, 50]" :currentPageReportTemplate="$t('common.showingRecordsCount', {
-                            first: '{first}',
-                            last: '{last}',
-                            totalRecords: '{totalRecords}',
-                        })" responsiveLayout="stack" breakpoint="480px">
+          <TabPanel :header="$t('course.users')">
+              <Button v-if="students.length === 0 && dic_course_type == 1" class="btn mb-3" :label="$t('hr.sp.request')"
+                      @click="sendRequestToCourse()"/>
 
-                        <template #header>
-                            <div class="table-header flex justify-content-between flex-wrap card-container purple-container">
-                                <div class="flex gap-2 flex-column sm:flex-row">
-                                    <Button v-if="findRole(null,'online_course_administrator') && dic_course_type == 1"
-                                            class="p-button-success mb-2" icon="pi pi-plus" :label="$t('common.add')"
-                                            @click="addStudent"/>
+            <!-- курсқа қатысушылар -->
+              <div v-if="students">
+                  <DataTable class="p-datatable-sm" selectionMode="single" v-model:selection="student" :lazy="true"
+                             :totalRecords="studentsCount" :value="students"
+                             @page="studentTableOnPage($event)" :first="studentLazyParams.first"
+                             :paginator="true" :rows="studentLazyParams.rows"
+                             dataKey="profile.userID" :rowHover="true" :loading="loading"
+                             paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink JumpToPageDropdown CurrentPageReport RowsPerPageDropdown"
+                             :rowsPerPageOptions="[10, 25, 50]" :currentPageReportTemplate="$t('common.showingRecordsCount', {
+                          first: '{first}',
+                          last: '{last}',
+                          totalRecords: '{totalRecords}',
+                      })" responsiveLayout="stack" breakpoint="480px">
 
-                                    <Button v-if="findRole(null,'online_course_administrator') && dic_course_type == 1"
-                                            class="p-button-help mb-2" icon="fa-solid fa-certificate"
-                                            :label="$t('course.certificate.issue')" @click="openIssueCertificateDialog"/>
+                      <template #header>
+                          <div class="table-header flex justify-content-between flex-wrap card-container purple-container">
+                              <div class="flex gap-2 flex-column sm:flex-row">
+                                  <Button v-if="findRole(null,'online_course_administrator') && dic_course_type == 1"
+                                          class="p-button-success mb-2" icon="pi pi-plus" :label="$t('common.add')"
+                                          @click="addStudent"/>
 
-                                    <Button v-if="findRole(null,'online_course_administrator') && dic_course_type == 1"
-                                            class="p-button-help mb-2" icon="fa-solid fa-file-circle-check"
-                                            :label="$t('course.certificate.issueWithApp')"
-                                            @click="openIssueCertificateWithDialog"/>
+                                  <Button v-if="findRole(null,'online_course_administrator') && dic_course_type == 1"
+                                          class="p-button-help mb-2" icon="fa-solid fa-certificate"
+                                          :label="$t('course.certificate.issue')" @click="openIssueCertificateDialog"/>
+
+                                  <Button v-if="findRole(null,'online_course_administrator') && dic_course_type == 1"
+                                          class="p-button-help mb-2" icon="fa-solid fa-file-circle-check"
+                                          :label="$t('course.certificate.issueWithApp')"
+                                          @click="openIssueCertificateWithDialog"/>
 
                                 <ActionButton :show-label="true" :items="menu" @toggle="toggleAction(data)"></ActionButton>
 
@@ -81,14 +82,16 @@
                       </template>
                       <Column field="profile.fullName" :header="$t('common.fullName')"></Column>
 
-                        <Column
-                                :field="'profile.mainPosition.department.name' + ($i18n.locale).charAt(0).toUpperCase() + ($i18n.locale).slice(1)"
-                                :header="$t('common.department')"></Column>
-                        <Column
-                            :field="'state.name' + ($i18n.locale)"
-                            :header="$t('common.status')"></Column>
-                        <Column header="">
-                            <template #body="slotProps">
+                      <Column
+                              :field="'profile.mainPosition.department.name' + ($i18n.locale).charAt(0).toUpperCase() + ($i18n.locale).slice(1)"
+                              :header="$t('common.department')"></Column>
+                      <Column
+                          :field="'state.name' + ($i18n.locale)"
+                          :header="$t('common.status')"></Column>
+                      <Column header="">
+                          <template #body="slotProps">
+                            <div class="buttons-container">
+                              <div class="buttons-row">
                                 <Button v-if="slotProps.data.state.id === 1 && findRole(null,'online_course_administrator')"
                                         class="p-button-success mr-3" icon="fa-solid fa-check"
                                         v-tooltip.bottom="$t('course.addCourse')" label=""
@@ -102,92 +105,98 @@
                                 <Button v-if="slotProps.data.certificateUUID" icon="pi pi-fw pi-qrcode"
                                         class="p-button-help mr-3" v-tooltip.bottom="$t('course.certificate.getQr')"
                                         label="" @click="getQR(slotProps.data.certificateUUID)"/>
+                              </div>
+
+<!--                              <div class="delete-button">-->
+<!--                                <Button class="p-button-text p-button-danger p-1 trash-button" icon="fa-solid fa-trash-can fa-xl"/>-->
+<!--                              </div>-->
+                            </div>
+                          </template>
+                      </Column>
+                      <!-- <Column headerStyle="width:60px;">
+                        <template #body="slotProps">
+                          <Button @click="template=slotProps.data;templateEditorVisilble = true"
+                            type="button"
+                            icon="pi pi-eye" class="p-button-info"></Button>
                             </template>
-                        </Column>
-                        <!-- <Column headerStyle="width:60px;">
-                          <template #body="slotProps">
-                            <Button @click="template=slotProps.data;templateEditorVisilble = true"
-                              type="button"
-                              icon="pi pi-eye" class="p-button-info"></Button>
-                              </template>
-                        </Column> -->
+                      </Column> -->
 
-                    </DataTable>
-          <!-- студент қосу диалогы -->
-                    <Dialog v-model:visible="studentDialog" :style="{ width: '450px' }" :header="$t('course.user')"
-                            :modal="true" class="p-fluid">
-                        <div class="field">
-                            <label for="newUsers">{{ $t('common.fullName') }}</label>
+                  </DataTable>
+        <!-- студент қосу диалогы -->
+                  <Dialog v-model:visible="studentDialog" :style="{ width: '450px' }" :header="$t('course.user')"
+                          :modal="true" class="p-fluid">
+                      <div class="field">
+                          <label for="newUsers">{{ $t('common.fullName') }}</label>
 
-                            <FindUser id="newUsers" v-model="newUsers" userType="3"></FindUser>
-                            <small class="p-error" v-if="submitted && !(newUsers && newUsers.length > 0)">{{
-                                $t('common.requiredField')
-                                }}</small>
-                        </div>
-                        <template #footer>
-                            <div class="flex flex-wrap row-gap-1">
-                                <Button :label="$t('common.save')" @click="addStudentsToCourse(2)"
-                                        class="w-full p-button-primary"/>
-                                <Button :label="$t('common.cancel')" @click="closeStudentDialog"
-                                        class="w-full p-button-secondary p-button-outlined"/>
-                            </div>
+                          <FindUser id="newUsers" v-model="newUsers" userType="3"></FindUser>
+                          <small class="p-error" v-if="submitted && !(newUsers && newUsers.length > 0)">{{
+                              $t('common.requiredField')
+                              }}</small>
+                      </div>
+                      <template #footer>
+                          <div class="flex flex-wrap row-gap-1">
+                              <Button :label="$t('common.save')" @click="addStudentsToCourse(2)"
+                                      class="w-full p-button-primary"/>
+                              <Button :label="$t('common.cancel')" @click="closeStudentDialog"
+                                      class="w-full p-button-secondary p-button-outlined"/>
+                          </div>
 
-                        </template>
-                    </Dialog>
+                      </template>
+                  </Dialog>
 
-                    <Dialog v-model:visible="issueCertificateDialog" :style="{ width: '500px' }">
-                        <template #header>
-                            <div>
-                                <i class="pi pi-exclamation-triangle mr-2"></i>
-                                {{ $t('course.certificate.confirm') }}
-                            </div>
-                        </template>
-                        <label>{{ $t('common.nextIssue') }}</label>
-                        <template #footer>
-                            <div class="flex justify-content-between">
-                                    <InputText type="text" v-model="organizer.lastNumber"></InputText>
-                                    <div>
-                                        <Button v-if="findRole(null,'online_course_administrator')"
-                                            :label="$t('common.yes')" @click="issueCertificate(0)"/>
+                  <Dialog v-model:visible="issueCertificateDialog" :style="{ width: '500px' }">
+                      <template #header>
+                          <div>
+                              <i class="pi pi-exclamation-triangle mr-2"></i>
+                              {{ $t('course.certificate.confirm') }}
+                          </div>
+                      </template>
+                      <label>{{ $t('common.nextIssue') }}</label>
+                      <template #footer>
+                          <div class="flex justify-content-between">
+                                  <InputText type="text" v-model="organizer.lastNumber"></InputText>
+                                  <div>
+                                      <Button v-if="findRole(null,'online_course_administrator')"
+                                          :label="$t('common.yes')" @click="issueCertificate(0)"/>
 
-                                        <Button :label="$t('common.no')" @click="closeIssueCertificateDialog"
-                                        class="p-button-outlined"/>
-                                    </div>
-                            </div>
+                                      <Button :label="$t('common.no')" @click="closeIssueCertificateDialog"
+                                      class="p-button-outlined"/>
+                                  </div>
+                          </div>
 
-                        </template>
+                      </template>
 
-                    </Dialog>
+                  </Dialog>
 
-                    <Dialog v-model:visible="issueCertificateWithDialog" :style="{ width: '500px' }">
-                        <template #header>
-                            <div>
-                                <i class="pi pi-exclamation-triangle mr-2"></i>
-                                {{ $t('course.certificate.confirm2') }}
-                            </div>
-                        </template>
+                  <Dialog v-model:visible="issueCertificateWithDialog" :style="{ width: '500px' }">
+                      <template #header>
+                          <div>
+                              <i class="pi pi-exclamation-triangle mr-2"></i>
+                              {{ $t('course.certificate.confirm2') }}
+                          </div>
+                      </template>
 
-                        <label>{{ $t('common.nextIssue') }}</label>
-                        <template #footer>
-                            <div class="flex justify-content-between">
-                                <InputText type="text" v-model="organizer.lastNumber"></InputText>
-                                <div>
-                                    <Button v-if="findRole(null,'online_course_administrator')"
-                                            :label="$t('common.yes')"
-                                            @click="issueCertificate(1)"/>
-                                    <Button :label="$t('common.no')" @click="closeIssueCertificateWithDialog"
-                                            class="p-button-secondary p-button-outlined"/>
-                                </div>
+                      <label>{{ $t('common.nextIssue') }}</label>
+                      <template #footer>
+                          <div class="flex justify-content-between">
+                              <InputText type="text" v-model="organizer.lastNumber"></InputText>
+                              <div>
+                                  <Button v-if="findRole(null,'online_course_administrator')"
+                                          :label="$t('common.yes')"
+                                          @click="issueCertificate(1)"/>
+                                  <Button :label="$t('common.no')" @click="closeIssueCertificateWithDialog"
+                                          class="p-button-secondary p-button-outlined"/>
+                              </div>
 
-                            </div>
-                        </template>
+                          </div>
+                      </template>
 
-                    </Dialog>
+                  </Dialog>
 
-                </div>
-            </TabPanel>
-            <!-- module қосу table -->
-            <TabPanel :header="$t('course.modules')" v-if="dic_course_type == 1">
+              </div>
+          </TabPanel>
+          <!-- module қосу table -->
+          <TabPanel :header="$t('course.modules')" v-if="dic_course_type == 1">
               <div class="module_grid">
                 <div class="module_card" v-for="item of module" :key="item">
                   <div class="content">
@@ -350,6 +359,7 @@ import {smartEnuApi, getHeader, findRole, fileRoute} from "@/config/config";
 import api from "@/service/api";
 import QrGenerator from "@/components/QrGenerator.vue";
 import {ref} from "vue";
+import ActionButton from "@/components/ActionButton.vue";
 
 export default {
     components: {ActionButton, QrGenerator},
