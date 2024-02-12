@@ -58,20 +58,20 @@
                       <template #header>
                           <div class="table-header flex justify-content-between flex-wrap card-container purple-container">
                               <div class="flex gap-2 flex-column sm:flex-row">
-                                  <Button v-if="findRole(null,'online_course_administrator') && dic_course_type == 1"
+                                  <Button v-if="findRole(null,'online_course_administrator') && dic_course_type === 1"
                                           class="p-button-success mb-2" icon="pi pi-plus" :label="$t('common.add')"
                                           @click="addStudent"/>
 
-                                  <Button v-if="findRole(null,'online_course_administrator') && dic_course_type == 1"
+                                  <Button v-if="findRole(null,'online_course_administrator') && dic_course_type === 1"
                                           class="p-button-help mb-2" icon="fa-solid fa-certificate"
                                           :label="$t('course.certificate.issue')" @click="openIssueCertificateDialog"/>
 
-                                  <Button v-if="findRole(null,'online_course_administrator') && dic_course_type == 1"
+                                  <Button v-if="findRole(null,'online_course_administrator') && dic_course_type === 1"
                                           class="p-button-help mb-2" icon="fa-solid fa-file-circle-check"
                                           :label="$t('course.certificate.issueWithApp')"
                                           @click="openIssueCertificateWithDialog"/>
 
-                                <ActionButton :show-label="true" :items="menu" @toggle="toggleAction(data)"></ActionButton>
+                                <ActionButton v-if="findRole(null,'online_course_administrator') && dic_course_type === 1" :show-label="true" :items="menu" @toggle="toggleAction(data)"></ActionButton>
 
                               </div>
                               <span v-if="findRole(null,'online_course_administrator')" class="p-input-icon-left">
@@ -408,7 +408,7 @@ export default {
             op: ref(),
             menu: [
               {
-                label: "оқуды аяқтады",
+                label: this.$t("course.completedTraining"),
                 icon: 'fa-solid fa-check',
                 command: () => {this.updateUserState(null, 4)}
               },
@@ -849,5 +849,9 @@ export default {
 
 .delete-button {
   margin-left: auto;
+}
+
+.custom-action-button {
+  height: 34px;
 }
 </style>
