@@ -70,14 +70,16 @@
                                             :label="$t('course.certificate.issueWithApp')"
                                             @click="openIssueCertificateWithDialog"/>
 
-                                </div>
-                                <span v-if="findRole(null,'online_course_administrator')" class="p-input-icon-left">
-                                    <i class="pi pi-search"/>
-                                    <InputText type="search" v-model="searchText" @keyup.enter="getCourseStudents"  @search="getCourseStudents" :placeholder="$t('common.search')"/>
-                                </span>
-                            </div>
-                        </template>
-                        <Column field="profile.fullName" :header="$t('common.fullName')"></Column>
+                                <ActionButton :show-label="true" :items="menu" @toggle="toggleAction(data)"></ActionButton>
+
+                              </div>
+                              <span v-if="findRole(null,'online_course_administrator')" class="p-input-icon-left">
+                                  <i class="pi pi-search"/>
+                                  <InputText type="search" v-model="searchText" @keyup.enter="getCourseStudents"  @search="getCourseStudents" :placeholder="$t('common.search')"/>
+                              </span>
+                          </div>
+                      </template>
+                      <Column field="profile.fullName" :header="$t('common.fullName')"></Column>
 
                         <Column
                                 :field="'profile.mainPosition.department.name' + ($i18n.locale).charAt(0).toUpperCase() + ($i18n.locale).slice(1)"
@@ -350,7 +352,7 @@ import QrGenerator from "@/components/QrGenerator.vue";
 import {ref} from "vue";
 
 export default {
-    components: {QrGenerator},
+    components: {ActionButton, QrGenerator},
     data() {
         return {
             qrVisible: false,
@@ -393,7 +395,16 @@ export default {
             searchText: '',
             searchData: {},
             dic_course_type: null,
-            op: ref()
+            op: ref(),
+            menu: [
+              {
+                label: "оқуды аяқтады",
+                icon: 'fa-solid fa-check',
+                command: () => {this.updateUserState(null, 4)}
+              },
+            ],
+            actionsNode: null
+
         }
     },
     created() {
@@ -737,6 +748,9 @@ export default {
         },
         toggle (event) {
           this.$refs.op.toggle(event);
+        },
+        toggleAction (node)  {
+          this.actionsNode = node
         }
     },
     computed: {
@@ -811,5 +825,19 @@ export default {
       width: 100%;
     }
   }
+}
+
+.buttons-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.buttons-row {
+  display: flex;
+}
+
+.delete-button {
+  margin-left: auto;
 }
 </style>
