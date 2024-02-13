@@ -6,6 +6,7 @@ build_stage:
   stage: build
   image: node:lts
   script:
+    - export NODE_OPTIONS=--openssl-legacy-provider
     - npm install
     - npm run build:stage
   only:
