@@ -1,21 +1,26 @@
 stages:
-#  - build
-#  - deploy
+  - build
+  - deploy
 
 build_stage:
   stage: build
+  image: node:lts
   script:
-#    - git pull origin test
-#    - cd ~/WebstormProjects/mobilefrontend
-#    - npm install
-#    - npm run build:stage
+    - npm install
+    - npm run build:stage
   only:
     - test
+  artifacts:
+    paths:
+      - dist/
 
 deploy_stage:
   stage: deploy
+  image: node:lts
   script:
     - ssh root@smart.enu.kz "rm -rf /local/testhtml/*"
-    - scp -r ~/WebstormProjects/mobilefrontend/dist/* root@smart.enu.kz:/local/testhtml
+    - scp -r $CI_PROJECT_DIR/dist/* root@smart.enu.kz:/local/testhtml
+  dependencies:
+    - build_stage
   only:
     - test
