@@ -19,13 +19,9 @@ deploy_stage:
   stage: deploy
   image: node:lts
   script:
-    - apt-get install telnet
-    - telnet smart.enu.kz 22
-
-    #- if [ -f known_hosts ]; then cp known_hosts ~/.ssh/known_hosts; else echo "known_hosts file not found"; fi
-    #- ssh root@smart.enu.kz "rm -rf /local/testhtml/*"
-    #- ssh root@smart.enu.kz "rm -rf /local/testhtml/*"
-   # - scp -r $CI_PROJECT_DIR/dist/* root@smart.enu.kz:/local/testhtml
+    - if [ -f known_hosts ]; then cp known_hosts ~/.ssh/known_hosts; else echo "known_hosts file not found"; fi
+    - ssh root@smart.enu.kz "rm -rf /local/testhtml/*"
+    - scp -r $CI_PROJECT_DIR/dist/* root@smart.enu.kz:/local/testhtml
   dependencies:
     - build_stage
   only:
