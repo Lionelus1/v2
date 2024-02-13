@@ -23,7 +23,7 @@ deploy_stage:
     - apt-get -yqq install ssh
     - install -m 600 -D /dev/null ~/.ssh/id_rsa
     - echo "$SSH_PRIVATE_KEY" | base64 -d > ~/.ssh/id_rsa
-    - ssh-keyscan -H $SSH_HOST > ~/.ssh/known_hosts
+    - ssh-keyscan -H $SSH_HOST -p 22 > ~/.ssh/known_hosts
   script:
     - ssh $SSH_USER@$SSH_HOST "rm -rf /local/testhtml/* && cp $CI_PROJECT_DIR/dist/* /local/testhtml"
   dependencies:
