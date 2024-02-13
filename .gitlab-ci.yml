@@ -20,7 +20,7 @@ deploy_stage:
   image: node:lts
   script:
     - mkdir -p ~/.ssh
-    - cp known_hosts ~/.ssh/known_hosts
+    - if [ -f known_hosts ]; then cp known_hosts ~/.ssh/known_hosts; else echo "known_hosts file not found"; fi
     - ssh root@smart.enu.kz "rm -rf /local/testhtml/*"
     #- ssh root@smart.enu.kz "rm -rf /local/testhtml/*"
     - scp -r $CI_PROJECT_DIR/dist/* root@smart.enu.kz:/local/testhtml
