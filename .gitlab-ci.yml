@@ -26,8 +26,6 @@ deploy_stage:
     - ssh-keyscan -H $SSH_HOST > ~/.ssh/known_hosts
   script:
     - ssh $SSH_USER@$SSH_HOST "rm -rf /local/testhtml/* && cp $CI_PROJECT_DIR/dist/* /local/testhtml"
-  after_script:
-    - rm -rf ~/.ssh
   dependencies:
     - build_stage
   only:
