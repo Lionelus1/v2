@@ -6,8 +6,11 @@
 <!--          <img :src="course.logo" alt="">-->
           <div class="text text-white">
             <div class="flex mb-4">
-              <h5 class="mb-0 mr-2">{{ course["name" + $i18n.locale] }}</h5>
-<!--              <Tag class="ql-size-small" icon="pi pi-star-fill" value="4,9"></Tag>-->
+              <h5 v-if="course.history[0].stateID === 8" class="mb-0 mr-2">{{ course["name" + $i18n.locale] }} - <span class="text-gray-400">{{ this.$t("course.isNotAvailable") }}</span>
+              </h5>
+              <h5 v-else class="mb-0 mr-2">{{ course["name" + $i18n.locale] }}</h5>
+
+              <!--              <Tag class="ql-size-small" icon="pi pi-star-fill" value="4,9"></Tag>-->
             </div>
             <p class="text-gray-400">{{ $t('fieldEducation.duration') }} : {{course.hours}}</p>
             <p class="text-gray-400">{{ $t('fieldEducation.trainingFormat') }}:
@@ -483,15 +486,15 @@ export default {
                 command: () => { this.updateUserState(null, 4) }
               },
               {
-                label: "Закрыть курс",
-                icon: 'fa-solid fa-lock', // Change the icon for closing the course
+                label: this.$t("course.сompleteTheCourse"),
+                icon: 'fa-solid fa-lock',
                 command: () => this.updateCourseState(8),
                 disabled: () => this.course.history[0].stateID === 8
               },
               {
-                label: "Открыть новый поток",
-                icon: 'fa-solid fa-stream', // Change the icon for opening a new stream
-                command: () => this.openCourseDialog(), // Change here: pass a function reference
+                label: this.$t("course.openNewThread"),
+                icon: 'fa-solid fa-stream',
+                command: () => this.openCourseDialog(),
                 disabled: () => this.course.history[0].stateID === 7
               },
             ],

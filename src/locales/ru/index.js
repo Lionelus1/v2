@@ -1404,7 +1404,10 @@ export default {
         disciplineName: "Наименование дисциплины",
         oodCourseName: "Курсы по общеобразовательным дисциплинам (ООД)",
         deleteCertificate:"Удалить сертификат",
-        deleteStudent:"Удалить участника"
+        deleteStudent:"Удалить участника",
+        сompleteTheCourse: "Завершить курс",
+        openNewThread: "Запустить новый поток",
+        isNotAvailable: "Для подачи заявки на курс доступ закрыт, ожидайте новый поток"
     },
     roleControl: {
         addSidebar: 'Добавление новой записи',

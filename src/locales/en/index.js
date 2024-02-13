@@ -1407,7 +1407,11 @@ export default {
         disciplineName: "Subject name",
         oodCourseName: "Courses in general education disciplines",
         deleteCertificate: "Delete certificate",
-        deleteStudent: "Delete participant"
+        deleteStudent: "Delete participant",
+        сompleteTheCourse: "Complete the course",
+        openNewThread: "Start a new stream",
+        isNotAvailable: "Аccess is closed to apply for the course, expect a new stream"
+
     },
     roleControl:{
         addSidebar: 'Adding new record',

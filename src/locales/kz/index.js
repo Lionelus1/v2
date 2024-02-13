@@ -1415,7 +1415,10 @@ export default {
         disciplineName: "Пән атауы",
         oodCourseName: "Жалпы білім беретін пәндер бойынша курстар",
         deleteCertificate: "Сертификаты жою",
-        deleteStudent: "Қатысушыны өшіру"
+        deleteStudent: "Қатысушыны өшіру",
+        сompleteTheCourse: "Курсты аяқтау",
+        openNewThread: "Жаңа ағынды іске қосыңыз",
+        isNotAvailable: "Курсқа өтініш беру қолжетімсіз, жаңа ағынды күтіңіз"
     },
     roleControl:{
         addSidebar: 'Жаңа жазбаны қосу',
