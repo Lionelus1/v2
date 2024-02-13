@@ -1376,7 +1376,7 @@ export default {
         categories: 'Категории курсов',
         certificate: {
             title: 'Сертификаты',
-            template: 'Шаблоны сертфиката',
+            template: 'Шаблоны сертификата',
             element: 'Элемент',
             elements: 'Элементы',
             designer: 'Дизайнер шаблона',
@@ -1387,7 +1387,7 @@ export default {
             confirm: "Подтверждаете выдачу сертификата БЕЗ приложения?",
             confirm2: "Сертификат будет выдан С приложением, подтверждаете корректность заполнение приложения?",
             issueDate: "Дата регистрации",
-            certSelect:"Указать шаблон сертификата"
+            certSelect:"Указать шаблон сертификата",
         },
         modules:'Модули курса',
         module: 'Модуль',
@@ -1409,7 +1409,12 @@ export default {
         completionDate: 'Дата окончания курса',
         disciplineCode: "Код дисциплины",
         disciplineName: "Наименование дисциплины",
-        oodCourseName: "Курсы по общеобразовательным дисциплинам (ООД)"
+        oodCourseName: "Курсы по общеобразовательным дисциплинам (ООД)",
+        deleteCertificate:"Удалить сертификат",
+        deleteStudent:"Удалить участника",
+        сompleteTheCourse: "Завершить курс",
+        openNewThread: "Запустить новый поток",
+        isNotAvailable: "Для подачи заявки на курс доступ закрыт, ожидайте новый поток"
     },
     roleControl: {
         addSidebar: 'Добавление новой записи',
