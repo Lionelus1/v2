@@ -55,6 +55,11 @@
       <small v-show="menuType === 2 && !formData.link && submitted" class="p-error">{{ $t("common.requiredField") }}</small>
     </div>
 
+    <div class="field">
+      <label>{{ $t('cafedra.responsible') }}</label>
+      <FindUser v-model="formData.responsible_user" :max="1" searchMode="local" />
+    </div>
+
     <div class="grid">
       <div class="col">
         <div class="field">
@@ -165,11 +170,12 @@ import {webEnuDomain} from "@/config/config";
 import {FileService} from "@/service/file.service";
 import {findRole} from "@/config/config";
 import {useStore} from "vuex";
+import FindUser from "@/helpers/FindUser.vue";
 
 export default {
   name: "AddMenu",
   props: ['isVisible', 'allPages', 'menu_id', 'currentMenu', 'slug'],
-  components: {AddPage, CustomFileUpload},
+  components: {FindUser, AddPage, CustomFileUpload},
   data() {
     return {
       editMenuVisible: this.isVisible ?? false,
@@ -197,8 +203,8 @@ export default {
         is_header: false,
         is_middle: false,
         icon: "",
-        hidden: false
-
+        hidden: false,
+        responsible_user: null,
       },
       isSelectedMenu: {
         is_header: false,

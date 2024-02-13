@@ -230,17 +230,19 @@ export class MenuService {
                         label: $t('web.menuPage'),
                         icon: 'pi pi-fw pi-bars',
                         to: '/enu/menus',
+                        visible: this.findRole('enu_web_admin') || this.findRole('enu_web_fac_admin') || this.findRole('enu_web_menu_admin')
                     },
                     {
                         label: $t('web.pageLink'), 
                         icon: 'pi pi-fw pi-external-link', 
                         to: '/enu/pages',
-                        visible: this.findRole('enu_web_admin') || this.findRole('enu_web_fac_admin') || this.findRole('enu_web_page_admin')
+                        visible: this.findRole('enu_web_admin') || this.findRole('enu_web_fac_admin') || this.findRole('enu_web_page_admin') || this.findRole('enu_web_menu_admin')
                     },
                     {
                         label: $t('web.blocks'), 
                         icon: 'fa-solid fa-cube', 
                         to: '/enu/blocks',
+                        visible: this.findRole('enu_web_admin') || this.findRole('enu_web_fac_admin')
                     },
                     {
                         label: $t('web.blog'),
