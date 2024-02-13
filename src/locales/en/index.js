@@ -1232,7 +1232,8 @@ export default {
         plancontracttopic: "On topic",
         scienceParticipants: "Project participants",
         generateAct: "Form an act",
-        minWordCount: "It should be at least 100 words"
+        minWordCount: "It should be between 50 and 250 words",
+        maxWordCount: "It should be between 50 and 250 words"
     },
     queue: {
 

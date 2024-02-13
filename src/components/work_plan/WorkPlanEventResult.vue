@@ -7,39 +7,44 @@
       </div>
       <div class="mb-0 mt-0 inline-block" style="font-size: 24px"> {{ $t('common.result') }}</div>
     </div>
-
-    <div v-if="resultData && event && resultData.reject_history">
+    <div v-if="resultData && resultData[0].plan_event_result_history[0].state_id === 6">
+    <div v-if="resultData && event && resultData[0].reject_history">
       <div class="p-fluid">
+        <br/>
         <div class="field">
           <label>{{ $t('common.state') }}:</label>
           <div>
-            <span v-if="event" :class="'customer-badge status-' + event.status.work_plan_event_status_id">{{
-              event.status.name_ru
-            }}</span>
+            <span v-if="event" :class="'customer-badge status-' + event.status.work_plan_event_status_id">
+            {{
+              $i18n.locale === "kz" ? event.status.name_kz : $i18n.locale === "ru" ? event.status.name_ru :
+              event.status.name_en
+            }}
+          </span>
+
           </div>
         </div>
-        <div class="field" v-if="resultData.reject_history.user">
+        <div class="field" v-if="resultData[0].reject_history.user">
           <label>{{ $t('contracts.assigner') }}:</label>
           <div>
-            <b>{{ resultData.reject_history.user.fullName }}</b>
+            <b>{{ resultData[0].reject_history.user.fullName }}</b>
           </div>
         </div>
-        <div class="field" v-if="resultData.reject_history.created_date">
+        <div class="field" v-if="resultData[0].reject_history.created_date">
           <label>{{ $t('common.date') }}:</label>
           <div>
-            <b>{{ formatDateMoment(resultData.reject_history.created_date) }}</b>
+            <b>{{ formatDateMoment(resultData[0].reject_history.created_date) }}</b>
           </div>
         </div>
         <div class="field">
           <label>{{ $t('common.comment') }}:</label>
           <div>
-            <Message :closable="false" severity="warn"><span v-html="resultData.reject_history.message"></span>
+            <Message :closable="false" severity="warn"><span v-html="resultData[0].reject_history.message"></span>
             </Message>
           </div>
         </div>
       </div>
     </div>
-
+  </div>
     <div>
       <TabView v-model:activeIndex="activeIndex" @tab-change="changeTab">
         <TabPanel :header="$t('common.properties')">
@@ -115,13 +120,26 @@
               </div>
               <div class="field" v-if="!hasResultToApprove">
                 <label>{{ $t('common.result') }}</label>
-                <TinyEditor v-if="plan && !plan.is_oper" v-model="result" :min-word="wordLimit" @wordCount="initWordCount" :height="300" :style="{ height: '100%', width: '100%' }"
+                <TinyEditor v-if="plan && isRespUserForWrite && !isOperPlan" v-model="result" :min-word="wordLimit" @wordCount="initWordCount" :height="300" :style="{ height: '100%', width: '100%' }"
                   @selectionChange="editorChange" />
-                <TinyEditor v-if="plan && plan.is_oper" v-model="newResult" :height="300" @selectionChange="editorChange" />
-                <small v-if="isSciencePlan && submitted && (inputWordCount < wordLimit)" class="p-error">{{$t('workPlan.minWordCount')}}</small>
-
+                <TinyEditor v-if="plan && isRespUserForWrite && !isSciencePlan && isOperPlan" v-model="newResult" :height="300" @selectionChange="editorChange" />
+                <small v-if="isSciencePlan && submitted && (wordCount < wordLimit)" class="p-error">{{$t('workPlan.minWordCount')}}</small>
               </div>
-              <div class="field">
+              <!-- <div class="field" v-if="!hasResultToApprove && plan && isRespUserForWrite">
+                <label>{{ $t('common.result') }}</label>
+
+                <TinyEditor
+                  :v-model="newResult || result"
+                  :min-word="wordLimit"
+                  @wordCount="initWordCount"
+                  :height="300"
+                  :style="{ height: '100%', width: '100%' }"
+                  @selectionChange="editorChange"
+                />
+
+                <small v-if="isSciencePlan && submitted && (inputWordCount < wordLimit)" class="p-error">{{$t('workPlan.minWordCount')}}</small>
+              </div> -->
+              <div class="field" v-if="plan && isRespUserForWrite">
                 <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadFile($event)" :auto="true" :multiple="true"
                   :chooseLabel="$t('smartenu.chooseAdditionalFile')"></FileUpload>
               </div>
@@ -166,8 +184,9 @@
                     </div>
 
                   </Divider>
-                  <Inplace v-if="item.result_text && (loginedUserId === item.result_text[0].user.userID) && event &&
-                    (item.plan_event_result_history && item.plan_event_result_history[0].state_id === 6)" :active="item.isActive" @open="openInplace(item)">
+                  <Inplace v-if="(item.result_text && (loginedUserId === item.result_text[0].user.userID) && event &&
+                    (item.plan_event_result_history && item.plan_event_result_history[0].state_id === 6)) || (item.result_text && isPlanCreator && event &&
+                    (item.plan_event_result_history && item.plan_event_result_history[0].state_id === 5) && isSciencePlan)" :active="item.isActive" @open="openInplace(item)">
                     <template #display>
                       <div>
                         <span class="mr-1" style="float:left;"><i class="fa-solid fa-pen color-success"></i></span>
@@ -176,7 +195,7 @@
 
                     </template>
                     <template #content>
-                      <div class="py-2" v-if="(item.plan_event_result_history[0].state_id === 6) && (loginedUserId === item.result_text[0].user.userID)">
+                      <div class="py-2" v-if="((item.plan_event_result_history[0].state_id === 6) && (loginedUserId === item.result_text[0].user.userID)) || (isPlanCreator && isSciencePlan && (item.plan_event_result_history[0].state_id === 5))">
                         <Button :label="$t('common.save')" icon="pi pi-check" class="p-button p-button-success" @click="saveEditResult(item)"
                           :loading="loading" />
                         <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button ml-1" @click="cancelEdit(item)" />
@@ -420,12 +439,18 @@ export default {
       resultUserId: null,
       eventResultId: null,
       Enum: Enum,
-      wordLimit: 100,
-      inputWordCount: 0,
+      wordLimit: 50,
+      wordMaxLimit: 250,
+      wordCounter:0,
       hasResultToApprove: false
     }
   },
+
   computed: {
+    wordCount() {
+      if (!this.result) return 0; 
+      return this.result.trim().split(/\s+/).length;
+    },
     userMenuItems() {
       return this.initMenu();
     },
@@ -467,7 +492,15 @@ export default {
     },
     isRespUser(){
       return this.event && this.respUserExists(this.loginedUserId) && this.plan.plan_type_id === 3
+    },
+    isRespUserForWrite(){
+      return this.respUserExists(this.loginedUserId)
     }
+  },
+  watch: {
+    result(newValue) {
+      this.wordCounter = this.wordCount;
+    },
   },
   mounted() {
     this.isAdmin = this.findRole(null, 'main_administrator')
@@ -475,6 +508,7 @@ export default {
       this.event_id = this.$route.params.id;
     }
     this.getEvent();
+  
 
   },
   methods: {
@@ -579,22 +613,22 @@ export default {
       this.isBlockUI = true;
       const fd = new FormData();
 
-      if (this.isSciencePlan && this.inputWordCount < 150) {
-        this.$toast.add({ severity: 'warn', detail: this.$t('workPlan.minWordCount', 150), life: 3000 })
+      if ((this.isSciencePlan && this.wordCount > this.wordMaxLimit) || (this.isSciencePlan && this.wordCount < this.wordLimit)) {
+        this.$toast.add({ severity: 'warn', detail: this.$t('workPlan.maxWordCount', this.wordMaxLimit), life: 3000 })
         this.isBlockUI = false;
         return;
       }
 
       fd.append('work_plan_event_id', this.event.work_plan_event_id);
-      fd.append('result', this.plan.is_oper ? this.newResult ? this.newResult : "" : this.result);
-      if (this.plan && this.plan.is_oper) {
+      fd.append('result', this.isOperPlan ? this.newResult ? this.newResult : "" : this.result);
+      if (this.plan && this.isOperPlan) {
         fd.append("is_partially", true);
       }
 
       if (!this.authUser.mainPosition.department.isFaculty)
         fd.append("fact", this.fact)
 
-      if (this.plan && this.plan.is_oper && this.resultData)
+      if (this.plan && this.isOperPlan && this.resultData)
         fd.append("result_id", this.resultData.event_result_id);
       if (this.files.length > 0) {
         let fullName = this.authUser.thirdName + ' ' + this.authUser.firstName
@@ -718,9 +752,7 @@ export default {
       // }
 
       let comment = "";
-      if (this.isInspected) {
-        comment = this.rejectComment
-      }
+      comment = this.rejectComment
 
       this.planService.verifyEventResultHistory(this.isInspected, comment, this.resultUserId, this.user_id, this.eventResultId).then(res => {
         if (res.data) {
@@ -868,9 +900,9 @@ export default {
     saveEditResult(item) {
       this.loading = true;
       const fd = new FormData();
-      fd.append("result_id", item.event_result_id)//Number(this.resultData.event_result_id))
-      fd.append("result_text_id", item.result_text[0].id)//Number(item.id))
-      fd.append("work_plan_event_id", item.work_plan_event_id)//this.event.work_plan_event_id)
+      fd.append("result_id", item.event_result_id)
+      fd.append("result_text_id", item.result_text[0].id)
+      fd.append("work_plan_event_id", item.work_plan_event_id)
       if (this.isFactChanged)
         fd.append("fact", this.fact)
       fd.append("text", item.result_text[0].text)
@@ -879,7 +911,6 @@ export default {
           fd.append('files', file, this.authUser.fullName.replace(/ /g, '_') + "_" + file.name)
         }
       }
-      //console.log("files: ", fd.files);
       this.planService.editEventResult(fd).then(res => {
         if (res.data.is_success) {
           this.getEvent();

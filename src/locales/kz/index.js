@@ -1273,7 +1273,8 @@ export default {
         plancontracttopic: "Тақырып бойынша",
         scienceParticipants: "Жобаға қатысушылар",
         generateAct: "Акт жасау",
-        minWordCount: "Кемінде 100 сөзден тұру керек"
+        minWordCount: "Мәтіннің ұзындығы 50-ден 250 сөзге дейін болуы керек",
+        maxWordCount: "Мәтіннің ұзындығы 50-ден 250 сөзге дейін болуы керек"
     },
     educomplex: {
         title: "Пәннің оқу-әдістемелік кешені",
