@@ -1405,7 +1405,9 @@ export default {
         completionDate: 'Course completion date',
         disciplineCode: "Subject code",
         disciplineName: "Subject name",
-        oodCourseName: "Courses in general education disciplines"
+        oodCourseName: "Courses in general education disciplines",
+        deleteCertificate: "Delete certificate",
+        deleteStudent: "Delete participant"
     },
     roleControl:{
         addSidebar: 'Adding new record',

@@ -1413,7 +1413,9 @@ export default {
         completionDate: 'Курстың аяқталу күні',
         disciplineCode: "Пән коды",
         disciplineName: "Пән атауы",
-        oodCourseName: "Жалпы білім беретін пәндер бойынша курстар"
+        oodCourseName: "Жалпы білім беретін пәндер бойынша курстар",
+        deleteCertificate: "Сертификаты жою",
+        deleteStudent: "Қатысушыны өшіру"
     },
     roleControl:{
         addSidebar: 'Жаңа жазбаны қосу',

@@ -38,7 +38,7 @@
            </div>-->
           </TabPanel>
           <TabPanel :header="$t('course.users')">
-              <Button v-if="students.length === 0 && dic_course_type == 1" class="btn mb-3" :label="$t('hr.sp.request')"
+              <Button v-if="course.history[0].stateID === 7 && students.length === 0 && dic_course_type === 1" class="btn mb-3" :label="$t('hr.sp.request')"
                       @click="sendRequestToCourse()"/>
 
             <!-- курсқа қатысушылар -->
@@ -107,9 +107,9 @@
                                         label="" @click="getQR(slotProps.data.certificateUUID)"/>
                               </div>
 
-<!--                              <div class="delete-button">-->
-<!--                                <Button class="p-button-text p-button-danger p-1 trash-button" icon="fa-solid fa-trash-can fa-xl"/>-->
-<!--                              </div>-->
+                              <div class="delete-button">
+                                <Button @click="deleteStudent(slotProps.data)" class="p-button-text p-button-danger p-1 trash-button" icon="fa-solid fa-trash-can fa-xl"/>
+                              </div>
                             </div>
                           </template>
                       </Column>
@@ -352,6 +352,76 @@
              class="p-sidebar-lg">
         <QrGenerator :data="this.qrUrl" :showBackButton="false"/>
     </Sidebar>
+
+    <!--  Обновление курса  -->
+    <Dialog v-model:visible="courseDialog" :style="{ width: '600px' }" :header="$t('course.course')" :modal="true" class="p-fluid">
+    <div class="col-12 md:col-12 p-fluid">
+      <div class="card">
+        <div class="grid formgrid">
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+            <label>{{ $t('common.nameInQazaq') }}</label>
+            <InputText v-model="course.namekz" class="mt-2" type="text" readonly></InputText>
+            <small v-if="courseValidate.namekz" class="p-error">{{$t('common.requiredField')}}</small>
+          </div>
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+            <label>{{ $t('common.descriptionKz') }}</label>
+            <InputText v-model="course.descriptionkz" class="mt-2" type="text" readonly></InputText>
+            <small v-if="courseValidate.descriptionkz" class="p-error">{{$t('common.requiredField')}}</small>
+          </div>
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+            <label>{{ $t('common.nameInRussian') }}</label>
+            <InputText v-model="course.nameru" class="mt-2" type="text" readonly></InputText>
+            <small v-if="courseValidate.nameru" class="p-error">{{$t('common.requiredField')}}</small>
+          </div>
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+            <label>{{ $t('common.descriptionRu') }}</label>
+            <InputText v-model="course.descriptionru" class="mt-2" type="text" readonly></InputText>
+            <small v-if="courseValidate.descriptionru" class="p-error">{{$t('common.requiredField')}}</small>
+          </div>
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+            <label>{{ $t('common.nameInEnglish') }}</label>
+            <InputText v-model="course.nameen" class="mt-2" type="text" readonly></InputText>
+            <small v-if="courseValidate.nameen" class="p-error">{{$t('common.requiredField')}}</small>
+          </div>
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+            <label>{{ $t('common.descriptionEn') }}</label>
+            <InputText v-model="course.descriptionen" class="mt-2" type="text" readonly></InputText>
+            <small v-if="courseValidate.descriptionen" class="p-error">{{$t('common.requiredField')}}</small>
+          </div>
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+            <label>{{ $t('course.startDate') }}</label>
+            <PrimeCalendar v-model="course.history[0].startDate"  class="mt-2" :placeholder="$t('hr.id.startDate')" dateFormat="dd.mm.yy"/>
+            <small v-if="courseValidate.start_time" class="p-error">{{ $t("common.requiredField") }}</small>
+          </div>
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+            <label>{{ $t('course.completionDate') }}</label>
+            <PrimeCalendar v-model="this.course.history[0].finalDate"  class="mt-2" :placeholder="$t('hr.id.startDate')" dateFormat="dd.mm.yy"/>
+            <small v-if="courseValidate.final_date" class="p-error">{{ $t("common.requiredField") }}</small>
+          </div>
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+            <label class="mr-2">{{ $t('course.moduleHours') }}</label>
+            <Checkbox v-model="checkedHours" :binary="true" />
+            <InputNumber :disabled="!checkedHours" v-model="course.hours" class="mt-2"></InputNumber>
+            <small v-if="courseValidate.hours" class="p-error">{{$t('common.requiredField')}}</small>
+          </div>
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+            <label class="mr-2">{{ $t('course.certificate.certSelect') }}</label>
+            <Checkbox v-model="checkedCertificate" :binary="true" />
+            <Dropdown :disabled="!checkedCertificate" v-model="course.certificate_template_id" :options="certificates" class="mt-2" :optionLabel="itemLabel" optionValue="id" :placeholder="$t('common.select')"
+                      @filter="handleFilter" :filter="true" :showClear="true" dataKey="id" :emptyFilterMessage="$t('roleControl.noResult')"  />
+            <small v-if="courseValidate.certificate_template_id"  class="p-error">{{$t('common.requiredField')}}</small>
+          </div>
+        </div>
+      </div>
+    </div>
+    <template #footer>
+      <div class="flex flex-wrap row-gap-1">
+        <Button :label="$t('common.save')" @click="updateCourseState(7)" class="w-full p-button-primary"/>
+        <Button :label="$t('common.cancel')" @click="closeCourse" class="w-full p-button-secondary p-button-outlined"/>
+      </div>
+    </template>
+
+  </Dialog>
 </template>
 <script>
 import {OnlineCourseService} from "@/service/onlinecourse.service";
@@ -410,11 +480,45 @@ export default {
               {
                 label: this.$t("course.completedTraining"),
                 icon: 'fa-solid fa-check',
-                command: () => {this.updateUserState(null, 4)}
+                command: () => { this.updateUserState(null, 4) }
+              },
+              {
+                label: "Закрыть курс",
+                icon: 'fa-solid fa-lock', // Change the icon for closing the course
+                command: () => this.updateCourseState(8),
+                disabled: () => this.course.history[0].stateID === 8
+              },
+              {
+                label: "Открыть новый поток",
+                icon: 'fa-solid fa-stream', // Change the icon for opening a new stream
+                command: () => this.openCourseDialog(), // Change here: pass a function reference
+                disabled: () => this.course.history[0].stateID === 7
               },
             ],
-            actionsNode: null
-
+            actionsNode: null,
+            courseDialog: false,
+            courseValidate: {
+              namekz: false,
+              nameru: false,
+              nameen: false,
+              descriptionkz: false,
+              descriptionru: false,
+              descriptionen: false,
+              hours: false,
+              certificate_template_id: false,
+              start_time: false,
+              final_date: false,
+              category_id: false
+            },
+            checkedCertificate: false,
+            checkedHours: false,
+            certificates: [],
+            countCertificate: 0,
+            lazyParams : {
+              page: 0,
+              rows: 10,
+              searchText: null,
+            },
         }
     },
     created() {
@@ -761,7 +865,146 @@ export default {
         },
         toggleAction (node)  {
           this.actionsNode = node
-        }
+        },
+
+        deleteStudent(student) {
+          const confirmationMessage = student.certificateUUID === null
+              ? this.$t('course.deleteStudent')
+              : this.$t('course.deleteCertificate');
+
+          const req = {
+            registerID: student.registerID,
+            certificateUUID: student.certificateUUID
+          };
+
+          this.$confirm.require({
+            message: this.$t('common.doYouWantDelete'),
+            header: confirmationMessage,
+            icon: 'pi pi-info-circle',
+            acceptClass: 'p-button-rounded p-button-success',
+            rejectClass: 'p-button-rounded p-button-danger',
+            accept: () => {
+              this.service.deleteCertificateOrStudent(req).then(res => {
+                this.getCourseStudents();
+                this.$toast.add({severity: "success", summary: this.$t("common.success"), life: 3000});
+              }).catch(error => {
+                console.log(error);
+                this.$toast.add({severity: "error", summary: this.$t("common.message.saveError"), life: 3000});
+              })
+            }
+          });
+        },
+        createCourse() {
+          console.log("TEST: 1")
+          if (!this.validateCourse()) {
+            return
+          }
+          this.loading = true
+          this.service.createCourse(this.course).then(_ => {
+            this.getCourses()
+            this.loading = false
+          }).catch(_=> {
+            this.loading = false;
+            this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
+          }).finally(() => {
+            this.closeCourse()
+          })
+        },
+
+        closeCourse() {
+          this.courseDialog = false
+        },
+
+        getCertificateTemplateJournal() {
+          this.loading = true;
+          this.lazyParams.docType = 7
+          this.service.getCertificateTemplateJournal(this.lazyParams).then(response =>{
+            this.certificates = response.data.templates;
+            this.countCertificate = response.data.count;
+          }).catch(_=> {
+          }).finally(() => {
+            this.loading = false;
+          })
+        },
+
+        openCourseDialog() {
+          this.courseDialog = true
+          this.course.history[0].startDate = null
+          this.course.history[0].finalDate = null
+          this.getCertificateTemplateJournal()
+        },
+
+        itemLabel(item) {
+          return item['name']
+        },
+
+        handleFilter(event) {
+          if (event.value && event.value.length > 0) {
+            this.lazyParams.searchText = event.value
+            this.getCertificateTemplateJournal()
+          } else {
+            this.lazyParams.searchText = null
+            this.getCertificateTemplateJournal()
+          }
+        },
+
+        validateCourse() {
+          this.courseValidate.namekz = this.course.namekz === ''
+          this.courseValidate.nameru = this.course.nameru === ''
+          this.courseValidate.nameen = this.course.nameen === ''
+          this.courseValidate.descriptionkz = this.course.descriptionkz === ''
+          this.courseValidate.descriptionru = this.course.descriptionru === ''
+          this.courseValidate.descriptionen = this.course.descriptionen === ''
+          this.courseValidate.start_time = this.course.history[0].startDate === null
+          this.courseValidate.final_date = this.course.history[0].finalDate === null
+          this.courseValidate.hours = (this.course.hours <= 0 && this.checkedHours)
+          if (this.checkedCertificate) {
+            this.courseValidate.certificate_template_id = this.course.certificate_template_id === null
+          } else {
+            this.courseValidate.certificate_template_id = false
+            this.course.certificate_template_id = null
+          }
+
+          return !this.courseValidate.namekz &&
+              !this.courseValidate.nameru &&
+              !this.courseValidate.nameen &&
+              !this.courseValidate.descriptionkz &&
+              !this.courseValidate.descriptionru &&
+              !this.courseValidate.descriptionen &&
+              !this.courseValidate.start_time &&
+              !this.courseValidate.final_date &&
+              !this.courseValidate.hours  &&
+              !this.courseValidate.certificate_template_id
+        },
+
+      updateCourseState(stateID) {
+          const req = {
+            course: this.course,
+            stateID: stateID
+          }
+
+          if (!this.validateCourse() && stateID !== 8) {
+            return
+          }
+          this.loading = true
+          this.service.createCourse(req).then(_ => {
+            this.getCourse()
+            this.loading = false
+          }).catch(_=> {
+            this.loading = false;
+            this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
+          }).finally(() => {
+            this.closeCourse()
+          })
+      },
+      showMessage(msgtype, message, content) {
+        this.$toast.add({
+          severity: msgtype,
+          summary: message,
+          detail: content,
+          life: 3000
+        });
+      },
     },
     computed: {
         isButtonDisabled() {
