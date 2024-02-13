@@ -18,10 +18,16 @@ build_stage:
 deploy_stage:
   stage: deploy
   image: node:lts
+  before_script:
+    - apt-get -yq update
+    - apt-get -yqq install ssh
+    - install -m 600 -D /dev/null ~/.ssh/id_rsa
+    - echo "$SSH_PRIVATE_KEY" | base64 -d > ~/.ssh/id_rsa
+    - ssh-keyscan -H $SSH_HOST > ~/.ssh/known_hosts
   script:
-    - if [ -f known_hosts ]; then cp known_hosts ~/.ssh/known_hosts; else echo "known_hosts file not found"; fi
-    - ssh root@smart.enu.kz "rm -rf /local/testhtml/*"
-    - scp -r $CI_PROJECT_DIR/dist/* root@smart.enu.kz:/local/testhtml
+    - ssh $SSH_USER@$SSH_HOST "rm -rf /local/testhtml/* && cp $CI_PROJECT_DIR/dist/* /local/testhtml"
+  after_script:
+    - rm -rf ~/.ssh
   dependencies:
     - build_stage
   only:
