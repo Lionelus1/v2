@@ -19,7 +19,7 @@ deploy_stage:
   stage: deploy
   image: node:lts
   script:
-    - sudo apt-get install telnet
+    - apt-get install telnet
     - telnet smart.enu.kz 22
 
     #- if [ -f known_hosts ]; then cp known_hosts ~/.ssh/known_hosts; else echo "known_hosts file not found"; fi
