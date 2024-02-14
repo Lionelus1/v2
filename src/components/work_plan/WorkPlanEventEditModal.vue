@@ -41,6 +41,9 @@
           <label for="name">{{ $t('common.role') }}</label>
           <RolesByName v-model="inputSet.selectedRole" roleGroupName="workplan_science"></RolesByName>
         </div>
+        <p style="text-align: right;" class="mb-3">
+            <Button v-if="inputSets && inputSets.length > 1 && index > 0" icon="pi pi-times" class="p-button-danger p-button-sm p-button-outlined"  @click="removeInputSet(index)" outlined />
+          </p>
       </div>
     </template>
     <div class="field" v-if="plan && plan.plan_type && plan.plan_type.code === Enum.WorkPlanTypes.Science">
@@ -204,6 +207,9 @@ export default {
     },
     addNewUser() {
       this.inputSets.push({ selectedUsers: null, selectedRole: null })
+    },
+    removeInputSet(index) {
+      this.inputSets.splice(index, 1);
     }
   }
 }
