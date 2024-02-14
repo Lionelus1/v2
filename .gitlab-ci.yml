@@ -3,10 +3,10 @@ stages:
   - deploy
 
 before_script:
-    - apt-get -yq update && apt-get -yqq install ssh
+    - apt-get update && apt-get install -y openssh-client
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
-    - ssh-keyscan -H smart.enu.kz >> ~/.ssh/known_hosts
+    - ssh-keyscan -H <main_server> >> ~/.ssh/known_hosts
 
 build_stage:
   stage: build
@@ -25,7 +25,8 @@ deploy_stage:
   stage: deploy
   image: node:lts
   script:
-    - ssh $SSH_USER@$SSH_HOST "rm -rf /local/testhtml/* && cp $CI_PROJECT_DIR/dist/* /local/testhtml"
+    - ssh root@smart.enu.kz "rm -rf /local/testhtml/*
+    - scp -r dist/* root@smart.enu.kz:/local/testhtml
   dependencies:
     - build_stage
   only:
