@@ -40,5 +40,3 @@ deploy_stage:
     - build_stage
   only:
     - test
-  when: on_failure
-  cleanup: on_failure
