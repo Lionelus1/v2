@@ -26,7 +26,7 @@ deploy_stage:
   stage: deploy
   image: node:lts
   script:
-    - ssh root@smart.enu.kz "rm -rf /local/testhtml/*"
+    - ssh root@smart.enu.kz "sudo rm -rf /local/testhtml/*"
     - scp -r dist/* root@smart.enu.kz:/local/testhtml
   dependencies:
     - build_stage
