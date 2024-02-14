@@ -3,8 +3,7 @@ stages:
   - deploy
 
 before_script:
-    - apt-get update && apt-get install -y openssh-client
-    - apk add --no-cache openssh
+    - apt-get -yq update && apt-get -yqq install ssh
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
     - ssh-keyscan -H smart.enu.kz >> ~/.ssh/known_hosts
