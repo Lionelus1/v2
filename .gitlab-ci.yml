@@ -3,6 +3,7 @@ stages:
   - deploy
 
 before_script:
+    - apt-get update && apt-get install -y openssh-client
     - apk add --no-cache openssh
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
