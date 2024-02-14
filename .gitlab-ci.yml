@@ -2,6 +2,12 @@ stages:
   - build
   - deploy
 
+before_script:
+    - apk add --no-cache openssh
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -H smart.enu.kz >> ~/.ssh/known_hosts
+
 build_stage:
   stage: build
   image: node:lts
@@ -18,12 +24,6 @@ build_stage:
 deploy_stage:
   stage: deploy
   image: node:lts
-  before_script:
-    - apt-get -yq update
-    - apt-get -yqq install ssh
-    - install -m 600 -D /dev/null ~/.ssh/id_rsa
-    - echo "$SSH_PRIVATE_KEY" | base64 -d > ~/.ssh/id_rsa
-    - ssh-keyscan -H $SSH_HOST -p 22 > ~/.ssh/known_hosts
   script:
     - ssh $SSH_USER@$SSH_HOST "rm -rf /local/testhtml/* && cp $CI_PROJECT_DIR/dist/* /local/testhtml"
   dependencies:
