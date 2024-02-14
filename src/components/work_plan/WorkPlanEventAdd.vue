@@ -42,7 +42,7 @@
             <label for="name">{{ $t('common.role') }}</label>
             <RolesByName v-model="inputSet.selectedRole" roleGroupName="workplan_science"></RolesByName>
           </div>
-          <p style="text-align: right;">
+          <p style="text-align: right;" class="mb-3">
             <Button v-if="inputSets && inputSets.length > 1 && index > 0" icon="pi pi-times" class="p-button-danger p-button-sm p-button-outlined"  @click="removeInputSet(index)" outlined />
           </p>
         </div>

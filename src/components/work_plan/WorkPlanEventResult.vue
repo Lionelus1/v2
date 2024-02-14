@@ -7,44 +7,45 @@
       </div>
       <div class="mb-0 mt-0 inline-block" style="font-size: 24px"> {{ $t('common.result') }}</div>
     </div>
-    <div v-if="resultData && resultData[0].plan_event_result_history[0].state_id === 6">
-    <div v-if="resultData && event && resultData[0].reject_history">
-      <div class="p-fluid">
-        <br/>
-        <div class="field">
-          <label>{{ $t('common.state') }}:</label>
-          <div>
-            <span v-if="event" :class="'customer-badge status-' + event.status.work_plan_event_status_id">
-            {{
-              $i18n.locale === "kz" ? event.status.name_kz : $i18n.locale === "ru" ? event.status.name_ru :
-              event.status.name_en
-            }}
-          </span>
 
+    <!-- <div v-if="resultData && resultData[0].plan_event_result_history[0].state_id === 6 && (loginedUserId === resultData[0].result_text[0].user.userID)">
+      <div v-if="resultData && event && resultData[0].reject_history">
+        <div class="p-fluid">
+          <br/>
+          <div class="field">
+            <label>{{ $t('common.state') }}:</label>
+            <div>
+              <span v-if="event" :class="'customer-badge status-' + event.status.work_plan_event_status_id">
+              {{
+                $i18n.locale === "kz" ? event.status.name_kz : $i18n.locale === "ru" ? event.status.name_ru :
+                event.status.name_en
+              }}
+            </span>
+
+            </div>
           </div>
-        </div>
-        <div class="field" v-if="resultData[0].reject_history.user">
-          <label>{{ $t('contracts.assigner') }}:</label>
-          <div>
-            <b>{{ resultData[0].reject_history.user.fullName }}</b>
+          <div class="field" v-if="resultData[0].reject_history.user">
+            <label>{{ $t('contracts.assigner') }}:</label>
+            <div>
+              <b>{{ resultData[0].reject_history.user.fullName }}</b>
+            </div>
           </div>
-        </div>
-        <div class="field" v-if="resultData[0].reject_history.created_date">
-          <label>{{ $t('common.date') }}:</label>
-          <div>
-            <b>{{ formatDateMoment(resultData[0].reject_history.created_date) }}</b>
+          <div class="field" v-if="resultData[0].reject_history.created_date">
+            <label>{{ $t('common.date') }}:</label>
+            <div>
+              <b>{{ formatDateMoment(resultData[0].reject_history.created_date) }}</b>
+            </div>
           </div>
-        </div>
-        <div class="field">
-          <label>{{ $t('common.comment') }}:</label>
-          <div>
-            <Message :closable="false" severity="warn"><span v-html="resultData[0].reject_history.message"></span>
-            </Message>
+          <div class="field">
+            <label>{{ $t('common.comment') }}:</label>
+            <div>
+              <Message :closable="false" severity="warn"><span v-html="resultData[0].reject_history.message"></span>
+              </Message>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
+    </div> -->
     <div>
       <TabView v-model:activeIndex="activeIndex" @tab-change="changeTab">
         <TabPanel :header="$t('common.properties')">
@@ -175,11 +176,16 @@
                     <div class="flex justify-content-center align-items-center">
                       <div class="flex flex-column justify-content-center align-items-start">
                         <span class="pb-2"><i class="fa-solid fa-user mr-1"></i><b>{{ item.user.fullName }}</b></span>
+                        
                         <span class="pb-2">{{ formatDateMoment(item.plan_event_result_history[0].create_date) }}</span>
                       </div>
                       <div class="ml-3">
                         <span :class="'customer-badge status-' + item.plan_event_result_history[0].state_id">{{
                             getResultStatus(item.plan_event_result_history[0].state_id) }}</span>
+                            <span style="float: right; margin-top: 0px;">
+                              <Button v-if="item.plan_event_result_history[0].state_id === 6" class="p-button p-component p-button-info p-button-outlined ml-1" style="height: 20px;" @click="showRejectMessageSidebar" :label="$t('common.linkTypeView')" link />
+                            </span>
+                            
                       </div>
                     </div>
 
@@ -375,6 +381,44 @@
       </div>
     </div>
   </Sidebar>
+  <Sidebar v-model:visible="rejectMessageSidebar" position="right" header="Work Plan Reject Message">
+    <div v-if="resultData && resultData[0].plan_event_result_history[0].state_id === 6 && (loginedUserId === resultData[0].result_text[0].user.userID)">
+      <div v-if="resultData && event && resultData[0].reject_history">
+        <div class="p-fluid">
+          <!-- <div class="field">
+            <label>{{ $t('common.state') }}:</label>
+            <div>
+              <span v-if="event" :class="'customer-badge status-' + event.status.work_plan_event_status_id">
+              {{
+                $i18n.locale === "kz" ? event.status.name_kz : $i18n.locale === "ru" ? event.status.name_ru :
+                event.status.name_en
+              }}
+            </span>
+
+            </div>
+          </div> -->
+          <div  v-if="resultData[0].reject_history.user">
+            <label><b>{{ $t('contracts.assigner') }}:</b></label> {{ resultData[0].reject_history.user.fullName }}
+          </div>
+          <div  v-if="resultData[0].reject_history.created_date" class="mt-1">
+            <label><b>{{ $t('common.date') }}:</b></label> {{ formatDateMoment(resultData[0].reject_history.created_date) }}
+          </div>
+          
+          <div class="mt-3">
+            <label><b>{{ $t('common.comment') }}:</b></label>
+            <div style="margin-top: -10px;">
+              <Message :closable="false" severity="info"><span v-html="resultData[0].reject_history.message"></span>
+              </Message>
+            </div>
+              
+            
+           
+          </div>
+        </div>
+      </div>
+    </div>
+
+</Sidebar>
 </template>
 
 <script>
@@ -405,6 +449,7 @@ export default {
       activeIndex: 0,
       history: null,
       toCorrectSidebar: false,
+      rejectMessageSidebar: false,
       rejectComment: null,
       loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID,
       itemActive: false,
@@ -697,6 +742,9 @@ export default {
       //     });
       //   }
       // });
+    },
+    showRejectMessageSidebar() {
+      this.rejectMessageSidebar = true;
     },
     showToCorrectSidebar() {
       this.toCorrectSidebar = true;
