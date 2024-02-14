@@ -1,9 +1,8 @@
 <template>
-  <Dialog :header="$t('workPlan.editEvent')" v-model:visible="showWorkPlanEventEditModal" :style="{width: '450px'}"
-          class="p-fluid" @hide="closeBasic">
+  <Dialog :header="$t('workPlan.editEvent')" v-model:visible="showWorkPlanEventEditModal" :style="{ width: '450px' }" class="p-fluid" @hide="closeBasic">
     <div class="field">
       <label>{{ plan && plan.is_oper ? $t('workPlan.resultIndicator') : $t('workPlan.eventName') }}</label>
-      <InputText v-model="editData.event_name"/>
+      <InputText v-model="editData.event_name" />
       <small class="p-error" v-if="submitted && formValid.event_name">{{ $t('workPlan.errors.eventNameError') }}</small>
     </div>
     <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Science">
@@ -16,15 +15,15 @@
     </div>
     <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
       <label>{{ $t('common.unit') }}</label>
-      <InputText v-model="editData.unit"/>
+      <InputText v-model="editData.unit" />
     </div>
     <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
       <label>{{ $t('common.planNumber') }}</label>
-      <InputText v-model="editData.plan_number"/>
+      <InputText v-model="editData.plan_number" />
     </div>
     <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
       <label>{{ $t('workPlan.approvalUsers') }}</label>
-      <InputText v-model="editData.responsible_executor"/>
+      <InputText v-model="editData.responsible_executor" />
     </div>
     <div class="field" v-if="plan && plan.plan_type && plan.plan_type.code !== Enum.WorkPlanTypes.Science">
       <label>{{ plan && (plan.is_oper || plan.plan_type.code === Enum.WorkPlanTypes.Oper) ? $t('workPlan.summary') : $t('workPlan.approvalUsers') }}</label>
@@ -48,39 +47,37 @@
       </div>
     </template>
     <div class="field" v-if="plan && plan.plan_type && plan.plan_type.code === Enum.WorkPlanTypes.Science">
-      <Button :label="$t('common.add')" icon="fa-solid fa-add" class="p-button-sm p-button-outlined px-5" @click="addNewUser"/>
+      <Button :label="$t('common.add')" icon="fa-solid fa-add" class="p-button-sm p-button-outlined px-5" @click="addNewUser" />
     </div>
-    <div class="field" v-if="(plan && plan.plan_type.code !== Enum.WorkPlanTypes.Science) && ((editData && parentData && parentData.quarter === 5) || !parentData)">
+    <div class="field"
+      v-if="(plan && plan.plan_type.code !== Enum.WorkPlanTypes.Science) && ((editData && parentData && parentData.quarter === 5) || !parentData)">
       <label>{{ $t('workPlan.quarter') }}</label>
-      <Dropdown v-model="editData.quarter" :options="quarters" optionLabel="name" optionValue="id"
-                :placeholder="$t('common.select')"/>
+      <Dropdown v-model="editData.quarter" :options="quarters" optionLabel="name" optionValue="id" :placeholder="$t('common.select')" />
       <small class="p-error" v-if="submitted && formValid.quarter">{{ $t('workPlan.errors.quarterError') }}</small>
     </div>
     <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
       <label>{{ $t('common.suppDocs') }}</label>
-      <Textarea v-model="editData.supporting_docs" rows="3" style="resize: vertical"/>
+      <Textarea v-model="editData.supporting_docs" rows="3" style="resize: vertical" />
     </div>
     <div class="field">
       <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('common.additionalInfo') : $t('common.result') }}</label>
-      <Textarea v-model="editData.result" rows="3" style="resize: vertical"/>
+      <Textarea v-model="editData.result" rows="3" style="resize: vertical" />
     </div>
     <template #footer>
-      <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
-              @click="closeBasic"/>
-      <Button :label="$t('common.save')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2"
-              @click="edit"/>
+      <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger" @click="closeBasic" />
+      <Button :label="$t('common.save')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2" @click="edit" />
     </template>
   </Dialog>
 </template>
 
 <script>
-import {WorkPlanService} from "@/service/work.plan.service";
+import { WorkPlanService } from "@/service/work.plan.service";
 import Enum from "@/enum/workplan/index"
 import RolesByName from "@/components/smartenu/RolesByName.vue";
 
 export default {
   name: "WorkPlanEventEditModal",
-  components: {RolesByName},
+  components: { RolesByName },
   props: ['visible', 'event', 'planData', 'parent'],
   emits: ['hide'],
   data() {
@@ -125,20 +122,24 @@ export default {
   },
   mounted() {
     if (this.editData !== null) {
+      this.editData.start_date = this.editData.start_date ? new Date(this.editData.start_date) : null
+      this.editData.end_date = this.editData.end_date ? new Date(this.editData.end_date) : null
       this.selectedUsers = [];
       this.editData.quarter = parseInt(this.editData.quarter);
       this.editData.user.forEach(e => {
         this.selectedUsers.push(e.user);
       });
-      if (this.plan && this.plan.plan_type.code === this.Enum.WorkPlanTypes.Science) {
+      if (this.plan && this.plan.plan_type.code === this.Enum.WorkPlanTypes.Science && this.editData.user) {
         const roleMap = new Map();
 
         this.editData.user.forEach(item => {
-          const {role, user} = item;
-          if (roleMap.has(role.id)) {
-            roleMap.get(role.id).users.push(user);
-          } else {
-            roleMap.set(role.id, {selectedRole: role, selectedUsers: [user]});
+          if (item.role && item.user) {
+            const { role, user } = item;
+            if (roleMap.has(role.id)) {
+              roleMap.get(role.id).users.push(user);
+            } else {
+              roleMap.set(role.id, { selectedRole: role, selectedUsers: [user] });
+            }
           }
         });
         this.inputSets = Array.from(roleMap.values());
@@ -172,7 +173,7 @@ export default {
       } else {
         userIds = [];
         this.selectedUsers.forEach(e => {
-          userIds.push({user: e, role: null})
+          userIds.push({ user: e, role: null })
         });
       }
 
@@ -189,7 +190,7 @@ export default {
         }
       }).catch(error => {
         this.submitted = false;
-        this.$toast.add({severity: "error", summary: error, life: 3000});
+        this.$toast.add({ severity: "error", summary: error, life: 3000 });
       });
     },
     notValid() {
@@ -214,6 +215,4 @@ export default {
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

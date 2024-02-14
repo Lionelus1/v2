@@ -353,6 +353,7 @@ export default {
         change: "Өзгерту",
         unknownUser: "Қонақ",
         doNotShowAnymore: "Ендігіәрі көрсетпеу",
+        showMore: "Көбірек көрсету"
     },
     positions: {
         menuTitle: 'Позицияны өзгерту',

@@ -355,6 +355,7 @@ export default {
         change: "Сменить",
         unknownUser: "Гость",
         doNotShowAnymore: "Больше не показывать",
+        showMore: "Показать больше"
     },
     positions: {
         menuTitle: 'Поменять позицию',

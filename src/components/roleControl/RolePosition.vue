@@ -123,8 +123,11 @@
           <Dropdown
             :placeholder="$t('roleControl.selectPosition')"
             v-model="position"
+            :filter="true"
+            :showClear="true"
             :optionLabel="positionLabel"
             :options="positions"
+            :emptyFilterMessage="$t('roleControl.noResult')"
             class="dropdown"
           ></Dropdown>
         </div>
