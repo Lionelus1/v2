@@ -130,13 +130,14 @@ export default {
         this.selectedUsers.push(e.user);
       });
       if (this.plan && this.plan.plan_type.code === this.Enum.WorkPlanTypes.Science && this.editData.user) {
+        console.log()
         const roleMap = new Map();
 
         this.editData.user.forEach(item => {
           if (item.role && item.user) {
             const { role, user } = item;
             if (roleMap.has(role.id)) {
-              roleMap.get(role.id).users.push(user);
+              roleMap.get(role.id).selectedUsers.push(user);
             } else {
               roleMap.set(role.id, { selectedRole: role, selectedUsers: [user] });
             }

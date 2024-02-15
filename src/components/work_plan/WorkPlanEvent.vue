@@ -56,7 +56,6 @@
         class="p-button-sm p-button-outlined ml-2" icon="fa-solid fa-download" @click="downloadContract('additional')" />
     </div>
     <div class="card" v-if="plan">
-
       <TreeTable ref="workplantreetable" class="p-treetable-sm" :value="data" :lazy="true" :loading="loading" @nodeExpand="onExpand" scrollHeight="flex"
         responsiveLayout="scroll" :resizableColumns="true" columnResizeMode="fit" showGridlines :paginator="true" :rows="10" :total-records="total"
         @page="onPage($event)">
@@ -99,7 +98,7 @@
                 </div>
                 <div class="field">
                   <label>{{ $t('cafedra.responsible') }}</label>
-                  <FindUser v-model="filters.author.value" :max="1" :editMode="false" />
+                  <FindUser v-model="filters.author.value" :max="1" :editMode="false"/>
                 </div>
                 <div class="field">
                   <Button :label="$t('common.clear')" @click="clearFilter" class="mb-2 p-button-outlined" />
@@ -173,7 +172,7 @@
           <template #body="{ node }">
             <div v-if="node.result && node.result.length > 100">
               {{ node.result_short }}
-<!--              <Button type="button" @click="toggle('event-final-result', $event)" class="p-button-text" icon="fa-solid fa-eye" label=""/>-->
+<!--              <Button type="button" @click="toggle('event-final-result', $event)" class="p-button-text" icon="fa-solid fa-eye" label="" />-->
               <a href="javascript:void(0);" @click="toggle('event-final-result', $event, node)">{{ $t('common.showMore').toLowerCase() }}</a>
               <OverlayPanel ref="event-final-result" :showCloseIcon="true" style="width: 450px" :breakpoints="{ '960px': '75vw' }" @hide="closeOverlay">
                 <div>{{ selectedEvent.result }}</div>
@@ -698,9 +697,11 @@ export default {
       });
     },
     isUserResp(data) {
+      console.log(data)
       if (Array.isArray(data) && data.length !== 1) return false;
 
       return data.some(e => {
+        console.log(e.id)
         return e.id === this.loginedUserId;
       });
     },
@@ -1001,7 +1002,7 @@ export default {
         {
           label: this.$t('common.add'),
           icon: 'fa-solid fa-plus',
-          disabled: !(this.selectedEvent && (this.isPlanCreator || this.isUserResp(this.selectedEvent.user)) && !this.isPlanSentApproval && !this.isFinish),
+          disabled: (this.selectedEvent && (this.isPlanCreator || this.isUserResp(this.selectedEvent.user)) && !this.isFinish),
           visible: !this.isFinish,
           command: () => {
             this.showDialog(this.dialog.add)
@@ -1010,7 +1011,7 @@ export default {
         {
           label: this.$t('common.edit'),
           icon: 'fa-solid fa-pen',
-          disabled: !((this.isPlanCreator || this.isCreator) && !this.isPlanSentApproval && !this.isFinish),
+          disabled: !((this.isPlanCreator || this.isCreator) && !this.isFinish),
           visible: !this.isFinish,
           command: () => {
             this.showDialog(this.dialog.edit)
@@ -1019,7 +1020,7 @@ export default {
         {
           label: this.$t('common.delete'),
           icon: 'fa-solid fa-trash',
-          disabled: !(this.isPlanCreator && !this.isPlanSentApproval && !this.isFinish),
+          disabled: !(this.isPlanCreator && !this.isFinish),
           visible: !this.isFinish,
           command: () => {
             this.remove_event()
