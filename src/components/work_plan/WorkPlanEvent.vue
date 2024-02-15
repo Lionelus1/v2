@@ -697,9 +697,11 @@ export default {
       });
     },
     isUserResp(data) {
+      console.log(data)
       if (Array.isArray(data) && data.length !== 1) return false;
 
       return data.some(e => {
+        console.log(e.id)
         return e.id === this.loginedUserId;
       });
     },
@@ -1000,7 +1002,7 @@ export default {
         {
           label: this.$t('common.add'),
           icon: 'fa-solid fa-plus',
-          disabled: !(this.selectedEvent && (this.isPlanCreator || this.isUserResp(this.selectedEvent.user)) && !this.isPlanSentApproval && !this.isFinish),
+          disabled: (this.selectedEvent && (this.isPlanCreator || this.isUserResp(this.selectedEvent.user)) && !this.isFinish),
           visible: !this.isFinish,
           command: () => {
             this.showDialog(this.dialog.add)
@@ -1009,7 +1011,7 @@ export default {
         {
           label: this.$t('common.edit'),
           icon: 'fa-solid fa-pen',
-          disabled: !((this.isPlanCreator || this.isCreator) && !this.isPlanSentApproval && !this.isFinish),
+          disabled: !((this.isPlanCreator || this.isCreator) && !this.isFinish),
           visible: !this.isFinish,
           command: () => {
             this.showDialog(this.dialog.edit)
@@ -1018,7 +1020,7 @@ export default {
         {
           label: this.$t('common.delete'),
           icon: 'fa-solid fa-trash',
-          disabled: !(this.isPlanCreator && !this.isPlanSentApproval && !this.isFinish),
+          disabled: !(this.isPlanCreator && !this.isFinish),
           visible: !this.isFinish,
           command: () => {
             this.remove_event()
