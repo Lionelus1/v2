@@ -493,7 +493,7 @@ export default {
           parent.children = res.data.items;
           if (parent.children) {
             parent.children.map(e => {
-              if (e.creator_id === this.loginedUserId && e.parent_id == null) {
+              if (e.creator_id === this.loginedUserId) {
                 this.isCreator = true;
               }
               if (e.result && e.result.length > 100) {
@@ -697,11 +697,8 @@ export default {
       });
     },
     isUserResp(data) {
-      console.log(data)
-      if (Array.isArray(data) && data.length !== 1) return false;
-
+      if (!Array.isArray(data)) return false;
       return data.some(e => {
-        console.log(e.id)
         return e.id === this.loginedUserId;
       });
     },
@@ -965,6 +962,7 @@ export default {
       URL.revokeObjectURL(link.href);
     },
     actionsToggle(node) {
+      this.isCreator = node.creator_id === this.loginedUserId
       this.selectedEvent = node
     },
     showDialog(dialog) {
@@ -1002,7 +1000,7 @@ export default {
         {
           label: this.$t('common.add'),
           icon: 'fa-solid fa-plus',
-          disabled: (this.selectedEvent && (this.isPlanCreator || this.isUserResp(this.selectedEvent.user)) && !this.isFinish),
+          disabled: !(this.selectedEvent && (this.isPlanCreator || this.isCreator || this.isUserResp(this.selectedEvent.user)) && !this.isFinish),
           visible: !this.isFinish,
           command: () => {
             this.showDialog(this.dialog.add)
@@ -1020,7 +1018,7 @@ export default {
         {
           label: this.$t('common.delete'),
           icon: 'fa-solid fa-trash',
-          disabled: !(this.isPlanCreator && !this.isFinish),
+          disabled: !((this.isPlanCreator || this.isCreator) && !this.isFinish),
           visible: !this.isFinish,
           command: () => {
             this.remove_event()
