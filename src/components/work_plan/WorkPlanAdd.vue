@@ -12,6 +12,7 @@
     <div class="field">
       <label>{{ $t('workPlan.planType') }}</label>
       <Dropdown v-model="selectedType" :options="types" :optionLabel="'name_' + $i18n.locale" optionValue="id" :placeholder="$t('common.select')"/>
+      <small class="p-error" v-if="submitted && !selectedType">{{ $t('common.requiredField') }}</small>
     </div>
     <template v-if="selectedType === 3">
       <div class="field" v-for="(param, index) of params" :key="index">
@@ -23,14 +24,17 @@
           <label>{{ $t('workPlan.' + param.name) }}</label>
           <PrimeCalendar v-model="param.value" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
         </template>
+        <small class="p-error" v-if="submitted && !param.value">{{ $t('common.requiredField') }}</small>
       </div>
       <div class="field">
         <label>{{ $t('contracts.contract') }}</label>
         <CustomFileUpload @upload="uploadFile($event, 'contractFiles')" v-model="contractFiles" :multiple="false" :button="true" />
+        <small class="p-error" v-if="submitted && !contractFiles">{{ $t('common.requiredField') }}</small>
       </div>
       <div class="field">
         <label>{{ $t('common.doc') }}</label>
         <CustomFileUpload @upload="uploadFile($event, 'documentFiles')" v-model="documentFiles" :multiple="false" :button="true" />
+        <small class="p-error" v-if="submitted && !documentFiles">{{ $t('common.requiredField') }}</small>
       </div>
     </template>
     <template #footer>
@@ -120,11 +124,7 @@ export default {
   },
   computed: {
     isDisabled() {
-      if (!this.submitted) {
-        return this.work_plan_name && this.lang && this.selectedType
-      } else {
-        return false
-      }
+      return this.validate()
     }
   },
   methods: {
@@ -185,7 +185,18 @@ export default {
       this[name] = event.files
     },
     validate() {
-      return this.work_plan_name && this.lang;
+      let paramValidation = false
+      let filesValidation = false
+      if (this.selectedType === 3) {
+        this.params.forEach(param=> {
+          if (param.value === null || param.value === '') {
+            paramValidation = true
+          }
+        })
+
+        filesValidation = !((this.contractFiles && this.contractFiles.length !== 0) && (this.documentFiles && this.documentFiles.length !== 0))
+      }
+      return this.work_plan_name && this.lang && this.selectedType && !paramValidation && !filesValidation;
     },
     getWorkPlanTypes() {
       this.types = []
