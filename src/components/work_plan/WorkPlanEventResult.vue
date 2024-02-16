@@ -48,12 +48,6 @@
     <div>
       <TabView v-model:activeIndex="activeIndex" @tab-change="changeTab">
         <TabPanel :header="$t('common.properties')">
-          <div
-            v-if="event &&
-              (isCurrentUserApproval && (event.status.work_plan_event_status_id === 1 || event.status.work_plan_event_status_id === 4 || event.status.work_plan_event_status_id === 6))">
-            <Menubar :model="userMenuItems" :key="active" style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
-          </div>
-
            <div v-if="isPlanCreator && event && event.status.work_plan_event_status_id === 5">
             <Menubar :model="verifyMenu" :key="active" style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
           </div>
@@ -579,13 +573,13 @@ export default {
 
     },
     initMenu() {
-      let menu = [
+      return [
         {
           label: "",
           icon: "pi pi-fw pi-refresh",
           command: () => {
             this.getEvent();
-            this.$toast.add({ severity: 'success', detail: this.$t('common.success'), life: 3000 });
+            this.$toast.add({severity: 'success', detail: this.$t('common.success'), life: 3000});
           },
         },
         {
@@ -606,7 +600,6 @@ export default {
         //   },
         // },
       ];
-      return menu;
     },
     saveResult() {
       this.submitted = true
