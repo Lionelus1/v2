@@ -3,7 +3,7 @@
     <h3 v-if="plan">
       <TitleBlock :title="plan.work_plan_name" :show-back-button="true" />
     </h3>
-    <div class="card" v-if="plan && plan.reject_history && isRejected && isPlanCreator">
+    <div class="card" v-if="plan && plan.reject_history && isRejected">
       <div class="p-fluid">
         <div class="field">
           <label>{{ $t('common.state') }}:</label>
@@ -35,13 +35,13 @@
       </div>
     </div>
     <div class="card" v-if="plan">
-      <Button v-if="((isPlanCreator || isCreator || isEventsNull) && !isFinish)" :label="$t('common.add')" icon="pi pi-plus" @click="showDialog(dialog.add)"
+      <Button v-if="((isPlanCreator || isEventsNull) && !isFinish)" :label="$t('common.add')" icon="pi pi-plus" @click="showDialog(dialog.add)"
         class="p-button-sm ml-2" />
       <Button
         v-if="plan && plan.doc_info && plan.doc_info?.docHistory && (plan.doc_info?.docHistory?.stateId === 1 || plan.doc_info?.docHistory?.stateId === 4) && isPlanCreator && isFinish"
         type="button" icon="pi pi-send" class="p-button-sm p-button-outlined ml-2" :label="$t('common.action.sendToApprove')"
         @click="showDialog(dialog.planApprove)"></Button>
-          <Button v-if="plan && isPlanCreator && !isFinish" :label="$t('common.complete')" icon="pi pi-check" @click="finish"
+          <Button v-if="plan && isPlanCreator && !isFinish" :label="$t('common.complete')" icon="pi pi-check" @click="confirmFinish"
         class="p-button-sm p-button-success ml-2" :disabled="!isFinshButtonDisabled"/>
       <Button
         v-if="isFinish && plan.doc_info && plan.doc_info.docHistory && !(plan.doc_info?.docHistory?.stateId === 1 || plan.doc_info?.docHistory?.stateId === 4)"
@@ -453,6 +453,7 @@ export default {
     },
     onExpand(node) {
       this.lazyParams.parent_id = Number(node.work_plan_event_id)
+      this.lazyParams.rows = 0
       this.parentNode = node
       this.getEventsTree(node)
     },
@@ -639,6 +640,18 @@ export default {
       }).catch(_ => {
         this.uploading = false;
       })
+    },
+    confirmFinish() {
+      this.$confirm.require({
+        message: this.$t("common.confirmation"),
+        header: this.$t("common.confirm"),
+        icon: 'pi pi-info-circle',
+        acceptClass: 'p-button-rounded p-button-success',
+        rejectClass: 'p-button-rounded p-button-danger',
+        accept: () => {
+          this.finish();
+        }
+      });
     },
     finish() {
       this.planService.finishEvent(this.work_plan_id).then(res => {
