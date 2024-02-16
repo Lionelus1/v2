@@ -129,4 +129,9 @@ export class OnlineCourseService {
     deleteCertificateOrStudent(data) {
         return api.post('/onlinecourse/deleteCertificateOrStudent', data, {headers:getHeader()});
     }
+
+    getCourseModuleAndStudentCounts(data) {
+        return api.post('/onlinecourse/courseStatistics', data, { headers: getHeader() });
+    }
+
 }
