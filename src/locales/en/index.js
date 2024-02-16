@@ -1406,7 +1406,18 @@ export default {
         completionDate: 'Course completion date',
         disciplineCode: "Subject code",
         disciplineName: "Subject name",
-        oodCourseName: "Courses in general education disciplines"
+        oodCourseName: "Courses in general education disciplines",
+        deleteCertificate: "Delete certificate",
+        deleteStudent: "Delete participant",
+        сompleteTheCourse: "Complete the course",
+        openNewThread: "Start a new stream",
+        isNotAvailable: "Аccess is closed to apply for the course, expect a new stream",
+        confirmation: "Confirmation",
+        warning: "Warning",
+        noGrades: "There are participants who have no grades!",
+        noBeenTrained:"There are participants who have not been trained yet. Do you want them to be trained?",
+        noIssuedCertificates:"Some participants were not issued certificates. Please issue certificates before completing the course!",
+        completeCourse: "Are you sure you want to complete the course?"
     },
     roleControl: {
         addSidebar: 'Adding new record',
