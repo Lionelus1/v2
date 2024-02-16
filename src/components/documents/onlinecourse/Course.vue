@@ -1077,8 +1077,8 @@
               this.showMessage('warn', this.$t("course.warning"), this.$t("course.noIssuedCertificates"), 6500)
             } else {
               showConfirmationDialog(
-                  "Вы уверены, что хотите закрыть курс?",
-                  "Подтверждение",
+                  this.$t("course.completeCourse"),
+                  this.$t("course.confirmation"),
                   'pi pi-info-circle',
                   () => this.updateCourseState(8),
                   null
