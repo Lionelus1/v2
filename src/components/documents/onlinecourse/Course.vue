@@ -6,8 +6,11 @@
 <!--          <img :src="course.logo" alt="">-->
           <div class="text text-white">
             <div class="flex mb-4">
-              <h5 class="mb-0 mr-2">{{ course["name" + $i18n.locale] }}</h5>
-<!--              <Tag class="ql-size-small" icon="pi pi-star-fill" value="4,9"></Tag>-->
+              <h5 v-if="course.history[0].stateID === 8" class="mb-0 mr-2">{{ course["name" + $i18n.locale] }} - <span class="text-gray-400">{{ this.$t("course.isNotAvailable") }}</span>
+              </h5>
+              <h5 v-else class="mb-0 mr-2">{{ course["name" + $i18n.locale] }}</h5>
+
+              <!--              <Tag class="ql-size-small" icon="pi pi-star-fill" value="4,9"></Tag>-->
             </div>
             <p class="text-gray-400">{{ $t('fieldEducation.duration') }} : {{course.hours}}</p>
             <p class="text-gray-400">{{ $t('fieldEducation.trainingFormat') }}:
@@ -37,8 +40,9 @@
              </div>
            </div>-->
           </TabPanel>
+
           <TabPanel :header="$t('course.users')">
-              <Button v-if="students.length === 0 && dic_course_type == 1" class="btn mb-3" :label="$t('hr.sp.request')"
+              <Button v-if="course.history[0].stateID === 7 && students.length === 0 && dic_course_type === 1" class="btn mb-3" :label="$t('hr.sp.request')"
                       @click="sendRequestToCourse()"/>
 
             <!-- курсқа қатысушылар -->
@@ -107,9 +111,9 @@
                                         label="" @click="getQR(slotProps.data.certificateUUID)"/>
                               </div>
 
-<!--                              <div class="delete-button">-->
-<!--                                <Button class="p-button-text p-button-danger p-1 trash-button" icon="fa-solid fa-trash-can fa-xl"/>-->
-<!--                              </div>-->
+                              <div class="delete-button">
+                                <Button v-if="findRole(null,'online_course_administrator')" @click="deleteStudent(slotProps.data)" class="p-button-text p-button-danger p-1 trash-button" icon="fa-solid fa-trash-can fa-xl"/>
+                              </div>
                             </div>
                           </template>
                       </Column>
@@ -122,6 +126,7 @@
                       </Column> -->
 
                   </DataTable>
+
         <!-- студент қосу диалогы -->
                   <Dialog v-model:visible="studentDialog" :style="{ width: '450px' }" :header="$t('course.user')"
                           :modal="true" class="p-fluid">
@@ -194,7 +199,9 @@
                   </Dialog>
 
               </div>
+
           </TabPanel>
+
           <!-- module қосу table -->
           <TabPanel :header="$t('course.modules')" v-if="dic_course_type == 1">
               <div class="module_grid">
@@ -352,424 +359,751 @@
              class="p-sidebar-lg">
         <QrGenerator :data="this.qrUrl" :showBackButton="false"/>
     </Sidebar>
+
+    <!--  Обновление курса  -->
+    <Dialog v-model:visible="courseDialog" :style="{ width: '600px' }" :header="$t('course.course')" :modal="true" class="p-fluid">
+      <div class="col-12 md:col-12 p-fluid">
+      <div class="card">
+        <div class="grid formgrid">
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+            <label>{{ $t('common.nameInQazaq') }}</label>
+            <InputText v-model="course.namekz" class="mt-2" type="text" readonly></InputText>
+            <small v-if="courseValidate.namekz" class="p-error">{{$t('common.requiredField')}}</small>
+          </div>
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+            <label>{{ $t('common.descriptionKz') }}</label>
+            <InputText v-model="course.descriptionkz" class="mt-2" type="text" readonly></InputText>
+            <small v-if="courseValidate.descriptionkz" class="p-error">{{$t('common.requiredField')}}</small>
+          </div>
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+            <label>{{ $t('common.nameInRussian') }}</label>
+            <InputText v-model="course.nameru" class="mt-2" type="text" readonly></InputText>
+            <small v-if="courseValidate.nameru" class="p-error">{{$t('common.requiredField')}}</small>
+          </div>
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+            <label>{{ $t('common.descriptionRu') }}</label>
+            <InputText v-model="course.descriptionru" class="mt-2" type="text" readonly></InputText>
+            <small v-if="courseValidate.descriptionru" class="p-error">{{$t('common.requiredField')}}</small>
+          </div>
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+            <label>{{ $t('common.nameInEnglish') }}</label>
+            <InputText v-model="course.nameen" class="mt-2" type="text" readonly></InputText>
+            <small v-if="courseValidate.nameen" class="p-error">{{$t('common.requiredField')}}</small>
+          </div>
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+            <label>{{ $t('common.descriptionEn') }}</label>
+            <InputText v-model="course.descriptionen" class="mt-2" type="text" readonly></InputText>
+            <small v-if="courseValidate.descriptionen" class="p-error">{{$t('common.requiredField')}}</small>
+          </div>
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+            <label>{{ $t('course.startDate') }}</label>
+            <PrimeCalendar v-model="course.history[0].startDate"  class="mt-2" :placeholder="$t('hr.id.startDate')" dateFormat="dd.mm.yy"/>
+            <small v-if="courseValidate.start_time" class="p-error">{{ $t("common.requiredField") }}</small>
+          </div>
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+            <label>{{ $t('course.completionDate') }}</label>
+            <PrimeCalendar v-model="this.course.history[0].finalDate"  class="mt-2" :placeholder="$t('hr.id.startDate')" dateFormat="dd.mm.yy"/>
+            <small v-if="courseValidate.final_date" class="p-error">{{ $t("common.requiredField") }}</small>
+          </div>
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+            <label class="mr-2">{{ $t('course.moduleHours') }}</label>
+            <Checkbox v-model="checkedHours" :binary="true" />
+            <InputNumber :disabled="!checkedHours" v-model="course.hours" class="mt-2"></InputNumber>
+            <small v-if="courseValidate.hours" class="p-error">{{$t('common.requiredField')}}</small>
+          </div>
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+            <label class="mr-2">{{ $t('course.certificate.certSelect') }}</label>
+            <Checkbox v-model="checkedCertificate" :binary="true" />
+            <Dropdown :disabled="!checkedCertificate" v-model="course.certificate_template_id" :options="certificates" class="mt-2" :optionLabel="itemLabel" optionValue="id" :placeholder="$t('common.select')"
+                      @filter="handleFilter" :filter="true" :showClear="true" dataKey="id" :emptyFilterMessage="$t('roleControl.noResult')"  />
+            <small v-if="courseValidate.certificate_template_id"  class="p-error">{{$t('common.requiredField')}}</small>
+          </div>
+        </div>
+      </div>
+    </div>
+      <template #footer>
+      <div class="flex flex-wrap row-gap-1">
+        <Button :label="$t('common.save')" @click="updateCourseState(7)" class="w-full p-button-primary"/>
+        <Button :label="$t('common.cancel')" @click="closeCourseDialog" class="w-full p-button-secondary p-button-outlined"/>
+      </div>
+    </template>
+
+  </Dialog>
 </template>
 <script>
-import {OnlineCourseService} from "@/service/onlinecourse.service";
-import {smartEnuApi, getHeader, findRole, fileRoute} from "@/config/config";
-import api from "@/service/api";
-import QrGenerator from "@/components/QrGenerator.vue";
-import {ref} from "vue";
-import ActionButton from "@/components/ActionButton.vue";
+  import {OnlineCourseService} from "@/service/onlinecourse.service";
+  import {smartEnuApi, findRole, fileRoute} from "@/config/config";
+  import QrGenerator from "@/components/QrGenerator.vue";
+  import {ref} from "vue";
+  import ActionButton from "@/components/ActionButton.vue";
 
-export default {
-    components: {ActionButton, QrGenerator},
-    data() {
-        return {
-            qrVisible: false,
-            qrUrl: null,
-            course_id: parseInt(this.$route.params.id),
-            loading: false,
-            service: new OnlineCourseService(),
-            course: null,
-            organizer: {},
-            students: [],
-            saving: false,
-            student: null,
-            modules: [],
-            studentsCount: 10,
-            studentLazyParams: {
+  export default {
+    // eslint-disable-next-line vue/no-unused-components
+      components: {ActionButton, QrGenerator},
+      data() {
+          return {
+              qrVisible: false,
+              qrUrl: null,
+              course_id: parseInt(this.$route.params.id),
+              loading: false,
+              service: new OnlineCourseService(),
+              course: null,
+              organizer: {},
+              students: [],
+              saving: false,
+              student: null,
+              modules: [],
+              studentsCount: 10,
+              studentLazyParams: {
+                  page: 0,
+                  rows: 10,
+              },
+              submitted: false,
+              studentDialog: false,
+              issueCertificateDialog: false,
+              issueCertificateWithDialog: false,
+              newUsers: [],
+              updateGrades: [],
+
+              moduleDialog: false,
+              module: null,
+              newModules: [],
+              newPeriod: [],
+              user: null,
+              journalVisible: false,
+              gradeVisible: false,
+              journal: [],
+              smartEnuApi: smartEnuApi,
+              formData: {},
+              reqBtn: true,
+              statusText: false,
+              userID: null,
+              stateID: null,
+              searchText: '',
+              searchData: {},
+              dic_course_type: null,
+              op: ref(),
+              menu: [
+                // {
+                //   label: this.$t("course.completedTraining"),
+                //   icon: 'fa-solid fa-check',
+                //   command: () => { this.updateUserState(null, 4) },
+                //   disabled: () => this.course.history[0].stateID === 8
+                // },
+                {
+                  label: this.$t("course.сompleteTheCourse"),
+                  icon: 'fa-solid fa-lock',
+                  command: () => {
+                      this.closeCourse()
+                  },
+
+                  disabled: () => this.course.history[0].stateID === 8
+                },
+                {
+                  label: this.$t("course.openNewThread"),
+                  icon: 'fa-solid fa-stream',
+                  command: () => this.openCourseDialog(),
+                  disabled: () => this.course.history[0].stateID === 7
+                },
+              ],
+              actionsNode: null,
+              courseDialog: false,
+              courseValidate: {
+                namekz: false,
+                nameru: false,
+                nameen: false,
+                descriptionkz: false,
+                descriptionru: false,
+                descriptionen: false,
+                hours: false,
+                certificate_template_id: false,
+                start_time: false,
+                final_date: false,
+                category_id: false
+              },
+              checkedCertificate: false,
+              checkedHours: false,
+              certificates: [],
+              countCertificate: 0,
+              lazyParams : {
                 page: 0,
                 rows: 10,
-            },
-            submitted: false,
-            studentDialog: false,
-            issueCertificateDialog: false,
-            issueCertificateWithDialog: false,
-            newUsers: [],
-            updateGrades: [],
-
-            moduleDialog: false,
-            module: null,
-            newModules: [],
-            newPeriod: [],
-            user: null,
-            journalVisible: false,
-            gradeVisible: false,
-            journal: [],
-            smartEnuApi: smartEnuApi,
-            formData: {},
-            reqBtn: true,
-            statusText: false,
-            userID: null,
-            stateID: null,
-            searchText: '',
-            searchData: {},
-            dic_course_type: null,
-            op: ref(),
-            menu: [
-              {
-                label: this.$t("course.completedTraining"),
-                icon: 'fa-solid fa-check',
-                command: () => {this.updateUserState(null, 4)}
+                searchText: null,
               },
-            ],
-            actionsNode: null
+              student_registered_count: 0,
+              student_completed_count: 0,
+              grade_count: 0,
+              isModule: false,
+          }
+      },
+      created() {
+          /*let oldPath = this.$router.options.history.state.forward;
+          if (oldPath && oldPath.indexOf('/qr?url') !== -1) {
+              this.studentLazyParams = JSON.parse(localStorage.getItem("course_page"))
+              this.studentLazyParams.first =  this.studentLazyParams.rows * this.studentLazyParams.page
+          }*/
+          this.getCourse();
+          this.getCourseStudents();
+          this.getModuleByCourseID();
+      },
+      methods: {
+          findRole: findRole,
+          sendRequestToCourse() {
+              this.$confirm.require({
+                  message: this.$t('common.confirmation'),
+                  header: this.$t('common.confirm'),
+                  icon: 'pi pi-exclamation-triangle',
+                  accept: () => {
+                      this.newUsers = [];
+                      this.addStudentsToCourse(1)
+                      //this.$toast.add({ severity: 'success', summary: this.$t("common.message.successCompleted"), life: 3000 });
+                      this.reqBtn = false
+                      this.statusText = true
+                  }
+              });
 
-        }
-    },
-    created() {
-        /*let oldPath = this.$router.options.history.state.forward;
-        if (oldPath && oldPath.indexOf('/qr?url') !== -1) {
-            this.studentLazyParams = JSON.parse(localStorage.getItem("course_page"))
-            this.studentLazyParams.first =  this.studentLazyParams.rows * this.studentLazyParams.page
-        }*/
-        this.getCourse();
-        this.getCourseStudents();
-        this.getModuleByCourseID();
-    },
-    methods: {
-        findRole: findRole,
-        sendRequestToCourse() {
-            this.$confirm.require({
-                message: this.$t('common.confirmation'),
-                header: this.$t('common.confirm'),
-                icon: 'pi pi-exclamation-triangle',
-                accept: () => {
-                    this.newUsers = [];
-                    this.addStudentsToCourse(1)
-                    //this.$toast.add({ severity: 'success', summary: this.$t("common.message.successCompleted"), life: 3000 });
-                    this.reqBtn = false
-                    this.statusText = true
-                }
-            });
+          },
 
-        },
+          updateUserState(userID, state) {
+              this.loading = true;
+              if (this.journal != null) {
+                this.updateJournal();
+              }
+              this.service.updateUserState(this.course.history[0].id, userID, state).then(response => {
+                  this.loading = false
+                  this.$toast.add({
+                      severity: "success",
+                      summary: this.$t('common.successDone'),
+                      life: 3000,
+                  });
+                  this.getCourseStudents();
+                  this.journalVisible = false
+              }).catch(_ => {
+                  this.loading = false
+              });
+          },
+          getUser() {
+              this.moduleDialog = true;
+          },
+          getModuleByCourseID() {
+              this.loading = true
+              this.service.getModulesByCourseID(this.$route.params.id).then(response => {
+                  this.module = response.data;
+                  this.loading = false
+              }).catch(_ => {
+                  this.loading = false
+              });
+          },
+          getJournal(courseHistoryID, userID) {
+              this.loading = true
+              this.service.getJournal(courseHistoryID, userID).then(response => {
+                  this.journal = response.data;
+                  this.loading = false;
+              }).catch(_ => {
+                  this.loading = false
+              });
+          },
 
-        updateUserState(userID, state) {
-            this.loading = true;
-            if (this.journal != null) {
-			    this.updateJournal();
+          addModule() {
+              this.moduleDialog = true;
+              this.formData = {};
+          },
+          closeModuleDialog() {
+              this.moduleDialog = false;
+              this.formData = {};
+          },
+          addModulesToCourse() {
+              console.log('rrrrrr:  ', this.formData)
+              this.formData.course_id = parseInt(this.course_id);
+              this.submitted = true;
+              if (!this.isValid()) {
+                  return;
+              }
+              this.saving = true
+              this.service.addModulesToCourse(this.formData).then(_ => {
+                  this.saving = false;
+                  this.submitted = false;
+                  this.closeModuleDialog()
+                  this.getModuleByCourseID()
+              }).catch(_ => {
+                  this.saving = false;
+                  this.submitted = false;
+              })
+          },
+          isValid() {
+              let errors = [];
+              if (!this.formData.name_kz)
+                  errors.push(1);
+              if (!this.formData.name_ru)
+                  errors.push(1);
+              if (!this.formData.name_en)
+                  errors.push(1);
+              if (!this.formData.hours)
+                  errors.push(1);
+              if (!this.formData.description_kz)
+                  errors.push(1);
+              if (!this.formData.description_ru)
+                  errors.push(1);
+              if (!this.formData.description_en)
+                  errors.push(1);
+
+              return errors.length === 0
+          },
+          openCertificate(uuid) {
+              let url = this.smartEnuApi + "/document?qrcode=" + uuid;
+              window.open(url, '_blank');
+          },
+          getQR(uuid) {
+              this.qrUrl = this.smartEnuApi + "/document?qrcode=" + uuid;
+              // if (url) {
+              //     this.$router.push({path: "/qr", query: {url}})
+              // }
+
+              this.qrVisible = true;
+          },
+
+          addStudent() {
+              this.studentDialog = true;
+          },
+          openIssueCertificateDialog() {
+              this.issueCertificateWithDialog = false;
+              this.issueCertificateDialog = true;
+              this.getCourseOrganizerByCourseID()
+          },
+
+          openIssueCertificateWithDialog() {
+              this.issueCertificateDialog = false;
+              this.issueCertificateWithDialog = true;
+              this.getCourseOrganizerByCourseID()
+          },
+
+          issueCertificate(withApplication) {
+              this.saving = true
+              this.service.issueCertificate({
+                  users: null,
+                  courseID: this.course.id,
+                  comment: "",
+                  withApplication: withApplication,
+                  lastNumber: parseInt(this.organizer.lastNumber-1)
+              }).then(_ => {
+                  this.saving = false;
+                  this.submitted = false;
+                  this.$toast.add({
+                      severity: "success",
+                      summary: this.$t('common.successDone'),
+                      life: 3000,
+                  });
+                  this.getCourseStudents()
+
+              }).catch(_ => {
+              })
+              .finally(() => {
+                  this.saving = false;
+                  this.submitted = false;
+                  this.issueCertificateWithDialog = false
+                  this.issueCertificateDialog = false
+              })
+          },
+          getCourseOrganizerByCourseID() {
+              this.loading = true
+
+              this.service.getCourseOrganizerByCourseID(this.course_id).then(response => {
+                  this.organizer = response.data.organizer
+                  this.organizer.lastNumber++
+                  this.loading = false
+              }).catch(_ => {
+                  this.loading = false
+              });
+          },
+          closeStudentDialog() {
+              this.studentDialog = false;
+              this.newUsers = []
+          },
+
+          closeIssueCertificateDialog() {
+              this.issueCertificateDialog = false;
+          },
+
+          closeIssueCertificateWithDialog() {
+              this.issueCertificateWithDialog = false;
+          },
+
+          getCourse() {
+              this.loading = true
+              this.service.getCourse(this.course_id).then(response => {
+                  this.course = response.data
+                  this.course.logo = smartEnuApi + fileRoute + this.course.logo
+                  /*if (this.course.students) {
+                      this.course.students = response.data.students
+                  } else {
+                          this.statusText = true
+                          this.reqBtn = false
+                      }*/
+                  this.loading = false
+              }).catch(_ => {
+                  this.loading = false
+              });
+          },
+
+          studentTableOnPage(event) {
+              this.studentLazyParams = event;
+              this.getCourseStudents();
+          },
+
+          getCourseStudents() {
+              this.loading = true
+              const requestData = {
+                  courseID: this.course_id,
+                  page: this.studentLazyParams.page,
+                  rows: this.studentLazyParams.rows,
+                  searchText: this.searchText,
+                  isModule: this.isModule,
+              };
+
+              //localStorage.setItem("course_page", JSON.stringify(this.studentLazyParams));
+              this.service.getCourseStudents(requestData).then(response => {
+                  if (response.data.students) {
+                      this.students = response.data.students
+                  }
+                  this.studentsCount = response.data.total
+                  this.dic_course_type = response.data.dic_course_type
+                  this.loading = false
+              }).catch(_ => {
+                  this.loading = false
+              });
+          },
+
+          addStudentsToCourse(state) {
+              this.submitted = true;
+              if (this.newUsers.length <= 0 && state != 1) {
+                  return
+              }
+              if (!this.course.history || this.course.history.length <= 0) {
+                  return
+              }
+              this.saving = true
+              this.service.addStudentsToCourse({
+                  users: this.newUsers,
+                  courseHistoryID: this.course.history[0].id,
+                  comment: "",
+                  state: state,
+              }).then(_ => {
+                  this.saving = false;
+                  this.submitted = false;
+                  this.newUsers = []
+                  this.closeStudentDialog()
+                  this.getCourseStudents()
+
+              }).catch(_ => {
+                  this.saving = false;
+                  this.submitted = false;
+              })
+          },
+
+          openJournal(studentID,stateID) {
+              this.userID = studentID
+              this.stateID = stateID
+              this.getJournal(this.course.history[0].id, studentID)
+              this.journalVisible = true;
+          },
+
+          closeJournal() {
+              this.journalVisible = false;
+          },
+
+          updateJournal() {
+              if (this.journal == null) {
+                  return
+              }
+              let journals = this.journal.map(e => {
+                  const newObjs = {
+                      id: e.id,
+                      course_history_student_rel_id: e.course_history_student_rel_id,
+                      grade: e.grade
+                  };
+                  newObjs.module = {id: e.module.id}
+                  return newObjs
+              })
+              const dataSend = {journals: journals}
+              this.service.updateJournal(dataSend).then(_ => {
+                  this.$toast.add({
+                      severity: "success",
+                      summary: this.$t("common.message.succesSaved"),
+                      life: 3000,
+                  });
+                  this.journalVisible = false
+              }).catch(_ => {
+                  this.$toast.add({
+                      severity: "error",
+                      summary: this.$t("common.message.saveError"),
+                      life: 3000,
+                  });
+              })
+          },
+
+          deleteModule(id) {
+              this.$confirm.require({
+                  message: this.$t('common.doYouWantDelete'),
+                  header: this.$t('common.delete'),
+                  icon: 'pi pi-info-circle',
+                  acceptClass: 'p-button-rounded p-button-success',
+                  rejectClass: 'p-button-rounded p-button-danger',
+                  accept: () => {
+                      this.service.deleteModule(id).then(res => {
+                          this.getModuleByCourseID();
+                          this.$toast.add({severity: "success", summary: this.$t("common.success"), life: 3000});
+                      }).catch(error => {
+                          console.log(error);
+                          this.$toast.add({severity: "error", summary: this.$t("common.message.saveError"), life: 3000});
+                      })
+                  }
+              });
+          },
+
+          updateModule(data) {
+              this.moduleDialog = true;
+
+              this.formData = data;
+          },
+
+          updateModuleOfCourse() {
+              this.formData.course_id = parseInt(this.course_id);
+              this.submitted = true;
+              if (!this.isValid()) {
+                  return;
+              }
+
+              this.saving = true;
+              this.service.updateModuleOfCourse(this.formData).then(_ => {
+                  this.saving = false;
+                  this.submitted = false;
+                  this.closeModuleDialog();
+              }).catch(_ => {
+                  this.saving = false;
+                  this.submitted = false;
+              });
+          },
+
+          toggle (event) {
+            this.$refs.op.toggle(event);
+          },
+
+          toggleAction (node)  {
+            const req = {
+              courseID: this.course.id
             }
-            this.service.updateUserState(this.course.history[0].id, userID, state).then(response => {
-                this.loading = false
-                this.$toast.add({
-                    severity: "success",
-                    summary: this.$t('common.successDone'),
-                    life: 3000,
-                });
-                this.getCourseStudents();
-                this.journalVisible = false
-            }).catch(_ => {
-                this.loading = false
-            });
-        },
-        getUser() {
-            this.moduleDialog = true;
-        },
-        getModuleByCourseID() {
-            this.loading = true
-            this.service.getModulesByCourseID(this.$route.params.id).then(response => {
-                this.module = response.data;
-                this.loading = false
-            }).catch(_ => {
-                this.loading = false
-            });
-        },
-        getJournal(courseHistoryID, userID) {
-            this.loading = true
-            this.service.getJournal(courseHistoryID, userID).then(response => {
-                this.journal = response.data;
-                this.loading = false;
-            }).catch(_ => {
-                this.loading = false
-            });
-        },
-
-        addModule() {
-            this.moduleDialog = true;
-            this.formData = {};
-        },
-        closeModuleDialog() {
-            this.moduleDialog = false;
-            this.formData = {};
-        },
-        addModulesToCourse() {
-            console.log('rrrrrr:  ', this.formData)
-            this.formData.course_id = parseInt(this.course_id);
-            this.submitted = true;
-            if (!this.isValid()) {
-                return;
-            }
-            this.saving = true
-            this.service.addModulesToCourse(this.formData).then(_ => {
-                this.saving = false;
-                this.submitted = false;
-                this.closeModuleDialog()
-                this.getModuleByCourseID()
-            }).catch(_ => {
-                this.saving = false;
-                this.submitted = false;
+            this.service.getCourseModuleAndStudentCounts(req).then(res => {
+              this.student_completed_count = res.data.student_completed_count
+              this.student_registered_count = res.data.student_registered_count
+              this.grade_count = res.data.grade_count
+              this.actionsNode = node
+            }).catch(error => {
+              console.log(error);
+              this.$toast.add({severity: "error", summary: this.$t("common.message.saveError"), life: 3000});
             })
-        },
-        isValid() {
-            let errors = [];
-            if (!this.formData.name_kz)
-                errors.push(1);
-            if (!this.formData.name_ru)
-                errors.push(1);
-            if (!this.formData.name_en)
-                errors.push(1);
-            if (!this.formData.hours)
-                errors.push(1);
-            if (!this.formData.description_kz)
-                errors.push(1);
-            if (!this.formData.description_ru)
-                errors.push(1);
-            if (!this.formData.description_en)
-                errors.push(1);
+          },
 
-            return errors.length === 0
-        },
-        openCertificate(uuid) {
-            let url = this.smartEnuApi + "/document?qrcode=" + uuid;
-            window.open(url, '_blank');
-        },
-        getQR(uuid) {
-            this.qrUrl = this.smartEnuApi + "/document?qrcode=" + uuid;
-            // if (url) {
-            //     this.$router.push({path: "/qr", query: {url}})
-            // }
+          deleteStudent(student) {
+            const confirmationMessage = student.certificateUUID === null
+                ? this.$t('course.deleteStudent')
+                : this.$t('course.deleteCertificate');
 
-            this.qrVisible = true;
-        },
-
-        addStudent() {
-            this.studentDialog = true;
-        },
-        openIssueCertificateDialog() {
-            this.issueCertificateWithDialog = false;
-            this.issueCertificateDialog = true;
-            this.getCourseOrganizerByCourseID()
-        },
-
-        openIssueCertificateWithDialog() {
-            this.issueCertificateDialog = false;
-            this.issueCertificateWithDialog = true;
-            this.getCourseOrganizerByCourseID()
-        },
-
-        issueCertificate(withApplication) {
-            this.saving = true
-            this.service.issueCertificate({
-                users: null,
-                courseID: this.course.id,
-                comment: "",
-                withApplication: withApplication,
-                lastNumber: parseInt(this.organizer.lastNumber-1)
-            }).then(_ => {
-                this.saving = false;
-                this.submitted = false;
-                this.$toast.add({
-                    severity: "success",
-                    summary: this.$t('common.successDone'),
-                    life: 3000,
-                });
-                this.getCourseStudents()
-
-            }).catch(_ => {
-            })
-            .finally(() => {
-                this.saving = false;
-                this.submitted = false;
-                this.issueCertificateWithDialog = false
-                this.issueCertificateDialog = false
-            })
-        },
-        getCourseOrganizerByCourseID() {
-            this.loading = true
-
-            this.service.getCourseOrganizerByCourseID(this.course_id).then(response => {
-                this.organizer = response.data.organizer
-                this.organizer.lastNumber++
-                this.loading = false
-            }).catch(_ => {
-                this.loading = false
-            });
-        },
-        closeStudentDialog() {
-            this.studentDialog = false;
-            this.newUsers = []
-        },
-
-        closeIssueCertificateDialog() {
-            this.issueCertificateDialog = false;
-        },
-
-        closeIssueCertificateWithDialog() {
-            this.issueCertificateWithDialog = false;
-        },
-
-        getCourse() {
-            this.loading = true
-            this.service.getCourse(this.course_id).then(response => {
-              console.log(response)
-                this.course = response.data
-                this.course.logo = smartEnuApi + fileRoute + this.course.logo
-                /*if (this.course.students) {
-                    this.course.students = response.data.students
-                } else {
-                        this.statusText = true
-                        this.reqBtn = false
-                    }*/
-                this.loading = false
-            }).catch(_ => {
-                this.loading = false
-            });
-        },
-        studentTableOnPage(event) {
-            this.studentLazyParams = event;
-            this.getCourseStudents();
-        },
-        getCourseStudents() {
-            this.loading = true
-            const requestData = {
-                courseID: this.course_id,
-                page: this.studentLazyParams.page,
-                rows: this.studentLazyParams.rows,
-                searchText: this.searchText,
+            const req = {
+              registerID: student.registerID,
+              certificateUUID: student.certificateUUID
             };
 
-            //localStorage.setItem("course_page", JSON.stringify(this.studentLazyParams));
-            this.service.getCourseStudents(requestData).then(response => {
-                if (response.data.students) {
-                    this.students = response.data.students
-                }
-                this.studentsCount = response.data.total
-                this.dic_course_type = response.data.dic_course_type
-                this.loading = false
-            }).catch(_ => {
-                this.loading = false
-            });
-        },
-        addStudentsToCourse(state) {
-            this.submitted = true;
-            if (this.newUsers.length <= 0 && state != 1) {
-                return
-            }
-            if (!this.course.history || this.course.history.length <= 0) {
-                return
-            }
-            this.saving = true
-            this.service.addStudentsToCourse({
-                users: this.newUsers,
-                courseHistoryID: this.course.history[0].id,
-                comment: "",
-                state: state,
-            }).then(_ => {
-                this.saving = false;
-                this.submitted = false;
-                this.newUsers = []
-                this.closeStudentDialog()
-                this.getCourseStudents()
-
-            }).catch(_ => {
-                this.saving = false;
-                this.submitted = false;
-            })
-        },
-        openJournal(studentID,stateID) {
-            this.userID = studentID
-            this.stateID = stateID
-            this.getJournal(this.course.history[0].id, studentID)
-            this.journalVisible = true;
-        },
-        closeJournal() {
-            this.journalVisible = false;
-        },
-        updateJournal() {
-            if (this.journal == null) {
-                return
-            }
-            let journals = this.journal.map(e => {
-                const newObjs = {
-                    id: e.id,
-                    course_history_student_rel_id: e.course_history_student_rel_id,
-                    grade: e.grade
-                };
-                newObjs.module = {id: e.module.id}
-                return newObjs
-            })
-            const dataSend = {journals: journals}
-            this.service.updateJournal(dataSend).then(_ => {
-                this.$toast.add({
-                    severity: "success",
-                    summary: this.$t("common.message.succesSaved"),
-                    life: 3000,
-                });
-                this.journalVisible = false
-            }).catch(_ => {
-                this.$toast.add({
-                    severity: "error",
-                    summary: this.$t("common.message.saveError"),
-                    life: 3000,
-                });
-            })
-        },
-        deleteModule(id) {
             this.$confirm.require({
-                message: this.$t('common.doYouWantDelete'),
-                header: this.$t('common.delete'),
-                icon: 'pi pi-info-circle',
+              message: this.$t('common.doYouWantDelete'),
+              header: confirmationMessage,
+              icon: 'pi pi-info-circle',
+              acceptClass: 'p-button-rounded p-button-success',
+              rejectClass: 'p-button-rounded p-button-danger',
+              accept: () => {
+                this.service.deleteCertificateOrStudent(req).then(res => {
+                  this.getCourseStudents();
+                  this.$toast.add({severity: "success", summary: this.$t("common.success"), life: 3000});
+                }).catch(error => {
+                  console.log(error);
+                  this.$toast.add({severity: "error", summary: this.$t("common.message.saveError"), life: 3000});
+                })
+              }
+            });
+          },
+
+          createCourse() {
+            if (!this.validateCourse()) {
+              return
+            }
+            this.loading = true
+            this.service.createCourse(this.course).then(_ => {
+              this.getCourses()
+              this.loading = false
+            }).catch(_=> {
+              this.loading = false;
+              this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'), 3000)
+            }).finally(() => {
+              this.closeCourseDialog()
+            })
+          },
+
+          closeCourseDialog() {
+            this.courseDialog = false
+          },
+
+          getCertificateTemplateJournal() {
+            this.loading = true;
+            this.lazyParams.docType = 7
+            this.service.getCertificateTemplateJournal(this.lazyParams).then(response =>{
+              this.certificates = response.data.templates;
+              this.countCertificate = response.data.count;
+            }).catch(_=> {
+            }).finally(() => {
+              this.loading = false;
+            })
+          },
+
+          openCourseDialog() {
+            this.courseDialog = true
+            this.course.history[0].startDate = null
+            this.course.history[0].finalDate = null
+            this.getCertificateTemplateJournal()
+          },
+
+          itemLabel(item) {
+            return item['name']
+          },
+
+          handleFilter(event) {
+            if (event.value && event.value.length > 0) {
+              this.lazyParams.searchText = event.value
+              this.getCertificateTemplateJournal()
+            } else {
+              this.lazyParams.searchText = null
+              this.getCertificateTemplateJournal()
+            }
+          },
+
+          validateCourse() {
+            this.courseValidate.namekz = this.course.namekz === ''
+            this.courseValidate.nameru = this.course.nameru === ''
+            this.courseValidate.nameen = this.course.nameen === ''
+            this.courseValidate.descriptionkz = this.course.descriptionkz === ''
+            this.courseValidate.descriptionru = this.course.descriptionru === ''
+            this.courseValidate.descriptionen = this.course.descriptionen === ''
+            this.courseValidate.start_time = this.course.history[0].startDate === null
+            this.courseValidate.final_date = this.course.history[0].finalDate === null
+            this.courseValidate.hours = (this.course.hours <= 0 && this.checkedHours)
+            if (this.checkedCertificate) {
+              this.courseValidate.certificate_template_id = this.course.certificate_template_id === null
+            } else {
+              this.courseValidate.certificate_template_id = false
+              this.course.certificate_template_id = null
+            }
+
+            return !this.courseValidate.namekz &&
+                !this.courseValidate.nameru &&
+                !this.courseValidate.nameen &&
+                !this.courseValidate.descriptionkz &&
+                !this.courseValidate.descriptionru &&
+                !this.courseValidate.descriptionen &&
+                !this.courseValidate.start_time &&
+                !this.courseValidate.final_date &&
+                !this.courseValidate.hours  &&
+                !this.courseValidate.certificate_template_id
+          },
+
+          updateCourseState(stateID) {
+              const req = {
+                course: this.course,
+                stateID: stateID
+              }
+
+              if (!this.validateCourse() && stateID !== 8) {
+                return
+              }
+              this.loading = true
+              this.service.createCourse(req).then(_ => {
+                this.getCourse()
+                this.loading = false
+              }).catch(_=> {
+                this.loading = false;
+                this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'), 3000)
+              }).finally(() => {
+                this.closeCourseDialog()
+              })
+          },
+
+          showMessage(msgtype, message, content, life) {
+          this.$toast.add({
+            severity: msgtype,
+            summary: message,
+            detail: content,
+            life: life
+          });
+        },
+
+          closeCourse() {
+            const showConfirmationDialog = (message, header, icon, acceptCallback, rejectCallback) => {
+              this.$confirm.require({
+                message: message,
+                header: header,
+                icon: icon,
                 acceptClass: 'p-button-rounded p-button-success',
                 rejectClass: 'p-button-rounded p-button-danger',
-                accept: () => {
-                    this.service.deleteModule(id).then(res => {
-                        this.getModuleByCourseID();
-                        this.$toast.add({severity: "success", summary: this.$t("common.success"), life: 3000});
-                    }).catch(error => {
-                        console.log(error);
-                        this.$toast.add({severity: "error", summary: this.$t("common.message.saveError"), life: 3000});
-                    })
-                }
-            });
-        },
-        updateModule(data) {
-            this.moduleDialog = true;
+                accept: acceptCallback,
+                reject: rejectCallback,
+              });
+            };
 
-            this.formData = data;
-        },
-
-        updateModuleOfCourse() {
-            this.formData.course_id = parseInt(this.course_id);
-            this.submitted = true;
-            if (!this.isValid()) {
-                return;
+            if (this.grade_count > 0) {
+              this.showMessage('warn', this.$t("course.warning"), this.$t("course.noGrades"), 6500)
+              this.getCourseStudentsFilter(true, 0)
+            } else if (this.student_registered_count > 0) {
+              showConfirmationDialog(
+                  this.$t("course.noBeenTrained"),
+                  this.$t("course.confirmation"),
+                  'pi pi-info-circle',
+                  () => this.updateUserState(null,4),
+                  () => showConfirmationDialog(
+                        "Вы уверены, что хотите закрыть курс?",
+                        "Подтверждение",
+                        'pi pi-info-circle',
+                        () => this.updateCourseState(8),
+                        false
+                    )
+              );
+            } else if (this.student_completed_count > 0 && this.grade_count === 0 && this.student_registered_count === 0) {
+              this.showMessage('warn', this.$t("course.warning"), this.$t("course.noIssuedCertificates"), 6500)
+            } else {
+              showConfirmationDialog(
+                  this.$t("course.completeCourse"),
+                  this.$t("course.confirmation"),
+                  'pi pi-info-circle',
+                  () => this.updateCourseState(8),
+                  null
+              );
             }
 
-            this.saving = true;
-            this.service.updateModuleOfCourse(this.formData).then(_ => {
-                this.saving = false;
-                this.submitted = false;
-                this.closeModuleDialog();
-            }).catch(_ => {
-                this.saving = false;
-                this.submitted = false;
-            });
-        },
-        toggle (event) {
-          this.$refs.op.toggle(event);
-        },
-        toggleAction (node)  {
-          this.actionsNode = node
+
+          },
+
+        getCourseStudentsFilter(isModule, state) {
+          if (isModule) {
+            this.isModule = true
+            this.getCourseStudents()
+          }
         }
-    },
-    computed: {
+
+      },
+      computed: {
         isButtonDisabled() {
             return this.journal.every(item => item.grade !== null);
         }
     },
 }
 </script>
+
 <style lang="scss">
 .course_card{
   background: #293042;
