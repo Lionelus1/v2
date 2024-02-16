@@ -194,7 +194,7 @@ export default {
           }
         })
 
-        filesValidation = !(this.contractFiles && this.documentFiles)
+        filesValidation = !((this.contractFiles && this.contractFiles.length !== 0) && (this.documentFiles && this.documentFiles.length !== 0))
       }
       return this.work_plan_name && this.lang && this.selectedType && !paramValidation && !filesValidation;
     },
