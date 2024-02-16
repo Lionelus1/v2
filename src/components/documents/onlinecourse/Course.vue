@@ -246,6 +246,10 @@
                 </DataTable>
 
             </TabPanel>
+
+          <TabPanel v-if="findRole(null,'online_course_administrator')" header="Потоки">
+              <CourseHistories :courseID="course.id"></CourseHistories>
+          </TabPanel>
         </TabView>
     </div>
 
@@ -436,10 +440,11 @@
   import QrGenerator from "@/components/QrGenerator.vue";
   import {ref} from "vue";
   import ActionButton from "@/components/ActionButton.vue";
+  import CourseHistories from "@/components/documents/onlinecourse/CourseHistories.vue";
 
   export default {
     // eslint-disable-next-line vue/no-unused-components
-      components: {ActionButton, QrGenerator},
+      components: {ActionButton, QrGenerator,CourseHistories},
       data() {
           return {
               qrVisible: false,
