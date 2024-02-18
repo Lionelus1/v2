@@ -42,12 +42,9 @@
           </TabPanel>
 
           <TabPanel :header="$t('course.users')">
-              <Button v-if="course.history[0].stateID === 7 && students.length === 0 && dic_course_type === 1" class="btn mb-3" :label="$t('hr.sp.request')"
-                      @click="sendRequestToCourse()"/>
-
             <!-- курсқа қатысушылар -->
               <div v-if="students">
-                  <DataTable class="p-datatable-sm" selectionMode="single" v-model:selection="student" :lazy="true"
+                  <!-- <DataTable class="p-datatable-sm" selectionMode="single" v-model:selection="student" :lazy="true"
                              :totalRecords="studentsCount" :value="students"
                              @page="studentTableOnPage($event)" :first="studentLazyParams.first"
                              :paginator="true" :rows="studentLazyParams.rows"
@@ -117,7 +114,7 @@
                             </div>
                           </template>
                       </Column>
-                      <!-- <Column headerStyle="width:60px;">
+                      <Column headerStyle="width:60px;">
                         <template #body="slotProps">
                           <Button @click="template=slotProps.data;templateEditorVisilble = true"
                             type="button"
@@ -125,7 +122,9 @@
                             </template>
                       </Column> -->
 
-                  </DataTable>
+                  <!-- </DataTable>  -->
+
+                  <CourseStudents  :props-course="course"/>
 
         <!-- студент қосу диалогы -->
                   <Dialog v-model:visible="studentDialog" :style="{ width: '450px' }" :header="$t('course.user')"
@@ -432,7 +431,7 @@
       </div>
     </template>
 
-  </Dialog>
+    </Dialog>
 </template>
 <script>
   import {OnlineCourseService} from "@/service/onlinecourse.service";
@@ -441,10 +440,11 @@
   import {ref} from "vue";
   import ActionButton from "@/components/ActionButton.vue";
   import CourseHistories from "@/components/documents/onlinecourse/CourseHistories.vue";
+  import CourseStudents from "./ CourseStudents.vue";
 
   export default {
     // eslint-disable-next-line vue/no-unused-components
-      components: {ActionButton, QrGenerator,CourseHistories},
+      components: {ActionButton, QrGenerator,CourseHistories,CourseStudents},
       data() {
           return {
               qrVisible: false,
@@ -489,12 +489,6 @@
               dic_course_type: null,
               op: ref(),
               menu: [
-                // {
-                //   label: this.$t("course.completedTraining"),
-                //   icon: 'fa-solid fa-check',
-                //   command: () => { this.updateUserState(null, 4) },
-                //   disabled: () => this.course.history[0].stateID === 8
-                // },
                 {
                   label: this.$t("course.сompleteTheCourse"),
                   icon: 'fa-solid fa-lock',
