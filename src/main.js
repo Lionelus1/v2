@@ -1,15 +1,4 @@
-import {createApp} from 'vue';
-import router from './router';
-import App from './App.vue';
-import PrimeVue from 'primevue/config';
-import AutoComplete from 'primevue/autocomplete';
-import Accordion from 'primevue/accordion';
-import AccordionTab from 'primevue/accordiontab';
-import Button from 'primevue/button';
-import Skeleton from "primevue/skeleton";
-import Breadcrumb from 'primevue/breadcrumb';
-import Badge from 'primevue/badge'
-import BlockUI from 'primevue/blockui';
+
 import VCalendar from 'v-calendar';
 import Calendar from 'primevue/calendar';
 import Card from 'primevue/card';
