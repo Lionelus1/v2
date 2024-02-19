@@ -1,6 +1,6 @@
 <template>
 
-  <Button v-if="course && course.history && course.history[0] && course.history[0].stateID === 7 && students.length === 0 && dic_course_type === 1" 
+  <Button v-if="courseHistoryState !== 'inactive' && course && course.history && course.history[0] && course.history[0].stateID === 7 && (!students || students.length === 0) && dic_course_type === 1"
         class="btn mb-3" :label="t('hr.sp.request')" @click="sendRequestToCourse()"/>
 
   <DataTable class="p-datatable-sm" selectionMode="single" v-model:selection="student" :lazy="true"
@@ -19,28 +19,28 @@
       <div class="table-header flex justify-content-between flex-wrap card-container purple-container">
           
         <div class="flex gap-2 flex-column sm:flex-row">
-          <Button v-if="courseHistoryState != 'inactive' && findRole(null,'online_course_administrator') && dic_course_type === 1"
+          <Button v-if="course && course.history && course.history[0] && course.history[0].stateID === 7 && courseHistoryState !== 'inactive' && findRole(null,'online_course_administrator') && dic_course_type === 1"
                   class="p-button-success mb-2" icon="pi pi-plus" :label="t('common.add')"
                   @click="addStudent"/>
 
-          <Button v-if="courseHistoryState != 'inactive' && findRole(null,'online_course_administrator') && dic_course_type === 1"
+          <Button v-if="course && course.history && course.history[0] && course.history[0].stateID === 7 && courseHistoryState !== 'inactive' && findRole(null,'online_course_administrator') && dic_course_type === 1"
                   class="p-button-help mb-2" icon="fa-solid fa-certificate"
                   :label="t('course.certificate.issue')" @click="openIssueCertificateDialog"/>
 
-          <Button v-if="courseHistoryState != 'inactive' && findRole(null,'online_course_administrator') && dic_course_type === 1"
+          <Button v-if="course && course.history && course.history[0] && course.history[0].stateID === 7 && courseHistoryState !== 'inactive' && findRole(null,'online_course_administrator') && dic_course_type === 1"
                   class="p-button-help mb-2" icon="fa-solid fa-file-circle-check"
                   :label="t('course.certificate.issueWithApp')"
                   @click="openIssueCertificateWithDialog"/>
 
 
                       
-          <ActionButton v-if="courseHistoryState != 'inactive' && findRole(null,'online_course_administrator') && 
+          <ActionButton v-if="courseHistoryState !== 'inactive' && findRole(null,'online_course_administrator') &&
           dic_course_type === 1" :show-label="true" :items="menu" @toggle="toggleAction(data)"></ActionButton>
         
       </div>
       <span v-if="findRole(null,'online_course_administrator')" class="p-input-icon-left">
           <i class="pi pi-search"/>
-          <InputText type="search" v-model="searchText" @keyup.enter="getCourseStudents"  @search="getCourseStudents" :placeholder="t('common.search')"/>
+          <InputText type="search" v-model="searchText" @keyup.enter="getCourseHistoryStudents"  @search="getCourseHistoryStudents" :placeholder="t('common.search')"/>
       </span>
 
       </div>
@@ -56,11 +56,11 @@
           <template #body="slotProps">
             <div class="buttons-container">
               <div class="buttons-row">
-                <Button v-if="courseHistoryState != 'inactive' && slotProps.data.state.id === 1 && findRole(null,'online_course_administrator')"
+                <Button v-if="courseHistoryState !== 'inactive' && slotProps.data.state.id === 1 && findRole(null,'online_course_administrator')"
                         class="p-button-success mr-3" icon="fa-solid fa-check"
                         v-tooltip.bottom="t('course.addCourse')" label=""
                         @click="updateUserState(slotProps.data.profile.userID, 2)"/>
-                <Button v-if="slotProps.data.state.id != 1 && dic_course_type == 1" class="p-button-success mr-3"
+                <Button v-if="slotProps.data.state.id !== 1 && dic_course_type === 1" class="p-button-success mr-3"
                         icon="fa-solid fa-list-check" v-tooltip.bottom="t('course.journal')" label=""
                         @click="openJournal(slotProps.data.profile.userID, slotProps.data.state.id)"/>
                 <Button v-if="slotProps.data.certificateUUID" icon="fa-solid fa-award" class="mr-3"
@@ -72,7 +72,7 @@
               </div>
 
               <div class="delete-button">
-                <Button v-if="courseHistoryState != 'inactive' && findRole(null,'online_course_administrator')" @click="deleteStudent(slotProps.data)" class="p-button-text p-button-danger p-1 trash-button" icon="fa-solid fa-trash-can fa-xl"/>
+                <Button v-if="courseHistoryState !== 'inactive' && findRole(null,'online_course_administrator')" @click="deleteStudentConfirmationDialog(slotProps.data)" class="p-button-text p-button-danger p-1 trash-button" icon="fa-solid fa-trash-can fa-xl"/>
               </div>
             </div>
           </template>
@@ -80,6 +80,7 @@
 
   </DataTable>
 
+  <!-- КУРС ҚАТЫСУШЫЛАР БАҒАСЫН ҚАРАУ -->
   <Sidebar
     v-model:visible="journalVisible"
     position="right"
@@ -112,18 +113,20 @@
             </DataTable>
         </template>
     </Card>
-    <Button v-if="courseHistoryState != 'inactive' && findRole(null,'online_course_administrator')" :label="t('common.save')" icon="pi pi-check" class="p-button p-component p-button-success mr-2"
+    <Button v-if="courseHistoryState !== 'inactive' && findRole(null,'online_course_administrator')" :label="t('common.save')" icon="pi pi-check" class="p-button p-component p-button-success mr-2"
             @click="updateJournal()"/>
-    <Button v-if="courseHistoryState != 'inactive' && findRole(null,'online_course_administrator') && stateID !== 5" :label="t('course.completedTraining')" icon="pi pi-check" class="p-button p-component mr-2"
-            @click="updateUserState(userID, 4)" :disabled="!isButtonDisabled"/>
+    <Button v-if="courseHistoryState !== 'inactive' && findRole(null,'online_course_administrator') && stateID !== 5" :label="t('course.completedTraining')" icon="pi pi-check" class="p-button p-component mr-2"
+            @click="updateUserState(userID, 4)" :disabled="!isGrade"/>
   </Sidebar>
 
+  <!-- QR CODE ҚАРАУ -->
   <Sidebar v-model:visible="qrVisible"
              position="right"
              class="p-sidebar-lg">
         <QrGenerator :data="qrUrl" :showBackButton="false"/>
   </Sidebar>
 
+  <!-- КУРС ҚАТЫСУШЫЛЫАРЫН ҚОСУ -->
   <Dialog v-model:visible="addStudentDialog" :style="{ width: '450px' }" :header="t('course.user')"
         :modal="true" class="p-fluid">
     <div class="field">
@@ -145,7 +148,7 @@
     </template>
   </Dialog>
   
-  <!--  Обновление курса  -->
+  <!-- КУРСТЫ ЖАҢАРТУ  -->
   <Dialog v-if="course" v-model:visible="courseDialog" :style="{ width: '600px' }" :header="t('course.course')" :modal="true" class="p-fluid">
     <div class="col-12 md:col-12 p-fluid">
     <div class="card">
@@ -215,63 +218,39 @@
 
   </Dialog>
 
-  <Dialog v-model:visible="issueCertificateDialog" :style="{ width: '500px' }">
-                      <template #header>
-                          <div>
-                              <i class="pi pi-exclamation-triangle mr-2"></i>
-                              {{ t('course.certificate.confirm') }}
-                          </div>
-                      </template>
-                      <label>{{ t('common.nextIssue') }}</label>
-                      <template #footer>
-                          <div class="flex justify-content-between">
-                                  <InputText type="text" v-model="organizer.lastNumber"></InputText>
-                                  <div>
-                                      <Button v-if="findRole(null,'online_course_administrator')"
-                                          :label="t('common.yes')" @click="issueCertificate(0)"/>
+  <!-- ҚАТЫСУШЫЛАРҒА СЕРТИФИКАТ БЕРУ -->
+  <!-- ЕГЕР issueCertificateWithDialog true болатын болса онда қосымша мен беріледі -->
+  <!-- ЕГЕР issueCertificateWithDialog false болатын болса онда қосымшасыз беріледі-->
+  <Dialog v-model:visible="openIssueCertificate" :style="{ width: '500px' }">
+    <template #header>
+      <div>
+        <i class="pi pi-exclamation-triangle mr-2"></i>
+        {{ issueCertificateWithDialog ? t('course.certificate.confirm2') : t('course.certificate.confirm') }}
+      </div>
+    </template>
 
-                                      <Button :label="t('common.no')" @click="closeIssueCertificateDialog"
-                                      class="p-button-outlined"/>
-                                  </div>
-                          </div>
-
-                      </template>
-
-  </Dialog>
-
-  <Dialog v-model:visible="issueCertificateWithDialog" :style="{ width: '500px' }">
-      <template #header>
-          <div>
-              <i class="pi pi-exclamation-triangle mr-2"></i>
-              {{ t('course.certificate.confirm2') }}
-          </div>
-      </template>
-
-      <label>{{ t('common.nextIssue') }}</label>
-      <template #footer>
-          <div class="flex justify-content-between">
-              <InputText type="text" v-model="organizer.lastNumber"></InputText>
-              <div>
-                  <Button v-if="findRole(null,'online_course_administrator')"
-                          :label="t('common.yes')"
-                          @click="issueCertificate(1)"/>
-                  <Button :label="t('common.no')" @click="closeIssueCertificateWithDialog"
-                          class="p-button-secondary p-button-outlined"/>
-              </div>
-
-          </div>
-      </template>
-
+    <label>{{ t('common.nextIssue') }}</label>
+    <template #footer>
+      <div class="flex justify-content-between">
+        <InputText v-if="organizer && organizer.lastNumber" type="text" v-model="organizer.lastNumber"></InputText>
+        <div>
+          <Button v-if="findRole(null,'online_course_administrator')"
+                  :label="t('common.yes')" @click="issueCertificate(issueCertificateWithDialog ? 1 : 0)"/>
+          <Button :label="t('common.no')" @click="closeIssueCertificateDialog"
+                  class="p-button-outlined"/>
+        </div>
+      </div>
+    </template>
   </Dialog>
 
 </template>
 
 <script setup>
-  import {computed, onMounted, ref, defineProps, inject} from "vue";
+  import {computed, onMounted, ref, defineProps, inject, watchEffect, watch, toRefs} from "vue";
   import {useI18n} from "vue-i18n";
   import {useToast} from "primevue/usetoast";
   import {OnlineCourseService} from "@/service/onlinecourse.service";
-  import {smartEnuApi, findRole, fileRoute} from "@/config/config";
+  import {smartEnuApi, findRole} from "@/config/config";
   import QrGenerator from "@/components/QrGenerator.vue";
   import ActionButton from "@/components/ActionButton.vue";
   import {useConfirm} from "primevue/useconfirm";
@@ -298,9 +277,13 @@
     courseHistoryState: {
       type: String,
       default: null
+    },
+    getCourse: {
+      type: Function,
+      default: () => {},
     }
   })
-  
+  const  getCourse  = toRefs(props);
   const students = ref([])
   const student = ref(null)
   const total = ref(0)
@@ -317,7 +300,6 @@
   const addStudentDialog = ref(false)
   const organizer = ref(null)  
   const issueCertificateWithDialog = ref(false)
-  const issueCertificateDialog = ref(false) 
   const journal = ref(null)
   const journalVisible = ref(false)
   const stateID = ref(0)
@@ -346,7 +328,7 @@
         disabled: () => course.value.history[0].stateID === 7
       },
   ])
-    
+  const submitted = ref(false)
   const courseValidate = ref({
     namekz: false,
     nameru: false,
@@ -363,8 +345,11 @@
   const checkedCertificate = ref(false)
   const checkedHours =  ref(false)
   const courseDialog = ref(false)
+  const openIssueCertificate = ref(false)
+  const isGrade = ref(false)
 
   const getCourseHistoryStudents = () => {
+    loading.value = true
     const req = {
       courseID: props.propsCourse?.id || 0,
       page: lazyParams.value.page,
@@ -377,9 +362,8 @@
     }
 
     onlineCourseService.getCourseStudents(req).then(response => {
-        if (response.data.students) {
-            students.value = response.data.students
-        }
+        students.value = response.data.students
+
         total.value = response.data.total
         dic_course_type.value = response.data.dic_course_type
         loading.value = false
@@ -389,6 +373,8 @@
   }
 
   const onPage = (event) => {
+    lazyParams.value = event
+    getCourseHistoryStudents()
   }
 
   const addStudent = () => {
@@ -396,14 +382,14 @@
   }
 
   const openIssueCertificateDialog = () => {
-    issueCertificateWithDialog.value = false
-    issueCertificateDialog.value = true
     getCourseOrganizerByCourseID()
+    issueCertificateWithDialog.value = false
+    openIssueCertificate.value = true
   }
 
   const openIssueCertificateWithDialog = () => {
-      issueCertificateDialog.value = false
-      issueCertificateWithDialog.value = true
+      openIssueCertificate.value = true
+    issueCertificateWithDialog.value = true
       getCourseOrganizerByCourseID()
   }
 
@@ -425,6 +411,7 @@
       header: t('common.confirm'),
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
+         newUsers.value = []
          addStudentsToCourse(1);
         toast.add({ severity: 'success', summary: t("common.message.successCompleted"), life: 3000 });
       }
@@ -432,28 +419,34 @@
   };
 
   const addStudentsToCourse = (state) => {
-      loading.value = true
-      if (state != 1) {
-          return
-      }
-      if (!course.value.history || course.value
-      .history.length <= 0) {
-          return
-      }
+    loading.value = true
+    submitted.value = true
 
-      onlineCourseService.addStudentsToCourse({
-          users: newUsers.value,
-          courseHistoryID: course.value.history[0].id,
-          comment: "",
-          state: state,
-      }).then(_ => {
-          loading.value = false;
-          closeStudentDialog()
-          getCourseHistoryStudents()
-
-      }).catch(_ => {
+    if (newUsers.value.length <= 0 && state !== 1) {
         loading.value = false
-      })
+        return
+    }
+    
+    if (!course.value.history || course.value.history.length <= 0) {
+      loading.value = false
+      return
+    }
+
+    onlineCourseService.addStudentsToCourse({
+        users: newUsers.value,
+        courseHistoryID: course.value.history[0].id,
+        comment: "",
+        state: state,
+    }).then(_ => {
+        loading.value = false;
+        submitted.value = false
+        closeStudentDialog()
+        getCourseHistoryStudents()
+
+    }).catch(_ => {
+      submitted.value = false
+      loading.value = false
+    })
   }
 
   const closeStudentDialog = () => {
@@ -467,11 +460,7 @@
       }
       onlineCourseService.updateUserState(course?.value.history[0].id, userID, state).then(response => {
           loading.value = false
-          toast.add({
-              severity: "success",
-              summary: t('common.successDone'),
-              life: 3000,
-          });
+
           getCourseHistoryStudents();
           journalVisible.value = false
       }).catch(_ => {
@@ -556,27 +545,23 @@
       grade_count.value = res.data.grade_count
       actionsNode.value = node
     }).catch(error => {
-      console.log(error);
       toast.add({severity: "error", summary: t("common.message.saveError"), life: 3000});
     })
   }
 
+  const showConfirmationDialog = (message, header, icon, acceptCallback, rejectCallback) => {
+    confirm.require({
+      message: message,
+      header: header,
+      icon: icon,
+      acceptClass: 'p-button-rounded p-button-success',
+      rejectClass: 'p-button-rounded p-button-danger',
+      accept: acceptCallback,
+      reject: rejectCallback,
+    });
+  };
+
   const closeCourse = () => {
-    const showConfirmationDialog = (message, header, icon, acceptCallback, rejectCallback) => {
-      confirm.require({
-        message: message,
-        header: header,
-        icon: icon,
-        acceptClass: 'p-button-rounded p-button-success',
-        rejectClass: 'p-button-rounded p-button-danger',
-        accept: acceptCallback,
-        reject: rejectCallback,
-      });
-
-
-      
-    };
-
     if (grade_count.value > 0) {
       showMessage('warn', t("course.warning"), t("course.noGrades"), 6500);
       getCourseStudentsFilter(true, 0);
@@ -636,7 +621,6 @@
     }
 
     if(!validateCourse() && stateID !== 8) {
-      console.log(stateID)
       return
     }
 
@@ -644,6 +628,8 @@
     onlineCourseService.createCourse(req).then(_ => {
       
       loading.value = false
+      props.getCourse()
+      getCourseHistoryStudents()
     }).catch(_=> {
       loading.value = false;
       showMessage('error', t('common.message.actionError'), t('common.message.actionErrorContactAdmin'), 3000)
@@ -687,7 +673,7 @@
 
   const issueCertificate = (withApplication) => {
       loading.value = true
-      this.service.issueCertificate({
+      onlineCourseService.issueCertificate({
           courseID: course.value.id,
           comment: "",
           withApplication: withApplication,
@@ -706,11 +692,74 @@
       .finally(() => {
           loading.value = true
           issueCertificateWithDialog.value = false
-          issueCertificateDialog.value = false
+          openIssueCertificate.value = false
       })
   }
+
+  const deleteStudentConfirmationDialog = (student) => {
+    const confirmationMessage = student.certificateUUID === null
+        ? t('course.deleteStudent')
+        : t('course.deleteCertificate');
+
+    const req = {
+      registerID: student.registerID,
+      certificateUUID: student.certificateUUID
+    };
+
+    showConfirmationDialog(t('common.doYouWantDelete'),
+        confirmationMessage, 'pi pi-info-circle', () => deleteStudent(req), null)
+  }
+
+  const deleteStudent = (req) => {
+    onlineCourseService.deleteCertificateOrStudent(req).then(res => {
+      getCourseHistoryStudents();
+      toast.add({severity: "success", summary: t("common.success"), life: 3000});
+    }).catch(error => {
+      toast.add({severity: "error", summary: t("common.message.saveError"), life: 3000});
+    })
+  }
+
+  watch(() => props.propsCourse, (newCourse, oldCourse) => {
+    course.value = newCourse
+  });
 
   onMounted(() => {
     getCourseHistoryStudents()
   })
+
 </script>
+
+<style lang="scss">
+.course_card{
+  background: #293042;
+  img{
+    margin-right: 20px;
+    width: 240px;
+    height: 160px;
+    object-fit: cover;
+  }
+}
+
+@media (max-width: 500px) {
+  .course_card{
+    img{
+      width: 100%;
+    }
+  }
+}
+
+.buttons-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.buttons-row {
+  display: flex;
+}
+
+.delete-button {
+  margin-left: auto;
+}
+
+</style>

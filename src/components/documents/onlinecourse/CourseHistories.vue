@@ -1,16 +1,26 @@
 <template>
-  <h1>Потоки</h1>
-  {{ courseHistoryStudentsVisible }}
-  <DataTable :value="courseHistories">
-    <Column :header="$t('common.date')">
+  <DataTable :value="courseHistories" class="p-datatable-sm"
+             :lazy="true" :totalRecords="total"
+             @page="onPage($event)" :first="lazyParams.first"
+             :paginator="true" :rows="lazyParams.rows" :loading="loading"
+             paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink JumpToPageDropdown CurrentPageReport RowsPerPageDropdown"
+             :rowsPerPageOptions="[10, 25, 50]"
+             :currentPageReportTemplate="t('common.showingRecordsCount', {
+          first: '{first}',
+          last: '{last}',
+          totalRecords: '{totalRecords}',
+      })" responsiveLayout="stack" breakpoint="480px">
+
+
+    <Column :header="t('common.date')" @page="onPage($event)" :first="lazyParams.first">
       <template #body="slotProps">
-        {{ slotProps.data.startDate }} - {{ slotProps.data.startDate }}
+        {{ formatDate(slotProps.data.startDate) }} - {{ formatDate(slotProps.data.finalDate) }}
       </template>
     </Column>
-    
-    <Column field="studentCount" header="Количество студентов"></Column>
-    
-    <Column :header="$t('contracts.columns.author')">
+
+    <Column field="studentCount" :header="t('course.numberParticipants')"></Column>
+
+    <Column :header="t('contracts.columns.author')">
       <template #body="slotProps">
         {{ slotProps.data.setter.fullName }}
       </template>
@@ -26,12 +36,14 @@
 
   </DataTable>
 
+  <!-- КУРС ҚАТЫСУШЫЛАРЫ  -->
   <Sidebar v-model:visible="courseHistoryStudentsVisible"
     position="right" class="p-sidebar-lg"
     style="width: 50%;" @hide="closeCourseHistoryStudents">
-    <CourseStudents :courseHistoryID="courseHistory?.id"
-     studentState="certified" courseHistoryState="inactive"/>
-    </Sidebar>
+
+    <CourseStudents studentState="certified" :courseHistoryID="courseHistory?.id" courseHistoryState="inactive" :props-course="propsCourse" :get-course="getCourse" @update-course="getCourse" />
+
+  </Sidebar>
 </template>
 <script setup>
   import {computed, onMounted, ref, defineProps, inject} from "vue";
@@ -46,12 +58,27 @@
   const loading = ref(false)
   const onlineCourseService = new OnlineCourseService
   const props = defineProps({
-    courseID: {
+    courseHistoryID: {
       type: Number,
       default: 0,
+    },
+    propsCourse: {
+      type: Object,
+      default: Object,
+    },
+    studentState: {
+      type: String,
+      default: null
+    },
+    courseHistoryState: {
+      type: String,
+      default: null
+    },
+    getCourse: {
+      type: Function,
+      default: () => {},
     }
   })
-
   const courseHistories = ref([])
   const courseHistory = ref(null)
   const total = ref(0)
@@ -63,7 +90,7 @@
 
   const getCourseHistories = () => {
     const req = {
-      course_id: props.courseID,
+      course_id: props.propsCourse?.id || 0,
       page: lazyParams.value.page,
       rows: lazyParams.value.rows
     }
@@ -86,7 +113,17 @@
   }
 
   const closeCourseHistoryStudents = () => {
-    
+  }
+
+  const formatDate = (dateString) => {
+    const options = { month: 'numeric', day: 'numeric', year: 'numeric' };
+    const date = new Date(dateString);
+    return date.toLocaleString(undefined, options).replace(/\//g, '.');
+  };
+
+  const onPage = (event) => {
+    lazyParams.value = event
+    getCourseHistories()
   }
 
   onMounted(() => {
