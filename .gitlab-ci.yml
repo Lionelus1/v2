@@ -22,8 +22,6 @@ build_stage:
   stage: build
   image: node:lts
   script:
-    - |
-      curl --request POST --url "https://api.telegram.org/bot$TG_ACCESS_TOKEN/sendMessage" --header "Content-Type: application/json" --data "{\"chat_id\": \"-1002040225063\",\"text\": \"Building  [${CI_PROJECT_NAME}] for environment: [${TARGET}] from branch: [${CI_COMMIT_BRANCH}] 🚀\",\"disable_notification\": true}"
     - export NODE_OPTIONS=--openssl-legacy-provider
     - npm install
     - npm run build:stage
