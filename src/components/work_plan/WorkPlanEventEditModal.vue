@@ -77,7 +77,7 @@ import RolesByName from "@/components/smartenu/RolesByName.vue";
 
 export default {
   name: "WorkPlanEventEditModal", 
-  components: { RolesByName }, 
+  components: {  }, 
   props: ['visible', 'event', 'planData', 'parent'],
   emits: ['hide'],
   data() {
