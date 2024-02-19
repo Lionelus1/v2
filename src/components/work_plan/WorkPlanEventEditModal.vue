@@ -76,8 +76,8 @@ import Enum from "@/enum/workplan/index"
 import RolesByName from "@/components/smartenu/RolesByName.vue";
 
 export default {
-  name: "WorkPlanEventEditModal",
-  components: { RolesByName },
+  name: "WorkPlanEventEditModal", 
+  components: { RolesByName }, 
   props: ['visible', 'event', 'planData', 'parent'],
   emits: ['hide'],
   data() {
