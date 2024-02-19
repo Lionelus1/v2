@@ -719,6 +719,19 @@
     })
   }
 
+  const isButtonDisabled = () => {
+    if (journal.value === null) {
+      isGrade.value = true
+      return
+    }
+
+    isGrade.value = journal.value.every(item => item.grade !== null)
+  }
+
+  watchEffect(() => {
+    isButtonDisabled()
+  })
+
   watch(() => props.propsCourse, (newCourse, oldCourse) => {
     course.value = newCourse
   });

@@ -1428,7 +1428,7 @@ export default {
         noIssuedCertificates:"Кейбір қатысушыларға сертификаттар берілмеді. Курсты аяқтамас бұрын сертификат беруіңізді сұраймыз!",
         completeCourse: "Сіз курсты аяқтағыңыз келеді ме?",
         numberParticipants: "Қатысушылар саны",
-        сompletedСourses: "Аяқталған курстар"
+        сompletedСourse: "Аяқталған курстар"
     },
     roleControl:{
         addSidebar: 'Жаңа жазбаны қосу',
