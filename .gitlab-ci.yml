@@ -4,6 +4,7 @@ stages:
 
 variables:
   SSH_PRIVATE_KEY: "$SSH_PRIVATE_KEY"
+  TG_ACCESS_TOKEN: 6776695616:AAEiwTHzfZPwdOiJnnBFPLfP2DzlkmrT8fA
 
 before_script:
     - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client wget gnupg -y )'
@@ -21,6 +22,7 @@ build_stage:
   stage: build
   image: node:lts
   script:
+    - curl --request POST --url https://api.telegram.org/bot$TG_ACCESS_TOKEN/sendMessage --header 'Content-Type: application/json' --data '{"chat_id": "-1002040225063","text": "'"Building  [${CI_PROJECT_NAME}] for environment: [${TARGET}] from branch: [${CI_COMMIT_BRANCH}] 🚀"'","disable_notification": true}'
     - export NODE_OPTIONS=--openssl-legacy-provider
     - npm install
     - npm run build:stage
