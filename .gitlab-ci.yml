@@ -28,17 +28,18 @@ build_stage:
     - npm install
     - if [ "$CI_COMMIT_BRANCH" == "master" ]; then 
         npm run build;
-        mv dist dist_prod
+        mv dist dist_prod;
       else 
         npm run build:stage;
-        mv dist dist_test
+        mv dist dist_test;
       fi
   only:
     - master
     - test
   artifacts:
     paths:
-      - dist/
+      - dist_master/
+      - dist_test/
 
 
 deploy_stage:
