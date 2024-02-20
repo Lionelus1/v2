@@ -21,7 +21,7 @@
             <i class="fa-solid fa-wallet"></i><span>Мои финансы</span>
           </button>
         </li>
-        <li v-if="loginedUser && loginedUser.mainPosition && loginedUser.mainPosition.organization.id === 1">
+        <li v-if="loginedUser && loginedUser.mainPosition && loginedUser.mainPosition.organization && loginedUser.mainPosition.organization.id === 1">
           <button @click="sVerify = true" class="p-link">
             <i class="pi pi-fw pi-verified"></i><span>{{ $t("common.verify") }}</span>
           </button>
@@ -36,7 +36,7 @@
             <i  class="fa-solid fa-user-shield"></i><span >{{ $t("positions.menuTitle") }}</span>
           </button>
         </li>
-        <li v-if="loginedUser && loginedUser.mainPosition && loginedUser.mainPosition.organization.id === 1">
+        <li v-if="loginedUser && loginedUser.mainPosition && loginedUser.mainPosition.organization && loginedUser.mainPosition.organization.id === 1">
           <button @click="myRef" class="p-link">
             <i :class="{ active: activeItem === 'myRef' }" class="pi pi-fw pi-book"></i><span :class="{active: activeItem === 'myRef'}" >{{ $t("ref.myRefs") }}</span>
           </button>
