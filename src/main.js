@@ -12,7 +12,7 @@ import Badge from 'primevue/badge'
 import BlockUI from 'primevue/blockui';
 import VCalendar from 'v-calendar';
 import Calendar from 'primevue/calendar';
-import Card from 'primevue/card'; 
+import Card from 'primevue/card';
 import Carousel from 'primevue/carousel';
 import Checkbox from 'primevue/checkbox';
 import Chips from 'primevue/chips';
