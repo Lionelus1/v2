@@ -1,0 +1,45 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  SSH_PRIVATE_KEY: "$SSH_PRIVATE_KEY"
+  TG_ACCESS_TOKEN: 6776695616:AAEiwTHzfZPwdOiJnnBFPLfP2DzlkmrT8fA
+
+before_script:
+    - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client wget gnupg -y )'
+    - wget -qO- https://get.docker.com/gpg | apt-key add -
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - touch ~/.ssh/config
+    - touch ~/.ssh/known_hosts
+    - chmod -R 400 ~/.ssh
+    - ssh-keyscan -H smart.enu.kz >> ~/.ssh/known_hosts
+    - '[[ -f /.dockerinit ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+
+build_stage:
+  stage: build
+  image: node:lts
+  script:
+    - export NODE_OPTIONS=--openssl-legacy-provider
+    - npm install
+    - if [ "$CI_COMMIT_BRANCH" == "master" ]; then npm run build; else npm run build:stage; fi
+  only:
+    - master
+    - test
+  artifacts:
+    paths:
+      - dist/
+
+deploy_stage:
+  stage: deploy
+  image: node:lts
+  script:
+    - if [ "$CI_COMMIT_BRANCH" == "master" ]; then ssh root@smart.enu.kz "sudo rm -rf /local/prohtml/*"; else scp -r dist/* root@smart.enu.kz:/local/prohtml; fi
+    - if [ "$CI_COMMIT_BRANCH" == "test" ]; then ssh root@smart.enu.kz "sudo rm -rf /local/testhtml/*";  else scp -r dist/* root@smart.enu.kz:/local/testhtml; fi
+  dependencies:
+    - build_stage
+  only:
+    - master
+    - test
