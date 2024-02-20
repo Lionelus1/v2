@@ -118,14 +118,14 @@
       </div>
       <div class="field">
         <label> {{ $t('common.author') }} </label>
-        <DepartmentList :orgType="2" :parentID="1" :autoLoad="true"
-                        ref="departmentList"  v-model="filesFilter.author.value" :editMode="true">
+        <DepartmentList :orgType="2" :parentID="1" :autoLoad="true" 
+          ref="departmentList"  v-model="filesFilter.author.value" :editMode="true">
         </DepartmentList>
       </div>
       <div class="field">
         <label> {{ $t('common.approveDate') }} </label>
-        <Dropdown v-model="filesFilter.year.matchMode" :options="matchModes" optionLabel="value"
-                  optionValue="value" :placeholder="$t('common.select')">
+        <Dropdown v-model="filesFilter.year.matchMode" :options="matchModes" optionLabel="value" 
+          optionValue="value" :placeholder="$t('common.select')">
           <template #value="slotProps">
             <span> {{ $t('common.' + slotProps.value) }} </span>
           </template>
@@ -136,8 +136,6 @@
         <PrimeCalendar class="mt-2" v-model="filesFilter.year.value" view="year" dateFormat="yy" />
       </div>
       <div class="field">
-        <Button :label="$t('common.search')" @click="getFilesByFilter()" class="mt-2" />
-        <Button v-if="filterApplied != null" :label="$t('common.filterReset')" @click="getFolders()" class="mt-2 p-button-warning" />
         <Button :label="$t('common.search')" @click="filterApplied = true; getFilesRaw()" class="mt-2" />
         <Button v-if="filterApplied" :label="$t('common.filterReset')" @click="filterApplied = false; currentDocument = null;" class="mt-2 p-button-warning" />
       </div>
@@ -148,14 +146,14 @@
     <PostFolder :modelValue="newNode" @updated="folderUpdated($event)"></PostFolder>
   </Dialog>
   <!-- file upload -->
-  <Dialog :header="$t('hdfs.uploadTitle')" v-model:visible="visibility.fileUploadDialog" :style="{width: '60vw'}" :modal="true">
-    <PostFile :approveInfo="true" :fileUpload="fileUpload" :modelValue="newNode" directory="normativeDocs"
-              :parentID="selectedNode.id" @updated="fileUpdated($event)" accept=".doc,.docx,.pdf,.zip,.rar,.7z,.gz"></PostFile>
+  <Dialog :header="$t('hdfs.uploadTitle')" v-model:visible="visibility.fileUploadDialog" :style="{width: '60vw'}" :modal="true"> 
+    <PostFile :approveInfo="true" :fileUpload="fileUpload" :modelValue="newNode" directory="normativeDocs" 
+      :parentID="selectedNode.id" @updated="fileUpdated($event)" accept=".doc,.docx,.pdf,.zip,.rar,.7z,.gz"></PostFile>
   </Dialog>
   <!-- as -->
-  <Dialog :header="$t('common.move')" v-model:visible="visibility.folderMoveDialog"  :style="{width: '75vw'}" :maximizable="true" :modal="true" :contentStyle="{height: '300px'}">
+  <Dialog :header="$t('common.move')" v-model:visible="visibility.folderMoveDialog"  :style="{width: '75vw'}" :maximizable="true" :modal="true" :contentStyle="{height: '300px'}"> 
     <TreeTable :scrollable="true" scrollHeight="flex"  class="p-treetable-sm"  @node-select="onMoveNodeSelect($event)" :value="catalog" :lazy="true" :loading="loading"
-               @node-expand="onNodeExpand($event)" :totalRecords="totalRecords" selectionMode="single" v-model:selectionKeys="moveto">
+      @node-expand="onNodeExpand($event)" :totalRecords="totalRecords" selectionMode="single" v-model:selectionKeys="moveto">
       <Column field="name" :header="$t('common.name')" :expander="true">
         <template #body="slotProps">
           <span v-if="slotProps.node.hidden || slotProps.node.isHidden"><i class="fa-solid fa-eye-slash"></i>&nbsp;{{slotProps.node["name"+$i18n.locale]}}</span>
@@ -191,7 +189,6 @@ export default {
   emits: [],
   data() {
     return {
-      innerHeightInRem: 0,
       service: new DocService(),
       Enum: Enum,
       loginedUser: {},
@@ -332,7 +329,7 @@ export default {
         file: false,
         folder: false
       }
-
+      
       if (node.nodeType === 'file') {
         this.tooltip.file = true
       } else {
@@ -357,8 +354,8 @@ export default {
         page: null,
         rows: null,
         parentId: parent !== null ? parent.id : null,
-      }, {
-        headers: getHeader()
+      }, { 
+        headers: getHeader() 
       }).then(res => {
         let data = res.data.folders
 
@@ -412,8 +409,8 @@ export default {
         folderId: parent.id,
         page: null,
         rows: null,
-      }, {
-        headers: getHeader()
+      }, { 
+        headers: getHeader() 
       }).then(res => {
         let data = res.data.documents
 
@@ -450,17 +447,17 @@ export default {
     getLang(lang) {
       if (lang === 0) {
         return {
-          name: "kz",
+          name: "kz", 
           value: 0
         }
       } else if (lang === 1) {
         return {
-          name: "ru",
+          name: "ru", 
           value: 1
         }
       } else {
         return {
-          name: "en",
+          name: "en", 
           value: 2
         }
       }
