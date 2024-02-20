@@ -24,8 +24,9 @@ build_stage:
   script:
     - export NODE_OPTIONS=--openssl-legacy-provider
     - npm install
-    - npm run build:stage
+    - if [ "$CI_COMMIT_BRANCH" == "master" ]; then npm run build; else npm run build:stage; fi
   only:
+    - master
     - test
   artifacts:
     paths:
@@ -35,9 +36,10 @@ deploy_stage:
   stage: deploy
   image: node:lts
   script:
-    - ssh root@smart.enu.kz "sudo rm -rf /local/testhtml/*"
-    - scp -r dist/* root@smart.enu.kz:/local/testhtml
+    - if [ "$CI_COMMIT_BRANCH" == "master" ]; then ssh root@smart.enu.kz "sudo rm -rf /local/prohtml/*"; else scp -r dist/* root@smart.enu.kz:/local/prohtml; fi
+    - if [ "$CI_COMMIT_BRANCH" == "test" ]; then ssh root@smart.enu.kz "sudo rm -rf /local/testhtml/*";  else scp -r dist/* root@smart.enu.kz:/local/testhtml; fi
   dependencies:
     - build_stage
   only:
+    - master
     - test
