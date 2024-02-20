@@ -1417,7 +1417,9 @@ export default {
         noGrades: "There are participants who have no grades!",
         noBeenTrained:"There are participants who have not been trained yet. Do you want them to be trained?",
         noIssuedCertificates:"Some participants were not issued certificates. Please issue certificates before completing the course!",
-        completeCourse: "Are you sure you want to complete the course?"
+        completeCourse: "Are you sure you want to complete the course?",
+        numberParticipants: "Number of participants",
+        сompletedСourse: "Completed courses"
     },
     roleControl: {
         addSidebar: 'Adding new record',

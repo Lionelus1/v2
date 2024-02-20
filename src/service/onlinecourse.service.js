@@ -134,4 +134,8 @@ export class OnlineCourseService {
         return api.post('/onlinecourse/courseStatistics', data, { headers: getHeader() });
     }
 
+    getCourseHistories(data) {
+        return api.post("/onlinecourse/course/histories", data, { headers: getHeader() })
+    }
+
 }
