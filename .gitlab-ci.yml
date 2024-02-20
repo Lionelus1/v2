@@ -38,7 +38,7 @@ build_stage:
     - test
   artifacts:
     paths:
-      - dist_master/
+      - dist_prod/
       - dist_test/
 
 
