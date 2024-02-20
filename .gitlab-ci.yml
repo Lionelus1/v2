@@ -36,6 +36,10 @@ build_stage:
   only:
     - master
     - test
+  artifacts:
+    paths:
+      - dist/
+
 
 deploy_stage:
   stage: deploy
