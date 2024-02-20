@@ -20,6 +20,7 @@ before_script:
 
 build_stage:
   stage: build
+  image: node:lts
   script:
     - export NODE_OPTIONS=--openssl-legacy-provider
     - npm install
@@ -34,6 +35,7 @@ build_stage:
 
 deploy_stage:
   stage: deploy
+  image: node:lts
   script:
     - if [ "$CI_COMMIT_BRANCH" == "master" ]; then 
         ssh root@smart.enu.kz "sudo rm -rf /local/prohtml/*"; 
