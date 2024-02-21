@@ -62,7 +62,7 @@
                         @click="updateUserState(slotProps.data.profile.userID, 2)"/>
                 <Button v-if="slotProps.data.state.id !== 1 && dic_course_type === 1" class="p-button-success mr-3"
                         icon="fa-solid fa-list-check" v-tooltip.bottom="t('course.journal')" label=""
-                        @click="openJournal(slotProps.data.profile.userID, slotProps.data.state.id)"/>
+                        @click="userID=slotProps.data.profile.userID;openJournal(slotProps.data.profile.userID, slotProps.data.state.id)"/>
                 <Button v-if="slotProps.data.certificateUUID" icon="fa-solid fa-award" class="mr-3"
                         v-tooltip.bottom="t('course.certificate.view')" label=""
                         @click="openCertificate(slotProps.data.certificateUUID)"/>
@@ -378,6 +378,7 @@
   }
 
   const addStudent = () => {
+    newUsers.value = []
     addStudentDialog.value = true
   }
 
@@ -388,9 +389,9 @@
   }
 
   const openIssueCertificateWithDialog = () => {
-      openIssueCertificate.value = true
+    getCourseOrganizerByCourseID()
+    openIssueCertificate.value = true
     issueCertificateWithDialog.value = true
-      getCourseOrganizerByCourseID()
   }
 
   const getCourseOrganizerByCourseID = () => {
