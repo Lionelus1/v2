@@ -347,6 +347,13 @@
   const courseDialog = ref(false)
   const openIssueCertificate = ref(false)
   const isGrade = ref(false)
+  const certificates = ref([])
+  const certificate = ref(null)
+  const certificateLazyParams = ref({
+      page: 0,
+      rows: 10,
+      searchText: null,
+  })
 
   const getCourseHistoryStudents = () => {
     loading.value = true
@@ -603,6 +610,7 @@
   }
 
   const openCourseDialog = () => {
+    getCertificateTemplate()
     course.value.history[0].startDate = null
     course.value.history[0].finalDate = null
     courseDialog.value = true
@@ -727,6 +735,31 @@
     }
 
     isGrade.value = journal.value.every(item => item.grade !== null)
+  }
+
+  const itemLabel = (item) => {
+    return item['name']
+  }
+
+  const getCertificateTemplate = () => {
+    loading.value = true;
+    certificateLazyParams.value.docType = 7
+    onlineCourseService.getCertificateTemplateJournal(certificateLazyParams.value).then(response =>{
+      certificates.value = response.data.templates;
+    }).catch(_=> {
+    }).finally(() => {
+      loading.value = false;
+    })
+  }
+
+  const handleFilter = (event) => {
+    if (event.value && event.value.length > 0) {
+      certificateLazyParams.value.searchText = event.value
+      getCertificateTemplate()
+    } else {
+      certificateLazyParams.value.searchText = null
+      getCertificateTemplate()
+    }
   }
 
   watchEffect(() => {
