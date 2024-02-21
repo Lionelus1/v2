@@ -6,7 +6,7 @@
       <div v-if="!resultId" @click="navigateToBack" class="inline-block"><i class="fa-solid fa-arrow-left mr-3" style="font-size: 16px;cursor: pointer"></i>
       </div>
       <div class="mb-0 mt-0 inline-block" style="font-size: 24px"> {{ $t('common.result') }}</div> &nbsp;
-      <span
+      <span v-if="isPlanCreator"
               :class="
                 'customer-badge status-' + event.status.work_plan_event_status_id
               "
