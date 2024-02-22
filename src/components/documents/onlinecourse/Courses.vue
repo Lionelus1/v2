@@ -26,7 +26,7 @@
         </div>
       </div>-->
       <template v-if="allCourses">
-        <DataView :value="allCourses.courses" :layout="layout" :loading="loading" :lazy="true" :paginator="true"
+        <DataView :value="allCourses.courses || allCourses" :layout="layout" :loading="loading" :lazy="true" :paginator="true"
                   :rows="lazyParams.rows" @page="onPage($event)" :totalRecords="total" :first="first">
           <template #header>
             <div class="flex justify-content-between">
@@ -40,7 +40,7 @@
                 <div class="flex flex-column sm:flex-row sm:align-items-center p-3 gap-3">
                   <div class="md:w-10rem relative">
                     <div class="cursor-pointer" v-if="slotProps.data.logo" @click="selectCourse(slotProps.data)">
-                      <img class="border-round w-full" src="https://thesette.co/wp-content/uploads/sites/9173/2017/09/graduation-cap.png"/>
+                      <img style="height: 85px;object-fit: cover" class="border-round w-full" :src="slotProps.data.filePath"/>
                     </div>
                     <div v-else class="cursor-pointer flex justify-content-center bg-blue-50 py-5" @click="selectCourse(slotProps.data)">
                       <i class="fa-solid fa-chalkboard-user size text-blue-100" style="font-size: 30px"></i>
@@ -69,10 +69,10 @@
                     </div>
                     <div class="flex flex-column md:align-items-end gap-5">
                       <div class="flex align-items-center">
-                        <span class="font-medium text-secondary text-sm mr-2" v-if="slotProps.data.history[0].createDate">
+                        <span class="font-medium text-secondary text-sm mr-2" v-if="slotProps.data.history && slotProps.data.history[0].createDate">
                           {{ formatDateMoment(slotProps.data.history[0].createDate) }}
                         </span>
-                        <Tag v-if="slotProps.data.history[0].state" :value="slotProps.data.history[0].state['name' + $i18n.locale]" severity="success"></Tag>
+                        <Tag v-if="slotProps.data.history && slotProps.data.history[0].state" :value="slotProps.data.history[0].state['name' + $i18n.locale]" severity="success"></Tag>
                       </div>
                       <div class="flex flex-row-reverse md:flex-row gap-2">
                         <div class="icons">
@@ -92,7 +92,7 @@
                 <div class="course_grid_card p-3 border-1 surface-border surface-card border-round flex flex-column justify-content-between">
                   <div class="cursor-pointer" @click="selectCourse(slotProps.data)">
                   <div class="" v-if="slotProps.data.logo">
-                      <img style="height: 170px" class="border-round w-full" :src="slotProps.data.filePath"/>
+                      <img style="height: 170px;object-fit: cover" class="border-round w-full" :src="slotProps.data.filePath"/>
                   </div>
                   <div v-else class="flex justify-content-center bg-blue-50 py-8 cursor-pointer" @click="selectCourse(slotProps.data)">
                     <i class="fa-solid fa-chalkboard-user size text-blue-100" style="font-size: 30px"></i>
@@ -111,7 +111,7 @@
                         <div v-else class="title cursor-pointer text-lg font-medium text-900 mt-1 mb-2" :title="slotProps.data['description' + $i18n.locale]" @click="selectCourse(slotProps.data)">
                           {{ slotProps.data['description' + $i18n.locale] }}
                         </div>
-                        <span class="font-medium text-secondary text-sm" v-if="slotProps.data.history[0].createDate">
+                        <span class="font-medium text-secondary text-sm" v-if="slotProps.data.history && slotProps.data.history[0].createDate">
                           {{ formatDateMoment(slotProps.data.history[0].createDate) }}
                         </span>
                       </div>
@@ -123,7 +123,7 @@
                         </div>
                       </div>
                       <div class="flex justify-content-between align-items-center">
-                        <Tag v-if="slotProps.data.history[0].state" :value="slotProps.data.history[0].state['name' + $i18n.locale]" severity="success"></Tag>
+                        <Tag v-if="slotProps.data.history && slotProps.data.history[0].state" :value="slotProps.data.history[0].state['name' + $i18n.locale]" severity="success"></Tag>
                         <div class="icons">
                           <i v-if="findRole(null,'online_course_administrator')" class="pi pi-pencil text-primary-500 cursor-pointer mr-4" @click="editCourse(slotProps.data.id)"></i>
                           <i v-if="findRole(null,'online_course_administrator')" class="pi pi-trash text-red-500 cursor-pointer" @click="deleteCourse(slotProps.data.id)"></i>
@@ -205,8 +205,11 @@ export default {
   },
   created() {
     this.fieldId = parseInt(this.$route.params.courseID)
-    if(this.fieldId !== 777)this.getCourses();
-    this.getAllCourses();
+    if(this.fieldId !== 777){
+      this.getCourses();
+    }else {
+      this.getAllCourses();
+    }
   },
   watch: {
     $route(to, from) {
@@ -222,8 +225,8 @@ export default {
     getCourses() {
       this.loading = true,
           this.service.getCourseFieldId(this.fieldId).then(response => {
-            this.courses = response.data
-            this.courses.map(e => {
+            this.allCourses = response.data
+            this.allCourses.map(e => {
               e.filePath = smartEnuApi + fileRoute + e.logo
               this.title = e.field[0]['name_' + this.$i18n.locale]
             });
