@@ -155,32 +155,32 @@
       <div class="grid formgrid">
         <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
           <label>{{ t('common.nameInQazaq') }}</label>
-          <InputText v-model="course.namekz" class="mt-2" type="text" readonly></InputText>
+          <InputText v-model="course.namekz" class="mt-2" type="text"></InputText>
           <small v-if="courseValidate.namekz" class="p-error">{{t('common.requiredField')}}</small>
         </div>
         <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
           <label>{{ t('common.descriptionKz') }}</label>
-          <InputText v-model="course.descriptionkz" class="mt-2" type="text" readonly></InputText>
+          <InputText v-model="course.descriptionkz" class="mt-2" type="text"></InputText>
           <small v-if="courseValidate.descriptionkz" class="p-error">{{t('common.requiredField')}}</small>
         </div>
         <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
           <label>{{ t('common.nameInRussian') }}</label>
-          <InputText v-model="course.nameru" class="mt-2" type="text" readonly></InputText>
+          <InputText v-model="course.nameru" class="mt-2" type="text"></InputText>
           <small v-if="courseValidate.nameru" class="p-error">{{t('common.requiredField')}}</small>
         </div>
         <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
           <label>{{ t('common.descriptionRu') }}</label>
-          <InputText v-model="course.descriptionru" class="mt-2" type="text" readonly></InputText>
+          <InputText v-model="course.descriptionru" class="mt-2" type="text"></InputText>
           <small v-if="courseValidate.descriptionru" class="p-error">{{t('common.requiredField')}}</small>
         </div>
         <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
           <label>{{ t('common.nameInEnglish') }}</label>
-          <InputText v-model="course.nameen" class="mt-2" type="text" readonly></InputText>
+          <InputText v-model="course.nameen" class="mt-2" type="text"></InputText>
           <small v-if="courseValidate.nameen" class="p-error">{{t('common.requiredField')}}</small>
         </div>
         <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
           <label>{{ t('common.descriptionEn') }}</label>
-          <InputText v-model="course.descriptionen" class="mt-2" type="text" readonly></InputText>
+          <InputText v-model="course.descriptionen" class="mt-2" type="text"></InputText>
           <small v-if="courseValidate.descriptionen" class="p-error">{{t('common.requiredField')}}</small>
         </div>
         <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
@@ -202,7 +202,7 @@
         <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
           <label class="mr-2">{{ t('course.certificate.certSelect') }}</label>
           <Checkbox v-model="checkedCertificate" :binary="true" />
-          <Dropdown :disabled="!checkedCertificate" v-model="course.certificate_template_id" :options="certificates" class="mt-2" :optionLabel="itemLabel" optionValue="id" :placeholder="t('common.select')"
+          <Dropdown :disabled="!checkedCertificate" v-model="course.organizer.certificateTemplateID" :options="certificates" class="mt-2" :optionLabel="itemLabel" optionValue="id" :placeholder="t('common.select')"
                     @filter="handleFilter" :filter="true" :showClear="true" dataKey="id" :emptyFilterMessage="t('roleControl.noResult')"  />
           <small v-if="courseValidate.certificate_template_id"  class="p-error">{{t('common.requiredField')}}</small>
         </div>
