@@ -1236,7 +1236,10 @@ export default {
         scienceParticipants: "Project participants",
         generateAct: "Form an act",
         minWordCount: "It should be between 50 and 250 words",
-        maxWordCount: "It should be between 50 and 250 words"
+        maxWordCount: "It should be between 50 and 250 words",
+        partiallyCompleted: "Partially completed",
+        errorUpdatingStatus: "Error updating status",
+        operationCanceled: "Action  canceled"
     },
     queue: {
 

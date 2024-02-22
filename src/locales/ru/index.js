@@ -1267,7 +1267,10 @@ export default {
         scienceParticipants: "Участники проекта",
         generateAct: "Сформировать акт",
         minWordCount: "Должно быть от 50 до 250 слов",
-        maxWordCount: "Должно быть от 50 до 250 слов"
+        maxWordCount: "Должно быть от 50 до 250 слов",
+        partiallyCompleted: "Частично выполнено",
+        errorUpdatingStatus: "Ошибка обновления статуса",
+        operationCanceled: "Продолжение действия остановлено"
     },
     educomplex: {
         title: "Учебно-методический комплекс дисциплины",

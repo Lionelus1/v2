@@ -1278,7 +1278,10 @@ export default {
         scienceParticipants: "Жобаға қатысушылар",
         generateAct: "Акт жасау",
         minWordCount: "Мәтіннің ұзындығы 50-ден 250 сөзге дейін болуы керек",
-        maxWordCount: "Мәтіннің ұзындығы 50-ден 250 сөзге дейін болуы керек"
+        maxWordCount: "Мәтіннің ұзындығы 50-ден 250 сөзге дейін болуы керек",
+        partiallyCompleted: "Жартылай орындалды",
+        errorUpdatingStatus: "Күйді жаңарту қатесі",
+        operationCanceled: "Амалды жалғастыру тоқтатылды"
     },
     educomplex: {
         title: "Пәннің оқу-әдістемелік кешені",
