@@ -30,7 +30,7 @@
         </div>
       </div>
       <div class="cat_grid" v-if="selectedItem === 0">
-        <div :style="{ 'background-image': 'url(https://www.mooc.org/hubfs/are-free-online-courses-worth-it.jpg)' }"
+        <div :style="{ 'background-image': 'url(assets/layout/images/course-bg.jpg)' }"
              class="grid_item p-4 relative p-4 col-12 sm:col-6 lg:col-12 xl:col-3" @click="selectCourse(777)">
           <div class="text-white absolute">
             <h5 class="title">{{
