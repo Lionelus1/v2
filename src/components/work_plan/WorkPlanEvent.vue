@@ -3,13 +3,13 @@
     <h3 v-if="plan">
       <TitleBlock :title="plan.work_plan_name" :show-back-button="true"/>
     </h3>
-    <div class="card" v-if="plan && plan.reject_history && isRejected">
+    <div class="card" v-if="plan && plan.doc_info && plan.reject_history && isRejected">
       <div class="p-fluid">
         <div class="field">
           <label>{{ $t('common.state') }}:</label>
-          <div>
-            <span v-if="plan.status" :class="'customer-badge status-' + plan.status.work_plan_status_id">{{
-                plan.status.name_ru
+          <div v-if="plan.doc_info.docHistory">
+            <span v-if="plan.status" :class="'customer-badge status-' + plan.doc_info.docHistory.stateEn">{{
+                $t('common.states.'+plan.doc_info.docHistory.stateEn)
               }}</span>
           </div>
         </div>
