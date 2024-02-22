@@ -151,7 +151,7 @@ export default {
       }
 
       if (this.documentFiles) {
-        for (let file of this.contractFiles) {
+        for (let file of this.documentFiles) {
           fd.append("document_files[]", file)
         }
       }
