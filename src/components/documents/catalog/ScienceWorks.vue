@@ -174,11 +174,11 @@
           <Column field="name_en" :header="$t('common.nameInEnglish')"></Column>
           <Column>
             <template #body="slotProps">
-              <Button class="mr-2" @click="koksnvo.edition=slotProps.data;open('newKoksnvoEdition')">
-                <i class="fas fa-edit"></i>
+              <Button class="p-button-text p-button-warning p-1 mr-2" @click="koksnvo.edition=slotProps.data;open('newKoksnvoEdition')">
+                <i class="fa-solid fa-pencil fa-xl"></i>
               </Button>
-              <Button @click="koksnvo.edition=slotProps.data;deleteKoksnvoEdition()">
-                <i class="fas fa-trash-alt"></i>
+              <Button class="p-button-text p-button-danger p-1 mr-2" @click="koksnvo.edition=slotProps.data;deleteKoksnvoEdition()">
+                <i class="fa-solid fa-trash-can fa-xl"></i>
               </Button>
             </template>
           </Column>

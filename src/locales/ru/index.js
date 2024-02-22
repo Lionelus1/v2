@@ -355,6 +355,7 @@ export default {
         change: "Сменить",
         unknownUser: "Гость",
         doNotShowAnymore: "Больше не показывать",
+        showMore: "Показать больше"
     },
     positions: {
         menuTitle: 'Поменять позицию',
@@ -1261,7 +1262,8 @@ export default {
         plancontracttopic: "По теме",
         scienceParticipants: "Участники проекта",
         generateAct: "Сформировать акт",
-        minWordCount: "Должно быть не менее 100 слов"
+        minWordCount: "Должно быть от 50 до 250 слов",
+        maxWordCount: "Должно быть от 50 до 250 слов"
     },
     educomplex: {
         title: "Учебно-методический комплекс дисциплины",
@@ -1370,7 +1372,7 @@ export default {
         categories: 'Категории курсов',
         certificate: {
             title: 'Сертификаты',
-            template: 'Шаблоны сертфиката',
+            template: 'Шаблоны сертификата',
             element: 'Элемент',
             elements: 'Элементы',
             designer: 'Дизайнер шаблона',
@@ -1380,7 +1382,7 @@ export default {
             getQr: "Получить QR",
             confirm: "Подтверждаете выдачу сертификата БЕЗ приложения?",
             confirm2: "Сертификат будет выдан С приложением, подтверждаете корректность заполнение приложения?",
-            certSelect:"Указать шоблон сертификата"
+            certSelect:"Указать шаблон сертификата"
         },
         modules:'Модули курса',
         module: 'Модуль',
@@ -1402,7 +1404,20 @@ export default {
         completionDate: 'Дата окончания курса',
         disciplineCode: "Код дисциплины",
         disciplineName: "Наименование дисциплины",
-        oodCourseName: "Курсы по общеобразовательным дисциплинам (ООД)"
+        oodCourseName: "Курсы по общеобразовательным дисциплинам (ООД)",
+        deleteCertificate:"Удалить сертификат",
+        deleteStudent:"Удалить участника",
+        сompleteTheCourse: "Завершить курс",
+        openNewThread: "Запустить новый поток",
+        isNotAvailable: "Для подачи заявки на курс доступ закрыт, ожидайте новый поток",
+        confirmation: "Подтверждение",
+        warning: "Предупреждение",
+        noGrades: "Есть участники, у которых отсутствуют оценки!",
+        noBeenTrained:"Есть участники, которые еще не прошли обучение. Хотите, чтобы они прошли обучение?",
+        noIssuedCertificates:"Некоторым участникам не были выданы сертификаты. Пожалуйста, выдайте сертификаты перед завершением курса!",
+        completeCourse: "Вы уверены, что хотите завершить курс?",
+        numberParticipants: "Количество участников",
+        сompletedСourse: "Завершенные курсы"
     },
     roleControl: {
         addSidebar: 'Добавление новой записи',

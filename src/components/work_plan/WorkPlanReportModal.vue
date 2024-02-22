@@ -1,13 +1,11 @@
 <template>
   <Button type="button" icon="pi pi-document" class="p-button p-button-outlined ml-2" :label="$t('workPlan.createReport')"
     @click="openModal"></Button>
-
   <Dialog :header="$t('workPlan.reports')" v-model:visible="selectQuarterModal" :style="{ width: '450px' }" class="p-fluid">
     <div class="field">
       <label>{{ $t('workPlan.reportName') }}</label>
       <InputText v-model="report_name" />
     </div>
-    <!-- {{ respUsers }} -->
     <div class="field">
       <label>{{ $t('common.type') }}</label>
       <Dropdown v-model="type" :options="reportTypes" optionLabel="name" optionValue="id" :placeholder="$t('common.select')" @select="selectReportType" />
@@ -21,15 +19,10 @@
       <Dropdown v-model="selectedHalfYear" :options="halfYearTypes" optionLabel="name" optionValue="id" :placeholder="$t('common.select')" />
     </div>
     <div class="field" v-if="isOperPlan">
-
       <label>{{ $t('common.department') }}</label>
       <Dropdown v-model="selectedDepartment" :options="departments" optionLabel="department_name" optionValue="department_id" :filter="true" :show-clear="true"
         :placeholder="$t('common.select')" />
     </div>
-    <!--<div class="field" v-if="plan && plan.is_oper">
-      <label>{{ $t('workPlan.respExecutor') }}</label>
-      <Dropdown v-model="selectedRespUser" :options="respUsers" optionLabel="fullName" optionValue="id" :placeholder="$t('common.select')" />
-    </div>-->
     <template #footer>
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger" @click="closeModal" />
       <Button label="Ок" icon="pi pi-check" class="p-button-rounded p-button-success mr-2" @click="create" />
@@ -101,7 +94,8 @@ export default {
       planCreator: null,
       isAdmin: false,
       planService: new WorkPlanService(),
-      Enum: Enum
+      Enum: Enum,
+      departmentId:null
     }
   },
   mounted() {
@@ -120,7 +114,6 @@ export default {
       return this.plan && ((this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Oper) || this.plan.is_oper)
     },
     showCreateReportButton() {
-      //return this.loginedUser && this.respUsers.some(user => user.id === this.loginedUser.userID) || (this.plan.user.id === this.loginedUser.userID);
       return (this.plan && this.plan.user.id === this.loginedUser.userID) || this.getResposiveUser;
     },
     isPlanCreator() {
@@ -130,16 +123,8 @@ export default {
   created() {
     this.respUsers = this.respUsers || [];
     this.isAdmin = this.findRole(null, 'main_administrator')
-    // if (this.plan.user && this.plan.user.id) {
-    //   const newElement = {
-    //     id: this.plan.user.id,
-    //     fullName: "Creator",
-    //     role_rel_id: null,
-    //     role: null,
-    //     user: null
-    //   };
-    //   this.respUsers.push(newElement);
-    // }
+    this.getDepartments();
+    
   },
   methods: {
     findRole: findRole,
@@ -172,7 +157,6 @@ export default {
       });
     },
     getRespUsers() {
-      //this.respUsers = [];
       this.planService.getRespUsers(parseInt(this.work_plan_id)).then(res => {
         if (res.data) {
           console.log(res.data);
@@ -193,16 +177,16 @@ export default {
     },
 
     create() {
-
-      //this.$router.push({ name: 'WorkPlanReportView', params: { id: this.work_plan_id, type: this.type, name: this.report_name, quarter: this.quarter }})
+      if (this.plan.plan_type.code === Enum.WorkPlanTypes.Oper){
+        this.departmentId = this.selectedDepartment ? this.selectedDepartment : null
+      }
       let data = {
         work_plan_id: parseInt(this.work_plan_id),
         report_name: this.report_name,
         report_type: this.type,
         quarter: this.type === 2 ? this.quarter : null,
         halfYearType: this.type === 3 ? this.selectedHalfYear : null,
-        department_id: this.selectedDepartment ? this.selectedDepartment : null,
-        //respUserId: this.selectedRespUser ? Number(this.selectedRespUser) : null
+        department_id: this.departmentId,
       };
       this.planService.createWorkPlanReport(data).then(res => {
         this.emitter.emit("isReportCreated", true);

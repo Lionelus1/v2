@@ -1,7 +1,6 @@
 <template>
   <div>
     <div class="col-12" v-if="!loading">
-      <!-- {{ plan.doc_info.docHistory.stateId }} -->
       <div class="card"
            v-if="isPlanApproved && (isPlanCreator || (isApproval || isApproved)) && !(plan.doc_info.docHistory.stateId === 2)">
         <Button v-if="isPlanCreator && plan" :label="$t('common.action.reApprove')" icon="pi pi-check"
@@ -24,12 +23,8 @@
       <div class="card">
         <h5><TitleBlock :title="plan.work_plan_name" :show-back-button="true" />&nbsp;
          <span :class="'status-badge status-' + plan.doc_info.docHistory.stateId" style="position: relative; top: -3px;">
-         <!-- {{ plan.doc_info.docHistory.stateEn }} -->
          {{ getDocStatus(plan.doc_info.docHistory.stateEn) }}
-         <!-- $i18n.locale === "kz" ? plan.status.name_kk : $i18n.locale === "ru" ? plan.status.name_ru : plan.status.name_en -->
           </span></h5>
-        <!--        <WorkPlanApproveStep style="height: 200px" now-step="1" direction="vertical" :step-list="approvals" />-->
-        <!--        <WorkPlanApproveStatus :options="approvals"></WorkPlanApproveStatus>-->
         <Timeline :value="approvals">
           <template #content="slotProps">
             <div v-for="(item, index) of slotProps.item" :key="index">
@@ -42,8 +37,6 @@
         </Timeline>
       </div>
       <div class="card">
-        <!--        <object src="#toolbar=0" style="width: 100%; height: 1000px" v-if="source" type="application/pdf"
-                        :data="sourceb64"></object>-->
         <embed :src="sourceb64" style="width: 100%; height: 1000px" v-if="sourceb64" type="application/pdf"/>
       </div>
     </div>
@@ -182,7 +175,7 @@ export default {
             this.isPlanCreator = true;
           }
           this.getFile();
-          this.getSignatures();
+          //this.getSignatures();
           this.getWorkPlanApprovalUsers();
         }
         this.loading = false;
@@ -225,26 +218,27 @@ export default {
         }
       });
     },
-    getSignatures() {
-      let data = {doc_id: this.plan.doc_id}
-      this.planService.getSignatures(data).then(res => {
-        if (res.data) {
-          this.signatures = res.data;
-          const signUser = res.data.find(x => x.userId === this.loginedUserId);
-          if (signUser && signUser.signature && signUser.signature !== '') {
-            this.isCurrentUserApproved = true;
-          }
-          console.log(this.signatures)
-        }
-      }).catch(error => {
-        console.log(error)
-        this.$toast.add({
-          severity: 'error',
-          summary: error,
-          life: 3000
-        });
-      })
-    },
+    // getSignatures() {
+    //   let data = {doc_id: this.plan.doc_id}
+    //   this.planService.getSignatures(data).then(res => {
+    //     if (res.data) {
+    //       this.signatures = res.data;
+    //       const signUser = res.data.find(x => x.userId === this.loginedUserId);
+    //       if (signUser && signUser.signature && signUser.signature !== '') {
+    //         this.isCurrentUserApproved = true;
+    //       }
+    //       console.log(this.signatures)
+    //     }
+    //   }).catch(error => {
+    //     console.log(error)
+    //     this.$toast.add({
+    //       severity: 'error',
+    //       summary: error,
+    //       life: 3000
+    //     });
+    //   })
+    // },
+
     init() {
       const currentUser = this.approval_users.findIndex(x => x.user.id === this.loginedUserId);
       const last = this.approval_users?.at(-1);
@@ -337,7 +331,7 @@ export default {
             life: 3000,
           });
           this.getPlan();
-          this.getSignatures();
+          //this.getSignatures();
           this.getWorkPlanApprovalUsers();
         }
       }).catch(error => {

@@ -1,10 +1,9 @@
 <template>
-  <!-- {{ plan.doc_info.docHistory.stateId }} -->
   <div class="col-12">
     <h3 v-if="plan">
       <TitleBlock :title="plan.work_plan_name" :show-back-button="true"/>
     </h3>
-    <div class="card" v-if="plan && plan.reject_history && isRejected && isPlanCreator">
+    <div class="card" v-if="plan && plan.reject_history && isRejected">
       <div class="p-fluid">
         <div class="field">
           <label>{{ $t('common.state') }}:</label>
@@ -36,35 +35,29 @@
       </div>
     </div>
     <div class="card" v-if="plan">
-      <Button v-if="((isPlanCreator || isCreator || isEventsNull) && !isFinish)"
-              :label="$t('common.add')" icon="pi pi-plus" @click="showDialog(dialog.add)"
+      <Button v-if="((isPlanCreator || isEventsNull) && !isFinish)" :label="$t('common.add')" icon="pi pi-plus" @click="showDialog(dialog.add)"
               class="p-button-sm ml-2"/>
-      <Button v-if="plan && plan.doc_info && plan.doc_info?.docHistory && (plan.doc_info?.docHistory?.stateId === 1 || plan.doc_info?.docHistory?.stateId === 4) && isPlanCreator && isFinish"
-          type="button" icon="pi pi-send" class="p-button-sm p-button-outlined ml-2"
-          :label="$t('common.action.sendToApprove')" @click="showDialog(dialog.planApprove)"></Button>
-      <Button v-if="plan && isPlanCreator && !isFinish" :label="$t('common.complete')" icon="pi pi-check" @click="finish"
-              class="p-button-sm p-button-success ml-2"/>
-      <Button v-if="isFinish && plan.doc_info && plan.doc_info.docHistory && !(plan.doc_info?.docHistory?.stateId === 1 || plan.doc_info?.docHistory?.stateId === 4)"
-              :label="$t('workPlan.viewPlan')" icon="pi pi-eye" @click="showDialog(dialog.planView)"
-              class="p-button-sm p-button-outlined ml-2"/>
-      <Button v-if="isFinish && (isApproval || isPlanCreator || isAdmin) && (plan.doc_info?.docHistory?.stateId === 3)" :label="$t('workPlan.reports')"
+      <Button
+          v-if="plan && plan.doc_info && plan.doc_info?.docHistory && (plan.doc_info?.docHistory?.stateId === 1 || plan.doc_info?.docHistory?.stateId === 4) && isPlanCreator && isFinish"
+          type="button" icon="pi pi-send" class="p-button-sm p-button-outlined ml-2" :label="$t('common.action.sendToApprove')"
+          @click="showDialog(dialog.planApprove)"></Button>
+      <Button v-if="plan && isPlanCreator && !isFinish" :label="$t('common.complete')" icon="pi pi-check" @click="confirmFinish"
+              class="p-button-sm p-button-success ml-2" :disabled="!isFinshButtonDisabled"/>
+      <Button
+          v-if="isFinish && plan.doc_info && plan.doc_info.docHistory && !(plan.doc_info?.docHistory?.stateId === 1 || plan.doc_info?.docHistory?.stateId === 4)"
+          :label="$t('workPlan.viewPlan')" icon="pi pi-eye" @click="showDialog(dialog.planView)" class="p-button-sm p-button-outlined ml-2"/>
+      <Button v-if="isFinish && (isApproval || isPlanCreator || isAdmin) && (plan.doc_info?.docHistory?.stateId === 3 || oldPlan)" :label="$t('workPlan.reports')"
               @click="navigateToReports" class="p-button-sm p-button-outlined ml-2"/>
       <Button v-if="isFinish && isPlanCreator && (plan.doc_info?.docHistory?.stateId === 3) && isSciencePlan" :label="$t('workPlan.generateAct')"
               @click="generateScienceReport" class="p-button-sm p-button-outlined ml-2"/>
-      <!--      <WorkPlanReportApprove v-if="isFinish && isPlanCreator && (plan.doc_info.docHistory.stateId === 3) && (plan.plan_type && plan.plan_type.code === Enum.WorkPlanTypes.Science)" :label="$t('workPlan.generateAct')"-->
-      <!--                             :doc-id="report.doc_id" :report="report_id"></WorkPlanReportApprove>-->
-
-      <Button v-if="isSciencePlan && scienceDocs && scienceDocs.some(e => e.docType === docEnum.DocType.Contract)" :label="$t('contracts.contract')" class="p-button-sm p-button-outlined ml-2" icon="fa-solid fa-download"
-              @click="downloadContract('contract')"/>
-      <Button v-if="isSciencePlan && scienceDocs && scienceDocs.some(e => e.docType === docEnum.DocType.RelatedDoc)" :label="$t('common.additionalInfo')" class="p-button-sm p-button-outlined ml-2" icon="fa-solid fa-download"
-              @click="downloadContract('additional')"/>
+      <Button v-if="isSciencePlan && scienceDocs && scienceDocs.some(e => e.docType === docEnum.DocType.Contract)" :label="$t('contracts.contract')"
+              class="p-button-sm p-button-outlined ml-2" icon="fa-solid fa-download" @click="downloadContract('contract')"/>
+      <Button v-if="isSciencePlan && scienceDocs && scienceDocs.some(e => e.docType === docEnum.DocType.RelatedDoc)" :label="$t('common.additionalInfo')"
+              class="p-button-sm p-button-outlined ml-2" icon="fa-solid fa-download" @click="downloadContract('additional')"/>
     </div>
     <div class="card" v-if="plan">
-
-      <TreeTable ref="workplantreetable" class="p-treetable-sm" :value="data" :lazy="true" :loading="loading" @nodeExpand="onExpand"
-                 scrollHeight="flex"
-                 responsiveLayout="scroll" :resizableColumns="true" columnResizeMode="fit" showGridlines :paginator="true" :rows="10"
-                 :total-records="total"
+      <TreeTable ref="workplantreetable" class="p-treetable-sm" :value="data" :lazy="true" :loading="loading" @nodeExpand="onExpand" scrollHeight="flex"
+                 responsiveLayout="scroll" :resizableColumns="true" columnResizeMode="fit" showGridlines :paginator="true" :rows="10" :total-records="total"
                  @page="onPage($event)">
         <template #header>
           <div class="flex justify-content-between align-items-center">
@@ -83,8 +76,7 @@
                 </div>
                 <div class="field">
                   <label for="status-filter">{{ $t('common.status') }}</label>
-                  <Dropdown v-model="filters.status.value" optionValue="" :options="statuses" :placeholder="$t('common.select')"
-                            class="p-column-filter"
+                  <Dropdown v-model="filters.status.value" optionValue="" :options="statuses" :placeholder="$t('common.select')" class="p-column-filter"
                             :showClear="true">
                     <template #value="slotProps">
                       <span v-if="slotProps.value" :class="'customer-badge status-' + slotProps.value.id">
@@ -107,9 +99,6 @@
                 <div class="field">
                   <label>{{ $t('cafedra.responsible') }}</label>
                   <FindUser v-model="filters.author.value" :max="1" :editMode="false"/>
-                  <!--                  <Dropdown v-model="filters.department.value" :options="departments" optionLabel="department_name"
-                                              optionValue="department_id" :filter="true" :show-clear="true"
-                                              :placeholder="$t('common.select')" />-->
                 </div>
                 <div class="field">
                   <Button :label="$t('common.clear')" @click="clearFilter" class="mb-2 p-button-outlined"/>
@@ -121,7 +110,7 @@
         </template>
         <template #empty> {{ $t('common.noData') }}</template>
         <template #loading> {{ $t('common.loading') }}</template>
-        <Column field="event_name" :header="$t('workPlan.eventName')" :expander="true" style="min-width:300px">
+        <Column field="event_name" :header="$t('workPlan.eventName')" :expander="true" style="min-width:300px;width: 30%;">
           <template #body="{ node }">
             <span><i class="fa-solid fa-folder"></i>&nbsp;{{ node.event_name }}</span>
           </template>
@@ -131,7 +120,7 @@
             {{ formatDateMoment(node.start_date) }}
           </template>
         </Column>
-        <Column field="end_date" :header="$t('common.startDate')" v-if="isSciencePlan" style="max-width: 100px">
+        <Column field="end_date" :header="$t('common.endDate')" v-if="isSciencePlan" style="max-width: 100px">
           <template #body="{ node }">
             {{ formatDateMoment(node.end_date) }}
           </template>
@@ -164,9 +153,9 @@
         <Column field="fullName" :header="isOperPlan ? $t('workPlan.summary') : $t('workPlan.approvalUsers')">
           <template #body="{ node }">
             <div v-if="node.user && node.user.length > 2">
-              <Button type="button" @click="showRespUsers" class="p-button-rounded" icon="fa-solid fa-eye" label=""/>
-              <OverlayPanel ref="op">
-                <p v-for="item in node.user" :key="item.id">{{ item.user.fullName }}</p>
+              <Button type="button" @click="showRespUsers($event, node)" class="p-button-text" icon="fa-solid fa-eye fa-xl" label=""/>
+              <OverlayPanel ref="op" @hide="closeOverlay">
+                <p v-for="item in selectedEvent.user" :key="item.id">{{ item.user.fullName }}</p>
               </OverlayPanel>
             </div>
             <div v-else>
@@ -179,12 +168,14 @@
             {{ node.supporting_docs }}
           </template>
         </Column>
-        <Column field="result" :header="plan && plan.is_oper ? $t('common.additionalInfo') : $t('common.result')">
+        <Column field="result" :header="isOperPlan ? $t('common.additionalInfo') : $t('common.result')" style="width: 15%;">
           <template #body="{ node }">
-            <div v-if="node.result && node.result.length > 150">
-              <Button type="button" @click="toggle('event-final-result', $event)" class="p-button-rounded" icon="fa-solid fa-eye" label=""/>
-              <OverlayPanel ref="event-final-result" :showCloseIcon="true" style="width: 450px" :breakpoints="{ '960px': '75vw' }">
-                <div>{{ node.result }}</div>
+            <div v-if="node.result && node.result.length > 100">
+              {{ node.result_short }}
+              <!--              <Button type="button" @click="toggle('event-final-result', $event)" class="p-button-text" icon="fa-solid fa-eye" label="" />-->
+              <a href="javascript:void(0);" @click="toggle('event-final-result', $event, node)">{{ $t('common.showMore').toLowerCase() }}</a>
+              <OverlayPanel ref="event-final-result" :showCloseIcon="true" style="width: 450px" :breakpoints="{ '960px': '75vw' }" @hide="closeOverlay">
+                <div>{{ selectedEvent.result }}</div>
               </OverlayPanel>
             </div>
             <div v-else>
@@ -203,22 +194,10 @@
         <Column field="actions" header="">
           <template #body="{ node }">
             <div>
-              <!--              <Button v-if="isPlanCreator && node.status.work_plan_event_status_id == 8" @click="updateConfirmEvent(node.work_plan_event_id)"-->
-              <!--                      class="mr-2" icon="pi pi-check" label=""-->
-              <!--                      severity="success"/>-->
-              <!--              (parseInt(node.quarter.String) === currentQuarter || parseInt(node.quarter.String) === 5)-->
-              <ActionButton :items="initItems" :show-label="true" @toggle="actionsToggle(node)" />
+              <ActionButton :items="initItems" :show-label="true" @toggle="actionsToggle(node)"/>
             </div>
           </template>
         </Column>
-        <!-- <Column field="actions" header="" class="text-right">
-          <div>
-            <template #body="{ node }">
-              <ActionButton :show-label="true" :items="initItems" @toggle="toggle2(node)" />
-            </template>
-          </div>
-        </Column> -->
-
       </TreeTable>
     </div>
   </div>
@@ -227,19 +206,18 @@
     <DocSignaturesInfo :docIdParam="plan.doc_id" :isInsideSidebar="true" @sentToRevision="rejectPlan($event)"></DocSignaturesInfo>
   </Sidebar>
 
-  <Sidebar v-model:visible="isShowPlanExecute" position="right" style="overflow-y: scroll; width: 50%;"
-           @hide="closePlanExecuteSidebar">
+  <Sidebar v-model:visible="isShowPlanExecute" position="right" style="overflow-y: scroll; width: 50%;" @hide="closePlanExecuteSidebar">
     <WorkPlanEventResult v-if="isShowPlanExecute && selectedEvent" :result-id="selectedEvent.work_plan_event_id"/>
   </Sidebar>
 
-  <work-plan-event-add v-if="dialog.add.state" :visible="dialog.add.state" :data="selectedEvent" :items="selectedEvent ? selectedEvent.children : null" :isMain="!!selectedEvent"
-                       :plan-data="plan" @hide="hideDialog(dialog.add)" />
-  <work-plan-event-edit-modal v-if="dialog.edit.state" :visible="dialog.edit.state" :planData="plan"
-                              :event="selectedEvent" @hide="hideDialog(dialog.edit)" />
+  <work-plan-event-add v-if="dialog.add.state" :visible="dialog.add.state" :data="selectedEvent" :items="selectedEvent ? selectedEvent.children : null"
+                       :isMain="!!selectedEvent" :plan-data="plan" @hide="hideDialog(dialog.add)"/>
+  <work-plan-event-edit-modal v-if="dialog.edit.state" :visible="dialog.edit.state" :planData="plan" :event="selectedEvent" @hide="hideDialog(dialog.edit)"/>
   <WorkPlanReportApprove v-if="showReportModal && scienceReport && plan" :approval-stages="approval_users" :visible="showReportModal && scienceReport"
                          :doc-id="scienceReport.doc_id" :report="scienceReport" :plan="plan"></WorkPlanReportApprove>
-  <work-plan-approve v-if="dialog.planApprove.state" :visible="dialog.planApprove.state"
-      :plan="plan" :events="data" @hide="hideDialog(dialog.planApprove)" @isSent="planSentToApprove"></work-plan-approve>
+  <work-plan-approve v-if="dialog.planApprove.state" :visible="dialog.planApprove.state" :approval-stages="planApprovalStage" :plan="plan" :events="data"
+                     @hide="hideDialog(dialog.planApprove)"
+                     @isSent="planSentToApprove"></work-plan-approve>
 </template>
 
 <script>
@@ -399,7 +377,9 @@ export default {
         planView: {
           state: false
         }
-      }
+      },
+      planApprovalStage: null,
+      oldPlan: false
     }
   },
   created() {
@@ -474,6 +454,7 @@ export default {
     },
     onExpand(node) {
       this.lazyParams.parent_id = Number(node.work_plan_event_id)
+      this.lazyParams.rows = 0
       this.parentNode = node
       this.getEventsTree(node)
     },
@@ -505,10 +486,23 @@ export default {
               if (e.creator_id === this.loginedUserId && e.parent_id == null) {
                 this.isCreator = true;
               }
+              if (e.result && e.result.length > 100) {
+                e.result_short = `${e.result.substring(0, 100)}...`
+              }
             });
           }
         } else {
           parent.children = res.data.items;
+          if (parent.children) {
+            parent.children.map(e => {
+              if (e.creator_id === this.loginedUserId) {
+                this.isCreator = true;
+              }
+              if (e.result && e.result.length > 100) {
+                e.result_short = `${e.result.substring(0, 100)}...`
+              }
+            });
+          }
           this.total = 0;
         }
         // this.getWorkPlanApprovalUsers();
@@ -559,9 +553,8 @@ export default {
     getPlan() {
       this.planService.getPlanById(this.work_plan_id).then(res => {
         this.plan = res.data;
-        if (this.plan && this.plan.is_finish) {
-          this.isFinish = this.plan.is_finish;
-        }
+        this.oldPlan = new Date(this.plan.create_date).getFullYear() < new Date().getFullYear()
+        this.isFinish = this.plan.is_finish;
         this.isRejected = this.plan.is_reject;
         if (this.plan && this.plan.user.id === this.loginedUserId) {
           this.isPlanCreator = true;
@@ -571,6 +564,60 @@ export default {
           //this.$router.push('/work-plan')
         }
         if (this.isSciencePlan) {
+          this.planApprovalStage = [
+            {
+              stage: 1,
+              users: [],
+              titleRu: "Научный руководитель проекта",
+              titleKz: "Жобаның ғылыми жетекшісі",
+              titleEn: "Project Scientific Director",
+              certificate: {
+                namekz: "Жеке тұлғаның сертификаты",
+                nameru: "Сертификат физического лица",
+                nameen: "Certificate of an individual",
+                value: "individual"
+              }
+            },
+            {
+              stage: 2,
+              users: [],
+              titleRu: "Ответственные от управления научных проектов",
+              titleKz: "Ғылыми жобалар басқармасынан жауапты тұлға",
+              titleEn: "Employee of Scientific Projects Management",
+              certificate: {
+                namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+                nameru: "Для внутреннего документооборота (ГОСТ)",
+                nameen: "For internal document management (GOST)",
+                value: "internal"
+              },
+            },
+            {
+              stage: 3,
+              users: [],
+              titleRu: "Начальник Управления научных проектов",
+              titleKz: "Ғылыми жобалар бөлімінің меңгерушісі",
+              titleEn: "Head of the Scientific Projects Department",
+              certificate: {
+                namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+                nameru: "Для внутреннего документооборота (ГОСТ)",
+                nameen: "For internal document management (GOST)",
+                value: "internal"
+              },
+            },
+            {
+              stage: 4,
+              users: [],
+              titleRu: "Директор Департамента науки",
+              titleKz: "Ғылым департаментінің директоры",
+              titleEn: "Director of the Department of Science",
+              certificate: {
+                namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+                nameru: "Для внутреннего документооборота (ГОСТ)",
+                nameen: "For internal document management (GOST)",
+                value: "internal"
+              },
+            }
+          ];
           this.getRelatedFiles()
         }
         this.isPlanApproved = this.plan.doc_info?.docHistory.stateEn == "approved"
@@ -592,6 +639,18 @@ export default {
       }).catch(_ => {
         this.uploading = false;
       })
+    },
+    confirmFinish() {
+      this.$confirm.require({
+        message: this.$t("common.confirmation"),
+        header: this.$t("common.confirm"),
+        icon: 'pi pi-info-circle',
+        acceptClass: 'p-button-rounded p-button-success',
+        rejectClass: 'p-button-rounded p-button-danger',
+        accept: () => {
+          this.finish();
+        }
+      });
     },
     finish() {
       this.planService.finishEvent(this.work_plan_id).then(res => {
@@ -650,8 +709,7 @@ export default {
       });
     },
     isUserResp(data) {
-      if (Array.isArray(data) && data.length !== 1) return false;
-
+      if (!Array.isArray(data)) return false;
       return data.some(e => {
         return e.id === this.loginedUserId;
       });
@@ -693,14 +751,23 @@ export default {
       }
       return res;
     },
-    showRespUsers(event) {
+    showRespUsers(event, node) {
+      if (node) {
+        this.selectedEvent = node
+      }
       this.$refs.op.toggle(event);
+    },
+    closeOverlay() {
+      this.selectedEvent = null
     },
     formatDateMoment(date, showHour) {
       if (showHour) return moment(new Date(date)).utc().format("DD.MM.YYYY HH:mm:ss")
       return moment(new Date(date)).utc().format("DD.MM.YYYY")
     },
-    toggle(ref, event) {
+    toggle(ref, event, node) {
+      if (node) {
+        this.selectedEvent = node;
+      }
       this.$refs[ref].toggle(event);
     },
     clearFilter() {
@@ -793,9 +860,9 @@ export default {
           {
             stage: 2,
             users: [],
-            titleRu: "Руководитель проекта",
-            titleKz: "Жоба жетекшісі",
-            titleEn: "Project Manager",
+            titleRu: "Научный руководитель проекта",
+            titleKz: "Жобаның ғылыми жетекшісі",
+            titleEn: "Project Scientific Director",
             certificate: {
               namekz: "Жеке тұлғаның сертификаты",
               nameru: "Сертификат физического лица",
@@ -806,9 +873,9 @@ export default {
           {
             stage: 3,
             users: [],
-            titleRu: "Ответственные за заключение договоров и сдачу актов от Сектора поддержки научных проектов",
-            titleKz: "Ғылыми жобаларды сүйемелдеу секторынан келісім-шарттар жасауға және актілерді ұсынуға жауапты",
-            titleEn: "Responsible for concluding contracts and submitting acts from the Scientific Projects Support Sector",
+            titleRu: "Ответственные от управления научных проектов",
+            titleKz: "Ғылыми жобалар басқармасынан жауапты тұлға",
+            titleEn: "Employee of Scientific Projects Management",
             certificate: {
               namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
               nameru: "Для внутреннего документооборота (ГОСТ)",
@@ -865,9 +932,8 @@ export default {
         work_plan_name: this.plan.work_plan_name
       };
       this.planService.rejectPlan(data).then(res => {
-        if (res.data.is_success) {
-          this.loading = false;
-        }
+        this.loading = false;
+        this.hideDialog(this.dialog.planView)
         this.getPlan();
         this.getEventsTree(null);
       }).catch(error => {
@@ -907,6 +973,7 @@ export default {
       URL.revokeObjectURL(link.href);
     },
     actionsToggle(node) {
+      this.isCreator = node.creator_id === this.loginedUserId
       this.selectedEvent = node
     },
     showDialog(dialog) {
@@ -944,7 +1011,7 @@ export default {
         {
           label: this.$t('common.add'),
           icon: 'fa-solid fa-plus',
-          disabled: !(this.selectedEvent && (this.isPlanCreator || this.isUserResp(this.selectedEvent.user)) && !this.isPlanSentApproval && !this.isFinish),
+          disabled: !(this.selectedEvent && (this.isPlanCreator || this.isCreator || this.isUserResp(this.selectedEvent.user)) && !this.isFinish),
           visible: !this.isFinish,
           command: () => {
             this.showDialog(this.dialog.add)
@@ -953,7 +1020,7 @@ export default {
         {
           label: this.$t('common.edit'),
           icon: 'fa-solid fa-pen',
-          disabled: !((this.isPlanCreator || this.isCreator) && !this.isPlanSentApproval && !this.isFinish),
+          disabled: !((this.isPlanCreator || this.isCreator) && !this.isFinish),
           visible: !this.isFinish,
           command: () => {
             this.showDialog(this.dialog.edit)
@@ -962,7 +1029,7 @@ export default {
         {
           label: this.$t('common.delete'),
           icon: 'fa-solid fa-trash',
-          disabled: !(this.isPlanCreator && !this.isPlanSentApproval && !this.isFinish),
+          disabled: !((this.isPlanCreator || this.isCreator) && !this.isFinish),
           visible: !this.isFinish,
           command: () => {
             this.remove_event()
@@ -976,6 +1043,9 @@ export default {
     isOperPlan() {
       return this.plan && ((this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Oper) || this.plan.is_oper)
     },
+    isFinshButtonDisabled() {
+      return this.data && this.data.length > 0;
+    }
   }
 }
 </script>

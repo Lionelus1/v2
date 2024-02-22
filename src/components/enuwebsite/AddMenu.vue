@@ -20,7 +20,7 @@
                  :class="{ 'p-invalid': !formData.menu_title_en && submitted }"/>
       <small v-show="!formData.menu_title_en && submitted" class="p-error">{{ $t("smartenu.titleEnInvalid") }}</small>
     </div>
-    <div class="field" v-if="!menu_id">
+    <div class="field" v-if="!menu_id && currentMenu.parent_id">
       <label>{{ $t('web.menuParent') }}</label>
       <TreeSelect v-model="selectedTreeMenu" :options="menus" :placeholder="$t('common.choose')"
                   @node-expand="expandMenuTreeSelect" @nodeSelect="menuTreeSelect"></TreeSelect>

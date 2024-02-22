@@ -1,32 +1,34 @@
 <template>
-    <h3>{{ $t("smartenu.catalogNormDoc") }}</h3>
-  <div class="card mb-0 flex flex-column" :style="{height: innerHeightInRem.toString()+'rem',
-    minHeight: '300px'}">
+  <ProgressSpinner v-if="loading" class="progress-spinner" strokeWidth="5"/>
+  <div class="flex flex-row mb-3">
+    <h3 class="m-0">{{ $t("smartenu.catalogNormDoc") }}</h3>
+  </div>
+  <BlockUI :blocked="loading" class="card">
     <Toolbar class="m-0 p-1">
       <template #start>
         <div v-if="findRole(null, 'normative_docs_admin')">
-          <Button @click="open('folderUploadDialog')" :disabled="!tooltip.folder" 
-            class="p-button-text p-button-info p-1">
+          <Button @click="open('folderUploadDialog')" :disabled="!tooltip.folder"
+                  class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-folder-plus fa-xl" />
           </Button>
-          <Button @click="open('folderUploadDialog', selectedNode)" :disabled="!tooltip.folder || selectedNode.parentID == null || loginedUser.userID != selectedNode.ownerId" 
-            class="p-button-text p-button-info p-1">
+          <Button @click="open('folderUploadDialog', selectedNode)" :disabled="!tooltip.folder || selectedNode.parentID == null || loginedUser.userID != selectedNode.ownerId"
+                  class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-square-pen fa-xl" />
           </Button>
-          <Button @click="deleteFolder()" :disabled="!tooltip.folder || selectedNode.parentID == null || loginedUser.userID != selectedNode.ownerId" 
-            class="p-button-text p-button-info p-1">
+          <Button @click="deleteFolder()" :disabled="!tooltip.folder || selectedNode.parentID == null || loginedUser.userID != selectedNode.ownerId"
+                  class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-folder-minus fa-xl" />
           </Button>
-          <Button v-if="tooltip.folder && !selectedNode.hidden && selectedNode.ownerId === loginedUser.userID" 
-            @click="hideFolder()" :disabled="!tooltip.folder || selectedNode.parentID == null" 
-            class="p-button-text p-button-info p-1">
+          <Button v-if="tooltip.folder && !selectedNode.hidden && selectedNode.ownerId === loginedUser.userID"
+                  @click="hideFolder()" :disabled="!tooltip.folder || selectedNode.parentID == null"
+                  class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-eye-slash fa-xl" />
           </Button>
           <Button v-if="tooltip.folder && selectedNode.hidden && selectedNode.ownerId === loginedUser.userID"
-            @click="showFolder()" :disabled="selectedNode.parentID == null" class="p-button-text p-button-info p-1">
+                  @click="showFolder()" :disabled="selectedNode.parentID == null" class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-eye fa-xl" />
           </Button>
-          <!-- <Button @click="open('folderMoveDialog')" :disabled="!tooltip.folder || selectedNode.parentID == null 
+          <!-- <Button @click="open('folderMoveDialog')" :disabled="!tooltip.folder || selectedNode.parentID == null
             || loginedUser.userID != selectedNode.ownerId" class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-right-left fa-xl" />
           </Button> -->
@@ -34,32 +36,32 @@
       </template>
       <template #end>
         <div v-if="findRole(null, 'normative_docs_admin')">
-          <Button @click="open('fileUploadDialog')" :disabled="!tooltip.folder" 
-            class="p-button-text p-button-info p-1">
+          <Button @click="open('fileUploadDialog')" :disabled="!tooltip.folder"
+                  class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-file-circle-plus fa-xl"/>
           </Button>
-          <Button @click="open('fileUploadDialog', selectedNode)"  :disabled="!tooltip.file || loginedUser.userID != selectedNode.creatorID" 
-            class="p-button-text p-button-info p-1">
+          <Button @click="open('fileUploadDialog', selectedNode)"  :disabled="!tooltip.file || loginedUser.userID != selectedNode.creatorID"
+                  class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-file-pen fa-xl" />
           </Button>
-          <Button @click="deleteFile()" :disabled="!tooltip.file || loginedUser.userID != selectedNode.creatorID" 
-            class="p-button-text p-button-info p-1">
+          <Button @click="deleteFile()" :disabled="!tooltip.file || loginedUser.userID != selectedNode.creatorID"
+                  class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-file-circle-minus fa-xl" />
           </Button>
-          <Button v-if="tooltip.file && !selectedNode.isHidden && loginedUser.userID === selectedNode.creatorID" 
-            @click="hideFile()" class="p-button-text p-button-info p-1">
+          <Button v-if="tooltip.file && !selectedNode.isHidden && loginedUser.userID === selectedNode.creatorID"
+                  @click="hideFile()" class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-eye-slash fa-xl" />
           </Button>
-          <Button v-if="tooltip.file && selectedNode.isHidden && loginedUser.userID === selectedNode.creatorID" 
-            @click="showFile()" class="p-button-text p-button-info p-1">
+          <Button v-if="tooltip.file && selectedNode.isHidden && loginedUser.userID === selectedNode.creatorID"
+                  @click="showFile()" class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-eye fa-xl" />
           </Button>
-          <!-- <Button @click="toggle()" aria:haspopup="true" aria-controls="overlay_panel" class="p-button-text p-button-info p-1">
+          <Button @click="toggle" aria:haspopup="true" aria-controls="overlay_panel" class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-search fa-xl" />
-          </Button> -->
+          </Button>
         </div>
         <div>
-          <Button @click="downloadFile()" :disabled="!tooltip.file" class="p-button-text p-button-info p-1">
+          <Button @click="downloadFile()" :disabled="!tooltip.file && !currentDocument" class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-file-arrow-down fa-xl" />
           </Button>
         </div>
@@ -67,8 +69,8 @@
     </Toolbar>
     <div class="flex-grow-1" style="height: 300px;">
       <TreeTable :value="catalog" :expandedKeys="expandedKeys" selectionMode="single" v-model:selectionKeys="selectedNodeKey"
-      :lazy="true" :loading="loading" scrollable scrollHeight="flex" class="p-treetable-sm"
-      @node-select="onNodeSelect($event)" @node-expand="onNodeExpand($event)"  >
+                 :lazy="true" :loading="loading" scrollable scrollHeight="flex" class="p-treetable-sm"
+                 @node-select="onNodeSelect($event)" @node-expand="onNodeExpand($event)"  v-if="!filterApplied">
         <Column :header="$t('common.name')" :expander="true" :pt="{rowToggler: {style: 'flex-shrink: 0;'}}">
           <template #body="slotProps">
             <span v-if="slotProps.node.hidden || slotProps.node.isHidden"><i class="fa-solid fa-eye-slash"></i>&nbsp;{{slotProps.node["name"+$i18n.locale]}}</span>
@@ -76,8 +78,37 @@
           </template>
         </Column>
       </TreeTable>
+      <DataTable :value="documents" dataKey="id" :rows="rows" :totalRecords="total" :first="first"
+                 :paginator="true" :paginatorTemplate="paginatorTemplate" :rowsPerPageOptions="[10, 25, 50]"
+                 :currentPageReportTemplate="currentPageReportTemplate" :lazy="true" :loading="tableLoading"
+                 scrollable scrollHeight="flex" v-model:selection="currentDocument" selectionMode="single"
+                 :rowHover="true" stripedRows class="flex-grow-1" @page="onPage" v-else>
+        <template #empty>
+          {{ this.$t("common.recordsNotFound") }}
+        </template>
+        <Column :header="$t('educomplex.columns.name')" style="min-width: 50px;">
+          <template #body="slotProps">
+            {{ slotProps.data['name'+$i18n.locale] ? slotProps.data['name'+$i18n.locale] : '' }}
+          </template>
+        </Column>
+        <Column :header="$t('educomplex.columns.author')" style="min-width: 150px;">
+          <template #body="slotProps">
+            {{ slotProps.data.author ? getDepartmentName(slotProps.data.author) : '' }}
+          </template>
+        </Column>
+        <Column :header="$t('common.approvedBy')" style="min-width: 50px;">
+          <template #body="slotProps">
+            {{ slotProps.data.approvedBy ? slotProps.data.approvedBy : '' }}
+          </template>
+        </Column>
+        <Column :header="$t('common.approveDate')" style="min-width: 50px;">
+          <template #body="slotProps">
+            {{ slotProps.data.approveDate ? slotProps.data.approveDate : '' }}
+          </template>
+        </Column>
+      </DataTable>
     </div>
-  </div>
+  </BlockUI>
   <!-- панель для фильтра -->
   <OverlayPanel ref="overlay_panel">
     <div class="p-fluid">
@@ -105,8 +136,8 @@
         <PrimeCalendar class="mt-2" v-model="filesFilter.year.value" view="year" dateFormat="yy" />
       </div>
       <div class="field">
-        <Button :label="$t('common.search')" @click="getFilesByFilter()" class="mt-2" />
-        <Button v-if="filterApplied != null" :label="$t('common.filterReset')" @click="getFolders()" class="mt-2 p-button-warning" />
+        <Button :label="$t('common.search')" @click="filterApplied = true; getFilesRaw()" class="mt-2" />
+        <Button v-if="filterApplied" :label="$t('common.filterReset')" @click="filterApplied = false; currentDocument = null;" class="mt-2 p-button-warning" />
       </div>
     </div>
   </OverlayPanel>
@@ -135,7 +166,6 @@
       <Button label="Yes" icon="pi pi-check" @click="moveFolder" autofocus />
     </template>
   </Dialog>
-  
 </template>
 <script>
 import axios from 'axios';
@@ -147,6 +177,8 @@ import Enum from "@/enum/docstates/index"
 import DepartmentList from "@/components/smartenu/DepartmentList.vue"
 import PostFolder from "@/components/documents/PostFolder.vue"
 import PostFile from "@/components/documents/PostFile.vue"
+import {DocService} from "@/service/doc.service";
+import {getLongDateString, getShortDateString} from "@/helpers/helper";
 
 export default {
   name: 'NormativeDocuments',
@@ -157,9 +189,19 @@ export default {
   emits: [],
   data() {
     return {
-      innerHeightInRem: 0,
-      loading: false,
+      service: new DocService(),
+      Enum: Enum,
+      loginedUser: {},
+      paginatorTemplate: "FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink JumpToPageDropdown CurrentPageReport RowsPerPageDropdown",
+      currentPageReportTemplate: this.$t('common.showingRecordsCount', {
+        first: '{first}',
+        last: '{last}',
+        totalRecords: '{totalRecords}',
+      }),
+
       fileUpload: false,
+      loading: false,
+      tableLoading: false,
 
       visibility: {
         folderUploadDialog: false,
@@ -172,13 +214,19 @@ export default {
         file: false,
       },
 
-      loginedUser: {},
       catalog: [],
       expandedKeys: {},
       selectedNode: null,
       selectedNodeKey: null,
       selectedMoveNode: null,
       newNode: null,
+
+      documents: [],
+      currentDocument: null,
+      total: 0,
+      first: 0,
+      page: 0,
+      rows: 10,
 
       filterApplied: false,
       filesFilter: {
@@ -203,17 +251,18 @@ export default {
       ],
     }
   },
-  mounted() { 
+  mounted() {
+    this.$emit('apply-flex', true);
+
     this.loginedUser = JSON.parse(window.localStorage.getItem("loginedUser"));
     this.getFolders();
-
-    this.onResize();
-    window.addEventListener('resize', this.onResize);
   },
   beforeUnmount() {
-    window.removeEventListener('resize', this.onResize);
+    this.$emit('apply-flex', false);
   },
   methods: {
+    getLongDateString: getLongDateString,
+    getShortDateString: getShortDateString,
     findRole: findRole,
     showMessage(msgtype, message, content) {
       this.$toast.add({
@@ -225,9 +274,6 @@ export default {
     },
     toggle(event) {
       this.$refs.overlay_panel.toggle(event);
-    },
-    onResize() {
-      this.innerHeightInRem = (window.innerHeight - 50 - 45) / parseFloat(getComputedStyle(document.documentElement).fontSize);
     },
     open(name, node = null) {
       if (node) {
@@ -359,12 +405,8 @@ export default {
       this.loading = true;
 
       axios.post(smartEnuApi + '/documents', {
-        sourceType: null,
         docType: Enum.DocType.NormativeDoc,
-        lang: null,
-        templateId: null,
         folderId: parent.id,
-        departmentId: null,
         page: null,
         rows: null,
       }, { 
@@ -713,20 +755,22 @@ export default {
     },
     downloadFile() {
       if (!this.selectedNode || this.selectedNode.nodeType !== 'file') {
-        return
+        if (!this.currentDocument) {
+          return
+        }
       }
 
       this.loading = true
 
       axios.post(smartEnuApi + '/downloadFile', {
-        filePath: this.selectedNode.filePath
+        filePath: this.selectedNode ? this.selectedNode.filePath : this.currentDocument.filePath,
       }, {
         headers: getHeader()
       }).then(res => {
         let link = document.createElement("a");
         link.href = "data:application/octet-stream;base64," + res.data;
-        link.setAttribute("download", this.selectedNode.name);
-        link.download = this.selectedNode.name;
+        link.setAttribute("download", this.selectedNode ? this.selectedNode.name : this.currentDocument.name);
+        link.download = this.selectedNode ? this.selectedNode.name : this.currentDocument.name;
         link.click();
         URL.revokeObjectURL(link.href);
 
@@ -744,10 +788,90 @@ export default {
         this.loading = false
       })
     },
+    getFilesRaw() {
+      this.tableLoading = true;
+
+      this.selectedNode = null;
+      this.tooltip = {
+        file: false,
+        folder: false
+      }
+
+      this.service.getDocumentsV2({
+        page: this.page,
+        rows: this.rows,
+        docType: this.Enum.DocType.NormativeDoc,
+        departmentId: this.filterApplied && this.filesFilter.author.value ? this.filesFilter.author.value.id : null,
+        filter: {
+          name: this.filterApplied ? this.filesFilter.name.value : null,
+          approvedDate: this.filterApplied ? this.filesFilter.year : null,
+        },
+      }).then(res => {
+        this.documents = res.data.documents
+        this.total = res.data.total
+        this.currentDocument = null
+
+        this.tableLoading = false
+      }).catch(err => {
+        this.documents = []
+        this.total = 0
+        this.currentDocument = null
+
+        if (err.response && err.response.status == 401) {
+          this.$store.dispatch("logLout")
+        } else if (err.response && err.response.data && err.response.data.localized) {
+          this.showMessage('error', this.$t(err.response.data.localizedPath), null)
+        } else {
+          console.log(err)
+          this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
+        }
+
+        this.tableLoading = false
+      });
+    },
+    getDepartmentName(department) {
+      let name = ''
+
+      if (department.cafedra) {
+        name += this.getDepartmentName(department.cafedra) + '/'
+      }
+
+      if (this.$i18n.locale === 'kz' && department.nameKz.length > 0) {
+        name += department.nameKz
+      } else if (this.$i18n.locale === 'ru' && department.nameRu.length > 0) {
+        name += department.nameRu
+      } else if (this.$i18n.locale === 'en' && department.nameEn.length > 0) {
+        name += department.nameEn
+      } else {
+        name += department.name
+      }
+
+      return name
+    },
+    onPage(event) {
+      this.first = event.first;
+      this.page = event.page;
+      this.rows = event.rows;
+      this.getFilesRaw();
+    },
   }
 }
 </script>
-<style scoped >
+<style scoped>
+.progress-spinner {
+  position: absolute;
+  top: 0; bottom: 0; left: 0; right: 0;
+  margin: auto;
+  z-index: 1102;
+}
+.card {
+  flex-grow: 1;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  margin-bottom: 0px;
+}
 :deep(.p-treetable-toggler) {
   flex-shrink: 0;
 }
