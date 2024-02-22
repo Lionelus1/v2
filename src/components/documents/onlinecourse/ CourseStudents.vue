@@ -351,7 +351,7 @@
   const certificate = ref(null)
   const certificateLazyParams = ref({
       page: 0,
-      rows: 10,
+      rows: 50,
       searchText: null,
   })
 
@@ -658,7 +658,7 @@
       courseValidate.value.final_date = course.value.history[0].finalDate === null
       courseValidate.value.hours = (course.value.hours <= 0 && checkedHours.value)
       if (checkedCertificate.value) {
-        courseValidate.value.certificate_template_id = course.value.certificate_template_id === null
+        courseValidate.value.certificate_template_id = course.organizer.certificateTemplateID === null
       } else {
         courseValidate.value.certificate_template_id = false
         course.value.certificate_template_id = null
