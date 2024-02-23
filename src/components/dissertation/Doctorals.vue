@@ -1611,7 +1611,9 @@ export default {
             return
           }
         }
-        fd.append("video_link", this.doctoral.dissertation.video_link)
+        if (this.doctoral.dissertation.video_link) {
+          fd.append("video_link", this.doctoral.dissertation.video_link)
+        }
         fd.append("councilConclusionFile", this.councilConclusionFile)
       }
       this.dissertationService.updateDoctoral(fd).then(_ => {
