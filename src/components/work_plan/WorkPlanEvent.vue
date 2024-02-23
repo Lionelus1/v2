@@ -1008,10 +1008,8 @@ export default {
       this.getEventsTree(this.parentNode)
     },
     canExecuteEvent() {
-      const isDocumentApproved = this.plan.doc_info?.docHistory?.stateId === 3;
       const isStatusValid = [1, 4, 5, 6, 8].includes(this.selectedEvent.status.work_plan_event_status_id);
       return (this.isPlanCreator || this.isUserApproval(this.selectedEvent)) &&
-          isDocumentApproved &&
           isStatusValid;
     },
     uploadFile(event, name) {
@@ -1044,7 +1042,7 @@ export default {
         {
           label: this.$t('common.show'),
           icon: 'fa-solid fa-eye',
-          disabled: !(this.selectedEvent && this.canExecuteEvent),
+          disabled: !(this.selectedEvent && this.plan.doc_info?.docHistory?.stateId === 3 && this.canExecuteEvent),
           visible: this.isFinish,
           command: () => {
             this.openPlanExecuteSidebar()
