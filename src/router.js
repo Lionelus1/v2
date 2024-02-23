@@ -559,6 +559,27 @@ const routes = [
                 component: load('documents/certificates/Template'),
                 beforeEnter: ifAuthenticated,
             },
+
+            {
+                path: '/helpdesk',
+                name: 'HelpDeskComponent',
+                component: load('helpDesk/HelpDeskComponent'),
+                beforeEnter: ifAuthenticated,
+                children: [
+                    {
+                        path: '',
+                        name: 'DeskJournal',
+                        component: load('helpDesk/DeskJournal'),
+                        beforeEnter: ifAuthenticated,
+                    },
+                    {
+                        path: '/request/:uuid',
+                        name: 'Request',
+                        component: load('helpDesk/Request'),
+                        beforeEnter: ifAuthenticated,
+                    }
+                ]
+            },
             {
                 path: '/orgControl',
                 name: 'OrgControl',

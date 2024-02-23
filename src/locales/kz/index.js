@@ -1756,5 +1756,24 @@ export default {
         specialization: 'Мамандандыру',
         groupEP: 'ББ тобы',
         ssdfgsdfg: 'sdfgsdfg',
+    },
+    helpDesk: {
+        title: 'Service Desk',
+        creationTime: 'Құру уақыты',
+        priority: 'Басымдық',
+        responsible: 'Жауапты',
+        application: {
+            applicationName: 'Өтінімдер',
+            requestReason: 'Өтінімді Жолдау',
+            description: 'Сипаттама',
+            contactNumber: 'Байланыс нөмірі',
+            categoryApplication: 'Өтінім санаты',
+            choseAudience: 'Аудиторияны таңдаңыз',
+            selectSpecialist: 'Маманды таңдаңыз',
+            applicationNumber: 'Өтінім нөмірі:',
+            created: 'Құрылды',
+            closed: 'Жабық',
+        },
+
     }
 }

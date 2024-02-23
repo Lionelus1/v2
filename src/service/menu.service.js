@@ -292,6 +292,11 @@ export class MenuService {
                     },
 
                 ]
+            },
+            {
+                label: $t('helpDesk.title'),
+                icon: 'pi pi-spin pi-cog',
+                to: '/helpdesk',
             }
         ]
     }

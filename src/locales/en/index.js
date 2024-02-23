@@ -1743,5 +1743,24 @@ export default {
         specialization: 'Specialization',
         groupEP: 'Group of educational programs',
         ssdfgsdfg: 'sdfgsdfg',
+    },
+    helpDesk: {
+        title: 'Service Desk',
+        creationTime: 'Creation time',
+        priority: 'Priority',
+        responsible: 'Responsible',
+        application: {
+            applicationName: 'Applications',
+            requestReason: 'Sending the Application',
+            description: 'Description',
+            contactNumber: 'Contact number',
+            categoryApplication: 'Application category',
+            choseAudience: 'Choose an audience',
+            selectSpecialist: 'Choose a specialist',
+            applicationNumber: 'Application Number:',
+            created: 'Created',
+            closed: 'Closed',
+        },
+
     }
 }
