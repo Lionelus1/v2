@@ -159,6 +159,7 @@ onBeforeUnmount(() => {
 .scroll-right {
   background: #fff;
   color: black;
+  box-shadow: 0 0 0 5px #fff;
   border: none;
   position: sticky;
   cursor: pointer;
@@ -209,11 +210,11 @@ onBeforeUnmount(() => {
   background: rgba(128, 0, 128, 0.30)!important;
 }
 .button_yellow{
-  color: #FBC02D !important;
-  background: rgba(255, 217, 0, 0.15);
+  color: #000 !important;
+  background: rgba(251, 192, 45, 0.70);
 }
 .button_yellow:hover{
-  background: rgba(255, 217, 0, 0.30)!important;
+  background: rgba(251, 192, 45, 0.90)!important;
 }
 .button_red{
   color: red!important;
