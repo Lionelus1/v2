@@ -38,6 +38,7 @@
 <script>
 import { getHeader, smartEnuApi } from "@/config/config";
 import axios from 'axios';
+
 import Department from "./Department";
 
 export default {
