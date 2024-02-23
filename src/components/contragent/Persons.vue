@@ -205,33 +205,6 @@ export default {
               : FilterMatchMode.EQUALS,
         },
       },
-      menu: [
-        {
-          label: "",
-          icon: "pi pi-fw pi-refresh",
-          command: () => {
-              this.initApiCall();
-          },
-        },
-        {
-          label: this.$t("bank.card"),
-          icon: "pi pi-fw pi-id-card",
-          command: ()=> {},
-        },
-        {
-          label: this.$t("common.contacts"),
-          icon: "pi pi-fw pi-user",
-          command: ()=> {},
-        },
-        {
-          label: this.$t("common.createNew"),
-          icon: "pi pi-fw pi-plus",
-          visible: this.insertMode,
-          command: () => {
-              this.addPerson()
-          }
-        }
-      ],
       localmenu: [{
           label: this.$t("common.activeList"),
           items:[
@@ -441,6 +414,37 @@ export default {
       this.addMode = true
       this.sideVisible = true;
     }
+  },
+  computed: {
+    menu () {
+      return [
+        {
+          label: "",
+          icon: "pi pi-fw pi-refresh",
+          command: () => {
+            this.initApiCall();
+          },
+        },
+        {
+          label: this.$t("bank.card"),
+          icon: "pi pi-fw pi-id-card",
+          command: ()=> {},
+        },
+        {
+          label: this.$t("common.contacts"),
+          icon: "pi pi-fw pi-user",
+          command: ()=> {},
+        },
+        {
+          label: this.$t("common.createNew"),
+          icon: "pi pi-fw pi-plus",
+          visible: this.insertMode,
+          command: () => {
+            this.addPerson()
+          }
+        }
+      ]
+    },
   },
   mounted() {
     this.lazyParams.filters = this.filters;
