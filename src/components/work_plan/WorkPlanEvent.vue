@@ -9,7 +9,7 @@
           <label>{{ $t('common.state') }}:</label>
           <div v-if="plan.doc_info.docHistory">
             <span v-if="plan.status" :class="'customer-badge status-' + plan.doc_info.docHistory.stateEn">{{
-                $t('common.states.'+plan.doc_info.docHistory.stateEn)
+                $t('common.states.' + plan.doc_info.docHistory.stateEn)
               }}</span>
           </div>
         </div>
@@ -54,6 +54,8 @@
               class="p-button-sm p-button-outlined ml-2" icon="fa-solid fa-download" @click="downloadContract('contract')"/>
       <Button v-if="isSciencePlan && scienceDocs && scienceDocs.some(e => e.docType === docEnum.DocType.RelatedDoc)" :label="$t('common.additionalInfo')"
               class="p-button-sm p-button-outlined ml-2" icon="fa-solid fa-download" @click="downloadContract('additional')"/>
+      <Button v-if="isSciencePlan && scienceDocs && !scienceDocs.some(e => e.docType === docEnum.DocType.RelatedDoc)" :label="$t('common.additionalInfo')"
+              class="p-button-sm p-button-outlined ml-2" icon="fa-solid fa-eye" @click="showDialog(dialog.uploadAdditionalFile)"/>
     </div>
     <div class="card" v-if="plan">
       <TreeTable ref="workplantreetable" class="p-treetable-sm" :value="data" :lazy="true" :loading="loading" @nodeExpand="onExpand" scrollHeight="flex"
@@ -210,6 +212,19 @@
     <WorkPlanEventResult v-if="isShowPlanExecute && selectedEvent" :result-id="selectedEvent.work_plan_event_id"/>
   </Sidebar>
 
+  <Dialog v-if="dialog.uploadAdditionalFile.state" v-model:visible="dialog.uploadAdditionalFile.state" :style="{ width: '450px' }"
+          :header="$t('common.additionalInfo')" :modal="true" class="p-fluid">
+    <div class="field">
+      <label>{{ $t('common.doc') }}</label>
+      <CustomFileUpload @upload="uploadFile($event, 'documentFiles')" v-model="documentFiles" :multiple="false" :button="true"/>
+    </div>
+    <template #footer>
+      <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-text"
+              @click="hideDialog(dialog.uploadAdditionalFile)"/>
+      <Button :label="$t('common.save')" icon="pi pi-check" class="p-button-text" @click="uploadRelatedDocs"/>
+    </template>
+  </Dialog>
+
   <work-plan-event-add v-if="dialog.add.state" :visible="dialog.add.state" :data="selectedEvent" :items="selectedEvent ? selectedEvent.children : null"
                        :isMain="!!selectedEvent" :plan-data="plan" @hide="hideDialog(dialog.add)"/>
   <work-plan-event-edit-modal v-if="dialog.edit.state" :visible="dialog.edit.state" :planData="plan" :event="selectedEvent" @hide="hideDialog(dialog.edit)"/>
@@ -235,10 +250,12 @@ import DocEnum from "@/enum/docstates/index"
 import WorkPlanReportApprove from "@/components/work_plan/WorkPlanReportApprove.vue";
 import {DocService} from "@/service/doc.service";
 import ActionButton from "@/components/ActionButton.vue";
+import CustomFileUpload from "@/components/CustomFileUpload.vue";
 
 export default {
   name: "WorkPlanEvent",
   components: {
+    CustomFileUpload,
     WorkPlanReportApprove,
     WorkPlanEventResult,
     WorkPlanEventEditModal,
@@ -376,10 +393,15 @@ export default {
         },
         planView: {
           state: false
+        },
+        uploadAdditionalFile: {
+          state: false
         }
       },
       planApprovalStage: null,
-      oldPlan: false
+      oldPlan: false,
+      documentFiles: null,
+      service: new DocService(),
     }
   },
   created() {
@@ -991,7 +1013,27 @@ export default {
       return (this.isPlanCreator || this.isUserApproval(this.selectedEvent)) &&
           isDocumentApproved &&
           isStatusValid;
-    }
+    },
+    uploadFile(event, name) {
+      this[name] = event.files
+    },
+    uploadRelatedDocs() {
+      const fd = new FormData();
+      if (this.documentFiles) {
+        for (let file of this.documentFiles) {
+          fd.append("document_files[]", file)
+        }
+      }
+      fd.append("workPlanId", this.plan.work_plan_id)
+      this.planService.updatePlanAttachments(fd).then(_ => {
+        this.hideDialog(this.dialog.uploadAdditionalFile)
+        this.getPlan();
+        this.getEventsTree(null);
+      }).catch(_ => {
+        this.$toast.add({severity: "error", summary: this.$t('common.message.uploadError'), life: 3000})
+      })
+
+    },
   },
   /*unmounted() {
     localStorage.removeItem("workPlan");
