@@ -129,8 +129,8 @@ export default{
       if (to.path === '/courses') {
         this.catLazyParams.parentID = null;
       }
-      this.getCourseCategories();
-      this.getCourses();
+      // this.getCourseCategories();
+      // this.getCourses();
     },
   } ,
   computed: {
@@ -151,31 +151,31 @@ export default{
   methods: {
     getCourseCategories() {
       this.loading = true
-          this.service.getCourseCategories(this.catLazyParams).then(response => {
-            if (this.catLazyParams.parentID)
-            {
-              this.category.children = response.data.categories;
-            }
-            else
-            {
-              this.categories = response.data.categories
-              this.total = response.data.total
-            }
-            this.loading = false
-            this.myOptions - this.options
-          }).catch(_=> {
-            this.loading = false
-          });
+      this.service.getCourseCategories(this.catLazyParams).then(response => {
+        if (this.catLazyParams.parentID)
+        {
+          this.category.children = response.data.categories;
+        }
+        else
+        {
+          this.categories = response.data.categories
+          this.total = response.data.total
+        }
+        this.loading = false
+        this.myOptions = this.options
+      }).catch(_=> {
+        this.loading = false
+      });
     },
     getCourses() {
-      this.loading = true,
-          this.service.getCourses(this.courseLazyParams).then(response => {
-            this.courses = response.data.courses
-            this.total = response.data.total
-            this.loading = false
-          }).catch(_=> {
-            this.loading = false
-          });
+      this.loading = true
+      this.service.getCourses(this.courseLazyParams).then(response => {
+        this.courses = response.data.courses
+        this.total = response.data.total
+        this.loading = false
+      }).catch(_=> {
+        this.loading = false
+      });
     },
     getFieldEducation() {
       this.service.getFieldEducation().then(response => {
@@ -193,9 +193,9 @@ export default{
     },
     selectCategory(category) {
       this.$router.push('/catcourses/' + category.id)
-      this.catLazyParams.parentID = category.id
-      this.getCourseCategories();
-      this.getCourses();
+      // this.catLazyParams.parentID = category.id
+      // this.getCourseCategories();
+      // this.getCourses();
     },
     selectFieldEducation(item) {
       this.$router.push('/catcourses/' + item.id)
@@ -203,11 +203,11 @@ export default{
       this.getCourses();
     },
     selectCourse(course) {
-      if(course === 777){
-        this.$router.push('/courses/' + 777)
-      }else {
+      // if(course === 777){
+      //   this.$router.push('/courses/' + 777)
+      // }else {
         this.$router.push('/courses/' + course.id)
-      }
+      // }
     },
     onPage(event) {
       this.courseLazyParams = event

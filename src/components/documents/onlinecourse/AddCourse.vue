@@ -403,6 +403,7 @@ const handleFilter = (event) => {
     getJournal()
   }
 }
+
 const changeLang = (event) => {
   disabledName.value = false
 }
