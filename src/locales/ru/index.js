@@ -1417,7 +1417,8 @@ export default {
         noIssuedCertificates:"Некоторым участникам не были выданы сертификаты. Пожалуйста, выдайте сертификаты перед завершением курса!",
         completeCourse: "Вы уверены, что хотите завершить курс?",
         numberParticipants: "Количество участников",
-        сompletedСourse: "Завершенные курсы"
+        сompletedСourse: "Завершенные курсы",
+        moduleCredits: 'Кредиты'
     },
     roleControl: {
         addSidebar: 'Добавление новой записи',

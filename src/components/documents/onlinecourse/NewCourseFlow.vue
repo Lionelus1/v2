@@ -52,10 +52,11 @@
           <small v-if="courseValidate.final_date" class="p-error">{{ t("common.requiredField") }}</small>
         </div>
         <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-          <label class="mr-2">{{ t('course.moduleHours') }}</label>
+          <label class="mr-2">{{ t('Тип модуля') }}</label>
           <Checkbox v-model="checkedHours" :binary="true" />
-          <InputNumber :placeholder="t('course.moduleHours')" :disabled="!checkedHours" v-model="course.hours" class="mt-2"></InputNumber>
-          <small v-if="courseValidate.hours" class="p-error">{{t('common.requiredField')}}</small>
+          <Dropdown :disabled="!checkedHours" optionValue="id" v-model="course.duration_type.id" :options="durationTypeOptions" :placeholder="t('common.select')" class="mt-2" :optionLabel="['name_'+locale]" />
+          <InputNumber :placeholder="course.duration_type.name && course.duration_type.name === 'hours' ? t('course.moduleHours') : t('course.moduleCredits')" :disabled="!checkedHours" v-model="course.hours" class="mt-2"></InputNumber>
+          <small v-if="courseValidate.hours" class="p-error">{{ t('common.requiredField') }}</small>
         </div>
         <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
           <label class="mr-2">{{ t('course.certificate.certSelect') }}</label>
@@ -109,7 +110,7 @@
     const total = ref(0)
     const course = ref(props.propsCourse)
     const searchText = ref(null)
-    const isModule = ref(false)
+    const selectedDurationType = ref(null)
     const dic_course_type = ref(0)
     const lazyParams = ref(
     {
@@ -167,10 +168,21 @@
         disabled: () => !(course.value.namekz) || !(course.value.nameru) || !(course.value.nameen) ||
             !(course.value.descriptionen) || !(course.value.descriptionru) || !(course.value.descriptionkz) ||
             !(course.value.history && course.value.history[0].startDate) || !(course.value.history && course.value.history[0].finalDate) ||
-            (checkedHours.value && course.value.hours <= 0) || (checkedCertificate.value && course.value.organizer.certificateTemplateID === null)
+            (checkedHours.value && course.value.hours <= 0) || (checkedCertificate.value && course.value.organizer.certificateTemplateID === null) ||
+            !(course.value.duration_type)
       },
     ])
     const certificates = ref([])
+
+    const durationTypeOptions = [
+      {
+        id: 1, name: "hours", name_kz: "Сағат", name_ru: "Часы", name_en: "Hours"
+      },
+      {
+        id:2, name:"credits", name_kz: "Кридит", name_ru:"Кридит", name_en:"Credits"
+      }
+    ] 
+
 
     const showMessage = (msgtype, message, content, life) => {
       toast.add({
@@ -182,6 +194,14 @@
     }
 
     const updateCourseState = (stateID) => {
+      console.log(course.value.duration_type.id)
+      if (course.value.duration_type.id > 0) {
+        const selectedOption = durationTypeOptions.find(option => option.id === course.value.duration_type.id);
+
+        if (selectedOption) {
+          course.value.duration_type = selectedOption;
+        }
+      }
       const req = {
         course: course.value,
         stateID: stateID,
@@ -260,17 +280,31 @@
       }
     }
 
+    const initializeCourseHistory = () => {
+      if (course.value) {
+        if (course.value.history && course.value.history.length > 0) {
+          console.log('test - 1');
+          course.value.history[0].startDate = null;
+          course.value.history[0].finalDate = null;
+        } else {
+          console.log('test - 2');
+          course.value.history = [{
+            startDate: null,
+            finalDate: null,
+          }];
+        }
+      }
+  
+    };
+
+    watch(selectedDurationType, (newVal) => {
+
+      selectedDurationType.value = newVal !== 'credits';
+    });
+
   onMounted( () => {
+    initializeCourseHistory();
     getCertificateTemplateJournal()
-    if (course.value && course.value.history.length > 0) {
-      course.value.history[0].startDate = null
-      course.value.history[0].finalDate = null
-    } else {
-      course.value.history = [{
-        startDate: null,
-        finalDate: null,
-      }]
-    }
   })
 </script>
 

@@ -181,7 +181,11 @@ export default {
         history: [{
           startDate: null,
           finalDate: null,
-        }]
+        }],
+        duration_type: {
+          id: 1,
+          name: 0
+        }
       },
       courseValidate: {
         namekz: false,
@@ -358,7 +362,26 @@ export default {
     },
     closeCourse() {
       this.courseDialog = false
-      this.courseRequest = {}
+      this.courseRequest = {
+        namekz: '',
+        nameru: '',
+        nameen: '',
+        descriptionkz: '',
+        descriptionru: '',
+        descriptionen: '',
+        hours: 0,
+        organizer: {
+          certificateTemplateID: null,
+        },
+        history: [{
+          startDate: null,
+          finalDate: null,
+        }],
+        duration_type: {
+          id: 1,
+          name: 0
+        }
+      }
       this.getCourses()
     },
     createCourse() {
