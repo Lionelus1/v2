@@ -31,62 +31,67 @@
         </TabPanel>
 
         <!-- КУРС ҚАТЫСУШЫЛАРЫ -->
-        <TabPanel :header="$t('course.users')">
-          <CourseStudents  :props-course="course" :get-course="getCourse" @update-course="getCourse" />
+<!--        <TabPanel :header="$t('course.users')">-->
+<!--          <CourseStudents  :props-course="course" :get-course="getCourse" @update-course="getCourse" />-->
+<!--        </TabPanel>-->
+        <TabPanel  header="Потоки">
+          <CourseHistories  :props-course="course" :get-course="getCourse" @update-course="getCourse" :courseID="course.id"></CourseHistories>
         </TabPanel>
-
         <!--  КУРС МОДУЛІ  -->
         <TabPanel :header="$t('course.modules')">
-          <div class="module_grid">
-            <div class="module_card" v-for="item of module" :key="item">
-              <div class="content">
-                <img src="https://www.mooc.org/hubfs/are-free-online-courses-worth-it.jpg" alt="">
-                <p>{{ item['name_' + $i18n.locale] }}</p>
-              </div>
-              <div class="footer">
-                <hr>
-                <i class="pi pi-list" @click="toggle"></i>
-              </div>
-            </div>
-          </div>
 
-          <OverlayPanel ref="op">
-            <Button class="p-button-raised" icon="pi pi-fw pi-desktop" :label="$t('Презентация')"/>
-            <br>
-            <Button class="p-button-outlined w-full" icon="pi pi-fw pi-desktop" :label="$t('Тест')"/>
-          </OverlayPanel>
+          <CourseModule :course-i-d="course_id"> </CourseModule>
 
-          <DataTable :value="module">
+<!--          <div class="module_grid">-->
+<!--            <div class="module_card" v-for="item of module" :key="item">-->
+<!--              <div class="content">-->
+<!--                <img src="https://www.mooc.org/hubfs/are-free-online-courses-worth-it.jpg" alt="">-->
+<!--                <p>{{ item['name_' + $i18n.locale] }}</p>-->
+<!--              </div>-->
+<!--              <div class="footer">-->
+<!--                <hr>-->
+<!--                <i class="pi pi-list" @click="toggle"></i>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
 
-            <template #header>
-                <div class="table-header flex justify-content-between flex-wrap card-container purple-container">
-                    <div class="flex gap-2">
-                        <Button v-if="findRole(null,'online_course_administrator')" class="p-button-success"
-                                icon="pi pi-plus" :label="$t('common.add')" @click="addModule"/>
-                    </div>
-                </div>
-            </template>
+<!--          <OverlayPanel ref="op">-->
+<!--            <Button class="p-button-raised" icon="pi pi-fw pi-desktop" :label="$t('Презентация')"/>-->
+<!--            <br>-->
+<!--            <Button class="p-button-outlined w-full" icon="pi pi-fw pi-desktop" :label="$t('Тест')"/>-->
+<!--          </OverlayPanel>-->
 
-            <Column field="name_kz" :header="$t('common.name')"></Column>
-            <Column field="hours" :header="$t('course.moduleHours')"></Column>
-            <Column :field="'description_' + $i18n.locale" :header="$t('common.description')"></Column>
-            <Column field="">
-                      <template #body="{data}">
-                          <Button v-if="findRole(null, 'online_course_administrator')" class="p-button-warning mb-2 mr-2"
-                              icon="pi pi-pencil" label="" @click="updateModule(data)"/>
+<!--          <DataTable :value="module">-->
 
-                          <Button v-if="findRole(null,'online_course_administrator')" class="p-button-danger mb-2 mr-2"
-                                  icon="fa-solid fa-trash" label="" @click="deleteModule(data.id)"/>
-                      </template>
-                  </Column>
-          </DataTable>
+<!--            <template #header>-->
+<!--                <div class="table-header flex justify-content-between flex-wrap card-container purple-container">-->
+<!--                    <div class="flex gap-2">-->
+<!--                        <Button v-if="findRole(null,'online_course_administrator')" class="p-button-success"-->
+<!--                                icon="pi pi-plus" :label="$t('common.add')" @click="addModule"/>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </template>-->
+
+<!--            <Column field="name_kz" :header="$t('common.name')"></Column>-->
+<!--            <Column field="hours" :header="$t('course.moduleHours')"></Column>-->
+<!--            <Column :field="'description_' + $i18n.locale" :header="$t('common.description')"></Column>-->
+<!--            <Column field="">-->
+<!--                      <template #body="{data}">-->
+<!--                          <Button v-if="findRole(null, 'online_course_administrator')" class="p-button-warning mb-2 mr-2"-->
+<!--                              icon="pi pi-pencil" label="" @click="updateModule(data)"/>-->
+
+<!--                          <Button v-if="findRole(null,'online_course_administrator')" class="p-button-danger mb-2 mr-2"-->
+<!--                                  icon="fa-solid fa-trash" label="" @click="deleteModule(data.id)"/>-->
+<!--                      </template>-->
+<!--                  </Column>-->
+<!--          </DataTable>-->
 
           </TabPanel>
 
         <!--  КУРС АҒЫНДАРЫ  -->
-        <TabPanel v-if="findRole(null,'online_course_administrator')" :header="this.$t('course.сompletedСourse')">
-            <CourseHistories  :props-course="course" :get-course="getCourse" @update-course="getCourse" :courseID="course.id"></CourseHistories>
-        </TabPanel>
+<!--        <TabPanel v-if="findRole(null,'online_course_administrator')" :header="this.$t('course.сompletedСourse')">-->
+<!--            <CourseHistories  :props-course="course" :get-course="getCourse" @update-course="getCourse" :courseID="course.id"></CourseHistories>-->
+<!--        </TabPanel>-->
       </TabView>
 
     </div>
@@ -163,10 +168,11 @@
   import {OnlineCourseService} from "@/service/onlinecourse.service";
   import {smartEnuApi, findRole, fileRoute} from "@/config/config";
   import CourseHistories from "@/components/documents/onlinecourse/CourseHistories.vue";
-  import CourseStudents from "./ CourseStudents.vue";
+  import CourseStudents from "./CourseStudents.vue";
+  import CourseModule from "@/components/documents/onlinecourse/CourseModule.vue";
 
   export default {
-      components: {CourseHistories,CourseStudents},
+      components: {CourseModule, CourseHistories},
       data() {
           return {
               course_id: parseInt(this.$route.params.id),
@@ -182,7 +188,7 @@
       },
       created() {
           this.getCourse();
-          this.getModuleByCourseID();
+          // this.getModuleByCourseID();
       },
       methods: {
           findRole: findRole,

@@ -1,5 +1,5 @@
 <template>
-  <TitleBlock :title="dic_course_type === 2 ? $t('course.oodCourseName') : $t('course.courses')" />
+  <TitleBlock :title="dic_course_type === courseType.ged ? $t('course.oodCourseName') : $t('course.courses')" />
   <div class="surface-card p-4 shadow-2 border-round">
     <TabPanel>
       <DataTable :value="courses" dataKey="id" :rows="rows" :totalRecords="total" :paginator="true"
@@ -10,13 +10,13 @@
         <template #header>
           <div class="sm:flex block justify-content-between">
           <div>
-            <Button v-if="findRole(null,'online_course_administrator') && dic_course_type == 1"
+            <Button v-if="findRole(null,'online_course_administrator') && dic_course_type !== courseType.ged"
                 class="p-button-success mb-2" icon="pi pi-plus" :label="$t('common.add')"
                 @click="addCourse"/>
           </div>
           <div>
-              <Button class="mr-2" v-if="findRole(null, 'online_course_administrator') && dic_course_type == 2" :label="$t('common.updateGES')" @click="getOod()" />
-              <Button class="mt-2" v-if="findRole(null, 'online_course_administrator') && dic_course_type == 2" :label="$t('common.save')"
+              <Button class="mr-2" v-if="findRole(null, 'online_course_administrator') && dic_course_type === 2" :label="$t('common.updateGES')" @click="getOod()" />
+              <Button class="mt-2" v-if="findRole(null, 'online_course_administrator') && dic_course_type === 2" :label="$t('common.save')"
               @click="updateCourseGiveCertificates()" />
           </div>
           <div>
@@ -28,17 +28,17 @@
         </div>
         </template>
 
-        <Column :header="dic_course_type === 2 ? $t('course.disciplineCode') : $t('common.name')">
+        <Column :header="dic_course_type === courseType.ged ? $t('course.disciplineCode') : $t('common.name')">
           <template #body="body">
             {{ body.data['name' + $i18n.locale] }}
           </template>
         </Column>
-        <Column :header="dic_course_type === 2 ? $t('course.disciplineName') : $t('common.description')">
+        <Column :header="dic_course_type === courseType.ged ? $t('course.disciplineName') : $t('common.description')">
           <template #body="body">
             {{ body.data['description' + $i18n.locale] }}
           </template>
         </Column>
-        <Column v-if="findRole(null, 'online_course_administrator') && dic_course_type == 2">
+        <Column v-if="findRole(null, 'online_course_administrator') && dic_course_type === courseType.ged">
           <template #body="body">
             <Checkbox v-model="body.data.give_certificate" @change="pushAndDeleteGiveCertificates(body.data)"
               :binary="true" />
@@ -50,81 +50,88 @@
         </Column>
         <Column>
           <template #body="body">
-            <Button v-if="dic_course_type == 1" :label="$t('common.goToTheCourse')" v-model="body.Button" class="p-button-info mb-2"
-              @click="selectCourse(body.data)" />
+            <Button class="p-button-text p-1 mr-2"  v-if="dic_course_type !== courseType.ged" @click="selectCourse(body.data)">
+              <i class="fa-solid fa-eye fa-xl"></i>
+            </Button>
+
           </template>
         </Column>
         
       </DataTable>
     </TabPanel>
-    <Dialog v-model:visible="courseDialog" :style="{ width: '600px' }" :header="$t('course.course')" :modal="true" class="p-fluid">
-      <div class="col-12 md:col-12 p-fluid">
-        <div class="card">
-          <div class="grid formgrid">
-              <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-                  <label>{{ $t('common.nameInQazaq') }}</label>
-                  <InputText v-model="courseRequest.namekz" class="mt-2" type="text"></InputText>
-                  <small v-if="courseValidate.namekz" class="p-error">{{$t('common.requiredField')}}</small>
-              </div>
-              <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-                  <label>{{ $t('common.descriptionKz') }}</label>
-                  <InputText v-model="courseRequest.descriptionkz" class="mt-2" type="text"></InputText>
-                  <small v-if="courseValidate.descriptionkz" class="p-error">{{$t('common.requiredField')}}</small>
-              </div>
-              <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-                  <label>{{ $t('common.nameInRussian') }}</label>
-                  <InputText v-model="courseRequest.nameru" class="mt-2" type="text"></InputText>
-                  <small v-if="courseValidate.nameru" class="p-error">{{$t('common.requiredField')}}</small>
-              </div>
-              <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-                  <label>{{ $t('common.descriptionRu') }}</label>
-                  <InputText v-model="courseRequest.descriptionru" class="mt-2" type="text"></InputText>
-                  <small v-if="courseValidate.descriptionru" class="p-error">{{$t('common.requiredField')}}</small>
-              </div>
-              <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-                <label>{{ $t('common.nameInEnglish') }}</label>
-                <InputText v-model="courseRequest.nameen" class="mt-2" type="text"></InputText>
-                <small v-if="courseValidate.nameen" class="p-error">{{$t('common.requiredField')}}</small>
-              </div>
-              <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-                <label>{{ $t('common.descriptionEn') }}</label>
-                <InputText v-model="courseRequest.descriptionen" class="mt-2" type="text"></InputText>
-                <small v-if="courseValidate.descriptionen" class="p-error">{{$t('common.requiredField')}}</small>
-              </div>
-              <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-                <label>{{ $t('course.startDate') }}</label>
-                <PrimeCalendar v-model="courseRequest.history[0].startDate" :readonly="readonly"  class="mt-2" :placeholder="$t('hr.id.startDate')" dateFormat="dd.mm.yy"/>
-                <small v-if="courseValidate.start_time" class="p-error">{{ $t("common.requiredField") }}</small>
-              </div>
-              <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-                <label>{{ $t('course.completionDate') }}</label>
-                <PrimeCalendar v-model="courseRequest.history[0].finalDate" :readonly="readonly"  class="mt-2" :placeholder="$t('hr.id.startDate')" dateFormat="dd.mm.yy"/>
-                <small v-if="courseValidate.final_date" class="p-error">{{ $t("common.requiredField") }}</small>
-              </div>
-              <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-                  <label class="mr-2">{{ $t('course.moduleHours') }}</label>
-                <Checkbox v-model="checkedHours" :binary="true" />
-                <InputNumber :disabled="!checkedHours" v-model="courseRequest.hours" class="mt-2"></InputNumber>
-                  <small v-if="courseValidate.hours" class="p-error">{{$t('common.requiredField')}}</small>
-              </div>
-              <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-                    <label class="mr-2">{{ $t('course.certificate.certSelect') }}</label>
-                    <Checkbox v-model="checkedCertificate" :binary="true" />
-                  <Dropdown :disabled="!checkedCertificate" v-model="courseRequest.organizer.certificateTemplateID" :options="journal" class="mt-2" :optionLabel="itemLabel" optionValue="id" :placeholder="$t('common.select')"
-                  @filter="handleFilter" :filter="true" :showClear="true" dataKey="id" :emptyFilterMessage="$t('roleControl.noResult')"  />
-                  <small v-if="courseValidate.certificate_template_id"  class="p-error">{{$t('common.requiredField')}}</small>
-              </div>
-          </div>
-        </div>
-      </div>
-        <template #footer>
-            <div class="flex flex-wrap row-gap-1">
-                <Button :label="$t('common.save')" @click="createCourse" class="w-full p-button-primary"/>
-                <Button :label="$t('common.cancel')" @click="closeCourse" class="w-full p-button-secondary p-button-outlined"/>
-            </div>
-        </template>
+<!--    <Dialog v-model:visible="courseDialog" :style="{ width: '600px' }" :header="$t('course.course')" :modal="true" class="p-fluid">-->
+<!--      <div class="col-12 md:col-12 p-fluid">-->
+<!--        <div class="card">-->
+<!--          <div class="grid formgrid">-->
+<!--              <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">-->
+<!--                  <label>{{ $t('common.nameInQazaq') }}</label>-->
+<!--                  <InputText v-model="courseRequest.namekz" class="mt-2" type="text"></InputText>-->
+<!--                  <small v-if="courseValidate.namekz" class="p-error">{{$t('common.requiredField')}}</small>-->
+<!--              </div>-->
+<!--              <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">-->
+<!--                  <label>{{ $t('common.descriptionKz') }}</label>-->
+<!--                  <InputText v-model="courseRequest.descriptionkz" class="mt-2" type="text"></InputText>-->
+<!--                  <small v-if="courseValidate.descriptionkz" class="p-error">{{$t('common.requiredField')}}</small>-->
+<!--              </div>-->
+<!--              <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">-->
+<!--                  <label>{{ $t('common.nameInRussian') }}</label>-->
+<!--                  <InputText v-model="courseRequest.nameru" class="mt-2" type="text"></InputText>-->
+<!--                  <small v-if="courseValidate.nameru" class="p-error">{{$t('common.requiredField')}}</small>-->
+<!--              </div>-->
+<!--              <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">-->
+<!--                  <label>{{ $t('common.descriptionRu') }}</label>-->
+<!--                  <InputText v-model="courseRequest.descriptionru" class="mt-2" type="text"></InputText>-->
+<!--                  <small v-if="courseValidate.descriptionru" class="p-error">{{$t('common.requiredField')}}</small>-->
+<!--              </div>-->
+<!--              <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">-->
+<!--                <label>{{ $t('common.nameInEnglish') }}</label>-->
+<!--                <InputText v-model="courseRequest.nameen" class="mt-2" type="text"></InputText>-->
+<!--                <small v-if="courseValidate.nameen" class="p-error">{{$t('common.requiredField')}}</small>-->
+<!--              </div>-->
+<!--              <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">-->
+<!--                <label>{{ $t('common.descriptionEn') }}</label>-->
+<!--                <InputText v-model="courseRequest.descriptionen" class="mt-2" type="text"></InputText>-->
+<!--                <small v-if="courseValidate.descriptionen" class="p-error">{{$t('common.requiredField')}}</small>-->
+<!--              </div>-->
+<!--              <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">-->
+<!--                <label>{{ $t('course.startDate') }}</label>-->
+<!--                <PrimeCalendar v-model="courseRequest.history[0].startDate" :readonly="readonly"  class="mt-2" :placeholder="$t('hr.id.startDate')" dateFormat="dd.mm.yy"/>-->
+<!--                <small v-if="courseValidate.start_time" class="p-error">{{ $t("common.requiredField") }}</small>-->
+<!--              </div>-->
+<!--              <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">-->
+<!--                <label>{{ $t('course.completionDate') }}</label>-->
+<!--                <PrimeCalendar v-model="courseRequest.history[0].finalDate" :readonly="readonly"  class="mt-2" :placeholder="$t('hr.id.startDate')" dateFormat="dd.mm.yy"/>-->
+<!--                <small v-if="courseValidate.final_date" class="p-error">{{ $t("common.requiredField") }}</small>-->
+<!--              </div>-->
+<!--              <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">-->
+<!--                  <label class="mr-2">{{ $t('course.moduleHours') }}</label>-->
+<!--                <Checkbox v-model="checkedHours" :binary="true" />-->
+<!--                <InputNumber :disabled="!checkedHours" v-model="courseRequest.hours" class="mt-2"></InputNumber>-->
+<!--                  <small v-if="courseValidate.hours" class="p-error">{{$t('common.requiredField')}}</small>-->
+<!--              </div>-->
+<!--              <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">-->
+<!--                    <label class="mr-2">{{ $t('course.certificate.certSelect') }}</label>-->
+<!--                    <Checkbox v-model="checkedCertificate" :binary="true" />-->
+<!--                  <Dropdown :disabled="!checkedCertificate" v-model="courseRequest.organizer.certificateTemplateID" :options="journal" class="mt-2" :optionLabel="itemLabel" optionValue="id" :placeholder="$t('common.select')"-->
+<!--                  @filter="handleFilter" :filter="true" :showClear="true" dataKey="id" :emptyFilterMessage="$t('roleControl.noResult')"  />-->
+<!--                  <small v-if="courseValidate.certificate_template_id"  class="p-error">{{$t('common.requiredField')}}</small>-->
+<!--              </div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--        <template #footer>-->
+<!--            <div class="flex flex-wrap row-gap-1">-->
+<!--                <Button :label="$t('common.save')" @click="createCourse" class="w-full p-button-primary"/>-->
+<!--                <Button :label="$t('common.cancel')" @click="closeCourse" class="w-full p-button-secondary p-button-outlined"/>-->
+<!--            </div>-->
+<!--        </template>-->
+<!--        -->
+<!--    </Dialog>-->
 
-    </Dialog>
+    <Sidebar position="right" class="p-sidebar-lg"
+             style="width: 50%;"  v-model:visible="courseDialog">
+      <NewCourseFlow :props-category-i-d="categoryId" :courseState="6" :propsCourse="courseRequest" :closeSideBar="closeCourse"/>
+    </Sidebar>
 
   </div>
 </template>
@@ -135,9 +142,11 @@ import { OnlineCourseService } from "@/service/onlinecourse.service";
 import { getHeader, smartEnuApi, findRole } from "@/config/config";
 import {TitleBlock} from "@/components/TitleBlock"
 
+import {findRole } from "@/config/config";
+import NewCourseFlow from "@/components/documents/onlinecourse/NewCourseFlow.vue";
 export default {
   name: 'CoursesTable',
-  components: {},
+  components: {NewCourseFlow},
   props: {},
   emits: [],
   data() {
@@ -177,7 +186,14 @@ export default {
         history: [{
           startDate: null,
           finalDate: null,
-        }]
+        }],
+        duration_type: {
+          id: 1,
+          name: 'hours',
+          name_kz: "Сағат",
+          name_ru: "Часы",
+          name_en: "Hours"
+        }
       },
       courseValidate: {
         namekz: false,
@@ -202,6 +218,12 @@ export default {
       count: 0,
       checkedCertificate: false,
       checkedHours: false,
+      courseType: {
+        common: "common",
+        ged: "ged",
+        educational: "educational",
+        not_formal_education: "not_formal_education"
+      }
     }
   },
   created() {
@@ -267,7 +289,7 @@ export default {
 
       this.give_certificates = []
 
-      this.onPage
+      this.onPage()
     },
     onPage(event) {
       this.page = event.page;
@@ -286,38 +308,40 @@ export default {
       this.service.getCourses(req).then(res => {
         let counter = 0
         this.courses = res.data.courses
-        this.courses.map((e) => {
-          e.give_certificate = e.give_certificate === 1
-          if (e.give_certificate === false) {
-            counter++
-          }
-          if (counter !== 0) {
-            this.selectAllChecked = false
-          } else {
-            this.selectAllChecked = true
-          }
-        })
+        if (this.courses.length > 0) {
+          this.courses.map((e) => {
+            e.give_certificate = e.give_certificate === 1
+            if (e.give_certificate === false) {
+              counter++
+            }
+            this.selectAllChecked = counter === 0;
+          })
 
-        this.courses.forEach(course => {
-          const storedCertificate = this.give_certificates.find(x => x.courseID === course.id);
-          if (storedCertificate) {
-            course.give_certificate = storedCertificate.give_certificate;
-          }
-        });
-        this.dic_course_type = res.data.dic_course_type
-        this.total = res.data.total
-        this.selectedCourse = null
+          this.courses.forEach(course => {
+            const storedCertificate = this.give_certificates.find(x => x.courseID === course.id);
+            if (storedCertificate) {
+              course.give_certificate = storedCertificate.give_certificate;
+            }
+          });
+          this.dic_course_type = res.data.dic_course_type
+          this.total = res.data.total
+          this.selectedCourse = null
+        }
 
         this.tableLoading = false
       }).catch(err => {
         this.courses = []
         this.total = 0
         this.selectedCourse = null
-        if (err.response && err.response.data && err.response.data.localized) {
-          this.showMessage('error', this.$t(err.response.data.localizedPath), null)
+
+        if (!(err.response && err.response.status === 401)) {
+          if (err.response && err.response.data && err.response.data.localized) {
+            this.showMessage('error', this.$t(err.response.data.localizedPath), null)
+          } else if (err.response) {
+            this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
+          }
         } else {
-          console.log(err)
-          this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
+          this.$store.dispatch("logLout")
         }
 
         this.tableLoading = false
@@ -345,7 +369,30 @@ export default {
     },
     closeCourse() {
       this.courseDialog = false
-      this.courseRequest = {}
+      this.courseRequest = {
+        namekz: '',
+        nameru: '',
+        nameen: '',
+        descriptionkz: '',
+        descriptionru: '',
+        descriptionen: '',
+        hours: 0,
+        organizer: {
+          certificateTemplateID: null,
+        },
+        history: [{
+          startDate: null,
+          finalDate: null,
+        }],
+        duration_type: {
+          id: 1,
+          name: 'hours',
+          name_kz: "Сағат",
+          name_ru: "Часы",
+          name_en: "Hours"
+        }
+      }
+      this.getCourses()
     },
     createCourse() {
       if (!this.validateCourse()) {

@@ -260,6 +260,12 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
+                path: '/course/:id/:history_id',
+                name: 'CourseStudents',
+                component: load('documents/onlinecourse/CourseStudents'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
                 path: '/documents/certificate/:uuid',
                 name: 'certificate',
                 component: load('documents/certificates/Certificate'),
