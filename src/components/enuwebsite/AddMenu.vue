@@ -20,7 +20,7 @@
                  :class="{ 'p-invalid': !formData.menu_title_en && submitted }"/>
       <small v-show="!formData.menu_title_en && submitted" class="p-error">{{ $t("smartenu.titleEnInvalid") }}</small>
     </div>
-    <div class="field" v-if="!menu_id && (currentMenu && currentMenu.parent_id)">
+    <div class="field" v-if="findRole(null, 'enu_web_admin') || (currentMenu && currentMenu.parent_id)">
       <label>{{ $t('web.menuParent') }}</label>
       <TreeSelect v-model="selectedTreeMenu" :options="menus" :placeholder="$t('common.choose')"
                   @node-expand="expandMenuTreeSelect" @nodeSelect="menuTreeSelect"></TreeSelect>
@@ -166,9 +166,8 @@
 import {EnuWebService} from "@/service/enu.web.service";
 import AddPage from "@/components/enuwebsite/pages/AddPage.vue";
 import CustomFileUpload from "@/components/CustomFileUpload.vue";
-import {webEnuDomain} from "@/config/config";
+import {findRole, webEnuDomain} from "@/config/config";
 import {FileService} from "@/service/file.service";
-import {findRole} from "@/config/config";
 import {useStore} from "vuex";
 import FindUser from "@/helpers/FindUser.vue";
 
@@ -255,6 +254,7 @@ export default {
 
   },
   methods: {
+    findRole,
     typeChange() {
       if (this.menuType === 1) {
         this.formData.link = null
