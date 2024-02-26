@@ -57,6 +57,7 @@
           <span class="p-input-icon-left" >
                 <i class="pi pi-search"/>
                 <InputText
+                    type="search"
                     class="search_toolbar"
                     @keyup.enter="searchClick()"
                     v-model="searchModel"
