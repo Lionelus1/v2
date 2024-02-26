@@ -129,6 +129,8 @@ import {far} from '@fortawesome/free-regular-svg-icons';
 import ScrollPanel from "primevue/scrollpanel";
 import WorkPlanEventResult from "./components/work_plan/WorkPlanEventResult";
 import TitleBlock from "./components/TitleBlock";
+import ToolbarMenu from "@/components/ToolbarMenu.vue";
+import ActionButton from "@/components/ActionButton.vue";
 
 Date.prototype.toJSON = function(){
     const hoursDiff = this.getHours() - this.getTimezoneOffset() / 60;
@@ -374,6 +376,8 @@ app.component('Divider', Divider);
 app.component('WorkPlanEventResult', WorkPlanEventResult)
 app.component('TinyEditor', TinyEditor)
 app.component('TitleBlock', TitleBlock)
+app.component('ToolbarMenu', ToolbarMenu)
+app.component('ActionButton', ActionButton)
 
 interceptor(store,app);
 app.mount('#app');
