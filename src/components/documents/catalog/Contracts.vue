@@ -152,13 +152,10 @@ import Enum from "@/enum/docstates/index";
 import { DocService } from "@/service/doc.service";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo";
 import FindUser from "@/helpers/FindUser";
-import TitleBlock from "@/components/TitleBlock.vue";
-import ToolbarMenu from "@/components/ToolbarMenu.vue";
-import ActionButton from "@/components/ActionButton.vue";
 
 export default {
   name: 'Contracts',
-  components: {ActionButton, ToolbarMenu, TitleBlock, DocSignaturesInfo, FindUser },
+  components: {DocSignaturesInfo, FindUser },
   props: { },
   data() {
     return {
@@ -587,7 +584,7 @@ export default {
           icon: "fa-solid fa-file-invoice",
           disabled: !this.currentDocument || this.currentDocument.docHistory.stateId !== Enum.SIGNED.ID ||
               this.currentDocument.sourceType !== Enum.DocSourceType.FilledDoc,
-          command: () => {$router.push('/documents/contracts/' + this.currentDocument.uuid + '/related')},
+          command: () => {this.$router.push('/documents/contracts/' + this.currentDocument.uuid + '/related')},
         },
       ]
     },
