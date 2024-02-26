@@ -112,14 +112,13 @@
     const searchText = ref(null)
     const selectedDurationType = ref(null)
     const dic_course_type = ref(0)
-    const lazyParams = ref(
+    const certificateLazyParams = ref(
     {
       page: 0,
       rows: 50,
       searchText: null,
       docType: 7
-    }
-    )
+    })
     const addStudentDialog = ref(false)
     const organizer = ref(null)
     const issueCertificateWithDialog = ref(false)
@@ -260,8 +259,8 @@
 
     const getCertificateTemplateJournal = () => {
       loading.value = true;
-      lazyParams.value.docType = 7
-      onlineCourseService.getCertificateTemplateJournal(lazyParams.value).then(response =>{
+      certificateLazyParams.value.docType = 7
+      onlineCourseService.getCertificateTemplateJournal(certificateLazyParams.value).then(response =>{
         certificates.value = response.data.templates;
         total.value = response.data.count;
       }).catch(_=> {
@@ -272,10 +271,10 @@
 
     const handleFilter = (event) => {
       if (event.value && event.value.length > 0) {
-        lazyParams.value.searchText = event.value
+        certificateLazyParams.value.searchText = event.value
         getCertificateTemplateJournal()
       } else  {
-        lazyParams.value.searchText = null
+        certificateLazyParams.value.searchText = null
         getCertificateTemplateJournal()
       }
     }

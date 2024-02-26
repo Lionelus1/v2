@@ -71,7 +71,7 @@
                           @click="updateUserState(slotProps.data.profile.userID, 2)"/>
                   <Button v-if="slotProps.data.state.id !== 1 && dic_course_type === courseType.common" class="p-button-success mr-3"
                           icon="fa-solid fa-list-check" v-tooltip.bottom="t('course.journal')" label=""
-                          @click="student=slotProps.data; openJournal(slotProps.data.profile.userID, slotProps.data.state.id)"/>
+                          @click="student=slotProps.data;openJournal(slotProps.data.profile.userID, slotProps.data.state.id)"/>
                   <Button v-if="slotProps.data.certificateUUID" icon="fa-solid fa-award" class="mr-3"
                           v-tooltip.bottom="t('course.certificate.view')" label=""
                           @click="openCertificate(slotProps.data.certificateUUID)"/>
@@ -125,7 +125,7 @@
           <Button v-if="courseHistory.state.code && findRole(null,'online_course_administrator') && student.state.id !== 5" :label="t('common.save')" icon="pi pi-check" class="p-button p-component p-button-success mr-2"
                   @click="updateJournal()"/>
           <Button v-if="courseHistory.state.code && findRole(null,'online_course_administrator') && student.state.id !== 5  && student.state.id !== 4" :label="t('course.completedTraining')" icon="pi pi-check" class="p-button p-component mr-2"
-                  @click="updateUserState(student.id, 4)" :disabled="!isGrade"/>
+                  @click="updateUserState(student.profile.userID, 4)" :disabled="!isGrade"/>
         </Sidebar>
 
         <!-- QR CODE ҚАРАУ -->
@@ -427,9 +427,9 @@
   }
 
   const openIssueCertificateWithDialog = () => {
-      openIssueCertificate.value = true
+    getCourseOrganizerByCourseID()
+    openIssueCertificate.value = true
     issueCertificateWithDialog.value = true
-      getCourseOrganizerByCourseID()
   }
 
   const getCourseOrganizerByCourseID = () => {
@@ -490,6 +490,7 @@
   }
 
   const closeStudentDialog = () => {
+    newUsers.value = []
     addStudentDialog.value = false;
   }
 
@@ -831,6 +832,10 @@
 
   const getCourseName = (course) => {
     return course['name'+locale.value]
+  }
+
+  const closeIssueCertificateDialog = () => {
+    openIssueCertificate.value = false
   }
 
   onMounted(() => {
