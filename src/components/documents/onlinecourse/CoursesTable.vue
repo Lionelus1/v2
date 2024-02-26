@@ -137,11 +137,7 @@
 </template>
   
 <script>
-import Checkbox from '@/main';
 import { OnlineCourseService } from "@/service/onlinecourse.service";
-import { getHeader, smartEnuApi, findRole } from "@/config/config";
-import {TitleBlock} from "@/components/TitleBlock"
-
 import {findRole } from "@/config/config";
 import NewCourseFlow from "@/components/documents/onlinecourse/NewCourseFlow.vue";
 export default {
