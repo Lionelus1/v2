@@ -1604,14 +1604,16 @@ export default {
           return
         }
         if (this.doctoral.dissertation.video_link) {
+          //eslint-disable-next-line
           const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-          console.log(this.doctoral.dissertation.video_link.match(youtubeRegex))
           if (!this.doctoral.dissertation.video_link.match(youtubeRegex)) {
             this.$toast.add({ severity: "error", summary: this.$t('dissertation.videoValid'), life: 3000 });
             return
           }
         }
-        fd.append("video_link", this.doctoral.dissertation.video_link)
+        if (this.doctoral.dissertation.video_link) {
+          fd.append("video_link", this.doctoral.dissertation.video_link)
+        }
         fd.append("councilConclusionFile", this.councilConclusionFile)
       }
       this.dissertationService.updateDoctoral(fd).then(_ => {

@@ -13,7 +13,6 @@ import {computed, ref} from "vue";
 const props = defineProps(['items', 'showLabel', 'showTooltip'])
 const emit = defineEmits(['toggle'])
 const menu = ref()
-
 const actionList = computed(() => props.items)
 
 const onClick = (event) => {

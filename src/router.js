@@ -798,6 +798,12 @@ const routes = [
                 component: load('science/ScientistsProfile'),
                 beforeEnter: ifAuthenticated,
             },
+            {
+                path: '/demo',
+                name: 'demos',
+                component: load('DemoTemplate'),
+                beforeEnter: ifAuthenticated,
+            },
         ]
     },
    
@@ -815,8 +821,6 @@ const routes = [
             },
         ]
     },
-
-
 ];
 
 const router = createRouter({

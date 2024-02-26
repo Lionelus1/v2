@@ -6,29 +6,9 @@
             <label class="text-gray-600 ml-2 mt-2">{{ this.$t("common.records") }}: {{ this.count }}</label>
         </div>
     </div>
+    <ToolbarMenu :data="menu" @search="initApiCall" :search="true"/>
       <div class="card">
         <div class="p-col">
-          <Menubar
-            :model="menu"
-            :key="active"
-            style="height: 36px;
-              margin-top: -7px;
-              margin-right: -7px;
-              margin-left: -7px;
-            "
-          >
-            <template #end>
-              <span class="p-input-icon-left">
-                <i class="pi pi-search" />
-                <InputText
-                  @keyup.enter="initApiCall"
-                  style="height: 30px"
-                  v-model="filters['global'].value"
-                  :placeholder="$t('common.search')"
-                />
-              </span>
-            </template>
-          </Menubar>
           <div class="box">
             <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
             <DataTable
@@ -121,8 +101,10 @@ import { smartEnuApi, getHeader, findRole } from "@/config/config";
 import axios from "axios";
 import Enum from "@/enum/docstates/index";
 import { FilterMatchMode, FilterOperator } from "primevue/api";
+import ToolbarMenu from "@/components/ToolbarMenu.vue";
 
 export default {
+  components: {ToolbarMenu},
   data() {
     return {
       localmenu: [{
@@ -161,35 +143,6 @@ export default {
           matchMode: FilterMatchMode.CONTAINS,
         },
       },
-      menu: [
-        {
-          label: "",
-          icon: "pi pi-fw pi-refresh",
-          command: () => {
-           //ToDo
-           
-          },
-        },
-        {
-          label: this.$t("bank.card"),
-          icon: "pi pi-fw pi-id-card",
-          command: () => {
-            this.toggle(null, this.selectedOrganizations)
-          }
-        },
-        {
-          label: this.$t("common.contacts"),
-          icon: "pi pi-fw pi-user",
-        },
-        {
-          label: this.$t("common.createNew"),
-          icon: "pi pi-fw pi-plus",
-          visible: this.selectedMode,
-          command: () => {
-              this.addOrganization()
-          }
-        }
-      ],
     };
   },
   props: {
@@ -217,12 +170,13 @@ export default {
       this.organizations.push(value.value);
       this.$emit("changed",value)
     },
-    initApiCall() {
+    initApiCall(data) {
       this.isAdmin = this.findRole(null, 'main_administrator') || this.findRole(null, "career_administrator")
       this.localmenu[0].items[0].disabled = !this.isAdmin
       this.$emit("update:pagemenu", this.localmenu)
       let url = "/contragent/organizations";
       this.loading =true;
+      this.filters.global.value = data
       this.lazyParams.filters = this.filters
       axios
         .post(smartEnuApi + url, this.lazyParams,  {headers: getHeader()})
@@ -313,8 +267,38 @@ export default {
   mounted() {
     this.initApiCall();
   },
-  computed() {
-    
+  computed: {
+    menu () {
+      return [
+        {
+          label: "",
+          icon: "pi pi-fw pi-refresh",
+          command: () => {
+            //ToDo
+
+          },
+        },
+        {
+          label: this.$t("bank.card"),
+          icon: "pi pi-fw pi-id-card",
+          command: () => {
+            this.toggle(null, this.selectedOrganizations)
+          }
+        },
+        {
+          label: this.$t("common.contacts"),
+          icon: "pi pi-fw pi-user",
+        },
+        {
+          label: this.$t("common.createNew"),
+          icon: "pi pi-fw pi-plus",
+          visible: this.selectedMode,
+          command: () => {
+            this.addOrganization()
+          }
+        }
+      ]
+    },
   }
 };
 </script>

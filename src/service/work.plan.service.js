@@ -170,4 +170,8 @@ export class WorkPlanService {
         return api.get('/workPlan/types', {headers: getHeader()});
     }
 
+    updatePlanAttachments(data) {
+        return api.post('/workPlan/updatePlanAttachments', data, {headers: getHeader()});
+    }
+
 }
