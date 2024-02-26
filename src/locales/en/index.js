@@ -1760,6 +1760,7 @@ export default {
             applicationNumber: 'Application Number:',
             created: 'Created',
             closed: 'Closed',
+            date: 'application data'
         },
 
     }

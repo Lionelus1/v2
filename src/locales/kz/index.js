@@ -1773,6 +1773,7 @@ export default {
             applicationNumber: 'Өтінім нөмірі:',
             created: 'Құрылды',
             closed: 'Жабық',
+            date:'Өтінім күні'
         },
 
     }

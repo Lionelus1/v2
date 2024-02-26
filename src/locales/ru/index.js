@@ -1759,6 +1759,7 @@ export default {
             applicationNumber: 'Номер заявки:',
             created: 'Создана',
             closed: 'Закрыта',
+            date: 'Дата заявки'
         },
 
     }
