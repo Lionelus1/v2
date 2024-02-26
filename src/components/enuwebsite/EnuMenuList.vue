@@ -203,7 +203,6 @@ export default {
       this.$refs[ref].toggle(event);
     },
     toggle2(node) {
-      console.log(node)
       this.actionsNode = node
     },
     reOrderMenu(node, up) {
