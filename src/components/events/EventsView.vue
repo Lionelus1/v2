@@ -1,5 +1,6 @@
 <template>
     <Dialog
+            header=" "
             v-model:visible="eventViewVisible"
             :closable="true"
             :style="{ width: '1000px' }"
@@ -12,7 +13,7 @@
         <Card style="box-shadow: none">
             <template #header>
                 <div class="dialog_img">
-                    <img :src="selectedEvent.imageUrl" style="width: 100%; height: 100%"/>
+                    <img v-if="selectedEvent.imageBool" :src="selectedEvent.imageUrl" style="width: 100%; height: 100%"/>
                 </div>
             </template>
             <template #title>
@@ -101,14 +102,6 @@
                 </div>
             </template>
         </Card>
-        <template #footer>
-            <Button
-                    v-bind:label="$t('common.close')"
-                    icon="pi pi-times"
-                    class="p-button-rounded p-button-danger"
-                    @click="closeModal"
-            />
-        </template>
     </Dialog>
 </template>
 
