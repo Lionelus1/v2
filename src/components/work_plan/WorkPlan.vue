@@ -73,7 +73,7 @@
         <Column field="actions" header="">
           <template #body="{ data }">
             <Button type="button"
-              v-if="data.user.id === loginedUserId && (data.status.work_plan_status_id === 1 || data.status.work_plan_status_id === 3 || data.status.work_plan_status_id === 5)"
+              v-if="this.isAdmin || (data.user.id === loginedUserId && (data.status.work_plan_status_id === 1 || data.status.work_plan_status_id === 3 || data.status.work_plan_status_id === 5))"
               icon="pi pi-trash" class="p-button-danger mr-2" label="" @click="deleteConfirm(data)"></Button>
           </template>
         </Column>
