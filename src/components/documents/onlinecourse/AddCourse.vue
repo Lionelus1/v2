@@ -139,7 +139,7 @@
 </template>
 
 <script setup>
-import {ref} from "vue";
+import {computed, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useToast} from "primevue/usetoast";
 import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers.vue";
@@ -237,7 +237,8 @@ const lazyParams = {
 }
 const checkedCertificate = ref(false)
 const fullName = store.state.loginedUser.thirdName + ' ' + store.state.loginedUser.firstName + ' ' + store.state.loginedUser.lastName
-const menu = ref([
+const menu = computed(() => {
+  return [
   {
     label: t("common.save"),
     icon: "pi pi-fw pi-save",
@@ -255,7 +256,7 @@ const menu = ref([
     disabled: disabledApproval,
     command: ()=> {},
   }
-])
+  ]})
 
 const handleFileChange = (event) => {
   abstractFile.value = event.files[0];

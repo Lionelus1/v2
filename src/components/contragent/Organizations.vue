@@ -143,35 +143,6 @@ export default {
           matchMode: FilterMatchMode.CONTAINS,
         },
       },
-      menu: [
-        {
-          label: "",
-          icon: "pi pi-fw pi-refresh",
-          command: () => {
-           //ToDo
-           
-          },
-        },
-        {
-          label: this.$t("bank.card"),
-          icon: "pi pi-fw pi-id-card",
-          command: () => {
-            this.toggle(null, this.selectedOrganizations)
-          }
-        },
-        {
-          label: this.$t("common.contacts"),
-          icon: "pi pi-fw pi-user",
-        },
-        {
-          label: this.$t("common.createNew"),
-          icon: "pi pi-fw pi-plus",
-          visible: this.selectedMode,
-          command: () => {
-              this.addOrganization()
-          }
-        }
-      ],
     };
   },
   props: {
@@ -296,8 +267,38 @@ export default {
   mounted() {
     this.initApiCall();
   },
-  computed() {
-    
+  computed: {
+    menu () {
+      return [
+        {
+          label: "",
+          icon: "pi pi-fw pi-refresh",
+          command: () => {
+            //ToDo
+
+          },
+        },
+        {
+          label: this.$t("bank.card"),
+          icon: "pi pi-fw pi-id-card",
+          command: () => {
+            this.toggle(null, this.selectedOrganizations)
+          }
+        },
+        {
+          label: this.$t("common.contacts"),
+          icon: "pi pi-fw pi-user",
+        },
+        {
+          label: this.$t("common.createNew"),
+          icon: "pi pi-fw pi-plus",
+          visible: this.selectedMode,
+          command: () => {
+            this.addOrganization()
+          }
+        }
+      ]
+    },
   }
 };
 </script>
