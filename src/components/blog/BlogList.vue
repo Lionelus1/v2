@@ -1,7 +1,7 @@
 <template>
   <div class="col-12">
     <TitleBlock :title="$t('blog.title')" />
-    <ToolbarMenu :data="toolbarMenus"/>
+    <ToolbarMenu v-if="isWebAdmin || mainAdmin" :data="toolbarMenus"/>
     <div class="card">
       <TabView>
         <TabPanel :header="$t('web.properties')">
@@ -123,6 +123,7 @@ import ToolbarMenu from "@/components/ToolbarMenu.vue";
 const authUser = computed(() => JSON.parse(localStorage.getItem("loginedUser")))
 const isFacultyWebAdmin = computed(() => findRole(authUser.value, "enu_web_fac_admin"))
 const isWebAdmin = computed(() => findRole(authUser.value, "enu_web_admin"))
+const mainAdmin = computed(() => findRole(authUser.value, "main_administrator"))
 const actionsNode = ref(null)
 const initItems = computed(() =>
     {
@@ -169,7 +170,6 @@ const toolbarMenus = computed(() => {
     {
       label: i18n.t('common.add'),
       icon: "pi pi-plus",
-      visible: !isFacultyWebAdmin.value && isWebAdmin.value,
       command: () => {
         openDialog()
       }
