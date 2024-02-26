@@ -54,7 +54,7 @@
         <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
           <label class="mr-2">{{ t('Тип модуля') }}</label>
           <Checkbox v-model="checkedHours" :binary="true" />
-          <Dropdown :disabled="!checkedHours" optionValue="id" v-model="course.duration_type.id" :options="durationTypeOptions" :placeholder="t('common.select')" class="mt-2" :optionLabel="['name_'+locale]" />
+          <Dropdown :disabled="!checkedHours" v-model="course.duration_type" :options="durationTypeOptions" :placeholder="t('common.select')" class="mt-2" :optionLabel="['name_'+locale]" />
           <InputNumber :placeholder="course.duration_type.name && course.duration_type.name === 'hours' ? t('course.moduleHours') : t('course.moduleCredits')" :disabled="!checkedHours" v-model="course.hours" class="mt-2"></InputNumber>
           <small v-if="courseValidate.hours" class="p-error">{{ t('common.requiredField') }}</small>
         </div>
@@ -179,7 +179,7 @@
         id: 1, name: "hours", name_kz: "Сағат", name_ru: "Часы", name_en: "Hours"
       },
       {
-        id:2, name:"credits", name_kz: "Кридит", name_ru:"Кридит", name_en:"Credits"
+        id:2, name:"credits", name_kz: "Кредиты", name_ru:"Кредиты", name_en:"Credits"
       }
     ] 
 

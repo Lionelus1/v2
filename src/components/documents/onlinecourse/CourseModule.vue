@@ -1,6 +1,6 @@
 <template>
   <div class="module_grid">
-    <div class="module_card" v-for="item in module" :key="item.id">
+    <div class="module_card" v-for="item in modules" :key="item.id">
       <div class="content">
         <img src="https://www.mooc.org/hubfs/are-free-online-courses-worth-it.jpg" alt="">
         <p>{{ item['name_' + $i18n.locale] }}</p>
@@ -18,7 +18,8 @@
     <Button class="p-button-outlined w-full" icon="pi pi-fw pi-desktop" :label="t('Тест')"/>
   </OverlayPanel>
 
-  <DataTable :value="module">
+  <DataTable selectionMode="single" v-model:selection="module"
+             :lazy="true" :value="modules">
     <template #header>
       <div class="table-header flex justify-content-between flex-wrap card-container purple-container">
         <div class="flex gap-2">
@@ -73,7 +74,24 @@ const modules = ref([]);
 const moduleDialog = ref(false);
 const module = ref(null);
 const submitted = ref(false);
-const formData = ref({});
+const formData = ref({
+  id: null,
+  course_id: 0,
+  hours: null,
+  name_kz: null,
+  name_ru: null,
+  name_en: null,
+  description_kz: null,
+  description_ru: null,
+  description_en: null,
+  duration_type: {
+    id: 1,
+    name: "hours",
+    name_kz: "Сағат",
+    name_en: "Hours",
+    name_ru: "Часы"
+  }
+});
 const props = defineProps ({
   courseID: {
     type: Number,
@@ -81,11 +99,12 @@ const props = defineProps ({
   }
 })
 
+
 const getModuleByCourseID = async () => {
   loading.value = true;
   try {
     const response = await service.getModulesByCourseID(course_id);
-    module.value = response.data;
+    modules.value = response.data;
   } catch (error) {
     console.error(error);
   } finally {
@@ -94,8 +113,25 @@ const getModuleByCourseID = async () => {
 };
 
 const addModule = () => {
+  formData.value = {
+    id: null,
+    course_id: 0,
+    hours: null,
+    name_kz: null,
+    name_ru: null,
+    name_en: null,
+    description_kz: null,
+    description_ru: null,
+    description_en: null,
+    duration_type: {
+      id: 1,
+      name: 'hours',
+      name_kz: "Сағат",
+      name_ru: "Часы",
+      name_en: "Hours"
+    }
+  };
   moduleDialog.value = true;
-  formData.value = {};
 };
 
 const closeModuleDialog = () => {
@@ -175,6 +211,15 @@ const deleteModule = (id) => {
 
 const updateModule = (data) => {
   formData.value = data;
+  if (!formData.value.duration_type) {
+    formData.value.duration_type = {
+      id: 1,
+      name: 'hours',
+      name_kz: "Сағат",
+      name_ru: "Часы",
+      name_en: "Hours"
+    }
+  }
   moduleDialog.value = true;
 };
 

@@ -56,7 +56,14 @@
         </div>
         <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
         <label>{{ t('course.moduleHours') }}</label>
-        <InputNumber :placeholder="t('course.moduleHours')" v-model="formData.hours"></InputNumber>
+        <Dropdown
+                  v-model="formData.duration_type" :options="durationTypeOptions"
+                  :placeholder="t('common.select')" class="mt-2"
+                  :optionLabel="['name_'+locale]" />
+        <InputNumber class="mt-2" :placeholder="formData.duration_type.name &&
+        formData.duration_type.name === 'hours' ?
+        t('course.moduleHours') : t('course.moduleCredits')"
+                     v-model="formData.hours"></InputNumber>
         <small class="p-error" v-if="!formData.hours && submitted">{{
             t('common.requiredField')
           }}</small>
@@ -92,7 +99,7 @@
       },
       disabled: () => !(formData.value.name_kz) || !(formData.value.description_kz) || !(formData.value.name_ru) ||
           !(formData.value.description_ru) || !(formData.value.name_en) || !(formData.value.description_en) ||
-          !(formData.value.hours)},
+          !(formData.value.hours) || !(formData.value.duration_type)},
   ])
   const submitted = ref(false);
   const props = defineProps ({
@@ -109,6 +116,14 @@
       default: Object
     }
   })
+  const durationTypeOptions = [
+    {
+      id: 1, name: "hours", name_kz: "Сағат", name_ru: "Часы", name_en: "Hours"
+    },
+    {
+      id:2, name:"credits", name_kz: "Кредиты", name_ru:"Кредиты", name_en:"Credits"
+    }
+  ]
 
   const addModulesToCourse = async () => {
     formData.value.course_id = props.courseID;

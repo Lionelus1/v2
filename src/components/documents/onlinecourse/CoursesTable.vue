@@ -184,7 +184,10 @@ export default {
         }],
         duration_type: {
           id: 1,
-          name: 0
+          name: 'hours',
+          name_kz: "Сағат",
+          name_ru: "Часы",
+          name_en: "Hours"
         }
       },
       courseValidate: {
@@ -379,7 +382,10 @@ export default {
         }],
         duration_type: {
           id: 1,
-          name: 0
+          name: 'hours',
+          name_kz: "Сағат",
+          name_ru: "Часы",
+          name_en: "Hours"
         }
       }
       this.getCourses()
