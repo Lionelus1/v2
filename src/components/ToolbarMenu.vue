@@ -48,7 +48,8 @@
       </div>
       <div class="flex" v-if="search || filter">
         <Button v-if="filter"
-            :style="{color: filtered ? '#2196f3':'#495057'}"
+            :label="filterLabel ? $t('common.filter') : ''"
+            :style="{color: filtered ? '#2196f3':'#495057', padding: '4px'}"
             class="p-button-text p-button-secondary"
             icon="fa-solid fa-filter"
             @click="filterClick($event)"/>
@@ -57,8 +58,9 @@
           <span class="p-input-icon-left" >
                 <i class="pi pi-search"/>
                 <InputText
+                    type="search"
                     class="search_toolbar"
-                    @keyup.enter="searchClick()"
+                    @search="searchClick()"
                     v-model="searchModel"
                     :placeholder="$t('common.search')"
                 /></span>
@@ -72,7 +74,7 @@
 <script setup>
 import {computed, onBeforeUnmount, onMounted, ref} from "vue";
 
-const props = defineProps(['data', 'notShowLabel','search','filter','filtered','border'])
+const props = defineProps(['data', 'notShowLabel','search','filter','filtered','border','filterLabel'])
 const containerRef = ref(null);
 const scrollStep = 50;
 const isScrollable = ref(false);

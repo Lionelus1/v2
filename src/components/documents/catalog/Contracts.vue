@@ -1,28 +1,8 @@
 <template>
   <ProgressBar v-if="loading" mode="indeterminate" class="progress-bar"/>
-  <h3>{{ $t("contracts.journal") }}</h3>
+  <TitleBlock :title="$t('contracts.journal')" />
+  <ToolbarMenu :data="menu" @filter="toggle('filterOverlayPanel', $event)" :filter="true" :filtered="filtered"/>
   <BlockUI :blocked="loading" class="card">
-    <Toolbar class="p-1">
-      <template #start>
-        <div class="flex flex-wrap gap-2">
-          <Button class="align-items-center" style="padding: 0.25rem 1rem;"
-            @click="openDocument" :disabled="!currentDocument">
-            <i class="fa-regular fa-address-card" /> &nbsp;{{ $t("contracts.card") }}</Button>
-          <Button class="align-items-center" style="padding: 0.25rem 1rem;"
-            @click="$router.push('/documents/contracts/' + this.currentDocument.uuid + '/related')"
-            :disabled="!currentDocument || currentDocument.docHistory.stateId !== Enum.SIGNED.ID ||
-            currentDocument.sourceType !== Enum.DocSourceType.FilledDoc">
-            <i class="fa-solid fa-file-invoice" /> &nbsp;{{ $t("contracts.menu.journal") }}</Button>
-        </div>
-      </template>
-      <template #end>
-        <div class="flex flex-wrap gap-2">
-          <Button class="align-items-center" :class="{'p-button-success': filter.applied, 'p-button': !filter.applied}"
-            style="padding: 0.25rem 1rem;" @click="toggle('filterOverlayPanel', $event)"> 
-            <i class="fa-solid fa-filter" /> &nbsp;{{ $t("contracts.filter.button") }}</Button>
-        </div>
-      </template>
-    </Toolbar>
     <DataTable :value="documents" dataKey="id" :rows="rows" :totalRecords="total" :first="first"
       :paginator="true" :paginatorTemplate="paginatorTemplate" :rowsPerPageOptions="[10, 25, 50]"
       :currentPageReportTemplate="currentPageReportTemplate" :lazy="true" :loading="tableLoading" 
@@ -85,15 +65,7 @@
       <Column style="min-width: 50px;">
         <template #body="slotProps">
           <div class="flex flex-wrap">
-            <Button @click="currentDocument=slotProps.data;open('documentInfoSidebar')"
-              class="p-button-text p-button-info p-1">
-              <i class="fa-solid fa-eye fa-xl"></i>
-            </Button>
-            <Button v-if="(slotProps.data.docHistory.stateId === Enum.CREATED.ID || 
-              slotProps.data.docHistory.stateId === Enum.REVISION.ID) && loginedUser.userID === slotProps.data.creatorID"
-              @click="currentDocument=slotProps.data;deleteFile()" class="p-button-text p-button-danger p-1">
-              <i class="fa-solid fa-trash fa-xl"></i>
-            </Button>
+            <ActionButton :show-label="true" :items="actions" @toggle="toggleActions(slotProps.data)" />
           </div>
         </template>
       </Column>
@@ -183,7 +155,7 @@ import FindUser from "@/helpers/FindUser";
 
 export default {
   name: 'Contracts',
-  components: { DocSignaturesInfo, FindUser },
+  components: {DocSignaturesInfo, FindUser },
   props: { },
   data() {
     return {
@@ -244,6 +216,8 @@ export default {
       templateSearchText: null,
 
       folders: [],
+      filtered: false,
+      actionsNode: {},
     }
   },
   created() {
@@ -303,6 +277,9 @@ export default {
       }
 
       this.$refs[ref].toggle(event);
+    },
+    toggleActions(node) {
+      this.actionsNode = node
     },
     getFullname(user) {
       let name = '';
@@ -526,6 +503,7 @@ export default {
     saveFilter() {
       this.filter = JSON.parse(JSON.stringify(this.tempFilter));
       this.filter.applied = true;
+      this.filtered = true;
     },
     clearFilter() {
       this.filter = {
@@ -539,6 +517,7 @@ export default {
         name: null,
         folder: null,
       };
+      this.filtered = false;
     },
     handleTemplateFilter(event) {
       if (event.value && event.value.length > 2) {
@@ -590,6 +569,41 @@ export default {
         }
       })
     },
+  },
+  computed: {
+    menu () {
+      return [
+        {
+          label: this.$t('contracts.card'),
+          icon: "fa-regular fa-address-card",
+          disabled: !this.currentDocument,
+          command: () => {this.openDocument()},
+        },
+        {
+          label: this.$t('contracts.menu.journal'),
+          icon: "fa-solid fa-file-invoice",
+          disabled: !this.currentDocument || this.currentDocument.docHistory.stateId !== Enum.SIGNED.ID ||
+              this.currentDocument.sourceType !== Enum.DocSourceType.FilledDoc,
+          command: () => {this.$router.push('/documents/contracts/' + this.currentDocument.uuid + '/related')},
+        },
+      ]
+    },
+    actions () {
+      return [
+        {
+          label: this.$t('common.show'),
+          icon: "fa-solid fa-eye",
+          command: () => {this.currentDocument=this.actionsNode;this.open('documentInfoSidebar')},
+        },
+        {
+          label: this.$t('common.delete'),
+          icon: "fa-solid fa-trash",
+          visible: (this.actionsNode.docHistory && this.actionsNode.docHistory.stateId === Enum.CREATED.ID ||this.actionsNode.docHistory && this.actionsNode.docHistory.stateId === Enum.REVISION.ID) && this.loginedUser.userID === this.actionsNode.creatorID,
+          command: () => {this.currentDocument=this.actionsNode;this.deleteFile()},
+        }
+
+      ]
+    },
   }
 }
 </script>
@@ -601,7 +615,7 @@ export default {
   z-index: 1102;
 }
 .card {
-  flex-grow: 1;
+  //flex-grow: 1;
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
