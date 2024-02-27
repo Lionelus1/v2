@@ -2,7 +2,7 @@
   <ConfirmPopup group="deleteResult"></ConfirmPopup>
   <vue-element-loading :active="isBlockUI" is-full-screen color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)" />
   <div class="col-12" v-if="plan && event">
-    <div>
+    <div class="text-left" style="width: 50%;">
       <div v-if="!resultId" @click="navigateToBack" class="inline-block"><i class="fa-solid fa-arrow-left mr-3" style="font-size: 16px;cursor: pointer"></i>
       </div>
       <div class="mb-0 mt-0 inline-block" style="font-size: 24px"> {{ $t('common.result') }}</div> &nbsp;
@@ -62,9 +62,10 @@
     <div>
       <TabView v-model:activeIndex="activeIndex" @tab-change="changeTab">
         <TabPanel :header="$t('common.properties')">
-          <div v-if="isPlanCreator" :style="{ 'z-index': 9999, 'position': 'relative' }">
+          <div class="text-left mb-3" v-if="isPlanCreator" :style="{ 'z-index': 9999, 'position': 'relative' }">
             <Menubar :model="initAcceptButtons" :key="active" :style="{ 'z-index': 9999, 'height': '36px', 'margin-top': '-7px', 'margin-left': '-14px', 'margin-right': '-14px' }"></Menubar>
           </div>
+             
            <div v-if="isPlanCreator && event && event.status.work_plan_event_status_id === 5">
             <Menubar :model="verifyMenu" :key="active" style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
           </div>
@@ -94,7 +95,7 @@
                 <div ref="content" class="p-fileupload-content">
                   <div class="p-fileupload-files">
                     <div class="p-fileupload-row" v-for="(file, index) of resultData[0].result_files" :key="index">
-                      <span class="mr-3" style="cursor: pointer;" @click="downloadFile(file)"><i
+                     <span class="mr-3" style="cursor: pointer;" @click="downloadFile(file)"><i
                           class="fa-solid fa-file-arrow-down fa-2x color-success"></i></span>
                       <span @click="downloadFile(file)"
                             style="cursor: pointer;">{{
@@ -269,7 +270,7 @@
 
                       <div class="p-fileupload-files">
                         <div class="p-fileupload-row" v-for="(file, index) of item.result_files" :key="index">
-                          <span class="mr-3" style="cursor: pointer;" @click="downloadFile(file.event_result_file)">
+                          <span class="mr-3" style="cursor: pointer;" @click="downloadFile(file)">
                             <i class="fa-solid fa-file-arrow-down fa-lg color-success"></i></span>
                           <span @click="downloadFile(file)" style="cursor: pointer;">{{
                             file.file_name ? file.file_name : file.event_result_file
@@ -498,7 +499,8 @@ export default {
       wordLimit: 50,
       wordMaxLimit: 250,
       wordCounter:0,
-      hasResultToApprove: false
+      hasResultToApprove: false,
+      formData: null
     }
   },
 
@@ -1349,4 +1351,5 @@ td {
 .p-menubar .p-submenu .p-menuitem {
     z-index: 9999;
 }
+
 </style>
