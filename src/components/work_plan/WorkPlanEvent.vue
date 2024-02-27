@@ -3,7 +3,7 @@
     <h3 v-if="plan">
       <TitleBlock :title="plan.work_plan_name" :show-back-button="true"/>
     </h3>
-    <div class="card" v-if="plan && plan.doc_info && plan.reject_history && isRejected">
+    <div class="card" v-if="plan && planDoc && isRejected">
       <div class="p-fluid">
         <div class="field">
           <label>{{ $t('common.state') }}:</label>
@@ -19,97 +19,25 @@
             <b>{{ plan.reject_history.user.fullName }}</b>
           </div>
         </div>
-        <div class="field" v-if="plan.reject_history.created_date">
+        <div class="field" v-if="planDoc.docHistory.setDate">
           <label>{{ $t('common.date') }}:</label>
           <div>
-            <b>{{ formatDateMoment(plan.reject_history.created_date, true) }}</b>
+            <b>{{ formatDateMoment(planDoc.docHistory.setDate, true) }}</b>
           </div>
         </div>
         <div class="field">
           <label>{{ $t('common.comment') }}:</label>
           <div>
-            <Message :closable="false" severity="warn"><span v-html="plan.reject_history.message"></span>
-            </Message>
+            <Message :closable="false" severity="warn"><span v-html="planDoc.docHistory.comment"></span></Message>
           </div>
         </div>
       </div>
     </div>
-    <div class="card" v-if="plan">
-      <Button v-if="((isPlanCreator || isEventsNull) && !isFinish)" :label="$t('common.add')" icon="pi pi-plus" @click="showDialog(dialog.add)"
-              class="p-button-sm ml-2"/>
-      <Button
-          v-if="plan && plan.doc_info && plan.doc_info?.docHistory && (plan.doc_info?.docHistory?.stateId === 1 || plan.doc_info?.docHistory?.stateId === 4) && isPlanCreator && isFinish"
-          type="button" icon="pi pi-send" class="p-button-sm p-button-outlined ml-2" :label="$t('common.action.sendToApprove')"
-          @click="showDialog(dialog.planApprove)"></Button>
-      <Button v-if="plan && isPlanCreator && !isFinish" :label="$t('common.complete')" icon="pi pi-check" @click="confirmFinish"
-              class="p-button-sm p-button-success ml-2" :disabled="!isFinshButtonDisabled"/>
-      <Button
-          v-if="isFinish && plan.doc_info && plan.doc_info.docHistory && !(plan.doc_info?.docHistory?.stateId === 1 || plan.doc_info?.docHistory?.stateId === 4)"
-          :label="$t('workPlan.viewPlan')" icon="pi pi-eye" @click="showDialog(dialog.planView)" class="p-button-sm p-button-outlined ml-2"/>
-      <Button v-if="isFinish && (isApproval || isPlanCreator || isAdmin) && (plan.doc_info?.docHistory?.stateId === 3 || oldPlan)" :label="$t('workPlan.reports')"
-              @click="navigateToReports" class="p-button-sm p-button-outlined ml-2"/>
-      <Button v-if="isFinish && isPlanCreator && (plan.doc_info?.docHistory?.stateId === 3) && isSciencePlan" :label="$t('workPlan.generateAct')"
-              @click="generateScienceReport" class="p-button-sm p-button-outlined ml-2"/>
-      <Button v-if="isSciencePlan && scienceDocs && scienceDocs.some(e => e.docType === docEnum.DocType.Contract)" :label="$t('contracts.contract')"
-              class="p-button-sm p-button-outlined ml-2" icon="fa-solid fa-download" @click="downloadContract('contract')"/>
-      <Button v-if="isSciencePlan && scienceDocs && scienceDocs.some(e => e.docType === docEnum.DocType.RelatedDoc)" :label="$t('common.additionalInfo')"
-              class="p-button-sm p-button-outlined ml-2" icon="fa-solid fa-download" @click="downloadContract('additional')"/>
-      <Button v-if="isSciencePlan && scienceDocs && !scienceDocs.some(e => e.docType === docEnum.DocType.RelatedDoc)" :label="$t('common.additionalInfo')"
-              class="p-button-sm p-button-outlined ml-2" icon="fa-solid fa-eye" @click="showDialog(dialog.uploadAdditionalFile)"/>
-    </div>
+    <ToolbarMenu v-if="plan" :data="toolbarMenus" @filter="toggle('global-filter', $event)" :filter="true" :filtered="filtered"/>
     <div class="card" v-if="plan">
       <TreeTable ref="workplantreetable" class="p-treetable-sm" :value="data" :lazy="true" :loading="loading" @nodeExpand="onExpand" scrollHeight="flex"
                  responsiveLayout="scroll" :resizableColumns="true" columnResizeMode="fit" showGridlines :paginator="true" :rows="10" :total-records="total"
                  @page="onPage($event)">
-        <template #header>
-          <div class="flex justify-content-between align-items-center">
-            <h5 class="m-0">{{ $t('workPlan.events') }} |
-              <router-link tag="a" to="/work-plan">{{ $t('workPlan.plans') }}</router-link>
-            </h5>
-            <Button type="button" icon="pi pi-search" :label="$t('common.search')" @click="toggle('global-filter', $event)" aria:haspopup="true"
-                    aria-controls="overlay_panel" class="p-input-icon-left">
-              <i class="fa-solid fa-filter fa-xl"></i>&nbsp;{{ $t('common.filter') }}
-            </Button>
-            <OverlayPanel ref="global-filter">
-              <div class="p-fluid">
-                <div class="field">
-                  <label>{{ $t('workPlan.eventName') }}</label>
-                  <InputText class="mt-2" type="text" :placeholder="$t('workPlan.eventName')" v-model="filters.name.value"/>
-                </div>
-                <div class="field">
-                  <label for="status-filter">{{ $t('common.status') }}</label>
-                  <Dropdown v-model="filters.status.value" optionValue="" :options="statuses" :placeholder="$t('common.select')" class="p-column-filter"
-                            :showClear="true">
-                    <template #value="slotProps">
-                      <span v-if="slotProps.value" :class="'customer-badge status-' + slotProps.value.id">
-                        {{
-                          $i18n.locale === 'kz' ? slotProps.value.nameKz : $i18n.locale === 'ru'
-                              ? slotProps.value.nameRu : slotProps.value.nameEn
-                        }}
-                      </span>
-                    </template>
-                    <template #option="slotProps">
-                      <span :class="'customer-badge status-' + slotProps.option.id">
-                        {{
-                          $i18n.locale === 'kz' ? slotProps.option.nameKz : $i18n.locale === 'ru'
-                              ? slotProps.option.nameRu : slotProps.option.nameEn
-                        }}
-                      </span>
-                    </template>
-                  </Dropdown>
-                </div>
-                <div class="field">
-                  <label>{{ $t('cafedra.responsible') }}</label>
-                  <FindUser v-model="filters.author.value" :max="1" :editMode="false"/>
-                </div>
-                <div class="field">
-                  <Button :label="$t('common.clear')" @click="clearFilter" class="mb-2 p-button-outlined"/>
-                  <Button :label="$t('common.search')" @click="initFilter" class="mt-2"/>
-                </div>
-              </div>
-            </OverlayPanel>
-          </div>
-        </template>
         <template #empty> {{ $t('common.noData') }}</template>
         <template #loading> {{ $t('common.loading') }}</template>
         <Column field="event_name" :header="$t('workPlan.eventName')" :expander="true" style="min-width:300px;width: 30%;">
@@ -225,13 +153,53 @@
     </template>
   </Dialog>
 
+  <OverlayPanel ref="global-filter">
+    <div class="p-fluid">
+      <div class="field">
+        <label>{{ $t('workPlan.eventName') }}</label>
+        <InputText class="mt-2" type="text" :placeholder="$t('workPlan.eventName')" v-model="filters.name.value"/>
+      </div>
+      <div class="field">
+        <label for="status-filter">{{ $t('common.status') }}</label>
+        <Dropdown v-model="filters.status.value" optionValue="" :options="statuses" :placeholder="$t('common.select')" class="p-column-filter"
+                  :showClear="true">
+          <template #value="slotProps">
+                      <span v-if="slotProps.value" :class="'customer-badge status-' + slotProps.value.id">
+                        {{
+                          $i18n.locale === 'kz' ? slotProps.value.nameKz : $i18n.locale === 'ru'
+                              ? slotProps.value.nameRu : slotProps.value.nameEn
+                        }}
+                      </span>
+          </template>
+          <template #option="slotProps">
+                      <span :class="'customer-badge status-' + slotProps.option.id">
+                        {{
+                          $i18n.locale === 'kz' ? slotProps.option.nameKz : $i18n.locale === 'ru'
+                              ? slotProps.option.nameRu : slotProps.option.nameEn
+                        }}
+                      </span>
+          </template>
+        </Dropdown>
+      </div>
+      <div class="field">
+        <label>{{ $t('cafedra.responsible') }}</label>
+        <FindUser v-model="filters.author.value" :max="1" :editMode="false"/>
+      </div>
+      <div class="field">
+        <Button :label="$t('common.clear')" @click="clearFilter" class="mb-2 p-button-outlined"/>
+        <Button :label="$t('common.search')" @click="initFilter" class="mt-2"/>
+      </div>
+    </div>
+  </OverlayPanel>
+
   <work-plan-event-add v-if="dialog.add.state" :visible="dialog.add.state" :data="selectedEvent" :items="selectedEvent ? selectedEvent.children : null"
                        :isMain="!!selectedEvent" :plan-data="plan" @hide="hideDialog(dialog.add)"/>
   <work-plan-event-edit-modal v-if="dialog.edit.state" :visible="dialog.edit.state" :planData="plan" :event="selectedEvent" @hide="hideDialog(dialog.edit)"/>
   <WorkPlanReportApprove v-if="showReportModal && scienceReport && plan" :approval-stages="approval_users" :visible="showReportModal && scienceReport"
-                         :doc-id="scienceReport.doc_id" :report="scienceReport" :plan="plan"></WorkPlanReportApprove>
-  <work-plan-approve v-if="dialog.planApprove.state" :visible="dialog.planApprove.state" :approval-stages="planApprovalStage"
-      :plan="plan" :events="data" @hide="hideDialog(dialog.planApprove)" @isSent="planSentToApprove"></work-plan-approve>
+                         :doc-id="scienceReport.doc_id" :report="scienceReport" :plan="plan" @sentToApprove="hideDialog(dialog.reportApprove)"/>
+  <work-plan-approve v-if="dialog.planApprove.state" :visible="dialog.planApprove.state" :approval-stages="planApprovalStage" :plan="plan" :events="data"
+                     @hide="hideDialog(dialog.planApprove)"
+                     @isSent="planSentToApprove"></work-plan-approve>
 </template>
 
 <script>
@@ -250,10 +218,13 @@ import WorkPlanReportApprove from "@/components/work_plan/WorkPlanReportApprove.
 import {DocService} from "@/service/doc.service";
 import ActionButton from "@/components/ActionButton.vue";
 import CustomFileUpload from "@/components/CustomFileUpload.vue";
+import DocState from "@/enum/docstates/index";
+import ToolbarMenu from "@/components/ToolbarMenu.vue";
 
 export default {
   name: "WorkPlanEvent",
   components: {
+    ToolbarMenu,
     CustomFileUpload,
     WorkPlanReportApprove,
     WorkPlanEventResult,
@@ -300,6 +271,7 @@ export default {
       parent: null,
       parentNode: null,
       plan: null,
+      planDoc: null,
       approval_users: null,
       loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID,
       windowHeight: window.innerHeight - 270,
@@ -317,7 +289,6 @@ export default {
       isCreator: false,
       isApproval: false,
       isPlanSentApproval: false,
-      isPlanApproved: false,
       isEventsNull: false,
       isShowPlanExecute: false,
       showReportDoc: false,
@@ -401,6 +372,8 @@ export default {
       oldPlan: false,
       documentFiles: null,
       service: new DocService(),
+      DocState: DocState,
+      filtered: false
     }
   },
   created() {
@@ -548,7 +521,6 @@ export default {
       this.planService.getWorkPlanApprovalUsers(parseInt(this.work_plan_id)).then(res => {
         if (res.data) {
           this.approval_users = res.data;
-          this.isPlanApproved = res.data.some(x => x.is_success);
           this.isPlanSentApproval = true;
           this.approval_users.forEach(e => {
             if (this.loginedUserId === e.user.id) {
@@ -574,16 +546,14 @@ export default {
     getPlan() {
       this.planService.getPlanById(this.work_plan_id).then(res => {
         this.plan = res.data;
+        this.planDoc = res.data.doc_info
         this.oldPlan = new Date(this.plan.create_date).getFullYear() < new Date().getFullYear()
         this.isFinish = this.plan.is_finish;
-        this.isRejected = this.plan.is_reject;
-        if (this.plan && this.plan.user.id === this.loginedUserId) {
-          this.isPlanCreator = true;
-
-        } else {
-          this.isPlanCreator = false;
-          //this.$router.push('/work-plan')
+        if (this.planDoc && this.planDoc.docHistory) {
+          this.isRejected = this.planDoc.docHistory.stateEn === this.DocState.REVISION.Value
         }
+        this.isPlanCreator = !!(this.plan && this.plan.user.id === this.loginedUserId);
+
         if (this.isSciencePlan) {
           this.planApprovalStage = [
             {
@@ -641,7 +611,6 @@ export default {
           ];
           this.getRelatedFiles()
         }
-        this.isPlanApproved = this.plan.doc_info?.docHistory.stateEn == "approved"
       }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
@@ -853,6 +822,18 @@ export default {
         }
       });
     },
+    confirmGenerateScienceReport() {
+      this.$confirm.require({
+        message: this.$t('common.confirmation'),
+        header: this.$t('common.confirm'),
+        icon: 'pi pi-info-circle',
+        acceptClass: 'p-button-rounded p-button-success',
+        rejectClass: 'p-button-rounded p-button-danger',
+        accept: () => {
+          this.generateScienceReport()
+        }
+      });
+    },
     generateScienceReport() {
       let data = {
         work_plan_id: parseInt(this.work_plan_id),
@@ -952,7 +933,7 @@ export default {
         doc_id: this.plan.doc_id,
         work_plan_name: this.plan.work_plan_name
       };
-      this.planService.rejectPlan(data).then(res => {
+      this.planService.rejectPlan(data).then(_ => {
         this.loading = false;
         this.hideDialog(this.dialog.planView)
         this.getPlan();
@@ -1003,6 +984,7 @@ export default {
     hideDialog(dialog) {
       this.selectedEvent = null
       dialog.state = false
+      this.showReportModal = false
       this.getPlan()
       this.getEventsTree(this.parentNode)
     },
@@ -1029,8 +1011,11 @@ export default {
       }).catch(_ => {
         this.$toast.add({severity: "error", summary: this.$t('common.message.uploadError'), life: 3000})
       })
-
     },
+    initSearch(searchText) {
+      this.filters.name.value = searchText
+      this.getEventsTree(null)
+    }
   },
   /*unmounted() {
     localStorage.removeItem("workPlan");
@@ -1084,6 +1069,91 @@ export default {
     },
     isFinshButtonDisabled() {
       return this.data && this.data.length > 0;
+    },
+    isCreatedPlan() {
+      return this.planDoc && this.planDoc.docHistory?.stateEn === this.DocState.CREATED.Value
+    },
+    isPlanApproved() {
+      return this.planDoc && this.planDoc.docHistory?.stateEn === this.DocState.APPROVED.Value
+    },
+    isPlanSentToRevision() {
+      return this.planDoc && this.planDoc.docHistory?.stateEn === this.DocState.REVISION.Value
+    },
+    toolbarMenus() {
+      return [
+        {
+          label: this.$t('common.add'),
+          icon: 'pi pi-plus',
+          visible: (this.isPlanCreator || this.isEventsNull) && !this.isFinish,
+          command: () => {
+            this.showDialog(this.dialog.add)
+          }
+        },
+        {
+          label: this.$t('common.action.sendToApprove'),
+          icon: 'pi pi-send',
+          visible: this.plan && this.planDoc && (this.isCreatedPlan || this.isPlanSentToRevision) && this.isPlanCreator && this.isFinish,
+          command: () => {
+            this.showDialog(this.dialog.planApprove)
+          }
+        },
+        {
+          label: this.$t('common.complete'),
+          icon: 'pi pi-check',
+          disabled: this.isFinshButtonDisabled,
+          visible: this.plan && this.isPlanCreator && !this.isFinish,
+          command: () => {
+            this.confirmFinish()
+          }
+        },
+        {
+          label: this.$t('workPlan.viewPlan'),
+          icon: 'pi pi-eye',
+          visible: this.isFinish && this.planDoc && !(this.isCreatedPlan || this.isPlanSentToRevision),
+          command: () => {
+            this.showDialog(this.dialog.planView)
+          }
+        },
+        {
+          label: this.$t('contracts.menu.actsJournal'),
+          visible: this.isFinish && this.isSciencePlan && (this.isApproval || this.isPlanCreator || this.isAdmin) &&
+              this.planDoc.docHistory?.stateEn === this.DocState.APPROVED.Value,
+          command: () => {
+            this.$router.push({path: '/documents/catalog/acts'})
+          }
+        },
+        {
+          label: this.$t('workPlan.generateAct'),
+          visible: this.isFinish && this.isPlanCreator && this.isPlanApproved && this.isSciencePlan,
+          command: () => {
+            this.confirmGenerateScienceReport()
+          }
+        },
+        {
+          label: this.$t('contracts.contract'),
+          visible: this.isSciencePlan && this.scienceDocs && this.scienceDocs.some(e => e.docType === this.docEnum.DocType.Contract),
+          icon: 'fa-solid fa-download',
+          command: () => {
+            this.downloadContract('contract')
+          }
+        },
+        {
+          label: this.$t('common.additionalInfo'),
+          visible: this.isSciencePlan && this.scienceDocs && this.scienceDocs.some(e => e.docType === this.docEnum.DocType.RelatedDoc),
+          icon: 'fa-solid fa-download',
+          command: () => {
+            this.downloadContract('additional')
+          }
+        },
+        {
+          label: this.$t('common.additionalInfo'),
+          visible: this.isSciencePlan && this.scienceDocs && !this.scienceDocs.some(e => e.docType === this.docEnum.DocType.RelatedDoc),
+          icon: 'fa-solid fa-eye',
+          command: () => {
+            this.showDialog(this.dialog.uploadAdditionalFile)
+          }
+        }
+      ]
     }
   }
 }
