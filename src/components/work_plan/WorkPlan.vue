@@ -1,43 +1,12 @@
 <template>
   <div class="col-12">
     <h3>{{ $t('workPlan.plans') }}</h3>
-    <div class="card">
-      <Button :label="$t('workPlan.addPlan')" icon="pi pi-plus" @click="openBasic" class="ml-2 p-button-outlined"/>
-    </div>
+    <ToolbarMenu :data="initMenu" @search="initSearch" :search="true" @filter="toggle('global-filter', $event)" :filter="isAdmin" :filtered="filtered" />
     <div class="card">
       <DataTable :lazy="true" :rowsPerPageOptions="[5, 10, 20, 50]" :value="data" dataKey="id" :rowHover="true"
         v-model:filters="filters" filterDisplay="menu" :loading="loading" responsiveLayout="scroll" :paginator="true"
         :rows="10" :totalRecords="total" @page="onPage"
         :globalFilterFields="['question', 'recipient', 'status', 'sendDate', 'createDate']" @sort="onSort($event)">
-        <template #header>
-          <div class="table-header flex justify-content-end align-items-center">
-            <div v-if="isAdmin">
-            <Button type="button" icon="fa-solid fa-filter" @click="toggle('global-filter', $event)" aria:haspopup="true"
-              aria-controls="overlay_panel" class="p-button-outlined mr-2" />
-            <OverlayPanel ref="global-filter">
-              <div v-for="(item, index) in types" :key="index" class="flex align-items-center">
-                <div class="field-radiobutton">
-                  <RadioButton v-model="selectedPlanType" :value="item.id" />
-                  <label :for="item" class="ml-2">{{ item['name_' + $i18n.locale] }}</label>
-                </div>
-              </div>
-              <div class="p-fluid">
-                <div class="field">
-                  <Button icon="pi pi-search" :label="$t('common.search')" class="ml-1" @click="setPlanType(null)" />
-                </div>
-                <div class="field">
-                  <Button icon="pi pi-trash" class="ml-1" @click="clearPlanTypeFilter()" :label="$t('common.clear')" />
-                </div>
-              </div>
-            </OverlayPanel>
-          </div>
-            <span class="p-input-icon-left"><i class="pi pi-search" />
-              <InputText type="search" v-model="lazyParams.searchText" @keyup.enter="getPlans"
-                :placeholder="$t('common.search')" @search="getPlans" />
-              <Button icon="pi pi-search" class="ml-1" @click="getPlans" />
-            </span>
-          </div>
-        </template>
         <template #empty> {{ $t('common.noData') }}</template>
         <template #loading> {{ $t('common.loading') }}</template>
         <Column field="content" :header="$t('workPlan.planName')" sortable>
@@ -81,16 +50,32 @@
       </DataTable>
     </div>
     <WorkPlanAdd v-if="showAddPlanDialog" :visible="showAddPlanDialog" @hide="closeBasic" />
+
+    <OverlayPanel ref="global-filter">
+      <div v-for="(item, index) in types" :key="index" class="flex align-items-center">
+        <div class="field-radiobutton">
+          <RadioButton v-model="selectedPlanType" :value="item.id" />
+          <label :for="item" class="ml-2">{{ item['name_' + $i18n.locale] }}</label>
+        </div>
+      </div>
+      <div class="p-fluid">
+        <div class="field">
+          <Button icon="pi pi-search" :label="$t('common.search')" class="button-blue p-button-sm" @click="setPlanType(null)" />
+          <Button icon="pi pi-trash" class="p-button-outlined p-button-sm mt-1" @click="clearPlanTypeFilter()" :label="$t('common.clear')" />
+        </div>
+      </div>
+    </OverlayPanel>
   </div>
 </template>
 
 <script>
 import WorkPlanAdd from "./WorkPlanAdd";
-import { getHeader, smartEnuApi, findRole } from "@/config/config";
+import { findRole } from "@/config/config";
 import { WorkPlanService } from "@/service/work.plan.service";
+import ToolbarMenu from "@/components/ToolbarMenu.vue";
 
 export default {
-  components: { WorkPlanAdd },
+  components: {ToolbarMenu, WorkPlanAdd },
   data() {
     return {
       data: [],
@@ -144,7 +129,8 @@ export default {
       ],
       selectedDocStatus: null,
       types: [],
-      showAddPlanDialog: false
+      showAddPlanDialog: false,
+      filtered: false
     }
   },
   mounted() {
@@ -159,6 +145,19 @@ export default {
       }
     });
 
+  },
+  computed: {
+    initMenu() {
+      return [
+        {
+          label: this.$t('workPlan.addPlan'),
+          icon: "pi pi-plus",
+          command: () => {
+            this.openBasic()
+          },
+        }
+      ]
+    }
   },
   created() {
     this.isAdmin = this.findRole(null, 'main_administrator')
@@ -258,7 +257,6 @@ export default {
       });
     },
     navigateToEvent(event) {
-      //localStorage.setItem('workPlan', JSON.stringify(event));
       this.$router.push({ name: 'WorkPlanEvent', params: { id: event.work_plan_id } });
     },
     formatDate(value) {
@@ -329,6 +327,10 @@ export default {
         this.$toast.add({severity: "error", summary: error, life: 3000});
       })
     },
+    initSearch(searchText) {
+      this.lazyParams.searchText = searchText
+      this.getPlans()
+    }
   }
 }
 </script>
