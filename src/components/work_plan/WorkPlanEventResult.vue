@@ -1160,7 +1160,7 @@ export default {
     },
     downloadFile(file) {
       this.isBlockUI = true;
-      let url = `${smartEnuApi}/serve?path=${file}`
+      let url = `${smartEnuApi}/serve?path=${file.event_result_file}`
       fetch(url, {
         method: 'GET',
         headers: getHeader()
