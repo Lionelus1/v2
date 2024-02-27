@@ -1,29 +1,11 @@
 <template>
   <ProgressSpinner v-if="loading" class="progress-spinner" strokeWidth="5"/>
-  <div class="flex flex-row mb-3">
-    <div class="arrow-icon" @click="$router.back()">
-      <i class="fas fa-arrow-left"></i>
-    </div>
-    <h4 class="m-0">{{ $t("contracts.menu.actsJournal") }}</h4>
-  </div>
+  <TitleBlock :title="$t('contracts.menu.actsJournal')" :show-back-button="true"/>
+  <ToolbarMenu v-if="this.findRole(null, RolesEnum.roles.MainAdministrator)" :data="menu"/>
   <BlockUI :blocked="loading" class="card">
-    <Toolbar class="p-1">
-      <template #start>
-        <div class="flex flex-wrap gap-2">
 <!--          <Button class="p-button-info align-items-center" style="padding: 0.25rem 1rem;"-->
 <!--            @click="openDocument" :disabled="!currentDocument">-->
 <!--            <i class="fa-regular fa-address-card" /> &nbsp;{{ $t("contracts.card") }}</Button>-->
-            <Button v-if="this.findRole(null, RolesEnum.roles.ActsToExecution) || this.findRole(null, RolesEnum.roles.MainAdministrator)"
-            class="p-button-info align-items-center" style="padding: 0.25rem 1rem;" @click="sendForExecution(currentDocument)" 
-            :disabled="!currentDocument || currentDocument.docHistory.stateId !== Enum.APPROVED.ID || executed(currentDocument) || execution(currentDocument)">
-            <i class="fa-solid fa-envelope-circle-check" /> &nbsp;{{ $t("contracts.menu.sendForExecution") }}</Button>
-          <Button v-if="this.findRole(null, RolesEnum.roles.Accountant) || this.findRole(null, RolesEnum.roles.MainAdministrator)"
-            class="p-button-info align-items-center" style="padding: 0.25rem 1rem;" @click="execute(currentDocument)"
-            :disabled="!currentDocument || currentDocument.docHistory.stateId !== Enum.APPROVED.ID || executed(currentDocument) || !execution(currentDocument)">
-            <i class="fa-solid fa-envelope-circle-check" /> &nbsp;{{ $t("contracts.executed") }}</Button>
-        </div>
-      </template>
-    </Toolbar>
     <DataTable :value="documents" dataKey="id" :rows="rows" :totalRecords="total" :first="first"
       :paginator="true" :paginatorTemplate="paginatorTemplate" :rowsPerPageOptions="[10, 25, 50]"
       :currentPageReportTemplate="currentPageReportTemplate" :lazy="true" :loading="tableLoading" 
@@ -70,15 +52,7 @@
       <Column style="min-width: 50px;">
         <template #body="slotProps">
           <div class="flex flex-wrap">
-            <Button v-if="slotProps.data.docHistory.stateId === Enum.APPROVED.ID"
-              @click="currentDocument=slotProps.data;download()"
-              class="p-button-text p-button-info p-1">
-              <i class="fa-solid fa-file-arrow-down fa-xl"></i>
-            </Button>
-            <Button @click="currentDocument=slotProps.data;open('documentInfoSidebar')"
-              class="p-button-text p-button-info p-1">
-              <i class="fa-solid fa-eye fa-xl"></i>
-            </Button>
+            <ActionButton :show-label="true" :items="actions" @toggle="toggleActions(slotProps.data)" />
           </div>
         </template>
       </Column>
@@ -133,6 +107,7 @@ export default {
       first: 0,
       page: 0,
       rows: 10,
+      actionsNode: {},
     }
   },
   created() {
@@ -353,7 +328,45 @@ export default {
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
       })
-    }
+    },
+    toggleActions(node) {
+      this.actionsNode = node
+    },
+  },
+  computed: {
+    menu () {
+      return [
+        {
+          label: this.$t('contracts.menu.sendForExecution'),
+          icon: "fa-solid fa-envelope-circle-check",
+          disabled: !this.currentDocument || this.currentDocument.docHistory.stateId !== Enum.APPROVED.ID || this.executed(this.currentDocument) || this.execution(this.currentDocument),
+          visible: this.findRole(null, RolesEnum.roles.ActsToExecution) || this.findRole(null, RolesEnum.roles.MainAdministrator),
+          command: () => {this.sendForExecution(this.currentDocument)},
+        },
+        {
+          label: this.$t('contracts.executed'),
+          icon: "fa-solid fa-envelope-circle-check",
+          disabled: !this.currentDocument || this.currentDocument.docHistory.stateId !== Enum.APPROVED.ID || this.executed(this.currentDocument) || !this.execution(this.currentDocument),
+          visible: this.findRole(null, RolesEnum.roles.Accountant) || this.findRole(null, RolesEnum.roles.MainAdministrator),
+          command: () => {this.execute(this.currentDocument)},
+        },
+      ]
+    },
+    actions () {
+      return [
+        {
+          label: this.$t('common.show'),
+          icon: "fa-solid fa-eye",
+          command: () => {this.currentDocument = this.actionsNode; this.open('documentInfoSidebar')},
+        },
+        {
+          label: this.$t('common.download'),
+          icon: "fa-solid fa-file-arrow-down",
+          visible: this.actionsNode.docHistory && this.actionsNode.docHistory.stateId === Enum.APPROVED.ID,
+          command: () => {this.currentDocument = this.actionsNode; this.download()},
+        },
+      ]
+    },
   }
 }
 </script>
@@ -372,7 +385,7 @@ export default {
   align-items: center; 
 }
 .card {
-  flex-grow: 1;
+  //flex-grow: 1;
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
