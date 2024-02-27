@@ -244,7 +244,7 @@
                       </div>
                       <div class="p-fileupload-files">
                         <div class="p-fileupload-row" v-for="(file, index) of item.result_files" :key="index">
-                          <span class="mr-3" style="cursor: pointer;" @click="downloadFile(file.event_result_file)">
+                          <span class="mr-3" style="cursor: pointer;" @click="downloadFile(file)">
                             <i class="fa-solid fa-file-arrow-down fa-lg color-success"></i></span>
                           <span @click="downloadFile(file)" style="cursor: pointer;">{{
                             file.file_name ? file.file_name : file.event_result_file
@@ -311,7 +311,7 @@
                 <div ref="content" class="p-fileupload-content">
                   <div class="p-fileupload-files">
                     <div class="p-fileupload-row" v-for="(file, index) of resultData.result_files" :key="index">
-                      <span class="mr-3" style="cursor: pointer;" @click="downloadFile(file.event_result_file)">
+                      <span class="mr-3" style="cursor: pointer;" @click="downloadFile(file)">
                         <i class="fa-solid fa-file-arrow-down fa-2x color-success"></i></span>
                       <span @click="downloadFile(file)" style="cursor: pointer;">{{
                         file.file_name ? file.file_name : file.event_result_file
@@ -1160,7 +1160,7 @@ export default {
     },
     downloadFile(file) {
       this.isBlockUI = true;
-      let url = `${smartEnuApi}/serve?path=${file.event_result_file}`
+      let url = `${smartEnuApi}/serve?path=${file}`
       fetch(url, {
         method: 'GET',
         headers: getHeader()
