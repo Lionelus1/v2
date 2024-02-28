@@ -1773,7 +1773,8 @@ export default {
             applicationNumber: 'Application Number:',
             created: 'Created',
             closed: 'Closed',
-            date: 'application data'
+            date: 'Select a date',
+            dateTime:'Choose a time'
         },
 
     }

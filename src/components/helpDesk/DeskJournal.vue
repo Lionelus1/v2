@@ -1,16 +1,16 @@
 <template>
   <div class="col-12">
     <h3>{{ $t('helpDesk.title') }}</h3>
+    <ToolbarMenu :data="mainMenu" @search="search" :search="true" @filter="toggleFilter($event)" :filter="true" :filtered="filtered">
+      <template #end>
+        <Button class="align-items-center" :class="{
+          'p-button-success p-button-outlined': filter.applied,
+          'p-button-secondary p-button-text': !filter.applied
+        }">
+        </Button>
+      </template>
+    </ToolbarMenu>
     <BlockUI :blocked="loading" class="card">
-      <Menubar class="p-1" :model="mainMenu" style="z-index: 2">
-        <template #end>
-          <Button class="align-items-center" :class="{
-            'p-button-success p-button-outlined': filter.applied,
-            'p-button-secondary p-button-text': !filter.applied
-          }">
-          </Button>
-        </template>
-      </Menubar>
       <!-- <Button :label="$t('common.createNew')" icon="pi pi-plus" @click="openBasic" class="ml-2"/> -->
       <Dialog :header="$t('helpDesk.application.applicationName')" v-model:visible="visibility.newPublicationDialog" :style="{ width: '450px' }"
         class="p-fluid">
@@ -19,26 +19,20 @@
           <Dropdown v-model="selectedDirection" :options="directions" optionLabel="name" :placeholder="$t('common.select')" />
         </div>
         <template #footer>
-          <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger" @click="close('newPublicationDialog')" />
-          <Button :label="$t('common.createNew')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2" :disabled="!selectedDirection"
+          <Button :label="$t('common.cancel')" icon="fa-solid fa-times" class="p-button-rounded p-button-danger"
+            @click="close('newPublicationDialog')" />
+          <Button :label="$t('common.createNew')" icon="pi pi-plus" class="p-button-rounded p-button-success mr-2" :disabled="!selectedDirection"
             @click="createHelpDesk" />
 
         </template>
       </Dialog>
       <div>
         <DataTable :lazy="true" :rowsPerPageOptions="[5, 10, 20, 50]" :value="data" dataKey="id" :rowHover="true" v-model:filters="filters"
-          filterDisplay="menu" :loading="loading" responsiveLayout="scroll" :paginator="true" selectionMode="single" stripedRows class="flex-grow-1"
-          :rows="10" :totalRecords="total" @page="onPage" v-model:selection="currentDocument" :first="first" scrollable scrollHeight="flex"
+          filterDisplay="menu" :loading="loading" responsiveLayout="scroll" :paginator="true" selectionMode="single" stripedRows class="p-datatable-sm"
+          :rows="10" :totalRecords="total" @page="onPage" v-model:selection="currentDocument" :first="first" scrollable scrollHeight="flex" @lazy="true"
           :globalFilterFields="['creationTime', 'priority', 'status', 'requestReason', 'categoryApplication', 'responsible']">
 
-          <template #header>
-            <div class="table-header flex justify-content-end align-items-center">
-              <span class="p-input-icon-left"><i class="pi pi-search" />
-                <InputText type="search" :placeholder="$t('common.search')" />
-                <Button icon="pi pi-search" class="ml-1" />
-              </span>
-            </div>
-          </template>
+
           <template #empty> {{ $t('common.noData') }}</template>
           <template #loading> {{ $t('common.loading') }}</template>
           <Column field="content" :header="$t('contracts.columns.number')" sortable>
@@ -83,11 +77,11 @@
           <Column style="min-width: 50px;">
             <template #body="{ data }">
               <div class="flex flex-wrap column-gap-1 row-gap-1">
-                <Button @click="currentDocument = data; openDocument()" class="p-button-text p-button-info p-1">
-                  <i class="fa-solid fa-pen fa-xl"></i>
+                <Button class="p-button-text p-button-warning p-1 mr-2" @click="currentDocument = data; openDocument()">
+                  <i class="fa-solid fa-pencil fa-xl"></i>
                 </Button>
-                <Button @click="currentDocument = data; deleteFile()" class="p-button-text p-button-danger p-1">
-                  <i class="fa-solid fa-trash fa-xl"></i>
+                <Button class="p-button-text p-button-danger p-1 mr-2" @click="currentDocument = data; deleteFile()">
+                  <i class="fa-solid fa-trash-can fa-xl"></i>
                 </Button>
               </div>
             </template>
@@ -99,12 +93,15 @@
 </template>
   
 <script>
+import ToolbarMenu from "@/components/ToolbarMenu.vue";
 import { getHeader, smartEnuApi } from "@/config/config";
 import axios from 'axios';
 
 
 export default {
-
+  components: {
+    ToolbarMenu
+  },
   data() {
     return {
       request: {
@@ -151,20 +148,6 @@ export default {
         status: null,
         years: [],
       },
-      mainMenu: [
-        {
-          label: this.$t("scienceWorks.buttons.card"),
-          icon: "fa-regular fa-address-card",
-          command: () => { this.openDocument() },
-          disabled: () => !this.currentDocument,
-        },
-        {
-          label: this.$t('scienceWorks.menu.newArticle'),
-          icon: "fa-solid fa-plus",
-          command: () => { this.open('newPublicationDialog') },
-
-        }
-      ],
       directions: null,
       showModal: false,
       total: 0,
@@ -172,7 +155,27 @@ export default {
       lazyParams: {
         page: 0,
         rows: 10,
-      }
+      },
+      filtered: false,
+      sort: null
+    }
+  },
+  computed: {
+    mainMenu() {
+      return [
+        {
+          label: this.$t("scienceWorks.buttons.card"),
+          icon: "pi pi-fw pi-save",
+          command: () => { this.openDocument() },
+          disabled: !this.currentDocument,
+        },
+        {
+          label: this.$t('scienceWorks.menu.newArticle'),
+          icon: "fa-solid fa-plus",
+          command: () => { this.open('newPublicationDialog') },
+
+        }
+      ]
     }
   },
   created() {
@@ -235,8 +238,11 @@ export default {
     },
     openDocument() {
       if (this.currentDocument) {
-        // this.$router.push('/helpdesk/request/' + this.currentDocument.uuid);
-        this.$router.push({ name: 'Request', params: { uuid: this.currentDocument.uuid, id: this.currentDocument.id } })
+        if (this.currentDocument.category.code != 'course_application') {
+          this.$router.push({ name: 'Request', params: { uuid: this.currentDocument.uuid, id: this.currentDocument.id } })
+        } else {
+          this.$router.push({ name: 'CourseRegistration', params: { uuid: this.currentDocument.uuid, id: this.currentDocument.id } })
+        }
       }
     },
     getCategory() {
@@ -254,6 +260,7 @@ export default {
             return {
               id: item.id,
               name: item.name_kz,
+              code: item.code
             };
           });
 
@@ -274,13 +281,19 @@ export default {
     createHelpDesk() {
       this.request.category = this.selectedDirection
 
+
+
       axios.post(smartEnuApi + "/helpdesk/ticket/create", this.request, { headers: getHeader() })
         .then(res => {
           this.uuid = res.data
 
           this.close('newPublicationDialog')
           this.loading = false;
-          this.$router.push({ name: 'Request', params: { uuid: this.uuid, isCreated: 1 }, state: { isCreated: 1 } })
+          if (this.selectedDirection.code != 'course_application') {
+            this.$router.push({ name: 'Request', params: { uuid: this.uuid }, state: { isCreated: 1 } })
+          } else {
+            this.$router.push({ name: 'CourseRegistration', params: { uuid: this.uuid, isCreated: 1 }, state: { isCreated: 1 } })
+          }
         }).catch(err => {
           if (err.response && err.response.status == 401) {
             this.$store.dispatch("logLout")
@@ -320,6 +333,12 @@ export default {
             life: 3000,
           });
         });
+    },
+    search(data) {
+      alert(data)
+    },
+    toggleFilter(event) {
+      this.sort = event
     }
 
   }

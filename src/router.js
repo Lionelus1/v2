@@ -76,9 +76,9 @@ const routes = [
         beforeEnter: ifNotAuthenticated,
     },
     {
-      path: '/privacy',
-      name: 'Privacy',
-      component: load('Privacy')
+        path: '/privacy',
+        name: 'Privacy',
+        component: load('Privacy')
     },
     {
         path: '/login',
@@ -492,42 +492,42 @@ const routes = [
                 name: '/queue',
                 component: load('queue/Queue'),
                 beforeEnter: ifAuthenticated,
-                
+
             },
             {
                 path: '/queue/operator/:id/:parentID',
                 name: '/queueOperator',
                 component: load('queue/Operator'),
                 beforeEnter: ifAuthenticated,
-                
+
             },
             {
                 path: '/queueService',
                 name: '/queueService',
                 component: load('queue/QueueService'),
                 beforeEnter: ifAuthenticated,
-                
+
             },
             {
                 path: '/queue/terminal/:id',
                 name: '/queueTerminal',
                 component: load('queue/Terminal'),
                 beforeEnter: ifAuthenticated,
-                
+
             },
             {
                 path: '/queue/tv/:id',
                 name: '/queueTv',
                 component: load('queue/Tv'),
                 beforeEnter: ifAuthenticated,
-                
+
             },
             {
                 path: '/queue/QueueReport/:id',
                 name: '/queueReport',
                 component: load('queue/QueueReport'),
                 beforeEnter: ifAuthenticated,
-                
+
             },
             {
                 path: '/reception',
@@ -546,7 +546,7 @@ const routes = [
                 name: 'Cafedra',
                 component: load('documents/Cafedra'),
                 beforeEnter: ifAuthenticated,
-                
+
             },
             {
                 path: '/access',
@@ -577,6 +577,12 @@ const routes = [
                         name: 'Request',
                         component: load('helpDesk/Request'),
                         beforeEnter: ifAuthenticated,
+                    },
+                    {
+                        path: '/request/course/:uuid',
+                        name: 'CourseRegistration',
+                        component: load('helpDesk/CourseRegistration'),
+                        beforeEnter: ifAuthenticated
                     }
                 ]
             },
@@ -806,7 +812,7 @@ const routes = [
             },
         ]
     },
-   
+
     {
         path: '/guide',
         name: 'Guide',

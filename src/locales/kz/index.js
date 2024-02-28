@@ -1786,7 +1786,8 @@ export default {
             applicationNumber: 'Өтінім нөмірі:',
             created: 'Құрылды',
             closed: 'Жабық',
-            date:'Өтінім күні'
+            date:'Күнді таңдаңыз',
+            dateTime:'Уақытты таңдаңыз'
         },
 
     }

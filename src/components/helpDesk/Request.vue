@@ -6,10 +6,18 @@
     </div>
     <h4 class="m-0">{{ $t("helpDesk.application.applicationName") }}</h4>
   </div>
+  <ToolbarMenu :data="menu" @search="search" :search="true" @filter="toggleFilter($event)" :filter="true" :filtered="filtered">
+    <template #end>
+      <Button class="align-items-center" :class="{
+        'p-button-success p-button-outlined': filter.applied,
+        'p-button-secondary p-button-text': !filter.applied
+      }">
+      </Button>
+    </template>
+  </ToolbarMenu>
   <BlockUI v-if="haveAccess" :blocked="loading" class="card">
-    <Menubar :model="menu" class="m-0 pt-0 pb-0"></Menubar>
     <div class="">
-      <div class="p-fluid md:col-6 mt-4">
+      <div class="p-fluid md:col-6">
         <label>{{ $t('helpDesk.application.categoryApplication') }}</label>
         <InputText type="text" v-model="selectedDirection['name_' + $i18n.locale]" disabled />
       </div>
@@ -24,7 +32,7 @@
             :yearNavigator="true" yearRange="1990:2050" />
         </div>
         <div class="p-fluid md:col-6">
-          <label>{{ $t('helpDesk.application.date') }}</label>
+          <label>{{ $t('helpDesk.application.dateTime') }}</label>
           <PrimeCalendar id="calendar-timeonly" :placeholder="$t('common.select')" v-model="request.dateTime" timeOnly />
         </div>
       </div>
@@ -39,7 +47,7 @@
             :yearNavigator="true" yearRange="1990:2050" />
         </div>
         <div class="p-fluid md:col-6">
-          <label>{{ $t('helpDesk.application.date') }}</label>
+          <label>{{ $t('helpDesk.application.dateTime') }}</label>
           <PrimeCalendar id="calendar-timeonly" :placeholder="$t('common.select')" v-model="request.dateTime" timeOnly />
         </div>
       </div>
@@ -62,12 +70,15 @@
   </BlockUI>
 </template>
 <script>
+import ToolbarMenu from "@/components/ToolbarMenu.vue";
 import DocEnum from "@/enum/docstates/index";
 import { getHeader, smartEnuApi } from "@/config/config";
 import axios from "axios";
 export default {
   name: 'Request',
-  components: {},
+  components: {
+    ToolbarMenu
+  },
   data() {
     return {
       choseAudience: null,
@@ -106,6 +117,7 @@ export default {
         local: null,
         date_ranges: null,
         dateTime: null,
+        filtered: false,
       },
       menu: [
         {
@@ -116,7 +128,7 @@ export default {
         },
         {
           label: this.$t("common.send"),
-          icon: "pi pi-send",
+          icon: "pi pi-fw pi-send",
           disabled: () => !this.isSendItemsRequest,
           items: [
             {
@@ -180,6 +192,12 @@ export default {
           this.loading = false;
         });
     },
+    search(data) {
+      alert(data)
+    },
+    toggleFilter(event) {
+      this.sort = event
+    }
 
   },
   created() {
