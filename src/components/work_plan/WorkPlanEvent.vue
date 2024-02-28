@@ -548,7 +548,7 @@ export default {
         this.plan = res.data;
         this.planDoc = res.data.doc_info
         this.oldPlan = new Date(this.plan.create_date).getFullYear() < new Date().getFullYear()
-        this.isFinish = this.plan.is_finish;
+        this.isFinish = this.plan.is_finish != null;
         if (this.planDoc && this.planDoc.docHistory) {
           this.isRejected = this.planDoc.docHistory.stateEn === this.DocState.REVISION.Value
         }
@@ -1067,8 +1067,8 @@ export default {
     isOperPlan() {
       return this.plan && ((this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Oper) || this.plan.is_oper)
     },
-    isFinshButtonDisabled() {
-      return this.data && this.data.length > 0;
+    isEventListEmpty() {
+      return this.data && this.data.length === 0;
     },
     isCreatedPlan() {
       return this.planDoc && this.planDoc.docHistory?.stateEn === this.DocState.CREATED.Value
@@ -1080,11 +1080,13 @@ export default {
       return this.planDoc && this.planDoc.docHistory?.stateEn === this.DocState.REVISION.Value
     },
     toolbarMenus() {
+      console.log(this.isEventListEmpty)
       return [
         {
           label: this.$t('common.add'),
           icon: 'pi pi-plus',
           visible: (this.isPlanCreator || this.isEventsNull) && !this.isFinish,
+          color: 'blue',
           command: () => {
             this.showDialog(this.dialog.add)
           }
@@ -1100,8 +1102,9 @@ export default {
         {
           label: this.$t('common.complete'),
           icon: 'pi pi-check',
-          disabled: this.isFinshButtonDisabled,
+          disabled: !this.data || this.data.length === 0,
           visible: this.plan && this.isPlanCreator && !this.isFinish,
+          color: 'yellow',
           command: () => {
             this.confirmFinish()
           }
