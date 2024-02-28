@@ -338,7 +338,7 @@ export default {
       return [
         {
           label: this.$t('contracts.menu.sendForExecution'),
-          icon: "fa-solid fa-envelope-circle-check",
+          icon: "fa-solid fa-circle-check",
           disabled: !this.currentDocument || this.currentDocument.docHistory.stateId !== Enum.APPROVED.ID || this.executed(this.currentDocument) || this.execution(this.currentDocument),
           visible: this.findRole(null, RolesEnum.roles.ActsToExecution) || this.findRole(null, RolesEnum.roles.MainAdministrator),
           command: () => {this.sendForExecution(this.currentDocument)},

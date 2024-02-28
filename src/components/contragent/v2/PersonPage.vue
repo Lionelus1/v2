@@ -1,6 +1,6 @@
 <template>
     <ProgressSpinner v-if="loading" class="progress-spinner" strokeWidth="5"/>
-    <ToolbarMenu :data="menu"/>
+    <ToolbarMenu :data="menu" border="true"/>
     <BlockUI v-if="!loading" class="p-fluid" :blocked="loading">
       <TabView class="custom-tabview">
         
