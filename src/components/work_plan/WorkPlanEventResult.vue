@@ -2,11 +2,49 @@
   <ConfirmPopup group="deleteResult"></ConfirmPopup>
   <vue-element-loading :active="isBlockUI" is-full-screen color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)" />
   <div class="col-12" v-if="plan && event">
-    <div>
+    <div class="text-left" style="width: 50%;">
       <div v-if="!resultId" @click="navigateToBack" class="inline-block"><i class="fa-solid fa-arrow-left mr-3" style="font-size: 16px;cursor: pointer"></i>
       </div>
-      <div class="mb-0 mt-0 inline-block" style="font-size: 24px"> {{ $t('common.result') }}</div>
+      <div class="mb-0 mt-0 inline-block" style="font-size: 24px"> {{ $t('common.result') }}</div> &nbsp;
+      <span v-if="isPlanCreator"
+              :class="
+                'customer-badge status-' + event.status.work_plan_event_status_id
+              "
+              style="margin-top: 5px;vertical-align: top;"
+              >{{
+                $i18n.locale === "kz"
+                  ? event.status.name_kz
+                  : $i18n.locale === "ru"
+                  ? event.status.name_ru
+                  : event.status.name_en
+              }}</span>
+
     </div>
+    <!-- <div class="text-right" style="margin-top:-30px;padding-bottom: 3px;">
+      
+                <Button type="button" icon="fa-solid fa-filter" label="Filter"
+                        @click="toggle('global-filter', $event)" aria:haspopup="true" aria-controls="overlay_panel"
+                        class="p-button-outlined mr-2" />
+                <OverlayPanel ref="global-filter">
+                    <div class="field">
+                      <label>{{ $t('cafedra.responsible') }}</label>
+                      <FindUser v-model="formData" :max="1" :editMode="false"/>
+                      <small class="p-error" v-if="formData">{{ $t("common.requiredField") }}</small>
+                    </div>
+                    <div class="p-fluid">
+                        <div class="field">
+                            <br />
+
+                            <Button icon="pi pi-trash" class="ml-1" @click="clearMenuTypeFilter()"
+                                    :label="$t('common.clear')" />
+                        </div>
+                        <div class="field">
+                            <Button icon="pi pi-search" :label="$t('common.search')" class="ml-1" @click="orderColumn(null)" />
+                        </div>
+                    </div>
+                </OverlayPanel>
+              
+      </div> -->
 
     <!-- <div v-if="resultData && resultData[0].plan_event_result_history[0].state_id === 6 && (loginedUserId === resultData[0].result_text[0].user.userID)">
       <div v-if="resultData && event && resultData[0].reject_history">
@@ -49,14 +87,15 @@
     <div>
       <TabView v-model:activeIndex="activeIndex" @tab-change="changeTab">
         <TabPanel :header="$t('common.properties')">
-          <div
-            v-if="event &&
-              (isCurrentUserApproval && (event.status.work_plan_event_status_id === 1 || event.status.work_plan_event_status_id === 4 || event.status.work_plan_event_status_id === 6))">
-            <Menubar :model="userMenuItems" :key="active" style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
+          <div class="text-left mb-3" v-if="isPlanCreator" :style="{ 'z-index': 9999, 'position': 'relative' }">
+            <Menubar :model="initAcceptButtons" :key="active" :style="{ 'z-index': 9999, 'height': '36px', 'margin-top': '-7px', 'margin-left': '-14px', 'margin-right': '-14px' }"></Menubar>
           </div>
-
            <div v-if="isPlanCreator && event && event.status.work_plan_event_status_id === 5">
             <Menubar :model="verifyMenu" :key="active" style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
+          </div>
+          <div v-if="event && isInspect">
+            <!-- <div v-if="resultData">{{ resultData[0].plan_event_result_history[0].state_id }}</div> -->
+            <Menubar :model="userMenuItems" :key="active" style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
           </div>
           <div class="grid mt-3" v-if="plan && resultData && (new Date(plan.create_date).getFullYear() < new Date().getFullYear())">
             <div class="p-sm-12 md:col-12 lg:col-12 p-xl-6">
@@ -66,9 +105,9 @@
               </div>
               <div class="field" v-if="plan && resultData && !isSciencePlan">
                 <label class="bold">{{ $t('common.result') }}</label>
-                <div v-if="resultData[0].event_result" class="mb-2">
+                <div v-if="resultData[0].event_result" class="mb-2" style="z-index: -1;">
                   <Divider align="left">
-                    <i class="fa-solid fa-user mr-1"></i><b>{{ item.user.fullName }}</b>
+                    <i class="fa-solid fa-user mr-1" ></i><b>{{ item.user.fullName }}</b>
                   </Divider>
                   <p v-html="resultData[0].event_result"></p>
                 </div>
@@ -84,7 +123,7 @@
                 <div ref="content" class="p-fileupload-content">
                   <div class="p-fileupload-files">
                     <div class="p-fileupload-row" v-for="(file, index) of resultData[0].result_files" :key="index">
-                      <span class="mr-3" style="cursor: pointer;" @click="downloadFile(file)"><i
+                     <span class="mr-3" style="cursor: pointer;" @click="downloadFile(file)"><i
                           class="fa-solid fa-file-arrow-down fa-2x color-success"></i></span>
                       <span @click="downloadFile(file)"
                             style="cursor: pointer;">{{
@@ -140,7 +179,7 @@
 
                 <small v-if="isSciencePlan && submitted && (inputWordCount < wordLimit)" class="p-error">{{$t('workPlan.minWordCount')}}</small>
               </div> -->
-              <div class="field" v-if="plan && isRespUserForWrite">
+              <div class="field" v-if="plan && isRespUserForWrite && isInspect">
                 <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadFile($event)" :auto="true" :multiple="true"
                   :chooseLabel="$t('smartenu.chooseAdditionalFile')"></FileUpload>
               </div>
@@ -170,7 +209,7 @@
               <div class="field" v-if="plan && resultData">
                 <!-- <label class="bold">{{ $t('common.result') }}</label> -->
                 <!-- {{ resultData[0] }} -->
-
+                
                 <div v-for="(item, index) of resultData" :key="index" class="mb-2">
                   <Divider align="left">
                     <div class="flex justify-content-center align-items-center">
@@ -190,7 +229,7 @@
                     </div>
 
                   </Divider>
-                  <Inplace v-if="(item.result_text && (loginedUserId === item.result_text[0].user.userID) && event &&
+                 <Inplace v-if="(item.result_text && (loginedUserId === item.result_text[0].user.userID) && event &&
                     (item.plan_event_result_history && item.plan_event_result_history[0].state_id === 6)) || (item.result_text && isPlanCreator && event &&
                     (item.plan_event_result_history && item.plan_event_result_history[0].state_id === 5) && isSciencePlan)" :active="item.isActive" @open="openInplace(item)">
                     <template #display>
@@ -259,7 +298,7 @@
 
                       <div class="p-fileupload-files">
                         <div class="p-fileupload-row" v-for="(file, index) of item.result_files" :key="index">
-                          <span class="mr-3" style="cursor: pointer;" @click="downloadFile(file.event_result_file)">
+                          <span class="mr-3" style="cursor: pointer;" @click="downloadFile(file)">
                             <i class="fa-solid fa-file-arrow-down fa-lg color-success"></i></span>
                           <span @click="downloadFile(file)" style="cursor: pointer;">{{
                             file.file_name ? file.file_name : file.event_result_file
@@ -382,7 +421,7 @@
     </div>
   </Sidebar>
   <Sidebar v-model:visible="rejectMessageSidebar" position="right" header="Work Plan Reject Message">
-    <div v-if="resultData && resultData[0].plan_event_result_history[0].state_id === 6 && (loginedUserId === resultData[0].result_text[0].user.userID)">
+    <div v-if="(resultData && resultData[0].plan_event_result_history[0].state_id === 6 && (loginedUserId === resultData[0].result_text[0].user.userID)) || (resultData && resultData[0].plan_event_result_history[0].state_id === 6 && isAdmin)">
       <div v-if="resultData && event && resultData[0].reject_history">
         <div class="p-fluid">
           <!-- <div class="field">
@@ -424,8 +463,8 @@
 <script>
 import {findRole, getHeader, smartEnuApi} from "@/config/config";
 import moment from "moment";
-import {WorkPlanService} from '../../service/work.plan.service'
-import Enum from "@/enum/workplan/index"
+import {WorkPlanService} from '../../service/work.plan.service';
+import Enum from "@/enum/workplan/index";
 
 export default {
   name: "WorkPlanEventResult",
@@ -460,6 +499,7 @@ export default {
       authUser: JSON.parse(localStorage.getItem("loginedUser")),
       quill: null,
       isPlanCreator: false,
+      isCreator: false,
       isPlanCreatorApproval: false,
       isCurrentUserApproval: false,
       planService: new WorkPlanService(),
@@ -487,7 +527,8 @@ export default {
       wordLimit: 50,
       wordMaxLimit: 250,
       wordCounter:0,
-      hasResultToApprove: false
+      hasResultToApprove: false,
+      formData: null
     }
   },
 
@@ -540,7 +581,85 @@ export default {
     },
     isRespUserForWrite(){
       return this.respUserExists(this.loginedUserId)
-    }
+    },
+    isInspect(){
+      return this.resultData && this.resultData[0].plan_event_result_history[0].state_id === 7
+    },
+    initAcceptButtons() {
+      const createConfirmationDialog = (status_code) => {
+        return {
+          message: this.$t("common.confirmation"),
+          header: this.$t("common.confirm"),
+          icon: "pi pi-exclamation-triangle",
+          rejectClass: "p-button-secondary p-button-outlined",
+          rejectLabel: this.$t("common.cancel"),
+          acceptLabel: this.$t("common.continue"),
+          accept: () => {
+            let params = {
+              event_id: this.event.work_plan_event_id || null,
+              status_code: status_code || null,
+            };
+            this.planService
+              .updateEventStatus(params)
+              .then((res) => {
+                this.$toast.add({
+                  severity: "success",
+                  detail: this.$t("common.success"),
+                  life: 3000,
+                });
+                //this.getEventsTree();
+                this.getEvent();
+              })
+              .catch((error) => {
+                this.$toast.add({
+                  severity: "error",
+                  summary: error.message || this.$t('workPlan.errorUpdatingStatus'),
+                  life: 3000,
+                });
+              });
+          },
+          reject: () => {
+            this.$toast.add({
+              severity: "info",
+              summary: this.$t('common.cancel'),
+              detail: this.$t('workPlan.operationCanceled'),
+              life: 3000,
+            });
+          },
+        };
+      };
+
+      return [
+      {
+        label: this.$t('common.action.accept'),
+        icon: 'pi pi-check',
+        items: [
+        {
+          label: this.$t("common.done"),
+          icon: "pi pi-verified",
+          command: () => {
+            this.$confirm.require(createConfirmationDialog(2));
+          },
+        },
+        {
+          label: this.$t("workPlan.partiallyCompleted"),
+          icon: "pi pi-chart-pie",
+          command: () => {
+            this.$confirm.require(createConfirmationDialog(4));
+          },
+        },
+        {
+          label: this.$t("common.notDone"),
+          icon: "pi pi-times-circle",
+          command: () => {
+            this.$confirm.require(createConfirmationDialog(3));
+          },
+        },
+        ]
+      }
+
+      ];
+    },
   },
   watch: {
     result(newValue) {
@@ -558,6 +677,9 @@ export default {
   },
   methods: {
     findRole: findRole,
+    toggle(ref, event) {
+      this.$refs[ref].toggle(event);
+    },
     initWordCount(count) {
       this.inputWordCount = count
     },
@@ -574,6 +696,9 @@ export default {
           } else {
             this.isPlanCreator = false;
             //this.$router.push('/work-plan')
+          }
+          if(this.event && this.event.creator_id === this.loginedUserId && this.event.parent_id !== null){
+            this.isCreator = true;
           }
           if (this.event && this.event.user) {
             this.isPlanCreatorApproval = this.event.user.find(e => e.id === this.loginedUserId) !== null && this.isPlanCreator;
@@ -624,13 +749,13 @@ export default {
 
     },
     initMenu() {
-      let menu = [
+      return [
         {
           label: "",
           icon: "pi pi-fw pi-refresh",
           command: () => {
             this.getEvent();
-            this.$toast.add({ severity: 'success', detail: this.$t('common.success'), life: 3000 });
+            this.$toast.add({severity: 'success', detail: this.$t('common.success'), life: 3000});
           },
         },
         {
@@ -651,7 +776,6 @@ export default {
         //   },
         // },
       ];
-      return menu;
     },
     saveResult() {
       this.submitted = true
@@ -1249,4 +1373,17 @@ td {
   padding: 8px;
   text-align: left;
 }
+// .custom-menubar .p-menubar .p-menuitem {
+//   position: relative;
+//     z-index: 999 !important;
+// }
+// .p-menubar .p-menuitem {
+//     position: relative;
+//     z-index: 999;
+// }
+.p-menubar .p-menuitem,
+.p-menubar .p-submenu .p-menuitem {
+    z-index: 9999;
+}
+
 </style>

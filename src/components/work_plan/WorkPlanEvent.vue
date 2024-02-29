@@ -1,8 +1,20 @@
 <template>
   <div class="col-12">
-    <h3 v-if="plan">
-      <TitleBlock :title="plan.work_plan_name" :show-back-button="true" />
-    </h3>
+    <div v-if="plan">
+  <div style="display: inline-block;">
+    <div>
+      <TitleBlock :title="plan.work_plan_name" :show-back-button="true"/>
+    </div>
+  </div>&nbsp;
+  <div style="display: inline-block; position: relative;">
+
+    <div v-if="showMySign(plan.doc_info.approvalStages)" style="font-size: 1.1em; position: absolute; top: -18px; left: 0;">
+      <i v-if="greenMySign(plan.doc_info.approvalStages)" class="pi pi-verified" style="color: green; margin-top: -5px;"></i>
+      <i v-else class="fa-regular fa-pen-to-square" style="color:#2196f3"></i><br/>
+    </div>
+  </div>
+</div>
+
     <div class="card" v-if="plan && plan.reject_history && isRejected && isPlanCreator">
       <div class="p-fluid">
         <div class="field">
@@ -46,8 +58,9 @@
       <Button
         v-if="isFinish && plan.doc_info && plan.doc_info.docHistory && !(plan.doc_info?.docHistory?.stateId === 1 || plan.doc_info?.docHistory?.stateId === 4)"
         :label="$t('workPlan.viewPlan')" icon="pi pi-eye" @click="showDialog(dialog.planView)" class="p-button-sm p-button-outlined ml-2" />
-      <Button v-if="isFinish && (isApproval || isPlanCreator || isAdmin) && (plan.doc_info?.docHistory?.stateId === 3 || oldPlan)" :label="$t('workPlan.reports')"
+      <Button v-if="isFinish && (isApproval || isPlanCreator || isAdmin || isRespUser) && (plan.doc_info?.docHistory?.stateId === 3 || oldPlan)" :label="$t('workPlan.reports')"
         @click="navigateToReports" class="p-button-sm p-button-outlined ml-2" />
+
       <Button v-if="isFinish && isPlanCreator && (plan.doc_info?.docHistory?.stateId === 3) && isSciencePlan" :label="$t('workPlan.generateAct')"
         @click="generateScienceReport" class="p-button-sm p-button-outlined ml-2" />
       <Button v-if="isSciencePlan && scienceDocs && scienceDocs.some(e => e.docType === docEnum.DocType.Contract)" :label="$t('contracts.contract')"
@@ -189,6 +202,7 @@
               $i18n.locale === "kz" ? node.status.name_kz : $i18n.locale === "ru" ? node.status.name_ru :
               node.status.name_en
             }}</span>
+           
           </template>
         </Column>
         <Column field="actions" header="">
@@ -251,6 +265,7 @@ export default {
     return {
       data: [],
       Enum: Enum,
+      DocEnum: DocEnum,
       work_plan_id: parseInt(this.$route.params.id),
       searchText: null,
       lastEvent: null,
@@ -378,13 +393,16 @@ export default {
         }
       },
       planApprovalStage: null,
-      oldPlan: false
+      oldPlan: false,
+      stages: []
     }
   },
   created() {
+    
     this.isAdmin = this.findRole(null, 'main_administrator')
     this.getPlan();
     this.getEventsTree(null);
+    
   },
   mounted() {
     this.emitter.on('workPlanEventIsAdded', (data) => {
@@ -982,7 +1000,66 @@ export default {
       return (this.isPlanCreator || this.isUserApproval(this.selectedEvent)) &&
         isDocumentApproved &&
         isStatusValid;
-    }
+    },
+    respUserExists(id){
+      return this.plan.responsive_users.some(user => user.id === id)
+    },
+    showMySign(approvalStages) {
+      try {
+        for (let i in approvalStages) {
+          let stage = approvalStages[i]
+          let stagePassed = true
+
+          for (let j = 0; j < stage.users.length; j++) {
+            if (stage.usersApproved[j] < 1) {
+              stagePassed = false
+            }
+
+            if (stage.users[j].userID === this.loginedUserId) {
+              return true
+            }
+          }
+  
+          if (!stagePassed) {
+            break
+          }
+        }
+      } catch (e) {
+        console.log(e)
+        return false
+      }
+
+      return false
+    },
+    greenMySign(approvalStages) {
+      let signed = true
+
+      try {
+        for (let i in approvalStages) {
+          let stage = approvalStages[i]
+          let stagePassed = true
+
+          for (let j = 0; j < stage.users.length; j++) {
+            if (stage.usersApproved[j] < 1) {
+              stagePassed = false
+            }
+
+            if (stage.users[j].userID === this.loginedUserId && stage.usersApproved[j] < 1) {
+              signed = false
+            }
+          }
+  
+          if (!stagePassed) {
+            break
+          }
+        }
+      } catch (e) {
+        console.log(e)
+        return signed
+      }
+
+      return signed
+    },
   },
   /*unmounted() {
     localStorage.removeItem("workPlan");
@@ -1036,7 +1113,10 @@ export default {
     },
     isFinshButtonDisabled() {
       return this.data && this.data.length > 0;
-    }
+    },
+    isRespUser(){
+      return this.plan && this.respUserExists(this.loginedUserId)
+    },
   }
 }
 </script>
@@ -1081,6 +1161,5 @@ export default {
     background: #C8E6C9;
     color: #256029;
   }
-
 }
 </style>
