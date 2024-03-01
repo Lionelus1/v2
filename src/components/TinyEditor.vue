@@ -65,14 +65,74 @@ export default {
                 toolbar:
                     `undo redo | fontselect fontsizeselect formatselect | ${this.contractElements ? `customSelect` : ''} | bold italic forecolor backcolor |
             alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | blockquote |
-            removeformat | table | link | image media ${this.customFileUpload ? `fileupload` : ''} | code | pagebreak`,
+            removeformat | table | link | image media ${this.customFileUpload ? `fileupload` : ''} | code | pagebreak | accordion`,
                 contextmenu: 'link | customUploadContext',
                 images_upload_handler: uploadSingFile,
                 language: this.$i18n.locale === "en" ? "en_US" : this.$i18n.locale === "kz" ? "kk" : this.$i18n.locale,
                 content_style: this.wordformat ? "html{background: #f7f7f7;display: flex; justify-content: center; } " +
                     "body {background: #fff; font-size: 14px; width: 794px; min-height:1120px; padding: 20px}" +
                     ".mce-pagebreak { background: #f7f7f7;border: none; height: 15px; width:900px; margin-left:-50px }" +
-                    " @media(max-width: 500px){html{display: block; }}" : "body {background: #fff; font-size: 14px;}",
+                    ".editor_accordion_title {color: #1b78bd; margin-top: 20px} .editor_accordion_title:after {content: '\\02795';float: right;margin-left: 5px;}" +
+                    "active:after{ content: \"\\2796\";} .editor_accordion_content{max-height: 0;overflow: hidden;}" +
+                    " @media(max-width: 500px){html{display: block; }}" : "body {background: #fff; font-size: 14px;}" +
+                    `.accordion {
+    padding-bottom: 20px;
+
+    .header {
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #fff;
+        /*background: #e9f7ff;
+        padding: 10px;*/
+        border-bottom: 1px dashed #c9c9c9;
+        padding-bottom: 5px;
+    }
+
+    .body {
+        box-shadow: 0 2px 5px rgba(69, 115, 153, 0.2);
+        opacity: 0;
+        max-height: 0;
+        overflow: hidden;
+        transition: opacity 500ms linear, max-height 500ms linear;
+        will-change: opacity, max-height;
+
+        &.fade-in {
+            padding: 15px 0;
+            opacity: 1;
+            max-height: fit-content;
+            transition: all 500ms linear;
+            will-change: opacity, max-height;
+        }
+
+        .body-inner {
+            padding: 0 15px;
+        }
+
+        .link_accordion {
+            margin-top: 20px;
+            cursor: pointer;
+        }
+    }
+
+    .accordion_icon .header-icon {
+        margin-left: 15px;
+        padding: 5px;
+        transform: rotate(180deg);
+        transition-duration: 0.3s;
+        cursor: pointer;
+    }
+
+    .header-icon.rotate {
+        transform: rotate(0deg);
+        transition-duration: 0.3s;
+    }
+
+    .header.rotate {
+        background: #0A407D;
+    }
+}`,
                 setup: editor => {
                     const self = this;
                     this.content = this.value;
@@ -150,6 +210,47 @@ export default {
                             callback(items);
                         },
                     });
+                  editor.ui.registry.addToggleButton('accordion', {
+                    text: '<i class="fa-solid fa-rectangle-list" style="font-size: 20px;"></i>',
+                    onAction: () => {
+                      //this.uploadFile();
+                      addAccordion('accordion title', 'accordion content')
+                    },
+                    onSetup: this.tinyEditorService.toggleActiveState(editor)
+                  });
+                  editor.ui.registry.addToggleButton('accordionremove', {
+                    text: '<i class="fa-solid fa-trash"></i>',
+                    onAction: () => {
+                      //this.uploadFile();
+                      alert('accordion remove alert')
+                    },
+                    onSetup: this.tinyEditorService.toggleActiveState(editor)
+                  });
+                  editor.ui.registry.addToggleButton('accordiontoggle', {
+                    text: '<i class="fa-solid fa-arrow-turn-down"></i>',
+                    onAction: () => {
+                      let node = editor.selection.getNode()
+                      let accordionNode = node.closest('.accordion');
+                      if (accordionNode) {
+                        let bodyNode = accordionNode.querySelector('.body');
+                        if (bodyNode) {
+                          if (bodyNode.classList.contains('fade-in')) {
+                            bodyNode.classList.remove('fade-in')
+                          } else {
+                            bodyNode.classList.add('fade-in');
+                          }
+                        }
+                      }
+                    },
+                    onSetup: this.tinyEditorService.toggleActiveState(editor)
+                  });
+                  editor.ui.registry.addContextToolbar('accordiontoolbar', {
+                    predicate: function (node) {
+                      return node.nodeName.toLowerCase() === 'div' },
+                    items: 'accordiontoggle accordionremove',
+                    position: 'line',
+                    scope: 'node'
+                  });
                     const onSelectItem = (value) => {
                         if (value === "text") {
                             this.tinyEditorService.contractElementsDialog(editor, self)
@@ -159,6 +260,33 @@ export default {
                         }
                         editor.execCommand('removeformat', false, null);
                     };
+                  const addAccordion = (value1, value2) => {
+                      const styledText = `<div><div class="landing_accordion accordion"><div class="header">${value1}</div>
+                                          <div class="body">
+                                            ${value2}
+                                            </div>
+                                          </div></div>`;
+                      editor.selection.setContent(styledText);
+                      //editor.execCommand('removeformat', false, null);
+                    if (styledText){
+                    let acc = document.getElementsByClassName("editor_accordion_title");
+                    console.log(acc)
+                    let i;
+                    for (i = 0; i < acc.length; i++) {
+                      acc[i].addEventListener("click", function() {
+                        this.classList.toggle("active");
+
+                        let panel = this.nextElementSibling;
+                        if (panel.style.display === "block") {
+                          panel.style.display = "none";
+                        } else {
+                          panel.style.display = "block";
+                        }
+                        console.log('fffffffff')
+                      });
+                    }}
+                  };
+
                 }
             },
             modalText: true,
