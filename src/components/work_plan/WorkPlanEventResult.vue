@@ -583,7 +583,7 @@ export default {
       return this.respUserExists(this.loginedUserId)
     },
     isInspect(){
-      return this.resultData && this.resultData[0].plan_event_result_history[0].state_id === 7
+      return this.resultData && this.resultData[0].plan_event_result_history[0].state_id === 7 || this.resultData === null
     },
     initAcceptButtons() {
       const createConfirmationDialog = (status_code) => {
