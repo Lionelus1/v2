@@ -361,8 +361,7 @@
           </div>
         </TabPanel>
         <TabPanel :header="$t('common.history')">
-          <!-- {{ history }} -->
-          <table>
+          <!-- <table>
             <thead>
             <tr style="font-weight: bolder;">
               <td>ID</td>
@@ -383,10 +382,8 @@
               </template>
             </template>
             </tbody>
-          </table>
-
-
-          <!-- <DataTable :value="history" class="p-datatable-sm" responsiveLayout="scroll">
+          </table> -->
+          <DataTable :value="history" class="p-datatable-sm" responsiveLayout="scroll">
             <Column field="id" header="ID"></Column>
             <Column :header="$t('common.date')">
               <template #body="{ data }">
@@ -403,7 +400,7 @@
                 {{ data.state ? $t(`common.states.${data.state}`) : "" }}
               </template>
             </Column>
-          </DataTable> -->
+          </DataTable>
         </TabPanel>
       </TabView>
     </div>
@@ -797,8 +794,10 @@ export default {
         fd.append("is_partially", true);
       }
 
-      if (!this.authUser.mainPosition.department.isFaculty)
-        fd.append("fact", this.fact)
+      if (this.authUser?.mainPosition?.department && !this.authUser.mainPosition.department.isFaculty && this.isOperPlan){
+        fd.append("fact", this.fact);
+      }
+        
 
       if (this.plan && this.isOperPlan && this.resultData)
         fd.append("result_id", this.resultData.event_result_id);
@@ -852,23 +851,23 @@ export default {
       });
     },
     getResultHistory() {
-      this.history = this.resultData
-      // this.planService.getEventResultHistory(this.resultData[0].event_result_id).then(res => {
-      //   if (res.data) {
-      //     console.log(res.data);
-      //     this.history = res.data;
-      //   }
-      // }).catch(error => {
-      //   if (error.response && error.response.status === 401) {
-      //     this.$store.dispatch("logLout");
-      //   } else {
-      //     this.$toast.add({
-      //       severity: "error",
-      //       summary: error,
-      //       life: 3000,
-      //     });
-      //   }
-      // });
+      //this.history = this.resultData
+      this.planService.getEventResultHistory(this.resultData[0].event_result_id).then(res => {
+        if (res.data) {
+          console.log(res.data);
+          this.history = res.data;
+        }
+      }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+      });
     },
     showRejectMessageSidebar() {
       this.rejectMessageSidebar = true;
