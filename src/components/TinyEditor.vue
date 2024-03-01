@@ -57,6 +57,7 @@ export default {
                 allow_script_urls: true,
                 remove_script_host: false,
                 relative_urls: false,
+                valid_elements: "*[*]",
                 plugins: [
                     'advlist autolink lists link image charmap print preview anchor',
                     'searchreplace visualblocks code fullscreen',
@@ -84,9 +85,10 @@ export default {
         align-items: center;
         justify-content: space-between;
         border-bottom: 1px solid #fff;
+        color: #1b78bd;
         /*background: #e9f7ff;
         padding: 10px;*/
-        border-bottom: 1px dashed #c9c9c9;
+        border-bottom: 1px solid #c9c9c9;
         padding-bottom: 5px;
     }
 
@@ -116,21 +118,12 @@ export default {
         }
     }
 
-    .accordion_icon .header-icon {
-        margin-left: 15px;
-        padding: 5px;
-        transform: rotate(180deg);
-        transition-duration: 0.3s;
-        cursor: pointer;
-    }
-
-    .header-icon.rotate {
-        transform: rotate(0deg);
-        transition-duration: 0.3s;
-    }
-
-    .header.rotate {
-        background: #0A407D;
+  .accordion_icon:after {
+  content: '\\02795';
+  font-size: 13px;
+  color: #777;
+  float: right;
+  margin-left: 5px;
     }
 }`,
                 setup: editor => {
@@ -211,7 +204,7 @@ export default {
                         },
                     });
                   editor.ui.registry.addToggleButton('accordion', {
-                    text: '<i class="fa-solid fa-rectangle-list" style="font-size: 20px;"></i>',
+                    text: '<i title="Accordion" class="fa-solid fa-right-left" style="transform: rotate(90deg);font-size: 20px;"></i>',
                     onAction: () => {
                       //this.uploadFile();
                       addAccordion('accordion title', 'accordion content')
@@ -227,7 +220,7 @@ export default {
                     onSetup: this.tinyEditorService.toggleActiveState(editor)
                   });
                   editor.ui.registry.addToggleButton('accordiontoggle', {
-                    text: '<i class="fa-solid fa-arrow-turn-down"></i>',
+                    text: '<i class="fa-solid fa-right-left" style="transform: rotate(90deg);"></i>',
                     onAction: () => {
                       let node = editor.selection.getNode()
                       let accordionNode = node.closest('.accordion');
@@ -246,7 +239,7 @@ export default {
                   });
                   editor.ui.registry.addContextToolbar('accordiontoolbar', {
                     predicate: function (node) {
-                      return node.nodeName.toLowerCase() === 'div' },
+                      return node.nodeName.toLowerCase() === 'accordion_header' },
                     items: 'accordiontoggle accordionremove',
                     position: 'line',
                     scope: 'node'
@@ -261,11 +254,17 @@ export default {
                         editor.execCommand('removeformat', false, null);
                     };
                   const addAccordion = (value1, value2) => {
-                      const styledText = `<div><div class="landing_accordion accordion"><div class="header">${value1}</div>
+                      const styledText = `<div><accordion class="accordion">
+                                               <accordion_header class="header">
+                                                <div class="main_title">${value1}</div>
+                                                <div class="accordion_icon">
+                                                    <i class="pi pi-angle-down header-icon">&nbsp;</i>
+                                          </div></accordion_header>
                                           <div class="body">
+                                          <div class="body-inner">
                                             ${value2}
-                                            </div>
-                                          </div></div>`;
+                                            </div></div>
+                                          </accordion></div>`;
                       editor.selection.setContent(styledText);
                       //editor.execCommand('removeformat', false, null);
                     if (styledText){
