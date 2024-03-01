@@ -1,8 +1,20 @@
 <template>
   <div class="col-12">
-    <h3 v-if="plan">
+    <div v-if="plan">
+  <div style="display: inline-block;">
+    <div>
       <TitleBlock :title="plan.work_plan_name" :show-back-button="true"/>
-    </h3>
+    </div>
+  </div>&nbsp;
+  <div style="display: inline-block; position: relative;">
+
+    <div v-if="showMySign(plan.doc_info.approvalStages)" style="font-size: 1.1em; position: absolute; top: -18px; left: 0;">
+      <i v-if="greenMySign(plan.doc_info.approvalStages)" class="pi pi-verified" style="color: green; margin-top: -5px;"></i>
+      <i v-else class="fa-regular fa-pen-to-square" style="color:#2196f3"></i><br/>
+    </div>
+  </div>
+</div>
+
     <div class="card" v-if="plan && planDoc && isRejected">
       <div class="p-fluid">
         <div class="field">
@@ -34,6 +46,28 @@
       </div>
     </div>
     <ToolbarMenu v-if="plan" :data="toolbarMenus" @filter="toggle('global-filter', $event)" :filter="true" :filtered="filtered"/>
+    <div class="card" v-if="plan">
+      <Button v-if="((isPlanCreator || isCreator || isEventsNull) && !isFinish)" :label="$t('common.add')" icon="pi pi-plus" @click="showDialog(dialog.add)"
+        class="p-button-sm ml-2" />
+      <Button
+        v-if="plan && plan.doc_info && plan.doc_info?.docHistory && (plan.doc_info?.docHistory?.stateId === 1 || plan.doc_info?.docHistory?.stateId === 4) && isPlanCreator && isFinish"
+        type="button" icon="pi pi-send" class="p-button-sm p-button-outlined ml-2" :label="$t('common.action.sendToApprove')"
+        @click="showDialog(dialog.planApprove)"></Button>
+          <Button v-if="plan && isPlanCreator && !isFinish" :label="$t('common.complete')" icon="pi pi-check" @click="finish"
+        class="p-button-sm p-button-success ml-2" :disabled="!isFinshButtonDisabled"/>
+      <Button
+        v-if="isFinish && plan.doc_info && plan.doc_info.docHistory && !(plan.doc_info?.docHistory?.stateId === 1 || plan.doc_info?.docHistory?.stateId === 4)"
+        :label="$t('workPlan.viewPlan')" icon="pi pi-eye" @click="showDialog(dialog.planView)" class="p-button-sm p-button-outlined ml-2" />
+      <Button v-if="isFinish && (isApproval || isPlanCreator || isAdmin || isRespUser) && (plan.doc_info?.docHistory?.stateId === 3 || oldPlan)" :label="$t('workPlan.reports')"
+        @click="navigateToReports" class="p-button-sm p-button-outlined ml-2" />
+
+      <Button v-if="isFinish && isPlanCreator && (plan.doc_info?.docHistory?.stateId === 3) && isSciencePlan" :label="$t('workPlan.generateAct')"
+        @click="generateScienceReport" class="p-button-sm p-button-outlined ml-2" />
+      <Button v-if="isSciencePlan && scienceDocs && scienceDocs.some(e => e.docType === docEnum.DocType.Contract)" :label="$t('contracts.contract')"
+        class="p-button-sm p-button-outlined ml-2" icon="fa-solid fa-download" @click="downloadContract('contract')" />
+      <Button v-if="isSciencePlan && scienceDocs && scienceDocs.some(e => e.docType === docEnum.DocType.RelatedDoc)" :label="$t('common.additionalInfo')"
+        class="p-button-sm p-button-outlined ml-2" icon="fa-solid fa-download" @click="downloadContract('additional')" />
+    </div>
     <div class="card" v-if="plan">
       <TreeTable ref="workplantreetable" class="p-treetable-sm" :value="data" :lazy="true" :loading="loading" @nodeExpand="onExpand" scrollHeight="flex"
                  responsiveLayout="scroll" :resizableColumns="true" columnResizeMode="fit" showGridlines :paginator="true" :rows="10" :total-records="total"
@@ -119,6 +153,7 @@
                 $i18n.locale === "kz" ? node.status.name_kz : $i18n.locale === "ru" ? node.status.name_ru :
                     node.status.name_en
               }}</span>
+
           </template>
         </Column>
         <Column field="actions" header="">
@@ -239,6 +274,7 @@ export default {
     return {
       data: [],
       Enum: Enum,
+      DocEnum: DocEnum,
       work_plan_id: parseInt(this.$route.params.id),
       searchText: null,
       lastEvent: null,
@@ -373,13 +409,16 @@ export default {
       documentFiles: null,
       service: new DocService(),
       DocState: DocState,
-      filtered: false
+      filtered: false,
+      stages: []
     }
   },
   created() {
+
     this.isAdmin = this.findRole(null, 'main_administrator')
     this.getPlan();
     this.getEventsTree(null);
+
   },
   mounted() {
     this.emitter.on('workPlanEventIsAdded', (data) => {
@@ -1015,7 +1054,66 @@ export default {
     initSearch(searchText) {
       this.filters.name.value = searchText
       this.getEventsTree(null)
-    }
+    },
+    respUserExists(id){
+      return this.plan.responsive_users.some(user => user.id === id)
+    },
+    showMySign(approvalStages) {
+      try {
+        for (let i in approvalStages) {
+          let stage = approvalStages[i]
+          let stagePassed = true
+
+          for (let j = 0; j < stage.users.length; j++) {
+            if (stage.usersApproved[j] < 1) {
+              stagePassed = false
+            }
+
+            if (stage.users[j].userID === this.loginedUserId) {
+              return true
+            }
+          }
+
+          if (!stagePassed) {
+            break
+          }
+        }
+      } catch (e) {
+        console.log(e)
+        return false
+      }
+
+      return false
+    },
+    greenMySign(approvalStages) {
+      let signed = true
+
+      try {
+        for (let i in approvalStages) {
+          let stage = approvalStages[i]
+          let stagePassed = true
+
+          for (let j = 0; j < stage.users.length; j++) {
+            if (stage.usersApproved[j] < 1) {
+              stagePassed = false
+            }
+
+            if (stage.users[j].userID === this.loginedUserId && stage.usersApproved[j] < 1) {
+              signed = false
+            }
+          }
+
+          if (!stagePassed) {
+            break
+          }
+        }
+      } catch (e) {
+        console.log(e)
+        return signed
+      }
+
+      return signed
+    },
   },
   /*unmounted() {
     localStorage.removeItem("workPlan");
@@ -1157,7 +1255,13 @@ export default {
           }
         }
       ]
-    }
+    },
+    isFinshButtonDisabled() {
+      return this.data && this.data.length > 0;
+    },
+    isRespUser(){
+      return this.plan && this.respUserExists(this.loginedUserId)
+    },
   }
 }
 </script>
@@ -1202,6 +1306,5 @@ export default {
     background: #C8E6C9;
     color: #256029;
   }
-
 }
 </style>

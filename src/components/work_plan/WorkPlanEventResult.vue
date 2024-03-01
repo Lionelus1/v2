@@ -20,7 +20,31 @@
               }}</span
             >
     </div>
-<!--    <div v-if="resultData && resultData[0].plan_event_result_history[0].state_id === 6">
+<!-- <div class="text-right" style="margin-top:-30px;padding-bottom: 3px;">
+
+                <Button type="button" icon="fa-solid fa-filter" label="Filter"
+                        @click="toggle('global-filter', $event)" aria:haspopup="true" aria-controls="overlay_panel"
+                        class="p-button-outlined mr-2" />
+                <OverlayPanel ref="global-filter">
+                    <div class="field">
+                      <label>{{ $t('cafedra.responsible') }}</label>
+                      <FindUser v-model="formData" :max="1" :editMode="false"/>
+                      <small class="p-error" v-if="formData">{{ $t("common.requiredField") }}</small>
+                    </div>
+                    <div class="p-fluid">
+                        <div class="field">
+                            <br />
+
+                            <Button icon="pi pi-trash" class="ml-1" @click="clearMenuTypeFilter()"
+                                    :label="$t('common.clear')" />
+                        </div>
+                        <div class="field">
+                            <Button icon="pi pi-search" :label="$t('common.search')" class="ml-1" @click="orderColumn(null)" />
+                        </div>
+                    </div>
+                </OverlayPanel>
+
+      </div> --><!--    <div v-if="resultData && resultData[0].plan_event_result_history[0].state_id === 6">
     <div v-if="resultData && event && resultData[0].reject_history">
       <div class="p-fluid">
         <br/>
@@ -64,10 +88,13 @@
           <div class="text-left mb-3" v-if="isPlanCreator" :style="{ 'z-index': 9999, 'position': 'relative' }">
             <Menubar :model="initAcceptButtons" :key="active" :style="{ 'z-index': 9999, 'height': '36px', 'margin-top': '-7px', 'margin-left': '-14px', 'margin-right': '-14px' }"></Menubar>
           </div>
-             
+
           <div
-              v-if="event &&
-              (isCurrentUserApproval && (event.status.work_plan_event_status_id === 1 || event.status.work_plan_event_status_id === 4 || event.status.work_plan_event_status_id === 6))">
+             class="text-left mb-3" v-if="isPlanCreator" :style="{ 'z-index': 9999, 'position': 'relative' }">
+            <Menubar :model="initAcceptButtons" :key="active" :style="{ 'z-index': 9999, 'height': '36px', 'margin-top': '-7px', 'margin-left': '-14px', 'margin-right': '-14px' }"></Menubar>
+          </div>
+          <div v-if="event && isInspect">
+            <!-- <div v-if="resultData">{{ resultData[0].plan_event_result_history[0].state_id }}</div> -->
             <Menubar :model="userMenuItems" :key="active" style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
           </div>
           <div class="grid mt-3" v-if="plan && resultData && (new Date(plan.create_date).getFullYear() < new Date().getFullYear())">
@@ -153,7 +180,7 @@
 
                 <small v-if="isSciencePlan && submitted && (inputWordCount < wordLimit)" class="p-error">{{$t('workPlan.minWordCount')}}</small>
               </div> -->
-              <div class="field" v-if="plan && isRespUserForWrite">
+              <div class="field" v-if="plan && isRespUserForWrite && isInspect">
                 <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadFile($event)" :auto="true" :multiple="true"
                             :chooseLabel="$t('smartenu.chooseAdditionalFile')"></FileUpload>
               </div>
@@ -397,7 +424,7 @@
     </div>
   </Sidebar>
   <Sidebar v-model:visible="rejectMessageSidebar" position="right" header="Work Plan Reject Message">
-    <div v-if="resultData && resultData[0].plan_event_result_history[0].state_id === 6 && (loginedUserId === resultData[0].result_text[0].user.userID)">
+    <div v-if="(resultData && resultData[0].plan_event_result_history[0].state_id === 6 && (loginedUserId === resultData[0].result_text[0].user.userID)) || (resultData && resultData[0].plan_event_result_history[0].state_id === 6 && isAdmin)">
       <div v-if="resultData && event && resultData[0].reject_history">
         <div class="p-fluid">
           <!-- <div class="field">
@@ -558,6 +585,9 @@ export default {
     isRespUserForWrite() {
       return this.respUserExists(this.loginedUserId)
     },
+    isInspect(){
+      return this.resultData && this.resultData[0].plan_event_result_history[0].state_id === 7 || this.resultData === null
+    },
     initAcceptButtons() {
       const createConfirmationDialog = (status_code) => {
         return {
@@ -650,6 +680,9 @@ export default {
   },
   methods: {
     findRole: findRole,
+    toggle(ref, event) {
+      this.$refs[ref].toggle(event);
+    },
     initWordCount(count) {
       this.inputWordCount = count
     },
