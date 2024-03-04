@@ -1,28 +1,10 @@
 <template>
-  <ProgressSpinner v-if="loading" class="progress-spinner" strokeWidth="5" />
-  <div class="flex flex-row mb-3">
-    <div v-if="!uuid" class="arrow-icon" @click="$router.back()">
-      <i class="fas fa-arrow-left"></i>
-    </div>
-    <h4 class="m-0">{{ $t("helpDesk.application.applicationName") }}</h4>
-  </div>
-  <ToolbarMenu :data="menu" @search="search" :search="true" @filter="toggleFilter($event)" :filter="true" :filtered="filtered" />
-
-  <!-- <template #end>
-        <Button class="align-items-center" :class="{
-          'p-button-success p-button-outlined': filter.applied,
-          'p-button-secondary p-button-text': !filter.applied
-        }">
-        </Button>
-      </template> -->
-
-
-  <BlockUI class="card">
+  <BlockUI class="card" v-if="findRole(null, 'student')">
     <DataTable :lazy="true" :rowsPerPageOptions="[5, 10, 20, 50]" :value="data" dataKey="id" :rowHover="true" v-model:filters="filters"
       filterDisplay="menu" :loading="loading" responsiveLayout="scroll" :paginator="true" stripedRows class="p-datatable-sm" :rows="10"
       :totalRecords="total" @page="onPage" v-model:selection="currentDocument" :first="first" scrollable scrollHeight="flex" @lazy="true">
-      <template #empty> {{ $t('common.noData') }}</template>
-      <template #loading> {{ $t('common.loading') }}</template>
+      <template #empty> {{ t('common.noData') }}</template>
+      <template #loading> {{ t('common.loading') }}</template>
 
       <Column field="checkbox">
         <template #body="{ data }">
@@ -30,210 +12,198 @@
         </template>
       </Column>
 
-      <Column field="name" :header="$t('common.name')" style="padding-top: 15px; padding-bottom: 15px;">
+      <!-- :header="dic_course_type === 2 ? t('course.disciplineCode') : t('common.name')" -->
+      <Column field="name" :header="t('common.name')" style="padding-top: 15px; padding-bottom: 15px;">
         <template #body="{ data }">
           <a href="javascript:void(0)">{{ $i18n.locale === "kz" ? data.namekz : $i18n.locale === "ru" ? data.nameru :
             data.category.nameen }}</a>
         </template>
       </Column>
 
-      <Column field="description" :header="$t('common.description')" style="padding-top: 15px; padding-bottom: 15px;">
+      <!-- :header="dic_course_type === 2 ? t('course.disciplineName') : t('common.description')" -->
+      <Column field="description" :header="t('common.description')" style="padding-top: 15px; padding-bottom: 15px;">
         <template #body="{ data }">
           <a href="javascript:void(0)">{{ $i18n.locale === "kz" ? data.descriptionkz : $i18n.locale === "ru" ? data.descriptionru :
             data.descriptionen }}</a>
         </template>
       </Column>
-      <!-- <Column style="min-width: 50px;">
-            <template #body="{ data }">
-              <div class="flex flex-wrap column-gap-1 row-gap-1">
-                <Button class="p-button-text p-button-warning p-1 mr-2" @click="currentDocument = data; openDocument()">
-                  <i class="fa-solid fa-pencil fa-xl"></i>
-                </Button>
-                <Button class="p-button-text p-button-danger p-1 mr-2" @click="currentDocument = data; deleteFile()">
-                  <i class="fa-solid fa-trash-can fa-xl"></i>
-                </Button>
-              </div>
-            </template>
-          </Column> -->
+
     </DataTable>
   </BlockUI>
-  <Dialog :header="$t('common.action.sendToApprove')" v-model:visible="visibility.sendToApproveDialog" :style="{ width: '50vw' }">
-    <div class="p-fluid">
-      <ApprovalUsers :approving="loading" v-model="selectedUsers" @closed="close('sendToApproveDialog')" @approve="sendToApprove($event)"
-        :stages="stages" mode="standard"></ApprovalUsers>
+  <BlocUI class="card" v-if="!findRole(null, 'student')" :style="{ height: '30vw' }">
+    <div class="field" style="margin-top: 10px;">
+      <label>Выберите предмет</label>
+      <InputText v-model="subject" />
     </div>
-  </Dialog>
+  </BlocUI>
 </template>
 
-<script>
-import ToolbarMenu from "@/components/ToolbarMenu.vue";
-import { getHeader, smartEnuApi } from "@/config/config";
-import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers";
+<script setup>
+import { ref, onMounted } from 'vue';
+import {useI18n} from "vue-i18n";
 import axios from 'axios';
-export default {
-  name: 'Request',
-  components: {
-    ToolbarMenu, ApprovalUsers
-  },
-  data() {
-    return {
-      data: null,
-      selectedIds: [],
-      filtered: false,
-      loading: false,
-      lazyParams: {
-        page: 0,
-        rows: 10,
-      },
-      total: 0,
-      currentDocument: null,
-      checked: null,
-      maxChecked: 5,
-      filter: {
-        applied: false,
-        name: null,
-        author: [],
-        status: null,
-        years: [],
-      },
-      visibility: {
-        documentInfoSidebar: false,
-        revisionDialog: false,
-        sendToApproveDialog: false,
-      },
-      selectedUsers: [],
+import { HelpDeskService } from '../../service/helpdesk.service';
+import { getHeader, smartEnuApi, findRole } from "@/config/config";
+import {useToast} from "primevue/usetoast";
+import {useStore} from "vuex";
+import {useRoute} from "vue-router";
+
+
+const {t, locale} = useI18n()
+const store = useStore()
+const route = useRoute();
+const toast = useToast()
+const service = new HelpDeskService()
+const emit = defineEmits(['onCheckboxChecked'])
+
+const props = defineProps({
+  courseRequest: {
+      type: Object,
+      default: Object,
     }
-  },
-  computed: {
-    menu() {
-      return [
-        {
-          label: this.$t("common.save"),
-          icon: "pi pi-fw pi-save",
-          command: () => { this.saveDocument() },
-          disabled: !this.selectedIds.length,
-        },
-        {
-          label: this.$t("common.send"),
-          icon: "pi pi-fw pi-send",
-          disabled: !this.selectedIds.length,
-          items: [
-            {
-              label: this.$t("common.tosign"),
-              icon: "pi pi-user-edit",
-              command: () => { this.open('sendToApproveDialog') }
-            },
-          ]
-        },
-      ];
-    },
-    saveButtonDisabled() {
-      return !this.selectedIds.length;
-    },
-    selectedCount() {
-      return this.data.filter(item => item.checked).length;
-    }
-  },
-  methods: {
-    showMessage(msgtype, message, content) {
-      this.$toast.add({
-        severity: msgtype,
-        summary: message,
-        detail: content,
-        life: 3000
-      });
-    },
-    open(name) {
-      this.visibility[name] = true;
-    },
-    close(name) {
-      this.visibility[name] = false
-    },
-    onPage(event) {
-      this.lazyParams.page = event.page
-      this.lazyParams.rows = event.rows
-      this.getCourse()
-    },
-    search(data) {
-      alert(data)
-    },
-    toggleFilter(event) {
-      this.sort = event
-    },
-    getCourse() {
-      axios.post(smartEnuApi + "/onlinecourse/courses",
-        {
-          page: this.lazyParams.page,
-          rows: this.lazyParams.rows,
-          categoryID: 4,
-          lang: this.$i18n.locale,
-          searchText: null,
-        }, { headers: getHeader(), })
-        .then((res) => {
-          this.data = res.data.courses
-          for (let i = 1; i <= 8; i++) {
-            this.data.push({ name: "Item " + i, checked: false });
-          }
-        })
-        .catch((err) => {
-          if (err.response.status == 401) {
-            this.$store.dispatch("logLout");
-          }
+  })
 
-          this.$toast.add({
-            severity: "error",
-            detail: this.$t("common.message.saveError"),
-            life: 3000,
-          });
-        });
-    },
-    isDisabled(rowData) {
-      let checkedCount = this.data.filter(item => item.checked).length;
-      return checkedCount >= this.maxChecked && !rowData.checked;
-    },
-    saveDocument() {
-      // axios.post(smartEnuApi + "",  { headers: getHeader() })
-      //   .then(res => {
 
-      //   }).catch(err => {
-      //     if (err.response && err.response.status == 401) {
-      //       this.$store.dispatch("logLout")
-      //     } else if (err.response && err.response.data && err.response.data.localized) {
-      //       this.showMessage('error', this.$t(err.response.data.localizedPath), null)
-      //     } else {
-      //       console.log(err)
-      //     }
+const data = ref(null);
+const selectedIds = ref([]);
 
-      //     this.loading = false;
-      //   });
-    },
-    checkBoxSelect(course) {
-      if (course.checked) {
-        this.selectedIds.push(course.id);
+const loading = ref(false);
+const lazyParams = ref({
+  page: 0,
+  rows: 10,
+});
+const total = ref(0);
+const currentDocument = ref(null);
+const checked = ref(null);
+const maxChecked = 25;
+const filter = ref({
+  applied: false,
+  name: null,
+  author: [],
+  status: null,
+  years: [],
+});
+const visibility = ref({
+  documentInfoSidebar: false,
+  revisionDialog: false,
+  sendToApproveDialog: false,
+});
+const selectedUsers = ref([]);
+
+const isSend = ref(false);
+
+const currentUser = ref(null);
+const subject = ref(null);
+const selectedDirection = ref({
+  name_ru: null,
+  name_kz: null,
+  name_en: null,
+});
+
+
+
+
+
+// const findRole = computed(() => findRole ) 
+const showMessage = (msgtype, message, content) => {
+  toast.add({
+    severity: msgtype,
+    summary: message,
+    detail: content,
+    life: 3000
+  });
+};
+
+
+const onPage = (event) => {
+  lazyParams.value.page = event.page;
+  lazyParams.value.rows = event.rows;
+  getCourse();
+};
+
+const getCourse = () => {
+  axios.post(smartEnuApi + "/onlinecourse/courses",
+    {
+      page: lazyParams.value.page,
+      rows: lazyParams.value.rows,
+      searchText: null,
+      dic_course_type: "not_formal_education"
+    }, { headers: getHeader() })
+    .then((res) => {
+
+      data.value = res.data.courses;
+      total.value = res.data.total;
+      for (let i = 1; i <= 8; i++) {
+        data.value.push({ name: "Item " + i, checked: false });
+      }
+    })
+    .catch((err) => {
+
+      showMessage("error", t("common.message.saveError"), null);
+    });
+};
+const isDisabled = (rowData) => {
+  let totalHours = data.value.reduce((total, item) => total + (item.checked ? item.hours : 0), 0);
+  return totalHours + rowData.hours > maxChecked && !rowData.checked;
+};
+const saveDocument = () => {
+  loading.value = true;
+  service.helpDeskTicketCreate( null)
+    .then(res => {
+      // Обработка успешного ответа
+    })
+    .catch(err => {
+      if (err.response && err.response.status == 401) {
+        store.dispatch("logLout");
+      } else if (err.response && err.response.data && err.response.data.localized) {
+        showMessage('error', t(err.response.data.localizedPath), null);
       } else {
-        this.selectedIds = this.selectedIds.filter(id => id !== course.id);
+        console.log(err);
       }
-    },
-    sendToApprove(approvalUsers) {
-      if (this.changed) {
-        this.showMessage("warn", this.$t("common.tosign"), this.$t("common.message.saveChanges"));
-        return;
-      }
-      this.loading = true;
+    })
+    .finally(() => {
+      loading.value = false;
+    });
 
-    },
+  isSend.value = true;
+};
+const checkBoxSelect = (course) => {
+  if (course.checked) {
+    selectedIds.value.push(course.subject_id);
+  } else {
+    selectedIds.value = selectedIds.value.filter(item => item !== course.subject_id);
+  }
+  emit('onCheckboxChecked', selectedIds.value)
+  if (selectedIds.value.length === 0) {
+    isSend.value = false;
+  }
 
-  },
-  created() {
-    this.getCourse()
+};
+onMounted(() => {
 
-  },
 
-}
+  currentUser.value = JSON.parse(localStorage.getItem("loginedUser"));
+  getCourse();
+});
+
 
 </script>
 
 <style scoped>
+.field {
+  display: flex;
+  flex-direction: column;
+}
+
+.field input {
+  width: 350px;
+}
+
+.field label {
+  margin-bottom: 5px;
+  /* Расстояние между меткой и полем ввода */
+}
+
 .progress-spinner {
   position: absolute;
   top: 0;
@@ -344,6 +314,5 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-</style>
+}</style>
 

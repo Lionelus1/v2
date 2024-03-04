@@ -577,12 +577,6 @@ const routes = [
                         name: 'Request',
                         component: load('helpDesk/Request'),
                         beforeEnter: ifAuthenticated,
-                    },
-                    {
-                        path: '/request/course/:uuid',
-                        name: 'CourseRegistration',
-                        component: load('helpDesk/CourseRegistration'),
-                        beforeEnter: ifAuthenticated
                     }
                 ]
             },
