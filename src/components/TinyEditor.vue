@@ -24,6 +24,10 @@ export default {
             type: Boolean,
             default: false
         },
+        accordion: {
+            type: Boolean,
+            default: false
+        },
         height: {
             type: Number,
             default: 500
@@ -57,6 +61,7 @@ export default {
                 allow_script_urls: true,
                 remove_script_host: false,
                 relative_urls: false,
+                valid_elements: "*[*]",
                 plugins: [
                     'advlist autolink lists link image charmap print preview anchor',
                     'searchreplace visualblocks code fullscreen',
@@ -65,14 +70,60 @@ export default {
                 toolbar:
                     `undo redo | fontselect fontsizeselect formatselect | ${this.contractElements ? `customSelect` : ''} | bold italic forecolor backcolor |
             alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | blockquote |
-            removeformat | table | link | image media ${this.customFileUpload ? `fileupload` : ''} | code | pagebreak`,
+            removeformat | table | link | image media ${this.customFileUpload ? `fileupload` : ''} | code | pagebreak | ${this.accordion ? `accordion` : ''}`,
                 contextmenu: 'link | customUploadContext',
                 images_upload_handler: uploadSingFile,
                 language: this.$i18n.locale === "en" ? "en_US" : this.$i18n.locale === "kz" ? "kk" : this.$i18n.locale,
                 content_style: this.wordformat ? "html{background: #f7f7f7;display: flex; justify-content: center; } " +
                     "body {background: #fff; font-size: 14px; width: 794px; min-height:1120px; padding: 20px}" +
                     ".mce-pagebreak { background: #f7f7f7;border: none; height: 15px; width:900px; margin-left:-50px }" +
-                    " @media(max-width: 500px){html{display: block; }}" : "body {background: #fff; font-size: 14px;}",
+                    ".editor_accordion_title {color: #1b78bd; margin-top: 20px} .editor_accordion_title:after {content: '\\02795';float: right;margin-left: 5px;}" +
+                    "active:after{ content: \"\\2796\";} .editor_accordion_content{max-height: 0;overflow: hidden;}" +
+                    " @media(max-width: 500px){html{display: block; }}" : "body {background: #fff; font-size: 14px;}" +
+                    `.accordion {
+    display: block;
+    padding-bottom: 10px;
+
+    .header {
+        padding: 0 15px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #fff;
+        color: #1b78bd;
+        background: #e9f7ff;
+        border-bottom: 1px solid #e7e7e7;
+    }
+
+    .body {
+        //box-shadow: 0 2px 5px rgba(69, 115, 153, 0.2);
+        border: 1px solid #e7e7e7;
+        border-top: 0;
+        opacity: 0;
+        max-height: 0;
+        overflow: hidden;
+        transition: opacity 500ms linear, max-height 500ms linear;
+        will-change: opacity, max-height;
+
+        &.fade-in {
+            padding: 15px 0;
+            opacity: 1;
+            max-height: fit-content;
+            transition: all 500ms linear;
+            will-change: opacity, max-height;
+        }
+
+        .body-inner {
+            padding: 0 15px;
+        }
+
+        .link_accordion {
+            margin-top: 20px;
+            cursor: pointer;
+        }
+    }
+}`,
                 setup: editor => {
                     const self = this;
                     this.content = this.value;
@@ -150,6 +201,52 @@ export default {
                             callback(items);
                         },
                     });
+                    editor.ui.registry.addToggleButton('accordion', {
+                    text: '<i title="Accordion" class="fa-regular fa-rectangle-list" style="font-size: 20px;"></i>',
+                    onAction: () => {
+                      addAccordion('Accordion title', 'Accordion content')
+                    },
+                    onSetup: this.tinyEditorService.toggleActiveState(editor)
+                  });
+                  editor.ui.registry.addToggleButton('accordionremove', {
+                    text: '<i class="fa-solid fa-trash"></i>',
+                    onAction: () => {
+                      let node = editor.selection.getNode()
+                      let accordionNode = node.closest('.accordion');
+                      if (accordionNode) {
+                        let confirmDelete = confirm('Delete the accordion?');
+                        if (confirmDelete) {
+                          accordionNode.remove();
+                        }
+                      }
+                    },
+                    onSetup: this.tinyEditorService.toggleActiveState(editor)
+                  });
+                  editor.ui.registry.addToggleButton('accordiontoggle', {
+                    text: '<i class="fa-solid fa-right-left" style="transform: rotate(90deg);"></i>',
+                    onAction: () => {
+                      let node = editor.selection.getNode()
+                      let accordionNode = node.closest('.accordion');
+                      if (accordionNode) {
+                        let bodyNode = accordionNode.querySelector('.body');
+                        if (bodyNode) {
+                          if (bodyNode.classList.contains('fade-in')) {
+                            bodyNode.classList.remove('fade-in')
+                          } else {
+                            bodyNode.classList.add('fade-in');
+                          }
+                        }
+                      }
+                    },
+                    onSetup: this.tinyEditorService.toggleActiveState(editor)
+                  });
+                  editor.ui.registry.addContextToolbar('accordiontoolbar', {
+                    predicate: function (node) {
+                      return node.nodeName.toLowerCase() === 'accordion_header' },
+                    items: 'accordiontoggle accordionremove',
+                    position: 'line',
+                    scope: 'node'
+                  });
                     const onSelectItem = (value) => {
                         if (value === "text") {
                             this.tinyEditorService.contractElementsDialog(editor, self)
@@ -159,6 +256,37 @@ export default {
                         }
                         editor.execCommand('removeformat', false, null);
                     };
+                  const addAccordion = (value1, value2) => {
+                      const styledText = `<div><accordion class="accordion">
+                                               <accordion_header class="header">
+                                                <div class="main_title">${value1}</div>
+                                                <div class="accordion_icon">
+                                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                                        xmlns:xlink="http://www.w3.org/1999/xlink"
+                                                        width="24" height="24" viewBox="0 0 24 24">
+                                                        <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z" fill="currentColor" />
+                                                    </svg>
+                                                </div></accordion_header>
+                                                <div class="body"><div class="body-inner">${value2}</div></div>
+                                          </accordion></div>`;
+                      editor.selection.setContent(styledText);
+                    if (styledText){
+                    let acc = document.getElementsByClassName("editor_accordion_title");
+                    let i;
+                    for (i = 0; i < acc.length; i++) {
+                      acc[i].addEventListener("click", function() {
+                        this.classList.toggle("active");
+
+                        let panel = this.nextElementSibling;
+                        if (panel.style.display === "block") {
+                          panel.style.display = "none";
+                        } else {
+                          panel.style.display = "block";
+                        }
+                      });
+                    }}
+                  };
+
                 }
             },
             modalText: true,
