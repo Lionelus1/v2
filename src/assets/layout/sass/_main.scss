@@ -65,7 +65,50 @@ a {
 .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-content .p-menuitem-link:hover{
     background: #d0f1ff;
 }
+.accordion {
+    display: block;
+    padding-bottom: 10px;
 
+    .header {
+        padding: 0 15px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #fff;
+        color: #1b78bd;
+        background: #e9f7ff;
+        border-bottom: 1px solid #e7e7e7;
+    }
+
+    .body {
+        //box-shadow: 0 2px 5px rgba(69, 115, 153, 0.2);
+        border: 1px solid #e7e7e7;
+        border-top: 0;
+        opacity: 0;
+        max-height: 0;
+        overflow: hidden;
+        transition: opacity 500ms linear, max-height 500ms linear;
+        will-change: opacity, max-height;
+
+        &.fade-in {
+            padding: 15px 0;
+            opacity: 1;
+            max-height: fit-content;
+            transition: all 500ms linear;
+            will-change: opacity, max-height;
+        }
+
+        .body-inner {
+            padding: 0 15px;
+        }
+
+        .link_accordion {
+            margin-top: 20px;
+            cursor: pointer;
+        }
+    }
+}
 .customer-badge {
     border-radius: 2px;
     padding: 0.25em 0.5rem;
