@@ -24,6 +24,10 @@ export default {
             type: Boolean,
             default: false
         },
+        accordion: {
+            type: Boolean,
+            default: false
+        },
         height: {
             type: Number,
             default: 500
@@ -66,7 +70,7 @@ export default {
                 toolbar:
                     `undo redo | fontselect fontsizeselect formatselect | ${this.contractElements ? `customSelect` : ''} | bold italic forecolor backcolor |
             alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | blockquote |
-            removeformat | table | link | image media ${this.customFileUpload ? `fileupload` : ''} | code | pagebreak | accordion`,
+            removeformat | table | link | image media ${this.customFileUpload ? `fileupload` : ''} | code | pagebreak | ${this.accordion ? `accordion` : ''}`,
                 contextmenu: 'link | customUploadContext',
                 images_upload_handler: uploadSingFile,
                 language: this.$i18n.locale === "en" ? "en_US" : this.$i18n.locale === "kz" ? "kk" : this.$i18n.locale,
@@ -77,23 +81,25 @@ export default {
                     "active:after{ content: \"\\2796\";} .editor_accordion_content{max-height: 0;overflow: hidden;}" +
                     " @media(max-width: 500px){html{display: block; }}" : "body {background: #fff; font-size: 14px;}" +
                     `.accordion {
-    padding-bottom: 20px;
+    display: block;
+    padding-bottom: 10px;
 
     .header {
+        padding: 0 15px;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: space-between;
         border-bottom: 1px solid #fff;
         color: #1b78bd;
-        /*background: #e9f7ff;
-        padding: 10px;*/
-        border-bottom: 1px solid #c9c9c9;
-        padding-bottom: 5px;
+        background: #e9f7ff;
+        border-bottom: 1px solid #e7e7e7;
     }
 
     .body {
-        box-shadow: 0 2px 5px rgba(69, 115, 153, 0.2);
+        //box-shadow: 0 2px 5px rgba(69, 115, 153, 0.2);
+        border: 1px solid #e7e7e7;
+        border-top: 0;
         opacity: 0;
         max-height: 0;
         overflow: hidden;
@@ -116,14 +122,6 @@ export default {
             margin-top: 20px;
             cursor: pointer;
         }
-    }
-
-  .accordion_icon:after {
-  content: '\\02795';
-  font-size: 13px;
-  color: #777;
-  float: right;
-  margin-left: 5px;
     }
 }`,
                 setup: editor => {
@@ -203,19 +201,24 @@ export default {
                             callback(items);
                         },
                     });
-                  editor.ui.registry.addToggleButton('accordion', {
-                    text: '<i title="Accordion" class="fa-solid fa-right-left" style="transform: rotate(90deg);font-size: 20px;"></i>',
+                    editor.ui.registry.addToggleButton('accordion', {
+                    text: '<i title="Accordion" class="fa-regular fa-rectangle-list" style="font-size: 20px;"></i>',
                     onAction: () => {
-                      //this.uploadFile();
-                      addAccordion('accordion title', 'accordion content')
+                      addAccordion('Accordion title', 'Accordion content')
                     },
                     onSetup: this.tinyEditorService.toggleActiveState(editor)
                   });
                   editor.ui.registry.addToggleButton('accordionremove', {
                     text: '<i class="fa-solid fa-trash"></i>',
                     onAction: () => {
-                      //this.uploadFile();
-                      alert('accordion remove alert')
+                      let node = editor.selection.getNode()
+                      let accordionNode = node.closest('.accordion');
+                      if (accordionNode) {
+                        let confirmDelete = confirm('Delete the accordion?');
+                        if (confirmDelete) {
+                          accordionNode.remove();
+                        }
+                      }
                     },
                     onSetup: this.tinyEditorService.toggleActiveState(editor)
                   });
@@ -258,18 +261,17 @@ export default {
                                                <accordion_header class="header">
                                                 <div class="main_title">${value1}</div>
                                                 <div class="accordion_icon">
-                                                    <i class="pi pi-angle-down header-icon">&nbsp;</i>
-                                          </div></accordion_header>
-                                          <div class="body">
-                                          <div class="body-inner">
-                                            ${value2}
-                                            </div></div>
+                                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                                        xmlns:xlink="http://www.w3.org/1999/xlink"
+                                                        width="24" height="24" viewBox="0 0 24 24">
+                                                        <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z" fill="currentColor" />
+                                                    </svg>
+                                                </div></accordion_header>
+                                                <div class="body"><div class="body-inner">${value2}</div></div>
                                           </accordion></div>`;
                       editor.selection.setContent(styledText);
-                      //editor.execCommand('removeformat', false, null);
                     if (styledText){
                     let acc = document.getElementsByClassName("editor_accordion_title");
-                    console.log(acc)
                     let i;
                     for (i = 0; i < acc.length; i++) {
                       acc[i].addEventListener("click", function() {
@@ -281,7 +283,6 @@ export default {
                         } else {
                           panel.style.display = "block";
                         }
-                        console.log('fffffffff')
                       });
                     }}
                   };
