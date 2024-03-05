@@ -1,7 +1,7 @@
 <template>
   <div class="col-12">
     <TitleBlock :title="$t('web.menuPage')"/>
-    <div class="card" v-if="findRole(null, 'enu_web_admin') || findRole(null, 'enu_web_admin') || findRole(null, 'main_administrator')">
+    <div class="card" v-if="findRole(null, 'enu_web_admin') || findRole(null, 'enu_web_fac_admin') || findRole(null, 'main_administrator')">
       <Button :label="$t('web.addMenu')" icon="pi pi-plus" class="ml-2" v-on:click="createMenu(null)"/>
     </div>
     <div class="card" v-if="findRole(null,'enu_web_admin')">

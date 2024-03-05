@@ -99,7 +99,6 @@ export default {
       };
       this.planService.getWorkPlanData(data).then(res => {
         this.file = this.b64toBlob(res.data);
-        console.log("approve data: ", res.data);
       }).catch(error => {
         this.loading = false;
         if (error.response && error.response.status === 401) {
