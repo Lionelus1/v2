@@ -6,7 +6,9 @@
     <h4 class="m-0">{{ t("helpDesk.application.applicationName") }}</h4>
   </div>
   <ToolbarMenu :data="menu" @search="search" :search="true" @filter="toggleFilter(event)" :filter="true" :filtered="filtered" />
-  <BlockUI  v-if="haveAccess && selectedDirection && selectedDirection.code !== 'course_application'" :blocked="loading" class="card">
+  <TabView v-model:activeIndex="activeTab" @tab-change="tabChanged" class="flex flex-column flex-grow-1">
+    <TabPanel :header="selectedDirection['name_' + locale]">
+      <BlockUI  v-if="haveAccess && selectedDirection && selectedDirection.code !== 'course_application'" :blocked="loading" class="card">
     <div class="">
       <div class="p-fluid md:col-6">
         <label>{{ t('helpDesk.application.categoryApplication') }}</label>
@@ -57,14 +59,28 @@
         @click="createHelpDesk" />
     </template>
   </BlockUI>
-  <CourseRegistration :courseRequest="request" @data-to-parent="handleDataFromChild" @on-checkbox-checked="onChecked"
-  v-if="selectedDirection && selectedDirection.code === 'course_application'" />
   <Dialog :header="t('common.action.sendToApprove')" v-model:visible="visibility.sendToApproveDialog" :style="{ width: '50vw' }">
+    
     <div class="p-fluid">
       <ApprovalUsers :approving="approving" v-model="selectedUsers" @closed="close('sendToApproveDialog')" @approve="sendToApprove($event)"
         :stages="stages" mode="standard"></ApprovalUsers>
     </div>
   </Dialog>
+  <Sidebar v-model:visible="visibility.documentInfoSidebar" position="right" class="p-sidebar-lg">
+    <DocSignaturesInfo :docIdParam="request.doc.uuid"></DocSignaturesInfo>
+  </Sidebar>
+      <CourseRegistration :courseRequest="request" @data-to-parent="handleDataFromChild" @on-checkbox-checked="onChecked"
+  v-if="selectedDirection && selectedDirection.code === 'course_application'" />
+    </TabPanel>  
+    <TabPanel :header="t('common.show')" :disabled="!request || !request.doc || !request.doc.filePath || request.doc.filePath.length < 1">
+        <div class="flex-grow-1 flex flex-row align-items-stretch">
+          <embed :src="pdf" style="width: 100%; height: 100vh;" v-if="pdf" type="application/pdf"/>
+        </div>
+      </TabPanel>
+    </TabView>
+
+  
+
 </template>
 
 
@@ -78,6 +94,10 @@ import { useToast } from "primevue/usetoast";
 import { useStore } from "vuex";
 import { useRouter, useRoute } from "vue-router";
 import CourseRegistration from "./CourseRegistration.vue";
+import {b64toBlob} from "@/config/config";
+import { downloadFile } from "../../config/config";
+import {DocService} from "@/service/doc.service";
+import DocSignaturesInfo from "@/components/DocSignaturesInfo.vue";
 
 
 const { t, locale } = useI18n()
@@ -86,6 +106,7 @@ const toast = useToast()
 const router = useRouter();
 const route = useRoute();
 const service = new HelpDeskService()
+const docService = new DocService()
 const showMessage = (severity, detail, life) => {
   toast.add({
     severity: severity,
@@ -140,6 +161,10 @@ const request = ref({
   filtered: false,
   doc: null
 });
+const pdf = ref(null)
+const activeTab = ref(0)
+
+
 const menu = computed(() => [
   {
     label: t("common.save"),
@@ -156,14 +181,14 @@ const menu = computed(() => [
         label: t("common.tosign"),
         icon: "pi pi-user-edit",
         command: () => open('sendToApproveDialog')
-      },
-      // {
-      //   label: t("common.revision"),
-      //   icon: "fa-regular fa-circle-xmark",
-      //   visible: () => '',
-      //   command: () => { open('revisionDialog') }
-      // },
+      }
     ]
+  },
+  {
+          label: t('common.approvalList'),
+          icon: "pi pi-user-edit",
+          disabled: !isSend.value,
+          command: () => open('documentInfoSidebar')
   },
 ]);
 
@@ -288,10 +313,10 @@ const helpDeskTicketGet = () => {
   
 })
   .then((res) => {
-    console.log(res.data)
     request.value = res.data.ticket[0]
     // request.value.category = res.data.ticket[0].category;
     selectedDirection.value = res.data.ticket[0].category;
+
   })
   .catch((err) => {
     if (err.response.status == 401) {
@@ -305,7 +330,38 @@ const helpDeskTicketGet = () => {
     });
   });
 }
+const tabChanged = () => {
+      if (activeTab.value === 1) {
+        if (!request.value || !request.value.doc || request.value.doc.filePath.length < 1) return;
 
+        downloadContract();
+      }
+   }
+
+const downloadContract = () => {
+      if (!request.value || !request.value.doc || request.value.doc.filePath.length < 1) return;
+
+      if (pdf.value) {
+        return;
+      }
+
+      docService.downloadDocumentV2({
+        uuid: request.value.doc.uuid
+      }).then(res => {
+        pdf.value = b64toBlob(res.data);
+
+        loading.value = false;
+      }).catch(err => {
+        loading.value = false;
+
+         if (err.response && err.response.data && err.response.data.localized) {
+          showMessage('error', t(err.response.data.localizedPath), null)
+        } else {
+          console.log(err)
+          showMessage('error', t('common.message.actionError'), t('common.message.actionErrorContactAdmin'))
+        }
+      })
+    }
 
 
 
