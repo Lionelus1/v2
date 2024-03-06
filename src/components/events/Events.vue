@@ -17,7 +17,6 @@
                     </div>
                 </template>
                 <template #empty>{{ $t("smartenu.eventsNotFound") }}</template>
-                <template #loading>{{ $t("smartenu.loadingEvents") }}</template>
                 <Column :field="$i18n.locale === 'kz' ? `titleKz`: $i18n.locale === 'ru' ? `titleRu` : `titleEn`"
                         v-bind:header="$t('common.nameIn')" :sortable="true">
                     <template #body="slotProps">
