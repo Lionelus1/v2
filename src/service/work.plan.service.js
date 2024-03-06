@@ -77,8 +77,8 @@ export class WorkPlanService {
         return api.post(`/workPlan/sendEventResultForVerify`, data, {headers: getHeader()});
     }
 
-    getEventResultHistory(eventResultId) {
-        return api.get(`/workPlan/getWorkPlanEventResultHistory/${eventResultId}`, {headers: getHeader()})
+    getEventResultHistory(data) {
+        return api.post(`/workPlan/getWorkPlanEventResultHistory`, data, {headers: getHeader()})
     }
 
     verifyEventResult(data) {
@@ -98,8 +98,8 @@ export class WorkPlanService {
         return api.post(`/workPlan/editResult`, fd, {headers: getHeader()});
     }
 
-    deleteEventResult(id) {
-        return api.post(`/workPlan/deleteResult/${id}`, null, {headers: getHeader()});
+    deleteEventResult(data) {
+        return api.post(`/workPlan/deleteResult`, data, {headers: getHeader()});
     }
 
     deleteResultFile(id) {
