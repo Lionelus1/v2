@@ -59,7 +59,7 @@
               <div style="width: 100%; display: flex; justify-content: flex-end;">
                 <Button @click="currentDepartment=slotProps.data;into()"
                   class="p-button-text p-button-info p-1" v-tooltip="$t('educomplex.tooltip.into')">
-                  <i class="fa-regular fa-folder"></i>
+                  <i class="fa-solid fa-arrow-right-to-bracket menubar-icons"></i>
                 </Button>
               </div>
             </template>

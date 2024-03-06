@@ -1,23 +1,9 @@
 <template>
-    <h3>{{ $t("queue.title") }}</h3>
+  <TitleBlock :title="$t('queue.title')"/>
+  <ToolbarMenu :data="menu"/>
 	<div class="card">
-    <div class="mb-4 ">
-        <Button
-          :label="$t('common.add')"
-          :title="$t('queue.creatQueue')"          
-          icon="pi pi-plus"
-          class="p-button-success mr-2"
-          v-on:click="createQueue(null)"
-        />
-    </div>
     <TreeTable :value="queues" :lazy="true" :paginator="true" :rows="lazyParams.rows" :loading="loading"
       @nodeExpand="onExpand" @page="onPage" :totalRecords="totalRecords" selectionMode="single" v-model:selectionKeys="currentNode">
-      <template #header>
-        <div class="table-header">
-          {{$t("queue.queues")}}
-        </div>
-      </template> 
-
       <Column field="queueName" :header="$t('common.name')" :expander="true">
         <template #body="slotProps">
            {{slotProps.node["queueName"+$i18n.locale]}}
@@ -175,6 +161,7 @@
 <script>
 import api from "@/service/api";
 import {  getHeader, smartEnuApi, findRole } from "@/config/config";
+import Enum from "@/enum/docstates";
 export default {
   name: "Queue",
   data() {
@@ -397,6 +384,17 @@ export default {
       this.deleteVisible = true;
     },
      
+  },
+  computed: {
+    menu () {
+      return [
+        {
+          label: this.$t('common.add'),
+          icon: "pi pi-plus",
+          command: () => {this.createQueue(null)},
+        },
+      ]
+    },
   },
   created() {
     this.loginedUser = this.$store.state.loginedUser;

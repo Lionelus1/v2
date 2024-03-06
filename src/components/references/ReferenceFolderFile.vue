@@ -11,14 +11,12 @@
       </div>
       <Toolbar class="p-1">
         <template #start>
-          <div class="flex flex-wrap gap-2">
             <Button icon="fa-solid fa-home" class="menubar-icons p-1"
               @click="homeFolder()" :disabled="!parentFolder"></Button>
-            <Button icon="fa-solid fa-arrow-left" class="menubar-icons p-1"
-              @click="returnFolder()" :disabled="!parentFolder"></Button>
-            <Button icon="fa-solid fa-turn-down" class="menubar-icons p-1"
-              @click="intoFolder()" :disabled="!currentFolder"></Button>
-          </div>
+        </template>
+        <template #end>
+          <Button icon="fa-solid fa-arrow-left" class="menubar-icons p-1"
+                  @click="returnFolder()" :disabled="!parentFolder"></Button>
         </template>
       </Toolbar>
       <DataTable :value="folders" dataKey="id" :rows="folderRows" :totalRecords="totalFolders" :class="[{'p-datatable-sm': !isLargeScreen}]"
@@ -28,7 +26,13 @@
         @page="onPageFolder($event)" @row-dblclick="doubleClickFolder($event)" stripedRows>
         <Column :header="$t('ref.folderName')">
           <template #body="slotProps">
+            <div class="flex justify-content-between w-full">
             {{ slotProps.data['name' + $i18n.locale] }}
+              <Button @click="currentFolder=slotProps.data;intoFolder()"
+                      class="p-button-text p-button-info p-1" v-tooltip="$t('educomplex.tooltip.into')">
+                <i class="fa-solid fa-arrow-right-to-bracket menubar-icons"></i>
+              </Button>
+            </div>
           </template>
         </Column>
       </DataTable>

@@ -1,50 +1,6 @@
 <template>
     <ProgressSpinner v-if="loading" class="progress-spinner" strokeWidth="5"/>
-    <h3 v-if="personType == 1">
-    {{this.$t("common.userDetail") + ' (' + this.$t("doctemplate.editor.individualEntrepreneur") + ')'}}
-    </h3>
-    <h3 v-else-if="personType == 2">
-    {{ this.$t("common.userDetail") + ' (' + this.$t("roleControl.employeeLabel") + ')' }}
-    </h3>
-    <h3 v-else-if="personType == 3">  
-    {{ this.$t("common.userDetail") + ' (' + this.$t("common.student") + ')' }}
-    </h3>
-
-    <div
-      v-if="userDetailSaved"
-      id="contentcnv"
-      class="col-12"
-      :style="backcolor"
-      ref="content"
-    >
-      <h6>{{ this.$t("common.message.userSuccessInserted") }}</h6>
-      <table style="border: 1px solid black; border-collapse: collapse">
-        <tr style="border: 1px solid black; border-collapse: collapse">
-          <th style="border: 1px solid black; border-collapse: collapse">
-            {{ this.$t("contact.iin") }}
-          </th>
-          <th style="border: 1px solid black; border-collapse: collapse">
-            {{ this.$t("common.password") }}
-          </th>
-        </tr>
-        <tr style="border: 1px solid black; border-collapse: collapse">
-          <td style="border: 1px solid black; border-collapse: collapse">
-            {{ per.IIN }}
-          </td>
-          <td style="border: 1px solid black; border-collapse: collapse">
-            {{ password }}
-          </td>
-        </tr>
-      </table>
-    </div>
-    <Button
-      v-if="userDetailSaved"
-      @click="download"
-      :label="this.$t('common.download')"
-      class="p-button-link"
-    />
-
-    <Menubar :model="items" class="m-0 pt-0 pb-0"></Menubar>
+    <ToolbarMenu :data="menu" border="true"/>
     <BlockUI v-if="!loading" class="p-fluid" :blocked="loading">
       <TabView class="custom-tabview">
 
@@ -118,7 +74,7 @@ import * as jsPDF from "jspdf";
 export default {
   name: 'PersonPage',
   components: {
-    UserPersonalInfomation, UserIDCard, UserEducationView, UserRequisite, UserResearchInterestsView, 
+    UserPersonalInfomation, UserIDCard, UserEducationView, UserRequisite, UserResearchInterestsView,
     WorkExperienceView, UserAwardView, UserQualificationsView, ResumeView, ScienceWorks, },
   props: {
     person: null,
@@ -161,7 +117,7 @@ export default {
         bank_id: false,
       },
 
-      items: [
+      menu: [
         {
           label: this.$t("common.save"),
           icon: "pi pi-fw pi-save",
@@ -247,9 +203,9 @@ export default {
         this.showMessage("error", this.$t('common.message.fillError'));
         return
       }
-      
+
       this.loading = true;
-      
+
       if (this.per.birthday) {
         const formattedBirthday = this.per.birthday;
         const birthdayDateObject = this.parseDate(formattedBirthday);

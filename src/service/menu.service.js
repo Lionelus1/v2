@@ -203,23 +203,24 @@ export class MenuService {
                 label: $t('queue.title'),
                 icon: 'fa-solid fa-people-line',
                 visible: !this.findRole("student"),
-                items: [
+                to: '/queue'
+                /*items: [
                     {
                         label: $t('queue.title'),
                         icon: 'pi pi-fw pi-plus-circle',
                         to: '/queue'
                     },
-                    // {
-                    //   label:  $t('queue.addService'),
-                    //   icon: 'pi pi-fw pi-th-large',
-                    //   to:'/queueCategories'
-                    // },
-                    // {
-                    //   label:  $t('queue.secretary'),
-                    //   icon: 'pi pi-fw pi-user-edit',
-                    //   to:'/queueService'
-                    // },
-                ]
+                    {
+                      label:  $t('queue.addService'),
+                      icon: 'pi pi-fw pi-th-large',
+                      to:'/queueCategories'
+                    },
+                    {
+                      label:  $t('queue.secretary'),
+                      icon: 'pi pi-fw pi-user-edit',
+                      to:'/queueService'
+                    },
+                ]*/
             },
             {
                 label: $t('web.mainMenuTitle'),
