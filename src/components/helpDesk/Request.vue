@@ -5,7 +5,7 @@
     </div>
     <h4 class="m-0">{{ t("helpDesk.application.applicationName") }}</h4>
   </div>
-  <ToolbarMenu :data="menu" @search="search" :search="true" @filter="toggleFilter(event)" :filter="true" :filtered="filtered" />
+  <ToolbarMenu v-if="request" :data="menu" @search="search" :search="true" @filter="toggleFilter(event)" :filter="true" :filtered="filtered" />
   <TabView v-model:activeIndex="activeTab" @tab-change="tabChanged" class="flex flex-column flex-grow-1">
     <TabPanel :header="selectedDirection['name_' + locale]">
       <BlockUI  v-if="haveAccess && selectedDirection && selectedDirection.code !== 'course_application'" :blocked="loading" class="card">
@@ -59,17 +59,17 @@
         @click="createHelpDesk" />
     </template>
   </BlockUI>
+
   <Dialog :header="t('common.action.sendToApprove')" v-model:visible="visibility.sendToApproveDialog" :style="{ width: '50vw' }">
-    
     <div class="p-fluid">
-      <ApprovalUsers :approving="approving" v-model="selectedUsers" @closed="close('sendToApproveDialog')" @approve="sendToApprove($event)"
+      <ApprovalUsers :approving="loading" v-model="selectedUsers" @closed="close('sendToApproveDialog')" @approve="sendToApprove($event)"
         :stages="stages" mode="standard"></ApprovalUsers>
     </div>
   </Dialog>
   <Sidebar v-model:visible="visibility.documentInfoSidebar" position="right" class="p-sidebar-lg">
     <DocSignaturesInfo :docIdParam="request.doc.uuid"></DocSignaturesInfo>
   </Sidebar>
-      <CourseRegistration :courseRequest="request" @data-to-parent="handleDataFromChild" @on-checkbox-checked="onChecked"
+      <CourseRegistration :courseRequest="request"  @on-checkbox-checked="onChecked"
   v-if="selectedDirection && selectedDirection.code === 'course_application'" />
     </TabPanel>  
     <TabPanel :header="t('common.show')" :disabled="!request || !request.doc || !request.doc.filePath || request.doc.filePath.length < 1">
@@ -78,8 +78,6 @@
         </div>
       </TabPanel>
     </TabView>
-
-  
 
 </template>
 
@@ -98,6 +96,7 @@ import {b64toBlob} from "@/config/config";
 import { downloadFile } from "../../config/config";
 import {DocService} from "@/service/doc.service";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo.vue";
+import DocEnum from "@/enum/docstates/index";
 
 
 const { t, locale } = useI18n()
@@ -131,6 +130,7 @@ const selectedDirection = ref({
   name_kz: null,
   name_en: null,
 });
+const userData = ref({})
 const approving = ref(false)
 const loading = ref(false)
 const haveAccess = ref(true);
@@ -164,7 +164,7 @@ const request = ref({
 const pdf = ref(null)
 const activeTab = ref(0)
 
-
+//computed(() =>[
 const menu = computed(() => [
   {
     label: t("common.save"),
@@ -180,6 +180,8 @@ const menu = computed(() => [
       {
         label: t("common.tosign"),
         icon: "pi pi-user-edit",
+        visible:  request.value && request.value.doc && (request.value.doc.docHistory?.stateId === DocEnum.CREATED.ID ||
+                  request.value.doc.docHistory?.stateId === DocEnum.REVISION.ID),
         command: () => open('sendToApproveDialog')
       }
     ]
@@ -187,7 +189,7 @@ const menu = computed(() => [
   {
           label: t('common.approvalList'),
           icon: "pi pi-user-edit",
-          disabled: !isSend.value,
+          disabled:  !request.value.doc || !request.value.doc.docHistory || request.value.doc.docHistory?.stateId < DocEnum.INAPPROVAL.ID,
           command: () => open('documentInfoSidebar')
   },
 ]);
@@ -201,23 +203,41 @@ const close = (name) => {
 };
 
 const onChecked = (data) => {
-  console.log(data);
-  request.value.doc = data
   selectedCourses.value = data
+  userData.value = data
 }
 const sendToApprove = (approvalUsers) => {
   if (changed.value) {
     showMessage("warn", t("common.tosign"), t("common.message.saveChanges"));
     return;
   }
-
-
+  loading.value = true
+  const req = {
+    ticket: request.value,
+    approvalStages: approvalUsers,
+  }
+  service.helpDeskDocApproval(req).then(res => {
+    console.log("TESTTT")
+    close("sendToApproveDialog");
+    loading.value = false
+    location.reload();
+    }).catch(err => {
+      loading.value = false
+      if (err.response && err.response.status == 401) {
+        store.dispatch("logLout")
+      } else if (err.response && err.response.data && err.response.data.localized) {
+        showMessage('error', t(err.response.data.localizedPath), null)
+      } else {
+        console.log(err)
+      }
+    });
 };
 
 const saveDocument = () => {
+  console.log("UserData",userData.value)
+  console.log("Selected",selectedCourses.value)
   loading.value = true;
   if (selectedCourses.value !== null && selectedCourses.value.length > 0){
-    request.value.doc = {}
     request.value.doc.newParams = {}
     let param = {
       value: selectedCourses.value,
@@ -225,12 +245,13 @@ const saveDocument = () => {
     }
     request.value.doc.newParams['not_formal_education'] = param
   }
-  console.log(route.params.isCreated)
+
   request.value.is_saved=1
   service.helpDeskTicketCreate(request.value)
     .then(res => {
-
+      loading.value = false
     }).catch(err => {
+      loading.value = false
       if (err.response && err.response.status == 401) {
         store.dispatch("logLout")
       } else if (err.response && err.response.data && err.response.data.localized) {
@@ -304,6 +325,7 @@ onMounted(() => {
 })
 
 const helpDeskTicketGet = () => {
+  loading.value = true
   service.helpDeskTicketGet({
   ID: null,
   SearchText: null,
@@ -314,11 +336,13 @@ const helpDeskTicketGet = () => {
 })
   .then((res) => {
     request.value = res.data.ticket[0]
+    console.log(request.value);
     // request.value.category = res.data.ticket[0].category;
     selectedDirection.value = res.data.ticket[0].category;
-
+    loading.value = false
   })
-  .catch((err) => {
+  .catch((err) => { 
+    loading.value = false
     if (err.response.status == 401) {
       store.dispatch('logLout');
     }
@@ -339,6 +363,7 @@ const tabChanged = () => {
    }
 
 const downloadContract = () => {
+  loading.value = true
       if (!request.value || !request.value.doc || request.value.doc.filePath.length < 1) return;
 
       if (pdf.value) {
@@ -375,6 +400,7 @@ const isSendItemsRequest = computed(() => {
 
 
 </script>
+
 <style scoped>
 .progress-spinner {
   position: absolute;
@@ -440,36 +466,4 @@ const isSendItemsRequest = computed(() => {
   padding-bottom: 0rem;
 }
 
-table {
-  border-collapse: collapse;
-  width: 100%;
-}
-
-th,
-td {
-  border: 1px solid #ddd;
-  padding: 8px;
-  text-align: center;
-}
-
-th {
-  background-color: #f2f2f2;
-}
-
-td.selected {
-  background-color: #aaf0d1;
-}
-
-td.booked {
-  background-color: #ffcccc;
-}
-
-td.selected.booked {
-  background-color: #ffcdd2;
-}
-
-td:hover {
-  cursor: pointer;
-  background-color: #f9f9f9;
-}
 </style>

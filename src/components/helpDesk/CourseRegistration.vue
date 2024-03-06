@@ -30,10 +30,30 @@
 
     </DataTable>
   </BlockUI>
-  <BlocUI class="card" v-if="!findRole(null, 'student')" :style="{ height: '30vw' }">
+  <BlocUI class="card" v-if="!findRole(null, 'student')" :style="{  height: '35vw' }">
     <div class="field" style="margin-top: 10px;">
-      <label>Выберите предмет</label>
-      <InputText v-model="subject" />
+      <label>{{ t('common.fullName') }}</label>
+      <InputText v-model="userData.fullName" type="text" :placeholder="$t('common.fullName')"  />
+    </div>
+    <div class="field" style="margin-top: 10px;">
+      <label>{{ t('common.speciality') }}</label>
+      <InputText v-model="userData.speciality" type="text" :placeholder="$t('common.speciality')" />
+    </div>
+    <div class="field" style="margin-top: 10px;">
+      <label>{{ t('course.course') }}</label>
+      <InputNumber v-model="userData.course" type="number" :placeholder="$t('course.course')" style="width: 350px;"/>
+    </div>
+    <div class="field" style="margin-top: 10px;">
+      <label>{{ t('contracts.cafedraGroup') }}</label>
+      <InputText v-model="userData.group" type="text" :placeholder="$t('contracts.cafedraGroup')" />
+    </div>
+    <div class="field" style="margin-top: 10px;">
+      <label>{{ t('contact.phone') }}</label>
+      <InputText v-model="userData.phone" class="mt-2" type="text" :placeholder="$t('contact.phone')" />
+    </div>
+    <div class="field" style="margin-top: 10px;">
+      <label>{{ t('contact.email') }}</label>
+      <InputText v-model="userData.email" type="text" :placeholder="$t('contact.email')"/>
     </div>
   </BlocUI>
 </template>
@@ -63,7 +83,14 @@ const props = defineProps({
     }
   })
 
-
+const userData = ref({
+  fullName: null,
+  speciality: null,
+  group:null,
+  course:null,
+  phone:null,
+  email:null
+})
 const data = ref(null);
 const selectedIds = ref([]);
 
@@ -146,34 +173,13 @@ const isDisabled = (rowData) => {
   let totalHours = data.value.reduce((total, item) => total + (item.checked ? item.hours : 0), 0);
   return totalHours + rowData.hours > maxChecked && !rowData.checked;
 };
-const saveDocument = () => {
-  loading.value = true;
-  service.helpDeskTicketCreate( null)
-    .then(res => {
-      // Обработка успешного ответа
-    })
-    .catch(err => {
-      if (err.response && err.response.status == 401) {
-        store.dispatch("logLout");
-      } else if (err.response && err.response.data && err.response.data.localized) {
-        showMessage('error', t(err.response.data.localizedPath), null);
-      } else {
-        console.log(err);
-      }
-    })
-    .finally(() => {
-      loading.value = false;
-    });
-
-  isSend.value = true;
-};
 const checkBoxSelect = (course) => {
   if (course.checked) {
     selectedIds.value.push(course.subject_id);
   } else {
     selectedIds.value = selectedIds.value.filter(item => item !== course.subject_id);
   }
-  emit('onCheckboxChecked', selectedIds.value)
+  emit('onCheckboxChecked', selectedIds.value, userData.value)
   if (selectedIds.value.length === 0) {
     isSend.value = false;
   }

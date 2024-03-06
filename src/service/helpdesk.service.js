@@ -14,4 +14,8 @@ export class HelpDeskService {
     helpDeskCategoryGet(params) {
         return api.post(`/helpdesk/category/get`, params, {headers: getHeader()});
     }
+
+    helpDeskDocApproval(data){
+        return api.post(`/helpdesk/doc/approval`, data, {headers: getHeader()});
+    }
 }
