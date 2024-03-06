@@ -19,15 +19,17 @@
             </div>
           </div>
           <DataView :lazy="true" :value="allNews" :layout="layout" :paginator="true" :rows="10"
-                    @page="onPage($event)" :totalRecords="total">
+                    @page="onPage($event)" :totalRecords="total" :pageLinkSize="mobile? 3:5">
             <template #empty>{{
                 this.$t("smartenu.newsNotFound")
               }}
             </template>
             <template #list="{ data }">
               <div class="post" v-on:click="newsView(data)">
-                <img class="round" v-if="data.imageUrl != null && data.imageUrl !=''"
-                     :src="data.imageUrl"/>
+                <div class="img">
+                  <img v-if="data.imageUrl != null && data.imageUrl !=''"
+                       :src="data.imageUrl"/>
+                </div>
                 <div class="text">
                   <strong>
                     {{
@@ -128,7 +130,8 @@ export default {
       allEvents: [],
       notifications: [],
       newsService: new NewsService(),
-      eventService: new EventsService()
+      eventService: new EventsService(),
+      mobile: false,
     };
   },
 
@@ -192,14 +195,13 @@ export default {
     this.getAllEvents();
   },
   mounted() {
+    this.mobile = window.innerWidth <= 640;
     this.emitter.on('newsViewModalClose', data => {
       this.newsViewVisible = data;
     });
     this.emitter.on('eventViewModalClose', data => {
       this.eventViewVisible = data;
     });
-
-
   },
   computed: {
     ...mapState(["loginedUser"]),
@@ -255,11 +257,17 @@ export default {
     }
   }
 
-  img {
+  .img {
     width: 120px;
     height: 80px;
-    border-radius: 5px;
-    box-shadow: 0 3px 6px rgb(0 0 0 / 16%), 0 3px 6px rgb(0 0 0 / 23%);
+
+    img{
+      width: 120px;
+      height: 100%;
+      border-radius: 5px;
+      object-fit: cover;
+      box-shadow: 0 3px 6px rgb(0 0 0 / 16%), 0 3px 6px rgb(0 0 0 / 23%);
+    }
   }
 }
 
@@ -290,9 +298,13 @@ export default {
     }
   }
   .post {
-    img {
-      width: 7rem;
-      height: 5rem;
+    .img {
+      width: 100px;
+      height: 70px;
+
+      img {
+        width: 100px;
+      }
     }
 
     .text {
