@@ -1,11 +1,13 @@
 <template>
-    <h3>{{ $t("hr.vacancies") }}</h3>
+  <TitleBlock :title="$t('hr.vacancies')" />
   <!-- Toolbar -->
   <Toolbar class="mb-4" v-if="userId === undefined">
     <template #end>
       <Button :label="$t('common.login')" icon="pi pi-user" v-on:click="visible.login = true"/>
     </template>
   </Toolbar>
+
+  <ToolbarMenu @search="getVacancies" :search="true"/>
   <!-- Авторизация -->
   <Dialog v-model:visible="visible.login" :style="{ width: '500px' }" :modal="true">
     <Login></Login>
@@ -43,20 +45,6 @@
                :loading="loading"
                responsiveLayout="scroll"
                @sort="onSort($event)">
-      <!--  HEADER -->
-      <template #header>
-        <div class="table-header flex flex-column md:flex-row md:justify-content-end">
-          <span class="p-input-icon-left">
-            <i class="pi pi-search"/>
-            <InputText type="search"
-                       v-model="lazyParams.searchText"
-                       :placeholder="$t('common.search')"
-                       @keyup.enter="getVacancies"
-                       @click="clearData"/>
-              <Button icon="pi pi-search" class="ml-1" @click="getVacancies"/>
-          </span>
-        </div>
-      </template>
       <!-- EMPTY -->
       <template #empty> {{ $t('common.noData') }}</template>
       <!-- NAME COLUMN -->
@@ -111,7 +99,7 @@
       <!-- APPLY BUTTON COLUMN -->
       <Column>
         <template #body="slotProps">
-          <Button v-if="!slotProps.data.isApply" icon="pi pi-star" class="p-button-success" :label="$t('hr.action.apply')"
+          <Button v-if="!slotProps.data.isApply" icon="pi pi-star" class="p-button-success white-space-nowrap" :label="$t('hr.action.apply')"
                   @click="openApplyDialog(slotProps.data.id)"/>
           <Tag v-if="slotProps.data.isApply" class="mr-2" severity="info" :value="$t('hr.action.applied')"></Tag>
         </template>
@@ -349,9 +337,11 @@ import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
 import Login from "../../../Login";
 import router from '@/router';
+import TitleBlock from "@/components/TitleBlock.vue";
+import ToolbarMenu from "@/components/ToolbarMenu.vue";
 export default {
   name: "CareerVacancies",
-  components: {Login},
+  components: {ToolbarMenu, TitleBlock, Login},
   data() {
     return {
       file: null,
@@ -400,9 +390,10 @@ export default {
     /**
      * *********************** ПОЛУЧЕНИЕ ВСЕХ ОПУБЛИКОВАННЫХ ВАКАНСИЙ
      */
-    getVacancies() {
+    getVacancies(data) {
       this.loading = true
       this.lazyParams.countMode = null;
+      this.lazyParams.searchText = data;
       axios.post(smartEnuApi + "/vacancy/public",
           this.lazyParams, {headers: getHeader()}).then((response) => {
         this.vacancies = response.data.vacancies;
@@ -526,14 +517,6 @@ export default {
     /**
      * ***********************
      */
-
-    clearData() {
-      if (!this.lazyParams.searchText) {
-        return;
-      }
-      this.lazyParams.searchText = "";
-      this.getVacancies();
-    },
 
     /**
      * *********************** ОТКРЫТИЕ ДИАЛОГОВОГО ОКНА ДЛЯ ПОДАЧИ ЗАЯВКИ
