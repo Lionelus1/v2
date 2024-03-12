@@ -1665,6 +1665,7 @@ export default {
             publicationCategory: "Жарияланым санаты",
             publicationType: "Жарияланым түрі",
             participationInGroup: "Авторлар ұжымына қатысу",
+            subtypeDescription: "Документ типі"
         }
     },
     supportingDocument: "Растайтын құжат",
