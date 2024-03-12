@@ -430,9 +430,9 @@ export default {
       this.attachments = {};
 
       let paramsName = ["publicationType", "publicationCategory", "publicationName", "publicationDate",
-        "editionType", "editionFullName",  "editionName", "editionNumber", "editionYear", "editionPages",
+        "editionType", "editionFullName",  "editionName", "editionNumber", "editionYear", "editionPages", "subtypeDescription",
         "issn", "isbn", "koksnvo", "link", "printedPages", "participationInGroup", "recommendedBy",
-        "coauthorsInternal", "coauthorsExternal", "attachments"];
+        "coauthorsInternal", "coauthorsExternal", "attachments",];
 
       for (let name of paramsName) {
         let param = this.scienceWork.newParams[name];
