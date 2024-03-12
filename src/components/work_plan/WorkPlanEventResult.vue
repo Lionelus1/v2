@@ -270,7 +270,9 @@
             <Column field="state" :header="$t('common.actionTitle')">
               <template #body="{ data }">
                 <!-- {{ data.state ? $t(`common.states.${data.state}`) : "" }} -->
-                {{ data.state ? getResultStatus(data.state_id) : "" }}
+                <span :class="'customer-badge status-' + data.state_id">
+                  {{ data.state ? getResultStatus(data.state_id) : "" }}
+                </span>
               </template>
             </Column>
           </DataTable>
@@ -297,31 +299,21 @@
     </div>
   </Sidebar>
 
-  <Sidebar v-model:visible="rejectMessageSidebar" position="right" header="Work Plan Reject Message" style="width: 30%;">
-    <div v-if="(resultData && resultData[0].plan_event_result_history[0].state_id === 6 && (loginedUserId === resultData[0].result_text[0].user.userID)) || (resultData && resultData[0].plan_event_result_history[0].state_id === 6 && isAdmin)">
-      <div v-if="resultData && event && resultData[0].reject_history">
-        <div class="p-fluid">
-          <div  v-if="resultData[0].reject_history.user">
-            <label><b>{{ $t('contracts.assigner') }}:</b></label> {{ resultData[0].reject_history.user.fullName }}
-          </div>
-          <div  v-if="resultData[0].reject_history.created_date" class="mt-1">
-            <label><b>{{ $t('common.date') }}:</b></label> {{ formatDateMoment(resultData[0].reject_history.created_date) }}
-          </div>
-          
-          <div class="mt-3">
-            <label><b>{{ $t('common.comment') }}:</b></label>
-            <div style="margin-top: -10px;">
-              <Message :closable="false" severity="info"><span v-html="resultData[0].reject_history.message"></span>
-              </Message>
-            </div>
-              
-            
-           
-          </div>
-        </div>
+  <Sidebar v-model:visible="rejectMessageSidebar" position="right" header="Work Plan Reject Message" style="width: 30%;" v-if="shouldShowRejectSidebar">
+  <div class="p-fluid">
+    <div v-if="rejectHistory.user">
+      <label><b>{{ $t('contracts.assigner') }}:</b></label> {{ rejectHistory.user.fullName }}
+    </div>
+    <div v-if="rejectHistory.created_date" class="mt-1">
+      <label><b>{{ $t('common.date') }}:</b></label> {{ formatDateMoment(rejectHistory.created_date) }}
+    </div>
+    <div class="mt-3" v-if="rejectHistory.message">
+      <label><b>{{ $t('common.comment') }}:</b></label>
+      <div style="margin-top: -10px;">
+        <Message :closable="false" severity="info"><span v-html="rejectHistory.message"></span></Message>
       </div>
     </div>
-
+  </div>
 </Sidebar>
 </template>
 
@@ -565,7 +557,8 @@ export default {
             this.isPlanCreator = false;
           }
           if (this.event && this.event.user) {
-            this.isPlanCreatorApproval = this.event.user.find(e => e.id === this.loginedUserId) !== null && this.isPlanCreator;
+            this.isPlanCreatorApproval = this
+.event.user.find(e => e.id === this.loginedUserId) !== null && this.isPlanCreator;
             this.isCurrentUserApproval = this.event.user.find(e => e.id === this.loginedUserId);
           }
           this.getData();
@@ -649,8 +642,14 @@ export default {
         fd.append("is_partially", true);
       }
 
-      if (!this.authUser.mainPosition.department.isFaculty)
-        fd.append("fact", this.fact)
+      if (
+        this.authUser?.mainPosition?.department &&
+        !this.authUser.mainPosition.department.isFaculty &&
+        this.isOperPlan
+      ) {
+        fd.append("fact", this.fact);
+      }
+
 
       if (this.plan && this.isOperPlan && this.resultData)
         fd.append("result_id", this.resultData.event_result_id);
