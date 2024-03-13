@@ -1771,7 +1771,7 @@ export default {
         ssdfgsdfg: 'sdfgsdfg',
     },
     helpDesk: {
-        title: 'Service Desk',
+        title: 'Менің өтініштерім',
         creationTime: 'Құру уақыты',
         priority: 'Басымдық',
         responsible: 'Жауапты',
@@ -1787,7 +1787,8 @@ export default {
             created: 'Құрылды',
             closed: 'Жабық',
             date:'Күнді таңдаңыз',
-            dateTime:'Уақытты таңдаңыз'
+            dateTime:'Уақытты таңдаңыз',
+            discipline: 'Сабақты жазыңыз',
         },
 
     }

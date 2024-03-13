@@ -4,9 +4,9 @@
     <ToolbarMenu :data="mainMenu" @search="search" :search="true" @filter="toggleFilter($event)" :filter="true" :filtered="filtered">
       <template #end>
         <Button class="align-items-center" :class="{
-          'p-button-success p-button-outlined': filter.applied,
-          'p-button-secondary p-button-text': !filter.applied
-        }">
+      'p-button-success p-button-outlined': filter.applied,
+      'p-button-secondary p-button-text': !filter.applied
+    }">
         </Button>
       </template>
     </ToolbarMenu>
@@ -28,61 +28,58 @@
       </Dialog>
       <div>
         <DataTable :lazy="true" :rowsPerPageOptions="[5, 10, 20, 50]" :value="data" dataKey="id" :rowHover="true" v-model:filters="filters"
-          filterDisplay="menu" :loading="loading" responsiveLayout="scroll" :paginator="true" selectionMode="single" stripedRows class="p-datatable-sm"
-          :rows="10" :totalRecords="total" @page="onPage" v-model:selection="currentDocument" :first="first" scrollable scrollHeight="flex" @lazy="true"
-          :globalFilterFields="['creationTime', 'priority', 'status', 'requestReason', 'categoryApplication', 'responsible']">
-
-
+          filterDisplay="menu" :loading="loading" responsiveLayout="scroll" :paginator="true" selectionMode="single" stripedRows
+          class="p-datatable-sm" :rows="10" :totalRecords="total" @page="onPage" v-model:selection="currentDocument" :first="first" scrollable
+          scrollHeight="flex" @lazy="true">
+          <!-- :globalFilterFields="['columns.number','creationTime', 'status', 'requestReason', 'categoryApplication', 'responsible']" -->
           <template #empty> {{ t('common.noData') }}</template>
           <template #loading> {{ t('common.loading') }}</template>
-          <Column field="content" :header="t('contracts.columns.number')" sortable>
-          </Column>
+          <!-- <Column field="content" :header="t('contracts.columns.number')" sortable>
+          </Column> -->
 
           <Column field="create_date" :header="t('helpDesk.creationTime')">
-            <template>
-
+            <template #body="{ data }">
+              <a href="javascript:void(0)">{{ formatDate(data.doc?.docHistory?.setDate) }}</a>
             </template>
           </Column>
 
-          <Column field="priority" :header="t('helpDesk.priority')">
-
-          </Column>
           <Column field="status" :header="t('common.status')">
             <!-- <template #body="{ data }">
-            <span :class="'customer-badge status-' + data.doc_info">
-              {{ getDocStatus(data.doc_info.docHistory.stateEn) }}
-          </span>
-          </template> -->
+              <span :class="'customer-badge status-' + data.doc?.docHistory?.code">
+                {{ getDocStatus(data.doc?.docHistory?.stateEn) }}
+              </span>
+            </template> -->
           </Column>
 
           <Column field="requestReason" :header="t('helpDesk.application.requestReason')">
             <template #body="{ data }">
               <a href="javascript:void(0)">{{ $i18n.locale === "kz" ? data.category.name_kz : $i18n.locale === "ru" ? data.category.name_ru :
-                data.category.name_en }}</a>
+      data.category.name_en }}</a>
             </template>
           </Column>
 
           <Column field="category" :header="t('helpDesk.application.categoryApplication')">
             <template #body="{ data }">
               <a href="javascript:void(0)">{{ $i18n.locale === "kz" ? data.category.name_kz : $i18n.locale === "ru" ? data.category.name_ru :
-                data.category.name_en }}</a>
+      data.category.name_en }}</a>
             </template>
           </Column>
 
-          <Column field="responsible" :header="t('helpDesk.responsible')">
+          <!-- <Column field="responsible" :header="t('helpDesk.responsible')">
             <template>
               <span></span>
             </template>
-          </Column>
+          </Column> -->
+
           <Column style="min-width: 50px;">
             <template #body="{ data }">
               <div class="flex flex-wrap column-gap-1 row-gap-1">
                 <Button class="p-button-text p-button-warning p-1 mr-2" @click="currentDocument = data; openDocument()">
                   <i class="fa-solid fa-pencil fa-xl"></i>
                 </Button>
-                <Button class="p-button-text p-button-danger p-1 mr-2" @click="currentDocument = data; deleteFile()">
+                <!-- <Button class="p-button-text p-button-danger p-1 mr-2" @click="currentDocument = data; deleteFile()">
                   <i class="fa-solid fa-trash-can fa-xl"></i>
-                </Button>
+                </Button> -->
               </div>
             </template>
           </Column>
@@ -91,13 +88,13 @@
     </BlockUI>
   </div>
 </template>
-  
+
 <script setup>
 import ToolbarMenu from "@/components/ToolbarMenu.vue";
 import { HelpDeskService } from "../../service/helpdesk.service";
 import { ref, computed, onMounted } from 'vue';
 import { useI18n } from "vue-i18n";
-import { getHeader, smartEnuApi } from "@/config/config";
+import { findRole } from "@/config/config";
 import { useToast } from "primevue/usetoast";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
@@ -147,7 +144,7 @@ const visibility = ref({
   newPublicationDialog: false,
 });
 const uuid = ref(null);
-
+const isAdmin = findRole(null, 'main_administrator')
 const data = ref([]);
 const selectedDirection = ref(null);
 const currentDocument = ref(null);
@@ -223,6 +220,14 @@ const getDocStatus = (code) => {
   }
 };
 
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+      const day = date.getDate().toString().padStart(2, '0'); // добавляем 0 для чисел < 10
+      const month = (date.getMonth() + 1).toString().padStart(2, '0'); // добавляем 0 для чисел < 10
+      const year = date.getFullYear();
+      return `${day}.${month}.${year}`;
+    }
+
 const requstLocal = () => {
   switch (locale) {
     case "kz":
@@ -246,7 +251,7 @@ const onPage = (event) => {
 };
 const openDocument = () => {
   if (currentDocument.value) {
-      router.push({ name: 'Request', params: { uuid: currentDocument.value.uuid, id: currentDocument.value.id } });
+    router.push({ name: 'Request', params: { uuid: currentDocument.value.uuid, id: currentDocument.value.id } });
   }
 };
 const getCategory = () => {
@@ -287,7 +292,7 @@ const createHelpDesk = () => {
       uuid.value = res.data;
       close('newPublicationDialog');
       loading.value = false;
-        router.push({ name: 'Request', params: { uuid: uuid.value, isCreated: 1 } });
+      router.push({ name: 'Request', params: { uuid: uuid.value, isCreated: 1 } });
     }).catch(err => {
       if (err.response && err.response.status == 401) {
         store.dispatch("logLout");
@@ -303,27 +308,35 @@ const createHelpDesk = () => {
 
 };
 const getTicket = () => {
-  service.helpDeskTicketGet(
-    {
-      ID: null,
-      search_text: null,
-      page: lazyParams.value.page,
-      rows: lazyParams.value.rows,
-      uuid: null,
-      is_saved: 1
+  if (findRole(null, 'main_administrator')) {
+    service.helpDeskTicketGet(
+      {
+        ID: null,
+        search_text: null,
+        page: lazyParams.value.page,
+        rows: lazyParams.value.rows,
+        uuid: null,
+        is_saved: 1
+      }
+    ).then((res) => {
+      console.log(res.data)
     })
-    .then((res) => {
-      data.value = res.data.ticket;
-      total.value = res.data.total;
-    })
-    .catch((err) => {
-
-      toast.add({
-        severity: "error",
-        detail: t("common.message.saveError"),
-        life: 3000,
-      });
-    });
+  } else {
+    service.helpDeskTicketGet(
+      {
+        ID: null,
+        search_text: null,
+        page: lazyParams.value.page,
+        rows: lazyParams.value.rows,
+        uuid: null,
+        is_saved: 1
+      })
+      .then((res) => {
+        data.value = res.data.ticket;
+        total.value = res.data.total;
+        console.log(data.value[0].doc.docHistory.code)
+      })
+  }
 };
 const search = (data) => {
   alert(data);
@@ -335,7 +348,7 @@ const toggleFilter = (event) => {
 
 
 </script>
-  
+
 <style scoped lang="scss">
 .commonColum {
   display: flex;

@@ -18,4 +18,7 @@ export class HelpDeskService {
     helpDeskDocApproval(data){
         return api.post(`/helpdesk/doc/approval`, data, {headers: getHeader()});
     }
+    helpDeskStudentInfo(data){
+        return api.post(`/helpdesk/studentInfo`, data, {headers: getHeader()})
+    }
 }

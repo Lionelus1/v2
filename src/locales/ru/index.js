@@ -1757,7 +1757,7 @@ export default {
         ssdfgsdfg: 'sdfgsdfg',
     },
     helpDesk: {
-        title: 'Service Desk',
+        title: 'Мои заявки',
         creationTime: 'Время создания',
         priority: 'Приоритет',
         responsible: 'Ответственный',
@@ -1773,7 +1773,8 @@ export default {
             created: 'Создана',
             closed: 'Закрыта',
             date: 'Выберите дату',
-            dateTime: 'Выберите время'
+            dateTime: 'Выберите время',
+            discipline: 'Напишите дисциплину',
         },
 
     }

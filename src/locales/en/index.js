@@ -1758,7 +1758,7 @@ export default {
         ssdfgsdfg: 'sdfgsdfg',
     },
     helpDesk: {
-        title: 'Service Desk',
+        title: 'My applications',
         creationTime: 'Creation time',
         priority: 'Priority',
         responsible: 'Responsible',
@@ -1774,7 +1774,8 @@ export default {
             created: 'Created',
             closed: 'Closed',
             date: 'Select a date',
-            dateTime:'Choose a time'
+            dateTime:'Choose a time',
+            discipline: 'Write the discipline',
         },
 
     }
