@@ -49,36 +49,36 @@
       <TabView class="custom-tabview">
 
         <TabPanel :header="this.$t('personalData')">
-          <template template v-if="(per && per.userID) || customType == chapter.createUser">
+          <template template v-if="(per && per.userID) || customType === chapter.createUser">
             <UserPersonalInfomation @personal-information-updated="handlePersonalInformationUpdate" :model-value="per" :custom-type="customType" :userID="per ? per.userID : null" :readonly="pageReadonly"/>
           </template>
         </TabPanel>
 
-        <TabPanel v-if="customType===chapter.myAccount || customType=== chapter.viewUser || customType == chapter.createUser"  :header="$t('hr.title.id')">
+        <TabPanel v-if="customType===chapter.myAccount || customType=== chapter.viewUser || customType === chapter.createUser"  :header="$t('hr.title.id')">
           <UserIDCard @personal-information-updated="handlePersonalInformationUpdate" :custom-type="customType" :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
         </TabPanel>
 
         <TabPanel :header="this.$t('hr.educationLabel')">
-          <UserEducationView  @personal-information-updated="handlePersonalInformationUpdate"  :model-value="per" :userID="per.userID"  :readonly="pageReadonly"/>
+          <UserEducationView  @personal-information-updated="handlePersonalInformationUpdate"  :custom-type="customType" :model-value="per" :userID="per.userID"  :readonly="pageReadonly"/>
         </TabPanel>
         
-        <TabPanel v-if="customType===chapter.myAccount || customType=== chapter.viewUser || customType == chapter.createUser" :header="$t('bank.requisite')">
+        <TabPanel v-if="customType===chapter.myAccount || customType=== chapter.viewUser || customType === chapter.createUser" :header="$t('bank.requisite')">
           <UserRequisite @personal-information-updated="handlePersonalInformationUpdate" :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
         </TabPanel>
         
-        <TabPanel v-if="customType != chapter.createUser && customType != chapter.viewUser && (customType===chapter.scientists || findRole(null, 'teacher') || findRole(null, 'personal'))" :header="this.$t('science.areaScientificInterests')">
+        <TabPanel v-if="customType !== chapter.createUser && customType !== chapter.viewUser && (customType===chapter.scientists || findRole(null, 'teacher') || findRole(null, 'personal'))" :header="this.$t('science.areaScientificInterests')">
           <UserResearchInterestsView :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
         </TabPanel>
 
-        <TabPanel v-if="customType != chapter.createUser && customType != chapter.viewUser && (customType===chapter.scientists || findRole(null, 'teacher') || findRole(null, 'personal'))" :header="this.$t('science.laborActivity')">
+        <TabPanel v-if="customType !== chapter.createUser && customType !== chapter.viewUser && (customType===chapter.scientists || findRole(null, 'teacher') || findRole(null, 'personal'))" :header="this.$t('science.laborActivity')">
           <WorkExperienceView :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
         </TabPanel>
 
-        <TabPanel v-if="customType != chapter.createUser && customType != chapter.viewUser && (customType===chapter.scientists || findRole(null, 'teacher') || findRole(null, 'personal'))" :header="this.$t('science.awardsAndHonors')">
+        <TabPanel v-if="customType !== chapter.createUser && customType !== chapter.viewUser && (customType===chapter.scientists || findRole(null, 'teacher') || findRole(null, 'personal'))" :header="this.$t('science.awardsAndHonors')">
           <UserAwardView :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
         </TabPanel>
 
-        <TabPanel v-if="customType != chapter.createUser && customType != chapter.viewUser && (customType===chapter.scientists || findRole(null, 'teacher') || findRole(null, 'personal'))" :header="this.$t('science.professionalDevelopment')">
+        <TabPanel v-if="customType !== chapter.createUser && customType !== chapter.viewUser && (customType===chapter.scientists || findRole(null, 'teacher') || findRole(null, 'personal'))" :header="this.$t('science.professionalDevelopment')">
           <UserQualificationsView :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
         </TabPanel>
 
