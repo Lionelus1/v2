@@ -1,5 +1,8 @@
 <template>
-    <h3>{{ $t("hr.vacancies") }}</h3>
+  <TitleBlock :title="$t('hr.vacancies')" />
+
+  <ToolbarMenu @search="getVacancies" :search="true"/>
+
   <div class="card">
     <DataTable :lazy="true"
                :value="vacancies"
@@ -32,22 +35,8 @@
                :loading="loading"
                responsiveLayout="scroll"
                @sort="onSort($event)">
-      <!--  HEADER -->
-      <template #header>
-        <div class="table-header flex flex-column md:flex-row md:justify-content-end">
-          <span class="p-input-icon-left">
-            <i class="pi pi-search"/>
-            <InputText type="search"
-                       v-model="lazyParams.searchText"
-                       :placeholder="$t('common.search')"
-                       @keyup.enter="getVacancies"
-                       @click="clearData"/>
-              <Button icon="pi pi-search" class="ml-1" @click="getVacancies"/>
-          </span>
-        </div>
-      </template>
       <!-- EMPTY -->
-      <template #empty> {{ $t('common.noData') }}</template>
+      <template #empty><div class="text-center">{{ $t('common.noData') }}</div></template>
       <!-- NAME COLUMN -->
       <Column :field="'name' + ($i18n.locale).charAt(0).toUpperCase() + ($i18n.locale).slice(1)"
               v-bind:header="$t('common.nameIn')"
@@ -100,7 +89,7 @@
       <!-- APPLY BUTTON COLUMN -->
       <Column>
         <template #body="slotProps">
-          <Button v-if="!slotProps.data.isApply" icon="pi pi-star" class="p-button-success"
+          <Button v-if="!slotProps.data.isApply" icon="pi pi-star" class="p-button-success white-space-nowrap"
                   :label="$t('hr.action.apply')"
                   @click="openApplyDialog(slotProps.data.id)"/>
           <Tag v-if="slotProps.data.isApply" class="mr-2" severity="info" :value="$t('hr.action.applied')"></Tag>
@@ -411,10 +400,12 @@ import html2pdf from "html2pdf.js";
 import {NCALayerClient} from "ncalayer-js-client";
 import {docToByteArray} from "@/helpers/SignDocFunctions";
 import {NCALayerClientExtension} from "@/helpers/ncalayer-client-ext";
+import TitleBlock from "@/components/TitleBlock.vue";
+import ToolbarMenu from "@/components/ToolbarMenu.vue";
 
 export default {
   name: "HrVacancies",
-  components: {ResumeView},
+  components: {ToolbarMenu, TitleBlock, ResumeView},
   data() {
     return {
       file: null,
@@ -593,11 +584,13 @@ export default {
     /**
      * *********************** ПОЛУЧЕНИЕ ВСЕХ ОПУБЛИКОВАННЫХ ВАКАНСИЙ
      */
-    getVacancies() {
+    getVacancies(data) {
       this.loading = true
       this.lazyParams.countMode = null;
+      this.lazyParams.searchText = data;
       api.post("/vacancy/public",
           this.lazyParams, {headers: getHeader()}).then((response) => {
+        console.log(response)
         this.vacancies = response.data.vacancies;
         this.count = response.data.total;
         this.loading = false;
@@ -605,11 +598,11 @@ export default {
         if (error.response.status == 401) {
           this.$store.dispatch("logLout");
         } else {
-          this.$toast.add({
+          /*this.$toast.add({
             severity: "error",
             summary: error,
             life: 3000,
-          });
+          });*/
         }
         this.loading = false;
       });
@@ -730,14 +723,6 @@ export default {
     /**
      * ***********************
      */
-
-    clearData() {
-      if (!this.lazyParams.searchText) {
-        return;
-      }
-      this.lazyParams.searchText = "";
-      this.getVacancies();
-    },
 
     /**
      * *********************** ОТКРЫТИЕ ДИАЛОГОВОГО ОКНА ДЛЯ ПОДАЧИ ЗАЯВКИ
