@@ -1219,6 +1219,13 @@ export default {
           }
         },
         {
+          label: this.$t('workPlan.reports'),
+          visible: this.isFinish && !this.isSciencePlan && (this.isApproval || this.isPlanCreator || this.isAdmin),
+          command: () => {
+            this.navigateToReports()
+          }
+        },
+        {
           label: this.$t('workPlan.generateAct'),
           visible: this.isFinish && this.isPlanCreator && this.isPlanApproved && this.isSciencePlan,
           command: () => {
