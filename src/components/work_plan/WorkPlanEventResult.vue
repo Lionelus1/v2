@@ -7,6 +7,41 @@
       </div>
       <div class="mb-0 mt-0 inline-block" style="font-size: 24px"> {{ $t('common.result') }}</div>
     </div>
+     <div class="text-right" style="margin-top:-30px;padding-bottom: 3px;" v-if="plan && isPlanCreator">
+                <Button type="button" icon="fa-solid fa-filter" :label="$t('common.filter')"
+                        @click="toggle('global-filter', $event)" aria:haspopup="true" aria-controls="overlay_panel"
+                        class="p-button-outlined mr-2" />
+                <OverlayPanel ref="global-filter" class="col-3">
+                  <div class="p-fluid">
+                    <div class="field">
+                      {{ resultFilter.faculty }}
+                        <label>{{ $t('requests.params.structural_unit') }}/{{ $t('common.faculty') }}</label>
+                        <DepartmentList :parentID="1" :orgType="2"  :autoLoad="true" v-model="resultFilter.faculty"
+                        :placeHolder="$t('smartenu.selectFaculty')">
+                      </DepartmentList>
+                      </div>
+                  </div>
+                  <div class="p-fluid">
+                    <div class="field">
+                      {{ resultFilter.responsiveUser }}
+                      <label>{{ $t('cafedra.responsible') }}</label>
+                      <FindUser v-model="resultFilter.responsiveUser" :max="5" searchMode="local" editMode="true"/>
+                      <!-- <small class="p-error" v-if="!resultFilter.responsiveUser">{{ $t("common.requiredField") }}</small> -->
+                    </div>
+                    </div>
+                    <div class="p-fluid">
+                        <div class="field">
+                            <br />
+                            <Button icon="pi pi-trash" class="ml-1" @click="clearResultFilter()"
+                                    :label="$t('common.clear')" outlined />
+                        </div>
+                        <div class="field">
+                            <Button icon="pi pi-search" :label="$t('common.search')" class="ml-1" @click="getData()" />
+                        </div>
+                    </div>
+                </OverlayPanel>
+              
+      </div>
     <div>
       <TabView v-model:activeIndex="activeIndex" @tab-change="changeTab">
         <TabPanel :header="$t('common.properties')">
@@ -301,16 +336,16 @@
 
   <Sidebar v-model:visible="rejectMessageSidebar" position="right" header="Work Plan Reject Message" style="width: 30%;" v-if="shouldShowRejectSidebar">
   <div class="p-fluid">
-    <div v-if="rejectHistory.user">
-      <label><b>{{ $t('contracts.assigner') }}:</b></label> {{ rejectHistory.user.fullName }}
+    <div v-if="rejectHistory?.user">
+      <label><b>{{ $t('contracts.assigner') }}:</b></label> {{ rejectHistory?.user.fullName }}
     </div>
-    <div v-if="rejectHistory.created_date" class="mt-1">
-      <label><b>{{ $t('common.date') }}:</b></label> {{ formatDateMoment(rejectHistory.created_date) }}
+    <div v-if="rejectHistory?.created_date" class="mt-1">
+      <label><b>{{ $t('common.date') }}:</b></label> {{ formatDateMoment(rejectHistory?.created_date) }}
     </div>
-    <div class="mt-3" v-if="rejectHistory.message">
+    <div class="mt-3" v-if="rejectHistory?.message">
       <label><b>{{ $t('common.comment') }}:</b></label>
       <div style="margin-top: -10px;">
-        <Message :closable="false" severity="info"><span v-html="rejectHistory.message"></span></Message>
+        <Message :closable="false" severity="info"><span v-html="rejectHistory?.message"></span></Message>
       </div>
     </div>
   </div>
@@ -322,9 +357,16 @@ import {findRole, getHeader, smartEnuApi} from "@/config/config";
 import moment from "moment";
 import {WorkPlanService} from '../../service/work.plan.service'
 import Enum from "@/enum/workplan/index"
+import FindUser from "@/helpers/FindUser";
+import DepartmentList from "../smartenu/DepartmentList.vue"
+
 
 export default {
   name: "WorkPlanEventResult",
+  components: {
+    FindUser,
+    DepartmentList
+  },
   props: ['resultId'],
   data() {
     return {
@@ -384,7 +426,12 @@ export default {
       wordLimit: 50,
       wordMaxLimit: 250,
       wordCounter: 0,
-      hasResultToApprove: false
+      hasResultToApprove: false,
+      formData: null,
+      resultFilter: {
+        faculty: null,
+        responsiveUser: []
+      }
     }
   },
   computed: {
@@ -523,6 +570,20 @@ export default {
         (this.resultData.result_text !== null || this.resultData === null)
       );    
     },
+    shouldShowRejectSidebar() {
+      const event = this.event;
+      const resultData = this.resultData;
+
+      return (
+        resultData &&
+        resultData[0].plan_event_result_history[0].state_id === 6 &&
+        ((this.loginedUserId === resultData[0].result_text[0].user.userID && event) ||
+          (this.isAdmin && event) || (this.isPlanCreator && event))
+      );
+    },
+    rejectHistory() {
+      return this.resultData[0]?.reject_history || {};
+    },
   },
   watch: {
     result(newValue) {
@@ -540,6 +601,13 @@ export default {
   },
   methods: {
     findRole: findRole,
+    toggle(ref, event) {
+      this.$refs[ref].toggle(event);
+    },
+    clearResultFilter(){
+      this.resultFilter.faculty = null;
+      this.resultFilter.responsiveUser = null;
+    },
     initWordCount(count) {
       this.inputWordCount = count
     },
@@ -576,7 +644,22 @@ export default {
       });
     },
     getData() {
-      this.planService.getEventResult(this.event.work_plan_event_id).then(res => {
+      const data = {
+        event_id : this.event.work_plan_event_id,
+       
+      }
+      // let data = {};
+      // if (this.resultFilter && this.resultFilter.faculty) {
+      //   data = {
+      //   event_id : this.event.work_plan_event_id,
+      //   result_filter: {
+      //     department_id : this.resultFilter.faculty.id,
+      //     responsive_users : this.resultFilter.responsiveUser[0].userID
+      //   }
+      //   }
+      // }
+     
+      this.planService.getEventResult(data).then(res => {
         if (res.data) {
           this.resultData = res.data;
 
