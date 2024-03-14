@@ -720,7 +720,7 @@
         <template #footer>
           <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-text"
             @click="hideDialog(dialog.updateDoctoral)" />
-          <Button :label="$t('common.yes')" icon="pi pi-check" class="p-button-text" @click="updateDoctoral" />
+          <Button :label="$t('common.yes')" icon="pi pi-check" class="p-button-text" :disabled="submitted" @click="updateDoctoral" />
         </template>
       </Dialog>
     </div>

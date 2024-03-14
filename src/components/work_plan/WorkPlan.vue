@@ -9,7 +9,9 @@
         <template #loading> {{ $t('common.loading') }}</template>
         <Column field="content" :header="$t('workPlan.planName')" sortable>
           <template #body="{ data }">
-            <a href="javascript:void(0)" @click="navigateToEvent(data)">{{ data.work_plan_name }}</a>
+            <router-link :to="{ name: 'WorkPlanEvent', params: { id: data.work_plan_id } }" tag="a">
+              {{ data.work_plan_name }}
+            </router-link>
           </template>
         </Column>
         <Column field="sing" :header="$t('ncasigner.sign')">
@@ -283,9 +285,6 @@ export default {
           });
         }
       });
-    },
-    navigateToEvent(event) {
-      this.$router.push({ name: 'WorkPlanEvent', params: { id: event.work_plan_id } });
     },
     formatDate(value) {
       let result = "";

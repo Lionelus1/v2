@@ -1,6 +1,6 @@
 <template>
   <ProgressBar v-if="loading" mode="indeterminate" class="progress-bar"/>
-  <TitleBlock :title="$t('contracts.journal')" />
+  <TitleBlock :title="$t('contracts.journal')" :show-back-button="true"/>
   <ToolbarMenu :data="menu" @filter="toggle('filterOverlayPanel', $event)" :filter="true" :filtered="filtered"/>
   <BlockUI :blocked="loading" class="card">
     <DataTable :value="documents" dataKey="id" :rows="rows" :totalRecords="total" :first="first"
@@ -581,7 +581,7 @@ export default {
         },
         {
           label: this.$t('contracts.menu.journal'),
-          icon: "fa-solid fa-file-invoice",
+          icon: "fa-solid fa-link",
           disabled: !this.currentDocument || this.currentDocument.docHistory.stateId !== Enum.SIGNED.ID ||
               this.currentDocument.sourceType !== Enum.DocSourceType.FilledDoc,
           command: () => {this.$router.push('/documents/contracts/' + this.currentDocument.uuid + '/related')},
