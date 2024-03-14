@@ -124,7 +124,7 @@ export default {
       default: false
     }
   },
-  emits: ['sentToRevision'],
+  // emits: ['sentToRevision'],
   data() {
     return {
       service: new DocService(),
@@ -507,8 +507,8 @@ export default {
         headers: getHeader()
       }).then(res => {
         this.loading = false
-        this.$emit('sentToRevision', this.revisionComment)
-
+        // this.$emit('sentToRevision', this.revisionComment)
+        this.getData()
       }).catch(err => {
         if (err.response.status == 401) {
           this.$store.dispatch("logLout");

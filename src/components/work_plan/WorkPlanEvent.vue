@@ -33,8 +33,8 @@
         </div>
       </div>
     </div>
-    <ToolbarMenu v-if="plan" :data="toolbarMenus" @filter="toggle('global-filter', $event)" :filter="true" :filtered="filtered"/>
-    <div class="card" v-if="plan">
+    <ToolbarMenu v-if="plan && planDoc" :data="toolbarMenus" @filter="toggle('global-filter', $event)" :filter="true" :filtered="filtered"/>
+    <div class="card" v-if="plan && planDoc">
       <TreeTable ref="workplantreetable" class="p-treetable-sm" :value="data" :lazy="true" :loading="loading" @nodeExpand="onExpand" scrollHeight="flex"
                  responsiveLayout="scroll" :resizableColumns="true" columnResizeMode="fit" showGridlines :paginator="true" :rows="10" :total-records="total"
                  @page="onPage($event)">
@@ -132,8 +132,8 @@
     </div>
   </div>
 
-  <Sidebar v-model:visible="dialog.planView.state" position="right" class="p-sidebar-lg" style="overflow-y: scroll" @hide="hideDialog(dialog.planView)">
-    <DocSignaturesInfo :docIdParam="plan.doc_id" :isInsideSidebar="true" @sentToRevision="rejectPlan($event)"></DocSignaturesInfo>
+  <Sidebar v-model:visible="dialog.planView.state" position="right" class="w-6" style="overflow-y: scroll" @hide="hideDialog(dialog.planView)">
+    <DocSignaturesInfo :docIdParam="plan.doc_id" :isInsideSidebar="true"></DocSignaturesInfo>
   </Sidebar>
 
   <Sidebar v-model:visible="isShowPlanExecute" position="right" style="overflow-y: scroll; width: 50%;" @hide="closePlanExecuteSidebar">
@@ -1026,7 +1026,7 @@ export default {
         {
           label: this.$t('common.show'),
           icon: 'fa-solid fa-eye',
-          disabled: !(this.selectedEvent && this.plan.doc_info?.docHistory?.stateId === 3 && this.canExecuteEvent),
+          disabled: !(this.selectedEvent && this.isPlanApproved && this.canExecuteEvent),
           visible: this.isFinish,
           command: () => {
             this.openPlanExecuteSidebar()
@@ -1076,11 +1076,10 @@ export default {
     isPlanApproved() {
       return this.planDoc && this.planDoc.docHistory?.stateEn === this.DocState.APPROVED.Value
     },
-    isPlanSentToRevision() {
+    isPlanUnderRevision() {
       return this.planDoc && this.planDoc.docHistory?.stateEn === this.DocState.REVISION.Value
     },
     toolbarMenus() {
-      console.log(this.isEventListEmpty)
       return [
         {
           label: this.$t('common.add'),
@@ -1094,7 +1093,7 @@ export default {
         {
           label: this.$t('common.action.sendToApprove'),
           icon: 'pi pi-send',
-          visible: this.plan && this.planDoc && (this.isCreatedPlan || this.isPlanSentToRevision) && this.isPlanCreator && this.isFinish,
+          visible: this.plan && this.planDoc && (this.isCreatedPlan || this.isPlanUnderRevision) && this.isPlanCreator && this.isFinish,
           command: () => {
             this.showDialog(this.dialog.planApprove)
           }
@@ -1112,7 +1111,7 @@ export default {
         {
           label: this.$t('workPlan.viewPlan'),
           icon: 'pi pi-eye',
-          visible: this.isFinish && this.planDoc && !(this.isCreatedPlan || this.isPlanSentToRevision),
+          visible: this.isFinish && this.planDoc && !(this.isCreatedPlan || this.isPlanUnderRevision),
           command: () => {
             this.showDialog(this.dialog.planView)
           }
