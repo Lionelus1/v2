@@ -523,6 +523,17 @@ export default {
         (this.resultData.result_text !== null || this.resultData === null)
       );    
     },
+    shouldShowRejectSidebar() {
+      const event = this.event;
+      const resultData = this.resultData;
+
+      return (
+        resultData &&
+        resultData[0].plan_event_result_history[0].state_id === 6 &&
+        ((this.loginedUserId === resultData[0].result_text[0].user.userID && event) ||
+          (this.isAdmin && event) || (this.isPlanCreator && event))
+      );
+    },
   },
   watch: {
     result(newValue) {
