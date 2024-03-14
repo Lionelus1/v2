@@ -13,7 +13,7 @@
 
         <Column field="checkbox">
           <template #body="{ data }">
-            <Checkbox :disabled="isDisabled(data)" v-model="data.checked" :binary="true" @change="checkBoxSelect(data)" style="margin-left: 20px;" />
+            <Checkbox :disabled="isDisabled(data) || isAdmin" v-model="data.checked" :binary="true" @change="checkBoxSelect(data)" style="margin-left: 20px;" />
           </template>
         </Column>
 
@@ -40,31 +40,31 @@
     <div class="field">
       <label>{{ t('common.fullName') }}</label>
       <!-- :disabled="!!responseUserData.fullName" -->
-      <InputText v-model="userData.fullName" type="text" :placeholder="t('common.fullName')" @input="input" />
+      <InputText v-model="userData.fullName" type="text" :disabled="isAdmin" :placeholder="t('common.fullName')" @input="input" />
     </div>
     <div class="field" style="margin-top: 10px;">
       <label>{{ t('common.speciality') }}</label>
-      <InputText v-model="userData.speciality" type="text"
-        :placeholder="userData.speciality || t('common.speciality')" @input="input" />
+      <InputText v-model="userData.speciality" type="text" :disabled="isAdmin" :placeholder="userData.speciality || t('common.speciality')"
+        @input="input" />
     </div>
     <div class="field" style="margin-top: 10px;">
       <label>{{ t('course.course') }}</label>
-      <InputNumber v-model="userData.course" :placeholder="userData.course || t('course.course')"
-        style="width: 350px;" @input="input" />
+      <InputNumber v-model="userData.course" :placeholder="userData.course || t('course.course')" style="width: 350px;" @input="input"
+        :disabled="isAdmin" />
     </div>
     <div class="field" style="margin-top: 10px;">
       <label>{{ t('contracts.cafedraGroup') }}</label>
-      <InputText v-model="userData.group" type="text"
-        :placeholder="userData.group || t('contracts.cafedraGroup')" @input="input" />
+      <InputText v-model="userData.group" type="text" :placeholder="userData.group || t('contracts.cafedraGroup')" @input="input"
+        :disabled="isAdmin" />
     </div>
     <div class="field" style="margin-top: 10px;">
       <label>{{ t('contact.phone') }}</label>
       <InputNumber v-model="userData.phone" class="mt-2" inputId="userDataPhone" :useGrouping="false" :placeholder="t('contact.phone')"
-        style="width: 350px;" @input="input" />
+        style="width: 350px;" @input="input" :disabled="isAdmin" />
     </div>
     <div class="field" style="margin-top: 10px;">
       <label>{{ t('contact.email') }}</label>
-      <InputText v-model="userData.email" type="text" :placeholder="t('contact.email')" @input="input" />
+      <InputText v-model="userData.email" type="text" :placeholder="t('contact.email')" @input="input" :disabled="isAdmin" />
     </div>
   </div>
   <!-- <BlocUI class="card" v-if="!findRole(null, 'student')" :style="{ height: '35vw' }">
@@ -146,6 +146,7 @@ const responseUserData = ref({
 const data = ref(null);
 const selectedIds = ref(props.courseRequest.doc.newParams && props.courseRequest.doc.newParams.not_formal_education_ids ? props.courseRequest.doc.newParams.not_formal_education_ids.value : []);
 
+const isAdmin = ref(false)
 const loading = ref(false);
 const lazyParams = ref({
   page: 0,
@@ -212,12 +213,17 @@ const onPage = (event) => {
 };
 
 const getCourse = () => {
+  console.log(props.courseRequest)
+  const userId = props.courseRequest?.doc?.newParams?.student_id?.value
+  const courseId = props.courseRequest?.doc?.newParams?.not_formal_education_ids.value
   axios.post(smartEnuApi + "/onlinecourse/courses",
     {
+      user_id: userId,
       page: lazyParams.value.page,
       rows: lazyParams.value.rows,
       searchText: null,
       dic_course_type: "not_formal_education",
+      courses_ids: courseId
 
     }, { headers: getHeader() })
     .then((res) => {
@@ -245,32 +251,32 @@ const getStudentInfo = () => {
     return
   }
   service.helpDeskStudentInfo({ user_id: userId }).then(res => {
-  responseUserData.value.speciality = locale === "kz" ? res.data.studen_info.specialty_kz : res.data.studen_info.specialty_ru
-  responseUserData.value.course = res.data.studen_info.course_number
-  responseUserData.value.group = res.data.studen_info.group
-  responseUserData.value.fullName = res.data.studen_info.full_name
-  responseUserData.value.phone = res.data.studen_info.phone
-  responseUserData.value.email = res.data.studen_info.email
+    responseUserData.value.speciality = locale === "kz" ? res.data.studen_info.specialty_kz : res.data.studen_info.specialty_ru
+    responseUserData.value.course = res.data.studen_info.course_number
+    responseUserData.value.group = res.data.studen_info.group
+    responseUserData.value.fullName = res.data.studen_info.full_name
+    responseUserData.value.phone = res.data.studen_info.phone
+    responseUserData.value.email = res.data.studen_info.email
 
-  console.log("studentInfo:", res.data)
-  userData.value = {
-    fullName: props.courseRequest.doc?.newParams?.not_formal_student_info.value.fullName || responseUserData.value.fullName,
-    speciality: props.courseRequest.doc?.newParams?.not_formal_student_info.value.speciality || responseUserData.value.speciality,
-    group: props.courseRequest.doc?.newParams?.not_formal_student_info.value.group || responseUserData.value.group,
-    course: props.courseRequest.doc?.newParams?.not_formal_student_info.value.course || responseUserData.value.course,
-    phone: props.courseRequest.doc?.newParams?.not_formal_student_info.value.phone || responseUserData.value.phone,
-    email: props.courseRequest.doc?.newParams?.not_formal_student_info.value.email || responseUserData.value.email,
-  }
-}).catch(err => {
-  loading.value = false
-  if (err.response && err.response.status == 401) {
-    store.dispatch("logLout")
-  } else if (err.response && err.response.data && err.response.data.localized) {
-    showMessage('error', t(err.response.data.localizedPath), null)
-  } else {
-    console.log(err)
-  }
-})
+    console.log("studentInfo:", res.data)
+    userData.value = {
+      fullName: props.courseRequest.doc?.newParams?.not_formal_student_info.value.fullName || responseUserData.value.fullName,
+      speciality: props.courseRequest.doc?.newParams?.not_formal_student_info.value.speciality || responseUserData.value.speciality,
+      group: props.courseRequest.doc?.newParams?.not_formal_student_info.value.group || responseUserData.value.group,
+      course: props.courseRequest.doc?.newParams?.not_formal_student_info.value.course || responseUserData.value.course,
+      phone: props.courseRequest.doc?.newParams?.not_formal_student_info.value.phone || responseUserData.value.phone,
+      email: props.courseRequest.doc?.newParams?.not_formal_student_info.value.email || responseUserData.value.email,
+    }
+  }).catch(err => {
+    loading.value = false
+    if (err.response && err.response.status == 401) {
+      store.dispatch("logLout")
+    } else if (err.response && err.response.data && err.response.data.localized) {
+      showMessage('error', t(err.response.data.localizedPath), null)
+    } else {
+      console.log(err)
+    }
+  })
 
 
 
@@ -303,6 +309,7 @@ const checkBoxSelect = (course) => {
 
 };
 onMounted(() => {
+  isAdmin.value = findRole(null, 'main_administrator') || findRole(null, "career_administrator")
   currentUser.value = JSON.parse(localStorage.getItem("loginedUser"));
   getStudentInfo()
   getCourse();

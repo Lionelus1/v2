@@ -5,7 +5,8 @@
     </div>
     <h4 class="m-0">{{ t("helpDesk.application.applicationName") }}</h4>
   </div>
-  <ToolbarMenu v-if="request" :data="menu" @search="search" :search="true" @filter="toggleFilter(event)" :filter="true" :filtered="filtered" />
+  <!-- @search="search" :search="true" @filter="toggleFilter(event)" :filter="true" :filtered="filtered"  -->
+  <ToolbarMenu v-if="request" :data="menu" />
   <TabView v-model:activeIndex="activeTab" @tab-change="tabChanged" class="flex flex-column flex-grow-1">
     <TabPanel :header="selectedDirection['name_' + locale]">
       <BlockUI v-if="haveAccess && selectedDirection && selectedDirection.code !== 'course_application'" :blocked="loading" class="card">
@@ -209,8 +210,8 @@ const menu = computed(() => [
   {
     label: t("common.revision"),
     icon: "fa-regular fa-circle-xmark",
-    // visible: request.value && request.value.doc?.docHistory.stateId === DocEnum.INAPPROVAL.ID &&
-    //   needMySign(),
+    visible: request.value && request.value.doc?.docHistory?.stateId === DocEnum.INAPPROVAL.ID &&
+      needMySign(),
     command: () =>  open('revisionDialog') 
   },
 ]);
