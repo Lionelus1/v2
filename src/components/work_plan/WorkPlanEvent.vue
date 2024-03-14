@@ -45,30 +45,8 @@
         </div>
       </div>
     </div>
-    <ToolbarMenu v-if="plan" :data="toolbarMenus" @filter="toggle('global-filter', $event)" :filter="true" :filtered="filtered"/>
-    <div class="card" v-if="plan">
-      <Button v-if="((isPlanCreator || isCreator || isEventsNull) && !isFinish)" :label="$t('common.add')" icon="pi pi-plus" @click="showDialog(dialog.add)"
-        class="p-button-sm ml-2" />
-      <Button
-        v-if="plan && plan.doc_info && plan.doc_info?.docHistory && (plan.doc_info?.docHistory?.stateId === 1 || plan.doc_info?.docHistory?.stateId === 4) && isPlanCreator && isFinish"
-        type="button" icon="pi pi-send" class="p-button-sm p-button-outlined ml-2" :label="$t('common.action.sendToApprove')"
-        @click="showDialog(dialog.planApprove)"></Button>
-          <Button v-if="plan && isPlanCreator && !isFinish" :label="$t('common.complete')" icon="pi pi-check" @click="finish"
-        class="p-button-sm p-button-success ml-2" :disabled="!isFinshButtonDisabled"/>
-      <Button
-        v-if="isFinish && plan.doc_info && plan.doc_info.docHistory && !(plan.doc_info?.docHistory?.stateId === 1 || plan.doc_info?.docHistory?.stateId === 4)"
-        :label="$t('workPlan.viewPlan')" icon="pi pi-eye" @click="showDialog(dialog.planView)" class="p-button-sm p-button-outlined ml-2" />
-      <Button v-if="isFinish && (isApproval || isPlanCreator || isAdmin || isRespUser) && (plan.doc_info?.docHistory?.stateId === 3 || oldPlan)" :label="$t('workPlan.reports')"
-        @click="navigateToReports" class="p-button-sm p-button-outlined ml-2" />
-
-      <Button v-if="isFinish && isPlanCreator && (plan.doc_info?.docHistory?.stateId === 3) && isSciencePlan" :label="$t('workPlan.generateAct')"
-        @click="generateScienceReport" class="p-button-sm p-button-outlined ml-2" />
-      <Button v-if="isSciencePlan && scienceDocs && scienceDocs.some(e => e.docType === docEnum.DocType.Contract)" :label="$t('contracts.contract')"
-        class="p-button-sm p-button-outlined ml-2" icon="fa-solid fa-download" @click="downloadContract('contract')" />
-      <Button v-if="isSciencePlan && scienceDocs && scienceDocs.some(e => e.docType === docEnum.DocType.RelatedDoc)" :label="$t('common.additionalInfo')"
-        class="p-button-sm p-button-outlined ml-2" icon="fa-solid fa-download" @click="downloadContract('additional')" />
-    </div>
-    <div class="card" v-if="plan">
+    <ToolbarMenu v-if="plan && planDoc" :data="toolbarMenus" @filter="toggle('global-filter', $event)" :filter="true" :filtered="filtered"/>
+    <div class="card" v-if="plan && planDoc">
       <TreeTable ref="workplantreetable" class="p-treetable-sm" :value="data" :lazy="true" :loading="loading" @nodeExpand="onExpand" scrollHeight="flex"
                  responsiveLayout="scroll" :resizableColumns="true" columnResizeMode="fit" showGridlines :paginator="true" :rows="10" :total-records="total"
                  @page="onPage($event)">
@@ -167,8 +145,8 @@
     </div>
   </div>
 
-  <Sidebar v-model:visible="dialog.planView.state" position="right" class="p-sidebar-lg" style="overflow-y: scroll" @hide="hideDialog(dialog.planView)">
-    <DocSignaturesInfo :docIdParam="plan.doc_id" :isInsideSidebar="true" @sentToRevision="rejectPlan($event)"></DocSignaturesInfo>
+  <Sidebar v-model:visible="dialog.planView.state" position="right" class="w-6" style="overflow-y: scroll" @hide="hideDialog(dialog.planView)">
+    <DocSignaturesInfo :docIdParam="plan.doc_id" :isInsideSidebar="true"></DocSignaturesInfo>
   </Sidebar>
 
   <Sidebar v-model:visible="isShowPlanExecute" position="right" style="overflow-y: scroll; width: 50%;" @hide="closePlanExecuteSidebar">
@@ -1124,7 +1102,7 @@ export default {
         {
           label: this.$t('common.show'),
           icon: 'fa-solid fa-eye',
-          disabled: !(this.selectedEvent && this.plan.doc_info?.docHistory?.stateId === 3 && this.canExecuteEvent),
+          disabled: !(this.selectedEvent && this.isPlanApproved && this.canExecuteEvent),
           visible: this.isFinish,
           command: () => {
             this.openPlanExecuteSidebar()
@@ -1174,7 +1152,7 @@ export default {
     isPlanApproved() {
       return this.planDoc && this.planDoc.docHistory?.stateEn === this.DocState.APPROVED.Value
     },
-    isPlanSentToRevision() {
+    isPlanUnderRevision() {
       return this.planDoc && this.planDoc.docHistory?.stateEn === this.DocState.REVISION.Value
     },
     // isGenerateActVisible(){
@@ -1196,7 +1174,6 @@ export default {
     //   );
     // },
     toolbarMenus() {
-      console.log(this.isEventListEmpty)
       return [
         {
           label: this.$t('common.add'),
@@ -1210,7 +1187,7 @@ export default {
         {
           label: this.$t('common.action.sendToApprove'),
           icon: 'pi pi-send',
-          visible: this.plan && this.planDoc && (this.isCreatedPlan || this.isPlanSentToRevision) && this.isPlanCreator && this.isFinish,
+          visible: this.plan && this.planDoc && (this.isCreatedPlan || this.isPlanUnderRevision) && this.isPlanCreator && this.isFinish,
           command: () => {
             this.showDialog(this.dialog.planApprove)
           }
@@ -1228,7 +1205,7 @@ export default {
         {
           label: this.$t('workPlan.viewPlan'),
           icon: 'pi pi-eye',
-          visible: this.isFinish && this.planDoc && !(this.isCreatedPlan || this.isPlanSentToRevision),
+          visible: this.isFinish && this.planDoc && !(this.isCreatedPlan || this.isPlanUnderRevision),
           command: () => {
             this.showDialog(this.dialog.planView)
           }
