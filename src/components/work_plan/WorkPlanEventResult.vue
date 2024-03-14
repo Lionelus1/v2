@@ -322,16 +322,10 @@ import {findRole, getHeader, smartEnuApi} from "@/config/config";
 import moment from "moment";
 import {WorkPlanService} from '../../service/work.plan.service'
 import Enum from "@/enum/workplan/index"
-import FindUser from "@/helpers/FindUser";
-import DepartmentList from "../smartenu/DepartmentList.vue"
 
 
 export default {
   name: "WorkPlanEventResult",
-  components: {
-    FindUser,
-    DepartmentList
-  },
   props: ['resultId'],
   data() {
     return {
