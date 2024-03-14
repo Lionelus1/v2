@@ -1,7 +1,7 @@
 <template>
   <div class="col-12">
     <h3>{{ t('helpDesk.title') }}</h3>
-    <ToolbarMenu :data="mainMenu" @search="search" :search="true" @filter="toggleFilter($event)" :filter="true" :filtered="filtered">
+    <ToolbarMenu :data="mainMenu">//@search="search" :search="true" @filter="toggleFilter($event)" :filter="true" :filtered="filtered"
       <template #end>
         <Button class="align-items-center" :class="{
       'p-button-success p-button-outlined': filter.applied,
@@ -23,7 +23,6 @@
             @click="close('newPublicationDialog')" />
           <Button :label="t('common.createNew')" icon="pi pi-plus" class="p-button-rounded p-button-success mr-2" :disabled="!selectedDirection"
             @click="createHelpDesk" />
-
         </template>
       </Dialog>
       <div>
@@ -39,16 +38,16 @@
 
           <Column field="create_date" :header="t('helpDesk.creationTime')">
             <template #body="{ data }">
-              <a href="javascript:void(0)">{{ formatDate(data.doc?.docHistory?.setDate) }}</a>
+              <a href="javascript:void(0)">{{ (formatDate(data.doc?.docHistory?.setDate) ? formatDate(data.doc?.docHistory?.setDate) : '') }}</a>
             </template>
           </Column>
 
           <Column field="status" :header="t('common.status')">
-            <!-- <template #body="{ data }">
-              <span :class="'customer-badge status-' + data.doc?.docHistory?.code">
+            <template #body="{ data }">
+              <span :class="'customer-badge status-' + data.doc.docHistory.stateEn">
                 {{ getDocStatus(data.doc?.docHistory?.stateEn) }}
               </span>
-            </template> -->
+            </template>
           </Column>
 
           <Column field="requestReason" :header="t('helpDesk.application.requestReason')">
@@ -71,7 +70,7 @@
             </template>
           </Column> -->
 
-          <Column style="min-width: 50px;">
+          <Column style="min-width: 50px;" v-if="!findRole(null, 'main_administrator')">
             <template #body="{ data }">
               <div class="flex flex-wrap column-gap-1 row-gap-1">
                 <Button class="p-button-text p-button-warning p-1 mr-2" @click="currentDocument = data; openDocument()">
@@ -203,9 +202,9 @@ const closeBasic = () => {
 };
 const getDocStatus = (code) => {
   const foundStatus = docStatus.value.find(status => status.code === code);
-
+  console.log(foundStatus.name_kz)
   if (foundStatus) {
-    switch (locale) {
+    switch (locale.value) {
       case "kz":
         return foundStatus.name_kz;
       case "ru":
@@ -213,20 +212,22 @@ const getDocStatus = (code) => {
       case "en":
         return foundStatus.name_en;
       default:
+        console.log("Default")
         return null;
     }
   } else {
     return null;
   }
+
 };
 
 const formatDate = (dateString) => {
   const date = new Date(dateString);
-      const day = date.getDate().toString().padStart(2, '0'); // добавляем 0 для чисел < 10
-      const month = (date.getMonth() + 1).toString().padStart(2, '0'); // добавляем 0 для чисел < 10
-      const year = date.getFullYear();
-      return `${day}.${month}.${year}`;
-    }
+  const day = date.getDate().toString().padStart(2, '0'); // добавляем 0 для чисел < 10
+  const month = (date.getMonth() + 1).toString().padStart(2, '0'); // добавляем 0 для чисел < 10
+  const year = date.getFullYear();
+  return `${day}.${month}.${year}`;
+}
 
 const requstLocal = () => {
   switch (locale) {
@@ -308,20 +309,6 @@ const createHelpDesk = () => {
 
 };
 const getTicket = () => {
-  if (findRole(null, 'main_administrator')) {
-    service.helpDeskTicketGet(
-      {
-        ID: null,
-        search_text: null,
-        page: lazyParams.value.page,
-        rows: lazyParams.value.rows,
-        uuid: null,
-        is_saved: 1
-      }
-    ).then((res) => {
-      console.log(res.data)
-    })
-  } else {
     service.helpDeskTicketGet(
       {
         ID: null,
@@ -334,18 +321,14 @@ const getTicket = () => {
       .then((res) => {
         data.value = res.data.ticket;
         total.value = res.data.total;
-        console.log(data.value[0].doc.docHistory.code)
       })
   }
-};
 const search = (data) => {
   alert(data);
 };
 const toggleFilter = (event) => {
   sort.value = event;
 };
-
-
 
 </script>
 
@@ -384,18 +367,54 @@ const toggleFilter = (event) => {
     color: #8A5340;
   }
 
-  &.operational-plan {
-    background-color: #3B82F6;
-    color: #ffffff;
-    font-weight: 500;
-    border-radius: 3px;
+  &.status-1 {
+    background: #B3E5FC;
+    color: #23547B;
+  }
+  &.created {
+    background: #3588a8;
+    color: #fff;
   }
 
-  &.simple-plan {
-    background-color: #10b981;
-    color: #ffffff;
-    font-weight: 500;
-    border-radius: 3px;
+  &.inapproval {
+    background: #C8E6C9;
+    color: #256029;
   }
+
+  &.approved {
+    background: #FFCDD2;
+    color: #C63737;
+  }
+
+  &.revision {
+    background: #FEEDAF;
+    color: #8A5340;
+  }
+
+  &.rejected {
+    background: #B3E5FC;
+    color: #23547B;
+  }
+  &.signing {
+    background: #2a6986;
+    color: #bfc9d1;
+  }
+  &.signed {
+    background: rgb(57, 134, 42);
+    color: #bfc9d1;
+  }
+  &.sent for re-approval {
+    background: rgb(134, 42, 119);
+    color: #bfc9d1;
+  }
+  &.updated for re-approval {
+    background: rgb(134, 42, 54);
+    color: #bfc9d1;
+  }
+  &.issued for re-approval {
+    background: rgb(42, 134, 88);
+    color: #bfc9d1;
+  }
+
 }
 </style>

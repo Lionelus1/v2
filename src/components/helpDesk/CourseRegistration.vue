@@ -1,5 +1,5 @@
 <template>
-  <BlockUI class="card" v-if="findRole(null, 'student')">
+  <BlockUI class="card" v-if="findRole(null, 'student') || findRole(null, 'main_administrator')">
     <div>
       <div class="buttonLanguag">
         <Button class="toggle-button" @click="toggleRegistration">Выберите дисциплину</Button>
@@ -35,37 +35,39 @@
 
       </DataTable>
     </div>
-    <div>
-      <div class="field" style="margin-top: 30px;">
-        <label>{{ t('common.fullName') }}</label>
-        <InputText v-model="userData.fullName" :disabled="!!responseUserData.fullName" type="text" :placeholder="t('common.fullName')" /> 
-      </div>
-      <div class="field" style="margin-top: 10px;">
-        <label>{{ t('common.speciality') }}</label>
-        <InputText v-model="userData.speciality" :disabled="!!responseUserData.speciality" type="text"
-          :placeholder="userData.speciality || t('common.speciality')" />
-      </div>
-      <div class="field" style="margin-top: 10px;">
-        <label>{{ t('course.course') }}</label>
-        <InputNumber v-model="userData.course" :disabled="!!responseUserData.course" type="number"
-          :placeholder="userData.course || t('course.course')" style="width: 350px;" />
-      </div>
-      <div class="field" style="margin-top: 10px;">
-        <label>{{ t('contracts.cafedraGroup') }}</label>
-        <InputText v-model="userData.group" :disabled="!!responseUserData.group" type="text"
-          :placeholder="userData.group || t('contracts.cafedraGroup')" />
-      </div>
-      <div class="field" style="margin-top: 10px;">
-        <label>{{ t('contact.phone') }}</label>
-        <InputNumber v-model="userData.phone" class="mt-2" inputId="userDataPhone" :useGrouping="false" :placeholder="t('contact.phone')" style="width: 350px;" />
-      </div>
-      <div class="field" style="margin-top: 10px;">
-        <label>{{ t('contact.email') }}</label>
-        <InputText v-model="userData.email" :disabled="!!responseUserData.email" type="text" :placeholder="t('contact.email')" />
-      </div>
-    </div>
   </BlockUI>
-  <BlocUI class="card" v-if="!findRole(null, 'student')" :style="{ height: '35vw' }">
+  <div>
+    <div class="field">
+      <label>{{ t('common.fullName') }}</label>
+      <!-- :disabled="!!responseUserData.fullName" -->
+      <InputText v-model="userData.fullName" type="text" :placeholder="t('common.fullName')" @input="input" />
+    </div>
+    <div class="field" style="margin-top: 10px;">
+      <label>{{ t('common.speciality') }}</label>
+      <InputText v-model="userData.speciality" type="text"
+        :placeholder="userData.speciality || t('common.speciality')" @input="input" />
+    </div>
+    <div class="field" style="margin-top: 10px;">
+      <label>{{ t('course.course') }}</label>
+      <InputNumber v-model="userData.course" :placeholder="userData.course || t('course.course')"
+        style="width: 350px;" @input="input" />
+    </div>
+    <div class="field" style="margin-top: 10px;">
+      <label>{{ t('contracts.cafedraGroup') }}</label>
+      <InputText v-model="userData.group" type="text"
+        :placeholder="userData.group || t('contracts.cafedraGroup')" @input="input" />
+    </div>
+    <div class="field" style="margin-top: 10px;">
+      <label>{{ t('contact.phone') }}</label>
+      <InputNumber v-model="userData.phone" class="mt-2" inputId="userDataPhone" :useGrouping="false" :placeholder="t('contact.phone')"
+        style="width: 350px;" @input="input" />
+    </div>
+    <div class="field" style="margin-top: 10px;">
+      <label>{{ t('contact.email') }}</label>
+      <InputText v-model="userData.email" type="text" :placeholder="t('contact.email')" @input="input" />
+    </div>
+  </div>
+  <!-- <BlocUI class="card" v-if="!findRole(null, 'student')" :style="{ height: '35vw' }">
     <div class="field" style="margin-top: 10px;">
       <label>{{ t('helpDesk.application.discipline') }}</label>
       <InputText v-model="userData.discipline" type="text" :placeholder="t('helpDesk.application.discipline')" />
@@ -94,7 +96,7 @@
       <label>{{ t('contact.email') }}</label>
       <InputText v-model="userData.email" type="text" :placeholder="t('contact.email')" />
     </div>
-  </BlocUI>
+  </BlocUI> -->
 </template>
 
 <script setup>
@@ -107,12 +109,13 @@ import { useToast } from "primevue/usetoast";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 
+
 const service = new HelpDeskService()
 const { t, locale } = useI18n()
 const store = useStore()
 const route = useRoute();
 const toast = useToast()
-const emit = defineEmits(['onCheckboxChecked'])
+const emit = defineEmits(['onCheckboxChecked', 'childInputData'])
 const loginedUser = ref(JSON.parse(localStorage.getItem("loginedUser")))
 
 const props = defineProps({
@@ -127,7 +130,7 @@ const userData = ref({
   speciality: null,
   group: null,
   course: null,
-  phone: null,
+  phone: '',
   email: null,
   discipline: null
 })
@@ -137,7 +140,7 @@ const responseUserData = ref({
   speciality: null,
   group: null,
   course: null,
-  phone: null,
+  phone: '',
   email: null
 })
 const data = ref(null);
@@ -167,7 +170,7 @@ const visibility = ref({
 const selectedUsers = ref([]);
 
 const isSend = ref(false);
-
+const changed = ref(false)
 const currentUser = ref(null);
 const subject = ref(null);
 const selectedDirection = ref({
@@ -199,8 +202,8 @@ const showMessage = (msgtype, message, content) => {
     life: 3000
   });
 };
-
-emit('onCheckboxChecked', null, userData.value)
+emit('onCheckboxChecked', selectedIds.value)
+emit('childInputData', userData.value)
 
 const onPage = (event) => {
   lazyParams.value.page = event.page;
@@ -235,27 +238,51 @@ const getCourse = () => {
 
 
 const getStudentInfo = () => {
-  if (findRole(null, "student")){
-  service.helpDeskStudentInfo().then(res => {
-    responseUserData.value.speciality = locale === "kz" ? res.data.studen_info.specialty_kz : res.data.studen_info.specialty_ru
-    responseUserData.value.course = res.data.studen_info.course_number
-    responseUserData.value.group = res.data.studen_info.group
-    responseUserData.value.fullName = loginedUser.value.firstName + loginedUser.value.lastName + loginedUser.value.thirdName
-    responseUserData.value.phone = loginedUser.value.phoneNumber
-    responseUserData.value.email = loginedUser.value.email
-    userData.value = responseUserData.value
-    console.log(responseUserData.value)
-  }).catch(err => {
-    loading.value = false
-    if (err.response && err.response.status == 401) {
-      store.dispatch("logLout")
-    } else if (err.response && err.response.data && err.response.data.localized) {
-      showMessage('error', t(err.response.data.localizedPath), null)
-    } else {
-      console.log(err)
-    }
-  });
+  const userId = props.courseRequest?.doc?.newParams?.student_id?.value
+  console.log('asd')
+
+  if (!findRole(null, 'student') && (userId === null && userId <= 0)) {
+    return
+  }
+  service.helpDeskStudentInfo({ user_id: userId }).then(res => {
+  responseUserData.value.speciality = locale === "kz" ? res.data.studen_info.specialty_kz : res.data.studen_info.specialty_ru
+  responseUserData.value.course = res.data.studen_info.course_number
+  responseUserData.value.group = res.data.studen_info.group
+  responseUserData.value.fullName = res.data.studen_info.full_name
+  responseUserData.value.phone = res.data.studen_info.phone
+  responseUserData.value.email = res.data.studen_info.email
+
+  console.log("studentInfo:", res.data)
+  userData.value = {
+    fullName: props.courseRequest.doc?.newParams?.not_formal_student_info.value.fullName || responseUserData.value.fullName,
+    speciality: props.courseRequest.doc?.newParams?.not_formal_student_info.value.speciality || responseUserData.value.speciality,
+    group: props.courseRequest.doc?.newParams?.not_formal_student_info.value.group || responseUserData.value.group,
+    course: props.courseRequest.doc?.newParams?.not_formal_student_info.value.course || responseUserData.value.course,
+    phone: props.courseRequest.doc?.newParams?.not_formal_student_info.value.phone || responseUserData.value.phone,
+    email: props.courseRequest.doc?.newParams?.not_formal_student_info.value.email || responseUserData.value.email,
+  }
+}).catch(err => {
+  loading.value = false
+  if (err.response && err.response.status == 401) {
+    store.dispatch("logLout")
+  } else if (err.response && err.response.data && err.response.data.localized) {
+    showMessage('error', t(err.response.data.localizedPath), null)
+  } else {
+    console.log(err)
+  }
+})
+
+
+
+
+
+
+
 }
+
+const input = () => {
+  changed.value = true;
+  emit('childInputData', userData.value)
 }
 
 const isDisabled = (rowData) => {
@@ -269,7 +296,7 @@ const checkBoxSelect = (course) => {
     selectedIds.value = selectedIds.value.filter(item => item !== course.subject_id);
   }
 
-  emit('onCheckboxChecked', selectedIds.value, null)
+  emit('onCheckboxChecked', selectedIds.value)
   if (selectedIds.value.length === 0) {
     isSend.value = false;
   }

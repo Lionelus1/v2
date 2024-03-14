@@ -76,11 +76,11 @@
           <Button :label="$t('common.cancel')" @click="close('revisionDialog')" />
         </template>
       </Dialog>
- 
+
       <Sidebar v-model:visible="visibility.documentInfoSidebar" position="right" class="p-sidebar-lg">
         <DocSignaturesInfo :docIdParam="request.doc.uuid"></DocSignaturesInfo>
       </Sidebar>
-      <CourseRegistration :courseRequest="request" @onCheckboxChecked="onChecked"
+      <CourseRegistration :courseRequest="request" @onCheckboxChecked="onChecked" @childInputData="childInput"
         v-if="selectedDirection && selectedDirection.code === 'course_application'" />
     </TabPanel>
     <TabPanel :header="t('common.show')" :disabled="!request || !request.doc || !request.doc.filePath || request.doc.filePath.length < 1">
@@ -104,7 +104,7 @@ import { useStore } from "vuex";
 import { useRouter, useRoute } from "vue-router";
 import CourseRegistration from "./CourseRegistration.vue";
 import { b64toBlob } from "@/config/config";
-import { downloadFile } from "../../config/config";
+import { downloadFile, findRole } from "../../config/config";
 import { DocService } from "@/service/doc.service";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo.vue";
 import DocEnum from "@/enum/docstates/index";
@@ -124,6 +124,7 @@ const showMessage = (severity, detail, life) => {
     life: life || 3000,
   });
 };
+const revisionText = ref(null)
 const stages = ref([]);
 const description = ref(null)
 const changed = ref(false)
@@ -181,7 +182,8 @@ const menu = computed(() => [
   {
     label: t("common.save"),
     icon: "pi pi-fw pi-save",
-    disabled: !isSaveItemsRequest.value && !(selectedCourses.value && selectedCourses.value.length !== 0) && !isFilled,
+    // disabled:  !request.value || (request.value.docHistory?.stateId != DocEnum.CREATED.ID &&
+    //           request.value.docHistory?.stateId != DocEnum.REVISION.ID) || !this.changed,
     command: saveDocument
   },
   {
@@ -207,19 +209,18 @@ const menu = computed(() => [
   {
     label: t("common.revision"),
     icon: "fa-regular fa-circle-xmark",
-    visible: !request.value && !request.value.doc.docHistory.stateId === DocEnum.INAPPROVAL.ID &&
-      needMySign,
-    command: () => { this.open('revisionDialog') }
+    // visible: request.value && request.value.doc?.docHistory.stateId === DocEnum.INAPPROVAL.ID &&
+    //   needMySign(),
+    command: () =>  open('revisionDialog') 
   },
 ]);
 
 
 const revision = () => {
   loading.value = true;
-
-  service.documentRevisionV2({
-    uuid: this.scienceWork.uuid,
-    comment: this.revisionText,
+  docService.documentRevisionV2({
+    uuid: request.value.doc.uuid,
+    comment: revisionText.value,
   }).then(res => {
     loading.value = false;
     close("revisionDialog");
@@ -242,35 +243,37 @@ const revision = () => {
   })
 }
 const needMySign = () => {
-      if (!request.value || !request.value.approvalStages || request.value.approvalStages.length < 1) {
-        return false;
+  if (!request.value || !request.value.approvalStages || request.value.approvalStages.length < 1) {
+    return false;
+  }
+
+  let loginedUser = JSON.parse(localStorage.getItem("loginedUser"));
+  let stages = request.value.approvalStages;
+  let need = false;
+
+  for (let i = 0; i < stages.length; i++) {
+    let nextStage = true;
+
+    for (let j = 0; j < stages[i].users.length; j++) {
+      if (stages.value[i].users[j].userID === loginedUser.value.userID && stages.value[i].usersApproved[j] === 0) {
+        need = true;
+        break;
       }
 
-      let loginedUser = JSON.parse(localStorage.getItem("loginedUser"));
-      let stages = request.value.approvalStages;
-      let need = false;
-
-      for (let i = 0; i < stages.length; i++) {
-        let nextStage = true;
-
-        for (let j = 0; j < stages[i].users.length; j++) {
-          if (stages.value[i].users[j].userID === loginedUser.value.userID && stages.value[i].usersApproved[j] === 0) {
-            need = true;
-            break;
-          }
-
-          if (stages.value[i].usersApproved[j] === 0) {
-            nextStage = false;
-          }
-        }
-
-        if (!nextStage) {
-          break;
-        }
+      if (stages.value[i].usersApproved[j] === 0) {
+        nextStage = false;
       }
-
-      return need;
     }
+
+    if (!nextStage) {
+      break;
+    }
+  }
+
+  return need;
+}
+
+
 
 const open = (name) => {
   visibility.value[name] = true;
@@ -281,15 +284,22 @@ const close = (name) => {
 
 lang.value = localStorage.getItem("lang")
 
-const onChecked = (data, ids) => {
+const childInput = (data) => {
+  userData.value = data
+  console.log("USERDATA:", data)
+}
+
+const onChecked = (data) => {
   selectedCourses.value = data
-  userData.value = ids
+  console.log("SELECT:", data)
 }
 const sendToApprove = (approvalUsers) => {
   if (changed.value) {
     showMessage("warn", t("common.tosign"), t("common.message.saveChanges"));
     return;
   }
+  loading.value = true
+  console.log("Request::",request.value)
   loading.value = true
   const req = {
     ticket: request.value,
@@ -313,20 +323,29 @@ const sendToApprove = (approvalUsers) => {
 
 const saveDocument = () => {
   loading.value = true;
-  console.log(userData.value)
-  if (selectedCourses.value && selectedCourses.value.length > 0) {
+  console.log("UserData:",userData.value)
+  console.log("selectedCourses:", selectedCourses.value)
+  if (selectedCourses.value && selectedCourses.value.length > 0 && userData.value) {
     request.value.doc.newParams = {}
-    let param = {
-      value: selectedCourses.value,
-      name: "not_formal_education_ids"
+    if (findRole(null, "student")) {
+      let param = {
+        value: selectedCourses.value,
+        name: "not_formal_education_ids"
+      }
+      request.value.doc.newParams['not_formal_education_ids'] = param
+    }
+    console.log(userData.value)
+    let paramInfo = {
+      value: userData.value,
+      name: "not_formal_student_info"
     }
     let paramLang = {
       value: lang.value,
       name: "lang"
     }
-    request.value.doc.newParams['not_formal_education_ids'] = param
-    request.value.doc.newParams['lang'] = paramLang
 
+    request.value.doc.newParams['lang'] = paramLang
+    request.value.doc.newParams['not_formal_student_info'] = paramInfo
 
     request.value.is_saved = 1
     service.helpDeskTicketCreate(request.value)
@@ -343,42 +362,8 @@ const saveDocument = () => {
         }
       });
     isSend.value = true;
-  } else if (userData.value) {
-    console.log("TEST:1")
-    loading.value = true;
-    if (userData.value.fullName && userData.value.course && userData.value.email && userData.value.group && userData.value.phone && userData.value.speciality) {
-      request.value.doc.newParams = {}
-      let param = {
-        value: userData.value,
-        name: "not_formal_student_info"
-      }
-      let paramLang = {
-        value: lang.value,
-        name: "lang"
-      }
-      request.value.doc.newParams['not_formal_student_info'] = param
-      request.value.doc.newParams['lang'] = paramLang
-
-      request.value.is_saved = 1
-      console.log("TEST:2", request.value)
-      service.helpDeskTicketCreate(request.value)
-        .then(res => {
-          loading.value = false
-        }).catch(err => {
-          loading.value = false
-          if (err.response && err.response.status == 401) {
-            store.dispatch("logLout")
-          } else if (err.response && err.response.data && err.response.data.localized) {
-            showMessage('error', t(err.response.data.localizedPath), null)
-          } else {
-            console.log(err)
-          }
-        });
-      isSend.value = true;
-    } else {
-      showMessage("error", t("common.message.fillError"), null);
-    }
-
+  } else {
+    showMessage("error", t("common.message.fillError"), null);
   }
 };
 const search = (data) => {
