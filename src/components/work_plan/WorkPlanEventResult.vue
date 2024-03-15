@@ -10,10 +10,7 @@
     <div>
       <TabView v-model:activeIndex="activeIndex" @tab-change="changeTab">
         <TabPanel :header="$t('common.properties')">
-          <div class="text-left mb-3" v-if="isPlanCreator" :style="{ 'z-index': 9999, 'position': 'relative' }">
-            <Menubar :model="initAcceptButtons" :key="active" :style="{ 'z-index': 9999, 'height': '36px', 'margin-top': '-7px', 'margin-left': '-14px', 'margin-right': '-14px' }"></Menubar>
-          </div>
-          <div v-if="!isVisibleWritableField">
+          <div v-if="isVisibleWritableField">
             <div
               v-if="event &&
               (isCurrentUserApproval && (event.status.work_plan_event_status_id === 1 || event.status.work_plan_event_status_id === 4 || event.status.work_plan_event_status_id === 6))">
@@ -87,7 +84,7 @@
               
               <div class="field" v-if="!hasResultToApprove">
                 <label>{{ $t('common.result') }}</label>
-                  <div v-if="!isVisibleWritableField">
+                  <div v-if="isVisibleWritableField">
                       <TinyEditor v-if="plan && isRespUserForWrite && !isOperPlan" v-model="result" :min-word="wordLimit" @wordCount="initWordCount" :height="300"
                                 :style="{ height: '100%', width: '100%' }"
                                 @selectionChange="editorChange"/>
@@ -95,7 +92,7 @@
                     <small v-if="isSciencePlan && submitted && (wordCount < wordLimit)" class="p-error">{{ $t('workPlan.minWordCount') }}</small>
                 </div>
               </div>
-              <div class="field" v-if="plan && isRespUserForWrite && !isVisibleWritableField">
+              <div class="field" v-if="plan && isRespUserForWrite && isVisibleWritableField">
                 <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadFile($event)" :auto="true" :multiple="true" :chooseLabel="$t('smartenu.chooseAdditionalFile')"></FileUpload>
               </div>
               <div class="field">
@@ -519,15 +516,16 @@ export default {
       ];
     },
     isVisibleWritableField(){
-      return (
-        this.resultData &&
-        this.resultData[0] &&
-        this.resultData[0].plan_event_result_history &&
-        this.resultData[0].plan_event_result_history[0] &&
-        (this.resultData[0].plan_event_result_history[0].state_id === 5 ||
-          this.resultData[0].plan_event_result_history[0].state_id === 6) &&
-        (this.resultData.result_text !== null || this.resultData === null)
-      );    
+      if (!this.resultData) {
+        return false
+      }
+
+      let userResults = this.resultData
+      if (this.isPlanCreator) {
+        userResults = this.resultData.filter(x => x.user_id === this.loginedUserId)
+      }
+
+      return !userResults.some(x => x.plan_event_result_history.some(x => x.state_id === 5 || x.state_id === 6))
     },
     shouldShowRejectSidebar() {
       const event = this.event;
