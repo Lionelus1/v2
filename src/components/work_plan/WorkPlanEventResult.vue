@@ -10,9 +10,6 @@
     <div>
       <TabView v-model:activeIndex="activeIndex" @tab-change="changeTab">
         <TabPanel :header="$t('common.properties')">
-          <div class="text-left mb-3" v-if="isPlanCreator" :style="{ 'z-index': 9999, 'position': 'relative' }">
-            <Menubar :model="initAcceptButtons" :key="active" :style="{ 'z-index': 9999, 'height': '36px', 'margin-top': '-7px', 'margin-left': '-14px', 'margin-right': '-14px' }"></Menubar>
-          </div>
           <div v-if="!isVisibleWritableField">
             <div
               v-if="event &&
