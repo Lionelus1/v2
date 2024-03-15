@@ -1,6 +1,22 @@
 <template>
-  <BlockUI class="card" v-if="findRole(null, 'student') || findRole(null, 'main_administrator')">
+  <div style="margin-left: 15px;" v-if="props.courseRequest.doc?.docHistory">
+    <p> {{ t('common.state') + ": " }}
+      <span :class="'customer-badge status-' + props.courseRequest.doc?.docHistory?.stateEn">
+        {{ getDocStatus(props.courseRequest.doc?.docHistory?.stateEn) }}
+      </span>
+    </p>
+   <div v-if="props.courseRequest.doc?.docHistory?.stateEn === 'revision'">
+    <label>{{ $t('common.comment') }}:</label>
     <div>
+      <Message style="width: 150px;" :closable="false"
+        v-if="props.courseRequest.doc != null && props.courseRequest.doc?.docHistory != null && props.courseRequest.doc?.docHistory != null"
+        severity="warn">
+        {{ props.courseRequest.doc?.docHistory?.comment }}</Message>
+    </div>
+   </div>
+  </div>
+  <BlockUI class="card" v-if="findRole(null, 'student') || findRole(null, 'main_administrator')">
+    <div >
       <div class="buttonLanguag">
         <Button class="toggle-button" @click="toggleRegistration">Выберите дисциплину</Button>
       </div>
@@ -8,12 +24,11 @@
         :rowHover="true" v-model:filters="filters" filterDisplay="menu" :loading="loading" responsiveLayout="scroll" :paginator="true" stripedRows
         class="p-datatable-sm" :rows="total >= 10 ? 10 : total" :totalRecords="total" @page="onPage" v-model:selection="currentDocument"
         :first="first" scrollable scrollHeight="flex" @lazy="true">
-        <template #empty> {{ t('common.noData') }}</template>
-        <template #loading> {{ t('common.loading') }}</template>
 
         <Column field="checkbox">
           <template #body="{ data }">
-            <Checkbox :disabled="isDisabled(data) || isAdmin" v-model="data.checked" :binary="true" @change="checkBoxSelect(data)" style="margin-left: 20px;" />
+            <Checkbox :disabled="isDisabled(data) || isAdmin" v-model="data.checked" :binary="true" @change="checkBoxSelect(data)"
+              style="margin-left: 20px;" />
           </template>
         </Column>
 
@@ -21,7 +36,7 @@
         <Column field="name" :header="t('common.name')" style="padding-top: 15px; padding-bottom: 15px;">
           <template #body="{ data }">
             <a href="javascript:void(0)">{{ $i18n.locale === "kz" ? data.namekz : $i18n.locale === "ru" ? data.nameru :
-    data.category.nameen }}</a>
+      data.category.nameen }}</a>
           </template>
         </Column>
 
@@ -29,7 +44,7 @@
         <Column field="description" :header="t('common.description')" style="padding-top: 15px; padding-bottom: 15px;">
           <template #body="{ data }">
             <a href="javascript:void(0)">{{ $i18n.locale === "kz" ? data.descriptionkz : $i18n.locale === "ru" ? data.descriptionru :
-    data.descriptionen }}</a>
+      data.descriptionen }}</a>
           </template>
         </Column>
 
@@ -40,7 +55,8 @@
     <div class="field">
       <label>{{ t('common.fullName') }}</label>
       <!-- :disabled="!!responseUserData.fullName" -->
-      <InputText v-model="userData.fullName" type="text" :disabled="isAdmin" :placeholder="t('common.fullName')" @input="input" />
+      <InputText v-model="userData.fullName" type="text" :disabled="isAdmin && (props.courseRequest.doc?.docHistory?.stateId !== DocEnum.CREATED.ID &&
+              props.courseRequest.doc?.docHistory?.stateId !== DocEnum.REVISION.ID)" :placeholder="t('common.fullName')" @input="input" />
     </div>
     <div class="field" style="margin-top: 10px;">
       <label>{{ t('common.speciality') }}</label>
@@ -100,7 +116,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watchEffect } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useI18n } from "vue-i18n";
 import axios from 'axios';
 import { HelpDeskService } from "../../service/helpdesk.service";
@@ -108,7 +124,7 @@ import { getHeader, smartEnuApi, findRole } from "@/config/config";
 import { useToast } from "primevue/usetoast";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
-
+import DocEnum from "@/enum/docstates/index";
 
 const service = new HelpDeskService()
 const { t, locale } = useI18n()
@@ -145,7 +161,19 @@ const responseUserData = ref({
 })
 const data = ref(null);
 const selectedIds = ref(props.courseRequest.doc.newParams && props.courseRequest.doc.newParams.not_formal_education_ids ? props.courseRequest.doc.newParams.not_formal_education_ids.value : []);
-
+const docStatus = ref([
+  { name_kz: "құрылды", name_en: "created", name_ru: "создан", code: "created" },
+  { name_kz: "келісуде", name_en: "inapproval", name_ru: "на согласовании", code: "inapproval" },
+  { name_kz: "келісілді", name_en: "approved", name_ru: "согласован", code: "approved" },
+  { name_kz: "түзетуге", name_en: "revision", name_ru: "на доработку", code: "revision" },
+  { name_kz: "қайтарылды", name_en: "rejected", name_ru: "отклонен", code: "rejected" },
+  { name_kz: "қол қоюда", name_en: "signing", name_ru: "на подписи", code: "signing" },
+  { name_kz: "қол қойылды", name_en: "signed", name_ru: "подписан", code: "signed" },
+  { name_kz: "қайта бекітуге жіберілді", name_en: "sent for re-approval", name_ru: "отправлен на переутверждение", code: "sent for re-approval" },
+  { name_kz: "жаңартылды", name_en: "updated", name_ru: "обновлен", code: "updated" },
+  { name_kz: "берілді", name_en: "issued", name_ru: "выдан", code: "issued" },
+]);
+const codesToExclude = ["inapproval", "approved", "rejected", "signing", "signed", "sent for re-approval", "updated", "issued"];
 const isAdmin = ref(false)
 const loading = ref(false);
 const lazyParams = ref({
@@ -227,7 +255,7 @@ const getCourse = () => {
 
     }, { headers: getHeader() })
     .then((res) => {
-
+      console.log(res.data)
       data.value = res.data.courses;
       if (props.courseRequest.doc.newParams) {
 
@@ -258,15 +286,17 @@ const getStudentInfo = () => {
     responseUserData.value.phone = res.data.studen_info.phone
     responseUserData.value.email = res.data.studen_info.email
 
-    console.log("studentInfo:", res.data)
+    console.log(responseUserData.value)
     userData.value = {
-      fullName: props.courseRequest.doc?.newParams?.not_formal_student_info.value.fullName || responseUserData.value.fullName,
-      speciality: props.courseRequest.doc?.newParams?.not_formal_student_info.value.speciality || responseUserData.value.speciality,
-      group: props.courseRequest.doc?.newParams?.not_formal_student_info.value.group || responseUserData.value.group,
-      course: props.courseRequest.doc?.newParams?.not_formal_student_info.value.course || responseUserData.value.course,
-      phone: props.courseRequest.doc?.newParams?.not_formal_student_info.value.phone || responseUserData.value.phone,
-      email: props.courseRequest.doc?.newParams?.not_formal_student_info.value.email || responseUserData.value.email,
+      fullName: props.courseRequest.doc?.newParams?.not_formal_student_info?.value.fullName || responseUserData.value.fullName,
+      speciality: props.courseRequest.doc?.newParams?.not_formal_student_info?.value.speciality || responseUserData.value.speciality,
+      group: props.courseRequest.doc?.newParams?.not_formal_student_info?.value.group || responseUserData.value.group,
+      course: props.courseRequest.doc?.newParams?.not_formal_student_info?.value.course || responseUserData.value.course,
+      phone: props.courseRequest.doc?.newParams?.not_formal_student_info?.value.phone || responseUserData.value.phone,
+      email: props.courseRequest.doc?.newParams?.not_formal_student_info?.value.email || responseUserData.value.email,
     }
+    emit('childInputData', userData.value)
+
   }).catch(err => {
     loading.value = false
     if (err.response && err.response.status == 401) {
@@ -277,14 +307,27 @@ const getStudentInfo = () => {
       console.log(err)
     }
   })
-
-
-
-
-
-
-
 }
+
+const getDocStatus = (code) => {
+  const foundStatus = docStatus.value.find(status => status.code === code);
+  if (foundStatus) {
+    switch (locale.value) {
+      case "kz":
+        return foundStatus.name_kz;
+      case "ru":
+        return foundStatus.name_ru;
+      case "en":
+        return foundStatus.name_en;
+      default:
+        console.log("Default")
+        return null;
+    }
+  } else {
+    return null;
+  }
+
+};
 
 const input = () => {
   changed.value = true;
@@ -309,7 +352,7 @@ const checkBoxSelect = (course) => {
 
 };
 onMounted(() => {
-  isAdmin.value = findRole(null, 'main_administrator') || findRole(null, "career_administrator")
+  isAdmin.value = codesToExclude.includes(props.courseRequest.doc?.docHistory?.stateEn) && (findRole(null, 'main_administrator') || findRole(null, "career_administrator"))
   currentUser.value = JSON.parse(localStorage.getItem("loginedUser"));
   getStudentInfo()
   getCourse();

@@ -73,8 +73,8 @@
           <Textarea v-model="revisionText" autoResize rows="5" cols="30" />
         </div>
         <template #footer>
-          <Button class="p-button-danger" :disabled="!revisionText" :label="$t('common.revision')" @click="revision()" />
-          <Button :label="$t('common.cancel')" @click="close('revisionDialog')" />
+          <Button class="p-button-danger" :disabled="!revisionText" :label="t('common.revision')" @click="revision()" />
+          <Button :label="t('common.cancel')" @click="close('revisionDialog')" />
         </template>
       </Dialog>
 
@@ -154,6 +154,19 @@ const visibility = ref({
   revisionDialog: false,
   sendToApproveDialog: false,
 });
+const docStatus = ref([
+  { name_kz: "құрылды", name_en: "created", name_ru: "создан", code: "created" },
+  { name_kz: "келісуде", name_en: "inapproval", name_ru: "на согласовании", code: "inapproval" },
+  { name_kz: "келісілді", name_en: "approved", name_ru: "согласован", code: "approved" },
+  { name_kz: "түзетуге", name_en: "revision", name_ru: "на доработку", code: "revision" },
+  { name_kz: "қайтарылды", name_en: "rejected", name_ru: "отклонен", code: "rejected" },
+  { name_kz: "қол қоюда", name_en: "signing", name_ru: "на подписи", code: "signing" },
+  { name_kz: "қол қойылды", name_en: "signed", name_ru: "подписан", code: "signed" },
+  { name_kz: "қайта бекітуге жіберілді", name_en: "sent for re-approval", name_ru: "отправлен на переутверждение", code: "sent for re-approval" },
+  { name_kz: "жаңартылды", name_en: "updated", name_ru: "обновлен", code: "updated" },
+  { name_kz: "берілді", name_en: "issued", name_ru: "выдан", code: "issued" },
+]);
+const codesToExclude = ["inapproval", "approved", "rejected", "signing", "signed", "sent for re-approval", "updated", "issued"];
 const sort = ref(null);
 const selectedUsers = ref([]);
 const request = ref({
@@ -183,20 +196,20 @@ const menu = computed(() => [
   {
     label: t("common.save"),
     icon: "pi pi-fw pi-save",
-    // disabled:  !request.value || (request.value.docHistory?.stateId != DocEnum.CREATED.ID &&
-    //           request.value.docHistory?.stateId != DocEnum.REVISION.ID) || !this.changed,
+    disabled: !request.value || (request.value.docHistory?.stateId != DocEnum.CREATED.ID &&
+              request.value.docHistory?.stateId != DocEnum.REVISION.ID) || !this.changed,
     command: saveDocument
   },
   {
     label: t("common.send"),
     icon: "pi pi-fw pi-send",
-    disabled: !isSend.value,
+    disabled: request.value,
     items: [
       {
         label: t("common.tosign"),
         icon: "pi pi-user-edit",
-        visible: request.value && request.value.doc && (request.value.doc.docHistory?.stateId === DocEnum.CREATED.ID ||
-          request.value.doc.docHistory?.stateId === DocEnum.REVISION.ID),
+        visible: request.value && (request.value.doc?.docHistory?.stateId === DocEnum.CREATED.ID ||
+          request.value.doc?.docHistory?.stateId === DocEnum.REVISION.ID),
         command: () => open('sendToApproveDialog')
       }
     ]
@@ -219,10 +232,12 @@ const menu = computed(() => [
 
 const revision = () => {
   loading.value = true;
-  docService.documentRevisionV2({
-    uuid: request.value.doc.uuid,
+  const req = {
+    ticket: request.value,
     comment: revisionText.value,
-  }).then(res => {
+    approvalStages: request.value.doc.approvalStages
+  }
+  service.helpDeskDocumentRevision(req).then(res => {
     loading.value = false;
     close("revisionDialog");
 
@@ -233,35 +248,35 @@ const revision = () => {
     if (err.response && err.response.status == 401) {
       store.dispatch("logLout");
     } else if (err.response && err.response.data && err.response.data.localized) {
-      showMessage('error', this.$t(err.response.data.localizedPath), null);
+      showMessage('error', t(err.response.data.localizedPath), null);
       if (err.response.status == 403) {
-        // haveAccess = false;
+        haveAccess.value = false;
       }
     } else {
       console.log(err)
-      showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
+      showMessage('error', t('common.message.actionError'), t('common.message.actionErrorContactAdmin'))
     }
   })
 }
 const needMySign = () => {
-  if (!request.value || !request.value.approvalStages || request.value.approvalStages.length < 1) {
+  if (!request.value.doc || !request.value.doc.approvalStages || request.value.doc.approvalStages.length < 1) {
     return false;
   }
 
   let loginedUser = JSON.parse(localStorage.getItem("loginedUser"));
-  let stages = request.value.approvalStages;
+  let stages = request.value.doc.approvalStages;
   let need = false;
 
   for (let i = 0; i < stages.length; i++) {
     let nextStage = true;
 
     for (let j = 0; j < stages[i].users.length; j++) {
-      if (stages.value[i].users[j].userID === loginedUser.value.userID && stages.value[i].usersApproved[j] === 0) {
+      if (stages[i].users[j].userID === loginedUser.userID && stages[i].usersApproved[j] === 0) {
         need = true;
         break;
       }
 
-      if (stages.value[i].usersApproved[j] === 0) {
+      if (stages[i].usersApproved[j] === 0) {
         nextStage = false;
       }
     }
@@ -270,7 +285,7 @@ const needMySign = () => {
       break;
     }
   }
-
+  console.log(need)
   return need;
 }
 
@@ -287,20 +302,16 @@ lang.value = localStorage.getItem("lang")
 
 const childInput = (data) => {
   userData.value = data
-  console.log("USERDATA:", data)
 }
 
 const onChecked = (data) => {
   selectedCourses.value = data
-  console.log("SELECT:", data)
 }
 const sendToApprove = (approvalUsers) => {
   if (changed.value) {
     showMessage("warn", t("common.tosign"), t("common.message.saveChanges"));
     return;
   }
-  loading.value = true
-  console.log("Request::",request.value)
   loading.value = true
   const req = {
     ticket: request.value,
@@ -324,9 +335,15 @@ const sendToApprove = (approvalUsers) => {
 
 const saveDocument = () => {
   loading.value = true;
-  console.log("UserData:",userData.value)
-  console.log("selectedCourses:", selectedCourses.value)
-  if (selectedCourses.value && selectedCourses.value.length > 0 && userData.value) {
+  let student = null
+  if (findRole(null, "student")){
+    student = selectedCourses.value && selectedCourses.value.length > 0 && userData.value
+  } else {
+    student = userData.value.fullName && userData.value.speciality && userData.value.course && userData.value.phone && userData.value.email
+  }
+  
+  if (student) {
+
     request.value.doc.newParams = {}
     if (findRole(null, "student")) {
       let param = {
@@ -335,7 +352,6 @@ const saveDocument = () => {
       }
       request.value.doc.newParams['not_formal_education_ids'] = param
     }
-    console.log(userData.value)
     let paramInfo = {
       value: userData.value,
       name: "not_formal_student_info"
@@ -349,9 +365,11 @@ const saveDocument = () => {
     request.value.doc.newParams['not_formal_student_info'] = paramInfo
 
     request.value.is_saved = 1
+    console.log(request.value)
     service.helpDeskTicketCreate(request.value)
       .then(res => {
-        loading.value = false
+        this.changed = false;
+        request.value = res.data
       }).catch(err => {
         loading.value = false
         if (err.response && err.response.status == 401) {
@@ -367,6 +385,7 @@ const saveDocument = () => {
     showMessage("error", t("common.message.fillError"), null);
   }
 };
+
 const search = (data) => {
   alert(data);
 };
@@ -439,7 +458,6 @@ const helpDeskTicketGet = () => {
     Page: 0,
     Rows: 10,
     uuid: route.params.uuid,
-
   })
     .then((res) => {
       request.value = res.data.ticket[0]

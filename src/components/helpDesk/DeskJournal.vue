@@ -64,11 +64,11 @@
             </template>
           </Column>
 
-          <!-- <Column field="responsible" :header="t('helpDesk.responsible')">
-            <template>
-              <span></span>
+          <Column field="category" :header="t('web.logUser')" v-if="findRole(null, 'main_administrator')">
+            <template #body="{ data }">
+              <a href="javascript:void(0)">{{ data.doc.newParams.not_formal_student_info.value.fullName }}</a>
             </template>
-          </Column> -->
+          </Column>
 
           <Column style="min-width: 50px;" v-if="!findRole(null, 'main_administrator')">
             <template #body="{ data }">
@@ -202,7 +202,6 @@ const closeBasic = () => {
 };
 const getDocStatus = (code) => {
   const foundStatus = docStatus.value.find(status => status.code === code);
-  console.log(foundStatus.name_kz)
   if (foundStatus) {
     switch (locale.value) {
       case "kz":
@@ -223,8 +222,8 @@ const getDocStatus = (code) => {
 
 const formatDate = (dateString) => {
   const date = new Date(dateString);
-  const day = date.getDate().toString().padStart(2, '0'); // добавляем 0 для чисел < 10
-  const month = (date.getMonth() + 1).toString().padStart(2, '0'); // добавляем 0 для чисел < 10
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
   const year = date.getFullYear();
   return `${day}.${month}.${year}`;
 }
@@ -290,7 +289,7 @@ const createHelpDesk = () => {
 
   service.helpDeskTicketCreate(request.value)
     .then(res => {
-      uuid.value = res.data;
+      uuid.value = res.data.uuid;
       close('newPublicationDialog');
       loading.value = false;
       router.push({ name: 'Request', params: { uuid: uuid.value, isCreated: 1 } });
@@ -309,20 +308,22 @@ const createHelpDesk = () => {
 
 };
 const getTicket = () => {
-    service.helpDeskTicketGet(
-      {
-        ID: null,
-        search_text: null,
-        page: lazyParams.value.page,
-        rows: lazyParams.value.rows,
-        uuid: null,
-        is_saved: 1
-      })
-      .then((res) => {
-        data.value = res.data.ticket;
-        total.value = res.data.total;
-      })
-  }
+  loading.value = true
+  service.helpDeskTicketGet(
+    {
+      ID: null,
+      search_text: null,
+      page: lazyParams.value.page,
+      rows: lazyParams.value.rows,
+      uuid: null,
+      is_saved: 1
+    })
+    .then((res) => {
+      loading.value = false
+      data.value = res.data.ticket;
+      total.value = res.data.total;
+    })
+}
 const search = (data) => {
   alert(data);
 };
@@ -371,6 +372,7 @@ const toggleFilter = (event) => {
     background: #B3E5FC;
     color: #23547B;
   }
+
   &.created {
     background: #3588a8;
     color: #fff;
@@ -395,22 +397,27 @@ const toggleFilter = (event) => {
     background: #B3E5FC;
     color: #23547B;
   }
+
   &.signing {
     background: #2a6986;
     color: #bfc9d1;
   }
+
   &.signed {
     background: rgb(57, 134, 42);
     color: #bfc9d1;
   }
+
   &.sent for re-approval {
     background: rgb(134, 42, 119);
     color: #bfc9d1;
   }
+
   &.updated for re-approval {
     background: rgb(134, 42, 54);
     color: #bfc9d1;
   }
+
   &.issued for re-approval {
     background: rgb(42, 134, 88);
     color: #bfc9d1;
