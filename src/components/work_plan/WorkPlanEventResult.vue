@@ -517,7 +517,7 @@ export default {
     },
     isVisibleWritableField(){
       if (!this.resultData) {
-        return false
+        return true
       }
 
       let userResults = this.resultData
