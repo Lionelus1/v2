@@ -5,18 +5,18 @@
         {{ getDocStatus(props.courseRequest.doc?.docHistory?.stateEn) }}
       </span>
     </p>
-   <div v-if="props.courseRequest.doc?.docHistory?.stateEn === 'revision'">
-    <label>{{ $t('common.comment') }}:</label>
-    <div>
-      <Message style="width: 150px;" :closable="false"
-        v-if="props.courseRequest.doc != null && props.courseRequest.doc?.docHistory != null && props.courseRequest.doc?.docHistory != null"
-        severity="warn">
-        {{ props.courseRequest.doc?.docHistory?.comment }}</Message>
+    <div v-if="props.courseRequest.doc?.docHistory?.stateEn === 'revision'">
+      <label>{{ $t('common.comment') }}:</label>
+      <div>
+        <Message style="width: 150px;" :closable="false"
+          v-if="props.courseRequest.doc != null && props.courseRequest.doc?.docHistory != null && props.courseRequest.doc?.docHistory != null"
+          severity="warn">
+          {{ props.courseRequest.doc?.docHistory?.comment }}</Message>
+      </div>
     </div>
-   </div>
   </div>
   <BlockUI class="card" v-if="findRole(null, 'student') || findRole(null, 'main_administrator')">
-    <div >
+    <div>
       <div class="buttonLanguag">
         <Button class="toggle-button" @click="toggleRegistration">Выберите дисциплину</Button>
       </div>
@@ -36,7 +36,7 @@
         <Column field="name" :header="t('common.name')" style="padding-top: 15px; padding-bottom: 15px;">
           <template #body="{ data }">
             <a href="javascript:void(0)">{{ $i18n.locale === "kz" ? data.namekz : $i18n.locale === "ru" ? data.nameru :
-      data.category.nameen }}</a>
+    data.category.nameen }}</a>
           </template>
         </Column>
 
@@ -44,7 +44,7 @@
         <Column field="description" :header="t('common.description')" style="padding-top: 15px; padding-bottom: 15px;">
           <template #body="{ data }">
             <a href="javascript:void(0)">{{ $i18n.locale === "kz" ? data.descriptionkz : $i18n.locale === "ru" ? data.descriptionru :
-      data.descriptionen }}</a>
+    data.descriptionen }}</a>
           </template>
         </Column>
 
@@ -52,67 +52,46 @@
     </div>
   </BlockUI>
   <div>
+    <div class="field" v-if="!findRole(null, 'student') && !findRole(null, 'main_administrator')" style="margin-top: 15px;">
+      <label>{{ t('helpDesk.application.discipline') }}</label>
+      <InputText v-model="userData.discipline" type="text"
+        :disabled="isAdmin || (props.courseRequest?.doc?.docHistory?.stateId == DocEnum.INAPPROVAL.ID)"
+        :placeholder="t('helpDesk.application.discipline')" @input="input" />
+    </div>
     <div class="field">
       <label>{{ t('common.fullName') }}</label>
       <!-- :disabled="!!responseUserData.fullName" -->
-      <InputText v-model="userData.fullName" type="text" :disabled="isAdmin && (props.courseRequest.doc?.docHistory?.stateId !== DocEnum.CREATED.ID &&
-              props.courseRequest.doc?.docHistory?.stateId !== DocEnum.REVISION.ID)" :placeholder="t('common.fullName')" @input="input" />
-    </div>
-    <div class="field" style="margin-top: 10px;">
-      <label>{{ t('common.speciality') }}</label>
-      <InputText v-model="userData.speciality" type="text" :disabled="isAdmin" :placeholder="userData.speciality || t('common.speciality')"
+      <InputText v-model="userData.fullName" type="text"
+        :disabled="isAdmin || (props.courseRequest?.doc?.docHistory?.stateId == DocEnum.INAPPROVAL.ID)" :placeholder="t('common.fullName')"
         @input="input" />
     </div>
     <div class="field" style="margin-top: 10px;">
+      <label>{{ t('common.speciality') }}</label>
+      <InputText v-model="userData.speciality" type="text"
+        :disabled="isAdmin || (props.courseRequest?.doc?.docHistory?.stateId == DocEnum.INAPPROVAL.ID)"
+        :placeholder="userData.speciality || t('common.speciality')" @input="input" />
+    </div>
+    <div class="field" style="margin-top: 10px;">
       <label>{{ t('course.course') }}</label>
-      <InputNumber v-model="userData.course" :placeholder="userData.course || t('course.course')" style="width: 350px;" @input="input"
-        :disabled="isAdmin" />
+      <InputNumber v-model="userData.course" :disabled="isAdmin || (props.courseRequest?.doc?.docHistory?.stateId == DocEnum.INAPPROVAL.ID)"
+        :placeholder="userData.course || t('course.course')" style="width: 350px;" @input="input" />
     </div>
     <div class="field" style="margin-top: 10px;">
       <label>{{ t('contracts.cafedraGroup') }}</label>
-      <InputText v-model="userData.group" type="text" :placeholder="userData.group || t('contracts.cafedraGroup')" @input="input"
-        :disabled="isAdmin" />
+      <InputText v-model="userData.group" type="text" :disabled="isAdmin || (props.courseRequest?.doc?.docHistory?.stateId == DocEnum.INAPPROVAL.ID)"
+        :placeholder="userData.group || t('contracts.cafedraGroup')" @input="input" />
     </div>
     <div class="field" style="margin-top: 10px;">
       <label>{{ t('contact.phone') }}</label>
       <InputNumber v-model="userData.phone" class="mt-2" inputId="userDataPhone" :useGrouping="false" :placeholder="t('contact.phone')"
-        style="width: 350px;" @input="input" :disabled="isAdmin" />
+        style="width: 350px;" @input="input" :disabled="isAdmin || (props.courseRequest?.doc?.docHistory?.stateId == DocEnum.INAPPROVAL.ID)" />
     </div>
     <div class="field" style="margin-top: 10px;">
       <label>{{ t('contact.email') }}</label>
-      <InputText v-model="userData.email" type="text" :placeholder="t('contact.email')" @input="input" :disabled="isAdmin" />
+      <InputText v-model="userData.email" type="text" :placeholder="t('contact.email')" @input="input"
+        :disabled="isAdmin || (props.courseRequest?.doc?.docHistory?.stateId == DocEnum.INAPPROVAL.ID)" />
     </div>
   </div>
-  <!-- <BlocUI class="card" v-if="!findRole(null, 'student')" :style="{ height: '35vw' }">
-    <div class="field" style="margin-top: 10px;">
-      <label>{{ t('helpDesk.application.discipline') }}</label>
-      <InputText v-model="userData.discipline" type="text" :placeholder="t('helpDesk.application.discipline')" />
-    </div>
-    <div class="field" style="margin-top: 10px;">
-      <label>{{ t('common.fullName') }}</label>
-      <InputText v-model="userData.fullName" type="text" :placeholder="t('common.fullName')" />
-    </div>
-    <div class="field" style="margin-top: 10px;">
-      <label>{{ t('common.speciality') }}</label>
-      <InputText v-model="userData.speciality" type="text" :placeholder="t('common.speciality')" />
-    </div>
-    <div class="field" style="margin-top: 10px;">
-      <label>{{ t('course.course') }}</label>
-      <InputNumber v-model="userData.course" :useGrouping="false" :placeholder="t('course.course')" style="width: 350px;" />
-    </div>
-    <div class="field" style="margin-top: 10px;">
-      <label>{{ t('contracts.cafedraGroup') }}</label>
-      <InputText v-model="userData.group" type="text" :placeholder="t('contracts.cafedraGroup')" />
-    </div>
-    <div class="field" style="margin-top: 10px;">
-      <label>{{ t('contact.phone') }}</label>
-      <InputNumber v-model="userData.phone" class="mt-2" inputId="userDataPhone" :useGrouping="false" :placeholder="t('contact.phone')" style="width: 350px;" />
-    </div>
-    <div class="field" style="margin-top: 10px;">
-      <label>{{ t('contact.email') }}</label>
-      <InputText v-model="userData.email" type="text" :placeholder="t('contact.email')" />
-    </div>
-  </BlocUI> -->
 </template>
 
 <script setup>
@@ -146,7 +125,7 @@ const userData = ref({
   speciality: null,
   group: null,
   course: null,
-  phone: '',
+  phone: null,
   email: null,
   discipline: null
 })
@@ -156,7 +135,7 @@ const responseUserData = ref({
   speciality: null,
   group: null,
   course: null,
-  phone: '',
+  phone: null,
   email: null
 })
 const data = ref(null);
@@ -241,43 +220,40 @@ const onPage = (event) => {
 };
 
 const getCourse = () => {
-  console.log(props.courseRequest)
-  const userId = props.courseRequest?.doc?.newParams?.student_id?.value
-  const courseId = props.courseRequest?.doc?.newParams?.not_formal_education_ids.value
-  axios.post(smartEnuApi + "/onlinecourse/courses",
-    {
-      user_id: userId,
-      page: lazyParams.value.page,
-      rows: lazyParams.value.rows,
-      searchText: null,
-      dic_course_type: "not_formal_education",
-      courses_ids: courseId
+  if (findRole(null, "student")) {
+    const userId = props.courseRequest?.doc?.newParams?.student_id?.value
+    const courseId = props.courseRequest?.doc?.newParams?.not_formal_education_ids.value
+    axios.post(smartEnuApi + "/onlinecourse/courses",
+      {
+        user_id: userId,
+        page: lazyParams.value.page,
+        rows: lazyParams.value.rows,
+        searchText: null,
+        dic_course_type: "not_formal_education",
+        courses_ids: courseId
 
-    }, { headers: getHeader() })
-    .then((res) => {
-      console.log(res.data)
-      data.value = res.data.courses;
-      if (props.courseRequest.doc.newParams) {
+      }, { headers: getHeader() })
+      .then((res) => {
+        console.log(res.data)
+        data.value = res.data.courses;
+        if (props.courseRequest.doc.newParams) {
 
-        data.value.map(e => {
-          e.checked = props.courseRequest.doc.newParams.not_formal_education_ids.value.some(x => x === e.subject_id)
-        })
-      }
-      total.value = res.data.total;
-    })
-    .catch((err) => {
-      showMessage("error", t("common.message.saveError"), null);
-    });
+          data.value.map(e => {
+            e.checked = props.courseRequest.doc.newParams.not_formal_education_ids.value.some(x => x === e.subject_id)
+          })
+        }
+        total.value = res.data.total;
+      })
+      .catch((err) => {
+        showMessage("error", t("common.message.saveError"), null);
+      });
+  }
 };
-
 
 const getStudentInfo = () => {
   const userId = props.courseRequest?.doc?.newParams?.student_id?.value
   console.log('asd')
 
-  if (!findRole(null, 'student') && (userId === null && userId <= 0)) {
-    return
-  }
   service.helpDeskStudentInfo({ user_id: userId }).then(res => {
     responseUserData.value.speciality = locale === "kz" ? res.data.studen_info.specialty_kz : res.data.studen_info.specialty_ru
     responseUserData.value.course = res.data.studen_info.course_number
@@ -288,11 +264,14 @@ const getStudentInfo = () => {
 
     console.log(responseUserData.value)
     userData.value = {
+      discipline: props.courseRequest.doc?.newParams?.not_formal_student_info?.value.discipline,
       fullName: props.courseRequest.doc?.newParams?.not_formal_student_info?.value.fullName || responseUserData.value.fullName,
       speciality: props.courseRequest.doc?.newParams?.not_formal_student_info?.value.speciality || responseUserData.value.speciality,
       group: props.courseRequest.doc?.newParams?.not_formal_student_info?.value.group || responseUserData.value.group,
       course: props.courseRequest.doc?.newParams?.not_formal_student_info?.value.course || responseUserData.value.course,
-      phone: props.courseRequest.doc?.newParams?.not_formal_student_info?.value.phone || responseUserData.value.phone,
+      phone: props.courseRequest.doc?.newParams?.not_formal_student_info?.value.phone > 0
+        ? props.courseRequest.doc.newParams.not_formal_student_info.value.phone
+        : '',
       email: props.courseRequest.doc?.newParams?.not_formal_student_info?.value.email || responseUserData.value.email,
     }
     emit('childInputData', userData.value)

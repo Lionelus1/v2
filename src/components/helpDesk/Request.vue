@@ -125,6 +125,7 @@ const showMessage = (severity, detail, life) => {
     life: life || 3000,
   });
 };
+const isSaved = ref(false)
 const revisionText = ref(null)
 const stages = ref([]);
 const description = ref(null)
@@ -196,14 +197,15 @@ const menu = computed(() => [
   {
     label: t("common.save"),
     icon: "pi pi-fw pi-save",
-    disabled: !request.value || (request.value.docHistory?.stateId != DocEnum.CREATED.ID &&
-              request.value.docHistory?.stateId != DocEnum.REVISION.ID) || !this.changed,
+    disabled: !isUserDataVaild() || (request.value.doc?.docHistory?.stateId != DocEnum.CREATED.ID &&
+      request.value.doc?.docHistory?.stateId != DocEnum.REVISION.ID && request.value.doc?.docHistory?.stateId != null),
     command: saveDocument
   },
+
   {
     label: t("common.send"),
     icon: "pi pi-fw pi-send",
-    disabled: request.value,
+    disabled: !request.value,
     items: [
       {
         label: t("common.tosign"),
@@ -211,7 +213,14 @@ const menu = computed(() => [
         visible: request.value && (request.value.doc?.docHistory?.stateId === DocEnum.CREATED.ID ||
           request.value.doc?.docHistory?.stateId === DocEnum.REVISION.ID),
         command: () => open('sendToApproveDialog')
-      }
+      },
+      {
+        label: t("common.revision"),
+        icon: "fa-regular fa-circle-xmark",
+        visible: request.value && request.value.doc?.docHistory?.stateId === DocEnum.INAPPROVAL.ID &&
+          needMySign(),
+        command: () => open('revisionDialog')
+      },
     ]
   },
   {
@@ -219,14 +228,7 @@ const menu = computed(() => [
     icon: "pi pi-user-edit",
     disabled: !request.value.doc || !request.value.doc.docHistory || request.value.doc.docHistory?.stateId < DocEnum.INAPPROVAL.ID,
     command: () => open('documentInfoSidebar')
-  },
-  {
-    label: t("common.revision"),
-    icon: "fa-regular fa-circle-xmark",
-    visible: request.value && request.value.doc?.docHistory?.stateId === DocEnum.INAPPROVAL.ID &&
-      needMySign(),
-    command: () =>  open('revisionDialog') 
-  },
+  }
 ]);
 
 
@@ -333,57 +335,85 @@ const sendToApprove = (approvalUsers) => {
   });
 };
 
+const isUserDataVaild = () => {
+  if (findRole(null, "student")) {
+    if (
+      userData.value !== null &&
+      userData.value.fullName &&
+      userData.value.speciality &&
+      userData.value.course &&
+      userData.value.email &&
+      userData.value.phone &&
+      selectedCourses.value &&
+      selectedCourses.value.length > 0
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    if (
+      userData.value !== null &&
+      userData.value.discipline && 
+      userData.value.fullName &&
+      userData.value.speciality &&
+      userData.value.course &&
+      userData.value.email &&
+      userData.value.phone
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+}
+
+
 const saveDocument = () => {
   loading.value = true;
   let student = null
-  if (findRole(null, "student")){
-    student = selectedCourses.value && selectedCourses.value.length > 0 && userData.value
-  } else {
-    student = userData.value.fullName && userData.value.speciality && userData.value.course && userData.value.phone && userData.value.email
-  }
-  
-  if (student) {
 
-    request.value.doc.newParams = {}
-    if (findRole(null, "student")) {
-      let param = {
-        value: selectedCourses.value,
-        name: "not_formal_education_ids"
+
+  request.value.doc.newParams = {}
+  if (findRole(null, "student")) {
+    let param = {
+      value: selectedCourses.value,
+      name: "not_formal_education_ids"
+    }
+    request.value.doc.newParams['not_formal_education_ids'] = param
+  }
+  let paramInfo = {
+    value: userData.value,
+    name: "not_formal_student_info"
+  }
+  let paramLang = {
+    value: lang.value,
+    name: "lang"
+  }
+
+  request.value.doc.newParams['lang'] = paramLang
+  request.value.doc.newParams['not_formal_student_info'] = paramInfo
+
+  request.value.is_saved = 1
+  console.log(request.value)
+  service.helpDeskTicketCreate(request.value)
+    .then(res => {
+      isSaved.value = true
+      changed.value = false;
+      request.value = res.data
+    }).catch(err => {
+      loading.value = false
+      if (err.response && err.response.status == 401) {
+        store.dispatch("logLout")
+      } else if (err.response && err.response.data && err.response.data.localized) {
+        showMessage('error', t(err.response.data.localizedPath), null)
+      } else {
+        console.log(err)
       }
-      request.value.doc.newParams['not_formal_education_ids'] = param
-    }
-    let paramInfo = {
-      value: userData.value,
-      name: "not_formal_student_info"
-    }
-    let paramLang = {
-      value: lang.value,
-      name: "lang"
-    }
+    });
+  isSend.value = true;
 
-    request.value.doc.newParams['lang'] = paramLang
-    request.value.doc.newParams['not_formal_student_info'] = paramInfo
-
-    request.value.is_saved = 1
-    console.log(request.value)
-    service.helpDeskTicketCreate(request.value)
-      .then(res => {
-        this.changed = false;
-        request.value = res.data
-      }).catch(err => {
-        loading.value = false
-        if (err.response && err.response.status == 401) {
-          store.dispatch("logLout")
-        } else if (err.response && err.response.data && err.response.data.localized) {
-          showMessage('error', t(err.response.data.localizedPath), null)
-        } else {
-          console.log(err)
-        }
-      });
-    isSend.value = true;
-  } else {
-    showMessage("error", t("common.message.fillError"), null);
-  }
 };
 
 const search = (data) => {
@@ -469,7 +499,6 @@ const helpDeskTicketGet = () => {
       if (err.response.status == 401) {
         store.dispatch('logLout');
       }
-
       toast.add({
         severity: 'error',
         detail: t('common.message.saveError'),

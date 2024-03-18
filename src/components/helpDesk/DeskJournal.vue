@@ -322,7 +322,12 @@ const getTicket = () => {
       loading.value = false
       data.value = res.data.ticket;
       total.value = res.data.total;
-    })
+    }) .catch((err) => {
+      loading.value = false
+      if (err.response.status == 401) {
+        store.dispatch('logLout');
+      }
+    });
 }
 const search = (data) => {
   alert(data);
