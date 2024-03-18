@@ -1,59 +1,25 @@
 <template>
   <div class="col-12">
     <h3>{{ $t('workPlan.plans') }}</h3>
-    <div class="card">
-      <WorkPlanAdd v-model="isAdded" />
-    </div>
+    <ToolbarMenu :data="initMenu" @search="initSearch" :search="true" @filter="toggle('global-filter', $event)" :filter="isAdmin" :filtered="filtered" />
     <div class="card">
       <DataTable :lazy="true" :rowsPerPageOptions="[5, 10, 20, 50]" :value="data" dataKey="id" :rowHover="true"
-        v-model:filters="filters" filterDisplay="menu" :loading="loading" responsiveLayout="scroll" :paginator="true"
-        :rows="10" :totalRecords="total" @page="onPage"
-        :globalFilterFields="['question', 'recipient', 'status', 'sendDate', 'createDate']" @sort="onSort($event)">
-        <template #header>
-          <div class="table-header flex justify-content-end align-items-center">
-            <div v-if="isAdmin">
-            <Button type="button" icon="fa-solid fa-filter" @click="toggle('global-filter', $event)" aria:haspopup="true"
-              aria-controls="overlay_panel" class="p-button-outlined mr-2" />
-            <OverlayPanel ref="global-filter">
-              <div v-for="text in workplan_radio_options" :key="text" class="flex align-items-center">
-                <div class="field-radiobutton">
-                  <RadioButton v-model="selectedPlanType" :value="text.value" />
-                  <label :for="text" class="ml-2">{{ text.text }}</label>
-                </div>
-              </div>
-              <div class="p-fluid">
-                <div class="field">
-                  <br />
-
-                  <Button icon="pi pi-trash" class="ml-1" @click="clearPlanTypeFilter()" :label="$t('common.clear')" />
-                </div>
-                <div class="field">
-                  <Button icon="pi pi-search" :label="$t('common.search')" class="ml-1" @click="setPlanType(null)" />
-                </div>
-              </div>
-            </OverlayPanel>
-          </div>
-            <span class="p-input-icon-left"><i class="pi pi-search" />
-              <InputText type="search" v-model="lazyParams.searchText" @keyup.enter="getPlans"
-                :placeholder="$t('common.search')" @search="getPlans" />
-              <Button icon="pi pi-search" class="ml-1" @click="getPlans" />
-            </span>
-          </div>
-        </template>
+                 :loading="loading" responsiveLayout="scroll" :paginator="true" :rows="10" :totalRecords="total" @page="onPage">
         <template #empty> {{ $t('common.noData') }}</template>
         <template #loading> {{ $t('common.loading') }}</template>
         <Column field="content" :header="$t('workPlan.planName')" sortable>
           <template #body="{ data }">
-            <a href="javascript:void(0)" @click="navigateToEvent(data)">{{ data.work_plan_name }}</a>
+            <router-link :to="{ name: 'WorkPlanEvent', params: { id: data.work_plan_id } }" tag="a">
+              {{ data.work_plan_name }}
+            </router-link>
           </template>
         </Column>
 
         <Column field="status" :header="$t('common.status')">
           <template #body="{ data }">
-            <span :class="'customer-badge status-' + data.status.work_plan_status_id">{{
-              $i18n.locale === "kz" ? data.status.name_kk : $i18n.locale === "ru" ? data.status.name_ru :
-              data.status.name_en
-            }}</span>
+            <span :class="'customer-badge status-' + data.doc_info.docHistory.stateEn">
+              {{ getDocStatus(data.doc_info.docHistory.stateEn) }}
+          </span>
           </template>
         </Column>
         <Column field="user" :header="$t('common.created')">
@@ -63,8 +29,8 @@
         </Column>
         <Column field="status" :header="$t('workPlan.planType')" v-if="isAdmin">
           <template #body="{ data }">
-            <span class="customer-badge" :class="{ 'operational-plan': data.is_oper, 'simple-plan': !data.is_oper }">
-              {{ data.is_oper ? $t('workPlan.operationalPlan') : $t('workPlan.simplePlan') }}
+            <span :class="'customer-badge ' + data.plan_type.code">
+              {{ data.plan_type['name_' + $i18n.locale] }}
             </span>
           </template>
         </Column>
@@ -76,50 +42,62 @@
         <Column field="actions" header="">
           <template #body="{ data }">
             <Button type="button"
-              v-if="data.user.id === loginedUserId && (data.status.work_plan_status_id === 1 || data.status.work_plan_status_id === 3 || data.status.work_plan_status_id === 5)"
-              icon="pi pi-trash" class="p-button-danger mr-2" label="" @click="deleteConfirm(data)"></Button>
+                    v-if="this.isAdmin || (data.user.id === loginedUserId && (data.status.work_plan_status_id === 1 || data.status.work_plan_status_id === 3 || data.status.work_plan_status_id === 5))"
+                    icon="pi pi-trash" class="p-button-danger mr-2" label="" @click="deleteConfirm(data)"></Button>
           </template>
         </Column>
 
       </DataTable>
     </div>
+    <WorkPlanAdd v-if="showAddPlanDialog" :visible="showAddPlanDialog" @hide="closeBasic" />
 
-    <!--    <Dialog :header="$t('common.action.accept')" v-model:visible="isAcceptModal" :style="{width: '450px'}" class="p-fluid">
-          <div class="field">
-          </div>
-          <template #footer>
-            <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
-                    @click="closeModal"/>
-            <Button :label="$t('ncasigner.sign')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2" @click="approve"/>
-          </template>
-        </Dialog>
-
-        <Dialog header="На доработку" v-model:visible="isRejectModal" :style="{width: '450px'}" class="p-fluid">
-          <div class="field">
-            <label>Комментарий</label>
-            <Textarea v-model="comment" rows="3" style="resize: vertical"/>
-          </div>
-          <template #footer>
-            <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
-                    @click="closeModal"/>
-            <Button label="Отправить" icon="pi pi-check" class="p-button-rounded p-button-success mr-2"
-                    @click="rejectPlan"/>
-          </template>
-        </Dialog>-->
+    <OverlayPanel ref="global-filter">
+      <div v-for="(item, index) in types" :key="index" class="flex align-items-center">
+        <div class="field-radiobutton">
+          <RadioButton v-model="filter.plan_type" :value="item.id" />
+          <label :for="item" class="ml-2">{{ item['name_' + $i18n.locale] }}</label>
+        </div>
+      </div>
+      <div class="p-fluid">
+<!--        <div class="field">
+          <label for="status-filter">{{ $t('common.status') }}</label>
+          <Dropdown v-model="filter.doc_status" :options="statuses" optionValue="value"
+                    class="p-column-filter" :showClear="true">
+            <template #value="slotProps">
+            <span v-if="slotProps && slotProps.value" :class="'customer-badge status-' + statuses.find((e) => e.value === slotProps.value).value">
+              {{ $i18n.locale === 'kz' ? statuses.find((e) => e.value === slotProps.value).nameKz : $i18n.locale === 'ru'
+                ? statuses.find((e) => e.value === slotProps.value).nameRu : statuses.find((e) => e.value === slotProps.value).nameEn }}
+            </span>
+            </template>
+            <template #option="slotProps">
+            <span :class="'customer-badge status-' + slotProps.option.value">
+              {{ $i18n.locale === 'kz' ? slotProps.option.nameKz : $i18n.locale === 'ru'
+                ? slotProps.option.nameRu : slotProps.option.nameEn }}
+            </span>
+            </template>
+          </Dropdown>
+        </div>-->
+        <div class="field">
+          <Button icon="pi pi-search" :label="$t('common.search')" class="button-blue p-button-sm" @click="getPlans" />
+          <Button icon="pi pi-trash" class="p-button-outlined p-button-sm mt-1" @click="clearFilter()" :label="$t('common.clear')" />
+        </div>
+      </div>
+    </OverlayPanel>
   </div>
 </template>
 
 <script>
 import WorkPlanAdd from "./WorkPlanAdd";
-import { getHeader, smartEnuApi, findRole } from "@/config/config";
+import { findRole } from "@/config/config";
 import { WorkPlanService } from "@/service/work.plan.service";
+import ToolbarMenu from "@/components/ToolbarMenu.vue";
+import Enum from "@/enum/docstates";
 
 export default {
-  components: { WorkPlanAdd },
+  components: {ToolbarMenu, WorkPlanAdd },
   data() {
     return {
       data: [],
-      //searchText: null,
       isAdded: null,
       isCurrentUserApprove: false,
       isAcceptModal: false,
@@ -134,11 +112,6 @@ export default {
         page: 0,
         rows: 10,
         searchText: null,
-        filter: {
-          is_plan: null,
-          is_oper_plan: null,
-          user_id: null,
-        }
       },
       total: 0,
       selectedPlanType: null,
@@ -157,6 +130,29 @@ export default {
         },
 
       ],
+      docStatus: [
+        { name_kz: "құрылды", name_en: "created", name_ru: "создан", code: "created" },
+        { name_kz: "келісуде", name_en: "inapproval", name_ru: "на согласовании", code: "inapproval" },
+        { name_kz: "келісілді", name_en: "approved", name_ru: "согласован", code: "approved" },
+        { name_kz: "түзетуге", name_en: "revision", name_ru: "на доработку", code: "revision" },
+        { name_kz: "қайтарылды", name_en: "rejected", name_ru: "отклонен", code: "rejected" },
+        { name_kz: "қол қоюда", name_en: "signing", name_ru: "на подписи", code: "signing" },
+        { name_kz: "қол қойылды", name_en: "signed", name_ru: "подписан", code: "signed" },
+        { name_kz: "қайта бекітуге жіберілді", name_en: "sent for re-approval", name_ru: "отправлен на переутверждение", code: "sent for re-approval" },
+        { name_kz: "жаңартылды", name_en: "updated", name_ru: "обновлен", code: "updated" },
+        { name_kz: "берілді", name_en: "issued", name_ru: "выдан", code: "issued" },
+      ],
+      selectedDocStatus: null,
+      types: [],
+      showAddPlanDialog: false,
+      filtered: false,
+      filter: {
+        doc_status: null,
+        plan_type: null,
+        user_id: null,
+      },
+      statuses: [Enum.StatusesArray.StatusCreated, Enum.StatusesArray.StatusInapproval, Enum.StatusesArray.StatusApproved,
+        Enum.StatusesArray.StatusRevision, Enum.StatusesArray.StatusSigning, Enum.StatusesArray.StatusSigned],
     }
   },
   mounted() {
@@ -172,20 +168,39 @@ export default {
     });
 
   },
+  computed: {
+    initMenu() {
+      return [
+        {
+          label: this.$t('workPlan.addPlan'),
+          icon: "pi pi-plus",
+          command: () => {
+            this.openBasic()
+          },
+        }
+      ]
+    }
+  },
   created() {
     this.isAdmin = this.findRole(null, 'main_administrator')
     this.getPlans();
+    this.getWorkPlanTypes()
   },
   methods: {
     findRole: findRole,
     toggle(ref, event) {
       this.$refs[ref].toggle(event);
     },
-    onSort() {
-
+    openBasic() {
+      this.showAddPlanDialog = true
+    },
+    closeBasic() {
+      this.showAddPlanDialog = false
+      this.getPlans()
     },
     getPlans() {
       this.loading = true;
+      this.lazyParams.filter = this.filter
       this.planService.getPlans(this.lazyParams).then(res => {
         this.data = res.data.plans;
         this.total = res.data.total;
@@ -264,10 +279,6 @@ export default {
         }
       });
     },
-    navigateToEvent(event) {
-      //localStorage.setItem('workPlan', JSON.stringify(event));
-      this.$router.push({ name: 'WorkPlanEvent', params: { id: event.work_plan_id } });
-    },
     formatDate(value) {
       let result = "";
       if (value == null) {
@@ -298,30 +309,47 @@ export default {
       this.lazyParams.rows = event.rows
       this.getPlans();
     },
-    clearPlanTypeFilter() {
+    clearFilter() {
       this.lazyParams.filter.is_plan = null;
       this.lazyParams.filter.is_oper_plan = null;
       this.selectedPlanType = null;
       this.lazyParams.filter.user_id = null;
       this.getPlans();
     },
-    setPlanType() {
-      if (this.selectedPlanType === "simple_plan") {
-        this.lazyParams.filter.is_plan = true
-        this.lazyParams.filter.is_oper_plan = null
-      }
-      if (this.selectedPlanType === "oper_plan") {
-        this.lazyParams.filter.is_plan = null
-        this.lazyParams.filter.is_oper_plan = true
-
-      }
-      if(this.selectedPlanType === "my_plan"){
-        this.lazyParams.filter.user_id = this.loginedUserId
-        this.lazyParams.filter.is_plan = null
-        this.lazyParams.filter.is_oper_plan = null
-      }
+    initFilter() {
       this.getPlans();
     },
+    getDocStatus(code) {
+      const foundStatus = this.docStatus.find(status => status.code === code);
+
+      if (foundStatus) {
+        switch (this.$i18n.locale) {
+          case "kz":
+            return foundStatus.name_kz;
+          case "ru":
+            return foundStatus.name_ru;
+          case "en":
+            return foundStatus.name_en;
+          default:
+            return null;
+        }
+      } else {
+        return null;
+      }
+    },
+    getWorkPlanTypes() {
+      this.types = []
+      this.planService.getWorkPlanTypes().then(res => {
+        this.types = res.data
+        this.types.push({id: 4, code: 'mine', name_kz: 'Менің жоспарларым', name_ru: 'Мои планы', name_en: 'My Plans'})
+      }).catch(error => {
+        this.$toast.add({severity: "error", summary: error, life: 3000});
+      })
+    },
+    initSearch(searchText) {
+      this.lazyParams.searchText = searchText
+      this.getPlans()
+    }
   }
 }
 </script>
@@ -355,16 +383,72 @@ export default {
     color: #8A5340;
   }
 
-  &.operational-plan {
+  &.status-1 {
+    background: #B3E5FC;
+    color: #23547B;
+  }
+  &.created {
+    background: #3588a8;
+    color: #fff;
+  }
+
+  &.inapproval {
+    background: #C8E6C9;
+    color: #256029;
+  }
+
+  &.approved {
+    background: #FFCDD2;
+    color: #C63737;
+  }
+
+  &.revision {
+    background: #FEEDAF;
+    color: #8A5340;
+  }
+
+  &.rejected {
+    background: #B3E5FC;
+    color: #23547B;
+  }
+  &.signing {
+    background: #2a6986;
+    color: #bfc9d1;
+  }
+  &.signed {
+    background: rgb(57, 134, 42);
+    color: #bfc9d1;
+  }
+  &.sent for re-approval {
+    background: rgb(134, 42, 119);
+    color: #bfc9d1;
+  }
+  &.updated for re-approval {
+    background: rgb(134, 42, 54);
+    color: #bfc9d1;
+  }
+  &.issued for re-approval {
+    background: rgb(42, 134, 88);
+    color: #bfc9d1;
+  }
+
+  &.oper  {
     background-color: #3B82F6;
     color: #ffffff;
     font-weight: 500;
     border-radius: 3px;
   }
 
-  &.simple-plan {
+  &.standart {
     background-color: #10b981;
     color: #ffffff;
+    font-weight: 500;
+    border-radius: 3px;
+  }
+
+  &.science {
+    background: #3588a8;
+    color: #fff;
     font-weight: 500;
     border-radius: 3px;
   }

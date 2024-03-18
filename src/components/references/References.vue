@@ -2,27 +2,9 @@
     <h3>{{ $t("ref.myRefs") }}</h3>
   <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
   <BlockUI :blocked="loading" :fullScreen="true"></BlockUI>
+  <ToolbarMenu :data="menu"/>
   <div class="card flex flex-column" :style="{height: innerHeightInRem.toString()+'rem',
     minHeight: '300px'}">
-    <Toolbar class="m-0 p-1">
-      <template #start>
-        <div class="flex flex-wrap gap-2">
-          <Button class="p-button-info align-items-center" style="padding: 0.25rem 1rem;"
-            @click="open('referenceSidebar')" :disabled="!selectedReference"> <i class="fa-regular fa-address-card" />
-            &nbsp;{{ $t("ref.open") }} </Button>
-          <Button class="p-button-info align-items-center" style="padding: 0.25rem 1rem;"
-            @click="selectedTemplate = null; open('getRefStep1Dialog')"> <i class="fa-solid fa-file-circle-plus" />
-            &nbsp;{{ $t("ref.getRef") }} </Button>
-        </div>
-      </template>
-      <template #end>
-        <div class="flex flex-wrap gap-2">
-          <Button class="p-button-info align-items-center" style="padding: 0.25rem 1rem;"
-            @click="open('filterOverlayPanel')" :disabled="true"> <i class="fa-solid fa-filter" />
-            &nbsp;{{ $t("ref.filter") }} </Button>
-        </div>
-      </template>
-    </Toolbar>
     <div class="flex-grow-1" style="height: 300px; min-width: 300px;">
       <DataTable :value="references" dataKey="id" :rows="rows"
         :totalRecords="total" :paginator="true" paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink JumpToPageDropdown CurrentPageReport RowsPerPageDropdown"
@@ -80,8 +62,8 @@
         </Column>
         <Column style="width: 5%; min-width: 50px;  flex-grow: 1; flex-shrink: 0;">
           <template #body="slotProps">
-            <Button v-if="slotProps.data.isPublic" class="p-button-help"
-              icon="fa-solid fa-link" v-tooltip="$t('ref.sharedLinkTooltip')"
+            <Button v-if="slotProps.data.isPublic" class="p-button-text p-button-help"
+              icon="fa-solid fa-link" v-tooltip.bottom="$t('ref.sharedLinkTooltip')"
               v-clipboard:copy="apiDomain + '/document/' + slotProps.data.uuid" 
               v-clipboard:success="onCopy" v-clipboard:error="onFail"></Button>
           </template>
@@ -127,10 +109,11 @@ import Enum from "@/enum/docstates/index";
 
 import ReferenceFolderFile from './ReferenceFolderFile.vue';
 import ReferencePage from './ReferencePage.vue';
+import ToolbarMenu from "@/components/ToolbarMenu.vue";
 
 export default {
   name: 'References',
-  components: { ReferenceFolderFile, ReferencePage },
+  components: {ToolbarMenu, ReferenceFolderFile, ReferencePage },
   props: {
     
   },
@@ -349,6 +332,31 @@ export default {
       });
 
       return result
+    },
+  },
+/*<Button class="p-button-info align-items-center" style="padding: 0.25rem 1rem;"
+            @click="open('referenceSidebar')" :disabled="!selectedReference"> <i class="fa-regular fa-address-card" />
+    &nbsp;{{ $t("ref.open") }} </Button>
+<Button class="p-button-info align-items-center" style="padding: 0.25rem 1rem;"
+            @click="selectedTemplate = null; open('getRefStep1Dialog')"> <i class="fa-solid fa-file-circle-plus" />
+    &nbsp;{{ $t("ref.getRef") }} </Button>*/
+  computed: {
+    menu () {
+      return [
+        {
+          label: this.$t('ref.open'),
+          icon: "fa-regular fa-address-card",
+          disabled: !this.selectedReference,
+          command: () => {this.open('referenceSidebar')},
+        },
+        {
+          label: this.$t('ref.getRef'),
+          icon: "fa-solid fa-file-circle-plus",
+          visible: this.selectedNews && this.selectedNews.history.status.id === this.statuses.created && (!this.isModer ||
+              !this.isPublisher || !this.isAdmin || !this.isEnuWebAdmin || !this.isEnuWebFacAdmin),
+          command: () => {this.selectedTemplate = null; this.open('getRefStep1Dialog')},
+        }
+      ]
     },
   }
 }

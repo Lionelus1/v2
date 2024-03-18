@@ -1,6 +1,6 @@
 <template>
   <ProgressSpinner v-if="loading" class="progress-spinner" strokeWidth="5"/>
-
+  <h3>{{ $t('science.publicationsRecommendedQACFSHE') }}</h3>
   <Menubar :model="menuItems" class="m-0 pt-0 pb-0"></Menubar>
   
   <div class="col-12 md:col-12 p-fluid">
@@ -41,6 +41,7 @@
             label: this.$t("common.save"),
             icon: "pi pi-fw pi-save",
             command: () => { this.saveEdition() },
+            disabled: () => this.edition.name_kz == '' || this.edition.name_en == '' || this.edition.name_ru == '' ,
           }
         ],   
         validation: {

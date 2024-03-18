@@ -1,64 +1,85 @@
 <template>
-  <Button label="" icon="pi pi-pencil" class="p-button-info ml-1 mt-1" @click="openBasic"/>
-
-  <Dialog :header="$t('workPlan.editEvent')" v-model:visible="showWorkPlanEventEditModal" :style="{width: '450px'}"
-          class="p-fluid">
+  <Dialog :header="$t('workPlan.editEvent')" v-model:visible="showWorkPlanEventEditModal" :style="{ width: '450px' }" class="p-fluid" @hide="closeBasic">
     <div class="field">
       <label>{{ plan && plan.is_oper ? $t('workPlan.resultIndicator') : $t('workPlan.eventName') }}</label>
-      <InputText v-model="editData.event_name"/>
+      <InputText v-model="editData.event_name" />
       <small class="p-error" v-if="submitted && formValid.event_name">{{ $t('workPlan.errors.eventNameError') }}</small>
     </div>
-    <div class="field" v-if="plan && plan.is_oper">
+    <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Science">
+      <label>{{ $t('common.startDate') }}</label>
+      <PrimeCalendar v-model="editData.start_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
+    </div>
+    <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Science">
+      <label>{{ $t('common.endDate') }}</label>
+      <PrimeCalendar v-model="editData.end_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
+    </div>
+    <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
       <label>{{ $t('common.unit') }}</label>
       <InputText v-model="editData.unit" />
     </div>
-    <div class="field" v-if="plan && plan.is_oper">
+    <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
       <label>{{ $t('common.planNumber') }}</label>
       <InputText v-model="editData.plan_number" />
     </div>
-    <div class="field" v-if="plan && plan.is_oper">
+    <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
       <label>{{ $t('workPlan.approvalUsers') }}</label>
       <InputText v-model="editData.responsible_executor" />
     </div>
-    <div class="field">
-      <label>{{ plan && plan.is_oper ? $t('workPlan.summary') : $t('workPlan.approvalUsers') }}</label>
+    <div class="field" v-if="plan && plan.plan_type && plan.plan_type.code !== Enum.WorkPlanTypes.Science">
+      <label>{{ plan && (plan.is_oper || plan.plan_type.code === Enum.WorkPlanTypes.Oper) ? $t('workPlan.summary') : $t('workPlan.approvalUsers') }}</label>
       <FindUser v-model="selectedUsers" :editMode="true"></FindUser>
       <small class="p-error" v-if="submitted && formValid.users">{{ $t('workPlan.errors.approvalUserError') }}</small>
     </div>
-    <div class="field" v-if="(editData != null && parentData != null && parentData.quarter === 5) || !parentData">
+    <template v-if="plan && plan.plan_type && plan.plan_type.code === Enum.WorkPlanTypes.Science && inputSets">
+      <div v-for="(inputSet, index) in inputSets" :key="index">
+        <div class="field">
+          <label>{{ $t('workPlan.scienceParticipants') }}</label>
+          <FindUser v-model="inputSet.selectedUsers" :editMode="true"></FindUser>
+          <small class="p-error" v-if="submitted && formValid.users">{{ $t('workPlan.errors.approvalUserError') }}</small>
+        </div>
+        <div class="field">
+          <label for="name">{{ $t('common.role') }}</label>
+          <RolesByName v-model="inputSet.selectedRole" roleGroupName="workplan_science"></RolesByName>
+        </div>
+      </div>
+    </template>
+    <div class="field" v-if="plan && plan.plan_type && plan.plan_type.code === Enum.WorkPlanTypes.Science">
+      <Button :label="$t('common.add')" icon="fa-solid fa-add" class="p-button-sm p-button-outlined px-5" @click="addNewUser" />
+    </div>
+    <div class="field"
+      v-if="(plan && plan.plan_type.code !== Enum.WorkPlanTypes.Science) && ((editData && parentData && parentData.quarter === 5) || !parentData)">
       <label>{{ $t('workPlan.quarter') }}</label>
-      <Dropdown v-model="editData.quarter" :options="quarters" optionLabel="name" optionValue="id"
-                :placeholder="$t('common.select')"/>
+      <Dropdown v-model="editData.quarter" :options="quarters" optionLabel="name" optionValue="id" :placeholder="$t('common.select')" />
       <small class="p-error" v-if="submitted && formValid.quarter">{{ $t('workPlan.errors.quarterError') }}</small>
     </div>
-    <div class="field" v-if="plan && plan.is_oper">
+    <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
       <label>{{ $t('common.suppDocs') }}</label>
       <Textarea v-model="editData.supporting_docs" rows="3" style="resize: vertical" />
     </div>
     <div class="field">
-      <label>{{ plan && plan.is_oper ? $t('common.additionalInfo') : $t('common.result') }}</label>
-      <Textarea v-model="editData.result" rows="3" style="resize: vertical"/>
+      <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('common.additionalInfo') : $t('common.result') }}</label>
+      <Textarea v-model="editData.result" rows="3" style="resize: vertical" />
     </div>
     <template #footer>
-      <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
-              @click="closeBasic"/>
-      <Button :label="$t('common.save')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2"
-              @click="edit"/>
+      <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger" @click="closeBasic" />
+      <Button :label="$t('common.save')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2" @click="edit" />
     </template>
   </Dialog>
 </template>
 
 <script>
-import axios from "axios";
-import {getHeader, smartEnuApi} from "@/config/config";
-import {WorkPlanService} from "@/service/work.plan.service";
+import { WorkPlanService } from "@/service/work.plan.service";
+import Enum from "@/enum/workplan/index"
+import RolesByName from "@/components/smartenu/RolesByName.vue";
 
 export default {
   name: "WorkPlanEventEditModal",
-  props: ['event', 'planData', 'parent'],
+  components: { RolesByName },
+  props: ['visible', 'event', 'planData', 'parent'],
+  emits: ['hide'],
   data() {
     return {
-      showWorkPlanEventEditModal: false,
+      showWorkPlanEventEditModal: this.visible,
       editData: JSON.parse(JSON.stringify(this.event)),
       plan: this.planData,
       quarters: [
@@ -84,39 +105,51 @@ export default {
         }
       ],
       parentData: this.parent != null ? JSON.parse(JSON.stringify(this.parent)) : null,
-      selectedUsers: [],
+      selectedUsers: null,
       formValid: {
         event_name: false,
         users: false,
         quarter: false
       },
       submitted: false,
-      planService: new WorkPlanService()
+      planService: new WorkPlanService(),
+      Enum: Enum,
+      inputSets: null,
     }
   },
-  created() {
-    //console.log(this.editData)
-  },
   mounted() {
+    if (this.editData !== null) {
+      this.editData.start_date = this.editData.start_date ? new Date(this.editData.start_date) : null
+      this.editData.end_date = this.editData.end_date ? new Date(this.editData.end_date) : null
+      this.selectedUsers = [];
+      this.editData.quarter = parseInt(this.editData.quarter);
+      this.editData.user.forEach(e => {
+        this.selectedUsers.push(e.user);
+      });
+      if (this.plan && this.plan.plan_type.code === this.Enum.WorkPlanTypes.Science && this.editData.user) {
+        console.log()
+        const roleMap = new Map();
 
+        this.editData.user.forEach(item => {
+          if (item.role && item.user) {
+            const { role, user } = item;
+            if (roleMap.has(role.id)) {
+              roleMap.get(role.id).selectedUsers.push(user);
+            } else {
+              roleMap.set(role.id, { selectedRole: role, selectedUsers: [user] });
+            }
+          }
+        });
+        this.inputSets = Array.from(roleMap.values());
+      }
+    }
   },
   unmounted() {
+    this.showWorkPlanEventEditModal = false
   },
   methods: {
-    openBasic() {
-      this.showWorkPlanEventEditModal = true;
-      if (this.editData !== null) {
-        this.selectedUsers = [];
-        this.editData.quarter = parseInt(this.editData.quarter);
-        this.editData.user.forEach(e => {
-          e.userID = e.id;
-          this.selectedUsers.push(e);
-        });
-        this.selectedUsers = this.editData.user;
-      }
-    },
     closeBasic() {
-      this.showWorkPlanEventEditModal = false;
+      this.$emit('hide')
     },
     edit() {
       this.submitted = true;
@@ -124,9 +157,24 @@ export default {
         return;
       }
       let userIds = [];
-      this.selectedUsers.forEach(e => {
-        userIds.push(e.userID)
-      });
+
+      if (this.plan && this.plan.plan_type && this.plan.plan_type.code === this.Enum.WorkPlanTypes.Science) {
+        userIds = this.inputSets.reduce((acc, inputSet) => {
+          inputSet.selectedUsers.forEach(user => {
+            acc.push({
+              user: user,
+              role: inputSet.selectedRole,
+            });
+          });
+          return acc;
+        }, []);
+      } else {
+        userIds = [];
+        this.selectedUsers.forEach(e => {
+          userIds.push({ user: e, role: null })
+        });
+      }
+
       this.editData.resp_person_ids = userIds;
       this.planService.editEvent(this.editData).then(res => {
         if (res.data.is_success) {
@@ -135,21 +183,12 @@ export default {
             summary: this.$t('workPlan.message.eventChanged'),
             life: 3000,
           });
-          this.emitter.emit("planEventChanged", true)
           this.closeBasic();
           this.submitted = false;
         }
       }).catch(error => {
         this.submitted = false;
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
+        this.$toast.add({ severity: "error", summary: error, life: 3000 });
       });
     },
     notValid() {
@@ -159,16 +198,16 @@ export default {
 
       let validation = this.formValid;
       let errors = [];
-      Object.keys(this.formValid).forEach(function(k)
-      {
+      Object.keys(this.formValid).forEach(function (k) {
         if (validation[k] === true) errors.push(validation[k])
       });
       return errors.length > 0
     },
+    addNewUser() {
+      this.inputSets.push({ selectedUsers: null, selectedRole: null })
+    }
   }
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

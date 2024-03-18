@@ -43,7 +43,7 @@
                         <div class="field">
                             <label>{{ $t("common.contentInQazaq") }}</label>
                             <!--            <RichEditor ref="kztext" v-model="formData.content_kz" editorStyle="height: 320px"></RichEditor>-->
-                            <TinyEditor v-model="formData.content_kz" :height="400" :custom-file-upload="true"
+                            <TinyEditor v-model="formData.content_kz" :height="400" :custom-file-upload="true" :accordion="true"
                                 @onAfterUpload="onAfterUpload" />
                         </div>
                     </TabPanel>
@@ -59,7 +59,7 @@
                         <div class="field">
                             <label for="ru-content">{{ $t("common.contentInRussian") }}</label>
                             <!--            <RichEditor id="ru-content" v-model="formData.content_ru" editorStyle="height: 320px"/>-->
-                            <TinyEditor v-model="formData.content_ru" :height="400" :custom-file-upload="true"
+                            <TinyEditor v-model="formData.content_ru" :height="400" :custom-file-upload="true" :accordion="true"
                                 @onAfterUpload="onAfterUpload" />
                         </div>
                     </TabPanel>
@@ -75,7 +75,7 @@
                         <div class="field">
                             <label>{{ $t("common.contentInEnglish") }}</label>
                             <!--            <RichEditor v-model="formData.content_en" editorStyle="height: 320px"/>-->
-                            <TinyEditor v-model="formData.content_en" :height="400" :custom-file-upload="true"
+                            <TinyEditor v-model="formData.content_en" :height="400" :custom-file-upload="true" :accordion="true"
                                 @onAfterUpload="onAfterUpload" />
                         </div>
                     </TabPanel>

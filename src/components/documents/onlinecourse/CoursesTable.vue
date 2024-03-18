@@ -93,23 +93,24 @@
               </div>
               <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
                 <label>{{ $t('course.startDate') }}</label>
-                <PrimeCalendar v-model="courseRequest.start_time" :readonly="readonly"  class="mt-2" :placeholder="$t('hr.id.startDate')" dateFormat="dd.mm.yy"/>
+                <PrimeCalendar v-model="courseRequest.history[0].startDate" :readonly="readonly"  class="mt-2" :placeholder="$t('hr.id.startDate')" dateFormat="dd.mm.yy"/>
                 <small v-if="courseValidate.start_time" class="p-error">{{ $t("common.requiredField") }}</small>
               </div>
               <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
                 <label>{{ $t('course.completionDate') }}</label>
-                <PrimeCalendar v-model="courseRequest.final_date" :readonly="readonly"  class="mt-2" :placeholder="$t('hr.id.startDate')" dateFormat="dd.mm.yy"/>
+                <PrimeCalendar v-model="courseRequest.history[0].finalDate" :readonly="readonly"  class="mt-2" :placeholder="$t('hr.id.startDate')" dateFormat="dd.mm.yy"/>
                 <small v-if="courseValidate.final_date" class="p-error">{{ $t("common.requiredField") }}</small>
               </div>
               <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-                  <label>{{ $t('course.moduleHours') }}</label>
-                  <InputNumber v-model="courseRequest.hours" class="mt-2"></InputNumber>
+                  <label class="mr-2">{{ $t('course.moduleHours') }}</label>
+                <Checkbox v-model="checkedHours" :binary="true" />
+                <InputNumber :disabled="!checkedHours" v-model="courseRequest.hours" class="mt-2"></InputNumber>
                   <small v-if="courseValidate.hours" class="p-error">{{$t('common.requiredField')}}</small>
               </div>
               <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
                     <label class="mr-2">{{ $t('course.certificate.certSelect') }}</label>
                     <Checkbox v-model="checkedCertificate" :binary="true" />
-                  <Dropdown :disabled="!checkedCertificate" v-model="courseRequest.certificate_template_id" :options="journal" class="mt-2" :optionLabel="itemLabel" optionValue="id" :placeholder="$t('common.select')"
+                  <Dropdown :disabled="!checkedCertificate" v-model="courseRequest.organizer.certificateTemplateID" :options="journal" class="mt-2" :optionLabel="itemLabel" optionValue="id" :placeholder="$t('common.select')"
                   @filter="handleFilter" :filter="true" :showClear="true" dataKey="id" :emptyFilterMessage="$t('roleControl.noResult')"  />
                   <small v-if="courseValidate.certificate_template_id"  class="p-error">{{$t('common.requiredField')}}</small>
               </div>
@@ -169,10 +170,13 @@ export default {
         descriptionru: '',
         descriptionen: '',
         hours: 0,
-        certificate_template_id: null,
-        start_time: null,
-        final_date: null,
-        category_id: null
+        organizer: {
+          certificateTemplateID: null,
+        },
+        history: [{
+          startDate: null,
+          finalDate: null,
+        }]
       },
       courseValidate: {
         namekz: false,
@@ -196,6 +200,7 @@ export default {
       loading: true,
       count: 0,
       checkedCertificate: false,
+      checkedHours: false,
     }
   },
   created() {
@@ -349,8 +354,14 @@ export default {
         return
       }
       this.loading = true
-      this.courseRequest.category_id = parseInt(this.$route.params.categoryID)
-      this.service.createCourse(this.courseRequest).then(_ => {
+
+      const req = {
+        course: this.courseRequest,
+        category_id: parseInt(this.$route.params.categoryID),
+        stateID: 6,
+      }
+
+      this.service.createCourse(req).then(_ => {
         this.getCourses()
         this.loading = false
       }).catch(_=> {
@@ -368,11 +379,11 @@ export default {
       this.courseValidate.descriptionkz = this.courseRequest.descriptionkz === '' 
       this.courseValidate.descriptionru = this.courseRequest.descriptionru === '' 
       this.courseValidate.descriptionen = this.courseRequest.descriptionen === '' 
-      this.courseValidate.start_time = this.courseRequest.start_time === null
-      this.courseValidate.final_date = this.courseRequest.final_date === null
-      this.courseValidate.hours = this.courseRequest.hours <= 0
+      this.courseValidate.start_time = this.courseRequest.history.startDate === null
+      this.courseValidate.final_date = this.courseRequest.history.finalDate === null
+      this.courseValidate.hours = (this.courseRequest.hours <= 0 && this.checkedHours)
       if (this.checkedCertificate) {
-        this.courseValidate.certificate_template_id = this.courseRequest.certificate_template_id === null
+        this.courseValidate.certificate_template_id = this.courseRequest.organizer.certificateTemplateID === null
       } else {
         this.courseValidate.certificate_template_id = false
         this.courseRequest.certificate_template_id = null

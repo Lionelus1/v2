@@ -24,8 +24,7 @@
 
   <Sidebar v-model:visible="dialogOpenState.createDocDialog" :modal="true" :style="largeScreen ? 'width:75vw' : ''" :position="largeScreen ? 'right' : 'full'">
     <div class="flex flex-wrap justify-content-between">
-      <SelectButton :disabled="!this.$store.state.loginedUser.mainPosition || this.$store.state.loginedUser.mainPosition.organization.id !== 1 || this.findRole(null, 'student')" 
-        v-model="selectedDocSourceType" :options="docSourceType" class="mb-3 mr-3">
+      <SelectButton :disabled="true" v-model="selectedDocSourceType" :options="docSourceType" class="mb-3 mr-3">
         <template #option="slotProps">
           <div v-if="slotProps.option == Enum.DocSourceType.Template">{{$t('contracts.fromtemplate')}}</div>
           <div v-else>{{$t('contracts.fromdoc')}}</div>

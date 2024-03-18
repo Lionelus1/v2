@@ -159,6 +159,7 @@ export default {
         refinf: "Анықтамалық мәліметтер",
         registration: "Тіркеу",
         total: "Барлығы",
+        all: "Барлығы",
         register: "Тіркелу",
         registered: "Тіркелгендер",
         protocol: "Хаттама",
@@ -353,6 +354,7 @@ export default {
         change: "Өзгерту",
         unknownUser: "Қонақ",
         doNotShowAnymore: "Ендігіәрі көрсетпеу",
+        showMore: "Көбірек көрсету"
     },
     positions: {
         menuTitle: 'Позицияны өзгерту',
@@ -1249,7 +1251,7 @@ export default {
             reportSentToApprove: "Есеп келісуге сәтті жіберілді",
             planSentToApprove: "Жоспар қайта қарауға жіберілді",
             planCreated: "Жоспар сәтті құрылды",
-            maxFileUploadSize: "5 файлдан артық жүктеуге болмайды"
+            maxFileUploadSize: "Бір уақытта 10 файлдан артық жүктеуге болмайды"
         },
         reportTypes: {
             year: "Жылдық",
@@ -1264,7 +1266,19 @@ export default {
         simplePlan: "Жоспар",
         operationalPlan: "Операциялық жоспар",
         planType: "Жоспар түрі",
-        myPlans: "Менің жоспарларым"
+        myPlans: "Менің жоспарларым",
+        plancontractname: "Келісім-шарттың атауы",
+        plancontractnumber: "Келісім-шарт номері",
+        plancontractdate: "Келісім-шарт уақыты",
+        plancontractprioruty: "Басымдық бойынша",
+        plancontracttopic: "Тақырып бойынша",
+        scienceParticipants: "Жобаға қатысушылар",
+        generateAct: "Акт жасау",
+        minWordCount: "Мәтіннің ұзындығы 50-ден 250 сөзге дейін болуы керек",
+        maxWordCount: "Мәтіннің ұзындығы 50-ден 250 сөзге дейін болуы керек",
+        partiallyCompleted: "Жартылай орындалды",
+        errorUpdatingStatus: "Күйді жаңарту қатесі",
+        operationCanceled: "Амалды жалғастыру тоқтатылды"
     },
     educomplex: {
         title: "Пәннің оқу-әдістемелік кешені",
@@ -1405,7 +1419,20 @@ export default {
         completionDate: 'Курстың аяқталу күні',
         disciplineCode: "Пән коды",
         disciplineName: "Пән атауы",
-        oodCourseName: "Жалпы білім беретін пәндер бойынша курстар"
+        oodCourseName: "Жалпы білім беретін пәндер бойынша курстар",
+        deleteCertificate: "Сертификаты жою",
+        deleteStudent: "Қатысушыны өшіру",
+        сompleteTheCourse: "Курсты аяқтау",
+        openNewThread: "Жаңа ағынды іске қосыңыз",
+        isNotAvailable: "Курсқа өтініш беру қолжетімсіз, жаңа ағынды күтіңіз",
+        confirmation: "Растау",
+        warning: "Ескерту",
+        noGrades: "Баға қойылмаған қатысушылар бар!",
+        noBeenTrained:"Әлі оқуды аяқтамаған қатысушылар бар. Олардың оқуды аяқтағанын қалайсыз ба?" ,
+        noIssuedCertificates:"Кейбір қатысушыларға сертификаттар берілмеді. Курсты аяқтамас бұрын сертификат беруіңізді сұраймыз!",
+        completeCourse: "Сіз курсты аяқтағыңыз келеді ме?",
+        numberParticipants: "Қатысушылар саны",
+        сompletedСourse: "Аяқталған курстар"
     },
     roleControl:{
         addSidebar: 'Жаңа жазбаны қосу',
@@ -1415,9 +1442,13 @@ export default {
         menuTitle: 'Ұйымды басқару',
         roleTitle: 'Рөлді басқару',
         rolePosRelTitle: 'Позиция-рөлді басқару',
+        rolePosTitle: 'Позицияны басқару',
         giveRole: 'Жаңа роль беру',
         givePosRoleRel: 'Жаңа позиция-роль қарым-қатынасын беру',
+        givePosRel:'Жаңа позиция',
         selectOrg: 'Ұйымды таңдаңыз',
+        selectPosition: 'Позицияны таңдаңыз',
+        selectDep: 'Бөлімді таңдаңыз',
         selectRole: 'Рольді таңдаңыз',
         selectEmployee: 'Қызметкерді таңдаңыз',
         employeeIIN: 'ЖСН',
@@ -1426,12 +1457,19 @@ export default {
         employeeNotFound: 'Мұндай ЖСН-мен қызметкер табылмады',
         roleName: 'Роль аты',
         roleLabel: 'Роль',
+        departmentName: 'Департамент атауы',
+        positionName:'Позиция атауы',
         noResult: 'Жазбалар табылмады',
         cantDelete: 'Жазбаны өшіру мүмкін емес',
         addNewInstance: 'Жаңа мақұлдаушыларды/қол қоюшыларды қосу',
         instance: 'Мақұлдаушы/қол қоюшы',
         failedToDelete: 'Жазба өшірілмеді',
         failedToLoad: 'Деректерді жүктеу сәтсіз аяқталды',
+        departmentRoleRel: 'Департамент-ролді басқару',
+        giveDepartmentRoleRel: 'Жаңа Департамент-роль қарым-қатынасын беру',
+        nameDepartment: 'Департамент атауы',
+        selectDepartment: 'Департаментті таңдаңыз',
+
     },
     blog: {
         title: 'Блог',

@@ -187,7 +187,7 @@ export default {
 
         },
       isMobile() {
-        return window.innerWidth < 500;
+        return window.innerWidth <= 1024;
       },
     },
     computed: {
@@ -227,7 +227,7 @@ export default {
         let v = this;
         this.socket = await new WebSocket(socketApi + "/notificationws");
         this.socket.onopen = () => {
-            this.socket.send(JSON.stringify(this.loginedUser));
+            this.socket.send(this.loginedUser);
         }
 
         this.socket.onmessage = (event) => {

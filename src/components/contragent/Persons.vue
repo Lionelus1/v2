@@ -12,26 +12,10 @@
           }}
         </h3>
     </div>
+    <ToolbarMenu :data="menu" @search="initApiCall" :search="true"/>
     <div class="card implementation">
-      <div class="card p-0">
+      <div class="p-0">
         <div class="p-col">
-          <Menubar
-            :model="menu"
-            :key="active"
-            style="height: 36px;margin-top: -7px;margin-right: -7px;margin-left: -7px;"
-          >
-            <template #end>
-              <span class="p-input-icon-left">
-                <i class="pi pi-search" />
-                <InputText
-                  @keyup.enter="initApiCall"
-                  style="height: 30px"
-                  v-model="filters['global'].value"
-                  :placeholder="$t('common.search')"
-                />
-              </span>
-            </template>
-          </Menubar>
           <div class="box">
             <DataTable
               class="p-datatable-sm"
@@ -174,8 +158,10 @@ import { smartEnuApi, getHeader, findRole } from "@/config/config";
 import axios from "axios";
 import Enum from "@/enum/docstates/index";
 import { FilterMatchMode, FilterOperator } from "primevue/api";
+import ToolbarMenu from "@/components/ToolbarMenu.vue";
 
 export default {
+  components: {ToolbarMenu},
   data() {
     return {
       active: null,
@@ -219,31 +205,6 @@ export default {
               : FilterMatchMode.EQUALS,
         },
       },
-      menu: [
-        {
-          label: "",
-          icon: "pi pi-fw pi-refresh",
-          command: () => {
-              this.initApiCall();
-          },
-        },
-        {
-          label: this.$t("bank.card"),
-          icon: "pi pi-fw pi-id-card",
-        },
-        {
-          label: this.$t("common.contacts"),
-          icon: "pi pi-fw pi-user",
-        },
-        {
-          label: this.$t("common.createNew"),
-          icon: "pi pi-fw pi-plus",
-          visible: this.insertMode,
-          command: () => {
-              this.addPerson()
-          }
-        }
-      ],
       localmenu: [{
           label: this.$t("common.activeList"),
           items:[
@@ -296,7 +257,7 @@ export default {
 
   methods: {
     findRole: findRole,
-    initApiCall() {
+    initApiCall(data) {
       this.isAdmin = this.findRole(null, 'main_administrator')
       this.localmenu[0].items[0].disabled = !this.isAdmin
       this.$emit("update:pagemenu", this.localmenu)
@@ -334,6 +295,7 @@ export default {
         this.personType === Enum.PersonType.IndividualEntrepreneur
           ? "dnone"
           : "";
+      this.filters.global.value = data
       this.lazyParams.filters = this.filters;
       if (
         this.filters.global.value != null &&
@@ -452,6 +414,37 @@ export default {
       this.addMode = true
       this.sideVisible = true;
     }
+  },
+  computed: {
+    menu () {
+      return [
+        {
+          label: "",
+          icon: "pi pi-fw pi-refresh",
+          command: () => {
+            this.initApiCall();
+          },
+        },
+        {
+          label: this.$t("bank.card"),
+          icon: "pi pi-fw pi-id-card",
+          command: ()=> {},
+        },
+        {
+          label: this.$t("common.contacts"),
+          icon: "pi pi-fw pi-user",
+          command: ()=> {},
+        },
+        {
+          label: this.$t("common.createNew"),
+          icon: "pi pi-fw pi-plus",
+          visible: this.insertMode,
+          command: () => {
+            this.addPerson()
+          }
+        }
+      ]
+    },
   },
   mounted() {
     this.lazyParams.filters = this.filters;

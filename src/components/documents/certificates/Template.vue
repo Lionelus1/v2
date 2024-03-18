@@ -4,11 +4,9 @@
     </BlockUI>
 		<div class="col-12">
       <TitleBlock :title="$t('course.certificate.template')" />
+      <ToolbarMenu :data="menu"/>
 			<div class="card">
         <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
-
-          <Button :label="$t('common.add')" @click="this.inittialNewTemplate();templateEditorVisilble=true;" icon="pi pi-plus" />
-  
         <DataTable
           v-if="journal"
           selectionMode="single"
@@ -39,9 +37,9 @@
           <Column field="name" :header="$t('common.name')"></Column>
           <Column headerStyle="width:60px;">
             <template #body="slotProps">
-              <Button @click="template=slotProps.data;templateEditorVisilble = true"
-                       type="button"
-                      icon="pi pi-eye" class="p-button-info"></Button>
+              <Button class="p-button-text p-1 mr-2"  @click="template=slotProps.data;templateEditorVisilble = true">
+                <i class="fa-solid fa-eye fa-xl"></i>
+              </Button>
             </template>
           </Column>
         </DataTable>
@@ -74,9 +72,10 @@
 import {OnlineCourseService} from "@/service/onlinecourse.service";
 import Certificate from './Certificate.vue';
 import TitleBlock from "@/components/TitleBlock"
+import ToolbarMenu from "@/components/ToolbarMenu.vue";
 export default {
     name: "Templates",
-    components: {Certificate},
+    components: {ToolbarMenu, Certificate},
     data() {
         return {
             journal: null,
@@ -119,7 +118,7 @@ export default {
               name: "",
               params: [
                   {id: -1, name: "img", description:"common", isDeleted:false, value: { url: "enu_logo/bg-orange.jpg", title: "background", rectelement: {z:0, x:0,y:0, w:840, h:593}}},
-                  {id: -1, name: "txt", description:"common", active: false, isDeleted:false, value: { name: "organizer", title: "@сourseOrganizer", titlekz: "@курстыҰйымдастырушы", titleru: "@организаторКурса", rectelement: {z:1, x:0,y:80, w:840, h:30}, style:"font-weight:bold;text-align:center;font-size:14px;color:#007dbe;letter-spacing:0px"}},
+                  {id: -1, name: "txt", description:"common", active: false, isDeleted:false, value: { name: "organizer", titleen: "@courseOrganizer", titlekz: "@курстыҰйымдастырушы", titleru: "@организаторКурса", rectelement: {z:1, x:0,y:80, w:840, h:30}, style:"font-weight:bold;text-align:center;font-size:14px;color:#007dbe;letter-spacing:0px"}},
                   {id: -1, name: "txt", description:"common", active: false, isDeleted:false, value: { name: "certificate", title: "СERTIFICATE", titlekz: "СЕРТИФИКАТ", titleru: "CЕРТИФИКАТ", rectelement: { z:2,x:306,y:120, w:230, h:50}, style:"text-align:center;font-size:32px;color:#007dbe;letter-spacing:2px"}},
                   {id: -1, name: "img", description:"common", active: false, isDeleted:false, value: {url: "enu_logo/qr.png", name: "qr", rectelement: {z:3, x:643,y:380, w:70, h:70}}},
                   {id: -1, name: "img", description:"common", active: false, isDeleted:false, value: {url: "enu_logo/build.png", name: "build", rectelement: {z:4, x:585,y:470, w:170, h:70}}},
@@ -148,6 +147,15 @@ export default {
       this.getJournal()
     },
     computed: {
+      menu () {
+        return [
+          {
+            label: this.$t('common.add'),
+            icon: "pi pi-plus",
+            command: () => {this.inittialNewTemplate();this.templateEditorVisilble=true;},
+          },
+        ]
+      },
       justifyOptions() { return [
         {icon: 'pi pi-align-left', value: 'Left', command: () => { this.activeElement.textAlign = "left"; this.calcStyle() }},
         {icon: 'pi pi-align-right', value: 'Right', command: () => { this.activeElement.textAlign = "right"; this.calcStyle() }},

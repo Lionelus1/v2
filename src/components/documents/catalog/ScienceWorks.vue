@@ -174,11 +174,11 @@
           <Column field="name_en" :header="$t('common.nameInEnglish')"></Column>
           <Column>
             <template #body="slotProps">
-              <Button class="mr-2" @click="koksnvo.edition=slotProps.data;open('newKoksnvoEdition')">
-                <i class="fas fa-edit"></i>
+              <Button class="p-button-text p-button-warning p-1 mr-2" @click="koksnvo.edition=slotProps.data;open('newKoksnvoEdition')">
+                <i class="fa-solid fa-pencil fa-xl"></i>
               </Button>
-              <Button @click="koksnvo.edition=slotProps.data;deleteKoksnvoEdition()">
-                <i class="fas fa-trash-alt"></i>
+              <Button class="p-button-text p-button-danger p-1 mr-2" @click="koksnvo.edition=slotProps.data;deleteKoksnvoEdition()">
+                <i class="fa-solid fa-trash-can fa-xl"></i>
               </Button>
             </template>
           </Column>
@@ -374,7 +374,7 @@ export default {
         requestsTotal: 0,
         requestsPage: 0,
         requestsRows: 10,
-      }
+      },
     }
   },
   created() {
@@ -838,6 +838,37 @@ export default {
         this.getKoksnvoEditions();
       }
     },
+  },
+  computed: {
+    initMenu() {
+      return [
+        {
+          label: this.$t("scienceWorks.buttons.card"),
+          icon: "fa-regular fa-address-card",
+          disabled: !this.currentDocument,
+          command: () => {
+            this.openDocument();
+          },
+        },
+        {
+          label: this.$t("scienceWorks.buttons.newPublication"),
+          icon: "fa-solid fa-plus",
+          visible: !this.scientist,
+          command: ()=> {
+            this.$refs.newPublicationMenu.toggle(event)
+          },
+          items: [
+            {
+              label: this.$t("contracts.setnumber"),
+              icon: "pi pi-fw pi-list",
+              command: () => {
+                this.open("documentNumberDialog");
+              },
+            }
+          ]
+        },
+      ]
+    }
   }
 }
 </script>
@@ -861,7 +892,6 @@ export default {
   display: flex;
   flex-direction: column;
   padding: 1rem;
-  margin-bottom: 0px;
 }
 .status-status_created {
   background: #6c757d;

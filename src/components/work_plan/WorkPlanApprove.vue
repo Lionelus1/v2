@@ -1,98 +1,75 @@
 <template>
-  <Button
-      type="button"
-      icon="pi pi-send"
-      class="p-button-success ml-2"
-      :label="$t('common.action.sendToApprove')"
-      @click="openModal"
-  ></Button>
-
-  <PdfContent ref="pdf" v-if="data" :data="data" :planId="data.work_plan_id" style="display: none;"></PdfContent>
-
-  <Dialog :header="$t('common.action.sendToApprove')" v-model:visible="showModal" :style="{width: '450px'}" class="p-fluid">
-    <div class="field">
-      <label>{{ $t('common.select') }}</label>
-      <ApproveComponent @add="approveChange" :stepValue="selectedUsers" v-model="selectedUsers" @changeStep="changeStep"></ApproveComponent>
-    </div>
-    <template #footer>
-      <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
-              @click="closeModal"/>
-      <Button ref="approveBtn" :disabled="submitted" :label="$t('common.send')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2"
-              @click="getGeneratedPdf"/>
-    </template>
+  <Dialog :header="$t('common.action.sendToApprove')" v-model:visible="showModal"
+          :style="{width: '50vw'}" class="p-fluid">
+    <ProgressBar v-if="approving" mode="indeterminate" style="height: .5em"/>
+    <BlockUI :blocked="approving">
+      <div class="field">
+        <ApprovalUsers :approving="approving" v-model="approval_users" @closed="closeModal"
+                       @approve="approve($event)" :stages="stages" :mode="'standard'"></ApprovalUsers>
+      </div>
+    </BlockUI>
   </Dialog>
 </template>
 
 <script>
-import ApproveComponent from "@/components/work_plan/ApproveComponent";
-import PdfContent from "@/components/work_plan/PdfContent";
-import html2pdf from "html2pdf.js";
-import axios from "axios";
-import {getHeader, getMultipartHeader, signerApi, smartEnuApi} from "@/config/config";
+import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers";
+import {b64toBlob} from "@/config/config";
 import {WorkPlanService} from "@/service/work.plan.service";
+import Enum from "@/enum/workplan/index"
 
 export default {
   name: "WorkPlanApprove",
-  components: {ApproveComponent, PdfContent},
-  props: ['docId', 'plan', 'events'],
+  components: {ApprovalUsers},
+  props: ['visible', 'docId', 'plan', 'events', 'approvalStages'],
+  emits: ['isSent', 'hide'],
   data() {
     return {
       data: this.plan,
-      showModal: false,
+      showModal: this.visible,
       selectedUsers: null,
-      steps: 3,
       step: 1,
-      approval_users: [],
+      approval_users: [
+        {
+          stage: 1,
+          users: [],
+          certificate: {
+            namekz: "Жеке тұлғаның сертификаты",
+            nameru: "Сертификат физического лица",
+            nameen: "Certificate of an individual",
+            value: "individual"
+          }
+        }
+      ],
       currentStageUsers: null,
       currentStage: 1,
       prevStage: 0,
-      loginedUserId: 0,
-      fd: null,
+      loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID,
       submitted: false,
-      planService: new WorkPlanService()
+      planService: new WorkPlanService(),
+      approveComponentKey: 0,
+      approving: false,
+      stages: this.approvalStages || null,
+      enum: Enum,
+      file: null
     }
   },
   created() {
-    this.loginedUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
+    //this.loginedUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
+    this.approveComponentKey++;
+    this.getWorkPlanContentData();
   },
   methods: {
-    openModal() {
-      this.showModal = true;
-    },
     closeModal() {
-      this.showModal = false;
+      this.$emit('hide')
     },
-    approve() {
+    approve(event) {
+      this.approving = true;
       this.submitted = true;
+      this.approval_users = event
       let workPlanId = this.data.work_plan_id;
-      let pdfOptions = {
-        margin: 10,
-        image: {
-          type: 'jpeg',
-          quality: 0.98,
-        },
-        html2canvas: {scale: 3},
-        jsPDF: {
-          unit: 'mm',
-          format: 'a4',
-          orientation: 'landscape',
-          hotfixes: ["px_scaling"]
-        },
-        pagebreak: {avoid: 'tr'},
-        filename: "file.pdf"
-      };
-      const pdfContent = this.$refs.pdf.$refs.htmlToPdf;
-      const worker = html2pdf().set(pdfOptions).from(pdfContent);
-
-      worker.toPdf().output("blob").then((pdf) => {
-        const fd = new FormData();
-        fd.append('wpfile', pdf);
-        fd.append('fname', pdfOptions.filename)
-        fd.append('work_plan_id', workPlanId)
-        this.approvePlan(fd);
-      });
-    },
-    approvePlan(fd) {
+      const fd = new FormData()
+      fd.append("file", this.file)
+      fd.append("work_plan_id", workPlanId)
       fd.append("doc_id", this.plan.doc_id)
       fd.append("approval_users", JSON.stringify(this.approval_users))
       this.planService.savePlanFile(fd).then(res => {
@@ -102,9 +79,10 @@ export default {
             summary: this.$t('common.message.succesSendToApproval'),
             life: 3000,
           });
-          this.emitter.emit("planSentToApprove", true);
+          this.$emit('isSent', true)
           this.submitted = false;
         }
+        this.approving = false;
         this.showModal = false;
       }).catch(error => {
         if (error.response && error.response.status === 401) {
@@ -146,20 +124,24 @@ export default {
         })
       }
     },
-    getGeneratedPdf() {
-      this.submitted = true
-      const pdfContent = this.$refs.pdf.$refs.htmlToPdf.innerHTML;
-      this.planService.generatePdf(pdfContent).then(res => {
-        let blob = this.b64toBlob(res.data)
-        this.source = "data:application/pdf;base64," + res.data;
-        const fd = new FormData();
-        fd.append('wpfile', blob);
-        fd.append('fname', "file.pdf")
-        fd.append('work_plan_id', this.data.work_plan_id)
-        this.approvePlan(fd);
+    getWorkPlanContentData() {
+      let data = {
+        work_plan_id: parseInt(this.data.work_plan_id),
+      };
+      this.planService.getWorkPlanData(data).then(res => {
+        this.file = this.b64toBlob(res.data);
       }).catch(error => {
-        //console.log(error)
-      })
+        this.loading = false;
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+      });
     },
     b64toBlob(b64Data, sliceSize = 512) {
       const byteCharacters = window.atob(b64Data);
@@ -177,7 +159,7 @@ export default {
         byteArrays.push(byteArray);
       }
 
-      const blob = new Blob(byteArrays, {type: "application/pdf"});
+      const blob = new Blob(byteArrays, { type: "application/pdf" });
       return blob;
     },
   }

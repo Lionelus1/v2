@@ -125,4 +125,17 @@ export class OnlineCourseService {
     delEduProg(id) {
         return api.post('/onlinecourse/delEduProg', {opId: id}, {headers:getHeader()});
     }
+
+    deleteCertificateOrStudent(data) {
+        return api.post('/onlinecourse/deleteCertificateOrStudent', data, {headers:getHeader()});
+    }
+
+    getCourseModuleAndStudentCounts(data) {
+        return api.post('/onlinecourse/courseStatistics', data, { headers: getHeader() });
+    }
+
+    getCourseHistories(data) {
+        return api.post("/onlinecourse/course/histories", data, { headers: getHeader() })
+    }
+
 }

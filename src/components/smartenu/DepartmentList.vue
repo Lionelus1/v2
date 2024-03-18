@@ -1,7 +1,9 @@
 <template>
   <div>
-    <Dropdown :class="{'p-invalid': validation}"
-     @change="sayChange($event)" v-model="value" :options="departments" :optionLabel="($i18n.locale == 'kz'? 'nameKz' : $i18n.locale == 'en' ? 'nameEn': 'name')" :filter="true" :placeholder="(placeHolder != undefined ? placeHolder: $t('common.select'))">
+    <Dropdown :class="{'p-invalid': validation}" show-clear @filter="getDepartments(null, $event)"
+     @change="sayChange($event)" v-model="value" :options="departments"
+              :optionLabel="($i18n.locale == 'kz'? 'nameKz' : $i18n.locale == 'en' ? 'nameEn': 'name')" :filter="true"
+              :placeholder="(placeHolder != undefined ? placeHolder: $t('common.select'))">
       <template #value="slotProps">
         <span v-if="slotProps.value">
           {{$i18n.locale == 'kz'? slotProps.value.nameKz : $i18n.locale == 'en' ? slotProps.value.nameEn: slotProps.value.name}}
@@ -46,6 +48,7 @@ export default {
       departments:  null,
       orgId: null,
       sidebar: false,
+      cancelToken : null,
     }
   },
   props: {
@@ -89,32 +92,37 @@ export default {
       this.$emit("changed",event)
       this.updateValue(event);
     },
-    getDepartments(parentID) {
+    getDepartments(parentID, searchText) {
+      if (this.cancelToken && typeof this.cancelToken !== typeof undefined) {
+        this.cancelToken.cancel("Operation canceled due to new request.")
+      }
+      this.cancelToken = axios.CancelToken.source()
       this.departments = null;
       this.value = null;
       this.parentID != undefined ? this.orgId = this.parentID : (parentID != undefined ? this.orgId = parentID : this.orgId = null)
       axios.post(smartEnuApi+"/getdepartments", {
         orgType: this.orgType,
-        parentID: this.parentID != undefined ? this.parentID : (parentID != undefined ? parentID: undefined)
-
-        } ,{headers: getHeader()})
+        parentID: this.parentID != undefined ? this.parentID : (parentID != undefined ? parentID: undefined),
+        search_text: searchText ? searchText.value : null
+        } ,{headers: getHeader(), cancelToken: this.cancelToken.token})
         .then(response=>{
           this.departments = response.data;
-
         })
         .catch((error) => {
-           if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          }
-          this.$toast.add({
-          severity: "error",
-          summary: "getDepartments:\n" + error,
-          life: 3000,
-        });
+          if(!axios.isCancel(error)) {
+            if (error.response.status == 401) {
+              this.$store.dispatch("logLout");
+            }
+            this.$toast.add({
+              severity: "error",
+              summary: "getDepartments:\n" + error,
+              life: 3000,
+            });
 
-        if (error.response.status === 404) {
-          this.departments = null;
-        }
+            if (error.response.status === 404) {
+              this.departments = null;
+            }
+          }
         });
       },
 

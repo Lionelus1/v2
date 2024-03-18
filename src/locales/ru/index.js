@@ -159,6 +159,7 @@ export default {
         refinf: "Справочная информация",
         registration: "Регистрация",
         total: "Всего",
+        all: "Все",
         register: "Зарегистрироваться",
         registered: "Зарегистрированы",
         reserve: "Зарезервировать",
@@ -355,6 +356,7 @@ export default {
         change: "Сменить",
         unknownUser: "Гость",
         doNotShowAnymore: "Больше не показывать",
+        showMore: "Показать больше"
     },
     positions: {
         menuTitle: 'Поменять позицию',
@@ -1238,7 +1240,7 @@ export default {
             reportSentToApprove: "Отчет успешно отправлен на согласование",
             planSentToApprove: "План отправлен на корректировку",
             planCreated: "План успешно создан",
-            maxFileUploadSize: "Невозможно загрузить более 5 файлов"
+            maxFileUploadSize: "Вы не можете загружать более 10 файлов одновременно"
         },
         reportTypes: {
             year: "Годовой",
@@ -1253,7 +1255,19 @@ export default {
         simplePlan: "План",
         operationalPlan: "Операционный план",
         planType: "Тип плана",
-        myPlans: "Мои планы"
+        myPlans: "Мои планы",
+        plancontractname: "Наименование договора",
+        plancontractnumber: "Номер договора",
+        plancontractdate: "Дата договора",
+        plancontractprioruty: "По приоритету",
+        plancontracttopic: "По теме",
+        scienceParticipants: "Участники проекта",
+        generateAct: "Сформировать акт",
+        minWordCount: "Должно быть от 50 до 250 слов",
+        maxWordCount: "Должно быть от 50 до 250 слов",
+        partiallyCompleted: "Частично выполнено",
+        errorUpdatingStatus: "Ошибка обновления статуса",
+        operationCanceled: "Продолжение действия остановлено"
     },
     educomplex: {
         title: "Учебно-методический комплекс дисциплины",
@@ -1362,7 +1376,7 @@ export default {
         categories: 'Категории курсов',
         certificate: {
             title: 'Сертификаты',
-            template: 'Шаблоны сертфиката',
+            template: 'Шаблоны сертификата',
             element: 'Элемент',
             elements: 'Элементы',
             designer: 'Дизайнер шаблона',
@@ -1372,7 +1386,7 @@ export default {
             getQr: "Получить QR",
             confirm: "Подтверждаете выдачу сертификата БЕЗ приложения?",
             confirm2: "Сертификат будет выдан С приложением, подтверждаете корректность заполнение приложения?",
-            certSelect:"Указать шоблон сертификата"
+            certSelect:"Указать шаблон сертификата"
         },
         modules:'Модули курса',
         module: 'Модуль',
@@ -1394,7 +1408,20 @@ export default {
         completionDate: 'Дата окончания курса',
         disciplineCode: "Код дисциплины",
         disciplineName: "Наименование дисциплины",
-        oodCourseName: "Курсы по общеобразовательным дисциплинам (ООД)"
+        oodCourseName: "Курсы по общеобразовательным дисциплинам (ООД)",
+        deleteCertificate:"Удалить сертификат",
+        deleteStudent:"Удалить участника",
+        сompleteTheCourse: "Завершить курс",
+        openNewThread: "Запустить новый поток",
+        isNotAvailable: "Для подачи заявки на курс доступ закрыт, ожидайте новый поток",
+        confirmation: "Подтверждение",
+        warning: "Предупреждение",
+        noGrades: "Есть участники, у которых отсутствуют оценки!",
+        noBeenTrained:"Есть участники, которые еще не прошли обучение. Хотите, чтобы они прошли обучение?",
+        noIssuedCertificates:"Некоторым участникам не были выданы сертификаты. Пожалуйста, выдайте сертификаты перед завершением курса!",
+        completeCourse: "Вы уверены, что хотите завершить курс?",
+        numberParticipants: "Количество участников",
+        сompletedСourse: "Завершенные курсы"
     },
     roleControl: {
         addSidebar: 'Добавление новой записи',
@@ -1404,9 +1431,13 @@ export default {
         menuTitle: 'Управление организацией',
         roleTitle: 'Управление ролями',
         rolePosRelTitle: 'Управление позицией-ролями',
+        rolePosTitle: 'Управление позицией',
         giveRole: 'Дать новую роль',
         givePosRoleRel: 'Дать новое отношение позиция-роль',
+        givePosRel:'Создать Позицию',
         selectOrg: 'Выберите организацию',
+        selectPosition: 'Выберите должность',
+        selectDep: 'Выберите департамента',
         selectRole: 'Выберите роль',
         selectEmployee: 'Выберите сотрудника',
         employeeIIN: 'ИИН',
@@ -1415,12 +1446,19 @@ export default {
         employeeNotFound: 'Сотрудник с таким ИИН не найдено',
         roleName: 'Имя роля',
         roleLabel: 'Роль',
+        departmentName: 'Название департамента',
+        positionName:'Название позицией',
         noResult: 'Не найдено записей',
         cantDelete: 'Невозможно удалить запись',
         addNewInstance: 'Добавление новых согласующих лиц/подписантов',
         instance: 'Согласующее лицо/подписант',
         failedToDelete: 'Не удалось удалить запись',
         failedToLoad: 'Не удалось загрузить данные',
+        departmentRoleRel: 'Управление департамент-ролями',
+        giveDepartmentRoleRel: 'Дать новое отношение департамент-роль',
+        nameDepartment: 'Название департамента',
+        selectDepartment: 'Выберите департамента',
+
     },
     responseExplanations: {
         badRequest: 'Ваш запрос не был понят или в нем отсутствовали необходимые параметры.',

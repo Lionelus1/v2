@@ -45,8 +45,8 @@ export class MenuService {
             {
                 label: $t('common.administration'),
                 icon: 'fa-solid fa-user-shield',
-                visible: this.isEnuWorker() && (this.isVacancyRightsValidity() || this.findRole("dephead") ||
-                    this.findRole("practice_responsible") || this.findRole("main_administrator") || this.findRole("hr_manager")),
+                visible: this.isVacancyRightsValidity() || (this.isEnuWorker() && (this.findRole("dephead") ||
+                    this.findRole("practice_responsible") || this.findRole("main_administrator") || this.findRole("hr_manager"))),
                 items: [
                     {
                         label: $t('hr.vacancies'),
@@ -203,23 +203,24 @@ export class MenuService {
                 label: $t('queue.title'),
                 icon: 'fa-solid fa-people-line',
                 visible: !this.findRole("student"),
-                items: [
+                to: '/queue'
+                /*items: [
                     {
                         label: $t('queue.title'),
                         icon: 'pi pi-fw pi-plus-circle',
                         to: '/queue'
                     },
-                    // {
-                    //   label:  $t('queue.addService'),
-                    //   icon: 'pi pi-fw pi-th-large',
-                    //   to:'/queueCategories'
-                    // },
-                    // {
-                    //   label:  $t('queue.secretary'),
-                    //   icon: 'pi pi-fw pi-user-edit',
-                    //   to:'/queueService'
-                    // },
-                ]
+                    {
+                      label:  $t('queue.addService'),
+                      icon: 'pi pi-fw pi-th-large',
+                      to:'/queueCategories'
+                    },
+                    {
+                      label:  $t('queue.secretary'),
+                      icon: 'pi pi-fw pi-user-edit',
+                      to:'/queueService'
+                    },
+                ]*/
             },
             {
                 label: $t('web.mainMenuTitle'),
@@ -230,17 +231,19 @@ export class MenuService {
                         label: $t('web.menuPage'),
                         icon: 'pi pi-fw pi-bars',
                         to: '/enu/menus',
+                        visible: this.findRole('enu_web_admin') || this.findRole('enu_web_fac_admin') || this.findRole('enu_web_menu_admin')
                     },
                     {
                         label: $t('web.pageLink'), 
                         icon: 'pi pi-fw pi-external-link', 
                         to: '/enu/pages',
-                        visible: this.findRole('enu_web_admin') || this.findRole('enu_web_fac_admin') || this.findRole('enu_web_page_admin')
+                        visible: this.findRole('enu_web_admin') || this.findRole('enu_web_fac_admin') || this.findRole('enu_web_page_admin') || this.findRole('enu_web_menu_admin')
                     },
                     {
                         label: $t('web.blocks'), 
                         icon: 'fa-solid fa-cube', 
                         to: '/enu/blocks',
+                        visible: this.findRole('enu_web_admin') || this.findRole('enu_web_fac_admin')
                     },
                     {
                         label: $t('web.blog'),

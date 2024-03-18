@@ -6,7 +6,7 @@
     <h3 v-else-if="personType == 2">
     {{ this.$t("common.userDetail") + ' (' + this.$t("roleControl.employeeLabel") + ')' }}
     </h3>
-    <h3 v-else-if="personType == 3">  
+    <h3 v-else-if="personType == 3">
     {{ this.$t("common.userDetail") + ' (' + this.$t("common.student") + ')' }}
     </h3>
 
@@ -118,7 +118,7 @@ import * as jsPDF from "jspdf";
 export default {
   name: 'PersonPage',
   components: {
-    UserPersonalInfomation, UserIDCard, UserEducationView, UserRequisite, UserResearchInterestsView, 
+    UserPersonalInfomation, UserIDCard, UserEducationView, UserRequisite, UserResearchInterestsView,
     WorkExperienceView, UserAwardView, UserQualificationsView, ResumeView, ScienceWorks, },
   props: {
     person: null,
@@ -247,9 +247,9 @@ export default {
         this.showMessage("error", this.$t('common.message.fillError'));
         return
       }
-      
+
       this.loading = true;
-      
+
       if (this.per.birthday) {
         const formattedBirthday = this.per.birthday;
         const birthdayDateObject = this.parseDate(formattedBirthday);
@@ -331,7 +331,6 @@ export default {
       this.validation.lastname =  !this.per.thirdName || this.per.thirdName.length < 1;
       this.validation.lastnameEn =  !this.per.thirdnameEn || this.per.thirdnameEn.length < 1;
       this.validation.email = !this.per.email || this.per.email.length < 1;
-      console.log(this.validation)
       return (this.validation.iin || this.validation.firstname || this.validation.lastname ||
         this.validation.email || this.validation.firstnameEn ||
         this.validation.lastnameEn);
