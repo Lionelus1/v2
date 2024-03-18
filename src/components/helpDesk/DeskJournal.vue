@@ -44,7 +44,7 @@
 
           <Column field="status" :header="t('common.status')">
             <template #body="{ data }">
-              <span :class="'customer-badge status-' + data.doc.docHistory.stateEn">
+              <span :class="'customer-badge status-' + data.doc?.docHistory?.stateEn">
                 {{ getDocStatus(data.doc?.docHistory?.stateEn) }}
               </span>
             </template>

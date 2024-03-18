@@ -63,7 +63,7 @@
       <!-- sendToApproveDialog -->
       <Dialog :header="t('common.action.sendToApprove')" v-model:visible="visibility.sendToApproveDialog" :style="{ width: '50vw' }">
         <div class="p-fluid">
-          <ApprovalUsers :approving="loading" v-model="selectedUsers" @closed="close('sendToApproveDialog')" @approve="sendToApprove($event)"
+          <ApprovalUsers :approving="approving" v-model="selectedUsers" @closed="close('sendToApproveDialog')" @approve="sendToApprove($event)"
             :stages="stages" mode="standard"></ApprovalUsers>
         </div>
       </Dialog>
