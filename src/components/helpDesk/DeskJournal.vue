@@ -211,7 +211,6 @@ const getDocStatus = (code) => {
       case "en":
         return foundStatus.name_en;
       default:
-        console.log("Default")
         return null;
     }
   } else {
@@ -299,7 +298,6 @@ const createHelpDesk = () => {
       } else if (err.response && err.response.data && err.response.data.localized) {
         showMessage('error', t(err.response.data.localizedPath), null);
       } else {
-        console.log(err);
         showMessage('error', t('common.message.actionError'), t('common.message.actionErrorContactAdmin'));
       }
 

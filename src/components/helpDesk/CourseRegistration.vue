@@ -15,7 +15,7 @@
       </div>
     </div>
   </div>
-  <BlockUI class="card" v-if="props.courseRequest.doc?.newParams?.not_formal_education_ids && (findRole(null, 'student') || findRole(null, 'main_administrator'))">
+  <BlockUI class="card" v-if="(findRole(null, 'student') || findRole(null, 'main_administrator'))">
     <div>
       <div class="buttonLanguag">
         <Button class="toggle-button" @click="toggleRegistration">Выберите дисциплину</Button>
@@ -220,7 +220,7 @@ const onPage = (event) => {
 };
 
 const getCourse = () => {
-  if (findRole(null, "student")) {
+  if (findRole(null, "student") || (findRole(null, 'main_administrator') || findRole(null, "career_administrator"))) {
     const userId = props.courseRequest?.doc?.newParams?.student_id?.value
     
     let courseId = props.courseRequest?.doc?.newParams?.not_formal_education_ids.value
@@ -283,8 +283,6 @@ const getStudentInfo = () => {
       store.dispatch("logLout")
     } else if (err.response && err.response.data && err.response.data.localized) {
       showMessage('error', t(err.response.data.localizedPath), null)
-    } else {
-      console.log(err)
     }
   })
 }
@@ -300,7 +298,6 @@ const getDocStatus = (code) => {
       case "en":
         return foundStatus.name_en;
       default:
-        console.log("Default")
         return null;
     }
   } else {

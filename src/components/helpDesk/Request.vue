@@ -255,7 +255,6 @@ const revision = () => {
         haveAccess.value = false;
       }
     } else {
-      console.log(err)
       showMessage('error', t('common.message.actionError'), t('common.message.actionErrorContactAdmin'))
     }
   })
@@ -328,8 +327,6 @@ const sendToApprove = (approvalUsers) => {
       store.dispatch("logLout")
     } else if (err.response && err.response.data && err.response.data.localized) {
       showMessage('error', t(err.response.data.localizedPath), null)
-    } else {
-      console.log(err)
     }
   });
 };
@@ -393,8 +390,6 @@ const saveDocument = () => {
           store.dispatch("logLout")
         } else if (err.response && err.response.data && err.response.data.localized) {
           showMessage('error', t(err.response.data.localizedPath), null)
-        } else {
-          console.log(err)
         }
       });
     isSend.value = true;
@@ -420,7 +415,6 @@ const saveDocument = () => {
     request.value.doc.newParams['not_formal_student_info'] = paramInfo
 
     request.value.is_saved = 1
-    console.log("IF HAVE REQUEST NEWPARAMS", request.value)
     service.helpDeskTicketCreate(request.value)
       .then(res => {
         isSaved.value = true
@@ -432,8 +426,6 @@ const saveDocument = () => {
           store.dispatch("logLout")
         } else if (err.response && err.response.data && err.response.data.localized) {
           showMessage('error', t(err.response.data.localizedPath), null)
-        } else {
-          console.log(err)
         }
       });
     isSend.value = true;
@@ -559,7 +551,6 @@ const downloadContract = () => {
     if (err.response && err.response.data && err.response.data.localized) {
       showMessage('error', t(err.response.data.localizedPath), null)
     } else {
-      console.log(err)
       showMessage('error', t('common.message.actionError'), t('common.message.actionErrorContactAdmin'))
     }
   })
