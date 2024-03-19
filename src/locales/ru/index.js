@@ -1785,7 +1785,6 @@ export default {
         menuColorDark: 'Темный',
         menuColorLight: 'Светлый',
     },
-    },
     helpDesk: {
         title: 'Мои заявки',
         creationTime: 'Время создания',

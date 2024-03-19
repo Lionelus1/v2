@@ -1785,8 +1785,6 @@ export default {
         menuColorDark: 'Dark',
         menuColorLight: 'Light',
     },
-        ssdfgsdfg: 'sdfgsdfg',
-    },
     helpDesk: {
         title: 'My applications',
         creationTime: 'Creation time',
