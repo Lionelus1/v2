@@ -15,7 +15,7 @@
       </div>
     </div>
   </div>
-  <BlockUI class="card" v-if="findRole(null, 'student') || findRole(null, 'main_administrator')">
+  <BlockUI class="card" v-if="props.courseRequest.doc?.newParams?.not_formal_education_ids && (findRole(null, 'student') || findRole(null, 'main_administrator'))">
     <div>
       <div class="buttonLanguag">
         <Button class="toggle-button" @click="toggleRegistration">Выберите дисциплину</Button>
@@ -27,8 +27,8 @@
 
         <Column field="checkbox">
           <template #body="{ data }">
-            <Checkbox :disabled="isDisabled(data) || isAdmin" v-model="data.checked" :binary="true" @change="checkBoxSelect(data)"
-              style="margin-left: 20px;" />
+            <Checkbox :disabled="isDisabled(data) || isAdmin || (props.courseRequest?.doc?.docHistory?.stateId == DocEnum.INAPPROVAL.ID)"
+              v-model="data.checked" :binary="true" @change="checkBoxSelect(data)" style="margin-left: 20px;" />
           </template>
         </Column>
 
@@ -222,7 +222,11 @@ const onPage = (event) => {
 const getCourse = () => {
   if (findRole(null, "student")) {
     const userId = props.courseRequest?.doc?.newParams?.student_id?.value
-    const courseId = props.courseRequest?.doc?.newParams?.not_formal_education_ids.value
+    
+    let courseId = props.courseRequest?.doc?.newParams?.not_formal_education_ids.value
+    if (props.courseRequest?.doc?.docHistory?.stateId === DocEnum.REVISION.ID && !isAdmin.value) {
+      courseId = null
+    }
     axios.post(smartEnuApi + "/onlinecourse/courses",
       {
         user_id: userId,
@@ -234,7 +238,6 @@ const getCourse = () => {
 
       }, { headers: getHeader() })
       .then((res) => {
-        console.log(res.data)
         data.value = res.data.courses;
         if (props.courseRequest.doc.newParams) {
 
@@ -252,7 +255,6 @@ const getCourse = () => {
 
 const getStudentInfo = () => {
   const userId = props.courseRequest?.doc?.newParams?.student_id?.value
-  console.log('asd')
 
   service.helpDeskStudentInfo({ user_id: userId }).then(res => {
     responseUserData.value.speciality = locale === "kz" ? res.data.studen_info.specialty_kz : res.data.studen_info.specialty_ru
@@ -262,7 +264,6 @@ const getStudentInfo = () => {
     responseUserData.value.phone = res.data.studen_info.phone
     responseUserData.value.email = res.data.studen_info.email
 
-    console.log(responseUserData.value)
     userData.value = {
       discipline: props.courseRequest.doc?.newParams?.not_formal_student_info?.value.discipline,
       fullName: props.courseRequest.doc?.newParams?.not_formal_student_info?.value.fullName || responseUserData.value.fullName,
@@ -331,12 +332,12 @@ const checkBoxSelect = (course) => {
 
 };
 onMounted(() => {
-  isAdmin.value = codesToExclude.includes(props.courseRequest.doc?.docHistory?.stateEn) && (findRole(null, 'main_administrator') || findRole(null, "career_administrator"))
+  isAdmin.value = (findRole(null, 'main_administrator') || findRole(null, "career_administrator"))
   currentUser.value = JSON.parse(localStorage.getItem("loginedUser"));
   getStudentInfo()
   getCourse();
 });
-
+// codesToExclude.includes(props.courseRequest.doc?.docHistory?.stateEn) &&
 
 </script>
 

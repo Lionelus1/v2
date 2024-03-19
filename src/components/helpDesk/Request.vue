@@ -191,13 +191,13 @@ const request = ref({
 });
 const pdf = ref(null)
 const activeTab = ref(0)
-
+const isAdmin = ref(false)
 //computed(() =>[
 const menu = computed(() => [
   {
     label: t("common.save"),
     icon: "pi pi-fw pi-save",
-    disabled: !isUserDataVaild() || (request.value.doc?.docHistory?.stateId != DocEnum.CREATED.ID &&
+    disabled: isAdmin.value ? true : !isUserDataVaild() || (request.value.doc?.docHistory?.stateId != DocEnum.CREATED.ID &&
       request.value.doc?.docHistory?.stateId != DocEnum.REVISION.ID && request.value.doc?.docHistory?.stateId != null),
     command: saveDocument
   },
@@ -210,7 +210,7 @@ const menu = computed(() => [
       {
         label: t("common.tosign"),
         icon: "pi pi-user-edit",
-        visible: request.value && (request.value.doc?.docHistory?.stateId === DocEnum.CREATED.ID ||
+        visible: !isAdmin.value && request.value && (request.value.doc?.docHistory?.stateId === DocEnum.CREATED.ID ||
           request.value.doc?.docHistory?.stateId === DocEnum.REVISION.ID),
         command: () => open('sendToApproveDialog')
       },
@@ -287,7 +287,6 @@ const needMySign = () => {
       break;
     }
   }
-  console.log(need)
   return need;
 }
 
@@ -354,7 +353,7 @@ const isUserDataVaild = () => {
   } else {
     if (
       userData.value !== null &&
-      userData.value.discipline && 
+      userData.value.discipline &&
       userData.value.fullName &&
       userData.value.speciality &&
       userData.value.course &&
@@ -374,46 +373,71 @@ const saveDocument = () => {
   loading.value = true;
   let student = null
 
-
-  request.value.doc.newParams = {}
-  if (findRole(null, "student")) {
-    let param = {
-      value: selectedCourses.value,
-      name: "not_formal_education_ids"
+  if (request.value.doc.newParams) {
+    if (findRole(null, "student")) {
+      request.value.doc.newParams.not_formal_education_ids.value = selectedCourses.value
     }
-    request.value.doc.newParams['not_formal_education_ids'] = param
-  }
-  let paramInfo = {
-    value: userData.value,
-    name: "not_formal_student_info"
-  }
-  let paramLang = {
-    value: lang.value,
-    name: "lang"
-  }
 
-  request.value.doc.newParams['lang'] = paramLang
-  request.value.doc.newParams['not_formal_student_info'] = paramInfo
+    request.value.doc.newParams.not_formal_student_info.value = userData.value
+    request.value.doc.newParams.lang.value = lang.value
+    request.value.is_saved = 1
 
-  request.value.is_saved = 1
-  console.log(request.value)
-  service.helpDeskTicketCreate(request.value)
-    .then(res => {
-      isSaved.value = true
-      changed.value = false;
-      request.value = res.data
-    }).catch(err => {
-      loading.value = false
-      if (err.response && err.response.status == 401) {
-        store.dispatch("logLout")
-      } else if (err.response && err.response.data && err.response.data.localized) {
-        showMessage('error', t(err.response.data.localizedPath), null)
-      } else {
-        console.log(err)
+    service.helpDeskTicketCreate(request.value)
+      .then(res => {
+        isSaved.value = true
+        changed.value = false;
+        request.value = res.data
+      }).catch(err => {
+        loading.value = false
+        if (err.response && err.response.status == 401) {
+          store.dispatch("logLout")
+        } else if (err.response && err.response.data && err.response.data.localized) {
+          showMessage('error', t(err.response.data.localizedPath), null)
+        } else {
+          console.log(err)
+        }
+      });
+    isSend.value = true;
+  } else {
+    request.value.doc.newParams = {}
+    if (findRole(null, "student")) {
+      let param = {
+        value: selectedCourses.value,
+        name: "not_formal_education_ids"
       }
-    });
-  isSend.value = true;
+      request.value.doc.newParams['not_formal_education_ids'] = param
+    }
+    let paramInfo = {
+      value: userData.value,
+      name: "not_formal_student_info"
+    }
+    let paramLang = {
+      value: lang.value,
+      name: "lang"
+    }
 
+    request.value.doc.newParams['lang'] = paramLang
+    request.value.doc.newParams['not_formal_student_info'] = paramInfo
+
+    request.value.is_saved = 1
+    console.log("IF HAVE REQUEST NEWPARAMS", request.value)
+    service.helpDeskTicketCreate(request.value)
+      .then(res => {
+        isSaved.value = true
+        changed.value = false;
+        request.value = res.data
+      }).catch(err => {
+        loading.value = false
+        if (err.response && err.response.status == 401) {
+          store.dispatch("logLout")
+        } else if (err.response && err.response.data && err.response.data.localized) {
+          showMessage('error', t(err.response.data.localizedPath), null)
+        } else {
+          console.log(err)
+        }
+      });
+    isSend.value = true;
+  }
 };
 
 const search = (data) => {
@@ -476,6 +500,7 @@ onMounted(() => {
       request.value.local = 1;
       break;
   }
+  isAdmin.value = (findRole(null, 'main_administrator') || findRole(null, "career_administrator"))
   clearStages()
   helpDeskTicketGet()
 })
