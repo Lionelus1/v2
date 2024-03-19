@@ -3,6 +3,14 @@
     <ConfirmDialog></ConfirmDialog>
     <Toast/>
     <AppTopBar @menu-toggle="onMenuToggle" v-model:pagemenu="localpagemenu"/>
+    <div class="hint" v-if="showOverlay">
+      <div class="hint-popup">
+        <span class="hint-close" title="Close" @click="hideOverlay">&#x2715;</span>
+        <p>
+          Қандайда бір көмек керек болса, біздің Telegram Chat қа жазыңыз
+        </p>
+      </div>
+    </div>
     <div :class="[sidebarClass,{ 'hide_items': hasClass }]" @click="onSidebarClick" v-show="isSidebarVisible()" :style="{ width: menuWidth + 'px' }"
          @mouseover="expandMenu" @mouseleave="collapseMenu">
       <div class="relative fixed_icon">
@@ -67,6 +75,7 @@ export default {
       applyFlex: false,
       menuWidth: 85,
       hasClass: false,
+      showOverlay: false,
       fixedMenu: localStorage.getItem('fixedMenu') === 'true' || false
     }
   },
@@ -218,6 +227,9 @@ export default {
     applyFlexHandler(value) {
       this.applyFlex = value;
     },
+    hideOverlay() {
+      this.showOverlay = false;
+    },
   },
   computed: {
     containerClass() {
@@ -254,6 +266,7 @@ export default {
     }
   },
   mounted() {
+    this.showOverlay = true;
     let showPositionsDialog = localStorage.getItem('showPositionsDialog');
     let doNotShowAnymore = localStorage.getItem('doNotShowWelcomePositionChangeDialog') === 'true';
 
@@ -357,5 +370,44 @@ export default {
     color: #c63737;
   }
 
+}
+
+.hint {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+.hint-popup{
+  width: 255px;
+  top: 55px;
+  right: 180px;
+  padding: 20px;
+  position: absolute;
+  background: #fff;
+}
+.hint-popup:before {
+  content: "";
+  border: solid transparent;
+  position: absolute;
+  right: 12px;
+  bottom: 100%;
+  border-bottom-color: #fff;
+  border-width: 9px;
+  margin-left: 0;
+}
+.hint-close{
+  position: absolute;
+  top: 0;
+  left:-25px;
+  text-align: center;
+  font-size: 12px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
 }
 </style>
