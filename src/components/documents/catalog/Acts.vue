@@ -1,7 +1,7 @@
 <template>
   <ProgressSpinner v-if="loading" class="progress-spinner" strokeWidth="5"/>
   <TitleBlock :title="$t('contracts.menu.actsJournal')" :show-back-button="true"/>
-  <ToolbarMenu v-if="this.findRole(null, RolesEnum.roles.MainAdministrator)" :data="menu"/>
+  <ToolbarMenu :data="menu"/>
   <BlockUI :blocked="loading" class="card">
 <!--          <Button class="p-button-info align-items-center" style="padding: 0.25rem 1rem;"-->
 <!--            @click="openDocument" :disabled="!currentDocument">-->
@@ -340,7 +340,7 @@ export default {
           label: this.$t('contracts.menu.sendForExecution'),
           icon: "fa-solid fa-circle-check",
           disabled: !this.currentDocument || this.currentDocument.docHistory.stateId !== Enum.APPROVED.ID || this.executed(this.currentDocument) || this.execution(this.currentDocument),
-          visible: this.findRole(null, RolesEnum.roles.ActsToExecution) || this.findRole(null, RolesEnum.roles.MainAdministrator),
+          visible: this.findRole(null, RolesEnum.roles.ActsToExecution) || this.findRole(null, RolesEnum.roles.MainAdministrator) || this.findRole(null, RolesEnum.roles.ScienceDirector),
           command: () => {this.sendForExecution(this.currentDocument)},
         },
         {
