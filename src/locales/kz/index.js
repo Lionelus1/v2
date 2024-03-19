@@ -1800,6 +1800,29 @@ export default {
         menuColor: 'Мәзір Түсі',
         menuColorDark: 'Қараңғы',
         menuColorLight: 'Жарық',
+        ssdfgsdfg: 'sdfgsdfg',
+    },
+    helpDesk: {
+        title: 'Менің өтініштерім',
+        creationTime: 'Құру уақыты',
+        priority: 'Басымдық',
+        responsible: 'Жауапты',
+        application: {
+            applicationName: 'Өтінімдер',
+            requestReason: 'Өтінімді Жолдау',
+            description: 'Сипаттама',
+            contactNumber: 'Байланыс нөмірі',
+            categoryApplication: 'Өтінім санаты',
+            choseAudience: 'Аудиторияны таңдаңыз',
+            selectSpecialist: 'Маманды таңдаңыз',
+            applicationNumber: 'Өтінім нөмірі:',
+            created: 'Құрылды',
+            closed: 'Жабық',
+            date:'Күнді таңдаңыз',
+            dateTime:'Уақытты таңдаңыз',
+            discipline: 'Сабақты жазыңыз',
+        },
+
     }
 
 }

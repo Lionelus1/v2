@@ -1785,4 +1785,27 @@ export default {
         menuColorDark: 'Темный',
         menuColorLight: 'Светлый',
     },
+    },
+    helpDesk: {
+        title: 'Мои заявки',
+        creationTime: 'Время создания',
+        priority: 'Приоритет',
+        responsible: 'Ответственный',
+        application: {
+            applicationName: 'Заявки',
+            requestReason: 'Направление Заявки',
+            description: 'Описание',
+            contactNumber: 'Контактный номер',
+            categoryApplication: 'Категория заявки',
+            choseAudience: 'Выберите аудиторию',
+            selectSpecialist: 'Выберите специалиста',
+            applicationNumber: 'Номер заявки:',
+            created: 'Создана',
+            closed: 'Закрыта',
+            date: 'Выберите дату',
+            dateTime: 'Выберите время',
+            discipline: 'Напишите дисциплину',
+        },
+
+    }
 }

@@ -1785,4 +1785,28 @@ export default {
         menuColorDark: 'Dark',
         menuColorLight: 'Light',
     },
+        ssdfgsdfg: 'sdfgsdfg',
+    },
+    helpDesk: {
+        title: 'My applications',
+        creationTime: 'Creation time',
+        priority: 'Priority',
+        responsible: 'Responsible',
+        application: {
+            applicationName: 'Applications',
+            requestReason: 'Sending the Application',
+            description: 'Description',
+            contactNumber: 'Contact number',
+            categoryApplication: 'Application category',
+            choseAudience: 'Choose an audience',
+            selectSpecialist: 'Choose a specialist',
+            applicationNumber: 'Application Number:',
+            created: 'Created',
+            closed: 'Closed',
+            date: 'Select a date',
+            dateTime:'Choose a time',
+            discipline: 'Write the discipline',
+        },
+
+    }
 }
