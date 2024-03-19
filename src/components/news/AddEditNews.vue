@@ -514,7 +514,8 @@ export default {
       });
     },
     afterUpload(files) {
-      this.uploadedGalleryFiles = files;
+      this.uploadedGalleryFiles = this.uploadedGalleryFiles ?
+          this.uploadedGalleryFiles.concat(files) : files;
     },
     onGalleryRemove(event) {
       if (event && this.newsData.files) {
