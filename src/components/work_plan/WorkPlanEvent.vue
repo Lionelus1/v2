@@ -1079,6 +1079,24 @@ export default {
     isPlanUnderRevision() {
       return this.planDoc && this.planDoc.docHistory?.stateEn === this.DocState.REVISION.Value
     },
+    // isGenerateActVisible(){
+    //   const currentMonth = new Date().getMonth() + 1;
+    //   let receivedDate = null;
+
+    //   if (this.planDoc && this.planDoc.docHistory) {
+    //     receivedDate = this.planDoc.docHistory?.setDate;
+    //   }
+    //   const newDate = receivedDate ? new Date(receivedDate) : null;
+    //   const receivedMonth = newDate ? newDate.getMonth() + 1 : null;
+    //   const isVisible = receivedMonth < currentMonth;
+
+    //   return (
+    //     this.planDoc &&
+    //     this.planDoc.docHistory &&
+    //     this.planDoc.docHistory.stateEn === this.DocState.REVISION.Value &&
+    //     isVisible
+    //   );
+    // },
     toolbarMenus() {
       return [
         {
@@ -1136,6 +1154,13 @@ export default {
           visible: this.isFinish && this.isPlanCreator && this.isPlanApproved && this.isSciencePlan,
           command: () => {
             this.confirmGenerateScienceReport()
+          }
+        },
+        {
+          label: this.$t('workPlan.reports'),
+          visible: this.isFinish && (this.isApproval || this.isPlanCreator || this.isAdmin || this.isRespUser) && (this.plan.doc_info?.docHistory?.stateId === 3 || this.oldPlan),
+          command: () => {
+            this.navigateToReports()
           }
         },
         {
