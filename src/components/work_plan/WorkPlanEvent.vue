@@ -1212,7 +1212,7 @@ export default {
         },
         {
           label: this.$t('contracts.menu.actsJournal'),
-          visible: this.isFinish && this.isSciencePlan && (this.isApproval || this.isPlanCreator || this.isAdmin) &&
+          visible: this.isFinish && this.isSciencePlan &&
               this.planDoc.docHistory?.stateEn === this.DocState.APPROVED.Value,
           command: () => {
             this.$router.push({path: '/documents/catalog/acts'})
