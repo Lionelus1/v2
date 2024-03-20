@@ -115,19 +115,18 @@
                 <label>{{ $t('common.fact') }}</label>
                 <InputText v-model="fact" @input="factChange"/>
               </div>
-              
-              
+
               <div class="field" v-if="!hasResultToApprove">
                 <label>{{ $t('common.result') }}</label>
                   <div v-if="isVisibleWritableField">
-                      <TinyEditor v-if="plan && isRespUserForWrite && !isOperPlan" v-model="result" :min-word="wordLimit" @wordCount="initWordCount" :height="300"
+                      <TinyEditor v-if="plan && isRespUser && !isOperPlan" v-model="result" :min-word="wordLimit" @wordCount="initWordCount" :height="300"
                                 :style="{ height: '100%', width: '100%' }"
                                 @selectionChange="editorChange"/>
-                    <TinyEditor v-if="plan && isRespUserForWrite && !isSciencePlan && isOperPlan" v-model="newResult" :height="300" @selectionChange="editorChange"/>
+                    <TinyEditor v-if="plan && isRespUser && isOperPlan" v-model="newResult" :height="300" @selectionChange="editorChange"/>
                     <small v-if="isSciencePlan && submitted && (wordCount < wordLimit)" class="p-error">{{ $t('workPlan.minWordCount') }}</small>
                 </div>
               </div>
-              <div class="field" v-if="plan && isRespUserForWrite && isVisibleWritableField">
+              <div class="field" v-if="plan && isRespUser && isVisibleWritableField">
                 <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadFile($event)" :auto="true" :multiple="true" :chooseLabel="$t('smartenu.chooseAdditionalFile')"></FileUpload>
               </div>
               <div class="field">
@@ -476,10 +475,7 @@ export default {
       return this.plan && ((this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Oper) || this.plan.is_oper)
     },
     isRespUser() {
-      return this.event && this.respUserExists(this.loginedUserId) && this.plan.plan_type_id === 3
-    },
-    isRespUserForWrite() {
-      return this.respUserExists(this.loginedUserId)
+      return this.event && this.respUserExists(this.loginedUserId)
     },
     initAcceptButtons() {
       const createConfirmationDialog = (status_code) => {
@@ -623,8 +619,7 @@ export default {
             this.isPlanCreator = false;
           }
           if (this.event && this.event.user) {
-            this.isPlanCreatorApproval = this
-.event.user.find(e => e.id === this.loginedUserId) !== null && this.isPlanCreator;
+            this.isPlanCreatorApproval = this.event.user.find(e => e.id === this.loginedUserId) !== null && this.isPlanCreator;
             this.isCurrentUserApproval = this.event.user.find(e => e.id === this.loginedUserId);
           }
           this.getData();

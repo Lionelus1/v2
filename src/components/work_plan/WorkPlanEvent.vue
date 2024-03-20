@@ -1157,13 +1157,6 @@ export default {
           }
         },
         {
-          label: this.$t('workPlan.reports'),
-          visible: this.isFinish && (this.isApproval || this.isPlanCreator || this.isAdmin || this.isRespUser) && (this.plan.doc_info?.docHistory?.stateId === 3 || this.oldPlan),
-          command: () => {
-            this.navigateToReports()
-          }
-        },
-        {
           label: this.$t('contracts.contract'),
           visible: this.isSciencePlan && this.scienceDocs && this.scienceDocs.some(e => e.docType === this.docEnum.DocType.Contract),
           icon: 'fa-solid fa-download',
