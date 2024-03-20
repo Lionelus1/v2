@@ -5,10 +5,8 @@
     <AppTopBar @menu-toggle="onMenuToggle" v-model:pagemenu="localpagemenu"/>
     <div class="hint" v-if="showOverlay">
       <div class="hint-popup">
-        <span class="hint-close" title="Close" @click="hideOverlay">&#x2715;</span>
-        <p>
-          Қандайда бір көмек керек болса, біздің Telegram Chat қа жазыңыз
-        </p>
+          Қандай да бір көмек керек болса, біздің Telegram Chat қа жазыңыз | немесе Анықтамадан қараңыз
+        <Button style="float: right; margin-top: 10px" class="p-button-outlined" @click="hideOverlay">OK</Button>
       </div>
     </div>
     <div :class="[sidebarClass,{ 'hide_items': hasClass }]" @click="onSidebarClick" v-show="isSidebarVisible()" :style="{ width: menuWidth + 'px' }"
@@ -372,22 +370,18 @@ export default {
 
 }
 
-.hint {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 999;
-}
+
 .hint-popup{
-  width: 255px;
+  width: 300px;
   top: 55px;
-  right: 180px;
+  right: 162px;
   padding: 20px;
   position: absolute;
   background: #fff;
+  z-index: 999;
+  box-shadow: rgba(0, 0, 0, 0.35) 0 2px 10px;
+  border-radius: 5px;
+  animation: jump 2s ease-in-out 2;
 }
 .hint-popup:before {
   content: "";
@@ -395,19 +389,15 @@ export default {
   position: absolute;
   right: 12px;
   bottom: 100%;
-  border-bottom-color: #fff;
+  border-bottom-color: #2196F3;
   border-width: 9px;
   margin-left: 0;
 }
-.hint-close{
-  position: absolute;
-  top: 0;
-  left:-25px;
-  text-align: center;
-  font-size: 12px;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: #fff;
+@keyframes jump {
+  0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+  40% {transform: translateY(-20px);}
+  60% {transform: translateY(-15px);
+    box-shadow: rgb(33, 150, 243) 0 2px 10px;
+  }
 }
 </style>
