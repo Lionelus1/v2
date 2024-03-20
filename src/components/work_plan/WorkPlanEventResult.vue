@@ -581,7 +581,7 @@ export default {
     },
     rejectHistory() {
       return this.resultData[0]?.reject_history || {};
-    }
+    },
   },
   watch: {
     result(newValue) {
