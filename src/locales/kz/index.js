@@ -353,7 +353,8 @@ export default {
         change: "Өзгерту",
         unknownUser: "Қонақ",
         doNotShowAnymore: "Ендігіәрі көрсетпеу",
-        showMore: "Көбірек көрсету"
+        showMore: "Көбірек көрсету",
+        hint: "Қандай да бір көмек керек болса, біздің Telegram Chat қа жазыңыз немесе Анықтамадан қараңыз"
     },
     positions: {
         menuTitle: 'Позицияны өзгерту',

@@ -5,7 +5,7 @@
     <AppTopBar @menu-toggle="onMenuToggle" v-model:pagemenu="localpagemenu"/>
     <div class="hint" v-if="showOverlay">
       <div class="hint-popup">
-          Қандай да бір көмек керек болса, біздің Telegram Chat қа жазыңыз | немесе Анықтамадан қараңыз
+        {{ $t("common.hint") }}
         <Button style="float: right; margin-top: 10px" class="p-button-outlined" @click="hideOverlay">OK</Button>
       </div>
     </div>
@@ -227,6 +227,7 @@ export default {
     },
     hideOverlay() {
       this.showOverlay = false;
+      localStorage.setItem("show-hint", true);
     },
   },
   computed: {
@@ -262,9 +263,12 @@ export default {
     }else {
       this.menuWidth = 85
     }
+
   },
   mounted() {
-    this.showOverlay = true;
+    if(!localStorage.getItem("show-hint")){
+      this.showOverlay = true;
+    }
     let showPositionsDialog = localStorage.getItem('showPositionsDialog');
     let doNotShowAnymore = localStorage.getItem('doNotShowWelcomePositionChangeDialog') === 'true';
 
@@ -376,7 +380,7 @@ export default {
   top: 55px;
   right: 162px;
   padding: 20px;
-  position: absolute;
+  position: fixed;
   background: #fff;
   z-index: 999;
   box-shadow: rgba(0, 0, 0, 0.35) 0 2px 10px;
@@ -392,6 +396,14 @@ export default {
   border-bottom-color: #2196F3;
   border-width: 9px;
   margin-left: 0;
+}
+@media (max-width: 500px) {
+  .hint-popup{
+    right: 2%;
+  }
+  .hint-popup:before {
+    right: 53%;
+  }
 }
 @keyframes jump {
   0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
