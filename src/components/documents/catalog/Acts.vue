@@ -108,6 +108,17 @@ export default {
       page: 0,
       rows: 10,
       actionsNode: {},
+      filter: {
+        applied: false,
+        status: null,
+        author: [],
+        createdFrom: null,
+        createdTo: null,
+        sourceType: null,
+        template: null,
+        name: null,
+        folder: null,
+      },
     }
   },
   created() {
@@ -332,6 +343,37 @@ export default {
     toggleActions(node) {
       this.actionsNode = node
     },
+    deleteFile() {
+      this.$confirm.require({
+        message: this.$t("common.doYouWantDelete"),
+        header: this.$t("common.confirm"),
+        icon: 'pi pi-exclamation-triangle',
+        acceptClass: 'p-button p-button-success',
+        rejectClass: 'p-button p-button-danger',
+        accept: () => {
+          this.loading = true;
+
+          this.service.documentDeleteV2({
+            uuid: this.currentDocument.uuid,
+          }).then(_ => {
+            this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
+            this.getActs();
+            this.loading = false;
+          }).catch(err => {
+            if (err.response && err.response.status == 401) {
+              this.$store.dispatch("logLout")
+            } else if (err.response && err.response.data && err.response.data.localized) {
+              this.showMessage('error', this.$t(err.response.data.localizedPath), null)
+            } else {
+              console.log(err)
+              this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
+            }
+
+            this.loading = false;
+          })
+        },
+      });
+    },
   },
   computed: {
     menu () {
@@ -365,6 +407,15 @@ export default {
           visible: this.actionsNode.docHistory && this.actionsNode.docHistory.stateId === Enum.APPROVED.ID,
           command: () => {this.currentDocument = this.actionsNode; this.download()},
         },
+        {
+          label: this.$t('common.delete'),
+          icon: "fa-solid fa-trash",
+          visible: (this.actionsNode.docHistory && this.actionsNode.docHistory.stateId === Enum.CREATED.ID || this.actionsNode.docHistory && this.actionsNode.docHistory.stateId === Enum.REVISION.ID) && this.loginedUser.userID === this.actionsNode.creatorID,
+          command: () => {
+            this.currentDocument = this.actionsNode;
+            this.deleteFile()
+          },
+        }
       ]
     },
   }
