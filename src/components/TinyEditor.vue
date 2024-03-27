@@ -1,5 +1,5 @@
 <template>
-    <editor  ref="myEditor" :api-key="editorApi" v-model="content" :init="editorOptions" :disabled="readonly"/>
+    <editor ref="myEditor" :api-key="editorApi" v-model="content" :init="editorOptions" cloud-channel="5" :disabled="readonly"/>
 </template>
 
 <script>
@@ -57,7 +57,11 @@ export default {
                 height: this.height,
                 fontsize_formats: "8px 10px 12px 14px 16px 18px 20px 22px 24px 36px 48px",
                 menubar: false,
-                toolbar_mode: 'wrap',
+                external_plugins: {
+                  'tiny_mce_wiris': `/assets/mathtype-tinymce5/plugin.min.js`,
+                },
+              draggable_modal: true,
+              toolbar_mode: 'wrap',
                 allow_script_urls: true,
                 remove_script_host: false,
                 relative_urls: false,
@@ -68,8 +72,10 @@ export default {
                     'insertdatetime media table paste code help wordcount pagebreak'
                 ],
                 toolbar:
-                    `undo redo | fontselect fontsizeselect formatselect | ${this.contractElements ? `customSelect` : ''} | bold italic forecolor backcolor |
-            alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | blockquote |
+                    `undo redo | fontselect fontsizeselect formatselect | ${this.contractElements ? `customSelect` : ''}
+                    | bold italic forecolor backcolor |
+                    alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | blockquote |
+                    tiny_mce_wiris_formulaEditor tiny_mce_wiris_formulaEditorChemistry |
             removeformat | table | link | image media ${this.customFileUpload ? `fileupload` : ''} | code | pagebreak | ${this.accordion ? `accordion` : ''}`,
                 contextmenu: 'link | customUploadContext',
                 images_upload_handler: uploadSingFile,
