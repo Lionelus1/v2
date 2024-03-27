@@ -359,6 +359,7 @@ export default {
         doNotShowAnymore: "Больше не показывать",
         addPost: 'Добавить публикацию',
         showMore: "Показать больше",
+        hint: "Если вам нужна помощь, пишите в наш Telegram Chat или смотрите в справочнике"
     },
     positions: {
         menuTitle: 'Поменять позицию',

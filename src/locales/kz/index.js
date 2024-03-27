@@ -357,6 +357,7 @@ export default {
         doNotShowAnymore: "Ендігіәрі көрсетпеу",
         addPost: 'Пост қосу',
         showMore: "Көбірек көрсету",
+        hint: "Қандай да бір көмек керек болса, біздің Telegram Chat қа жазыңыз немесе Анықтамадан қараңыз"
     },
     positions: {
         menuTitle: 'Позицияны өзгерту',

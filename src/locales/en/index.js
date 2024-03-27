@@ -357,6 +357,7 @@ export default {
         doNotShowAnymore: "Do not show anymore",
         addPost: 'Add post',
         showMore: "Show more",
+        hint: "If you need help, write to our Telegram Chat or look in the guide"
     },
     positions: {
         menuTitle: 'Change position',
