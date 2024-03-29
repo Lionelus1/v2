@@ -1,7 +1,7 @@
 <template>
   <ProgressSpinner v-if="loading" class="progress-spinner" strokeWidth="5"/>
   <TitleBlock :title="$t('contracts.menu.actsJournal')" :show-back-button="true"/>
-  <ToolbarMenu :data="menu"/>
+  <ToolbarMenu :data="menu" @filter="toggle('filterOverlayPanel', $event)" :filter="true" :filtered="filtered"/>
   <BlockUI :blocked="loading" class="card">
 <!--          <Button class="p-button-info align-items-center" style="padding: 0.25rem 1rem;"-->
 <!--            @click="openDocument" :disabled="!currentDocument">-->
@@ -58,6 +58,38 @@
       </Column>
     </DataTable>
   </BlockUI>
+
+  <OverlayPanel ref="filterOverlayPanel">
+    <div class="p-fluid" style="min-width: 320px;">
+      <div class="field">
+        <label>{{ $t('contracts.filter.author') }}</label>
+        <FindUser v-model="filter.author" :max="1" :userType="3"></FindUser>
+      </div>
+      <div class="field">
+        <label>{{ $t('contracts.filter.status') }}</label>
+        <Dropdown v-model="filter.status" :options="statuses" optionValue="id"
+                  class="p-column-filter" :showClear="true">
+          <template #value="slotProps">
+            <span v-if="slotProps.value" :class="'customer-badge status-' + statuses.find((e) => e.id === slotProps.value).value">
+              {{ $i18n.locale === 'kz' ? statuses.find((e) => e.id === slotProps.value).nameKz : $i18n.locale === 'ru'
+                ? statuses.find((e) => e.id === slotProps.value).nameRu : statuses.find((e) => e.id === slotProps.value).nameEn }}
+            </span>
+          </template>
+          <template #option="slotProps">
+            <span :class="'customer-badge status-' + slotProps.option.value">
+              {{ $i18n.locale === 'kz' ? slotProps.option.nameKz : $i18n.locale === 'ru'
+                ? slotProps.option.nameRu : slotProps.option.nameEn }}
+            </span>
+          </template>
+        </Dropdown>
+      </div>
+      <div class="field">
+        <Button :label="$t('common.clear')" @click="clearFilter();toggle('filterOverlayPanel', $event);getActs()" class="mb-2 p-button-outlined"/>
+        <Button :label="$t('common.search')" @click="filtered = true;toggle('filterOverlayPanel', $event);getActs()" class="mt-2"/>
+      </div>
+    </div>
+  </OverlayPanel>
+
   <!-- documentInfoSidebar -->
   <Sidebar v-model:visible="visibility.documentInfoSidebar" position="right" class="p-sidebar-lg" 
     style="overflow-y: scroll" @hide="getActs">
@@ -72,10 +104,11 @@ import RolesEnum from "@/enum/roleControls/index";
 
 import { DocService } from "@/service/doc.service";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo";
+import FindUser from "@/helpers/FindUser.vue";
 
 export default {
   name: 'Acts',
-  components: { DocSignaturesInfo },
+  components: {FindUser, DocSignaturesInfo },
   props: { },
   data() {
     return {
@@ -108,6 +141,7 @@ export default {
       page: 0,
       rows: 10,
       actionsNode: {},
+      statuses: [Enum.StatusesArray.StatusCreated, Enum.StatusesArray.StatusInapproval, Enum.StatusesArray.StatusApproved],
       filter: {
         applied: false,
         status: null,
@@ -119,6 +153,7 @@ export default {
         name: null,
         folder: null,
       },
+      filtered: false,
     }
   },
   created() {
@@ -197,6 +232,10 @@ export default {
         page: this.page,
         rows: this.rows,
         docType: this.Enum.DocType.ActCompletedWorks,
+        filter: {
+          status: this.filter.status && this.filter.status.length > 0 ? this.filter.status : null,
+          author: this.filter.author.length > 0 && this.filter.author[0] ? this.filter.author[0].userID : null,
+        },
       }).then(res => {
         this.documents = res.data.documents;
         this.total = res.data.total;
@@ -373,6 +412,23 @@ export default {
           })
         },
       });
+    },
+    toggle(ref, event) {
+      this.$refs[ref].toggle(event);
+    },
+    clearFilter() {
+      this.filter = {
+        applied: false,
+        status: null,
+        author: [],
+        createdFrom: null,
+        createdTo: null,
+        sourceType: null,
+        template: null,
+        name: null,
+        folder: null,
+      };
+      this.filtered = false;
     },
   },
   computed: {
