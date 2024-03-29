@@ -26,6 +26,10 @@
         <label>{{ $t('workPlan.approvalUsers') }}</label>
         <InputText v-model="responsible_executor" />
       </div>
+      <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
+        <label>{{ $t('workPlan.summaryDepartment') }}</label>
+        <FindUser v-model="summaryDepartment" :max="1" searchMode="local" editMode="true"/>
+      </div>
       <div class="field" v-if="plan && plan.plan_type && plan.plan_type.code !== Enum.WorkPlanTypes.Science">
         <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('workPlan.summary') : $t('workPlan.approvalUsers') }}</label>
         <FindUser v-model="selectedUsers" :editMode="true"></FindUser>
@@ -121,6 +125,7 @@ export default {
       selectedUsers: [],
       parentData: null,
       parentId: null,
+      summaryDepartment: null,
       formValid: {
         event_name: false,
         users: false,
@@ -139,6 +144,7 @@ export default {
       inputSets: [{ selectedUsers: '', selectedRole: '' }],
       start_date: new Date,
       end_date: new Date()
+      
     }
   },
   mounted() {
@@ -219,10 +225,17 @@ export default {
       if (this.parentData) {
         this.parentId = parseInt(this.parentData.work_plan_event_id);
       }
+      let resp_person_id;
+      if (this.summaryDepartment && this.summaryDepartment[0]?.userID) {
+          resp_person_id = this.summaryDepartment[0].userID;
+      } else {
+          resp_person_id = null;
+      }
       let data = {
         work_plan_id: this.work_plan_id,
         event_name: this.event_name,
         parent_id: this.parentId,
+        resp_person_id: resp_person_id,
         quarter: this.quarter,
         result: this.result,
         resp_person_ids: userIds

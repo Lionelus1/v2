@@ -12,14 +12,14 @@
                         @click="toggle('global-filter', $event)" aria:haspopup="true" aria-controls="overlay_panel"
                         class="p-button-outlined mr-2" />
                 <OverlayPanel ref="global-filter" class="col-3">
-                  <div class="p-fluid">
+                  <!-- <div class="p-fluid">
                     <div class="field">
                         <label>{{ $t('requests.params.structural_unit') }}/{{ $t('common.faculty') }}</label>
                         <DepartmentList :parentID="1" :orgType="2"  :autoLoad="true" v-model="resultFilter.faculty"
                         :placeHolder="$t('smartenu.selectFaculty')">
                       </DepartmentList>
                       </div>
-                  </div>
+                  </div> -->
                   <div class="p-fluid">
                     <div class="field">
                       <label>{{ $t('cafedra.responsible') }}</label>
@@ -372,14 +372,13 @@ import moment from "moment";
 import {WorkPlanService} from '../../service/work.plan.service'
 import Enum from "@/enum/workplan/index"
 import FindUser from "@/helpers/FindUser";
-import DepartmentList from "../smartenu/DepartmentList.vue"
+// import DepartmentList from "../smartenu/DepartmentList.vue"
 
 
 export default {
   name: "WorkPlanEventResult",
   components: {
-    FindUser,
-    DepartmentList
+    FindUser
   },
   props: ['resultId'],
   data() {
@@ -443,7 +442,6 @@ export default {
       hasResultToApprove: false,
       formData: null,
       resultFilter: {
-        faculty: null,
         responsiveUser: null
       },
     }
@@ -500,6 +498,9 @@ export default {
     },
     isRespUserForWrite() {
       return this.respUserExists(this.loginedUserId)
+    },
+    isSummaryDepartmentUser(){
+      return this.event && this.event.summary_department_id !== null && this.event.summary_department_id === this.loginedUserId;
     },
     initAcceptButtons() {
       const createConfirmationDialog = (status_code) => {
@@ -623,7 +624,6 @@ export default {
       this.$refs[ref].toggle(event);
     },
     clearResultFilter(){
-      this.resultFilter.faculty = null;
       this.resultFilter.responsiveUser = null;
     },
     initWordCount(count) {
@@ -666,16 +666,12 @@ export default {
         result_filter: {}
        
       }
-      if (this.resultFilter && this.resultFilter.faculty && this.resultFilter.faculty.id > 0) {
-        data.result_filter.department_id = this.resultFilter.faculty.id;
-      }
+      // if (this.resultFilter && this.resultFilter.faculty && this.resultFilter.faculty.id > 0) {
+      //   data.result_filter.department_id = this.resultFilter.faculty.id;
+      // }
       if (this.resultFilter && this.resultFilter.responsiveUser && this.resultFilter.responsiveUser.length > 0 && this.resultFilter.responsiveUser[0].userID > 0){
         data.result_filter.responsive_user = this.resultFilter.responsiveUser[0].userID;
       }
-      // if (this.resultFilter.responsiveUser === null){
-      //   this.resultFilter.faculty = null;
-      //   this.resultFilter.responsiveUser = null;
-      // }
       this.planService.getEventResult(data).then(res => {
         if (res.data) {
           this.resultData = res.data;
@@ -713,6 +709,48 @@ export default {
 
     },
     initMenu() {
+      const createConfirmationDialog = (status_code) => {
+        return {
+          message: this.$t("common.confirmation"),
+          header: this.$t("common.confirm"),
+          icon: "pi pi-exclamation-triangle",
+          rejectClass: "p-button-secondary p-button-outlined",
+          rejectLabel: this.$t("common.cancel"),
+          acceptLabel: this.$t("common.continue"),
+          accept: () => {
+            let params = {
+              event_id: this.event.work_plan_event_id || null,
+              status_code: status_code || null,
+            };
+            this.planService
+              .updateEventStatus(params)
+              .then((res) => {
+                this.$toast.add({
+                  severity: "success",
+                  detail: this.$t("common.success"),
+                  life: 3000,
+                });
+                //this.getEventsTree();
+                this.getEvent();
+              })
+              .catch((error) => {
+                this.$toast.add({
+                  severity: "error",
+                  summary: error.message || this.$t('workPlan.errorUpdatingStatus'),
+                  life: 3000,
+                });
+              });
+          },
+          reject: () => {
+            this.$toast.add({
+              severity: "info",
+              summary: this.$t('common.cancel'),
+              detail: this.$t('workPlan.operationCanceled'),
+              life: 3000,
+            });
+          },
+        };
+      };
       return [
         {
           label: "",
@@ -739,21 +777,21 @@ export default {
           label: this.$t("common.done"),
           icon: "pi pi-verified",
           command: () => {
-            this.$confirm.require(this.createConfirmationDialog(2));
+            this.$confirm.require(createConfirmationDialog(2));
           },
         },
         {
           label: this.$t("workPlan.partiallyCompleted"),
           icon: "pi pi-chart-pie",
           command: () => {
-            this.$confirm.require(this.createConfirmationDialog(4));
+            this.$confirm.require(createConfirmationDialog(4));
           },
         },
         {
           label: this.$t("common.notDone"),
           icon: "pi pi-times-circle",
           command: () => {
-            this.$confirm.require(this.createConfirmationDialog(3));
+            this.$confirm.require(createConfirmationDialog(3));
           },
         },
         ]
