@@ -153,7 +153,6 @@ const userData = ref({
   course: null,
   phone: null,
   email: null,
-  discipline: null
 })
 const isCurrentUserSender = computed(() => {
   return ((currentUser.value?.userID == props.courseRequest.sender_id && (props.courseRequest.doc.docHistory == null)) || props.courseRequest?.doc?.docHistory?.stateId == DocEnum.REVISION.ID )
@@ -221,14 +220,9 @@ const toggleRegistration = () => {
   showRegistration.value = !showRegistration.value;
 };
 
-// const savedData = JSON.parse(localStorage.getItem('userData'));
-// if (savedData) {
-//   Object.assign(userData.value, savedData)
-// }
+const initCourse = () => {
 
-// watchEffect(() => {
-//   localStorage.setItem('userData', JSON.stringify(userData.value))
-// })
+}
 
 const clearData = () => {
   if (!searchText.value) {
@@ -258,7 +252,7 @@ const onPage = (event) => {
 const getCourse = () => {
   if (findRole(null, "student") || (findRole(null, 'main_administrator') || findRole(null, "career_administrator"))) {
     const userId = props.courseRequest?.doc?.newParams?.student_id?.value
-    
+
     let courseId = props.courseRequest?.doc?.newParams?.not_formal_education_ids.value
     if ((props.courseRequest?.doc?.docHistory?.stateId === DocEnum.CREATED.ID || props.courseRequest?.doc?.docHistory?.stateId === DocEnum.REVISION.ID) && !isAdmin.value) {
       courseId = null
@@ -290,8 +284,7 @@ const getCourse = () => {
         });
 
   }
-};
-
+}
 const getStudentInfo = () => {
   const userId = props.courseRequest?.doc?.newParams?.student_id?.value
 

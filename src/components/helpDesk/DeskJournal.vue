@@ -127,6 +127,7 @@ const request = ref({
   uuid: null,
   is_saved: 1,
   local: null
+
 });
 const showMessage = (severity, detail, life) => {
   toast.add({
@@ -135,6 +136,14 @@ const showMessage = (severity, detail, life) => {
     life: life || 3000,
   });
 };
+
+const position = ref([
+  {name_kz: "Қосымша білім беру бағдарламасы", name_en: "Additional educational program", name_ru: "Дополнительная образовательная программа", code: "additional"},
+  {name_kz: "Пререквизиттерді игеру", name_en: "Mastering prerequisites", name_ru: "Освоение пререквизитов", code: "mastering"},
+  {name_kz: "Академиялық қарызды жою", name_en: "Liquidation of academic debt", name_ru: "Ликвидация академической задолженности", code: "liquidation"},
+  {name_kz: "Аударым ұпайларын арттыру (GPA)", name_en: "Increase in transferable points (GPA)", name_ru: "Повышение переводных баллов (GPA)", code: "increase"},
+]);
+
 const docStatus = ref([
   { name_kz: "құрылды", name_en: "created", name_ru: "создан", code: "created" },
   { name_kz: "келісуде", name_en: "inapproval", name_ru: "на согласовании", code: "inapproval" },
@@ -151,13 +160,22 @@ const visibility = ref({
   Request: false,
   newPublicationDialog: false,
 });
+const selectedPosition = computed({
+  get(){
+    return store.state.selectedPosition
+  },
+  set(value){
+    store.commit('SET_SELECTED_POSITION_DESK', value)
+  }
+})
 const uuid = ref(null);
 const isAdmin = findRole(null, 'main_administrator')
 const data = ref([]);
 const selectedDirection = ref(null);
+
 const currentDocument = ref(null);
+
 const loading = ref(false);
-const loginedUserId = ref(JSON.parse(localStorage.getItem("loginedUser")).userID);
 const filter = ref({
   applied: false,
   name: null,
@@ -173,6 +191,7 @@ const lazyParams = ref({
   page: 0,
   rows: 10,
 });
+
 const filtered = ref(false);
 const sort = ref(null);
 const mainMenu = computed(() => [
@@ -190,12 +209,17 @@ const mainMenu = computed(() => [
 ]);
 
 onMounted(() => {
+
   getTicket();
   requstLocal();
   getCategory();
 });
 
-
+const courseApplicationCreate = () => {
+  if (selectedDirection.value === "course_application") {
+    return !selectedDirection.value && !selectedPosition.value
+  }
+}
 const open = (name) => {
   visibility.value[name] = true;
 };
@@ -206,6 +230,7 @@ const openBasic = () => {
   showModal.value = true;
 };
 const closeBasic = () => {
+  selectedPosition.value = null
   selectedDirection.value = null;
   showModal.value = false;
 };
@@ -263,6 +288,7 @@ const openDocument = () => {
   }
 };
 const getCategory = () => {
+  selectedPosition.value = null;
   selectedDirection.value = null;
   service.helpDeskCategoryGet(
     {
@@ -273,14 +299,7 @@ const getCategory = () => {
     })
     .then((res) => {
       currentDocument.value = null;
-      directions.value = res.data.category.map(item => {
-        return {
-          id: item.id,
-          name: item.name_kz,
-          code: item.code
-        };
-      });
-
+      directions.value = res.data.category
       request.value.category = res.data.category.id;
     })
     .catch((err) => {
@@ -294,13 +313,13 @@ const getCategory = () => {
 };
 const createHelpDesk = () => {
   request.value.category = selectedDirection.value;
-
   service.helpDeskTicketCreate(request.value)
     .then(res => {
       uuid.value = res.data.uuid;
       close('newPublicationDialog');
       loading.value = false;
-      router.push({ name: 'Request', params: { uuid: uuid.value, isCreated: 1 } });
+      router.push({ name: 'Request', params: { uuid: uuid.value }});
+      // router.push({ name: 'Request', params: { uuid: uuid.value, isCreated: 1}, query: {selectedPosition: JSON.stringify(selectedPosition.value.code)}});
     }).catch(err => {
       if (err.response && err.response.status == 401) {
         store.dispatch("logLout");

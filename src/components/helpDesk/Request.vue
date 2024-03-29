@@ -144,7 +144,7 @@ const selectedDirection = ref({
   name_ru: null,
   name_kz: null,
   name_en: null,
-});
+})
 const lang = ref(null)
 const userData = ref({})
 const approving = ref(false)
@@ -406,10 +406,12 @@ const saveDocument = () => {
       }
       request.value.doc.newParams['not_formal_education_ids'] = param
     }
+
     let paramInfo = {
       value: userData.value,
       name: "not_formal_student_info"
     }
+
     let paramLang = {
       value: lang.value,
       name: "lang"
