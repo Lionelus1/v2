@@ -9,6 +9,7 @@ const store = createStore({
     plugins: [createPersistedState()],
     state: {
         activeItem: "",
+        selectedPosition: {},
         loginedUser: {},
         token: "",
         attemptedUrl: "",
@@ -82,6 +83,9 @@ const store = createStore({
         updateParentVariable(state, newValue) {
             state.activeItem = newValue;
         },
+        SET_SELECTED_POSITION_DESK(state, data) {
+            state.selectedPosition = data
+        }
     },
     actions: {
         setLoginedUser(context) {
@@ -115,7 +119,9 @@ const store = createStore({
         updateParentVariable({commit}, newValue) {
             commit('updateParentVariable', newValue);
         },
-
+        setSelectedPositionDesk({commit}, newPosition){
+          commit('setSelectedPositionDesk', newPosition)
+        }
     },
     getters: {
         isAuthenticated: state => !!state.token,
@@ -123,6 +129,9 @@ const store = createStore({
         getParentVariable(state) {
             return state.activeItem;
         },
+        getSelectedPositionDesk(state){
+            return state.selectedPosition
+        }
     }
 
 })

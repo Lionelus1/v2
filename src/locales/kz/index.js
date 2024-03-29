@@ -1804,7 +1804,7 @@ export default {
         ssdfgsdfg: 'sdfgsdfg',
     },
     helpDesk: {
-        title: 'Менің өтініштерім',
+        title: 'Менің өтінімдерім',
         creationTime: 'Құру уақыты',
         priority: 'Басымдық',
         responsible: 'Жауапты',
@@ -1822,6 +1822,8 @@ export default {
             date:'Күнді таңдаңыз',
             dateTime:'Уақытты таңдаңыз',
             discipline: 'Сабақты жазыңыз',
+            credits: 'Кредит саны',
+            codeName: 'Код атауы'
         },
 
     }
