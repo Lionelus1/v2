@@ -11,24 +11,33 @@
       </template>
     </ToolbarMenu>
     <BlockUI :blocked="loading" class="card">
-      <!-- <Button :label="t('common.createNew')" icon="pi pi-plus" @click="openBasic" class="ml-2"/> -->
       <Dialog :header="t('helpDesk.application.applicationName')" v-model:visible="visibility.newPublicationDialog" :style="{ width: '450px' }"
         class="p-fluid">
         <div class="field">
           <label>{{ t('helpDesk.application.requestReason') }}</label>
-          <Dropdown v-model="selectedDirection" :options="directions" optionLabel="name" :placeholder="t('common.select')" />
+          <Dropdown v-model="selectedDirection"
+                    :options="directions"
+                    :optionLabel="locale === 'kz' ? 'name_kz' : locale === 'ru' ? 'name_ru' :
+          'name_en'" :placeholder="t('common.select')" />
+          <div style="margin-top: 15px" v-if="selectedDirection?.code === 'course_application'">
+            <label>{{ t('doctemplate.templates') }}</label>
+            <Dropdown style="margin-top: 5px" v-model="selectedPosition"
+                      :options="position"
+                      :optionLabel="locale === 'kz' ? 'name_kz' : locale === 'ru' ? 'name_ru' :
+          'name_en'" :placeholder="t('common.select')"  />
+          </div>
         </div>
         <template #footer>
           <Button :label="t('common.cancel')" icon="fa-solid fa-times" class="p-button-rounded p-button-danger"
             @click="close('newPublicationDialog')" />
-          <Button :label="t('common.createNew')" icon="pi pi-plus" class="p-button-rounded p-button-success mr-2" :disabled="!selectedDirection"
+          <Button :label="t('common.createNew')" icon="pi pi-plus" class="p-button-rounded p-button-success mr-2" :disabled="!selectedDirection || !selectedPosition"
             @click="createHelpDesk" />
         </template>
       </Dialog>
       <div>
-        <DataTable :lazy="true" :rowsPerPageOptions="[5, 10, 20, 50]" :value="data" dataKey="id" :rowHover="true" v-model:filters="filters"
+        <DataTable :lazy="true" :rowsPerPageOptions="[5, 10, 20, 50]" :value="data" dataKey="id" :rowHover="true"
           filterDisplay="menu" :loading="loading" responsiveLayout="scroll" :paginator="true" selectionMode="single" stripedRows
-          class="p-datatable-sm" :rows="10" :totalRecords="total" @page="onPage" v-model:selection="currentDocument" :first="first" scrollable
+          class="p-datatable-sm" :rows="10" :totalRecords="total" @page="onPage" v-model:selection="currentDocument" scrollable
           scrollHeight="flex" @lazy="true">
           <!-- :globalFilterFields="['columns.number','creationTime', 'status', 'requestReason', 'categoryApplication', 'responsible']" -->
           <template #empty> {{ t('common.noData') }}</template>
@@ -52,8 +61,8 @@
 
           <Column field="requestReason" :header="t('helpDesk.application.requestReason')">
             <template #body="{ data }">
-              <a href="javascript:void(0)">{{ $i18n.locale === "kz" ? data.category.name_kz : $i18n.locale === "ru" ? data.category.name_ru :
-      data.category.name_en }}</a>
+              <a href="javascript:void(0)">{{ $i18n.locale === "kz" ? data.doc.newParams.selectedPosition.value.name_kz : $i18n.locale === "ru" ? data.doc.newParams.selectedPosition.value.name_ru :
+                  data.doc.newParams.selectedPosition.value.name_en  }}</a>
             </template>
           </Column>
 

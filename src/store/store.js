@@ -8,7 +8,7 @@ import router from '@/router';
 const store = createStore({
     plugins: [createPersistedState()],
     state: {
-
+        selectedPosition: {},
         loginedUser: {},
         token: "",
         attemptedUrl:"",
@@ -54,6 +54,9 @@ const store = createStore({
         },
         REMOVE_USER_SITE_SLUG(state) {
             state.userSlug = {}
+        },
+        SET_SELECTED_POSITION_DESK(state, data) {
+            state.selectedPosition = data
         }
     },
     actions: {
@@ -78,11 +81,17 @@ const store = createStore({
         },
         removeUserSiteSlug(context) {
             context.commit("REMOVE_USER_SITE_SLUG")
+        },
+        setSelectedPositionDesk({commit}, newPosition){
+          commit('setSelectedPositionDesk', newPosition)
         }
     },
     getters: {
         isAuthenticated: state => !!state.token,
-        isMainAdministrator: state => state.loginedUser && state.loginedUser.roles && state.loginedUser.roles.some(role => role.name === 'main_administrator')
+        isMainAdministrator: state => state.loginedUser && state.loginedUser.roles && state.loginedUser.roles.some(role => role.name === 'main_administrator'),
+        getSelectedPositionDesk(state){
+            return state.selectedPosition
+        }
     }
 
 })

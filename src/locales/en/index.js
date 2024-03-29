@@ -1776,6 +1776,9 @@ export default {
             date: 'Select a date',
             dateTime:'Choose a time',
             discipline: 'Write the discipline',
+            credits: 'Number of credits',
+            codeName: 'Code name',
+            positionName: ''
         },
 
     }

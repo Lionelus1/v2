@@ -1775,6 +1775,9 @@ export default {
             date: 'Выберите дату',
             dateTime: 'Выберите время',
             discipline: 'Напишите дисциплину',
+            credits:'Количество кредитов',
+            codeName: 'Код наименование',
+            positionName: ''
         },
 
     }

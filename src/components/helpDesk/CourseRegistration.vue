@@ -17,13 +17,32 @@
   </div>
   <BlockUI class="card" v-if="(findRole(null, 'student') || findRole(null, 'main_administrator'))">
     <div>
+      <div class="mb-3"
+           style="display: flex; justify-content: space-between; margin-bottom: 20px"
+      >
       <div class="buttonLanguag">
         <Button class="toggle-button" @click="toggleRegistration">Выберите дисциплину</Button>
       </div>
+        <span class="p-input-icon-left mr-2 position-relative" v-if="showRegistration && props.courseRequest && data" >
+    <i class="pi pi-search position-absolute" style="top: 15px"/>
+    <InputText
+        type="search"
+        v-model="searchText"
+        :placeholder="t('common.search')"
+        @keyup.enter="getCourse"
+    />
+    <Button
+        icon="pi pi-search"
+        class="p-ml-1"
+        @click="getCourse"
+    />
+</span>
+
+      </div>
       <DataTable v-if="showRegistration && props.courseRequest && data" :lazy="true" :rowsPerPageOptions="[5, 10, 20, 50]" :value="data" dataKey="id"
-        :rowHover="true" v-model:filters="filters" filterDisplay="menu" :loading="loading" responsiveLayout="scroll" :paginator="true" stripedRows
+        :rowHover="true" filterDisplay="menu" :loading="loading" responsiveLayout="scroll" :paginator="true" stripedRows
         class="p-datatable-sm" :rows="total >= 10 ? 10 : total" :totalRecords="total" @page="onPage" v-model:selection="currentDocument"
-        :first="first" scrollable scrollHeight="flex" @lazy="true">
+         scrollable scrollHeight="flex" @lazy="true">
 
         <Column field="checkbox">
           <template #body="{ data }">
@@ -48,46 +67,53 @@
           </template>
         </Column>
 
+        <Column field="credit" :header="t('helpDesk.application.credits')" style="padding-top: 15px; padding-bottom: 15px;">
+          <template #body="{ data }">
+            <a href="javascript:void(0)">{{data.hours}}</a>
+          </template>
+        </Column>
+
       </DataTable>
     </div>
   </BlockUI>
   <div>
     <div class="field" v-if="!findRole(null, 'student') && !findRole(null, 'main_administrator')" style="margin-top: 15px;">
-      <label>{{ t('helpDesk.application.discipline') }}</label>
+      <label>{{ t('helpDesk.application.discipline') }}<span v-if="isCurrentUserSender" style="font-size: 20px; color: red;">*</span></label>
       <InputText v-model="userData.discipline" type="text"
         :disabled="isAdmin || (props.courseRequest?.doc?.docHistory?.stateId == DocEnum.INAPPROVAL.ID)"
         :placeholder="t('helpDesk.application.discipline')" @input="input" />
     </div>
     <div class="field">
-      <label>{{ t('common.fullName') }}</label>
+      <label>{{ t('common.fullName') }}<span v-if="isCurrentUserSender" style="font-size: 20px; color: red;">*</span></label>
       <!-- :disabled="!!responseUserData.fullName" -->
       <InputText v-model="userData.fullName" type="text"
         :disabled="isAdmin || (props.courseRequest?.doc?.docHistory?.stateId == DocEnum.INAPPROVAL.ID)" :placeholder="t('common.fullName')"
         @input="input" />
     </div>
     <div class="field" style="margin-top: 10px;">
-      <label>{{ t('common.speciality') }}</label>
+      <label>{{ t('common.speciality') }}<span v-if="isCurrentUserSender" style="font-size: 20px; color: red;">*</span></label>
       <InputText v-model="userData.speciality" type="text"
         :disabled="isAdmin || (props.courseRequest?.doc?.docHistory?.stateId == DocEnum.INAPPROVAL.ID)"
         :placeholder="userData.speciality || t('common.speciality')" @input="input" />
     </div>
     <div class="field" style="margin-top: 10px;">
-      <label>{{ t('course.course') }}</label>
+      <label>{{ t('course.course') }}<span v-if="isCurrentUserSender" style="font-size: 20px; color: red;">*</span></label>
       <InputNumber v-model="userData.course" :disabled="isAdmin || (props.courseRequest?.doc?.docHistory?.stateId == DocEnum.INAPPROVAL.ID)"
         :placeholder="userData.course || t('course.course')" style="width: 350px;" @input="input" />
     </div>
     <div class="field" style="margin-top: 10px;">
-      <label>{{ t('contracts.cafedraGroup') }}</label>
+      <label>{{ t('contracts.cafedraGroup') }}<span v-if="isCurrentUserSender" style="font-size: 20px; color: red;">*</span>
+      </label>
       <InputText v-model="userData.group" type="text" :disabled="isAdmin || (props.courseRequest?.doc?.docHistory?.stateId == DocEnum.INAPPROVAL.ID)"
         :placeholder="userData.group || t('contracts.cafedraGroup')" @input="input" />
     </div>
     <div class="field" style="margin-top: 10px;">
-      <label>{{ t('contact.phone') }}</label>
+      <label>{{ t('contact.phone') }}<span v-if="isCurrentUserSender" style="font-size: 20px; color: red;">*</span></label>
       <InputNumber v-model="userData.phone" class="mt-2" inputId="userDataPhone" :useGrouping="false" :placeholder="t('contact.phone')"
         style="width: 350px;" @input="input" :disabled="isAdmin || (props.courseRequest?.doc?.docHistory?.stateId == DocEnum.INAPPROVAL.ID)" />
     </div>
     <div class="field" style="margin-top: 10px;">
-      <label>{{ t('contact.email') }}</label>
+      <label>{{ t('contact.email') }}<span v-if="isCurrentUserSender" style="font-size: 20px; color: red;">*</span></label>
       <InputText v-model="userData.email" type="text" :placeholder="t('contact.email')" @input="input"
         :disabled="isAdmin || (props.courseRequest?.doc?.docHistory?.stateId == DocEnum.INAPPROVAL.ID)" />
     </div>
@@ -95,7 +121,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import {ref, onMounted, computed} from 'vue';
 import { useI18n } from "vue-i18n";
 import axios from 'axios';
 import { HelpDeskService } from "../../service/helpdesk.service";
@@ -129,7 +155,9 @@ const userData = ref({
   email: null,
   discipline: null
 })
-
+const isCurrentUserSender = computed(() => {
+  return ((currentUser.value?.userID == props.courseRequest.sender_id && (props.courseRequest.doc.docHistory == null)) || props.courseRequest?.doc?.docHistory?.stateId == DocEnum.REVISION.ID )
+})
 const responseUserData = ref({
   fullName: null,
   speciality: null,
@@ -138,6 +166,7 @@ const responseUserData = ref({
   phone: null,
   email: null
 })
+const searchText = ref(null)
 const data = ref(null);
 const selectedIds = ref(props.courseRequest.doc.newParams && props.courseRequest.doc.newParams.not_formal_education_ids ? props.courseRequest.doc.newParams.not_formal_education_ids.value : []);
 const docStatus = ref([
@@ -201,6 +230,13 @@ const toggleRegistration = () => {
 //   localStorage.setItem('userData', JSON.stringify(userData.value))
 // })
 
+const clearData = () => {
+  if (!searchText.value) {
+    return;
+  }
+  searchText.value = null;
+  initCourse();
+}
 
 const showMessage = (msgtype, message, content) => {
   toast.add({
@@ -224,32 +260,35 @@ const getCourse = () => {
     const userId = props.courseRequest?.doc?.newParams?.student_id?.value
     
     let courseId = props.courseRequest?.doc?.newParams?.not_formal_education_ids.value
-    if (props.courseRequest?.doc?.docHistory?.stateId === DocEnum.REVISION.ID && !isAdmin.value) {
+    if ((props.courseRequest?.doc?.docHistory?.stateId === DocEnum.CREATED.ID || props.courseRequest?.doc?.docHistory?.stateId === DocEnum.REVISION.ID) && !isAdmin.value) {
       courseId = null
     }
     axios.post(smartEnuApi + "/onlinecourse/courses",
-      {
-        user_id: userId,
-        page: lazyParams.value.page,
-        rows: lazyParams.value.rows,
-        searchText: null,
-        dic_course_type: "not_formal_education",
-        courses_ids: courseId
+        {
+          user_id: userId,
+          page: lazyParams.value.page,
+          rows: lazyParams.value.rows,
+          searchText: searchText.value,
+          dic_course_type: "not_formal_education",
+          courses_ids: courseId
+        }, {headers: getHeader()})
+        .then((res) => {
+          data.value = res.data.courses;
+          if (props.courseRequest.doc.newParams) {
+            data.value.map(e => {
+              e.checked = props.courseRequest.doc.newParams.not_formal_education_ids.value.some(x => x === e.subject_id)
+            })
+          } else {
+            data.value.map(e => {
+              e.checked = selectedIds.value.some(x => x === e.subject_id)
+            })
+          }
+          total.value = res.data.total;
+        })
+        .catch((err) => {
+          showMessage("error", t("common.message.saveError"), null);
+        });
 
-      }, { headers: getHeader() })
-      .then((res) => {
-        data.value = res.data.courses;
-        if (props.courseRequest.doc.newParams) {
-
-          data.value.map(e => {
-            e.checked = props.courseRequest.doc.newParams.not_formal_education_ids.value.some(x => x === e.subject_id)
-          })
-        }
-        total.value = res.data.total;
-      })
-      .catch((err) => {
-        showMessage("error", t("common.message.saveError"), null);
-      });
   }
 };
 
@@ -269,10 +308,10 @@ const getStudentInfo = () => {
       fullName: props.courseRequest.doc?.newParams?.not_formal_student_info?.value.fullName || responseUserData.value.fullName,
       speciality: props.courseRequest.doc?.newParams?.not_formal_student_info?.value.speciality || responseUserData.value.speciality,
       group: props.courseRequest.doc?.newParams?.not_formal_student_info?.value.group || responseUserData.value.group,
-      course: props.courseRequest.doc?.newParams?.not_formal_student_info?.value.course || responseUserData.value.course,
-      phone: props.courseRequest.doc?.newParams?.not_formal_student_info?.value.phone > 0
+      course: (props.courseRequest.doc?.newParams?.not_formal_student_info?.value.course > 0 ? props.courseRequest.doc?.newParams?.not_formal_student_info?.value.course : null ) || (responseUserData.value.course > 0 ? responseUserData.value.course : null) ,
+      phone: (props.courseRequest.doc?.newParams?.not_formal_student_info?.value.phone > 0
         ? props.courseRequest.doc.newParams.not_formal_student_info.value.phone
-        : '',
+        : '') || (responseUserData.value.phone > 0 ? responseUserData.value.phone : null) ,
       email: props.courseRequest.doc?.newParams?.not_formal_student_info?.value.email || responseUserData.value.email,
     }
     emit('childInputData', userData.value)
@@ -321,7 +360,6 @@ const checkBoxSelect = (course) => {
   } else {
     selectedIds.value = selectedIds.value.filter(item => item !== course.subject_id);
   }
-
   emit('onCheckboxChecked', selectedIds.value)
   if (selectedIds.value.length === 0) {
     isSend.value = false;

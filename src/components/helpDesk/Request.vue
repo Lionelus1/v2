@@ -11,7 +11,7 @@
     <TabPanel :header="selectedDirection['name_' + locale]">
       <BlockUI v-if="haveAccess && selectedDirection && selectedDirection.code !== 'course_application'" :blocked="loading" class="card">
         <div class="">
-          <div class="p-fluid md:col-6">
+            <div class="p-fluid md:col-6">
             <label>{{ t('helpDesk.application.categoryApplication') }}</label>
             <InputText type="text" v-model="selectedDirection['name_' + locale]" disabled />
           </div>
@@ -62,7 +62,7 @@
       </BlockUI>
       <!-- sendToApproveDialog -->
       <Dialog :header="t('common.action.sendToApprove')" v-model:visible="visibility.sendToApproveDialog" :style="{ width: '50vw' }">
-        <div class="p-fluid">
+        <div class="p-fluid" v-if="stages">
           <ApprovalUsers :approving="approving" v-model="selectedUsers" @closed="close('sendToApproveDialog')" @approve="sendToApprove($event)"
             :stages="stages" mode="standard"></ApprovalUsers>
         </div>
@@ -112,10 +112,10 @@ import DocEnum from "@/enum/docstates/index";
 
 
 const { t, locale } = useI18n()
-const store = useStore()
 const toast = useToast()
 const router = useRouter();
 const route = useRoute();
+const store = useStore()
 const service = new HelpDeskService()
 const docService = new DocService()
 const showMessage = (severity, detail, life) => {
@@ -125,6 +125,7 @@ const showMessage = (severity, detail, life) => {
     life: life || 3000,
   });
 };
+const selectedPosition = computed(() => store.state.selectedPosition)
 const isSaved = ref(false)
 const revisionText = ref(null)
 const stages = ref([]);
@@ -189,6 +190,8 @@ const request = ref({
   filtered: false,
   doc: null
 });
+const currentUser = computed(() => JSON.parse(localStorage.getItem("loginedUser")))
+// const selectedPosition = ref(route.params.selectedPosition)
 const pdf = ref(null)
 const activeTab = ref(0)
 const isAdmin = ref(false)
@@ -377,6 +380,7 @@ const saveDocument = () => {
 
     request.value.doc.newParams.not_formal_student_info.value = userData.value
     request.value.doc.newParams.lang.value = lang.value
+    request.value.doc.newParams.selectedPosition = selectedPosition.value
     request.value.is_saved = 1
 
     service.helpDeskTicketCreate(request.value)
@@ -411,6 +415,10 @@ const saveDocument = () => {
       name: "lang"
     }
 
+    request.value.doc.newParams['selectedPosition'] = {
+      value: selectedPosition.value,
+      name: "selectedPosition"
+    };
     request.value.doc.newParams['lang'] = paramLang
     request.value.doc.newParams['not_formal_student_info'] = paramInfo
 
@@ -441,37 +449,46 @@ const toggleFilter = (event) => {
 };
 
 const clearStages = () => {
-  selectedUsers.value = [];
-  stages.value = [
-    {
-      stage: 1,
-      users: null,
-      titleRu: "Декан",
-      titleKz: "Декан",
-      titleEn: "Декан",
-      certificate: {
-        namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
-        nameru: "Для внутреннего документооборота (ГОСТ)",
-        nameen: "For internal document management (GOST)",
-        value: "internal"
-      },
-    }
-  ];
-  stages.value.push(
-    {
-      stage: 2,
-      users: null,
-      titleRu: "Офис регистратор",
-      titleKz: "Кеңсе тіркеушісі",
-      titleEn: "Office registrar",
-      certificate: {
-        namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
-        nameru: "Для внутреннего документооборота (ГОСТ)",
-        nameen: "For internal document management (GOST)",
-        value: "internal"
-      },
+  const users = []
+  if (findRole(null, "student")){
+  stages.value = [{
+    stage: 1,
+    users: null,
+    titleRu: "Декан",
+    titleKz: "Декан",
+    titleEn: "Декан",
+    certificate: {
+      namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+      nameru: "Для внутреннего документооборота (ГОСТ)",
+      nameen: "For internal document management (GOST)",
+      value: "internal"}
+  }, {
+    stage: 2,
+    users: null,
+    titleRu: "Офис регистратор",
+    titleKz: "Кеңсе тіркеушісі",
+    titleEn: "Office registrar",
+    certificate: {
+      namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+      nameru: "Для внутреннего документооборота (ГОСТ)",
+      nameen: "For internal document management (GOST)",
+      value: "internal"
     },
-  );
+  }];
+  } else {
+    stages.value = [{
+      stage: 1,
+      users: selectedUsers,
+      titleRu: "Институт непрерывного образования",
+      titleKz: "Үздіксіз білім беру институты",
+      titleEn: "Institute of Continuing Education",
+      certificate: {
+        namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+        nameru: "Для внутреннего документооборота (ГОСТ)",
+        nameen: "For internal document management (GOST)",
+        value: "internal"}
+    }]
+  }
 };
 
 
