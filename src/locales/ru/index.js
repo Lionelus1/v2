@@ -1271,7 +1271,8 @@ export default {
         maxWordCount: "Должно быть от 50 до 250 слов",
         partiallyCompleted: "Частично выполнено",
         errorUpdatingStatus: "Ошибка обновления статуса",
-        operationCanceled: "Продолжение действия остановлено"
+        operationCanceled: "Продолжение действия остановлено",
+        summaryDepartment: "Свод структурный отдел"
     },
     educomplex: {
         title: "Учебно-методический комплекс дисциплины",

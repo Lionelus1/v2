@@ -1240,7 +1240,8 @@ export default {
         maxWordCount: "It should be between 50 and 250 words",
         partiallyCompleted: "Partially completed",
         errorUpdatingStatus: "Error updating status",
-        operationCanceled: "Action  canceled"
+        operationCanceled: "Action  canceled",
+        summaryDepartment: "Summary structural department"
     },
     queue: {
 

@@ -7,22 +7,58 @@
       </div>
       <div class="mb-0 mt-0 inline-block" style="font-size: 24px"> {{ $t('common.result') }}</div>
     </div>
+     <div class="text-right" style="margin-top:-30px;padding-bottom: 3px;" v-if="plan && isPlanCreator">
+                <Button type="button" icon="fa-solid fa-filter" :label="$t('common.filter')"
+                        @click="toggle('global-filter', $event)" aria:haspopup="true" aria-controls="overlay_panel"
+                        class="p-button-outlined mr-2" />
+                <OverlayPanel ref="global-filter" class="col-3">
+                  <!-- <div class="p-fluid">
+                    <div class="field">
+                        <label>{{ $t('requests.params.structural_unit') }}/{{ $t('common.faculty') }}</label>
+                        <DepartmentList :parentID="1" :orgType="2"  :autoLoad="true" v-model="resultFilter.faculty"
+                        :placeHolder="$t('smartenu.selectFaculty')">
+                      </DepartmentList>
+                      </div>
+                  </div> -->
+                  <div class="p-fluid">
+                    <div class="field">
+                      <label>{{ $t('cafedra.responsible') }}</label>
+                      <FindUser v-model="resultFilter.responsiveUser" :max="1" searchMode="local" editMode="true"/>
+                      <!-- <small class="p-error" v-if="!resultFilter.responsiveUser">{{ $t("common.requiredField") }}</small> -->
+                    </div>
+                    </div>
+                    <div class="p-fluid">
+                        <div class="field">
+                            <br />
+                            <Button icon="pi pi-trash" class="ml-1" @click="clearResultFilter()"
+                                    :label="$t('common.clear')" outlined />
+                        </div>
+                        <div class="field">
+                            <Button icon="pi pi-search" :label="$t('common.search')" class="ml-1" @click="getData()" />
+                        </div>
+                    </div>
+                </OverlayPanel>
+              
+      </div>
     <div>
       <TabView v-model:activeIndex="activeIndex" @tab-change="changeTab">
         <TabPanel :header="$t('common.properties')">
-          <div v-if="isVisibleWritableField">
-            <div
-              v-if="event &&
-              (isCurrentUserApproval && (event.status.work_plan_event_status_id === 1 || event.status.work_plan_event_status_id === 4 || event.status.work_plan_event_status_id === 6))">
-            <Menubar :model="userMenuItems" :key="active" style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
-          </div>
+          <div v-if="!isVisibleWritableField || isPlanCreator">
+            <div :style="{ 'z-index': 9999, 'position': 'relative' }"
+                v-if="(event &&
+                (isCurrentUserApproval && (event.status.work_plan_event_status_id === 1 || event.status.work_plan_event_status_id === 4 || event.status.work_plan_event_status_id === 6))) || (event && isPlanCreator)">
+              <Menubar :model="userMenuItems" :key="active" style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;z-index: 9999;"></Menubar>
+
+            </div>
           </div>
 
           <div v-if="isPlanCreator && event && event.status.work_plan_event_status_id === 5">
             <Menubar :model="verifyMenu" :key="active" style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
           </div>
-          <div class="grid mt-3" v-if="plan && resultData && (new Date(plan.create_date).getFullYear() < new Date().getFullYear())">
-            <div class="p-sm-12 md:col-12 lg:col-12 p-xl-6">
+
+              <div class="grid mt-3" v-if="plan && resultData && (new Date(plan.create_date).getFullYear() < new Date().getFullYear())">
+            <div class="p-sm-12 md:col-12 lg:col-12 p-xl-6" style="padding-left: 0 !important;">
+
               <div class="field" v-if="event && isOperPlan">
                 <label class="bold">{{ $t('common.fact') }}: </label>
                 <div>{{ event.fact }}</div>
@@ -30,17 +66,18 @@
               <div class="field" v-if="plan && resultData && !isSciencePlan">
                 <label class="bold">{{ $t('common.result') }}</label>
                 <div v-if="resultData[0].event_result" class="mb-2">
-                  <Divider align="left">
+                  <Divider >
                     <i class="fa-solid fa-user mr-1"></i><b>{{ item.user.fullName }}</b>
                   </Divider>
                   <p v-html="resultData[0].event_result"></p>
                 </div>
-                <div v-else v-for="(item, index) of resultData[0].result_text" :key="index" class="mb-2">
-                  <Divider align="left">
+                <div v-else v-for="(item, index) of getFilteredData(item.id)" :key="index" class="mb-2">
+                  <Divider >
                     <i class="fa-solid fa-user mr-1"></i><b>{{ item.user.fullName }}</b>
                   </Divider>
                   <p v-html="item.text"></p>
                 </div>
+
               </div>
               <div class="field" v-if="resultData && resultData[0].result_files">
                 <label class="bold">{{ $t('workPlan.attachments') }}</label>
@@ -80,7 +117,6 @@
                 <label>{{ $t('common.fact') }}</label>
                 <InputText v-model="fact" @input="factChange"/>
               </div>
-
               <div class="field" v-if="!hasResultToApprove">
                 <label>{{ $t('common.result') }}</label>
                   <div v-if="isVisibleWritableField">
@@ -111,21 +147,29 @@
                 </div>
               </div>
             </div>
-            <div class="p-sm-12 md:col-12 lg:col-12 p-xl-6">
+
+            <div v-if="event && event.user">
+            <div v-for="item in event.user" :key="item.id">
+              <Divider align="left" v-if="isPlanCreator || loginedUserId === item.id"><i class="fa-solid fa-user mr-1"></i><b>{{ item.fullName }}</b></Divider>
+              <div v-if="resultData">
+                <div class="p-sm-12 md:col-12 lg:col-12 p-xl-6">
               <div class="field" v-if="event && plan && plan.is_oper && !authUser.mainPosition.department.isFaculty">
                 <label class="bold">{{ $t('common.fact') }}: </label>
                 <div>{{ event.fact }}</div>
               </div>
               <!-- Start Editing -->
               <div class="field" v-if="plan && resultData">
-                <div v-for="(item, index) of resultData" :key="index" class="mb-2">
-                  <Divider align="left">
-                    <div class="flex justify-content-center align-items-center">
+                <div v-if="(getFilteredData(item.id).length === 0 && isPlanCreator) || (getFilteredData(item.id).length === 0 && loginedUserId === item.id)">
+                  {{ $t('common.noData') }}
+                </div>
+
+                <div v-for="(item, index) of getFilteredData(item.id)" :key="index" class="mb-2">
+                    <div class="flex">
                       <div class="flex flex-column justify-content-center align-items-start">
-                        <span class="pb-2"><i class="fa-solid fa-user mr-1"></i><b>{{ item.user.fullName }}</b></span>
-                        <span class="pb-2">{{ formatDateMoment(item.plan_event_result_history[0].create_date) }}</span>
+                        <!-- <span class="pb-2"><i class="fa-solid fa-user mr-1"></i><b>{{ item.user.fullName }}</b></span> -->
+                        <span class="customer-badge" style="background-color: #e0e0eb;border-radius: 0;color:#555;font-weight: 600;">{{ $t('contracts.columns.createDate') }}{{ ": " }}{{ formatDateMoment(item.plan_event_result_history[0].create_date) }}</span>
                       </div>
-                      <div class="ml-3">
+                      <div class="ml-1">
                         <span :class="'customer-badge status-' + item.plan_event_result_history[0].state_id">
                           {{ getResultStatus(item.plan_event_result_history[0].state_id) }}</span>
                         <span style="float: right; margin-top: 0px;">
@@ -133,7 +177,7 @@
                         </span>
                       </div>
                     </div>
-                  </Divider>
+
                   <Inplace v-if="(item.result_text && (loginedUserId === item.result_text[0].user.userID) && event &&
                     (item.plan_event_result_history && item.plan_event_result_history[0].state_id === 6)) || (item.result_text && isPlanCreator && event &&
                     (item.plan_event_result_history && item.plan_event_result_history[0].state_id === 5) && isSciencePlan)" :active="item.isActive" @open="openInplace(item)">
@@ -191,7 +235,7 @@
                     </template>
                   </Inplace>
                   <div v-else class="p-0">
-                    <p v-html="item.result_text[0].text"></p>
+                    <p style="min-width: 600px;border-left:2px double #e0e0eb;padding-left: 10px; padding-top: 7px; margin-top: 3px;" v-html="item.result_text[0].text"></p>
                   </div>
                   <br/>
                   <div class="" v-if="resultData && item.result_files">
@@ -248,6 +292,12 @@
                   </div>
                 </div>
               </div>
+                </div>
+              </div>
+              <div v-else>
+                {{ $t('common.recordsNotFound') }}
+              </div>
+            </div>
             </div>
           </div>
         </TabPanel>
@@ -320,10 +370,14 @@ import {findRole, getHeader, smartEnuApi} from "@/config/config";
 import moment from "moment";
 import {WorkPlanService} from '../../service/work.plan.service'
 import Enum from "@/enum/workplan/index"
+import FindUser from "@/helpers/FindUser";
 
 
 export default {
   name: "WorkPlanEventResult",
+  components: {
+    FindUser
+  },
   props: ['resultId'],
   data() {
     return {
@@ -386,12 +440,14 @@ export default {
       hasResultToApprove: false,
       formData: null,
       resultFilter: {
-        faculty: null,
-        responsiveUser: []
-      }
+        responsiveUser: null
+      },
     }
   },
   computed: {
+    getFilteredData(){
+      return userID => this.resultData.filter(item => item.user_id === userID)
+    },
     wordCount() {
       if (!this.result) return 0;
       return this.result.trim().split(/\s+/).length;
@@ -437,6 +493,9 @@ export default {
     },
     isRespUser() {
       return this.event && this.respUserExists(this.loginedUserId)
+    },
+    isSummaryDepartmentUser(){
+      return this.event && this.event.summary_department_id !== null && this.event.summary_department_id === this.loginedUserId;
     },
     initAcceptButtons() {
       const createConfirmationDialog = (status_code) => {
@@ -556,11 +615,11 @@ export default {
   },
   methods: {
     findRole: findRole,
+
     toggle(ref, event) {
       this.$refs[ref].toggle(event);
     },
     clearResultFilter(){
-      this.resultFilter.faculty = null;
       this.resultFilter.responsiveUser = null;
     },
     initWordCount(count) {
@@ -600,19 +659,15 @@ export default {
     getData() {
       const data = {
         event_id : this.event.work_plan_event_id,
+        result_filter: {}
 
       }
-      // let data = {};
-      // if (this.resultFilter && this.resultFilter.faculty) {
-      //   data = {
-      //   event_id : this.event.work_plan_event_id,
-      //   result_filter: {
-      //     department_id : this.resultFilter.faculty.id,
-      //     responsive_users : this.resultFilter.responsiveUser[0].userID
-      //   }
-      //   }
+      // if (this.resultFilter && this.resultFilter.faculty && this.resultFilter.faculty.id > 0) {
+      //   data.result_filter.department_id = this.resultFilter.faculty.id;
       // }
-
+      if (this.resultFilter && this.resultFilter.responsiveUser && this.resultFilter.responsiveUser.length > 0 && this.resultFilter.responsiveUser[0].userID > 0){
+        data.result_filter.responsive_user = this.resultFilter.responsiveUser[0].userID;
+      }
       this.planService.getEventResult(data).then(res => {
         if (res.data) {
           this.resultData = res.data;
@@ -622,17 +677,24 @@ export default {
               e.isActive = false;
             });
           }
+          if (this.resultData.result_text === null) {
+            this.resultData.result_text.map(e => {
+              e.isActive = true;
+            });
+          }
           this.fact = this.resultData.fact;
           this.resultData.forEach(e => {
             if (e.plan_event_result_history && e.plan_event_result_history.some(x => (x.state_id === 5 || x.state_id === 6))) {
               this.hasResultToApprove = !this.isPlanCreator && e.plan_event_result_history.some(x => (x.state_id === 5 || x.state_id === 6))
             }
           })
+        }else if(res.data === null){
+          this.resultData = res.data;
         }
       }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
-        } else {
+        }else {
           this.$toast.add({
             severity: "error",
             summary: error,
@@ -643,6 +705,48 @@ export default {
 
     },
     initMenu() {
+      const createConfirmationDialog = (status_code) => {
+        return {
+          message: this.$t("common.confirmation"),
+          header: this.$t("common.confirm"),
+          icon: "pi pi-exclamation-triangle",
+          rejectClass: "p-button-secondary p-button-outlined",
+          rejectLabel: this.$t("common.cancel"),
+          acceptLabel: this.$t("common.continue"),
+          accept: () => {
+            let params = {
+              event_id: this.event.work_plan_event_id || null,
+              status_code: status_code || null,
+            };
+            this.planService
+              .updateEventStatus(params)
+              .then((res) => {
+                this.$toast.add({
+                  severity: "success",
+                  detail: this.$t("common.success"),
+                  life: 3000,
+                });
+                //this.getEventsTree();
+                this.getEvent();
+              })
+              .catch((error) => {
+                this.$toast.add({
+                  severity: "error",
+                  summary: error.message || this.$t('workPlan.errorUpdatingStatus'),
+                  life: 3000,
+                });
+              });
+          },
+          reject: () => {
+            this.$toast.add({
+              severity: "info",
+              summary: this.$t('common.cancel'),
+              detail: this.$t('workPlan.operationCanceled'),
+              life: 3000,
+            });
+          },
+        };
+      };
       return [
         {
           label: "",
@@ -659,6 +763,34 @@ export default {
           command: () => {
             this.saveResult();
           },
+        },
+        {
+        label: this.$t('common.action.accept'),
+        icon: 'pi pi-check',
+        visible: this.isPlanCreator,
+        items: [
+        {
+          label: this.$t("common.done"),
+          icon: "pi pi-verified",
+          command: () => {
+            this.$confirm.require(createConfirmationDialog(2));
+          },
+        },
+        {
+          label: this.$t("workPlan.partiallyCompleted"),
+          icon: "pi pi-chart-pie",
+          command: () => {
+            this.$confirm.require(createConfirmationDialog(4));
+          },
+        },
+        {
+          label: this.$t("common.notDone"),
+          icon: "pi pi-times-circle",
+          command: () => {
+            this.$confirm.require(createConfirmationDialog(3));
+          },
+        },
+        ]
         },
       ];
     },
@@ -979,6 +1111,7 @@ export default {
         rejectClass: 'p-button-rounded p-button-danger',
         accept: () => {
           this.deleteItem(item);
+
         }
       });
     },
@@ -1129,6 +1262,7 @@ export default {
     showRejectMessageSidebar() {
       this.rejectMessageSidebar = true;
     },
+
   }
 }
 </script>
