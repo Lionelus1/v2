@@ -1,7 +1,7 @@
 <template>
   <div class="talon_bg">
     <div class="relative">
-      <div class="talon">
+      <div class="talon" v-if="inQueue">
         <div class="talon_top">
         <div class="talon_number">107</div>
         <b>Сіздің кезектегі нөміріңіз</b>
@@ -21,7 +21,23 @@
           </div>
         </div>
       </div>
-      <div class="talon_list">
+      <div class="talon_called" v-if="called">
+        <div class="talon_top">
+          <div class="talon_number">107</div>
+          <b>Сіз шақырылдыңыз, өтіңіз</b>
+        </div>
+        <div class="talon_content">
+          <div class="go_to flex justify-content-center align-items-center mb-4">
+          <i class="fa-solid fa-person-walking-arrow-right"></i>
+          № 8 терезе
+          </div>
+          <div class="flex justify-content-between">
+            <div>01.04.2024</div>
+            <div>11:25</div>
+          </div>
+        </div>
+      </div>
+      <div class="talon_list" v-if="inQueue">
         <div class="flex justify-content-between text-white ml-5 mb-2">
           <div>№</div>
           <div>Терезе</div>
@@ -35,6 +51,17 @@
           <div>289</div>
           <i class="pi pi-arrow-right"></i>
           <div>4</div>
+        </div>
+        <div class="item flex justify-content-between align-items-center">
+          <div>356</div>
+          <i class="pi pi-arrow-right"></i>
+          <div>8</div>
+        </div>
+      </div>
+      <div class="talon_list" v-if="called">
+        <div class="flex justify-content-between text-white ml-5 mb-2">
+          <div>№</div>
+          <div>Терезе</div>
         </div>
         <div class="item flex justify-content-between align-items-center">
           <div>356</div>
@@ -67,6 +94,8 @@ import {getHeader, smartEnuApi} from "@/config/config";
 const phoneNumber = ref('');
 const validationError = ref(false);
 const queues = ref();
+const inQueue = ref(false);
+const called = ref(true);
 
 const validatePhoneNumber = () => {
   if (phoneNumber.value.length !== 10) {
@@ -93,25 +122,20 @@ getQueue()
 
 <style lang="scss" scoped>
 .talon_bg{
-  background: #000e39;
+  //background: #000e39;
   height: 100vh;
   margin: -20px;
   padding-top: 30px;
 }
 .talon{
-  background: #fff;
+  background: #a8d9ff;
   margin: auto;
   text-align: center;
   border-radius: 8px;
-  //padding: 30px;
-  //box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   width: 90%;
   z-index: 2;
-  //border-bottom: 8px dotted #000000;
   &_top{
     padding: 50px 0;
-    //border-radius: 10px;
-    //background: #a7d8ff;
   }
   &_number{
     font-size: 50px;
@@ -121,10 +145,36 @@ getQueue()
     padding: 0 30px;
   }
 }
-.talon:after{
+.talon_called{
+  background: #2aed1f;
+  margin: auto;
+  text-align: center;
+  border-radius: 8px;
+  width: 90%;
+  z-index: 2;
+  &_top{
+    padding: 50px 0;
+  }
+  &_number{
+    font-size: 50px;
+    font-weight: 600;
+  }
+  &_content{
+    padding: 0 30px;
+  }
+  svg{
+    font-size: 30px;
+    margin-right: 10px;
+  }
+  .go_to{
+    font-size: 18px;
+    font-weight: 600;
+  }
+}
+.talon_called:after{
   background:
-      linear-gradient(-45deg, transparent 16px, #ffffff 0),
-      linear-gradient(45deg, transparent 16px, #ffffff 0);
+      linear-gradient(-45deg, transparent 16px, #2aed1f 0),
+      linear-gradient(45deg, transparent 16px, #2aed1f 0);
   background-repeat: repeat-x;
   background-position: left bottom;
   background-size: 15px 32px;
@@ -134,7 +184,22 @@ getQueue()
   height: 32px;
   position: relative;
   top:20px;
-  left:0px;
+  left:0;
+}
+.talon:after{
+  background:
+      linear-gradient(-45deg, transparent 16px, #a8d9ff 0),
+      linear-gradient(45deg, transparent 16px, #a8d9ff 0);
+  background-repeat: repeat-x;
+  background-position: left bottom;
+  background-size: 15px 32px;
+  content: "";
+  display: block;
+  width: 100%;
+  height: 32px;
+  position: relative;
+  top:20px;
+  left:0;
 }
 .dashed{
   margin: 10px 0;
@@ -145,33 +210,12 @@ getQueue()
   margin: 40px auto;
   width: 90%;
   .item{
-    background: #fff;
+    background: #a8d9ff;
     border-radius: 8px;
     padding: 20px;
     font-size: 20px;
     margin-bottom: 10px;
   }
 }
-/*.talon_top{
-  background: #5b5b5b;
-  height: 20px;
-  width: 100%;
-  border-radius: 5px;
-  position: absolute;
-  z-index: 1;
-}
-.talon_top:after{
-  content: '';
-  position: absolute;
-  top:50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  bottom: 0;
-  display: block;
-  background: #000;
-  height: 10px;
-  width: 95%;
-  border-radius: 3px;
-}*/
 
 </style>
