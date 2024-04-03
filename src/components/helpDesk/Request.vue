@@ -81,8 +81,8 @@
       <Sidebar v-model:visible="visibility.documentInfoSidebar" position="right" class="p-sidebar-lg">
         <DocSignaturesInfo :docIdParam="request.doc.uuid"></DocSignaturesInfo>
       </Sidebar>
-      <CourseRegistration :courseRequest="request" @onCheckboxChecked="onChecked" @childInputData="childInput"
-        v-if="selectedDirection && selectedDirection.code === 'course_application'" />
+      <CourseRegistration :courseRequest="request" :validationRequest="validationRequest" @onCheckboxChecked="onChecked" @childInputData="childInput"
+                          @validateInput="validateInput" v-if="selectedDirection && selectedDirection.code === 'course_application'" />
     </TabPanel>
     <TabPanel :header="t('common.show')" :disabled="!request || !request.doc || !request.doc.filePath || request.doc.filePath.length < 1">
       <div class="flex-grow-1 flex flex-row align-items-stretch">
@@ -109,6 +109,7 @@ import { downloadFile, findRole } from "../../config/config";
 import { DocService } from "@/service/doc.service";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo.vue";
 import DocEnum from "@/enum/docstates/index";
+import {ContragentService} from "@/service/contragent.service";
 
 
 const { t, locale } = useI18n()
@@ -118,6 +119,7 @@ const route = useRoute();
 const store = useStore()
 const service = new HelpDeskService()
 const docService = new DocService()
+const contragentService = new ContragentService()
 const showMessage = (severity, detail, life) => {
   toast.add({
     severity: severity,
@@ -147,6 +149,8 @@ const selectedDirection = ref({
 })
 const lang = ref(null)
 const userData = ref({})
+const validationRequest = ref({})
+const validation = ref({})
 const approving = ref(false)
 const loading = ref(false)
 const haveAccess = ref(true);
@@ -190,7 +194,7 @@ const request = ref({
   filtered: false,
   doc: null
 });
-const currentUser = computed(() => JSON.parse(localStorage.getItem("loginedUser")))
+const currentUser = ref(null)
 // const selectedPosition = ref(route.params.selectedPosition)
 const pdf = ref(null)
 const activeTab = ref(0)
@@ -275,7 +279,7 @@ const needMySign = () => {
     let nextStage = true;
 
     for (let j = 0; j < stages[i].users.length; j++) {
-      if (stages[i].users[j].userID === loginedUser.userID && stages[i].usersApproved[j] === 0) {
+      if (stages[i].users[j].userID === currentUser.value.userID && stages[i].usersApproved[j] === 0) {
         need = true;
         break;
       }
@@ -305,6 +309,10 @@ lang.value = localStorage.getItem("lang")
 
 const childInput = (data) => {
   userData.value = data
+}
+
+const validateInput = (data) => {
+  validation.value = data
 }
 
 const onChecked = (data) => {
@@ -370,6 +378,14 @@ const isUserDataVaild = () => {
 
 
 const saveDocument = () => {
+  if (validation.value.phone || validation.value.course || validation.value.email){
+    showMessage('warn', t('helpDesk.application.inputErrorMessage'), null)
+    validationRequest.value = validation.value
+    return
+  }
+  validationRequest.value = validation.value
+
+
   loading.value = true;
   let student = null
 
@@ -453,30 +469,49 @@ const toggleFilter = (event) => {
 const clearStages = () => {
   const users = []
   if (findRole(null, "student")){
-  stages.value = [{
-    stage: 1,
-    users: null,
-    titleRu: "Декан",
-    titleKz: "Декан",
-    titleEn: "Декан",
-    certificate: {
-      namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
-      nameru: "Для внутреннего документооборота (ГОСТ)",
-      nameen: "For internal document management (GOST)",
-      value: "internal"}
-  }, {
-    stage: 2,
-    users: null,
-    titleRu: "Офис регистратор",
-    titleKz: "Кеңсе тіркеушісі",
-    titleEn: "Office registrar",
-    certificate: {
-      namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
-      nameru: "Для внутреннего документооборота (ГОСТ)",
-      nameen: "For internal document management (GOST)",
-      value: "internal"
-    },
-  }];
+    let userDekan = []
+    let userOffice = []
+    let reqDekan = { filter: {
+        departmentId:currentUser.value.mainPosition.department.parent.id,
+            positionName:"Декан факультета"
+      }}
+    let reqOffice =    { filter: {
+        "name":"Кыдырбаева Айман Турсыналыевна"
+    }}
+    if (reqDekan.filter.departmentId) {
+      contragentService.getPersons(reqDekan).then(res => {
+        userDekan = res.data.foundUsers
+        stages.value.push({
+          stage: 1,
+          users: userDekan,
+          titleRu: "Декан",
+          titleKz: "Декан",
+          titleEn: "Декан",
+          certificate: {
+            namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+            nameru: "Для внутреннего документооборота (ГОСТ)",
+            nameen: "For internal document management (GOST)",
+            value: "internal"
+          }
+        });
+      })
+    }
+    contragentService.getPersons(reqOffice).then(res => {
+      userOffice = res.data.foundUsers
+      stages.value.push({
+        stage: 2,
+        users: userOffice,
+        titleRu: "Офис регистратор",
+        titleKz: "Кеңсе тіркеушісі",
+        titleEn: "Office registrar",
+        certificate: {
+          namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+          nameru: "Для внутреннего документооборота (ГОСТ)",
+          nameen: "For internal document management (GOST)",
+          value: "internal"
+        }
+      });
+    })
   } else {
     stages.value = [{
       stage: 1,
@@ -511,6 +546,7 @@ onMounted(() => {
       request.value.local = 1;
       break;
   }
+  currentUser.value = JSON.parse(localStorage.getItem("loginedUser"))
   isAdmin.value = (findRole(null, 'main_administrator') || findRole(null, "career_administrator"))
   clearStages()
   helpDeskTicketGet()
