@@ -1824,7 +1824,9 @@ export default {
             dateTime:'Уақытты таңдаңыз',
             discipline: 'Сабақты жазыңыз',
             credits: 'Кредит саны',
-            codeName: 'Код атауы'
+            codeName: 'Код атауы',
+            inputErrorMessage: 'Дұрыс деректерді енгізіңіз',
+            applicationObjectives: 'өтінімнің мақсаттары'
         },
 
     }

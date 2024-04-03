@@ -1808,7 +1808,9 @@ export default {
             discipline: 'Напишите дисциплину',
             credits:'Количество кредитов',
             codeName: 'Код наименование',
-            positionName: ''
+            positionName: '',
+            inputErrorMessage: 'Пожалуйста, введите корректные данные',
+            applicationObjectives: 'Цели заяки'
         },
 
     }

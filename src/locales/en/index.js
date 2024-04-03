@@ -1808,7 +1808,9 @@ export default {
             discipline: 'Write the discipline',
             credits: 'Number of credits',
             codeName: 'Code name',
-            positionName: ''
+            positionName: '',
+            inputErrorMessage: 'Please enter the correct data',
+            applicationObjectives: 'Application objectives'
         },
 
     }

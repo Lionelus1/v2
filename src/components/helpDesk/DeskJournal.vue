@@ -20,7 +20,7 @@
                     :optionLabel="locale === 'kz' ? 'name_kz' : locale === 'ru' ? 'name_ru' :
           'name_en'" :placeholder="t('common.select')" />
           <div style="margin-top: 15px" v-if="selectedDirection?.code === 'course_application'">
-            <label>{{ t('doctemplate.templates') }}</label>
+            <label>{{ t('helpDesk.application.applicationObjectives') }}</label>
             <Dropdown style="margin-top: 5px" v-model="selectedPosition"
                       :options="position"
                       :optionLabel="locale === 'kz' ? 'name_kz' : locale === 'ru' ? 'name_ru' :
@@ -36,7 +36,7 @@
       </Dialog>
       <div>
         <DataTable :lazy="true" :rowsPerPageOptions="[5, 10, 20, 50]" :value="data" dataKey="id" :rowHover="true"
-          filterDisplay="menu" :loading="loading" responsiveLayout="scroll" :paginator="true" selectionMode="single" stripedRows
+          filterDisplay="menu" responsiveLayout="scroll" :paginator="true" selectionMode="single" stripedRows
           class="p-datatable-sm" :rows="10" :totalRecords="total" @page="onPage" v-model:selection="currentDocument" scrollable
           scrollHeight="flex" @lazy="true">
           <!-- :globalFilterFields="['columns.number','creationTime', 'status', 'requestReason', 'categoryApplication', 'responsible']" -->

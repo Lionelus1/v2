@@ -52,7 +52,7 @@
         </Column>
 
         <!-- :header="dic_course_type === 2 ? t('course.disciplineCode') : t('common.name')" -->
-        <Column field="name" :header="t('common.name')" style="padding-top: 15px; padding-bottom: 15px;">
+        <Column field="name" :header="t('course.disciplineCode')" style="padding-top: 15px; padding-bottom: 15px;">
           <template #body="{ data }">
             <a href="javascript:void(0)">{{ $i18n.locale === "kz" ? data.namekz : $i18n.locale === "ru" ? data.nameru :
     data.category.nameen }}</a>
@@ -60,7 +60,7 @@
         </Column>
 
         <!-- :header="dic_course_type === 2 ? t('course.disciplineName') : t('common.description')" -->
-        <Column field="description" :header="t('common.description')" style="padding-top: 15px; padding-bottom: 15px;">
+        <Column field="description" :header="t('course.disciplineName')" style="padding-top: 15px; padding-bottom: 15px;">
           <template #body="{ data }">
             <a href="javascript:void(0)">{{ $i18n.locale === "kz" ? data.descriptionkz : $i18n.locale === "ru" ? data.descriptionru :
     data.descriptionen }}</a>
@@ -98,8 +98,9 @@
     </div>
     <div class="field" style="margin-top: 10px;">
       <label>{{ t('course.course') }}<span v-if="isCurrentUserSender" style="font-size: 20px; color: red;">*</span></label>
-      <InputNumber v-model="userData.course" :disabled="isAdmin || (props.courseRequest?.doc?.docHistory?.stateId == DocEnum.INAPPROVAL.ID)"
-        :placeholder="userData.course || t('course.course')" style="width: 350px;" @input="input" />
+      <InputText v-model="userData.course" :disabled="isAdmin || (props.courseRequest?.doc?.docHistory?.stateId == DocEnum.INAPPROVAL.ID)"
+        :placeholder=" t('course.course')" style="width: 350px;" @input="input" />
+      <div v-if="props.validationRequest.course" style="color: red; margin-top: 5px">Курс введен неправильно</div>
     </div>
     <div class="field" style="margin-top: 10px;">
       <label>{{ t('contracts.cafedraGroup') }}<span v-if="isCurrentUserSender" style="font-size: 20px; color: red;">*</span>
@@ -109,13 +110,15 @@
     </div>
     <div class="field" style="margin-top: 10px;">
       <label>{{ t('contact.phone') }}<span v-if="isCurrentUserSender" style="font-size: 20px; color: red;">*</span></label>
-      <InputNumber v-model="userData.phone" class="mt-2" inputId="userDataPhone" :useGrouping="false" :placeholder="t('contact.phone')"
-        style="width: 350px;" @input="input" :disabled="isAdmin || (props.courseRequest?.doc?.docHistory?.stateId == DocEnum.INAPPROVAL.ID)" />
+      <InputText v-model="userData.phone" class="mt-2" inputId="userDataPhone" :placeholder="t('contact.phone')"
+        style="width: 350px;" @input="input" :disabled="isAdmin || (props.courseRequest?.doc?.docHistory?.stateId == DocEnum.INAPPROVAL.ID)"/>
+      <div v-if="props.validationRequest.phone" style="color: red; margin-top: 5px">Номер введен неправильно</div>
     </div>
     <div class="field" style="margin-top: 10px;">
       <label>{{ t('contact.email') }}<span v-if="isCurrentUserSender" style="font-size: 20px; color: red;">*</span></label>
       <InputText v-model="userData.email" type="text" :placeholder="t('contact.email')" @input="input"
         :disabled="isAdmin || (props.courseRequest?.doc?.docHistory?.stateId == DocEnum.INAPPROVAL.ID)" />
+      <div v-if="props.validationRequest.email" style="color: red; margin-top: 5px">Email введен неправильно</div>
     </div>
   </div>
 </template>
@@ -136,13 +139,16 @@ const { t, locale } = useI18n()
 const store = useStore()
 const route = useRoute();
 const toast = useToast()
-const emit = defineEmits(['onCheckboxChecked', 'childInputData'])
-const loginedUser = ref(JSON.parse(localStorage.getItem("loginedUser")))
+const emit = defineEmits(['onCheckboxChecked', 'childInputData','validateInput'])
 
 const props = defineProps({
   courseRequest: {
     type: Object,
     default: Object,
+  },
+  validationRequest: {
+    type: Object,
+    default: Object
   }
 })
 
@@ -220,16 +226,11 @@ const toggleRegistration = () => {
   showRegistration.value = !showRegistration.value;
 };
 
-const initCourse = () => {
-
-}
-
 const clearData = () => {
   if (!searchText.value) {
     return;
   }
   searchText.value = null;
-  initCourse();
 }
 
 const showMessage = (msgtype, message, content) => {
@@ -240,9 +241,28 @@ const showMessage = (msgtype, message, content) => {
     life: 3000
   });
 };
+const validateCourse = (course) => {
+  return course >= 1 && course <= 5
+}
 emit('onCheckboxChecked', selectedIds.value)
 emit('childInputData', userData.value)
+emit('validateInput', {
+  course: !validateCourse(userData.value.course),
+  email: !(userData.value.email === null || /\S+@\S+\.\S+/.test(userData.value.email)),
+  phone: userData.value.phone === null || !validatePhoneNumber(userData.value.phone),
+});
 
+
+const validatePhoneNumber = (phoneNumber) => {
+  const phoneRegex = /^(8|\+7)?\(\d{3}\)\d{7}$|^(8|\+7)?\d{10}$/;
+
+  return phoneRegex.test(phoneNumber);
+}
+
+// const isValidCourse = computed(() => {
+//   const course = parseInt(userData.course)
+//   return !isNaN(course) && course >= 1 && course <= 1
+// })
 const onPage = (event) => {
   lazyParams.value.page = event.page;
   lazyParams.value.rows = event.rows;
@@ -341,6 +361,11 @@ const getDocStatus = (code) => {
 const input = () => {
   changed.value = true;
   emit('childInputData', userData.value)
+  emit('validateInput', {
+    course: !validateCourse(userData.value.course),
+    email: !(userData.value.email === null || /\S+@\S+\.\S+/.test(userData.value.email)),
+    phone: userData.value.phone === null || !validatePhoneNumber(userData.value.phone),
+  });
 }
 
 const isDisabled = (rowData) => {
