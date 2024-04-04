@@ -28,7 +28,7 @@
       </div>
       <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
         <label>{{ $t('workPlan.summaryDepartment') }}</label>
-        <FindUser v-model="summaryDepartment" :max="1" searchMode="local" editMode="true"/>
+        <FindUser v-model="summaryDepartment" :max="1" editMode="true"/>
       </div>
       <div class="field" v-if="plan && plan.plan_type && plan.plan_type.code !== Enum.WorkPlanTypes.Science">
         <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('workPlan.summary') : $t('workPlan.approvalUsers') }}</label>
@@ -143,7 +143,7 @@ export default {
       Enum: Enum,
       inputSets: [{ selectedUsers: '', selectedRole: '' }],
       start_date: new Date,
-      end_date: new Date()
+      end_date: new Date(),
       
     }
   },
@@ -157,11 +157,13 @@ export default {
       console.log(ind)
       this.quarters = this.quarters.slice(0, ind);*/
     }
+    
   },
   created() {
     this.work_plan_id = parseInt(this.$route.params.id);
   },
   computed: {
+    
     isSciencePlan() {
       return this.plan && this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Science
     },
