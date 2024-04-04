@@ -1655,6 +1655,7 @@ export default {
             publicationCategory: "Категория публикации",
             publicationType: "Тип публикации",
             participationInGroup: "Участие в коллективе авторов",
+            subtypeDescription: "Тип документа"
         }
     },
     supportingDocument: "Подтверждающий документ",

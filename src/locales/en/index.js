@@ -1656,6 +1656,7 @@ export default {
             publicationCategory: "Publication category",
             publicationType: "Publication type",
             participationInGroup: "Participation in the team of authors",
+            subtypeDescription: "Document type"
         }
     },
     supportingDocument: "Supporting document",
