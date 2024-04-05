@@ -25,6 +25,10 @@
       <label>{{ $t('workPlan.approvalUsers') }}</label>
       <InputText v-model="editData.responsible_executor" />
     </div>
+    <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
+        <label>{{ $t('workPlan.summaryDepartment') }}</label>
+        <FindUser v-model="summaryUser" :max="1" editMode="true"/>
+    </div>
     <div class="field" v-if="plan && plan.plan_type && plan.plan_type.code !== Enum.WorkPlanTypes.Science">
       <label>{{ plan && (plan.is_oper || plan.plan_type.code === Enum.WorkPlanTypes.Oper) ? $t('workPlan.summary') : $t('workPlan.approvalUsers') }}</label>
       <FindUser v-model="selectedUsers" :editMode="true"></FindUser>
@@ -109,6 +113,7 @@ export default {
       ],
       parentData: this.parent != null ? JSON.parse(JSON.stringify(this.parent)) : null,
       selectedUsers: null,
+      summaryUser:[],
       formValid: {
         event_name: false,
         users: false,
@@ -126,8 +131,14 @@ export default {
       this.editData.end_date = this.editData.end_date ? new Date(this.editData.end_date) : null
       this.selectedUsers = [];
       this.editData.quarter = parseInt(this.editData.quarter);
+      
       this.editData.user.forEach(e => {
         this.selectedUsers.push(e.user);
+        if(e.is_summary_department){
+            this.summaryUser.push(e.user);
+            this.selectedUsers.pop(e.user);
+        }
+        
       });
       if (this.plan && this.plan.plan_type.code === this.Enum.WorkPlanTypes.Science && this.editData.user) {
         console.log()
@@ -151,6 +162,12 @@ export default {
     this.showWorkPlanEventEditModal = false
   },
   methods: {
+    // summaryUserExists(){
+    //   if(this.summaryUser && !this.selectedUsers.includes(this.summaryUser)){
+    //     this.selectedUsers.push()
+
+    //   }
+    // },
     closeBasic() {
       this.$emit('hide')
     },
@@ -177,6 +194,13 @@ export default {
           userIds.push({ user: e, role: null })
         });
       }
+      let resp_person_id;
+      if (this.summaryUser && this.summaryUser[0]?.userID) {
+          resp_person_id = this.summaryUser[0].userID;
+      } else {
+          resp_person_id = null;
+      }
+      this.editData.resp_person_id = resp_person_id;
 
       this.editData.resp_person_ids = userIds;
       this.planService.editEvent(this.editData).then(res => {
@@ -191,7 +215,10 @@ export default {
         }
       }).catch(error => {
         this.submitted = false;
-        this.$toast.add({ severity: "error", summary: error, life: 3000 });
+        if (error && error.error === 'summaryuseradded') {
+          this.$toast.add({ severity: "warn", summary: this.$t('workPlan.warnAddingSummaryUser'), life: 4000 });
+        }
+        
       });
     },
     notValid() {

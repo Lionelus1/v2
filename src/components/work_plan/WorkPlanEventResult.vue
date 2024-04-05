@@ -12,19 +12,10 @@
                         @click="toggle('global-filter', $event)" aria:haspopup="true" aria-controls="overlay_panel"
                         class="p-button-outlined mr-2" />
                 <OverlayPanel ref="global-filter" class="col-3">
-                  <!-- <div class="p-fluid">
-                    <div class="field">
-                        <label>{{ $t('requests.params.structural_unit') }}/{{ $t('common.faculty') }}</label>
-                        <DepartmentList :parentID="1" :orgType="2"  :autoLoad="true" v-model="resultFilter.faculty"
-                        :placeHolder="$t('smartenu.selectFaculty')">
-                      </DepartmentList>
-                      </div>
-                  </div> -->
                   <div class="p-fluid">
                     <div class="field">
                       <label>{{ $t('cafedra.responsible') }}</label>
                       <FindUser v-model="resultFilter.responsiveUser" :max="1" searchMode="local" editMode="true"/>
-                      <!-- <small class="p-error" v-if="!resultFilter.responsiveUser">{{ $t("common.requiredField") }}</small> -->
                     </div>
                     </div>
                     <div class="p-fluid">
@@ -43,7 +34,7 @@
     <div>
       <TabView v-model:activeIndex="activeIndex" @tab-change="changeTab">
         <TabPanel :header="$t('common.properties')">
-          <div v-if="isVisibleWritableField || isPlanCreator">
+          <div v-if="!isVisibleWritableField || isPlanCreator">
             <div :style="{ 'z-index': 9999, 'position': 'relative' }"
                 v-if="(event &&
                 (isCurrentUserApproval && (event.status.work_plan_event_status_id === 1 || event.status.work_plan_event_status_id === 4 || event.status.work_plan_event_status_id === 6))) || (event && isPlanCreator)">
@@ -57,8 +48,8 @@
           </div>
 
               <div class="grid mt-3" v-if="plan && resultData && (new Date(plan.create_date).getFullYear() < new Date().getFullYear())">
-            <div class="p-sm-12 md:col-12 lg:col-12 p-xl-6" style="padding-left: 0 !important;">
-
+              <div class="p-sm-12 md:col-12 lg:col-12 p-xl-6" style="padding-left: 0 !important;">
+              
               <div class="field" v-if="event && isOperPlan">
                 <label class="bold">{{ $t('common.fact') }}: </label>
                 <div>{{ event.fact }}</div>
@@ -113,7 +104,8 @@
                 <label>{{ $t('workPlan.eventName') }}</label>
                 <InputText v-model="event.event_name" disabled/>
               </div>
-              <div class="field" v-if="plan && plan.is_oper && !authUser.mainPosition.department.isFaculty">
+              <div class="field" v-if="(plan && plan.plan_type.code === 'oper' && isSummaryDepartmentUser)">
+                <!-- !authUser.mainPosition.department.isFaculty -->
                 <label>{{ $t('common.fact') }}</label>
                 <InputText v-model="fact" @input="factChange"/>
               </div>
@@ -123,7 +115,7 @@
                       <TinyEditor v-if="plan && isRespUser && !isOperPlan" v-model="result" :min-word="wordLimit" @wordCount="initWordCount" :height="300"
                                 :style="{ height: '100%', width: '100%' }"
                                 @selectionChange="editorChange"/>
-                    <TinyEditor v-if="plan && isRespUser && isOperPlan" v-model="newResult" :height="300" @selectionChange="editorChange"/>
+                    <TinyEditor v-if="plan && isRespUser && isOperPlan && isQuarterLimitForTextEditor" v-model="newResult" :height="300" @selectionChange="editorChange"/>
                     <small v-if="isSciencePlan && submitted && (wordCount < wordLimit)" class="p-error">{{ $t('workPlan.minWordCount') }}</small>
                 </div>
               </div>
@@ -147,7 +139,6 @@
                 </div>
               </div>
             </div>
-
             <div v-if="event && event.user">
             <div v-for="item in event.user" :key="item.id">
               <Divider align="left" v-if="isPlanCreator || loginedUserId === item.id"><i class="fa-solid fa-user mr-1"></i><b>{{ item.fullName }}</b></Divider>
@@ -296,6 +287,9 @@
               </div>
               <div v-else>
                 {{ $t('common.recordsNotFound') }}
+                <!-- <div v-if="isRecordsNotFound">
+                </div> -->
+
               </div>
             </div>
             </div>
@@ -442,6 +436,7 @@ export default {
       resultFilter: {
         responsiveUser: null
       },
+      givenDate:null,
     }
   },
   computed: {
@@ -495,82 +490,22 @@ export default {
       return this.event && this.respUserExists(this.loginedUserId)
     },
     isSummaryDepartmentUser(){
-      return this.event && this.event.summary_department_id !== null && this.event.summary_department_id === this.loginedUserId;
+      return this.event && this.summaryDepartmentExists(this.loginedUserId);
     },
-    initAcceptButtons() {
-      const createConfirmationDialog = (status_code) => {
-        return {
-          message: this.$t("common.confirmation"),
-          header: this.$t("common.confirm"),
-          icon: "pi pi-exclamation-triangle",
-          rejectClass: "p-button-secondary p-button-outlined",
-          rejectLabel: this.$t("common.cancel"),
-          acceptLabel: this.$t("common.continue"),
-          accept: () => {
-            let params = {
-              event_id: this.event.work_plan_event_id || null,
-              status_code: status_code || null,
-            };
-            this.planService
-              .updateEventStatus(params)
-              .then((res) => {
-                this.$toast.add({
-                  severity: "success",
-                  detail: this.$t("common.success"),
-                  life: 3000,
-                });
-                //this.getEventsTree();
-                this.getEvent();
-              })
-              .catch((error) => {
-                this.$toast.add({
-                  severity: "error",
-                  summary: error.message || this.$t('workPlan.errorUpdatingStatus'),
-                  life: 3000,
-                });
-              });
-          },
-          reject: () => {
-            this.$toast.add({
-              severity: "info",
-              summary: this.$t('common.cancel'),
-              detail: this.$t('workPlan.operationCanceled'),
-              life: 3000,
-            });
-          },
-        };
-      };
-
-      return [
-      {
-        label: this.$t('common.action.accept'),
-        icon: 'pi pi-check',
-        items: [
-        {
-          label: this.$t("common.done"),
-          icon: "pi pi-verified",
-          command: () => {
-            this.$confirm.require(createConfirmationDialog(2));
-          },
-        },
-        {
-          label: this.$t("workPlan.partiallyCompleted"),
-          icon: "pi pi-chart-pie",
-          command: () => {
-            this.$confirm.require(createConfirmationDialog(4));
-          },
-        },
-        {
-          label: this.$t("common.notDone"),
-          icon: "pi pi-times-circle",
-          command: () => {
-            this.$confirm.require(createConfirmationDialog(3));
-          },
-        },
-        ]
-      }
-
-      ];
+    isRecordsNotFound() {
+        return this.event && this.event.user && this.event.user.length > 0 && this.event.user[0].id === this.loginedUserId;
+    },
+    currentDate() {
+      return new Date();
+    },
+    fifteenthDayNextQuarter() {
+      const firstDayNextQuarter = this.getFirstDayNextQuarter(this.givenDate);
+      const fifteenthDayNextQuarter = new Date(firstDayNextQuarter);
+      fifteenthDayNextQuarter.setDate(fifteenthDayNextQuarter.getDate() + 14);
+      return fifteenthDayNextQuarter;
+    },
+    isQuarterLimitForTextEditor(){
+      return this.currentDate <= this.fifteenthDayNextQuarter;
     },
     isVisibleWritableField(){
       if (!this.resultData) {
@@ -615,7 +550,13 @@ export default {
   },
   methods: {
     findRole: findRole,
-
+    getFirstDayNextQuarter(date) {
+      const givenDate = new Date(date);
+      const currentQuarter = Math.floor((givenDate.getMonth() + 3) / 3);
+      const nextQuarterMonth = givenDate.getMonth() + (currentQuarter === 4 ? 9 : 3);
+      const nextQuarterYear = givenDate.getFullYear() + (nextQuarterMonth > 11 ? 1 : 0);
+      return new Date(nextQuarterYear, nextQuarterMonth % 12, 1);
+    },
     toggle(ref, event) {
       this.$refs[ref].toggle(event);
     },
@@ -628,11 +569,15 @@ export default {
     respUserExists(id) {
       return this.event.user.some(user => user.id === id)
     },
+    summaryDepartmentExists(id){
+      return this.event.user.some(user => user.id === id && user.is_summary_department === true)
+    },
     getEvent() {
       this.planService.getEventById(this.event_id).then(res => {
         if (res.data) {
           this.event = res.data.event;
           this.plan = res.data.plan;
+          this.givenDate = this.event.created_date;
           if (this.plan && this.plan.user.id === this.loginedUserId) {
             this.isPlanCreator = true;
           } else {
