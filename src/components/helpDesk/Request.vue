@@ -10,7 +10,6 @@
   <TabView v-model:activeIndex="activeTab" @tab-change="tabChanged" class="flex flex-column flex-grow-1">
     <TabPanel :header="selectedDirection['name_' + locale]">
       <BlockUI v-if="haveAccess && selectedDirection && selectedDirection.code !== 'course_application'" :blocked="loading" class="card">
-        <ProgressSpinner v-if="loading" class="progress-spinner" strokeWidth="5"/>
         <div class="">
             <div class="p-fluid md:col-6">
             <label>{{ t('helpDesk.application.categoryApplication') }}</label>
@@ -679,15 +678,6 @@ const isSaveItemsRequest = computed(() => {
 </script>
 
 <style scoped>
-.progress-spinner {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  margin: auto;
-  z-index: 1000;
-}
 
 .arrow-icon {
   cursor: pointer;

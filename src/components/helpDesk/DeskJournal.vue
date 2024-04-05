@@ -1,7 +1,7 @@
 <template>
   <div class="col-12">
     <h3>{{ t('helpDesk.title') }}</h3>
-    <ToolbarMenu :data="mainMenu" @search="search" :search="true" @filter="toggleFilter($event)" :filter="true" :filtered="filter">//@search="search" :search="true" @filter="toggleFilter($event)" :filter="true" :filtered="filtered"
+    <ToolbarMenu :data="mainMenu" @search="search" :search="true" @filter="toggleFilter($event)" :filter="true" :filtered="filtered">//@search="search" :search="true" @filter="toggleFilter($event)" :filter="true" :filtered="filtered"
       <template #end>
         <Button class="align-items-center" :class="{'p-button-success p-button-outlined': filter.applied,
           'p-button-secondary p-button-text': !filter.applied}" @click="toggle('filterOverlayPanel', $event)">
@@ -415,8 +415,8 @@ const search = (data) => {
   alert(data);
 };
 const toggleFilter = (event) => {
-  sort.value = event;
-};
+  filter.value.toggle(event)
+}
 
 </script>
 

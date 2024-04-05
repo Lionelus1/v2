@@ -15,7 +15,8 @@
       </div>
     </div>
   </div>
-  <BlockUI style="margin-top: 10px" v-if="(findRole(null, 'student') || findRole(null, 'main_administrator'))">
+<!--  || findRole(null, 'main_administrator')-->
+  <BlockUI style="margin-top: 10px" v-if="findRole(null, 'student') || props.courseRequest.doc?.newParams?.not_formal_education_ids">
     <div>
       <div class="mb-3"
            style="display: flex; justify-content: space-between; margin-bottom: 20px"
@@ -272,7 +273,7 @@ const onPage = (event) => {
 };
 
 const getCourse = () => {
-  if (findRole(null, "student") || (findRole(null, 'main_administrator') || findRole(null, "career_administrator"))) {
+  if (findRole(null, "student") || props.courseRequest.doc?.newParams?.not_formal_education_ids) {
     const userId = props.courseRequest?.doc?.newParams?.student_id?.value
 
     let courseId = props.courseRequest?.doc?.newParams?.not_formal_education_ids.value
@@ -409,16 +410,6 @@ onMounted(() => {
 .field label {
   margin-bottom: 5px;
   /* Расстояние между меткой и полем ввода */
-}
-
-.progress-spinner {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  margin: auto;
-  z-index: 1102;
 }
 
 .arrow-icon {
