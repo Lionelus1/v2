@@ -1800,6 +1800,7 @@ export default {
             contactNumber: 'Контактный номер',
             categoryApplication: 'Категория заявки',
             choseAudience: 'Выберите аудиторию',
+            chooseDiscipline: 'Выберите дисциплину',
             selectSpecialist: 'Выберите специалиста',
             applicationNumber: 'Номер заявки:',
             created: 'Создана',

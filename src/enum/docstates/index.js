@@ -65,6 +65,7 @@ export default {
     ScienceWorks: 12,
     ScienceWorksList: 13,
     ActCompletedWorks: 14,
+    RequestList: 15
   },
 
   ContragentType: {

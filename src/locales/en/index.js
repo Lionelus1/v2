@@ -1800,6 +1800,7 @@ export default {
             contactNumber: 'Contact number',
             categoryApplication: 'Application category',
             choseAudience: 'Choose an audience',
+            chooseDiscipline: 'Choose a discipline',
             selectSpecialist: 'Choose a specialist',
             applicationNumber: 'Application Number:',
             created: 'Created',

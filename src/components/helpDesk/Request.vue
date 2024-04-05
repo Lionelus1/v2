@@ -6,64 +6,64 @@
     <h4 class="m-0">{{ t("helpDesk.application.applicationName") }}</h4>
   </div>
   <!-- @search="search" :search="true" @filter="toggleFilter(event)" :filter="true" :filtered="filtered"  -->
+
+
   <ToolbarMenu v-if="request" :data="menu" />
   <TabView v-model:activeIndex="activeTab" @tab-change="tabChanged" class="flex flex-column flex-grow-1">
     <TabPanel :header="selectedDirection['name_' + locale]">
-      <BlockUI v-if="haveAccess && selectedDirection && selectedDirection.code !== 'course_application'" :blocked="loading" class="card">
-        <div class="">
-            <div class="p-fluid md:col-6">
-            <label>{{ t('helpDesk.application.categoryApplication') }}</label>
-            <InputText type="text" v-model="selectedDirection['name_' + locale]" disabled />
-          </div>
-          <div v-if="selectedDirection && selectedDirection.code === 'office_booking'">
-            <div class="p-fluid md:col-6">
-              <label>{{ t('helpDesk.application.choseAudience') }}</label>
-              <Dropdown v-model="choseAudience" optionLabel="name" optionValue="id" :placeholder="t('common.select')" />
-            </div>
-            <div class="p-fluid md:col-6">
-              <label>{{ t('helpDesk.application.date') }}</label>
-              <PrimeCalendar v-model="request.date_ranges" dateFormat="dd.mm.yy" :placeholder="t('common.select')" :monthNavigator="true"
-                :yearNavigator="true" yearRange="1990:2050" />
-            </div>
-            <div class="p-fluid md:col-6">
-              <label>{{ t('helpDesk.application.dateTime') }}</label>
-              <PrimeCalendar id="calendar-timeonly" :placeholder="t('common.select')" v-model="request.dateTime" timeOnly />
-            </div>
-          </div>
-          <div v-if="selectedDirection && selectedDirection.code === 'appointment'">
-            <div class="p-fluid md:col-6">
-              <label>{{ t('helpDesk.application.selectSpecialist') }}</label>
-              <Dropdown v-model="specialization" optionLabel="name" optionValue="id" :placeholder="t('common.select')" />
-            </div>
-            <div class="p-fluid md:col-6">
-              <label>{{ t('helpDesk.application.date') }}</label>
-              <PrimeCalendar v-model="request.date_ranges" dateFormat="dd.mm.yy" :placeholder="t('common.select')" :monthNavigator="true"
-                :yearNavigator="true" yearRange="1990:2050" />
-            </div>
-            <div class="p-fluid md:col-6">
-              <label>{{ t('helpDesk.application.dateTime') }}</label>
-              <PrimeCalendar id="calendar-timeonly" :placeholder="t('common.select')" v-model="request.dateTime" timeOnly />
-            </div>
-          </div>
-          <div class="p-fluid md:col-6">
-            <label>{{ t('helpDesk.application.description') }}</label>
-            <Textarea class="mt-2" v-model="request.description_ru" autoResize rows="5" cols="30" />
-          </div>
-          <div class="p-fluid md:col-6">
-            <label>{{ t('helpDesk.application.contactNumber') }}</label>
-            <InputText class="mt-2" v-model="contactNumber" />
-          </div>
-        </div>
-        <template #footer>
-          <Button :label="t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger" @click="closeBasic" />
-          <Button :label="t('common.createNew')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2" :disabled="isDisabled && lang"
-            @click="createHelpDesk" />
-        </template>
+      <BlockUI  :blocked="loading" class="card">
+<!--        <div v-if="haveAccess && selectedDirection && selectedDirection.code !== 'course_application'">-->
+<!--            <div class="p-fluid md:col-6">-->
+<!--            <label>{{ t('helpDesk.application.categoryApplication') }}</label>-->
+<!--            <InputText type="text" v-model="selectedDirection['name_' + locale]" disabled />-->
+<!--          </div>-->
+<!--          <div v-if="selectedDirection && selectedDirection.code === 'office_booking'">-->
+<!--            <div class="p-fluid md:col-6">-->
+<!--              <label>{{ t('helpDesk.application.choseAudience') }}</label>-->
+<!--              <Dropdown v-model="choseAudience" optionLabel="name" optionValue="id" :placeholder="t('common.select')" />-->
+<!--            </div>-->
+<!--            <div class="p-fluid md:col-6">-->
+<!--              <label>{{ t('helpDesk.application.date') }}</label>-->
+<!--              <PrimeCalendar v-model="request.date_ranges" dateFormat="dd.mm.yy" :placeholder="t('common.select')" :monthNavigator="true"-->
+<!--                :yearNavigator="true" yearRange="1990:2050" />-->
+<!--            </div>-->
+<!--            <div class="p-fluid md:col-6">-->
+<!--              <label>{{ t('helpDesk.application.dateTime') }}</label>-->
+<!--              <PrimeCalendar id="calendar-timeonly" :placeholder="t('common.select')" v-model="request.dateTime" timeOnly />-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          <div v-if="selectedDirection && selectedDirection.code === 'appointment'">-->
+<!--            <div class="p-fluid md:col-6">-->
+<!--              <label>{{ t('helpDesk.application.selectSpecialist') }}</label>-->
+<!--              <Dropdown v-model="specialization" optionLabel="name" optionValue="id" :placeholder="t('common.select')" />-->
+<!--            </div>-->
+<!--            <div class="p-fluid md:col-6">-->
+<!--              <label>{{ t('helpDesk.application.date') }}</label>-->
+<!--              <PrimeCalendar v-model="request.date_ranges" dateFormat="dd.mm.yy" :placeholder="t('common.select')" :monthNavigator="true"-->
+<!--                :yearNavigator="true" yearRange="1990:2050" />-->
+<!--            </div>-->
+<!--            <div class="p-fluid md:col-6">-->
+<!--              <label>{{ t('helpDesk.application.dateTime') }}</label>-->
+<!--              <PrimeCalendar id="calendar-timeonly" :placeholder="t('common.select')" v-model="request.dateTime" timeOnly />-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          <div class="p-fluid md:col-6">-->
+<!--            <label>{{ t('helpDesk.application.description') }}</label>-->
+<!--            <Textarea class="mt-2" v-model="request.description_ru" autoResize rows="5" cols="30" />-->
+<!--          </div>-->
+<!--          <div class="p-fluid md:col-6">-->
+<!--            <label>{{ t('helpDesk.application.contactNumber') }}</label>-->
+<!--            <InputText class="mt-2" v-model="contactNumber" />-->
+<!--          </div>-->
+<!--        </div>-->
+        <CourseRegistration :courseRequest="request" :validationRequest="validationRequest" @onCheckboxChecked="onChecked" @childInputData="childInput"
+                            @validateInput="validateInput" v-if="selectedDirection && selectedDirection.code === 'course_application'" />
       </BlockUI>
       <!-- sendToApproveDialog -->
       <Dialog :header="t('common.action.sendToApprove')" v-model:visible="visibility.sendToApproveDialog" :style="{ width: '50vw' }">
+        <ProgressBar v-if="approving" mode="indeterminate" style="height: .5em"/>
         <div class="p-fluid" v-if="stages">
-          <ApprovalUsers :approving="approving" v-model="selectedUsers" @closed="close('sendToApproveDialog')" @approve="sendToApprove($event)"
+          <ApprovalUsers :approving="loading"  v-model="selectedUsers" @closed="close('sendToApproveDialog')" @approve="sendToApprove($event)"
             :stages="stages" mode="standard"></ApprovalUsers>
         </div>
       </Dialog>
@@ -78,11 +78,21 @@
         </template>
       </Dialog>
 
+<!--      rejectedDialog-->
+      <Dialog :header="$t('common.states.rejected')" :modal="true" v-model:visible="visibility.rejectedDialog" style="width: 30vw;">
+        <div class="p-fluid col-12">
+          <Textarea v-model="rejectedText" autoResize rows="5" cols="30" />
+        </div>
+        <template #footer>
+          <Button class="p-button-danger" :disabled="!rejectedText" :label="t('common.states.rejected')" @click="rejected()" />
+          <Button :label="t('common.cancel')" @click="close('rejectedDialog')" />
+        </template>
+      </Dialog>
+
       <Sidebar v-model:visible="visibility.documentInfoSidebar" position="right" class="p-sidebar-lg">
         <DocSignaturesInfo :docIdParam="request.doc.uuid"></DocSignaturesInfo>
       </Sidebar>
-      <CourseRegistration :courseRequest="request" :validationRequest="validationRequest" @onCheckboxChecked="onChecked" @childInputData="childInput"
-                          @validateInput="validateInput" v-if="selectedDirection && selectedDirection.code === 'course_application'" />
+
     </TabPanel>
     <TabPanel :header="t('common.show')" :disabled="!request || !request.doc || !request.doc.filePath || request.doc.filePath.length < 1">
       <div class="flex-grow-1 flex flex-row align-items-stretch">
@@ -90,6 +100,7 @@
       </div>
     </TabPanel>
   </TabView>
+
 
 </template>
 
@@ -130,6 +141,7 @@ const showMessage = (severity, detail, life) => {
 const selectedPosition = computed(() => store.state.selectedPosition)
 const isSaved = ref(false)
 const revisionText = ref(null)
+const rejectedText = ref(null)
 const stages = ref([]);
 const description = ref(null)
 const changed = ref(false)
@@ -159,6 +171,7 @@ const visibility = ref({
   documentInfoSidebar: false,
   revisionDialog: false,
   sendToApproveDialog: false,
+  rejectedDialog:false
 });
 const docStatus = ref([
   { name_kz: "құрылды", name_en: "created", name_ru: "создан", code: "created" },
@@ -204,7 +217,7 @@ const menu = computed(() => [
   {
     label: t("common.save"),
     icon: "pi pi-fw pi-save",
-    disabled: isAdmin.value ? true : !isUserDataVaild() || (request.value.doc?.docHistory?.stateId != DocEnum.CREATED.ID &&
+    disabled: !isUserDataVaild() || (request.value.doc?.docHistory?.stateId != DocEnum.CREATED.ID &&
       request.value.doc?.docHistory?.stateId != DocEnum.REVISION.ID && request.value.doc?.docHistory?.stateId != null),
     command: saveDocument
   },
@@ -217,7 +230,7 @@ const menu = computed(() => [
       {
         label: t("common.tosign"),
         icon: "pi pi-user-edit",
-        visible: !isAdmin.value && request.value && (request.value.doc?.docHistory?.stateId === DocEnum.CREATED.ID ||
+        visible: request.value && (request.value.doc?.docHistory?.stateId === DocEnum.CREATED.ID ||
           request.value.doc?.docHistory?.stateId === DocEnum.REVISION.ID),
         command: () => open('sendToApproveDialog')
       },
@@ -227,6 +240,13 @@ const menu = computed(() => [
         visible: request.value && request.value.doc?.docHistory?.stateId === DocEnum.INAPPROVAL.ID &&
           needMySign(),
         command: () => open('revisionDialog')
+      },
+      {
+        label: t("common.states.rejected"),
+        icon: "fa-regular fa-circle-xmark",
+        visible: request.value && request.value.doc?.docHistory?.stateId === DocEnum.INAPPROVAL.ID &&
+            needMySign(),
+        command: () => open('rejectedDialog')
       },
     ]
   },
@@ -249,6 +269,34 @@ const revision = () => {
   service.helpDeskDocumentRevision(req).then(res => {
     loading.value = false;
     close("revisionDialog");
+
+    location.reload();
+  }).catch(err => {
+    loading.value = false;
+
+    if (err.response && err.response.status == 401) {
+      store.dispatch("logLout");
+    } else if (err.response && err.response.data && err.response.data.localized) {
+      showMessage('error', t(err.response.data.localizedPath), null);
+      if (err.response.status == 403) {
+        haveAccess.value = false;
+      }
+    } else {
+      showMessage('error', t('common.message.actionError'), t('common.message.actionErrorContactAdmin'))
+    }
+  })
+}
+
+const rejected = () => {
+  loading.value = true;
+  const req = {
+    ticket: request.value,
+    comment: rejectedText.value,
+    approvalStages: request.value.doc.approvalStages
+  }
+  service.helpDeskDocumentRejected(req).then(res => {
+    loading.value = false;
+    close("rejectedDialog");
 
     location.reload();
   }).catch(err => {
@@ -318,22 +366,53 @@ const validateInput = (data) => {
 const onChecked = (data) => {
   selectedCourses.value = data
 }
+const helpDeskTicketGet = () => {
+  loading.value = true
+  service.helpDeskTicketGet({
+    ID: null,
+    SearchText: null,
+    Page: 0,
+    Rows: 10,
+    uuid: route.params.uuid,
+  })
+      .then((res) => {
+        request.value = res.data.ticket[0]
+        selectedDirection.value = res.data.ticket[0].category;
+        loading.value = false
+      })
+      .catch((err) => {
+        loading.value = false
+        if (err.response.status == 401) {
+          store.dispatch('logLout');
+        }
+        toast.add({
+          severity: 'error',
+          detail: t('common.message.saveError'),
+          life: 3000,
+        });
+      });
+}
 const sendToApprove = (approvalUsers) => {
   if (changed.value) {
     showMessage("warn", t("common.tosign"), t("common.message.saveChanges"));
     return;
   }
-  loading.value = true
+
   const req = {
     ticket: request.value,
     approvalStages: approvalUsers,
   }
+  approving.value = true
+  loading.value = true
+  close("sendToApproveDialog");
   service.helpDeskDocApproval(req).then(res => {
-    close("sendToApproveDialog");
+    approving.value = false
     loading.value = false
     location.reload();
+
   }).catch(err => {
     loading.value = false
+    approving.value = false
     if (err.response && err.response.status == 401) {
       store.dispatch("logLout")
     } else if (err.response && err.response.data && err.response.data.localized) {
@@ -386,7 +465,6 @@ const saveDocument = () => {
   validationRequest.value = validation.value
 
 
-  loading.value = true;
   let student = null
 
   if (request.value.doc.newParams) {
@@ -405,7 +483,6 @@ const saveDocument = () => {
         changed.value = false;
         request.value = res.data
       }).catch(err => {
-        loading.value = false
         if (err.response && err.response.status == 401) {
           store.dispatch("logLout")
         } else if (err.response && err.response.data && err.response.data.localized) {
@@ -447,7 +524,6 @@ const saveDocument = () => {
         changed.value = false;
         request.value = res.data
       }).catch(err => {
-        loading.value = false
         if (err.response && err.response.status == 401) {
           store.dispatch("logLout")
         } else if (err.response && err.response.data && err.response.data.localized) {
@@ -466,7 +542,7 @@ const toggleFilter = (event) => {
   sort.value = event;
 };
 
-const clearStages = () => {
+const initStages = () => {
   const users = []
   if (findRole(null, "student")){
     let userDekan = []
@@ -515,7 +591,7 @@ const clearStages = () => {
   } else {
     stages.value = [{
       stage: 1,
-      users: selectedUsers,
+      users: null,
       titleRu: "Институт непрерывного образования",
       titleKz: "Үздіксіз білім беру институты",
       titleEn: "Institute of Continuing Education",
@@ -526,6 +602,8 @@ const clearStages = () => {
         value: "internal"}
     }]
   }
+
+  selectedUsers.value = stages.value
 };
 
 
@@ -548,36 +626,11 @@ onMounted(() => {
   }
   currentUser.value = JSON.parse(localStorage.getItem("loginedUser"))
   isAdmin.value = (findRole(null, 'main_administrator') || findRole(null, "career_administrator"))
-  clearStages()
+  initStages()
   helpDeskTicketGet()
 })
 
-const helpDeskTicketGet = () => {
-  loading.value = true
-  service.helpDeskTicketGet({
-    ID: null,
-    SearchText: null,
-    Page: 0,
-    Rows: 10,
-    uuid: route.params.uuid,
-  })
-    .then((res) => {
-      request.value = res.data.ticket[0]
-      selectedDirection.value = res.data.ticket[0].category;
-      loading.value = false
-    })
-    .catch((err) => {
-      loading.value = false
-      if (err.response.status == 401) {
-        store.dispatch('logLout');
-      }
-      toast.add({
-        severity: 'error',
-        detail: t('common.message.saveError'),
-        life: 3000,
-      });
-    });
-}
+
 const tabChanged = () => {
   if (activeTab.value === 1) {
     if (!request.value || !request.value.doc || request.value.doc.filePath.length < 1) return;
@@ -625,15 +678,6 @@ const isSaveItemsRequest = computed(() => {
 </script>
 
 <style scoped>
-.progress-spinner {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  margin: auto;
-  z-index: 1102;
-}
 
 .arrow-icon {
   cursor: pointer;
@@ -652,35 +696,6 @@ const isSaveItemsRequest = computed(() => {
   margin-bottom: 0px;
 }
 
-.status-status_created {
-  background: #6c757d;
-  color: #fff;
-}
-
-.status-status_signing {
-  background: #17a2b8;
-  color: #fff;
-}
-
-.status-status_signed {
-  background: #28a745;
-  color: #fff;
-}
-
-.status-status_inapproval {
-  background: #9317b8;
-  color: #ffffff;
-}
-
-.status-status_approved {
-  background: #007bff;
-  color: #ffffff;
-}
-
-.status-status_revision {
-  background: #ffcdd2;
-  color: #c63737;
-}
 
 :deep(.p-datatable-footer),
 :deep(.p-button-link),

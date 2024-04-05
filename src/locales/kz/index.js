@@ -1817,6 +1817,7 @@ export default {
             contactNumber: 'Байланыс нөмірі',
             categoryApplication: 'Өтінім санаты',
             choseAudience: 'Аудиторияны таңдаңыз',
+            chooseDiscipline: 'Пәнді таңдаңыз',
             selectSpecialist: 'Маманды таңдаңыз',
             applicationNumber: 'Өтінім нөмірі:',
             created: 'Құрылды',
@@ -1827,7 +1828,7 @@ export default {
             credits: 'Кредит саны',
             codeName: 'Код атауы',
             inputErrorMessage: 'Дұрыс деректерді енгізіңіз',
-            applicationObjectives: 'өтінімнің мақсаттары'
+            applicationObjectives: 'Өтінімнің мақсаттары'
         },
 
     }
