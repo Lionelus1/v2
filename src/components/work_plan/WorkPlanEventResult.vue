@@ -48,7 +48,7 @@
           </div>
 
               <div class="grid mt-3" v-if="plan && resultData && (new Date(plan.create_date).getFullYear() < new Date().getFullYear())">
-            <div class="p-sm-12 md:col-12 lg:col-12 p-xl-6" style="padding-left: 0 !important;">
+              <div class="p-sm-12 md:col-12 lg:col-12 p-xl-6" style="padding-left: 0 !important;">
               
               <div class="field" v-if="event && isOperPlan">
                 <label class="bold">{{ $t('common.fact') }}: </label>
@@ -139,7 +139,6 @@
                 </div>
               </div>
             </div>
-
             <div v-if="event && event.user">
             <div v-for="item in event.user" :key="item.id">
               <Divider align="left" v-if="isPlanCreator || loginedUserId === item.id"><i class="fa-solid fa-user mr-1"></i><b>{{ item.fullName }}</b></Divider>

@@ -125,7 +125,7 @@ export default {
       selectedUsers: [],
       parentData: null,
       parentId: null,
-      summaryDepartment: null,
+      summaryDepartment: [],
       formValid: {
         event_name: false,
         users: false,
@@ -157,13 +157,14 @@ export default {
       console.log(ind)
       this.quarters = this.quarters.slice(0, ind);*/
     }
-    
+   
   },
   created() {
     this.work_plan_id = parseInt(this.$route.params.id);
+   
+
   },
   computed: {
-    
     isSciencePlan() {
       return this.plan && this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Science
     },
@@ -220,7 +221,9 @@ export default {
       } else {
         this.selectedUsers.forEach(e => {
           userIds.push({user: e, role: null});
-          this.respUsers.push({id: e.userID, fullName: e.fullName});
+            this.respUsers.push({id: e.userID, fullName: e.fullName});
+          
+          
         });
       }
 
@@ -261,7 +264,9 @@ export default {
         this.clearModel();
         //this.addToArray(res.data);
       }).catch(error => {
-        this.$toast.add({severity: "error", summary: error, life: 3000});
+        if (error && error.error === 'summaryuseradded') {
+          this.$toast.add({ severity: "warn", summary: this.$t('workPlan.warnAddingSummaryUser'), life: 4000 });
+        }
       });
     },
     addToArray(data) {
