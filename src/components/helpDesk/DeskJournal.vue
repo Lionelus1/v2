@@ -104,7 +104,7 @@
     </BlockUI>
   </div>
   <Sidebar v-model:visible="visibility.documentInfoSidebar" position="right" class="p-sidebar-lg"
-           style="overflow-y: scroll" @hide="getHelpdeskDeskJournal">
+           style="overflow-y: scroll">
     <DocSignaturesInfo :docIdParam="currentDocument.uuid"></DocSignaturesInfo>
   </Sidebar>
 </template>
@@ -251,41 +251,7 @@ const closeBasic = () => {
   showModal.value = false;
 };
 
-const getHelpdeskDeskJournal = () => {
 
-  docService.getDocumentsV2({
-    page: lazyParams.value.page,
-    rows: lazyParams.value.rows,
-    docType: Enum.DocType.RequestList,
-    filter: {
-      name: null,
-      status: null,
-      author: null,
-      years: null,
-    },
-  }).then(res => {
-    this.documents = res.data.documents
-    this.total = res.data.total
-    this.currentDocument = null
-
-    this.tableLoading = false
-  }).catch(err => {
-    this.documents = []
-    this.total = 0
-    this.currentDocument = null
-
-    if (err.response && err.response.status == 401) {
-      this.$store.dispatch("logLout")
-    } else if (err.response && err.response.data && err.response.data.localized) {
-      this.showMessage('error', this.$t(err.response.data.localizedPath), null)
-    } else {
-      console.log(err)
-      this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
-    }
-
-    this.tableLoading = false
-  });
-}
 const getDocStatus = (code) => {
   const foundStatus = docStatus.value.find(status => status.code === code);
   if (foundStatus) {
