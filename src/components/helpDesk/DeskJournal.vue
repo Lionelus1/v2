@@ -78,8 +78,8 @@
 
           <Column style="min-width: 50px;">
             <template #body="{data}">
-              <div class="flex flex-wrap column-gap-1 row-gap-1" style="margin-left: 30px">
-                <Button @click="currentDocument=data;openSignInfo()"
+              <div v-if="data.doc?.uuid" class="flex flex-wrap column-gap-1 row-gap-1" style="margin-left: 30px">
+                <Button @click="currentDocument=data.doc ;openSignInfo()"
                         v-if="data.doc.docHistory.stateId >= Enum.INAPPROVAL.ID" class="p-button-text p-button-info p-1">
                   <i class="fa-solid fa-eye fa-xl"></i>
                 </Button>
@@ -258,10 +258,10 @@ const getHelpdeskDeskJournal = () => {
     rows: lazyParams.value.rows,
     docType: Enum.DocType.RequestList,
     filter: {
-      name: this.filter.name && this.filter.name.length > 0 ? this.filter.name : null,
-      status: this.filter.status && this.filter.status.length > 0 ? this.filter.status : null,
-      author: this.filter.author.length > 0 && this.filter.author[0] ? this.filter.author[0].userID : null,
-      years: this.filter.years && this.filter.years.length > 0 ? this.filter.years : null,
+      name: null,
+      status: null,
+      author: null,
+      years: null,
     },
   }).then(res => {
     this.documents = res.data.documents
@@ -438,61 +438,6 @@ const toggleFilter = (event) => {
   &.status-rejected {
     background: red;
     color: #fff;
-  }
-
-  &.status-4 {
-    background: #C8E6C9;
-    color: #256029;
-  }
-
-  &.status-3 {
-    background: #FFCDD2;
-    color: #C63737;
-  }
-
-  &.status-2 {
-    background: #FEEDAF;
-    color: #8A5340;
-  }
-
-  &.status-1 {
-    background: #B3E5FC;
-    color: #23547B;
-  }
-
-  &.created {
-    background: #3588a8;
-    color: #fff;
-  }
-
-  &.inapproval {
-    background: #C8E6C9;
-    color: #256029;
-  }
-
-  &.approved {
-    background: #FFCDD2;
-    color: #C63737;
-  }
-
-  &.revision {
-    background: #FEEDAF;
-    color: #8A5340;
-  }
-
-  &.rejected {
-    background: #B3E5FC;
-    color: #23547B;
-  }
-
-  &.signing {
-    background: #2a6986;
-    color: #bfc9d1;
-  }
-
-  &.signed {
-    background: rgb(57, 134, 42);
-    color: #bfc9d1;
   }
 
   &.sent for re-approval {
