@@ -29,8 +29,8 @@
         </div>
       </template>
     </Dropdown>
-    <Sidebar v-model:visible="sidebar" position="right" class="p-sidebar-lg" style="overflow-y:scroll">
-      <Department :readonly="false" :orgId="this.orgId" :orgType="orgType" :modelValue="this.value"></Department>
+    <Sidebar v-if="sidebar" v-model:visible="sidebar" position="right" class="p-sidebar-lg" style="overflow-y:scroll">
+      <Department :readonly="false" :orgId="orgId" :orgType="orgType" :modelValue="value"></Department>
     </Sidebar>
   </div>
 </template>
