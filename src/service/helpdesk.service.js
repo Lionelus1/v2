@@ -21,6 +21,11 @@ export class HelpDeskService {
     helpDeskDocumentRevision(data){
         return api.post(`/helpdesk/doc/revision`, data, {headers: getHeader()})
     }
+
+    helpDeskDocumentRejected(data){
+        return api.post(`/helpdesk/doc/rejected`, data,{headers: getHeader()})
+    }
+
     helpDeskStudentInfo(data){
         return api.post(`/helpdesk/studentInfo`, data, {headers: getHeader()})
     }

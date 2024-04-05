@@ -1,26 +1,24 @@
 <template>
   <div class="col-12">
     <h3>{{ t('helpDesk.title') }}</h3>
-    <ToolbarMenu :data="mainMenu">//@search="search" :search="true" @filter="toggleFilter($event)" :filter="true" :filtered="filtered"
+    <ToolbarMenu :data="mainMenu" @search="search" :search="true" @filter="toggleFilter($event)" :filter="true" :filtered="filter">//@search="search" :search="true" @filter="toggleFilter($event)" :filter="true" :filtered="filtered"
       <template #end>
-        <Button class="align-items-center" :class="{
-      'p-button-success p-button-outlined': filter.applied,
-      'p-button-secondary p-button-text': !filter.applied
-    }">
-        </Button>
+        <Button class="align-items-center" :class="{'p-button-success p-button-outlined': filter.applied,
+          'p-button-secondary p-button-text': !filter.applied}" @click="toggle('filterOverlayPanel', $event)">
+          <i class="fa-solid fa-filter" /> &nbsp;{{ $t("scienceWorks.buttons.filter") }}</Button>
       </template>
     </ToolbarMenu>
-    <BlockUI :blocked="loading" class="card">
+    <BlockUI class="card">
       <Dialog :header="t('helpDesk.application.applicationName')" v-model:visible="visibility.newPublicationDialog" :style="{ width: '450px' }"
         class="p-fluid">
         <div class="field">
-          <label>{{ t('helpDesk.application.requestReason') }}</label>
+          <label>{{ t('helpDesk.application.categoryApplication') }}</label>
           <Dropdown v-model="selectedDirection"
                     :options="directions"
                     :optionLabel="locale === 'kz' ? 'name_kz' : locale === 'ru' ? 'name_ru' :
           'name_en'" :placeholder="t('common.select')" />
           <div style="margin-top: 15px" v-if="selectedDirection?.code === 'course_application'">
-            <label>{{ t('helpDesk.application.applicationObjectives') }}</label>
+            <label>{{ t('helpDesk.application.requestReason') }}</label>
             <Dropdown style="margin-top: 5px" v-model="selectedPosition"
                       :options="position"
                       :optionLabel="locale === 'kz' ? 'name_kz' : locale === 'ru' ? 'name_ru' :
@@ -35,17 +33,16 @@
         </template>
       </Dialog>
       <div>
-        <DataTable :lazy="true" :rowsPerPageOptions="[5, 10, 20, 50]" :value="data" dataKey="id" :rowHover="true"
+        <DataTable :lazy="true" :loading="loading" :rowsPerPageOptions="[5, 10, 20, 50]" :value="data" dataKey="id" :rowHover="true"
           filterDisplay="menu" responsiveLayout="scroll" :paginator="true" selectionMode="single" stripedRows
           class="p-datatable-sm" :rows="10" :totalRecords="total" @page="onPage" v-model:selection="currentDocument" scrollable
           scrollHeight="flex" @lazy="true">
           <!-- :globalFilterFields="['columns.number','creationTime', 'status', 'requestReason', 'categoryApplication', 'responsible']" -->
           <template #empty> {{ t('common.noData') }}</template>
-          <template #loading> {{ t('common.loading') }}</template>
           <!-- <Column field="content" :header="t('contracts.columns.number')" sortable>
           </Column> -->
 
-          <Column field="create_date" :header="t('helpDesk.creationTime')">
+          <Column @click="openDocument" field="create_date" :header="t('helpDesk.creationTime')">
             <template #body="{ data }">
               <a href="javascript:void(0)">{{ (formatDate(data.doc?.docHistory?.setDate) ? formatDate(data.doc?.docHistory?.setDate) : '') }}</a>
             </template>
@@ -73,28 +70,43 @@
             </template>
           </Column>
 
-          <Column field="category" :header="t('web.logUser')" v-if="findRole(null, 'main_administrator')">
+          <Column field="fullName" :header="t('web.logUser')" >
             <template #body="{ data }">
               <a href="javascript:void(0)">{{ data.doc.newParams.not_formal_student_info.value.fullName }}</a>
             </template>
           </Column>
 
-          <Column style="min-width: 50px;" v-if="!findRole(null, 'main_administrator')">
-            <template #body="{ data }">
-              <div class="flex flex-wrap column-gap-1 row-gap-1">
-                <Button class="p-button-text p-button-warning p-1 mr-2" @click="currentDocument = data; openDocument()">
-                  <i class="fa-solid fa-pencil fa-xl"></i>
+          <Column style="min-width: 50px;">
+            <template #body="{data}">
+              <div class="flex flex-wrap column-gap-1 row-gap-1" style="margin-left: 30px">
+                <Button @click="currentDocument=data;openSignInfo()"
+                        v-if="data.doc.docHistory.stateId >= Enum.INAPPROVAL.ID" class="p-button-text p-button-info p-1">
+                  <i class="fa-solid fa-eye fa-xl"></i>
                 </Button>
-                <!-- <Button class="p-button-text p-button-danger p-1 mr-2" @click="currentDocument = data; deleteFile()">
-                  <i class="fa-solid fa-trash-can fa-xl"></i>
-                </Button> -->
               </div>
             </template>
           </Column>
+
+<!--          <Column style="min-width: 50px;" v-if="!findRole(null, 'main_administrator')">-->
+<!--            <template #body="{ data }">-->
+<!--              <div class="flex flex-wrap column-gap-1 row-gap-1">-->
+<!--                <Button class="p-button-text p-button-warning p-1 mr-2" @click="currentDocument = data; openDocument()">-->
+<!--                  <i class="fa-solid fa-pencil fa-xl"></i>-->
+<!--                </Button>-->
+<!--                &lt;!&ndash; <Button class="p-button-text p-button-danger p-1 mr-2" @click="currentDocument = data; deleteFile()">-->
+<!--                  <i class="fa-solid fa-trash-can fa-xl"></i>-->
+<!--                </Button> &ndash;&gt;-->
+<!--              </div>-->
+<!--            </template>-->
+<!--          </Column>-->
         </DataTable>
       </div>
     </BlockUI>
   </div>
+  <Sidebar v-model:visible="visibility.documentInfoSidebar" position="right" class="p-sidebar-lg"
+           style="overflow-y: scroll" @hide="getHelpdeskDeskJournal">
+    <DocSignaturesInfo :docIdParam="currentDocument.uuid"></DocSignaturesInfo>
+  </Sidebar>
 </template>
 
 <script setup>
@@ -106,13 +118,16 @@ import { findRole } from "@/config/config";
 import { useToast } from "primevue/usetoast";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
+import Enum from "@/enum/docstates";
+import DocSignaturesInfo from "@/components/DocSignaturesInfo.vue";
+import {DocService} from "@/service/doc.service";
 
 
 const { t, locale } = useI18n()
 const store = useStore()
 const toast = useToast()
 const router = useRouter();
-
+const docService = new DocService()
 const service = new HelpDeskService()
 const request = ref({
   id: null,
@@ -139,9 +154,9 @@ const showMessage = (severity, detail, life) => {
 
 const position = ref([
   {name_kz: "Қосымша білім беру бағдарламасы", name_en: "Additional educational program", name_ru: "Дополнительная образовательная программа", code: "additional"},
-  {name_kz: "Пререквизиттерді игеру", name_en: "Mastering prerequisites", name_ru: "Освоение пререквизитов", code: "mastering"},
-  {name_kz: "Академиялық қарызды жою", name_en: "Liquidation of academic debt", name_ru: "Ликвидация академической задолженности", code: "liquidation"},
-  {name_kz: "Аударым ұпайларын арттыру (GPA)", name_en: "Increase in transferable points (GPA)", name_ru: "Повышение переводных баллов (GPA)", code: "increase"},
+  {name_kz: "Пререквизиттерді меңгеру", name_en: "Mastering prerequisites", name_ru: "Освоение пререквизитов", code: "mastering"},
+  {name_kz: "Академиялық берешекті жою", name_en: "Liquidation of academic debt", name_ru: "Ликвидация академической задолженности", code: "liquidation"},
+  {name_kz: "Ауысу ұпайларын көтеру (GPA)", name_en: "Increase in transferable points (GPA)", name_ru: "Повышение переводных баллов (GPA)", code: "increase"},
 ]);
 
 const docStatus = ref([
@@ -159,6 +174,7 @@ const docStatus = ref([
 const visibility = ref({
   Request: false,
   newPublicationDialog: false,
+  documentInfoSidebar: false
 });
 const selectedPosition = computed({
   get(){
@@ -234,6 +250,42 @@ const closeBasic = () => {
   selectedDirection.value = null;
   showModal.value = false;
 };
+
+const getHelpdeskDeskJournal = () => {
+
+  docService.getDocumentsV2({
+    page: lazyParams.value.page,
+    rows: lazyParams.value.rows,
+    docType: Enum.DocType.RequestList,
+    filter: {
+      name: this.filter.name && this.filter.name.length > 0 ? this.filter.name : null,
+      status: this.filter.status && this.filter.status.length > 0 ? this.filter.status : null,
+      author: this.filter.author.length > 0 && this.filter.author[0] ? this.filter.author[0].userID : null,
+      years: this.filter.years && this.filter.years.length > 0 ? this.filter.years : null,
+    },
+  }).then(res => {
+    this.documents = res.data.documents
+    this.total = res.data.total
+    this.currentDocument = null
+
+    this.tableLoading = false
+  }).catch(err => {
+    this.documents = []
+    this.total = 0
+    this.currentDocument = null
+
+    if (err.response && err.response.status == 401) {
+      this.$store.dispatch("logLout")
+    } else if (err.response && err.response.data && err.response.data.localized) {
+      this.showMessage('error', this.$t(err.response.data.localizedPath), null)
+    } else {
+      console.log(err)
+      this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
+    }
+
+    this.tableLoading = false
+  });
+}
 const getDocStatus = (code) => {
   const foundStatus = docStatus.value.find(status => status.code === code);
   if (foundStatus) {
@@ -277,6 +329,10 @@ const requstLocal = () => {
       break;
   }
 };
+
+const openSignInfo = () => {
+    open('documentInfoSidebar');
+}
 const onPage = (event) => {
   lazyParams.value.page = event.page;
   lazyParams.value.rows = event.rows;
@@ -379,8 +435,8 @@ const toggleFilter = (event) => {
   font-size: 12px;
   letter-spacing: .3px;
 
-  &.status-5 {
-    background: #B48B7D;
+  &.status-rejected {
+    background: red;
     color: #fff;
   }
 

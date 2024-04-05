@@ -15,13 +15,13 @@
       </div>
     </div>
   </div>
-  <BlockUI class="card" v-if="(findRole(null, 'student') || findRole(null, 'main_administrator'))">
+  <BlockUI style="margin-top: 10px" v-if="(findRole(null, 'student') || findRole(null, 'main_administrator'))">
     <div>
       <div class="mb-3"
            style="display: flex; justify-content: space-between; margin-bottom: 20px"
       >
       <div class="buttonLanguag">
-        <Button class="toggle-button" @click="toggleRegistration">Выберите дисциплину</Button>
+        <Button class="toggle-button" @click="toggleRegistration">{{t('helpDesk.application.chooseDiscipline')}}</Button>
       </div>
         <span class="p-input-icon-left mr-2 position-relative" v-if="showRegistration && props.courseRequest && data" >
     <i class="pi pi-search position-absolute" style="top: 15px"/>
@@ -80,44 +80,44 @@
     <div class="field" v-if="!findRole(null, 'student') && !findRole(null, 'main_administrator')" style="margin-top: 15px;">
       <label>{{ t('helpDesk.application.discipline') }}<span v-if="isCurrentUserSender" style="font-size: 20px; color: red;">*</span></label>
       <InputText v-model="userData.discipline" type="text"
-        :disabled="isAdmin || (props.courseRequest?.doc?.docHistory?.stateId == DocEnum.INAPPROVAL.ID)"
+        :disabled="disabledStatus"
         :placeholder="t('helpDesk.application.discipline')" @input="input" />
     </div>
     <div class="field">
       <label>{{ t('common.fullName') }}<span v-if="isCurrentUserSender" style="font-size: 20px; color: red;">*</span></label>
       <!-- :disabled="!!responseUserData.fullName" -->
       <InputText v-model="userData.fullName" type="text"
-        :disabled="isAdmin || (props.courseRequest?.doc?.docHistory?.stateId == DocEnum.INAPPROVAL.ID)" :placeholder="t('common.fullName')"
+        :disabled="disabledStatus" :placeholder="t('common.fullName')"
         @input="input" />
     </div>
     <div class="field" style="margin-top: 10px;">
       <label>{{ t('common.speciality') }}<span v-if="isCurrentUserSender" style="font-size: 20px; color: red;">*</span></label>
       <InputText v-model="userData.speciality" type="text"
-        :disabled="isAdmin || (props.courseRequest?.doc?.docHistory?.stateId == DocEnum.INAPPROVAL.ID)"
+        :disabled="disabledStatus"
         :placeholder="userData.speciality || t('common.speciality')" @input="input" />
     </div>
     <div class="field" style="margin-top: 10px;">
       <label>{{ t('course.course') }}<span v-if="isCurrentUserSender" style="font-size: 20px; color: red;">*</span></label>
-      <InputText v-model="userData.course" :disabled="isAdmin || (props.courseRequest?.doc?.docHistory?.stateId == DocEnum.INAPPROVAL.ID)"
-        :placeholder=" t('course.course')" style="width: 350px;" @input="input" />
+      <InputNumber v-model="userData.course"  :disabled="disabledStatus"
+        :placeholder=" t('course.course')" id="number-input" style="width: 350px;" @input="input" />
       <div v-if="props.validationRequest.course" style="color: red; margin-top: 5px">Курс введен неправильно</div>
     </div>
     <div class="field" style="margin-top: 10px;">
       <label>{{ t('contracts.cafedraGroup') }}<span v-if="isCurrentUserSender" style="font-size: 20px; color: red;">*</span>
       </label>
-      <InputText v-model="userData.group" type="text" :disabled="isAdmin || (props.courseRequest?.doc?.docHistory?.stateId == DocEnum.INAPPROVAL.ID)"
+      <InputText v-model="userData.group" type="text" :disabled="disabledStatus"
         :placeholder="userData.group || t('contracts.cafedraGroup')" @input="input" />
     </div>
     <div class="field" style="margin-top: 10px;">
       <label>{{ t('contact.phone') }}<span v-if="isCurrentUserSender" style="font-size: 20px; color: red;">*</span></label>
       <InputText v-model="userData.phone" class="mt-2" inputId="userDataPhone" :placeholder="t('contact.phone')"
-        style="width: 350px;" @input="input" :disabled="isAdmin || (props.courseRequest?.doc?.docHistory?.stateId == DocEnum.INAPPROVAL.ID)"/>
-      <div v-if="props.validationRequest.phone" style="color: red; margin-top: 5px">Номер введен неправильно</div>
+        style="width: 350px;" @input="input"  :disabled="disabledStatus"/>
+      <div v-if="props.validationRequest.phone"  style="color: red; margin-top: 5px">Номер введен неправильно</div>
     </div>
     <div class="field" style="margin-top: 10px;">
       <label>{{ t('contact.email') }}<span v-if="isCurrentUserSender" style="font-size: 20px; color: red;">*</span></label>
       <InputText v-model="userData.email" type="text" :placeholder="t('contact.email')" @input="input"
-        :disabled="isAdmin || (props.courseRequest?.doc?.docHistory?.stateId == DocEnum.INAPPROVAL.ID)" />
+        :disabled="disabledStatus" />
       <div v-if="props.validationRequest.email" style="color: red; margin-top: 5px">Email введен неправильно</div>
     </div>
   </div>
@@ -221,6 +221,8 @@ const selectedDirection = ref({
   name_en: null,
 });
 const showRegistration = ref(false);
+
+const disabledStatus = isAdmin.value || props.courseRequest?.doc?.docHistory?.stateId == DocEnum.INAPPROVAL.ID || props.courseRequest?.doc?.docHistory?.stateId == DocEnum.REJECTED.ID
 
 const toggleRegistration = () => {
   showRegistration.value = !showRegistration.value;
@@ -466,6 +468,11 @@ onMounted(() => {
   color: #c63737;
 }
 
+.status-rejected {
+  background: red;
+  color: #fff;
+}
+
 .commonColum {
   display: flex;
   align-items: center;
@@ -479,26 +486,6 @@ onMounted(() => {
   font-weight: 700;
   font-size: 12px;
   letter-spacing: .3px;
-}
-
-.customer-badge.status-5 {
-  background: #B48B7D;
-  color: #fff;
-}
-
-.customer-badge.status-4 {
-  background: #C8E6C9;
-  color: #256029;
-}
-
-.customer-badge.status-3 {
-  background: #FFCDD2;
-  color: #C63737;
-}
-
-.customer-badge.status-2 {
-  background: #FEEDAF;
-  color: #8A5340;
 }
 
 .customer-badge.operational-plan {

@@ -10,6 +10,7 @@
   <TabView v-model:activeIndex="activeTab" @tab-change="tabChanged" class="flex flex-column flex-grow-1">
     <TabPanel :header="selectedDirection['name_' + locale]">
       <BlockUI v-if="haveAccess && selectedDirection && selectedDirection.code !== 'course_application'" :blocked="loading" class="card">
+        <ProgressSpinner v-if="loading" class="progress-spinner" strokeWidth="5"/>
         <div class="">
             <div class="p-fluid md:col-6">
             <label>{{ t('helpDesk.application.categoryApplication') }}</label>
@@ -62,8 +63,9 @@
       </BlockUI>
       <!-- sendToApproveDialog -->
       <Dialog :header="t('common.action.sendToApprove')" v-model:visible="visibility.sendToApproveDialog" :style="{ width: '50vw' }">
+        <ProgressBar v-if="approving" mode="indeterminate" style="height: .5em"/>
         <div class="p-fluid" v-if="stages">
-          <ApprovalUsers :approving="approving" v-model="selectedUsers" @closed="close('sendToApproveDialog')" @approve="sendToApprove($event)"
+          <ApprovalUsers :approving="loading"  v-model="selectedUsers" @closed="close('sendToApproveDialog')" @approve="sendToApprove($event)"
             :stages="stages" mode="standard"></ApprovalUsers>
         </div>
       </Dialog>
@@ -75,6 +77,17 @@
         <template #footer>
           <Button class="p-button-danger" :disabled="!revisionText" :label="t('common.revision')" @click="revision()" />
           <Button :label="t('common.cancel')" @click="close('revisionDialog')" />
+        </template>
+      </Dialog>
+
+<!--      rejectedDialog-->
+      <Dialog :header="$t('common.states.rejected')" :modal="true" v-model:visible="visibility.rejectedDialog" style="width: 30vw;">
+        <div class="p-fluid col-12">
+          <Textarea v-model="rejectedText" autoResize rows="5" cols="30" />
+        </div>
+        <template #footer>
+          <Button class="p-button-danger" :disabled="!rejectedText" :label="t('common.states.rejected')" @click="rejected()" />
+          <Button :label="t('common.cancel')" @click="close('rejectedDialog')" />
         </template>
       </Dialog>
 
@@ -130,6 +143,7 @@ const showMessage = (severity, detail, life) => {
 const selectedPosition = computed(() => store.state.selectedPosition)
 const isSaved = ref(false)
 const revisionText = ref(null)
+const rejectedText = ref(null)
 const stages = ref([]);
 const description = ref(null)
 const changed = ref(false)
@@ -159,6 +173,7 @@ const visibility = ref({
   documentInfoSidebar: false,
   revisionDialog: false,
   sendToApproveDialog: false,
+  rejectedDialog:false
 });
 const docStatus = ref([
   { name_kz: "құрылды", name_en: "created", name_ru: "создан", code: "created" },
@@ -228,6 +243,13 @@ const menu = computed(() => [
           needMySign(),
         command: () => open('revisionDialog')
       },
+      {
+        label: t("common.states.rejected"),
+        icon: "fa-regular fa-circle-xmark",
+        visible: request.value && request.value.doc?.docHistory?.stateId === DocEnum.INAPPROVAL.ID &&
+            needMySign(),
+        command: () => open('rejectedDialog')
+      },
     ]
   },
   {
@@ -249,6 +271,34 @@ const revision = () => {
   service.helpDeskDocumentRevision(req).then(res => {
     loading.value = false;
     close("revisionDialog");
+
+    location.reload();
+  }).catch(err => {
+    loading.value = false;
+
+    if (err.response && err.response.status == 401) {
+      store.dispatch("logLout");
+    } else if (err.response && err.response.data && err.response.data.localized) {
+      showMessage('error', t(err.response.data.localizedPath), null);
+      if (err.response.status == 403) {
+        haveAccess.value = false;
+      }
+    } else {
+      showMessage('error', t('common.message.actionError'), t('common.message.actionErrorContactAdmin'))
+    }
+  })
+}
+
+const rejected = () => {
+  loading.value = true;
+  const req = {
+    ticket: request.value,
+    comment: rejectedText.value,
+    approvalStages: request.value.doc.approvalStages
+  }
+  service.helpDeskDocumentRejected(req).then(res => {
+    loading.value = false;
+    close("rejectedDialog");
 
     location.reload();
   }).catch(err => {
@@ -323,17 +373,22 @@ const sendToApprove = (approvalUsers) => {
     showMessage("warn", t("common.tosign"), t("common.message.saveChanges"));
     return;
   }
-  loading.value = true
+
   const req = {
     ticket: request.value,
     approvalStages: approvalUsers,
   }
+  loading.value = true
+  approving.value = true
+  close("sendToApproveDialog");
+  loading.value = false
   service.helpDeskDocApproval(req).then(res => {
-    close("sendToApproveDialog");
+    approving.value = false
     loading.value = false
     location.reload();
   }).catch(err => {
     loading.value = false
+    approving.value = false
     if (err.response && err.response.status == 401) {
       store.dispatch("logLout")
     } else if (err.response && err.response.data && err.response.data.localized) {
@@ -386,7 +441,6 @@ const saveDocument = () => {
   validationRequest.value = validation.value
 
 
-  loading.value = true;
   let student = null
 
   if (request.value.doc.newParams) {
@@ -405,7 +459,6 @@ const saveDocument = () => {
         changed.value = false;
         request.value = res.data
       }).catch(err => {
-        loading.value = false
         if (err.response && err.response.status == 401) {
           store.dispatch("logLout")
         } else if (err.response && err.response.data && err.response.data.localized) {
@@ -447,7 +500,6 @@ const saveDocument = () => {
         changed.value = false;
         request.value = res.data
       }).catch(err => {
-        loading.value = false
         if (err.response && err.response.status == 401) {
           store.dispatch("logLout")
         } else if (err.response && err.response.data && err.response.data.localized) {
@@ -466,7 +518,7 @@ const toggleFilter = (event) => {
   sort.value = event;
 };
 
-const clearStages = () => {
+const initStages = () => {
   const users = []
   if (findRole(null, "student")){
     let userDekan = []
@@ -515,7 +567,7 @@ const clearStages = () => {
   } else {
     stages.value = [{
       stage: 1,
-      users: selectedUsers,
+      users: null,
       titleRu: "Институт непрерывного образования",
       titleKz: "Үздіксіз білім беру институты",
       titleEn: "Institute of Continuing Education",
@@ -526,6 +578,8 @@ const clearStages = () => {
         value: "internal"}
     }]
   }
+
+  selectedUsers.value = stages.value
 };
 
 
@@ -548,7 +602,7 @@ onMounted(() => {
   }
   currentUser.value = JSON.parse(localStorage.getItem("loginedUser"))
   isAdmin.value = (findRole(null, 'main_administrator') || findRole(null, "career_administrator"))
-  clearStages()
+  initStages()
   helpDeskTicketGet()
 })
 
@@ -632,7 +686,7 @@ const isSaveItemsRequest = computed(() => {
   left: 0;
   right: 0;
   margin: auto;
-  z-index: 1102;
+  z-index: 1000;
 }
 
 .arrow-icon {
@@ -652,35 +706,6 @@ const isSaveItemsRequest = computed(() => {
   margin-bottom: 0px;
 }
 
-.status-status_created {
-  background: #6c757d;
-  color: #fff;
-}
-
-.status-status_signing {
-  background: #17a2b8;
-  color: #fff;
-}
-
-.status-status_signed {
-  background: #28a745;
-  color: #fff;
-}
-
-.status-status_inapproval {
-  background: #9317b8;
-  color: #ffffff;
-}
-
-.status-status_approved {
-  background: #007bff;
-  color: #ffffff;
-}
-
-.status-status_revision {
-  background: #ffcdd2;
-  color: #c63737;
-}
 
 :deep(.p-datatable-footer),
 :deep(.p-button-link),
