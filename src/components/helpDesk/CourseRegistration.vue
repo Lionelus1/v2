@@ -5,7 +5,7 @@
         {{ getDocStatus(props.courseRequest.doc?.docHistory?.stateEn) }}
       </span>
     </p>
-    <div v-if="props.courseRequest.doc?.docHistory?.stateEn === 'revision'">
+    <div v-if="props.courseRequest.doc?.docHistory?.stateEn === 'revision' || props.courseRequest.doc?.docHistory?.stateEn === 'rejected' ">
       <label>{{ $t('common.comment') }}:</label>
       <div>
         <Message style="width: 150px;" :closable="false"

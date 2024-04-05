@@ -154,6 +154,7 @@ const category = ref(null);
 const directions = ref(null);
 const selectedCell = ref(null);
 const selectedDateTime = ref(null);
+
 const selectedDirection = ref({
   name_ru: null,
   name_kz: null,
@@ -264,7 +265,8 @@ const revision = () => {
   const req = {
     ticket: request.value,
     comment: revisionText.value,
-    approvalStages: request.value.doc.approvalStages
+    approvalStages: request.value.doc.approvalStages,
+    status: 4
   }
   service.helpDeskDocumentRevision(req).then(res => {
     loading.value = false;
@@ -292,9 +294,10 @@ const rejected = () => {
   const req = {
     ticket: request.value,
     comment: rejectedText.value,
-    approvalStages: request.value.doc.approvalStages
+    approvalStages: request.value.doc.approvalStages,
+    status: 5
   }
-  service.helpDeskDocumentRejected(req).then(res => {
+  service.helpDeskDocumentRevision(req).then(res => {
     loading.value = false;
     close("rejectedDialog");
 
