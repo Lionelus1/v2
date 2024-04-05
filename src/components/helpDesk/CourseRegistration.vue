@@ -41,7 +41,7 @@
 
       </div>
       <DataTable v-if="showRegistration && props.courseRequest && data" :lazy="true" :rowsPerPageOptions="[5, 10, 20, 50]" :value="data" dataKey="id"
-        :rowHover="true" filterDisplay="menu" :loading="loading" responsiveLayout="scroll" :paginator="true" stripedRows
+        :rowHover="true" filterDisplay="menu" responsiveLayout="scroll" :paginator="true" stripedRows
         class="p-datatable-sm" :rows="total >= 10 ? 10 : total" :totalRecords="total" @page="onPage" v-model:selection="currentDocument"
          scrollable scrollHeight="flex" @lazy="true">
 
@@ -78,7 +78,7 @@
     </div>
   </BlockUI>
   <div>
-    <div class="field" v-if="!findRole(null, 'student') && !findRole(null, 'main_administrator')" style="margin-top: 15px;">
+    <div class="field" v-if="!findRole(null, 'student') && !props.courseRequest.doc?.newParams?.not_formal_education_ids " style="margin-top: 15px;">
       <label>{{ t('helpDesk.application.discipline') }}<span v-if="isCurrentUserSender" style="font-size: 20px; color: red;">*</span></label>
       <InputText v-model="userData.discipline" type="text"
         :disabled="disabledStatus"
@@ -333,7 +333,7 @@ const getStudentInfo = () => {
     emit('childInputData', userData.value)
 
   }).catch(err => {
-    loading.value = false
+
     if (err.response && err.response.status == 401) {
       store.dispatch("logLout")
     } else if (err.response && err.response.data && err.response.data.localized) {

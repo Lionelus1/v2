@@ -42,15 +42,15 @@
           <!-- <Column field="content" :header="t('contracts.columns.number')" sortable>
           </Column> -->
 
-          <Column @click="openDocument" field="create_date" :header="t('helpDesk.creationTime')">
+          <Column field="create_date" :header="t('helpDesk.creationTime')">
             <template #body="{ data }">
-              <a href="javascript:void(0)">{{ (formatDate(data.doc?.docHistory?.setDate) ? formatDate(data.doc?.docHistory?.setDate) : '') }}</a>
+              <a @click="openDocument"  href="javascript:void(0)">{{ (formatDate(data.doc?.docHistory?.setDate) ? formatDate(data.doc?.docHistory?.setDate) : '') }}</a>
             </template>
           </Column>
 
           <Column field="status" :header="t('common.status')">
             <template #body="{ data }">
-              <span :class="'customer-badge status-' + data.doc?.docHistory?.stateEn">
+              <span @click="openDocument" :class="'customer-badge status-' + data.doc?.docHistory?.stateEn">
                 {{ getDocStatus(data.doc?.docHistory?.stateEn) }}
               </span>
             </template>
