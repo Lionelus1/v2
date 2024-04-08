@@ -162,12 +162,6 @@ export default {
     this.showWorkPlanEventEditModal = false
   },
   methods: {
-    // summaryUserExists(){
-    //   if(this.summaryUser && !this.selectedUsers.includes(this.summaryUser)){
-    //     this.selectedUsers.push()
-
-    //   }
-    // },
     closeBasic() {
       this.$emit('hide')
     },
