@@ -38,13 +38,13 @@
             <div :style="{ 'z-index': 9999, 'position': 'relative' }"
                 v-if="(event &&
                 (isCurrentUserApproval && (event.status.work_plan_event_status_id === 1 || event.status.work_plan_event_status_id === 4 || event.status.work_plan_event_status_id === 6))) || (event && isPlanCreator)">
-              <Menubar :model="userMenuItems" :key="active" style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;z-index: 9999;"></Menubar>
+              <Menubar :model="userMenuItems" :key="active" class="userMenu"></Menubar>
 
             </div>
           </div>
 
           <div v-if="isPlanCreator && event && event.status.work_plan_event_status_id === 5">
-            <Menubar :model="verifyMenu" :key="active" style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
+            <Menubar :model="verifyMenu" :key="active" class ="userMenu" style=""></Menubar>
           </div>
 
               <div class="grid mt-3" v-if="plan && resultData && (new Date(plan.create_date).getFullYear() < new Date().getFullYear())">
@@ -94,7 +94,7 @@
               </div>
             </div>
           </div>
-          <div class="grid mt-3" v-else>
+          <div v-else>
             <div class="p-fluid" v-if="(!isPlanCreator && (isPlanCreatorApproval || !isPlanCreator) &&
               event.status.work_plan_event_status_id !== 5 &&
               event.status.work_plan_event_status_id !== 2 && event.status.work_plan_event_status_id !== 6) || (isRespUser && isPlanCreator && (isPlanCreatorApproval || !isPlanCreator) &&
@@ -154,11 +154,10 @@
                   {{ $t('common.noData') }}
                 </div>
                
-                <div v-for="(item, index) of getFilteredData(item.id)" :key="index" class="mb-2">
+                <div v-for="(item, index) of getFilteredData(item.id)" :key="index">
                     <div class="flex">
                       <div class="flex flex-column justify-content-center align-items-start">
-                        <!-- <span class="pb-2"><i class="fa-solid fa-user mr-1"></i><b>{{ item.user.fullName }}</b></span> -->
-                        <span class="customer-badge" style="background-color: #e0e0eb;border-radius: 0;color:#555;font-weight: 600;">{{ $t('contracts.columns.createDate') }}{{ ": " }}{{ formatDateMoment(item.plan_event_result_history[0].create_date) }}</span>
+                        <span class="customer-badge" style="background-color: #e0e0eb;border-radius: 0;color:#555;font-weight: 600;">{{ formatDateMoment(item.plan_event_result_history[0].create_date) }}</span>
                       </div>
                       <div class="ml-1">
                         <span :class="'customer-badge status-' + item.plan_event_result_history[0].state_id">
@@ -226,9 +225,8 @@
                     </template>
                   </Inplace>
                   <div v-else class="p-0">
-                    <p style="min-width: 600px;border-left:2px double #e0e0eb;padding-left: 10px; padding-top: 7px; margin-top: 3px;" v-html="item.result_text[0].text"></p>
+                    <p class="mt-2" style="text-align: justify; margin-bottom: 10px;" v-html="item.result_text[0].text"></p>
                   </div>
-                  <br/>
                   <div class="" v-if="resultData && item.result_files">
                     <label class="bold"><strong>{{ $t('workPlan.attachments') }}</strong></label>
                     <div ref="content" class="p-fileupload-content" style="padding-top: 7px;">
@@ -284,9 +282,9 @@
                 </div>
               </div>
               <div v-else>
-                {{ $t('common.recordsNotFound') }}
-                <!-- <div v-if="isRecordsNotFound">
-                </div> -->
+                <div v-if="loginedUserId === item.id || isPlanCreator">
+                  {{ $t('common.recordsNotFound') }}
+                </div>
                 
               </div>
             </div>
@@ -309,7 +307,6 @@
             </Column>
             <Column field="state" :header="$t('common.actionTitle')">
               <template #body="{ data }">
-                <!-- {{ data.state ? $t(`common.states.${data.state}`) : "" }} -->
                 <span :class="'customer-badge status-' + data.state_id">
                   {{ data.state ? getResultStatus(data.state_id) : "" }}
                 </span>
@@ -363,7 +360,6 @@ import moment from "moment";
 import {WorkPlanService} from '../../service/work.plan.service'
 import Enum from "@/enum/workplan/index"
 import FindUser from "@/helpers/FindUser";
-// import DepartmentList from "../smartenu/DepartmentList.vue"
 
 
 export default {
@@ -493,9 +489,6 @@ export default {
     },
     isSummaryDepartmentUser(){
       return this.event && this.summaryDepartmentExists(this.loginedUserId);
-    },
-    isRecordsNotFound() {
-        return this.event && this.event.user && this.event.user.length > 0 && this.event.user[0].id === this.loginedUserId;
     },
     currentDate() {
       return new Date();
@@ -1323,5 +1316,10 @@ td {
   border-bottom: 1px solid #ddd;
   padding: 8px;
   text-align: left;
+}
+.userMenu {
+  height: 36px;
+  margin: -7px -14px 10px;
+  z-index: 9999;
 }
 </style>
