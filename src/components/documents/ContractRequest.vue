@@ -2,6 +2,9 @@
   <ProgressSpinner v-if="loading" class="progress-spinner" strokeWidth="5"/>
   <BlockUI v-if="contragentRequested" :blocked="loading" class="card">
     <div>
+      <div class="p-fluid pb-0" v-if="!contragent">
+        <Message severity="warn" :closable="false">{{ $t('contracts.contragentAsEnt') }}</Message>
+      </div>
       <div class="p-fluid md:col-6 pb-0">
         <label>{{ $t('contracts.contragentSigner') }}</label>
       </div>
@@ -225,11 +228,16 @@ export default {
       })
     },
     downloadContract() {
+      this.loading = true;
+
       this.service.downloadDocumentV2({
         uuid: this.contract.uuid,
         preview: true,
+        organization: this.contragent,
+        signer: this.signer,
       }).then(res => {
         this.pdf = b64toBlob(res.data);
+        this.loading = false;
       }).catch(err => {
         this.loading = false;
 
@@ -247,16 +255,19 @@ export default {
       this.close('organizationCard');
 
       this.contragent = JSON.parse(JSON.stringify(event));
+      this.downloadContract();
     },
     personUpdated(event) {
       this.close('signerCard');
 
       this.signer = JSON.parse(JSON.stringify(event));
+      this.downloadContract();
     },
     personSelected(event) {
       this.close('signerList');
 
       this.signer = JSON.parse(JSON.stringify(event));
+      this.downloadContract();
     },
     contragentAccept() {
       if (!this.signer || this.signer.userID < 1) {
