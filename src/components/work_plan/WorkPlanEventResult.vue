@@ -282,7 +282,7 @@
                 </div>
               </div>
               <div v-else>
-                <div v-if="loginedUserId === item.id || isPlanCreator">
+                <div v-if="loginedUserId === item.id || isPlanCreator || isAdmin">
                   {{ $t('common.recordsNotFound') }}
                 </div>
                 
