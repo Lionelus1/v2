@@ -141,7 +141,7 @@
             </div>
             <div v-if="event && event.user">
             <div v-for="item in event.user" :key="item.id">
-              <Divider align="left" v-if="isPlanCreator || loginedUserId === item.id"><i class="fa-solid fa-user mr-1"></i><b>{{ item.fullName }}</b></Divider>
+              <Divider align="left" v-if="isPlanCreator || loginedUserId === item.id || isAdmin"><i class="fa-solid fa-user mr-1"></i><b>{{ item.fullName }}</b></Divider>
               <div v-if="resultData">
                 <div class="p-sm-12 md:col-12 lg:col-12 p-xl-6">
               <div class="field" v-if="event && plan && plan.is_oper && !authUser.mainPosition.department.isFaculty">
