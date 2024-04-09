@@ -25,10 +25,10 @@
           </div>
         </div>
       </AccordionTab>
-      <AccordionTab>
+      <AccordionTab v-if="customType !== 'createUser'">
         <template #header>
             <div class="uppercase">
-              {{ t("hr.title.education") }}
+              <label>{{ t('hr.title.education') }}<span class="p-error" v-if="!readonly">*</span></label>
             </div>
         </template>
 
@@ -149,7 +149,7 @@
     customType: {
       type: String,
       default: ''
-    }
+    },
   });
   const academicDegrees = ref([])
   const academicDegree = ref(null)
@@ -167,6 +167,9 @@
   const emitPersonalInformationUpdate = defineEmits(["personal-information-updated"]);
 
   const getUserAcademicDegree = () => {
+    if (props.customType === 'createUser') {
+      return
+    }
     loading.value = true
     const req = {
       userID: userID.value,

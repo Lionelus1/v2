@@ -1,40 +1,84 @@
 <template>
     <ProgressSpinner v-if="loading" class="progress-spinner" strokeWidth="5"/>
-    <ToolbarMenu :data="menu" border="true"/>
+    <h3 v-if="personType == 1">
+    {{this.$t("common.userDetail") + ' (' + this.$t("doctemplate.editor.individualEntrepreneur") + ')'}}
+    </h3>
+    <h3 v-else-if="personType == 2">
+    {{ this.$t("common.userDetail") + ' (' + this.$t("roleControl.employeeLabel") + ')' }}
+    </h3>
+    <h3 v-else-if="personType == 3">
+    {{ this.$t("common.userDetail") + ' (' + this.$t("common.student") + ')' }}
+    </h3>
+
+    <div
+      v-if="userDetailSaved"
+      id="contentcnv"
+      class="col-12"
+      :style="backcolor"
+      ref="content"
+    >
+      <h6>{{ this.$t("common.message.userSuccessInserted") }}</h6>
+      <table style="border: 1px solid black; border-collapse: collapse">
+        <tr style="border: 1px solid black; border-collapse: collapse">
+          <th style="border: 1px solid black; border-collapse: collapse">
+            {{ this.$t("contact.iin") }}
+          </th>
+          <th style="border: 1px solid black; border-collapse: collapse">
+            {{ this.$t("common.password") }}
+          </th>
+        </tr>
+        <tr style="border: 1px solid black; border-collapse: collapse">
+          <td style="border: 1px solid black; border-collapse: collapse">
+            {{ per.IIN }}
+          </td>
+          <td style="border: 1px solid black; border-collapse: collapse">
+            {{ password }}
+          </td>
+        </tr>
+      </table>
+    </div>
+    <Button
+      v-if="userDetailSaved"
+      @click="download"
+      :label="this.$t('common.download')"
+      class="p-button-link"
+    />
+
+    <Menubar :model="items" class="m-0 pt-0 pb-0"></Menubar>
     <BlockUI v-if="!loading" class="p-fluid" :blocked="loading">
       <TabView class="custom-tabview">
 
         <TabPanel :header="this.$t('personalData')">
-          <template template v-if="(per && per.userID) || customType == chapter.createUser">
+          <template template v-if="(per && per.userID) || customType === chapter.createUser">
             <UserPersonalInfomation @personal-information-updated="handlePersonalInformationUpdate" :model-value="per" :custom-type="customType" :userID="per ? per.userID : null" :readonly="pageReadonly"/>
           </template>
         </TabPanel>
 
-        <TabPanel v-if="customType===chapter.myAccount || customType=== chapter.viewUser || customType == chapter.createUser"  :header="$t('hr.title.id')">
+        <TabPanel v-if="customType===chapter.myAccount || customType=== chapter.viewUser || customType === chapter.createUser"  :header="$t('hr.title.id')">
           <UserIDCard @personal-information-updated="handlePersonalInformationUpdate" :custom-type="customType" :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
         </TabPanel>
 
         <TabPanel :header="this.$t('hr.educationLabel')">
-          <UserEducationView  @personal-information-updated="handlePersonalInformationUpdate"  :model-value="per" :userID="per.userID"  :readonly="pageReadonly"/>
+          <UserEducationView  @personal-information-updated="handlePersonalInformationUpdate"  :custom-type="customType" :model-value="per" :userID="per.userID"  :readonly="pageReadonly"/>
         </TabPanel>
         
-        <TabPanel v-if="customType===chapter.myAccount || customType=== chapter.viewUser || customType == chapter.createUser" :header="$t('bank.requisite')">
+        <TabPanel v-if="customType===chapter.myAccount || customType=== chapter.viewUser || customType === chapter.createUser" :header="$t('bank.requisite')">
           <UserRequisite @personal-information-updated="handlePersonalInformationUpdate" :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
         </TabPanel>
         
-        <TabPanel v-if="customType != chapter.createUser && customType != chapter.viewUser && (customType===chapter.scientists || findRole(null, 'teacher') || findRole(null, 'personal'))" :header="this.$t('science.areaScientificInterests')">
+        <TabPanel v-if="customType !== chapter.createUser && customType !== chapter.viewUser && (customType===chapter.scientists || findRole(null, 'teacher') || findRole(null, 'personal'))" :header="this.$t('science.areaScientificInterests')">
           <UserResearchInterestsView :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
         </TabPanel>
 
-        <TabPanel v-if="customType != chapter.createUser && customType != chapter.viewUser && (customType===chapter.scientists || findRole(null, 'teacher') || findRole(null, 'personal'))" :header="this.$t('science.laborActivity')">
+        <TabPanel v-if="customType !== chapter.createUser && customType !== chapter.viewUser && (customType===chapter.scientists || findRole(null, 'teacher') || findRole(null, 'personal'))" :header="this.$t('science.laborActivity')">
           <WorkExperienceView :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
         </TabPanel>
 
-        <TabPanel v-if="customType != chapter.createUser && customType != chapter.viewUser && (customType===chapter.scientists || findRole(null, 'teacher') || findRole(null, 'personal'))" :header="this.$t('science.awardsAndHonors')">
+        <TabPanel v-if="customType !== chapter.createUser && customType !== chapter.viewUser && (customType===chapter.scientists || findRole(null, 'teacher') || findRole(null, 'personal'))" :header="this.$t('science.awardsAndHonors')">
           <UserAwardView :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
         </TabPanel>
 
-        <TabPanel v-if="customType != chapter.createUser && customType != chapter.viewUser && (customType===chapter.scientists || findRole(null, 'teacher') || findRole(null, 'personal'))" :header="this.$t('science.professionalDevelopment')">
+        <TabPanel v-if="customType !== chapter.createUser && customType !== chapter.viewUser && (customType===chapter.scientists || findRole(null, 'teacher') || findRole(null, 'personal'))" :header="this.$t('science.professionalDevelopment')">
           <UserQualificationsView :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
         </TabPanel>
 
@@ -117,7 +161,7 @@ export default {
         bank_id: false,
       },
 
-      menu: [
+      items: [
         {
           label: this.$t("common.save"),
           icon: "pi pi-fw pi-save",
@@ -287,7 +331,6 @@ export default {
       this.validation.lastname =  !this.per.thirdName || this.per.thirdName.length < 1;
       this.validation.lastnameEn =  !this.per.thirdnameEn || this.per.thirdnameEn.length < 1;
       this.validation.email = !this.per.email || this.per.email.length < 1;
-      console.log(this.validation)
       return (this.validation.iin || this.validation.firstname || this.validation.lastname ||
         this.validation.email || this.validation.firstnameEn ||
         this.validation.lastnameEn);
