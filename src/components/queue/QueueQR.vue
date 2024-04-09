@@ -3,13 +3,15 @@
     <div class="relative">
       <div class="talon" v-if="inQueue">
         <div class="talon_top">
+          <img src="assets/layout/images/logo.svg" style="width:110px; margin: 10px ">
+          <div class="dots"></div>
         <div class="talon_number">107</div>
         <b>Сіздің кезектегі нөміріңіз</b>
         </div>
         <div class="talon_content">
           <div class="dashed flex justify-content-between">
             <div>Сіздің алдыңызда</div>
-            <Badge>3</Badge>
+            <div class="talon_badge">3</div>
           </div>
           <div class="dashed flex justify-content-between">
             <div>Ағымдағы нөмір</div>
@@ -71,71 +73,88 @@
       </div>
     </div>
   </div>
-<!--  <div class="card text-center flex flex-column gap-4 m-auto" style="width: 385px">
+  <div class="card text-center flex flex-column gap-4 m-auto">
     <h3>{{$t('contact.phone')}}</h3>
-    <InputMask class="p-inputtext-lg" @input="validatePhoneNumber" id="mobile" mask="+7-(999)-999-99-99" />
-    <Button class="justify-content-center p-button-lg">{{$t('common.continue')}}</Button>
-    <small v-if="validationError" class="p-error">{{ $t("error")}}</small>
+    <input type="text" v-model="phoneNumber" @input="validatePhoneNumber">
+    <InputMask class="p-inputtext-lg"  mask="+7-(999)-999-99-99" />
+    <Button class="justify-content-center p-button-lg" :disabled="isDisabled">{{$t('common.continue')}}</Button>
+    <small v-if="!validPhoneNumber" class="p-error">{{ $t("common.error")}} Некорректный номер телефона</small>
+    {{validPhoneNumber}}
   </div>
-<div class="card m-auto mt-4" style="width: 385px">
-  <a class="block mb-2 cursor-pointer" @click="getQueue()">
+<div class="card m-auto mt-4">
+<!--  <a class="block mb-2 cursor-pointer" @click="getQueue()">
     <i class="pi pi-arrow-left"></i>
     Артқа
-  </a>
+  </a>-->
   <Button class="p-button-lg mb-3" style="width: 100%" v-for="i of queues" :key="i" @click="getQueue(i.key)">{{i.queueNamekz}}</Button>
-</div>-->
+</div>
 </template>
 
 <script setup>
-import {ref} from "vue";
+import {computed, onMounted, ref} from "vue";
 import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
+import {useRoute} from "vue-router";
 
-const phoneNumber = ref('');
+const route = useRoute()
+const parentId = ref(parseInt(route.params.id))
 const validationError = ref(false);
 const queues = ref();
-const inQueue = ref(false);
-const called = ref(true);
+const inQueue = ref(true);
+const called = ref(false);
+const inputValue = ref('');
+const isDisabled = computed(() => inputValue.value.length <= 8);
+const phoneNumber = ref('');
+const validPhoneNumber = ref(true);
 
 const validatePhoneNumber = () => {
-  if (phoneNumber.value.length !== 10) {
-    validationError.value = true;
+  const phoneRegex = /^\+(?:[0-9] ?){10}[0-9]$/;
+
+  if (!phoneRegex.test(phoneNumber.value)) {
+    console.log(phoneNumber)
+    validPhoneNumber.value = false;
   } else {
-    validationError.value = false;
+    validPhoneNumber.value = true;
   }
+};
+
+const checkInput = (event) => {
+  console.log(event.target.value)
+  inputValue.value = event.target.value;
 };
 
 const getQueue = (data) => {
   axios
-      .post(smartEnuApi + "/queue/allQueues", {parentID: data}, {
+      .post(smartEnuApi + "/queue/allQueuesForQr", {parentID: data}, {
         headers: getHeader(),
       })
       .then((response) => {
         queues.value = response.data.queues
-        console.log(response.data.queues)
       })
       .catch((error) => {
       });
 }
-getQueue()
+getQueue(parentId.value)
 </script>
 
 <style lang="scss" scoped>
 .talon_bg{
-  //background: #000e39;
+  background: #000e39;
   height: 100vh;
   margin: -20px;
   padding-top: 30px;
 }
 .talon{
-  background: #a8d9ff;
-  margin: auto;
+  position: relative;
+  padding-bottom: 30px;
+  background: #fff;
+  margin: 30px auto;
   text-align: center;
   border-radius: 8px;
   width: 90%;
   z-index: 2;
   &_top{
-    padding: 50px 0;
+    padding: 20px 0;
   }
   &_number{
     font-size: 50px;
@@ -143,6 +162,44 @@ getQueue()
   }
   &_content{
     padding: 0 30px;
+  }
+  .dots{
+    margin: 20px 0;
+    border-bottom: 4px dotted #000e39;
+    position: relative;
+  }
+  .dots:after{
+    content: '';
+    position: absolute;
+    display: block;
+    border-radius: 50%;
+    width: 23px;
+    height: 23px;
+    background: #000e39;
+    left: -13px;
+    top: -10px;
+  }
+  .dots:before{
+    content: '';
+    position: absolute;
+    display: block;
+    border-radius: 50%;
+    width: 23px;
+    height: 23px;
+    background: #000e39;
+    right: -13px;
+    top: -10px;
+  }
+  .talon_badge{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    //background: #000e39;
+    padding: 5px;
+    font-weight: 600;
   }
 }
 .talon_called{
@@ -186,10 +243,25 @@ getQueue()
   top:20px;
   left:0;
 }
-.talon:after{
+.talon:before{
+  content: "";
+  display: block;
+  position: absolute;
+  width: 40px;
+  height: 20px;
+  background: #000e39;
+  bottom: -10px;
+  border-radius: 8px;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
+  text-align: center;
+}
+/*.talon:after{
   background:
-      linear-gradient(-45deg, transparent 16px, #a8d9ff 0),
-      linear-gradient(45deg, transparent 16px, #a8d9ff 0);
+      linear-gradient(-45deg, transparent 16px, #fff 0),
+      linear-gradient(45deg, transparent 16px, #fff 0);
   background-repeat: repeat-x;
   background-position: left bottom;
   background-size: 15px 32px;
@@ -200,19 +272,19 @@ getQueue()
   position: relative;
   top:20px;
   left:0;
-}
+}*/
 .dashed{
   margin: 10px 0;
   padding: 5px 0;
-  border-bottom: 2px dashed #ccc;
+  //border-bottom: 2px dashed #ccc;
 }
 .talon_list{
   margin: 40px auto;
   width: 90%;
   .item{
-    background: #a8d9ff;
+    background: #fff;
     border-radius: 8px;
-    padding: 20px;
+    padding: 15px;
     font-size: 20px;
     margin-bottom: 10px;
   }

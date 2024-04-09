@@ -530,10 +530,9 @@ const routes = [
                 
             },
             {
-                path: '/queue/qr',
+                path: '/queue/qr/:id',
                 name: '/queueQR',
                 component: load('queue/QueueQR'),
-                beforeEnter: ifAuthenticated,
             },
             {
                 path: '/reception',
