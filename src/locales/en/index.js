@@ -355,7 +355,8 @@ export default {
         change: "Change",
         unknownUser: "Guest",
         doNotShowAnymore: "Do not show anymore",
-        showMore: "Show more"
+        showMore: "Show more",
+        hint: "If you need help, write to our Telegram Chat or look in the guide"
     },
     positions: {
         menuTitle: 'Change position',
@@ -1656,6 +1657,7 @@ export default {
             publicationCategory: "Publication category",
             publicationType: "Publication type",
             participationInGroup: "Participation in the team of authors",
+            subtypeDescription: "Document type"
         }
     },
     supportingDocument: "Supporting document",

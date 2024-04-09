@@ -36,6 +36,7 @@ const store = createStore({
                     localStorage.removeItem('contractFilters');
                     localStorage.removeItem('userSlug')
                     localStorage.removeItem('selectedSlug')
+                    localStorage.removeItem('show-hint')
                     router.push({ "name": "PublicVacancies" })
                 })
                 .catch((err) => {
@@ -44,7 +45,8 @@ const store = createStore({
                     localStorage.removeItem('loginedUser');
                     localStorage.removeItem('userSlug');
                     localStorage.removeItem('selectedSlug')
-                
+                    localStorage.removeItem('show-hint')
+
                     router.push({ "path": "/login" })
                 })
 

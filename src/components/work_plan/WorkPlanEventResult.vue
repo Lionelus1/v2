@@ -7,6 +7,41 @@
       </div>
       <div class="mb-0 mt-0 inline-block" style="font-size: 24px"> {{ $t('common.result') }}</div>
     </div>
+     <div class="text-right" style="margin-top:-30px;padding-bottom: 3px;" v-if="plan && isPlanCreator">
+                <Button type="button" icon="fa-solid fa-filter" :label="$t('common.filter')"
+                        @click="toggle('global-filter', $event)" aria:haspopup="true" aria-controls="overlay_panel"
+                        class="p-button-outlined mr-2" />
+                <OverlayPanel ref="global-filter" class="col-3">
+                  <div class="p-fluid">
+                    <div class="field">
+                      {{ resultFilter.faculty }}
+                        <label>{{ $t('requests.params.structural_unit') }}/{{ $t('common.faculty') }}</label>
+                        <DepartmentList :parentID="1" :orgType="2"  :autoLoad="true" v-model="resultFilter.faculty"
+                        :placeHolder="$t('smartenu.selectFaculty')">
+                      </DepartmentList>
+                      </div>
+                  </div>
+                  <div class="p-fluid">
+                    <div class="field">
+                      {{ resultFilter.responsiveUser }}
+                      <label>{{ $t('cafedra.responsible') }}</label>
+                      <FindUser v-model="resultFilter.responsiveUser" :max="5" searchMode="local" editMode="true"/>
+                      <!-- <small class="p-error" v-if="!resultFilter.responsiveUser">{{ $t("common.requiredField") }}</small> -->
+                    </div>
+                    </div>
+                    <div class="p-fluid">
+                        <div class="field">
+                            <br />
+                            <Button icon="pi pi-trash" class="ml-1" @click="clearResultFilter()"
+                                    :label="$t('common.clear')" outlined />
+                        </div>
+                        <div class="field">
+                            <Button icon="pi pi-search" :label="$t('common.search')" class="ml-1" @click="getData()" />
+                        </div>
+                    </div>
+                </OverlayPanel>
+              
+      </div>
     <div>
       <TabView v-model:activeIndex="activeIndex" @tab-change="changeTab">
         <TabPanel :header="$t('common.properties')">
@@ -80,19 +115,18 @@
                 <label>{{ $t('common.fact') }}</label>
                 <InputText v-model="fact" @input="factChange"/>
               </div>
-              
-              
+
               <div class="field" v-if="!hasResultToApprove">
                 <label>{{ $t('common.result') }}</label>
                   <div v-if="isVisibleWritableField">
-                      <TinyEditor v-if="plan && isRespUserForWrite && !isOperPlan" v-model="result" :min-word="wordLimit" @wordCount="initWordCount" :height="300"
+                      <TinyEditor v-if="plan && isRespUser && !isOperPlan" v-model="result" :min-word="wordLimit" @wordCount="initWordCount" :height="300"
                                 :style="{ height: '100%', width: '100%' }"
                                 @selectionChange="editorChange"/>
-                    <TinyEditor v-if="plan && isRespUserForWrite && !isSciencePlan && isOperPlan" v-model="newResult" :height="300" @selectionChange="editorChange"/>
+                    <TinyEditor v-if="plan && isRespUser && isOperPlan" v-model="newResult" :height="300" @selectionChange="editorChange"/>
                     <small v-if="isSciencePlan && submitted && (wordCount < wordLimit)" class="p-error">{{ $t('workPlan.minWordCount') }}</small>
                 </div>
               </div>
-              <div class="field" v-if="plan && isRespUserForWrite && isVisibleWritableField">
+              <div class="field" v-if="plan && isRespUser && isVisibleWritableField">
                 <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadFile($event)" :auto="true" :multiple="true" :chooseLabel="$t('smartenu.chooseAdditionalFile')"></FileUpload>
               </div>
               <div class="field">
@@ -150,7 +184,7 @@
                         <Button :label="$t('common.save')" icon="pi pi-check" class="p-button p-button-success" @click="saveEditResult(item)"
                                 :loading="loading"/>
                         <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button ml-1" @click="cancelEdit(item)"/>
-                                               <Button :label="$t('common.delete')" icon="pi pi-trash" class="p-button p-button-danger ml-1" @click="deleteConfirmItem($event, item)" />
+                        <Button :label="$t('common.delete')" icon="pi pi-trash" class="p-button p-button-danger ml-1" @click="deleteConfirmItem($event, item)" />
                       </div>
                       <div class="field">
                         <TinyEditor v-model="item.result_text[0].text" :height="300" :style="{ height: '100%', width: '100%' }"/>
@@ -210,13 +244,15 @@
                       </div>
                     </div>
                   </div>
-                  <div style="margin-left: -12px;" v-if="isPlanCreator">
+                  <div style="margin-left: -12px;" v-if="isPlanCreator || findRole(null, 'main_administrator')">
                     <Button v-if="(item.plan_event_result_history[0].state_id === 5)" icon="pi pi-fw pi-check" class="p-button-rounded p-button-text"
                             @click="confirmToInspected(isInspected, item.user.userID, item.event_result_id)" :label="$t('common.action.accept')"></Button>
                     <Button v-if="(item.plan_event_result_history[0].state_id === 5)" icon="pi pi-fw pi-times" class="p-button-rounded p-button-text"
                             @click="showToCorrectSidebarNew(item.user.userID, item.event_result_id)" :label="$t('workPlan.toCorrect')"></Button>
+                    <Button v-if="findRole(null, 'main_administrator')" :label="$t('common.delete')" icon="pi pi-trash" class="p-button p-button-danger ml-1" @click="deleteConfirmItem($event, item)" />
                     <br/><br/>
                   </div>
+
                   <div v-else class="p-0">
                     <span style="float:right;margin-top: -7px;" v-if="isPlanCreator">
                       <Button icon="pi pi-fw pi-check" class="p-button-rounded p-button-text" @click="verify(true)" :label="$t('common.action.accept')"></Button>
@@ -298,16 +334,16 @@
 
   <Sidebar v-model:visible="rejectMessageSidebar" position="right" header="Work Plan Reject Message" style="width: 30%;" v-if="shouldShowRejectSidebar">
   <div class="p-fluid">
-    <div v-if="rejectHistory.user">
-      <label><b>{{ $t('contracts.assigner') }}:</b></label> {{ rejectHistory.user.fullName }}
+    <div v-if="rejectHistory?.user">
+      <label><b>{{ $t('contracts.assigner') }}:</b></label> {{ rejectHistory?.user.fullName }}
     </div>
-    <div v-if="rejectHistory.created_date" class="mt-1">
-      <label><b>{{ $t('common.date') }}:</b></label> {{ formatDateMoment(rejectHistory.created_date) }}
+    <div v-if="rejectHistory?.created_date" class="mt-1">
+      <label><b>{{ $t('common.date') }}:</b></label> {{ formatDateMoment(rejectHistory?.created_date) }}
     </div>
-    <div class="mt-3" v-if="rejectHistory.message">
+    <div class="mt-3" v-if="rejectHistory?.message">
       <label><b>{{ $t('common.comment') }}:</b></label>
       <div style="margin-top: -10px;">
-        <Message :closable="false" severity="info"><span v-html="rejectHistory.message"></span></Message>
+        <Message :closable="false" severity="info"><span v-html="rejectHistory?.message"></span></Message>
       </div>
     </div>
   </div>
@@ -319,9 +355,16 @@ import {findRole, getHeader, smartEnuApi} from "@/config/config";
 import moment from "moment";
 import {WorkPlanService} from '../../service/work.plan.service'
 import Enum from "@/enum/workplan/index"
+import FindUser from "@/helpers/FindUser";
+import DepartmentList from "../smartenu/DepartmentList.vue"
+
 
 export default {
   name: "WorkPlanEventResult",
+  components: {
+    FindUser,
+    DepartmentList
+  },
   props: ['resultId'],
   data() {
     return {
@@ -381,7 +424,12 @@ export default {
       wordLimit: 50,
       wordMaxLimit: 250,
       wordCounter: 0,
-      hasResultToApprove: false
+      hasResultToApprove: false,
+      formData: null,
+      resultFilter: {
+        faculty: null,
+        responsiveUser: []
+      }
     }
   },
   computed: {
@@ -429,10 +477,7 @@ export default {
       return this.plan && ((this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Oper) || this.plan.is_oper)
     },
     isRespUser() {
-      return this.event && this.respUserExists(this.loginedUserId) && this.plan.plan_type_id === 3
-    },
-    isRespUserForWrite() {
-      return this.respUserExists(this.loginedUserId)
+      return this.event && this.respUserExists(this.loginedUserId)
     },
     initAcceptButtons() {
       const createConfirmationDialog = (status_code) => {
@@ -532,6 +577,9 @@ export default {
           (this.isAdmin && event) || (this.isPlanCreator && event))
       );
     },
+    rejectHistory() {
+      return this.resultData[0]?.reject_history || {};
+    },
   },
   watch: {
     result(newValue) {
@@ -549,6 +597,13 @@ export default {
   },
   methods: {
     findRole: findRole,
+    toggle(ref, event) {
+      this.$refs[ref].toggle(event);
+    },
+    clearResultFilter(){
+      this.resultFilter.faculty = null;
+      this.resultFilter.responsiveUser = null;
+    },
     initWordCount(count) {
       this.inputWordCount = count
     },
@@ -566,8 +621,7 @@ export default {
             this.isPlanCreator = false;
           }
           if (this.event && this.event.user) {
-            this.isPlanCreatorApproval = this
-.event.user.find(e => e.id === this.loginedUserId) !== null && this.isPlanCreator;
+            this.isPlanCreatorApproval = this.event.user.find(e => e.id === this.loginedUserId) !== null && this.isPlanCreator;
             this.isCurrentUserApproval = this.event.user.find(e => e.id === this.loginedUserId);
           }
           this.getData();
@@ -585,7 +639,22 @@ export default {
       });
     },
     getData() {
-      this.planService.getEventResult(this.event.work_plan_event_id).then(res => {
+      const data = {
+        event_id : this.event.work_plan_event_id,
+       
+      }
+      // let data = {};
+      // if (this.resultFilter && this.resultFilter.faculty) {
+      //   data = {
+      //   event_id : this.event.work_plan_event_id,
+      //   result_filter: {
+      //     department_id : this.resultFilter.faculty.id,
+      //     responsive_users : this.resultFilter.responsiveUser[0].userID
+      //   }
+      //   }
+      // }
+     
+      this.planService.getEventResult(data).then(res => {
         if (res.data) {
           this.resultData = res.data;
 

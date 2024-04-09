@@ -14,7 +14,14 @@
             </router-link>
           </template>
         </Column>
-
+        <Column field="sing" :header="$t('ncasigner.sign')">
+          <template #body="{ data }">
+            <div v-if="showMySign(data.doc_info.approvalStages)">
+                <i v-if="greenMySign(data.doc_info.approvalStages)" class="pi pi-check-circle" style="color:green;"></i>
+                <i v-else class="pi pi-check-circle" style="color: red;"></i>
+            </div>
+          </template>
+        </Column>
         <Column field="status" :header="$t('common.status')">
           <template #body="{ data }">
             <span :class="'customer-badge status-' + data.doc_info.docHistory.stateEn">
@@ -349,7 +356,63 @@ export default {
     initSearch(searchText) {
       this.lazyParams.searchText = searchText
       this.getPlans()
-    }
+    },
+    showMySign(approvalStages) {
+      try {
+        for (let i in approvalStages) {
+          let stage = approvalStages[i]
+          let stagePassed = true
+
+          for (let j = 0; j < stage.users.length; j++) {
+            if (stage.usersApproved[j] < 1) {
+              stagePassed = false
+            }
+
+            if (stage.users[j].userID === this.loginedUserId) {
+              return true
+            }
+          }
+  
+          if (!stagePassed) {
+            break
+          }
+        }
+      } catch (e) {
+        console.log(e)
+        return false
+      }
+
+      return false
+    },
+    greenMySign(approvalStages) {
+      let signed = true
+
+      try {
+        for (let i in approvalStages) {
+          let stage = approvalStages[i]
+          let stagePassed = true
+
+          for (let j = 0; j < stage.users.length; j++) {
+            if (stage.usersApproved[j] < 1) {
+              stagePassed = false
+            }
+
+            if (stage.users[j].userID === this.loginedUserId && stage.usersApproved[j] < 1) {
+              signed = false
+            }
+          }
+  
+          if (!stagePassed) {
+            break
+          }
+        }
+      } catch (e) {
+        console.log(e)
+        return signed
+      }
+
+      return signed
+    },
   }
 }
 </script>
@@ -451,6 +514,13 @@ export default {
     color: #fff;
     font-weight: 500;
     border-radius: 3px;
+  }
+
+  .approved {
+    color: #42855B;
+  }
+  .not-approved {
+    color: #a6a6a6;
   }
 }
 </style>
