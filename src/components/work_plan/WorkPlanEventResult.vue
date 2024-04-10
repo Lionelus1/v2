@@ -34,7 +34,7 @@
     <div>
       <TabView v-model:activeIndex="activeIndex" @tab-change="changeTab">
         <TabPanel :header="$t('common.properties')">
-          <div v-if="!isVisibleWritableField || isPlanCreator">
+          <div v-if="isVisibleWritableField || isPlanCreator">
             <div :style="{ 'z-index': 9999, 'position': 'relative' }"
                 v-if="(event &&
                 (isCurrentUserApproval && (event.status.work_plan_event_status_id === 1 || event.status.work_plan_event_status_id === 4 || event.status.work_plan_event_status_id === 6))) || (event && isPlanCreator)">
