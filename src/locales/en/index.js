@@ -1796,6 +1796,7 @@ export default {
         creationTime: 'Creation time',
         priority: 'Priority',
         responsible: 'Responsible',
+        applicant: 'Applicant',
         application: {
             applicationName: 'Applications',
             requestReason: 'Sending the Application',
@@ -1815,7 +1816,8 @@ export default {
             codeName: 'Code name',
             positionName: '',
             inputErrorMessage: 'Please enter the correct data',
-            applicationObjectives: 'Application objectives'
+            applicationObjectives: 'Application objectives',
+            enteredIncorrectly: 'Entered incorrectly'
         },
 
     }

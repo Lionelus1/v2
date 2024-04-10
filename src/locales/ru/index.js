@@ -1796,6 +1796,7 @@ export default {
         creationTime: 'Время создания',
         priority: 'Приоритет',
         responsible: 'Ответственный',
+        applicant: 'Заявитель',
         application: {
             applicationName: 'Заявки',
             requestReason: 'Направление Заявки',
@@ -1815,7 +1816,8 @@ export default {
             codeName: 'Код наименование',
             positionName: '',
             inputErrorMessage: 'Пожалуйста, введите корректные данные',
-            applicationObjectives: 'Цели заяки'
+            applicationObjectives: 'Цели заяки',
+            enteredIncorrectly: 'Введен неправильно'
         },
 
     }
