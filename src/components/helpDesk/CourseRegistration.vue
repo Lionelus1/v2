@@ -113,13 +113,13 @@
       <label>{{ t('contact.phone') }}<span v-if="isCurrentUserSender" style="font-size: 20px; color: red;">*</span></label>
       <InputText v-model="userData.phone" class="mt-2" inputId="userDataPhone" :placeholder="t('contact.phone')"
         style="width: 350px;" @input="input"  :disabled="disabledStatus"/>
-      <div v-if="props.validationRequest.phone"  style="color: red; margin-top: 5px">Номер введен неправильно</div>
+      <div v-if="props.validationRequest.phone"  style="color: red; margin-top: 5px">Введен неправильно</div>
     </div>
     <div class="field" style="margin-top: 10px;">
       <label>{{ t('contact.email') }}<span v-if="isCurrentUserSender" style="font-size: 20px; color: red;">*</span></label>
       <InputText v-model="userData.email" type="text" :placeholder="t('contact.email')" @input="input"
         :disabled="disabledStatus" />
-      <div v-if="props.validationRequest.email" style="color: red; margin-top: 5px">Email введен неправильно</div>
+      <div v-if="props.validationRequest.email" style="color: red; margin-top: 5px">Введен неправильно</div>
     </div>
   </div>
 </template>
