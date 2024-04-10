@@ -15,7 +15,7 @@
       </div>
     </div>
   </div>
-<!--  || findRole(null, 'main_administrator')-->
+
   <BlockUI style="margin-top: 10px" v-if="findRole(null, 'student') || props.courseRequest.doc?.newParams?.not_formal_education_ids">
     <div>
       <div class="mb-3"
@@ -101,7 +101,7 @@
       <label>{{ t('course.course') }}<span v-if="isCurrentUserSender" style="font-size: 20px; color: red;">*</span></label>
       <InputNumber v-model="userData.course"  :disabled="disabledStatus"
         :placeholder=" t('course.course')" id="number-input" style="width: 350px;" @input="input" />
-      <div v-if="props.validationRequest.course" style="color: red; margin-top: 5px">Курс введен неправильно</div>
+<!--      <div v-if="props.validationRequest.course" style="color: red; margin-top: 5px">Курс введен неправильно</div>-->
     </div>
     <div class="field" style="margin-top: 10px;">
       <label>{{ t('contracts.cafedraGroup') }}<span v-if="isCurrentUserSender" style="font-size: 20px; color: red;">*</span>
