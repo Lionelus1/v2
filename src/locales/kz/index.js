@@ -1775,6 +1775,7 @@ export default {
         creationTime: 'Құру уақыты',
         priority: 'Басымдық',
         responsible: 'Жауапты',
+        applicant: 'Өтініш беруші',
         application: {
             applicationName: 'Өтінімдер',
             requestReason: 'Өтінімді Жолдау',
@@ -1793,7 +1794,8 @@ export default {
             credits: 'Кредит саны',
             codeName: 'Код атауы',
             inputErrorMessage: 'Дұрыс деректерді енгізіңіз',
-            applicationObjectives: 'Өтінімнің мақсаттары'
+            applicationObjectives: 'Өтінімнің мақсаттары',
+            enteredIncorrectly: 'Қате енгіздіңіз'
         },
 
     }
