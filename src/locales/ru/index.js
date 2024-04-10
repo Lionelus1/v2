@@ -355,7 +355,8 @@ export default {
         change: "Сменить",
         unknownUser: "Гость",
         doNotShowAnymore: "Больше не показывать",
-        showMore: "Показать больше"
+        showMore: "Показать больше",
+        hint: "Если вам нужна помощь, пишите в наш Telegram Chat или смотрите в справочнике"
     },
     positions: {
         menuTitle: 'Поменять позицию',
@@ -1656,6 +1657,7 @@ export default {
             publicationCategory: "Категория публикации",
             publicationType: "Тип публикации",
             participationInGroup: "Участие в коллективе авторов",
+            subtypeDescription: "Тип документа"
         }
     },
     supportingDocument: "Подтверждающий документ",

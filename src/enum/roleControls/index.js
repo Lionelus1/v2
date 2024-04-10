@@ -16,5 +16,6 @@ export default {
         Prorector: "prorector",
         ActsToExecution: "acts_to_execution",
         Accountant: "accountant",
+        ScienceDirector: "science_director"
     }
 }

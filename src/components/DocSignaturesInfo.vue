@@ -264,7 +264,8 @@ export default {
           if (this.showAllSignsParam) {
             this.isShow = true;
           } else {
-            this.isShow = this.findRole(null, RolesEnum.roles.CareerModerator) || this.findRole(null, RolesEnum.roles.UMKAdministrator) ||
+            this.isShow = this.findRole(null, RolesEnum.roles.CareerModerator) || this.findRole(null, RolesEnum.roles.UMKAdministrator)
+                || this.findRole(null, RolesEnum.roles.Accountant) ||
               (this.findRole(null, RolesEnum.roles.Teacher) && this.docInfo.docType === Enum.DocType.Contract) ||
               (this.signatures && this.signatures.some(x => x.userId === this.loginedUserId)) ||
               this.docInfo.docHistory.setterId === this.loginedUserId || this.docInfo.creatorID === this.loginedUserId;

@@ -1136,10 +1136,17 @@ export default {
         },
         {
           label: this.$t('contracts.menu.actsJournal'),
-          visible: this.isFinish && this.isSciencePlan && (this.isApproval || this.isPlanCreator || this.isAdmin) &&
+          visible: this.isFinish && this.isSciencePlan &&
               this.planDoc.docHistory?.stateEn === this.DocState.APPROVED.Value,
           command: () => {
             this.$router.push({path: '/documents/catalog/acts'})
+          }
+        },
+        {
+          label: this.$t('workPlan.reports'),
+          visible: this.isFinish && !this.isSciencePlan && (this.isApproval || this.isPlanCreator || this.isAdmin),
+          command: () => {
+            this.navigateToReports()
           }
         },
         {
@@ -1147,13 +1154,6 @@ export default {
           visible: this.isFinish && this.isPlanCreator && this.isPlanApproved && this.isSciencePlan,
           command: () => {
             this.confirmGenerateScienceReport()
-          }
-        },
-        {
-          label: this.$t('workPlan.reports'),
-          visible: this.isFinish && (this.isApproval || this.isPlanCreator || this.isAdmin || this.isRespUser) && (this.plan.doc_info?.docHistory?.stateId === 3 || this.oldPlan),
-          command: () => {
-            this.navigateToReports()
           }
         },
         {

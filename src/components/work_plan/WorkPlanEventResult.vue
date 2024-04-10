@@ -109,17 +109,18 @@
                 <label>{{ $t('common.fact') }}</label>
                 <InputText v-model="fact" @input="factChange"/>
               </div>
+
               <div class="field" v-if="!hasResultToApprove">
                 <label>{{ $t('common.result') }}</label>
-                  <div v-if="!isVisibleWritableField">
-                      <TinyEditor v-if="plan && isRespUserForWrite && !isOperPlan" v-model="result" :min-word="wordLimit" @wordCount="initWordCount" :height="300"
+                  <div v-if="isVisibleWritableField">
+                      <TinyEditor v-if="plan && isRespUser && !isOperPlan" v-model="result" :min-word="wordLimit" @wordCount="initWordCount" :height="300"
                                 :style="{ height: '100%', width: '100%' }"
                                 @selectionChange="editorChange"/>
-                    <TinyEditor v-if="plan && isRespUserForWrite && !isSciencePlan && isOperPlan && isQuarterLimitForTextEditor" v-model="newResult" :height="300" @selectionChange="editorChange"/>
+                    <TinyEditor v-if="plan && isRespUser && isOperPlan && isQuarterLimitForTextEditor" v-model="newResult" :height="300" @selectionChange="editorChange"/>
                     <small v-if="isSciencePlan && submitted && (wordCount < wordLimit)" class="p-error">{{ $t('workPlan.minWordCount') }}</small>
                 </div>
               </div>
-              <div class="field" v-if="plan && isRespUserForWrite && !isVisibleWritableField">
+              <div class="field" v-if="plan && isRespUser && isVisibleWritableField">
                 <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadFile($event)" :auto="true" :multiple="true" :chooseLabel="$t('smartenu.chooseAdditionalFile')"></FileUpload>
               </div>
               <div class="field">
@@ -183,7 +184,7 @@
                         <Button :label="$t('common.save')" icon="pi pi-check" class="p-button p-button-success" @click="saveEditResult(item)"
                                 :loading="loading"/>
                         <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button ml-1" @click="cancelEdit(item)"/>
-                                               <Button :label="$t('common.delete')" icon="pi pi-trash" class="p-button p-button-danger ml-1" @click="deleteConfirmItem($event, item)" />
+                        <Button :label="$t('common.delete')" icon="pi pi-trash" class="p-button p-button-danger ml-1" @click="deleteConfirmItem($event, item)" />
                       </div>
                       <div class="field">
                         <TinyEditor v-model="item.result_text[0].text" :height="300" :style="{ height: '100%', width: '100%' }"/>
@@ -242,13 +243,15 @@
                       </div>
                     </div>
                   </div>
-                  <div style="margin-left: -12px;" v-if="isPlanCreator">
+                  <div style="margin-left: -12px;" v-if="isPlanCreator || findRole(null, 'main_administrator')">
                     <Button v-if="(item.plan_event_result_history[0].state_id === 5)" icon="pi pi-fw pi-check" class="p-button-rounded p-button-text"
                             @click="confirmToInspected(isInspected, item.user.userID, item.event_result_id)" :label="$t('common.action.accept')"></Button>
                     <Button v-if="(item.plan_event_result_history[0].state_id === 5)" icon="pi pi-fw pi-times" class="p-button-rounded p-button-text"
                             @click="showToCorrectSidebarNew(item.user.userID, item.event_result_id)" :label="$t('workPlan.toCorrect')"></Button>
+                    <Button v-if="findRole(null, 'main_administrator')" :label="$t('common.delete')" icon="pi pi-trash" class="p-button p-button-danger ml-1" @click="deleteConfirmItem($event, item)" />
                     <br/><br/>
                   </div>
+
                   <div v-else class="p-0">
                     <span style="float:right;margin-top: -7px;" v-if="isPlanCreator">
                       <Button icon="pi pi-fw pi-check" class="p-button-rounded p-button-text" @click="verify(true)" :label="$t('common.action.accept')"></Button>
@@ -482,10 +485,7 @@ export default {
       return this.plan && ((this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Oper) || this.plan.is_oper)
     },
     isRespUser() {
-      return this.event && this.respUserExists(this.loginedUserId) && this.plan.plan_type_id === 3
-    },
-    isRespUserForWrite() {
-      return this.respUserExists(this.loginedUserId)
+      return this.event && this.respUserExists(this.loginedUserId)
     },
     isSummaryDepartmentUser(){
       return this.event && this.summaryDepartmentExists(this.loginedUserId);
@@ -503,15 +503,16 @@ export default {
       return this.currentDate <= this.fifteenthDayNextQuarter;
     },
     isVisibleWritableField(){
-      return (
-        this.resultData &&
-        this.resultData[0] &&
-        this.resultData[0].plan_event_result_history &&
-        this.resultData[0].plan_event_result_history[0] &&
-        (this.resultData[0].plan_event_result_history[0].state_id === 5 ||
-          this.resultData[0].plan_event_result_history[0].state_id === 6) &&
-        (this.resultData.result_text !== null || this.resultData === null)
-      );    
+      if (!this.resultData) {
+        return true
+      }
+
+      let userResults = this.resultData
+      if (this.isPlanCreator) {
+        userResults = this.resultData.filter(x => x.user_id === this.loginedUserId)
+      }
+
+      return !userResults.some(x => x.plan_event_result_history.some(x => x.state_id === 5 || x.state_id === 6))
     },
     shouldShowRejectSidebar() {
       const event = this.event;
