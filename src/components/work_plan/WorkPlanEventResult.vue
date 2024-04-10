@@ -564,7 +564,7 @@ export default {
         userResults = this.resultData.filter(x => x.user_id === this.loginedUserId)
       }
 
-      return !userResults.some(x => x.plan_event_result_history.some(x => x.state_id === 5 || x.state_id === 6))
+      return !userResults.some(x => x.plan_event_result_history?.some(x => x.user_id === this.loginedUserId && (x.state_id === 5 || x.state_id === 6)))
     },
     shouldShowRejectSidebar() {
       const event = this.event;
