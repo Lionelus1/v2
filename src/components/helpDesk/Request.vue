@@ -84,7 +84,7 @@
           <Textarea v-model="rejectedText" autoResize rows="5" cols="30" />
         </div>
         <template #footer>
-          <Button class="p-button-danger" :disabled="!rejectedText" :label="t('common.states.rejected')" @click="rejected()" />
+          <Button class="p-button-danger" :disabled="!rejectedText" :label="t('common.action.notAccept')" @click="rejected()" />
           <Button :label="t('common.cancel')" @click="close('rejectedDialog')" />
         </template>
       </Dialog>
@@ -460,7 +460,7 @@ const isUserDataVaild = () => {
 
 
 const saveDocument = () => {
-  if (validation.value.phone || validation.value.course || validation.value.email){
+  if (validation.value.phone || validation.value.email){
     showMessage('warn', t('helpDesk.application.inputErrorMessage'), null)
     validationRequest.value = validation.value
     return
