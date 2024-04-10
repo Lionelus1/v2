@@ -602,9 +602,9 @@ export default {
             {
               stage: 3,
               users: [],
-              titleRu: "Начальник Управления научных проектов",
-              titleKz: "Ғылыми жобалар бөлімінің меңгерушісі",
-              titleEn: "Head of the Scientific Projects Department",
+              titleRu: "Заместитель директора департамента науки",
+              titleKz: "Ғылым департаменті директорының орынбасары",
+              titleEn: "Deputy Director of the Department of Science",
               certificate: {
                 namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
                 nameru: "Для внутреннего документооборота (ГОСТ)",
@@ -615,9 +615,9 @@ export default {
             {
               stage: 4,
               users: [],
-              titleRu: "Директор Департамента науки",
-              titleKz: "Ғылым департаментінің директоры",
-              titleEn: "Director of the Department of Science",
+              titleRu: "И.о. директора департамента науки",
+              titleKz: "Ғылым департаменті директорының м.а",
+              titleEn: "Acting Director of the Department of Science",
               certificate: {
                 namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
                 nameru: "Для внутреннего документооборота (ГОСТ)",
@@ -903,11 +903,11 @@ export default {
             },
           },
           {
-            stage: 4,
+            stage: 3,
             users: [],
-            titleRu: "Начальник Управления научных проектов",
-            titleKz: "Ғылыми жобалар бөлімінің меңгерушісі",
-            titleEn: "Head of the Scientific Projects Department",
+            titleRu: "Заместитель директора департамента науки",
+            titleKz: "Ғылым департаменті директорының орынбасары",
+            titleEn: "Deputy Director of the Department of Science",
             certificate: {
               namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
               nameru: "Для внутреннего документооборота (ГОСТ)",
@@ -916,11 +916,11 @@ export default {
             },
           },
           {
-            stage: 5,
+            stage: 4,
             users: [],
-            titleRu: "Директор Департамента науки",
-            titleKz: "Ғылым департаментінің директоры",
-            titleEn: "Director of the Department of Science",
+            titleRu: "И.о. директора департамента науки",
+            titleKz: "Ғылым департаменті директорының м.а",
+            titleEn: "Acting Director of the Department of Science",
             certificate: {
               namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
               nameru: "Для внутреннего документооборота (ГОСТ)",
