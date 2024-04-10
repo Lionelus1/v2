@@ -19,7 +19,7 @@
         <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
         <label>{{ t('contact.fnameLatin') }}<span class="p-error" v-if="!readonly">*</span></label>
         <InputText class="mt-2" :placeholder="t('contact.fnameLatin')" v-model="user.firstnameEn" :readonly="props.readonly" @input="updateUserData"></InputText>
-        <small class="p-error" v-if="validation.firstNameEn">{{ t("common.requiredField") }}</small>
+        <small class="p-error" v-if="validation.firstNameEn">{{ t("") }}</small>
         </div>
   
         <!-- ФАМИЛИЯ -->
@@ -104,7 +104,7 @@
         <!-- ДАТА РОЖДЕНИЯ -->
         <div class="col-12 mb-2 mt-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ t('contact.birthday') }}</label>
-            <PrimeCalendar :readonly="props.readonly" class="mt-2" v-model="user.birthday" :placeholder="t('contact.birthday')" :dateFormat="'mm.dd.yy'" @input="updateUserData"/>
+            <PrimeCalendar :readonly="props.readonly" class="mt-2" v-model="user.birthday" :placeholder="t('contact.birthday')" :dateFormat="'dd.mm.yy'" @input="updateUserData"/>
         </div>
   
         <!-- АДРЕС -->
@@ -219,7 +219,7 @@
         
         const formattedBirthday = `${(dateObject.getMonth() + 1).toString().padStart(2, '0')}.${dateObject.getDate().toString().padStart(2, '0')}.${dateObject.getFullYear().toString().padStart(4, '0')}`;
 
-        user.value.birthday = formattedBirthday;
+        user.value.birthday = formatDate(user.value.birthday);
       }
 
       if (user.value.mainPosition == undefined) {
@@ -242,7 +242,7 @@
         // Format the birthday in "mm.dd.yyyy" format
         const formattedBirthday = `${(dateObject.getMonth() + 1).toString().padStart(2, '0')}.${dateObject.getDate().toString().padStart(2, '0')}.${dateObject.getFullYear().toString().padStart(4, '0')}`;
 
-        user.value.birthday = formattedBirthday;
+        user.value.birthday = formatDate(user.value.birthday);
       }
       user.value.password = ''
       if (user.value.mainPosition == undefined) {
@@ -373,6 +373,14 @@
   const localizedOrganizationName = (name, shortname) => {
       return name && name.length > 0 ? (shortname ? `"${shortname}" ${name}` : name) : '';
   };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}.${month}.${year}`;
+  }
 
   onMounted(() => {
     currentUser.value = JSON.parse(localStorage.getItem("loginedUser"));

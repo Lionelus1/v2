@@ -16,12 +16,20 @@
         <div class="grid formgrid">
         <div  class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ t("common.academicDegree") }}</label>
-            <Dropdown   @input="updateUserData" class="mt-2" :disabled="readonly"  v-model="user.academicDegree" :options="academicDegreeDictionary" :optionLabel="('name'+locale)" :placeholder="t('common.select')" />
+          <div class="dropdown-container" style="position: relative; display: inline-block; width: calc(100% - 32px);">
+            <Dropdown @change="updateUserData" class="mt-2" :disabled="readonly" v-model="user.academicDegree" :options="academicDegreeDictionary"
+                      :optionLabel="('name'+locale)" :placeholder="t('common.select')" style="width: 100%;">
+            </Dropdown>
+            <Button class="clear-icon" v-if="user.academicDegree" icon="pi pi-times" @click="clearAcademicDegree" />
+          </div>
 
           </div>
           <div  class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ t("common.academicTitle") }}</label>
-            <Dropdown   @input="updateUserData" class="mt-2" :disabled="readonly" v-model="user.academicTitle" :options="academicTitleDictionary" :optionLabel="('name'+$i18n.locale)" :placeholder="t('common.select')" />
+            <div class="dropdown-container" style="position: relative; display: inline-block; width: calc(100% - 32px);">
+              <Dropdown  @change="updateUserData" class="mt-2" :disabled="readonly" v-model="user.academicTitle" :options="academicTitleDictionary" :optionLabel="('name'+$i18n.locale)" :placeholder="t('common.select')" />
+              <Button class="clear-icon" v-if="user.academicTitle" icon="pi pi-times" @click="clearAcademicTitle" />
+            </div>
           </div>
         </div>
       </AccordionTab>
@@ -54,7 +62,7 @@
           <Column  field="diplom_number" :header="t('common.diplomNumber')"></Column>
 
           <!-- Год поступления -->
-          <Column field="start_date" :header="t('common.startDate')">
+          <Column field="start_date" :header="t('hr.edu.receiptDate')">
               <template #body="slotProps">
                   {{ formatDate(slotProps.data.start_date) }}
               </template>
@@ -62,7 +70,7 @@
 
           
           <!-- Год окончания -->
-          <Column field="final_date" :header="t('common.endDate')">
+          <Column field="final_date" :header="t('hr.edu.expirationDate')">
               <template #body="slotProps">
                   {{ formatDate(slotProps.data.final_date) }}
               </template>
@@ -260,7 +268,7 @@
       }
 
       const dateObject = new Date(dateString);
-      return dateObject.toLocaleDateString(); 
+      return dateObject.getFullYear().toString();
   }
 
 
@@ -308,6 +316,18 @@
         });
     }
 
+    const clearAcademicDegree = () => {
+      console.log('test')
+      user.value.academicDegree = null
+      emitPersonalInformationUpdate("personal-information-updated", user.value);
+    }
+
+  const clearAcademicTitle = () => {
+    console.log('test')
+    user.value.academicTitle = null
+    emitPersonalInformationUpdate("personal-information-updated", user.value);
+  }
+
   const updateUserData = () => {
     emitPersonalInformationUpdate("personal-information-updated", user.value);
   };
@@ -326,3 +346,27 @@
   })
   
 </script>
+
+<style>
+.dropdown-container {
+  display: flex;
+  align-items: center;
+}
+
+.clear-icon {
+  background: transparent;
+  border: none;
+  color: #6c757d;
+  position: absolute;
+  right: 30px;
+  top: 60%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+.clear-icon:enabled:hover {
+  background: rgba(236, 236, 236, 0.50);
+  border: none;
+  color: #6c757d;
+}
+
+</style>
