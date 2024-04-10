@@ -109,6 +109,7 @@
                 <label>{{ $t('common.fact') }}</label>
                 <InputText v-model="fact" @input="factChange"/>
               </div>
+
               <div class="field" v-if="!hasResultToApprove">
                 <label>{{ $t('common.result') }}</label>
                   <div v-if="isVisibleWritableField">
