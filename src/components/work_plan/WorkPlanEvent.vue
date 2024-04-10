@@ -396,6 +396,7 @@ export default {
     this.isAdmin = this.findRole(null, 'main_administrator')
     this.getPlan();
     this.getEventsTree(null);
+    this.getWorkPlanApprovalUsers(this.work_plan_id)
 
   },
   mounted() {
@@ -540,7 +541,7 @@ export default {
           this.approval_users = res.data;
           this.isPlanSentApproval = true;
           this.approval_users.forEach(e => {
-            if (this.loginedUserId === e.user.id) {
+            if (this.loginedUserId === e.id) {
               this.isApproval = true;
             }
           });
@@ -627,6 +628,7 @@ export default {
             }
           ];
           this.getRelatedFiles()
+          this.getWorkPlanApprovalUsers(this.work_plan_id)
         }
       }).catch(error => {
         if (error.response && error.response.status === 401) {
