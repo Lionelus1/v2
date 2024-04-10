@@ -4,7 +4,7 @@
     <ToolbarMenu :data="initMenu" @search="initSearch" :search="true" @filter="toggle('global-filter', $event)" :filter="isAdmin" :filtered="filtered" />
     <div class="card">
       <DataTable :lazy="true" :rowsPerPageOptions="[5, 10, 20, 50]" :value="data" dataKey="id" :rowHover="true"
-                 :loading="loading" responsiveLayout="scroll" :paginator="true" :rows="10" :totalRecords="total" @page="onPage">
+                 :loading="loading" responsiveLayout="scroll" :paginator="true" :first="lazyParams.first || 0" :rows="lazyParams.rows" :totalRecords="total" @page="onPage">
         <template #empty> {{ $t('common.noData') }}</template>
         <template #loading> {{ $t('common.loading') }}</template>
         <Column field="content" :header="$t('workPlan.planName')" sortable>
@@ -49,7 +49,8 @@
         <Column field="actions" header="">
           <template #body="{ data }">
             <Button type="button"
-                    v-if="this.isAdmin || (data.user.id === loginedUserId && (data.status.work_plan_status_id === 1 || data.status.work_plan_status_id === 3 || data.status.work_plan_status_id === 5))"
+                    v-if="this.isAdmin || (data.user.id === loginedUserId && (data.doc_info?.docHistory?.stateId === Enum.REVISION.ID
+                    || data.doc_info?.docHistory?.stateId === Enum.CREATED.ID || data.doc_info?.docHistory?.stateId === Enum.INAPPROVAL.ID))"
                     icon="pi pi-trash" class="p-button-danger mr-2" label="" @click="deleteConfirm(data)"></Button>
           </template>
         </Column>
@@ -160,6 +161,7 @@ export default {
       },
       statuses: [Enum.StatusesArray.StatusCreated, Enum.StatusesArray.StatusInapproval, Enum.StatusesArray.StatusApproved,
         Enum.StatusesArray.StatusRevision, Enum.StatusesArray.StatusSigning, Enum.StatusesArray.StatusSigned],
+      Enum: Enum,
     }
   },
   mounted() {
@@ -190,6 +192,7 @@ export default {
   },
   created() {
     this.isAdmin = this.findRole(null, 'main_administrator')
+    this.lazyParams = localStorage.getItem("workPlanPage") ? JSON.parse(localStorage.getItem("workPlanPage")) : this.lazyParams;
     this.getPlans();
     this.getWorkPlanTypes()
   },
@@ -312,8 +315,9 @@ export default {
       this.isRejectModal = false;
     },
     onPage(event) {
-      this.lazyParams.page = event.page
-      this.lazyParams.rows = event.rows
+      this.lazyParams = event
+      console.log(event)
+      localStorage.setItem("workPlanPage", JSON.stringify(event))
       this.getPlans();
     },
     clearFilter() {
