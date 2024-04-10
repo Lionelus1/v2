@@ -24,7 +24,7 @@
       <div class="buttonLanguag">
         <Button class="toggle-button" @click="toggleRegistration">{{t('helpDesk.application.chooseDiscipline')}}</Button>
       </div>
-        <span class="p-input-icon-left mr-2 position-relative" v-if="showRegistration && props.courseRequest && data" >
+        <span class="p-input-icon-left mr-2 position-relative" v-if="showRegistration && props.courseRequest " >
     <i class="pi pi-search position-absolute" style="top: 15px"/>
     <InputText
         type="search"
@@ -40,11 +40,11 @@
 </span>
 
       </div>
-      <DataTable v-if="showRegistration && props.courseRequest && data" :lazy="true" :rowsPerPageOptions="[5, 10, 20, 50]" :value="data" dataKey="id"
+      <DataTable v-if="showRegistration && props.courseRequest" :lazy="true" :rowsPerPageOptions="[5, 10, 20, 50]" :value="data" dataKey="id"
         :rowHover="true" filterDisplay="menu" responsiveLayout="scroll" :paginator="true" stripedRows
         class="p-datatable-sm" :rows="total >= 10 ? 10 : total" :totalRecords="total" @page="onPage" v-model:selection="currentDocument"
          scrollable scrollHeight="flex" @lazy="true">
-
+        <template #empty> {{ t('common.noData') }}</template>
         <Column field="checkbox">
           <template #body="{ data }">
             <Checkbox :disabled="isDisabled(data) || isAdmin || (props.courseRequest?.doc?.docHistory?.stateId == DocEnum.INAPPROVAL.ID)"
@@ -113,13 +113,13 @@
       <label>{{ t('contact.phone') }}<span v-if="isCurrentUserSender" style="font-size: 20px; color: red;">*</span></label>
       <InputText v-model="userData.phone" class="mt-2" inputId="userDataPhone" :placeholder="t('contact.phone')"
         style="width: 350px;" @input="input"  :disabled="disabledStatus"/>
-      <div v-if="props.validationRequest.phone"  style="color: red; margin-top: 5px">Введен неправильно</div>
+      <div v-if="props.validationRequest.phone"  style="color: red; margin-top: 5px">{{t('helpDesk.application.enteredIncorrectly')}}</div>
     </div>
     <div class="field" style="margin-top: 10px;">
       <label>{{ t('contact.email') }}<span v-if="isCurrentUserSender" style="font-size: 20px; color: red;">*</span></label>
       <InputText v-model="userData.email" type="text" :placeholder="t('contact.email')" @input="input"
         :disabled="disabledStatus" />
-      <div v-if="props.validationRequest.email" style="color: red; margin-top: 5px">Введен неправильно</div>
+      <div v-if="props.validationRequest.email" style="color: red; margin-top: 5px">{{t('helpDesk.application.enteredIncorrectly')}}</div>
     </div>
   </div>
 </template>
@@ -276,7 +276,7 @@ const getCourse = () => {
   if (findRole(null, "student") || props.courseRequest.doc?.newParams?.not_formal_education_ids) {
     const userId = props.courseRequest?.doc?.newParams?.student_id?.value
 
-    let courseId = props.courseRequest?.doc?.newParams?.not_formal_education_ids.value
+    let courseId = props.courseRequest?.doc?.newParams?.not_formal_education_ids.value ? props.courseRequest?.doc?.newParams?.not_formal_education_ids.value : null
     if ((props.courseRequest?.doc?.docHistory?.stateId === DocEnum.CREATED.ID || props.courseRequest?.doc?.docHistory?.stateId === DocEnum.REVISION.ID) && !isAdmin.value) {
       courseId = null
     }
@@ -291,28 +291,26 @@ const getCourse = () => {
         }, {headers: getHeader()})
         .then((res) => {
           data.value = res.data.courses;
-          if (props.courseRequest.doc.newParams) {
-            data.value.map(e => {
-              e.checked = props.courseRequest.doc.newParams.not_formal_education_ids.value.some(x => x === e.subject_id)
-            })
-          } else {
-            data.value.map(e => {
-              e.checked = selectedIds.value.some(x => x === e.subject_id)
-            })
+          if (data.value) {
+            if (props.courseRequest.doc.newParams) {
+              data.value.map(e => {
+                e.checked = props.courseRequest.doc.newParams.not_formal_education_ids.value.some(x => x === e.subject_id)
+              })
+            } else {
+              data.value.map(e => {
+                e.checked = selectedIds.value.some(x => x === e.subject_id)
+              })
+            }
           }
           total.value = res.data.total;
         })
-        .catch((err) => {
-          showMessage("error", t("common.message.saveError"), null);
-        });
-
   }
 }
 const getStudentInfo = () => {
   const userId = props.courseRequest?.doc?.newParams?.student_id?.value
 
   service.helpDeskStudentInfo({ user_id: userId }).then(res => {
-    responseUserData.value.speciality = locale === "kz" ? res.data.studen_info.specialty_kz : res.data.studen_info.specialty_ru
+    responseUserData.value.speciality = locale.value === "kz" ? res.data.studen_info.specialty_kz : res.data.studen_info.specialty_ru
     responseUserData.value.course = res.data.studen_info.course_number
     responseUserData.value.group = res.data.studen_info.group
     responseUserData.value.fullName = res.data.studen_info.full_name
