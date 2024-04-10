@@ -1,12 +1,24 @@
 <template>
-  <div class="talon_bg">
+  <div class="card text-center flex flex-column gap-4 m-auto" v-if="isBoolPhone">
+    <h4>{{$t('contact.phone')}}</h4>
+    <InputMask class="p-inputtext-lg" v-model="phoneNumber"
+               @update:modelValue="validatePhoneNumber" placeholder="+7-(777)-777-77-77" mask="+7-(999)-999-99-99" />
+    <Button class="justify-content-center p-button-lg" @click="sendNumber()" :disabled="isDisabled">{{$t('common.continue')}}</Button>
+  </div>
+<div class="card m-auto mt-4" v-if="isBoolList">
+  <Button class="p-button-lg mb-3" style="width: 100%" v-for="i of queues" :key="i" @click="registerQueue(i)">{{i.queueNamekz}}</Button>
+</div>
+  <div class="talon_bg"  v-if="isBoolTalon">
     <div class="relative">
       <div class="talon" v-if="inQueue">
-        <div class="talon_top">
+        <embed :src="queinfo + '#toolbar=0'" style="width: 100%;height: 320px;" v-if="queinfo" type="application/pdf" />
+        <div v-if="queinfo">{{queinfo}}</div>
+        <div class="dots"></div>
+<!--        <div class="talon_top">
           <img src="assets/layout/images/logo.svg" style="width:110px; margin: 10px ">
-          <div class="dots"></div>
-        <div class="talon_number">107</div>
-        <b>Сіздің кезектегі нөміріңіз</b>
+
+          <div class="talon_number">107</div>
+          <b>Сіздің кезектегі нөміріңіз</b>
         </div>
         <div class="talon_content">
           <div class="dashed flex justify-content-between">
@@ -21,17 +33,17 @@
             <div>01.04.2024</div>
             <div>11:25</div>
           </div>
-        </div>
+        </div>-->
       </div>
-      <div class="talon_called" v-if="called">
+<!--      <div class="talon_called" v-if="called">
         <div class="talon_top">
           <div class="talon_number">107</div>
           <b>Сіз шақырылдыңыз, өтіңіз</b>
         </div>
         <div class="talon_content">
           <div class="go_to flex justify-content-center align-items-center mb-4">
-          <i class="fa-solid fa-person-walking-arrow-right"></i>
-          № 8 терезе
+            <i class="fa-solid fa-person-walking-arrow-right"></i>
+            № 8 терезе
           </div>
           <div class="flex justify-content-between">
             <div>01.04.2024</div>
@@ -70,58 +82,42 @@
           <i class="pi pi-arrow-right"></i>
           <div>8</div>
         </div>
-      </div>
+      </div>-->
     </div>
   </div>
-  <div class="card text-center flex flex-column gap-4 m-auto">
-    <h3>{{$t('contact.phone')}}</h3>
-    <input type="text" v-model="phoneNumber" @input="validatePhoneNumber">
-    <InputMask class="p-inputtext-lg"  mask="+7-(999)-999-99-99" />
-    <Button class="justify-content-center p-button-lg" :disabled="isDisabled">{{$t('common.continue')}}</Button>
-    <small v-if="!validPhoneNumber" class="p-error">{{ $t("common.error")}} Некорректный номер телефона</small>
-    {{validPhoneNumber}}
-  </div>
-<div class="card m-auto mt-4">
-<!--  <a class="block mb-2 cursor-pointer" @click="getQueue()">
-    <i class="pi pi-arrow-left"></i>
-    Артқа
-  </a>-->
-  <Button class="p-button-lg mb-3" style="width: 100%" v-for="i of queues" :key="i" @click="getQueue(i.key)">{{i.queueNamekz}}</Button>
-</div>
 </template>
 
 <script setup>
 import {computed, onMounted, ref} from "vue";
 import axios from "axios";
-import {getHeader, smartEnuApi} from "@/config/config";
+import {b64toBlob, getHeader, smartEnuApi} from "@/config/config";
 import {useRoute} from "vue-router";
+import {useI18n} from "vue-i18n";
 
+const {t, locale} = useI18n()
 const route = useRoute()
 const parentId = ref(parseInt(route.params.id))
-const validationError = ref(false);
 const queues = ref();
 const inQueue = ref(true);
 const called = ref(false);
-const inputValue = ref('');
-const isDisabled = computed(() => inputValue.value.length <= 8);
 const phoneNumber = ref('');
-const validPhoneNumber = ref(true);
+const isDisabled = ref(true);
+const isBoolPhone = ref(true);
+const isBoolList = ref(false);
+const isBoolTalon = ref(false);
+const queinfo = ref();
 
-const validatePhoneNumber = () => {
-  const phoneRegex = /^\+(?:[0-9] ?){10}[0-9]$/;
-
-  if (!phoneRegex.test(phoneNumber.value)) {
-    console.log(phoneNumber)
-    validPhoneNumber.value = false;
-  } else {
-    validPhoneNumber.value = true;
+const validatePhoneNumber = (val) => {
+  const phoneNumberRegex = /^\+7-\(\d{3}\)-\d{3}-\d{2}-\d{2}$/;
+  isDisabled.value = !phoneNumberRegex.test(val)
+};
+const sendNumber=()=>{
+  if(phoneNumber.value){
+    localStorage.setItem('phoneNumber', phoneNumber.value);
+    isBoolPhone.value = false
+    isBoolList.value = true
   }
-};
-
-const checkInput = (event) => {
-  console.log(event.target.value)
-  inputValue.value = event.target.value;
-};
+}
 
 const getQueue = (data) => {
   axios
@@ -132,9 +128,34 @@ const getQueue = (data) => {
         queues.value = response.data.queues
       })
       .catch((error) => {
+        console.log(error)
       });
 }
 getQueue(parentId.value)
+
+const registerQueue = (queue) => {
+  const req = {
+    queueID: queue.key, lang: locale.value
+  }
+  axios
+      .post(smartEnuApi + "/queue/registerService", req, {
+        headers: getHeader(),
+      })
+      .then((response) => {
+        queinfo.value = b64toBlob(response.data)
+        isBoolList.value = false
+        isBoolTalon.value = true
+      })
+      .catch((error) => {
+        console.log(error)
+      });
+}
+onMounted(()=>{
+  if (localStorage.getItem('phoneNumber') !== null){
+    isBoolPhone.value = false
+    isBoolList.value = true
+  }
+})
 </script>
 
 <style lang="scss" scoped>
@@ -145,8 +166,9 @@ getQueue(parentId.value)
   padding-top: 30px;
 }
 .talon{
+  min-height: 375px;
   position: relative;
-  padding-bottom: 30px;
+  padding: 20px;
   background: #fff;
   margin: 30px auto;
   text-align: center;
@@ -165,8 +187,9 @@ getQueue(parentId.value)
   }
   .dots{
     margin: 20px 0;
-    border-bottom: 4px dotted #000e39;
+    //border-bottom: 4px dotted #000e39;
     position: relative;
+    bottom: 220px;
   }
   .dots:after{
     content: '';
@@ -176,7 +199,7 @@ getQueue(parentId.value)
     width: 23px;
     height: 23px;
     background: #000e39;
-    left: -13px;
+    left: -33px;
     top: -10px;
   }
   .dots:before{
@@ -187,7 +210,7 @@ getQueue(parentId.value)
     width: 23px;
     height: 23px;
     background: #000e39;
-    right: -13px;
+    right: -33px;
     top: -10px;
   }
   .talon_badge{
@@ -288,6 +311,9 @@ getQueue(parentId.value)
     font-size: 20px;
     margin-bottom: 10px;
   }
+}
+.p-inputtext::placeholder{
+  color: #ced4da;
 }
 
 </style>
