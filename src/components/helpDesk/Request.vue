@@ -74,7 +74,7 @@
         </div>
         <template #footer>
           <Button class="p-button-danger" :disabled="!revisionText" :label="t('common.revision')" @click="revision()" />
-          <Button :label="t('common.cancel')" @click="close('revisionDialog')" />
+          <Button :label="t('hdfs.cancelBtn')" @click="close('revisionDialog')" />
         </template>
       </Dialog>
 
@@ -85,7 +85,7 @@
         </div>
         <template #footer>
           <Button class="p-button-danger" :disabled="!rejectedText" :label="t('common.action.notAccept')" @click="rejected()" />
-          <Button :label="t('common.cancel')" @click="close('rejectedDialog')" />
+          <Button :label="t('hdfs.cancelBtn')" @click="close('rejectedDialog')" />
         </template>
       </Dialog>
 
