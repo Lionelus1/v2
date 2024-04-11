@@ -118,10 +118,10 @@
   })
   const durationTypeOptions = [
     {
-      id: 1, name: "hours", name_kz: "Сағат", name_ru: "Часы", name_en: "Hours"
+      id: 1, name: "hours", name_kz: "сағат", name_ru: "часы", name_en: "hours"
     },
     {
-      id:2, name:"credits", name_kz: "Кредиты", name_ru:"Кредиты", name_en:"Credits"
+      id:2, name:"credits", name_kz: "кредиты", name_ru:"кредиты", name_en:"credits"
     }
   ]
 
