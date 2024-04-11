@@ -1,7 +1,7 @@
 <template>
   <div class="col-12">
     <h3>{{ $t('workPlan.plans') }}</h3>
-    <ToolbarMenu :data="initMenu" @search="initSearch" :search="true" @filter="toggle('global-filter', $event)" :filter="isAdmin" :filtered="filtered"/>
+    <ToolbarMenu v-model:searchModel="filter.searchText" :data="initMenu" @search="initSearch" :search="true" @filter="toggle('global-filter', $event)" :filter="isAdmin" :filtered="filtered"/>
     <div class="card">
       <DataTable :lazy="true" :rowsPerPageOptions="[5, 10, 20, 50]" :value="data" dataKey="id" :rowHover="true"
                  :loading="loading" responsiveLayout="scroll" :paginator="true" :first="lazyParams.first || 0" :rows="lazyParams.rows" :totalRecords="total" @page="onPage">
@@ -165,11 +165,11 @@ export default {
         doc_status: null,
         plan_type: null,
         user_id: null,
+        searchText: null
       },
       statuses: [Enum.StatusesArray.StatusCreated, Enum.StatusesArray.StatusInapproval, Enum.StatusesArray.StatusApproved,
         Enum.StatusesArray.StatusRevision, Enum.StatusesArray.StatusSigning, Enum.StatusesArray.StatusSigned],
       Enum: Enum,
-      searchText: null,
     }
   },
   mounted() {
@@ -206,7 +206,7 @@ export default {
     this.lazyParams.rows = parseInt(this.$route.query.rows) || 10
 
     const storageFilter = JSON.parse(localStorage.getItem("workPlanFilter"))
-    console.log(storageFilter)
+
     this.filter = storageFilter || this.filter
     this.filtered = storageFilter || false
 
@@ -312,15 +312,15 @@ export default {
         this.$toast.add({severity: "error", summary: error, life: 3000});
       })
     },
+    initSearch(searchText) {
+      this.filter.searchText = searchText;
+      this.initFilter()
+    },
     initFilter() {
       localStorage.setItem("workPlanFilter", JSON.stringify(this.filter));
       this.lazyParams.first = 0
       this.lazyParams.page = 0
       this.filtered = true;
-      this.getPlans()
-    },
-    initSearch(searchText) {
-      this.lazyParams.searchText = searchText
       this.getPlans()
     },
     showMySign(approvalStages) {
