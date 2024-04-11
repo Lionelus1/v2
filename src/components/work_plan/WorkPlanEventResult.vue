@@ -112,8 +112,8 @@
                       <TinyEditor v-if="plan && isRespUser && !isOperPlan" v-model="result" :min-word="wordLimit" @wordCount="initWordCount" :height="300"
                                 :style="{ height: '100%', width: '100%' }"
                                 @selectionChange="editorChange"/>
-                    <TinyEditor v-if="plan && isRespUser && isOperPlan && isQuarterLimitForTextEditor" v-model="newResult" :height="300" @selectionChange="editorChange"/>
-                    <small v-if="isSciencePlan && submitted && (wordCount < wordLimit)" class="p-error">{{ $t('workPlan.minWordCount') }}</small>
+                    <TinyEditor v-if="plan && isRespUser && isOperPlan && isQuarterLimitForTextEditor" :min-word="wordLimit" @wordCount="initWordCount" v-model="newResult" :height="300" @selectionChange="editorChange"/>
+                    <small v-if="(isSciencePlan && submitted && (wordCount < wordLimit)) || (isOperPlan && submitted && (wordCount < wordLimit))" class="p-error">{{ $t('workPlan.minWordCount') }}</small>
                 </div>
               </div>
               <div class="field" v-if="isVisibleWritableField">
@@ -723,7 +723,7 @@ export default {
       this.isBlockUI = true;
       const fd = new FormData();
 
-      if ((this.isSciencePlan && this.wordCount > this.wordMaxLimit) || (this.isSciencePlan && this.wordCount < this.wordLimit)) {
+      if (((this.isSciencePlan && this.wordCount > this.wordMaxLimit) || (this.isSciencePlan && this.wordCount < this.wordLimit)) || ((this.isOperPlan && this.wordCount > this.wordMaxLimit) || (this.isOperPlan && this.wordCount < this.wordLimit))) {
         this.$toast.add({severity: 'warn', detail: this.$t('workPlan.maxWordCount', this.wordMaxLimit), life: 3000})
         this.isBlockUI = false;
         return;
