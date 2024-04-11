@@ -87,9 +87,9 @@ const formData = ref({
   duration_type: {
     id: 1,
     name: "hours",
-    name_kz: "Сағат",
-    name_en: "Hours",
-    name_ru: "Часы"
+    name_kz: "сағат",
+    name_en: "hours",
+    name_ru: "часы"
   }
 });
 const props = defineProps ({
@@ -126,9 +126,9 @@ const addModule = () => {
     duration_type: {
       id: 1,
       name: 'hours',
-      name_kz: "Сағат",
-      name_ru: "Часы",
-      name_en: "Hours"
+      name_kz: "сағат",
+      name_ru: "часы",
+      name_en: "hours"
     }
   };
   moduleDialog.value = true;
