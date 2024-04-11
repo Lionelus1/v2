@@ -8,8 +8,8 @@
 <!--            <i class="fa-regular fa-address-card" /> &nbsp;{{ $t("contracts.card") }}</Button>-->
     <DataTable :value="documents" dataKey="id" :rows="rows" :totalRecords="total" :first="first"
       :paginator="true" :paginatorTemplate="paginatorTemplate" :rowsPerPageOptions="[10, 25, 50]"
-      :currentPageReportTemplate="currentPageReportTemplate" :lazy="true" :loading="tableLoading" 
-      scrollable scrollHeight="flex" v-model:selection="currentDocument" selectionMode="single" 
+      :currentPageReportTemplate="currentPageReportTemplate" :lazy="true" :loading="tableLoading"
+      scrollable scrollHeight="flex" v-model:selection="currentDocument" selectionMode="single"
       :rowHover="true" stripedRows class="flex-grow-1" @page="onPage">
       <template #empty>
         {{ this.$t("common.recordsNotFound") }}
@@ -91,7 +91,7 @@
   </OverlayPanel>
 
   <!-- documentInfoSidebar -->
-  <Sidebar v-model:visible="visibility.documentInfoSidebar" position="right" class="p-sidebar-lg" 
+  <Sidebar v-model:visible="visibility.documentInfoSidebar" position="right" class="p-sidebar-lg"
     style="overflow-y: scroll" @hide="getActs">
     <DocSignaturesInfo :docIdParam="currentDocument.uuid"></DocSignaturesInfo>
   </Sidebar>
@@ -186,7 +186,7 @@ export default {
       if (!user) {
         return '';
       }
-      
+
       let name = '';
 
       if (this.$i18n.locale === 'en' && this.validString(user.thirdnameEn) && this.validString(user.firstnameEn)) {
@@ -199,8 +199,8 @@ export default {
         return name
       }
 
-      name = user.thirdName + ' ' + user.firstName 
-      
+      name = user.thirdName + ' ' + user.firstName
+
       if (this.validString(user.lastName)) {
         name += ' ' + user.lastName
       }
@@ -300,7 +300,7 @@ export default {
             if (data.requests[i].status === 1) {
               return true;
             }
-            
+
             break;
           }
         }
@@ -319,7 +319,7 @@ export default {
             if (data.requests[i].status === 0) {
               return true;
             }
-            
+
             break;
           }
         }
@@ -466,7 +466,9 @@ export default {
         {
           label: this.$t('common.delete'),
           icon: "fa-solid fa-trash",
-          visible: (this.actionsNode.docHistory && this.actionsNode.docHistory.stateId === Enum.CREATED.ID || this.actionsNode.docHistory && this.actionsNode.docHistory.stateId === Enum.REVISION.ID) && this.loginedUser.userID === this.actionsNode.creatorID,
+          visible: (this.actionsNode.docHistory && this.actionsNode.docHistory.stateId === Enum.CREATED.ID ||
+              this.actionsNode.docHistory.stateId === Enum.REVISION.ID || this.actionsNode.docHistory.stateId === Enum.INAPPROVAL.ID) &&
+              this.loginedUser.userID === this.actionsNode.creatorID,
           command: () => {
             this.currentDocument = this.actionsNode;
             this.deleteFile()
@@ -489,7 +491,7 @@ export default {
   font-size: 1.25rem;
   margin-right: 1rem;
   display: flex;
-  align-items: center; 
+  align-items: center;
 }
 .card {
   //flex-grow: 1;
