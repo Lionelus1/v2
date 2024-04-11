@@ -1,4 +1,7 @@
 <template>
+  <ActionButton v-if="findRole(null,'online_course_administrator')" :show-label="true" :items="menu" @toggle="toggleAction(data)">
+  </ActionButton>
+
   <DataTable :value="courseHistories" class="p-datatable-sm"
              :lazy="true" :totalRecords="total"
              @page="onPage($event)" :first="lazyParams.first"
@@ -12,13 +15,15 @@
       })" responsiveLayout="stack" breakpoint="480px">
 
 
-    <Column :header="t('common.date')" @page="onPage($event)" :first="lazyParams.first">
+    <Column :header="t('common.date')" >
       <template #body="slotProps">
         {{ formatDate(slotProps.data.startDate) }} - {{ formatDate(slotProps.data.finalDate) }}
       </template>
     </Column>
 
-    <Column field="studentCount" :header="t('course.numberParticipants')"></Column>
+    <Column v-if="findRole(null, 'online_course_administrator')" field="studentCount" :header="t('course.numberParticipants')"></Column>
+
+    <Column field="state.namekz" header="Статус"></Column>
 
     <Column :header="t('contracts.columns.author')">
       <template #body="slotProps">
@@ -41,16 +46,26 @@
     position="right" class="p-sidebar-lg"
     style="width: 50%;" @hide="closeCourseHistoryStudents">
 
-    <CourseStudents studentState="certified" :courseHistoryID="courseHistory?.id" courseHistoryState="inactive" :props-course="propsCourse" :get-course="getCourse" @update-course="getCourse" />
+    <CourseStudents :courseHistory="courseHistory" :courseHistoryID="courseHistory?.id" :props-course="propsCourse" :get-course="getCourse" @update-course="getCourse" />
 
   </Sidebar>
+
+  <Sidebar position="right" class="p-sidebar-lg"
+           style="width: 50%;"  v-model:visible="courseDialog">
+    <NewCourseFlow :courseState="7" :propsCourse="propsCourse" :closeSideBar="closeCourseDialog"/>
+  </Sidebar>
+
 </template>
 <script setup>
   import {computed, onMounted, ref, defineProps, inject} from "vue";
   import {useI18n} from "vue-i18n";
   import {useToast} from "primevue/usetoast";
   import {OnlineCourseService} from "@/service/onlinecourse.service";
-  import CourseStudents from "./ CourseStudents.vue";
+  import CourseStudents from "./CourseStudents.vue";
+  import {findRole} from "@/config/config";
+  import ActionButton from "@/components/ActionButton.vue";
+  import NewCourseFlow from "./NewCourseFlow.vue"
+  import {useRoute, useRouter} from "vue-router";
 
   const emitter = inject("emitter");
   const {t, locale} = useI18n()
@@ -87,6 +102,17 @@
     rows: 10,
   })
   const courseHistoryStudentsVisible = ref(false)
+  const menu =  ref([
+    {
+      label: t("course.openNewThread"),
+      icon: 'fa-solid fa-stream',
+      command: () => openCourseDialog()
+    },
+  ])
+  const courseDialog = ref(false)
+  const actionsNode = ref(null)
+  const router = useRouter()
+  const route = useRoute()
 
   const getCourseHistories = () => {
     const req = {
@@ -109,20 +135,34 @@
   }
 
   const openCourseHistoryStudentsDialog = () => {
-    courseHistoryStudentsVisible.value = true
+    // eslint-disable-next-line no-undef
+    router.push({ name: 'CourseStudents', params: { id: props.propsCourse.id, history_id: courseHistory.value.id } });
+    // courseHistoryStudentsVisible.value = true
   }
-
   const closeCourseHistoryStudents = () => {
   }
 
   const formatDate = (dateString) => {
-    const options = { month: 'numeric', day: 'numeric', year: 'numeric' };
+    const options = {  day: 'numeric', month: 'numeric', year: 'numeric' };
     const date = new Date(dateString);
     return date.toLocaleString(undefined, options).replace(/\//g, '.');
   };
 
   const onPage = (event) => {
     lazyParams.value = event
+    getCourseHistories()
+  }
+
+  const openCourseDialog = () => {
+    courseDialog.value = true
+  }
+
+  const toggleAction = (node) =>  {
+    actionsNode.value = node
+  }
+
+  const closeCourseDialog = () => {
+    courseDialog.value = false
     getCourseHistories()
   }
 

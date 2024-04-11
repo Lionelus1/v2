@@ -1419,7 +1419,8 @@ export default {
         noIssuedCertificates:"Some participants were not issued certificates. Please issue certificates before completing the course!",
         completeCourse: "Are you sure you want to complete the course?",
         numberParticipants: "Number of participants",
-        сompletedСourse: "Completed courses"
+        сompletedСourse: "Completed courses",
+        moduleCredits: 'Credits'
     },
     roleControl: {
         addSidebar: 'Adding new record',
@@ -1502,6 +1503,7 @@ export default {
         internalServerError: 'We\'re sorry, something went wrong on our end. Please try again later.',
         unauthorized: 'The user is not authorized.',
         importAlreadyOnProcess: 'Import process is already on. Please wait for results.',
+        notFound: 'The requested resource was not found'
     },
     visuallyImpaired: {
         fontSize: "Font size",
