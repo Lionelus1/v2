@@ -26,7 +26,7 @@
             </template>
             <template #list="{ data }">
               <div class="post" v-on:click="newsView(data)">
-                <img class="round" v-if="data.imageUrl != null && data.imageUrl !=''"
+                <img class="round" v-if="data.imageUrl && data.imageUrl !=''"
                      :src="data.imageUrl"/>
                 <div class="text">
                   <strong>
