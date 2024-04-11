@@ -112,7 +112,7 @@
                       <TinyEditor v-if="plan && isRespUser && !isOperPlan" v-model="result" :min-word="wordLimit" @wordCount="initWordCount" :height="300"
                                 :style="{ height: '100%', width: '100%' }"
                                 @selectionChange="editorChange"/>
-                    <TinyEditor v-if="plan && isRespUser && isOperPlan && isQuarterLimitForTextEditor" v-model="newResult" :height="300" @selectionChange="editorChange"/>
+                    <TinyEditor v-if="plan && isRespUser && isOperPlan && isQuarterLimitForTextEditor" :min-word="wordLimit" @wordCount="initWordCount" v-model="newResult" :height="300" @selectionChange="editorChange"/>
                     <small v-if="isSciencePlan && submitted && (wordCount < wordLimit)" class="p-error">{{ $t('workPlan.minWordCount') }}</small>
                 </div>
               </div>
@@ -425,8 +425,9 @@ export default {
       return userID => this.resultData.filter(item => item.user_id === userID)
     },
     wordCount() {
-      if (!this.result) return 0;
-      return this.result.trim().split(/\s+/).length;
+      const textToCount = this.isOperPlan ? this.newResult : this.result;
+      if (!textToCount) return 0;
+      return textToCount.trim().split(/\s+/).length;
     },
     userMenuItems() {
       return this.initMenu();
@@ -467,6 +468,9 @@ export default {
     isOperPlan() {
       return this.plan && ((this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Oper) || this.plan.is_oper)
     },
+    isStandartPlan() {
+      return this.plan && this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Standart
+    },
     isRespUser() {
       return this.event && this.respUserExists(this.loginedUserId)
     },
@@ -486,7 +490,6 @@ export default {
       return this.currentDate <= this.fifteenthDayNextQuarter;
     },
     isVisibleWritableField(){
-      console.log(this.resultData);
       if (!this.resultData) {
         return true
       }
@@ -722,12 +725,16 @@ export default {
       this.submitted = true
       this.isBlockUI = true;
       const fd = new FormData();
-
-      if ((this.isSciencePlan && this.wordCount > this.wordMaxLimit) || (this.isSciencePlan && this.wordCount < this.wordLimit)) {
+      if (this.isOperPlan){
+        this.wordLimit = 0
+      }
+      if (!this.isStandartPlan && (this.wordCount > this.wordMaxLimit || this.wordCount < this.wordLimit)) {
         this.$toast.add({severity: 'warn', detail: this.$t('workPlan.maxWordCount', this.wordMaxLimit), life: 3000})
         this.isBlockUI = false;
         return;
       }
+      
+    
 
       fd.append('work_plan_event_id', this.event.work_plan_event_id);
       fd.append('result', this.isOperPlan ? this.newResult ? this.newResult : "" : this.result);
