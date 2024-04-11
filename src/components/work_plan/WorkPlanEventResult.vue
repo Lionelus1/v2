@@ -8,7 +8,7 @@
       <div class="mb-0 mt-0 inline-block" style="font-size: 24px"> {{ $t('common.result') }}</div>
     </div>
      <div class="text-right" style="margin-top:-30px;padding-bottom: 3px;" v-if="plan && isPlanCreator">
-                <Button type="button" icon="fa-solid fa-filter" :label="$t('common.filter')"
+      <Button type="button" icon="fa-solid fa-filter" :label="$t('common.filter')"
                         @click="toggle('global-filter', $event)" aria:haspopup="true" aria-controls="overlay_panel"
                         class="p-button-outlined mr-2" />
                 <OverlayPanel ref="global-filter" class="col-3">
@@ -39,17 +39,15 @@
                 v-if="(event &&
                 (isCurrentUserApproval && (event.status.work_plan_event_status_id === 1 || event.status.work_plan_event_status_id === 4 || event.status.work_plan_event_status_id === 6))) || (event && isPlanCreator)">
               <Menubar :model="userMenuItems" :key="active" class="userMenu"></Menubar>
-
             </div>
           </div>
 
           <div v-if="isPlanCreator && event && event.status.work_plan_event_status_id === 5">
-            <Menubar :model="verifyMenu" :key="active" class ="userMenu" style=""></Menubar>
+            <Menubar :model="verifyMenu" :key="active" style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
           </div>
+          <div class="grid mt-3" v-if="plan && resultData && (new Date(plan.create_date).getFullYear() < new Date().getFullYear())">
+            <div class="p-sm-12 md:col-12 lg:col-12 p-xl-6">
 
-              <div class="grid mt-3" v-if="plan && resultData && (new Date(plan.create_date).getFullYear() < new Date().getFullYear())">
-              <div class="p-sm-12 md:col-12 lg:col-12 p-xl-6" style="padding-left: 0 !important;">
-              
               <div class="field" v-if="event && isOperPlan">
                 <label class="bold">{{ $t('common.fact') }}: </label>
                 <div>{{ event.fact }}</div>
@@ -57,18 +55,17 @@
               <div class="field" v-if="plan && resultData && !isSciencePlan">
                 <label class="bold">{{ $t('common.result') }}</label>
                 <div v-if="resultData[0].event_result" class="mb-2">
-                  <Divider >
+                  <Divider align="left">
                     <i class="fa-solid fa-user mr-1"></i><b>{{ item.user.fullName }}</b>
                   </Divider>
                   <p v-html="resultData[0].event_result"></p>
                 </div>
-                <div v-else v-for="(item, index) of getFilteredData(item.id)" :key="index" class="mb-2">
-                  <Divider >
+                <div v-else v-for="(item, index) of resultData[0].result_text" :key="index" class="mb-2">
+                  <Divider align="left">
                     <i class="fa-solid fa-user mr-1"></i><b>{{ item.user.fullName }}</b>
                   </Divider>
                   <p v-html="item.text"></p>
                 </div>
-
               </div>
               <div class="field" v-if="resultData && resultData[0].result_files">
                 <label class="bold">{{ $t('workPlan.attachments') }}</label>
@@ -94,7 +91,7 @@
               </div>
             </div>
           </div>
-          <div v-else>
+          <div class="grid mt-3" v-else>
             <div class="p-fluid" v-if="(!isPlanCreator && (isPlanCreatorApproval || !isPlanCreator) &&
               event.status.work_plan_event_status_id !== 5 &&
               event.status.work_plan_event_status_id !== 2 && event.status.work_plan_event_status_id !== 6) || (isRespUser && isPlanCreator && (isPlanCreatorApproval || !isPlanCreator) &&
@@ -105,7 +102,6 @@
                 <InputText v-model="event.event_name" disabled/>
               </div>
               <div class="field" v-if="(plan && plan.plan_type.code === 'oper' && isSummaryDepartmentUser)">
-                <!-- !authUser.mainPosition.department.isFaculty -->
                 <label>{{ $t('common.fact') }}</label>
                 <InputText v-model="fact" @input="factChange"/>
               </div>
@@ -120,7 +116,7 @@
                     <small v-if="isSciencePlan && submitted && (wordCount < wordLimit)" class="p-error">{{ $t('workPlan.minWordCount') }}</small>
                 </div>
               </div>
-              <div class="field" v-if="plan && isRespUser && isVisibleWritableField">
+              <div class="field" v-if="isVisibleWritableField">
                 <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadFile($event)" :auto="true" :multiple="true" :chooseLabel="$t('smartenu.chooseAdditionalFile')"></FileUpload>
               </div>
               <div class="field">
@@ -140,27 +136,21 @@
                 </div>
               </div>
             </div>
-            <div v-if="event && event.user">
-            <div v-for="item in event.user" :key="item.id">
-              <Divider align="left" v-if="isPlanCreator || loginedUserId === item.id || isAdmin"><i class="fa-solid fa-user mr-1"></i><b>{{ item.fullName }}</b></Divider>
-              <div v-if="resultData">
-                <div class="p-sm-12 md:col-12 lg:col-12 p-xl-6">
-              <div class="field" v-if="event && plan && plan.is_oper && !authUser.mainPosition.department.isFaculty">
+            <div class="p-sm-12 md:col-12 lg:col-12 p-xl-6">
+              <div class="field" v-if="(plan && plan.plan_type.code === 'oper' && isSummaryDepartmentUser)">
                 <label class="bold">{{ $t('common.fact') }}: </label>
                 <div>{{ event.fact }}</div>
               </div>
               <!-- Start Editing -->
               <div class="field" v-if="plan && resultData">
-                <div v-if="(getFilteredData(item.id).length === 0 && isPlanCreator) || (getFilteredData(item.id).length === 0 && loginedUserId === item.id)">
-                  {{ $t('common.noData') }}
-                </div>
-               
-                <div v-for="(item, index) of getFilteredData(item.id)" :key="index">
-                    <div class="flex">
+                <div v-for="(item, index) of resultData" :key="index" class="mb-2">
+                  <Divider align="left">
+                    <div class="flex justify-content-center align-items-center">
                       <div class="flex flex-column justify-content-center align-items-start">
-                        <span class="customer-badge" style="background-color: #e0e0eb;border-radius: 0;color:#555;font-weight: 600;">{{ formatDateMoment(item.plan_event_result_history[0].create_date) }}</span>
+                        <span class="pb-2"><i class="fa-solid fa-user mr-1"></i><b>{{ item.user.fullName }}</b></span>
+                        <span class="pb-2">{{ formatDateMoment(item.plan_event_result_history[0].create_date) }}</span>
                       </div>
-                      <div class="ml-1">
+                      <div class="ml-3">
                         <span :class="'customer-badge status-' + item.plan_event_result_history[0].state_id">
                           {{ getResultStatus(item.plan_event_result_history[0].state_id) }}</span>
                         <span style="float: right; margin-top: 0px;">
@@ -168,7 +158,7 @@
                         </span>
                       </div>
                     </div>
-
+                  </Divider>
                   <Inplace v-if="(item.result_text && (loginedUserId === item.result_text[0].user.userID) && event &&
                     (item.plan_event_result_history && item.plan_event_result_history[0].state_id === 6)) || (item.result_text && isPlanCreator && event &&
                     (item.plan_event_result_history && item.plan_event_result_history[0].state_id === 5) && isSciencePlan)" :active="item.isActive" @open="openInplace(item)">
@@ -226,8 +216,9 @@
                     </template>
                   </Inplace>
                   <div v-else class="p-0">
-                    <p class="mt-2" style="text-align: justify; margin-bottom: 10px;" v-html="item.result_text[0].text"></p>
+                    <p v-html="item.result_text[0].text"></p>
                   </div>
+                  <br/>
                   <div class="" v-if="resultData && item.result_files">
                     <label class="bold"><strong>{{ $t('workPlan.attachments') }}</strong></label>
                     <div ref="content" class="p-fileupload-content" style="padding-top: 7px;">
@@ -282,14 +273,6 @@
                   </div>
                 </div>
               </div>
-                </div>
-              </div>
-              <div v-else>
-                <div v-if="loginedUserId === item.id || isPlanCreator || isAdmin">
-                  {{ $t('common.recordsNotFound') }}
-                </div>
-              </div>
-            </div>
             </div>
           </div>
         </TabPanel>
@@ -309,6 +292,7 @@
             </Column>
             <Column field="state" :header="$t('common.actionTitle')">
               <template #body="{ data }">
+                <!-- {{ data.state ? $t(`common.states.${data.state}`) : "" }} -->
                 <span :class="'customer-badge status-' + data.state_id">
                   {{ data.state ? getResultStatus(data.state_id) : "" }}
                 </span>
@@ -502,6 +486,7 @@ export default {
       return this.currentDate <= this.fifteenthDayNextQuarter;
     },
     isVisibleWritableField(){
+      console.log(this.resultData);
       if (!this.resultData) {
         return true
       }
@@ -510,8 +495,8 @@ export default {
       if (this.isPlanCreator) {
         userResults = this.resultData.filter(x => x.user_id === this.loginedUserId)
       }
-
-      return !userResults.some(x => x.plan_event_result_history?.some(x => x.user_id === this.loginedUserId && (x.state_id === 5 || x.state_id === 6)))
+      let userData = !userResults.some(x => x.plan_event_result_history?.every(x => x.modi_user_id === this.loginedUserId && (x.state_id === 5 || x.state_id === 6)))
+      return userData
     },
     shouldShowRejectSidebar() {
       const event = this.event;
