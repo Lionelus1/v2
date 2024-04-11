@@ -272,6 +272,7 @@ export default {
                 || this.findRole(null, RolesEnum.roles.Accountant) ||
               (this.findRole(null, RolesEnum.roles.Teacher) && this.docInfo.docType === Enum.DocType.Contract) ||
               (this.signatures && this.signatures.some(x => x.userId === this.loginedUserId)) ||
+                (this.findRole(null, RolesEnum.roles.OnlineCourseAdministrator) && this.docInfo.docType === Enum.DocType.DT_Request) ||
               this.docInfo.docHistory.setterId === this.loginedUserId || this.docInfo.creatorID === this.loginedUserId;
           }
 
