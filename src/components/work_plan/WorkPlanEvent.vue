@@ -517,7 +517,6 @@ export default {
           }
           this.total = 0;
         }
-        // this.getWorkPlanApprovalUsers();
         this.loading = false;
       }).catch(error => {
         if (error.response && error.response.status === 401) {
