@@ -179,7 +179,7 @@ const docStatus = ref([
   { name_kz: "келісуде", name_en: "inapproval", name_ru: "на согласовании", code: "inapproval" },
   { name_kz: "келісілді", name_en: "approved", name_ru: "согласован", code: "approved" },
   { name_kz: "түзетуге", name_en: "revision", name_ru: "на доработку", code: "revision" },
-  { name_kz: "қайтарылды", name_en: "rejected", name_ru: "отклонен", code: "rejected" },
+  { name_kz: "қабылданбады", name_en: "rejected", name_ru: "отклонен", code: "rejected" },
   { name_kz: "қол қоюда", name_en: "signing", name_ru: "на подписи", code: "signing" },
   { name_kz: "қол қойылды", name_en: "signed", name_ru: "подписан", code: "signed" },
   { name_kz: "қайта бекітуге жіберілді", name_en: "sent for re-approval", name_ru: "отправлен на переутверждение", code: "sent for re-approval" },
