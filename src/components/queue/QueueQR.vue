@@ -35,6 +35,17 @@
           </div>
         </div>-->
       </div>
+      <div class="talon_list" v-if="inQueue">
+        <div class="flex justify-content-between text-white ml-5 mb-2">
+          <div>№</div>
+          <div>Терезе</div>
+        </div>
+        <div class="item flex justify-content-between align-items-center" v-for="i of queuesWS" :key="i">
+          <div>{{i.ticket}}</div>
+          <i class="pi pi-arrow-right"></i>
+          <div>{{i.window}}</div>
+        </div>
+      </div>
 <!--      <div class="talon_called" v-if="called">
         <div class="talon_top">
           <div class="talon_number">107</div>
@@ -51,27 +62,7 @@
           </div>
         </div>
       </div>
-      <div class="talon_list" v-if="inQueue">
-        <div class="flex justify-content-between text-white ml-5 mb-2">
-          <div>№</div>
-          <div>Терезе</div>
-        </div>
-        <div class="item flex justify-content-between align-items-center">
-          <div>104</div>
-          <i class="pi pi-arrow-right"></i>
-          <div>1</div>
-        </div>
-        <div class="item flex justify-content-between align-items-center">
-          <div>289</div>
-          <i class="pi pi-arrow-right"></i>
-          <div>4</div>
-        </div>
-        <div class="item flex justify-content-between align-items-center">
-          <div>356</div>
-          <i class="pi pi-arrow-right"></i>
-          <div>8</div>
-        </div>
-      </div>
+
       <div class="talon_list" v-if="called">
         <div class="flex justify-content-between text-white ml-5 mb-2">
           <div>№</div>
@@ -90,7 +81,7 @@
 <script setup>
 import {computed, onMounted, ref} from "vue";
 import axios from "axios";
-import {b64toBlob, getHeader, smartEnuApi} from "@/config/config";
+import {b64toBlob, getHeader, smartEnuApi, socketApi} from "@/config/config";
 import {useRoute} from "vue-router";
 import {useI18n} from "vue-i18n";
 
@@ -106,6 +97,7 @@ const isBoolPhone = ref(true);
 const isBoolList = ref(false);
 const isBoolTalon = ref(false);
 const queinfo = ref();
+const queuesWS = ref([]);
 
 const validatePhoneNumber = (val) => {
   const phoneNumberRegex = /^\+7-\(\d{3}\)-\d{3}-\d{2}-\d{2}$/;
@@ -150,7 +142,54 @@ const registerQueue = (queue) => {
         console.log(error)
       });
 }
+const useRealtimeStream = (qId=0) => {
+  if (qId===0){
+    alert("must declrare to connect queue");
+    return
+  }
+  let socket = new WebSocket(socketApi + "/qws");
+
+  socket.onopen = () => {
+    const newTv = {
+      serviceId: 0,
+      windowId: 0,
+      queueId: qId
+    };
+    socket.send(JSON.stringify(newTv));
+  };
+
+  socket.onmessage = (event) => {
+    const msg = JSON.parse(event.data)
+    if (msg.lang === 'ru') {
+      msg.lang = 2
+    } else if(msg.lang === 'kz') {
+      msg.lang = 1
+    } else {
+      msg.lang=3
+    }
+    msg.window = Number(msg.window)
+    queuesWS.value.unshift(JSON.parse(event.data));
+    if (queuesWS.value.length > 15) {
+      queuesWS.value = queuesWS.value.slice(0, 15);
+    }
+  };
+
+  socket.onclose = (event) => {
+    if (event.wasClean) {
+      //alert(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
+    } else {
+      // e.g. server process killed or network down
+      // event.code is usually 1006 in this case
+      // alert('[close] Connection died');
+    }
+  };
+
+  socket.onerror = (error) => {
+    alert(`[error] ${error.message}`);
+  };
+}
 onMounted(()=>{
+  useRealtimeStream(parentId.value)
   if (localStorage.getItem('phoneNumber') !== null){
     isBoolPhone.value = false
     isBoolList.value = true
