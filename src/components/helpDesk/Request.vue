@@ -79,7 +79,7 @@
       </Dialog>
 
 <!--      rejectedDialog-->
-      <Dialog :header="$t('common.states.rejected')" :modal="true" v-model:visible="visibility.rejectedDialog" style="width: 30vw;">
+      <Dialog :header="$t('common.action.notAccept')" :modal="true" v-model:visible="visibility.rejectedDialog" style="width: 30vw;">
         <div class="p-fluid col-12">
           <Textarea v-model="rejectedText" autoResize rows="5" cols="30" />
         </div>
@@ -243,7 +243,7 @@ const menu = computed(() => [
         command: () => open('revisionDialog')
       },
       {
-        label: t("common.states.rejected"),
+        label: t("common.action.notAccept"),
         icon: "fa-regular fa-circle-xmark",
         visible: request.value && request.value.doc?.docHistory?.stateId === DocEnum.INAPPROVAL.ID &&
             needMySign(),
