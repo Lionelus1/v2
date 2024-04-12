@@ -358,8 +358,7 @@ export default {
         });
     },
     initRoles() {
-      axios
-        .get(smartEnuApi + "/positionRoleRel/roles", {
+        api.get("/positionRoleRel/roles", {
           headers: getHeader(),
         })
         .then((res) => {

@@ -252,7 +252,7 @@ export default {
     },
     getData() {
       this.loading = true
-      api.post(smartEnuApi + `/agreement/getSignInfo`, {
+      api.post(`/agreement/getSignInfo`, {
         doc_uuid: this.doc_id,
       }, {
         headers: getHeader(),
