@@ -7,7 +7,7 @@
       </div>
       <div class="mb-0 mt-0 inline-block" style="font-size: 24px"> {{ $t('common.result') }}</div>
     </div>
-     <div class="text-right" style="margin-top:-30px;padding-bottom: 3px;" v-if="plan && isPlanCreator">
+     <div class="text-right" style="margin-top:-30px;padding-bottom: 3px;" v-if="plan && isPlanCreator || plan && isAdmin">
       <Button type="button" icon="fa-solid fa-filter" :label="$t('common.filter')"
                         @click="toggle('global-filter', $event)" aria:haspopup="true" aria-controls="overlay_panel"
                         class="p-button-outlined mr-2" />
