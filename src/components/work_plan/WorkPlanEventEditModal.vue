@@ -27,7 +27,7 @@
     </div>
     <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
         <label>{{ $t('workPlan.summaryDepartment') }}</label>
-        <FindUser v-model="summaryUser" :max="1" editMode="true"/>
+        <FindUser v-model="summaryDepartment" :max="1" editMode="true"/>
     </div>
     <div class="field" v-if="plan && plan.plan_type && plan.plan_type.code !== Enum.WorkPlanTypes.Science">
       <label>{{ plan && (plan.is_oper || plan.plan_type.code === Enum.WorkPlanTypes.Oper) ? $t('workPlan.summary') : $t('workPlan.approvalUsers') }}</label>
@@ -113,7 +113,7 @@ export default {
       ],
       parentData: this.parent != null ? JSON.parse(JSON.stringify(this.parent)) : null,
       selectedUsers: null,
-      summaryUser:[],
+      summaryDepartment:[],
       formValid: {
         event_name: false,
         users: false,
@@ -135,7 +135,7 @@ export default {
       this.editData.user.forEach(e => {
         this.selectedUsers.push(e.user);
         if(e.is_summary_department){
-            this.summaryUser.push(e.user);
+            this.summaryDepartment.push(e.user);
             this.selectedUsers.pop(e.user);
         }
         
@@ -157,6 +157,18 @@ export default {
         this.inputSets = Array.from(roleMap.values());
       }
     }
+  },
+  watch: {
+    summaryDepartment: {
+      handler(newVal) {
+        if (newVal.length === 0) {
+        this.selectedUsers.shift();
+        } else {
+          this.selectedUsers.unshift(...newVal);
+        }
+      },
+      deep: true,
+    },
   },
   unmounted() {
     this.showWorkPlanEventEditModal = false
@@ -189,8 +201,8 @@ export default {
         });
       }
       let resp_person_id;
-      if (this.summaryUser && this.summaryUser[0]?.userID) {
-          resp_person_id = this.summaryUser[0].userID;
+      if (this.summaryDepartment && this.summaryDepartment[0]?.userID) {
+          resp_person_id = this.summaryDepartment[0].userID;
       } else {
           resp_person_id = null;
       }
@@ -209,8 +221,8 @@ export default {
         }
       }).catch(error => {
         this.submitted = false;
-        if (error && error.error === 'summaryuseradded') {
-          this.$toast.add({ severity: "warn", summary: this.$t('workPlan.warnAddingSummaryUser'), life: 4000 });
+        if (error && error.error === 'summaryDepartmentadded') {
+          this.$toast.add({ severity: "warn", summary: this.$t('workPlan.warnAddingsummaryDepartment'), life: 4000 });
         }
         
       });

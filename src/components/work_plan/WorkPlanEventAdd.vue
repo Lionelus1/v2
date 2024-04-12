@@ -29,6 +29,8 @@
       <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
         <label>{{ $t('workPlan.summaryDepartment') }}</label>
         <FindUser v-model="summaryDepartment" :max="1" editMode="true"/>
+        <!-- <small class="p-error" v-if="submitted && formValid.summaryUser">{{ $t("common.requiredField") }}</small> -->
+        <small class="p-error" v-if="submitted && formValid.summaryUser">{{ $t('workPlan.errors.approvalUserError') }}</small>
       </div>
       <div class="field" v-if="plan && plan.plan_type && plan.plan_type.code !== Enum.WorkPlanTypes.Science">
         <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('workPlan.summary') : $t('workPlan.approvalUsers') }}</label>
@@ -130,6 +132,7 @@ export default {
       summaryDepartment: [],
       formValid: {
         event_name: false,
+        summaryUser: false,
         users: false,
         quarter: false,
       },
@@ -159,10 +162,28 @@ export default {
       console.log(ind)
       this.quarters = this.quarters.slice(0, ind);*/
     }
+    if (this.summaryDepartment && this.summaryDepartment.length === 0) {
+      if (this.selectedUsers.length > 0) {
+        this.selectedUsers.shift();
+      }
+    }
    
+  },
+  watch: {
+    summaryDepartment: {
+      handler(newVal) {
+        if (newVal.length === 0) {
+        this.selectedUsers.shift();
+        } else {
+          this.selectedUsers.unshift(...newVal);
+        }
+      },
+      deep: true,
+    },
   },
   created() {
     this.work_plan_id = parseInt(this.$route.params.id);
+    
    
 
   },
@@ -284,10 +305,11 @@ export default {
     },
     validateForm() {
       this.formValid.event_name = !this.event_name;
+      this.formValid.summaryUser = !this.summaryDepartment.length === 0;
       // this.formValid.users = this.selectedUsers.length === 0;
       // this.formValid.quarter = !this.quarter;
 
-      return this.parentData ? !this.formValid.event_name && !this.formValid.users : !this.formValid.event_name && !this.formValid.users && !this.formValid.quarter;
+      return this.parentData ? !this.formValid.event_name && !this.formValid.users && !this.formValid.summaryUser : !this.formValid.event_name && !this.formValid.users && !this.formValid.quarter && !this.formValid.summaryUser;
     },
     clearModel() {
       this.event_name = null;
