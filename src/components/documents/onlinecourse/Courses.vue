@@ -212,11 +212,8 @@ export default {
   },
   created() {
     this.fieldId = parseInt(this.$route.params.courseID)
-    if(this.fieldId !== 777){
-      this.getCourses();
-    }else {
-      this.getAllCourses();
-    }
+    if (this.fieldId !== 777) this.getCourses();
+    this.getAllCourses();
   },
   watch: {
     $route(to, from) {
