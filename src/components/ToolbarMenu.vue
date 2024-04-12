@@ -79,7 +79,7 @@ const containerRef = ref(null);
 const scrollStep = 50;
 const isScrollable = ref(false);
 const emit = defineEmits(['search','filter'])
-const searchModel = ref()
+const searchModel = defineModel('searchModel')
 const mobilemenu = ref()
 const subMenu = ref()
 const actionList = computed(() => props.data)
