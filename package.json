@@ -41,7 +41,7 @@
 		"primevue": "^3.21.0",
 		"prismjs": "^1.15.0",
 		"sass-loader": "^14.1.1",
-		"vue": "3.2.2",
+		"vue": "^3.4.21",
 		"vue-cli-plugin-i18n": "~2.3.2",
 		"vue-router": "^4.0.0-0"
 	},

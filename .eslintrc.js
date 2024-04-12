@@ -20,5 +20,6 @@ module.exports = {
 		"no-mixed-spaces-and-tabs": 0,
 		"no-unused-vars": "off",
 		"vue/no-deprecated-slot-attribute": "off",
+		"no-undef": "off"
 	},
 };
