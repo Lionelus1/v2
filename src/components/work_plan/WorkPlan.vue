@@ -1,7 +1,8 @@
 <template>
   <div class="col-12">
     <h3>{{ $t('workPlan.plans') }}</h3>
-    <ToolbarMenu v-model:searchModel="filter.searchText" :data="initMenu" @search="initSearch" :search="true" @filter="toggle('global-filter', $event)" :filter="isAdmin" :filtered="filtered"/>
+    <ToolbarMenu v-model:search-model="filter.searchText" :data="initMenu" @search="initSearch" :search="true" @filter="toggle('global-filter', $event)" :filter="isAdmin"
+                 :filtered="filter.filtered"/>
     <div class="card">
       <DataTable :lazy="true" :rowsPerPageOptions="[5, 10, 20, 50]" :value="data" dataKey="id" :rowHover="true"
                  :loading="loading" responsiveLayout="scroll" :paginator="true" :first="lazyParams.first || 0" :rows="lazyParams.rows" :totalRecords="total" @page="onPage">
@@ -160,12 +161,12 @@ export default {
       selectedDocStatus: null,
       types: [],
       showAddPlanDialog: false,
-      filtered: false,
       filter: {
         doc_status: null,
         plan_type: null,
         user_id: null,
-        searchText: null
+        searchText: null,
+        filtered: false
       },
       statuses: [Enum.StatusesArray.StatusCreated, Enum.StatusesArray.StatusInapproval, Enum.StatusesArray.StatusApproved,
         Enum.StatusesArray.StatusRevision, Enum.StatusesArray.StatusSigning, Enum.StatusesArray.StatusSigned],
@@ -208,7 +209,6 @@ export default {
     const storageFilter = JSON.parse(localStorage.getItem("workPlanFilter"))
 
     this.filter = storageFilter || this.filter
-    this.filtered = storageFilter || false
 
     this.getPlans();
     this.getWorkPlanTypes()
@@ -276,13 +276,11 @@ export default {
     },
     clearFilter() {
       localStorage.removeItem("workPlanFilter");
-      this.filter = {
-        doc_status: null,
-        plan_type: null,
-        user_id: null,
-      }
+      this.filter.doc_status = null
+      this.filter.plan_type = null
+      this.filter.user_id = null
       this.selectedPlanType = null;
-      this.filtered = false;
+      this.filter.filtered = false;
       this.getPlans();
     },
     getDocStatus(code) {
@@ -314,13 +312,16 @@ export default {
     },
     initSearch(searchText) {
       this.filter.searchText = searchText;
-      this.initFilter()
-    },
-    initFilter() {
       localStorage.setItem("workPlanFilter", JSON.stringify(this.filter));
       this.lazyParams.first = 0
       this.lazyParams.page = 0
-      this.filtered = true;
+      this.getPlans()
+    },
+    initFilter() {
+      this.filter.filtered = true;
+      localStorage.setItem("workPlanFilter", JSON.stringify(this.filter));
+      this.lazyParams.first = 0
+      this.lazyParams.page = 0
       this.getPlans()
     },
     showMySign(approvalStages) {
@@ -379,7 +380,14 @@ export default {
 
       return signed
     },
-  }
+  },
+  beforeUnmount() {
+    console.log(this.$router.options.history)
+    const currentRoute = this.$router.options.history.state.current;
+    if (currentRoute) {
+
+    }
+  },
 }
 </script>
 
