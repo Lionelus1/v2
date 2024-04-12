@@ -1,18 +1,18 @@
 <template>
-  <div class="card text-center flex flex-column gap-4 m-auto" v-if="isBoolPhone">
+  <div :class="['card',{'talon_bg': isBoolTalon , 'mt-6': !isBoolTalon }]">
+  <div class="text-center flex flex-column gap-4 m-auto" v-if="isBoolPhone">
     <h4>{{$t('contact.phone')}}</h4>
     <InputMask class="p-inputtext-lg" v-model="phoneNumber"
-               @update:modelValue="validatePhoneNumber" placeholder="+7-(777)-777-77-77" mask="+7-(999)-999-99-99" />
+               @update:modelValue="validatePhoneNumber" placeholder="+7-(777)-777-77-77" mask="+7-(999)-999-99-99" @keyup.enter="sendNumber"/>
     <Button class="justify-content-center p-button-lg" @click="sendNumber()" :disabled="isDisabled">{{$t('common.continue')}}</Button>
   </div>
-<div class="card m-auto mt-4" v-if="isBoolList">
-  <Button class="p-button-lg mb-3" style="width: 100%" v-for="i of queues" :key="i" @click="registerQueue(i)">{{i.queueNamekz}}</Button>
+<div class="m-auto flex flex-column gap-3" v-if="isBoolList">
+  <Button class="p-button-lg text-left p-3" style="width: 100%" v-for="i of queues" :key="i" @click="registerQueue(i)">{{i.queueNamekz}}</Button>
 </div>
-  <div class="talon_bg"  v-if="isBoolTalon">
+  <div v-if="isBoolTalon">
     <div class="relative">
       <div class="talon" v-if="inQueue">
-        <embed :src="queinfo + '#toolbar=0'" style="width: 100%;height: 320px;" v-if="queinfo" type="application/pdf" />
-        <div v-if="queinfo">{{queinfo}}</div>
+        <embed :src="queinfo + '#toolbar=0'" style="width: 100%;height: 250px;" v-if="queinfo" type="application/pdf" />
         <div class="dots"></div>
 <!--        <div class="talon_top">
           <img src="assets/layout/images/logo.svg" style="width:110px; margin: 10px ">
@@ -40,8 +40,13 @@
           <div>№</div>
           <div>Терезе</div>
         </div>
-        <div class="item flex justify-content-between align-items-center" v-for="i of queuesWS" :key="i">
-          <div>{{i.ticket}}</div>
+<!--        <div class="item flex justify-content-between align-items-center blinking">
+          <div>085</div>
+          <i class="pi pi-arrow-right"></i>
+          <div>3</div>
+        </div>-->
+        <div class="item flex justify-content-between align-items-center blinking" v-for="i of queuesWS" :key="i">
+          <div>{{padTo2Digits(i.ticket)}}</div>
           <i class="pi pi-arrow-right"></i>
           <div>{{i.window}}</div>
         </div>
@@ -75,6 +80,7 @@
         </div>
       </div>-->
     </div>
+  </div>
   </div>
 </template>
 
@@ -126,24 +132,27 @@ const getQueue = (data) => {
 getQueue(parentId.value)
 
 const registerQueue = (queue) => {
-  const req = {
-    queueID: queue.key, lang: locale.value
+  if (localStorage.getItem('phoneNumber')) {
+    const phoneNumber = localStorage.getItem('phoneNumber')
+    const req = {
+      queueID: queue.key, lang: locale.value, phoneNumber: phoneNumber
+    }
+    axios
+        .post(smartEnuApi + "/queue/registerService", req, {
+          headers: getHeader(),
+        })
+        .then((response) => {
+          queinfo.value = b64toBlob(response.data)
+          isBoolList.value = false
+          isBoolTalon.value = true
+        })
+        .catch((error) => {
+          console.log(error)
+        });
   }
-  axios
-      .post(smartEnuApi + "/queue/registerService", req, {
-        headers: getHeader(),
-      })
-      .then((response) => {
-        queinfo.value = b64toBlob(response.data)
-        isBoolList.value = false
-        isBoolTalon.value = true
-      })
-      .catch((error) => {
-        console.log(error)
-      });
 }
 const useRealtimeStream = (qId=0) => {
-  if (qId===0){
+  if (qId === 0){
     alert("must declrare to connect queue");
     return
   }
@@ -178,15 +187,18 @@ const useRealtimeStream = (qId=0) => {
     if (event.wasClean) {
       //alert(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
     } else {
-      // e.g. server process killed or network down
       // event.code is usually 1006 in this case
       // alert('[close] Connection died');
     }
   };
 
   socket.onerror = (error) => {
+    console.log(error)
     alert(`[error] ${error.message}`);
   };
+}
+const padTo2Digits = (num)=> {
+  return num.toString().padStart(3, '0');
 }
 onMounted(()=>{
   useRealtimeStream(parentId.value)
@@ -205,7 +217,7 @@ onMounted(()=>{
   padding-top: 30px;
 }
 .talon{
-  min-height: 375px;
+  min-height: 300px;
   position: relative;
   padding: 20px;
   background: #fff;
@@ -228,7 +240,7 @@ onMounted(()=>{
     margin: 20px 0;
     //border-bottom: 4px dotted #000e39;
     position: relative;
-    bottom: 220px;
+    bottom: 170px;
   }
   .dots:after{
     content: '';
@@ -349,6 +361,26 @@ onMounted(()=>{
     padding: 15px;
     font-size: 20px;
     margin-bottom: 10px;
+  }
+  .blinking{
+    animation: blink 0.8s ease-in-out 3;
+  }
+}
+@keyframes blink {
+  0% {
+    background-color: #fff;
+  }
+  25% {
+    background-color: #add8fb;
+  }
+  50% {
+    background-color: #fff;
+  }
+  75% {
+    background-color: #add8fb;
+  }
+  100% {
+    background-color: #fff;
   }
 }
 .p-inputtext::placeholder{
