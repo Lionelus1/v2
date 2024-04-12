@@ -36,12 +36,11 @@
 </template>
 
 <script>
-import { getHeader, smartEnuApi } from "@/config/config";
+import {getHeader} from "@/config/config";
 import api from '@/service/api';
 import axios from 'axios';
 
 import Department from "./Department";
-import axios from "axios";
 
 export default {
   components: {Department},
