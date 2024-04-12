@@ -219,7 +219,7 @@ export default {
       if (this.active == 1 && this.files.length < 1) { // showFileTab
         if (this.docInfo.isManifest === true) {
           api.post(
-            smartEnuApi + "/downloadManifestFiles", {
+            "/downloadManifestFiles", {
             docId: this.docInfo.id
           }, {
             headers: getHeader()
@@ -233,7 +233,7 @@ export default {
             })
         } else {
           api.post(
-            smartEnuApi + "/downloadFile", {
+            "/downloadFile", {
             filePath: this.docInfo.filePath
           }, {
             headers: getHeader()
@@ -368,7 +368,7 @@ export default {
     },
     sign() {
       this.signing = true;
-      api.post(smartEnuApi + "/downloadFile", {
+      api.post("/downloadFile", {
         filePath: this.docInfo.filePath
       }, {
         headers: getHeader()
@@ -397,7 +397,7 @@ export default {
       };
       this.signing = true
 
-      api.post(smartEnuApi + "/doc/sign", req, { headers: getHeader() })
+      api.post("/doc/sign", req, { headers: getHeader() })
         .then(response => {
           this.signing = false
           this.getData()
@@ -419,7 +419,7 @@ export default {
         })
     },
     getSignatures() {
-      api.post(smartEnuApi + `/workPlan/getSignatures`, { doc_id: this.plan.doc_id }, { headers: getHeader() }).then(res => {
+      api.post(`/workPlan/getSignatures`, { doc_id: this.plan.doc_id }, { headers: getHeader() }).then(res => {
         if (res.data) {
           this.signatures = res.data;
           const signUser = res.data.find(x => x.userId === this.loginedUserId);
@@ -502,7 +502,7 @@ export default {
       }
 
       this.loading = true
-      api.post(smartEnuApi + `/doc/sendtorevision`, {
+      api.post(`/doc/sendtorevision`, {
         comment: this.revisionComment,
         docID: this.docInfo.id,
       }, {
