@@ -36,68 +36,72 @@
       <DataView :lazy="true" :loading="loading" :value="data" :rows="10" :paginator="true" :first="pageFirst" @page="onPage($event)"
                 :totalRecords="total" layout="grid">
         <template #grid="slotProps">
-          <div class="col-12 lg:col-6 p-2">
-              <div class="card question_card p-3 shadow-1 m-0">
+          <div class="grid">
+            <template v-for="(item, index) in slotProps?.items" :key="index">
+              <div class="col-12 lg:col-6 p-2">
+                <div class="card question_card p-3 shadow-1 m-0">
                   <div class="question_status text-center mt-2 mb-2 sm:m-0">
                           <span class="font-bold mr-2">
-                            <small>№&nbsp;{{ slotProps.data.id }}</small>
+                            <small>№&nbsp;{{ item.id }}</small>
                           </span>
-                    <span v-if="adminMode" :class="'customer-badge status-' + slotProps.data.state.id">
-                            {{ $t("common.states." + slotProps.data.state.code) }}
+                    <span v-if="adminMode" :class="'customer-badge status-' + item.state.id">
+                            {{ $t("common.states." + item.state.code) }}
                           </span>
                   </div>
                   <div class="block sm:flex justify-content-between relative">
-                          <div class="">
-                              <i class="fa-solid fa-tags product-category-icon mr-2"></i>
-                              <small class="product-category">{{ slotProps.data.category['name' + $i18n.locale].split("(")[0] }}</small>
-                          </div>
-                          <div class="">
-                  <span v-if="slotProps.data.expired">
+                    <div class="">
+                      <i class="fa-solid fa-tags product-category-icon mr-2"></i>
+                      <small class="product-category">{{ item.category['name' + $i18n.locale].split("(")[0] }}</small>
+                    </div>
+                    <div class="">
+                  <span v-if="item.expired">
                     <i class="fa-solid fa-calendar-days product-error-icon mr-2"></i>
                   </span>
-                  <span v-else>
+                      <span v-else>
                     <i class="fa-solid fa-calendar-days product-category-icon mr-2"></i>
                   </span>
-                              <small class="product-category">{{ moment(new Date(slotProps.data.createdDate)).utc().format("DD.MM.YYYY") }}</small>
-                          </div>
-                      </div>
+                      <small class="product-category">{{ moment(new Date(item.createdDate)).utc().format("DD.MM.YYYY") }}</small>
+                    </div>
+                  </div>
                   <div class="product-grid-item-content mt-2 mb-2">
-                      <p class="question_text" :title="slotProps.data.question">{{ slotProps.data.question }}</p>
+                    <p class="question_text" :title="item.question">{{ item.question }}</p>
                   </div>
                   <div class="product-grid-item-bottom">
-                      <div class="block sm:flex justify-content-between align-items-center">
-                          <div>
-                              <div class="mb-2 sm:m-0">
-                                  <i class="fa-solid fa-at product-category-icon mr-2"></i>
-                                  <small class="product-category">{{ slotProps.data.lastName + " " + slotProps.data.firstName }}</small>
-                              </div>
-                              <div v-if="adminMode" class="block sm:flex align-items-center">
-                                  <span v-if="slotProps.data.replier">
+                    <div class="block sm:flex justify-content-between align-items-center">
+                      <div>
+                        <div class="mb-2 sm:m-0">
+                          <i class="fa-solid fa-at product-category-icon mr-2"></i>
+                          <small class="product-category">{{ item.lastName + " " + item.firstName }}</small>
+                        </div>
+                        <div v-if="adminMode" class="block sm:flex align-items-center">
+                                  <span v-if="item.replier">
                                     <i class="fa-solid fa-user-tag product-category-icon mr-2"></i>
-                                    <small class="product-category mb-2 sm:m-0">{{ slotProps.data.replier.fullName }}</small>
+                                    <small class="product-category mb-2 sm:m-0">{{ item.replier.fullName }}</small>
                                   </span>
-                              </div>
-                          </div>
-                          <div class="sm:flex block justify-content-between align-items-center">
-                              <div v-if="adminMode">
-                                  <Button v-if="slotProps.data.state.id !=7" :label="$t('common.send')" icon="pi pi-send" class="p-button-outlined p-button-warning sm:ml-2 sm:mt-0 ml-0 mt-2 sm:mr-4 mr-0"
-                                          @click="currentQuestion=slotProps.data.id;sendDialog=true"></Button>
-                              </div>
-                                  <Button class="mt-2 sm:mt-0 sm:mr-4 mr-0" v-if="slotProps.data.filePath" :label="$t('faq.attachments')" icon="pi pi-download"
-                                          @click="downloadFile(slotProps.data.filePath)"></Button>
-                              <div class="">
-                                  <router-link :to="{ name: 'ReceptionQuestion', params: { id: slotProps.data.id } }" tag="a">
-                                      <Button :label="$t('common.more')" class="p-button-outlined p-button-info mt-2 sm:mt-0 sm:mr-4 mr-0"></Button>
-                                  </router-link>
-                              </div>
-                              <div style="text-align: end">
-                                <Button v-if="adminMode" class="p-button-danger"
-                                        icon="pi pi-trash" label="" @click="deleteVisibleReceptionQuestion(slotProps.data.id)" />
-                              </div>
-                          </div>
+                        </div>
                       </div>
+                      <div class="sm:flex block justify-content-between align-items-center">
+                        <div v-if="adminMode">
+                          <Button v-if="item.state.id !=7" :label="$t('common.send')" icon="pi pi-send" class="p-button-outlined p-button-warning sm:ml-2 sm:mt-0 ml-0 mt-2 sm:mr-4 mr-0"
+                                  @click="currentQuestion=item.id;sendDialog=true"></Button>
+                        </div>
+                        <Button class="mt-2 sm:mt-0 sm:mr-4 mr-0" v-if="item.filePath" :label="$t('faq.attachments')" icon="pi pi-download"
+                                @click="downloadFile(item.filePath)"></Button>
+                        <div class="">
+                          <router-link :to="{ name: 'ReceptionQuestion', params: { id: item.id } }" tag="a">
+                            <Button :label="$t('common.more')" class="p-button-outlined p-button-info mt-2 sm:mt-0 sm:mr-4 mr-0"></Button>
+                          </router-link>
+                        </div>
+                        <div style="text-align: end">
+                          <Button v-if="adminMode" class="p-button-danger"
+                                  icon="pi pi-trash" label="" @click="deleteVisibleReceptionQuestion(item.id)" />
+                        </div>
+                      </div>
+                    </div>
                   </div>
+                </div>
               </div>
+            </template>
           </div>
         </template>
       </DataView>
