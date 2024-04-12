@@ -139,7 +139,6 @@ export default {
       this.loading = true
       this.lazyParams.countMode = null;
       this.newsService.getWelcomeNews(this.lazyParams).then((response) => {
-        console.log(response)
         this.allNews = response.data.news;
         this.allNews.map(e => {
           let fileUrl = e.main_image_file ? e.main_image_file.filepath : e.image1
@@ -164,7 +163,6 @@ export default {
           let fileUrl = e.main_image_file ? e.main_image_file.filepath : e.image1
           e.imageUrl = smartEnuApi + fileRoute + fileUrl
         });
-        //console.log("ddd", this.allEvents)
         this.loading = false;
       }).catch((error) => {
         this.$toast.add({
