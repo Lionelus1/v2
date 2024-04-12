@@ -6,7 +6,7 @@
     <div class="card card_bottom">
       <TabView ref="templateView" v-model:activeIndex="active">
         <TabPanel v-bind:header="$t('smartenu.newsTitle')">
-          <div v-if="allNews===0">
+          <div v-if="allNews.length === 0">
             {{ $t("smartenu.newsNotFound") }}
           </div>
           <div v-if="loading" class="skeletons">
@@ -24,26 +24,28 @@
                 this.$t("smartenu.newsNotFound")
               }}
             </template>
-            <template #list="{ data }">
-              <div class="post" v-on:click="newsView(data)">
-                <img class="round" v-if="data.imageUrl && data.imageUrl !=''"
-                     :src="data.imageUrl"/>
-                <div class="text">
-                  <strong>
-                    {{
-                      $i18n.locale === "kz"
-                          ? data.titleKz
-                          : $i18n.locale === "ru"
-                              ? data.titleRu
-                              : data.titleEn
-                    }}
-                  </strong>
-                  <div class="date">{{ formatDateMoment(data.publish_date) }}</div>
-                  <div class="mt-2">
-                    <Tag severity="info" class="mt-2" :value="data.site_url"></Tag>
+            <template #list="slotProps">
+              <template v-for="(item, index) in slotProps?.items" :key="index">
+                <div class="post" v-on:click="newsView(item)">
+                  <img class="round" v-if="item?.imageUrl && item?.imageUrl !=''"
+                       :src="item?.imageUrl"/>
+                  <div class="text">
+                    <strong>
+                      {{
+                        $i18n.locale === "kz"
+                            ? data?.titleKz
+                            : $i18n.locale === "ru"
+                                ? data?.titleRu
+                                : data?.titleEn
+                      }}
+                    </strong>
+                    <div class="date">{{ formatDateMoment(item?.publish_date) }}</div>
+                    <div class="mt-2">
+                      <Tag severity="info" class="mt-2" :value="item?.site_url"></Tag>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </template>
             </template>
           </DataView>
         </TabPanel>
@@ -161,7 +163,6 @@ export default {
           let fileUrl = e.main_image_file ? e.main_image_file.filepath : e.image1
           e.imageUrl = smartEnuApi + fileRoute + fileUrl
         });
-        //console.log("ddd", this.allEvents)
         this.loading = false;
       }).catch((error) => {
         this.$toast.add({
@@ -259,7 +260,7 @@ export default {
     width: 120px;
     height: 80px;
     border-radius: 5px;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 16%), 0 3px 6px rgba(0, 0, 0, 23%);
+    box-shadow: 0 3px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.19);
   }
 }
 
