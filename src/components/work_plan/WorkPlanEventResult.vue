@@ -113,7 +113,7 @@
                                 :style="{ height: '100%', width: '100%' }"
                                 @selectionChange="editorChange"/>
                     <TinyEditor v-if="plan && isRespUser && isOperPlan && isQuarterLimitForTextEditor" :min-word="wordLimit" @wordCount="initWordCount" v-model="newResult" :height="300" @selectionChange="editorChange"/>
-                    <small v-if="isSciencePlan && submitted && (wordCount < wordLimit)" class="p-error">{{ $t('workPlan.minWordCount') }}</small>
+                    <small v-if="isSciencePlan && submitted && (inputWordCount < wordLimit)" class="p-error">{{ $t('workPlan.minWordCount') }}</small>
                 </div>
               </div>
               <div class="field" v-if="isVisibleWritableField">
@@ -411,7 +411,6 @@ export default {
       Enum: Enum,
       wordLimit: 50,
       wordMaxLimit: 250,
-      wordCounter: 0,
       hasResultToApprove: false,
       formData: null,
       resultFilter: {
@@ -423,11 +422,6 @@ export default {
   computed: {
     getFilteredData(){
       return userID => this.resultData.filter(item => item.user_id === userID)
-    },
-    wordCount() {
-      const textToCount = this.isOperPlan ? this.newResult : this.result;
-      if (!textToCount) return 0;
-      return textToCount.trim().split(/\s+/).length;
     },
     userMenuItems() {
       return this.initMenu();
@@ -514,11 +508,6 @@ export default {
     },
     rejectHistory() {
       return this.resultData[0]?.reject_history || {};
-    },
-  },
-  watch: {
-    result(newValue) {
-      this.wordCounter = this.wordCount;
     },
   },
   mounted() {
@@ -728,7 +717,7 @@ export default {
       if (this.isOperPlan){
         this.wordLimit = 0
       }
-      if (!this.isStandartPlan && (this.wordCount > this.wordMaxLimit || this.wordCount < this.wordLimit)) {
+      if (!this.isStandartPlan && (this.inputWordCount > this.wordMaxLimit || this.inputWordCount < this.wordLimit)) {
         this.$toast.add({severity: 'warn', detail: this.$t('workPlan.maxWordCount', this.wordMaxLimit), life: 3000})
         this.isBlockUI = false;
         return;
