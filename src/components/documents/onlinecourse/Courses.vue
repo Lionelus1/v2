@@ -184,17 +184,17 @@ export default {
       catLazyParams: {
         Page: 0,
         Rows: 10,
-        parentID: this.$route.params.categoryID != undefined ? Number(this.$route.params.categoryID) : null,
+        parentID: this.$route.params.categoryID !== undefined ? Number(this.$route.params.categoryID) : null,
       },
       courseLazyParams: {
         Page: 0,
         Rows: 10,
-        categoryID: this.$route.params.categoryID != undefined ? Number(this.$route.params.categoryID) : null,
+        categoryID: this.$route.params.categoryID !== undefined ? Number(this.$route.params.categoryID) : null,
       },
       lazyParams: {
         page: 0,
         rows: 10,
-        categoryID: this.$route.params.categoryID != undefined ? Number(this.$route.params.categoryID) : null,
+        categoryID: this.$route.params.categoryID !== undefined ? Number(this.$route.params.categoryID) : null,
       },
       first: null,
       category: null,
@@ -227,18 +227,18 @@ export default {
     findRole,
     formatDate,
     getCourses() {
-      this.loading = true,
-          this.service.getCourseFieldId(this.fieldId).then(response => {
-            this.courses = response.data
-            this.courses.map(e => {
-              e.filePath = smartEnuApi + fileRoute + e.logo
-              this.title = e.field[0]['name_' + this.$i18n.locale]
-            });
-            this.total = response.data.total
-            this.loading = false
-          }).catch(_ => {
-            this.loading = false
-          });
+      this.loading = true;
+      this.service.getCourseFieldId(this.fieldId).then(response => {
+        this.courses = response.data
+        this.courses.map(e => {
+          e.filePath = smartEnuApi + fileRoute + e.logo
+          this.title = e.field[0]['name_' + this.$i18n.locale]
+        });
+        this.total = response.data.total
+        this.loading = false
+      }).catch(_ => {
+        this.loading = false
+      });
     },
     getAllCourses() {
       this.service.getCourses(this.lazyParams).then(response => {
