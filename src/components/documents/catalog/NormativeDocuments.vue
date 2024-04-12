@@ -405,6 +405,7 @@ export default {
       this.loading = true;
 
       api.post('/documents', {
+        sourceType: null,
         docType: Enum.DocType.NormativeDoc,
         folderId: parent.id,
         page: null,

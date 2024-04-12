@@ -54,8 +54,7 @@
 </template>
 
 <script>
-import { authHeader, getHeader, smartEnuApi, findRole, b64toBlob } from "@/config/config";
-import axios from "axios";
+import {b64toBlob, findRole, getHeader} from "@/config/config";
 import api from "@/service/api";
 
 export default {

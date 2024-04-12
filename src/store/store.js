@@ -77,7 +77,7 @@ const store = createStore({
                 window.localStorage.setItem("loginedUser", JSON.stringify(response.data));
                 context.commit('SET_LOGINED_USER')
             }).catch(error => {
-                this.$router.push({name: 'Login'});
+                // this.$router.push({name: 'Login'});
             })
         },
         updateParentVariable(state, newValue) {

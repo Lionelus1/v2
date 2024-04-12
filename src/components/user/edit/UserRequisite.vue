@@ -117,11 +117,11 @@
               banks.value = res.data
           }
 
-    }).catch(err => {
-        if (err.data && err.data.status != 404) {
-          toast.add({severity: 'error', summary: t('common.error'), life: 3000})
-        }
-    })
+      }).catch(err => {
+          if (err?.data?.status !== 404) {
+            toast.add({severity: 'error', summary: t('common.error'), life: 3000})
+          }
+      })
   }
 
   const bankLabel = (item) => {
