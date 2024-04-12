@@ -16,5 +16,7 @@ export default {
         Prorector: "prorector",
         ActsToExecution: "acts_to_execution",
         Accountant: "accountant",
+        ScienceDirector: "science_director",
+        OnlineCourseAdministrator: "online_course_administrator"
     }
 }

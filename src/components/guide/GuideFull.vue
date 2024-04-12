@@ -15,12 +15,12 @@
                 </div>
             </div>
         </transition>
-        <div class="layout-main">
+        <div class="layout-main guide_sidebar">
             <div class="col-12">
                 <router-view v-model:pagemenu="localpagemenu"/>
             </div>
         </div>
-        <AppFooter/>
+        <AppFooter class="guide_sidebar"/>
     </div>
 </template>
 
@@ -178,6 +178,14 @@
         h3{
             margin: 10px 0;
         }
+    }
+    .guide_sidebar{
+      margin-left: 250px!important;
+    }
+    @media (max-width: 1026px) {
+      .guide_sidebar{
+        margin-left: 0!important;
+      }
     }
 
 </style>

@@ -24,17 +24,8 @@
           <div class="md:col-6" v-if="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID)">
             <p class="mb-0">{{ $t('contracts.contragentMessage') }}</p>
             <div class="p-inputgroup p-input-filled">
-              <InputText :modelValue="apiDomain + '/documents/contracts/' + this.contract.uuid + '/request'" :disabled="true"/>
-              <Button v-bind:label="$t('ncasigner.copy')" v-clipboard:copy="apiDomain + '/documents/contracts/' + this.contract.uuid + '/request'"
-                      v-clipboard:success="onCopy" v-clipboard:error="onFail" class="p-button-secondary" />
-              <Button type="button" @click="showSocials" class="p-button-rounded ml-4" icon="fa-solid fa-share-nodes" label="" />
-              <OverlayPanel ref="op">
-                <div class="flex flex-column gap-2">
-                  <Button type="button" @click="shareWhatsApp" class="p-button-success" icon="fa-brands fa-whatsapp" label="Whats App" />
-                  <Button type="button" @click="shareFacebook" class="" icon="fa-brands fa-facebook" label="Facebook" />
-                  <Button type="button" @click="shareTelegram" class="" icon="fa-brands fa-telegram" label="Telegram" />
-                </div>
-              </OverlayPanel>
+              <Share :data="apiDomain + '/documents/contracts/' + this.contract.uuid + '/request'"
+                     :disabled="true" :param="true" :label="$t('ncasigner.copy')" @copy="onCopy()" @error="onFail()"/>
             </div>
           </div>
           <Panel class="md:col-6 p-2" v-if="contract.sourceType === DocEnum.DocSourceType.FilledDoc"
@@ -126,8 +117,8 @@
         </div>
       </TabPanel>
       <TabPanel :header="$t('common.show')" :disabled="!contract || !contract.filePath || contract.filePath.length < 1">
-        <div class="flex-grow-1">
-          <embed :src="pdf" style="width: 100%; height: 100%" v-if="pdf" type="application/pdf"/>
+        <div class="flex-grow-1 flex flex-row align-items-stretch">
+          <embed :src="pdf" style="width: 100%;" v-if="pdf" type="application/pdf"/>
         </div>
       </TabPanel>
     </TabView>
@@ -178,10 +169,11 @@ import ContragentSelectV2 from "@/components/contragent/v2/ContragentSelectV2";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo";
 import FindUser from "@/helpers/FindUser";
 import StepComponent from "@/components/ncasigner/ApprovalUsers/StepComponent";
+import Share from "@/components/Share.vue";
 
 export default {
   name: 'ContractV2',
-  components: { Access, ContragentSelectV2, DocSignaturesInfo, FindUser, StepComponent },
+  components: {Share, Access, ContragentSelectV2, DocSignaturesInfo, FindUser, StepComponent },
   props: { },
   data() {
     return {
@@ -465,7 +457,7 @@ export default {
         param.uuid = this.generateUUID();
         this.contractParams.push(param);
 
-        if (!this.contragentRequest) {
+        if (this.contragentOption !== 'email' && !this.contragentRequest) {
           this.contragentOption = "organization";
 
           if (param.value && param.value.type === this.DocEnum.ContragentType.Person) {
@@ -715,6 +707,16 @@ export default {
       });
     },
     sendToContragent() {
+      if (this.changed) {
+        this.showMessage("warn", this.$t("common.tosign"), this.$t("common.message.saveChanges"));
+        return;
+      }
+
+      if (!this.validate()) {
+        this.showMessage("error", this.$t("common.tosign"), this.$t("common.message.fillError"));
+        return;
+      }
+
       this.loading = true;
 
       this.service.createNewDocumentRequest({
@@ -878,24 +880,7 @@ export default {
         return v.toString(16);
       });
     },
-    showSocials(event) {
-      this.$refs.op.toggle(event);
-    },
-    shareWhatsApp()  {
-      const text = apiDomain + '/documents/contracts/' + this.contract.uuid + '/request';
-      const whatsAppUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
-      window.open(whatsAppUrl);
-    },
-    shareFacebook() {
-      const text = apiDomain + '/documents/contracts/' + this.contract.uuid + '/request';
-      const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(text)}`
-      window.open(facebookUrl)
-    },
-    shareTelegram() {
-      const text = apiDomain + '/documents/contracts/' + this.contract.uuid + '/request';
-      const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(text)}`;
-      window.open(telegramUrl);
-    },
+
   }
 }
 </script>

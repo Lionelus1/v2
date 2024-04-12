@@ -17,7 +17,7 @@ export class MenuService {
                     },
                     {
                         label: $t('contracts.title'),
-                        icon: 'pi pi-fw pi-copy',
+                        icon: 'fa-solid fa-file-signature',
                         to: '/documents/contracts'
                     },
                     {
@@ -45,8 +45,8 @@ export class MenuService {
             {
                 label: $t('common.administration'),
                 icon: 'fa-solid fa-user-shield',
-                visible: this.isEnuWorker() && (this.isVacancyRightsValidity() || this.findRole("dephead") ||
-                    this.findRole("practice_responsible") || this.findRole("main_administrator") || this.findRole("hr_manager")),
+                visible: this.isVacancyRightsValidity() || (this.isEnuWorker() && (this.findRole("dephead") ||
+                    this.findRole("practice_responsible") || this.findRole("main_administrator") || this.findRole("hr_manager"))),
                 items: [
                     {
                         label: $t('hr.vacancies'),
@@ -98,6 +98,11 @@ export class MenuService {
                         label: $t('common.personal'),
                         icon: 'fa-solid fa-person-shelter',
                         to: '/contragent/persons/' + Enum.PersonType.OrganizationMember
+                    },
+                    {
+                        label: $t('common.students'),
+                        icon: 'fa-solid fa-graduation-cap',
+                        to: '/contragent/persons/' + Enum.PersonType.Student
                     }
                 ]
             },
@@ -140,42 +145,41 @@ export class MenuService {
             },
             {
                 label: $t('science.activity'),
-                icon: 'fas fa-flask',
+                icon: 'fa-solid fa-atom',
                 items: [
                     {
                         label: $t('science.scientistsProfile'),
-                        icon: 'fas fa-user',
+                        icon: 'fa-solid fa-user-tie',
                         to: '/science/scientists'
                     },
                     {
                         label: $t('scienceWorks.title'),
-                        icon: 'fa-solid fa-flask-vial',
+                        icon: 'fa-solid fa-file-lines',
                         to: '/documents/catalog/scienceWorks'
                     },
-                ]
-            },
-            {
-                label: $t('dissertation.title'),
-                icon: 'fa-solid fa-school-circle-check',
-                visible: this.findRole('dissertation_chief') || this.isRoleGroupMember("dissertation_council") || this.findRole('main_administrator'),
-                items: [
                     {
-                        label: $t('dissertation.council.list'),
-                        icon: 'pi pi-fw pi-list',
-                        to: '/dissertation',
-                        visible: this.findRole('dissertation_chief') || this.findRole("dissertation_council_secretary") || this.findRole('main_administrator')
+                        label: $t('dissertation.title'),
+                        icon: 'fa-solid fa-landmark',
+                        visible: this.findRole('dissertation_chief') || this.isRoleGroupMember("dissertation_council") || this.findRole('main_administrator'),
+                        items: [
+                            {
+                                label: $t('dissertation.council.list'),
+                                icon: 'pi pi-fw pi-list',
+                                to: '/dissertation',
+                                visible: this.findRole('dissertation_chief') || this.findRole("dissertation_council_secretary") || this.findRole('main_administrator')
+                            },
+                            {
+                                label: $t('dissertation.doctoralCard'),
+                                icon: 'fa-solid fa-graduation-cap',
+                                to: '/dissertation/doctorals',
+                                visible: this.findRole('dissertation_chief') || this.isRoleGroupMember("dissertation_council") || this.findRole('main_administrator')
+                            }
+                        ]
                     },
-                    {
-                        label: $t('dissertation.doctoralCard'),
-                        icon: 'fa-solid fa-graduation-cap',
-                        to: '/dissertation/doctorals',
-                        visible: this.findRole('dissertation_chief') || this.isRoleGroupMember("dissertation_council") || this.findRole('main_administrator')
-                    }
-                ]
-            },
+                ]},
             {
                 label: $t('workPlan.plans'),
-                icon: 'pi pi-fw pi-folder',
+                icon: 'fa-solid fa-list-check',
                 to: '/work-plan',
                 visible: !this.findRole("student")
             },
@@ -199,23 +203,24 @@ export class MenuService {
                 label: $t('queue.title'),
                 icon: 'fa-solid fa-people-line',
                 visible: !this.findRole("student"),
-                items: [
+                to: '/queue'
+                /*items: [
                     {
                         label: $t('queue.title'),
                         icon: 'pi pi-fw pi-plus-circle',
                         to: '/queue'
                     },
-                    // {
-                    //   label:  $t('queue.addService'),
-                    //   icon: 'pi pi-fw pi-th-large',
-                    //   to:'/queueCategories'
-                    // },
-                    // {
-                    //   label:  $t('queue.secretary'),
-                    //   icon: 'pi pi-fw pi-user-edit',
-                    //   to:'/queueService'
-                    // },
-                ]
+                    {
+                      label:  $t('queue.addService'),
+                      icon: 'pi pi-fw pi-th-large',
+                      to:'/queueCategories'
+                    },
+                    {
+                      label:  $t('queue.secretary'),
+                      icon: 'pi pi-fw pi-user-edit',
+                      to:'/queueService'
+                    },
+                ]*/
             },
             {
                 label: $t('web.mainMenuTitle'),
@@ -226,17 +231,19 @@ export class MenuService {
                         label: $t('web.menuPage'),
                         icon: 'pi pi-fw pi-bars',
                         to: '/enu/menus',
+                        visible: this.findRole('enu_web_admin') || this.findRole('enu_web_fac_admin') || this.findRole('enu_web_menu_admin')
                     },
                     {
                         label: $t('web.pageLink'), 
                         icon: 'pi pi-fw pi-external-link', 
                         to: '/enu/pages',
-                        visible: this.findRole('enu_web_admin') || this.findRole('enu_web_fac_admin') || this.findRole('enu_web_page_admin')
+                        visible: this.findRole('enu_web_admin') || this.findRole('enu_web_fac_admin') || this.findRole('enu_web_page_admin') || this.findRole('enu_web_menu_admin')
                     },
                     {
                         label: $t('web.blocks'), 
                         icon: 'fa-solid fa-cube', 
                         to: '/enu/blocks',
+                        visible: this.findRole('enu_web_admin') || this.findRole('enu_web_fac_admin')
                     },
                     {
                         label: $t('web.blog'),
@@ -283,9 +290,16 @@ export class MenuService {
                     {
                         label: $t('course.courses'),
                         icon: 'fa-solid fa-chalkboard',
-                        to: '/courses',
+                        to: '/categories-courses',
+
                     },
+
                 ]
+            },
+            {
+                label: $t('helpDesk.title'),
+                icon: 'pi pi-spin pi-cog',
+                to: '/helpdesk',
             }
         ]
     }

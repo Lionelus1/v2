@@ -1,7 +1,7 @@
 <template>
     <ConfirmPopup group="deleteResult"></ConfirmPopup>
-    <Dialog v-if="editVisible" v-model:visible="editVisible" closable :style="{ width: '1000px' }"
-            :breakpoints="{'960px': '75vw', '640px': '90vw'}" @close="hideDialog" @hide="hideDialog" :close-on-escape="false"
+    <Dialog v-model:visible="editVisible" :closable="true" :style="{ width: '1000px' }"
+            :breakpoints="{'960px': '75vw', '640px': '90vw'}" @close="hideDialog" @hide="hideDialog" :close-on-escape="true"
             :header="$t('smartenu.createOrEditEvents')" :modal="true" class="p-fluid">
         <div class="card">
             <!--      <Message v-for="msg of formValid" severity="error" :key="msg">{{ msg }}</Message>-->
@@ -238,7 +238,7 @@ export default {
     props: ['selectedEvent', 'isVisible', 'partCats'],
     data() {
         return {
-            editVisible: this.isVisible ?? false,
+            editVisible: this.isVisible,
             event: this.selectedEvent,
             formValid: [],
             isPoster: false,

@@ -63,6 +63,10 @@ export default {
     PostAccreditationMonitoringReport: 10,
     Reference: 11,
     ScienceWorks: 12,
+    ScienceWorksList: 13,
+    ActCompletedWorks: 14,
+    RequestList: 15,
+    DT_Request:16
   },
 
   ContragentType: {
@@ -165,6 +169,45 @@ export default {
       nameKz: "Қол қойылды",
       nameEn: "Signed",
       value: "signed"
+    },
+  },
+
+  CertificatesArray: {
+    Individual: {
+      namekz: "Жеке тұлғаның сертификаты",
+      nameru: "Сертификат физического лица",
+      nameen: "Certificate of an individual",
+      value: "individual"
+    },
+    Internal: {
+      namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+      nameru: "Для внутреннего документооборота (ГОСТ)",
+      nameen: "For internal document management (GOST)",
+      value: "internal"
+    },
+    Ceo: {
+      namekz: "Бірінші басшының сертификаты",
+      nameru: "Сертификат первого руководителя",
+      nameen: "Certificate of the CEO",
+      value: "ceo"
+    },
+    HrWorker: {
+      namekz: "Кадр бөлімі қызметкерінің сертификаты",
+      nameru: "Сертификат сотрудника отела кадров",
+      nameen: "Certificate of the HR worker",
+      value: "hr_worker"
+    },
+    SignRight: {
+      namekz: "Қол қою құқығы бар қызметкер сертификаты",
+      nameru: "Сертификат сотрудника с правом подписи",
+      nameen: "Certificate of the employee with the right to sign",
+      value: "sign_right"
+    },
+    FinancialSignRight: {
+      namekz: "Қаржы құжаттарына қол қою құқығы бар қызметкер сертификаты",
+      nameru: "Сертификат сотрудника с правом подписи финансовых документов",
+      nameen: "Certificate of the employee with the right to sign financial docs",
+      value: "financial_sign_right"
     },
   }
 }

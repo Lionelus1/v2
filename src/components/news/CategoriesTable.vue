@@ -1,15 +1,7 @@
 <template>
   <div class="col-12">
     <h3>{{ $t("smartenu.newsCategoriesTitle") }}</h3>
-    <div class="card">
-      <Button
-          :label="$t('common.add')"
-          v-if="isAdmin"
-          icon="pi pi-plus"
-          class="p-button-success mr-2"
-          v-on:click="createNewsCategory"
-      />
-    </div>
+    <ToolbarMenu v-if="isAdmin" :data="menu"/>
     <div class="card">
       <DataTable
           :value="categories"
@@ -73,19 +65,8 @@
           </template>
         </Column>
         <Column>
-          <template #body="slotProps">
-            <Button
-                icon="pi pi-pencil"
-                class="p-button-rounded p-button-success mr-2"
-                v-if="isAdmin"
-                @click="editNewsCategory(slotProps.data.id)"
-            />
-            <Button
-                icon="pi pi-trash"
-                class="p-button-rounded p-button-warning"
-                v-if="isAdmin"
-                @click="delNewsCategory(slotProps.data.id)"
-            />
+          <template #body="{data}">
+            <ActionButton v-if="isAdmin" :show-label="true" :items="actions" @toggle="toggle(data)" />
           </template>
         </Column>
       </DataTable>
@@ -230,9 +211,12 @@
 import api from "@/service/api";
 import {authHeader, findRole, getHeader, smartEnuApi} from "@/config/config";
 import {FilterMatchMode, FilterOperator} from "primevue/api";
+import ToolbarMenu from "@/components/ToolbarMenu.vue";
+import ActionButton from "@/components/ActionButton.vue";
 
 export default {
   name: "CategoriesTable",
+  components: {ActionButton, ToolbarMenu},
   data() {
     return {
       findRole: findRole,
@@ -277,7 +261,8 @@ export default {
         isStudent: false,
       },
       bgColor: '0062ff',
-      textColor: 'ffffff'
+      textColor: 'ffffff',
+      actionsNode: null
     };
   },
   methods: {
@@ -393,13 +378,40 @@ export default {
       this.roles.isPublisher = this.findRole(null, "news_publisher");
       this.roles.isStudent = this.findRole(null, "student");
       this.roles.isModer = this.findRole(null, "news_moderator");
-    }
+    },
+    toggle(node) {
+      this.actionsNode = node
+    },
   },
   created() {
     this.getCategories();
     this.getRoles();
   },
   computed: {
+    menu () {
+      return [
+        {
+          label: this.$t('common.add'),
+          icon: "pi pi-plus",
+          visible: this.isAdmin,
+          command: () => {this.createNewsCategory()},
+        }
+      ]
+    },
+    actions () {
+      return [
+        {
+          label: this.$t('common.edit'),
+          icon: "pi pi-pencil",
+          command: () => {this.editNewsCategory(this.actionsNode.id)},
+        },
+        {
+          label: this.$t('common.delete'),
+          icon: "pi pi-trash",
+          command: () => {this.delNewsCategory(this.actionsNode.id)},
+        },
+      ]
+    },
     isAdmin: function () {
       return this.roles.isAdmin;
     },

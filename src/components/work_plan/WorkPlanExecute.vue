@@ -1,72 +1,40 @@
 <template>
   <div>
-    <Button :label="$t('common.perform')" icon="pi pi-check" @click="openBasic" class="mr-2"/>
+    <Button :label="$t('common.perform')" icon="pi pi-pen" @click="openBasic" class="mr-2" />
   </div>
-  <vue-element-loading :active="isBlockUI" is-full-screen color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)"/>
-  <Sidebar
-      v-model:visible="showWorkPlanExecuteSidebar"
-      position="right"
-      class="p-sidebar-lg"
-      style="overflow-y: scroll"
-  >
-    <div class="col-12" v-if="plan && plan.is_oper && resultData && resultData.reject_history">
+  <vue-element-loading :active="isBlockUI" is-full-screen color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)" />
+  <Sidebar v-model:visible="showWorkPlanExecuteSidebar" position="right" class="p-sidebar-lg" style="overflow-y: scroll">
+    <div class="col-12" v-if="resultData && resultData.reject_history">
       <label class="bold">{{ $t('common.resultSentToCorrect') }}</label>
       <Message severity="warn" :closable="false" title="">{{ resultData.reject_history.message }}</Message>
     </div>
     <div class="col-12">
       <div>
-        <Menubar :model="menu" :key="active"
-                 style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
+        <Menubar :model="menu" :key="active" style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
       </div>
     </div>
     <div class="col-12 p-fluid">
       <div class="field">
         <label class="bold">{{ $t('workPlan.eventName') }}</label>
-        <InputText v-model="event.event_name" disabled/>
+        <InputText v-model="event.event_name" disabled />
       </div>
       <div class="field">
         <label class="bold">{{ $t('common.result') }}</label>
-        <RichEditor v-if="plan && !plan.is_oper" v-model="result" editorStyle="height:300px;" @text-change="editorChange">
-          <template v-slot:toolbar>
-            <span class="ql-formats">
-              <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
-              <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
-              <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
-            </span>
-          </template>
-        </RichEditor>
-        <div v-if="plan && resultData && plan.is_oper" v-html="resultData.event_result" class="mb-4"></div>
-        <RichEditor v-if="plan && plan.is_oper" v-model="newResult" editorStyle="height:300px;" @text-change="editorChange">
-          <template v-slot:toolbar>
-            <span class="ql-formats">
-              <button class="ql-bold" v-tooltip.bottom="'Bold'"></button>
-              <button class="ql-italic" v-tooltip.bottom="'Italic'"></button>
-              <button class="ql-underline" v-tooltip.bottom="'Underline'"></button>
-            </span>
-          </template>
-        </RichEditor>
+        <TinyEditor v-model="result" :height="300" @selectionChange="editorChange" />
       </div>
       <div class="field" v-if="resultData && resultData.result_files">
         <label class="bold">{{ $t('workPlan.attachments') }}</label>
         <div>
-          <Button
-              v-for="(item, index) of resultData.result_files" :key="index"
-              icon="pi pi-download"
-              class="p-button-rounded p-button-success mr-2"
-              @click="downloadFile(item)"
-          />
+          
+          <Button v-for="(item, index) of resultData.result_files" :key="index" icon="pi pi-download" class="p-button-rounded p-button-success mr-2"
+            @click="downloadFile(item)" />
         </div>
       </div>
-      <div class="field">
-        <FileUpload
-            ref="form"
-            mode="basic"
-            :customUpload="true"
-            @uploader="uploadFile($event)"
-            :auto="true"
-            :multiple="true"
-            :chooseLabel="$t('smartenu.chooseAdditionalFile')"
-        ></FileUpload>
+      <div>
+        <div class="field">
+          <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadFile($event)" :auto="true" :multiple="true"
+            :chooseLabel="$t('smartenu.chooseAdditionalFile')"></FileUpload>
+        </div>
       </div>
       <div class="field">
         <div ref="content" class="p-fileupload-content">
@@ -75,7 +43,7 @@
               <span class="mr-3"><i class="pi pi-paperclip"></i></span>
               <span>{{ file.name }}</span>
               <span class="ml-5">
-                <Button icon="pi pi-times" class="p-button-rounded p-button-text" @click="removeFile(index)"/>
+                <Button icon="pi pi-times" class="p-button-rounded p-button-text" @click="removeFile(index)" />
               </span>
             </div>
           </div>
@@ -86,27 +54,19 @@
       </div>
     </div>
   </Sidebar>
-
-  <Sidebar
-      v-model:visible="showOperPlanExecute"
-      position="right"
-      style="overflow-y: scroll; width: 50%;"
-      v-if="event"
-      @hide="sideBarClosed"
-  >
-    <WorkPlanEventResult :result-id="event.work_plan_event_id"/>
+  <Sidebar v-model:visible="showOperPlanExecute" position="right" style="overflow-y: scroll; width: 50%;" v-if="event" @hide="sideBarClosed">
+    <WorkPlanEventResult :result-id="event.work_plan_event_id" />
   </Sidebar>
 </template>
 
 <script>
+import { watch } from 'vue'
 import axios from "axios";
-import {getHeader, getMultipartHeader, smartEnuApi} from "@/config/config";
-import RichEditor from "../documents/editor/RichEditor";
-import {WorkPlanService} from '../../service/work.plan.service'
+import { getHeader, getMultipartHeader, smartEnuApi } from "@/config/config";
+import { WorkPlanService } from '../../service/work.plan.service'
 
 export default {
   name: "WorkPlanExecute",
-  components: {RichEditor},
   props: ['data', 'planData'],
   data() {
     return {
@@ -134,6 +94,7 @@ export default {
         this.showOperPlanExecute = true;
       } else {
         this.showWorkPlanExecuteSidebar = true;
+        this.getData()
         this.initMenu();
       }
     },
@@ -191,7 +152,7 @@ export default {
       }
       this.planService.saveEventResult(fd).then(res => {
         this.emitter.emit("workPlanEventIsCompleted", true);
-        this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
+        this.$toast.add({ severity: 'success', detail: this.$t('common.done'), life: 3000 });
         this.showWorkPlanExecuteSidebar = false;
         this.clearModel();
       }).catch(error => {
@@ -213,7 +174,7 @@ export default {
       };
       this.planService.sendResultToVerify(data).then(res => {
         if (res.data.is_success) {
-          this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
+          this.$toast.add({ severity: 'success', detail: this.$t('common.done'), life: 3000 });
           this.showWorkPlanExecuteSidebar = false;
           this.emitter.emit("workPlanResultSentToVerify", true);
         }
@@ -262,9 +223,9 @@ export default {
         this.clearFiles();
         return;
       }
-      this.files = [];
-      let files = event.files;
-      for (let file of files) {
+      // this.files = [];
+      // let files = event.files;
+      for (let file of event.files) {
         this.files.push(file);
       }
       this.clearFiles();
@@ -296,34 +257,33 @@ export default {
         method: 'GET',
         headers: getHeader()
       }).then(response => response.blob())
-          .then(blob => {
-            var url = window.URL.createObjectURL(blob);
-            var a = document.createElement('a');
-            a.href = url;
-            a.download = filePath;
-            document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
-            a.click();
-            a.remove();
-            this.isBlockUI = false;
-          }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
-        this.isBlockUI = false;
-      });
+        .then(blob => {
+          var url = window.URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url;
+          a.download = filePath;
+          document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
+          a.click();
+          a.remove();
+          this.isBlockUI = false;
+        }).catch(error => {
+          if (error.response && error.response.status === 401) {
+            this.$store.dispatch("logLout");
+          } else {
+            this.$toast.add({
+              severity: "error",
+              summary: error,
+              life: 3000,
+            });
+          }
+          this.isBlockUI = false;
+        });
     },
   }
 }
 </script>
 
 <style scoped lang="scss">
-
 .p-fileupload-content {
   position: relative;
 }
@@ -333,12 +293,12 @@ export default {
   align-items: center;
 }
 
-.p-fileupload-row > div {
+.p-fileupload-row>div {
   flex: 1 1 auto;
   width: 25%;
 }
 
-.p-fileupload-row > div:last-child {
+.p-fileupload-row>div:last-child {
   text-align: right;
 }
 
@@ -368,5 +328,4 @@ export default {
 .sidebar-custom {
   width: 50% !important;
 }
-
 </style>

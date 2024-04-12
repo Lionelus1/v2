@@ -2,13 +2,7 @@
     <div class="col-12">
       <TitleBlock :title="$t('science.profile')" :show-back-button="true"/>
     </div>
-
-    <div>
-      <div class="col-12 md:col-12 p-fluid">
         <PersonPage v-if="userView" :person="user" :sidebar="true" custom-type="scientists"/>
-      </div>
-    </div>
-
 </template>
   
 <script setup>

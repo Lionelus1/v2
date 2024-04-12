@@ -1,24 +1,38 @@
 <template>
-  <div :class="containerClass" @click="onWrapperClick">
+  <div :class="[containerClass, {'fixed_container': fixedMenu}]" @click="onWrapperClick">
     <ConfirmDialog></ConfirmDialog>
-    <Toast />
+    <Toast/>
     <AppTopBar @menu-toggle="onMenuToggle" v-model:pagemenu="localpagemenu"/>
-
-    <transition name="layout-sidebar">
-      <div :class="sidebarClass" @click="onSidebarClick" v-show="isSidebarVisible()">
-        <div class="layout-logo">
+    <div class="hint" v-if="showOverlay">
+      <div class="hint-popup">
+        {{ $t("common.hint") }}
+        <Button style="float: right; margin-top: 10px" class="p-button-outlined" @click="hideOverlay">OK</Button>
+      </div>
+    </div>
+    <div :class="[sidebarClass,{ 'hide_items': hasClass }]" @click="onSidebarClick" v-show="isSidebarVisible()" :style="{ width: menuWidth + 'px' }"
+         @mouseover="expandMenu" @mouseleave="collapseMenu">
+      <div class="relative fixed_icon">
+        <div class="absolute right-0 top-0" v-if="isDesktop()" @click="toggleMenuWidth" :style="{color: fixedMenu? '#2196f3':'#ced4da'}">
+          <i class="fa-solid fa-thumbtack"></i>
+        </div>
+      </div>
+      <div class="layout-logo">
+        <div class="flex justify-content-center align-items-center">
           <router-link to="/">
             <h2 class="text-white">SMART.ENU</h2>
+            <div class="text_enu">ENU</div>
           </router-link>
         </div>
-        <AppProfile/>
-        <AppMenu :model="globalMenu"  @menuitem-click="onMenuItemClick"/>
+
       </div>
-    </transition>
+      <AppProfile/>
+      <AppMenu :model="globalMenu" @menuitem-click="onMenuItemClick"/>
+    </div>
     <div class="layout-main flex-grow-1" :class="{ 'flex flex-column': applyFlex }">
       <router-view v-model:pagemenu="localpagemenu" @apply-flex="applyFlexHandler"/>
     </div>
-    <AppConfig :layoutMode="layoutMode" :layoutColorMode="layoutColorMode" @layout-change="onLayoutChange" @layout-color-change="onLayoutColorChange"/>
+    <AppConfig :layoutMode="layoutMode" :layoutColorMode="layoutColorMode" @layout-change="onLayoutChange"
+               @layout-color-change="onLayoutColorChange"/>
     <AppFooter/>
     <PositionChangeDialog v-if="loginedUser && loginedUser.userID > 0" ref="positionChangeDialog"></PositionChangeDialog>
   </div>
@@ -35,13 +49,15 @@ import AppMenu from '../AppMenu.vue';
 import AppConfig from '../AppConfig.vue';
 import AppFooter from '../AppFooter.vue';
 import PositionChangeDialog from './PositionChangeDialog.vue';
+import {isNumber} from "chart.js/helpers";
+import Bold from "quill/formats/bold";
 
 export default {
   setup() {
     useRoute();
   },
 
-  props : {
+  props: {
     pagemenu: null,
   },
   data() {
@@ -54,8 +70,11 @@ export default {
       mobileMenuActive: false,
       localpagemenu: this.pagemenu,
       menuService: new MenuService(),
-
       applyFlex: false,
+      menuWidth: 85,
+      hasClass: false,
+      showOverlay: false,
+      fixedMenu: localStorage.getItem('fixedMenu') === 'true' || false
     }
   },
 
@@ -63,6 +82,16 @@ export default {
     $route() {
       this.menuActive = false;
       this.$toast.removeAllGroups();
+    },
+    fixedMenu(newVal, oldVal) {
+      this.fixedMenu = newVal
+      if(this.fixedMenu){
+        this.menuWidth = 250
+        this.hasClass = true
+      }else {
+        this.menuWidth = 85
+        this.hasClass = false
+      }
     }
   },
   methods: {
@@ -125,24 +154,12 @@ export default {
     },
     onMenuToggle() {
       this.menuClick = true;
-        this.$emit("update:pagemenu", this.localpagemenu);
-
-      if (this.isDesktop()) {
-        if (this.layoutMode === 'overlay') {
-          if (this.mobileMenuActive === true) {
-            this.overlayMenuActive = true;
-          }
-
-          this.overlayMenuActive = !this.overlayMenuActive;
-          this.mobileMenuActive = false;
-        } else if (this.layoutMode === 'static') {
-          this.staticMenuInactive = !this.staticMenuInactive;
-        }
-      } else {
-        this.mobileMenuActive = !this.mobileMenuActive;
+      this.$emit("update:pagemenu", this.localpagemenu);
+      this.mobileMenuActive = !this.mobileMenuActive;
+      this.hasClass = true;
+      if (this.menuWidth === 85) {
+        this.menuWidth = 250;
       }
-
-      event.preventDefault();
     },
     onSidebarClick() {
       this.menuClick = true;
@@ -151,6 +168,25 @@ export default {
       if (event.item && !event.item.items) {
         this.overlayMenuActive = false;
         this.mobileMenuActive = false;
+      }
+    },
+    toggleMenuWidth() {
+      this.menuWidth = this.menuWidth === 85 ? 250 : 85;
+      this.fixedMenu = !this.fixedMenu
+      localStorage.setItem("fixedMenu", this.fixedMenu)
+    },
+    expandMenu() {
+      if (this.fixedMenu) return;
+      this.hasClass = true;
+      if (this.menuWidth === 85) {
+        this.menuWidth = 250;
+      }
+    },
+    collapseMenu() {
+      if (this.fixedMenu) return;
+      this.hasClass = false;
+      if (this.menuWidth === 250) {
+        this.menuWidth = 85;
       }
     },
     onLayoutChange(layoutMode) {
@@ -173,7 +209,6 @@ export default {
     },
     isDesktop() {
       return window.innerWidth > 1024;
-      
     },
     isSidebarVisible() {
       if (this.isDesktop()) {
@@ -189,6 +224,10 @@ export default {
     },
     applyFlexHandler(value) {
       this.applyFlex = value;
+    },
+    hideOverlay() {
+      this.showOverlay = false;
+      localStorage.setItem("show-hint", true);
     },
   },
   computed: {
@@ -214,16 +253,25 @@ export default {
     },
     globalMenu() {
       return this.initMenu();
-    }
-
+    },
   },
   created() {
     this.getLoginedUser();
+    if(this.fixedMenu){
+      this.menuWidth = 250
+      this.hasClass = true
+    }else {
+      this.menuWidth = 85
+    }
+
   },
   mounted() {
+    if(!localStorage.getItem("show-hint")){
+      this.showOverlay = true;
+    }
     let showPositionsDialog = localStorage.getItem('showPositionsDialog');
     let doNotShowAnymore = localStorage.getItem('doNotShowWelcomePositionChangeDialog') === 'true';
-    
+
     if (showPositionsDialog && !doNotShowAnymore) {
       this.$refs.positionChangeDialog.show();
 
@@ -255,62 +303,113 @@ export default {
   z-index: 1000;
   top: 70px;
 }
-.customer-badge {
-    border-radius: 2px;
-    padding: 0.25em 0.5rem;
-    text-transform: uppercase;
-    font-weight: 700;
-    font-size: 12px;
-    letter-spacing: 0.3px;
-  
-    &.status-vaccinated {
-      background: #c8e6c9;
-      color: #256029;
-    }
-    &.status-firstcomponent {
-      background: #b3e5fc;
-      color: #23547b;
-    }
-    &.status-noData {
-      background: #ffcdd2;
-      color: #c63737;
-    }
-    &.status-rejected {
-      background: #feedaf;
-      color: #ff0000;
-    }
-    &.status-planned {
-      background: #eccfff;
-      color: #694382;
-    }
-    &.status-minor {
-      background: #a2fcfc;
-      color: #00f7f7;
-    }
-    &.status-created {
-        background: #6c757d;
-        color: #fff;
-    }
-    &.status-signing {
-        background: #17a2b8;
-        color: #fff;
-    }
-    &.status-signed {
-      background: #28a745;
-      color: #fff;
-    }
-    &.status-inapproval {
-      background: #9317b8;
-      color: #ffffff;
-    }
-    &.status-approved {
-      background: #007bff;
-      color: #ffffff;
-    }
-     &.status-revision {
-      background: #ffcdd2;
-      color: #c63737;
-    }
 
+.customer-badge {
+  border-radius: 2px;
+  padding: 0.25em 0.5rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.3px;
+
+  &.status-vaccinated {
+    background: #c8e6c9;
+    color: #256029;
   }
+
+  &.status-firstcomponent {
+    background: #b3e5fc;
+    color: #23547b;
+  }
+
+  &.status-noData {
+    background: #ffcdd2;
+    color: #c63737;
+  }
+
+  &.status-rejected {
+    background: #feedaf;
+    color: #ff0000;
+  }
+
+  &.status-planned {
+    background: #eccfff;
+    color: #694382;
+  }
+
+  &.status-minor {
+    background: #a2fcfc;
+    color: #00f7f7;
+  }
+
+  &.status-created {
+    background: #6c757d;
+    color: #fff;
+  }
+
+  &.status-signing {
+    background: #17a2b8;
+    color: #fff;
+  }
+
+  &.status-signed {
+    background: #28a745;
+    color: #fff;
+  }
+
+  &.status-inapproval {
+    background: #9317b8;
+    color: #ffffff;
+  }
+
+  &.status-approved {
+    background: #007bff;
+    color: #ffffff;
+  }
+
+  &.status-revision {
+    background: #ffcdd2;
+    color: #c63737;
+  }
+
+}
+
+
+.hint-popup{
+  width: 300px;
+  top: 55px;
+  right: 162px;
+  padding: 20px;
+  position: fixed;
+  background: #fff;
+  z-index: 999;
+  box-shadow: rgba(0, 0, 0, 0.35) 0 2px 10px;
+  border-radius: 5px;
+  animation: jump 2s ease-in-out 2;
+}
+.hint-popup:before {
+  content: "";
+  border: solid transparent;
+  position: absolute;
+  right: 12px;
+  bottom: 100%;
+  border-bottom-color: #2196F3;
+  border-width: 9px;
+  margin-left: 0;
+}
+@media (max-width: 500px) {
+  .hint-popup{
+    right: 2%;
+  }
+  .hint-popup:before {
+    right: 53%;
+  }
+}
+@keyframes jump {
+  0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+  40% {transform: translateY(-20px);}
+  60% {transform: translateY(-15px);
+    box-shadow: rgb(33, 150, 243) 0 2px 10px;
+  }
+}
 </style>

@@ -483,11 +483,13 @@ export default {
         this.educations = response.data
         this.iter++
       }).catch(error => {
-        this.$toast.add({
-          severity: "error",
-          summary: error,
-          life: 3000,
-        });
+        if (error.data.status !== 404) {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
       })
     },
     getCandidateAcademicDegrees() {

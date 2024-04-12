@@ -29,6 +29,7 @@
                             :editMode="true"
                             ref="departmentList"
                             :orgType="2"
+                            :parentID="value?.organization?.id || undefined"
                             :validation="validation.department"
                             v-model="value.department"/>
             <small

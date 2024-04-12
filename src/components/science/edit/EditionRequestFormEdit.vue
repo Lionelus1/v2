@@ -53,9 +53,10 @@
           ...(!this.propsEdition
           ? [
           {
-          label: this.$t('requests.sendRequest'),
-          icon: "pi pi-fw pi-save",
-          command: () => { this.saveEdition() },
+            label: this.$t('requests.sendRequest'),
+            icon: "pi pi-fw pi-save",
+            command: () => { this.saveEdition() },
+            disabled: () => this.edition.name_kz == '' || this.edition.name_en == '' || this.edition.name_ru == '' ,
           },]
           : []),
         ...(this.propsEdition
@@ -64,11 +65,13 @@
                   label: this.$t('requests.save'),
                   icon: "pi pi-fw pi-check",
                   command: () => { this.updateStateEditionRequest(2) },
+                  disabled: () => this.edition.name_kz == '' || this.edition.name_en == '' || this.edition.name_ru == '' ,
                 },
                 {
                   label: this.$t('requests.reject'),
                   icon: "pi pi-fw pi-times",
                   command: () => { this.rejectRequest() },
+                  disabled: () => this.edition.name_kz == '' || this.edition.name_en == '' || this.edition.name_ru == '' ,
                 },
             ]
         : []),

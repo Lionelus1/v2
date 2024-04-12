@@ -5,14 +5,17 @@
            :src="'data:image/jpeg;base64,' + loginedUser.photo "/>
       <img class="round" v-else src="assets/layout/images/default-user.jpg"/>
     </div>
-    <button class="p-link layout-profile-link" @click="onClick">
+    <button class="p-link layout-profile-link align-items-center px-3 justify-content-between" @click="onClick">
+      <span class="pl-4">
+        <i class="fa-regular fa-address-card mr-2"></i>
       <span class="username" v-if="loginedUser && loginedUser.userID > 0">{{ getFullname(loginedUser) }}</span>
       <span class="username" v-else>{{ $t("common.unknownUser") }}</span>
-      <i class="pi pi-fw pi-cog"></i>
+      </span>
+      <i class="pi pi-fw pi-angle-down"></i>
     </button>
     <transition name="layout-submenu-wrapper">
       <ul v-if="loginedUser && loginedUser.userID > 0" v-show="expanded">
-        <li v-if="loginedUser && loginedUser.mainPosition && loginedUser.mainPosition.organization.id === 1">
+        <li v-if="loginedUser && loginedUser.mainPosition && loginedUser.mainPosition.organization && loginedUser.mainPosition.organization.id === 1">
           <button @click="sVerify = true" class="p-link">
             <i class="pi pi-fw pi-verified"></i><span>{{ $t("common.verify") }}</span>
           </button>
@@ -27,16 +30,16 @@
             <i class="fa-solid fa-user-shield"></i><span>{{ $t("positions.menuTitle") }}</span>
           </button>
         </li>
-        <li v-if="loginedUser && loginedUser.mainPosition && loginedUser.mainPosition.organization.id === 1">
+        <li v-if="loginedUser && loginedUser.mainPosition && loginedUser.mainPosition.organization && loginedUser.mainPosition.organization.id === 1">
           <button @click="myRef" class="p-link">
             <i class="pi pi-fw pi-book"></i><span>{{ $t("ref.myRefs") }}</span>
           </button>
         </li>
-          <li v-if="!this.findRole(null, 'student')">
-              <button @click="qr" class="p-link">
-                  <i class="pi pi-fw pi-qrcode"></i><span>{{ $t("common.qrGenerator") }}</span>
-              </button>
-          </li>
+        <li v-if="!this.findRole(null, 'student')">
+          <button @click="qr" class="p-link">
+            <i class="pi pi-fw pi-qrcode"></i><span>{{ $t("common.qrGenerator") }}</span>
+          </button>
+        </li>
         <li>
           <button @click="logOutFromSystem" class="p-link">
             <i class="pi pi-fw pi-power-off"></i><span>{{ $t("common.logout") }}</span>
@@ -64,10 +67,7 @@
 </template>
 
 <script>
-import {
-  mapActions,
-  mapState
-} from "vuex";
+import {mapActions, mapState} from "vuex";
 
 import {findRole} from "@/config/config";
 
@@ -111,13 +111,7 @@ export default {
       this.$router.push({path: "/login"})
     },
     getFullname(user) {
-      let fullname = user.thirdName + ' ' + user.firstName;
-
-      if (user.lastName && user.lastName.length > 0) {
-        fullname += ' ' + user.lastName;
-      }
-
-      return fullname
+      return user.thirdName + ' ' + user.firstName
     }
   },
   computed: {
@@ -127,13 +121,8 @@ export default {
 </script>
 
 <style scoped>
-.round {
-  border-radius: 100px;
-  /* Радиус скругления */
-  box-shadow: 0 0 0 3px #2196f3, 0 0 13px #333;
-  /* Параметры теней */
-}
+
 .p-link:focus {
-    box-shadow: none;
+  box-shadow: none;
 }
 </style>

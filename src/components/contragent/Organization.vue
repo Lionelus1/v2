@@ -49,7 +49,7 @@
 
           <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ this.$t("common.head") }}</label>
-            <FindUser @input="correct" @remove="correct" class="mt-2" :disabled="localReadonly" :editMode="true" v-model="users"  v-model:first="value.chief" :max="1"/>
+            <FindUser userType="3" @input="correct" @remove="correct" class="mt-2" :disabled="localReadonly" :editMode="true" v-model="users"  v-model:first="value.chief" :max="1"/>
           </div>
           
           <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">

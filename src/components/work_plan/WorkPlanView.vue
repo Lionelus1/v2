@@ -2,7 +2,7 @@
   <div>
     <div class="col-12" v-if="!loading">
       <div class="card"
-           v-if="isPlanApproved && (isPlanCreator || (isApproval || isApproved)) && plan.status.work_plan_status_id === 4">
+           v-if="isPlanApproved && (isPlanCreator || (isApproval || isApproved)) && !(plan.doc_info.docHistory.stateId === 2)">
         <Button v-if="isPlanCreator && plan" :label="$t('common.action.reApprove')" icon="pi pi-check"
                 @click="reapproveConfirmDialog"
                 class="p-button ml-2"/>
@@ -11,7 +11,7 @@
                 @click="viewSignatures"
                 class="p-button ml-2"/>
       </div>
-      <div class="card" v-if="isApproval && plan.status.work_plan_status_id === 2">
+      <div class="card" v-if="isApproval && plan.doc_info.docHistory.stateId === 2">
         <Button :label="isLast ? $t('common.action.approve') : $t('common.action.approve') " icon="pi pi-check"
                  @click="openApprovePlan"
                 class="p-button p-button-success ml-2"/>
@@ -22,11 +22,9 @@
 
       <div class="card">
         <h5><TitleBlock :title="plan.work_plan_name" :show-back-button="true" />&nbsp;
-         <span :class="'status-badge status-' + plan.status.work_plan_status_id" style="position: relative; top: -3px;">{{
-            $i18n.locale === "kz" ? plan.status.name_kk : $i18n.locale === "ru" ? plan.status.name_ru : plan.status.name_en
-          }}</span></h5>
-        <!--        <WorkPlanApproveStep style="height: 200px" now-step="1" direction="vertical" :step-list="approvals" />-->
-        <!--        <WorkPlanApproveStatus :options="approvals"></WorkPlanApproveStatus>-->
+         <span :class="'status-badge status-' + plan.doc_info.docHistory.stateId" style="position: relative; top: -3px;">
+         {{ getDocStatus(plan.doc_info.docHistory.stateEn) }}
+          </span></h5>
         <Timeline :value="approvals">
           <template #content="slotProps">
             <div v-for="(item, index) of slotProps.item" :key="index">
@@ -39,8 +37,6 @@
         </Timeline>
       </div>
       <div class="card">
-        <!--        <object src="#toolbar=0" style="width: 100%; height: 1000px" v-if="source" type="application/pdf"
-                        :data="sourceb64"></object>-->
         <embed :src="sourceb64" style="width: 100%; height: 1000px" v-if="sourceb64" type="application/pdf"/>
       </div>
     </div>
@@ -91,7 +87,20 @@ export default {
       isPlanCreator: false,
       sourceb64: null,
       isCurrentUserApproved: false,
-      planService: new WorkPlanService()
+      planService: new WorkPlanService(),
+      docStatus: [
+        { name_kz: "құрылды", name_en: "created", name_ru: "создан", code: "created" },
+        { name_kz: "келісуде", name_en: "inapproval", name_ru: "на согласовании", code: "inapproval" },
+        { name_kz: "келісілді", name_en: "approved", name_ru: "согласован", code: "approved" },
+        { name_kz: "түзетуге", name_en: "revision", name_ru: "на доработку", code: "revision" },
+        { name_kz: "қайтарылды", name_en: "rejected", name_ru: "отклонен", code: "rejected" },
+        { name_kz: "қол қоюда", name_en: "signing", name_ru: "на подписи", code: "signing" },
+        { name_kz: "қол қойылды", name_en: "signed", name_ru: "подписан", code: "signed" },
+        { name_kz: "қайта бекітуге жіберілді", name_en: "sent for re-approval", name_ru: "отправлен на переутверждение", code: "sent for re-approval" },
+        { name_kz: "жаңартылды", name_en: "updated", name_ru: "обновлен", code: "updated" },
+        { name_kz: "берілді", name_en: "issued", name_ru: "выдан", code: "issued" },
+      ],
+      selectedDocStatus: null,
     }
   },
   created() {
@@ -101,6 +110,24 @@ export default {
     this.getPlan();
   },
   methods: {
+    getDocStatus(code) {
+      const foundStatus = this.docStatus.find(status => status.code === code);
+
+      if (foundStatus) {
+        switch (this.$i18n.locale) {
+          case "kz":
+            return foundStatus.name_kz;
+          case "ru":
+            return foundStatus.name_ru;
+          case "en":
+            return foundStatus.name_en;
+          default:
+            return null;
+        }
+      } else {
+        return null;
+      }
+    },
     getFile() {
       this.planService.getPlanFile(this.plan.doc_id).then(res => {
         if (res.data) {
@@ -148,7 +175,7 @@ export default {
             this.isPlanCreator = true;
           }
           this.getFile();
-          this.getSignatures();
+          //this.getSignatures();
           this.getWorkPlanApprovalUsers();
         }
         this.loading = false;
@@ -191,25 +218,27 @@ export default {
         }
       });
     },
-    getSignatures() {
-      let data = {doc_id: this.plan.doc_id}
-      this.planService.getSignatures(data).then(res => {
-        if (res.data) {
-          this.signatures = res.data;
-          const signUser = res.data.find(x => x.userId === this.loginedUserId);
-          if (signUser && signUser.signature && signUser.signature !== '') {
-            this.isCurrentUserApproved = true;
-          }
-        }
-      }).catch(error => {
-        console.log(error)
-        this.$toast.add({
-          severity: 'error',
-          summary: error,
-          life: 3000
-        });
-      })
-    },
+    // getSignatures() {
+    //   let data = {doc_id: this.plan.doc_id}
+    //   this.planService.getSignatures(data).then(res => {
+    //     if (res.data) {
+    //       this.signatures = res.data;
+    //       const signUser = res.data.find(x => x.userId === this.loginedUserId);
+    //       if (signUser && signUser.signature && signUser.signature !== '') {
+    //         this.isCurrentUserApproved = true;
+    //       }
+    //       console.log(this.signatures)
+    //     }
+    //   }).catch(error => {
+    //     console.log(error)
+    //     this.$toast.add({
+    //       severity: 'error',
+    //       summary: error,
+    //       life: 3000
+    //     });
+    //   })
+    // },
+
     init() {
       const currentUser = this.approval_users.findIndex(x => x.user.id === this.loginedUserId);
       const last = this.approval_users?.at(-1);
@@ -302,7 +331,7 @@ export default {
             life: 3000,
           });
           this.getPlan();
-          this.getSignatures();
+          //this.getSignatures();
           this.getWorkPlanApprovalUsers();
         }
       }).catch(error => {
@@ -393,11 +422,6 @@ export default {
   &.status-2 {
     background: #FEEDAF;
     color: #8A5340;
-  }
-
-  &.status-1 {
-    background: #B3E5FC;
-    color: #23547B;
   }
 }
 </style>

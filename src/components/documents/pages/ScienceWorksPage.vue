@@ -11,8 +11,10 @@
     <div v-if="scienceWork" class="flex flex-column flex-grow-1">
       <div class="lg:col-6 mt-3">
         <p> {{ $t('common.state') + ": " }}
-          <span :class="'customer-badge status-' + scienceWork.docHistory.code">
+          <span v-if="getScienceWorkType() !== DocEnum.ScienceWorkType.ScopusArticle" :class="'customer-badge status-' + scienceWork.docHistory.code">
                 {{ scienceWork.docHistory[$i18n.locale === 'en' ? 'stateEn' : $i18n.locale === 'ru' ? 'stateRus' : 'stateKaz'] }}</span>
+          <span v-if="getScienceWorkType() === DocEnum.ScienceWorkType.ScopusArticle" class="customer-badge status-status_signed">Scopus</span>
+          <span v-if="isFromPlatonus()" class="customer-badge status-status_signing">Platonus</span>
         </p>
       </div>
       <div class="p-fluid md:col-6" v-if="scienceWork.docHistory.stateId === DocEnum.REVISION.ID">
@@ -24,11 +26,15 @@
             <label>{{ $t('scienceWorks.labels.' + param.description) }}</label>
           </div>
           <div class="p-fluid md:col-6" v-if="'text' === param.name">
-            <div class="p-inputgroup p-input-filled">
-              <InputText v-model="param.value" type="text" @input="input()" :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
-                scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)"></InputText>
-              <Button v-if="param.description === 'link'" icon="fa-solid fa-copy"
-                      v-clipboard:copy="param.value" v-clipboard:success="onCopy"></Button>
+            <template v-if="'publicationCategory' === param.description">
+              <Dropdown v-model="param.value" :options="publicationCategories" class="w-full" @change="input" editable
+                        :option-label="publicationCategoriesLabel" :option-value="publicationCategoriesLabel"
+                        :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID && scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)">
+              </Dropdown>
+            </template>
+            <div v-else class="p-inputgroup p-input-filled">
+              <Share :data="param.value" :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
+                scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)" :param="param.value && param.description === 'link'" :label="$t('ncasigner.copy')" @copy="onCopy()"/>
             </div>
           </div>
           <div class="p-fluid md:col-6" v-if="'number' === param.name">
@@ -51,19 +57,6 @@
                   {{ $t('scienceWorks.editionTypes.' + slotProps.option) }}
                 </template>
               </SelectButton>
-            </template>
-            <template v-if="'publicationCategory' === param.description">
-              <Dropdown v-model="param.value" :options="publicationCategories" class="w-full" @change="input"
-                        :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID && scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)">
-                <template #value="slotProps">
-                  <template v-if="slotProps.value">
-                    {{ $t('scienceWorks.publicationCategories.' + slotProps.value) }}
-                  </template>
-                </template>
-                <template #option="slotProps">
-                  {{ $t('scienceWorks.publicationCategories.' + slotProps.option) }}
-                </template>
-              </Dropdown>
             </template>
           </div>
           <div class="md:col-6" v-if="'koksnvo' === param.name">
@@ -136,10 +129,11 @@ import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo.vue";
 import FindUser from "@/helpers/FindUser";
 import {ScienceService} from "@/service/science.service";
+import Share from "@/components/Share.vue";
 
 export default {
   name: 'ScienceWorksPage',
-  components: {Access, ApprovalUsers, DocSignaturesInfo, FindUser},
+  components: {Share, Access, ApprovalUsers, DocSignaturesInfo, FindUser},
   props: {
     uuid: {
       type: String,
@@ -203,9 +197,7 @@ export default {
           label: this.$t('common.approvalList'),
           icon: "pi pi-user-edit",
           disabled: () => !this.scienceWork || !this.scienceWork.docHistory || this.scienceWork.docHistory.stateId < DocEnum.INAPPROVAL.ID,
-          command: () => {
-            this.open('documentInfoSidebar')
-          }
+          command: () => { this.open('documentInfoSidebar') }
         },
       ],
 
@@ -332,6 +324,13 @@ export default {
 
       return this.scienceWork.newParams.scienceWorkType.value;
     },
+    isFromPlatonus() {
+      if (this.scienceWork && this.scienceWork.newParams && this.scienceWork.newParams.pub_platonus_id) {
+        return true;
+      }
+
+      return false;
+    },
     revision() {
       this.loading = true;
 
@@ -431,9 +430,9 @@ export default {
       this.attachments = {};
 
       let paramsName = ["publicationType", "publicationCategory", "publicationName", "publicationDate",
-        "editionType", "editionFullName",  "editionName", "editionNumber", "editionYear", "editionPages",
+        "editionType", "editionFullName",  "editionName", "editionNumber", "editionYear", "editionPages", "subtypeDescription",
         "issn", "isbn", "koksnvo", "link", "printedPages", "participationInGroup", "recommendedBy",
-        "coauthorsInternal", "coauthorsExternal", "attachments"];
+        "coauthorsInternal", "coauthorsExternal", "attachments",];
 
       for (let name of paramsName) {
         let param = this.scienceWork.newParams[name];
@@ -446,13 +445,6 @@ export default {
           this.contractParams.push(param);
         }
       }
-    },
-    isNull(param) {
-      if (param === null || param === undefined || param === 'null' || param === '') {
-        return true;
-      }
-
-      return false;
     },
     uploadAttachment(event) {
       let uuid = this.generateUUID();
@@ -518,76 +510,45 @@ export default {
     },
     clearStages() {
       this.selectedUsers = [];
+      this.stages = [
+        {
+          stage: 1,
+          users: null,
+          titleRu: "Соискатель",
+          titleKz: "Соискатель",
+          titleEn: "Соискатель",
+          certificate: DocEnum.CertificatesArray.Individual,
+        }
+      ];
 
-      if ([DocEnum.ScienceWorkType.Monograph, DocEnum.ScienceWorkType.ScopusArticle].includes(this.getScienceWorkType())) {
-        this.stages = [
-          {
-            stage: 1,
-            users: null,
-            titleRu: "Соискатель",
-            titleKz: "Соискатель",
-            titleEn: "Соискатель",
-            certificate: {
-              namekz: "Жеке тұлғаның сертификаты",
-              nameru: "Сертификат физического лица",
-              nameen: "Certificate of an individual",
-              value: "individual"
+      if ([DocEnum.ScienceWorkType.Monograph, DocEnum.ScienceWorkType.ScopusArticle, DocEnum.ScienceWorkType.PublicationKOKSNVO].includes(this.getScienceWorkType())) {
+        this.stages.push(
+            {
+              stage: 2,
+              users: null,
+              titleRu: "Начальник Управление научных изданий и наукометрических ресурсов",
+              titleKz: "Начальник Управление научных изданий и наукометрических ресурсов",
+              titleEn: "Начальник Управление научных изданий и наукометрических ресурсов",
+              certificate: DocEnum.CertificatesArray.Internal,
             },
-          },
-          {
-            stage: 2,
-            users: null,
-            titleRu: "Начальник Управление научных изданий и наукометрических ресурсов",
-            titleKz: "Начальник Управление научных изданий и наукометрических ресурсов",
-            titleEn: "Начальник Управление научных изданий и наукометрических ресурсов",
-            certificate: {
-              namekz: "Жеке тұлғаның сертификаты",
-              nameru: "Сертификат физического лица",
-              nameen: "Certificate of an individual",
-              value: "individual"
+            {
+              stage: 3,
+              users: null,
+              titleRu: "Директор Департамента науки",
+              titleKz: "Директор Департамента науки",
+              titleEn: "Директор Департамента науки",
+              certificate: DocEnum.CertificatesArray.Internal,
             },
-          },
-          {
-            stage: 3,
-            users: null,
-            titleRu: "Директор Департамента науки",
-            titleKz: "Директор Департамента науки",
-            titleEn: "Директор Департамента науки",
-            certificate: {
-              namekz: "Жеке тұлғаның сертификаты",
-              nameru: "Сертификат физического лица",
-              nameen: "Certificate of an individual",
-              value: "individual"
-            },
-          },
-        ];
+        );
       } else {
-        this.stages = [
-          {
-            stage: 1,
-            users: null,
-            titleRu: "Соискатель",
-            titleKz: "Соискатель",
-            titleEn: "Соискатель",
-            certificate: {
-              namekz: "Жеке тұлғаның сертификаты",
-              nameru: "Сертификат физического лица",
-              nameen: "Certificate of an individual",
-              value: "individual"
-            },
-          },
+        this.stages.push(
           {
             stage: 2,
             users: null,
             titleRu: "Заведующий кафедры",
             titleKz: "Кафедра меңгерушісі",
             titleEn: "Head of Department",
-            certificate: {
-              namekz: "Жеке тұлғаның сертификаты",
-              nameru: "Сертификат физического лица",
-              nameen: "Certificate of an individual",
-              value: "individual"
-            },
+            certificate: DocEnum.CertificatesArray.Internal,
           },
           {
             stage: 3,
@@ -595,15 +556,13 @@ export default {
             titleRu: "Секретарь Правления - Ученый секретарь",
             titleKz: "Кеңес хатшысы – Ғылыми хатшы",
             titleEn: "Secretary of the Board - Scientific Secretary",
-            certificate: {
-              namekz: "Жеке тұлғаның сертификаты",
-              nameru: "Сертификат физического лица",
-              nameen: "Certificate of an individual",
-              value: "individual"
-            },
+            certificate: DocEnum.CertificatesArray.Internal,
           },
-        ];
+        );
       }
+    },
+    publicationCategoriesLabel(data) {
+      return this.$t('scienceWorks.publicationCategories.' + data);
     },
   }
 }

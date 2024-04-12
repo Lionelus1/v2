@@ -47,6 +47,7 @@ const routes = [
         path:'/login',
         name:'Login',
         component: load('Login'),
+        beforeEnter: ifNotAuthenticated
     },
     {
         path:'/outqr',
@@ -75,9 +76,9 @@ const routes = [
         beforeEnter: ifNotAuthenticated,
     },
     {
-      path: '/privacy',
-      name: 'Privacy',
-      component: load('Privacy')
+        path: '/privacy',
+        name: 'Privacy',
+        component: load('Privacy')
     },
     {
         path: '/login',
@@ -116,7 +117,7 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
-path: '/documents/catalog/acts',
+                path: '/documents/catalog/acts',
                 name: '/documents/catalog/acts',
                 component: load('documents/catalog/Acts'),
                 beforeEnter: ifAuthenticated,
@@ -125,6 +126,12 @@ path: '/documents/catalog/acts',
                 path: '/documents/catalog/scienceWorks',
                 name: 'ScienceWorks',
                 component: load('documents/catalog/ScienceWorks'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/documents/catalog/scienceWorksList',
+                name: 'ScienceWorksList',
+                component: load('documents/catalog/ScienceWorksList'),
                 beforeEnter: ifAuthenticated,
             },
             {
@@ -164,6 +171,12 @@ path: '/documents/catalog/acts',
                 beforeEnter: ifAuthenticated,
             },
             {
+                path: '/documents/scienceWorksList/:uuid',
+                name: 'ScienceWorksListPage',
+                component: load('documents/pages/ScienceWorksListPage'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
                 path: '/documents/contracts',
                 name: '/documents/contracts',
                 component: load('documents/ContractsFirstPage'),
@@ -193,15 +206,33 @@ path: '/documents/catalog/acts',
                 beforeEnter: ifAuthenticated,
             },
             {
+                path: '/categories-courses',
+                name: 'categoriesCourses',
+                component: load('documents/onlinecourse/CategoriesCourses'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
                 path: '/course/categories',
                 name: 'onlinecoursecategory',
                 component: load('documents/onlinecourse/Categories'),
                 beforeEnter: ifAuthenticated,
             },
             {
-                path: '/courses',
+                path: '/courses/:courseID',
                 name: 'onlinecourses',
                 component: load('documents/onlinecourse/Courses'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/courses/edit/:fieldId/:courseId',
+                name: 'EditCourse',
+                component: load('documents/onlinecourse/AddCourse'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/courses/add/:fieldId',
+                name: 'AddCourse',
+                component: load('documents/onlinecourse/AddCourse'),
                 beforeEnter: ifAuthenticated,
             },
             {
@@ -217,9 +248,27 @@ path: '/documents/catalog/acts',
                 beforeEnter: ifAuthenticated,
             },
             {
+                path: '/course/:id/:history_id',
+                name: 'CourseStudents',
+                component: load('documents/onlinecourse/CourseStudents'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
                 path: '/documents/certificate/:uuid',
                 name: 'certificate',
                 component: load('documents/certificates/Certificate'),
+            },
+            {
+                path: '/educational-programs/:slug',
+                name: 'educationalPrograms',
+                component: load('documents/onlinecourse/EducationalPrograms'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/educational-programs/bachelor/add/:degreeID',
+                name: 'addEducationalPrograms',
+                component: load('documents/onlinecourse/AddEducationalProgram'),
+                beforeEnter: ifAuthenticated,
             },
             {
                 path: '/contragent/banks',
@@ -379,12 +428,6 @@ path: '/documents/catalog/acts',
                         beforeEnter: ifAuthenticated,
                     },
                     {
-                        path: 'view/:id',
-                        name: 'WorkPlanView',
-                        component: load('work_plan/WorkPlanView'),
-                        beforeEnter: ifAuthenticated
-                    },
-                    {
                         path: 'reports/:id',
                         name: 'WorkPlanReport',
                         component: load('work_plan/WorkPlanReport'),
@@ -396,12 +439,6 @@ path: '/documents/catalog/acts',
                         component: load('work_plan/WorkPlanReportView'),
                         beforeEnter: ifAuthenticated,
                     },
-                    {
-                        path: 'result/:id',
-                        name: 'WorkPlanEventResult',
-                        component: load('work_plan/WorkPlanEventResult'),
-                        beforeEnter: ifAuthenticated,
-                    }
                 ]
             },
             {
@@ -461,42 +498,42 @@ path: '/documents/catalog/acts',
                 name: '/queue',
                 component: load('queue/Queue'),
                 beforeEnter: ifAuthenticated,
-                
+
             },
             {
                 path: '/queue/operator/:id/:parentID',
                 name: '/queueOperator',
                 component: load('queue/Operator'),
                 beforeEnter: ifAuthenticated,
-                
+
             },
             {
                 path: '/queueService',
                 name: '/queueService',
                 component: load('queue/QueueService'),
                 beforeEnter: ifAuthenticated,
-                
+
             },
             {
                 path: '/queue/terminal/:id',
                 name: '/queueTerminal',
                 component: load('queue/Terminal'),
                 beforeEnter: ifAuthenticated,
-                
+
             },
             {
                 path: '/queue/tv/:id',
                 name: '/queueTv',
                 component: load('queue/Tv'),
                 beforeEnter: ifAuthenticated,
-                
+
             },
             {
                 path: '/queue/QueueReport/:id',
                 name: '/queueReport',
                 component: load('queue/QueueReport'),
                 beforeEnter: ifAuthenticated,
-                
+
             },
             {
                 path: '/reception',
@@ -515,7 +552,7 @@ path: '/documents/catalog/acts',
                 name: 'Cafedra',
                 component: load('documents/Cafedra'),
                 beforeEnter: ifAuthenticated,
-                
+
             },
             {
                 path: '/access',
@@ -527,6 +564,27 @@ path: '/documents/catalog/acts',
                 name: 'CertificateTemplate',
                 component: load('documents/certificates/Template'),
                 beforeEnter: ifAuthenticated,
+            },
+
+            {
+                path: '/helpdesk',
+                name: 'HelpDeskComponent',
+                component: load('helpDesk/HelpDeskComponent'),
+                beforeEnter: ifAuthenticated,
+                children: [
+                    {
+                        path: '',
+                        name: 'DeskJournal',
+                        component: load('helpDesk/DeskJournal'),
+                        beforeEnter: ifAuthenticated,
+                    },
+                    {
+                        path: '/request/:uuid',
+                        name: 'Request',
+                        component: load('helpDesk/Request'),
+                        beforeEnter: ifAuthenticated,
+                    }
+                ]
             },
             {
                 path: '/orgControl',
@@ -746,9 +804,15 @@ path: '/documents/catalog/acts',
                 component: load('science/ScientistsProfile'),
                 beforeEnter: ifAuthenticated,
             },
+            {
+                path: '/demo',
+                name: 'demos',
+                component: load('DemoTemplate'),
+                beforeEnter: ifAuthenticated,
+            },
         ]
     },
-   
+
     {
         path: '/guide',
         name: 'Guide',
@@ -763,8 +827,6 @@ path: '/documents/catalog/acts',
             },
         ]
     },
-
-
 ];
 
 const router = createRouter({

@@ -1,38 +1,11 @@
 <template>
     <h3>{{ $t("postaccmonrep.title") }}</h3>
+
+    <ToolbarMenu :data="menu" @filter="toggle('global-filter', $event)" :filter="true" :filtered="filtered"/>
+
     <div class="card">
     <BlockUI :blocked="approving" :fullScreen="true"></BlockUI>
-
     <div>
-      <Toolbar class="m-0 p-1" style="position:relative;">
-
-        <template #start>
-          <Button v-if="findRole(null,'accreditation_rating_sector_employee')"  :disabled="selected===null || (file.depType !=2 && file.depType != 10)" @click="resetFileInfo();openDialog('fileUpload')"
-                  class="p-button-info p-1 mr-2"><i
-              class="fa-solid fa-file-circle-plus fa-xl"></i>&nbsp;{{ $t('common.add') }}
-          </Button>
-          <Button v-if="loginedUser != null && loginedUser.userID == file.ownerId && file.stateID == 1"
-                  :disabled="selected===null || file.depType != 3" @click="openDialog('sendToApprove')"
-                  class=" p-button-info p-1 mr-2"><i
-              class="fa-solid fa-file-contract fa-xl"></i>&nbsp;{{ $t('common.toapprove') }}
-          </Button>
-          <Button v-if="loginedUser != null && loginedUser.userID != file.ownerId && file.stateID == 2"
-                  :disabled="selected===null || file.depType !=3" @click="openDialog('revision')"
-                  class=" p-button-warning p-1 mr-2"><i class="fa-solid fa-file-circle-exclamation fa-xl"></i>&nbsp;{{
-              $t('common.revision')
-            }}
-          </Button>
-          <Button v-if="loginedUser != null && loginedUser.userID == file.ownerId && file.stateID == 4"
-                  @click="openDialog('fileUpload')" :disabled="selected===null || file.depType !=3"
-                  class="p-button-help p-1 mr-2"><i
-              class="fa-solid fa-file-pen fa-xl"></i>&nbsp;{{ $t('common.edit') }}
-          </Button>
-          <Button type="button" icon="pi pi-search"
-                  :label="$t('common.search')" @click="toggle('global-filter', $event)" aria:haspopup="true"
-                  aria-controls="overlay_panel" class="p-button-info p-1"><i class="fa-solid fa-filter fa-xl"></i>&nbsp;{{
-              $t('common.filter')
-            }}
-          </Button>
           <OverlayPanel ref="global-filter">
             <div class="p-fluid">
               <div class="field">
@@ -99,18 +72,17 @@
           <Button v-if="!file.hidden" @click="deleteFile(true)" :disabled="selected===null || file.type !=1" class="p-button-text p-button-info p-1"><i class="fa-solid fa-eye-slash fa-xl"></i></Button>
           <Button v-if="file.hidden" @click="showFile()" :disabled="selected===null || file.type !=1" class="p-button-text p-button-info p-1"><i class="fa-solid fa-eye fa-xl"></i></Button>
           <Button @click="downloadFile()" :disabled="selected===null || file.type !=1" class="p-button-text p-button-info p-1"><i class="fa-solid fa-file-arrow-down fa-xl"></i></Button> -->
-        </template>
-      </Toolbar>
+
       <TreeTable ref="edutreetable" :scrollable="true" :scrollHeight="windowHeight + 'px'" class="p-treetable-sm"
                  @node-select="onNodeSelect" :value="catalog" :lazy="true" :loading="loading"
                  @nodeExpand="onExpand($event, true)" selectionMode="single" v-model:selectionKeys="selected">
-        <Column field="name" :header="$t('common.name')" :expander="true"  style="min-width: 10rem;">
+        <Column field="name" :header="$t('common.name')" :expander="true"  style="min-width: 35rem;">
           <template #body="slotProps">
             <span><i
                 :class="'fa-solid fa-' + ((slotProps.node.depType <= 2 || slotProps.node.depType == 10) ? 'folder' : 'file')"></i>&nbsp;{{
                 slotProps.node["name" + $i18n.locale]
               }}</span>
-            <Button type="button" icon="fa-solid fa-filter fa-xl" v-if="slotProps.node.depType === 2"
+            <Button type="button" icon="fa-solid fa-filter" v-if="slotProps.node.depType === 2"
                     @click="onNodeSelect(slotProps.node);toggle('op', $event)" aria:haspopup="true" label=""
                     aria-controls="overlay_panel" class="p-button-link" />
             <OverlayPanel ref="op">
@@ -201,18 +173,7 @@
         </Column>
         <Column field="path">
           <template #body="slotProps">
-            <Button v-if="slotProps.node.path != null" @click="downloadFile(slotProps.node.path)"
-                    class="p-button-text p-button-info p-1"><i class="fa-solid fa-file-arrow-down fa-xl"></i></Button>
-            <Button v-if="slotProps.node.key != null && slotProps.node.depType ===3 && slotProps.node.stateID !==4"
-                    @click="onNodeSelect(slotProps.node);openDialog('signerInfo')"
-                    class="p-button-text p-button-info p-1"><i class="fa-solid fa-eye fa-xl"></i></Button>
-            <Button v-if="slotProps.node.key != null && slotProps.node.depType ===3 &&  slotProps.node.stateID ===4"
-                    @click="onNodeSelect(slotProps.node);openDialog('docInfo')"
-                    class="p-button-text p-button-info p-1"><i class="fa-solid fa-eye fa-xl"></i></Button>
-            <Button
-                v-if="slotProps.node.key != null && slotProps.node.depType ===3 && slotProps.node.stateID !== 7 && loginedUser.userID === slotProps.node.ownerId"
-                @click="onNodeSelect(slotProps.node);deleteFile(false)" class="p-button-text p-button-danger p-1">
-              <i class="fa-solid fa-trash fa-xl"></i></Button>
+            <ActionButton v-if="slotProps.node.path != null" :show-label="true" :items="actions" @toggle="toggleActions(slotProps.node)" />
           </template>
         </Column>
 
@@ -268,9 +229,11 @@ import DocSignaturesInfo from "@/components/DocSignaturesInfo";
 import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers";
 import DocState from "@/enum/docstates/index"
 import {FilterMatchMode} from "primevue/api";
+import ToolbarMenu from "@/components/ToolbarMenu.vue";
+import ActionButton from "@/components/ActionButton.vue";
 
 export default {
-  components: {ApprovalUsers, DocInfo, DocSignaturesInfo, PostFile},
+  components: {ActionButton, ToolbarMenu, ApprovalUsers, DocInfo, DocSignaturesInfo, PostFile},
   data() {
     return {
       catalog: [],
@@ -428,6 +391,8 @@ export default {
       ],
       approveComponentKey: 0,
       isGlobalFilter: false,
+      filtered: false,
+      actionsNode: {},
     }
   },
   created() {
@@ -445,6 +410,9 @@ export default {
     toggle(ref, event) {
       this.$refs[ref].toggle(event);
     },
+    toggleActions(node) {
+      this.actionsNode = node
+    },
     clearFilter(isGlobal) {
       this.filters.name.value = null
       this.filters.status.value = null
@@ -453,6 +421,8 @@ export default {
       this.isGlobalFilter = false;
       this.lazyParams.depType = 0
       this.getFolders(isGlobal ? null : this.parent);
+      this.filtered = false;
+      this.selected = null;
     },
     signed(event) {
       this.file.isApproved = 1
@@ -512,6 +482,7 @@ export default {
       }
       this.isGlobalFilter = true;
       this.getFolders(null)
+      this.filtered = true;
     },
     getFoldersByFilter() {
       if (!(this.filters.name.value === null && this.filters.status.value === null && this.filters.createDate.value === null)) {
@@ -769,11 +740,79 @@ export default {
 
       this.dialogOpenState.revision = false;
     },
+  },
+  computed: {
+    menu () {
+      return [
+        {
+          label: this.$t('common.add'),
+          icon: "fa-solid fa-file-circle-plus",
+          visible: this.findRole(null,'accreditation_rating_sector_employee'),
+          disabled: this.selected===null || (this.file.depType !=2 && this.file.depType != 10),
+          command: () => {this.resetFileInfo();this.openDialog('fileUpload')},
+        },
+        {
+          label: this.$t('common.toapprove'),
+          icon: "fa-solid fa-file-contract",
+          visible: this.loginedUser != null && this.loginedUser.userID == this.file.ownerId && this.file.stateID == 1,
+          disabled: this.selected===null || this.file.depType != 3,
+          command: () => {this.openDialog('sendToApprove')},
+        },
+        {
+          label: this.$t('common.revision'),
+          icon: "fa-solid fa-file-circle-exclamation",
+          visible: this.loginedUser != null && this.loginedUser.userID != this.file.ownerId && this.file.stateID === 2,
+          disabled: this.selected===null || this.file.depType != 3,
+          color: 'yellow',
+          command: () => {this.openDialog('revision')},
+        },
+        {
+          label: this.$t('common.edit'),
+          icon: "fa-solid fa-file-pen",
+          visible: this.loginedUser != null && this.loginedUser.userID === this.file.ownerId && this.file.stateID === 4,
+          disabled: this.selected===null || this.file.depType != 3,
+          color: 'purple',
+          command: () => {this.openDialog('fileUpload')},
+        }
+      ]
+    },
+    actions () {
+      return [
+        {
+          label: this.$t('common.download'),
+          icon: "fa-solid fa-file-arrow-down",
+          visible: this.actionsNode.path != null,
+          command: () => {this.downloadFile(this.actionsNode.path)},
+        },
+        {
+          label: this.$t('common.show'),
+          icon: "fa-solid fa-eye",
+          visible: this.actionsNode.key != null && this.actionsNode.depType ===3 && this.actionsNode.stateID !==4,
+          command: () => {this.onNodeSelect(this.actionsNode);this.openDialog('signerInfo')},
+        },
+        {
+          label: this.$t('common.show'),
+          icon: "fa-solid fa-eye",
+          visible: this.actionsNode.key != null && this.actionsNode.depType ===3 && this.actionsNode.stateID === 4,
+          command: () => {this.onNodeSelect(this.actionsNode);this.openDialog('docInfo')},
+        },
+        {
+          label: this.$t('common.delete'),
+          icon: "fa-solid fa-trash",
+          visible: this.actionsNode.key != null && this.actionsNode.depType === 3 && this.actionsNode.stateID !==7 && this.loginedUser.userID === this.actionsNode.ownerId,
+          command: () => {this.onNodeSelect(this.actionsNode);this.deleteFile(false)},
+        }
+
+      ]
+    },
   }
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
+:deep(.p-treetable-scrollable .p-treetable-thead > tr){
+  background: white;
+}
 .w2 {
   width: 1.8rem !important;
   height: 1.8rem !important;
