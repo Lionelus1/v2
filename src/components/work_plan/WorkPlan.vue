@@ -200,6 +200,10 @@ export default {
     }
   },
   created() {
+    let oldPath = this.$router.options.history.state.back;
+    if (oldPath && oldPath.indexOf('/work-plan') === -1) {
+      localStorage.removeItem("workPlanFilter")
+    }
     this.isAdmin = this.findRole(null, 'main_administrator')
 
     this.lazyParams.first = parseInt(this.$route.query.first) || 0
@@ -382,10 +386,9 @@ export default {
     },
   },
   beforeUnmount() {
-    console.log(this.$router.options.history)
-    const currentRoute = this.$router.options.history.state.current;
-    if (currentRoute) {
-
+    let current = this.$router.options.history.state.current;
+    if (current && current.indexOf('/work-plan') === -1) {
+      localStorage.removeItem("workPlanFilter")
     }
   },
 }
