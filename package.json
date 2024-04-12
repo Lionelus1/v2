@@ -1,9 +1,9 @@
 {
 	"name": "smartenu",
-	"version": "1.2.10",
+	"version": "1.2.11",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/primefaces/sigma-vue.git"
+		"url": "https://gitlab.enu.kz/enu/mobilefrontend.git"
 	},
 	"license": "MIT",
 	"scripts": {
@@ -27,7 +27,7 @@
 		"@vue/cli-service": "~5.0.8",
 		"@vue/compiler-sfc": "^3.2.45",
 		"@vue/test-utils": "2.2.6",
-		"axios": "^0.21.4",
+		"axios": "^1.6.8",
 		"babel-core": "7.0.0-bridge.0",
 		"babel-eslint": "^10.1.0",
 		"babel-jest": "^25.0.0",
@@ -58,7 +58,7 @@
 		"@splidejs/vue-splide": "^0.6.12",
 		"@tinymce/tinymce-vue": "^4.0.7",
 		"crypto-browserify": "^3.12.0",
-		"generate-password": "^1.7.0",
+		"generate-password": "^1.7.1",
 		"howler": "^2.2.3",
 		"html2pdf.js": "^0.9.3",
 		"image-resize-compress": "^1.0.8",
@@ -67,6 +67,7 @@
 		"moment": "^2.29.4",
 		"moment-locale-fr": "^1.0.0",
 		"ncalayer-js-client": "^1.0.4",
+		"node-polyfill-webpack-plugin": "^3.0.0",
 		"qr-code-styling": "^1.5.0",
 		"qrcode": "^1.5.1",
 		"qrcode.vue": "^3.3.3",
@@ -76,6 +77,7 @@
 		"quill-image-uploader": "^1.2.4",
 		"stream-browserify": "^3.0.0",
 		"v-calendar": "^3.0.0-alpha.3",
+		"vm-browserify": "^1.1.2",
 		"vue-axios-cors": "^1.0.1",
 		"vue-doc-preview": "^0.3.2",
 		"vue-drag-resize": "^1.5.4",

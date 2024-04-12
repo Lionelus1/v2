@@ -1,3 +1,5 @@
+const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
+
 module.exports = {
     runtimeCompiler: true,
     productionSourceMap: false,
@@ -12,9 +14,14 @@ module.exports = {
     configureWebpack: {
         resolve: {
             fallback: {
+                vm: require.resolve("vm-browserify"),
                 crypto: require.resolve('crypto-browserify'),
                 stream: require.resolve("stream-browserify")
             }
-        }
-    }
+        },
+        plugins: [
+            new NodePolyfillPlugin()
+        ]
+    },
+
 }

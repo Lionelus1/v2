@@ -124,7 +124,7 @@
 
   import { useI18n } from "vue-i18n";
   import { useToast } from "primevue/usetoast";
-  import { inject, ref, onMounted } from "vue";
+  import {inject, ref, onMounted, computed} from "vue";
   import {findRole} from "@/config/config";
   import {UserService} from "@/service/user.service"
   import { format } from 'date-fns';
@@ -161,7 +161,7 @@
   });
   const academicDegrees = ref([])
   const academicDegree = ref(null)
-  const userID = ref(props.userID)
+  const userID = computed(() => props.userID)
   const fileData = ref(null)
   const fileView = ref(false)
   const lazyParams = ref({
