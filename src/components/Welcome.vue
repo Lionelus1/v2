@@ -33,10 +33,10 @@
                     <strong>
                       {{
                         $i18n.locale === "kz"
-                            ? data?.titleKz
+                            ? item?.titleKz
                             : $i18n.locale === "ru"
-                                ? data?.titleRu
-                                : data?.titleEn
+                                ? item?.titleRu
+                                : item?.titleEn
                       }}
                     </strong>
                     <div class="date">{{ formatDateMoment(item?.publish_date) }}</div>
