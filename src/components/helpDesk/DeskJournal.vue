@@ -254,7 +254,13 @@ const mainMenu = computed(() => [
   }
 ]);
 const disabledSelected = () => {
-  return !selectedDirection.value || !selectedPosition.value
+  if (selectedDirection.value?.code === 'course_application') {
+    console.log(selectedDirection.value)
+    return !selectedDirection.value || !selectedPosition.value
+  } else {
+    console.log(selectedDirection.value)
+    return !selectedDirection.value
+  }
 }
 //Поиск и Фильтрация
 const search = (data) => {
@@ -284,8 +290,9 @@ const openSignInfo = () => {
 
 const close = (name) => {
   visibility.value[name] = false;
-  if (name === 'newPublicationDialog'){
-
+  if (name === 'newPublicationDialog') {
+    selectedPosition.value = null,
+        selectedDirection.value = null
   }
 };
 
@@ -334,7 +341,6 @@ const requstLocal = () => {
       break;
   }
 };
-
 
 
 const onPage = (event) => {
