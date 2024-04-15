@@ -614,19 +614,30 @@ const initStages = () => {
     //   });
     // })
   } else {
-    stages.value = [{
-      stage: 1,
-      users: null,
-      titleRu: "Институт непрерывного образования",
-      titleKz: "Үздіксіз білім беру институты",
-      titleEn: "Institute of Continuing Education",
-      certificate: {
-        namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
-        nameru: "Для внутреннего документооборота (ГОСТ)",
-        nameen: "For internal document management (GOST)",
-        value: "internal"
-      }
-    }]
+    let userInstitute = []
+
+    let reqInstitute = {
+      filter: {
+        "name":"Палымбетов Нурбол Шаменович"
+      }}
+
+    contragentService.getPersons(reqInstitute).then(res => {
+      userInstitute = res.data.foundUsers
+      stages.value.push({
+        stage: 1,
+        users: userInstitute,
+        titleRu: "Институт непрерывного образования",
+        titleKz: "Үздіксіз білім беру институты",
+        titleEn: "Institute of Continuing Education",
+        certificate: {
+          namekz: "Жеке тұлғаның сертификаты",
+          nameru: "Сертификат физического лица",
+          nameen: "Certificate of an individual",
+          value: "individual"
+        }
+      });
+    })
+
   }
 
   selectedUsers.value = stages.value
