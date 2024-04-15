@@ -43,6 +43,7 @@
 <script>
 import {getHeader, smartEnuApi, templateApi} from "@/config/config";
 import api from '@/service/api';
+import axios from "axios";
 
 export default {
   components: {},
@@ -150,7 +151,7 @@ export default {
       if (this.cancelToken && typeof this.cancelToken != typeof undefined) {
         this.cancelToken.cancel("Operation canceled due to new request.")
       }
-      this.cancelToken = api.CancelToken.source()
+      this.cancelToken = axios.CancelToken.source()
       this.foundEntities = null;
       this.$refs.op.hide();
       this.$refs.op.toggle(event);
