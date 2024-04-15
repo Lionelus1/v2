@@ -1,12 +1,12 @@
 <template>
-  <div :class="['card',{'talon_bg': isBoolTalon , 'mt-6': !isBoolTalon }]">
-    <div class="text-center flex flex-column gap-4 m-auto" v-if="isBoolPhone">
+  <div :class="['card',{'talon_bg': currentStep === 3 , 'mt-6': currentStep !==3 }]">
+    <div class="text-center flex flex-column gap-4 m-auto" v-if="currentStep === 1">
       <h4>{{ $t('contact.phone') }}</h4>
       <InputMask class="p-inputtext-lg" v-model="phoneNumber"
                  @update:modelValue="validatePhoneNumber" placeholder="+7-(777)-777-77-77" mask="+7-(999)-999-99-99" @keyup.enter="sendNumber"/>
       <Button class="justify-content-center p-button-lg" @click="sendNumber()" :disabled="isDisabled">{{ $t('common.continue') }}</Button>
     </div>
-    <div class="m-auto flex flex-column gap-3" v-if="isBoolList">
+    <div class="m-auto flex flex-column gap-3" v-if="currentStep === 2">
       <Button class="p-button-lg text-left p-3" style="width: 100%" v-for="i of queues" :key="i" @click="registerQueue(i)">
         {{
           $i18n.locale === "kz"
@@ -17,76 +17,23 @@
         }}
       </Button>
     </div>
-    <div v-if="isBoolTalon">
+    <div v-if="currentStep === 3">
       <div class="relative">
         <div class="talon" v-if="inQueue">
           <embed :src="queinfo + '#toolbar=0'" style="width: 100%;height: 250px;" v-if="queinfo" type="application/pdf"/>
           <div class="dots"></div>
-          <!--        <div class="talon_top">
-                    <img src="assets/layout/images/logo.svg" style="width:110px; margin: 10px ">
-
-                    <div class="talon_number">107</div>
-                    <b>Сіздің кезектегі нөміріңіз</b>
-                  </div>
-                  <div class="talon_content">
-                    <div class="dashed flex justify-content-between">
-                      <div>Сіздің алдыңызда</div>
-                      <div class="talon_badge">3</div>
-                    </div>
-                    <div class="dashed flex justify-content-between">
-                      <div>Ағымдағы нөмір</div>
-                      <div>104</div>
-                    </div>
-                    <div class="flex justify-content-between">
-                      <div>01.04.2024</div>
-                      <div>11:25</div>
-                    </div>
-                  </div>-->
         </div>
         <div class="talon_list" v-if="inQueue">
           <div class="flex justify-content-between text-white ml-5 mb-2">
             <div>№</div>
             <div>Терезе</div>
           </div>
-          <!--        <div class="item flex justify-content-between align-items-center blinking">
-                    <div>085</div>
-                    <i class="pi pi-arrow-right"></i>
-                    <div>3</div>
-                  </div>-->
           <div class="item flex justify-content-between align-items-center blinking" v-for="i of queuesWS" :key="i">
             <div>{{ padTo2Digits(i.ticket) }}</div>
             <i class="pi pi-arrow-right"></i>
             <div>{{ i.window }}</div>
           </div>
         </div>
-        <!--      <div class="talon_called" v-if="called">
-                <div class="talon_top">
-                  <div class="talon_number">107</div>
-                  <b>Сіз шақырылдыңыз, өтіңіз</b>
-                </div>
-                <div class="talon_content">
-                  <div class="go_to flex justify-content-center align-items-center mb-4">
-                    <i class="fa-solid fa-person-walking-arrow-right"></i>
-                    № 8 терезе
-                  </div>
-                  <div class="flex justify-content-between">
-                    <div>01.04.2024</div>
-                    <div>11:25</div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="talon_list" v-if="called">
-                <div class="flex justify-content-between text-white ml-5 mb-2">
-                  <div>№</div>
-                  <div>Терезе</div>
-                </div>
-                <div class="item flex justify-content-between align-items-center">
-                  <div>356</div>
-                  <i class="pi pi-arrow-right"></i>
-                  <div>8</div>
-                </div>
-              </div>-->
       </div>
     </div>
   </div>
@@ -107,11 +54,9 @@ const inQueue = ref(true);
 const called = ref(false);
 const phoneNumber = ref('');
 const isDisabled = ref(true);
-const isBoolPhone = ref(true);
-const isBoolList = ref(false);
-const isBoolTalon = ref(false);
 const queinfo = ref();
 const queuesWS = ref([]);
+const currentStep = ref(1);
 
 const validatePhoneNumber = (val) => {
   const phoneNumberRegex = /^\+7-\(\d{3}\)-\d{3}-\d{2}-\d{2}$/;
@@ -120,8 +65,7 @@ const validatePhoneNumber = (val) => {
 const sendNumber = () => {
   if (phoneNumber.value) {
     localStorage.setItem('phoneNumber', phoneNumber.value);
-    isBoolPhone.value = false
-    isBoolList.value = true
+    currentStep.value = 2
   }
 }
 
@@ -151,8 +95,7 @@ const registerQueue = (queue) => {
         })
         .then((response) => {
           queinfo.value = b64toBlob(response.data)
-          isBoolList.value = false
-          isBoolTalon.value = true
+          currentStep.value = 3
         })
         .catch((error) => {
           console.log(error)
@@ -212,8 +155,7 @@ const padTo2Digits = (num) => {
 onMounted(() => {
   useRealtimeStream(parentId.value)
   if (localStorage.getItem('phoneNumber') !== null) {
-    isBoolPhone.value = false
-    isBoolList.value = true
+    currentStep.value = 2
   }
 })
 </script>
