@@ -117,7 +117,7 @@
 </template>
 <script>
 
-import axios from "axios";
+import api from "@/service/api";
 import {getHeader, smartEnuApi} from "@/config/config";
 
 export default {
@@ -165,8 +165,8 @@ export default {
     action() {
       if (this.validateForm()) {
         let path = !this.value.id ? "/candidate/education/create" : "/candidate/education/update"
-        axios
-            .post(smartEnuApi + path, this.value, {headers: getHeader(),})
+        api
+            .post(path, this.value, {headers: getHeader(),})
             .then(res => {
               this.emitter.emit("education", true);
             }).catch(error => {

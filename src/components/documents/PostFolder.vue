@@ -31,7 +31,7 @@
     </div>
 </template>
 <script>
-import axios from "axios";
+import api from "@/service/api";
 import {smartEnuApi, getHeader} from "@/config/config";
 
 export default {
@@ -100,7 +100,7 @@ export default {
             return
         }
         let url = "/doctemplate/createFolder";
-        axios.post(smartEnuApi+url, this.folder, { headers: getHeader() })
+        api.post(url, this.folder, { headers: getHeader() })
         .then(response=>{
             this.folder.id = response.data.id
             this.folder.key = response.data.id + "";
@@ -115,7 +115,7 @@ export default {
       
         let url = "/doc/deleteFolder";
 
-        axios.post(smartEnuApi+url, {id: this.folder.id, hide: hide}, { headers: getHeader() })
+        api.post(url, {id: this.folder.id, hide: hide}, { headers: getHeader() })
         .then(response=>{
            
             this.showMessage('success', this.$t('common.message.title.docCreation'),this.$t('common.message.catSuccesCreated'));

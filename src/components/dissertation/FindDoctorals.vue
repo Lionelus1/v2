@@ -42,7 +42,7 @@
 
 <script>
 import {getHeader, smartEnuApi, templateApi} from "@/config/config";
-import axios from 'axios';
+import api from '@/service/api';
 
 export default {
   components: {},
@@ -150,14 +150,14 @@ export default {
       if (this.cancelToken && typeof this.cancelToken != typeof undefined) {
         this.cancelToken.cancel("Operation canceled due to new request.")
       }
-      this.cancelToken = axios.CancelToken.source()
+      this.cancelToken = api.CancelToken.source()
       this.foundEntities = null;
       this.$refs.op.hide();
       this.$refs.op.toggle(event);
       this.searchInProgres = true;
-      axios
+      api
       .post(
-          smartEnuApi + "/dissertation/getdoctorals",
+          "/dissertation/getdoctorals",
           { 
             page: 0,
             rows: 1000,
@@ -176,7 +176,7 @@ export default {
       )
       .catch(
         (error) => {
-          if(!axios.isCancel(error)) {
+          if(!api.isCancel(error)) {
             this.searchInProgres = false;
             if (error.response.status === 404) {
               this.foundEntities = null;

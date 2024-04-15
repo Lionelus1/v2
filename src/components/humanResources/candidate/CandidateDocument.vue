@@ -223,7 +223,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "@/service/api";
 import {getHeader, smartEnuApi} from "@/config/config";
 
 
@@ -335,7 +335,7 @@ export default {
         fd.append('psychoCert', this.documents.psychoCert)
         fd.append('gcCert', this.documents.gcCert)
         fd.append('mId', this.documents.mId)
-        axios.post(smartEnuApi + '/candidate/documents/create', fd, {headers: getHeader()}).then(_ => {
+        api.post('/candidate/documents/create', fd, {headers: getHeader()}).then(_ => {
           this.emitter.emit('closeDoc', true)
         }).catch(error => {
           this.$toast.add({

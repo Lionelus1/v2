@@ -53,7 +53,7 @@
 </template>
 <script setup>
     import { ref, defineProps, inject, onMounted } from 'vue';
-    import axios from "axios";
+    import api from "@/service/api";
     import {getHeader, smartEnuApi} from "@/config/config";
     
     const emitter = inject("emitter");
@@ -92,7 +92,7 @@
             console.log(bank.value.id)
         }
         
-        axios.post(smartEnuApi + '/account/bank/update', payload.value, {headers: getHeader()}).then(res  => {
+        api.post('/account/bank/update', payload.value, {headers: getHeader()}).then(res  => {
             emitter.emit('educationUpdated', true)
         }).catch(err => {
           console.log(err)
@@ -101,7 +101,7 @@
 
     const getBanks = () => {
         var req = {"id" : 0, "count": 0};
-        axios.post(smartEnuApi + '/contragent/banks', req, {headers: getHeader()}).then(res  => {
+        api.post('/contragent/banks', req, {headers: getHeader()}).then(res  => {
             const data = res.data.find(item => item.id === payload.value.bank_id);
             if (data) {
                 banks.value = [data];
@@ -110,7 +110,9 @@
                 banks.value = res.data
             }
         }).catch(err => {
-          console.log(err)
+          if (err?.response?.status !== 404) {
+            console.error(err)
+          }
         })
     }
 

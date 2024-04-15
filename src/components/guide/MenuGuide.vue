@@ -47,7 +47,7 @@
 </template>
 
 <script>
-    import axios from "axios";
+    import api from "@/service/api";
     import {findRole, getHeader, smartEnuApi} from "@/config/config";
     import AddGuide from "./AddGuide";
     import EditGuide from "./EditGuide";
@@ -79,7 +79,7 @@
             getGuides(parentId, parent) {
                 this.lazyParams.parentId = parentId
                 this.loading = true
-                axios.post(smartEnuApi + "/manual/getManuals", this.lazyParams, {
+                api.post("/manual/getManuals", this.lazyParams, {
                     headers: getHeader(),
                 }).then((response) => {
                     if (parentId !== null) {
@@ -149,7 +149,7 @@
                 });
             },
             delete(event) {
-                axios.post(smartEnuApi + `/manual/delManual`, {manualId: event.manualId}, {headers: getHeader()})
+                api.post(`/manual/delManual`, {manualId: event.manualId}, {headers: getHeader()})
                     .then(response => {
                         this.$toast.add({
                             severity: "success",

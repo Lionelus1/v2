@@ -49,7 +49,7 @@
 </template>
 <script>
 	import {smartEnuApi, getHeader} from "@/config/config";
-  import axios from 'axios';
+  import api from '@/service/api';
 	import Bank from './Bank.vue';
 	import {FilterMatchMode,FilterOperator} from 'primevue/api'
 
@@ -94,13 +94,15 @@
 			initApiCall(){
         let url = "/contragent/banks";
 				var req = {"id" : 0, "count": this.bankShowCount};
-        axios.post(smartEnuApi+url, req,  {headers: getHeader()})
+        api.post(url, req,  {headers: getHeader()})
         .then(res=>{
 
           this.banks =  res.data
         })
         .catch(error => {
+          if (error?.response?.status !== 404) {
             console.error(error)
+          }
         })
       },
 			toggle(event, data) {

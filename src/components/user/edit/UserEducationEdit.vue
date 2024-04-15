@@ -76,7 +76,7 @@
 </template>
 <script setup>
 
-  import axios from "axios";
+  import api from "@/service/api";
   import {getHeader, smartEnuApi} from "@/config/config";
   import { inject, defineProps, ref } from 'vue';
   import {useI18n} from "vue-i18n";

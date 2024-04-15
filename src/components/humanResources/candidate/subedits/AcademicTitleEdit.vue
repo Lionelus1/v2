@@ -92,7 +92,7 @@
 <script>
 import Institution from "../../../dictionary/Institution";
 import DicSpeciality from "../../../dictionary/DicSpeciality";
-import axios from "axios";
+import api from "@/service/api";
 import {getHeader, smartEnuApi} from "@/config/config";
 
 export default {
@@ -129,8 +129,7 @@ export default {
   },
   methods: {
     getCatalog(name) {
-      axios.post(
-          smartEnuApi + "/auth/getDictionary",
+      api.post("/auth/getDictionary",
           {name: name},
           {
             headers: getHeader(),
@@ -153,8 +152,8 @@ export default {
     action() {
       if (this.validateForm()) {
         let path = !this.value.id ? "/candidate/academic-title/create" : "/candidate/academic-title/update"
-        axios
-            .post(smartEnuApi + path, this.value, {headers: getHeader(),})
+        api
+            .post(path, this.value, {headers: getHeader(),})
             .then(res => {
               this.emitter.emit("academicTitle", true);
             }).catch(error => {
