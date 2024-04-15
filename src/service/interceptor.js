@@ -10,7 +10,10 @@ const setup = (store, app) => {
   const configG = app.config.globalProperties;
 
   instance.interceptors.request.use(
-    (config) => config,
+      (config) => {
+          config.data = transformRequest(config?.data);
+          return config;
+      },
     (error) => Promise.reject(error)
   );
 
@@ -25,7 +28,7 @@ const setup = (store, app) => {
 
           try {
             const tokenDataString = window.localStorage.getItem("authUser");
-            const tokenData = tokenDataString ? JSON.parse(tokenDataString) : null; 
+            const tokenData = tokenDataString ? JSON.parse(tokenDataString) : null;
             if (tokenData && tokenData.refresh_token) {
 
               const res = await axios.post(smartEnuApi + "/refreshToken", {
@@ -84,5 +87,9 @@ const setup = (store, app) => {
     }
   );
 };
+
+function transformRequest(data) {
+    return data;
+}
 
 export default setup;
