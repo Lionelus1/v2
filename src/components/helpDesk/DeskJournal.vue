@@ -50,39 +50,45 @@
 
           <Column field="create_date" :header="t('helpDesk.creationTime')">
             <template #body="{ data }">
-              <a @click="openDocument" href="javascript:void(0)">{{
-                  (formatDate(data.doc?.docHistory?.setDate) ? formatDate(data.doc?.docHistory?.setDate) : '')
-                }}</a>
+              <router-link
+                  :to="{name: 'Request', params: {uuid: data?.uuid, id: data?.id}}"
+                  tag="a">
+                {{ (formatDate(data.doc?.docHistory?.setDate) || '') }}
+              </router-link>
             </template>
           </Column>
 
           <Column field="status" :header="t('common.status')">
             <template #body="{ data }">
-              <span @click="openDocument" :class="'customer-badge status-' + data.doc?.docHistory?.stateEn">
+              <router-link :class="'customer-badge status-' + data.doc?.docHistory?.stateEn"
+                  :to="{name: 'Request', params: {uuid: data?.uuid, id: data?.id}}"
+                  tag="a">
                 {{ getDocStatus(data.doc?.docHistory?.stateEn) }}
-              </span>
+              </router-link>
             </template>
           </Column>
 
           <Column field="requestReason" :header="t('helpDesk.application.requestReason')">
             <template #body="{ data }">
-              <a href="javascript:void(0)">{{ $i18n.locale === "kz" ? data.doc?.newParams?.selectedPosition.value.name_kz : $i18n.locale === "ru" ? data.doc?.newParams?.selectedPosition.value.name_ru :
-                  data.doc?.newParams?.selectedPosition.value.name_en  }}</a>
+              <span>{{
+                  $i18n.locale === "kz" ? data.doc?.newParams?.selectedPosition.value.name_kz : $i18n.locale === "ru" ? data.doc?.newParams?.selectedPosition.value.name_ru :
+                      data.doc?.newParams?.selectedPosition.value.name_en
+                }}</span>
             </template>
           </Column>
 
           <Column field="category" :header="t('helpDesk.application.categoryApplication')">
             <template #body="{ data }">
-              <a href="javascript:void(0)">{{
+              <span>{{
                   $i18n.locale === "kz" ? data.category.name_kz : $i18n.locale === "ru" ? data.category.name_ru :
                       data.category.name_en
-                }}</a>
+                }}</span>
             </template>
           </Column>
 
           <Column field="fullName" :header="t('web.logUser')">
             <template #body="{ data }">
-              <a href="javascript:void(0)">{{ data.doc?.newParams?.not_formal_student_info.value.fullName }}</a>
+              <span>{{ data.doc?.newParams?.not_formal_student_info.value.fullName }}</span>
             </template>
           </Column>
 
@@ -327,7 +333,6 @@ const requstLocal = () => {
       break;
   }
 };
-
 
 
 const onPage = (event) => {
