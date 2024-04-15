@@ -5,6 +5,7 @@ const setup = (store, app) => {
 var configG = app.config.globalProperties
     instance.interceptors.request.use(
         (config) => {
+            config.data = transformRequest(config?.data);
             return config;
         },
         (error) => {
@@ -41,5 +42,9 @@ var configG = app.config.globalProperties
         return Promise.reject(error.message);
     });
 };
+
+function transformRequest(data) {
+    return data;
+}
 
 export default setup;

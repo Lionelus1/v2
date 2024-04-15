@@ -1490,6 +1490,7 @@ export default {
             data,
             {
               headers: getHeader(),
+              transformRequest: data
             }
           )
           .then((res) => {
