@@ -255,7 +255,7 @@ export class MenuService {
                         label: $t('common.faculties'),
                         icon: 'fa-solid fa-folder',
                         to: '/enu/faculties',
-                        visible: this.findRole('enu_web_admin') && store.state.userSlug
+                        visible: this.findRole('enu_web_admin') && store?.state?.userSlug
                     },
                     {
                         label: $t('web.siteSettings'),
@@ -295,6 +295,11 @@ export class MenuService {
                     },
 
                 ]
+            },
+            {
+                label: $t('helpDesk.title'),
+                icon: 'pi pi-spin pi-cog',
+                to: '/helpdesk',
             }
         ]
     }

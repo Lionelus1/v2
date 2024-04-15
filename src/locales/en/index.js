@@ -1424,7 +1424,8 @@ export default {
         noIssuedCertificates:"Some participants were not issued certificates. Please issue certificates before completing the course!",
         completeCourse: "Are you sure you want to complete the course?",
         numberParticipants: "Number of participants",
-        сompletedСourse: "Completed courses"
+        сompletedСourse: "Completed courses",
+        moduleCredits: 'Credits'
     },
     roleControl: {
         addSidebar: 'Adding new record',
@@ -1507,6 +1508,7 @@ export default {
         internalServerError: 'We\'re sorry, something went wrong on our end. Please try again later.',
         unauthorized: 'The user is not authorized.',
         importAlreadyOnProcess: 'Import process is already on. Please wait for results.',
+        notFound: 'The requested resource was not found'
     },
     visuallyImpaired: {
         fontSize: "Font size",
@@ -1762,5 +1764,35 @@ export default {
         specialization: 'Specialization',
         groupEP: 'Group of educational programs',
         ssdfgsdfg: 'sdfgsdfg',
+    },
+    helpDesk: {
+        title: 'My applications',
+        creationTime: 'Creation time',
+        priority: 'Priority',
+        responsible: 'Responsible',
+        applicant: 'Applicant',
+        application: {
+            applicationName: 'Applications',
+            requestReason: 'Sending the Application',
+            description: 'Description',
+            contactNumber: 'Contact number',
+            categoryApplication: 'Application category',
+            choseAudience: 'Choose an audience',
+            chooseDiscipline: 'Choose a discipline',
+            selectSpecialist: 'Choose a specialist',
+            applicationNumber: 'Application Number:',
+            created: 'Created',
+            closed: 'Closed',
+            date: 'Select a date',
+            dateTime:'Choose a time',
+            discipline: 'Write the discipline',
+            credits: 'Number of credits',
+            codeName: 'Code name',
+            positionName: '',
+            inputErrorMessage: 'Please enter the correct data',
+            applicationObjectives: 'Application objectives',
+            enteredIncorrectly: 'Entered incorrectly'
+        },
+
     }
 }
