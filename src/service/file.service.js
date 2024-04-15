@@ -4,7 +4,7 @@ import {getHeader} from "@/config/config";
 export class FileService {
 
     uploadFile(data) {
-        return api.post("/upload", data, {headers: getHeader()});
+        return api.post("/upload", data, {headers: getHeader(), transformRequest: data});
     }
 
     webUploadFile(data) {
