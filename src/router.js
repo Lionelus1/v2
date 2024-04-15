@@ -583,6 +583,12 @@ const routes = [
                         name: 'Request',
                         component: load('helpDesk/Request'),
                         beforeEnter: ifAuthenticated,
+                    },
+                    {
+                        path: '',
+                        name: 'CreateCategory',
+                        component: load('helpDesk/CreateCategory'),
+                        beforeEnter: ifNotAuthenticated
                     }
                 ]
             },
