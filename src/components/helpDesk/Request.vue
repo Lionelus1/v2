@@ -597,22 +597,22 @@ const initStages = () => {
         });
       })
     }
-    contragentService.getPersons(reqOffice).then(res => {
-      userOffice = res.data.foundUsers
-      stages.value.push({
-        stage: 2,
-        users: userOffice,
-        titleRu: "Офис регистратор",
-        titleKz: "Кеңсе тіркеушісі",
-        titleEn: "Office registrar",
-        certificate: {
-          namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
-          nameru: "Для внутреннего документооборота (ГОСТ)",
-          nameen: "For internal document management (GOST)",
-          value: "internal"
-        }
-      });
-    })
+    // contragentService.getPersons(reqOffice).then(res => {
+    //   userOffice = res.data.foundUsers
+    //   stages.value.push({
+    //     stage: 2,
+    //     users: userOffice,
+    //     titleRu: "Офис регистратор",
+    //     titleKz: "Кеңсе тіркеушісі",
+    //     titleEn: "Office registrar",
+    //     certificate: {
+    //       namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+    //       nameru: "Для внутреннего документооборота (ГОСТ)",
+    //       nameen: "For internal document management (GOST)",
+    //       value: "internal"
+    //     }
+    //   });
+    // })
   } else {
     stages.value = [{
       stage: 1,
