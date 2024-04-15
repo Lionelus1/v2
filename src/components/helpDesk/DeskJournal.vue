@@ -32,7 +32,7 @@
           <Button :label="t('common.cancel')" icon="fa-solid fa-times" class="p-button-rounded p-button-danger"
                   @click="close('newPublicationDialog')"/>
           <Button :label="t('common.createNew')" icon="pi pi-plus" class="p-button-rounded p-button-success mr-2"
-                  :disabled="!selectedDirection || !selectedPosition"
+                  :disabled="disabledSelected()"
                   @click="createHelpDesk"/>
         </template>
       </Dialog>
@@ -253,7 +253,9 @@ const mainMenu = computed(() => [
     command: () => open('newPublicationDialog'),
   }
 ]);
-
+const disabledSelected = () => {
+  return !selectedDirection.value || !selectedPosition.value
+}
 //Поиск и Фильтрация
 const search = (data) => {
   alert(data);
@@ -282,6 +284,9 @@ const openSignInfo = () => {
 
 const close = (name) => {
   visibility.value[name] = false;
+  if (name === 'newPublicationDialog'){
+
+  }
 };
 
 //Статус Документ
