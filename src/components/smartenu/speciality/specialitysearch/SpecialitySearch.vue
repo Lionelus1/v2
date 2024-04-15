@@ -35,85 +35,86 @@
 </template>
 
 <script>
-import {getHeader} from "@/config/config";
-import api from '@/service/api';
-import axios from "axios";
+	import {smartEnuApi, getHeader} from "@/config/config";
+	import api from '@/service/api';
+  import axios from "axios";
 
-export default {
-  inheritAttrs: false,
-  emits: ['update:modelValue', 'add', 'remove'],
-  props: {
-    modelValue: {
-      type: Array,
-      default: null
+	export default {
+    inheritAttrs: false,
+    emits: ['update:modelValue', 'add', 'remove'],
+    props: {
+        modelValue: {
+            type: Array,
+            default: null
+        },
+        // білім деңгейі (бакалавриат, докторантура, магистратура, резидентура)
+        // @/enum/docstates/index" EducationLevel 
+        educationLevel: null,
+        max: {
+            type: Number,
+            default: null
+        },
+        separator: {
+            type: String,
+            default: null
+        },
+        addOnBlur: {
+            type: Boolean,
+            default: null
+        },
+        allowDuplicate: {
+            type: Boolean,
+            default: true
+        },
+        class: null,
+        style: null
     },
-    // білім деңгейі (бакалавриат, докторантура, магистратура, резидентура)
-    // @/enum/docstates/index" EducationLevel
-    educationLevel: null,
-    max: {
-      type: Number,
-      default: null
+    data() {
+        return {
+            cancelToken : null,
+						requests: [],
+						request: null,
+            inputValue: null,
+            focused: false,
+						foundSpecialists: null,
+						keyPressDate : Date.now(),
+						selectedEntity: {
+							name : "",
+						},
+						searchInProgres: false,
+        };
     },
-    separator: {
-      type: String,
-      default: null
-    },
-    addOnBlur: {
-      type: Boolean,
-      default: null
-    },
-    allowDuplicate: {
-      type: Boolean,
-      default: true
-    },
-    class: null,
-    style: null
-  },
-  data() {
-    return {
-      cancelToken: null,
-      requests: [],
-      request: null,
-      inputValue: null,
-      focused: false,
-      foundSpecialists: null,
-      keyPressDate: Date.now(),
-      selectedEntity: {
-        name: "",
-      },
-      searchInProgres: false,
-    };
-  },
-  methods: {
-    toggle(event, inputValue) {
-      if (inputValue.length < 2) return;
-      //Check if there are any previous pending requests
-      if (this.cancelToken && typeof this.cancelToken !== typeof undefined) {
-        this.cancelToken.cancel("Operation canceled due to new request.")
-      }
-      this.cancelToken = axios.CancelToken.source()
-      this.foundSpecialists = null;
-      this.$refs.op.hide();
-      this.$refs.op.toggle(event);
-      this.searchInProgres = true;
-      let url = "/getspecialities";
-      api.post(url, {
-            "name": inputValue,
-            "level": this.educationLevel
-          },
-          {
-            headers: getHeader(),
-            cancelToken: this.cancelToken.token
-          }
-      )
-          .then(response => {
-            this.foundSpecialists = response.data;
-            this.searchInProgres = false;
+    methods: {
+		toggle(event, inputValue) {
+    		if (inputValue.length<2)
+				return;
+                    //Check if there are any previous pending requests
+            if (this.cancelToken && typeof this.cancelToken != typeof undefined) {
+                this.cancelToken.cancel("Operation canceled due to new request.")
+            }
+            this.cancelToken = axios.CancelToken.source()
+			this.foundSpecialists = null;
+			this.$refs.op.hide();
+			this.$refs.op.toggle(event);
+			this.searchInProgres = true;
+			let url = "/getspecialities";
+			api.post(url, {
+                "name" : inputValue, 
+                "level" : this.educationLevel
+                }, 
+                {
+                    headers: getHeader(),
+                    cancelToken: this.cancelToken.token 
+                }
+            )
+            .then(response=>{
+                this.foundSpecialists = response.data;
+			    this.searchInProgres = false;
 
-          })
-          .catch((error) => {
-            if (!api.isCancel(error)) {
-              this.$toast.add({
+            })
+			.catch((error) => {
+                if(!api.isCancel(error)) {
+                this.$toast.add({
                 severity: "error",
                 summary: "getSpeciliatyListError:\n" + error,
                 life: 3000,

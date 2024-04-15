@@ -100,7 +100,9 @@
           this.banks =  res.data
         })
         .catch(error => {
+          if (error?.response?.status !== 404) {
             console.error(error)
+          }
         })
       },
 			toggle(event, data) {

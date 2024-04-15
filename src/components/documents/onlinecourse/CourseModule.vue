@@ -67,7 +67,6 @@ const toast = useToast()
 const loading = ref(false)
 const onlineCourseService = new OnlineCourseService
 
-const course_id = props.courseID;
 const service = new OnlineCourseService();
 const course = ref(null);
 const modules = ref([]);
@@ -98,12 +97,14 @@ const props = defineProps ({
     default: null
   }
 })
+const course_id = ref(props.courseID);
+
 
 
 const getModuleByCourseID = async () => {
   loading.value = true;
   try {
-    const response = await service.getModulesByCourseID(course_id);
+    const response = await service.getModulesByCourseID(course_id.value);
     modules.value = response.data;
   } catch (error) {
     console.error(error);
@@ -179,7 +180,7 @@ const getCourse = async () => {
   loading.value = true;
 
   try {
-    const response = await service.getCourse(course_id);
+    const response = await service.getCourse(course_id.value);
     course.value = response.data;
     course.value.logo = smartEnuApi + fileRoute + course.value.logo;
   } catch (error) {

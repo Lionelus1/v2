@@ -4,7 +4,7 @@ import {getHeader, smartEnuApi} from "../config/config";
 export class ClubService {
 
     getClubs(params) {
-        return api.post(smartEnuApi + "/allClubs", params, {headers: getHeader()});
+        return api.post( "/allClubs", params, {headers: getHeader()});
     }
 
     
