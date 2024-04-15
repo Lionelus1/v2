@@ -1,22 +1,26 @@
 <template>
   <div class="field mb-4" v-if="contr && [0, Enum.ContragentType.Organization, Enum.ContragentType.Bank].includes(contr.type)">
-    <span class="p-input-icon-right">
-      <i v-if="contr.data && contr.data.id > 0" class="pi pi-id-card" 
-        style="right: 2.5rem;" @click="open('organizationCard')"></i>
-      <i class="pi pi-ellipsis-h" style="right: 0;" @click="open('organizationList')"></i>
+    <IconField iconPosition="right">
+      <InputIcon>
+        <i v-if="contr.data && contr.data.id > 0" class="pi pi-id-card"
+           style="font-size: 1.2rem;padding-right: 10px;" @click="open('organizationCard')"></i>
+        <i class="pi pi-ellipsis-h" style="font-size: 1.2rem" @click="open('organizationList')"></i>
+      </InputIcon>
       <InputText :disabled="disable" :readonly="true" type="text" v-model="getOrganizationName"></InputText>
-    </span>
+    </IconField>
   </div>
   <div class="field mb-0" v-if="(contr && contr.type === Enum.ContragentType.Person) || contr.data">
-    <span class="p-float-label p-input-icon-right">
-      <i v-if="signer && signer.userID > 0" class="pi pi-id-card" 
-        style="right: 2.5rem;" @click="open('signerCard')"
-        :style="{'z-index': scientist ? 1 : 0}"></i>
-        <i class="pi pi-ellipsis-h" style="right: 0;" @click="open('signerList')"></i>
-        <i v-if="signer && signer.userID > 0" class="pi pi-cloud-download" @click="open('viewResume')" style="right: 65px;"></i>
-        <InputText :disabled="disable" :readonly="true" type="text" v-model="getSignerName"></InputText>
-        <label v-if="[0, Enum.ContragentType.Organization, Enum.ContragentType.Bank].includes(contr.type)">{{$t('contracts.signer')}}</label>
-      </span>
+    <IconField iconPosition="right">
+      <InputIcon>
+        <i v-if="signer && signer.userID > 0" class="pi pi-id-card"
+           style="font-size: 1.25rem;padding-right: 10px;" @click="open('signerCard')"
+           :style="{'z-index': scientist ? 1 : 0}"></i>
+        <i v-if="signer && signer.userID > 0" class="pi pi-cloud-download" @click="open('viewResume')" style="font-size: 1.25rem;padding-right: 10px;"></i>
+        <i class="pi pi-ellipsis-h" style="font-size: 1.25rem" @click="open('signerList')"></i>
+      </InputIcon>
+      <InputText :disabled="disable" :readonly="true" type="text" v-model="getSignerName"></InputText>
+    </IconField>
+    <small v-if="[0, Enum.ContragentType.Organization, Enum.ContragentType.Bank].includes(contr.type)">{{$t('contracts.signer')}}</small>
   </div>
   <Sidebar v-model:visible="visibility.organizationCard" position="right" class="p-sidebar-lg">
     <OrganizationPage :organization="this.contr.data" :sidebar="true" @organizationUpdated="organizationUpdated"></OrganizationPage>
