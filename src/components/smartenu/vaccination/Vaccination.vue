@@ -541,7 +541,7 @@
 <script>
 import { FilterMatchMode, FilterOperator } from "primevue/api";
 import * as imageResizeCompress from "image-resize-compress";
-import axios from "axios";
+import api from "@/service/api";
 import { getHeader, header, smartEnuApi } from "@/config/config";
 const VS_FirstComponent = 0;
 const VS_Vaccinated = 1;
@@ -781,8 +781,8 @@ export default {
         return;
       }
 
-      axios
-        .post(smartEnuApi + "/addNewVaccine", this.newVaccine, {
+      api
+        .post("/addNewVaccine", this.newVaccine, {
           headers: getHeader(),
         })
         .then((response) => {
@@ -819,8 +819,8 @@ export default {
     },
     LoadMyDetail() {
       this.myDetails = {};
-      axios
-        .get(smartEnuApi + "/getMyDetails", {
+      api
+        .get( "/getMyDetails", {
           headers: getHeader(),
         })
         .then((response) => {
@@ -868,8 +868,8 @@ export default {
     getDetailsCount() {
       this.lazyParams.countMode = 1;
 
-      axios
-        .post(smartEnuApi + "/getDetailsList", this.lazyParams, {
+      api
+        .post("/getDetailsList", this.lazyParams, {
           headers: getHeader(),
         })
         .then((response) => {
@@ -890,8 +890,8 @@ export default {
     },
     getDetailsChart() {
       this.lazyParams.countMode = 2;
-      axios
-        .post(smartEnuApi + "/getDetailsList", this.lazyParams, {
+      api
+        .post("/getDetailsList", this.lazyParams, {
           headers: getHeader(),
         })
         .then((response) => {
@@ -1035,8 +1035,8 @@ export default {
       this.loading = true;
 
       this.lazyParams.countMode = null;
-      axios
-        .post(smartEnuApi + "/getDetailsList", this.lazyParams, {
+      api
+        .post("/getDetailsList", this.lazyParams, {
           headers: getHeader(),
         })
         .then((response) => {
@@ -1058,8 +1058,8 @@ export default {
     },
     getVaccineCatalog() {
       this.vaccines = [];
-      axios
-        .get(smartEnuApi + "/getAllVaccines", {
+      api
+        .get("/getAllVaccines", {
           headers: getHeader(),
         })
         .then((response) => {
@@ -1083,8 +1083,8 @@ export default {
         });
     },
     getMyDetails() {
-      axios
-        .get(smartEnuApi + "/getMyDetails", {
+      api
+        .get("/getMyDetails", {
           headers: getHeader(),
         })
         .then((response) => {
@@ -1122,9 +1122,9 @@ export default {
     downloadFile(filename, status) {
       var req = { filename: filename, status: status };
 
-      axios
+      api
         .post(
-          smartEnuApi + "/vaccine/downloadFile",
+          "/vaccine/downloadFile",
           { filename: filename, status: status },
           {
             headers: getHeader(),
@@ -1269,8 +1269,8 @@ export default {
 
             data.append("myDetails", JSON.stringify(this.myDetails));
 
-            axios
-              .post(smartEnuApi + "/updateMyDetails", data, {
+            api
+              .post("/updateMyDetails", data, {
                 headers: getHeader(),
               })
               .then((response) => {

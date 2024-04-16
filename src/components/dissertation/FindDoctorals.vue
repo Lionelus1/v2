@@ -42,7 +42,8 @@
 
 <script>
 import {getHeader, smartEnuApi, templateApi} from "@/config/config";
-import axios from 'axios';
+import api from '@/service/api';
+import axios from "axios";
 
 export default {
   components: {},
@@ -155,9 +156,9 @@ export default {
       this.$refs.op.hide();
       this.$refs.op.toggle(event);
       this.searchInProgres = true;
-      axios
+      api
       .post(
-          smartEnuApi + "/dissertation/getdoctorals",
+          "/dissertation/getdoctorals",
           { 
             page: 0,
             rows: 1000,
@@ -176,7 +177,7 @@ export default {
       )
       .catch(
         (error) => {
-          if(!axios.isCancel(error)) {
+          if(!api.isCancel(error)) {
             this.searchInProgres = false;
             if (error.response.status === 404) {
               this.foundEntities = null;

@@ -6,7 +6,7 @@
 
 <script>
 import { getHeader, smartEnuApi } from "@/config/config";
-import axios from 'axios';
+import api from '@/service/api';
 
 export default {
    data() {
@@ -38,8 +38,8 @@ export default {
   methods: {
     getRoles() {
       //this.lazyParams.countMode = null;
-      axios
-        .post(smartEnuApi + "/getrolesbyname", {name: this.roleGroupName},  {
+      api
+        .post("/getrolesbyname", {name: this.roleGroupName},  {
           headers: getHeader(),
         })
         .then((response) => {

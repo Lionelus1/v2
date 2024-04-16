@@ -129,7 +129,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "@/service/api";
 import {getHeader, smartEnuApi} from "../config/config";
 
 export default {
@@ -181,7 +181,7 @@ export default {
       if (this.validateForm()) {
         const formData = new FormData();
         formData.append("cms", this.cmsOrZip)
-        axios.post(smartEnuApi + "/doc/check-data-attaching", formData, {headers: getHeader()})
+        api.post("/doc/check-data-attaching", formData, {headers: getHeader()})
             .then((response) => {
               let result = response.data
               if (result.success) {
@@ -210,7 +210,7 @@ export default {
         const formData = new FormData();
         formData.append("mainFile", this.file)
         formData.append("cms", this.cmsOrZip)
-        axios.post(smartEnuApi + "/doc/verify", formData, {headers: getHeader()})
+        api.post("/doc/verify", formData, {headers: getHeader()})
             .then((response) => {
               let totalResult = response.data
               console.log(totalResult)

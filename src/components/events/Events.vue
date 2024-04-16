@@ -58,7 +58,7 @@
 </template>
 
 <script>
-import {smartEnuApi} from "@/config/config";
+import {getHeader, smartEnuApi} from "@/config/config";
 import {FilterMatchMode} from "primevue/api";
 import {fileRoute, findRole} from "../../config/config";
 import EventsView from "./EventsView";

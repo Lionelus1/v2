@@ -203,7 +203,7 @@
 import TopMenuBar from "./TopMenuBar.vue";
 import { getHeader, smartEnuApi,findRole } from "@/config/config";
 
-import axios from "axios";
+import api from "@/service/api";
 
 export default {
   components: { TopMenuBar },
@@ -273,7 +273,7 @@ export default {
       this.menu[0].disabled = false
     },
     getOrgForms() {
-      axios.get(smartEnuApi+"/contragent/orgforms", {headers: getHeader()})
+      api.get("/contragent/orgforms", {headers: getHeader()})
       .then(response=>{
         this.orgforms = response.data;
       })
@@ -320,7 +320,7 @@ export default {
         return
       }
       
-      axios.post(smartEnuApi+"/contragent/updateorg", this.value, {headers: getHeader()})
+      api.post("/contragent/updateorg", this.value, {headers: getHeader()})
       .then(response=> {
         console.log("sasa:", response.data)
         this.menu[0].disabled = true

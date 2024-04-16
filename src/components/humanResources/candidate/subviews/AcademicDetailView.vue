@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "@/service/api";
 import {getHeader, smartEnuApi} from "@/config/config";
 
 export default {
@@ -23,8 +23,8 @@ export default {
   },
   methods: {
     deleteValue() {
-      axios
-          .post(smartEnuApi + "/candidate/academic-detail/delete", {id: this.value.id}, {headers: getHeader(),})
+      api
+          .post("/candidate/academic-detail/delete", {id: this.value.id}, {headers: getHeader(),})
           .then(res => {
             this.emitter.emit("academicDetail", true);
           }).catch(error => {

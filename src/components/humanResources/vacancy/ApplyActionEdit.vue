@@ -147,7 +147,7 @@
 <script>
 import VacancyService from "./VacancyService";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo"
-import axios from "axios";
+import api from "@/service/api";
 import {getHeader, smartEnuApi} from "@/config/config";
 
 export default {
@@ -225,7 +225,7 @@ export default {
             life: 3000,
           });
         }
-        axios.post(smartEnuApi + `/workPlan/getSignatures`, {doc_id: this.documentUuid},
+        api.post(`/workPlan/getSignatures`, {doc_id: this.documentUuid},
             {headers: getHeader()}).then(res => {
           if (res.data) {
             if (res.data.length !== 0) {

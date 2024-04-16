@@ -48,7 +48,7 @@
 <script setup>
 
   import { ref, defineProps, inject, onMounted } from 'vue';
-  import axios from "axios";
+  import api from "@/service/api";
   import {getHeader, smartEnuApi} from "@/config/config";
   import {useI18n} from "vue-i18n";
   import { useToast } from "primevue/usetoast";
@@ -103,25 +103,25 @@
   })
 
   const getBanks = () => {
-    var req = {"id" : 0, "count": 0};
-    axios.post(smartEnuApi + '/contragent/banks', req, {headers: getHeader()}).then(res  => {
-        const data = ref(null)
-        if (user.value != null && user.value.bank != null ) {
-            data.value = res.data.find(item => item.id == user.value.bank.id);
-        }
-        if (data.value !== null) {
-            banks.value = res.data;
-            bank.value = data.value
-        } else {
-            bank.value = {}
-            banks.value = res.data
-        }
+      var req = {"id" : 0, "count": 0};
+      api.post('/contragent/banks', req, {headers: getHeader()}).then(res  => {
+          const data = ref(null)
+          if (user.value != null && user.value.bank != null ) {
+              data.value = res.data.find(item => item.id == user.value.bank.id);
+          }
+          if (data.value !== null) {
+              banks.value = res.data;
+              bank.value = data.value
+          } else {
+              bank.value = {}
+              banks.value = res.data
+          }
 
-    }).catch(err => {
-        if (err.data && err.data.status != 404) {
-          toast.add({severity: 'error', summary: t('common.error'), life: 3000})
-        }
-    })
+      }).catch(err => {
+          if (err?.response?.status !== 404) {
+            toast.add({severity: 'error', summary: t('common.error'), life: 3000})
+          }
+      })
   }
 
   const bankLabel = (item) => {

@@ -154,7 +154,7 @@
   </Sidebar>
 </template>
 <script>
-import axios from "axios";
+import api from "@/service/api";
 import {getHeader, smartEnuApi} from '../../config/config';
 import Enum from '@/enum/roleControls/index'
 
@@ -198,7 +198,7 @@ export default {
     getApprovalList() {
       this.wait = true
 
-      axios.get(smartEnuApi + '/approvalList/get', {
+      api.get('/approvalList/get', {
         headers: getHeader()
       }).then(res => {
         this.approvalList = res.data;
@@ -245,7 +245,7 @@ export default {
         currentUsersId.push(elem.userID)
       })
 
-      axios.post(smartEnuApi + '/approvalList/defaultUsers', {
+      api.post('/approvalList/defaultUsers', {
         approvalListId: this.currentApprovalList.approvalListId,
         userIds: [...currentUsersId],
       }, {
@@ -283,7 +283,7 @@ export default {
     },
     saveApprovalList() {
       this.wait = true
-      axios.post(smartEnuApi + '/approvalList/create', {
+      api.post('/approvalList/create', {
         titleRu: this.newApprovalList.titleRu,
         titleEn: this.newApprovalList.titleEn,
         titleKz: this.newApprovalList.titleKz,
@@ -319,7 +319,7 @@ export default {
     },
     editApprovalList() {
       this.wait = true
-      axios.post(smartEnuApi + '/approvalList/update', {
+      api.post('/approvalList/update', {
         approvalListId: this.currentApprovalList.approvalListId,
         userChangeable: this.newApprovalList.userChangeable,
         certificate: this.newApprovalList.certificate.value,
