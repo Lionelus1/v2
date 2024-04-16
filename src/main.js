@@ -85,6 +85,10 @@ import VueClipboard from 'vue3-clipboard'
 import TreeSelect from 'primevue/treeselect';
 import Vue3SimpleHtml2pdf from "vue3-simple-html2pdf";
 import VuePdfEmbed from 'vue-pdf-embed'
+import FloatLabel from 'primevue/floatlabel';
+import IconField from 'primevue/iconfield';
+import InputIcon from 'primevue/inputicon';
+
 
 import CodeHighlight from './AppCodeHighlight';
 import i18n from './locales/index'
@@ -372,6 +376,9 @@ app.component("VueElementLoading", VueElementLoading);
 app.component('TreeSelect', TreeSelect);
 app.component('ScrollPanel', ScrollPanel);
 app.component('Divider', Divider);
+app.component('FloatLabel', FloatLabel);
+app.component('IconField', IconField);
+app.component('InputIcon', InputIcon);
 
 app.component('WorkPlanEventResult', WorkPlanEventResult)
 app.component('TinyEditor', TinyEditor)
