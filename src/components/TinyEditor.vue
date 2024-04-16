@@ -17,7 +17,6 @@ import 'tinymce/plugins/lists';
 import 'tinymce/plugins/autolink';
 import 'tinymce/plugins/image';
 import 'tinymce/plugins/charmap';
-import 'tinymce/plugins/print';
 import 'tinymce/plugins/preview';
 import 'tinymce/plugins/anchor';
 import 'tinymce/plugins/searchreplace';
@@ -26,10 +25,8 @@ import 'tinymce/plugins/fullscreen';
 import 'tinymce/plugins/insertdatetime';
 import 'tinymce/plugins/media';
 import 'tinymce/plugins/table';
-import 'tinymce/plugins/paste';
 import 'tinymce/plugins/help';
 import 'tinymce/plugins/wordcount';
-import 'tinymce/plugins/pagebreak';
 
 import contentUiCss from 'tinymce/skins/ui/oxide/content.css';
 import "tinymce/skins/ui/oxide/skin.css";
