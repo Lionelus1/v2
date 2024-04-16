@@ -290,7 +290,7 @@ export default {
       })
     },
     executed(data) {
-      if (data.docHistory.stateId !== this.Enum.APPROVED.ID) {
+      if (data.docHistory?.stateId !== this.Enum.APPROVED.ID) {
         return false;
       }
 
@@ -437,14 +437,14 @@ export default {
         {
           label: this.$t('contracts.menu.sendForExecution'),
           icon: "fa-solid fa-circle-check",
-          disabled: !this.currentDocument || this.currentDocument.docHistory.stateId !== Enum.APPROVED.ID || this.executed(this.currentDocument) || this.execution(this.currentDocument),
+          disabled: !this.currentDocument || this.currentDocument.docHistory?.stateId !== Enum.APPROVED.ID || this.executed(this.currentDocument) || this.execution(this.currentDocument),
           visible: this.findRole(null, RolesEnum.roles.ActsToExecution) || this.findRole(null, RolesEnum.roles.MainAdministrator) || this.findRole(null, RolesEnum.roles.ScienceDirector),
           command: () => {this.sendForExecution(this.currentDocument)},
         },
         {
           label: this.$t('contracts.executed'),
           icon: "fa-solid fa-envelope-circle-check",
-          disabled: !this.currentDocument || this.currentDocument.docHistory.stateId !== Enum.APPROVED.ID || this.executed(this.currentDocument) || !this.execution(this.currentDocument),
+          disabled: !this.currentDocument || this.currentDocument.docHistory?.stateId !== Enum.APPROVED.ID || this.executed(this.currentDocument) || !this.execution(this.currentDocument),
           visible: this.findRole(null, RolesEnum.roles.Accountant) || this.findRole(null, RolesEnum.roles.MainAdministrator),
           command: () => {this.execute(this.currentDocument)},
         },
@@ -460,14 +460,14 @@ export default {
         {
           label: this.$t('common.download'),
           icon: "fa-solid fa-file-arrow-down",
-          visible: this.actionsNode.docHistory && this.actionsNode.docHistory.stateId === Enum.APPROVED.ID,
+          visible: this.actionsNode.docHistory && this.actionsNode.docHistory?.stateId === Enum.APPROVED.ID,
           command: () => {this.currentDocument = this.actionsNode; this.download()},
         },
         {
           label: this.$t('common.delete'),
           icon: "fa-solid fa-trash",
-          visible: (this.actionsNode.docHistory && this.actionsNode.docHistory.stateId === Enum.CREATED.ID ||
-              this.actionsNode.docHistory.stateId === Enum.REVISION.ID || this.actionsNode.docHistory.stateId === Enum.INAPPROVAL.ID) &&
+          visible: (this.actionsNode.docHistory && this.actionsNode.docHistory?.stateId === Enum.CREATED.ID ||
+              this.actionsNode.docHistory?.stateId === Enum.REVISION.ID || this.actionsNode.docHistory?.stateId === Enum.INAPPROVAL.ID) &&
               this.loginedUser.userID === this.actionsNode.creatorID,
           command: () => {
             this.currentDocument = this.actionsNode;
