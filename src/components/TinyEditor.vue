@@ -1,9 +1,39 @@
 <template>
-    <editor  ref="myEditor" :api-key="editorApi" v-model="content" :init="editorOptions" :disabled="readonly"/>
+    <editor  ref="myEditor" v-model="content" :init="editorOptions" :disabled="readonly"/>
 </template>
 
 <script>
 import Editor from '@tinymce/tinymce-vue'
+import 'tinymce'
+import 'tinymce/icons/default';
+import 'tinymce/themes/silver';
+import 'tinymce/skins/ui/oxide/skin.css';
+import 'tinymce/plugins/advlist';
+import 'tinymce/plugins/code';
+import 'tinymce/plugins/emoticons';
+import 'tinymce/plugins/emoticons/js/emojis';
+import 'tinymce/plugins/link';
+import 'tinymce/plugins/lists';
+import 'tinymce/plugins/autolink';
+import 'tinymce/plugins/image';
+import 'tinymce/plugins/charmap';
+import 'tinymce/plugins/print';
+import 'tinymce/plugins/preview';
+import 'tinymce/plugins/anchor';
+import 'tinymce/plugins/searchreplace';
+import 'tinymce/plugins/visualblocks';
+import 'tinymce/plugins/fullscreen';
+import 'tinymce/plugins/insertdatetime';
+import 'tinymce/plugins/media';
+import 'tinymce/plugins/table';
+import 'tinymce/plugins/paste';
+import 'tinymce/plugins/help';
+import 'tinymce/plugins/wordcount';
+import 'tinymce/plugins/pagebreak';
+
+import contentUiCss from 'tinymce/skins/ui/oxide/content.css';
+import "tinymce/skins/ui/oxide/skin.css";
+
 import {uploadSingFile} from "../helpers/HelperUtil";
 import {FileService} from "@/service/file.service";
 import {downloadRoute, fileRoute, smartEnuApi} from "@/config/config";
@@ -62,6 +92,7 @@ export default {
                 remove_script_host: false,
                 relative_urls: false,
                 valid_elements: "*[*]",
+                language_url: this.$i18n.locale === 'en' ? false : `/assets/tinymce-lang/${this.$i18n.locale}.js`,
                 plugins: [
                     'advlist autolink lists link image charmap print preview anchor',
                     'searchreplace visualblocks code fullscreen',
@@ -73,13 +104,15 @@ export default {
             removeformat | table | link | image media ${this.customFileUpload ? `fileupload` : ''} | code | pagebreak | ${this.accordion ? `accordion` : ''}`,
                 contextmenu: 'link | customUploadContext',
                 images_upload_handler: uploadSingFile,
-                language: this.$i18n.locale === "en" ? "en_US" : this.$i18n.locale === "kz" ? "kk" : this.$i18n.locale,
+                language: this.$i18n.locale === "kz" ? "kk" : this.$i18n.locale,
+                skin: false,
+                content_css: false,
                 content_style: this.wordformat ? "html{background: #f7f7f7;display: flex; justify-content: center; } " +
                     "body {background: #fff; font-size: 14px; width: 794px; min-height:1120px; padding: 20px}" +
                     ".mce-pagebreak { background: #f7f7f7;border: none; height: 15px; width:900px; margin-left:-50px }" +
                     ".editor_accordion_title {color: #1b78bd; margin-top: 20px} .editor_accordion_title:after {content: '\\02795';float: right;margin-left: 5px;}" +
                     "active:after{ content: \"\\2796\";} .editor_accordion_content{max-height: 0;overflow: hidden;}" +
-                    " @media(max-width: 500px){html{display: block; }}" : "body {background: #fff; font-size: 14px;}" +
+                    " @media(max-width: 500px){html{display: block; }}" + contentUiCss : contentUiCss + "body {background: #fff; font-size: 14px;}" +
                     `.accordion {
     display: block;
     padding-bottom: 10px;

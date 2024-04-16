@@ -56,7 +56,7 @@
 		"@splidejs/splide-extension-auto-scroll": "^0.5.3",
 		"@splidejs/splide-extension-grid": "^0.4.1",
 		"@splidejs/vue-splide": "^0.6.12",
-		"@tinymce/tinymce-vue": "^4.0.7",
+		"@tinymce/tinymce-vue": "^5.1.1",
 		"crypto-browserify": "^3.12.0",
 		"generate-password": "^1.7.1",
 		"howler": "^2.2.3",
