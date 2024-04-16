@@ -7,7 +7,7 @@
       <Button class="justify-content-center p-button-lg" @click="sendNumber()" :disabled="isDisabled">{{ $t('common.continue') }}</Button>
     </div>
     <div class="m-auto flex flex-column gap-3" v-if="currentStep === 2">
-      <Button class="p-button-lg text-left p-3" style="width: 100%" v-for="i of queues" :key="i" @click="registerQueue(i)">
+      <Button class="p-button-lg text-left p-3" style="width: 100%" v-for="i of queues" :key="i" @click="registerQueue(i.key)">
         {{
           $i18n.locale === "kz"
               ? i.queueNamekz
@@ -20,7 +20,27 @@
     <div v-if="currentStep === 3">
       <div class="relative">
         <div class="talon" v-if="inQueue">
-          <embed :src="queinfo + '#toolbar=0'" style="width: 100%;height: 250px;" v-if="queinfo" type="application/pdf"/>
+                  <div class="talon_top">
+                    <img src="assets/layout/images/logo.svg" style="width:110px; margin: 10px ">
+
+                    <div class="talon_number" v-if="queinfo">{{padTo2Digits(queinfo?.queueNumber)}}</div>
+                    <b>Сіздің кезектегі нөміріңіз</b>
+                  </div>
+                  <div class="talon_content">
+                    <div class="dashed flex justify-content-between">
+                      <div>Сіздің алдыңызда</div>
+<!--                      <div class="talon_badge">{{queinfo.queueCount}}</div>-->
+                      <b>{{queinfo.queueCount}}</b>
+                    </div>
+                    <div class="dashed flex justify-content-between">
+                      <div>Шамамен күтетін уақытыңыз</div>
+                      <div><b>{{queinfo.averageTime}}</b> (мин)</div>
+                    </div>
+                    <div class="flex justify-content-between font-bold">
+                      <div>{{talonDate}}</div>
+                      <div>{{talonTime}}</div>
+                    </div>
+                  </div>
           <div class="dots"></div>
         </div>
         <div class="talon_list" v-if="inQueue">
@@ -45,6 +65,7 @@ import axios from "axios";
 import {b64toBlob, getHeader, smartEnuApi, socketApi} from "@/config/config";
 import {useRoute} from "vue-router";
 import {useI18n} from "vue-i18n";
+import moment from "moment";
 
 const {t, locale} = useI18n()
 const route = useRoute()
@@ -54,9 +75,12 @@ const inQueue = ref(true);
 const called = ref(false);
 const phoneNumber = ref('');
 const isDisabled = ref(true);
-const queinfo = ref();
+const queinfo = ref({});
 const queuesWS = ref([]);
 const currentStep = ref(1);
+const talonDate = ref('')
+const talonTime = ref('')
+const queueKey = ref()
 
 const validatePhoneNumber = (val) => {
   const phoneNumberRegex = /^\+7-\(\d{3}\)-\d{3}-\d{2}-\d{2}$/;
@@ -83,18 +107,31 @@ const getQueue = (data) => {
 }
 getQueue(parentId.value)
 
+const splitDateTime = (dateTimeString) => {
+  const dateTime = moment(dateTimeString);
+
+  const formattedDate = dateTime.format('DD.MM.YYYY');
+  const formattedTime = dateTime.utc().format('HH:mm');
+
+  talonDate.value = formattedDate;
+  talonTime.value = formattedTime;
+};
 const registerQueue = (queue) => {
   if (localStorage.getItem('phoneNumber')) {
+    localStorage.setItem('queueKey', queue);
     const phoneNumber = localStorage.getItem('phoneNumber')
     const req = {
-      queueID: queue.key, lang: locale.value, phoneNumber: phoneNumber
+      queueID: queue, lang: locale.value, phoneNumber: phoneNumber
     }
     axios
         .post(smartEnuApi + "/queue/registerService", req, {
           headers: getHeader(),
         })
         .then((response) => {
-          queinfo.value = b64toBlob(response.data)
+          queinfo.value = response.data
+          const numMin = response.data.averageTime / 60
+          queinfo.value.averageTime = numMin.toFixed(2);
+          splitDateTime(response.data.queueDate)
           currentStep.value = 3
         })
         .catch((error) => {
@@ -150,12 +187,17 @@ const useRealtimeStream = (qId = 0) => {
   };
 }
 const padTo2Digits = (num) => {
+  console.log(num)
   return num.toString().padStart(3, '0');
 }
 onMounted(() => {
+  /*if (queueKey.value){
+    registerQueue(queueKey.value)
+  }*/
   useRealtimeStream(parentId.value)
-  if (localStorage.getItem('phoneNumber') !== null) {
-    currentStep.value = 2
+  if (localStorage.getItem('phoneNumber') !== null && localStorage.getItem('queueKey') !== null) {
+    registerQueue(parseInt(localStorage.getItem('queueKey')))
+    currentStep.value = 3
   }
 })
 </script>
@@ -189,7 +231,7 @@ onMounted(() => {
   }
 
   &_content {
-    padding: 0 30px;
+    //padding: 0 20px;
   }
 
   .dots {
