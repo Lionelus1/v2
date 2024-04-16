@@ -78,7 +78,7 @@
               >{{ t("contact.position")
               }}</label
             >
-            <PositionsList 
+            <PositionsList
               class="mt-2"
               :readonly="!findRole(currentUser, 'main_administrator')"
               v-model="user.mainPosition"
@@ -87,18 +87,23 @@
 
         <div v-if="(user && user.academicDegree || user.academicTitle) || customType === 'scientists'" class="col-12 mb-2 mt-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ t('science.academicDegAndAcademicTit')}}</label>
-            <InputText class="mt-2 gray-background" :placeholder="t('science.academicDegAndAcademicTit')" :value="getCombinedDegreeAndTitle()" :readonly="true" @input="updateUserData"></InputText>
+            <InputText class="mb-2 gray-background" :placeholder="t('science.academicDegAndAcademicTit')" :value="getCombinedDegreeAndTitle()" :readonly="true" @input="updateUserData"></InputText>
         </div>
 
 
         <div v-if="customType === 'myAccount' || customType === 'viewUser' || customType === 'createUser'" class="col-12 mb-2 mt-2 pb-2 lg:col-6 mb-lg-0">
-            <label>{{ t("common.workPlace")}}</label>
-            <span class="p-input-icon-right mt-2"> 
-              <i class="pi pi-id-card" v-if="user.mainPosition && user.mainPosition.organization && user.mainPosition.organization.id > 0" 
-                style="right: 2.5rem;" @click="openorganizationCard"></i>
-              <i class="pi pi-ellipsis-h" v-if="findRole(currentUser, 'main_administrator')" style="right: 1;" @click="openorganizationList"></i>
-              <InputText :readonly="true" type="text" :value="getOrganizationName()"></InputText>
-            </span> 
+          <label>{{ t("common.workPlace")}}</label>
+
+          <IconField iconPosition="right">
+            <InputIcon>
+                <i class="pi pi-id-card" v-if="user.mainPosition && user.mainPosition.organization && user.mainPosition.organization.id > 0"
+                  style="font-size: 1.25rem;" @click="openorganizationCard"></i>
+                <i class="pi pi-ellipsis-h" v-if="findRole(currentUser, 'main_administrator')" style="font-size: 1.25rem;" @click="openorganizationList"></i>
+              </InputIcon>
+            <InputText  style="padding-right: 40px;" type="text" :value="getOrganizationName()"></InputText>
+
+            </IconField>
+
         </div>
         <!-- {{ user.mainPosition.organization }} -->
         <!-- ДАТА РОЖДЕНИЯ -->
@@ -162,6 +167,8 @@
   import OrganizationList from "../../contragent/v2/OrganizationList"
   import { findRole } from "@/config/config";
   import PositionsList from "../../smartenu/PositionsList.vue";
+  import IconField from 'primevue/iconfield';
+  import InputIcon from 'primevue/inputicon';
 
   const {t, locale} = useI18n()
   const toast = useToast()
