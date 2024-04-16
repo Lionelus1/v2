@@ -134,7 +134,6 @@
 
   const {t, locale} = useI18n()
   const toast = useToast()
-  const user = ref(props.modelValue)
   const emitter = inject("emitter");
   const userService = new UserService
   const confirmDelete = ref(false);
@@ -173,6 +172,7 @@
     academicDegree: false
   })
   const emitPersonalInformationUpdate = defineEmits(["personal-information-updated"]);
+  const user = ref(props.modelValue)
 
   const getUserAcademicDegree = () => {
     if (props.customType === 'createUser') {
