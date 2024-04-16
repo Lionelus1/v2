@@ -210,6 +210,7 @@ export default {
         root: [],
       },
       categories: null,
+      publish_date: new Date()
     }
   },
   created() {
@@ -230,6 +231,7 @@ export default {
     getNewsById() {
       this.newsService.getNewsById(this.newsId).then(res => {
         this.newsData = res.data
+        this.newsData.publish_date = new Date(this.newsData.publish_date)
         this.poster = this.newsData.poster || {}
         if (this.poster) {
           this.poster.imageKkUrl = this.poster.imageKk ? smartEnuApi + fileRoute + this.poster.imageKk : ""
