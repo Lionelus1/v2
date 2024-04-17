@@ -7,19 +7,23 @@
       </div>
       <div class="p-fluid md:col-6">
         <div class="field mb-4" v-if="contragent">
-          <span class="p-input-icon-right">
-            <i v-if="contragent" class="pi pi-id-card" @click="open('organizationCard')"></i>
+          <IconField iconPosition="right">
+            <InputIcon>
+              <i v-if="contragent" class="pi pi-id-card" style="font-size: 1.2rem" @click="open('organizationCard')"></i>
+            </InputIcon>
             <InputText :readonly="true" type="text" v-model="getOrganizationName"></InputText>
-          </span>
+          </IconField>
         </div>
         <div class="field mb-0" v-if="signer">
-          <span class="p-float-label p-input-icon-right">
-            <i v-if="signer && signer.userID > 0" 
-              class="pi pi-id-card" style="right: 2.5rem;" @click="open('signerCard')"></i>
-            <i class="pi pi-ellipsis-h" style="right: 0;" @click="open('signerList')"></i>
+          <IconField iconPosition="right">
+            <InputIcon>
+              <i v-if="signer && signer.userID > 0"
+                 class="pi pi-id-card" style="font-size: 1.25rem;padding-right: 10px;" @click="open('signerCard')"></i>
+              <i class="pi pi-ellipsis-h" style="font-size: 1.25rem" @click="open('signerList')"></i>
+            </InputIcon>
             <InputText :readonly="true" type="text" v-model="getSignerName"></InputText>
-            <label v-if="contragent">{{$t('contracts.signer')}}</label>
-          </span>
+          </IconField>
+          <label v-if="contragent">{{$t('contracts.signer')}}</label>
         </div>
       </div>
       <div class="md:col-6">
@@ -194,6 +198,7 @@ export default {
         this.loading = false;
 
         if (this.contract.docHistory.stateId > this.DocEnum.CREATED.ID) {
+          this.$router.push('/sign/' + this.contract.uuid);
           return;
         }
         
