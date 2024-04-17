@@ -28,6 +28,8 @@ import 'tinymce/plugins/table';
 import 'tinymce/plugins/help';
 import 'tinymce/plugins/wordcount';
 import 'tinymce/plugins/pagebreak';
+import 'tinymce/plugins/print';
+import 'tinymce/plugins/paste';
 
 import contentUiCss from 'tinymce/skins/ui/oxide/content.css';
 import "tinymce/skins/ui/oxide/skin.css";
