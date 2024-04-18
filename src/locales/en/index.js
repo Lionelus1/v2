@@ -1225,7 +1225,7 @@ export default {
         },
         quarterYear: "Whole year",
         resultIndicator: "Indicator of direct results",
-        summary: "Summary/Confirmation",
+        summary: "Executing structural unit",
         respExecutor: "Responsible performers",
         halfYear: "semi-annual",
         simplePlan: "Plan",
@@ -1244,7 +1244,7 @@ export default {
         partiallyCompleted: "Partially completed",
         errorUpdatingStatus: "Error updating status",
         operationCanceled: "Action  canceled",
-        summaryDepartment: "Summary structural department",
+        summaryDepartment: "Converging structural unit",
         warnAddingSummaryUser: "You cannot add a user selected in the «Summary structural department» field to the «Summary/Confirmation» field."
     },
     queue: {

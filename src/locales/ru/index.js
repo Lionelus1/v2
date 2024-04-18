@@ -1256,7 +1256,7 @@ export default {
         },
         quarterYear: "Весь год",
         resultIndicator: "Показатель прямых результатов",
-        summary: "Свод/Подтверждение",
+        summary: "Исполняющее структурное подразделение",
         respExecutor: "Ответственные исполнители",
         halfYear: "полугодие",
         simplePlan: "План",
@@ -1275,7 +1275,7 @@ export default {
         partiallyCompleted: "Частично выполнено",
         errorUpdatingStatus: "Ошибка обновления статуса",
         operationCanceled: "Продолжение действия остановлено",
-        summaryDepartment: "Свод структурный отдел",
+        summaryDepartment: "Сводящее структурное подразделение",
         warnAddingSummaryUser: "Вы не можете добавить пользователя, выбранного в поле «Свод структурный отдел», в поле «Свод/Подтверждение»."
     },
     educomplex: {
