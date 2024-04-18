@@ -17,9 +17,9 @@
                       <label>{{ $t('cafedra.responsible') }}</label>
                       <FindUser v-model="resultFilter.responsiveUser" :max="1" searchMode="local" editMode="true"/>
                     </div>
-                    <div class="field">
-                    <Dropdown v-model="resultFilter.quarter" :options="quarters" :optionLabel="('quarter_'+$i18n.locale)" :placeholder="$t('common.select')" class="w-full md:w-14rem" optionValue="value"/>
-                  </div>
+                    </div>
+                    <div class="field p-fluid">
+                      <Dropdown v-model="resultFilter.quarter" :options="quarters" :optionLabel="('quarter_'+$i18n.locale)" :placeholder="$t('common.select')" class="w-full" optionValue="value"/>
                     </div>
                     <div class="p-fluid">
                         <div class="field">
