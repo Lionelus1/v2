@@ -220,7 +220,7 @@ const request = ref({
 });
 lang.value = localStorage.getItem("lang")
 
-const currentUser = ref(null)
+const currentUser = ref(JSON.parse(localStorage.getItem("loginedUser")));
 const pdf = ref(null)
 const activeTab = ref(0)
 const isAdmin = ref(false)
@@ -242,7 +242,7 @@ const menu = computed(() => [
       {
         label: t("common.tosign"),
         icon: "pi pi-user-edit",
-        visible: request.value && (request.value.doc?.docHistory?.stateId === DocEnum.CREATED.ID ||
+        visible: request.value && (currentUser.value?.userID == request.value?.sender_id) && (request.value.doc?.docHistory?.stateId === DocEnum.CREATED.ID ||
             request.value.doc?.docHistory?.stateId === DocEnum.REVISION.ID),
         command: () => open('sendToApproveDialog')
       },
@@ -331,7 +331,6 @@ const needMySign = () => {
     return false;
   }
 
-  let loginedUser = JSON.parse(localStorage.getItem("loginedUser"));
   let stages = request.value.doc.approvalStages;
   let need = false;
 
@@ -383,8 +382,7 @@ const helpDeskTicketGet = () => {
     Page: 0,
     Rows: 10,
     uuid: route.params.uuid,
-  })
-      .then((res) => {
+  }).then((res) => {
         request.value = res.data.ticket[0]
         selectedDirection.value = res.data.ticket[0].category;
         loading.value = false
