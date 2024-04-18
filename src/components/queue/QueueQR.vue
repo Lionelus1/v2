@@ -20,28 +20,31 @@
     <div v-if="currentStep === 3">
       <div class="relative">
         <div class="talon" v-if="inQueue">
-                  <div class="talon_top">
-                    <img src="assets/layout/images/logo.svg" style="width:110px; margin: 10px ">
+          <template v-if="queinfo">
+            <div class="talon_top">
+              <img src="assets/layout/images/logo.svg" style="width:110px; margin: 10px ">
 
-                    <div class="talon_number" v-if="queinfo">{{padTo2Digits(queinfo?.queueNumber)}}</div>
-                    <b>Сіздің кезектегі нөміріңіз</b>
-                  </div>
-                  <div class="talon_content">
-                    <div class="dashed flex justify-content-between">
-                      <div>Сіздің алдыңызда</div>
-<!--                      <div class="talon_badge">{{queinfo.queueCount}}</div>-->
-                      <b>{{queinfo.queueCount}}</b>
-                    </div>
-                    <div class="dashed flex justify-content-between">
-                      <div>Шамамен күтетін уақытыңыз</div>
-                      <div><b>{{queinfo.averageTime}}</b> (мин)</div>
-                    </div>
-                    <div class="flex justify-content-between font-bold">
-                      <div>{{talonDate}}</div>
-                      <div>{{talonTime}}</div>
-                    </div>
-                  </div>
-          <div class="dots"></div>
+              <div class="talon_number">{{ padTo2Digits(queinfo.queueNumber) }}</div>
+              <b>Сіздің кезектегі нөміріңіз</b>
+            </div>
+            <div class="talon_content">
+              <div class="dashed flex justify-content-between">
+                <div>Сіздің алдыңызда</div>
+                <!--                      <div class="talon_badge">{{queinfo.queueCount}}</div>-->
+                <b>{{ queinfo.queueCount }}</b>
+              </div>
+              <div class="dashed flex justify-content-between">
+                <div>Шамамен күтетін уақытыңыз</div>
+                <div><b>{{ queinfo.averageTime }}</b> (мин)</div>
+              </div>
+              <div class="flex justify-content-between font-bold">
+                <div>{{ talonDate }}</div>
+                <div>{{ talonTime }}</div>
+              </div>
+            </div>
+            <div class="dots"></div>
+          </template>
+          <ProgressSpinner v-else class="progress-spinner" strokeWidth="2" style="width: 50px;"/>
         </div>
         <div class="talon_list" v-if="inQueue">
           <div class="flex justify-content-between text-white ml-5 mb-2">
@@ -54,15 +57,32 @@
             <div>{{ i.window }}</div>
           </div>
         </div>
+        <div style="width: 90%; margin: auto">
+          <Button class="p-button-lg p-button-danger justify-content-center w-full border-white" style="border-radius: 8px"
+                  @click="refusalVisible = true">Кезектен бас тарту
+          </Button>
+        </div>
       </div>
     </div>
   </div>
+  <Dialog v-model:visible="refusalVisible" :style="{ width: '450px' }" modal header=" ">
+    <div class="text-center">
+      <!--      Вы уверены, что хотите отказаться от место в очереди?-->
+      <h4>Кезектегі орыннан бас тартқыңыз келетініне сенімдісіз бе?</h4>
+    </div>
+    <template #footer>
+      <Button :label="$t('common.yes')" icon="pi pi-check" class="p-button p-component p-button-success w-full mb-3"
+              @click="refusal()"/>
+      <Button :label="$t('common.no')" icon="pi pi-times" class="p-button p-component p-button-danger w-full"
+              @click="refusalVisible = false"/>
+    </template>
+  </Dialog>
 </template>
 
 <script setup>
-import {computed, onMounted, ref} from "vue";
+import {onMounted, ref} from "vue";
 import axios from "axios";
-import {b64toBlob, getHeader, smartEnuApi, socketApi} from "@/config/config";
+import {getHeader, smartEnuApi, socketApi} from "@/config/config";
 import {useRoute} from "vue-router";
 import {useI18n} from "vue-i18n";
 import moment from "moment";
@@ -75,12 +95,13 @@ const inQueue = ref(true);
 const called = ref(false);
 const phoneNumber = ref('');
 const isDisabled = ref(true);
-const queinfo = ref({});
+const queinfo = ref();
 const queuesWS = ref([]);
 const currentStep = ref(1);
 const talonDate = ref('')
 const talonTime = ref('')
 const queueKey = ref()
+const refusalVisible = ref(false)
 
 const validatePhoneNumber = (val) => {
   const phoneNumberRegex = /^\+7-\(\d{3}\)-\d{3}-\d{2}-\d{2}$/;
@@ -130,7 +151,7 @@ const registerQueue = (queue) => {
         .then((response) => {
           queinfo.value = response.data
           const numMin = response.data.averageTime / 60
-          queinfo.value.averageTime = numMin.toFixed(2);
+          queinfo.value.averageTime = numMin.toFixed(0);
           splitDateTime(response.data.queueDate)
           currentStep.value = 3
         })
@@ -190,21 +211,37 @@ const padTo2Digits = (num) => {
   console.log(num)
   return num.toString().padStart(3, '0');
 }
+const refusal = () => {
+  const phoneNumber = localStorage.getItem('phoneNumber')
+  axios
+      .post(smartEnuApi + "/queue/stateChange", {phoneNumber: phoneNumber}, {
+        headers: getHeader(),
+      })
+      .then((response) => {
+        console.log(response)
+        refusalVisible.value = false
+        localStorage.removeItem('queueKey')
+        currentStep.value = 2
+      })
+      .catch((error) => {
+        console.log(error)
+      });
+}
+
 onMounted(() => {
-  /*if (queueKey.value){
-    registerQueue(queueKey.value)
-  }*/
   useRealtimeStream(parentId.value)
   if (localStorage.getItem('phoneNumber') !== null && localStorage.getItem('queueKey') !== null) {
     registerQueue(parseInt(localStorage.getItem('queueKey')))
     currentStep.value = 3
+  } else if (localStorage.getItem('phoneNumber') !== null) {
+    currentStep.value = 2
   }
 })
 </script>
 
 <style lang="scss" scoped>
 .talon_bg {
-  background: #000e39;
+  background: #007dbe;
   height: 100vh;
   margin: -20px;
   padding-top: 30px;
@@ -248,7 +285,7 @@ onMounted(() => {
     border-radius: 50%;
     width: 23px;
     height: 23px;
-    background: #000e39;
+    background: #007dbe;
     left: -33px;
     top: -10px;
   }
@@ -260,7 +297,7 @@ onMounted(() => {
     border-radius: 50%;
     width: 23px;
     height: 23px;
-    background: #000e39;
+    background: #007dbe;
     right: -33px;
     top: -10px;
   }
@@ -331,7 +368,7 @@ onMounted(() => {
   position: absolute;
   width: 40px;
   height: 20px;
-  background: #000e39;
+  background: #007dbe;
   bottom: -10px;
   border-radius: 8px;
   margin-left: auto;
