@@ -1267,7 +1267,7 @@ export default {
         },
         quarterYear: "Жыл бойы",
         resultIndicator: "Нәтиже көрсеткіші",
-        summary: "Жинақтаушы/Растау",
+        summary: "Орындаушы құрылымдық бөлім",
         respExecutor: "Жауапты орындаушылар",
         halfYear: "жартыжылдық",
         simplePlan: "Жоспар",

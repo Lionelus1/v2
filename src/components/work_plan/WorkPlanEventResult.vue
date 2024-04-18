@@ -17,6 +17,9 @@
                       <label>{{ $t('cafedra.responsible') }}</label>
                       <FindUser v-model="resultFilter.responsiveUser" :max="1" searchMode="local" editMode="true"/>
                     </div>
+                    <div class="field">
+                    <Dropdown v-model="resultFilter.quarter" :options="quarters" :optionLabel="('quarter_'+$i18n.locale)" :placeholder="$t('common.select')" class="w-full md:w-14rem" optionValue="value"/>
+                  </div>
                     </div>
                     <div class="p-fluid">
                         <div class="field">
@@ -101,18 +104,21 @@
                 <label>{{ $t('workPlan.eventName') }}</label>
                 <InputText v-model="event.event_name" disabled/>
               </div>
-              <div class="field" v-if="(plan && plan.plan_type.code === 'oper' && isSummaryDepartmentUser)">
+              <div class="field" v-if="(plan && isOperPlan && isSummaryDepartmentUser)">
                 <label>{{ $t('common.fact') }}</label>
                 <InputText v-model="fact" @input="factChange"/>
               </div>
-
+              <div class="field">
+                <Dropdown v-model="selectedQuarter" :options="filteredQuarters" :optionLabel="('quarter_'+$i18n.locale)" :placeholder="$t('common.select')" class="w-full md:w-14rem" required @change="validate"/>
+                <small class="p-error" v-if="validation.quarter">{{$t('common.requiredField')}}</small>
+              </div>
               <div class="field" v-if="!hasResultToApprove">
                 <label>{{ $t('common.result') }}</label>
                   <div v-if="isVisibleWritableField">
                       <TinyEditor v-if="plan && isRespUser && !isOperPlan" v-model="result" :min-word="wordLimit" @wordCount="initWordCount" :height="300"
                                 :style="{ height: '100%', width: '100%' }"
                                 @selectionChange="editorChange"/>
-                    <TinyEditor v-if="plan && isRespUser && isOperPlan && isQuarterLimitForTextEditor" :min-word="wordLimit" @wordCount="initWordCount" v-model="newResult" :height="300" @selectionChange="editorChange"/>
+                    <TinyEditor v-if="plan && isRespUser && isOperPlan" :min-word="wordLimit" @wordCount="initWordCount" v-model="newResult" :height="300" @selectionChange="editorChange"/>
                     <small v-if="isSciencePlan && submitted && (inputWordCount < wordLimit)" class="p-error">{{ $t('workPlan.minWordCount') }}</small>
                 </div>
               </div>
@@ -147,8 +153,12 @@
                   <Divider align="left">
                     <div class="flex justify-content-center align-items-center">
                       <div class="flex flex-column justify-content-center align-items-start">
-                        <span class="pb-2"><i class="fa-solid fa-user mr-1"></i><b>{{ item.user.fullName }}</b></span>
-                        <span class="pb-2">{{ formatDateMoment(item.plan_event_result_history[0].create_date) }}</span>
+                        <span class="pb-2"><i class="fa-solid fa-user mr-1"></i><b>{{ item.user.thirdName + " " + item.user.firstName }}</b></span>
+                        <!-- {{ item.result_text[0].quarter }} -->
+                        
+                        
+                        <span class="pb-2"><strong>{{ getQuarter(item.result_text[0].quarter) }}</strong> | {{ formatDateMoment(item.plan_event_result_history[0].create_date) }}</span>
+                       
                       </div>
                       <div class="ml-3">
                         <span :class="'customer-badge status-' + item.plan_event_result_history[0].state_id">
@@ -157,6 +167,9 @@
                           <Button v-if="item.plan_event_result_history[0].state_id === 6" class="p-button p-component p-button-icon-only p-button-text" style="height: 20px;font-size: 16px;" @click="showRejectMessageSidebar" icon="fa-solid fa-eye" link />
                         </span>
                       </div>
+                      <!-- <div class="ml-3">
+                        <span :class="'customer-badge value-' + item.result_text[0].quarter">{{ getQuarter(item.result_text[0].quarter) }}</span>
+                      </div> -->
                     </div>
                   </Divider>
                   <Inplace v-if="(item.result_text && (loginedUserId === item.result_text[0].user.userID) && event &&
@@ -346,6 +359,7 @@ import moment from "moment";
 import {WorkPlanService} from '../../service/work.plan.service'
 import Enum from "@/enum/workplan/index"
 import FindUser from "@/helpers/FindUser";
+import { log } from "qrcode/lib/core/galois-field";
 
 
 export default {
@@ -414,9 +428,21 @@ export default {
       hasResultToApprove: false,
       formData: null,
       resultFilter: {
-        responsiveUser: null
+        responsiveUser: null,
+        quarter: null
       },
       givenDate:null,
+      selectedQuarter: null,
+      quarters: [
+        { quarter_kz: 'I тоқсан', quarter_ru: 'I квартал', quarter_en: 'I quarter', value: 1 },
+        { quarter_kz: 'II тоқсан', quarter_ru: 'II квартал', quarter_en: 'II quarter', value: 2 },
+        { quarter_kz: 'III тоқсан', quarter_ru: 'III квартал', quarter_en: 'III quarter', value: 3 },
+        { quarter_kz: 'IV тоқсан', quarter_ru: 'IV квартал', quarter_en: 'IV quarter', value: 4 }
+      ],
+      isQuarterValid: true,
+      validation:{
+        quarter: false
+      }
     }
   },
   computed: {
@@ -474,15 +500,6 @@ export default {
     currentDate() {
       return new Date();
     },
-    fifteenthDayNextQuarter() {
-      const firstDayNextQuarter = this.getFirstDayNextQuarter(this.givenDate);
-      const fifteenthDayNextQuarter = new Date(firstDayNextQuarter);
-      fifteenthDayNextQuarter.setDate(fifteenthDayNextQuarter.getDate() + 14);
-      return fifteenthDayNextQuarter;
-    },
-    isQuarterLimitForTextEditor(){
-      return this.currentDate <= this.fifteenthDayNextQuarter;
-    },
     isVisibleWritableField(){
       if (!this.resultData) {
         return true
@@ -509,6 +526,9 @@ export default {
     rejectHistory() {
       return this.resultData[0]?.reject_history || {};
     },
+    filteredQuarters() {
+      return this.filterQuarters();
+    }
   },
   mounted() {
     this.isAdmin = this.findRole(null, 'main_administrator')
@@ -521,18 +541,35 @@ export default {
   },
   methods: {
     findRole: findRole,
-    getFirstDayNextQuarter(date) {
-      const givenDate = new Date(date);
-      const currentQuarter = Math.floor((givenDate.getMonth() + 3) / 3);
-      const nextQuarterMonth = givenDate.getMonth() + (currentQuarter === 4 ? 9 : 3);
-      const nextQuarterYear = givenDate.getFullYear() + (nextQuarterMonth > 11 ? 1 : 0);
-      return new Date(nextQuarterYear, nextQuarterMonth % 12, 1);
+
+    filterQuarters() {
+      const currentDate = new Date();
+      const currentMonth = currentDate.getMonth() + 1;
+      const currentQuarter = Math.ceil(currentMonth / 3);
+
+      if (currentDate.getDate() <= 15) {
+        // Eger agymdagy aidyng agymdagy kuni 15-ten kishi nemese teng bolsa agymdagy toqsan men aldynggy toqsandy korsetu. 
+        return this.quarters.filter(quarter => quarter.value >= currentQuarter - 1 && quarter.value <= currentQuarter);
+      } else {
+        // Tek agymdagy toqsandy korsetu
+        return this.quarters.filter(quarter => quarter.value === currentQuarter);
+      }
+    },
+    getQuarter(quarterValue){
+      const selectedLangKey = 'quarter_' + this.$i18n.locale;
+      const quarter = this.quarters.find(quarter => quarter.value === quarterValue && quarter[selectedLangKey]);
+      return quarter ? quarter[selectedLangKey] : '';
+    },
+    validate(){
+      this.validation.quarter = !this.selectedQuarter
+      return this.validation.quarter
     },
     toggle(ref, event) {
       this.$refs[ref].toggle(event);
     },
     clearResultFilter(){
       this.resultFilter.responsiveUser = null;
+      this.resultFilter.quarter = null;
     },
     initWordCount(count) {
       this.inputWordCount = count
@@ -582,7 +619,11 @@ export default {
       //   data.result_filter.department_id = this.resultFilter.faculty.id;
       // }
       if (this.resultFilter && this.resultFilter.responsiveUser && this.resultFilter.responsiveUser.length > 0 && this.resultFilter.responsiveUser[0].userID > 0){
-        data.result_filter.responsive_user = this.resultFilter.responsiveUser[0].userID;
+        //data.result_filter.responsive_user = this.resultFilter.responsiveUser[0].userID;
+        data.result_filter.responsive_user = this.resultFilter.responsiveUser;
+      }
+      if (this.resultFilter && this.resultFilter.quarter && this.resultFilter.quarter > 0 ){
+        data.result_filter.quarter = this.resultFilter.quarter;
       }
       this.planService.getEventResult(data).then(res => {
         if (res.data) {
@@ -711,8 +752,13 @@ export default {
       ];
     },
     saveResult() {
+      if (this.validate()) {
+        this.showMessage("error", this.$t('common.message.fillError'));
+        return
+      }
       this.submitted = true
       this.isBlockUI = true;
+     
       const fd = new FormData();
       if (this.isOperPlan){
         this.wordLimit = 0
@@ -739,7 +785,7 @@ export default {
         fd.append("fact", this.fact);
       }
 
-
+      fd.append("quarter", this.selectedQuarter.value);
       if (this.plan && this.isOperPlan && this.resultData)
         fd.append("result_id", this.resultData.event_result_id);
       if (this.files.length > 0) {
@@ -983,12 +1029,20 @@ export default {
       item.isActive = true;
     },
     saveEditResult(item) {
+      if (this.validate()) {
+        this.showMessage("error", this.$t('common.message.fillError'));
+        return
+      }
       this.loading = true;
       const fd = new FormData();
       fd.append("result_id", item.event_result_id)
       fd.append("result_text_id", item.result_text[0].id)
       fd.append("work_plan_event_id", item.work_plan_event_id)
+      fd.append("quarter", this.selectedQuarter.value);
+
+      
       if (this.isFactChanged)
+        console.log("fact: ", this.fact);
         fd.append("fact", this.fact)
       fd.append("text", item.result_text[0].text)
       if (this.files.length > 0) {
@@ -1234,6 +1288,7 @@ export default {
   color: #689F38;
 }
 
+
 .customer-badge {
   border-radius: 2px;
   padding: .25em .5rem;
@@ -1303,4 +1358,25 @@ td {
   margin: -7px -14px 10px;
   z-index: 9999;
 }
+
+.customer-badge.value-1 {
+  background-color: #007bff; 
+  color: #ffffff; 
+}
+
+.customer-badge.value-2 {
+  background-color: #b30077; 
+  color: #ffffff; 
+}
+
+.customer-badge.value-3 {
+  background-color: #6666ff; 
+  color: #ffffff;
+}
+
+.customer-badge.value-4 {
+  background-color: #cc33ff; 
+  color: #ffffff; 
+}
+
 </style>
