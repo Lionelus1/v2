@@ -1,20 +1,20 @@
 <template>
-  <div style="margin-left: 15px;" v-if="props.courseRequest.doc?.docHistory">
-    <p> {{ t('common.state') + ": " }}
-      <span :class="'customer-badge status-' + props.courseRequest.doc?.docHistory?.stateEn">
-        {{ getDocStatus(props.courseRequest.doc?.docHistory?.stateEn) }}
-      </span>
-    </p>
-    <div v-if="props.courseRequest.doc?.docHistory?.stateEn === 'revision' || props.courseRequest.doc?.docHistory?.stateEn === 'rejected' ">
-      <label>{{ $t('common.comment') }}:</label>
-      <div>
-        <Message style="width: 150px;" :closable="false"
-          v-if="props.courseRequest.doc != null && props.courseRequest.doc?.docHistory != null && props.courseRequest.doc?.docHistory != null"
-          severity="warn">
-          {{ props.courseRequest.doc?.docHistory?.comment }}</Message>
-      </div>
-    </div>
-  </div>
+<!--  <div style="margin-left: 15px;" v-if="props.courseRequest.doc?.docHistory">-->
+<!--    <p> {{ t('common.state') + ": " }}-->
+<!--      <span :class="'customer-badge status-' + props.courseRequest.doc?.docHistory?.stateEn">-->
+<!--        {{ getDocStatus(props.courseRequest.doc?.docHistory?.stateEn) }}-->
+<!--      </span>-->
+<!--    </p>-->
+<!--    <div v-if="props.courseRequest.doc?.docHistory?.stateEn === 'revision' || props.courseRequest.doc?.docHistory?.stateEn === 'rejected' ">-->
+<!--      <label>{{ $t('common.comment') }}:</label>-->
+<!--      <div>-->
+<!--        <Message style="width: 150px;" :closable="false"-->
+<!--          v-if="props.courseRequest.doc != null && props.courseRequest.doc?.docHistory != null && props.courseRequest.doc?.docHistory != null"-->
+<!--          severity="warn">-->
+<!--          {{ props.courseRequest.doc?.docHistory?.comment }}</Message>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
 
   <BlockUI style="margin-top: 10px" v-if="findRole(null, 'student') || props.courseRequest.doc?.newParams?.not_formal_education_ids">
     <div>
@@ -77,51 +77,12 @@
       </DataTable>
     </div>
   </BlockUI>
-  <div>
-    <div class="field" v-if="!findRole(null, 'student') && !props.courseRequest.doc?.newParams?.not_formal_education_ids " style="margin-top: 15px;">
-      <label>{{ t('helpDesk.application.discipline') }}<span v-if="isCurrentUserSender" style="font-size: 20px; color: red;">*</span></label>
-      <InputText v-model="userData.discipline" type="text"
-        :disabled="disabledStatus"
-        :placeholder="t('helpDesk.application.discipline')" @input="input" />
-    </div>
-    <div class="field">
-      <label>{{ t('common.fullName') }}<span v-if="isCurrentUserSender" style="font-size: 20px; color: red;">*</span></label>
-      <!-- :disabled="!!responseUserData.fullName" -->
-      <InputText v-model="userData.fullName" type="text"
-        :disabled="disabledStatus" :placeholder="t('common.fullName')"
-        @input="input" />
-    </div>
-    <div class="field" style="margin-top: 10px;">
-      <label>{{ t('common.speciality') }}<span v-if="isCurrentUserSender" style="font-size: 20px; color: red;">*</span></label>
-      <InputText v-model="userData.speciality" type="text"
-        :disabled="disabledStatus"
-        :placeholder="userData.speciality || t('common.speciality')" @input="input" />
-    </div>
-    <div class="field" style="margin-top: 10px;">
-      <label>{{ t('course.course') }}<span v-if="isCurrentUserSender" style="font-size: 20px; color: red;">*</span></label>
-      <InputNumber v-model="userData.course"  :disabled="disabledStatus"
-        :placeholder=" t('course.course')" id="number-input" style="width: 350px;" @input="input" />
-<!--      <div v-if="props.validationRequest.course" style="color: red; margin-top: 5px">Курс введен неправильно</div>-->
-    </div>
-    <div class="field" style="margin-top: 10px;">
-      <label>{{ t('contracts.cafedraGroup') }}<span v-if="isCurrentUserSender" style="font-size: 20px; color: red;">*</span>
-      </label>
-      <InputText v-model="userData.group" type="text" :disabled="disabledStatus"
-        :placeholder="userData.group || t('contracts.cafedraGroup')" @input="input" />
-    </div>
-    <div class="field" style="margin-top: 10px;">
-      <label>{{ t('contact.phone') }}<span v-if="isCurrentUserSender" style="font-size: 20px; color: red;">*</span></label>
-      <InputText v-model="userData.phone" class="mt-2" inputId="userDataPhone" :placeholder="t('contact.phone')"
-        style="width: 350px;" @input="input"  :disabled="disabledStatus"/>
-      <div v-if="props.validationRequest.phone"  style="color: red; margin-top: 5px">{{t('helpDesk.application.enteredIncorrectly')}}</div>
-    </div>
-    <div class="field" style="margin-top: 10px;">
-      <label>{{ t('contact.email') }}<span v-if="isCurrentUserSender" style="font-size: 20px; color: red;">*</span></label>
-      <InputText v-model="userData.email" type="text" :placeholder="t('contact.email')" @input="input"
-        :disabled="disabledStatus" />
-      <div v-if="props.validationRequest.email" style="color: red; margin-top: 5px">{{t('helpDesk.application.enteredIncorrectly')}}</div>
-    </div>
+  <div v-for="field in formFields" :key="field.key" class="field" :style="{ marginTop: field.marginTop }">
+    <label>{{ field.label }}<span v-if="isCurrentUserSender && field.required" style="font-size: 20px; color: red;">*</span></label>
+    <InputText v-model="field.model" :type="field.type" :placeholder="field.placeholder" @input="input" :disabled="disabledStatus" />
+    <div v-if="field.validation && props.validationRequest[field.validation]" style="color: red; margin-top: 5px">{{ t('helpDesk.application.enteredIncorrectly') }}</div>
   </div>
+
 </template>
 
 <script setup>
@@ -154,6 +115,7 @@ const props = defineProps({
 })
 
 const userData = ref({
+  discipline: null,
   fullName: null,
   speciality: null,
   group: null,
@@ -161,6 +123,20 @@ const userData = ref({
   phone: null,
   email: null,
 })
+
+const formFields = computed(() => [
+  { key: 'fullName', label: t('common.fullName'), model: userData.value.fullName, type: 'text', placeholder: t('common.fullName'),   validation: null,show: true },
+  { key: 'speciality', label: t('common.speciality'), model: userData.value.speciality, type: 'text', placeholder: userData.value.speciality || t('common.speciality'),   validation: null, show: true },
+  { key: 'course', label: t('course.course'), model: userData.value.course, type: 'number', placeholder: t('course.course'),   validation: null, show: true },
+  { key: 'group', label: t('contracts.cafedraGroup'), model: userData.value.group, type: 'text', placeholder: userData.value.group || t('contracts.cafedraGroup'),   validation: null, show: true },
+  { key: 'phone', label: t('contact.phone'), model: userData.value.phone, type: 'text', placeholder: t('contact.phone'),   validation: 'phone', show: true},
+  { key: 'email', label: t('contact.email'), model: userData.value.email, type: 'text', placeholder: t('contact.email'),   validation: 'email', show:true },
+])
+
+if (!findRole(null, 'student') && !props.courseRequest.doc?.newParams?.not_formal_education_ids) {
+  formFields.value.unshift({ key: 'discipline', label: t('helpDesk.application.discipline'), model: userData.value.discipline, type: 'text', placeholder: t('helpDesk.application.discipline'), required: true,  validation: null, show: true });
+}
+
 const isCurrentUserSender = computed(() => {
   return ((currentUser.value?.userID == props.courseRequest.sender_id && (props.courseRequest.doc.docHistory == null)) || props.courseRequest?.doc?.docHistory?.stateId == DocEnum.REVISION.ID )
 })

@@ -8,53 +8,32 @@
   <ToolbarMenu v-if="request" :data="menu"/>
   <TabView v-model:activeIndex="activeTab" @tab-change="tabChanged" class="flex flex-column flex-grow-1">
     <TabPanel :header="selectedDirection['name_' + locale]">
-      <BlockUI  :blocked="loading" class="card">
-<!--        <div v-if="haveAccess && selectedDirection && selectedDirection.code !== 'course_application'">-->
-<!--            <div class="p-fluid md:col-6">-->
-<!--            <label>{{ t('helpDesk.application.categoryApplication') }}</label>-->
-<!--            <InputText type="text" v-model="selectedDirection['name_' + locale]" disabled />-->
-<!--          </div>-->
-<!--          <div v-if="selectedDirection && selectedDirection.code === 'office_booking'">-->
-<!--            <div class="p-fluid md:col-6">-->
-<!--              <label>{{ t('helpDesk.application.choseAudience') }}</label>-->
-<!--              <Dropdown v-model="choseAudience" optionLabel="name" optionValue="id" :placeholder="t('common.select')" />-->
-<!--            </div>-->
-<!--            <div class="p-fluid md:col-6">-->
-<!--              <label>{{ t('helpDesk.application.date') }}</label>-->
-<!--              <PrimeCalendar v-model="request.date_ranges" dateFormat="dd.mm.yy" :placeholder="t('common.select')" :monthNavigator="true"-->
-<!--                :yearNavigator="true" yearRange="1990:2050" />-->
-<!--            </div>-->
-<!--            <div class="p-fluid md:col-6">-->
-<!--              <label>{{ t('helpDesk.application.dateTime') }}</label>-->
-<!--              <PrimeCalendar id="calendar-timeonly" :placeholder="t('common.select')" v-model="request.dateTime" timeOnly />-->
-<!--            </div>-->
-<!--          </div>-->
-<!--          <div v-if="selectedDirection && selectedDirection.code === 'appointment'">-->
-<!--            <div class="p-fluid md:col-6">-->
-<!--              <label>{{ t('helpDesk.application.selectSpecialist') }}</label>-->
-<!--              <Dropdown v-model="specialization" optionLabel="name" optionValue="id" :placeholder="t('common.select')" />-->
-<!--            </div>-->
-<!--            <div class="p-fluid md:col-6">-->
-<!--              <label>{{ t('helpDesk.application.date') }}</label>-->
-<!--              <PrimeCalendar v-model="request.date_ranges" dateFormat="dd.mm.yy" :placeholder="t('common.select')" :monthNavigator="true"-->
-<!--                :yearNavigator="true" yearRange="1990:2050" />-->
-<!--            </div>-->
-<!--            <div class="p-fluid md:col-6">-->
-<!--              <label>{{ t('helpDesk.application.dateTime') }}</label>-->
-<!--              <PrimeCalendar id="calendar-timeonly" :placeholder="t('common.select')" v-model="request.dateTime" timeOnly />-->
-<!--            </div>-->
-<!--          </div>-->
-<!--          <div class="p-fluid md:col-6">-->
-<!--            <label>{{ t('helpDesk.application.description') }}</label>-->
-<!--            <Textarea class="mt-2" v-model="request.description_ru" autoResize rows="5" cols="30" />-->
-<!--          </div>-->
-<!--          <div class="p-fluid md:col-6">-->
-<!--            <label>{{ t('helpDesk.application.contactNumber') }}</label>-->
-<!--            <InputText class="mt-2" v-model="contactNumber" />-->
-<!--          </div>-->
-<!--        </div>-->
-        <CourseRegistration :courseRequest="request" :validationRequest="validationRequest" @onCheckboxChecked="onChecked" @childInputData="childInput"
-                            @validateInput="validateInput" v-if="selectedDirection && selectedDirection.code === 'course_application'" />
+      <BlockUI :blocked="loading" class="card">
+        <div style="margin-left: 15px;" v-if="request.doc?.docHistory">
+          <p> {{ t('common.state') + ": " }}
+            <span :class="'customer-badge status-' + request.doc?.docHistory?.stateEn">
+        {{ getDocStatus(request.doc?.docHistory?.stateEn) }}
+      </span>
+          </p>
+          <div v-if="request.doc?.docHistory?.stateEn === 'revision' || request.doc?.docHistory?.stateEn === 'rejected' ">
+            <label>{{ $t('common.comment') }}:</label>
+            <div>
+              <Message style="width: 150px;" :closable="false"
+                       v-if="request.doc != null && request.doc?.docHistory != null && request.doc?.docHistory != null"
+                       severity="warn">
+                {{ request.doc?.docHistory?.comment }}</Message>
+            </div>
+          </div>
+        </div>
+        <div
+            v-if="haveAccess && selectedDirection && selectedDirection.code === 'appointment' || selectedDirection.code === 'office_booking'">
+          <ConsultationManager :courseRequest="request" @childConsultationInput="childConsultationInput"
+                               @validationConsultation="validationConsultation" :validationRequest="validationRequest"/>
+        </div>
+        <CourseRegistration :courseRequest="request" :validationRequest="validationRequest"
+                            @onCheckboxChecked="onChecked" @childInputData="childInput"
+                            @validateInput="validateInput"
+                            v-if="selectedDirection && selectedDirection.code === 'course_application'"/>
       </BlockUI>
       <!-- sendToApproveDialog -->
       <Dialog :header="t('common.action.sendToApprove')" v-model:visible="visibility.sendToApproveDialog"
@@ -122,6 +101,7 @@ import {DocService} from "@/service/doc.service";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo.vue";
 import DocEnum from "@/enum/docstates/index";
 import {ContragentService} from "@/service/contragent.service";
+import ConsultationManager from "./ConsultationManager.vue";
 
 // Переменные для работы с i18n, хранилищем, уведомлениями и маршрутизацией ↓
 const {t, locale} = useI18n()
@@ -219,7 +199,24 @@ const request = ref({
   doc: null
 });
 lang.value = localStorage.getItem("lang")
+const getDocStatus = (code) => {
+  const foundStatus = docStatus.value.find(status => status.code === code);
+  if (foundStatus) {
+    switch (locale.value) {
+      case "kz":
+        return foundStatus.name_kz;
+      case "ru":
+        return foundStatus.name_ru;
+      case "en":
+        return foundStatus.name_en;
+      default:
+        return null;
+    }
+  } else {
+    return null;
+  }
 
+};
 const currentUser = ref(null)
 const pdf = ref(null)
 const activeTab = ref(0)
@@ -364,6 +361,13 @@ const close = (name) => {
   visibility.value[name] = false;
 };
 
+const childConsultationInput = (data) => {
+  userData.value = data
+}
+const validationConsultation = (data) => {
+  validation.value = data
+}
+
 const childInput = (data) => {
   userData.value = data
 }
@@ -435,77 +439,112 @@ const saveDocument = () => {
     validationRequest.value = validation.value
     return
   }
-  validationRequest.value = validation.value
 
+  validationRequest.value = validation.value
 
   let student = null
 
-  if (request.value.doc.newParams) {
-    if (findRole(null, "student")) {
-      request.value.doc.newParams.not_formal_education_ids.value = selectedCourses.value
-    }
-
-    request.value.doc.newParams.not_formal_student_info.value = userData.value
-    request.value.doc.newParams.lang.value = lang.value
-    request.value.doc.newParams.selectedPosition = selectedPosition.value
-    request.value.is_saved = 1
-
-    service.helpDeskTicketCreate(request.value)
-        .then(res => {
-          isSaved.value = true
-          changed.value = false;
-          request.value = res.data
-        }).catch(err => {
-      if (err.response && err.response.status == 401) {
-        store.dispatch("logLout")
-      } else if (err.response && err.response.data && err.response.data.localized) {
-        showMessage('error', t(err.response.data.localizedPath), null)
+  if (selectedDirection.value.code === 'course_application') {
+    if (request.value.doc.newParams) {
+      if (findRole(null, "student")) {
+        request.value.doc.newParams.not_formal_education_ids.value = selectedCourses.value
       }
-    });
-    isSend.value = true;
-  } else {
-    request.value.doc.newParams = {}
-    if (findRole(null, "student")) {
+
+      request.value.doc.newParams.not_formal_student_info.value = userData.value
+      request.value.doc.newParams.lang.value = lang.value
+      // request.value.doc.newParams.selectedPosition = selectedPosition.value
+      request.value.is_saved = 1
+
+      service.helpDeskTicketCreate(request.value)
+          .then(res => {
+            isSaved.value = true
+            changed.value = false;
+            request.value = res.data
+          }).catch(err => {
+        if (err.response && err.response.status == 401) {
+          store.dispatch("logLout")
+        } else if (err.response && err.response.data && err.response.data.localized) {
+          showMessage('error', t(err.response.data.localizedPath), null)
+        }
+      });
+      isSend.value = true;
+    } else {
+      request.value.doc.newParams = {}
+      if (findRole(null, "student")) {
+        let param = {
+          value: selectedCourses.value,
+          name: "not_formal_education_ids"
+        }
+        request.value.doc.newParams['not_formal_education_ids'] = param
+      }
+
+      let paramInfo = {
+        value: userData.value,
+        name: "not_formal_student_info"
+      }
+
+      let paramLang = {
+        value: lang.value,
+        name: "lang"
+      }
+
+      request.value.doc.newParams['selectedPosition'] = {
+        value: selectedPosition.value,
+        name: "selectedPosition"
+      };
+      request.value.doc.newParams['lang'] = paramLang
+      request.value.doc.newParams['not_formal_student_info'] = paramInfo
+
+      request.value.is_saved = 1
+      service.helpDeskTicketCreate(request.value)
+          .then(res => {
+            isSaved.value = true
+            changed.value = false;
+            request.value = res.data
+          }).catch(err => {
+        if (err.response && err.response.status == 401) {
+          store.dispatch("logLout")
+        } else if (err.response && err.response.data && err.response.data.localized) {
+          showMessage('error', t(err.response.data.localizedPath), null)
+        }
+      });
+      isSend.value = true;
+    }
+  } else if (selectedDirection.value.code === 'appointment' || selectedDirection.value.code === 'office_booking') {
+    if (request.value.doc.newParams) {
+      console.log("IF HAVE NEWPARAMS")
+    } else {
+      request.value.doc.newParams = {}
+
       let param = {
-        value: selectedCourses.value,
-        name: "not_formal_education_ids"
+        value: userData.value,
+        name: "consultation"
       }
-      request.value.doc.newParams['not_formal_education_ids'] = param
-    }
 
-    let paramInfo = {
-      value: userData.value,
-      name: "not_formal_student_info"
-    }
-
-    let paramLang = {
-      value: lang.value,
-      name: "lang"
-    }
-
-    request.value.doc.newParams['selectedPosition'] = {
-      value: selectedPosition.value,
-      name: "selectedPosition"
-    };
-    request.value.doc.newParams['lang'] = paramLang
-    request.value.doc.newParams['not_formal_student_info'] = paramInfo
-
-    request.value.is_saved = 1
-    service.helpDeskTicketCreate(request.value)
-        .then(res => {
-          isSaved.value = true
-          changed.value = false;
-          request.value = res.data
-        }).catch(err => {
-      if (err.response && err.response.status == 401) {
-        store.dispatch("logLout")
-      } else if (err.response && err.response.data && err.response.data.localized) {
-        showMessage('error', t(err.response.data.localizedPath), null)
+      let paramLang = {
+        value: lang.value,
+        name: "lang"
       }
-    });
-    isSend.value = true;
+
+      request.value.is_saved = 1
+      request.value.doc.newParams['lang'] = paramLang
+      request.value.doc.newParams['consultation'] = param
+
+      service.helpDeskTicketCreate(request.value)
+          .then(res => {
+            isSaved.value = true
+            request.value = res.data
+          }).catch(err => {
+        if (err.response && err.response.status == 401) {
+          store.dispatch("logLout")
+        } else if (err.response && err.response.data && err.response.data.localized) {
+          showMessage('error', t(err.response.data.localizedPath), null)
+        }
+      });
+    }
   }
 };
+
 const downloadContract = () => {
   loading.value = true
   if (!request.value || !request.value.doc || request.value.doc.filePath.length < 1) return;
@@ -531,36 +570,51 @@ const downloadContract = () => {
   })
 }
 const isUserDataVaild = () => {
-  if (findRole(null, "student")) {
-    if (
-        userData.value !== null &&
-        userData.value.fullName &&
-        userData.value.speciality &&
-        userData.value.course &&
-        userData.value.email &&
-        userData.value.phone &&
-        selectedCourses.value &&
-        selectedCourses.value.length > 0
-    ) {
-      return true;
+  if (selectedDirection.value.code === 'course_application') {
+    if (findRole(null, "student")) {
+      if (
+          userData.value !== null &&
+          userData.value.fullName &&
+          userData.value.speciality &&
+          userData.value.course &&
+          userData.value.email &&
+          userData.value.phone &&
+          selectedCourses.value &&
+          selectedCourses.value.length > 0
+      ) {
+        return true;
+      } else {
+        return false;
+      }
     } else {
-      return false;
+      if (
+          userData.value !== null &&
+          userData.value.discipline &&
+          userData.value.fullName &&
+          userData.value.speciality &&
+          userData.value.course &&
+          userData.value.email &&
+          userData.value.phone
+      ) {
+        return true;
+      } else {
+        return false;
+      }
     }
-  } else {
+  } else if (selectedDirection.value.code === 'appointment' || selectedDirection.value.code === 'office_booking') {
     if (
         userData.value !== null &&
-        userData.value.discipline &&
-        userData.value.fullName &&
-        userData.value.speciality &&
-        userData.value.course &&
-        userData.value.email &&
-        userData.value.phone
+        userData.value.specialization &&
+        userData.value.dateTime &&
+        userData.value.phone &&
+        userData.value.description
     ) {
       return true;
     } else {
       return false;
     }
   }
+
 
 }
 const initStages = () => {

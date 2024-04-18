@@ -67,8 +67,8 @@
           <Column field="requestReason" :header="t('helpDesk.application.requestReason')">
             <template #body="{ data }">
               <a href="javascript:void(0)">{{
-                  $i18n.locale === "kz" ? data.doc.newParams.selectedPosition.value.name_kz : $i18n.locale === "ru" ? data.doc.newParams.selectedPosition.value.name_ru :
-                      data.doc.newParams.selectedPosition.value.name_en
+                  $i18n.locale === "kz" ? data.doc.newParams.selectedPosition?.value.name_kz : $i18n.locale === "ru" ? data.doc.newParams.selectedPosition?.value.name_ru :
+                      data.doc.newParams.selectedPosition?.value.name_en
                 }}</a>
             </template>
           </Column>
@@ -84,7 +84,7 @@
 
           <Column field="fullName" :header="t('web.logUser')">
             <template #body="{ data }">
-              <a href="javascript:void(0)">{{ data.doc.newParams.not_formal_student_info.value.fullName }}</a>
+              <a href="javascript:void(0)">{{ data.doc.newParams.not_formal_student_info?.value.fullName }}</a>
             </template>
           </Column>
 
@@ -291,7 +291,6 @@ const openSignInfo = () => {
 const close = (name) => {
   visibility.value[name] = false;
   if (name === 'newPublicationDialog') {
-    selectedPosition.value = null,
         selectedDirection.value = null
   }
 };
@@ -419,9 +418,6 @@ const getTicket = () => {
         total.value = res.data.total;
       }).catch((err) => {
     loading.value = false
-    if (err.response.status == 401) {
-      store.dispatch('logLout');
-    }
   });
 }
 
