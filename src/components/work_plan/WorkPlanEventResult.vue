@@ -7,27 +7,19 @@
       </div>
       <div class="mb-0 mt-0 inline-block" style="font-size: 24px"> {{ $t('common.result') }}</div>
     </div>
-     <div class="text-right" style="margin-top:-30px;padding-bottom: 3px;" v-if="plan && isPlanCreator">
-                <Button type="button" icon="fa-solid fa-filter" :label="$t('common.filter')"
+     <div class="text-right" style="margin-top:-30px;padding-bottom: 3px;" v-if="plan && isPlanCreator || plan && isAdmin">
+      <Button type="button" icon="fa-solid fa-filter" :label="$t('common.filter')"
                         @click="toggle('global-filter', $event)" aria:haspopup="true" aria-controls="overlay_panel"
                         class="p-button-outlined mr-2" />
                 <OverlayPanel ref="global-filter" class="col-3">
                   <div class="p-fluid">
                     <div class="field">
-                      {{ resultFilter.faculty }}
-                        <label>{{ $t('requests.params.structural_unit') }}/{{ $t('common.faculty') }}</label>
-                        <DepartmentList :parentID="1" :orgType="2"  :autoLoad="true" v-model="resultFilter.faculty"
-                        :placeHolder="$t('smartenu.selectFaculty')">
-                      </DepartmentList>
-                      </div>
-                  </div>
-                  <div class="p-fluid">
-                    <div class="field">
-                      {{ resultFilter.responsiveUser }}
                       <label>{{ $t('cafedra.responsible') }}</label>
-                      <FindUser v-model="resultFilter.responsiveUser" :max="5" searchMode="local" editMode="true"/>
-                      <!-- <small class="p-error" v-if="!resultFilter.responsiveUser">{{ $t("common.requiredField") }}</small> -->
+                      <FindUser v-model="resultFilter.responsiveUser" :max="1" searchMode="local" editMode="true"/>
                     </div>
+                    </div>
+                    <div class="field p-fluid">
+                      <Dropdown v-model="resultFilter.quarter" :options="quarters" :optionLabel="('quarter_'+$i18n.locale)" :placeholder="$t('common.select')" class="w-full" optionValue="value"/>
                     </div>
                     <div class="p-fluid">
                         <div class="field">
@@ -45,12 +37,12 @@
     <div>
       <TabView v-model:activeIndex="activeIndex" @tab-change="changeTab">
         <TabPanel :header="$t('common.properties')">
-          <div v-if="isVisibleWritableField">
-            <div
-              v-if="event &&
-              (isCurrentUserApproval && (event.status.work_plan_event_status_id === 1 || event.status.work_plan_event_status_id === 4 || event.status.work_plan_event_status_id === 6))">
-            <Menubar :model="userMenuItems" :key="active" style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
-          </div>
+          <div v-if="isVisibleWritableField || isPlanCreator">
+            <div :style="{ 'z-index': 9999, 'position': 'relative' }"
+                v-if="(event &&
+                (isCurrentUserApproval && (event.status.work_plan_event_status_id === 1 || event.status.work_plan_event_status_id === 4 || event.status.work_plan_event_status_id === 6))) || (event && isPlanCreator)">
+              <Menubar :model="userMenuItems" :key="active" class="userMenu"></Menubar>
+            </div>
           </div>
 
           <div v-if="isPlanCreator && event && event.status.work_plan_event_status_id === 5">
@@ -58,6 +50,7 @@
           </div>
           <div class="grid mt-3" v-if="plan && resultData && (new Date(plan.create_date).getFullYear() < new Date().getFullYear())">
             <div class="p-sm-12 md:col-12 lg:col-12 p-xl-6">
+
               <div class="field" v-if="event && isOperPlan">
                 <label class="bold">{{ $t('common.fact') }}: </label>
                 <div>{{ event.fact }}</div>
@@ -111,22 +104,25 @@
                 <label>{{ $t('workPlan.eventName') }}</label>
                 <InputText v-model="event.event_name" disabled/>
               </div>
-              <div class="field" v-if="plan && plan.is_oper && !authUser.mainPosition.department.isFaculty">
+              <div class="field" v-if="(plan && isOperPlan && isSummaryDepartmentUser)">
                 <label>{{ $t('common.fact') }}</label>
                 <InputText v-model="fact" @input="factChange"/>
               </div>
-
+              <div class="field">
+                <Dropdown v-model="selectedQuarter" :options="filteredQuarters" :optionLabel="('quarter_'+$i18n.locale)" :placeholder="$t('common.select')" class="w-full md:w-14rem" required @change="validate"/>
+                <small class="p-error" v-if="validation.quarter">{{$t('common.requiredField')}}</small>
+              </div>
               <div class="field" v-if="!hasResultToApprove">
                 <label>{{ $t('common.result') }}</label>
                   <div v-if="isVisibleWritableField">
                       <TinyEditor v-if="plan && isRespUser && !isOperPlan" v-model="result" :min-word="wordLimit" @wordCount="initWordCount" :height="300"
                                 :style="{ height: '100%', width: '100%' }"
                                 @selectionChange="editorChange"/>
-                    <TinyEditor v-if="plan && isRespUser && isOperPlan" v-model="newResult" :height="300" @selectionChange="editorChange"/>
-                    <small v-if="isSciencePlan && submitted && (wordCount < wordLimit)" class="p-error">{{ $t('workPlan.minWordCount') }}</small>
+                    <TinyEditor v-if="plan && isRespUser && isOperPlan" :min-word="wordLimit" @wordCount="initWordCount" v-model="newResult" :height="300" @selectionChange="editorChange"/>
+                    <small v-if="isSciencePlan && submitted && (inputWordCount < wordLimit)" class="p-error">{{ $t('workPlan.minWordCount') }}</small>
                 </div>
               </div>
-              <div class="field" v-if="plan && isRespUser && isVisibleWritableField">
+              <div class="field" v-if="isVisibleWritableField">
                 <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadFile($event)" :auto="true" :multiple="true" :chooseLabel="$t('smartenu.chooseAdditionalFile')"></FileUpload>
               </div>
               <div class="field">
@@ -147,7 +143,7 @@
               </div>
             </div>
             <div class="p-sm-12 md:col-12 lg:col-12 p-xl-6">
-              <div class="field" v-if="event && plan && plan.is_oper && !authUser.mainPosition.department.isFaculty">
+              <div class="field" v-if="(plan && plan.plan_type.code === 'oper' && isSummaryDepartmentUser)">
                 <label class="bold">{{ $t('common.fact') }}: </label>
                 <div>{{ event.fact }}</div>
               </div>
@@ -157,8 +153,12 @@
                   <Divider align="left">
                     <div class="flex justify-content-center align-items-center">
                       <div class="flex flex-column justify-content-center align-items-start">
-                        <span class="pb-2"><i class="fa-solid fa-user mr-1"></i><b>{{ item.user.fullName }}</b></span>
-                        <span class="pb-2">{{ formatDateMoment(item.plan_event_result_history[0].create_date) }}</span>
+                        <span class="pb-2"><i class="fa-solid fa-user mr-1"></i><b>{{ item.user.thirdName + " " + item.user.firstName }}</b></span>
+                        <!-- {{ item.result_text[0].quarter }} -->
+                        
+                        
+                        <span class="pb-2"><strong>{{ getQuarter(item.result_text[0].quarter) }}</strong> | {{ formatDateMoment(item.plan_event_result_history[0].create_date) }}</span>
+                       
                       </div>
                       <div class="ml-3">
                         <span :class="'customer-badge status-' + item.plan_event_result_history[0].state_id">
@@ -167,6 +167,9 @@
                           <Button v-if="item.plan_event_result_history[0].state_id === 6" class="p-button p-component p-button-icon-only p-button-text" style="height: 20px;font-size: 16px;" @click="showRejectMessageSidebar" icon="fa-solid fa-eye" link />
                         </span>
                       </div>
+                      <!-- <div class="ml-3">
+                        <span :class="'customer-badge value-' + item.result_text[0].quarter">{{ getQuarter(item.result_text[0].quarter) }}</span>
+                      </div> -->
                     </div>
                   </Divider>
                   <Inplace v-if="(item.result_text && (loginedUserId === item.result_text[0].user.userID) && event &&
@@ -356,14 +359,13 @@ import moment from "moment";
 import {WorkPlanService} from '../../service/work.plan.service'
 import Enum from "@/enum/workplan/index"
 import FindUser from "@/helpers/FindUser";
-import DepartmentList from "../smartenu/DepartmentList.vue"
+import { log } from "qrcode/lib/core/galois-field";
 
 
 export default {
   name: "WorkPlanEventResult",
   components: {
-    FindUser,
-    DepartmentList
+    FindUser
   },
   props: ['resultId'],
   data() {
@@ -423,19 +425,29 @@ export default {
       Enum: Enum,
       wordLimit: 50,
       wordMaxLimit: 250,
-      wordCounter: 0,
       hasResultToApprove: false,
       formData: null,
       resultFilter: {
-        faculty: null,
-        responsiveUser: []
+        responsiveUser: null,
+        quarter: null
+      },
+      givenDate:null,
+      selectedQuarter: null,
+      quarters: [
+        { quarter_kz: 'I тоқсан', quarter_ru: 'I квартал', quarter_en: 'I quarter', value: 1 },
+        { quarter_kz: 'II тоқсан', quarter_ru: 'II квартал', quarter_en: 'II quarter', value: 2 },
+        { quarter_kz: 'III тоқсан', quarter_ru: 'III квартал', quarter_en: 'III quarter', value: 3 },
+        { quarter_kz: 'IV тоқсан', quarter_ru: 'IV квартал', quarter_en: 'IV quarter', value: 4 }
+      ],
+      isQuarterValid: true,
+      validation:{
+        quarter: false
       }
     }
   },
   computed: {
-    wordCount() {
-      if (!this.result) return 0;
-      return this.result.trim().split(/\s+/).length;
+    getFilteredData(){
+      return userID => this.resultData.filter(item => item.user_id === userID)
     },
     userMenuItems() {
       return this.initMenu();
@@ -476,10 +488,180 @@ export default {
     isOperPlan() {
       return this.plan && ((this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Oper) || this.plan.is_oper)
     },
+    isStandartPlan() {
+      return this.plan && this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Standart
+    },
     isRespUser() {
       return this.event && this.respUserExists(this.loginedUserId)
     },
-    initAcceptButtons() {
+    isSummaryDepartmentUser(){
+      return this.event && this.summaryDepartmentExists(this.loginedUserId);
+    },
+    currentDate() {
+      return new Date();
+    },
+    isVisibleWritableField(){
+      if (!this.resultData) {
+        return true
+      }
+
+      let userResults = this.resultData
+      if (this.isPlanCreator) {
+        userResults = this.resultData.filter(x => x.user_id === this.loginedUserId)
+      }
+      let userData = !userResults.some(x => x.plan_event_result_history?.every(x => x.modi_user_id === this.loginedUserId && (x.state_id === 5 || x.state_id === 6)))
+      return userData
+    },
+    shouldShowRejectSidebar() {
+      const event = this.event;
+      const resultData = this.resultData;
+
+      return (
+        resultData &&
+        resultData[0].plan_event_result_history[0].state_id === 6 &&
+        ((this.loginedUserId === resultData[0].result_text[0].user.userID && event) ||
+          (this.isAdmin && event) || (this.isPlanCreator && event))
+      );
+    },
+    rejectHistory() {
+      return this.resultData[0]?.reject_history || {};
+    },
+    filteredQuarters() {
+      return this.filterQuarters();
+    }
+  },
+  mounted() {
+    this.isAdmin = this.findRole(null, 'main_administrator')
+    if (!this.event_id) {
+      this.event_id = this.$route.params.id;
+    }
+    this.getEvent();
+
+
+  },
+  methods: {
+    findRole: findRole,
+
+    filterQuarters() {
+      const currentDate = new Date();
+      const currentMonth = currentDate.getMonth() + 1;
+      const currentQuarter = Math.ceil(currentMonth / 3);
+
+      if (currentDate.getDate() <= 15) {
+        // Eger agymdagy aidyng agymdagy kuni 15-ten kishi nemese teng bolsa agymdagy toqsan men aldynggy toqsandy korsetu. 
+        return this.quarters.filter(quarter => quarter.value >= currentQuarter - 1 && quarter.value <= currentQuarter);
+      } else {
+        // Tek agymdagy toqsandy korsetu
+        return this.quarters.filter(quarter => quarter.value === currentQuarter);
+      }
+    },
+    getQuarter(quarterValue){
+      const selectedLangKey = 'quarter_' + this.$i18n.locale;
+      const quarter = this.quarters.find(quarter => quarter.value === quarterValue && quarter[selectedLangKey]);
+      return quarter ? quarter[selectedLangKey] : '';
+    },
+    validate(){
+      this.validation.quarter = !this.selectedQuarter
+      return this.validation.quarter
+    },
+    toggle(ref, event) {
+      this.$refs[ref].toggle(event);
+    },
+    clearResultFilter(){
+      this.resultFilter.responsiveUser = null;
+      this.resultFilter.quarter = null;
+    },
+    initWordCount(count) {
+      this.inputWordCount = count
+    },
+    respUserExists(id) {
+      return this.event.user.some(user => user.id === id)
+    },
+    summaryDepartmentExists(id){
+      return this.event.user.some(user => user.id === id && user.is_summary_department === true)
+    },
+    getEvent() {
+      this.planService.getEventById(this.event_id).then(res => {
+        if (res.data) {
+          this.event = res.data.event;
+          this.plan = res.data.plan;
+          this.givenDate = this.event.created_date;
+          if (this.plan && this.plan.user.id === this.loginedUserId) {
+            this.isPlanCreator = true;
+          } else {
+            this.isPlanCreator = false;
+          }
+          if (this.event && this.event.user) {
+            this.isPlanCreatorApproval = this.event.user.find(e => e.id === this.loginedUserId) !== null && this.isPlanCreator;
+            this.isCurrentUserApproval = this.event.user.find(e => e.id === this.loginedUserId);
+          }
+          this.getData();
+        }
+      }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+      });
+    },
+    getData() {
+      const data = {
+        event_id : this.event.work_plan_event_id,
+        result_filter: {}
+
+      }
+      // if (this.resultFilter && this.resultFilter.faculty && this.resultFilter.faculty.id > 0) {
+      //   data.result_filter.department_id = this.resultFilter.faculty.id;
+      // }
+      if (this.resultFilter && this.resultFilter.responsiveUser && this.resultFilter.responsiveUser.length > 0 && this.resultFilter.responsiveUser[0].userID > 0){
+        //data.result_filter.responsive_user = this.resultFilter.responsiveUser[0].userID;
+        data.result_filter.responsive_user = this.resultFilter.responsiveUser;
+      }
+      if (this.resultFilter && this.resultFilter.quarter && this.resultFilter.quarter > 0 ){
+        data.result_filter.quarter = this.resultFilter.quarter;
+      }
+      this.planService.getEventResult(data).then(res => {
+        if (res.data) {
+          this.resultData = res.data;
+
+          if (this.resultData.result_text != null) {
+            this.resultData.result_text.map(e => {
+              e.isActive = false;
+            });
+          }
+          if (this.resultData.result_text === null) {
+            this.resultData.result_text.map(e => {
+              e.isActive = true;
+            });
+          }
+          this.fact = this.resultData.fact;
+          this.resultData.forEach(e => {
+            if (e.plan_event_result_history && e.plan_event_result_history.some(x => (x.state_id === 5 || x.state_id === 6))) {
+              this.hasResultToApprove = !this.isPlanCreator && e.plan_event_result_history.some(x => (x.state_id === 5 || x.state_id === 6))
+            }
+          })
+        }else if(res.data === null){
+          this.resultData = res.data;
+        }
+      }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        }else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+      });
+
+    },
+    initMenu() {
       const createConfirmationDialog = (status_code) => {
         return {
           message: this.$t("common.confirmation"),
@@ -522,11 +704,27 @@ export default {
           },
         };
       };
-
       return [
-      {
+        {
+          label: "",
+          icon: "pi pi-fw pi-refresh",
+          command: () => {
+            this.getEvent();
+            this.$toast.add({severity: 'success', detail: this.$t('common.success'), life: 3000});
+          },
+        },
+        {
+          label: this.$t("common.save"),
+          icon: "pi pi-fw pi-save",
+          disabled: this.isDisabled,
+          command: () => {
+            this.saveResult();
+          },
+        },
+        {
         label: this.$t('common.action.accept'),
         icon: 'pi pi-check',
+        visible: this.isPlanCreator,
         items: [
         {
           label: this.$t("common.done"),
@@ -550,169 +748,28 @@ export default {
           },
         },
         ]
-      }
-
-      ];
-    },
-    isVisibleWritableField(){
-      if (!this.resultData) {
-        return true
-      }
-
-      let userResults = this.resultData
-      if (this.isPlanCreator) {
-        userResults = this.resultData.filter(x => x.user_id === this.loginedUserId)
-      }
-
-      return !userResults.some(x => x.plan_event_result_history?.some(x => x.user_id === this.loginedUserId && (x.state_id === 5 || x.state_id === 6)))
-    },
-    shouldShowRejectSidebar() {
-      const event = this.event;
-      const resultData = this.resultData;
-
-      return (
-        resultData &&
-        resultData[0].plan_event_result_history[0].state_id === 6 &&
-        ((this.loginedUserId === resultData[0].result_text[0].user.userID && event) ||
-          (this.isAdmin && event) || (this.isPlanCreator && event))
-      );
-    },
-    rejectHistory() {
-      return this.resultData[0]?.reject_history || {};
-    },
-  },
-  watch: {
-    result(newValue) {
-      this.wordCounter = this.wordCount;
-    },
-  },
-  mounted() {
-    this.isAdmin = this.findRole(null, 'main_administrator')
-    if (!this.event_id) {
-      this.event_id = this.$route.params.id;
-    }
-    this.getEvent();
-
-
-  },
-  methods: {
-    findRole: findRole,
-    toggle(ref, event) {
-      this.$refs[ref].toggle(event);
-    },
-    clearResultFilter(){
-      this.resultFilter.faculty = null;
-      this.resultFilter.responsiveUser = null;
-    },
-    initWordCount(count) {
-      this.inputWordCount = count
-    },
-    respUserExists(id) {
-      return this.event.user.some(user => user.id === id)
-    },
-    getEvent() {
-      this.planService.getEventById(this.event_id).then(res => {
-        if (res.data) {
-          this.event = res.data.event;
-          this.plan = res.data.plan;
-          if (this.plan && this.plan.user.id === this.loginedUserId) {
-            this.isPlanCreator = true;
-          } else {
-            this.isPlanCreator = false;
-          }
-          if (this.event && this.event.user) {
-            this.isPlanCreatorApproval = this.event.user.find(e => e.id === this.loginedUserId) !== null && this.isPlanCreator;
-            this.isCurrentUserApproval = this.event.user.find(e => e.id === this.loginedUserId);
-          }
-          this.getData();
-        }
-      }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
-      });
-    },
-    getData() {
-      const data = {
-        event_id : this.event.work_plan_event_id,
-       
-      }
-      // let data = {};
-      // if (this.resultFilter && this.resultFilter.faculty) {
-      //   data = {
-      //   event_id : this.event.work_plan_event_id,
-      //   result_filter: {
-      //     department_id : this.resultFilter.faculty.id,
-      //     responsive_users : this.resultFilter.responsiveUser[0].userID
-      //   }
-      //   }
-      // }
-     
-      this.planService.getEventResult(data).then(res => {
-        if (res.data) {
-          this.resultData = res.data;
-
-          if (this.resultData.result_text != null) {
-            this.resultData.result_text.map(e => {
-              e.isActive = false;
-            });
-          }
-          this.fact = this.resultData.fact;
-          this.resultData.forEach(e => {
-            if (e.plan_event_result_history && e.plan_event_result_history.some(x => (x.state_id === 5 || x.state_id === 6))) {
-              this.hasResultToApprove = !this.isPlanCreator && e.plan_event_result_history.some(x => (x.state_id === 5 || x.state_id === 6))
-            }
-          })
-        }
-      }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
-      });
-
-    },
-    initMenu() {
-      return [
-        {
-          label: "",
-          icon: "pi pi-fw pi-refresh",
-          command: () => {
-            this.getEvent();
-            this.$toast.add({severity: 'success', detail: this.$t('common.success'), life: 3000});
-          },
-        },
-        {
-          label: this.$t("common.save"),
-          icon: "pi pi-fw pi-save",
-          disabled: this.isDisabled,
-          command: () => {
-            this.saveResult();
-          },
         },
       ];
     },
     saveResult() {
+      if (this.validate()) {
+        this.showMessage("error", this.$t('common.message.fillError'));
+        return
+      }
       this.submitted = true
       this.isBlockUI = true;
+     
       const fd = new FormData();
-
-      if ((this.isSciencePlan && this.wordCount > this.wordMaxLimit) || (this.isSciencePlan && this.wordCount < this.wordLimit)) {
+      if (this.isOperPlan){
+        this.wordLimit = 0
+      }
+      if (!this.isStandartPlan && (this.inputWordCount > this.wordMaxLimit || this.inputWordCount < this.wordLimit)) {
         this.$toast.add({severity: 'warn', detail: this.$t('workPlan.maxWordCount', this.wordMaxLimit), life: 3000})
         this.isBlockUI = false;
         return;
       }
+      
+    
 
       fd.append('work_plan_event_id', this.event.work_plan_event_id);
       fd.append('result', this.isOperPlan ? this.newResult ? this.newResult : "" : this.result);
@@ -728,7 +785,7 @@ export default {
         fd.append("fact", this.fact);
       }
 
-
+      fd.append("quarter", this.selectedQuarter.value);
       if (this.plan && this.isOperPlan && this.resultData)
         fd.append("result_id", this.resultData.event_result_id);
       if (this.files.length > 0) {
@@ -972,12 +1029,20 @@ export default {
       item.isActive = true;
     },
     saveEditResult(item) {
+      if (this.validate()) {
+        this.showMessage("error", this.$t('common.message.fillError'));
+        return
+      }
       this.loading = true;
       const fd = new FormData();
       fd.append("result_id", item.event_result_id)
       fd.append("result_text_id", item.result_text[0].id)
       fd.append("work_plan_event_id", item.work_plan_event_id)
+      fd.append("quarter", this.selectedQuarter.value);
+
+      
       if (this.isFactChanged)
+        console.log("fact: ", this.fact);
         fd.append("fact", this.fact)
       fd.append("text", item.result_text[0].text)
       if (this.files.length > 0) {
@@ -1020,6 +1085,7 @@ export default {
         rejectClass: 'p-button-rounded p-button-danger',
         accept: () => {
           this.deleteItem(item);
+
         }
       });
     },
@@ -1170,6 +1236,7 @@ export default {
     showRejectMessageSidebar() {
       this.rejectMessageSidebar = true;
     },
+
   }
 }
 </script>
@@ -1220,6 +1287,7 @@ export default {
 .color-success {
   color: #689F38;
 }
+
 
 .customer-badge {
   border-radius: 2px;
@@ -1285,4 +1353,30 @@ td {
   padding: 8px;
   text-align: left;
 }
+.userMenu {
+  height: 36px;
+  margin: -7px -14px 10px;
+  z-index: 9999;
+}
+
+.customer-badge.value-1 {
+  background-color: #007bff; 
+  color: #ffffff; 
+}
+
+.customer-badge.value-2 {
+  background-color: #b30077; 
+  color: #ffffff; 
+}
+
+.customer-badge.value-3 {
+  background-color: #6666ff; 
+  color: #ffffff;
+}
+
+.customer-badge.value-4 {
+  background-color: #cc33ff; 
+  color: #ffffff; 
+}
+
 </style>

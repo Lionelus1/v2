@@ -25,7 +25,7 @@
       <div class="field" v-if="resultData && resultData.result_files">
         <label class="bold">{{ $t('workPlan.attachments') }}</label>
         <div>
-          
+
           <Button v-for="(item, index) of resultData.result_files" :key="index" icon="pi pi-download" class="p-button-rounded p-button-success mr-2"
             @click="downloadFile(item)" />
         </div>
@@ -60,10 +60,8 @@
 </template>
 
 <script>
-import { watch } from 'vue'
-import axios from "axios";
-import { getHeader, getMultipartHeader, smartEnuApi } from "@/config/config";
-import { WorkPlanService } from '../../service/work.plan.service'
+import {WorkPlanService} from '../../service/work.plan.service'
+import { FileService } from "../../service/file.service";
 
 export default {
   name: "WorkPlanExecute",
@@ -84,7 +82,8 @@ export default {
       newResult: null,
       fact: null,
       isBlockUI: false,
-      planService: new WorkPlanService()
+      planService: new WorkPlanService(),
+      fileService: new FileService()
     }
   },
   methods: {
@@ -253,31 +252,28 @@ export default {
     },
     downloadFile(filePath) {
       this.isBlockUI = true;
-      fetch(smartEnuApi + `/serve?path=${filePath}`, {
-        method: 'GET',
-        headers: getHeader()
-      }).then(response => response.blob())
-        .then(blob => {
-          var url = window.URL.createObjectURL(blob);
-          var a = document.createElement('a');
-          a.href = url;
-          a.download = filePath;
-          document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
-          a.click();
-          a.remove();
-          this.isBlockUI = false;
-        }).catch(error => {
-          if (error.response && error.response.status === 401) {
-            this.$store.dispatch("logLout");
-          } else {
-            this.$toast.add({
-              severity: "error",
-              summary: error,
-              life: 3000,
-            });
-          }
-          this.isBlockUI = false;
-        });
+      this.fileService.serve(filePath).then(response => response.blob())
+          .then(blob => {
+            var url = window.URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = filePath;
+            document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
+            a.click();
+            a.remove();
+            this.isBlockUI = false;
+          }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+        this.isBlockUI = false;
+      });
     },
   }
 }
