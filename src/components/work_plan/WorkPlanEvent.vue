@@ -302,7 +302,6 @@ export default {
       isAdmin: false,
       isCreator: false,
       isApproval: false,
-      isPlanSentApproval: false,
       isEventsNull: false,
       isShowPlanExecute: false,
       showReportDoc: false,
@@ -537,16 +536,13 @@ export default {
     getWorkPlanApprovalUsers() {
       this.planService.getWorkPlanApprovalUsers(parseInt(this.work_plan_id)).then(res => {
         if (res.data) {
-          this.approval_users = res.data;
-          this.isPlanSentApproval = true;
-          this.approval_users.forEach(e => {
+          res?.data?.forEach(e => {
             if (this.loginedUserId === e.id) {
               this.isApproval = true;
             }
           });
         } else {
           this.isApproval = false;
-          this.isPlanSentApproval = false;
         }
       }).catch(error => {
         if (error.response && error.response.status === 401) {
