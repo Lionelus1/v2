@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "@/service/api";
 import {smartEnuApi} from "@/config/config";
 
 export default {
@@ -44,7 +44,7 @@ export default {
       const fd = new FormData();
       fd.append('myFile', event.files[0]);
       fd.append('filePath', this.dir ? this.dir + '/' + event.files[0].name : event.files[0].name);
-      axios.post(smartEnuApi + "/upload", fd, {
+      api.post("/upload", fd, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }

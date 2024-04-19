@@ -221,7 +221,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "@/service/api";
 import PostFile from "../PostFile.vue"
 import DocInfo from "../DocInfo.vue"
 import {smartEnuApi, getHeader, findRole} from "@/config/config";
@@ -433,7 +433,7 @@ export default {
     },
     approve(event) {
       this.approving = true;
-      axios.post(smartEnuApi + "/doc/sendtoapprovebystage", {
+      api.post("/doc/sendtoapprovebystage", {
         id: this.file.id,
         appUsers: event
       }, {headers: getHeader()}).then(res => {
@@ -505,7 +505,7 @@ export default {
         this.lazyParams.parentID = null
         this.lazyParams.depType = 0
       }
-      axios.post(smartEnuApi + url, this.lazyParams, {headers: getHeader()})
+      api.post(url, this.lazyParams, {headers: getHeader()})
           .then(response => {
             if (this.isGlobalFilter) {
               this.catalog = response.data;
@@ -643,7 +643,7 @@ export default {
         rejectClass: 'p-button p-button-danger',
         accept: () => {
           let url = "/doc/removeFile";
-          axios.post(smartEnuApi + url, {id: this.file.id, hide: hide}, {headers: getHeader()})
+          api.post(url, {id: this.file.id, hide: hide}, {headers: getHeader()})
               .then(_ => {
                     this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
                     this.getFolders(this.parentNode)
@@ -673,7 +673,7 @@ export default {
 
     showFile() {
       let url = "/doc/showFile";
-      axios.post(smartEnuApi + url, {id: this.file.id}, {headers: getHeader()})
+      api.post(url, {id: this.file.id}, {headers: getHeader()})
           .then(_ => {
             this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
             this.file.hidden = false
@@ -690,8 +690,8 @@ export default {
     },
     downloadFile(path = null) {
       if (this.file || path) {
-        axios.post(
-            smartEnuApi + "/downloadFile", {
+        api.post(
+            "/downloadFile", {
               filePath: path != null ? path : this.file.path
             }, {
               headers: getHeader()
@@ -721,7 +721,7 @@ export default {
         comment: this.revisionComment,
       }
       this.approving = true
-      axios.post(smartEnuApi + url, req, {headers: getHeader()}).then(() => {
+      api.post(url, req, {headers: getHeader()}).then(() => {
         this.file.stateID = this.DocState.REVISION.ID;
         this.file.statekz = "түзетуге";
         this.file.stateru = "на доработку";

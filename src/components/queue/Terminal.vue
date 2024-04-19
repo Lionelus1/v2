@@ -55,8 +55,7 @@
 
 <script>
 import { authHeader, getHeader, smartEnuApi, findRole, b64toBlob } from "@/config/config";
-import axios from "axios";
-import { Socket } from "dgram";
+import api from "@/service/api";
 
 export default {
  
@@ -111,8 +110,8 @@ export default {
     getQueue(parentID) {
         this.loading = true  
         this.lazyParams.parentID = parentID
-        axios
-        .post(smartEnuApi + "/queue/allQueues", this.lazyParams, {
+        api
+        .post("/queue/allQueues", this.lazyParams, {
           headers: getHeader(),
         })
         .then((response) => {
@@ -137,8 +136,8 @@ export default {
       var req = {
         queueID: queue.key, lang: this.selectedlanguage.code
       }
-      axios
-      .post(smartEnuApi + "/queue/registerService", req,  {
+      api
+      .post("/queue/registerService", req,  {
           headers: getHeader(),
         })
       .then(response => {

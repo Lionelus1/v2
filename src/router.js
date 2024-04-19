@@ -76,9 +76,9 @@ const routes = [
         beforeEnter: ifNotAuthenticated,
     },
     {
-      path: '/privacy',
-      name: 'Privacy',
-      component: load('Privacy')
+        path: '/privacy',
+        name: 'Privacy',
+        component: load('Privacy')
     },
     {
         path: '/login',
@@ -245,6 +245,12 @@ const routes = [
                 path: '/course/:id',
                 name: 'onlinecoursedetail',
                 component: load('documents/onlinecourse/Course'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/course/:id/:history_id',
+                name: 'CourseStudents',
+                component: load('documents/onlinecourse/CourseStudents'),
                 beforeEnter: ifAuthenticated,
             },
             {
@@ -492,42 +498,42 @@ const routes = [
                 name: '/queue',
                 component: load('queue/Queue'),
                 beforeEnter: ifAuthenticated,
-                
+
             },
             {
                 path: '/queue/operator/:id/:parentID',
                 name: '/queueOperator',
                 component: load('queue/Operator'),
                 beforeEnter: ifAuthenticated,
-                
+
             },
             {
                 path: '/queueService',
                 name: '/queueService',
                 component: load('queue/QueueService'),
                 beforeEnter: ifAuthenticated,
-                
+
             },
             {
                 path: '/queue/terminal/:id',
                 name: '/queueTerminal',
                 component: load('queue/Terminal'),
                 beforeEnter: ifAuthenticated,
-                
+
             },
             {
                 path: '/queue/tv/:id',
                 name: '/queueTv',
                 component: load('queue/Tv'),
                 beforeEnter: ifAuthenticated,
-                
+
             },
             {
                 path: '/queue/QueueReport/:id',
                 name: '/queueReport',
                 component: load('queue/QueueReport'),
                 beforeEnter: ifAuthenticated,
-                
+
             },
             {
                 path: '/queue/qr/:id',
@@ -551,7 +557,7 @@ const routes = [
                 name: 'Cafedra',
                 component: load('documents/Cafedra'),
                 beforeEnter: ifAuthenticated,
-                
+
             },
             {
                 path: '/access',
@@ -563,6 +569,27 @@ const routes = [
                 name: 'CertificateTemplate',
                 component: load('documents/certificates/Template'),
                 beforeEnter: ifAuthenticated,
+            },
+
+            {
+                path: '/helpdesk',
+                name: 'HelpDeskComponent',
+                component: load('helpDesk/HelpDeskComponent'),
+                beforeEnter: ifAuthenticated,
+                children: [
+                    {
+                        path: '',
+                        name: 'DeskJournal',
+                        component: load('helpDesk/DeskJournal'),
+                        beforeEnter: ifAuthenticated,
+                    },
+                    {
+                        path: '/request/:uuid',
+                        name: 'Request',
+                        component: load('helpDesk/Request'),
+                        beforeEnter: ifAuthenticated,
+                    }
+                ]
             },
             {
                 path: '/orgControl',
@@ -790,7 +817,7 @@ const routes = [
             },
         ]
     },
-   
+
     {
         path: '/guide',
         name: 'Guide',

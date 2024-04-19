@@ -29,16 +29,17 @@
         </div>
       </template>
     </Dropdown>
-    <Sidebar v-model:visible="sidebar" position="right" class="p-sidebar-lg" style="overflow-y:scroll">
-      <Department :readonly="false" :orgId="this.orgId" :orgType="orgType" :modelValue="this.value"></Department>
+    <Sidebar v-if="sidebar" v-model:visible="sidebar" position="right" class="p-sidebar-lg" style="overflow-y:scroll">
+      <Department :readonly="false" :orgId="orgId" :orgType="orgType" :modelValue="value"></Department>
     </Sidebar>
   </div>
 </template>
 
 <script>
 import { getHeader, smartEnuApi } from "@/config/config";
-import axios from 'axios';
+import api from '@/service/api';
 import Department from "./Department";
+import axios from "axios";
 
 export default {
   components: {Department},
@@ -100,7 +101,7 @@ export default {
       this.departments = null;
       this.value = null;
       this.parentID != undefined ? this.orgId = this.parentID : (parentID != undefined ? this.orgId = parentID : this.orgId = null)
-      axios.post(smartEnuApi+"/getdepartments", {
+      api.post("/getdepartments", {
         orgType: this.orgType,
         parentID: this.parentID != undefined ? this.parentID : (parentID != undefined ? parentID: undefined),
         search_text: searchText ? searchText.value : null

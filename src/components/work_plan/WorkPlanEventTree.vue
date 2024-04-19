@@ -101,7 +101,7 @@
 import WorkPlanEventAdd from "@/components/work_plan/WorkPlanEventAdd";
 import WorkPlanExecute from "@/components/work_plan/WorkPlanExecute";
 import WorkPlanEventResultModal from "@/components/work_plan/WorkPlanEventResultModal";
-import axios from "axios";
+import api from "@/service/api";
 import {getHeader, smartEnuApi} from "@/config/config";
 import WorkPlanEventEditModal from "@/components/work_plan/WorkPlanEventEditModal";
 
@@ -207,7 +207,7 @@ export default {
       this.$refs.op.toggle(event);
     },
     remove(event_id) {
-      axios.post(smartEnuApi + `/workPlan/removeEvent/${event_id}`, {}, {headers: getHeader()}).then(res => {
+      api.post(`/workPlan/removeEvent/${event_id}`, {}, {headers: getHeader()}).then(res => {
         if (res.data.is_success) {
           this.$toast.add({severity: 'success', summary: this.$t('common.success'), life: 3000});
           this.emitter.emit("workPlanChildEventIsDeleted", true);

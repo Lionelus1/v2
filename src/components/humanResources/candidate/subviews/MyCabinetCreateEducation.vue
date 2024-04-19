@@ -114,7 +114,7 @@
   </template>
   <script setup>
   
-  import axios from "axios";
+  import api from "@/service/api";
   import {getHeader, smartEnuApi} from "@/config/config";
   import { inject, defineProps, ref } from 'vue';
 
@@ -165,7 +165,7 @@
           api = '/account/education/update'
         } 
 
-        axios.post(smartEnuApi + api, payload.value, {headers: getHeader()}).then(res  => {
+        api.post(api, payload.value, {headers: getHeader()}).then(res  => {
           emitter.emit('educationUpdated', true)
         }).catch(err => {
           console.log(err)

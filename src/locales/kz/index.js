@@ -353,7 +353,8 @@ export default {
         change: "Өзгерту",
         unknownUser: "Қонақ",
         doNotShowAnymore: "Ендігіәрі көрсетпеу",
-        showMore: "Көбірек көрсету"
+        showMore: "Көбірек көрсету",
+        hint: "Қандай да бір көмек керек болса, біздің Telegram Chat қа жазыңыз немесе Анықтамадан қараңыз"
     },
     positions: {
         menuTitle: 'Позицияны өзгерту',
@@ -1431,7 +1432,9 @@ export default {
         noIssuedCertificates:"Кейбір қатысушыларға сертификаттар берілмеді. Курсты аяқтамас бұрын сертификат беруіңізді сұраймыз!",
         completeCourse: "Сіз курсты аяқтағыңыз келеді ме?",
         numberParticipants: "Қатысушылар саны",
-        сompletedСourse: "Аяқталған курстар"
+        сompletedСourse: "Аяқталған курстар",
+        moduleCredits: 'Кредиты'
+
     },
     roleControl:{
         addSidebar: 'Жаңа жазбаны қосу',
@@ -1517,6 +1520,7 @@ export default {
         internalServerError: 'Кешіріңіз, біздің тарапымыздан бірдеңе дұрыс болмады. Әрекетті кейінірек қайталаңыз.',
         unauthorized: 'Пайдаланушы жүйеге кірмеген.',
         importAlreadyOnProcess: 'Импорттау процесі жүзеге асырылуда. Нәтижелерді күтіңіз.',
+        notFound: 'Сұралған ресурс табылмады'
     },
     visuallyImpaired: {
         fontSize: "Қаріп өлшемі",
@@ -1668,6 +1672,7 @@ export default {
             publicationCategory: "Жарияланым санаты",
             publicationType: "Жарияланым түрі",
             participationInGroup: "Авторлар ұжымына қатысу",
+            subtypeDescription: "Документ типі"
         }
     },
     supportingDocument: "Растайтын құжат",
@@ -1772,5 +1777,34 @@ export default {
         specialization: 'Мамандандыру',
         groupEP: 'ББ тобы',
         ssdfgsdfg: 'sdfgsdfg',
+    },
+    helpDesk: {
+        title: 'Менің өтінімдерім',
+        creationTime: 'Құру уақыты',
+        priority: 'Басымдық',
+        responsible: 'Жауапты',
+        applicant: 'Өтініш беруші',
+        application: {
+            applicationName: 'Өтінімдер',
+            requestReason: 'Өтінімді Жолдау',
+            description: 'Сипаттама',
+            contactNumber: 'Байланыс нөмірі',
+            categoryApplication: 'Өтінім санаты',
+            choseAudience: 'Аудиторияны таңдаңыз',
+            chooseDiscipline: 'Пәнді таңдаңыз',
+            selectSpecialist: 'Маманды таңдаңыз',
+            applicationNumber: 'Өтінім нөмірі:',
+            created: 'Құрылды',
+            closed: 'Жабық',
+            date:'Күнді таңдаңыз',
+            dateTime:'Уақытты таңдаңыз',
+            discipline: 'Сабақты жазыңыз',
+            credits: 'Кредит саны',
+            codeName: 'Код атауы',
+            inputErrorMessage: 'Дұрыс деректерді енгізіңіз',
+            applicationObjectives: 'Өтінімнің мақсаттары',
+            enteredIncorrectly: 'Қате енгіздіңіз'
+        },
+
     }
 }

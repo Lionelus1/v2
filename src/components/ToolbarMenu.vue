@@ -36,14 +36,14 @@
                   @click="i.command(index)" />
             </template>
           <Button
-              v-if="i.items"
+              v-if="i && i.items"
               :class="['p-button-outlined']"
               icon="pi pi-angle-down"
               iconPos="right"
               :label="label(i.label)"
               :disabled="i.disabled"
-              @click="subMenu.toggle($event)"/>
-          <Menu v-if="i.items" ref="subMenu" :model="i.items" :popup="true" />
+              @click="toggleSubMenu($event, index)"/>
+          <Menu v-if="i?.items" :ref="(el) => (subMenu[index] = el)" :model="i?.items" :popup="true" />
         </template>
       </div>
       <div class="flex" v-if="search || filter">
@@ -81,7 +81,7 @@ const isScrollable = ref(false);
 const emit = defineEmits(['search','filter'])
 const searchModel = ref()
 const mobilemenu = ref()
-const subMenu = ref()
+const subMenu = ref({})
 const actionList = computed(() => props.data)
 const onClick = (event) => {
   mobilemenu.value.toggle(event);
@@ -107,6 +107,9 @@ const searchClick = () => {
 }
 const filterClick = (event) => {
   emit('filter', event)
+}
+const toggleSubMenu = (event, index) => {
+  subMenu?.value[index].toggle(event)
 }
 
 onMounted(() => {

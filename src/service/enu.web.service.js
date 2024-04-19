@@ -1,4 +1,3 @@
-import axios from "axios";
 import {getHeader, smartEnuApi} from "../config/config";
 import api from "@/service/api";
 import {useRouter} from "vue-router";

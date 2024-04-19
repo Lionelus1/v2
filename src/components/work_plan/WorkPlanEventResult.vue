@@ -184,7 +184,7 @@
                         <Button :label="$t('common.save')" icon="pi pi-check" class="p-button p-button-success" @click="saveEditResult(item)"
                                 :loading="loading"/>
                         <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button ml-1" @click="cancelEdit(item)"/>
-                                               <Button :label="$t('common.delete')" icon="pi pi-trash" class="p-button p-button-danger ml-1" @click="deleteConfirmItem($event, item)" />
+                        <Button :label="$t('common.delete')" icon="pi pi-trash" class="p-button p-button-danger ml-1" @click="deleteConfirmItem($event, item)" />
                       </div>
                       <div class="field">
                         <TinyEditor v-model="item.result_text[0].text" :height="300" :style="{ height: '100%', width: '100%' }"/>
@@ -244,13 +244,15 @@
                       </div>
                     </div>
                   </div>
-                  <div style="margin-left: -12px;" v-if="isPlanCreator">
+                  <div style="margin-left: -12px;" v-if="isPlanCreator || findRole(null, 'main_administrator')">
                     <Button v-if="(item.plan_event_result_history[0].state_id === 5)" icon="pi pi-fw pi-check" class="p-button-rounded p-button-text"
                             @click="confirmToInspected(isInspected, item.user.userID, item.event_result_id)" :label="$t('common.action.accept')"></Button>
                     <Button v-if="(item.plan_event_result_history[0].state_id === 5)" icon="pi pi-fw pi-times" class="p-button-rounded p-button-text"
                             @click="showToCorrectSidebarNew(item.user.userID, item.event_result_id)" :label="$t('workPlan.toCorrect')"></Button>
+                    <Button v-if="findRole(null, 'main_administrator')" :label="$t('common.delete')" icon="pi pi-trash" class="p-button p-button-danger ml-1" @click="deleteConfirmItem($event, item)" />
                     <br/><br/>
                   </div>
+
                   <div v-else class="p-0">
                     <span style="float:right;margin-top: -7px;" v-if="isPlanCreator">
                       <Button icon="pi pi-fw pi-check" class="p-button-rounded p-button-text" @click="verify(true)" :label="$t('common.action.accept')"></Button>
@@ -562,7 +564,7 @@ export default {
         userResults = this.resultData.filter(x => x.user_id === this.loginedUserId)
       }
 
-      return !userResults.some(x => x.plan_event_result_history.some(x => x.state_id === 5 || x.state_id === 6))
+      return !userResults.some(x => x.plan_event_result_history?.some(x => x.user_id === this.loginedUserId && (x.state_id === 5 || x.state_id === 6)))
     },
     shouldShowRejectSidebar() {
       const event = this.event;

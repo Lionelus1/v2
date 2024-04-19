@@ -355,7 +355,8 @@ export default {
         change: "Сменить",
         unknownUser: "Гость",
         doNotShowAnymore: "Больше не показывать",
-        showMore: "Показать больше"
+        showMore: "Показать больше",
+        hint: "Если вам нужна помощь, пишите в наш Telegram Chat или смотрите в справочнике"
     },
     positions: {
         menuTitle: 'Поменять позицию',
@@ -1420,7 +1421,8 @@ export default {
         noIssuedCertificates:"Некоторым участникам не были выданы сертификаты. Пожалуйста, выдайте сертификаты перед завершением курса!",
         completeCourse: "Вы уверены, что хотите завершить курс?",
         numberParticipants: "Количество участников",
-        сompletedСourse: "Завершенные курсы"
+        сompletedСourse: "Завершенные курсы",
+        moduleCredits: 'Кредиты'
     },
     roleControl: {
         addSidebar: 'Добавление новой записи',
@@ -1466,6 +1468,7 @@ export default {
         internalServerError: 'Приносим извинения, с нашей стороны что-то пошло не так. Пожалуйста, повторите попытку позже.',
         unauthorized: 'Пользователь не авторизован.',
         importAlreadyOnProcess: 'Процесс импорта уже запущен. Пожалуйста, дождитесь результатов.',
+        notFound: 'Запрашиваемый ресурс не найден'
     },
     blog: {
         title: 'Блог',
@@ -1654,6 +1657,7 @@ export default {
             publicationCategory: "Категория публикации",
             publicationType: "Тип публикации",
             participationInGroup: "Участие в коллективе авторов",
+            subtypeDescription: "Тип документа"
         }
     },
     supportingDocument: "Подтверждающий документ",
@@ -1758,5 +1762,35 @@ export default {
         specialization: 'Специализация',
         groupEP: 'Группа образовательных программ',
         ssdfgsdfg: 'sdfgsdfg',
+    },
+    helpDesk: {
+        title: 'Мои заявки',
+        creationTime: 'Время создания',
+        priority: 'Приоритет',
+        responsible: 'Ответственный',
+        applicant: 'Заявитель',
+        application: {
+            applicationName: 'Заявки',
+            requestReason: 'Направление Заявки',
+            description: 'Описание',
+            contactNumber: 'Контактный номер',
+            categoryApplication: 'Категория заявки',
+            choseAudience: 'Выберите аудиторию',
+            chooseDiscipline: 'Выберите дисциплину',
+            selectSpecialist: 'Выберите специалиста',
+            applicationNumber: 'Номер заявки:',
+            created: 'Создана',
+            closed: 'Закрыта',
+            date: 'Выберите дату',
+            dateTime: 'Выберите время',
+            discipline: 'Напишите дисциплину',
+            credits:'Количество кредитов',
+            codeName: 'Код наименование',
+            positionName: '',
+            inputErrorMessage: 'Пожалуйста, введите корректные данные',
+            applicationObjectives: 'Цели заяки',
+            enteredIncorrectly: 'Введен неправильно'
+        },
+
     }
 }

@@ -273,7 +273,7 @@
   </OverlayPanel>
 </template>
 <script>
-import axios from 'axios';
+import api from '@/service/api';
 
 import { getHeader, smartEnuApi } from "@/config/config";
 import Enum from "@/enum/docstates/index";
@@ -764,7 +764,7 @@ export default {
     getDepartments() {
       this.departmentTableLoading = true
 
-      axios.post(smartEnuApi + '/departments', {
+      api.post('/departments', {
         orgId: 1,
         parentId: this.faculty ? this.faculty.id : null,
         isFaculty: this.faculty ? false : true,
@@ -816,7 +816,7 @@ export default {
 
       this.fileTableLoading = true
 
-      axios.post(smartEnuApi + '/documents', {
+      api.post('/documents', {
         page: this.filePage,
         rows: this.fileRows,
         docType: this.Enum.DocType.EduComplex,
@@ -854,7 +854,7 @@ export default {
 
       this.loading = true
 
-      axios.post(smartEnuApi + '/document/download', {
+      api.post('/document/download', {
         uuid: uuid,
       }, { 
         headers: getHeader() 
@@ -890,7 +890,7 @@ export default {
         accept: () => {
           this.loading = true;
           
-          axios.post(smartEnuApi + '/document/delete', {
+          api.post('/document/delete', {
             uuid: this.currentFile.uuid,
           }, {
             headers: getHeader()
@@ -917,7 +917,7 @@ export default {
     approve(event) {
       this.loading = true;
 
-      axios.post(smartEnuApi + "/doc/sendtoapprovebystage", {
+      api.post("/doc/sendtoapprovebystage", {
         id: this.currentFile.id,
         appUsers: event
       }, {
@@ -945,7 +945,7 @@ export default {
     revision() {
       this.loading = true
 
-      axios.post(smartEnuApi + '/document/revision', {
+      api.post('/document/revision', {
         uuid: this.currentFile.uuid,
         comment: this.revisionComment,
       }, {

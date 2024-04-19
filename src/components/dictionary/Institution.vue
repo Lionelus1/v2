@@ -24,7 +24,7 @@
 
 <script>
 import { getHeader, smartEnuApi } from "@/config/config";
-import axios from "axios";
+import api from "@/service/api";
 export default {
   name: "Institution",
   data() {
@@ -62,7 +62,7 @@ export default {
     getInstitutions() {
       this.institutions = null
       this.value = null
-      axios.get(smartEnuApi + '/institutions')
+      api.get('/institutions')
           .then(response=>{
             this.institutions = response.data;
             console.log(response.data)

@@ -8,7 +8,7 @@ import router from '@/router';
 const store = createStore({
     plugins: [createPersistedState()],
     state: {
-
+        selectedPosition: {},
         loginedUser: {},
         token: "",
         attemptedUrl:"",
@@ -36,6 +36,7 @@ const store = createStore({
                     localStorage.removeItem('contractFilters');
                     localStorage.removeItem('userSlug')
                     localStorage.removeItem('selectedSlug')
+                    localStorage.removeItem('show-hint')
                     router.push({ "name": "PublicVacancies" })
                 })
                 .catch((err) => {
@@ -44,7 +45,8 @@ const store = createStore({
                     localStorage.removeItem('loginedUser');
                     localStorage.removeItem('userSlug');
                     localStorage.removeItem('selectedSlug')
-                
+                    localStorage.removeItem('show-hint')
+
                     router.push({ "path": "/login" })
                 })
 
@@ -54,6 +56,31 @@ const store = createStore({
         },
         REMOVE_USER_SITE_SLUG(state) {
             state.userSlug = {}
+        },
+        REFRESH_TOKEN(state) {
+            const tokenData = JSON.parse(window.localStorage.getItem("authUser"));
+            let authUser = {}
+            axios.post("/refreshToken", {
+                refresh_token: tokenData.refresh_token,
+            }).then(res => {
+                authUser.access_token = res.data.access_token;
+                authUser.refresh_token = res.data.refresh_token;
+                window.localStorage.setItem('authUser', JSON.stringify(authUser));
+            }).catch(error => {
+                console.log('refresh token error')
+            });
+        },
+        GET_USER_INFO(state, context) {
+            window.localStorage.removeItem("loginedUser")
+            axios.get(smartEnuApi + '/logineduserinfo', {headers: getHeader()}).then(response => {
+                window.localStorage.setItem("loginedUser", JSON.stringify(response.data));
+                context.commit('SET_LOGINED_USER')
+            }).catch(error => {
+                // router.push({name: 'Login'});
+            })
+        },
+        SET_SELECTED_POSITION_DESK(state, data) {
+            state.selectedPosition = data
         }
     },
     actions: {
@@ -78,11 +105,23 @@ const store = createStore({
         },
         removeUserSiteSlug(context) {
             context.commit("REMOVE_USER_SITE_SLUG")
+        },
+        refreshToken(context) {
+            context.commit('REFRESH_TOKEN')
+        },
+        setNewUserInfo(context) {
+            context.commit('GET_USER_INFO')
+        },
+        setSelectedPositionDesk({commit}, newPosition){
+          commit('setSelectedPositionDesk', newPosition)
         }
     },
     getters: {
         isAuthenticated: state => !!state.token,
-        isMainAdministrator: state => state.loginedUser && state.loginedUser.roles && state.loginedUser.roles.some(role => role.name === 'main_administrator')
+        isMainAdministrator: state => state.loginedUser && state.loginedUser.roles && state.loginedUser.roles.some(role => role.name === 'main_administrator'),
+        getSelectedPositionDesk(state){
+            return state.selectedPosition
+        }
     }
 
 })

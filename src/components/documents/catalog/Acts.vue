@@ -1,15 +1,15 @@
 <template>
   <ProgressSpinner v-if="loading" class="progress-spinner" strokeWidth="5"/>
   <TitleBlock :title="$t('contracts.menu.actsJournal')" :show-back-button="true"/>
-  <ToolbarMenu :data="menu"/>
+  <ToolbarMenu :data="menu" @filter="toggle('filterOverlayPanel', $event)" :filter="true" :filtered="filtered"/>
   <BlockUI :blocked="loading" class="card">
 <!--          <Button class="p-button-info align-items-center" style="padding: 0.25rem 1rem;"-->
 <!--            @click="openDocument" :disabled="!currentDocument">-->
 <!--            <i class="fa-regular fa-address-card" /> &nbsp;{{ $t("contracts.card") }}</Button>-->
     <DataTable :value="documents" dataKey="id" :rows="rows" :totalRecords="total" :first="first"
       :paginator="true" :paginatorTemplate="paginatorTemplate" :rowsPerPageOptions="[10, 25, 50]"
-      :currentPageReportTemplate="currentPageReportTemplate" :lazy="true" :loading="tableLoading" 
-      scrollable scrollHeight="flex" v-model:selection="currentDocument" selectionMode="single" 
+      :currentPageReportTemplate="currentPageReportTemplate" :lazy="true" :loading="tableLoading"
+      scrollable scrollHeight="flex" v-model:selection="currentDocument" selectionMode="single"
       :rowHover="true" stripedRows class="flex-grow-1" @page="onPage">
       <template #empty>
         {{ this.$t("common.recordsNotFound") }}
@@ -58,8 +58,40 @@
       </Column>
     </DataTable>
   </BlockUI>
+
+  <OverlayPanel ref="filterOverlayPanel">
+    <div class="p-fluid" style="min-width: 320px;">
+      <div class="field">
+        <label>{{ $t('contracts.filter.author') }}</label>
+        <FindUser v-model="filter.author" :max="1" :userType="3"></FindUser>
+      </div>
+      <div class="field">
+        <label>{{ $t('contracts.filter.status') }}</label>
+        <Dropdown v-model="filter.status" :options="statuses" optionValue="id"
+                  class="p-column-filter" :showClear="true">
+          <template #value="slotProps">
+            <span v-if="slotProps.value" :class="'customer-badge status-' + statuses.find((e) => e.id === slotProps.value).value">
+              {{ $i18n.locale === 'kz' ? statuses.find((e) => e.id === slotProps.value).nameKz : $i18n.locale === 'ru'
+                ? statuses.find((e) => e.id === slotProps.value).nameRu : statuses.find((e) => e.id === slotProps.value).nameEn }}
+            </span>
+          </template>
+          <template #option="slotProps">
+            <span :class="'customer-badge status-' + slotProps.option.value">
+              {{ $i18n.locale === 'kz' ? slotProps.option.nameKz : $i18n.locale === 'ru'
+                ? slotProps.option.nameRu : slotProps.option.nameEn }}
+            </span>
+          </template>
+        </Dropdown>
+      </div>
+      <div class="field">
+        <Button :label="$t('common.clear')" @click="clearFilter();toggle('filterOverlayPanel', $event);getActs()" class="mb-2 p-button-outlined"/>
+        <Button :label="$t('common.search')" @click="filtered = true;toggle('filterOverlayPanel', $event);getActs()" class="mt-2"/>
+      </div>
+    </div>
+  </OverlayPanel>
+
   <!-- documentInfoSidebar -->
-  <Sidebar v-model:visible="visibility.documentInfoSidebar" position="right" class="p-sidebar-lg" 
+  <Sidebar v-model:visible="visibility.documentInfoSidebar" position="right" class="p-sidebar-lg"
     style="overflow-y: scroll" @hide="getActs">
     <DocSignaturesInfo :docIdParam="currentDocument.uuid"></DocSignaturesInfo>
   </Sidebar>
@@ -72,10 +104,11 @@ import RolesEnum from "@/enum/roleControls/index";
 
 import { DocService } from "@/service/doc.service";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo";
+import FindUser from "@/helpers/FindUser.vue";
 
 export default {
   name: 'Acts',
-  components: { DocSignaturesInfo },
+  components: {FindUser, DocSignaturesInfo },
   props: { },
   data() {
     return {
@@ -108,6 +141,19 @@ export default {
       page: 0,
       rows: 10,
       actionsNode: {},
+      statuses: [Enum.StatusesArray.StatusCreated, Enum.StatusesArray.StatusInapproval, Enum.StatusesArray.StatusApproved],
+      filter: {
+        applied: false,
+        status: null,
+        author: [],
+        createdFrom: null,
+        createdTo: null,
+        sourceType: null,
+        template: null,
+        name: null,
+        folder: null,
+      },
+      filtered: false,
     }
   },
   created() {
@@ -140,7 +186,7 @@ export default {
       if (!user) {
         return '';
       }
-      
+
       let name = '';
 
       if (this.$i18n.locale === 'en' && this.validString(user.thirdnameEn) && this.validString(user.firstnameEn)) {
@@ -153,8 +199,8 @@ export default {
         return name
       }
 
-      name = user.thirdName + ' ' + user.firstName 
-      
+      name = user.thirdName + ' ' + user.firstName
+
       if (this.validString(user.lastName)) {
         name += ' ' + user.lastName
       }
@@ -186,6 +232,10 @@ export default {
         page: this.page,
         rows: this.rows,
         docType: this.Enum.DocType.ActCompletedWorks,
+        filter: {
+          status: this.filter.status && this.filter.status.length > 0 ? this.filter.status : null,
+          author: this.filter.author.length > 0 && this.filter.author[0] ? this.filter.author[0].userID : null,
+        },
       }).then(res => {
         this.documents = res.data.documents;
         this.total = res.data.total;
@@ -240,7 +290,7 @@ export default {
       })
     },
     executed(data) {
-      if (data.docHistory.stateId !== this.Enum.APPROVED.ID) {
+      if (data.docHistory?.stateId !== this.Enum.APPROVED.ID) {
         return false;
       }
 
@@ -250,7 +300,7 @@ export default {
             if (data.requests[i].status === 1) {
               return true;
             }
-            
+
             break;
           }
         }
@@ -269,7 +319,7 @@ export default {
             if (data.requests[i].status === 0) {
               return true;
             }
-            
+
             break;
           }
         }
@@ -332,6 +382,54 @@ export default {
     toggleActions(node) {
       this.actionsNode = node
     },
+    deleteFile() {
+      this.$confirm.require({
+        message: this.$t("common.doYouWantDelete"),
+        header: this.$t("common.confirm"),
+        icon: 'pi pi-exclamation-triangle',
+        acceptClass: 'p-button p-button-success',
+        rejectClass: 'p-button p-button-danger',
+        accept: () => {
+          this.loading = true;
+
+          this.service.documentDeleteV2({
+            uuid: this.currentDocument.uuid,
+          }).then(_ => {
+            this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
+            this.getActs();
+            this.loading = false;
+          }).catch(err => {
+            if (err.response && err.response.status == 401) {
+              this.$store.dispatch("logLout")
+            } else if (err.response && err.response.data && err.response.data.localized) {
+              this.showMessage('error', this.$t(err.response.data.localizedPath), null)
+            } else {
+              console.log(err)
+              this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
+            }
+
+            this.loading = false;
+          })
+        },
+      });
+    },
+    toggle(ref, event) {
+      this.$refs[ref].toggle(event);
+    },
+    clearFilter() {
+      this.filter = {
+        applied: false,
+        status: null,
+        author: [],
+        createdFrom: null,
+        createdTo: null,
+        sourceType: null,
+        template: null,
+        name: null,
+        folder: null,
+      };
+      this.filtered = false;
+    },
   },
   computed: {
     menu () {
@@ -339,14 +437,14 @@ export default {
         {
           label: this.$t('contracts.menu.sendForExecution'),
           icon: "fa-solid fa-circle-check",
-          disabled: !this.currentDocument || this.currentDocument.docHistory.stateId !== Enum.APPROVED.ID || this.executed(this.currentDocument) || this.execution(this.currentDocument),
+          disabled: !this.currentDocument || this.currentDocument.docHistory?.stateId !== Enum.APPROVED.ID || this.executed(this.currentDocument) || this.execution(this.currentDocument),
           visible: this.findRole(null, RolesEnum.roles.ActsToExecution) || this.findRole(null, RolesEnum.roles.MainAdministrator) || this.findRole(null, RolesEnum.roles.ScienceDirector),
           command: () => {this.sendForExecution(this.currentDocument)},
         },
         {
           label: this.$t('contracts.executed'),
           icon: "fa-solid fa-envelope-circle-check",
-          disabled: !this.currentDocument || this.currentDocument.docHistory.stateId !== Enum.APPROVED.ID || this.executed(this.currentDocument) || !this.execution(this.currentDocument),
+          disabled: !this.currentDocument || this.currentDocument.docHistory?.stateId !== Enum.APPROVED.ID || this.executed(this.currentDocument) || !this.execution(this.currentDocument),
           visible: this.findRole(null, RolesEnum.roles.Accountant) || this.findRole(null, RolesEnum.roles.MainAdministrator),
           command: () => {this.execute(this.currentDocument)},
         },
@@ -362,9 +460,20 @@ export default {
         {
           label: this.$t('common.download'),
           icon: "fa-solid fa-file-arrow-down",
-          visible: this.actionsNode.docHistory && this.actionsNode.docHistory.stateId === Enum.APPROVED.ID,
+          visible: this.actionsNode.docHistory && this.actionsNode.docHistory?.stateId === Enum.APPROVED.ID,
           command: () => {this.currentDocument = this.actionsNode; this.download()},
         },
+        {
+          label: this.$t('common.delete'),
+          icon: "fa-solid fa-trash",
+          visible: (this.actionsNode.docHistory && this.actionsNode.docHistory?.stateId === Enum.CREATED.ID ||
+              this.actionsNode.docHistory?.stateId === Enum.REVISION.ID || this.actionsNode.docHistory?.stateId === Enum.INAPPROVAL.ID) &&
+              this.loginedUser.userID === this.actionsNode.creatorID,
+          command: () => {
+            this.currentDocument = this.actionsNode;
+            this.deleteFile()
+          },
+        }
       ]
     },
   }
@@ -382,7 +491,7 @@ export default {
   font-size: 1.25rem;
   margin-right: 1rem;
   display: flex;
-  align-items: center; 
+  align-items: center;
 }
 .card {
   //flex-grow: 1;

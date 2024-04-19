@@ -104,7 +104,7 @@
 
 <script>
 import DicLanguage from "../../../dictionary/DicLanguage";
-import axios from "axios";
+import api from "@/service/api";
 import {getHeader, smartEnuApi} from "@/config/config";
 
 export default {
@@ -159,8 +159,8 @@ export default {
       )
     },
     getCatalog() {
-      axios.post(
-          smartEnuApi + "/knowledge/levels", {}, {headers: getHeader()}).then((res) => {
+      api.post(
+          "/knowledge/levels", {}, {headers: getHeader()}).then((res) => {
         this.knowledgeLevels = res.data
       }).catch((error) => {
         if (error.response.status == 401) {
@@ -180,8 +180,8 @@ export default {
       fd.append("cert", this.file);
       if (this.validateForm()) {
         let path = !this.value.id ? "/candidate/language/create" : "/candidate/language/update"
-        axios
-            .post(smartEnuApi + path, fd, {headers: getHeader(),})
+        api
+            .post(path, fd, {headers: getHeader(),})
             .then(res => {
               this.emitter.emit("language", true);
             }).catch(error => {

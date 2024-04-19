@@ -284,7 +284,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "@/service/api";
 import {b64toBlob, getHeader, smartEnuApi} from "@/config/config";
 import ResumeView from "../../candidate/ResumeView.vue";
 import html2pdf from "html2pdf.js";
@@ -468,7 +468,7 @@ export default {
       }
     },
     getVacancy(vacancyId) {
-      axios.post(smartEnuApi + "/vacancy/single",
+      api.post("/vacancy/single",
           {
             vacancyId: parseInt(vacancyId)
           },
@@ -483,7 +483,7 @@ export default {
       });
     },
     getCatalog() {
-      axios.post(smartEnuApi + "/vacancy/sources",
+      api.post("/vacancy/sources",
           {}, {headers: getHeader()}).then((res) => {
         this.vacancySources = res.data
         this.getUserCandidate()
@@ -504,7 +504,7 @@ export default {
      * *********************** ПРОВЕРКА НАЛИЧИЯ РЕЗЮМЕ
      */
     getUserCandidate() {
-      axios.post(smartEnuApi + "/candidate/get",
+      api.post("/candidate/get",
           {}, {headers: getHeader()}).then(res => {
         this.visible.apply = true
         this.candidate = res.data
@@ -540,7 +540,7 @@ export default {
         fd.append("resumeData", this.resumeFile)
       }
       if (this.validateForm()) {
-        axios.post(smartEnuApi + "/vacancy/apply",
+        api.post("/vacancy/apply",
             fd, {headers: getHeader()}).then((response) => {
           this.visible.apply = false;
           this.vacancy.isApply = true

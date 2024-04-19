@@ -2,7 +2,7 @@
   <div class="w-100">жүктелуде . . . </div>
 </template>
 <script>
-import axios from 'axios';
+import api from '@/service/api';
 import {mapActions} from 'vuex';
 import {getHeader, smartEnuApi, findRole} from "../config/config";
 
@@ -14,8 +14,7 @@ export default {
     ]),
     findRole: findRole,
     getLoginedUser(){
-      axios.get(
-        smartEnuApi +'/logineduserinfo', 
+      api.get('/logineduserinfo', 
         { headers:getHeader() }
       ).then(response => {
         window.localStorage.setItem("loginedUser", JSON.stringify(response.data));
@@ -42,7 +41,7 @@ export default {
       })
     },
     getUserSlug() {
-      axios.get(smartEnuApi + `/getUserSlug`, {headers: getHeader()}).then(res => {
+      api.get(`/getUserSlug`, {headers: getHeader()}).then(res => {
         if (res.data) {
           localStorage.setItem("userSlug", JSON.stringify(res.data))
           this.setUserSiteSlug()

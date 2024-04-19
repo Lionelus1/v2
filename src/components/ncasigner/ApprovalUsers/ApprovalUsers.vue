@@ -14,7 +14,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import StepComponent from "./StepComponent.vue";
 import {smartEnuApi, getHeader} from "@/config/config";
 
