@@ -38,7 +38,7 @@ export default {
             nameen: "Certificate of an individual",
             value: "individual"
           }
-        }
+        },
       ],
       currentStageUsers: null,
       currentStage: 1,
@@ -53,7 +53,7 @@ export default {
       planService: new WorkPlanService(),
       approveComponentKey: 0,
       approving: false,
-      stages: this.approvalStages ? this.approvalStages : this.approval_users,
+      stages: this.approvalStages ? this.approvalStages : null,
       Enum: Enum,
       file: null
     }
