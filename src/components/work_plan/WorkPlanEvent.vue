@@ -537,9 +537,9 @@ export default {
     getWorkPlanApprovalUsers() {
       this.planService.getWorkPlanApprovalUsers(parseInt(this.work_plan_id)).then(res => {
         if (res.data) {
-          this.approval_users = res.data;
-          this.isPlanSentApproval = true;
-          this.approval_users.forEach(e => {
+          // this.approval_users = res.data;
+          // this.isPlanSentApproval = true;
+          res?.data?.forEach(e => {
             if (this.loginedUserId === e.id) {
               this.isApproval = true;
             }

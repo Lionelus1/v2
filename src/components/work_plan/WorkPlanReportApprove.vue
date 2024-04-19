@@ -53,7 +53,7 @@ export default {
       planService: new WorkPlanService(),
       approveComponentKey: 0,
       approving: false,
-      stages: this.approvalStages ? this.approvalStages : null,
+      stages: this.approvalStages ? this.approvalStages : this.approval_users,
       Enum: Enum,
       file: null
     }
