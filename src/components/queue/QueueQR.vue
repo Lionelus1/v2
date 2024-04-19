@@ -21,6 +21,7 @@
       <div class="relative">
         <div class="talon" v-if="inQueue">
           <template v-if="queinfo">
+            <template v-if="!called">
             <div class="talon_top">
               <img src="assets/layout/images/logo.svg" style="width:110px; margin: 10px ">
 
@@ -42,6 +43,24 @@
                 <div>{{ talonTime }}</div>
               </div>
             </div>
+            </template>
+            <template v-if="called">
+              <div class="talon_called">
+                <img src="assets/layout/images/logo.svg" style="width:110px; margin: 10px ">
+                <div class="bg">
+                <div class="talon_top">
+                  <div class="talon_number">{{ padTo2Digits(queinfo.queueNumber) }}</div>
+                  <b>Сіз шақырылдыңыз, өтіңіз</b>
+                </div>
+                <div class="talon_content">
+                  <div class="go_to flex justify-content-center align-items-center">
+                    <i class="fa-solid fa-person-walking-arrow-right"></i>
+                    № {{ calledWindow }} терезе
+                  </div>
+                </div>
+                </div>
+              </div>
+            </template>
             <div class="dots"></div>
           </template>
           <ProgressSpinner v-else class="progress-spinner" strokeWidth="2" style="width: 50px;"/>
@@ -51,11 +70,20 @@
             <div>№</div>
             <div>Терезе</div>
           </div>
-          <div class="item flex justify-content-between align-items-center blinking" v-for="i of queuesWS" :key="i">
-            <div>{{ padTo2Digits(i.ticket) }}</div>
-            <i class="pi pi-arrow-right"></i>
-            <div>{{ i.window }}</div>
-          </div>
+          <template v-if="!called">
+            <div class="item flex justify-content-between align-items-center blinking" v-for="i of queuesWS" :key="i">
+              <div>{{ padTo2Digits(i.ticket) }}</div>
+              <i class="pi pi-arrow-right"></i>
+              <div>{{ i.window }}</div>
+            </div>
+          </template>
+          <template v-if="called">
+            <div class="item flex justify-content-between align-items-center blinking_called" v-for="i of queuesWS.slice(0, 1)" :key="i">
+              <div>{{ padTo2Digits(i.ticket) }}</div>
+              <i class="pi pi-arrow-right"></i>
+              <div>{{ i.window }}</div>
+            </div>
+          </template>
         </div>
         <div style="width: 90%; margin: auto">
           <Button class="p-button-lg p-button-danger justify-content-center w-full border-white" style="border-radius: 8px"
@@ -67,20 +95,18 @@
   </div>
   <Dialog v-model:visible="refusalVisible" :style="{ width: '450px' }" modal header=" ">
     <div class="text-center">
-      <!--      Вы уверены, что хотите отказаться от место в очереди?-->
-      <h4>Кезектегі орыннан бас тартқыңыз келетініне сенімдісіз бе?</h4>
+      <h4 v-if="locale === 'ru'">Вы уверены, что хотите отказаться от место в очереди?</h4>
+      <h4 v-if="locale === 'kz'">Кезектегі орыннан бас тартқыңыз келетініне сенімдісіз бе?</h4>
     </div>
-    <template #footer>
-      <Button :label="$t('common.yes')" icon="pi pi-check" class="p-button p-component p-button-success w-full mb-3"
+      <Button :label="$t('common.yes')" icon="pi pi-check" class="p-button p-component p-button-success w-full mb-3 mt-6"
               @click="refusal()"/>
       <Button :label="$t('common.no')" icon="pi pi-times" class="p-button p-component p-button-danger w-full"
               @click="refusalVisible = false"/>
-    </template>
   </Dialog>
 </template>
 
 <script setup>
-import {onMounted, ref} from "vue";
+import {onMounted, ref, watch} from "vue";
 import axios from "axios";
 import {getHeader, smartEnuApi, socketApi} from "@/config/config";
 import {useRoute} from "vue-router";
@@ -101,6 +127,9 @@ const currentStep = ref(1);
 const talonDate = ref('')
 const talonTime = ref('')
 const queueKey = ref()
+const currentTicketWS = ref(null)
+const currentTicketAPI = ref(null)
+const calledWindow = ref()
 const refusalVisible = ref(false)
 
 const validatePhoneNumber = (val) => {
@@ -128,6 +157,12 @@ const getQueue = (data) => {
 }
 getQueue(parentId.value)
 
+watch(()=> currentTicketWS.value, (newValue, oldValue) => {
+  if (currentTicketWS.value !== null && currentTicketAPI.value !== null) {
+    called.value = currentTicketWS.value === currentTicketAPI.value;
+  }
+});
+
 const splitDateTime = (dateTimeString) => {
   const dateTime = moment(dateTimeString);
 
@@ -150,6 +185,7 @@ const registerQueue = (queue) => {
         })
         .then((response) => {
           queinfo.value = response.data
+          currentTicketAPI.value = queinfo.value.queueNumber
           const numMin = response.data.averageTime / 60
           queinfo.value.averageTime = numMin.toFixed(0);
           splitDateTime(response.data.queueDate)
@@ -187,6 +223,8 @@ const useRealtimeStream = (qId = 0) => {
     }
     msg.window = Number(msg.window)
     queuesWS.value.unshift(JSON.parse(event.data));
+    currentTicketWS.value = queuesWS.value[0].ticket
+    calledWindow.value = queuesWS.value[0].window
     if (queuesWS.value.length > 3) {
       queuesWS.value = queuesWS.value.slice(0, 3);
     }
@@ -208,7 +246,6 @@ const useRealtimeStream = (qId = 0) => {
   };
 }
 const padTo2Digits = (num) => {
-  console.log(num)
   return num.toString().padStart(3, '0');
 }
 const refusal = () => {
@@ -218,7 +255,6 @@ const refusal = () => {
         headers: getHeader(),
       })
       .then((response) => {
-        console.log(response)
         refusalVisible.value = false
         localStorage.removeItem('queueKey')
         currentStep.value = 2
@@ -316,15 +352,17 @@ onMounted(() => {
 }
 
 .talon_called {
-  background: #2aed1f;
   margin: auto;
-  text-align: center;
-  border-radius: 8px;
   width: 90%;
-  z-index: 2;
 
+.bg{
+  margin-top: 20px;
+  background: #2aed1f;
+  border-radius: 8px;
+  padding-bottom: 30px;
+}
   &_top {
-    padding: 50px 0;
+    padding-bottom: 50px;
   }
 
   &_number {
@@ -332,7 +370,7 @@ onMounted(() => {
     font-weight: 600;
   }
 
-  &_content {
+  .talon_content {
     padding: 0 30px;
   }
 
@@ -345,21 +383,6 @@ onMounted(() => {
     font-size: 18px;
     font-weight: 600;
   }
-}
-
-.talon_called:after {
-  background: linear-gradient(-45deg, transparent 16px, #2aed1f 0),
-  linear-gradient(45deg, transparent 16px, #2aed1f 0);
-  background-repeat: repeat-x;
-  background-position: left bottom;
-  background-size: 15px 32px;
-  content: "";
-  display: block;
-  width: 100%;
-  height: 32px;
-  position: relative;
-  top: 20px;
-  left: 0;
 }
 
 .talon:before {
@@ -378,21 +401,6 @@ onMounted(() => {
   text-align: center;
 }
 
-/*.talon:after{
-  background:
-      linear-gradient(-45deg, transparent 16px, #fff 0),
-      linear-gradient(45deg, transparent 16px, #fff 0);
-  background-repeat: repeat-x;
-  background-position: left bottom;
-  background-size: 15px 32px;
-  content: "";
-  display: block;
-  width: 100%;
-  height: 32px;
-  position: relative;
-  top:20px;
-  left:0;
-}*/
 .dashed {
   margin: 10px 0;
   padding: 5px 0;
@@ -400,7 +408,7 @@ onMounted(() => {
 }
 
 .talon_list {
-  margin: 40px auto;
+  margin: 20px auto;
   width: 90%;
 
   .item {
@@ -413,6 +421,10 @@ onMounted(() => {
 
   .blinking {
     animation: blink 0.8s ease-in-out 3;
+  }
+  .blinking_called {
+    background: #2aed1f;
+    animation: blink_called 0.8s ease-in-out 3;
   }
 }
 
@@ -428,6 +440,23 @@ onMounted(() => {
   }
   75% {
     background-color: #add8fb;
+  }
+  100% {
+    background-color: #fff;
+  }
+}
+@keyframes blink_called {
+  0% {
+    background-color: #fff;
+  }
+  25% {
+    background-color: #2aed1f;
+  }
+  50% {
+    background-color: #fff;
+  }
+  75% {
+    background-color: #2aed1f;
   }
   100% {
     background-color: #fff;
