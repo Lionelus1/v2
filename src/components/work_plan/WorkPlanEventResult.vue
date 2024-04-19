@@ -11,7 +11,7 @@
       <Button type="button" icon="fa-solid fa-filter" :label="$t('common.filter')"
                         @click="toggle('global-filter', $event)" aria:haspopup="true" aria-controls="overlay_panel"
                         class="p-button-outlined mr-2" />
-                <OverlayPanel ref="global-filter" class="col-3">
+                <OverlayPanel ref="global-filter" class="overlay-panel" style="max-width: 50vw;">
                   <div class="p-fluid">
                     <div class="field">
                       <label>{{ $t('cafedra.responsible') }}</label>
@@ -570,6 +570,7 @@ export default {
     clearResultFilter(){
       this.resultFilter.responsiveUser = null;
       this.resultFilter.quarter = null;
+      this.getData()
     },
     initWordCount(count) {
       this.inputWordCount = count
@@ -610,21 +611,20 @@ export default {
       });
     },
     getData() {
+
       const data = {
         event_id : this.event.work_plan_event_id,
-        result_filter: {}
-
+        result_filter: JSON.parse(JSON.stringify(this.resultFilter))
       }
+
+      if (data.result_filter.responsiveUser) {
+        data.result_filter.responsiveUser = data.result_filter.responsiveUser[0]
+      }
+
       // if (this.resultFilter && this.resultFilter.faculty && this.resultFilter.faculty.id > 0) {
       //   data.result_filter.department_id = this.resultFilter.faculty.id;
       // }
-      if (this.resultFilter && this.resultFilter.responsiveUser && this.resultFilter.responsiveUser.length > 0 && this.resultFilter.responsiveUser[0].userID > 0){
-        //data.result_filter.responsive_user = this.resultFilter.responsiveUser[0].userID;
-        data.result_filter.responsive_user = this.resultFilter.responsiveUser;
-      }
-      if (this.resultFilter && this.resultFilter.quarter && this.resultFilter.quarter > 0 ){
-        data.result_filter.quarter = this.resultFilter.quarter;
-      }
+      
       this.planService.getEventResult(data).then(res => {
         if (res.data) {
           this.resultData = res.data;
@@ -1378,5 +1378,9 @@ td {
   background-color: #cc33ff; 
   color: #ffffff; 
 }
-
+@media screen and (max-width: 768px) {
+  .overlay-panel {
+    max-width: 90vw; /* Adjust the percentage as needed */
+  }
+}
 </style>
