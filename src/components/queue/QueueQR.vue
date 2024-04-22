@@ -86,7 +86,8 @@
           </template>
         </div>
         <div style="width: 90%; margin: auto">
-          <Button class="p-button-lg p-button-danger justify-content-center w-full border-white" style="border-radius: 8px"
+          <Button class="p-button-lg p-button-outlined justify-content-center w-full" style="border-radius: 8px;color: red !important;
+    background: rgba(255, 0, 0, 0.15);"
                   @click="refusalVisible = true">Кезектен бас тарту
           </Button>
         </div>
@@ -277,7 +278,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .talon_bg {
-  background: #007dbe;
+  //background: #007dbe;
   height: 100vh;
   margin: -20px;
   padding-top: 30px;
@@ -293,6 +294,7 @@ onMounted(() => {
   border-radius: 8px;
   width: 90%;
   z-index: 2;
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
 
   &_top {
     padding: 20px 0;
@@ -314,7 +316,7 @@ onMounted(() => {
     bottom: 170px;
   }
 
-  .dots:after {
+ /* .dots:after {
     content: '';
     position: absolute;
     display: block;
@@ -336,7 +338,7 @@ onMounted(() => {
     background: #007dbe;
     right: -33px;
     top: -10px;
-  }
+  }*/
 
   .talon_badge {
     display: flex;
@@ -357,7 +359,9 @@ onMounted(() => {
 
 .bg{
   margin-top: 20px;
-  background: #2aed1f;
+  background: #49e740;
+  //border: 2px solid #ccc;
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
   border-radius: 8px;
   padding-bottom: 30px;
 }
@@ -385,7 +389,7 @@ onMounted(() => {
   }
 }
 
-.talon:before {
+/*.talon:before {
   content: "";
   display: block;
   position: absolute;
@@ -399,7 +403,7 @@ onMounted(() => {
   left: 0;
   right: 0;
   text-align: center;
-}
+}*/
 
 .dashed {
   margin: 10px 0;
@@ -417,13 +421,15 @@ onMounted(() => {
     padding: 15px;
     font-size: 20px;
     margin-bottom: 10px;
+    border: 1px solid #ccc;
+    //box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
   }
 
   .blinking {
     animation: blink 0.8s ease-in-out 3;
   }
   .blinking_called {
-    background: #2aed1f;
+    background: #49e740;
     animation: blink_called 0.8s ease-in-out 3;
   }
 }
@@ -450,13 +456,13 @@ onMounted(() => {
     background-color: #fff;
   }
   25% {
-    background-color: #2aed1f;
+    background-color: #49e740;
   }
   50% {
     background-color: #fff;
   }
   75% {
-    background-color: #2aed1f;
+    background-color: #49e740;
   }
   100% {
     background-color: #fff;
