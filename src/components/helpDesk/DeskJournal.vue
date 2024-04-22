@@ -1,15 +1,7 @@
 <template>
   <div class="col-12">
     <h3>{{ t('helpDesk.title') }}</h3>
-    <ToolbarMenu :data="mainMenu">//@search="search" :search="true" @filter="toggleFilter($event)" :filter="true"
-      :filtered="filtered"
-      <template #end>
-        <Button class="align-items-center" :class="{'p-button-success p-button-outlined': filter.applied,
-          'p-button-secondary p-button-text': !filter.applied}" @click="toggle('filterOverlayPanel', $event)">
-          <i class="fa-solid fa-filter"/> &nbsp;{{ $t("scienceWorks.buttons.filter") }}
-        </Button>
-      </template>
-    </ToolbarMenu>
+    <ToolbarMenu :data="mainMenu" @filter="toggle('filterOverlayPanel', $event)" :filter="true" :filtered="filtered"/>
     <BlockUI class="card">
       <Dialog :header="t('helpDesk.application.applicationName')" v-model:visible="visibility.newPublicationDialog"
               :style="{ width: '450px' }"
@@ -39,7 +31,7 @@
       <div>
         <DataTable :lazy="true" :loading="loading" :rowsPerPageOptions="[5, 10, 20, 50]" :value="data" dataKey="id"
                    :rowHover="true"
-                   filterDisplay="menu" responsiveLayout="scroll" :paginator="true" selectionMode="single" stripedRows
+                   filterDisplay="menu" :first="first" responsiveLayout="scroll" :paginator="true" selectionMode="single" stripedRows
                    class="p-datatable-sm" :rows="10" :totalRecords="total" @page="onPage"
                    v-model:selection="currentDocument" scrollable
                    scrollHeight="flex" @lazy="true">
@@ -61,8 +53,8 @@
           <Column field="status" :header="t('common.status')">
             <template #body="{ data }">
               <router-link :class="'customer-badge status-' + data.doc?.docHistory?.stateEn"
-                  :to="{name: 'Request', params: {uuid: data?.uuid, id: data?.id}}"
-                  tag="a">
+                           :to="{name: 'Request', params: {uuid: data?.uuid, id: data?.id}}"
+                           tag="a">
                 {{ getDocStatus(data.doc?.docHistory?.stateEn) }}
               </router-link>
             </template>
@@ -71,8 +63,8 @@
           <Column field="requestReason" :header="t('helpDesk.application.requestReason')">
             <template #body="{ data }">
               <span>{{
-                  $i18n.locale === "kz" ? data.doc?.newParams?.selectedPosition.value.name_kz : $i18n.locale === "ru" ? data.doc?.newParams?.selectedPosition.value.name_ru :
-                      data.doc?.newParams?.selectedPosition.value.name_en
+                  $i18n.locale === "kz" ? data.doc?.newParams?.selectedPosition?.value.name_kz : $i18n.locale === "ru" ? data.doc?.newParams?.selectedPosition?.value.name_ru :
+                      data.doc?.newParams?.selectedPosition?.value.name_en
                 }}</span>
             </template>
           </Column>
@@ -88,7 +80,7 @@
 
           <Column field="fullName" :header="t('web.logUser')">
             <template #body="{ data }">
-              <span>{{ data.doc?.newParams?.not_formal_student_info.value.fullName }}</span>
+              <span>{{ data.doc?.newParams?.not_formal_student_info?.value.fullName }}</span>
             </template>
           </Column>
 
@@ -100,10 +92,14 @@
                         class="p-button-text p-button-info p-1">
                   <i class="fa-solid fa-eye fa-xl"></i>
                 </Button>
+                <Button class="p-button-text p-button-danger p-1 mr-2"
+                        @click="currentDocument=data.doc; openDelete(data)"
+                        v-if="(data.doc.docHistory.stateId === Enum.CREATED.ID) && (currentUser.userID === data.sender_id)">
+                  <i class="fa-solid fa-trash-can fa-xl"></i>
+                </Button>
               </div>
             </template>
           </Column>
-
           <!--          <Column style="min-width: 50px;" v-if="!findRole(null, 'main_administrator')">-->
           <!--            <template #body="{ data }">-->
           <!--              <div class="flex flex-wrap column-gap-1 row-gap-1">-->
@@ -120,10 +116,80 @@
       </div>
     </BlockUI>
   </div>
+  <OverlayPanel ref="filterv2">
+    <div class="p-fluid" style="min-width: 320px;">
+      <div class="field">
+        <label>{{ t('helpDesk.application.categoryApplication') }}</label>
+        <Dropdown v-model="tempFilter.category"
+                  :options="directions"
+                  :optionLabel="locale === 'kz' ? 'name_kz' : locale === 'ru' ? 'name_ru' :
+          'name_en'"/>
+
+        <!--        <InputText type="text" v-model="tempFilter.category"/>-->
+      </div>
+      <div class="field">
+        <label>{{ t('helpDesk.applicant') }}</label>
+        <FindUser v-model="tempFilter.applicant" :max="1" searchMode="local"></FindUser>
+      </div>
+      <div class="field">
+        <label>{{ t('scienceWorks.filter.status') }}</label>
+        <Dropdown v-model="tempFilter.status" :options="statuses" optionValue="id"
+                  class="p-column-filter" :showClear="true">
+          <template #value="slotProps">
+            <span v-if="slotProps.value"
+                  :class="'customer-badge status-' + statuses.find((e) => e.id === slotProps.value).value">
+              {{
+                $i18n.locale === 'kz' ? statuses.find((e) => e.id === slotProps.value).nameKz : $i18n.locale === 'ru'
+                    ? statuses.find((e) => e.id === slotProps.value).nameRu : statuses.find((e) => e.id === slotProps.value).nameEn
+              }}
+            </span>
+          </template>
+          <template #option="slotProps">
+            <span :class="'customer-badge status-' + slotProps.option.value">
+              {{
+                $i18n.locale === 'kz' ? slotProps.option.nameKz : $i18n.locale === 'ru'
+                    ? slotProps.option.nameRu : slotProps.option.nameEn
+              }}
+            </span>
+          </template>
+        </Dropdown>
+      </div>
+      <div class="field">
+        <Button :label="$t('common.clear')"
+                @click="clearFilter();toggle('filterOverlayPanel', $event);
+                getTicket()" icon="pi pi-trash" class="mb-2 p-button-outlined"/>
+        <Button icon="pi pi-search" :label="$t('common.search')" class="mt-2"
+                @click="saveFilter();toggle('filterOverlayPanel', $event);
+                getTicket()"/>
+      </div>
+    </div>
+  </OverlayPanel>
   <Sidebar v-model:visible="visibility.documentInfoSidebar" position="right" class="p-sidebar-lg"
            style="overflow-y: scroll">
     <DocSignaturesInfo :docIdParam="currentDocument.uuid"></DocSignaturesInfo>
   </Sidebar>
+  <!--  ДИАЛОГОВОЕ ОКНО ДЛЯ УДАЛЕНИЯ ЗАПИСИ В ТАБЛИЦЕ  -->
+  <Dialog v-model:visible="isDeleting"
+          :style="{ width: '450px' }"
+          :modal="true"
+          :closable="false">
+    <div class="confirmation-content">
+      <i class="pi pi-exclamation-triangle p-mr-3" style="font-size: 2rem"/>
+      <span>
+          {{ $t("common.doYouWantDelete") }}?
+        </span>
+    </div>
+    <template #footer>
+      <Button :label="$t('common.yes')"
+              icon="pi pi-check"
+              class="p-button p-component p-button-success p-mr-2"
+              @click="deleteTicket"/>
+      <Button :label="$t('common.no')"
+              icon="pi pi-times"
+              class="p-button p-component p-button-danger p-mr-2"
+              @click="closeDelete"/>
+    </template>
+  </Dialog>
 </template>
 
 <script setup>
@@ -160,21 +226,17 @@ const request = ref({
   uuid: null,
   is_saved: 1,
   local: null
-
 });
+const isDeleteData = ref(null)
+const isDeleting = ref(false)
+const first = ref(0)
+const currentUser = ref(JSON.parse(localStorage.getItem("loginedUser")));
 const uuid = ref(null);
 const isAdmin = findRole(null, 'main_administrator')
 const data = ref([]);
 const selectedDirection = ref(null);
 const currentDocument = ref(null);
 const loading = ref(false);
-const filter = ref({
-  applied: false,
-  name: null,
-  author: [],
-  status: null,
-  years: [],
-});
 const directions = ref(null);
 const showModal = ref(false);
 const total = ref(0);
@@ -192,6 +254,23 @@ const showMessage = (severity, detail, life) => {
     life: life || 3000,
   });
 };
+const statuses = ref([Enum.StatusesArray.StatusCreated, Enum.StatusesArray.StatusInapproval, Enum.StatusesArray.StatusApproved,
+  Enum.StatusesArray.StatusRevision, Enum.StatusesArray.StatusSigning, Enum.StatusesArray.StatusSigned])
+const filter = ref({
+  applied: false,
+  category: null,
+  applicant: [],
+  status: null,
+  years: [],
+})
+const filterv2 = ref(null)
+const tempFilter = ref({
+  applied: false,
+  category: null,
+  applicant: [],
+  status: null,
+  years: [],
+})
 // Список позиций с переводами
 const position = ref([
   {
@@ -257,11 +336,35 @@ const mainMenu = computed(() => [
     command: () => open('newPublicationDialog'),
   }
 ]);
+const toggle = (ref, event) => {
+  if (ref === 'filterOverlayPanel') {
+    tempFilter.value = JSON.parse(JSON.stringify(filter.value));
+    if (tempFilter.value.years) {
+      tempFilter.value.years.forEach((value, index, array) => {
+        array[index] = new Date(value);
+      });
+    }
+  }
 
+  filterv2.value.toggle(event);
+}
+const clearFilter = () => {
+  filter.value = {
+    applied: false,
+    category: null,
+    applicant: [],
+    status: null,
+    years: [],
+  };
+}
+const saveFilter = () => {
+  filter.value = JSON.parse(JSON.stringify(tempFilter.value));
+  filter.value.applied = true;
+}
+const filterClick = (event) => {
+  filtered.value = event
+}
 //Поиск и Фильтрация
-const search = (data) => {
-  alert(data);
-};
 const toggleFilter = (event) => {
   filter.value.toggle(event)
 }
@@ -336,8 +439,10 @@ const requstLocal = () => {
 
 
 const onPage = (event) => {
+  first.value = event.first
   lazyParams.value.page = event.page;
   lazyParams.value.rows = event.rows;
+  localStorage.setItem('DeskJournalCurrentPage', JSON.stringify({first: first.value, page: lazyParams.value.page, rows:lazyParams.value.rows}))
   getTicket();
 };
 
@@ -399,11 +504,16 @@ const getTicket = () => {
   service.helpDeskTicketGet(
       {
         ID: null,
-        search_text: null,
+        search_text: filter.value.category?.name_ru && filter.value.category?.name_ru.length > 0 ? filter.value.category?.name_ru : null,
         page: lazyParams.value.page,
         rows: lazyParams.value.rows,
         uuid: null,
-        is_saved: 1
+        is_saved: 1,
+        filter: {
+          status: filter.value.status && filter.value.status.length > 0 ? filter.value.status : null,
+          author: filter.value.applicant.length > 0 && filter.value.applicant[0] ? filter.value.applicant[0].userID : null,
+          years: filter.value.years && filter.value.years.length > 0 ? filter.value.years : null,
+        }
       })
       .then((res) => {
         loading.value = false
@@ -411,18 +521,55 @@ const getTicket = () => {
         total.value = res.data.total;
       }).catch((err) => {
     loading.value = false
-    if (err.response.status == 401) {
-      store.dispatch('logLout');
+    if (!err.response) {
+      data.value = null;
+      total.value = null;
     }
   });
 }
 
+const openDelete = (data) => {
+  isDeleteData.value = data
+  isDeleting.value = true
+}
+const closeDelete = () => {
+  isDeleteData.value = null
+  isDeleting.value = false
+}
 
+const deleteTicket = () => {
+  loading.value = true
+  const req = {
+    id: isDeleteData.value.id,
+    user_id: isDeleteData.value.sender_id,
+    doc_id: isDeleteData.value.doc_id
+  }
+  isDeleting.value = false
+  service.helpDeskDeleteTicket(req).then((res) => {
+    getTicket()
+  }).catch((err) => {
+        loading.value = false
+        if (err.response.status == 401) {
+          store.dispatch('logLout');
+        }
+      }
+  )
+}
+const search = (data) => {
+  alert(data);
+};
 // Вызов функций при монтировании компонента
 onMounted(() => {
   getTicket();
   requstLocal();
   getCategory();
+  let currentPage = localStorage.getItem('DeskJournalCurrentPage');
+  if (currentPage) {
+    currentPage = JSON.parse(currentPage);
+    first.value = currentPage.first;
+    lazyParams.value.page = currentPage.page;
+    lazyParams.value.rows = currentPage.rows;
+  }
 });
 </script>
 
