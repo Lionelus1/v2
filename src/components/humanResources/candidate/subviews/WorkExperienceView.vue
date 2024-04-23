@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "@/service/api";
 import {getHeader, smartEnuApi} from "@/config/config";
 export default {
   name: "WorkExperienceView",
@@ -26,8 +26,8 @@ export default {
   },
   methods: {
     deleteValue() {
-      axios
-          .post(smartEnuApi + "/candidate/experience/delete", {id: this.value.id}, {headers: getHeader(),})
+      api
+          .post("/candidate/experience/delete", {id: this.value.id}, {headers: getHeader(),})
           .then(res => {
             this.emitter.emit("experience", true);
           }).catch(error => {

@@ -5,10 +5,7 @@
     </div>
     <h4 class="m-0">{{ t("helpDesk.application.applicationName") }}</h4>
   </div>
-  <!-- @search="search" :search="true" @filter="toggleFilter(event)" :filter="true" :filtered="filtered"  -->
-
-
-  <ToolbarMenu v-if="request" :data="menu" />
+  <ToolbarMenu v-if="request" :data="menu"/>
   <TabView v-model:activeIndex="activeTab" @tab-change="tabChanged" class="flex flex-column flex-grow-1">
     <TabPanel :header="selectedDirection['name_' + locale]">
       <BlockUI  :blocked="loading" class="card">
@@ -60,43 +57,47 @@
                             @validateInput="validateInput" v-if="selectedDirection && selectedDirection.code === 'course_application'" />
       </BlockUI>
       <!-- sendToApproveDialog -->
-      <Dialog :header="t('common.action.sendToApprove')" v-model:visible="visibility.sendToApproveDialog" :style="{ width: '50vw' }">
+      <Dialog :header="t('common.action.sendToApprove')" v-model:visible="visibility.sendToApproveDialog"
+              :style="{ width: '50vw' }">
         <ProgressBar v-if="approving" mode="indeterminate" style="height: .5em"/>
         <div class="p-fluid" v-if="stages">
-          <ApprovalUsers :approving="loading"  v-model="selectedUsers" @closed="close('sendToApproveDialog')" @approve="sendToApprove($event)"
-            :stages="stages" mode="standard"></ApprovalUsers>
+          <ApprovalUsers :approving="loading" v-model="selectedUsers" @closed="close('sendToApproveDialog')"
+                         @approve="sendToApprove($event)"
+                         :stages="stages" mode="standard"></ApprovalUsers>
         </div>
       </Dialog>
       <!-- revisionDialog -->
-      <Dialog :header="$t('common.revision')" :modal="true" v-model:visible="visibility.revisionDialog" style="width: 30vw;">
+      <Dialog :header="$t('common.revision')" :modal="true" v-model:visible="visibility.revisionDialog"
+              style="width: 30vw;">
         <div class="p-fluid col-12">
-          <Textarea v-model="revisionText" autoResize rows="5" cols="30" />
+          <Textarea v-model="revisionText" autoResize rows="5" cols="30"/>
         </div>
         <template #footer>
-          <Button class="p-button-danger" :disabled="!revisionText" :label="t('common.revision')" @click="revision()" />
-          <Button :label="t('hdfs.cancelBtn')" @click="close('revisionDialog')" />
+          <Button class="p-button-danger" :disabled="!revisionText" :label="t('common.revision')" @click="revision()"/>
+          <Button :label="t('hdfs.cancelBtn')" @click="close('revisionDialog')"/>
         </template>
       </Dialog>
 
-<!--      rejectedDialog-->
-      <Dialog :header="$t('common.action.notAccept')" :modal="true" v-model:visible="visibility.rejectedDialog" style="width: 30vw;">
+      <!--      rejectedDialog-->
+      <Dialog :header="$t('common.action.notAccept')" :modal="true" v-model:visible="visibility.rejectedDialog"
+              style="width: 30vw;">
         <div class="p-fluid col-12">
-          <Textarea v-model="rejectedText" autoResize rows="5" cols="30" />
+          <Textarea v-model="rejectedText" autoResize rows="5" cols="30"/>
         </div>
         <template #footer>
-          <Button class="p-button-danger" :disabled="!rejectedText" :label="t('common.action.notAccept')" @click="rejected()" />
-          <Button :label="t('hdfs.cancelBtn')" @click="close('rejectedDialog')" />
+          <Button class="p-button-danger" :disabled="!rejectedText" :label="t('common.action.notAccept')"
+                  @click="rejected()"/>
+          <Button :label="t('hdfs.cancelBtn')" @click="close('rejectedDialog')"/>
         </template>
       </Dialog>
-
       <Sidebar v-model:visible="visibility.documentInfoSidebar" position="right" class="p-sidebar-lg">
         <DocSignaturesInfo :docIdParam="request.doc.uuid"></DocSignaturesInfo>
       </Sidebar>
-
     </TabPanel>
-    <TabPanel :header="t('common.show')" :disabled="!request || !request.doc || !request.doc.filePath || request.doc.filePath.length < 1">
+    <TabPanel :header="t('common.show')"
+              :disabled="!request || !request.doc || !request.doc.filePath || request.doc.filePath.length < 1">
       <div class="flex-grow-1 flex flex-row align-items-stretch">
-        <embed :src="pdf" style="width: 100%; height: 100vh;" v-if="pdf" type="application/pdf" />
+        <embed :src="pdf" style="width: 100%; height: 100vh;" v-if="pdf" type="application/pdf"/>
       </div>
     </TabPanel>
   </TabView>
@@ -107,30 +108,32 @@
 
 <script setup>
 import ToolbarMenu from "@/components/ToolbarMenu.vue";
-import { HelpDeskService } from "../../service/helpdesk.service";
+import {HelpDeskService} from "../../service/helpdesk.service";
 import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers";
-import { ref, computed, onMounted } from 'vue';
-import { useI18n } from "vue-i18n";
-import { useToast } from "primevue/usetoast";
-import { useStore } from "vuex";
-import { useRouter, useRoute } from "vue-router";
+import {ref, computed, onMounted} from 'vue';
+import {useI18n} from "vue-i18n";
+import {useToast} from "primevue/usetoast";
+import {useStore} from "vuex";
+import {useRouter, useRoute} from "vue-router";
 import CourseRegistration from "./CourseRegistration.vue";
-import { b64toBlob } from "@/config/config";
-import { downloadFile, findRole } from "../../config/config";
-import { DocService } from "@/service/doc.service";
+import {b64toBlob} from "@/config/config";
+import {downloadFile, findRole} from "../../config/config";
+import {DocService} from "@/service/doc.service";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo.vue";
 import DocEnum from "@/enum/docstates/index";
 import {ContragentService} from "@/service/contragent.service";
 
-
-const { t, locale } = useI18n()
+// Переменные для работы с i18n, хранилищем, уведомлениями и маршрутизацией ↓
+const {t, locale} = useI18n()
 const toast = useToast()
 const router = useRouter();
 const route = useRoute();
 const store = useStore()
+// Сервисы для  API
 const service = new HelpDeskService()
 const docService = new DocService()
 const contragentService = new ContragentService()
+
 const showMessage = (severity, detail, life) => {
   toast.add({
     severity: severity,
@@ -138,6 +141,8 @@ const showMessage = (severity, detail, life) => {
     life: life || 3000,
   });
 };
+
+//Переменные
 const selectedPosition = computed(() => store.state.selectedPosition)
 const isSaved = ref(false)
 const revisionText = ref(null)
@@ -154,7 +159,6 @@ const category = ref(null);
 const directions = ref(null);
 const selectedCell = ref(null);
 const selectedDateTime = ref(null);
-
 const selectedDirection = ref({
   name_ru: null,
   name_kz: null,
@@ -172,19 +176,25 @@ const visibility = ref({
   documentInfoSidebar: false,
   revisionDialog: false,
   sendToApproveDialog: false,
-  rejectedDialog:false
+  rejectedDialog: false
 });
+// Список статусов документа с переводами
 const docStatus = ref([
-  { name_kz: "құрылды", name_en: "created", name_ru: "создан", code: "created" },
-  { name_kz: "келісуде", name_en: "inapproval", name_ru: "на согласовании", code: "inapproval" },
-  { name_kz: "келісілді", name_en: "approved", name_ru: "согласован", code: "approved" },
-  { name_kz: "түзетуге", name_en: "revision", name_ru: "на доработку", code: "revision" },
-  { name_kz: "қайтарылды", name_en: "rejected", name_ru: "отклонен", code: "rejected" },
-  { name_kz: "қол қоюда", name_en: "signing", name_ru: "на подписи", code: "signing" },
-  { name_kz: "қол қойылды", name_en: "signed", name_ru: "подписан", code: "signed" },
-  { name_kz: "қайта бекітуге жіберілді", name_en: "sent for re-approval", name_ru: "отправлен на переутверждение", code: "sent for re-approval" },
-  { name_kz: "жаңартылды", name_en: "updated", name_ru: "обновлен", code: "updated" },
-  { name_kz: "берілді", name_en: "issued", name_ru: "выдан", code: "issued" },
+  {name_kz: "құрылды", name_en: "created", name_ru: "создан", code: "created"},
+  {name_kz: "келісуде", name_en: "inapproval", name_ru: "на согласовании", code: "inapproval"},
+  {name_kz: "келісілді", name_en: "approved", name_ru: "согласован", code: "approved"},
+  {name_kz: "түзетуге", name_en: "revision", name_ru: "на доработку", code: "revision"},
+  {name_kz: "қабылданбады", name_en: "rejected", name_ru: "отклонен", code: "rejected"},
+  {name_kz: "қол қоюда", name_en: "signing", name_ru: "на подписи", code: "signing"},
+  {name_kz: "қол қойылды", name_en: "signed", name_ru: "подписан", code: "signed"},
+  {
+    name_kz: "қайта бекітуге жіберілді",
+    name_en: "sent for re-approval",
+    name_ru: "отправлен на переутверждение",
+    code: "sent for re-approval"
+  },
+  {name_kz: "жаңартылды", name_en: "updated", name_ru: "обновлен", code: "updated"},
+  {name_kz: "берілді", name_en: "issued", name_ru: "выдан", code: "issued"},
 ]);
 const codesToExclude = ["inapproval", "approved", "rejected", "signing", "signed", "sent for re-approval", "updated", "issued"];
 const sort = ref(null);
@@ -208,18 +218,19 @@ const request = ref({
   filtered: false,
   doc: null
 });
-const currentUser = ref(null)
-// const selectedPosition = ref(route.params.selectedPosition)
+lang.value = localStorage.getItem("lang")
+
+const currentUser = ref(JSON.parse(localStorage.getItem("loginedUser")));
 const pdf = ref(null)
 const activeTab = ref(0)
 const isAdmin = ref(false)
-//computed(() =>[
+// Меню для кнопок
 const menu = computed(() => [
   {
     label: t("common.save"),
     icon: "pi pi-fw pi-save",
     disabled: !isUserDataVaild() || (request.value.doc?.docHistory?.stateId != DocEnum.CREATED.ID &&
-      request.value.doc?.docHistory?.stateId != DocEnum.REVISION.ID && request.value.doc?.docHistory?.stateId != null),
+        request.value.doc?.docHistory?.stateId != DocEnum.REVISION.ID && request.value.doc?.docHistory?.stateId != null),
     command: saveDocument
   },
 
@@ -231,15 +242,15 @@ const menu = computed(() => [
       {
         label: t("common.tosign"),
         icon: "pi pi-user-edit",
-        visible: request.value && (request.value.doc?.docHistory?.stateId === DocEnum.CREATED.ID ||
-          request.value.doc?.docHistory?.stateId === DocEnum.REVISION.ID),
+        visible: request.value && (currentUser.value?.userID == request.value?.sender_id) && (request.value.doc?.docHistory?.stateId === DocEnum.CREATED.ID ||
+            request.value.doc?.docHistory?.stateId === DocEnum.REVISION.ID),
         command: () => open('sendToApproveDialog')
       },
       {
         label: t("common.revision"),
         icon: "fa-regular fa-circle-xmark",
         visible: request.value && request.value.doc?.docHistory?.stateId === DocEnum.INAPPROVAL.ID &&
-          needMySign(),
+            needMySign(),
         command: () => open('revisionDialog')
       },
       {
@@ -258,7 +269,6 @@ const menu = computed(() => [
     command: () => open('documentInfoSidebar')
   }
 ]);
-
 
 const revision = () => {
   loading.value = true;
@@ -288,7 +298,6 @@ const revision = () => {
     }
   })
 }
-
 const rejected = () => {
   loading.value = true;
   const req = {
@@ -322,7 +331,6 @@ const needMySign = () => {
     return false;
   }
 
-  let loginedUser = JSON.parse(localStorage.getItem("loginedUser"));
   let stages = request.value.doc.approvalStages;
   let need = false;
 
@@ -347,8 +355,7 @@ const needMySign = () => {
   return need;
 }
 
-
-
+//Open and Close
 const open = (name) => {
   visibility.value[name] = true;
 };
@@ -356,16 +363,14 @@ const close = (name) => {
   visibility.value[name] = false;
 };
 
-lang.value = localStorage.getItem("lang")
-
 const childInput = (data) => {
   userData.value = data
 }
-
 const validateInput = (data) => {
   validation.value = data
 }
 
+// Запросы на бэкенд
 const onChecked = (data) => {
   selectedCourses.value = data
 }
@@ -377,8 +382,7 @@ const helpDeskTicketGet = () => {
     Page: 0,
     Rows: 10,
     uuid: route.params.uuid,
-  })
-      .then((res) => {
+  }).then((res) => {
         request.value = res.data.ticket[0]
         selectedDirection.value = res.data.ticket[0].category;
         loading.value = false
@@ -423,44 +427,8 @@ const sendToApprove = (approvalUsers) => {
     }
   });
 };
-
-const isUserDataVaild = () => {
-  if (findRole(null, "student")) {
-    if (
-      userData.value !== null &&
-      userData.value.fullName &&
-      userData.value.speciality &&
-      userData.value.course &&
-      userData.value.email &&
-      userData.value.phone &&
-      selectedCourses.value &&
-      selectedCourses.value.length > 0
-    ) {
-      return true;
-    } else {
-      return false;
-    }
-  } else {
-    if (
-      userData.value !== null &&
-      userData.value.discipline &&
-      userData.value.fullName &&
-      userData.value.speciality &&
-      userData.value.course &&
-      userData.value.email &&
-      userData.value.phone
-    ) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-}
-
-
 const saveDocument = () => {
-  if (validation.value.phone || validation.value.email){
+  if (validation.value.phone || validation.value.email) {
     showMessage('warn', t('helpDesk.application.inputErrorMessage'), null)
     validationRequest.value = validation.value
     return
@@ -481,17 +449,17 @@ const saveDocument = () => {
     request.value.is_saved = 1
 
     service.helpDeskTicketCreate(request.value)
-      .then(res => {
-        isSaved.value = true
-        changed.value = false;
-        request.value = res.data
-      }).catch(err => {
-        if (err.response && err.response.status == 401) {
-          store.dispatch("logLout")
-        } else if (err.response && err.response.data && err.response.data.localized) {
-          showMessage('error', t(err.response.data.localizedPath), null)
-        }
-      });
+        .then(res => {
+          isSaved.value = true
+          changed.value = false;
+          request.value = res.data
+        }).catch(err => {
+      if (err.response && err.response.status == 401) {
+        store.dispatch("logLout")
+      } else if (err.response && err.response.data && err.response.data.localized) {
+        showMessage('error', t(err.response.data.localizedPath), null)
+      }
+    });
     isSend.value = true;
   } else {
     request.value.doc.newParams = {}
@@ -522,126 +490,20 @@ const saveDocument = () => {
 
     request.value.is_saved = 1
     service.helpDeskTicketCreate(request.value)
-      .then(res => {
-        isSaved.value = true
-        changed.value = false;
-        request.value = res.data
-      }).catch(err => {
-        if (err.response && err.response.status == 401) {
-          store.dispatch("logLout")
-        } else if (err.response && err.response.data && err.response.data.localized) {
-          showMessage('error', t(err.response.data.localizedPath), null)
-        }
-      });
+        .then(res => {
+          isSaved.value = true
+          changed.value = false;
+          request.value = res.data
+        }).catch(err => {
+      if (err.response && err.response.status == 401) {
+        store.dispatch("logLout")
+      } else if (err.response && err.response.data && err.response.data.localized) {
+        showMessage('error', t(err.response.data.localizedPath), null)
+      }
+    });
     isSend.value = true;
   }
 };
-
-const search = (data) => {
-  alert(data);
-};
-
-const toggleFilter = (event) => {
-  sort.value = event;
-};
-
-const initStages = () => {
-  const users = []
-  if (findRole(null, "student")){
-    let userDekan = []
-    let userOffice = []
-    let reqDekan = { filter: {
-        departmentId:currentUser.value.mainPosition.department.parent.id,
-            positionName:"Декан факультета"
-      }}
-    let reqOffice =    { filter: {
-        "name":"Кыдырбаева Айман Турсыналыевна"
-    }}
-    if (reqDekan.filter.departmentId) {
-      contragentService.getPersons(reqDekan).then(res => {
-        userDekan = res.data.foundUsers
-        stages.value.push({
-          stage: 1,
-          users: userDekan,
-          titleRu: "Декан",
-          titleKz: "Декан",
-          titleEn: "Декан",
-          certificate: {
-            namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
-            nameru: "Для внутреннего документооборота (ГОСТ)",
-            nameen: "For internal document management (GOST)",
-            value: "internal"
-          }
-        });
-      })
-    }
-    contragentService.getPersons(reqOffice).then(res => {
-      userOffice = res.data.foundUsers
-      stages.value.push({
-        stage: 2,
-        users: userOffice,
-        titleRu: "Офис регистратор",
-        titleKz: "Кеңсе тіркеушісі",
-        titleEn: "Office registrar",
-        certificate: {
-          namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
-          nameru: "Для внутреннего документооборота (ГОСТ)",
-          nameen: "For internal document management (GOST)",
-          value: "internal"
-        }
-      });
-    })
-  } else {
-    stages.value = [{
-      stage: 1,
-      users: null,
-      titleRu: "Институт непрерывного образования",
-      titleKz: "Үздіксіз білім беру институты",
-      titleEn: "Institute of Continuing Education",
-      certificate: {
-        namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
-        nameru: "Для внутреннего документооборота (ГОСТ)",
-        nameen: "For internal document management (GOST)",
-        value: "internal"}
-    }]
-  }
-
-  selectedUsers.value = stages.value
-};
-
-
-const isFilled = Object.values(userData.value).every(value => value !== null);
-
-onMounted(() => {
-  switch (locale) {
-    case 'kz':
-      request.value.local = 1;
-      break;
-    case 'ru':
-      request.value.local = 2;
-      break;
-    case 'en':
-      request.value.local = 3;
-      break;
-    default:
-      request.value.local = 1;
-      break;
-  }
-  currentUser.value = JSON.parse(localStorage.getItem("loginedUser"))
-  isAdmin.value = (findRole(null, 'main_administrator') || findRole(null, "career_administrator"))
-  initStages()
-  helpDeskTicketGet()
-})
-
-
-const tabChanged = () => {
-  if (activeTab.value === 1) {
-    if (!request.value || !request.value.doc || request.value.doc.filePath.length < 1) return;
-
-    downloadContract();
-  }
-}
-
 const downloadContract = () => {
   loading.value = true
   if (!request.value || !request.value.doc || request.value.doc.filePath.length < 1) return;
@@ -666,18 +528,147 @@ const downloadContract = () => {
     }
   })
 }
+const isUserDataVaild = () => {
+  if (findRole(null, "student")) {
+    if (
+        userData.value !== null &&
+        userData.value.fullName &&
+        userData.value.speciality &&
+        userData.value.course &&
+        userData.value.email &&
+        userData.value.phone &&
+        selectedCourses.value &&
+        selectedCourses.value.length > 0
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    if (
+        userData.value !== null &&
+        userData.value.discipline &&
+        userData.value.fullName &&
+        userData.value.speciality &&
+        userData.value.course &&
+        userData.value.email &&
+        userData.value.phone
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 
-const userDataDisabled = computed(() => {
-  return !userData.value
+}
+const initStages = () => {
+  const users = []
+  if (findRole(null, "student")) {
+    let userDekan = []
+    let userOffice = []
+    let reqDekan = {
+      filter: {
+        departmentId: currentUser.value.mainPosition.department.parent.id,
+        positionName: "Декан факультета"
+      }
+    }
+    let reqOffice = {
+      filter: {
+        "name": "Кыдырбаева Айман Турсыналыевна"
+      }
+    }
+    if (reqDekan.filter.departmentId) {
+      contragentService.getPersons(reqDekan).then(res => {
+        userDekan = res.data.foundUsers
+        stages.value.push({
+          stage: 1,
+          users: userDekan,
+          titleRu: "Декан",
+          titleKz: "Декан",
+          titleEn: "Декан",
+          certificate: {
+            namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+            nameru: "Для внутреннего документооборота (ГОСТ)",
+            nameen: "For internal document management (GOST)",
+            value: "internal"
+          }
+        });
+      })
+    }
+    // contragentService.getPersons(reqOffice).then(res => {
+    //   userOffice = res.data.foundUsers
+    //   stages.value.push({
+    //     stage: 2,
+    //     users: userOffice,
+    //     titleRu: "Офис регистратор",
+    //     titleKz: "Кеңсе тіркеушісі",
+    //     titleEn: "Office registrar",
+    //     certificate: {
+    //       namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+    //       nameru: "Для внутреннего документооборота (ГОСТ)",
+    //       nameen: "For internal document management (GOST)",
+    //       value: "internal"
+    //     }
+    //   });
+    // })
+  } else {
+    let userInstitute = []
+
+    let reqInstitute = {
+      filter: {
+        "name":"Палымбетов Нурбол Шаменович"
+      }}
+
+    contragentService.getPersons(reqInstitute).then(res => {
+      userInstitute = res.data.foundUsers
+      stages.value.push({
+        stage: 1,
+        users: userInstitute,
+        titleRu: "Институт непрерывного образования",
+        titleKz: "Үздіксіз білім беру институты",
+        titleEn: "Institute of Continuing Education",
+        certificate: {
+          namekz: "Жеке тұлғаның сертификаты",
+          nameru: "Сертификат физического лица",
+          nameen: "Certificate of an individual",
+          value: "individual"
+        }
+      });
+    })
+
+  }
+
+  selectedUsers.value = stages.value
+};
+
+const tabChanged = () => {
+  if (activeTab.value === 1) {
+    if (!request.value || !request.value.doc || request.value.doc.filePath.length < 1) return;
+
+    downloadContract();
+  }
+}
+
+onMounted(() => {
+  switch (locale) {
+    case 'kz':
+      request.value.local = 1;
+      break;
+    case 'ru':
+      request.value.local = 2;
+      break;
+    case 'en':
+      request.value.local = 3;
+      break;
+    default:
+      request.value.local = 1;
+      break;
+  }
+  currentUser.value = JSON.parse(localStorage.getItem("loginedUser"))
+  isAdmin.value = (findRole(null, 'main_administrator') || findRole(null, "career_administrator"))
+  initStages()
+  helpDeskTicketGet()
 })
-
-const isSaveItemsRequest = computed(() => {
-  return choseAudience.value !== null || specialization.value !== null || description.value !== null || contactNumber.value !== null;
-});
-
-
-
-
 </script>
 
 <style scoped>

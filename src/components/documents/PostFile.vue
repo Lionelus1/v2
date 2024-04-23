@@ -92,7 +92,7 @@
 
 </template>
 <script>
-import axios from "axios";
+import api from "@/service/api";
 import Files from "@/components/documents/Files.vue"
 
 import {smartEnuApi, getHeader, getFileHeader, fileRoute} from "@/config/config";
@@ -227,7 +227,7 @@ export default {
           fcount = this.$refs.ufile.files.length
         }
         fd.append('info', JSON.stringify({directory: this.directory, count: fcount, folderID: locFolderId, fileInfo: this.file}));
-        axios.post(smartEnuApi + "/doc/updateFile", fd, {
+        api.post("/doc/updateFile", fd, {
           headers: getFileHeader()
         })
         .then(resp => {
@@ -253,7 +253,7 @@ export default {
     },
     deleteFile(hide) {
       let url = "/doc/deleteFile";
-      axios.post(smartEnuApi+url, {id: this.folder.id, hide: hide}, { headers: getHeader() })
+      api.post(url, {id: this.folder.id, hide: hide}, { headers: getHeader() })
       .then(response=>{
           this.folder.key = response.data.id;
           this.showMessage('success', this.$t('common.message.title.docCreation'),this.$t('common.message.catSuccesCreated'));
@@ -264,7 +264,7 @@ export default {
       })
     },
     getReadyDocCatalog() {
-      axios.post(smartEnuApi + '/doc/getFoldersByType', {
+      api.post('/doc/getFoldersByType', {
         type: Enum.FolderType.FilledDoc,
         showDocs: false,
       }, {

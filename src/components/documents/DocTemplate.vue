@@ -261,7 +261,7 @@
 <script>
   import {smartEnuApi, findRole, getHeader} from "@/config/config";
   import {runNCaLayer} from "@/helpers/SignDocFunctions"
-  import axios from 'axios';
+  import api from '@/service/api';
   import DocState from "@/enum/docstates/index";
   import RolesEnum from "@/enum/roleControls/index";
   import DocSignaturesInfo from "@/components/DocSignaturesInfo"
@@ -402,7 +402,7 @@
           header: this.$t('common.approve'),
           icon: 'pi pi-exclamation-triangle',
           accept: () => {
-                axios.post(smartEnuApi + "/downloadFile",
+                api.post("/downloadFile",
                 { filePath: this.selectedNode.data.filePath},
                 { headers: getHeader() }).then(
                   response => {
@@ -414,7 +414,7 @@
                           docUUID: this.selectedNode.data.docID,
                           sign: sign
                         };
-                        axios.post(smartEnuApi+"/doc/sign", req, { headers: getHeader() }).then(response=>{
+                        api.post("/doc/sign", req, { headers: getHeader() }).then(response=>{
                         this.selectedNode.data.stateID = this.DocState.APPROVED.ID;
                         this.selectedNode.data.state =  this.$t('common.states.approved');
                         this.selectedNode.data.stateEn =  this.DocState.APPROVED.Value;
@@ -457,7 +457,7 @@
           state: this.DocState.REVISION.ID,
           comment: this.revisionComment,
         }
-        axios.post(smartEnuApi+url, req, { headers: getHeader() }).then(()=>{
+        api.post(url, req, { headers: getHeader() }).then(()=>{
           this.selectedNode.data.stateID = this.DocState.REVISION.ID;
           this.selectedNode.data.state =  this.$t('common.states.revision');
           this.selectedNode.data.stateEn =  "revision";
@@ -504,7 +504,7 @@
         }
         this.signing = true
 
-        axios.post(smartEnuApi+url, req, { headers: getHeader() }).then(response=>{
+        api.post(url, req, { headers: getHeader() }).then(response=>{
           this.selectedNode.data.docID = response.data.docUUID
           this.selectedNode.data.filePath = response.data.filePath
           this.selectedNode.data.stateID = this.DocState.INAPPROVAL;
@@ -543,7 +543,7 @@
         if (this.templateLanguage != "kz") {
           req.lang = "rus"
         }
-        axios.post(smartEnuApi+url, req, { headers: getHeader() })
+        api.post(url, req, { headers: getHeader() })
         .then(response=>{
           let pdf = response.data;
           var link = document.createElement('a');
@@ -583,7 +583,7 @@
           req.textRus = "";
         }
         this.signing = true
-        axios.post(smartEnuApi+url, req, { headers: getHeader() })
+        api.post(url, req, { headers: getHeader() })
         .then(()=>{
           this.showMessage('success', this.$t('doctemplate.updateTemplate'), this.$t('doctemplate.message.succesUpdated'));
           this.signing = false
@@ -640,7 +640,7 @@
         this.createdTemplate.folderID = this.selectedNode.key;
         this.createdTemplate.approvalStages = [...this.initialApprovalStages]
         let url = "/doctemplate/create";
-        axios.post(smartEnuApi+url, this.createdTemplate, { headers: getHeader() })
+        api.post(url, this.createdTemplate, { headers: getHeader() })
         .then(response=>{
           this.templates.forEach(folder=>{
             if (folder.key == response.data.folderID) {
@@ -682,7 +682,7 @@
           return
         }
         let url = "/doctemplate/createFolder";
-        axios.post(smartEnuApi+url, this.createdFolder, { headers: getHeader() })
+        api.post(url, this.createdFolder, { headers: getHeader() })
         .then(response=>{
 
           let node = new Object();
@@ -780,7 +780,7 @@
         }
         this.loading = true;
         url+= stateFilter
-        axios (smartEnuApi+url, { headers: getHeader() })
+        api (url, { headers: getHeader() })
         .then(res=>{
           let treeData = [];
           res.data.forEach(el => {
@@ -818,7 +818,7 @@
         this.initTemplateApprovalInfo();
       },
       initTemplateApprovalInfo(openForm, node) {
-        axios.post(smartEnuApi + "/approvalList/getDefault", {
+        api.post("/approvalList/getDefault", {
           type: Enum.DefaultApprovalListType.DocTemplate,
         }, {
           headers: getHeader(),
@@ -844,7 +844,7 @@
         })
       },
       initApprovalInfo(openForm) {
-        axios.post(smartEnuApi + "/doctemplate/getApprovalStages", {
+        api.post("/doctemplate/getApprovalStages", {
           docTemplateId: this.selectedNode.id,
         }, {
           headers: getHeader(),
@@ -870,7 +870,7 @@
         this.initialApprovalStages = event
       },
       saveApprovalUser(event) {
-        axios.post(smartEnuApi + "/doctemplate/updateApprovalStages", {
+        api.post("/doctemplate/updateApprovalStages", {
           docTemplateId: this.selectedNode.id,
           approvalStages: event,
         }, {

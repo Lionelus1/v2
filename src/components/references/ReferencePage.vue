@@ -39,7 +39,7 @@
   </Dialog>
 </template>
 <script>
-import axios from 'axios';
+import api from '@/service/api';
 
 import { getHeader, smartEnuApi, apiDomain, b64toBlob } from "@/config/config";
 import Enum from "@/enum/docstates/index";
@@ -117,7 +117,7 @@ export default {
     share() {
       this.loading = true
 
-      axios.post(smartEnuApi + '/document/share', {
+      api.post('/document/share', {
         docId: this.reference.id,
       }, {
         headers: getHeader() 
@@ -142,7 +142,7 @@ export default {
     correctionRequest() {
       this.loading = true
 
-      axios.post(smartEnuApi + '/document/newRequest', {
+      api.post('/document/newRequest', {
         requestType: Enum.DocumentRequestType.ReferenceErrorCorrection,
         docId: this.reference.id,
         commentary: this.commentary,
@@ -168,7 +168,7 @@ export default {
     getPdf() {
       this.loading = true
 
-      axios.post(smartEnuApi + '/document/download', {
+      api.post('/document/download', {
         uuid: this.reference.uuid,
       }, {
         headers: getHeader() 

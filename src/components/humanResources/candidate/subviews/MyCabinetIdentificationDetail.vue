@@ -99,7 +99,7 @@
 <script setup>
 import { defineProps, inject, ref } from 'vue';
 import {getHeader,  smartEnuApi} from "@/config/config";
-import axios from "axios";
+import api from "@/service/api";
 const emitter = inject("emitter");
   const props = defineProps({
     modelValue: {
@@ -147,7 +147,7 @@ const emitter = inject("emitter");
     fd.append("id", JSON.stringify(payload.value))
     fd.append("idImage", file.value);  
 
-    axios.post(smartEnuApi + '/account/cardID/update', fd, {headers: getHeader()}).then(res  => {
+    api.post('/account/cardID/update', fd, {headers: getHeader()}).then(res  => {
         emitter.emit('educationUpdated', true)
       }).catch(err => {
         console.log(err)

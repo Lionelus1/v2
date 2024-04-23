@@ -6,7 +6,7 @@
   </div>
 </template>
 <script>
-import axios from 'axios';
+import api from '@/service/api';
 
 import { getHeader, smartEnuApi, b64toBlob } from "@/config/config";
 
@@ -34,7 +34,7 @@ export default {
     getPdf() {
       this.loading = true
 
-      axios.post(smartEnuApi + '/document/download', {
+      api.post('/document/download', {
         uuid: this.$route.params.uuid,
       }, {
         headers: getHeader() 

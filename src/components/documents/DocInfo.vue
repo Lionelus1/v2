@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "@/service/api";
 import { getHeader, smartEnuApi, b64toBlob } from "@/config/config";
 import { getLongDateString } from "@/helpers/helper";
 
@@ -69,8 +69,8 @@ export default {
         let url = "/agreement/get";
         var req = { id: this.docID };
         this.loading = true
-        axios
-            .post(smartEnuApi + url, req, { headers: getHeader() })
+        api
+            .post(url, req, { headers: getHeader() })
             .then((res) => {
                 this.loading = false
                 this.doc = res.data;

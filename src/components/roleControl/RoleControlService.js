@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from "@/service/api";
 import {getHeader, getMultipartHeader, smartEnuApi} from "@/config/config";
 
 export const RIGHTS = {
@@ -8,48 +8,48 @@ export const RIGHTS = {
 
 export default class RoleControlService {
     getOrganizations(orgParams) {
-        return axios.post(
-            smartEnuApi + "/roleControl/organizations",
+        return api.post(
+            "/roleControl/organizations",
             orgParams,
             {headers: getHeader()}
         )
     }
 
     getRoleRelations(lazyParams) {
-        return axios.post(
-            smartEnuApi + "/roleControl/roleRelations",
+        return api.post(
+            "/roleControl/roleRelations",
             lazyParams,
             {headers: getHeader()}
         )
     }
 
     deleteRoleRelation(roleId) {
-        return axios.post(
-            smartEnuApi + "/roleControl/delete",
+        return api.post(
+            "/roleControl/delete",
             {id: roleId},
             {headers: getHeader()}
         )
     }
 
     addRoleRelation(params) {
-        return axios.post(
-            smartEnuApi + "/roleControl/add",
+        return api.post(
+            "/roleControl/add",
             params,
             {headers: getHeader()}
         )
     }
 
     getRoles(orgId) {
-        return axios.post(
-            smartEnuApi + "/roleControl/roles",
+        return api.post(
+            "/roleControl/roles",
             {orgId: orgId},
             {headers: getHeader()}
         )
     }
 
     getEmployeeByIIN(iin) {
-        return axios.post(
-            smartEnuApi + "/roleControl/getEmployee",
+        return api.post(
+            "/roleControl/getEmployee",
             {IIN: iin},
             {headers: getHeader()}
         )

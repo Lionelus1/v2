@@ -143,7 +143,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "@/service/api";
 import {FilterMatchMode, FilterOperator} from 'primevue/api';
 import {getHeader, smartEnuApi, findRole} from "@/config/config";
 import moment from "moment";
@@ -218,7 +218,7 @@ export default {
         this.lazyParams.page = this.currentPage
         this.lazyParams.first = this.pageFirst
       }
-      axios.post(smartEnuApi + "/reception/questions", this.lazyParams, {
+      api.post("/reception/questions", this.lazyParams, {
         headers: getHeader(),
       }).then((response) => {
         this.data = response.data.items;

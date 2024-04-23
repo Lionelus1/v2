@@ -403,7 +403,7 @@
 <script>
 import {FilterMatchMode, FilterOperator} from "primevue/api";
 import ResumeView from "../../candidate/ResumeView";
-import axios from "axios";
+import api from "@/service/api";
 import {b64toBlob, getHeader, smartEnuApi} from "@/config/config";
 import Login from "../../../Login";
 import router from '@/router';
@@ -596,7 +596,7 @@ export default {
     getVacancies() {
       this.loading = true
       this.lazyParams.countMode = null;
-      axios.post(smartEnuApi + "/vacancy/public",
+      api.post("/vacancy/public",
           this.lazyParams, {headers: getHeader()}).then((response) => {
         this.vacancies = response.data.vacancies;
         this.count = response.data.total;
@@ -619,7 +619,7 @@ export default {
      * *********************** ПОЛУЧЕНИЕ СПРАВОЧНИК ИСТОЧНИКОВ ВАКАНСИИ
      */
     getCatalog() {
-      axios.post(smartEnuApi + "/vacancy/sources",
+      api.post("/vacancy/sources",
           {}, {headers: getHeader()}).then((res) => {
         this.vacancySources = res.data
         this.getUserCandidate()
@@ -640,7 +640,7 @@ export default {
      * *********************** ПРОВЕРКА НАЛИЧИЯ РЕЗЮМЕ
      */
     getUserCandidate() {
-      axios.post(smartEnuApi + "/candidate/get",
+      api.post("/candidate/get",
           {}, {headers: getHeader()}).then(res => {
         this.visible.apply = true
         this.candidate = res.data
@@ -676,7 +676,7 @@ export default {
         fd.append("resumeData", this.resumeFile)
       }
       if (this.validateForm()) {
-        axios.post(smartEnuApi + "/vacancy/apply",
+        api.post("/vacancy/apply",
             fd, {headers: getHeader()}).then((response) => {
           for (let key in this.vacancies) {
             if (this.vacancies[key].id === this.relation.vacancyId) {

@@ -126,7 +126,7 @@
 import {mapState} from "vuex";
 import RolesByName from "../smartenu/RolesByName.vue"
 import Enums from "@/enum/docstates/index";
-import axios from 'axios';
+import api from '@/service/api';
 import {getHeader, smartEnuApi, findRole} from "@/config/config";
 import FindDoctorals from "./FindDoctorals.vue"
 import {DissertationService} from "@/service/dissertation.service";
@@ -185,7 +185,7 @@ export default {
         header: this.$t("common.confirm"),
         icon: 'pi pi-exclamation-triangle',
         accept: () => {
-          axios.post(smartEnuApi + "/dissertation/deleteCouncilMember",
+          api.post("/dissertation/deleteCouncilMember",
               {id: this.selectedMember.memberID}, {headers: getHeader(),}).then((response) => {
             this.MembersList.splice(this.MembersList.indexOf(this.selectedMember), 1);
           }).catch((error) => {
@@ -217,8 +217,8 @@ export default {
     loadCouncil() {
       this.loading = true;
       this.lazyParams.id = this.councilID
-      axios
-          .post(smartEnuApi + "/dissertation/getcouncilmembers", this.lazyParams, {
+      api
+          .post("/dissertation/getcouncilmembers", this.lazyParams, {
             headers: getHeader(),
           })
           .then((response) => {
@@ -246,7 +246,7 @@ export default {
             request.dissertations.push(element.dissertation.id)
           });
         }
-        axios.post(smartEnuApi + "/dissertation/addCouncilMember",
+        api.post("/dissertation/addCouncilMember",
             request,
             {
               headers: getHeader(),

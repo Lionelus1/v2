@@ -129,7 +129,22 @@ const menu = computed(() => {
     label: t("Мысал текст"),
     icon: "pi pi-fw  pi-check",
     disabled: false,
-    command: null,
+    command: () => {},
+    items: [
+      {
+        label: "123",
+        icon: "fa-regular fa-handshake",
+        command: () => {
+          alert('dddd')
+        }
+      },
+      {
+        label: "34234",
+        icon: "fa-solid fa-square-envelope",
+        command: () => {
+        }
+      },
+    ],
   },
   {
     label: "Тест тест",

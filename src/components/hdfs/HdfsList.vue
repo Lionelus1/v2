@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "@/service/api";
 import {smartEnuApi} from "@/config/config";
 
 export default {
@@ -75,7 +75,7 @@ export default {
       this.tableData = [];
       if (!dirName)
         dirName = "/"
-      axios.get(smartEnuApi + "/getFiles?dirName=" + dirName).then(
+        api.get("/getFiles?dirName=" + dirName).then(
           (response) => {
             var pathList = response.data;
             pathList.forEach((i) => {
@@ -97,7 +97,7 @@ export default {
     },
     remove(fileName) {
       let fname = this.selected ? this.selected + "/" + fileName : fileName;
-      axios.post(smartEnuApi + "/remove?fileName=" + fname, {}).then((r) => {
+      api.post("/remove?fileName=" + fname, {}).then((r) => {
         if (r.status === 200) {
           this.$toast.add({severity: 'info', summary: this.$t('hdfs.success'), detail: this.$t('hdfs.fileRemoved'), life: 3000});
           this.getData(this.selected);
@@ -106,7 +106,7 @@ export default {
     },
     getDirectories() {
       this.dirs = [];
-      axios.get(smartEnuApi + "/getDirs").then(response => {
+      api.get("/getDirs").then(response => {
         response.data.forEach((r) => {
           this.dirs.push({dirName: r});
         });

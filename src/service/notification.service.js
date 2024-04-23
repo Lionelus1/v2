@@ -1,6 +1,5 @@
 import api from "@/service/api";
 import {getHeader, smartEnuApi} from "@/config/config";
-import axios from "axios";
 
 export class NotificationService {
 
