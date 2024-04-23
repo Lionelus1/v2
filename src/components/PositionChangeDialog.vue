@@ -172,7 +172,7 @@ export default {
         result += orgName + ' - '
       }
 
-      if (this.loginedUser.mainPosition.department.id) {
+      if (this.loginedUser.mainPosition?.department?.id) {
         let depName = ''
 
         if (this.$i18n.locale === 'en') {
@@ -190,7 +190,7 @@ export default {
         result += depName + ' - '
       }
 
-      if (this.loginedUser.mainPosition.id) {
+      if (this.loginedUser.mainPosition?.id) {
         let posName = ''
 
         if (this.$i18n.locale === 'en') {
