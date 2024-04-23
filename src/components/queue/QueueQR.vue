@@ -19,7 +19,7 @@
     </div>
     <div v-if="currentStep === 3">
       <div class="relative">
-        <div class="talon" v-if="inQueue">
+        <div class="talon">
           <template v-if="queinfo">
             <template v-if="!called">
             <div class="talon_top">
@@ -65,8 +65,8 @@
           </template>
           <ProgressSpinner v-else class="progress-spinner" strokeWidth="2" style="width: 50px;"/>
         </div>
-        <div class="talon_list" v-if="inQueue">
-          <div class="flex justify-content-between text-white ml-5 mb-2">
+        <div class="talon_list">
+          <div class="flex justify-content-between ml-5 mb-2">
             <div>№</div>
             <div>Терезе</div>
           </div>
@@ -118,7 +118,6 @@ const {t, locale} = useI18n()
 const route = useRoute()
 const parentId = ref(parseInt(route.params.id))
 const queues = ref();
-const inQueue = ref(true);
 const called = ref(false);
 const phoneNumber = ref('');
 const isDisabled = ref(true);
@@ -140,6 +139,7 @@ const validatePhoneNumber = (val) => {
 const sendNumber = () => {
   if (phoneNumber.value) {
     localStorage.setItem('phoneNumber', phoneNumber.value);
+    localStorage.setItem('queueParentId', parentId.value);
     currentStep.value = 2
   }
 }
@@ -161,6 +161,7 @@ getQueue(parentId.value)
 watch(()=> currentTicketWS.value, (newValue, oldValue) => {
   if (currentTicketWS.value !== null && currentTicketAPI.value !== null) {
     called.value = currentTicketWS.value === currentTicketAPI.value;
+    localStorage.removeItem('queueKey')
   }
 });
 
@@ -267,7 +268,10 @@ const refusal = () => {
 
 onMounted(() => {
   useRealtimeStream(parentId.value)
-  if (localStorage.getItem('phoneNumber') !== null && localStorage.getItem('queueKey') !== null) {
+  if(parentId.value !== parseInt(localStorage.getItem('queueParentId'))){
+    localStorage.removeItem('phoneNumber')
+  }
+  if (localStorage.getItem('phoneNumber') !== null && localStorage.getItem('queueKey') !== null && (parentId.value === parseInt(localStorage.getItem('queueParentId')))) {
     registerQueue(parseInt(localStorage.getItem('queueKey')))
     currentStep.value = 3
   } else if (localStorage.getItem('phoneNumber') !== null) {
@@ -294,7 +298,7 @@ onMounted(() => {
   border-radius: 8px;
   width: 90%;
   z-index: 2;
-  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+  box-shadow: rgba(0, 0, 0, 0.12) 0 1px 3px, rgba(0, 0, 0, 0.24) 0 1px 2px;
 
   &_top {
     padding: 20px 0;
@@ -305,40 +309,12 @@ onMounted(() => {
     font-weight: 600;
   }
 
-  &_content {
-    //padding: 0 20px;
-  }
-
   .dots {
     margin: 20px 0;
     //border-bottom: 4px dotted #000e39;
     position: relative;
     bottom: 170px;
   }
-
- /* .dots:after {
-    content: '';
-    position: absolute;
-    display: block;
-    border-radius: 50%;
-    width: 23px;
-    height: 23px;
-    background: #007dbe;
-    left: -33px;
-    top: -10px;
-  }
-
-  .dots:before {
-    content: '';
-    position: absolute;
-    display: block;
-    border-radius: 50%;
-    width: 23px;
-    height: 23px;
-    background: #007dbe;
-    right: -33px;
-    top: -10px;
-  }*/
 
   .talon_badge {
     display: flex;
@@ -361,7 +337,7 @@ onMounted(() => {
   margin-top: 20px;
   background: #49e740;
   //border: 2px solid #ccc;
-  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+  box-shadow: rgba(0, 0, 0, 0.12) 0 1px 3px, rgba(0, 0, 0, 0.24) 0 1px 2px;
   border-radius: 8px;
   padding-bottom: 30px;
 }
@@ -388,22 +364,6 @@ onMounted(() => {
     font-weight: 600;
   }
 }
-
-/*.talon:before {
-  content: "";
-  display: block;
-  position: absolute;
-  width: 40px;
-  height: 20px;
-  background: #007dbe;
-  bottom: -10px;
-  border-radius: 8px;
-  margin-left: auto;
-  margin-right: auto;
-  left: 0;
-  right: 0;
-  text-align: center;
-}*/
 
 .dashed {
   margin: 10px 0;
