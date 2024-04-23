@@ -57,7 +57,7 @@
 
     <div class="field">
       <label>{{ $t('cafedra.responsible') }}</label>
-      <FindUser v-model="formData.responsible_user" :max="1" searchMode="local" />
+      <FindUser v-model="formData.responsible_user" :max="1" />
     </div>
 
     <div class="grid">
