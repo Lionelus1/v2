@@ -160,7 +160,16 @@ const createPlan = () => {
 }
 
 const uploadFile = (event, name) => {
-  name.value = event.files
+  switch (name) {
+    case 'contractFiles':
+      contractFiles.value = event.files;
+      break;
+    case 'documentFiles':
+      documentFiles.value = event.files;
+      break;
+    default:
+      break;
+  }
 }
 
 const validate = () => {
