@@ -113,6 +113,7 @@ import {getHeader, smartEnuApi, socketApi} from "@/config/config";
 import {useRoute} from "vue-router";
 import {useI18n} from "vue-i18n";
 import moment from "moment";
+import {socket} from "@/main";
 
 const {t, locale} = useI18n()
 const route = useRoute()
@@ -132,6 +133,25 @@ const currentTicketAPI = ref(null)
 const calledWindow = ref()
 const refusalVisible = ref(false)
 
+/*const socket = io(smartEnuApi);
+const testDataSocket = ref(null);
+
+socket.on('connect', () => {
+  socket.connected = true
+});
+
+socket.on('notice', (data) => {
+  console.log(data)
+  testDataSocket.value = data;
+});
+
+const sendData = () => {
+  socket.connected = true
+  socket.emit('notice', 'dddddddddd')
+  console.log(socket)
+  console.log(testDataSocket.value)
+};
+sendData();*/
 const validatePhoneNumber = (val) => {
   const phoneNumberRegex = /^\+7-\(\d{3}\)-\d{3}-\d{2}-\d{2}$/;
   isDisabled.value = !phoneNumberRegex.test(val)
@@ -265,6 +285,16 @@ const refusal = () => {
         console.log(error)
       });
 }
+const connected =()=>{
+  const data = {
+    serviceId: 0,
+    windowId: 0,
+    queueId: parentId.value
+  };
+  socket.emit("notice", data)
+  console.log(socket)
+}
+connected()
 
 onMounted(() => {
   useRealtimeStream(parentId.value)

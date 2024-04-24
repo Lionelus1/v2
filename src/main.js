@@ -135,6 +135,8 @@ import WorkPlanEventResult from "./components/work_plan/WorkPlanEventResult";
 import TitleBlock from "./components/TitleBlock";
 import ToolbarMenu from "@/components/ToolbarMenu.vue";
 import ActionButton from "@/components/ActionButton.vue";
+import io from "socket.io-client";
+import {getHeader, smartEnuApi} from "@/config/config";
 
 Date.prototype.toJSON = function(){
     const hoursDiff = this.getHours() - this.getTimezoneOffset() / 60;
@@ -151,6 +153,10 @@ router.beforeEach(function(to, from, next) {
 const app = createApp(App);
 const emitter = mitt();
 app.provide('emitter', emitter);
+
+export const socket = io(smartEnuApi, {
+    withCredentials: false
+})
 
 /* eslint-disable */
 app.use(PrimeVue, {
