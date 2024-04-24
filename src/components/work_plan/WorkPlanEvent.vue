@@ -136,9 +136,16 @@
         </Column>
         <Column field="actions" header="">
           <template #body="{ node }">
-            <div>
+            <div v-if="!isFinish">
               <ActionButton :items="initItems" :show-label="true" @toggle="actionsToggle(node)"/>
             </div>
+            <div class="inline-flex">
+              <div v-if="!(selectedEvent && isPlanApproved && canExecuteEvent)">
+                <Button v-if="isFinish" class="p-button-text p-1 mr-2"  @click="openPlanExecuteSidebar(node)">
+                  <i class="fa-solid fa-address-book" style="font-size: 1.35em;"></i>
+                </Button>
+              </div>
+          </div>
           </template>
         </Column>
       </TreeTable>
@@ -795,7 +802,9 @@ export default {
               !(node.status.work_plan_event_status_id === 4 || node.status.work_plan_event_status_id === 6)) ||
           node.status.work_plan_event_status_id === 5 || node.status.work_plan_event_status_id === 2;
     },
-    openPlanExecuteSidebar() {
+    openPlanExecuteSidebar(node) {
+      this.isCreator = node.creator_id === this.loginedUserId
+      this.selectedEvent = node
       this.isShowPlanExecute = true;
     },
     closePlanExecuteSidebar() {

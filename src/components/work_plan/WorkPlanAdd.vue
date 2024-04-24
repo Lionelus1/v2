@@ -1,6 +1,7 @@
 <template>
   <Dialog :header="$t('workPlan.addPlan')" v-model:visible="showModal" :style="{width: '450px'}" class="p-fluid" @hide="closeBasic">
     <div class="field">
+      <ProgressBar v-if="loading" mode="indeterminate" style="height: 6px; margin-bottom: 10px;"></ProgressBar>
       <label>{{ $t('workPlan.planName') }}</label>
       <InputText v-model="work_plan_name" v-on:keyup.enter="createPlan"/>
     </div>
@@ -117,6 +118,7 @@ export default {
           type: "text"
         },
       ],
+      loading: false, 
     }
   },
   mounted() {
@@ -135,7 +137,7 @@ export default {
       this.submitted = true;
       if (!this.validate())
         return
-
+      this.loading = true;
       const fd = new FormData()
       let data = {
         work_plan_name: this.work_plan_name,
@@ -168,6 +170,7 @@ export default {
         this.showModal = false;
         this.submitted = false;
         this.closeBasic()
+        this.loading = false;
       }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
@@ -179,6 +182,7 @@ export default {
           });
         }
         this.submitted = false;
+        this.loading = false;
       });
     },
     uploadFile(event, name) {
