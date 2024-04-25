@@ -135,6 +135,7 @@ import WorkPlanEventResult from "./components/work_plan/WorkPlanEventResult";
 import TitleBlock from "./components/TitleBlock";
 import ToolbarMenu from "@/components/ToolbarMenu.vue";
 import ActionButton from "@/components/ActionButton.vue";
+import {isMobile} from "@/helpers/HelperUtil";
 
 Date.prototype.toJSON = function(){
     const hoursDiff = this.getHours() - this.getTimezoneOffset() / 60;
@@ -276,6 +277,8 @@ app.use(PrimeVue, {
 });
 
 app.config.globalProperties.emitter = emitter;
+
+app.config.globalProperties.$isMobile = isMobile()
 
 
 app.use(i18n);
