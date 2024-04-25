@@ -154,7 +154,7 @@ const request = ref({
   description_en: "",
   category: null,
   uuid: null,
-  is_saved: 1,
+  is_saved: null,
   local: null
 
 });

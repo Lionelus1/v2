@@ -24,4 +24,7 @@ export class HelpDeskService {
     helpDeskStudentInfo(data){
         return api.post(`/helpdesk/studentInfo`, data, {headers: getHeader()})
     }
+    helpDeskTicketForm(data){
+        return api.post(`helpdesk/ticketForm`, data, {headers: getHeader()});
+    }
 }

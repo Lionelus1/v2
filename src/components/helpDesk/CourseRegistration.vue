@@ -80,7 +80,7 @@
   <div v-for="field in formFields" :key="field.key" class="field" :style="{ marginTop: field.marginTop }">
     <label>{{ field.label }}<span v-if="isCurrentUserSender && field.required" style="font-size: 20px; color: red;">*</span></label>
     <InputText v-model="field.model" :type="field.type" :placeholder="field.placeholder" @input="input" :disabled="disabledStatus" />
-    <div v-if="field.validation && props.validationRequest[field.validation]" style="color: red; margin-top: 5px">{{ t('helpDesk.application.enteredIncorrectly') }}</div>
+    <div v-if="props.validationRequest[field.validation]" style="color: red; margin-top: 5px">{{ t('helpDesk.application.enteredIncorrectly') }}</div>
   </div>
 
 </template>
@@ -114,15 +114,7 @@ const props = defineProps({
   }
 })
 
-const userData = ref({
-  discipline: null,
-  fullName: null,
-  speciality: null,
-  group: null,
-  course: null,
-  phone: null,
-  email: null,
-})
+const userData = ref({})
 
 const formFields = computed(() => [
   { key: 'fullName', label: t('common.fullName'), model: userData.value.fullName, type: 'text', placeholder: t('common.fullName'),   validation: null,show: true },
@@ -223,6 +215,13 @@ const showMessage = (msgtype, message, content) => {
 const validateCourse = (course) => {
   return course >= 1 && course <= 5
 }
+
+const validatePhoneNumber = (phoneNumber) => {
+  const phoneRegex = /^(8|\+7)?\(\d{3}\)\d{7}$|^(8|\+7)?\d{10}$/;
+
+  return phoneRegex.test(phoneNumber);
+}
+
 emit('onCheckboxChecked', selectedIds.value)
 emit('childInputData', userData.value)
 emit('validateInput', {
@@ -230,13 +229,6 @@ emit('validateInput', {
   email: !(userData.value.email === null || /\S+@\S+\.\S+/.test(userData.value.email)),
   phone: userData.value.phone === null || !validatePhoneNumber(userData.value.phone),
 });
-
-
-const validatePhoneNumber = (phoneNumber) => {
-  const phoneRegex = /^(8|\+7)?\(\d{3}\)\d{7}$|^(8|\+7)?\d{10}$/;
-
-  return phoneRegex.test(phoneNumber);
-}
 
 // const isValidCourse = computed(() => {
 //   const course = parseInt(userData.course)

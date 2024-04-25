@@ -392,6 +392,7 @@ const helpDeskTicketGet = () => {
         request.value = res.data.ticket[0]
         selectedDirection.value = res.data.ticket[0].category;
         loading.value = false
+        getTicketForm()
       })
       .catch((err) => {
         loading.value = false
@@ -544,6 +545,15 @@ const saveDocument = () => {
     }
   }
 };
+const getTicketForm = () => {
+  let req = {
+    Id: request.value.category.id
+  }
+  service.helpDeskTicketForm(req).then((res) => {
+    console.log(res.data)
+  })
+}
+
 
 const downloadContract = () => {
   loading.value = true
