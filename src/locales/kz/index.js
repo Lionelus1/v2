@@ -1286,6 +1286,7 @@ export default {
         partiallyCompleted: "Жартылай орындалды",
         errorUpdatingStatus: "Күйді жаңарту қатесі",
         operationCanceled: "Амалды жалғастыру тоқтатылды",
+        rejectionMessage: "Бас тарту туралы хабарлама",
         summaryDepartment: "Жинақтаушы құрылымдық бөлім",
         warnAddingSummaryUser: "«Жинақтаушы құрылымдық бөлім» өрісінде таңдалған қолданушыны «Жинақтаушы/Растау» өрісіне қоса алмайсыз."
     },
