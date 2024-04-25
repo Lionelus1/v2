@@ -104,11 +104,11 @@
                 <label>{{ $t('workPlan.eventName') }}</label>
                 <InputText v-model="event.event_name" disabled/>
               </div>
-              <div class="field" v-if="(plan && isOperPlan && isSummaryDepartmentUser)">
+              <div class="field" v-if="(plan && isOperPlan && isSummaryDepartmentUser && isVisibleWritableField)">
                 <label>{{ $t('common.fact') }}</label>
                 <InputText v-model="fact" @input="factChange"/>
               </div>
-              <div class="field">
+              <div class="field" v-if="isVisibleWritableField">
                 <Dropdown v-model="selectedQuarter" :options="filteredQuarters" :optionLabel="('quarter_'+$i18n.locale)" :placeholder="$t('common.select')" class="w-full md:w-14rem" required @change="validate"/>
                 <small class="p-error" v-if="validation.quarter">{{$t('common.requiredField')}}</small>
               </div>
@@ -164,7 +164,7 @@
                         <span :class="'customer-badge status-' + item.plan_event_result_history[0].state_id">
                           {{ getResultStatus(item.plan_event_result_history[0].state_id) }}</span>
                         <span style="float: right; margin-top: 0px;">
-                          <Button v-if="item.plan_event_result_history[0].state_id === 6" class="p-button p-component p-button-icon-only p-button-text" style="height: 20px;font-size: 16px;" @click="showRejectMessageSidebar" icon="fa-solid fa-eye" link />
+                          <Button v-if="item.plan_event_result_history[0]?.state_id === 6" class="p-button p-component p-button-icon-only p-button-text" style="height: 20px;font-size: 16px;" @click="showRejectMessageSidebar" icon="fa-solid fa-eye" link />
                         </span>
                       </div>
                       <!-- <div class="ml-3">
@@ -335,21 +335,25 @@
     </div>
   </Sidebar>
 
-  <Sidebar v-model:visible="rejectMessageSidebar" position="right" header="Work Plan Reject Message" style="width: 30%;" v-if="shouldShowRejectSidebar">
-  <div class="p-fluid">
-    <div v-if="rejectHistory?.user">
-      <label><b>{{ $t('contracts.assigner') }}:</b></label> {{ rejectHistory?.user.fullName }}
-    </div>
-    <div v-if="rejectHistory?.created_date" class="mt-1">
-      <label><b>{{ $t('common.date') }}:</b></label> {{ formatDateMoment(rejectHistory?.created_date) }}
-    </div>
-    <div class="mt-3" v-if="rejectHistory?.message">
-      <label><b>{{ $t('common.comment') }}:</b></label>
-      <div style="margin-top: -10px;">
-        <Message :closable="false" severity="info"><span v-html="rejectHistory?.message"></span></Message>
+  <Sidebar v-model:visible="rejectMessageSidebar" position="right" :header="$t('workPlan.rejectionMessage')" style="width: 30%;" >
+    <div v-for="item in rejectHistory" :key="item.event_result_id">
+      <div v-if="item?.plan_event_result_history[0]?.state_id === 6 && item?.user?.userID === loginedUserId">
+        <div class="p-fluid">
+          <div v-if="item?.reject_history?.user">
+            <label><b>{{ $t('contracts.assigner') }}:</b></label> {{ item?.reject_history?.user?.fullName }}
+          </div>
+          <div v-if="item?.reject_history?.created_date" class="mt-1">
+          <label><b>{{ $t('common.date') }}:</b></label> {{ formatDateMoment(item?.reject_history.created_date) }}
+        </div>
+          <div class="mt-3" v-if="item?.reject_history?.message">
+            <label><b>{{ $t('common.comment') }}:</b></label>
+            <div style="margin-top: -10px;">
+              <Message :closable="false" severity="info"><span v-html="item?.reject_history?.message"></span></Message>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
 </Sidebar>
 </template>
 
@@ -442,7 +446,7 @@ export default {
       isQuarterValid: true,
       validation:{
         quarter: false
-      }
+      },
     }
   },
   computed: {
@@ -524,7 +528,17 @@ export default {
       );
     },
     rejectHistory() {
-      return this.resultData[0]?.reject_history || {};
+      return this.resultData || {};
+    //     for (const item of this.resultData) {
+    //   // Check if the reject_history.message is not null
+    //   if (item.reject_history?.message !== null) {
+    //     // Return the non-null reject_history.message
+    //     this.rejectMessage = item.reject_history.message;
+    //     return 
+    //   }
+    // }
+    // // If no non-null reject_history.message is found, return an empty string or handle it as per your requirement
+    // return '';
     },
     filteredQuarters() {
       return this.filterQuarters();
@@ -1026,6 +1040,8 @@ export default {
 
     },
     openInplace(item) {
+      this.fact = item.fact
+      this.selectedQuarter = item.result_text[0].quarter
       item.isActive = true;
     },
     saveEditResult(item) {
@@ -1033,12 +1049,13 @@ export default {
         this.showMessage("error", this.$t('common.message.fillError'));
         return
       }
+      console.log("received quarter:", item.quarter);
       this.loading = true;
       const fd = new FormData();
       fd.append("result_id", item.event_result_id)
       fd.append("result_text_id", item.result_text[0].id)
       fd.append("work_plan_event_id", item.work_plan_event_id)
-      fd.append("quarter", this.selectedQuarter.value);
+      fd.append("quarter", this.selectedQuarter);
 
       
       if (this.isFactChanged)
