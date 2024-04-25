@@ -30,7 +30,7 @@
       </TabPanel>
       <TabPanel v-if="docInfo && (docInfo.docHistory.stateId == 2 || docInfo.docHistory.stateId == 6)" :header="$t('ncasigner.sign')">
         <div class="mt-2">
-          <Panel>
+          <Panel v-if="!$isMobile">
             <template #header>
               <InlineMessage severity="info">{{ $t('ncasigner.noteMark') }}</InlineMessage>
             </template>
@@ -39,32 +39,33 @@
                 :loading="signing" />
             </div>
           </Panel>
-          <div class="p-mt-2">
+          <div class="mt-2">
             <Panel>
               <template #header>
-                <div class="p-d-flex p-jc-center">
+                <div class="d-flex justify-content-center">
+                  <InlineMessage v-if="$isMobile" severity="info" class="mb-1">{{ $t('ncasigner.noteMark') }}</InlineMessage>
                   <InlineMessage class="" severity="info">{{ $t('ncasigner.qrSinging') }}</InlineMessage>
                 </div>
               </template>
               <div class="text-center">
                 <h6><b>{{ $t('mgov.inApp') }}</b> <b style="color: red">{{ mobileApp }}</b></h6>
               </div>
-              <div v-if="mgovSignUri" class="p-d-flex p-jc-center">
-                <qrcode-vue size="350" render-as="svg" margin="2" :value="mgovSignUri"></qrcode-vue>
-              </div>
-              <div v-if="mgovMobileRedirectUri && isIndivid" class="p-fluid text-center">
-                <Button class="p-button-outlined" :label="$t('common.mgovMobile')" @click="redirectToMgovMobile" />
-              </div>
               <div v-if="mgovMobileRedirectUri && isIndivid">
                 <hr>
               </div>
-              <div v-if="mgobBusinessRedirectUri && !isIndivid" class="p-fluid text-center">
-                <Button class="p-button-outlined" :label="$t('common.mgovBusiness')" @click="redirectToMgovBusiness" />
+              <div v-if="mgovMobileRedirectUri && isIndivid" class="text-center">
+                <Button class="p-button-outlined" :label="$t('common.mgovMobile')" @click="redirectToMgovMobile" />
               </div>
               <div v-if="mgobBusinessRedirectUri && !isIndivid">
                 <hr>
               </div>
-              <QrGuideline/>
+              <div v-if="mgobBusinessRedirectUri && !isIndivid" class="text-center">
+                <Button class="p-button-outlined" :label="$t('common.mgovBusiness')" @click="redirectToMgovBusiness" />
+              </div>
+              <div v-if="mgovSignUri && !$isMobile" class="d-flex justify-content-center">
+                <qrcode-vue size="350" render-as="svg" margin="2" :value="mgovSignUri"></qrcode-vue>
+              </div>
+              <QrGuideline class="mt-2"/>
             </Panel>
           </div>
         </div>
