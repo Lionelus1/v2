@@ -93,7 +93,7 @@
 
         </DataTable> 
     </AccordionTab>
-      <AccordionTab>
+      <AccordionTab v-if="customType !== 'createUser' && findRole(null, 'teacher')">
         <template #header>
           <div class="uppercase">
             {{ "Научная школа" }}
@@ -216,7 +216,6 @@
   const totalRecordsSchools = ref(0)
   const scienceService = new ScienceService
   const confirm = useConfirm()
-
   const isView = ref({
     academicDegree: false,
     scienceSchool: false,

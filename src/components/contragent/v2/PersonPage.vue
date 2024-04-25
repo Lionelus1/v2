@@ -66,7 +66,7 @@
           <UserRequisite @personal-information-updated="handlePersonalInformationUpdate" :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
         </TabPanel>
 
-        <TabPanel v-if="customType===chapter.myAccount || customType=== chapter.viewUser || customType === chapter.createUser"  :header="$t('science.scientific_grants')">
+        <TabPanel v-if="(customType===chapter.myAccount || customType=== chapter.viewUser) && (customType===chapter.scientists || findRole(null, 'teacher') || findRole(null, 'personal'))"  :header="$t('science.scientific_grants')">
           <ScientificGrantsView :model-value="per" :userID="per.userID" :readonly="pageReadonly"></ScientificGrantsView>
         </TabPanel>
 
