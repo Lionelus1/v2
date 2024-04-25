@@ -28,7 +28,7 @@
 
         </div>
       </TabPanel>
-      <TabPanel v-if="docInfo && (docInfo.docHistory.stateId == 2 || docInfo.docHistory.stateId == 6)" :header="$t('ncasigner.sign')">
+      <TabPanel v-if="docInfo && (docInfo.docHistory.stateId == 2 || docInfo.docHistory.stateId == 6)" :disabled="hideDocSign" :header="$t('ncasigner.sign')">
         <div class="mt-2">
           <Panel v-if="!$isMobile">
             <template #header>
