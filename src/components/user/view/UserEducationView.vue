@@ -443,12 +443,12 @@
       acceptClass: 'p-button p-button-success',
       rejectClass: 'p-button p-button-danger',
       accept: () => {
-        const data = {
+        const req = {
           id: Number(scienceSchool.value.id),
-          userId: Number(scienceSchool.value.user_id)
+          user_id: Number(scienceSchool.value.user_id)
         }
 
-        scienceService.scienceSchoolDelete(data).then(res  => {
+        scienceService.scienceSchoolDelete(req).then(res  => {
           toast.add({severity: "success", summary: t('common.success'), life: 3000});
           getSchools()
         }).catch(err => {
