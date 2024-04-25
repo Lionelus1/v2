@@ -93,12 +93,47 @@
 
         </DataTable> 
     </AccordionTab>
+      <AccordionTab>
+        <template #header>
+          <div class="uppercase">
+            {{ "Научная школа" }}
+          </div>
+        </template>
+
+        <div class="col-12">
+          <Menubar :model="menuScienceSchool" :key="active" style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px"></Menubar>
+        </div>
+
+
+        <DataTable :style="{ width: '75vw' }" maximizable modal :contentStyle="{ height: '300px' }"  selectionMode="single" v-model="scienceSchool" :lazy="true" :value="scienceSchools" :loading="loading" v-model:selection="scienceSchool"
+                   :paginator="true" :rows="10" :totalRecords="totalRecordsSchools" @page="onPageChange">
+          <!-- Учебное заведение -->
+          <Column header="Научная школа">
+            <template #body="slotProps">
+              <p><b>{{ t(slotProps.data['name_'+locale]) }}</b></p>
+            </template>
+          </Column>
+          <!-- Действия-->
+          <Column v-if="!readonly" :header="t('dissertation.dissReportActions')">
+            <template #body="slotProps">
+              <Button icon="fa-solid fa-pencil fa-xl" class="p-button-text p-button-warning p-1 mr-2" @click="scienceSchool=slotProps.data;updateScienceSchool()"></Button>
+              <Button icon="fa-solid fa-trash-can fa-xl" class="p-button-text p-button-danger p-1 mr-2" @click="scienceSchool=slotProps.data;deleteSchool()"></Button>
+            </template>
+          </Column>
+
+        </DataTable>
+
+      </AccordionTab>
     </Accordion>
   </div>
 
 
   <Sidebar v-model:visible="isView.academicDegree"  position="right" class="p-sidebar-lg"  style="overflow-y: scroll">
       <UserEducationEdit :modelValue=academicDegree :readonly="readonly"/>
+  </Sidebar>
+
+  <Sidebar v-model:visible="isView.scienceSchool"  position="right" class="p-sidebar-lg"  style="overflow-y: scroll">
+    <ScienceSchoolEdit :modelValue=scienceSchool :readonly="readonly"/>
   </Sidebar>
 
   <Dialog v-model:visible="fileView" :style="{ width: '650px' }" :modal="true">
@@ -131,6 +166,10 @@
   import  UserEducationEdit from "../edit/UserEducationEdit"
   import {getHeader} from "@/config/config";
   import api from "@/service/api"
+  import Sidebar from "primevue/sidebar";
+  import ScienceSchoolEdit from "@/components/user/edit/ScienceSchoolEdit.vue";
+  import {ScienceService} from "@/service/science.service"
+  import { useConfirm } from "primevue/useconfirm";
 
   const {t, locale} = useI18n()
   const toast = useToast()
@@ -160,6 +199,8 @@
   });
   const academicDegrees = ref([])
   const academicDegree = ref(null)
+  const scienceSchools = ref([])
+  const scienceSchool = ref(null)
   const userID = computed(() => props.userID)
   const fileData = ref(null)
   const fileView = ref(false)
@@ -167,9 +208,18 @@
     page: 0,  
     rows: 10, 
   });
+  const lazyParamsSchool = ref({
+    page: 0,
+    rows: 10,
+  });
   const totalRecords = ref(0)
+  const totalRecordsSchools = ref(0)
+  const scienceService = new ScienceService
+  const confirm = useConfirm()
+
   const isView = ref({
-    academicDegree: false
+    academicDegree: false,
+    scienceSchool: false,
   })
   const emitPersonalInformationUpdate = defineEmits(["personal-information-updated"]);
   const user = ref(props.modelValue)
@@ -204,21 +254,30 @@
   }
 
   const deleteEducationConfirm = () => {
-      const data = {
-        id: Number(academicDegree.value.id),
-        userId: Number(academicDegree.value.userID)
-      }
+    confirm.require({
+      message: t('common.doYouWantDelete'),
+      header: t('common.confirm'),
+      icon: 'pi pi-exclamation-triangle',
+      acceptClass: 'p-button p-button-success',
+      rejectClass: 'p-button p-button-danger',
+      accept: () => {
+        const data = {
+          id: Number(academicDegree.value.id),
+          userId: Number(academicDegree.value.userID)
+        }
 
-      userService.deleteEducation(data).then(res  => {
-        toast.add({severity: "success", summary: t('common.success'), life: 3000});
-        getUserAcademicDegree()
-      }).catch(err => {
+        userService.deleteEducation(data).then(res  => {
+          toast.add({severity: "success", summary: t('common.success'), life: 3000});
+          getUserAcademicDegree()
+        }).catch(err => {
           toast.add({
-          severity: "error",
-          summary: t('message.actionError'),
-          life: 3000,
+            severity: "error",
+            summary: t('message.actionError'),
+            life: 3000,
           })
-      })
+        })
+      },
+    });
   }
 
   const onPageChange = (event) => {
@@ -226,20 +285,27 @@
     getUserAcademicDegree();
   };
 
-  const deleteEducation = () => {
-      confirmDelete.value = true;
-
-  }
-
   const createEducation=() => {
       academicDegree.value = {}
       academicDegree.value.userID = props.userID
       isView.value.academicDegree = true
   }
 
+  const createScienceSchool = () => {
+    scienceSchool.value = {}
+    scienceSchool.value.userID = props.userID
+    isView.value.scienceSchool = true
+  }
+
   const updateEducation = () => {
     if (academicDegree.value != null) {
       isView.value.academicDegree = true
+    }
+  }
+
+  const updateScienceSchool = () => {
+    if (scienceSchool.value != null) {
+      isView.value.scienceSchool = true
     }
   }
 
@@ -253,6 +319,17 @@
           },
         },
     ])
+
+  const menuScienceSchool = ref([
+    {
+      label: t("common.add"),
+      icon: "pi pi-fw pi-plus",
+      disabled: () => props.readonly,
+      command: () => {
+        createScienceSchool()
+      },
+    },
+  ])
 
   const showFile = (data) => {
       if (!data) {
@@ -317,13 +394,11 @@
     }
 
     const clearAcademicDegree = () => {
-      console.log('test')
       user.value.academicDegree = null
       emitPersonalInformationUpdate("personal-information-updated", user.value);
     }
 
   const clearAcademicTitle = () => {
-    console.log('test')
     user.value.academicTitle = null
     emitPersonalInformationUpdate("personal-information-updated", user.value);
   }
@@ -332,10 +407,68 @@
     emitPersonalInformationUpdate("personal-information-updated", user.value);
   };
 
+  const getSchools = () => {
+    if (props.customType === 'createUser') {
+      return
+    }
+    loading.value = true
+    const req = {
+      user_id: userID.value,
+      page: lazyParamsSchool.value.page,
+      rows: lazyParamsSchool.value.rows,
+    }
+
+    scienceService.getScienceSchools(req).then(response=>{
+
+      scienceSchools.value = response.data.schools
+      totalRecordsSchools.value = response.data.total
+
+      loading.value = false
+    }).catch(error => {
+      loading.value = false
+      toast.add({
+        severity: "error",
+        summary: t('message.actionError'),
+        life: 3000,
+      })
+    })
+
+    confirmDelete.value = false;
+  }
+
+  const deleteSchool = () => {
+    confirm.require({
+      message: t('common.doYouWantDelete'),
+      header: t('common.confirm'),
+      icon: 'pi pi-exclamation-triangle',
+      acceptClass: 'p-button p-button-success',
+      rejectClass: 'p-button p-button-danger',
+      accept: () => {
+        const data = {
+          id: Number(scienceSchool.value.id),
+          userId: Number(scienceSchool.value.user_id)
+        }
+
+        scienceService.scienceSchoolDelete(data).then(res  => {
+          toast.add({severity: "success", summary: t('common.success'), life: 3000});
+          getSchools()
+        }).catch(err => {
+          toast.add({
+            severity: "error",
+            summary: t('message.actionError'),
+            life: 3000,
+          })
+        })
+      },
+    });
+
+  }
+
   onMounted(() => {
     getCatalog("academic_degree");
     getCatalog("academic_title")
-      getUserAcademicDegree()
+    getUserAcademicDegree()
+    getSchools()
 
       emitter.on('academicDegree', (data) => {
           if (data === true) {
@@ -343,6 +476,14 @@
               getUserAcademicDegree()
           }
       });
+
+    emitter.on('scienceSchool', (data) => {
+      if (data === true) {
+        isView.value.scienceSchool = false
+        getSchools()
+      }
+    });
+
   })
   
 </script>

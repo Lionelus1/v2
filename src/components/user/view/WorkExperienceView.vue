@@ -53,6 +53,7 @@
     import {findRole} from "@/config/config";
     import {ScienceService} from "@/service/science.service";
     import ExperienceEdit from "@/components/humanResources/candidate/subedits/ExperienceEdit"
+    import {useConfirm} from "primevue/useconfirm";
 
     const { t } = useI18n()
     const toast = useToast()
@@ -101,6 +102,7 @@
           },
         },
     ])
+    const confirm = useConfirm()
 
     const getLaborActivity=() => {
         const req = {
@@ -135,20 +137,30 @@
 
 
     const deleteValue =()=> {
-        const req = {
+
+      confirm.require({
+        message: t('common.doYouWantDelete'),
+        header: t('common.confirm'),
+        icon: 'pi pi-exclamation-triangle',
+        acceptClass: 'p-button p-button-success',
+        rejectClass: 'p-button p-button-danger',
+        accept: () => {
+          const req = {
             id: laborActivity.value.id,
             userID: props.userID || null,
-        }
+          }
 
-        loading.value = true
-        scienceService.deleteLaborActivity(req).then(_ => {
+          loading.value = true
+          scienceService.deleteLaborActivity(req).then(_ => {
             loading.value = false
             toast.add({severity: "success", summary: t('common.success'), life: 3000});
             getLaborActivity()
-        }).catch(error => {
+          }).catch(error => {
             toast.add({severity: 'error', summary: t('common.error'), life: 3000})
             loading.value = false;
-        })
+          })
+        },
+      });
     }
 
     const create=() => {

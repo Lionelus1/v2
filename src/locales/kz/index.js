@@ -1591,7 +1591,15 @@ export default {
         scientistsProfile: 'Ғалымдардың профилі',
         profileLink: 'Профильге сілтеме',
         academicDegAndAcademicTit: 'Ғылыми дәрежесі және ғылыми атағы',
-        currentPosition:'Ағымдағы лауазым'
+        currentPosition:'Ағымдағы лауазым',
+        customerAndSourceInRussia: 'Тапсырыс беруші және қаржыландыру көзі орыс тілінде',
+        customerAndSourceInKazakh: 'Тапсырыс беруші және қаржыландыру көзі қазақ тілінде',
+        customerAndSourceInEnglish: 'Тапсырыс беруші және қаржыландыру көзі ағылшын тілінде',
+        customerAndSource:'Тапсырыс беруші және қаржыландыру көзі',
+        contract_sum_kz: 'Шарт сомасы',
+        project_position:'Жобаның позициясы',
+        scientific_grants: "Ғылыми гранттар"
+
     },
     personalData: 'Жеке ақпарат',
     yearPeriod:'Период годов',

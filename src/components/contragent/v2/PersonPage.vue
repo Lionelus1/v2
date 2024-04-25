@@ -65,7 +65,11 @@
         <TabPanel v-if="customType===chapter.myAccount || customType=== chapter.viewUser || customType === chapter.createUser" :header="$t('bank.requisite')">
           <UserRequisite @personal-information-updated="handlePersonalInformationUpdate" :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
         </TabPanel>
-        
+
+        <TabPanel v-if="customType===chapter.myAccount || customType=== chapter.viewUser || customType === chapter.createUser"  :header="$t('science.scientific_grants')">
+          <ScientificGrantsView :model-value="per" :userID="per.userID" :readonly="pageReadonly"></ScientificGrantsView>
+        </TabPanel>
+
         <TabPanel v-if="customType !== chapter.createUser && customType !== chapter.viewUser && (customType===chapter.scientists || findRole(null, 'teacher') || findRole(null, 'personal'))" :header="this.$t('science.areaScientificInterests')">
           <UserResearchInterestsView :model-value="per" :userID="per.userID" :readonly="pageReadonly"/>
         </TabPanel>
@@ -114,10 +118,12 @@ import  ResumeView  from "@/components/humanResources/vacancy/ResumeView.vue";
 import ScienceWorks from "@/components/documents/catalog/ScienceWorks.vue"
 import html2canvas from "html2canvas";
 import * as jsPDF from "jspdf";
+import ScientificGrantsView from "@/components/user/view/ScientificGrantsView.vue";
 
 export default {
   name: 'PersonPage',
   components: {
+    ScientificGrantsView,
     UserPersonalInfomation, UserIDCard, UserEducationView, UserRequisite, UserResearchInterestsView,
     WorkExperienceView, UserAwardView, UserQualificationsView, ResumeView, ScienceWorks, },
   props: {
@@ -191,6 +197,7 @@ export default {
       userService: new UserService(),
       file: null,
       fileBankRequisite: null,
+      userPhoto: null,
       chapter: {
         myAccount: 'myAccount',
         scientists: 'scientists',
@@ -230,6 +237,13 @@ export default {
         this.fileBankRequisite = data
         this.changed = true;
       } 
+    });
+
+    this.emitter.on('userPhoto', (data) => {
+      if (data !== true) {
+        this.userPhoto = data
+        this.changed = true;
+      }
     });
 
   },
@@ -289,6 +303,10 @@ export default {
       }
       if (this.fileBankRequisite !== null) {
         fd.append("bankRequisiteImage", this.fileBankRequisite)
+      }
+
+      if (this.userPhoto !== null) {
+        fd.append("userPhoto", this.userPhoto)
       }
 
       this.userService.updateUserAccountHandler(fd).then(res => {
