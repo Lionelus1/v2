@@ -521,10 +521,8 @@ const getTicket = () => {
         total.value = res.data.total;
       }).catch((err) => {
     loading.value = false
-    if (!err.response) {
       data.value = null;
       total.value = null;
-    }
   });
 }
 
