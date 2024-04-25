@@ -76,6 +76,7 @@
   import {  findRole } from "@/config/config";
   import ResearchInterestsEdit from "../edit/ResearchInterestsEdit"
   import UserAwardEdit from "../edit/UserAwardEdit"
+  import {useConfirm} from "primevue/useconfirm";
   const emitter = inject("emitter");
   const {t, locale} = useI18n()
   const toast = useToast()
@@ -115,22 +116,32 @@
 
   const fileData = ref(null)
   const fileView = ref(false)
+  const confirm = useConfirm()
 
   const deleteValue=() => {
-    const req = {
-        id: award.value.id || null,
-        userID: props.userID || null,
-    }
-    loading.value = true
+    confirm.require({
+      message: t('common.doYouWantDelete'),
+      header: t('common.confirm'),
+      icon: 'pi pi-exclamation-triangle',
+      acceptClass: 'p-button p-button-success',
+      rejectClass: 'p-button p-button-danger',
+      accept: () => {
+        const req = {
+          id: award.value.id || null,
+          userID: props.userID || null,
+        }
+          loading.value = true
 
-    scienceService.deleteAwards(req).then(_ => {
-        loading.value = false
-        toast.add({severity: "success", summary: t('common.success'), life: 3000});
-        getScienceAward()
-    }).catch(error => {
-        toast.add({severity: 'error', summary: t('common.error'), life: 3000})
-        loading.value = false;
-    })
+          scienceService.deleteAwards(req).then(_ => {
+            loading.value = false
+            toast.add({severity: "success", summary: t('common.success'), life: 3000});
+            getScienceAward()
+          }).catch(error => {
+            toast.add({severity: 'error', summary: t('common.error'), life: 3000})
+            loading.value = false;
+          })
+      },
+    });
   }
   const menu= ref([
         {

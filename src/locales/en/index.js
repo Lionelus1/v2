@@ -1586,7 +1586,15 @@ export default {
         scientistsProfile: 'Profile Scientists',
         profileLink: 'Profile link',
         academicDegAndAcademicTit: 'Academic degree and academic title',
-        currentPosition: 'Current position'
+        currentPosition: 'Current position',
+        customerAndSourceInRussia: 'Customer and source of funding in Russian language',
+        customerAndSourceInKazakh: 'Customer and source of funding in Kazakh language',
+        customerAndSourceInEnglish: 'Customer and source of funding in English language',
+        customerAndSource:'Customer and source of funding',
+        contract_sum_en: 'Contract amount',
+        project_position:'Project position',
+        scientific_grants: "Scientific grants"
+
     },
     fieldEducation: {
         title: 'Field of education',

@@ -51,6 +51,7 @@
   import {  findRole } from "@/config/config";
   import ResearchInterestsEdit from "../edit/ResearchInterestsEdit"
   import ScienceWorks from "@/components/documents/catalog/ScienceWorks.vue"
+  import {useConfirm} from "primevue/useconfirm";
   const emitter = inject("emitter");
   const {t, locale} = useI18n()
   const toast = useToast()
@@ -89,20 +90,32 @@
   const researchInterests = ref([])
   const researchInterest = ref(null)
   const showScientificWorks = ref(false)
+  const confirm = useConfirm()
+
+
   const deleteValue =()=> {
-    const req = {
-        id: researchInterest.value.id,
-        userID: props.userID || null,
-    }
-    loading.value = true
-    scienceService.deleteScienceInterests(req).then(_ => {
-        loading.value = false
-        toast.add({severity: "success", summary: t('common.success'), life: 3000});
-        getScienceInterests()
-    }).catch(error => {
-        toast.add({severity: 'error', summary: t('common.error'), life: 3000})
-        loading.value = false;
-    })
+    confirm.require({
+      message: t('common.doYouWantDelete'),
+      header: t('common.confirm'),
+      icon: 'pi pi-exclamation-triangle',
+      acceptClass: 'p-button p-button-success',
+      rejectClass: 'p-button p-button-danger',
+      accept: () => {
+        const req = {
+          id: researchInterest.value.id,
+          userID: props.userID || null,
+        }
+        loading.value = true
+        scienceService.deleteScienceInterests(req).then(_ => {
+          loading.value = false
+          toast.add({severity: "success", summary: t('common.success'), life: 3000});
+          getScienceInterests()
+        }).catch(error => {
+          toast.add({severity: 'error', summary: t('common.error'), life: 3000})
+          loading.value = false;
+        })
+      },
+    });
   }
 
   const menu= ref([

@@ -93,6 +93,7 @@
   import ResearchInterestsEdit from "../edit/ResearchInterestsEdit"
   import UserAwardEdit from "../edit/UserAwardEdit"
   import UserQualificationsEdit from "../edit/UserQualificationsEdit.vue"
+  import {useConfirm} from "primevue/useconfirm";
 
   const emitter = inject("emitter");
   const {t, locale} = useI18n()
@@ -145,23 +146,34 @@
 
   const fileData = ref(null)
   const fileView = ref(false)
+  const confirm = useConfirm()
 
   const deleteValue=() => {
-      const data = {
+
+    confirm.require({
+      message: t('common.doYouWantDelete'),
+      header: t('common.confirm'),
+      icon: 'pi pi-exclamation-triangle',
+      acceptClass: 'p-button p-button-success',
+      rejectClass: 'p-button p-button-danger',
+      accept: () => {
+        const data = {
           id: Number(qualification.value.id),
           userID: Number(props.userID)
-      }
+        }
 
-      scienceService.deleteQualificationsScience(data).then(res  => {
-        toast.add({severity: "success", summary: t('common.success'), life: 3000});
-        getQualificationsScience()
-      }).catch(err => {
+        scienceService.deleteQualificationsScience(data).then(res  => {
+          toast.add({severity: "success", summary: t('common.success'), life: 3000});
+          getQualificationsScience()
+        }).catch(err => {
           toast.add({
-          severity: "error",
-          summary: t('message.actionError'),
-          life: 3000,
+            severity: "error",
+            summary: t('message.actionError'),
+            life: 3000,
           })
-      })
+        })
+      },
+    });
   }
 
   const update = () => {

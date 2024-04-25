@@ -1,16 +1,23 @@
 <template>
   <div v-if="loading">
-    
     <div class="flex flex-col items-center justify-center">
       <!-- ФОТО -->
       <div>
-        <img class="round mr-2 card_img" v-if="user.photo != null && user.photo !=''" :src="'data:image/jpeg;base64,' + user.photo" />
+        <img class="round mr-2 card_img" v-if="user.photo != null && user.photo !=''" :src="'data:image/jpeg;base64,'+user.photo" />
         <img class="round" v-else src="assets/layout/images/default-user.jpg" />
+        <FileUpload v-if="(userID === currentUser.userID || findRole(currentUser, 'main_administrator')) && findRole(currentUser, 'teacher')" ref="form" mode="basic" class="mt-2"
+                    :customUpload="true" accept="image/*" :class="{'p-invalid': validation.file}"
+                    @uploader="upload($event)" :auto="true" chooseLabel="Выберите фото"/>
+
+        <InlineMessage severity="info" style="font-size: 10px;" class="mt-2" show
+                       v-if="file">
+          {{ t('ncasigner.chosenFile', {fn: file ? file.name : ""}) }}
+        </InlineMessage>
       </div>
   
       <div class="grid formgrid">
         <!-- ИМЯ -->
-        <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+        <div class="col-12 mt-2 mb-2 pb-2 lg:col-6 mb-lg-0">
         <label>{{ t('contact.fname') }}<span class="p-error" v-if="!readonly">*</span></label>
         <InputText class="mt-2" :placeholder="t('contact.fname')" v-model="user.firstName" :readonly="props.readonly" @input="updateUserData"></InputText>
         <small class="p-error" v-if="validation.firstName">{{ t("common.requiredField") }}</small>
@@ -49,22 +56,22 @@
         <!-- ЭЛ ПОЧТА -->
         <div class="col-12 mb-2 mt-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ t('contact.email') }}<span class="p-error" v-if="!readonly">*</span></label>
-            <InputText class="mt-2" :placeholder="t('contact.email')" v-model="user.email" :readonly="customType != 'createUser'" @input="updateUserData"></InputText>
+            <InputText class="mt-2" :placeholder="t('contact.email')" v-model="user.email" :readonly="readonly" @input="updateUserData"></InputText>
             <small class="p-error" v-if="validation.email">{{ t("common.requiredField") }}</small>
         </div>
   
         <!-- Пароль -->
-        <div v-if="customType == 'viewUser' || customType == 'createUser'" class="col-12 mb-2 mt-2 pb-2 lg:col-6 mb-lg-0">
+        <div v-if="findRole(currentUser, 'main_administrator') && (customType == 'viewUser' || customType == 'createUser')" class="col-12 mb-2 mt-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ t("common.password") }}<span class="p-error" v-if="customType == 'createUser'">*</span></label>
-            <span class="p-input-icon-right mt-2">
+          <IconField iconPosition="right">
               <Password
                 @input="updateUserData"
                 :readonly="readonly"
                 type="text"
                 v-model="user.password"
               ></Password>
-              <i class="pi pi-key" style="cursor: pointer;" @click="generatePassword" />
-            </span>
+            <InputIcon class="pi pi-key" style="cursor: pointer;" @click="generatePassword"></InputIcon>
+            </IconField>
         </div>
 
         <!-- Текущая должность -->
@@ -100,7 +107,7 @@
                   style="font-size: 1.25rem;" @click="openorganizationCard"></i>
                 <i class="pi pi-ellipsis-h" v-if="findRole(currentUser, 'main_administrator')" style="font-size: 1.25rem;" @click="openorganizationList"></i>
               </InputIcon>
-            <InputText  style="padding-right: 40px;" type="text" :value="getOrganizationName()"></InputText>
+            <InputText :readonly="readonly"  style="padding-right: 40px;" type="text" :value="getOrganizationName()"></InputText>
 
             </IconField>
 
@@ -196,7 +203,9 @@
   
   const userID = ref(props.userID)
   const loading = ref(false)
-  
+  const file = ref(null)
+  const emitter = inject("emitter");
+
   const validation =  ref({
     firstName: false,
     thirdName: false,
@@ -388,6 +397,12 @@
     const year = date.getFullYear();
     return `${day}.${month}.${year}`;
   }
+
+  const upload = (event) =>  {
+    file.value = event.files[0];
+    emitter.emit("userPhoto", file.value);
+  }
+
 
   onMounted(() => {
     currentUser.value = JSON.parse(localStorage.getItem("loginedUser"));
