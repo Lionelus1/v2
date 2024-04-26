@@ -86,7 +86,7 @@
 import { mapState} from "vuex";
 import RolesByName from "../smartenu/RolesByName.vue"
 import Enums from "@/enum/docstates/index";
-import axios from 'axios';
+import api from '@/service/api';
 import {getHeader, smartEnuApi} from "@/config/config";
 export default {
   components: {   RolesByName},
@@ -143,8 +143,8 @@ export default {
       header: this.$t("common.confirm"),
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
-        axios
-        .post(smartEnuApi + "/dissertation/deleteCouncilMember", {id : this.selectedMember.memberID},  {
+        api
+        .post("/dissertation/deleteCouncilMember", {id : this.selectedMember.memberID},  {
           headers: getHeader(),
         })
         .then((response) => {
@@ -182,8 +182,8 @@ export default {
     this.loading = true;
       let id = this.councilID
       //this.lazyParams.countMode = null;
-      axios
-        .post(smartEnuApi + "/dissertation/getcouncilmembers", {id:id},  {
+      api
+        .post("/dissertation/getcouncilmembers", {id:id},  {
           headers: getHeader(),
         })
         .then((response) => {
@@ -201,8 +201,8 @@ export default {
     this.submitted = true;
     
     if (this.validateAddConsulMemberForm()) {
-      axios.
-        post(smartEnuApi + "/dissertation/addCouncilMember", 
+      api.
+        post("/dissertation/addCouncilMember", 
           {userID: this.selectedMembers[0].userID, roleID: this.selectedRole.id, councilID: this.councilID}, 
           {
           headers: getHeader(),

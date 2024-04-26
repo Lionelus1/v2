@@ -8,32 +8,53 @@
   <ToolbarMenu v-if="request" :data="menu"/>
   <TabView v-model:activeIndex="activeTab" @tab-change="tabChanged" class="flex flex-column flex-grow-1">
     <TabPanel :header="selectedDirection['name_' + locale]">
-      <BlockUI :blocked="loading" class="card">
-        <div style="margin-left: 15px;" v-if="request.doc?.docHistory">
-          <p> {{ t('common.state') + ": " }}
-            <span :class="'customer-badge status-' + request.doc?.docHistory?.stateEn">
-        {{ getDocStatus(request.doc?.docHistory?.stateEn) }}
-      </span>
-          </p>
-          <div v-if="request.doc?.docHistory?.stateEn === 'revision' || request.doc?.docHistory?.stateEn === 'rejected' ">
-            <label>{{ $t('common.comment') }}:</label>
-            <div>
-              <Message style="width: 150px;" :closable="false"
-                       v-if="request.doc != null && request.doc?.docHistory != null && request.doc?.docHistory != null"
-                       severity="warn">
-                {{ request.doc?.docHistory?.comment }}</Message>
-            </div>
-          </div>
-        </div>
-        <div
-            v-if="haveAccess && selectedDirection && selectedDirection.code === 'appointment' || selectedDirection.code === 'office_booking'">
-          <ConsultationManager :courseRequest="request" @childConsultationInput="childConsultationInput"
-                               @validationConsultation="validationConsultation" :validationRequest="validationRequest"/>
-        </div>
-        <CourseRegistration :courseRequest="request" :validationRequest="validationRequest"
-                            @onCheckboxChecked="onChecked" @childInputData="childInput"
-                            @validateInput="validateInput"
-                            v-if="selectedDirection && selectedDirection.code === 'course_application'"/>
+      <BlockUI  :blocked="loading" class="card">
+<!--        <div v-if="haveAccess && selectedDirection && selectedDirection.code !== 'course_application'">-->
+<!--            <div class="p-fluid md:col-6">-->
+<!--            <label>{{ t('helpDesk.application.categoryApplication') }}</label>-->
+<!--            <InputText type="text" v-model="selectedDirection['name_' + locale]" disabled />-->
+<!--          </div>-->
+<!--          <div v-if="selectedDirection && selectedDirection.code === 'office_booking'">-->
+<!--            <div class="p-fluid md:col-6">-->
+<!--              <label>{{ t('helpDesk.application.choseAudience') }}</label>-->
+<!--              <Dropdown v-model="choseAudience" optionLabel="name" optionValue="id" :placeholder="t('common.select')" />-->
+<!--            </div>-->
+<!--            <div class="p-fluid md:col-6">-->
+<!--              <label>{{ t('helpDesk.application.date') }}</label>-->
+<!--              <PrimeCalendar v-model="request.date_ranges" dateFormat="dd.mm.yy" :placeholder="t('common.select')" :monthNavigator="true"-->
+<!--                :yearNavigator="true" yearRange="1990:2050" />-->
+<!--            </div>-->
+<!--            <div class="p-fluid md:col-6">-->
+<!--              <label>{{ t('helpDesk.application.dateTime') }}</label>-->
+<!--              <PrimeCalendar id="calendar-timeonly" :placeholder="t('common.select')" v-model="request.dateTime" timeOnly />-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          <div v-if="selectedDirection && selectedDirection.code === 'appointment'">-->
+<!--            <div class="p-fluid md:col-6">-->
+<!--              <label>{{ t('helpDesk.application.selectSpecialist') }}</label>-->
+<!--              <Dropdown v-model="specialization" optionLabel="name" optionValue="id" :placeholder="t('common.select')" />-->
+<!--            </div>-->
+<!--            <div class="p-fluid md:col-6">-->
+<!--              <label>{{ t('helpDesk.application.date') }}</label>-->
+<!--              <PrimeCalendar v-model="request.date_ranges" dateFormat="dd.mm.yy" :placeholder="t('common.select')" :monthNavigator="true"-->
+<!--                :yearNavigator="true" yearRange="1990:2050" />-->
+<!--            </div>-->
+<!--            <div class="p-fluid md:col-6">-->
+<!--              <label>{{ t('helpDesk.application.dateTime') }}</label>-->
+<!--              <PrimeCalendar id="calendar-timeonly" :placeholder="t('common.select')" v-model="request.dateTime" timeOnly />-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          <div class="p-fluid md:col-6">-->
+<!--            <label>{{ t('helpDesk.application.description') }}</label>-->
+<!--            <Textarea class="mt-2" v-model="request.description_ru" autoResize rows="5" cols="30" />-->
+<!--          </div>-->
+<!--          <div class="p-fluid md:col-6">-->
+<!--            <label>{{ t('helpDesk.application.contactNumber') }}</label>-->
+<!--            <InputText class="mt-2" v-model="contactNumber" />-->
+<!--          </div>-->
+<!--        </div>-->
+        <CourseRegistration :courseRequest="request" :validationRequest="validationRequest" @onCheckboxChecked="onChecked" @childInputData="childInput"
+                            @validateInput="validateInput" v-if="selectedDirection && selectedDirection.code === 'course_application'" />
       </BlockUI>
       <!-- sendToApproveDialog -->
       <Dialog :header="t('common.action.sendToApprove')" v-model:visible="visibility.sendToApproveDialog"
@@ -164,7 +185,7 @@ const docStatus = ref([
   {name_kz: "келісуде", name_en: "inapproval", name_ru: "на согласовании", code: "inapproval"},
   {name_kz: "келісілді", name_en: "approved", name_ru: "согласован", code: "approved"},
   {name_kz: "түзетуге", name_en: "revision", name_ru: "на доработку", code: "revision"},
-  {name_kz: "қайтарылды", name_en: "rejected", name_ru: "отклонен", code: "rejected"},
+  {name_kz: "қабылданбады", name_en: "rejected", name_ru: "отклонен", code: "rejected"},
   {name_kz: "қол қоюда", name_en: "signing", name_ru: "на подписи", code: "signing"},
   {name_kz: "қол қойылды", name_en: "signed", name_ru: "подписан", code: "signed"},
   {
@@ -216,8 +237,7 @@ const getDocStatus = (code) => {
     return null;
   }
 
-};
-const currentUser = ref(null)
+const currentUser = ref(JSON.parse(localStorage.getItem("loginedUser")));
 const pdf = ref(null)
 const activeTab = ref(0)
 const isAdmin = ref(false)
@@ -239,7 +259,7 @@ const menu = computed(() => [
       {
         label: t("common.tosign"),
         icon: "pi pi-user-edit",
-        visible: request.value && (request.value.doc?.docHistory?.stateId === DocEnum.CREATED.ID ||
+        visible: request.value && (currentUser.value?.userID == request.value?.sender_id) && (request.value.doc?.docHistory?.stateId === DocEnum.CREATED.ID ||
             request.value.doc?.docHistory?.stateId === DocEnum.REVISION.ID),
         command: () => open('sendToApproveDialog')
       },
@@ -328,7 +348,6 @@ const needMySign = () => {
     return false;
   }
 
-  let loginedUser = JSON.parse(localStorage.getItem("loginedUser"));
   let stages = request.value.doc.approvalStages;
   let need = false;
 
@@ -440,8 +459,8 @@ const saveDocument = () => {
     validationRequest.value = validation.value
     return
   }
-
   validationRequest.value = validation.value
+
 
   let student = null
 
@@ -625,7 +644,6 @@ const isUserDataVaild = () => {
     }
   }
 
-
 }
 const initStages = () => {
   const users = []
@@ -661,36 +679,47 @@ const initStages = () => {
         });
       })
     }
-    contragentService.getPersons(reqOffice).then(res => {
-      userOffice = res.data.foundUsers
+    // contragentService.getPersons(reqOffice).then(res => {
+    //   userOffice = res.data.foundUsers
+    //   stages.value.push({
+    //     stage: 2,
+    //     users: userOffice,
+    //     titleRu: "Офис регистратор",
+    //     titleKz: "Кеңсе тіркеушісі",
+    //     titleEn: "Office registrar",
+    //     certificate: {
+    //       namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+    //       nameru: "Для внутреннего документооборота (ГОСТ)",
+    //       nameen: "For internal document management (GOST)",
+    //       value: "internal"
+    //     }
+    //   });
+    // })
+  } else {
+    let userInstitute = []
+
+    let reqInstitute = {
+      filter: {
+        "name":"Палымбетов Нурбол Шаменович"
+      }}
+
+    contragentService.getPersons(reqInstitute).then(res => {
+      userInstitute = res.data.foundUsers
       stages.value.push({
-        stage: 2,
-        users: userOffice,
-        titleRu: "Офис регистратор",
-        titleKz: "Кеңсе тіркеушісі",
-        titleEn: "Office registrar",
+        stage: 1,
+        users: userInstitute,
+        titleRu: "Институт непрерывного образования",
+        titleKz: "Үздіксіз білім беру институты",
+        titleEn: "Institute of Continuing Education",
         certificate: {
-          namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
-          nameru: "Для внутреннего документооборота (ГОСТ)",
-          nameen: "For internal document management (GOST)",
-          value: "internal"
+          namekz: "Жеке тұлғаның сертификаты",
+          nameru: "Сертификат физического лица",
+          nameen: "Certificate of an individual",
+          value: "individual"
         }
       });
     })
-  } else {
-    stages.value = [{
-      stage: 1,
-      users: null,
-      titleRu: "Институт непрерывного образования",
-      titleKz: "Үздіксіз білім беру институты",
-      titleEn: "Institute of Continuing Education",
-      certificate: {
-        namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
-        nameru: "Для внутреннего документооборота (ГОСТ)",
-        nameen: "For internal document management (GOST)",
-        value: "internal"
-      }
-    }]
+
   }
 
   selectedUsers.value = stages.value

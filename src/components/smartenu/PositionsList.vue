@@ -28,7 +28,7 @@
 </template>
 <script>
 import { getHeader, smartEnuApi } from "@/config/config";
-import axios from "axios";
+import api from "@/service/api";
 export default {
   data() {
     return {
@@ -57,8 +57,8 @@ export default {
   },
   methods: {
     getPositions() {
-      axios
-        .get(smartEnuApi + "/getpositions", { headers: getHeader() })
+      api
+        .get("/getpositions", { headers: getHeader() })
         .then((response) => {
           this.positions = response.data;
         })

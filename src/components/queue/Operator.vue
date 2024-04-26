@@ -72,7 +72,7 @@
 <script>
 
 import {  getHeader, smartEnuApi, findRole } from "@/config/config";
-import axios from "axios";
+import api from "@/service/api";
 export default {
 
   data() {
@@ -119,8 +119,8 @@ export default {
         this.loading = true  
         this.lazyParams.parentID = parentID
          //alert(parentID)
-        axios
-        .post(smartEnuApi + "/queue/allQueues", this.lazyParams, {
+        api
+        .post("/queue/allQueues", this.lazyParams, {
           headers: getHeader(),
         })
         .then((response) => {
@@ -152,8 +152,8 @@ export default {
     getNeigborQueue(parentID) {
         this.loading = true         
         this.lazyParams.id = parentID
-        axios
-        .post(smartEnuApi + "/queue/getneigbors", this.lazyParams, {
+        api
+        .post("/queue/getneigbors", this.lazyParams, {
           headers: getHeader(),
         })
         .then((response) => {
@@ -175,8 +175,8 @@ export default {
     },
     callNextCustomer(call, number) {
        this.loading = true  
-       axios
-        .post(smartEnuApi + "/queue/callCustomer", {
+       api
+        .post("/queue/callCustomer", {
           queueID: Number(this.$route.params.parentID),
           windowID: Number(this.$route.params.id),
           number: number!= null ? Number(number): null,
@@ -224,8 +224,8 @@ export default {
     changeState(state, redirectID){
       var workSecond=this.service.info.second+(this.service.info.minute*60)+(Number(this.service.info.hour*3600));
       this.loading = true
-      axios
-        .post(smartEnuApi + "/queue/statusChange", {serviceID: this.service.id, state: state, redirectID: redirectID,workTime: workSecond}, {
+      api
+        .post("/queue/statusChange", {serviceID: this.service.id, state: state, redirectID: redirectID,workTime: workSecond}, {
           headers: getHeader(),
         })
         .then((_) => {         

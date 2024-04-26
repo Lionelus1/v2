@@ -59,7 +59,7 @@
 
 <script>
 import {getHeader, smartEnuApi, findRole } from "@/config/config";
-import axios from "axios";
+import api from "@/service/api";
 export default {
  
   data() {
@@ -75,8 +75,8 @@ export default {
 
     getQueueReport(queueID) {
       this.loading = true  
-      axios
-      .post(smartEnuApi + "/queue/queueReport", {selectedDay:this.selectDate},{
+      api
+      .post("/queue/queueReport", {selectedDay:this.selectDate},{
         headers: getHeader(),
       })
       .then((response) => {

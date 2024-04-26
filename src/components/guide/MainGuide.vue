@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "@/service/api";
 import {findRole} from "../../config/config";
 import {getHeader, smartEnuApi} from "@/config/config";
 import {resizeImages} from "../../helpers/HelperUtil";
@@ -100,7 +100,7 @@ export default {
   methods: {
     getGuide() {
       this.loading = true
-      axios.post(smartEnuApi + "/manual/getContent", {pageLink: this.pageLink}, {headers: getHeader()})
+      api.post("/manual/getContent", {pageLink: this.pageLink}, {headers: getHeader()})
           .then((response) => {
             this.guide = response.data;
             if (this.guide.pageLink === "" && this.findRole(null, "manual_moderator")) {
@@ -179,7 +179,7 @@ export default {
       this.bodyParams.name = this.guide.name
       this.bodyParams.nameRu = this.guide.nameRu
       this.bodyParams.nameEn = this.guide.nameEn
-      axios.post(smartEnuApi + "/manual/save", this.bodyParams, {
+      api.post("/manual/save", this.bodyParams, {
         headers: getHeader(),
       }).then((response) => {
         if (response.data !== null) {
@@ -230,7 +230,7 @@ export default {
 
     },
     getGuideByPageLink(label) {
-      axios.post(smartEnuApi + "/manual/getManuals", {manualSearch: label}, {headers: getHeader()})
+      api.post("/manual/getManuals", {manualSearch: label}, {headers: getHeader()})
           .then((response) => {
             if (response.data.manuals && response.data.manuals.length !== 0) {
               this.parentGuide = response.data.manuals[0];
@@ -262,7 +262,7 @@ export default {
         nameEn: label,
       }
 
-      axios.post(smartEnuApi + "/manual/save", d, {
+      api.post("/manual/save", d, {
         headers: getHeader(),
       }).then((response) => {
         if (response.data !== null) {

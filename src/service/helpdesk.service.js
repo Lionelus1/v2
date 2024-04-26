@@ -11,6 +11,10 @@ export class HelpDeskService {
         return api.post("/helpdesk/ticket/get", data, {headers: getHeader()});
     }
 
+    helpDeskDeleteTicket(data){
+        return api.post("/helpdesk/ticket/delete", data, {headers: getHeader()});
+    }
+
     helpDeskCategoryGet(params) {
         return api.post(`/helpdesk/category/get`, params, {headers: getHeader()});
     }

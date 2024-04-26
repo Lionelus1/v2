@@ -28,9 +28,9 @@
 
         </div>
       </TabPanel>
-      <TabPanel v-if="docInfo && (docInfo.docHistory.stateId == 2 || docInfo.docHistory.stateId == 6)" :header="$t('ncasigner.sign')">
+      <TabPanel v-if="docInfo && (docInfo.docHistory.stateId == 2 || docInfo.docHistory.stateId == 6)" :disabled="hideDocSign" :header="$t('ncasigner.sign')">
         <div class="mt-2">
-          <Panel>
+          <Panel v-if="!$isMobile">
             <template #header>
               <InlineMessage severity="info">{{ $t('ncasigner.noteMark') }}</InlineMessage>
             </template>
@@ -39,32 +39,33 @@
                 :loading="signing" />
             </div>
           </Panel>
-          <div class="p-mt-2">
+          <div class="mt-2">
             <Panel>
               <template #header>
-                <div class="p-d-flex p-jc-center">
+                <div class="d-flex justify-content-center">
+                  <InlineMessage v-if="$isMobile" severity="info" class="mb-1">{{ $t('ncasigner.noteMark') }}</InlineMessage>
                   <InlineMessage class="" severity="info">{{ $t('ncasigner.qrSinging') }}</InlineMessage>
                 </div>
               </template>
               <div class="text-center">
                 <h6><b>{{ $t('mgov.inApp') }}</b> <b style="color: red">{{ mobileApp }}</b></h6>
               </div>
-              <div v-if="mgovSignUri" class="p-d-flex p-jc-center">
-                <qrcode-vue size="350" render-as="svg" margin="2" :value="mgovSignUri"></qrcode-vue>
-              </div>
-              <div v-if="mgovMobileRedirectUri && isIndivid" class="p-fluid text-center">
-                <Button class="p-button-outlined" :label="$t('common.mgovMobile')" @click="redirectToMgovMobile" />
-              </div>
               <div v-if="mgovMobileRedirectUri && isIndivid">
                 <hr>
               </div>
-              <div v-if="mgobBusinessRedirectUri && !isIndivid" class="p-fluid text-center">
-                <Button class="p-button-outlined" :label="$t('common.mgovBusiness')" @click="redirectToMgovBusiness" />
+              <div v-if="mgovMobileRedirectUri && isIndivid" class="text-center">
+                <Button class="p-button-outlined" :label="$t('common.mgovMobile')" @click="redirectToMgovMobile" />
               </div>
               <div v-if="mgobBusinessRedirectUri && !isIndivid">
                 <hr>
               </div>
-              <QrGuideline />
+              <div v-if="mgobBusinessRedirectUri && !isIndivid" class="text-center">
+                <Button class="p-button-outlined" :label="$t('common.mgovBusiness')" @click="redirectToMgovBusiness" />
+              </div>
+              <div v-if="mgovSignUri && !$isMobile" class="d-flex justify-content-center">
+                <qrcode-vue size="350" render-as="svg" margin="2" :value="mgovSignUri"></qrcode-vue>
+              </div>
+              <QrGuideline class="mt-2"/>
             </Panel>
           </div>
         </div>
@@ -88,8 +89,8 @@
 import SignatureQrPdf from "@/components/ncasigner/SignatureQrPdf";
 import { runNCaLayer, makeTimestampForSignature } from "@/helpers/SignDocFunctions"
 
-import axios from "axios";
-import { getHeader, smartEnuApi, socketApi, b64toBlob, findRole } from "@/config/config";
+import api from "@/service/api";
+import {getHeader, smartEnuApi, socketApi, b64toBlob, findRole} from "@/config/config";
 import html2pdf from "html2pdf.js";
 import DocInfo from "@/components/ncasigner/DocInfo";
 import QrcodeVue from "qrcode.vue";
@@ -181,7 +182,7 @@ export default {
     this.wsconnect()
     this.emitter.on('downloadCMS', (data) => {
       if (data !== null) {
-        axios
+        api
           .post(smartEnuApi + "/doc/downloadCms",
             { documentUuid: this.doc_id, signatureId: data },
             { headers: getHeader(), })
@@ -218,8 +219,8 @@ export default {
     tabChanged() {
       if (this.active == 1 && this.files.length < 1) { // showFileTab
         if (this.docInfo.isManifest === true) {
-          axios.post(
-            smartEnuApi + "/downloadManifestFiles", {
+          api.post(
+            "/downloadManifestFiles", {
             docId: this.docInfo.id
           }, {
             headers: getHeader()
@@ -232,8 +233,8 @@ export default {
               }
             })
         } else {
-          axios.post(
-            smartEnuApi + "/downloadFile", {
+          api.post(
+            "/downloadFile", {
             filePath: this.docInfo.filePath
           }, {
             headers: getHeader()
@@ -252,7 +253,7 @@ export default {
     },
     getData() {
       this.loading = true
-      axios.post(smartEnuApi + `/agreement/getSignInfo`, {
+      api.post(`/agreement/getSignInfo`, {
         doc_uuid: this.doc_id,
       }, {
         headers: getHeader(),
@@ -368,7 +369,7 @@ export default {
     },
     sign() {
       this.signing = true;
-      axios.post(smartEnuApi + "/downloadFile", {
+      api.post("/downloadFile", {
         filePath: this.docInfo.filePath
       }, {
         headers: getHeader()
@@ -397,7 +398,7 @@ export default {
       };
       this.signing = true
 
-      axios.post(smartEnuApi + "/doc/sign", req, { headers: getHeader() })
+      api.post("/doc/sign", req, { headers: getHeader() })
         .then(response => {
           this.signing = false
           this.getData()
@@ -419,7 +420,7 @@ export default {
         })
     },
     getSignatures() {
-      axios.post(smartEnuApi + `/workPlan/getSignatures`, { doc_id: this.plan.doc_id }, { headers: getHeader() }).then(res => {
+      api.post(`/workPlan/getSignatures`, { doc_id: this.plan.doc_id }, { headers: getHeader() }).then(res => {
         if (res.data) {
           this.signatures = res.data;
           const signUser = res.data.find(x => x.userId === this.loginedUserId);
@@ -502,7 +503,7 @@ export default {
       }
 
       this.loading = true
-      axios.post(smartEnuApi + `/doc/sendtorevision`, {
+      api.post(`/doc/sendtorevision`, {
         comment: this.revisionComment,
         docID: this.docInfo.id,
       }, {

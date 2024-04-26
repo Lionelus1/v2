@@ -85,6 +85,10 @@ import VueClipboard from 'vue3-clipboard'
 import TreeSelect from 'primevue/treeselect';
 import Vue3SimpleHtml2pdf from "vue3-simple-html2pdf";
 import VuePdfEmbed from 'vue-pdf-embed'
+import FloatLabel from 'primevue/floatlabel';
+import IconField from 'primevue/iconfield';
+import InputIcon from 'primevue/inputicon';
+
 
 import CodeHighlight from './AppCodeHighlight';
 import i18n from './locales/index'
@@ -131,6 +135,7 @@ import WorkPlanEventResult from "./components/work_plan/WorkPlanEventResult";
 import TitleBlock from "./components/TitleBlock";
 import ToolbarMenu from "@/components/ToolbarMenu.vue";
 import ActionButton from "@/components/ActionButton.vue";
+import {isMobile} from "@/helpers/HelperUtil";
 
 Date.prototype.toJSON = function(){
     const hoursDiff = this.getHours() - this.getTimezoneOffset() / 60;
@@ -273,6 +278,8 @@ app.use(PrimeVue, {
 
 app.config.globalProperties.emitter = emitter;
 
+app.config.globalProperties.$isMobile = isMobile()
+
 
 app.use(i18n);
 app.use(ToastService);
@@ -372,6 +379,9 @@ app.component("VueElementLoading", VueElementLoading);
 app.component('TreeSelect', TreeSelect);
 app.component('ScrollPanel', ScrollPanel);
 app.component('Divider', Divider);
+app.component('FloatLabel', FloatLabel);
+app.component('IconField', IconField);
+app.component('InputIcon', InputIcon);
 
 app.component('WorkPlanEventResult', WorkPlanEventResult)
 app.component('TinyEditor', TinyEditor)

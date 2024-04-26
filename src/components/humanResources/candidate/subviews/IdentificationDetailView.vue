@@ -10,8 +10,8 @@
 </template>
 
 <script>
-import axios from "axios";
-import {getHeader, smartEnuApi} from "@/config/config";
+import api from "@/service/api";
+import {getHeader} from "@/config/config";
 
 export default {
   name: "IdentificationDetailView",
@@ -26,8 +26,8 @@ export default {
   },
   methods: {
     deleteValue() {
-      axios
-          .post(smartEnuApi + "/candidate/id/delete", {id: this.value.id}, {headers: getHeader(),})
+      api
+          .post("/candidate/id/delete", {id: this.value.id}, {headers: getHeader(),})
           .then(res => {
             this.emitter.emit("id", true);
           }).catch(error => {

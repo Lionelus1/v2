@@ -1,30 +1,34 @@
 <template>
-<!--  <div style="margin-left: 15px;" v-if="props.courseRequest.doc?.docHistory">-->
-<!--    <p> {{ t('common.state') + ": " }}-->
-<!--      <span :class="'customer-badge status-' + props.courseRequest.doc?.docHistory?.stateEn">-->
-<!--        {{ getDocStatus(props.courseRequest.doc?.docHistory?.stateEn) }}-->
-<!--      </span>-->
-<!--    </p>-->
-<!--    <div v-if="props.courseRequest.doc?.docHistory?.stateEn === 'revision' || props.courseRequest.doc?.docHistory?.stateEn === 'rejected' ">-->
-<!--      <label>{{ $t('common.comment') }}:</label>-->
-<!--      <div>-->
-<!--        <Message style="width: 150px;" :closable="false"-->
-<!--          v-if="props.courseRequest.doc != null && props.courseRequest.doc?.docHistory != null && props.courseRequest.doc?.docHistory != null"-->
-<!--          severity="warn">-->
-<!--          {{ props.courseRequest.doc?.docHistory?.comment }}</Message>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--  </div>-->
+  <div style="margin-left: 15px;" v-if="props.courseRequest.doc?.docHistory">
+    <p> {{ t('common.state') + ": " }}
+      <span :class="'customer-badge status-' + props.courseRequest.doc?.docHistory?.stateEn">
+        {{ getDocStatus(props.courseRequest.doc?.docHistory?.stateEn) }}
+      </span>
+    </p>
+    <div
+        v-if="props.courseRequest.doc?.docHistory?.stateEn === 'revision' || props.courseRequest.doc?.docHistory?.stateEn === 'rejected' ">
+      <label>{{ $t('common.comment') }}:</label>
+      <div>
+        <Message style="width: 150px;" :closable="false"
+                 v-if="props.courseRequest.doc != null && props.courseRequest.doc?.docHistory != null && props.courseRequest.doc?.docHistory != null"
+                 severity="warn">
+          {{ props.courseRequest.doc?.docHistory?.comment }}
+        </Message>
+      </div>
+    </div>
+  </div>
 
-  <BlockUI style="margin-top: 10px" v-if="findRole(null, 'student') || props.courseRequest.doc?.newParams?.not_formal_education_ids">
+  <BlockUI style="margin-top: 10px"
+           v-if="findRole(null, 'student') || props.courseRequest.doc?.newParams?.not_formal_education_ids">
     <div>
       <div class="mb-3"
            style="display: flex; justify-content: space-between; margin-bottom: 20px"
       >
-      <div class="buttonLanguag">
-        <Button class="toggle-button" @click="toggleRegistration">{{t('helpDesk.application.chooseDiscipline')}}</Button>
-      </div>
-        <span class="p-input-icon-left mr-2 position-relative" v-if="showRegistration && props.courseRequest " >
+        <div class="buttonLanguag">
+          <Button class="toggle-button" @click="toggleRegistration">{{ t('helpDesk.application.chooseDiscipline') }}
+          </Button>
+        </div>
+        <span class="p-input-icon-left mr-2 position-relative" v-if="showRegistration && props.courseRequest ">
     <i class="pi pi-search position-absolute" style="top: 15px"/>
     <InputText
         type="search"
@@ -40,68 +44,128 @@
 </span>
 
       </div>
-      <DataTable v-if="showRegistration && props.courseRequest" :lazy="true" :rowsPerPageOptions="[5, 10, 20, 50]" :value="data" dataKey="id"
-        :rowHover="true" filterDisplay="menu" responsiveLayout="scroll" :paginator="true" stripedRows
-        class="p-datatable-sm" :rows="total >= 10 ? 10 : total" :totalRecords="total" @page="onPage" v-model:selection="currentDocument"
-         scrollable scrollHeight="flex" @lazy="true">
+      <DataTable v-if="showRegistration && props.courseRequest" :lazy="true" :rowsPerPageOptions="[5, 10, 20, 50]"
+                 :value="data" dataKey="id"
+                 :rowHover="true" filterDisplay="menu" responsiveLayout="scroll" :paginator="true" stripedRows
+                 class="p-datatable-sm" :rows="total >= 10 ? 10 : total" :totalRecords="total" @page="onPage"
+                 v-model:selection="currentDocument"
+                 scrollable scrollHeight="flex" @lazy="true">
         <template #empty> {{ t('common.noData') }}</template>
         <Column field="checkbox">
           <template #body="{ data }">
-            <Checkbox :disabled="isDisabled(data) || isAdmin || (props.courseRequest?.doc?.docHistory?.stateId == DocEnum.INAPPROVAL.ID)"
-              v-model="data.checked" :binary="true" @change="checkBoxSelect(data)" style="margin-left: 20px;" />
+            <Checkbox
+                :disabled="isDisabled(data) || isAdmin || (props.courseRequest?.doc?.docHistory?.stateId == DocEnum.INAPPROVAL.ID)"
+                v-model="data.checked" :binary="true" @change="checkBoxSelect(data)" style="margin-left: 20px;"/>
           </template>
         </Column>
 
         <!-- :header="dic_course_type === 2 ? t('course.disciplineCode') : t('common.name')" -->
         <Column field="name" :header="t('course.disciplineCode')" style="padding-top: 15px; padding-bottom: 15px;">
           <template #body="{ data }">
-            <a href="javascript:void(0)">{{ $i18n.locale === "kz" ? data.namekz : $i18n.locale === "ru" ? data.nameru :
-    data.category.nameen }}</a>
+            <a href="javascript:void(0)">{{
+                $i18n.locale === "kz" ? data.namekz : $i18n.locale === "ru" ? data.nameru :
+                    data.category.nameen
+              }}</a>
           </template>
         </Column>
 
         <!-- :header="dic_course_type === 2 ? t('course.disciplineName') : t('common.description')" -->
-        <Column field="description" :header="t('course.disciplineName')" style="padding-top: 15px; padding-bottom: 15px;">
+        <Column field="description" :header="t('course.disciplineName')"
+                style="padding-top: 15px; padding-bottom: 15px;">
           <template #body="{ data }">
-            <a href="javascript:void(0)">{{ $i18n.locale === "kz" ? data.descriptionkz : $i18n.locale === "ru" ? data.descriptionru :
-    data.descriptionen }}</a>
+            <a href="javascript:void(0)">{{
+                $i18n.locale === "kz" ? data.descriptionkz : $i18n.locale === "ru" ? data.descriptionru :
+                    data.descriptionen
+              }}</a>
           </template>
         </Column>
 
-        <Column field="credit" :header="t('helpDesk.application.credits')" style="padding-top: 15px; padding-bottom: 15px;">
+        <Column field="credit" :header="t('helpDesk.application.credits')"
+                style="padding-top: 15px; padding-bottom: 15px;">
           <template #body="{ data }">
-            <a href="javascript:void(0)">{{data.hours}}</a>
+            <a href="javascript:void(0)">{{ data.hours }}</a>
           </template>
         </Column>
 
       </DataTable>
     </div>
   </BlockUI>
-  <div v-for="field in formFields" :key="field.key" class="field" :style="{ marginTop: field.marginTop }">
-    <label>{{ field.label }}<span v-if="isCurrentUserSender && field.required" style="font-size: 20px; color: red;">*</span></label>
-    <InputText v-model="field.model" :type="field.type" :placeholder="field.placeholder" @input="input" :disabled="disabledStatus" />
-    <div v-if="props.validationRequest[field.validation]" style="color: red; margin-top: 5px">{{ t('helpDesk.application.enteredIncorrectly') }}</div>
+  <div>
+    <div class="field"
+         v-if="!findRole(null, 'student') && !props.courseRequest.doc?.newParams?.not_formal_education_ids "
+         style="margin-top: 15px;">
+      <label>{{ t('helpDesk.application.discipline') }}<span v-if="isCurrentUserSender"
+                                                             style="font-size: 20px; color: red;">*</span></label>
+      <InputText v-model="userData.discipline" type="text"
+                 :disabled="disabledStatus"
+                 :placeholder="t('helpDesk.application.discipline')" @input="input"/>
+    </div>
+    <div class="field">
+      <label>{{ t('common.fullName') }}<span v-if="isCurrentUserSender"
+                                             style="font-size: 20px; color: red;">*</span></label>
+      <!-- :disabled="!!responseUserData.fullName" -->
+      <InputText v-model="userData.fullName" type="text"
+                 :disabled="disabledStatus" :placeholder="t('common.fullName')"
+                 @input="input"/>
+    </div>
+    <div class="field" style="margin-top: 10px;">
+      <label>{{ t('common.speciality') }}<span v-if="isCurrentUserSender" style="font-size: 20px; color: red;">*</span></label>
+      <InputText v-model="userData.speciality" type="text"
+                 :disabled="disabledStatus"
+                 :placeholder="userData.speciality || t('common.speciality')" @input="input"/>
+    </div>
+    <div class="field" style="margin-top: 10px;">
+      <label>{{ t('course.course') }}<span v-if="isCurrentUserSender"
+                                           style="font-size: 20px; color: red;">*</span></label>
+      <InputNumber v-model="userData.course" :disabled="disabledStatus"
+                   :placeholder=" t('course.course')" id="number-input" style="width: 350px;" @input="input"/>
+      <!--      <div v-if="props.validationRequest.course" style="color: red; margin-top: 5px">Курс введен неправильно</div>-->
+    </div>
+    <div class="field" style="margin-top: 10px;">
+      <label>{{ t('contracts.cafedraGroup') }}<span v-if="isCurrentUserSender"
+                                                    style="font-size: 20px; color: red;">*</span>
+      </label>
+      <InputText v-model="userData.group" type="text" :disabled="disabledStatus"
+                 :placeholder="userData.group || t('contracts.cafedraGroup')" @input="input"/>
+    </div>
+    <div class="field" style="margin-top: 10px;">
+      <label>{{ t('contact.phone') }}<span v-if="isCurrentUserSender"
+                                           style="font-size: 20px; color: red;">*</span></label>
+      <InputText v-model="userData.phone" class="mt-2" inputId="userDataPhone" :placeholder="t('contact.phone')"
+                 style="width: 350px;" @input="input" :disabled="disabledStatus"/>
+      <div v-if="props.validationRequest.phone" style="color: red; margin-top: 5px">
+        {{ t('helpDesk.application.enteredIncorrectly') }}
+      </div>
+    </div>
+    <div class="field" style="margin-top: 10px;">
+      <label>{{ t('contact.email') }}<span v-if="isCurrentUserSender"
+                                           style="font-size: 20px; color: red;">*</span></label>
+      <InputText v-model="userData.email" type="text" :placeholder="t('contact.email')" @input="input"
+                 :disabled="disabledStatus"/>
+      <div v-if="props.validationRequest.email" style="color: red; margin-top: 5px">
+        {{ t('helpDesk.application.enteredIncorrectly') }}
+      </div>
+    </div>
   </div>
-
 </template>
 
 <script setup>
 import {ref, onMounted, computed} from 'vue';
-import { useI18n } from "vue-i18n";
+import {useI18n} from "vue-i18n";
 import axios from 'axios';
-import { HelpDeskService } from "../../service/helpdesk.service";
-import { getHeader, smartEnuApi, findRole } from "@/config/config";
-import { useToast } from "primevue/usetoast";
-import { useStore } from "vuex";
-import { useRoute } from "vue-router";
+import {HelpDeskService} from "../../service/helpdesk.service";
+import {getHeader, smartEnuApi, findRole} from "@/config/config";
+import {useToast} from "primevue/usetoast";
+import {useStore} from "vuex";
+import {useRoute} from "vue-router";
 import DocEnum from "@/enum/docstates/index";
 
 const service = new HelpDeskService()
-const { t, locale } = useI18n()
+const {t, locale} = useI18n()
 const store = useStore()
 const route = useRoute();
 const toast = useToast()
-const emit = defineEmits(['onCheckboxChecked', 'childInputData','validateInput'])
+const emit = defineEmits(['onCheckboxChecked', 'childInputData', 'validateInput'])
 
 const props = defineProps({
   courseRequest: {
@@ -130,7 +194,7 @@ if (!findRole(null, 'student') && !props.courseRequest.doc?.newParams?.not_forma
 }
 
 const isCurrentUserSender = computed(() => {
-  return ((currentUser.value?.userID == props.courseRequest.sender_id && (props.courseRequest.doc.docHistory == null)) || props.courseRequest?.doc?.docHistory?.stateId == DocEnum.REVISION.ID )
+  return ((currentUser.value?.userID == props.courseRequest.sender_id && (props.courseRequest.doc.docHistory == null)) || props.courseRequest?.doc?.docHistory?.stateId == DocEnum.REVISION.ID)
 })
 const responseUserData = ref({
   fullName: null,
@@ -148,7 +212,7 @@ const docStatus = ref([
   { name_kz: "келісуде", name_en: "inapproval", name_ru: "на согласовании", code: "inapproval" },
   { name_kz: "келісілді", name_en: "approved", name_ru: "согласован", code: "approved" },
   { name_kz: "түзетуге", name_en: "revision", name_ru: "на доработку", code: "revision" },
-  { name_kz: "қайтарылды", name_en: "rejected", name_ru: "отклонен", code: "rejected" },
+  { name_kz: "қабылданбады", name_en: "rejected", name_ru: "отклонен", code: "rejected" },
   { name_kz: "қол қоюда", name_en: "signing", name_ru: "на подписи", code: "signing" },
   { name_kz: "қол қойылды", name_en: "signed", name_ru: "подписан", code: "signed" },
   { name_kz: "қайта бекітуге жіберілді", name_en: "sent for re-approval", name_ru: "отправлен на переутверждение", code: "sent for re-approval" },
@@ -182,7 +246,7 @@ const selectedUsers = ref([]);
 
 const isSend = ref(false);
 const changed = ref(false)
-const currentUser = ref(null);
+const currentUser = ref(JSON.parse(localStorage.getItem("loginedUser")));
 const subject = ref(null);
 const selectedDirection = ref({
   name_ru: null,
@@ -190,9 +254,10 @@ const selectedDirection = ref({
   name_en: null,
 });
 const showRegistration = ref(false);
-
-const disabledStatus = isAdmin.value || props.courseRequest?.doc?.docHistory?.stateId == DocEnum.INAPPROVAL.ID || props.courseRequest?.doc?.docHistory?.stateId == DocEnum.REJECTED.ID
-
+currentUser.value = JSON.parse(localStorage.getItem("loginedUser"));
+const disabledStatus = computed(() => {
+ return !(currentUser.value?.userID == props.courseRequest.sender_id) || props.courseRequest?.doc?.docHistory?.stateId == DocEnum.INAPPROVAL.ID || props.courseRequest?.doc?.docHistory?.stateId == DocEnum.REJECTED.ID
+})
 const toggleRegistration = () => {
   showRegistration.value = !showRegistration.value;
 };
@@ -215,13 +280,6 @@ const showMessage = (msgtype, message, content) => {
 const validateCourse = (course) => {
   return course >= 1 && course <= 5
 }
-
-const validatePhoneNumber = (phoneNumber) => {
-  const phoneRegex = /^(8|\+7)?\(\d{3}\)\d{7}$|^(8|\+7)?\d{10}$/;
-
-  return phoneRegex.test(phoneNumber);
-}
-
 emit('onCheckboxChecked', selectedIds.value)
 emit('childInputData', userData.value)
 emit('validateInput', {
@@ -229,6 +287,13 @@ emit('validateInput', {
   email: !(userData.value.email === null || /\S+@\S+\.\S+/.test(userData.value.email)),
   phone: userData.value.phone === null || !validatePhoneNumber(userData.value.phone),
 });
+
+
+const validatePhoneNumber = (phoneNumber) => {
+  const phoneRegex = /^(8|\+7)?\(\d{3}\)\d{7}$|^(8|\+7)?\d{10}$/;
+
+  return phoneRegex.test(phoneNumber);
+}
 
 // const isValidCourse = computed(() => {
 //   const course = parseInt(userData.course)
@@ -277,7 +342,7 @@ const getCourse = () => {
 const getStudentInfo = () => {
   const userId = props.courseRequest?.doc?.newParams?.student_id?.value
 
-  service.helpDeskStudentInfo({ user_id: userId }).then(res => {
+  service.helpDeskStudentInfo({user_id: userId}).then(res => {
     responseUserData.value.speciality = locale.value === "kz" ? res.data.studen_info.specialty_kz : res.data.studen_info.specialty_ru
     responseUserData.value.course = res.data.studen_info.course_number
     responseUserData.value.group = res.data.studen_info.group
@@ -290,10 +355,10 @@ const getStudentInfo = () => {
       fullName: props.courseRequest.doc?.newParams?.not_formal_student_info?.value.fullName || responseUserData.value.fullName,
       speciality: props.courseRequest.doc?.newParams?.not_formal_student_info?.value.speciality || responseUserData.value.speciality,
       group: props.courseRequest.doc?.newParams?.not_formal_student_info?.value.group || responseUserData.value.group,
-      course: (props.courseRequest.doc?.newParams?.not_formal_student_info?.value.course > 0 ? props.courseRequest.doc?.newParams?.not_formal_student_info?.value.course : null ) || (responseUserData.value.course > 0 ? responseUserData.value.course : null) ,
+      course: (props.courseRequest.doc?.newParams?.not_formal_student_info?.value.course > 0 ? props.courseRequest.doc?.newParams?.not_formal_student_info?.value.course : null) || (responseUserData.value.course > 0 ? responseUserData.value.course : null),
       phone: (props.courseRequest.doc?.newParams?.not_formal_student_info?.value.phone > 0
-        ? props.courseRequest.doc.newParams.not_formal_student_info.value.phone
-        : '') || (responseUserData.value.phone > 0 ? responseUserData.value.phone : null) ,
+          ? props.courseRequest.doc.newParams.not_formal_student_info.value.phone
+          : '') || (responseUserData.value.phone > 0 ? responseUserData.value.phone : null),
       email: props.courseRequest.doc?.newParams?.not_formal_student_info?.value.email || responseUserData.value.email,
     }
     emit('childInputData', userData.value)

@@ -57,6 +57,28 @@ const store = createStore({
         REMOVE_USER_SITE_SLUG(state) {
             state.userSlug = {}
         },
+        REFRESH_TOKEN(state) {
+            const tokenData = JSON.parse(window.localStorage.getItem("authUser"));
+            let authUser = {}
+            axios.post("/refreshToken", {
+                refresh_token: tokenData.refresh_token,
+            }).then(res => {
+                authUser.access_token = res.data.access_token;
+                authUser.refresh_token = res.data.refresh_token;
+                window.localStorage.setItem('authUser', JSON.stringify(authUser));
+            }).catch(error => {
+                console.log('refresh token error')
+            });
+        },
+        GET_USER_INFO(state, context) {
+            window.localStorage.removeItem("loginedUser")
+            axios.get(smartEnuApi + '/logineduserinfo', {headers: getHeader()}).then(response => {
+                window.localStorage.setItem("loginedUser", JSON.stringify(response.data));
+                context.commit('SET_LOGINED_USER')
+            }).catch(error => {
+                // router.push({name: 'Login'});
+            })
+        },
         SET_SELECTED_POSITION_DESK(state, data) {
             state.selectedPosition = data
         }
@@ -83,6 +105,12 @@ const store = createStore({
         },
         removeUserSiteSlug(context) {
             context.commit("REMOVE_USER_SITE_SLUG")
+        },
+        refreshToken(context) {
+            context.commit('REFRESH_TOKEN')
+        },
+        setNewUserInfo(context) {
+            context.commit('GET_USER_INFO')
         },
         setSelectedPositionDesk({commit}, newPosition){
           commit('setSelectedPositionDesk', newPosition)

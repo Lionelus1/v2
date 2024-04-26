@@ -62,7 +62,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "@/service/api";
 import {getHeader, smartEnuApi} from "@/config/config";
 
 export default {
@@ -112,8 +112,8 @@ export default {
         this.value.orgType = this.orgType
         this.value.orgId = this.orgId
         let path = "/add-department"
-        axios
-            .post(smartEnuApi + path, this.value, {headers: getHeader(),})
+        api
+            .post(path, this.value, {headers: getHeader(),})
             .then(res => {
               this.emitter.emit("department", true);
             }).catch(error => {

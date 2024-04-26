@@ -120,7 +120,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "@/service/api";
 import {getHeader, smartEnuApi} from "@/config/config";
 
 export default {
@@ -137,8 +137,8 @@ export default {
   methods: {
     downloadFile(path, name) {
       this.disabled = true
-      axios.post(
-          smartEnuApi + '/candidate/documents/download',
+      api.post(
+          '/candidate/documents/download',
           {filePath: path},
           {headers: getHeader()}
       ).then(response => {

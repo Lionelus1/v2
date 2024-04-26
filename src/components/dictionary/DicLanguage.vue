@@ -24,7 +24,7 @@
 
 <script>
 import { getHeader, smartEnuApi } from "@/config/config";
-import axios from "axios";
+import api from "@/service/api";
 
 export default {
   name: "DicLanguage",
@@ -64,7 +64,7 @@ export default {
     getSpecialities() {
       this.specialities = null
       this.value = null
-      axios.get(smartEnuApi + '/languages')
+      api.get('/languages')
           .then(response=>{
             this.languages = response.data;
             console.log(response.data)

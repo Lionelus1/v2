@@ -90,7 +90,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import {getHeader, smartEnuApi, findRole} from "../../config/config";
 import moment from "moment";
 import ReceptionService from "@/service/reception.service";

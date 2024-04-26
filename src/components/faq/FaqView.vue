@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "@/service/api";
 import { getHeader, smartEnuApi } from "../../config/config";
 export default {
   data() {
@@ -73,9 +73,9 @@ export default {
   },
   methods: {
     getFaqById() {
-      axios
+      api
         .post(
-          smartEnuApi + "/faq/getById",
+          "/faq/getById",
           {
             faqId: parseInt(this.faqId),
           },
@@ -91,9 +91,9 @@ export default {
         });
     },
     downloadFile(fileName, fileType) {
-      axios
+      api
         .post(
-          smartEnuApi + "/faq/downloadFile",
+          "/faq/downloadFile",
           { filename: fileName, fileType: fileType },
           {
             headers: getHeader(),

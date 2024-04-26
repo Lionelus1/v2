@@ -371,7 +371,7 @@
 <script>
 import ContragentSelectOrg from "../contragent/ContragentSelectOrg.vue";
 import PositionsList from "../smartenu/PositionsList.vue";
-import axios from "axios";
+import api from "@/service/api";
 import { getHeader, smartEnuApi, findRole } from "@/config/config";
 import Enum from "@/enum/docstates/index";
 import html2canvas from "html2canvas";
@@ -478,9 +478,9 @@ export default {
       this.menu[0].disabled = false
     },
     getCatalog(name) {
-      axios
+      api
         .post(
-          smartEnuApi + "/auth/getDictionary",
+          "/auth/getDictionary",
           { name: name },
           {
             headers: getHeader(),
@@ -508,10 +508,10 @@ export default {
     insertUser() {
       this.submitted = true;
       if (this.validateAddForm()) {
-        axios
+        api
           .post(
             
-            smartEnuApi + (this.addMode ? "/insertUser" : "/updateUser"),
+            (this.addMode ? "/insertUser" : "/updateUser"),
             { user: this.value, password: this.password },
             {
               headers: getHeader(),
@@ -574,8 +574,8 @@ export default {
       }
     },
     insertIndividualEntrepreneur() {
-      axios.post(
-        smartEnuApi + "/roleControl/add",
+      api.post(
+        "/roleControl/add",
         {
           roleName: "individual_entrepreneur",
           userId: this.value.userID ? this.value.userID : this.value.id,

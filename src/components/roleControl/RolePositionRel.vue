@@ -170,7 +170,7 @@
 </template>
 <script>
 import { smartEnuApi, getHeader } from "@/config/config";
-import axios from "axios";
+import api from '@/service/api';
 
 export default {
   data() {
@@ -213,8 +213,8 @@ export default {
       if (this.searchText) {
         this.getParams.searchText = this.searchText;
       }
-      axios
-        .post(smartEnuApi + "/positionRoleRel", this.getParams, {
+      api
+        .post("/positionRoleRel", this.getParams, {
           headers: getHeader(),
         })
         .then((res) => {
@@ -271,9 +271,9 @@ export default {
 
       this.loading = true;
 
-      axios
+      api
         .post(
-          smartEnuApi + "/positionRoleRel/create",
+          "/positionRoleRel/create",
           {
             positionId: this.position.id,
             roleId: this.role.id,
@@ -308,9 +308,9 @@ export default {
 
       this.loading = true;
 
-      axios
+      api
         .post(
-          smartEnuApi + "/positionRoleRel/delete",
+          "/positionRoleRel/delete",
           {
             id: this.forDeleting.positionRoleRelId,
           },
@@ -338,8 +338,8 @@ export default {
         });
     },
     initPositions() {
-      axios
-        .get(smartEnuApi + "/positionRoleRel/positions", {
+      api
+        .get("/positionRoleRel/positions", {
           headers: getHeader(),
         })
         .then((res) => {
@@ -358,8 +358,7 @@ export default {
         });
     },
     initRoles() {
-      axios
-        .get(smartEnuApi + "/positionRoleRel/roles", {
+        api.get("/positionRoleRel/roles", {
           headers: getHeader(),
         })
         .then((res) => {
