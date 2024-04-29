@@ -95,7 +95,7 @@
       <label>{{$i18n.locale === "kz" ? field.name_kz : $i18n.locale === "ru" ? field.name_ru :
           field.name_en}} <span v-if="isCurrentUserSender"
                                      style="font-size: 20px; color: red;">*</span></label>
-      <InputText v-model="field.value" :type="field.type" :placeholder="$i18n.locale === 'kz' ? field.name_kz : $i18n.locale === 'ru' ? field.name_ru :
+      <InputText v-model="field.model" :type="field.type" :placeholder="$i18n.locale === 'kz' ? field.name_kz : $i18n.locale === 'ru' ? field.name_ru :
       field.name_en" :disabled="disabledStatus"
                  @input="input"/>
       <div v-if="field.validation && props.validationRequest[field.key]" style="color: red; margin-top: 5px">
@@ -124,17 +124,6 @@ const route = useRoute();
 const toast = useToast()
 const emit = defineEmits(['onCheckboxChecked', 'childInputData', 'validateInput'])
 
-const props = defineProps({
-  courseRequest: {
-    type: Object,
-    default: Object,
-  },
-  validationRequest: {
-    type: Object,
-    default: Object
-  }
-})
-
 const userData = ref({})
 
 // const formFields = computed(() => [
@@ -147,7 +136,15 @@ const userData = ref({})
 // ])
 
 
-const formFields = ref([]);
+const formFields = ref({
+  // key: null,
+  // type: null,
+  // name_kz: null, // use empty string as default value
+  // name_ru: null,
+  // name_en: null,
+  // model: null,
+  // validation: null
+});
 
 if (!findRole(null, 'student') && !props.courseRequest.doc?.newParams?.not_formal_education_ids) {
   formFields.value.unshift({
@@ -236,13 +233,6 @@ const toggleRegistration = () => {
   showRegistration.value = !showRegistration.value;
 };
 
-const clearData = () => {
-  if (!searchText.value) {
-    return;
-  }
-  searchText.value = null;
-}
-
 const showMessage = (msgtype, message, content) => {
   toast.add({
     severity: msgtype,
@@ -260,7 +250,6 @@ const validatePhoneNumber = (phoneNumber) => {
   return phoneRegex.test(phoneNumber);
 }
 emit('onCheckboxChecked', selectedIds.value)
-emit('childInputData', userData.value)
 emit('validateInput', {
   course: !validateCourse(userData.value.course),
   email: !(userData.value.email === null || /\S+@\S+\.\S+/.test(userData.value.email)),
@@ -333,8 +322,6 @@ const getStudentInfo = () => {
           : '') || (responseUserData.value.phone > 0 ? responseUserData.value.phone : null),
       email: props.courseRequest.doc?.newParams?.not_formal_student_info?.value.email || responseUserData.value.email,
     }
-    emit('childInputData', userData.value)
-
   }).catch(err => {
 
     if (err.response && err.response.status == 401) {
@@ -355,9 +342,10 @@ const getTicketForm = () => {
       name_kz: value.name_kz || '', // use empty string as default value
       name_ru: value.name_ru || '',
       name_en: value.name_en || '',
-      value: userData.value[value.code],
+      model: userData.value[value.code],
       validation: value.validation || ''
     }))
+    emit('childInputData', formFields.value.model)
   }).catch((err) => {
     console.log(err)
   })
@@ -384,7 +372,7 @@ const getDocStatus = (code) => {
 
 const input = () => {
   changed.value = true;
-  emit('childInputData', userData.value)
+  emit('childInputData', formFields.value.model)
   emit('validateInput', {
     course: !validateCourse(userData.value.course),
     email: !(userData.value.email === null || /\S+@\S+\.\S+/.test(userData.value.email)),
