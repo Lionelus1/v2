@@ -568,20 +568,20 @@ const routes = [
 
             {
                 path: '/helpdesk',
-                name: 'HelpDeskComponent',
-                component: load('helpDesk/HelpDeskComponent'),
+                name: 'HelpDeskComponentV2',
+                component: load('helpDesk/v2/HelpDeskComponentV2'),
                 beforeEnter: ifAuthenticated,
                 children: [
                     {
                         path: '',
-                        name: 'DeskJournal',
-                        component: load('helpDesk/DeskJournal'),
+                        name: 'DeskJournalV2',
+                        component: load('helpDesk/v2/DeskJournalV2'),
                         beforeEnter: ifAuthenticated,
                     },
                     {
                         path: '/request/:uuid',
-                        name: 'Request',
-                        component: load('helpDesk/Request'),
+                        name: 'RequestV2',
+                        component: load('helpDesk/v2/RequestV2'),
                         beforeEnter: ifAuthenticated,
                     },
                     {

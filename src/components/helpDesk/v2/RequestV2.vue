@@ -108,21 +108,21 @@
 
 <script setup>
 import ToolbarMenu from "@/components/ToolbarMenu.vue";
-import {HelpDeskService} from "../../service/helpdesk.service";
+import {HelpDeskService} from "../../../service/helpdesk.service";
 import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers";
 import {ref, computed, onMounted} from 'vue';
 import {useI18n} from "vue-i18n";
 import {useToast} from "primevue/usetoast";
 import {useStore} from "vuex";
 import {useRouter, useRoute} from "vue-router";
-import CourseRegistration from "./CourseRegistration.vue";
+import CourseRegistration from "./CourseRegistrationV2.vue";
 import {b64toBlob} from "@/config/config";
-import {downloadFile, findRole} from "../../config/config";
+import {downloadFile, findRole} from "../../../config/config";
 import {DocService} from "@/service/doc.service";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo.vue";
 import DocEnum from "@/enum/docstates/index";
 import {ContragentService} from "@/service/contragent.service";
-import ConsultationManager from "./ConsultationManager.vue";
+import ConsultationManager from "./ConsultationManagerV2.vue";
 
 // Переменные для работы с i18n, хранилищем, уведомлениями и маршрутизацией ↓
 const {t, locale} = useI18n()
@@ -411,7 +411,6 @@ const helpDeskTicketGet = () => {
         request.value = res.data.ticket[0]
         selectedDirection.value = res.data.ticket[0].category;
         loading.value = false
-        getTicketForm()
       })
       .catch((err) => {
         loading.value = false
@@ -564,14 +563,6 @@ const saveDocument = () => {
     }
   }
 };
-const getTicketForm = () => {
-  let req = {
-    Id: request.value.category.id
-  }
-  service.helpDeskTicketForm(req).then((res) => {
-    console.log(res.data)
-  })
-}
 
 
 const downloadContract = () => {
