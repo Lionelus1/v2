@@ -91,6 +91,8 @@
                   @click="refusalVisible = true">Кезектен бас тарту
           </Button>
         </div>
+        {{testDataSocket}}
+        {{queError}}
       </div>
     </div>
   </div>
@@ -123,6 +125,7 @@ const called = ref(false);
 const phoneNumber = ref('');
 const isDisabled = ref(true);
 const queinfo = ref();
+const queError = ref();
 const queuesWS = ref([]);
 const currentStep = ref(1);
 const talonDate = ref('')
@@ -132,6 +135,7 @@ const currentTicketWS = ref(null)
 const currentTicketAPI = ref(null)
 const calledWindow = ref()
 const refusalVisible = ref(false)
+const testDataSocket = ref(null);
 
 /*const socket = io(smartEnuApi);
 const testDataSocket = ref(null);
@@ -262,9 +266,10 @@ const useRealtimeStream = (qId = 0) => {
   };
 
   socket.onerror = (error) => {
-    console.log(error)
-    console.error(error)
-    alert(`[error] ${error}`);
+    queError.value = JSON.stringify(error)
+    console.log(JSON.parse(error))
+    console.error(JSON.parse(error))
+    alert(`[error] ${JSON.stringify(error)}`);
   };
 }
 const padTo2Digits = (num) => {
@@ -286,12 +291,38 @@ const refusal = () => {
       });
 }
 const connected =()=>{
+
+/*  socket.on('connect_error', (err) => {
+    console.log(err.message);
+  });*/
+
+/*
+  socket.on('connect', function() {
+    console.log('Connected to socket.io server')
+  })
+
+  socket.on('error', (error) => {
+    console.error('Socket.IO error:', error);
+  });
+
+  socket.on('msg', (msg) => {
+    console.log(msg)
+  });
+*/
   const data = {
     serviceId: 0,
     windowId: 0,
     queueId: parentId.value
   };
-  socket.emit("notice", data)
+  socket.emit("join", '1')
+  socket.emit("notice", 'ffffffff')
+  socket.on('joinRoom', (info) => {
+    console.log(info)
+    testDataSocket.value = info
+  });
+  socket.on('msg', (info) => {
+    console.log(info)
+  });
   console.log(socket)
 }
 connected()
