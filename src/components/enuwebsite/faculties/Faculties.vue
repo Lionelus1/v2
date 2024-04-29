@@ -33,8 +33,8 @@
                       <FindUser v-model="formData.user" :max="1" :editMode="false" />
                     </div>
                   </div>
-                  <div class="grid">
-                    <Button :label="$t('common.save')" @click="setFacultyAdmin" class="mt-2" />
+                  <div class="field">
+                    <Button :label="$t('common.save')" @click="setFacultyAdmin" class="p-button p-component p-button-outlined toolbar_btn button_green" />
                   </div>
                 </OverlayPanel>
               </template>

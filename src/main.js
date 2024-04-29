@@ -137,6 +137,7 @@ import ToolbarMenu from "@/components/ToolbarMenu.vue";
 import ActionButton from "@/components/ActionButton.vue";
 import {getHeader, smartEnuApi, socketApi} from "@/config/config";
 import io from "socket.io-client";
+import {isMobile} from "@/helpers/HelperUtil";
 
 Date.prototype.toJSON = function(){
     const hoursDiff = this.getHours() - this.getTimezoneOffset() / 60;
@@ -294,6 +295,8 @@ app.use(PrimeVue, {
 
 app.config.globalProperties.emitter = emitter;
 
+app.config.globalProperties.$isMobile = isMobile()
+
 
 app.use(i18n);
 app.use(ToastService);
@@ -404,5 +407,4 @@ app.component('ToolbarMenu', ToolbarMenu)
 app.component('ActionButton', ActionButton)
 
 interceptor(store,app);
-
 app.mount('#app');

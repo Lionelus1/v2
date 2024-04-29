@@ -1,5 +1,14 @@
 <template>
-  <h3 v-if="!organization">{{ $t("common.individualEntrepreneur") }}</h3>
+  <h3 v-if="personType == 1">
+    {{$t("common.individualEntrepreneur")}}
+  </h3>
+  <h3 v-else-if="personType == 2">
+  {{   $t("common.personal")  }}
+  </h3>
+  <h3 v-else-if="personType == 3">  
+  {{ $t("common.students") }}
+  </h3>
+  <h3 v-else-if="!organization">{{ $t("common.individualEntrepreneur") }}</h3>
   <h3 v-else>{{ $t("contragent.orgEmployees", {"org": getOrganizationName(organization)}) }}</h3>
   <div class="card">
     <Menubar :model="menu" class="m-0 pt-0 pb-0">
@@ -42,8 +51,8 @@
     </DataTable>
   </div>
   <!-- personPage -->
-  <Sidebar v-model:visible="visibility.personPage" position="right" class="p-sidebar-lg">
-    <PersonPage :person="currentPerson" @personUpdated="personUpdated" custom-type="viewUser"></PersonPage>
+  <Sidebar v-model:visible="visibility.personPage" position="right" style="width: 60%;" class="p-sidebar-lg">    
+    <PersonPage :person="currentPerson" @personUpdated="personUpdated" :custom-type="customType" :personType="personType"></PersonPage>
   </Sidebar>
 </template>
 <script>
@@ -108,15 +117,33 @@ export default {
           disabled: () => !this.currentPerson,
           visible: () => this.sidebar,
           command: () => { this.$emit('personSelected', this.currentPerson); }
+        },
+        {
+          label: this.$t("common.createNew"),
+          icon: "pi pi-fw pi-plus",
+          command: () => {
+              this.addPerson()
+          },
+          visible: () => this.personType != 3
         }
       ],
+      personType: null,
+      customType: ''
     }
+  },
+  watch: {
+    "$route.params.type": function (type) {
+      this.personType = type;
+      this.getPersons();
+    },
   },
   mounted() {
     if (!this.sidebar) {
       this.$emit('apply-flex', true);
     }
 
+    this.personType = this.$route.params.type;
+    
     this.getPersons();
   },
   beforeUnmount() {
@@ -204,7 +231,10 @@ export default {
       this.getPersons();
     },
     getPersons() {
+      this.customType = 'viewUser'
       this.tableLoading = true;
+
+      const searchMode = this.personType == 1 ? "individual_entrepreneur" : this.personType == 2 ? "staff" : this.personType == 3 ? "student" : null;
 
       this.service.getPersons({
         page: this.page,
@@ -213,11 +243,14 @@ export default {
           orgId: this.organization ? this.organization.id : null,
           name: this.filter.name,
           signers: this.signers,
-        }
+        },
+        searchMode: searchMode,
+        searchCookie: this.searchCookie,
       }).then(res => {
         this.persons = res.data.foundUsers;
         this.total = res.data.total;
         this.currentPerson = null;
+        this.searchCookie = res.data.searchCookie;
 
         this.tableLoading = false;
       }).catch(err => {
@@ -239,14 +272,17 @@ export default {
     },
     personSelected() {
       if (!this.sidebar) {
+        this.customType = 'viewUser'
         this.open('personPage');
         return;
       }
 
       if (this.validString(this.currentPerson.firstName) && this.validString(this.currentPerson.thirdName) && 
         this.validString(this.currentPerson.email)) {
+          this.customType = 'viewUser'
           this.$emit('personSelected', this.currentPerson);
       } else {
+        this.customType = 'viewUser'
         this.open('personPage');
       }
     },
@@ -259,6 +295,48 @@ export default {
       }
 
       return false;
+    },
+    addPerson(type){
+      const searchMode = type == 2 ? "staff" : type == 3 ? "student" : null;
+
+      
+      this.currentPerson = {
+        IIN: null,
+        name: null,
+        type: null,
+        mail: null,
+        info: null,
+        id : null,
+        photo: null,
+        lastName: null,
+        thirdName: null,
+        firstName: null,
+        birthday: null,
+        gender: null,
+        state: null,
+        residnet: null,
+        locality: {
+          id: null,
+          name: null,
+        },
+        address: null, 
+        addressrus: null,
+        phone: null,
+        email: null,
+        idnumber: null,
+
+        mainPosition: {
+          id: null,
+          name:null,
+          nameen: null,
+          namekz:null,
+          nameru:null,
+        },
+        bank: {}
+        
+      }
+      this.visibility.personPage = true
+      this.customType = 'createUser';
     }
   }
 }
@@ -275,4 +353,14 @@ export default {
 :deep(.p-datatable.p-datatable-scrollable > .p-datatable-wrapper > .p-datatable-table > .p-datatable-thead) {
   background: transparent;
 }
+
+.p-sidebar-lg {
+    width: 300px; 
+  }
+
+  @media only screen and (max-width: 1024px) {
+    .p-sidebar {
+      width: 100%;
+    }
+  }
 </style>

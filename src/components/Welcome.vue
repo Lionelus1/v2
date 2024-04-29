@@ -19,7 +19,7 @@
             </div>
           </div>
           <DataView :lazy="true" :value="allNews" :layout="layout" :paginator="true" :rows="10"
-                    @page="onPage($event)" :totalRecords="total">
+                    @page="onPage($event)" :totalRecords="total" :pageLinkSize="mobile? 3:5">
             <template #empty>{{
                 this.$t("smartenu.newsNotFound")
               }}
@@ -77,11 +77,11 @@
               <template #body="slotProps">
                 <a href="javascript:void(0)" @click="eventView(slotProps.data)">
                   {{
-                    $i18n.locale === "kz"
-                        ? slotProps.data.titleKz
-                        : $i18n.locale === "ru"
-                            ? slotProps.data.titleRu
-                            : slotProps.data.titleEn
+                  $i18n.locale === "kz"
+                  ? slotProps.data.titleKz
+                  : $i18n.locale === "ru"
+                  ? slotProps.data.titleRu
+                  : slotProps.data.titleEn
                   }}
                 </a>
               </template>
@@ -130,7 +130,8 @@ export default {
       allEvents: [],
       notifications: [],
       newsService: new NewsService(),
-      eventService: new EventsService()
+      eventService: new EventsService(),
+      mobile: false,
     };
   },
 
@@ -147,13 +148,16 @@ export default {
         });
         this.total = response.data.total;
         this.loading = false;
-      }).catch((error) => {
-        this.$toast.add({
-          severity: "error",
-          summary: this.$t("smartenu.loadAllNewsError") + ":\n" + error,
-          life: 3000,
-        });
-      });
+      })
+          .catch((error) => {
+            console.log(error, 'test')
+            this.$toast.add({
+              severity: "error",
+              summary: this.$t("smartenu.loadAllNewsError") + ":\n" + error,
+              life: 3000,
+            });
+            this.loading = false;
+          });
     },
     getAllEvents() {
       this.allEvents = [];
@@ -164,13 +168,15 @@ export default {
           e.imageUrl = smartEnuApi + fileRoute + fileUrl
         });
         this.loading = false;
-      }).catch((error) => {
-        this.$toast.add({
-          severity: "error",
-          summary: this.$t("smartenu.loadAllEventsError") + ":\n" + error,
-          life: 3000,
-        });
-      });
+      })
+          .catch((error) => {
+            this.$toast.add({
+              severity: "error",
+              summary: this.$t("smartenu.loadAllEventsError") + ":\n" + error,
+              life: 3000,
+            });
+            this.loading = false;
+          });
     },
     formatDateMoment(date) {
       return moment(new Date(date)).utc().format("DD.MM.YYYY HH:mm")
@@ -187,20 +193,27 @@ export default {
       this.lazyParams = event
       this.getAllNews();
     },
-  },
+  getFullname(user) {
+                let fullname = user.thirdName + ' ' + user.firstName;
+
+                if (user.lastName && user.lastName.length > 0) {
+                    fullname += ' ' + user.lastName;
+                }
+
+                return fullname
+            }},
   created() {
     this.getAllNews();
     this.getAllEvents();
   },
   mounted() {
+    this.mobile = window.innerWidth <= 640;
     this.emitter.on('newsViewModalClose', data => {
       this.newsViewVisible = data;
     });
     this.emitter.on('eventViewModalClose', data => {
       this.eventViewVisible = data;
     });
-
-
   },
   computed: {
     ...mapState(["loginedUser"]),
@@ -260,6 +273,7 @@ export default {
     width: 120px;
     height: 80px;
     border-radius: 5px;
+    object-fit: cover;
     box-shadow: 0 3px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.19);
   }
 }
@@ -291,9 +305,13 @@ export default {
     }
   }
   .post {
-    img {
-      width: 7rem;
-      height: 5rem;
+    .img {
+      width: 100px;
+      height: 70px;
+
+      img {
+        width: 100px;
+      }
     }
 
     .text {

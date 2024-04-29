@@ -1,12 +1,12 @@
 <template>
     
-    <div v-if="isView.check" id="carddiv" class="grid">  
+    <div v-if="isView.check">  
         <div class="col-12">
             <Menubar :model="menu" :key="active" style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px"></Menubar>
          </div>
 
-        <span   style="white-space: pre-line">
-            <DataTable class="justify-content-between" tableStyle="min-width: 50rem" selectionMode="single" v-model="laborActivity" :lazy="true" :value="laborActivities" :loading="loading" v-model:selection="laborActivity"
+        <span >
+            <DataTable selectionMode="single" v-model="laborActivity" :lazy="true" :value="laborActivities" :loading="loading" v-model:selection="laborActivity"
             :paginator="true" :rows="10" :totalRecords="totalRecords" @page="onPageChange"> 
             
                 <Column field="organizationName" :header="$t('common.organizationName')">
@@ -30,8 +30,8 @@
                 <!-- Действия-->
                 <Column v-if="!readonly" :header="t('dissertation.dissReportActions')">
                     <template #body="slotProps">
-                        <Button icon="pi pi-pencil" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="laborActivity=slotProps.data;update()"></Button>
-                        <Button icon="fa-solid fa-trash" class="p-button-danger mb-2 mr-2" @click="laborActivity=slotProps.data;deleteValue()"></Button>
+                        <Button icon="fa-solid fa-pencil fa-xl" class="p-button-text p-button-warning p-1 mr-2" @click="laborActivity=slotProps.data;update()"></Button>
+                        <Button icon="fa-solid fa-trash-can fa-xl" class="p-button-text p-button-danger p-1 mr-2" @click="laborActivity=slotProps.data;deleteValue()"></Button>
                     </template>
                 </Column>
 
@@ -53,6 +53,7 @@
     import {findRole} from "@/config/config";
     import {ScienceService} from "@/service/science.service";
     import ExperienceEdit from "@/components/humanResources/candidate/subedits/ExperienceEdit"
+    import {useConfirm} from "primevue/useconfirm";
 
     const { t } = useI18n()
     const toast = useToast()
@@ -101,6 +102,7 @@
           },
         },
     ])
+    const confirm = useConfirm()
 
     const getLaborActivity=() => {
         const req = {
@@ -135,20 +137,30 @@
 
 
     const deleteValue =()=> {
-        const req = {
+
+      confirm.require({
+        message: t('common.doYouWantDelete'),
+        header: t('common.confirm'),
+        icon: 'pi pi-exclamation-triangle',
+        acceptClass: 'p-button p-button-success',
+        rejectClass: 'p-button p-button-danger',
+        accept: () => {
+          const req = {
             id: laborActivity.value.id,
             userID: props.userID || null,
-        }
+          }
 
-        loading.value = true
-        scienceService.deleteLaborActivity(req).then(_ => {
+          loading.value = true
+          scienceService.deleteLaborActivity(req).then(_ => {
             loading.value = false
             toast.add({severity: "success", summary: t('common.success'), life: 3000});
             getLaborActivity()
-        }).catch(error => {
+          }).catch(error => {
             toast.add({severity: 'error', summary: t('common.error'), life: 3000})
             loading.value = false;
-        })
+          })
+        },
+      });
     }
 
     const create=() => {

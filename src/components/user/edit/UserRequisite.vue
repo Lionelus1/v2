@@ -7,34 +7,34 @@
 
           <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
               <div class="p-field">
-                  <label>{{ $t('bank.title2') }}<span class="p-error" v-if="!readonly">*</span></label>
+                  <label>{{ t('bank.title2') }}</label>
                   <Dropdown  v-model="bank" :optionLabel="bankLabel"
-                  :options="banks" :placeholder="$t('bank.title2')" 
+                  :options="banks" :placeholder="t('bank.title2')" :disabled="readonly"
                   class="dropdown w-full mt-2" :readonly="readonly" @input="updateUserData"></Dropdown>
-              <small class="p-error" v-if="validation.bankname">{{ $t("common.requiredField") }}</small>
+              <small class="p-error" v-if="validation.bankname">{{ t("common.requiredField") }}</small>
               </div>
           </div>
 
           <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
               <div class="p-field">
-                  <label>{{ $t('bank.accnumber') }}<span class="p-error" v-if="!readonly">*</span></label>
+                  <label>{{ t('bank.accnumber') }}</label>
                   <InputText
                       :readonly="readonly"
                       class="mt-2"
                       type="text"
-                      :placeholder="$t('bank.accnumber')"
+                      :placeholder="t('bank.accnumber')"
                       v-model=" user.bankaccount" @input="updateUserData"></InputText>
-                  <small class="p-error" v-if="validation.accnumber">{{ $t("common.requiredField") }}</small>
+                  <small class="p-error" v-if="validation.accnumber">{{ t("common.requiredField") }}</small>
               </div>
           </div>
           
           <div v-if="!readonly" class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-            <label>{{$t("supportingDocument")}}</label>
-            <FileUpload ref="form" mode="basic" class="mt-2" :customUpload="true" accept=".pdf, image/*" :class="{'p-invalid': validation.file}" @uploader="upload($event)" :auto="true" v-bind:chooseLabel="$t('ncasigner.chooseFile')"/>
+            <label>{{t("supportingDocument")}}</label>
+            <FileUpload ref="form" mode="basic" class="mt-2" :customUpload="true" accept=".pdf, image/*" :class="{'p-invalid': validation.file}" @uploader="upload($event)" :auto="true" v-bind:chooseLabel="t('ncasigner.chooseFile')"/>
             <InlineMessage severity="info" class="mt-2" show v-if="file">
-                {{ $t('ncasigner.chosenFile', {fn: file ? file.name : ""}) }}
+                {{ t('ncasigner.chosenFile', {fn: file ? file.name : ""}) }}
             </InlineMessage>
-            <small class="p-error"  v-if="validation.file" >{{ $t("common.requiredField") }}</small>
+            <small class="p-error"  v-if="validation.file" >{{ t("common.requiredField") }}</small>
           </div>
           
           <Button v-if="user.bankRequisitePath" :label="t('supportingDocument')" style="text-align: left" class="p-button-link" @click="downloadFile(t('supportingDocument'), user.bankRequisitePath)" />
@@ -204,7 +204,7 @@
           })
         }
       })
-    }
+  }
 
   onMounted(() => {
       getUserAccount()

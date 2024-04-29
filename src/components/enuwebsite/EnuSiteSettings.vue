@@ -32,7 +32,7 @@
             <div class="py-3" v-if="formData.is_closed"><a :href="facultySite" target="_blank">{{
               i18n.t('web.sitePreviewLink') }}</a></div>
             <div class="field">
-              <Button :label="$t('common.save')" class="mt-3" @click="update" />
+              <Button :label="$t('common.save')" class="p-button-outlined mt-3" @click="update" />
             </div>
 
           </div>
@@ -78,7 +78,7 @@
               </div>
             </div>
             <div class="field">
-              <Button :label="$t('common.save')" class="mt-3" @click="saveSiteInfo" />
+              <Button :label="$t('common.save')" class="p-button-outlined mt-3" @click="saveSiteInfo" />
             </div>
           </Panel>
         </div>

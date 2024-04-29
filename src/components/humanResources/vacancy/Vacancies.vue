@@ -519,15 +519,48 @@ export default {
 
 <style lang="scss" scoped>
 .customer-badge {
+  border-radius: 2px;
+  padding: 0.25em 0.5rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.3px;
+
+  &.status-1 {
+    background: #b3e5fc;
+    color: #23547b;
+  }
+
+  &.status-2 {
+    background: #eccfff;
+    color: #694382;
+  }
+
   &.status-3 {
     background: #feedaf;
     color: #8a5340;
+  }
+
+  &.status-4 {
+    background: #ffcdd2;
+    color: #c63737;
   }
 
   &.status-5 {
     background: #ffd8b2;
     color: #805b36;
   }
+
+  &.status-6 {
+    background: #feedaf;
+    color: #8a5340;
+  }
+
+  &.status-7 {
+    background: #c8e6c9;
+    color: #256029;
+  }
+
 
 }
 </style>

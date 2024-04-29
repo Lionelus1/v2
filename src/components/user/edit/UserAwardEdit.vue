@@ -124,6 +124,11 @@
           command: () => {
             createAward()
           },
+          disabled: () => (!payload.value.award_type || payload.value.award_type == "")
+          || (!payload.value.award_name_kz || payload.value.award_name_kz == "") 
+          || (!payload.value.award_name_ru || payload.value.award_name_ru == "")
+          || (!payload.value.award_name_en || payload.value.award_name_en == "")
+          || (!payload.value.start_time || payload.value.start_time == "")
         },
     ])
 

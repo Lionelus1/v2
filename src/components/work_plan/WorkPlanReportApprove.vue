@@ -38,7 +38,7 @@ export default {
             nameen: "Certificate of an individual",
             value: "individual"
           }
-        }
+        },
       ],
       currentStageUsers: null,
       currentStage: 1,

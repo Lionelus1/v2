@@ -1,6 +1,7 @@
 <template>
   <Dialog :header="$t('workPlan.addPlan')" v-model:visible="showModal" :style="{width: '450px'}" class="p-fluid" @hide="closeBasic">
     <div class="field">
+      <ProgressBar v-if="loading" mode="indeterminate" style="height: 6px; margin-bottom: 10px;"></ProgressBar>
       <label>{{ $t('workPlan.planName') }}</label>
       <InputText v-model="formData.work_plan_name" v-on:keyup.enter="createPlan"/>
     </div>
@@ -160,7 +161,16 @@ const createPlan = () => {
 }
 
 const uploadFile = (event, name) => {
-  name.value = event.files
+  switch (name) {
+    case 'contractFiles':
+      contractFiles.value = event.files;
+      break;
+    case 'documentFiles':
+      documentFiles.value = event.files;
+      break;
+    default:
+      break;
+  }
 }
 
 const validate = () => {

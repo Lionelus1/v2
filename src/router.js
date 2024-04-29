@@ -93,6 +93,12 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
+                path:'/finance',
+                name:'Finance',
+                component: load('finance/Finance'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
                 path: '/documents/catalog/normdoc',
                 name: '/documents/catalog/normdoc',
                 component: load('documents/catalog/NormativeDocuments'),
@@ -194,6 +200,12 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
+                path: '/documents/scientific-works',
+                name: 'ScientificWorks',
+                component: load('documents/ScientificWorks'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
                 path: '/docrequests',
                 name: 'DocumentRequests',
                 component: load('references/ReferenceRequests'),
@@ -284,8 +296,8 @@ const routes = [
             },
             {
                 path: '/contragent/persons/:type',
-                name: 'persons',
-                component: load('contragent/Persons'),
+                name: 'PersonsList',
+                component: load('contragent/v2/PersonsList'),
                 beforeEnter: ifAuthenticated,
             },
             {
@@ -795,6 +807,12 @@ const routes = [
                 path: '/integrations/params',
                 name: 'IntegrationParams',
                 component: load('integration/IntegrationParams'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/service-catalog',
+                name: 'ServiceCatalog',
+                component: load('service-catalog/ServiceCatalog'),
                 beforeEnter: ifAuthenticated,
             },
             {

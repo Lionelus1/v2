@@ -25,7 +25,7 @@ const setup = (store, app) => {
 
           try {
             const tokenDataString = window.localStorage.getItem("authUser");
-            const tokenData = tokenDataString ? JSON.parse(tokenDataString) : null; 
+            const tokenData = tokenDataString ? JSON.parse(tokenDataString) : null;
             if (tokenData && tokenData.refresh_token) {
 
               const res = await axios.post(smartEnuApi + "/refreshToken", {
