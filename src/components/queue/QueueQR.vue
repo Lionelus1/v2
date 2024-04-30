@@ -7,7 +7,7 @@
       <Button class="justify-content-center p-button-lg" @click="sendNumber()" :disabled="isDisabled">{{ $t('common.continue') }}</Button>
     </div>
     <div class="m-auto flex flex-column gap-3" v-if="currentStep === 2">
-      <Button class="p-button-lg text-left p-3" style="width: 100%" v-for="i of queues" :key="i" @click="registerQueue(i.key)">
+      <Button class="p-button-lg text-left p-3" style="width: 100%" v-for="i of queues" :key="i" @click="registerQueue(i.key,i)">
         {{
           $i18n.locale === "kz"
               ? i.queueNamekz
@@ -26,17 +26,39 @@
               <img src="assets/layout/images/logo.svg" style="width:110px; margin: 10px ">
 
               <div class="talon_number">{{ padTo2Digits(queinfo.queueNumber) }}</div>
-              <b>Сіздің кезектегі нөміріңіз</b>
+              <b v-if="locale === 'kz'">Сіздің кезектегі нөміріңіз</b>
+              <b v-if="locale === 'ru'">Ваш номер в очереди</b>
+              <b v-if="locale === 'en'">Your number in the queue</b>
             </div>
             <div class="talon_content">
-              <div class="dashed flex justify-content-between">
-                <div>Сіздің алдыңызда</div>
-                <!--                      <div class="talon_badge">{{queinfo.queueCount}}</div>-->
-                <b>{{ queinfo.queueCount }}</b>
+              <div class="text-left font-bold">
+                {{
+                  $i18n.locale === "kz"
+                      ? categoryName.queueNamekz
+                      : $i18n.locale === "ru"
+                          ? categoryName.queueNameru
+                          : categoryName.queueNameen
+                }}
               </div>
               <div class="dashed flex justify-content-between">
-                <div>Шамамен күтетін уақытыңыз</div>
-                <div><b>{{ queinfo.averageTime }}</b> (мин)</div>
+                <div v-if="locale === 'kz'">Сіздің алдыңызда</div>
+                <div v-if="locale === 'ru'">В очереди перед вами</div>
+                <div v-if="locale === 'en'">In queue in front of you</div>
+                <div>
+                <b>{{ queinfo.queueCount }} </b>
+                  <template v-if="locale === 'kz'"> (адам)</template>
+                  <template v-if="locale === 'ru'"> (человек)</template>
+                  <template v-if="locale === 'en'"> (people)</template>
+                </div>
+              </div>
+              <div class="dashed flex justify-content-between">
+                <div v-if="locale === 'kz'">Шамамен күтетін уақытыңыз</div>
+                <div v-if="locale === 'ru'">Примерное время ожидания</div>
+                <div v-if="locale === 'en'">Approximate waiting time</div>
+                <div><b>{{ queinfo.averageTime }}</b>
+                  <template v-if="locale === 'kz' || locale === 'ru'"> (мин)</template>
+                  <template v-if="locale === 'en'"> (min)</template>
+                </div>
               </div>
               <div class="flex justify-content-between font-bold">
                 <div>{{ talonDate }}</div>
@@ -50,12 +72,17 @@
                 <div class="bg">
                 <div class="talon_top">
                   <div class="talon_number">{{ padTo2Digits(queinfo.queueNumber) }}</div>
-                  <b>Сіз шақырылдыңыз, өтіңіз</b>
+                  <b v-if="locale === 'kz'">Сіз шақырылдыңыз, өтіңіз</b>
+                  <b v-if="locale === 'ru'">Вас вызвали, проходите</b>
+                  <b v-if="locale === 'en'">You have been called, come in</b>
                 </div>
                 <div class="talon_content">
                   <div class="go_to flex justify-content-center align-items-center">
                     <i class="fa-solid fa-person-walking-arrow-right"></i>
-                    № {{ calledWindow }} терезе
+                    № {{ calledWindow }}
+                    <template v-if="locale === 'kz'">терезе</template>
+                    <template v-if="locale === 'ru'">окно</template>
+                    <template v-if="locale === 'en'">window</template>
                   </div>
                 </div>
                 </div>
@@ -68,7 +95,9 @@
         <div class="talon_list">
           <div class="flex justify-content-between ml-5 mb-2">
             <div>№</div>
-            <div>Терезе</div>
+            <div v-if="locale === 'kz'">Терезе</div>
+            <div v-if="locale === 'ru'">Окно</div>
+            <div v-if="locale === 'en'">Window</div>
           </div>
           <template v-if="!called">
             <div class="item flex justify-content-between align-items-center blinking" v-for="i of queuesWS" :key="i">
@@ -86,20 +115,22 @@
           </template>
         </div>
         <div style="width: 90%; margin: auto">
-          <Button class="p-button-lg p-button-outlined justify-content-center w-full" style="border-radius: 8px;color: red !important;
+          <Button v-if="!called" class="p-button-lg p-button-outlined justify-content-center w-full" style="border-radius: 8px;color: red !important;
     background: rgba(255, 0, 0, 0.15);"
-                  @click="refusalVisible = true">Кезектен бас тарту
+                  @click="refusalVisible = true">
+            <template v-if="locale === 'kz'">Кезектен бас тарту</template>
+            <template v-if="locale === 'ru'">Отказаться от очереди</template>
+            <template v-if="locale === 'en'">Skip the queue</template>
           </Button>
         </div>
-        {{testDataSocket}}
-        {{queError}}
       </div>
     </div>
   </div>
   <Dialog v-model:visible="refusalVisible" :style="{ width: '450px' }" modal header=" ">
     <div class="text-center">
-      <h4 v-if="locale === 'ru'">Вы уверены, что хотите отказаться от место в очереди?</h4>
       <h4 v-if="locale === 'kz'">Кезектегі орыннан бас тартқыңыз келетініне сенімдісіз бе?</h4>
+      <h4 v-if="locale === 'ru'">Вы уверены, что хотите отказаться от место в очереди?</h4>
+      <h4 v-if="locale === 'en'">Are you sure you want to give up your place in queue?</h4>
     </div>
       <Button :label="$t('common.yes')" icon="pi pi-check" class="p-button p-component p-button-success w-full mb-3 mt-6"
               @click="refusal()"/>
@@ -115,7 +146,6 @@ import {getHeader, smartEnuApi, socketApi} from "@/config/config";
 import {useRoute} from "vue-router";
 import {useI18n} from "vue-i18n";
 import moment from "moment";
-import {socket} from "@/main";
 
 const {t, locale} = useI18n()
 const route = useRoute()
@@ -136,26 +166,8 @@ const currentTicketAPI = ref(null)
 const calledWindow = ref()
 const refusalVisible = ref(false)
 const testDataSocket = ref(null);
+const categoryName = ref()
 
-/*const socket = io(smartEnuApi);
-const testDataSocket = ref(null);
-
-socket.on('connect', () => {
-  socket.connected = true
-});
-
-socket.on('notice', (data) => {
-  console.log(data)
-  testDataSocket.value = data;
-});
-
-const sendData = () => {
-  socket.connected = true
-  socket.emit('notice', 'dddddddddd')
-  console.log(socket)
-  console.log(testDataSocket.value)
-};
-sendData();*/
 const validatePhoneNumber = (val) => {
   const phoneNumberRegex = /^\+7-\(\d{3}\)-\d{3}-\d{2}-\d{2}$/;
   isDisabled.value = !phoneNumberRegex.test(val)
@@ -198,12 +210,16 @@ const splitDateTime = (dateTimeString) => {
   talonDate.value = formattedDate;
   talonTime.value = formattedTime;
 };
-const registerQueue = (queue) => {
+const registerQueue = (queueId, queue) => {
   if (localStorage.getItem('phoneNumber')) {
-    localStorage.setItem('queueKey', queue);
+    localStorage.setItem('queueKey', queueId);
+    if(queue){
+      localStorage.setItem('queueCategory', JSON.stringify(queue));
+    }
+    categoryName.value = JSON.parse(localStorage.getItem('queueCategory'))
     const phoneNumber = localStorage.getItem('phoneNumber')
     const req = {
-      queueID: queue, lang: locale.value, phoneNumber: phoneNumber
+      queueID: queueId, lang: locale.value, phoneNumber: phoneNumber
     }
     axios
         .post(smartEnuApi + "/queue/registerService", req, {
@@ -325,7 +341,7 @@ const connected =()=>{
   });
   console.log(socket)
 }
-connected()
+//connected()
 
 onMounted(() => {
   useRealtimeStream(parentId.value)
@@ -333,7 +349,7 @@ onMounted(() => {
     localStorage.removeItem('phoneNumber')
   }
   if (localStorage.getItem('phoneNumber') !== null && localStorage.getItem('queueKey') !== null && (parentId.value === parseInt(localStorage.getItem('queueParentId')))) {
-    registerQueue(parseInt(localStorage.getItem('queueKey')))
+    registerQueue(parseInt(localStorage.getItem('queueKey')), event)
     currentStep.value = 3
   } else if (localStorage.getItem('phoneNumber') !== null) {
     currentStep.value = 2
@@ -396,7 +412,7 @@ onMounted(() => {
 
 .bg{
   margin-top: 20px;
-  background: #49e740;
+  background: #2cc511;
   //border: 2px solid #ccc;
   box-shadow: rgba(0, 0, 0, 0.12) 0 1px 3px, rgba(0, 0, 0, 0.24) 0 1px 2px;
   border-radius: 8px;
@@ -450,7 +466,7 @@ onMounted(() => {
     animation: blink 0.8s ease-in-out 3;
   }
   .blinking_called {
-    background: #49e740;
+    background: #2cc511;
     animation: blink_called 0.8s ease-in-out 3;
   }
 }
@@ -477,13 +493,13 @@ onMounted(() => {
     background-color: #fff;
   }
   25% {
-    background-color: #49e740;
+    background-color: #2cc511;
   }
   50% {
     background-color: #fff;
   }
   75% {
-    background-color: #49e740;
+    background-color: #2cc511;
   }
   100% {
     background-color: #fff;
