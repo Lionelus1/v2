@@ -155,18 +155,20 @@ const app = createApp(App);
 const emitter = mitt();
 app.provide('emitter', emitter);
 
+/*
 const headers = getHeader()
 export const socket = io(smartEnuApi, {
     withCredentials: false
-   /* transports: ['websocket'],
+   /!* transports: ['websocket'],
     extraHeaders: {
 
-    }*/
+    }*!/
 })
 
 socket.on("connect", (s) => {
     console.log(s)
 });
+*/
 
 
 
