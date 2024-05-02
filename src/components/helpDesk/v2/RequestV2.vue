@@ -27,7 +27,6 @@
             </div>
           </div>
         </div>
-
         <BlockUI style="margin-top: 10px"
                  v-if="findRole(null, 'student') || request.doc?.newParams?.not_formal_education_ids">
           <div>
@@ -60,43 +59,15 @@
                        v-model:selection="currentDocument"
                        scrollable scrollHeight="flex" @lazy="true">
               <template #empty> {{ t('common.noData') }}</template>
-              <Column field="checkbox">
+              <Column v-for="(column, index) in columns" :key="index" :field="column.field" :header="t(column.header)"
+                      :style="column.style">
                 <template #body="{ data }">
-                  <Checkbox
-                      :disabled="isDisabled(data) || isAdmin || (request.doc?.docHistory?.stateId == DocEnum.INAPPROVAL.ID)"
-                      v-model="data.checked" :binary="true" @change="checkBoxSelect(data)" style="margin-left: 20px;"/>
+                  <Checkbox v-if="column.field === 'checkbox'"
+                            :disabled="isDisabled(data) || isAdmin || (request.doc?.docHistory?.stateId == DocEnum.INAPPROVAL.ID)"
+                            v-model="data.checked" :binary="true" @change="checkBoxSelect(data)" style="margin-left: 20px;"/>
+                  <a v-else href="javascript:void(0)">{{ getColumnValue(data, column) }}</a>
                 </template>
               </Column>
-
-              <!-- :header="dic_course_type === 2 ? t('course.disciplineCode') : t('common.name')" -->
-              <Column field="name" :header="t('course.disciplineCode')"
-                      style="padding-top: 15px; padding-bottom: 15px;">
-                <template #body="{ data }">
-                  <a href="javascript:void(0)">{{
-                      $i18n.locale === "kz" ? data.namekz : $i18n.locale === "ru" ? data.nameru :
-                          data.category.nameen
-                    }}</a>
-                </template>
-              </Column>
-
-              <!-- :header="dic_course_type === 2 ? t('course.disciplineName') : t('common.description')" -->
-              <Column field="description" :header="t('course.disciplineName')"
-                      style="padding-top: 15px; padding-bottom: 15px;">
-                <template #body="{ data }">
-                  <a href="javascript:void(0)">{{
-                      $i18n.locale === "kz" ? data.descriptionkz : $i18n.locale === "ru" ? data.descriptionru :
-                          data.descriptionen
-                    }}</a>
-                </template>
-              </Column>
-
-              <Column field="credit" :header="t('helpDesk.application.credits')"
-                      style="padding-top: 15px; padding-bottom: 15px;">
-                <template #body="{ data }">
-                  <a href="javascript:void(0)">{{ data.hours }}</a>
-                </template>
-              </Column>
-
             </DataTable>
           </div>
         </BlockUI>
@@ -111,14 +82,12 @@
             <InputText v-model="field.model" :type="field.type" :placeholder="$i18n.locale === 'kz' ? field.name_kz : $i18n.locale === 'ru' ? field.name_ru :
       field.name_en" :disabled="disabledStatus"
                        @input="input"/>
-            <div v-if="field.validation && validateInput[field.key]" style="color: red; margin-top: 5px">
-              {{ t('helpDesk.application.enteredIncorrectly') }}
-            </div>
+<!--            <div v-if="field.validation && validateInput[field.key]" style="color: red; margin-top: 5px">-->
+<!--              {{ t('helpDesk.application.enteredIncorrectly') }}-->
+<!--            </div>-->
           </div>
 
         </div>
-        <!--        <CourseRegistration :courseRequest="request" :validationRequest="validationRequest" @onCheckboxChecked="onChecked" @childInputData="childInput"-->
-        <!--                            @validateInput="validateInput" v-if="selectedDirection && selectedDirection.code === 'course_application'" />-->
       </BlockUI>
       <!-- sendToApproveDialog -->
       <Dialog :header="t('common.action.sendToApprove')" v-model:visible="visibility.sendToApproveDialog"
@@ -216,15 +185,8 @@ const rejectedText = ref(null)
 const stages = ref([]);
 const description = ref(null)
 const changed = ref(false)
-const selectedCourses = ref(null)
 const isSend = ref(false)
-const choseAudience = ref(null);
-const specialization = ref(null);
-const contactNumber = ref(null);
 const category = ref(null);
-const directions = ref(null);
-const selectedCell = ref(null);
-const selectedDateTime = ref(null);
 const selectedDirection = ref({
   name_ru: null,
   name_kz: null,
@@ -237,7 +199,12 @@ const validation = ref({})
 const approving = ref(false)
 const loading = ref(false)
 const haveAccess = ref(true);
-const selectResponse = ref(null);
+const columnsArray = ref([
+  { field: 'checkbox', header: 'course.disciplineCode'},
+  { field: 'name', header: 'course.disciplineCode' },
+  { field: 'description', header: 'course.disciplineName'},
+  { field: 'credit', header: 'helpDesk.application.credits'}
+])
 const visibility = ref({
   documentInfoSidebar: false,
   revisionDialog: false,
@@ -306,15 +273,6 @@ const currentUser = ref(JSON.parse(localStorage.getItem("loginedUser")));
 const pdf = ref(null)
 const activeTab = ref(0)
 const isAdmin = ref(false)
-
-// const formFields = computed(() => [
-//   { key: 'fullName', label: t('common.fullName'), model: userDataCourse.value.fullName, type: 'text', placeholder: t('common.fullName'),   validation: null,show: true },
-//   { key: 'speciality', label: t('common.speciality'), model: userDataCourse.value.speciality, type: 'text', placeholder: userDataCourse.value.speciality || t('common.speciality'),   validation: null, show: true },
-//   { key: 'course', label: t('course.course'), model: userDataCourse.value.course, type: 'number', placeholder: t('course.course'),   validation: null, show: true },
-//   { key: 'group', label: t('contracts.cafedraGroup'), model: userDataCourse.value.group, type: 'text', placeholder: userDataCourse.value.group || t('contracts.cafedraGroup'),   validation: null, show: true },
-//   { key: 'phone', label: t('contact.phone'), model: userDataCourse.value.phone, type: 'text', placeholder: t('contact.phone'),   validation: 'phone', show: true},
-//   { key: 'email', label: t('contact.email'), model: userDataCourse.value.email, type: 'text', placeholder: t('contact.email'),   validation: 'email', show:true },
-// ])
 
 
 const formFields = ref({
@@ -504,10 +462,6 @@ const validationConsultation = (data) => {
   validation.value = data
 }
 
-const validateInput = (data) => {
-  validation.value = data
-}
-
 // Запросы на бэкенд
 const helpDeskTicketGet = () => {
   loading.value = true
@@ -522,6 +476,8 @@ const helpDeskTicketGet = () => {
         request.value = res.data.ticket[0]
         selectedDirection.value = res.data.ticket[0].category;
         loading.value = false
+        getTicketForm()
+        getCourse();
       })
       .catch((err) => {
         loading.value = false
@@ -561,40 +517,43 @@ const sendToApprove = (approvalUsers) => {
   });
 };
 const saveDocument = () => {
-  if (validation.value.phone || validation.value.email) {
-    showMessage('warn', t('helpDesk.application.inputErrorMessage'), null)
-    validationRequest.value = validation.value
-    return
-  }
-  validationRequest.value = validation.value
+  // if (validation.value.phone || validation.value.email) {
+  //   showMessage('warn', t('helpDesk.application.inputErrorMessage'), null)
+  //   validationRequest.value = validation.value
+  //   return
+  // }
+  // validationRequest.value = validation.value
 
 
   let student = null
 
   if (selectedDirection.value.code === 'course_application') {
     if (request.value.doc.newParams) {
-      if (findRole(null, "student")) {
-        request.value.doc.newParams.not_formal_education_ids.value = selectedIds.value
-      }
-
-      request.value.doc.newParams.not_formal_student_info.value = formFields.value.model
-      request.value.doc.newParams.lang.value = lang.value
-      // request.value.doc.newParams.selectedPosition = selectedPosition.value
-      request.value.is_saved = 1
-
-      service.helpDeskTicketCreate(request.value)
-          .then(res => {
-            isSaved.value = true
-            changed.value = false;
-            request.value = res.data
-          }).catch(err => {
-        if (err.response && err.response.status == 401) {
-          store.dispatch("logLout")
-        } else if (err.response && err.response.data && err.response.data.localized) {
-          showMessage('error', t(err.response.data.localizedPath), null)
-        }
-      });
-      isSend.value = true;
+      // if (findRole(null, "student")) {
+      //   request.value.doc.newParams.not_formal_education_ids.value = selectedIds.value
+      // }
+      //
+      // formFields.value.forEach(field => {
+      //   request.value.doc.newParams.not_formal_student_info.value = field.model
+      // });
+      //
+      // request.value.doc.newParams.lang.value = lang.value
+      // // request.value.doc.newParams.selectedPosition = selectedPosition.value
+      // request.value.is_saved = 1
+      //
+      // service.helpDeskTicketCreate(request.value)
+      //     .then(res => {
+      //       isSaved.value = true
+      //       changed.value = false;
+      //       request.value = res.data
+      //     }).catch(err => {
+      //   if (err.response && err.response.status == 401) {
+      //     store.dispatch("logLout")
+      //   } else if (err.response && err.response.data && err.response.data.localized) {
+      //     showMessage('error', t(err.response.data.localizedPath), null)
+      //   }
+      // });
+      // isSend.value = true;
     } else {
       request.value.doc.newParams = {}
       if (findRole(null, "student")) {
@@ -604,16 +563,20 @@ const saveDocument = () => {
         }
         request.value.doc.newParams['not_formal_education_ids'] = param
       }
+      let paramForm = {}
+      formFields.value.forEach(field => {
+        paramForm[field.code] = field.model
+      });
 
       let paramInfo = {
-        value: formFields.value.model,
+        value: paramForm,
         name: "not_formal_student_info"
       }
-
       let paramLang = {
         value: lang.value,
         name: "lang"
       }
+
 
       request.value.doc.newParams['selectedPosition'] = {
         value: selectedPosition.value,
@@ -697,30 +660,30 @@ const downloadContract = () => {
     }
   })
 }
-const isUserDataVaild = () => {
-  if (selectedDirection.value.code === 'course_application') {
-    if (findRole(null, "student")) {
-      for (let field of formFields.value){
-        if (field.model[field.code]){
-          return true;
-        }
-      }
-      return false
-    }
-  } else if (selectedDirection.value.code === 'appointment' || selectedDirection.value.code === 'office_booking') {
-    if (
-        formFields.value.model !== null &&
-        formFields.value.model.specialization &&
-        formFields.value.model.dateTime &&
-        formFields.value.model.phone &&
-        formFields.value.model.description
-    ) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-}
+// const isUserDataVaild = () => {
+//   if (selectedDirection.value.code === 'course_application') {
+//     if (findRole(null, "student")) {
+//       for (let field of formFields.value){
+//         if (field.model[field.code]){
+//           return true;
+//         }
+//       }
+//       return false
+//     }
+//   } else if (selectedDirection.value.code === 'appointment' || selectedDirection.value.code === 'office_booking') {
+//     if (
+//         formFields.value.model !== null &&
+//         formFields.value.model.specialization &&
+//         formFields.value.model.dateTime &&
+//         formFields.value.model.phone &&
+//         formFields.value.model.description
+//     ) {
+//       return true;
+//     } else {
+//       return false;
+//     }
+//   }
+// }
 
 
 const initStages = () => {
@@ -873,34 +836,21 @@ const getCourse = () => {
 }
 const getStudentInfo = () => {
   const userId = request.value?.doc?.newParams?.student_id?.value
+    service.helpDeskStudentInfo({user_id: userId}).then(res => {
+      responseUserData.value.speciality = locale.value === "kz" ? res.data.studen_info.specialty_kz : res.data.studen_info.specialty_ru
+      responseUserData.value.course = res.data.studen_info.course_number
+      responseUserData.value.group = res.data.studen_info.group
+      responseUserData.value.fullName = res.data.studen_info.full_name
+      responseUserData.value.phone = res.data.studen_info.phone
+      responseUserData.value.email = res.data.studen_info.email
+    }).catch(err => {
+      if (err.response && err.response.status == 401) {
+        store.dispatch("logLout")
+      } else if (err.response && err.response.data && err.response.data.localized) {
+        showMessage('error', t(err.response.data.localizedPath), null)
+      }
+    })
 
-  service.helpDeskStudentInfo({user_id: userId}).then(res => {
-    responseUserData.value.speciality = locale.value === "kz" ? res.data.studen_info.specialty_kz : res.data.studen_info.specialty_ru
-    responseUserData.value.course = res.data.studen_info.course_number
-    responseUserData.value.group = res.data.studen_info.group
-    responseUserData.value.fullName = res.data.studen_info.full_name
-    responseUserData.value.phone = res.data.studen_info.phone
-    responseUserData.value.email = res.data.studen_info.email
-
-    userData.value = {
-      discipline: request.value.doc?.newParams?.not_formal_student_info?.value.discipline,
-      fullName: request.value.doc?.newParams?.not_formal_student_info?.value.fullName || responseUserData.value.fullName,
-      speciality: request.value.doc?.newParams?.not_formal_student_info?.value.speciality || responseUserData.value.speciality,
-      group: request.value.doc?.newParams?.not_formal_student_info?.value.group || responseUserData.value.group,
-      course: (request.value.doc?.newParams?.not_formal_student_info?.value.course > 0 ? request.value.doc?.newParams?.not_formal_student_info?.value.course : null) || (responseUserData.value.course > 0 ? responseUserData.value.course : null),
-      phone: (request.value.doc?.newParams?.not_formal_student_info?.value.phone > 0
-          ? request.value.doc.newParams.not_formal_student_info.value.phone
-          : '') || (responseUserData.value.phone > 0 ? responseUserData.value.phone : null),
-      email: request.value.doc?.newParams?.not_formal_student_info?.value.email || responseUserData.value.email,
-    }
-  }).catch(err => {
-
-    if (err.response && err.response.status == 401) {
-      store.dispatch("logLout")
-    } else if (err.response && err.response.data && err.response.data.localized) {
-      showMessage('error', t(err.response.data.localizedPath), null)
-    }
-  })
 }
 const getTicketForm = () => {
   let req = {
@@ -913,9 +863,13 @@ const getTicketForm = () => {
       name_kz: value.name_kz || '', // use empty string as default value
       name_ru: value.name_ru || '',
       name_en: value.name_en || '',
-      model: userData.value[value.code],
-      validation: value.validation || ''
+      validation: value.validation || '',
+      code: value.code
     }))
+    formFields.value?.map(field => {
+      userData.value[field.code] = request.value.doc?.newParams?.not_formal_student_info?.value[field.code] || responseUserData.value[field.code];
+      field.model = userData.value[field.code]
+    });
   }).catch((err) => {
     console.log(err)
   })
@@ -962,10 +916,9 @@ onMounted(() => {
   currentUser.value = JSON.parse(localStorage.getItem("loginedUser"))
   isAdmin.value = (findRole(null, 'main_administrator') || findRole(null, "career_administrator"))
   initStages()
-  helpDeskTicketGet()
   getStudentInfo()
-  getCourse();
-  getTicketForm()
+  helpDeskTicketGet()
+
 })
 </script>
 

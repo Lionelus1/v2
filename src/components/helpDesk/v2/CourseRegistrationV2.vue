@@ -1,22 +1,22 @@
 <template>
-  <div style="margin-left: 15px;" v-if="props.courseRequest.doc?.docHistory">
-    <p> {{ t('common.state') + ": " }}
-      <span :class="'customer-badge status-' + props.courseRequest.doc?.docHistory?.stateEn">
-        {{ getDocStatus(props.courseRequest.doc?.docHistory?.stateEn) }}
-      </span>
-    </p>
-    <div
-        v-if="props.courseRequest.doc?.docHistory?.stateEn === 'revision' || props.courseRequest.doc?.docHistory?.stateEn === 'rejected' ">
-      <label>{{ $t('common.comment') }}:</label>
-      <div>
-        <Message style="width: 150px;" :closable="false"
-                 v-if="props.courseRequest.doc != null && props.courseRequest.doc?.docHistory != null && props.courseRequest.doc?.docHistory != null"
-                 severity="warn">
-          {{ props.courseRequest.doc?.docHistory?.comment }}
-        </Message>
-      </div>
-    </div>
-  </div>
+<!--  <div style="margin-left: 15px;" v-if="props.courseRequest.doc?.docHistory">-->
+<!--    <p> {{ t('common.state') + ": " }}-->
+<!--      <span :class="'customer-badge status-' + props.courseRequest.doc?.docHistory?.stateEn">-->
+<!--        {{ getDocStatus(props.courseRequest.doc?.docHistory?.stateEn) }}-->
+<!--      </span>-->
+<!--    </p>-->
+<!--    <div-->
+<!--        v-if="props.courseRequest.doc?.docHistory?.stateEn === 'revision' || props.courseRequest.doc?.docHistory?.stateEn === 'rejected' ">-->
+<!--      <label>{{ $t('common.comment') }}:</label>-->
+<!--      <div>-->
+<!--        <Message style="width: 150px;" :closable="false"-->
+<!--                 v-if="props.courseRequest.doc != null && props.courseRequest.doc?.docHistory != null && props.courseRequest.doc?.docHistory != null"-->
+<!--                 severity="warn">-->
+<!--          {{ props.courseRequest.doc?.docHistory?.comment }}-->
+<!--        </Message>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
 
   <BlockUI style="margin-top: 10px"
            v-if="findRole(null, 'student') || props.courseRequest.doc?.newParams?.not_formal_education_ids">
@@ -90,20 +90,6 @@
       </DataTable>
     </div>
   </BlockUI>
-  <div>
-    <div v-for="field in formFields" :key="field.key" class="field" style="margin-top: 10px;">
-      <label>{{$i18n.locale === "kz" ? field.name_kz : $i18n.locale === "ru" ? field.name_ru :
-          field.name_en}} <span v-if="isCurrentUserSender"
-                                     style="font-size: 20px; color: red;">*</span></label>
-      <InputText v-model="field.model" :type="field.type" :placeholder="$i18n.locale === 'kz' ? field.name_kz : $i18n.locale === 'ru' ? field.name_ru :
-      field.name_en" :disabled="disabledStatus"
-                 @input="input"/>
-      <div v-if="field.validation && props.validationRequest[field.key]" style="color: red; margin-top: 5px">
-        {{ t('helpDesk.application.enteredIncorrectly') }}
-      </div>
-    </div>
-  </div>
-
 </template>
 
 <script setup>
