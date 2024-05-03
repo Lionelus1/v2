@@ -588,9 +588,7 @@ export default {
       this.loading = true
       this.lazyParams.countMode = null;
       this.lazyParams.searchText = data;
-      api.post("/vacancy/public",
-          this.lazyParams, {headers: getHeader()}).then((response) => {
-        console.log(response)
+      api.post("/vacancy/public", this.lazyParams, {headers: getHeader()}).then((response) => {
         this.vacancies = response.data.vacancies;
         this.count = response.data.total;
         this.loading = false;

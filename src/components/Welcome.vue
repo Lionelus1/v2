@@ -27,8 +27,10 @@
             <template #list="slotProps">
               <template v-for="(item, index) in slotProps?.items" :key="index">
                 <div class="post" v-on:click="newsView(item)">
-                  <img class="round" v-if="item?.imageUrl && item?.imageUrl !=''"
-                       :src="item?.imageUrl"/>
+                  <div class="img">
+                    <img v-if="item?.imageUrl != null && item?.imageUrl !=''"
+                         :src="item?.imageUrl"/>
+                  </div>
                   <div class="text">
                     <strong>
                       {{
@@ -269,12 +271,17 @@ export default {
     }
   }
 
-  img {
+  .img {
     width: 120px;
     height: 80px;
-    border-radius: 5px;
-    object-fit: cover;
-    box-shadow: 0 3px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.19);
+
+    img{
+      width: 120px;
+      height: 100%;
+      border-radius: 5px;
+      object-fit: cover;
+      box-shadow: 0 3px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.19);
+    }
   }
 }
 
