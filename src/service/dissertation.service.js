@@ -104,4 +104,8 @@ export class DissertationService {
     newStartRegistration(data) {
         return api.post(`/dissertation/newStartRegistration`, data, {headers: getHeader()});
     }
+
+    generateAnnounce(params) {
+        return api.post(`/dissertation/generate-announce`, params, {headers: getHeader()});
+    }
 }
