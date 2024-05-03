@@ -55,15 +55,15 @@
             @click="filterClick($event)"/>
         <template v-if="search">
           <div class="vertical_line"></div>
-          <span class="p-input-icon-left" >
-                <i class="pi pi-search"/>
-                <InputText
-                    type="search"
-                    class="search_toolbar"
-                    @search="searchClick()"
-                    v-model="searchModel"
-                    :placeholder="$t('common.search')"
-                /></span>
+          <IconField iconPosition="left">
+            <InputIcon class="pi pi-search"> </InputIcon>
+            <InputText type="search"
+                       class="search_toolbar"
+                       @keyup.enter="searchClick()"
+                       @search="searchClick()"
+                       v-model="searchModel"
+                       :placeholder="$t('common.search')"/>
+          </IconField>
         </template>
       </div>
     </div>

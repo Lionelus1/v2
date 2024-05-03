@@ -10,7 +10,6 @@
         v-on:click="openSidebar"
       />
       <span class="p-input-icon-left mr-2">
-        <i class="pi pi-search" />
         <InputText
           type="search"
           v-model="searchText"
