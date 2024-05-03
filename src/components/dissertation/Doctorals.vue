@@ -4,7 +4,6 @@
       <Toolbar class="mb-4">
         <template #end>
 
-
           <Button v-if="findRole(null, 'dissertation_council_secretary')" isSecretary icon="pi pi-plus"
             class="p-button-success mr-2" @click="showAddCouncilDialog()" />
           <Button v-if="canShowUpdateDoctoral" :disabled="!selectedDoctoral" icon="pi pi-pencil" class="mr-2"
@@ -344,71 +343,38 @@
             {{ $t('dissertation.setMeetingTimeConfirmMsg', { btn: $t('common.yes') }) }}
           </Message>
         </div>
-        <div class="field">
-          <label><b>{{ $t('common.fullName') }}</b></label>
-          <div>{{ selectedDoctoral.user.fullName }}</div>
-        </div>
-        <div class="field">
-          <label><b>{{ $t('dissertation.disstitle') }}</b></label>
-          <div>{{ selectedDoctoral.dissertation['name' + $i18n.locale] }}</div>
-        </div>
-        <div class="field">
-          <label><b>{{ $t('common.cafedra') + '/' + $t('common.speciality') }}</b></label>
-          <div>{{
-            $t('common.cafedra') + ' ' + selectedDoctoral.cafedra['name' + upFirstLetter($i18n.locale)] + '/' +
-            $t('common.speciality') + ' "' + selectedDoctoral.speciality['nameIn' + upFirstLetter($i18n.locale)] + '"'
-          }}
-          </div>
-        </div>
-        <div class="field">
-          <label><b>{{ $t('dissertation.defenseLang') }}</b></label>
-          <div>{{
-            selectedDoctoral.dissertation.language === 1 ? $t('common.language.kz') :
-            selectedDoctoral.dissertation.language === 2 ? $t('common.language.ru') : $t('common.language.en')
-          }}
-          </div>
-        </div>
-        <div class="field">
-          <label><b>{{ $t('dissertation.reviewers') }}</b></label>
-          <template v-if="memberList !== 0">
-            <div v-for="(item, index) in initMembers('dissertation_council_reviewer')" :key="index">
-              {{ item.fullName }}
-            </div>
-          </template>
-          <div><small><a href="javascript:void(0)" @click="showDialog(dialog.addMember)">{{ $t('common.add')
-          }}</a></small></div>
-        </div>
-        <div class="field">
-          <label><b>{{ $t('dissertation.tempMember') }}</b></label>
-          <template v-if="memberList !== 0">
-            <div v-for="(item, index) in initMembers('dissertation_council_temporary_member')" :key="index">
-              {{ item.fullName }}
-            </div>
-          </template>
-          <div><small><a href="javascript:void(0)" @click="showDialog(dialog.addMember)">{{ $t('common.add')
-          }}</a></small></div>
-        </div>
-        <div class="field">
-          <label><b>{{ $t('dissertation.advisors') }}</b></label>
-          <div v-if="selectedDoctoral.dissertation['science_consultant_' + $i18n.locale]">
-            {{ selectedDoctoral.dissertation['science_consultant_' + $i18n.locale] }}
-          </div>
-          <div v-if="selectedDoctoral.dissertation['foreign_consultant_' + $i18n.locale]">
-            {{ selectedDoctoral.dissertation['foreign_consultant_' + $i18n.locale] }}
-          </div>
-        </div>
-        <div class="field">
-          <label><b>{{ $t('dissertation.meetingTime') }}</b></label>
-          <div>{{ selectedDoctoral.meetingTime ? getLongDateString(selectedDoctoral.meetingTime) : "Нет данных" }}</div>
-        </div>
-        <div class="field">
-          <label><b>{{ $t('common.meetingUrl') }}</b></label>
-          <div>{{ selectedDoctoral.dissertation.meetingUrl || $t('common.noData') }}</div>
-        </div>
-        <div class="field">
-          <label><b>{{ $t('common.address') }}</b></label>
-          <div>{{ selectedDoctoral.dissertation.meetingPlace }}</div>
-        </div>
+        <TabView>
+            <TabPanel header="Қазақша">
+                <div class="field">
+                    <label for="kz-title">{{ $t("common.nameInQazaq") }}</label>
+                    <InputText id="kz-title" v-model="announceData.titleTextKz"  rows="3"/>
+                </div>
+                <div class="field">
+                    <label for="kz-content">{{ $t("common.contentInQazaq") }}</label>
+                    <TinyEditor v-model="announceData.announceTextKz"  :height="600" :custom-file-upload="true" @onAfterUpload="onAfterUpload"/>
+                </div>
+            </TabPanel>
+            <TabPanel header="Русский">
+              <div class="field">
+                    <label for="ru-title">{{ $t("common.nameInRussian") }}</label>
+                    <InputText id="ru-title" v-model="announceData.titleTextRu" rows="3"/>
+                </div>
+                <div class="field">
+                    <label for="ru-content">{{ $t("common.contentInRussian") }}</label>
+                    <TinyEditor v-model="announceData.announceTextRu"  :height="600" :custom-file-upload="true" @onAfterUpload="onAfterUpload"/>
+                </div>
+            </TabPanel>
+            <TabPanel header="English">
+              <div class="field">
+                    <label for="en-title">{{ $t("common.nameInEnglish") }}</label>
+                    <InputText id="en-title" v-model="announceData.titleTextEn" rows="3"/>
+                </div>
+                <div class="field">
+                    <label for="en-content">{{ $t("common.contentInEnglish") }}</label>
+                    <TinyEditor v-model="announceData.announceTextEn" :height="600" :custom-file-upload="true" @onAfterUpload="onAfterUpload"/>
+                </div>
+            </TabPanel>
+        </TabView>
         <template #footer>
           <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-text"
             @click="hideDialog(dialog.setMeetingTimeConfirm)" />
@@ -681,7 +647,6 @@
       <Dialog v-if="dialog.updateDoctoral.state && selectedDoctoral" v-model:visible="dialog.updateDoctoral.state"
         :style="{ width: '600px' }" :header="selectedDoctoral.user.fullName" :modal="true" :maximizable="true"
         class="p-fluid">
-
         <template v-if="selectedDoctoral.dissertation.state === 1">
           <div class="field">
             <label>{{ $t('dissertation.reviewerComment') + ' ' + $t('common.pdfFormat') }}</label>
@@ -894,12 +859,22 @@ export default {
 
       },
       dissertationService: new DissertationService(),
-      memberList: []
+      memberList: [],
+      dissertationID: null,
+      announceData: {
+        titleTextKz: "",
+        titleTextRu: "",
+        titleTextEn: "",
+        announceTextKz: "",
+        announceTextRu: "",
+        announceTextEn:""
+      },
     };
   },
   created() {
     this.councilID = Number(this.$route.params.id);
     this.getDoctorals();
+    this.generateAnnounce();
 
     var generator = require("generate-password");
 
@@ -912,6 +887,7 @@ export default {
   mounted() {
     this.getDissertationMember();
     this.getSecretary();
+    this.generateAnnounce();
 
   },
 
@@ -1193,6 +1169,37 @@ export default {
         });
 
     },
+    generateAnnounce(){
+      let data = {
+        dissertation_id: this.selectedDoctoral?.dissertation?.id,
+        url: this.selectedDoctoral?.dissertation?.url,
+        meetingUrl: this.selectedDoctoral?.dissertation?.meetingUrl,
+        meetingPlace: this.selectedDoctoral?.dissertation?.meetingPlace,
+        meetingTime: this.selectedDoctoral?.meetingTime,
+        language: this.selectedDoctoral?.dissertation?.language
+
+      }
+      this.dissertationService.generateAnnounce(data).then(res => {
+        if (res.data) {
+          this.announceData.titleTextKz = res.data.TitleTextKz
+          this.announceData.titleTextRu = res.data.TitleTextRu
+          this.announceData.titleTextEn = res.data.TitleTextEn
+          this.announceData.announceTextKz = res.data.AnnounceTextKz
+          this.announceData.announceTextRu = res.data.AnnounceTextRu
+          this.announceData.announceTextEn = res.data.AnnounceTextEn
+        }
+      }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+      });
+    },
     async startNewRegistration() {
       const req = {
         councilID: this.selectedDoctoral.councilID,
@@ -1413,7 +1420,8 @@ export default {
     confirmSetMeetingTime() {
       this.submitted = true;
       if (!this.validateSetMeetingTimeForm()) return;
-      this.loadCouncil();
+      // this.loadCouncil();
+      this.generateAnnounce()
       this.submitted = false;
       this.dialog.setMeetingTimeConfirm.state = true;
     },
@@ -1426,7 +1434,8 @@ export default {
           meetingUrl: this.selectedDoctoral.dissertation.meetingUrl,
           meetingPlace: this.selectedDoctoral.dissertation.meetingPlace,
           meetingTime: this.selectedDoctoral.meetingTime,
-          language: this.selectedDoctoral.dissertation.language
+          language: this.selectedDoctoral.dissertation.language,
+          announce:this.announceData
         }
         api
           .post(
