@@ -17,7 +17,6 @@
             <template #header>
               <div class="text-right">
                 <div class="p-input-icon-left">
-                  <i class="pi pi-search"/>
                   <InputText type="search" v-model="lazyParams.searchText"
                              :placeholder="$t('common.search')" @search="getBlockList"/>
                   <Button icon="pi pi-search" class="ml-1" @click="getBlockList"/>

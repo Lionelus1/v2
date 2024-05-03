@@ -10,7 +10,7 @@
     <div class="card">
       <TabView>
         <TabPanel :header="$t('web.properties')">
-          <div class="text-right mb-3">
+          <div class="text-right mb-3 flex justify-content-end">
             <Button type="button" icon="fa-solid fa-filter"
                     @click="toggle('global-filter', $event)" aria:haspopup="true" aria-controls="overlay_panel"
                     class="p-button-outlined mr-2"/>
@@ -34,7 +34,6 @@
               </div>
             </OverlayPanel>
             <div class="p-input-icon-left">
-              <i class="pi pi-search"/>
               <InputText type="search" v-model="filter.search_text" :placeholder="$t('common.search')"
                          @search="getMenus(null)"/>
               <Button icon="pi pi-search" class="ml-1" @click="getMenus(null)"/>

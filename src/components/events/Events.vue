@@ -10,10 +10,10 @@
                        :loading="loading" responsive-layout="scroll">
                 <template #header>
                     <div class="table-header flex justify-content-end align-items-center">
-            <span class="p-input-icon-left">
-              <i class="pi pi-search"/>
-              <InputText v-model="filters['global'].value" v-bind:placeholder="$t('hdfs.search')"/>
-            </span>
+                      <IconField iconPosition="left">
+                        <InputIcon class="pi pi-search"> </InputIcon>
+                        <InputText  v-model="filters['global'].value" v-bind:placeholder="$t('hdfs.search')" />
+                      </IconField>
                     </div>
                 </template>
                 <template #empty>{{ $t("smartenu.eventsNotFound") }}</template>
