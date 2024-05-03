@@ -13,13 +13,13 @@
       <div class="card" v-if="report && report?.doc_info && !(report?.doc_info.docHistory.stateId === 1 || report?.doc_info.docHistory.stateId === 4)">
         <Button type="button" icon="pi pi-eye" class="p-button-outlined" :label="$t('educomplex.tooltip.document')" @click="openDoc"></Button>
       </div>
-      <div class="card" v-if="!isReportSentApproval && visibleSendToApprove">
+      <div class="card" v-if="visibleSendToApprove">
         <Button type="button" icon="pi pi-send" class="p-button-success ml-2" :label="$t('common.toapprove')" @click="openModal"></Button>
         <WorkPlanReportApprove v-if="showModal" :report-fd="this.fd" :visible="showModal" :doc-id="report.doc_id" :approvalStages="approval_users"
           :report="report" :plan="plan" @sent-to-approve="getReport" @closed="closeApproveModal" />
      
       </div>
-      <div class="card" v-if="blobSource && !(isSciencePlan && report?.doc_info && report?.doc_info.docHistory && report?.doc_info.docHistory.stateId === 4)">
+      <div class="card" v-if="blobSource">
         <embed :src="blobSource" style="width: 100%; height: 1000px" type="application/pdf" />
       </div>
     </div>
@@ -47,6 +47,7 @@ import WorkPlanReportApprove from "@/components/work_plan/WorkPlanReportApprove"
 import { WorkPlanService } from "@/service/work.plan.service";
 import Enum from "@/enum/workplan";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo.vue";
+import {log} from "qrcode/lib/core/galois-field";
 
 export default {
   name: "WorkPlanReportView",
@@ -97,16 +98,13 @@ export default {
       approval_users: [],
       respUsers: [],
       planCreator: null,
-      approvals: [],
       reject: {
         report_id: 0,
         doc_id: null,
         comment: null,
         report_name: null
       },
-      isReportSentApproval: false,
       isCurrentUserApproved: false,
-      isPlanReportApproved: false,
       isPlanReportRevision: false,
       loading: false,
       planService: new WorkPlanService(),
@@ -169,7 +167,7 @@ export default {
         this.report = res.data;
         this.getPlan();
         this.getFile();
-        this.getReportApprovalUsers();
+        // this.getReportApprovalUsers();
         this.getRespUsers()
       }).catch(error => {
         if (error.response && error.response.status === 401) {
@@ -238,15 +236,6 @@ export default {
     getReportApprovalUsers() {
       this.planService.getReportApprovalUsers(this.report_id).then(res => {
         if (res.data) {
-          this.approvals = [];
-          this.isReportSentApproval = true;
-          const d = res.data;
-          this.isPlanReportApproved = d.every(x => x.is_success);
-          const unique = [...new Set(d.map(item => item.stage))];
-          unique.forEach(r => {
-            let f = d.filter(x => x.stage === r);
-            this.approvals.push(f);
-          });
           this.approval_users = res.data;
         }
       }).catch(error => {

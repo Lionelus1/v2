@@ -1,9 +1,7 @@
 <template>
   <div class="col-12">
-    <TitleBlock :title="$t('web.blocks')" />
-    <div class="card">
-      <Button :label="$t('web.addBlock')" @click="openDialog"/>
-    </div>
+    <TitleBlock :title="$t('web.blocks')"/>
+    <ToolbarMenu :data="toolbarMenus" @search="initSearch($event)" :search="true"/>
     <div class="card" v-if="isWebAdmin">
       <SelectSiteSlug @onSelect="onSlugSelect"/>
     </div>
@@ -14,15 +12,6 @@
                      :rows="10" :rowHover="true" :paginator="true" :totalRecords="total" @page="onPage" @sort="onSort">
             <template #empty>{{ $t("common.noData") }}</template>
             <template #loading>{{ $t("common.loading") }}</template>
-            <template #header>
-              <div class="text-right">
-                <div class="p-input-icon-left">
-                  <InputText type="search" v-model="lazyParams.searchText"
-                             :placeholder="$t('common.search')" @search="getBlockList"/>
-                  <Button icon="pi pi-search" class="ml-1" @click="getBlockList"/>
-                </div>
-              </div>
-            </template>
             <Column :field="'title_' + $i18n.locale" :header="$t('common.nameIn')" sortable>
               <template #body="{ data }">
                 <a href="javascript:void(0)" @click="navigateToView(data)">
@@ -48,7 +37,7 @@
             </Column>
             <Column class="text-right">
               <template #body="{ data }">
-                  <ActionButton :show-label="true" :items="initItems" @toggle="toggle(data)" />
+                <ActionButton :show-label="true" :items="initItems" @toggle="toggle(data)"/>
               </template>
             </Column>
           </DataTable>
@@ -482,7 +471,7 @@
   </Dialog>
 </template>
 
-<script>
+<script setup>
 import {onMounted, computed, ref, reactive, toRefs} from "vue";
 import {EnuWebService} from "@/service/enu.web.service";
 import {formatDate} from "@/helpers/HelperUtil";
@@ -498,250 +487,253 @@ import TitleBlock from "@/components/TitleBlock.vue";
 import {findRole} from "@/config/config";
 import {useStore} from "vuex";
 import ActionButton from "@/components/ActionButton.vue";
+import ToolbarMenu from "@/components/ToolbarMenu.vue";
 
+const store = useStore()
+const i18n = useI18n()
+const toast = useToast()
+const confirm = useConfirm()
+const loading = ref(false)
+const TN = ref(null)
+let selectedBlock = ref()
+let isCreateModal = ref(false)
+let submitted = ref(false)
+const blockList = ref([])
+const enuService = new EnuWebService()
+const router = useRouter()
+let formData = ref({})
+const options = ref([true, false]);
+const total = ref(0)
+const lazyParams = ref({
+  page: 0,
+  rows: 10,
+  searchText: "",
+  sortField: null,
+  sortOrder: 0,
+  slug: localStorage.getItem('selectedSlug') ? JSON.parse(localStorage.getItem('selectedSlug')).slug : null
+})
+const selectedBlockListType = ref();
+const listTypes = ref([]);
+const selectedBlockListViewType = ref();
+const listViewTypes = ref([]);
+const accTabs = ref([
+  {title: 'Title 1', content: 'Content 1'},
 
-export default {
-  name: "BlockList",
-  components: {ActionButton, TitleBlock, SelectSiteSlug, WebLogs},
-  setup() {
-    const store = useStore()
-    const i18n = useI18n()
-    const toast = useToast()
-    const confirm = useConfirm()
-    const loading = ref(false)
-    const TN = ref(null)
-    let selectedBlock = ref()
-    let isCreateModal = ref(false)
-    let submitted = ref(false)
-    const blockList = ref([])
-    const enuService = new EnuWebService()
-    const router = useRouter()
-    let formData = ref({})
-    const options = ref([true, false]);
-    const total = ref(0)
-    const lazyParams = ref({
-      page: 0,
-      rows: 10,
-      searchText: "",
-      sortField: null,
-      sortOrder: 0,
-      slug: localStorage.getItem('selectedSlug') ? JSON.parse(localStorage.getItem('selectedSlug')).slug : null
-    })
-    const selectedBlockListType = ref();
-    const listTypes = ref([]);
-    const selectedBlockListViewType = ref();
-    const listViewTypes = ref([]);
-    const accTabs = ref([
-      {title: 'Title 1', content: 'Content 1'},
+]);
+const isGuideVisible = ref(false);
+const actionsNode = ref(null)
 
-    ]);
-    const isGuideVisible = ref(false);
-    const actionsNode = ref(null)
-      const showHideUserGuide = () => {
-      isGuideVisible.value = !isGuideVisible.value;
-    };
+const toolbarMenus = computed(() => {
+  return [
+    {
+      label: i18n.t('web.addBlock'),
+      icon: "pi pi-plus",
+      visible: findRole(null, 'enu_web_admin') ||
+          findRole(null, 'enu_web_admin') || this.findRole(null, 'main_administrator'),
+      command: () => {
+        openDialog()
+      },
+    },
+  ]
+})
+const showHideUserGuide = () => {
+  isGuideVisible.value = !isGuideVisible.value;
+};
 
-    const navigateToView = (data) => {
-      if (!data.is_plugin) router.push({name: 'BlockView', params: {id: data.block_id}})
+const navigateToView = (data) => {
+  if (!data.is_plugin) router.push({name: 'BlockView', params: {id: data.block_id}})
 
-      if (data.block_plugin) {
-        const compName = enuService.navigateToPlugin(data.block_plugin.component_name)
-        router.push({name: compName});
-      }
-    };
-
-    const getBlockList = () => {
-      loading.value = true;
-      enuService.getBlockList(lazyParams.value).then(res => {
-        if (res.data) {
-          blockList.value = res.data.blocks
-          total.value = res.data.total;
-          TN.value = res.data.tn_res
-        }
-        loading.value = false
-      }).catch(error => {
-        loading.value = false
-        toast.add({severity: "error", summary: error, life: 3000});
-      });
-    }
-
-    const getBlockListTypes = () => {
-      loading.value = true;
-      enuService.getBlockListTypes().then(res => {
-        if (res.data) {
-          listTypes.value = res.data;
-
-        }
-        loading.value = false
-      }).catch(error => {
-        loading.value = false
-        toast.add({severity: "error", summary: error, life: 3000});
-      });
-    }
-
-    const getBlockListViewTypes = () => {
-      loading.value = true;
-      enuService.getBlockListViewTypes().then(res => {
-        if (res.data) {
-          listViewTypes.value = res.data;
-        }
-        loading.value = false
-      }).catch(error => {
-        loading.value = false
-        toast.add({severity: "error", summary: error, life: 3000});
-      });
-    }
-
-    const addBlock = () => {
-      submitted.value = true;
-      if (lazyParams.value.slug && findRole(store.state.loginedUser, 'enu_web_admin')) {
-        formData.value.slug = lazyParams.value.slug
-      }
-      enuService.addBlock(formData.value).then(res => {
-        if (res.data && res.data.is_success) {
-          toast.add({severity: "success", summary: i18n.t('common.success'), life: 3000});
-        }
-        submitted.value = false;
-        isCreateModal.value = false;
-        formData.value = {}
-        getBlockList()
-      }).catch(error => {
-        submitted.value = false;
-        isCreateModal.value = false;
-        formData.value = {}
-        toast.add({severity: "error", summary: error, life: 3000});
-      });
-    }
-    const isWebAdmin = computed(() => findRole(store.state.loginedUser, "enu_web_admin"))
-    const initItems = computed(() =>
-        {
-            return [
-                {
-                    label: i18n.t('common.edit'),
-                    icon: 'fa-solid fa-pen',
-                    command: () => {
-                        openEdit(actionsNode.value)
-                    }
-                },
-                {
-                    label: i18n.t('common.delete'),
-                    icon: 'fa-solid fa-trash',
-                    command: () => {
-                        deleteConfirm(actionsNode.value)
-                    }
-                },
-
-            ];
-        }
-    )
-    const toggle = (node) => {
-      actionsNode.value = node
-    }
-    const save = () => {
-      submitted.value = true;
-      enuService.editBlock(formData.value).then(res => {
-        if (res.data && res.data.is_success) {
-          toast.add({severity: "success", summary: i18n.t('common.success'), life: 3000});
-        }
-        submitted.value = false;
-        isCreateModal.value = false;
-        formData.value = {}
-        selectedBlock.value = null
-        getBlockList()
-      }).catch(error => {
-        submitted.value = false;
-        isCreateModal.value = false;
-        formData.value = {}
-        selectedBlock.value = null
-        toast.add({severity: "error", summary: error, life: 3000});
-      });
-    }
-
-    const openEdit = (data) => {
-      formData.value = data
-      selectedBlock.value = data;
-      isCreateModal.value = true;
-    }
-
-    const openDialog = () => {
-      isCreateModal.value = true;
-      formData.value = {};
-    }
-
-    const hideDialog = () => {
-      isCreateModal.value = false;
-      selectedBlockListType.value = null;
-      selectedBlockListViewType.value = null;
-    }
-
-    const deleteConfirm = (data) => {
-      confirm.require({
-        message: i18n.t('common.doYouWantDelete'),
-        header: i18n.t('common.delete'),
-        icon: 'pi pi-info-circle',
-        acceptClass: 'p-button-rounded p-button-success',
-        rejectClass: 'p-button-rounded p-button-danger',
-        accept: () => {
-          remove(data.block_id)
-        },
-      });
-    }
-
-    const remove = (id) => {
-      enuService.deleteBlock(id).then(res => {
-        if (res.data && res.data.is_success) {
-          toast.add({severity: "success", summary: i18n.t('common.success'), life: 3000});
-        } else {
-          toast.add({severity: "warn", summary: i18n.t('common.message.title.saveError'), life: 3000});
-        }
-        getBlockList();
-      }).catch(error => {
-        toast.add({severity: "error", summary: error, life: 3000});
-      });
-    }
-
-    const onPage = (event) => {
-      lazyParams.value.page = event.page
-      lazyParams.value.rows = event.rows
-      getBlockList();
-    }
-
-    const onSort = (event) => {
-      lazyParams.value.sortField = event.sortField;
-      lazyParams.value.sortOrder = event.sortOrder;
-      getBlockList();
-    }
-
-    const onBlockListTypeSelect = (event) => {
-      formData.value.list_type_id = event.value.id
-    }
-
-    const onBlockListViewTypeSelect = (event) => {
-      formData.value.list_type_view_id = event.value.id
-    }
-   
-    const onSlugSelect = (event) => {
-      lazyParams.value.slug = event.slug
-      getBlockList()
-    }
-
-
-    onMounted(() => {
-      getBlockList();
-      getBlockListTypes();
-      getBlockListViewTypes();
-    });
-
-
-    return {
-      blockList, isCreateModal, formData, lazyParams,
-      loading, selectedBlock, submitted, options, total, TN, onBlockListTypeSelect,
-      navigateToView, openDialog, hideDialog, addBlock, save, deleteConfirm, openEdit, formatDate,
-      onPage, onSort, getBlockList, selectedBlockListType, listTypes, selectedBlockListViewType, onBlockListViewTypeSelect, listViewTypes,
-      accTabs, showHideUserGuide, isGuideVisible, onSlugSelect, isWebAdmin, initItems, actionsNode, toggle
-    }
+  if (data.block_plugin) {
+    const compName = enuService.navigateToPlugin(data.block_plugin.component_name)
+    router.push({name: compName});
   }
+};
+
+const getBlockList = () => {
+  loading.value = true;
+  enuService.getBlockList(lazyParams.value).then(res => {
+    if (res.data) {
+      blockList.value = res.data.blocks
+      total.value = res.data.total;
+      TN.value = res.data.tn_res
+    }
+    loading.value = false
+  }).catch(error => {
+    loading.value = false
+    toast.add({severity: "error", summary: error, life: 3000});
+  });
 }
+
+const getBlockListTypes = () => {
+  loading.value = true;
+  enuService.getBlockListTypes().then(res => {
+    if (res.data) {
+      listTypes.value = res.data;
+
+    }
+    loading.value = false
+  }).catch(error => {
+    loading.value = false
+    toast.add({severity: "error", summary: error, life: 3000});
+  });
+}
+
+const getBlockListViewTypes = () => {
+  loading.value = true;
+  enuService.getBlockListViewTypes().then(res => {
+    if (res.data) {
+      listViewTypes.value = res.data;
+    }
+    loading.value = false
+  }).catch(error => {
+    loading.value = false
+    toast.add({severity: "error", summary: error, life: 3000});
+  });
+}
+
+const addBlock = () => {
+  submitted.value = true;
+  if (lazyParams.value.slug && findRole(store.state.loginedUser, 'enu_web_admin')) {
+    formData.value.slug = lazyParams.value.slug
+  }
+  enuService.addBlock(formData.value).then(res => {
+    if (res.data && res.data.is_success) {
+      toast.add({severity: "success", summary: i18n.t('common.success'), life: 3000});
+    }
+    submitted.value = false;
+    isCreateModal.value = false;
+    formData.value = {}
+    getBlockList()
+  }).catch(error => {
+    submitted.value = false;
+    isCreateModal.value = false;
+    formData.value = {}
+    toast.add({severity: "error", summary: error, life: 3000});
+  });
+}
+const isWebAdmin = computed(() => findRole(store.state.loginedUser, "enu_web_admin"))
+const initItems = computed(() => {
+      return [
+        {
+          label: i18n.t('common.edit'),
+          icon: 'fa-solid fa-pen',
+          command: () => {
+            openEdit(actionsNode.value)
+          }
+        },
+        {
+          label: i18n.t('common.delete'),
+          icon: 'fa-solid fa-trash',
+          command: () => {
+            deleteConfirm(actionsNode.value)
+          }
+        },
+
+      ];
+    }
+)
+const toggle = (node) => {
+  actionsNode.value = node
+}
+const save = () => {
+  submitted.value = true;
+  enuService.editBlock(formData.value).then(res => {
+    if (res.data && res.data.is_success) {
+      toast.add({severity: "success", summary: i18n.t('common.success'), life: 3000});
+    }
+    submitted.value = false;
+    isCreateModal.value = false;
+    formData.value = {}
+    selectedBlock.value = null
+    getBlockList()
+  }).catch(error => {
+    submitted.value = false;
+    isCreateModal.value = false;
+    formData.value = {}
+    selectedBlock.value = null
+    toast.add({severity: "error", summary: error, life: 3000});
+  });
+}
+
+const openEdit = (data) => {
+  formData.value = data
+  selectedBlock.value = data;
+  isCreateModal.value = true;
+}
+
+const openDialog = () => {
+  isCreateModal.value = true;
+  formData.value = {};
+}
+
+const hideDialog = () => {
+  isCreateModal.value = false;
+  selectedBlockListType.value = null;
+  selectedBlockListViewType.value = null;
+}
+
+const deleteConfirm = (data) => {
+  confirm.require({
+    message: i18n.t('common.doYouWantDelete'),
+    header: i18n.t('common.delete'),
+    icon: 'pi pi-info-circle',
+    acceptClass: 'p-button-rounded p-button-success',
+    rejectClass: 'p-button-rounded p-button-danger',
+    accept: () => {
+      remove(data.block_id)
+    },
+  });
+}
+
+const remove = (id) => {
+  enuService.deleteBlock(id).then(res => {
+    if (res.data && res.data.is_success) {
+      toast.add({severity: "success", summary: i18n.t('common.success'), life: 3000});
+    } else {
+      toast.add({severity: "warn", summary: i18n.t('common.message.title.saveError'), life: 3000});
+    }
+    getBlockList();
+  }).catch(error => {
+    toast.add({severity: "error", summary: error, life: 3000});
+  });
+}
+
+const onPage = (event) => {
+  lazyParams.value.page = event.page
+  lazyParams.value.rows = event.rows
+  getBlockList();
+}
+
+const onSort = (event) => {
+  lazyParams.value.sortField = event.sortField;
+  lazyParams.value.sortOrder = event.sortOrder;
+  getBlockList();
+}
+
+const onBlockListTypeSelect = (event) => {
+  formData.value.list_type_id = event.value.id
+}
+
+const onBlockListViewTypeSelect = (event) => {
+  formData.value.list_type_view_id = event.value.id
+}
+
+const onSlugSelect = (event) => {
+  lazyParams.value.slug = event.slug
+  getBlockList()
+}
+
+const initSearch = (searchText) => {
+  lazyParams.value.searchText = searchText
+  getBlockList()
+}
+
+
+onMounted(() => {
+  getBlockList();
+  getBlockListTypes();
+  getBlockListViewTypes();
+});
 </script>
 
 <style lang="scss" scoped>
