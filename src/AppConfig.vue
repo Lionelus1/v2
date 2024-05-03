@@ -369,9 +369,12 @@ import axios from 'axios';
 	margin-bottom: 10px;
 	.btns{
 		.vi_btn{
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
 			font-weight: 700;
-			width: 40px;
-			height: 40px;
+			width: 40px!important;
+			height: 40px!important;
 			border-radius: 50%;
 			background: transparent;
 			margin-right: 10px;
@@ -382,14 +385,14 @@ import axios from 'axios';
 		}
 		.small {
 			font-size: 18px;
-			width: 30px;
-			height: 30px;
+			width: 30px!important;
+			height: 30px!important;
 		}
 
 		.middle {
 			font-size: 25px;
-			width: 35px;
-			height: 35px;
+			width: 35px!important;
+			height: 35px!important;
 		}
 
 		.big {

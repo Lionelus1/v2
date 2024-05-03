@@ -48,7 +48,6 @@
         <div class="block lg:flex justify-content-between align-items-center">
           <h5 class="mb-2 lg:m-0" v-if="selectedOrganization">{{ selectedOrganization['name'+$i18n.locale] }}</h5>
           <span class="p-input-icon-left" v-if="selectedOrganization">
-            <i class="pi pi-search"/>
             <InputText type="search"
                        v-model="lazyParams.searchText"
                        :placeholder="$t('common.search')"

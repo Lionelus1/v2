@@ -20,10 +20,10 @@
                     @click="updateCourseGiveCertificates()" />
           </div>
           <div>
-            <span  class="p-input-icon-left mr-2">
-                <i class="pi pi-search"/>
-                <InputText type="search" v-model="searchText" @keyup.enter="getCourses"  @search="getCourses" :placeholder="$t('common.search')"/>
-            </span>
+            <IconField iconPosition="left">
+              <InputIcon class="pi pi-search"> </InputIcon>
+              <InputText  type="search" v-model="searchText" @keyup.enter="getCourses"  @search="getCourses" :placeholder="$t('common.search')" />
+            </IconField>
           </div>
         </div>
         </template>

@@ -35,7 +35,6 @@
       <div class="table-header flex flex-column md:flex-row md:justify-content-between">
         <h4 class="mb-2 m-md-0 align-self-md-center">{{ $t("hr.vacancies") }}</h4>
         <span class="p-input-icon-left">
-            <i class="pi pi-search"/>
             <InputText type="search"
                        v-model="lazyParams.searchText"
                        :placeholder="$t('common.search')"

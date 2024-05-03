@@ -18,7 +18,6 @@
           <div class="flex justify-content-between align-items-center">
             <h5 class="m-0">{{ $t('faq.title') }}</h5>
             <span class="p-input-icon-left">
-              <i class="pi pi-search"/>
               <InputText type="search" v-model="userData.searchText" :placeholder="$t('common.search')"
                          @keyup.enter="getData" @click="clearData"/>
               <Button icon="pi pi-search" class="ml-1" @click="getData"/>
@@ -133,7 +132,6 @@
           <div class="flex justify-content-between align-items-center">
             <h5 class="m-0">{{ $t('faq.title') }}</h5>
             <span class="p-input-icon-left">
-              <i class="pi pi-search"/>
               <InputText type="search" v-model="userData.searchText" :placeholder="$t('common.search')"
                          @keyup.enter="getData" @click="clearData"/>
               <Button icon="pi pi-search" class="ml-1" @click="getData"/>
