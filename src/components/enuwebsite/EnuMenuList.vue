@@ -2,9 +2,6 @@
   <div class="col-12">
     <TitleBlock :title="$t('web.menuPage')"/>
     <ToolbarMenu :data="headerMenus" @search="initSearch($event)" :search="true" @filter="toggle('global-filter', $event)" :filter="true" :filtered="filtered"/>
-    <div class="card" v-if="findRole(null, 'enu_web_admin') || findRole(null, 'enu_web_fac_admin') || findRole(null, 'main_administrator')">
-      <Button :label="$t('web.addMenu')" icon="pi pi-plus" class="ml-2" v-on:click="createMenu(null)"/>
-    </div>
     <div class="card" v-if="findRole(null,'enu_web_admin')">
       <SelectSiteSlug @onSelect="onSlugSelect"/>
     </div>
@@ -449,7 +446,7 @@ export default {
           label: this.$t('common.add'),
           icon: "pi pi-plus",
           visible: this.findRole(null, 'enu_web_admin') ||
-              this.findRole(null, 'enu_web_admin') || this.findRole(null, 'main_administrator'),
+              this.findRole(null, 'enu_web_fac_admin') || this.findRole(null, 'main_administrator'),
           command: () => {
             this.createMenu(null)
           },
