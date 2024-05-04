@@ -529,7 +529,7 @@ export default {
         this.getAllNews();
         this.getCategories();
         this.getRoles();
-      
+
     },
 
     computed: {
@@ -569,18 +569,18 @@ export default {
         return [
           {
             label: this.$t('common.show'),
-            icon: "pi pi-eye",
+            icon: "fa-solid fa-eye",
             command: () => {this.newsView(this.actionsNode)},
           },
           {
             label: this.$t('common.edit'),
-            icon: "pi pi-pencil",
+            icon: "fa-solid fa-pencil",
             visible: this.actionsNode?.history.status.id ===this.statuses.created || this.isAdmin || this.isModer || this.isEnuWebAdmin || this.isEnuWebFacAdmin,
             command: () => {this.editNews(this.actionsNode)},
           },
           {
             label: this.$t('common.delete'),
-            icon: "pi pi-trash",
+            icon: "fa-solid fa-trash-can",
             visible: this.actionsNode?.history.status.id ===this.statuses.created || this.isAdmin|| this.isEnuWebAdmin || this.isEnuWebFacAdmin,
             command: () => {this.delNews(this.actionsNode.id)},
           },

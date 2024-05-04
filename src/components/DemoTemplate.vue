@@ -26,6 +26,9 @@
       </OverlayPanel>
     </div>
     <DataTable :value="tableData" class="p-datatable-sm" responsiveLayout="scroll" :lazy="true">
+      <template #header>
+        <ToolbarMenu :border="true" :data="menu" @search="search" :search="true" @filter="toggleFilter($event)" :filter="true" :filtered="filtered"/>
+      </template>
       <Column field="name" header="Name"></Column>
       <Column field="year" header="Year"></Column>
       <Column field="capacity" header="Capacity"></Column>
@@ -278,17 +281,46 @@ const buttons = computed(() => {
       return [
         {
           label: t('common.edit'),
-          icon: 'fa-solid fa-pen',
+          icon: 'fa-solid fa-pencil',
+          command: () => {
+            alert('edit')
+          }
+        },
+        {
+          label: t('common.delete'),
+          icon: 'fa-solid fa-trash-can',
+          disabled: true,
+          command: () => {
+            alert('del')
+          }
+        },
+        {
+          label: t('User'),
+          visible: false,
+          icon: 'fa-solid fa-user',
           command: () => {
           }
         },
+      ];
+    }
+)
+const buttons2 = computed(() => {
+      return [
+        {
+          label: t('common.edit'),
+          icon: 'fa-solid fa-pencil',
+          command: () => {
+            alert('edit')
+          }
+        },/*
         {
           label: t('common.delete'),
           icon: 'fa-solid fa-trash',
           visible: true,
           command: () => {
+            alert('del')
           }
-        },
+        },*/
       ];
     }
 )
