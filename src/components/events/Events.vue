@@ -447,18 +447,18 @@ export default {
         return [
           {
             label: this.$t('common.show'),
-            icon: "pi pi-eye",
+            icon: "fa-solid fa-eye",
             command: () => {this.eventView(this.actionsNode)},
           },
           {
             label: this.$t('common.edit'),
-            icon: "pi pi-pencil",
+            icon: "fa-solid fa-pencil",
             visible: this.actionsNode?.history.status.id ===this.statuses.created || this.userHasAdmin || this.isEnuWebAdmin || this.isEnuWebFacAdmin,
             command: () => {this.editEvent(this.actionsNode)},
           },
           {
             label: this.$t('common.delete'),
-            icon: "pi pi-trash",
+            icon: "fa-solid fa-trash-can",
             visible: this.actionsNode?.history.status.id ===this.statuses.created || this.isAdmin|| this.isEnuWebAdmin || this.isEnuWebFacAdmin,
             command: () => {this.deleteConfirm(this.actionsNode)},
           },
