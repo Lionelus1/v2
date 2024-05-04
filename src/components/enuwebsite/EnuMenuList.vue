@@ -446,7 +446,7 @@ export default {
           label: this.$t('common.add'),
           icon: "pi pi-plus",
           visible: this.findRole(null, 'enu_web_admin') ||
-              this.findRole(null, 'enu_web_admin') || this.findRole(null, 'main_administrator'),
+              this.findRole(null, 'enu_web_fac_admin') || this.findRole(null, 'main_administrator'),
           command: () => {
             this.createMenu(null)
           },

@@ -529,7 +529,7 @@ const toolbarMenus = computed(() => {
       label: i18n.t('web.addBlock'),
       icon: "pi pi-plus",
       visible: findRole(null, 'enu_web_admin') ||
-          findRole(null, 'enu_web_admin') || this.findRole(null, 'main_administrator'),
+          findRole(null, 'enu_web_fac_admin') || this.findRole(null, 'main_administrator'),
       command: () => {
         openDialog()
       },
