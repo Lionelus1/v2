@@ -920,7 +920,8 @@ export default {
         addReport: 'Add Report',
         sendReportForSign: 'Send the report for signature',
         doYouWantSendReport: "Are you sure to submit this report for signature?",
-        videoValid: 'Only videos from the YouTube platform are allowed'
+        videoValid: 'Only videos from the YouTube platform are allowed',
+        reviewerCommentFieldWarning: 'Review from official reviewer not attached'
     },
     faq: {
         title: "Help desk",
