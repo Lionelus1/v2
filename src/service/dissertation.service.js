@@ -48,4 +48,8 @@ export class DissertationService {
     updateDoctoral(params) {
         return api.post(`/dissertation/updateDoctoral`, params, {headers: getHeader()});
     }
+
+    generateAnnounce(params) {
+        return api.post(`/dissertation/generate-announce`, params, {headers: getHeader()});
+    }
 }

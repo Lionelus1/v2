@@ -19,7 +19,7 @@
             </div>
           </div>
           <DataView :lazy="true" :value="allNews" :layout="layout" :paginator="true" :rows="10"
-                    @page="onPage($event)" :totalRecords="total">
+                    @page="onPage($event)" :totalRecords="total" :pageLinkSize="mobile? 3:5">
             <template #empty>{{
                 this.$t("smartenu.newsNotFound")
               }}
@@ -27,8 +27,10 @@
             <template #list="slotProps">
               <template v-for="(item, index) in slotProps?.items" :key="index">
                 <div class="post" v-on:click="newsView(item)">
-                  <img class="round" v-if="item?.imageUrl && item?.imageUrl !=''"
-                       :src="item?.imageUrl"/>
+                  <div class="img">
+                    <img v-if="item?.imageUrl != null && item?.imageUrl !=''"
+                         :src="item?.imageUrl"/>
+                  </div>
                   <div class="text">
                     <strong>
                       {{
@@ -130,7 +132,8 @@ export default {
       allEvents: [],
       notifications: [],
       newsService: new NewsService(),
-      eventService: new EventsService()
+      eventService: new EventsService(),
+      mobile: false,
     };
   },
 
@@ -193,14 +196,13 @@ export default {
     this.getAllEvents();
   },
   mounted() {
+    this.mobile = window.innerWidth <= 640;
     this.emitter.on('newsViewModalClose', data => {
       this.newsViewVisible = data;
     });
     this.emitter.on('eventViewModalClose', data => {
       this.eventViewVisible = data;
     });
-
-
   },
   computed: {
     ...mapState(["loginedUser"]),
@@ -256,11 +258,17 @@ export default {
     }
   }
 
-  img {
+  .img {
     width: 120px;
     height: 80px;
-    border-radius: 5px;
-    box-shadow: 0 3px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.19);
+
+    img{
+      width: 120px;
+      height: 100%;
+      border-radius: 5px;
+      object-fit: cover;
+      box-shadow: 0 3px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.19);
+    }
   }
 }
 
@@ -291,9 +299,13 @@ export default {
     }
   }
   .post {
-    img {
-      width: 7rem;
-      height: 5rem;
+    .img {
+      width: 100px;
+      height: 70px;
+
+      img {
+        width: 100px;
+      }
     }
 
     .text {

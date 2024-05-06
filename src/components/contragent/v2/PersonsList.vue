@@ -4,10 +4,10 @@
   <div class="card">
     <Menubar :model="menu" class="m-0 pt-0 pb-0">
       <template #end>
-        <span class="p-input-icon-left">
-          <i class="pi pi-search"/>
-          <InputText @keyup.enter="getPersons" v-model="filter.name" :placeholder="$t('common.search')"></InputText>
-        </span>
+        <IconField iconPosition="left">
+          <InputIcon class="pi pi-search"> </InputIcon>
+          <InputText  @keyup.enter="getPersons" v-model="filter.name" :placeholder="$t('common.search')"/>
+        </IconField>
       </template>
     </Menubar>
     <DataTable :value="persons" dataKey="userID" :rows="rows" :totalRecords="total"

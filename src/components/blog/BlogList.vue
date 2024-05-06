@@ -1,9 +1,7 @@
 <template>
   <div class="col-12">
     <TitleBlock :title="$t('blog.title')" />
-    <div v-if="!isFacultyWebAdmin && isWebAdmin" class="card">
-      <Button :label="$t('common.add')" @click="openDialog"/>
-    </div>
+    <ToolbarMenu v-if="isWebAdmin || mainAdmin" :data="toolbarMenus"/>
     <div class="card">
       <TabView>
         <TabPanel :header="$t('web.properties')">
@@ -120,10 +118,12 @@ import {fileRoute, findRole, smartEnuApi} from "@/config/config";
 import {FileService} from "@/service/file.service";
 import TitleBlock from "@/components/TitleBlock.vue";
 import ActionButton from "@/components/ActionButton.vue";
+import ToolbarMenu from "@/components/ToolbarMenu.vue";
 
 const authUser = computed(() => JSON.parse(localStorage.getItem("loginedUser")))
 const isFacultyWebAdmin = computed(() => findRole(authUser.value, "enu_web_fac_admin"))
 const isWebAdmin = computed(() => findRole(authUser.value, "enu_web_admin"))
+const mainAdmin = computed(() => findRole(authUser.value, "main_administrator"))
 const actionsNode = ref(null)
 const initItems = computed(() =>
     {
@@ -164,6 +164,18 @@ const total = ref(0)
 const responsible = ref()
 const thumbFile = ref(null)
 const bgImg = ref(null)
+
+const toolbarMenus = computed(() => {
+  return [
+    {
+      label: i18n.t('common.add'),
+      icon: "pi pi-plus",
+      command: () => {
+        openDialog()
+      }
+    }
+  ]
+})
 
 
 const lazyParams = ref({

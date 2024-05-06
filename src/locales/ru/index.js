@@ -945,7 +945,8 @@ export default {
         addReport: 'Добавить отчет',
         sendReportForSign: 'Отправить отчет на подпись',
         doYouWantSendReport: "Вы уверены, что отправите этот отчет на подпись?",
-        videoValid: 'Принимаются только видеоролики с платформы YouTube'
+        videoValid: 'Принимаются только видеоролики с платформы YouTube',
+        reviewerCommentFieldWarning: 'Отзыв официального рецензента не прикреплен'
     },
     faq: {
         title: "Служба поддержки",

@@ -1,7 +1,8 @@
 <template>
   <div class="col-12">
     <h3>{{ $t('workPlan.plans') }}</h3>
-    <ToolbarMenu :data="initMenu" @search="initSearch" :search="true" @filter="toggle('global-filter', $event)" :filter="isAdmin" :filtered="filtered" />
+    <ToolbarMenu v-model:search-model="filter.searchText" :data="initMenu" @search="initSearch" :search="true" @filter="toggle('global-filter', $event)" :filter="isAdmin"
+                 :filtered="filter.filtered"/>
     <div class="card">
       <DataTable :lazy="true" :rowsPerPageOptions="[5, 10, 20, 50]" :value="data" dataKey="id" :rowHover="true"
                  :loading="loading" responsiveLayout="scroll" :paginator="true" :rows="10" :totalRecords="total" @page="onPage">
@@ -85,7 +86,7 @@
           </Dropdown>
         </div>-->
         <div class="field">
-          <Button icon="pi pi-search" :label="$t('common.search')" class="button-blue p-button-sm" @click="getPlans" />
+          <Button icon="pi pi-search" :label="$t('common.search')" class="button-blue p-button-sm" @click="initFilter"/>
           <Button icon="pi pi-trash" class="p-button-outlined p-button-sm mt-1" @click="clearFilter()" :label="$t('common.clear')" />
         </div>
       </div>
@@ -152,11 +153,12 @@ export default {
       selectedDocStatus: null,
       types: [],
       showAddPlanDialog: false,
-      filtered: false,
       filter: {
         doc_status: null,
         plan_type: null,
         user_id: null,
+        searchText: null,
+        filtered: false
       },
       statuses: [Enum.StatusesArray.StatusCreated, Enum.StatusesArray.StatusInapproval, Enum.StatusesArray.StatusApproved,
         Enum.StatusesArray.StatusRevision, Enum.StatusesArray.StatusSigning, Enum.StatusesArray.StatusSigned],
@@ -189,7 +191,20 @@ export default {
     }
   },
   created() {
+    let oldPath = this.$router.options.history.state.back;
+    if (oldPath && oldPath.indexOf('/work-plan') === -1) {
+      localStorage.removeItem("workPlanFilter")
+    }
     this.isAdmin = this.findRole(null, 'main_administrator')
+
+    this.lazyParams.first = parseInt(this.$route.query.first) || 0
+    this.lazyParams.page = parseInt(this.$route.query.page) || 0
+    this.lazyParams.rows = parseInt(this.$route.query.rows) || 10
+
+    const storageFilter = JSON.parse(localStorage.getItem("workPlanFilter"))
+
+    this.filter = storageFilter || this.filter
+
     this.getPlans();
     this.getWorkPlanTypes()
   },
@@ -317,13 +332,12 @@ export default {
       this.getPlans();
     },
     clearFilter() {
-      this.lazyParams.filter.is_plan = null;
-      this.lazyParams.filter.is_oper_plan = null;
+      localStorage.removeItem("workPlanFilter");
+      this.filter.doc_status = null
+      this.filter.plan_type = null
+      this.filter.user_id = null
       this.selectedPlanType = null;
-      this.lazyParams.filter.user_id = null;
-      this.getPlans();
-    },
-    initFilter() {
+      this.filter.filtered = false;
       this.getPlans();
     },
     getDocStatus(code) {
@@ -354,7 +368,17 @@ export default {
       })
     },
     initSearch(searchText) {
-      this.lazyParams.searchText = searchText
+      this.filter.searchText = searchText;
+      localStorage.setItem("workPlanFilter", JSON.stringify(this.filter));
+      this.lazyParams.first = 0
+      this.lazyParams.page = 0
+      this.getPlans()
+    },
+    initFilter() {
+      this.filter.filtered = true;
+      localStorage.setItem("workPlanFilter", JSON.stringify(this.filter));
+      this.lazyParams.first = 0
+      this.lazyParams.page = 0
       this.getPlans()
     },
     showMySign(approvalStages) {
@@ -372,7 +396,7 @@ export default {
               return true
             }
           }
-  
+
           if (!stagePassed) {
             break
           }
@@ -401,7 +425,7 @@ export default {
               signed = false
             }
           }
-  
+
           if (!stagePassed) {
             break
           }
@@ -413,7 +437,13 @@ export default {
 
       return signed
     },
-  }
+  },
+  beforeUnmount() {
+    let current = this.$router.options.history.state.current;
+    if (current && current.indexOf('/work-plan') === -1) {
+      localStorage.removeItem("workPlanFilter")
+    }
+  },
 }
 </script>
 
