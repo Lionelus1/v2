@@ -8,7 +8,7 @@
   </template>
     <template v-else>
       <template v-for="(i,index) of actionList" :key="i">
-        <Button v-if="i.visible !== false" :disabled="i.disabled" class="p-button-text p-1"  @click="i.command(index)" v-tooltip.bottom="i.label">
+        <Button v-if="i.visible !== false" :disabled="i.disabled" class="p-button-text p-1"  @click="onClick($event, index)" v-tooltip.bottom="i.label">
           <i :class="[i.icon, 'fa-xl']"></i>
         </Button>
       </template>
@@ -24,8 +24,12 @@ const emit = defineEmits(['toggle'])
 const menu = ref()
 const actionList = computed(() => props.items)
 
-const onClick = (event) => {
-    menu.value.toggle(event);
+const onClick = (event, index = null) => {
+    if (index !== null) {
+      actionList.value[index].command(index)
+    } else {
+      menu.value.toggle(event);
+    }
     emit('toggle')
 }
 const visibleCount = ref(0);

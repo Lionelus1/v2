@@ -975,6 +975,7 @@ export default {
       URL.revokeObjectURL(link.href);
     },
     actionsToggle(node) {
+      console.log(node)
       this.isCreator = node.creator_id === this.loginedUserId
       this.selectedEvent = node
     },
@@ -1026,7 +1027,7 @@ export default {
         {
           label: this.$t('common.show'),
           icon: 'fa-solid fa-eye',
-          disabled: !(this.selectedEvent && this.isPlanApproved && this.canExecuteEvent),
+          disabled: !(this.isPlanApproved && this.canExecuteEvent),
           visible: this.isFinish,
           command: () => {
             this.openPlanExecuteSidebar()
@@ -1035,7 +1036,7 @@ export default {
         {
           label: this.$t('common.add'),
           icon: 'fa-solid fa-plus',
-          disabled: !(this.selectedEvent && (this.isPlanCreator || this.isCreator || this.isUserResp(this.selectedEvent.user)) && !this.isFinish),
+          disabled: !(this.isPlanCreator || this.isCreator || this.isUserResp(this.selectedEvent?.user) && !this.isFinish),
           visible: !this.isFinish,
           command: () => {
             this.showDialog(this.dialog.add)

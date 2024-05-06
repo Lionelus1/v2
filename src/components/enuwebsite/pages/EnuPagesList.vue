@@ -227,12 +227,11 @@ export default {
         {
           label: this.$t('common.show'),
           icon: 'fa-solid fa-eye',
-
           command: () => {
             this.onView(this.actionsNode)
           }
         },
-        /*{
+        {
           label: this.$t('common.edit'),
           icon: 'fa-solid fa-pen',
           command: () => {
@@ -246,7 +245,7 @@ export default {
           command: () => {
             this.delPage(this.actionsNode)
           }
-        },*/
+        },
 
       ];
     },
