@@ -399,12 +399,12 @@ export default {
       return [
         {
           label: this.$t('common.edit'),
-          icon: "pi pi-pencil",
+          icon: "fa-solid fa-pencil",
           command: () => {this.editNewsCategory(this.actionsNode.id)},
         },
         {
           label: this.$t('common.delete'),
-          icon: "pi pi-trash",
+          icon: "fa-solid fa-trash-can",
           command: () => {this.delNewsCategory(this.actionsNode.id)},
         },
       ]

@@ -25,7 +25,7 @@
             </Column>
             <Column v-if="isWebAdmin" class="text-right">
               <template #body="{ data }">
-                <Button type="button" @click="toggle($event, data)" class="p-button" icon="fa-solid fa-pen" label="" />
+                <Button type="button" @click="toggle($event, data)" class="p-button-text p-button" icon="fa-solid fa-pen fa-xl" label="" />
                 <OverlayPanel ref="op">
                   <div class="p-fluid">
                     <div class="field" style="width: 50vh">
