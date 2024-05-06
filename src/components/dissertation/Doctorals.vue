@@ -1,9 +1,19 @@
 <template>
+  <Toast group="bc" @close="onClose" severity="warn">
+            <template #message="slotProps">
+              <div class="flex flex-column justify-content-start">
+                <div>
+                {{ slotProps.message.summary }}
+              </div>
+              <router-link to="#" @click="showAddReviewerComment">{{ $t('common.add') }}</router-link>
+              <!-- <Button :label="$t('common.add')" link /> -->
+              </div>
+            </template>
+        </Toast>
   <div class="col-12">
     <div class="card">
       <Toolbar class="mb-4">
         <template #end>
-
           <Button v-if="findRole(null, 'dissertation_council_secretary')" isSecretary icon="pi pi-plus"
             class="p-button-success mr-2" @click="showAddCouncilDialog()" />
           <Button v-if="canShowUpdateDoctoral" :disabled="!selectedDoctoral" icon="pi pi-pencil" class="mr-2"
@@ -329,11 +339,13 @@
           <Button icon="pi pi-download" :label="$t('dissertation.dissertationFile')"
             @click="downloadFile(selectedDoctoral.dissertation.dissFile)" />
         </div>
-
+ 
         <template #footer>
+         
           <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-text"
             @click="hideDialog(dialog.setMeetingTime)" />
-          <Button :label="$t('common.confirm')" icon="pi pi-check" class="p-button-text" @click="confirmSetMeetingTime" />
+          <Button :label="$t('common.confirm')" icon="pi pi-check" class="p-button-text" @click="confirmSetMeetingTime" :disabled="isReviewerCommentFileMissing" />
+  
         </template>
       </Dialog>
       <Dialog v-model:visible="dialog.setMeetingTimeConfirm.state" :style="{ width: '600px' }"
@@ -383,6 +395,7 @@
       </Dialog>
       <Dialog v-model:visible="dialog.defenseConduct.state" :style="{ width: '600px' }"
         :header="$t('dissertation.defenseConduct')" :modal="true" :maximizable="true" class="p-fluid">
+        
 
         <div
           v-if="!(selectedDoctoral && selectedDoctoral.dissertation.state == dissertationState.VotingFinished) && !(isDissertationMember && ((currentMemberState === memberState.Registered && selectedDoctoral.dissertation.state === dissertationState.VotingStarted) || (currentMemberState === memberState.Voted && selectedDoctoral.dissertation.state === dissertationState.VotingRestarted)))">
@@ -868,7 +881,7 @@ export default {
         announceTextKz: "",
         announceTextRu: "",
         announceTextEn:""
-      },
+      }
     };
   },
   created() {
@@ -892,6 +905,12 @@ export default {
   },
 
   methods: {
+    showAddReviewerComment(){
+      this.dialog.defenseConduct.state = false;
+      this.dialog.updateDoctoral.state = true;
+      // this.dialog.state = true;
+      
+    },
     toggle(ref, event) {
       this.$refs[ref].toggle(event);
     },
@@ -1132,6 +1151,11 @@ export default {
       });
     },
     startRegistration() {
+      if (this.isReviewerCommentFileMissing)  {
+        this.$toast.add({ severity: 'warn', summary: this.$t('dissertation.reviewerCommentFieldWarning'), group: 'bc' });
+
+        return
+      }
       var req = {
         councilID: this.selectedDoctoral.councilID,
         dissertationID: this.selectedDoctoral.dissertation.id
@@ -1417,6 +1441,7 @@ export default {
           }
         });
     },
+   
     confirmSetMeetingTime() {
       this.submitted = true;
       if (!this.validateSetMeetingTimeForm()) return;
@@ -1658,6 +1683,9 @@ export default {
 
       return (this.selectedDoctoral && (this.selectedDoctoral.dissertation.state === 1 || this.selectedDoctoral.dissertation.state === 6))
         && (this.findRole(this.loginedUser, 'dissertation_chief') || this.findRole(this.loginedUser, 'dissertation_council_secretary'))
+    },
+    isReviewerCommentFileMissing(){
+      return ((this.selectedDoctoral && this.selectedDoctoral.dissertation && this.selectedDoctoral.dissertation.state === 1) && (this.selectedDoctoral.dissertation.reviewer1CommentFile === null || this.selectedDoctoral.dissertation.reviewer2CommentFile == null)) //this.selectedDoctoral.dissertation.state === 1 ||
     }
   },
 };
