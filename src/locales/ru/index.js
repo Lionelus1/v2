@@ -1765,10 +1765,18 @@ export default {
     },
     helpDesk: {
         title: 'Мои заявки',
+        category:'Категории',
         creationTime: 'Время создания',
         priority: 'Приоритет',
         responsible: 'Ответственный',
         applicant: 'Заявитель',
+        active: 'Активный',
+        categoryKz:"Категория на казахском языке",
+        categoryRu:"Категория на русском языке",
+        categoryEn:"Категория на английском языке",
+        categoryCode: "Код категории",
+        activeCategory: "Активный/Не активный",
+        categoryLine:"Добавить линию",
         application: {
             applicationName: 'Заявки',
             requestReason: 'Направление Заявки',

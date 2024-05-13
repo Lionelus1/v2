@@ -9,50 +9,6 @@
   <TabView v-model:activeIndex="activeTab" @tab-change="tabChanged" class="flex flex-column flex-grow-1">
     <TabPanel :header="selectedDirection['name_' + locale]">
       <BlockUI  :blocked="loading" class="card">
-<!--        <div v-if="haveAccess && selectedDirection && selectedDirection.code !== 'course_application'">-->
-<!--            <div class="p-fluid md:col-6">-->
-<!--            <label>{{ t('helpDesk.application.categoryApplication') }}</label>-->
-<!--            <InputText type="text" v-model="selectedDirection['name_' + locale]" disabled />-->
-<!--          </div>-->
-<!--          <div v-if="selectedDirection && selectedDirection.code === 'office_booking'">-->
-<!--            <div class="p-fluid md:col-6">-->
-<!--              <label>{{ t('helpDesk.application.choseAudience') }}</label>-->
-<!--              <Dropdown v-model="choseAudience" optionLabel="name" optionValue="id" :placeholder="t('common.select')" />-->
-<!--            </div>-->
-<!--            <div class="p-fluid md:col-6">-->
-<!--              <label>{{ t('helpDesk.application.date') }}</label>-->
-<!--              <PrimeCalendar v-model="request.date_ranges" dateFormat="dd.mm.yy" :placeholder="t('common.select')" :monthNavigator="true"-->
-<!--                :yearNavigator="true" yearRange="1990:2050" />-->
-<!--            </div>-->
-<!--            <div class="p-fluid md:col-6">-->
-<!--              <label>{{ t('helpDesk.application.dateTime') }}</label>-->
-<!--              <PrimeCalendar id="calendar-timeonly" :placeholder="t('common.select')" v-model="request.dateTime" timeOnly />-->
-<!--            </div>-->
-<!--          </div>-->
-<!--          <div v-if="selectedDirection && selectedDirection.code === 'appointment'">-->
-<!--            <div class="p-fluid md:col-6">-->
-<!--              <label>{{ t('helpDesk.application.selectSpecialist') }}</label>-->
-<!--              <Dropdown v-model="specialization" optionLabel="name" optionValue="id" :placeholder="t('common.select')" />-->
-<!--            </div>-->
-<!--            <div class="p-fluid md:col-6">-->
-<!--              <label>{{ t('helpDesk.application.date') }}</label>-->
-<!--              <PrimeCalendar v-model="request.date_ranges" dateFormat="dd.mm.yy" :placeholder="t('common.select')" :monthNavigator="true"-->
-<!--                :yearNavigator="true" yearRange="1990:2050" />-->
-<!--            </div>-->
-<!--            <div class="p-fluid md:col-6">-->
-<!--              <label>{{ t('helpDesk.application.dateTime') }}</label>-->
-<!--              <PrimeCalendar id="calendar-timeonly" :placeholder="t('common.select')" v-model="request.dateTime" timeOnly />-->
-<!--            </div>-->
-<!--          </div>-->
-<!--          <div class="p-fluid md:col-6">-->
-<!--            <label>{{ t('helpDesk.application.description') }}</label>-->
-<!--            <Textarea class="mt-2" v-model="request.description_ru" autoResize rows="5" cols="30" />-->
-<!--          </div>-->
-<!--          <div class="p-fluid md:col-6">-->
-<!--            <label>{{ t('helpDesk.application.contactNumber') }}</label>-->
-<!--            <InputText class="mt-2" v-model="contactNumber" />-->
-<!--          </div>-->
-<!--        </div>-->
         <CourseRegistration :courseRequest="request" :validationRequest="validationRequest" @onCheckboxChecked="onChecked" @childInputData="childInput"
                             @validateInput="validateInput" v-if="selectedDirection && selectedDirection.code === 'course_application'" />
       </BlockUI>
@@ -61,6 +17,7 @@
               :style="{ width: '50vw' }">
         <ProgressBar v-if="approving" mode="indeterminate" style="height: .5em"/>
         <div class="p-fluid" v-if="stages">
+          {{selectedUsers}}
           <ApprovalUsers :approving="loading" v-model="selectedUsers" @closed="close('sendToApproveDialog')"
                          @approve="sendToApprove($event)"
                          :stages="stages" mode="standard"></ApprovalUsers>
@@ -441,7 +398,7 @@ const sendToApprove = (approvalUsers) => {
   service.helpDeskDocApproval(req).then(res => {
     approving.value = false
     loading.value = false
-    location.reload();
+    // location.reload();
 
   }).catch(err => {
     loading.value = false

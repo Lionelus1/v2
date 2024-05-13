@@ -31,4 +31,7 @@ export class HelpDeskService {
     helpDeskTicketForm(data){
         return api.post(`helpdesk/ticketForm`, data, {headers: getHeader()});
     }
+    helpDeskUpdateCategory(data) {
+        return api.post(`/helpdesk/updateTicket`, data, {headers: getHeader()})
+    }
 }

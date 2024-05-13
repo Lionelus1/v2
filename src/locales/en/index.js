@@ -1766,10 +1766,18 @@ export default {
     },
     helpDesk: {
         title: 'My applications',
+        category:'Categories',
         creationTime: 'Creation time',
         priority: 'Priority',
         responsible: 'Responsible',
         applicant: 'Applicant',
+        active: 'Active',
+        categoryKz:"Category in Kazakh",
+        categoryRu:"Category in Russian",
+        categoryEn:"Category in English",
+        categoryCode: "Category code",
+        activeCategory: "Active/Inactive",
+        categoryLine:"Add a line",
         application: {
             applicationName: 'Applications',
             requestReason: 'Sending the Application',

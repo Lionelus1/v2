@@ -567,28 +567,34 @@ const routes = [
             },
 
             {
-                path: '/helpdesk',
-                name: 'HelpDeskComponentV2',
-                component: load('helpDesk/v2/HelpDeskComponentV2'),
+                path: '/helpdesk/',
+                name: 'HelpDeskComponent',
+                component: load('helpDesk/HelpDeskComponent'),
                 beforeEnter: ifAuthenticated,
                 children: [
                     {
-                        path: '',
-                        name: 'DeskJournalV2',
-                        component: load('helpDesk/v2/DeskJournalV2'),
+                        path: 'deskJournal',
+                        name: 'DeskJournal',
+                        component: load('helpDesk/DeskJournal'),
                         beforeEnter: ifAuthenticated,
                     },
                     {
-                        path: '/request/:uuid',
-                        name: 'RequestV2',
-                        component: load('helpDesk/v2/RequestV2'),
+                        path: 'request/:uuid',
+                        name: 'Request',
+                        component: load('helpDesk/Request'),
                         beforeEnter: ifAuthenticated,
                     },
                     {
-                        path: '',
+                        path: 'create',
                         name: 'CreateCategory',
                         component: load('helpDesk/CreateCategory'),
-                        beforeEnter: ifNotAuthenticated
+                        beforeEnter: ifAuthenticated
+                    },
+                    {
+                        path: 'edit/:id',
+                        name: 'EditCategories',
+                        component: load('helpDesk/EditCategories'),
+                        beforeEnter: ifAuthenticated,
                     }
                 ]
             },

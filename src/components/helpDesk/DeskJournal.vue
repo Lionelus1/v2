@@ -466,7 +466,7 @@ const getCategory = () => {
       })
       .then((res) => {
         currentDocument.value = null;
-        directions.value = res.data.category
+        directions.value = res.data.category.filter(category => category.is_active)
         request.value.category = res.data.category.id;
       })
       .catch((err) => {

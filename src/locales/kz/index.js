@@ -1780,10 +1780,18 @@ export default {
     },
     helpDesk: {
         title: 'Менің өтінімдерім',
+        category:'Санаттар',
         creationTime: 'Құру уақыты',
         priority: 'Басымдық',
         responsible: 'Жауапты',
         applicant: 'Өтініш беруші',
+        active:'Белсенді',
+        categoryKz:"Қазақ тіліндегі санат",
+        categoryRu:"Орыс тіліндегі санат",
+        categoryEn:"Ағылшын тіліндегі санат",
+        categoryCode: "Санат коды",
+        activeCategory: "Белсенді/Белсенді Емес",
+        categoryLine:"Добавить линию",
         application: {
             applicationName: 'Өтінімдер',
             requestReason: 'Өтінімді Жолдау',
