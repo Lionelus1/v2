@@ -1,19 +1,6 @@
 <template>
   <div class="col-12">
-    <div v-if="plan">
-      <div style="display: inline-block;">
-        <div>
-          <TitleBlock :title="plan.work_plan_name" :show-back-button="true"/>
-        </div>
-      </div>&nbsp;
-      <div style="display: inline-block; position: relative;">
-
-        <div v-if="showMySign(plan.doc_info.approvalStages)" style="font-size: 1.1em; position: absolute; top: -18px; left: 0;">
-          <i v-if="greenMySign(plan.doc_info.approvalStages)" class="pi pi-verified" style="color: green; margin-top: -5px;"></i>
-          <i v-else class="fa-regular fa-pen-to-square" style="color:#2196f3"></i><br/>
-        </div>
-      </div>
-    </div>
+    <TitleBlock :title="plan?.work_plan_name" :show-back-button="true"/>
 
     <div class="card" v-if="plan && planDoc && isRejected">
       <div class="p-fluid">
