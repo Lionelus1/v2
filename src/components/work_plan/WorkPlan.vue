@@ -86,7 +86,7 @@
           </Dropdown>
         </div>-->
         <div class="field">
-          <Button icon="pi pi-search" :label="$t('common.search')" class="button-blue p-button-sm" @click="getPlans" />
+          <Button icon="pi pi-search" :label="$t('common.search')" class="button-blue p-button-sm" @click="initFilter"/>
           <Button icon="pi pi-trash" class="p-button-outlined p-button-sm mt-1" @click="clearFilter()" :label="$t('common.clear')" />
         </div>
       </div>
@@ -396,7 +396,7 @@ export default {
               return true
             }
           }
-  
+
           if (!stagePassed) {
             break
           }
@@ -425,7 +425,7 @@ export default {
               signed = false
             }
           }
-  
+
           if (!stagePassed) {
             break
           }

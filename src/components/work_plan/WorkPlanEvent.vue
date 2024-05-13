@@ -1,19 +1,6 @@
 <template>
   <div class="col-12">
-    <div v-if="plan">
-  <div style="display: inline-block;">
-    <div>
-      <TitleBlock :title="plan.work_plan_name" :show-back-button="true"/>
-    </div>
-  </div>&nbsp;
-  <div style="display: inline-block; position: relative;">
-
-    <div v-if="showMySign(plan.doc_info.approvalStages)" style="font-size: 1.1em; position: absolute; top: -18px; left: 0;">
-      <i v-if="greenMySign(plan.doc_info.approvalStages)" class="pi pi-verified" style="color: green; margin-top: -5px;"></i>
-      <i v-else class="fa-regular fa-pen-to-square" style="color:#2196f3"></i><br/>
-    </div>
-  </div>
-</div>
+    <TitleBlock :title="plan?.work_plan_name" :show-back-button="true"/>
 
     <div class="card" v-if="plan && planDoc && isRejected">
       <div class="p-fluid">
@@ -136,16 +123,7 @@
         </Column>
         <Column field="actions" header="">
           <template #body="{ node }">
-            <div v-if="!isFinish">
-              <ActionButton :items="initItems" :show-label="true" @toggle="actionsToggle(node)"/>
-            </div>
-            <div class="inline-flex">
-              <div v-if="!(selectedEvent && isPlanApproved && canExecuteEvent)">
-                <Button v-if="isFinish" class="p-button-text p-1 mr-2"  @click="openPlanExecuteSidebar(node)">
-                  <i class="fa-solid fa-address-book" style="font-size: 1.35em;"></i>
-                </Button>
-              </div>
-          </div>
+            <ActionButton :items="initItems" :show-label="true" @toggle="actionsToggle(node)"/>
           </template>
         </Column>
       </TreeTable>
@@ -1039,7 +1017,7 @@ export default {
       this.filters.name.value = searchText
       this.getEventsTree(null)
     },
-    respUserExists(id){
+    respUserExists(id) {
       return this.plan.responsive_users.some(user => user.id === id)
     },
     showMySign(approvalStages) {
@@ -1267,7 +1245,7 @@ export default {
     isFinshButtonDisabled() {
       return this.data && this.data.length > 0;
     },
-    isRespUser(){
+    isRespUser() {
       return this.plan && this.respUserExists(this.loginedUserId)
     },
   }
