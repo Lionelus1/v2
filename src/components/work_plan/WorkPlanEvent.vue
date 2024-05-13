@@ -780,9 +780,7 @@ export default {
               !(node.status.work_plan_event_status_id === 4 || node.status.work_plan_event_status_id === 6)) ||
           node.status.work_plan_event_status_id === 5 || node.status.work_plan_event_status_id === 2;
     },
-    openPlanExecuteSidebar(node) {
-      this.isCreator = node.creator_id === this.loginedUserId
-      this.selectedEvent = node
+    openPlanExecuteSidebar() {
       this.isShowPlanExecute = true;
     },
     closePlanExecuteSidebar() {
