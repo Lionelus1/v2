@@ -82,7 +82,7 @@
         <Column field="fullName" :header="isOperPlan ? $t('workPlan.summary') : $t('workPlan.approvalUsers')">
           <template #body="{ node }">
             <div v-if="node.user && node.user.length > 2">
-              <Button type="button" @click="showRespUsers($event, node)" class="p-button-text" icon="fa-solid fa-eye fa-xl" label=""/>
+              <Button type="button" @click="showRespUsers($event, node)" class="p-button-text" icon="fa-solid fa-people-group fa-xl" label=""/>
               <OverlayPanel ref="op" @hide="closeOverlay">
                 <p v-for="item in selectedEvent.user" :key="item.id">{{ item.user.fullName }}</p>
               </OverlayPanel>
