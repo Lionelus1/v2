@@ -298,9 +298,9 @@ export default {
        
         saveCertificateTemplate() {
           this.saving = true;
-          for (let i=0;i<this.template.params.length; i++) {
+          for (let i=0; i<this.template.params.length; i++) {
             if (this.template.params[i].name === 'text') {
-              let divHtml = this.$refs["template" + this.template.params[i].description].innerHTML;
+              let divHtml = this.$refs["template" + this.template?.params[i].description][0].innerHTML;
               divHtml = divHtml.replaceAll(this.smartEnuApi + this.fileRoute, "@fileservice")
               this.template.params[i].value = divHtml
             } 
