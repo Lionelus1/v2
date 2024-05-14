@@ -39,6 +39,11 @@
                         {{ slotProps.data.createdBy.fullName }}
                     </template>
                 </Column>
+              <Column field="history.modify_date" v-bind:header="$t('common.pDate')" sortable>
+                <template #body="{data}">
+                  {{ formatDate(data?.publish_date) }}
+                </template>
+              </Column>
               <Column field="history.modify_date" v-bind:header="$t('common.updated')" sortable>
                 <template #body="{data}">
                   {{ formatDate(data?.history?.modifyDate) }}

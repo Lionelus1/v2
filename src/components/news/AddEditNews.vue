@@ -164,15 +164,13 @@
 </template>
 
 <script>
-import * as imageResizeCompress from "image-resize-compress";
-import {formatDate, resizeImages} from "../../helpers/HelperUtil";
+import {formatDate} from "../../helpers/HelperUtil";
 import {NewsService} from "../../service/news.service";
 import {PosterService} from "../../service/poster.service";
 import {downloadRoute, fileRoute, getHeader, smartEnuApi} from "@/config/config";
 import Gallery from "@/components/Gallery.vue";
 import {FileService} from "@/service/file.service";
 import {EnuWebService} from "@/service/enu.web.service";
-import CustomFileUpload from "@/components/CustomFileUpload.vue";
 
 export default {
   name: "AddEditNews",
@@ -231,7 +229,7 @@ export default {
     getNewsById() {
       this.newsService.getNewsById(this.newsId).then(res => {
         this.newsData = res.data
-        this.newsData.publish_date = new Date(this.newsData.publish_date)
+        this.newsData.publish_date = new Date(this.newsData.publish_date.replace("Z", ""));
         this.poster = this.newsData.poster || {}
         if (this.poster) {
           this.poster.imageKkUrl = this.poster.imageKk ? smartEnuApi + fileRoute + this.poster.imageKk : ""
