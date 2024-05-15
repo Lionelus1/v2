@@ -359,31 +359,31 @@
             <TabPanel header="Қазақша">
                 <div class="field">
                     <label for="kz-title">{{ $t("common.nameInQazaq") }}</label>
-                    <InputText id="kz-title" v-model="announceData.titleTextKz"  rows="3"/>
+                    <InputText id="kz-title" v-model="announceData.title_text_kz"  rows="3"/>
                 </div>
                 <div class="field">
                     <label for="kz-content">{{ $t("common.contentInQazaq") }}</label>
-                    <TinyEditor v-model="announceData.announceTextKz"  :height="600" :custom-file-upload="true" @onAfterUpload="onAfterUpload"/>
+                    <TinyEditor v-model="announceData.announce_text_kz"  :height="600" :custom-file-upload="true" @onAfterUpload="onAfterUpload"/>
                 </div>
             </TabPanel>
             <TabPanel header="Русский">
               <div class="field">
                     <label for="ru-title">{{ $t("common.nameInRussian") }}</label>
-                    <InputText id="ru-title" v-model="announceData.titleTextRu" rows="3"/>
+                    <InputText id="ru-title" v-model="announceData.title_text_ru" rows="3"/>
                 </div>
                 <div class="field">
                     <label for="ru-content">{{ $t("common.contentInRussian") }}</label>
-                    <TinyEditor v-model="announceData.announceTextRu"  :height="600" :custom-file-upload="true" @onAfterUpload="onAfterUpload"/>
+                    <TinyEditor v-model="announceData.announce_text_ru"  :height="600" :custom-file-upload="true" @onAfterUpload="onAfterUpload"/>
                 </div>
             </TabPanel>
             <TabPanel header="English">
               <div class="field">
                     <label for="en-title">{{ $t("common.nameInEnglish") }}</label>
-                    <InputText id="en-title" v-model="announceData.titleTextEn" rows="3"/>
+                    <InputText id="en-title" v-model="announceData.title_text_en" rows="3"/>
                 </div>
                 <div class="field">
                     <label for="en-content">{{ $t("common.contentInEnglish") }}</label>
-                    <TinyEditor v-model="announceData.announceTextEn" :height="600" :custom-file-upload="true" @onAfterUpload="onAfterUpload"/>
+                    <TinyEditor v-model="announceData.announce_text_en" :height="600" :custom-file-upload="true" @onAfterUpload="onAfterUpload"/>
                 </div>
             </TabPanel>
         </TabView>
@@ -875,19 +875,18 @@ export default {
       memberList: [],
       dissertationID: null,
       announceData: {
-        titleTextKz: "",
-        titleTextRu: "",
-        titleTextEn: "",
-        announceTextKz: "",
-        announceTextRu: "",
-        announceTextEn:""
+        title_text_kz: "",
+        title_text_ru: "",
+        title_text_en: "",
+        announce_text_kz: "",
+        announce_text_ru: "",
+        announce_text_en:""
       }
     };
   },
   created() {
     this.councilID = Number(this.$route.params.id);
     this.getDoctorals();
-    this.generateAnnounce();
 
     var generator = require("generate-password");
 
@@ -900,7 +899,6 @@ export default {
   mounted() {
     this.getDissertationMember();
     this.getSecretary();
-    this.generateAnnounce();
 
   },
 
@@ -1168,7 +1166,7 @@ export default {
         )
         .then(response => {
           this.regInfo = response.data
-          console.log(this.regInfo)
+          //console.log(this.regInfo)
           if (this.regInfo.length > 0) {
             this.regInfoDetail = this.regInfo[0].members
           }
@@ -1205,12 +1203,8 @@ export default {
       }
       this.dissertationService.generateAnnounce(data).then(res => {
         if (res.data) {
-          this.announceData.titleTextKz = res.data.TitleTextKz
-          this.announceData.titleTextRu = res.data.TitleTextRu
-          this.announceData.titleTextEn = res.data.TitleTextEn
-          this.announceData.announceTextKz = res.data.AnnounceTextKz
-          this.announceData.announceTextRu = res.data.AnnounceTextRu
-          this.announceData.announceTextEn = res.data.AnnounceTextEn
+   
+          this.announceData = res.data;
         }
       }).catch(error => {
         if (error.response && error.response.status === 401) {
@@ -1238,7 +1232,7 @@ export default {
         );
 
         this.regInfo = response.data;
-        console.log(this.regInfo);
+        //console.log(this.regInfo);
 
         if (this.regInfo.length > 0) {
           this.regInfoDetail = this.regInfo[0].members;
@@ -1446,9 +1440,11 @@ export default {
       this.submitted = true;
       if (!this.validateSetMeetingTimeForm()) return;
       // this.loadCouncil();
-      this.generateAnnounce()
+      
       this.submitted = false;
       this.dialog.setMeetingTimeConfirm.state = true;
+
+      this.generateAnnounce()
     },
     setMeetingTime() {
       this.submitted = true;
