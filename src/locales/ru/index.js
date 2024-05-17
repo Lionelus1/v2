@@ -1792,5 +1792,17 @@ export default {
             enteredIncorrectly: 'Введен неправильно'
         },
 
-    }
+    },
+    telegram: {
+        question: 'Вопросы',
+        anwers: 'Ответы',
+        questionkz: 'введите вопрос на казахском',
+        questionen: 'введите вопрос на английском',
+        questionru: 'введите вопрос на русском',
+        anwerskz: 'введите ответ на казахском',
+        anwersen: 'введите ответ на английском',
+        anwersru: 'введите ответ на русском',
+        author: 'автор'
+    } 
+    
 }

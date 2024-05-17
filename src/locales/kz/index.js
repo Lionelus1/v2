@@ -1806,5 +1806,17 @@ export default {
             enteredIncorrectly: 'Қате енгіздіңіз'
         },
 
-    }
+    },
+    telegram: {
+        question: 'Сұрактар',
+        anwers: ':Жауаптар',
+        author: 'автор',
+
+        questionkz: 'сұрақты қазақша еңгізіңіз',
+        questionen: 'сұрақты ағылшынша еңгізіңіз',
+        questionru: 'сұрақты орысша еңгізіңіз',
+        anwerskz: 'жауапты қазақша еңгізіңіз',
+        anwersen: 'жауапты ағылшынша еңгізіңіз',
+        anwersru: 'жауапты орысша еңгізіңіз'
+        } 
 }

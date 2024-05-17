@@ -565,6 +565,13 @@ const routes = [
                 component: load('documents/certificates/Template'),
                 beforeEnter: ifAuthenticated,
             },
+            {
+                path: '/telegram',
+                name: 'CertificateTemplate',
+                component: load('telegram/Questions'),
+                beforeEnter: ifAuthenticated,
+            },
+            
 
             {
                 path: '/helpdesk',
