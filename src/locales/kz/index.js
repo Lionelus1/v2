@@ -956,7 +956,8 @@ export default {
         sendReportForSign: 'Есепті қол қоюға жіберу',
         doYouWantSendReport: "Бұл есепті қол қоюға жіберуге сенімдісіз бе?",
         videoValid: 'Тек YouTube платформасынан бейнелер жарайды',
-        reviewerCommentFieldWarning: 'Ресми рецензенттің пікірі қосылмаған'
+        reviewerCommentFieldWarning: 'Ресми рецензенттің пікірі қосылмаған',
+        event: 'Іс-шара'
     },
     faq: {
         title: "Қолдау қызметі",
