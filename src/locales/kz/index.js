@@ -1279,7 +1279,8 @@ export default {
         maxWordCount: "Мәтіннің ұзындығы 50-ден 250 сөзге дейін болуы керек",
         partiallyCompleted: "Жартылай орындалды",
         errorUpdatingStatus: "Күйді жаңарту қатесі",
-        operationCanceled: "Амалды жалғастыру тоқтатылды"
+        operationCanceled: "Амалды жалғастыру тоқтатылды",
+        rejectionMessage: "Бас тарту туралы хабарлама"
     },
     educomplex: {
         title: "Пәннің оқу-әдістемелік кешені",

@@ -124,9 +124,6 @@ export default {
     visibleSendToApprove() {
       return ((this.loginedUser && this.respUsers.some(user => user.id === this.loginedUser.userID)) || this.isPlanCreator) && (this.report && this.report.doc_info && (this.report.doc_info.docHistory.stateId === 1 || this.report.doc_info.docHistory.stateId === 4));
     },
-
-
-
   },
   created() {
     this.getReport();
@@ -325,9 +322,9 @@ export default {
           {
             stage: 1,
             users: [this.loginedUser],
-            titleRu: "",
-            titleKz: "",
-            titleEn: "",
+            titleRu: "Структурное подразделение",
+            titleKz: "Құрылымдық бөлім",
+            titleEn: "Structural department",
             certificate: {
               namekz: "Жеке тұлғаның сертификаты",
               nameru: "Сертификат физического лица",
@@ -338,9 +335,9 @@ export default {
           {
             stage: 2,
             users: [],
-            titleRu: "",
-            titleKz: "",
-            titleEn: "",
+            titleRu: "Начальник отдела стратегического планирования",
+            titleKz: "Стратегиялық жоспарлау бөлімінің бастығы",
+            titleEn: "Head of the Strategic Planning Department",
             certificate: {
               namekz: "Жеке тұлғаның сертификаты",
               nameru: "Сертификат физического лица",

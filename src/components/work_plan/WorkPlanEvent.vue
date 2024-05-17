@@ -1,8 +1,7 @@
 <template>
   <div class="col-12">
-    <h3 v-if="plan">
-      <TitleBlock :title="plan.work_plan_name" :show-back-button="true"/>
-    </h3>
+    <TitleBlock :title="plan?.work_plan_name" :show-back-button="true"/>
+
     <div class="card" v-if="plan && planDoc && isRejected">
       <div class="p-fluid">
         <div class="field">
@@ -83,7 +82,7 @@
         <Column field="fullName" :header="isOperPlan ? $t('workPlan.summary') : $t('workPlan.approvalUsers')">
           <template #body="{ node }">
             <div v-if="node.user && node.user.length > 2">
-              <Button type="button" @click="showRespUsers($event, node)" class="p-button-text" icon="fa-solid fa-eye fa-xl" label=""/>
+              <Button type="button" @click="showRespUsers($event, node)" class="p-button-text" icon="fa-solid fa-people-group fa-xl" label=""/>
               <OverlayPanel ref="op" @hide="closeOverlay">
                 <p v-for="item in selectedEvent.user" :key="item.id">{{ item.user.fullName }}</p>
               </OverlayPanel>
@@ -119,13 +118,12 @@
                 $i18n.locale === "kz" ? node.status.name_kz : $i18n.locale === "ru" ? node.status.name_ru :
                     node.status.name_en
               }}</span>
+
           </template>
         </Column>
         <Column field="actions" header="">
           <template #body="{ node }">
-            <div>
-              <ActionButton :items="initItems" :show-label="true" @toggle="actionsToggle(node)"/>
-            </div>
+            <ActionButton :items="initItems" :show-label="true" @toggle="actionsToggle(node)"/>
           </template>
         </Column>
       </TreeTable>
@@ -239,6 +237,7 @@ export default {
     return {
       data: [],
       Enum: Enum,
+      DocEnum: DocEnum,
       work_plan_id: parseInt(this.$route.params.id),
       searchText: null,
       lastEvent: null,
@@ -288,7 +287,6 @@ export default {
       isAdmin: false,
       isCreator: false,
       isApproval: false,
-      isPlanSentApproval: false,
       isEventsNull: false,
       isShowPlanExecute: false,
       showReportDoc: false,
@@ -373,13 +371,17 @@ export default {
       documentFiles: null,
       service: new DocService(),
       DocState: DocState,
-      filtered: false
+      filtered: false,
+      stages: []
     }
   },
   created() {
+
     this.isAdmin = this.findRole(null, 'main_administrator')
     this.getPlan();
     this.getEventsTree(null);
+    this.getWorkPlanApprovalUsers(this.work_plan_id)
+
   },
   mounted() {
     this.emitter.on('workPlanEventIsAdded', (data) => {
@@ -499,7 +501,6 @@ export default {
           }
           this.total = 0;
         }
-        // this.getWorkPlanApprovalUsers();
         this.loading = false;
       }).catch(error => {
         if (error.response && error.response.status === 401) {
@@ -520,16 +521,13 @@ export default {
     getWorkPlanApprovalUsers() {
       this.planService.getWorkPlanApprovalUsers(parseInt(this.work_plan_id)).then(res => {
         if (res.data) {
-          this.approval_users = res.data;
-          this.isPlanSentApproval = true;
-          this.approval_users.forEach(e => {
-            if (this.loginedUserId === e.user.id) {
+          res?.data?.forEach(e => {
+            if (this.loginedUserId === e.id) {
               this.isApproval = true;
             }
           });
         } else {
           this.isApproval = false;
-          this.isPlanSentApproval = false;
         }
       }).catch(error => {
         if (error.response && error.response.status === 401) {
@@ -610,6 +608,7 @@ export default {
             }
           ];
           this.getRelatedFiles()
+          this.getWorkPlanApprovalUsers(this.work_plan_id)
         }
       }).catch(error => {
         if (error.response && error.response.status === 401) {
@@ -1016,7 +1015,66 @@ export default {
     initSearch(searchText) {
       this.filters.name.value = searchText
       this.getEventsTree(null)
-    }
+    },
+    respUserExists(id) {
+      return this.plan.responsive_users.some(user => user.id === id)
+    },
+    showMySign(approvalStages) {
+      try {
+        for (let i in approvalStages) {
+          let stage = approvalStages[i]
+          let stagePassed = true
+
+          for (let j = 0; j < stage.users.length; j++) {
+            if (stage.usersApproved[j] < 1) {
+              stagePassed = false
+            }
+
+            if (stage.users[j].userID === this.loginedUserId) {
+              return true
+            }
+          }
+
+          if (!stagePassed) {
+            break
+          }
+        }
+      } catch (e) {
+        console.log(e)
+        return false
+      }
+
+      return false
+    },
+    greenMySign(approvalStages) {
+      let signed = true
+
+      try {
+        for (let i in approvalStages) {
+          let stage = approvalStages[i]
+          let stagePassed = true
+
+          for (let j = 0; j < stage.users.length; j++) {
+            if (stage.usersApproved[j] < 1) {
+              stagePassed = false
+            }
+
+            if (stage.users[j].userID === this.loginedUserId && stage.usersApproved[j] < 1) {
+              signed = false
+            }
+          }
+
+          if (!stagePassed) {
+            break
+          }
+        }
+      } catch (e) {
+        console.log(e)
+        return signed
+      }
+
+      return signed
+    },
   },
   /*unmounted() {
     localStorage.removeItem("workPlan");
@@ -1182,7 +1240,13 @@ export default {
           }
         }
       ]
-    }
+    },
+    isFinshButtonDisabled() {
+      return this.data && this.data.length > 0;
+    },
+    isRespUser() {
+      return this.plan && this.respUserExists(this.loginedUserId)
+    },
   }
 }
 </script>
@@ -1227,6 +1291,5 @@ export default {
     background: #C8E6C9;
     color: #256029;
   }
-
 }
 </style>
