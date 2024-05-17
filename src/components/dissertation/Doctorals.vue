@@ -16,7 +16,7 @@
         <template #end>
           <Button v-if="findRole(null, 'dissertation_council_secretary')" isSecretary icon="pi pi-plus"
             class="p-button-success mr-2" @click="showAddCouncilDialog()" />
-          <Button :disabled="!selectedDoctoral" icon="pi pi-pen-to-square" class="mr-2" severity="help"
+          <Button v-if="isAdmin" :disabled="!selectedDoctoral" icon="pi pi-pen-to-square" class="mr-2" severity="help"
             @click="showDialog(dialog.editDissertation)" v-tooltip.top="$t('common.edit')" />
           <Button v-if="canShowUpdateDoctoral" :disabled="!selectedDoctoral" icon="pi pi-pencil" class="mr-2"
             @click="showDialog(dialog.updateDoctoral)" v-tooltip.top="$t('common.edit')" />
@@ -718,8 +718,7 @@
         </template>
       </Dialog>
       <!-- Editing -->
-      <Dialog v-if="dialog.editDissertation.state && selectedDoctoral" v-model:visible="dialog.editDissertation.state"
-        :refresh="dialog.editDissertation.refresh" :style="{ width: '600px' }" :header="selectedDoctoral.user.fullName"
+      <Dialog v-if="dialog.editDissertation.state && selectedDoctoral" v-model:visible="dialog.editDissertation.state"  :style="{ width: '600px' }" :header="selectedDoctoral.user.fullName"
         :modal="true" :maximizable="true" class="p-fluid">
         <div class="grid formgrid">
           <div class="col-12 pb-2 lg:col-12 mb-lg-0">
@@ -1150,6 +1149,7 @@ export default {
       },
       isValidYoutubeLink: true,
       docService: new DocService(),
+      isAdmin: false,
     };
   },
   created() {
@@ -1163,6 +1163,7 @@ export default {
       length: 10,
       numbers: true,
     });
+    this.isAdmin = this.findRole(null, 'main_administrator')
   },
   mounted() {
     this.getDissertationMember();
@@ -2037,7 +2038,8 @@ export default {
     },
     isReviewerCommentFileMissing() {
       return ((this.selectedDoctoral && this.selectedDoctoral.dissertation && this.selectedDoctoral.dissertation.state === 1) && (this.selectedDoctoral.dissertation.reviewer1CommentFile === null || this.selectedDoctoral.dissertation.reviewer2CommentFile == null)) //this.selectedDoctoral.dissertation.state === 1 ||
-    }
+    },
+   
   },
 
 };
