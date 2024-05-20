@@ -1239,7 +1239,9 @@ export default {
         partiallyCompleted: "Partially completed",
         errorUpdatingStatus: "Error updating status",
         operationCanceled: "Action  canceled",
-        rejectionMessage: "Rejection message"
+        rejectionMessage: "Rejection message",
+        summaryDepartment: "Converging structural unit",
+        warnAddingSummaryUser: "You cannot add a user selected in the «Summary structural department» field to the «Summary/Confirmation» field."
     },
     queue: {
 
