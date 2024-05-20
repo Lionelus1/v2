@@ -1777,6 +1777,7 @@ export default {
         categoryCode: "Код категории",
         activeCategory: "Активный/Не активный",
         categoryLine:"Добавить линию",
+        createCategory:"Создать новую категорию",
         application: {
             applicationName: 'Заявки',
             requestReason: 'Направление Заявки',

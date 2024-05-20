@@ -1778,6 +1778,7 @@ export default {
         categoryCode: "Category code",
         activeCategory: "Active/Inactive",
         categoryLine:"Add a line",
+        createCategory:"Create a new category",
         application: {
             applicationName: 'Applications',
             requestReason: 'Sending the Application',

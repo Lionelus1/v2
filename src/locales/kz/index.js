@@ -1791,7 +1791,8 @@ export default {
         categoryEn:"Ағылшын тіліндегі санат",
         categoryCode: "Санат коды",
         activeCategory: "Белсенді/Белсенді Емес",
-        categoryLine:"Добавить линию",
+        categoryLine:"Линия қосу",
+        createCategory:"Жаңа санат құру",
         application: {
             applicationName: 'Өтінімдер',
             requestReason: 'Өтінімді Жолдау',

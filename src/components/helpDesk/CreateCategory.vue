@@ -1,6 +1,7 @@
 <template>
   <div class="col-12">
     <TitleBlock :title="t('helpDesk.category')"/>
+    <ToolbarMenu :data="mainMenu"/>
     <div class="card">
       <DataTable :lazy="true" :value="categories" dataKey="id" :loading="loading" responsiveLayout="scroll"
                  :rowHover="true">
@@ -43,6 +44,7 @@ import {useToast} from "primevue/usetoast";
 import {useRouter} from "vue-router";
 import {useConfirm} from "primevue/useconfirm";
 import {HelpDeskService} from "../../service/helpdesk.service";
+import EditCategories from "./EditCategories.vue";
 
 const {t, locale} = useI18n()
 const toast = useToast()
@@ -69,6 +71,18 @@ const initItems = computed(() => {
     }
   ];
 })
+
+const mainMenu = computed(() => [
+  {
+    label: t('helpDesk.createCategory'),
+    icon: "fa-solid fa-plus",
+    command: () => createNewCategory(),
+  }
+]);
+
+const createNewCategory = () => {
+  router.push({name: 'AddCategories'});
+}
 
 const toggle = (data) => {
   request.value = data

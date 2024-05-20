@@ -4,7 +4,7 @@
     <ToolbarMenu :data="menu"/>
 
     <div class="card">
-      <h4 style="margin-bottom: 15px">Первая линия</h4>
+      <h4 style="margin-bottom: 15px">Линия</h4>
       <div class="field" style="padding-right: 915px">
         <label>{{ t("common.organizationNameLabel") }}</label>
         <Dropdown disabled class="w-full mr-2" v-model="selectedOrganization" :options="userOrganizations"
@@ -40,7 +40,8 @@
 <!--              <Button class="toggle-button">{{ t('helpDesk.categoryLine') }}-->
 <!--              </Button>-->
 <!--            </div>-->
-      <div style="margin-top: 40px" class="field">
+      <h4 style="margin-top: 30px">Категория</h4>
+      <div style="margin-top: 10px" class="field">
         <label>{{ t('helpDesk.categoryKz') }}<span
             style="font-size: 20px; color: red;">*</span></label>
         <!-- :disabled="!!responseUserData.fullName" -->
@@ -71,7 +72,7 @@
       <div class="field">
         <label>{{ t('helpDesk.activeCategory') }}<span
             style="font-size: 20px; color: red;">*</span></label>
-        <InputSwitch v-model="categoryData.isActive" @change="toggleCategory"/>
+        <InputSwitch v-model="categoryData.isActive"/>
       </div>
     </div>
   </div>
@@ -119,6 +120,9 @@ const categoryData = ref({
   nameRu: null,
   nameEn: null
 })
+const categoryLineRole = ref(null)
+const categoryLineDepartment = ref(null)
+const categoryLineId = ref(null)
 const menu = computed(() => [
   {
     label: t("common.save"),
@@ -127,19 +131,27 @@ const menu = computed(() => [
   }
 ]);
 
+
 const saveData = () => {
-  saveCategoryLine()
   saveCategory()
 }
 
 const saveCategoryLine = () => {
   let req = {
-    id: null,
-    categoryId: categoryData.value.id,
-    department_id: selectedDepartment.value?.id || null,
-    position_id: role.value?.id || null
+    id: Number(categoryLineId.value) || null,
+    category_id: Number(categoryData.value.id) || null,
+    department_id: Number(selectedDepartment.value?.id) || null,
+    role_id: Number(role.value?.id) || null
   }
-  console.log(req)
+  service.helpDeskUpdateCategoryLine(req).then(() => {
+
+  }).catch((err) => {
+    toast.add({
+      severity: "error",
+      summary: t('common.message.actionError'),
+      life: t('common.message.actionErrorContactAdmin'),
+    })
+  })
 }
 const saveCategory = () => {
   request.value = {
@@ -147,13 +159,18 @@ const saveCategory = () => {
     name_kz: categoryData.value.nameKz,
     name_ru: categoryData.value.nameRu,
     name_en: categoryData.value.nameEn,
-    code: categoryData.value.code
+    code: categoryData.value.code,
+    is_active:categoryData.value.isActive
   }
-  // service.helpDeskUpdateCategory(request.value).then(() => {
-  // }).catch((err) => {
-  //   console.log(err)
-  // })
-  console.log(request.value);
+  service.helpDeskUpdateCategory(request.value).then((res) => {
+    if (!categoryData.value.id){
+      categoryData.value.id = res.data.id
+    }
+    saveCategoryLine()
+    router.back()
+  }).catch((err) => {
+    console.log(err)
+  })
 }
 
 const input = () => {
@@ -205,7 +222,7 @@ const getDepartment = () => {
     headers: getHeader()
   }).then(res => {
     departments.value = res.data.departments;
-
+    selectedDepartment.value = departments.value.find(item => item.id === categoryLineDepartment.value)
     loading.value = false;
   }).catch(err => {
     departments.value = []
@@ -229,9 +246,10 @@ const getDepartment = () => {
   });
 }
 
-const getRoles = () => {
-  roleControlService.getRoles(2).then(response => {
+const getRoles = async () => {
+  await roleControlService.getRoles(2).then(response => {
     roles.value = response.data
+    role.value = roles.value.find(item => item.id === categoryLineRole.value);
   }).catch(error => {
     toast.add({
       severity: "error",
@@ -286,26 +304,53 @@ const handleFilterDepartment = (event) => {
     handleSelectionChange()
   }
 }
-
-const getCategory = () => {
-  service.helpDeskCategoryGet(
+const getCategoryLine = () => {
+  service.helpDeskGetCategoryLine(
       {
-        ID: Number(categoryId.value),
-        SearchText: null,
-        Page: 0,
-        Rows: 10,
-      })
-      .then((res) => {
-        categoryData.value.id = res.data.category[0].id
-        categoryData.value.nameKz = res.data.category[0].name_kz
-        categoryData.value.nameRu = res.data.category[0].name_ru
-        categoryData.value.nameEn = res.data.category[0].name_en
-        categoryData.value.code = res.data.category[0].code
-        categoryData.value.isActive = res.data.category[0].is_active
-      })
-      .catch((err) => {
-        console.log(err)
-      });
+        id: Number(categoryId.value)
+      }
+  ).then(res => {
+    categoryLineRole.value = res.data.category_line[1].role_id
+    categoryLineDepartment.value = res.data.category_line[1].department_id
+    categoryLineId.value = res.data.category_line[1].id
+    selectedDepartment.value = departments.value.find(item => item.id === categoryLineDepartment.value)
+    role.value = roles.value.find(item => item.id === categoryLineRole.value);
+  }).catch(error => {
+    toast.add({
+      severity: "error",
+      summary: error,
+      life: 3000,
+    })
+  })
+}
+const getCategory = () => {
+  if (categoryId.value) {
+    service.helpDeskCategoryGet(
+        {
+          ID: Number(categoryId.value),
+          SearchText: null,
+          Page: 0,
+          Rows: 10,
+        })
+        .then((res) => {
+          categoryData.value.id = res.data.category[0].id
+          categoryData.value.nameKz = res.data.category[0].name_kz
+          categoryData.value.nameRu = res.data.category[0].name_ru
+          categoryData.value.nameEn = res.data.category[0].name_en
+          categoryData.value.code = res.data.category[0].code
+          categoryData.value.isActive = res.data.category[0].is_active
+        })
+        .catch(error => {
+          toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          })
+        })
+  }
+  getCategoryLine();
+  getOrganizations();
+  getRoles();
 };
 
 const toggleCategory = () => {
@@ -313,15 +358,15 @@ const toggleCategory = () => {
     id: categoryData.value.id,
     is_active: categoryData.value.isActive
   }
+
+
 }
 
 onMounted(() => {
-  currentUser.value = JSON.parse(localStorage.getItem("loginedUser"))
-  categoryId.value = route.params.id
-  getCategory();
-  getOrganizations()
-  getRoles()
+  currentUser.value = JSON.parse(localStorage.getItem("loginedUser"));
+    getCategory();
 })
+
 </script>
 
 <style scoped>

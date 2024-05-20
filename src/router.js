@@ -595,6 +595,12 @@ const routes = [
                         name: 'EditCategories',
                         component: load('helpDesk/EditCategories'),
                         beforeEnter: ifAuthenticated,
+                    },
+                    {
+                        path: 'add',
+                        name: 'AddCategories',
+                        component: load('helpDesk/EditCategories'),
+                        beforeEnter: ifAuthenticated,
                     }
                 ]
             },

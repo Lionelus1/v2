@@ -488,7 +488,7 @@ const createHelpDesk = () => {
         router.push({name: 'Request', params: {uuid: uuid.value}});
         // router.push({ name: 'Request', params: { uuid: uuid.value, isCreated: 1}, query: {selectedPosition: JSON.stringify(selectedPosition.value.code)}});
       }).catch(err => {
-    if (err.response && err.response.status == 401) {
+    if (err.response && err.response.status == 401) {r
       store.dispatch("logLout");
     } else if (err.response && err.response.data && err.response.data.localized) {
       showMessage('error', t(err.response.data.localizedPath), null);
