@@ -8,16 +8,92 @@
   <ToolbarMenu v-if="request" :data="menu"/>
   <TabView v-model:activeIndex="activeTab" @tab-change="tabChanged" class="flex flex-column flex-grow-1">
     <TabPanel :header="selectedDirection['name_' + locale]">
-      <BlockUI  :blocked="loading" class="card">
-        <CourseRegistration :courseRequest="request" :validationRequest="validationRequest" @onCheckboxChecked="onChecked" @childInputData="childInput"
-                            @validateInput="validateInput" v-if="selectedDirection && selectedDirection.code === 'course_application'" />
+      <BlockUI :blocked="loading" class="card">
+        <div style="margin-left: 15px;" v-if="request.doc?.docHistory">
+          <p> {{ t('common.state') + ": " }}
+            <span :class="'customer-badge status-' + request.doc?.docHistory?.stateEn">
+        {{ getDocStatus(request.doc?.docHistory?.stateEn) }}
+      </span>
+          </p>
+          <div
+              v-if="request.doc?.docHistory?.stateEn === 'revision' || request.doc?.docHistory?.stateEn === 'rejected' ">
+            <label>{{ $t('common.comment') }}:</label>
+            <div>
+              <Message style="width: 150px;" :closable="false"
+                       v-if="request.doc != null && request.doc?.docHistory != null && request.doc?.docHistory != null"
+                       severity="warn">
+                {{ request.doc?.docHistory?.comment }}
+              </Message>
+            </div>
+          </div>
+        </div>
+        <BlockUI style="margin-top: 10px"
+                 v-if="findRole(null, 'student') || request.doc?.newParams?.not_formal_education_ids">
+          <div>
+            <div class="mb-3" style="display: flex; justify-content: space-between; margin-bottom: 20px">
+              <div class="buttonLanguag">
+                <Button class="toggle-button" @click="toggleRegistration">{{
+                    t('helpDesk.application.chooseDiscipline')
+                  }}
+                </Button>
+              </div>
+              <span class="p-input-icon-left mr-2 position-relative" v-if="showRegistration && request ">
+            <i class="pi pi-search position-absolute" style="top: 15px"/>
+    <InputText
+        type="search"
+        v-model="searchText"
+        :placeholder="t('common.search')"
+        @keyup.enter="getCourse"
+    />
+    <Button
+        icon="pi pi-search"
+        class="p-ml-1"
+        @click="getCourse"
+    />
+    </span>
+            </div>
+            <DataTable v-if="showRegistration && request" :lazy="true" :rowsPerPageOptions="[5, 10, 20, 50]"
+                       :value="data" dataKey="id"
+                       :rowHover="true" filterDisplay="menu" responsiveLayout="scroll" :paginator="true" stripedRows
+                       class="p-datatable-sm" :rows="total >= 10 ? 10 : total" :totalRecords="total" @page="onPage"
+                       v-model:selection="currentDocument"
+                       scrollable scrollHeight="flex" @lazy="true">
+              <template #empty> {{ t('common.noData') }}</template>
+              <Column v-for="(column, index) in columns" :key="index" :field="column.field" :header="t(column.header)"
+                      :style="column.style">
+                <template #body="{ data }">
+                  <Checkbox v-if="column.field === 'checkbox'"
+                            :disabled="isDisabled(data) || isAdmin || (request.doc?.docHistory?.stateId == DocEnum.INAPPROVAL.ID)"
+                            v-model="data.checked" :binary="true" @change="checkBoxSelect(data)" style="margin-left: 20px;"/>
+                  <a v-else href="javascript:void(0)">{{ getColumnValue(data, column) }}</a>
+                </template>
+              </Column>
+            </DataTable>
+          </div>
+        </BlockUI>
+        <div>
+
+          <div v-for="field in formFields" :key="field.key" class="field" style="margin-top: 10px;">
+            <label>{{
+                $i18n.locale === "kz" ? field.name_kz : $i18n.locale === "ru" ? field.name_ru :
+                    field.name_en
+              }} <span v-if="isCurrentUserSender"
+                       style="font-size: 20px; color: red;">*</span></label>
+            <InputText v-model="field.model" :type="field.type" :placeholder="$i18n.locale === 'kz' ? field.name_kz : $i18n.locale === 'ru' ? field.name_ru :
+      field.name_en" :disabled="disabledStatus"
+                       @input="input"/>
+<!--            <div v-if="field.validation && validateInput[field.key]" style="color: red; margin-top: 5px">-->
+<!--              {{ t('helpDesk.application.enteredIncorrectly') }}-->
+<!--            </div>-->
+          </div>
+
+        </div>
       </BlockUI>
       <!-- sendToApproveDialog -->
       <Dialog :header="t('common.action.sendToApprove')" v-model:visible="visibility.sendToApproveDialog"
               :style="{ width: '50vw' }">
         <ProgressBar v-if="approving" mode="indeterminate" style="height: .5em"/>
         <div class="p-fluid" v-if="stages">
-          {{selectedUsers}}
           <ApprovalUsers :approving="loading" v-model="selectedUsers" @closed="close('sendToApproveDialog')"
                          @approve="sendToApprove($event)"
                          :stages="stages" mode="standard"></ApprovalUsers>
@@ -65,21 +141,22 @@
 
 <script setup>
 import ToolbarMenu from "@/components/ToolbarMenu.vue";
-import {HelpDeskService} from "../../service/helpdesk.service";
+import {HelpDeskService} from "../../../service/helpdesk.service";
 import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers";
 import {ref, computed, onMounted} from 'vue';
 import {useI18n} from "vue-i18n";
 import {useToast} from "primevue/usetoast";
 import {useStore} from "vuex";
 import {useRouter, useRoute} from "vue-router";
-import CourseRegistration from "./CourseRegistration.vue";
+import CourseRegistration from "./CourseRegistrationV2.vue";
 import {b64toBlob} from "@/config/config";
-import {downloadFile, findRole} from "../../config/config";
+import {getHeader, findRole,smartEnuApi} from "../../../config/config";
 import {DocService} from "@/service/doc.service";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo.vue";
 import DocEnum from "@/enum/docstates/index";
 import {ContragentService} from "@/service/contragent.service";
-import ConsultationManager from "./ConsultationManager.vue";
+import ConsultationManager from "./ConsultationManagerV2.vue";
+import axios from "axios";
 
 // Переменные для работы с i18n, хранилищем, уведомлениями и маршрутизацией ↓
 const {t, locale} = useI18n()
@@ -108,15 +185,8 @@ const rejectedText = ref(null)
 const stages = ref([]);
 const description = ref(null)
 const changed = ref(false)
-const selectedCourses = ref(null)
 const isSend = ref(false)
-const choseAudience = ref(null);
-const specialization = ref(null);
-const contactNumber = ref(null);
 const category = ref(null);
-const directions = ref(null);
-const selectedCell = ref(null);
-const selectedDateTime = ref(null);
 const selectedDirection = ref({
   name_ru: null,
   name_kz: null,
@@ -129,7 +199,12 @@ const validation = ref({})
 const approving = ref(false)
 const loading = ref(false)
 const haveAccess = ref(true);
-const selectResponse = ref(null);
+const columnsArray = ref([
+  { field: 'checkbox', header: 'course.disciplineCode'},
+  { field: 'name', header: 'course.disciplineCode' },
+  { field: 'description', header: 'course.disciplineName'},
+  { field: 'credit', header: 'helpDesk.application.credits'}
+])
 const visibility = ref({
   documentInfoSidebar: false,
   revisionDialog: false,
@@ -198,13 +273,59 @@ const currentUser = ref(JSON.parse(localStorage.getItem("loginedUser")));
 const pdf = ref(null)
 const activeTab = ref(0)
 const isAdmin = ref(false)
+
+
+const formFields = ref({
+  // key: null,
+  // type: null,
+  // name_kz: null, // use empty string as default value
+  // name_ru: null,
+  // name_en: null,
+  // model: null,
+  // validation: null
+});
+
+const isCurrentUserSender = computed(() => {
+  return ((currentUser.value?.userID == request.value.sender_id && (request.value.doc.docHistory == null)) || request.value.doc?.docHistory?.stateId == DocEnum.REVISION.ID)
+})
+const responseUserData = ref({
+  fullName: null,
+  speciality: null,
+  group: null,
+  course: null,
+  phone: null,
+  email: null
+})
+const searchText = ref(null)
+const data = ref(null);
+const selectedIds = ref(request.value.doc?.newParams && request.value.doc?.newParams.not_formal_education_ids ? request.value.doc?.newParams.not_formal_education_ids.value : []);
+const lazyParams = ref({
+  page: 0,
+  rows: 10,
+});
+const total = ref(0);
+const currentDocument = ref(null);
+const checked = ref(null);
+const maxChecked = 25;
+const filter = ref({
+  applied: false,
+  name: null,
+  author: [],
+  status: null,
+  years: [],
+});
+const showRegistration = ref(false);
+currentUser.value = JSON.parse(localStorage.getItem("loginedUser"));
+const disabledStatus = computed(() => {
+  return !(currentUser.value?.userID == request.value.sender_id) || request.value.doc?.docHistory?.stateId == DocEnum.INAPPROVAL.ID || request.value.doc?.docHistory?.stateId == DocEnum.REJECTED.ID
+})
 // Меню для кнопок
 const menu = computed(() => [
   {
     label: t("common.save"),
     icon: "pi pi-fw pi-save",
-    disabled: !isUserDataVaild() || (request.value.doc?.docHistory?.stateId != DocEnum.CREATED.ID &&
-        request.value.doc?.docHistory?.stateId != DocEnum.REVISION.ID && request.value.doc?.docHistory?.stateId != null),
+    // disabled: !isUserDataVaild() || (request.value.doc?.docHistory?.stateId != DocEnum.CREATED.ID &&
+    //     request.value.doc?.docHistory?.stateId != DocEnum.REVISION.ID && request.value.doc?.docHistory?.stateId != null),
     command: saveDocument
   },
 
@@ -337,24 +458,11 @@ const close = (name) => {
   visibility.value[name] = false;
 };
 
-const childConsultationInput = (data) => {
-  userData.value = data
-}
 const validationConsultation = (data) => {
   validation.value = data
 }
 
-const childInput = (data) => {
-  userData.value = data
-}
-const validateInput = (data) => {
-  validation.value = data
-}
-
 // Запросы на бэкенд
-const onChecked = (data) => {
-  selectedCourses.value = data
-}
 const helpDeskTicketGet = () => {
   loading.value = true
   service.helpDeskTicketGet({
@@ -369,12 +477,10 @@ const helpDeskTicketGet = () => {
         selectedDirection.value = res.data.ticket[0].category;
         loading.value = false
         getTicketForm()
+        getCourse();
       })
       .catch((err) => {
         loading.value = false
-        if (err.response.status == 401) {
-          store.dispatch('logLout');
-        }
         toast.add({
           severity: 'error',
           detail: t('common.message.saveError'),
@@ -398,7 +504,7 @@ const sendToApprove = (approvalUsers) => {
   service.helpDeskDocApproval(req).then(res => {
     approving.value = false
     loading.value = false
-    // location.reload();
+    location.reload();
 
   }).catch(err => {
     loading.value = false
@@ -411,59 +517,66 @@ const sendToApprove = (approvalUsers) => {
   });
 };
 const saveDocument = () => {
-  if (validation.value.phone || validation.value.email) {
-    showMessage('warn', t('helpDesk.application.inputErrorMessage'), null)
-    validationRequest.value = validation.value
-    return
-  }
-  validationRequest.value = validation.value
+  // if (validation.value.phone || validation.value.email) {
+  //   showMessage('warn', t('helpDesk.application.inputErrorMessage'), null)
+  //   validationRequest.value = validation.value
+  //   return
+  // }
+  // validationRequest.value = validation.value
 
 
   let student = null
 
   if (selectedDirection.value.code === 'course_application') {
     if (request.value.doc.newParams) {
-      if (findRole(null, "student")) {
-        request.value.doc.newParams.not_formal_education_ids.value = selectedCourses.value
-      }
-
-      request.value.doc.newParams.not_formal_student_info.value = userData.value
-      request.value.doc.newParams.lang.value = lang.value
-      // request.value.doc.newParams.selectedPosition = selectedPosition.value
-      request.value.is_saved = 1
-
-      service.helpDeskTicketCreate(request.value)
-          .then(res => {
-            isSaved.value = true
-            changed.value = false;
-            request.value = res.data
-          }).catch(err => {
-        if (err.response && err.response.status == 401) {
-          store.dispatch("logLout")
-        } else if (err.response && err.response.data && err.response.data.localized) {
-          showMessage('error', t(err.response.data.localizedPath), null)
-        }
-      });
-      isSend.value = true;
+      // if (findRole(null, "student")) {
+      //   request.value.doc.newParams.not_formal_education_ids.value = selectedIds.value
+      // }
+      //
+      // formFields.value.forEach(field => {
+      //   request.value.doc.newParams.not_formal_student_info.value = field.model
+      // });
+      //
+      // request.value.doc.newParams.lang.value = lang.value
+      // // request.value.doc.newParams.selectedPosition = selectedPosition.value
+      // request.value.is_saved = 1
+      //
+      // service.helpDeskTicketCreate(request.value)
+      //     .then(res => {
+      //       isSaved.value = true
+      //       changed.value = false;
+      //       request.value = res.data
+      //     }).catch(err => {
+      //   if (err.response && err.response.status == 401) {
+      //     store.dispatch("logLout")
+      //   } else if (err.response && err.response.data && err.response.data.localized) {
+      //     showMessage('error', t(err.response.data.localizedPath), null)
+      //   }
+      // });
+      // isSend.value = true;
     } else {
       request.value.doc.newParams = {}
       if (findRole(null, "student")) {
         let param = {
-          value: selectedCourses.value,
+          value: selectedIds.value,
           name: "not_formal_education_ids"
         }
         request.value.doc.newParams['not_formal_education_ids'] = param
       }
+      let paramForm = {}
+      formFields.value.forEach(field => {
+        paramForm[field.code] = field.model
+      });
 
       let paramInfo = {
-        value: userData.value,
+        value: paramForm,
         name: "not_formal_student_info"
       }
-
       let paramLang = {
         value: lang.value,
         name: "lang"
       }
+
 
       request.value.doc.newParams['selectedPosition'] = {
         value: selectedPosition.value,
@@ -494,7 +607,7 @@ const saveDocument = () => {
       request.value.doc.newParams = {}
 
       let param = {
-        value: userData.value,
+        value: formFields.value.model,
         name: "consultation"
       }
 
@@ -521,14 +634,6 @@ const saveDocument = () => {
     }
   }
 };
-const getTicketForm = () => {
-  let req = {
-    Id: request.value.category.id
-  }
-  service.helpDeskTicketForm(req).then((res) => {
-    console.log(res.data)
-  })
-}
 
 
 const downloadContract = () => {
@@ -555,53 +660,32 @@ const downloadContract = () => {
     }
   })
 }
-const isUserDataVaild = () => {
-  if (selectedDirection.value.code === 'course_application') {
-    if (findRole(null, "student")) {
-      if (
-          userData.value !== null &&
-          userData.value.fullName &&
-          userData.value.speciality &&
-          userData.value.course &&
-          userData.value.email &&
-          userData.value.phone &&
-          selectedCourses.value &&
-          selectedCourses.value.length > 0
-      ) {
-        return true;
-      } else {
-        return false;
-      }
-    } else {
-      if (
-          userData.value !== null &&
-          userData.value.discipline &&
-          userData.value.fullName &&
-          userData.value.speciality &&
-          userData.value.course &&
-          userData.value.email &&
-          userData.value.phone
-      ) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-  } else if (selectedDirection.value.code === 'appointment' || selectedDirection.value.code === 'office_booking') {
-    if (
-        userData.value !== null &&
-        userData.value.specialization &&
-        userData.value.dateTime &&
-        userData.value.phone &&
-        userData.value.description
-    ) {
-      return true;
-    } else {
-      return false;
-    }
-  }
+// const isUserDataVaild = () => {
+//   if (selectedDirection.value.code === 'course_application') {
+//     if (findRole(null, "student")) {
+//       for (let field of formFields.value){
+//         if (field.model[field.code]){
+//           return true;
+//         }
+//       }
+//       return false
+//     }
+//   } else if (selectedDirection.value.code === 'appointment' || selectedDirection.value.code === 'office_booking') {
+//     if (
+//         formFields.value.model !== null &&
+//         formFields.value.model.specialization &&
+//         formFields.value.model.dateTime &&
+//         formFields.value.model.phone &&
+//         formFields.value.model.description
+//     ) {
+//       return true;
+//     } else {
+//       return false;
+//     }
+//   }
+// }
 
-}
+
 const initStages = () => {
   const users = []
   if (findRole(null, "student")) {
@@ -657,8 +741,9 @@ const initStages = () => {
 
     let reqInstitute = {
       filter: {
-        "name":"Палымбетов Нурбол Шаменович"
-      }}
+        "name": "Палымбетов Нурбол Шаменович"
+      }
+    }
 
     contragentService.getPersons(reqInstitute).then(res => {
       userInstitute = res.data.foundUsers
@@ -690,6 +775,129 @@ const tabChanged = () => {
   }
 }
 
+const toggleRegistration = () => {
+  showRegistration.value = !showRegistration.value;
+};
+
+const validateCourse = (course) => {
+  return course >= 1 && course <= 5
+}
+const validatePhoneNumber = (phoneNumber) => {
+  const phoneRegex = /^(8|\+7)?\(\d{3}\)\d{7}$|^(8|\+7)?\d{10}$/;
+
+  return phoneRegex.test(phoneNumber);
+}
+
+validation.value =  {
+  course: !validateCourse(formFields.value.model?.course),
+  email: !(formFields.value.model?.email === null || /\S+@\S+\.\S+/.test(formFields.value.model?.email)),
+  phone: formFields.value.model?.phone === null || !validatePhoneNumber(formFields.value.model?.phone),
+}
+
+const onPage = (event) => {
+  lazyParams.value.page = event.page;
+  lazyParams.value.rows = event.rows;
+  getCourse();
+};
+
+const getCourse = () => {
+  if (findRole(null, "student") || request.value.doc?.newParams?.not_formal_education_ids) {
+    const userId = request.value?.doc?.newParams?.student_id?.value
+
+    let courseId = request.value?.doc?.newParams?.not_formal_education_ids.value ? request.value?.doc?.newParams?.not_formal_education_ids.value : null
+    if ((request.value?.doc?.docHistory?.stateId === DocEnum.CREATED.ID || request.value?.doc?.docHistory?.stateId === DocEnum.REVISION.ID) && !isAdmin.value) {
+      courseId = null
+    }
+    axios.post(smartEnuApi + "/onlinecourse/courses",
+        {
+          user_id: userId,
+          page: lazyParams.value.page,
+          rows: lazyParams.value.rows,
+          searchText: searchText.value,
+          dic_course_type: "not_formal_education",
+          courses_ids: courseId
+        }, {headers: getHeader()})
+        .then((res) => {
+          data.value = res.data.courses;
+          if (data.value) {
+            if (request.value.doc?.newParams) {
+              data.value.map(e => {
+                e.checked = request.value.doc.newParams.not_formal_education_ids.value.some(x => x === e.subject_id)
+              })
+            } else {
+              data.value.map(e => {
+                e.checked = selectedIds.value.some(x => x === e.subject_id)
+              })
+            }
+          }
+          total.value = res.data.total;
+        })
+  }
+}
+const getStudentInfo = () => {
+  const userId = request.value?.doc?.newParams?.student_id?.value
+    service.helpDeskStudentInfo({user_id: userId}).then(res => {
+      responseUserData.value.speciality = locale.value === "kz" ? res.data.studen_info.specialty_kz : res.data.studen_info.specialty_ru
+      responseUserData.value.course = res.data.studen_info.course_number
+      responseUserData.value.group = res.data.studen_info.group
+      responseUserData.value.fullName = res.data.studen_info.full_name
+      responseUserData.value.phone = res.data.studen_info.phone
+      responseUserData.value.email = res.data.studen_info.email
+    }).catch(err => {
+      if (err.response && err.response.status == 401) {
+        store.dispatch("logLout")
+      } else if (err.response && err.response.data && err.response.data.localized) {
+        showMessage('error', t(err.response.data.localizedPath), null)
+      }
+    })
+
+}
+const getTicketForm = () => {
+  let req = {
+    Id: request.value.category?.id
+  }
+  service.helpDeskTicketForm(req).then((res) => {
+    formFields.value = res.data.ticket_form.map(value => ({
+      key: value.id,
+      type: value.type,
+      name_kz: value.name_kz || '', // use empty string as default value
+      name_ru: value.name_ru || '',
+      name_en: value.name_en || '',
+      validation: value.validation || '',
+      code: value.code
+    }))
+    formFields.value?.map(field => {
+      userData.value[field.code] = request.value.doc?.newParams?.not_formal_student_info?.value[field.code] || responseUserData.value[field.code];
+      field.model = userData.value[field.code]
+    });
+  }).catch((err) => {
+    console.log(err)
+  })
+}
+
+const input = () => {
+  changed.value = true;
+  validation.value = {
+    course: !validateCourse(request.value.course),
+    email: !(request.value.email === null || /\S+@\S+\.\S+/.test(request.value.email)),
+    phone: request.value.phone === null || !validatePhoneNumber(request.value.phone),
+  }
+}
+
+const isDisabled = (rowData) => {
+  let totalHours = data.value.reduce((total, item) => total + (item.checked ? item.hours : 0), 0);
+  return totalHours + rowData.hours > maxChecked && !rowData.checked;
+};
+const checkBoxSelect = (course) => {
+  if (course.checked) {
+    selectedIds.value.push(course.subject_id);
+  } else {
+    selectedIds.value = selectedIds.value.filter(item => item !== course.subject_id);
+  }
+  if (selectedIds.value.length === 0) {
+    isSend.value = false;
+  }
+};
 onMounted(() => {
   switch (locale) {
     case 'kz':
@@ -708,7 +916,9 @@ onMounted(() => {
   currentUser.value = JSON.parse(localStorage.getItem("loginedUser"))
   isAdmin.value = (findRole(null, 'main_administrator') || findRole(null, "career_administrator"))
   initStages()
+  getStudentInfo()
   helpDeskTicketGet()
+
 })
 </script>
 
@@ -737,5 +947,44 @@ onMounted(() => {
 :deep(.p-datatable-thead > tr > th) {
   padding-top: 0rem;
   padding-bottom: 0rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+}
+
+.field input {
+  width: 350px;
+}
+
+.field label {
+  margin-bottom: 5px;
+  /* Расстояние между меткой и полем ввода */
+}
+
+.arrow-icon {
+  cursor: pointer;
+  font-size: 1.25rem;
+  margin-right: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.card {
+  flex-grow: 1;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  margin-bottom: 0px;
+}
+
+.lang {
+  margin-left: 20px;
+}
+
+.buttonLanguag {
+  margin-bottom: 20px;
 }
 </style>

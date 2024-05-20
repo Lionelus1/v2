@@ -43,7 +43,7 @@
           <Column field="create_date" :header="t('helpDesk.creationTime')">
             <template #body="{ data }">
               <router-link
-                  :to="{name: 'Request', params: {uuid: data?.uuid, id: data?.id}}"
+                  :to="{name: 'RequestV2', params: {uuid: data?.uuid, id: data?.id}}"
                   tag="a">
                 {{ (formatDate(data.doc?.docHistory?.setDate) || '') }}
               </router-link>
@@ -53,7 +53,7 @@
           <Column field="status" :header="t('common.status')">
             <template #body="{ data }">
               <router-link :class="'customer-badge status-' + data.doc?.docHistory?.stateEn"
-                           :to="{name: 'Request', params: {uuid: data?.uuid, id: data?.id}}"
+                           :to="{name: 'RequestV2', params: {uuid: data?.uuid, id: data?.id}}"
                            tag="a">
                 {{ getDocStatus(data.doc?.docHistory?.stateEn) }}
               </router-link>
@@ -195,7 +195,7 @@
 
 <script setup>
 import ToolbarMenu from "@/components/ToolbarMenu.vue";
-import {HelpDeskService} from "../../service/helpdesk.service";
+import {HelpDeskService} from "../../../service/helpdesk.service";
 import {ref, computed, onMounted} from 'vue';
 import {useI18n} from "vue-i18n";
 import {findRole} from "@/config/config";
@@ -449,7 +449,7 @@ const onPage = (event) => {
 
 const openDocument = () => {
   if (currentDocument.value) {
-    router.push({name: 'Request', params: {uuid: currentDocument.value.uuid, id: currentDocument.value.id}});
+    router.push({name: 'RequestV2', params: {uuid: currentDocument.value.uuid, id: currentDocument.value.id}});
   }
 };
 
@@ -466,7 +466,7 @@ const getCategory = () => {
       })
       .then((res) => {
         currentDocument.value = null;
-        directions.value = res.data.category.filter(category => category.is_active)
+        directions.value = res.data.category
         request.value.category = res.data.category.id;
       })
       .catch((err) => {
@@ -485,10 +485,10 @@ const createHelpDesk = () => {
         uuid.value = res.data.uuid;
         close('newPublicationDialog');
         loading.value = false;
-        router.push({name: 'Request', params: {uuid: uuid.value}});
+        router.push({name: 'RequestV2', params: {uuid: uuid.value}});
         // router.push({ name: 'Request', params: { uuid: uuid.value, isCreated: 1}, query: {selectedPosition: JSON.stringify(selectedPosition.value.code)}});
       }).catch(err => {
-    if (err.response && err.response.status == 401) {r
+    if (err.response && err.response.status == 401) {
       store.dispatch("logLout");
     } else if (err.response && err.response.data && err.response.data.localized) {
       showMessage('error', t(err.response.data.localizedPath), null);

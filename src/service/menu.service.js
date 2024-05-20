@@ -317,7 +317,19 @@ export class MenuService {
             {
                 label: $t('helpDesk.title'),
                 icon: 'pi pi-spin pi-cog',
-                to: '/helpdesk',
+                items: [
+                    {
+                        label: $t('helpDesk.title'),
+                        icon: 'fa-solid fa-paperclip',
+                        to: '/helpdesk/deskJournal',
+                    },
+                    {
+                        label: $t('helpDesk.category'),
+                        icon: 'fa-solid fa-pen-nib',
+                        to: '/helpdesk/create',
+                        visible: this.findRole("main_administrator") || this.findRole("online_course_administrator")
+                    }
+                ]
             }
         ]
     }

@@ -28,4 +28,16 @@ export class HelpDeskService {
     helpDeskStudentInfo(data){
         return api.post(`/helpdesk/studentInfo`, data, {headers: getHeader()})
     }
+    helpDeskTicketForm(data){
+        return api.post(`helpdesk/ticketForm`, data, {headers: getHeader()});
+    }
+    helpDeskUpdateCategory(data) {
+        return api.post(`/helpdesk/update/category`, data, {headers: getHeader()})
+    }
+    helpDeskUpdateCategoryLine(data){
+        return api.post(`/helpdesk/update/categoryLine`, data, {headers: getHeader()})
+    }
+    helpDeskGetCategoryLine(data){
+        return api.post(`/helpdesk/get/categoryLine`,data, {headers: getHeader()})
+    }
 }
