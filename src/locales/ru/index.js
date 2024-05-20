@@ -1269,7 +1269,9 @@ export default {
         partiallyCompleted: "Частично выполнено",
         errorUpdatingStatus: "Ошибка обновления статуса",
         operationCanceled: "Продолжение действия остановлено",
-        rejectionMessage: "Сообщение о отказе"
+        rejectionMessage: "Сообщение о отказе",
+        summaryDepartment: "Сводящее структурное подразделение",
+        warnAddingSummaryUser: "Вы не можете добавить пользователя, выбранного в поле «Свод структурный отдел», в поле «Свод/Подтверждение»."
     },
     educomplex: {
         title: "Учебно-методический комплекс дисциплины",
