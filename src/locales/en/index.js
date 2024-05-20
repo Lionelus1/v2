@@ -1220,7 +1220,7 @@ export default {
         },
         quarterYear: "Whole year",
         resultIndicator: "Indicator of direct results",
-        summary: "Summary/Confirmation",
+        summary: "Executing structural unit",
         respExecutor: "Responsible performers",
         halfYear: "semi-annual",
         simplePlan: "Plan",
