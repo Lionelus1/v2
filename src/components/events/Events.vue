@@ -24,17 +24,17 @@
           </span>
           </template>
         </Column>
-        <Column field="history" v-bind:header="$t('common.status')" :sortable="true">
+        <Column :field="$i18n.locale === 'kz' ? `history.status.nameKz` : $i18n.locale === 'ru'
+        ? `history.status.nameRu` : `history.status.nameEn`" v-bind:header="$t('common.status')" :sortable="true">
           <template #body="slotProps">
           <span :class="'customer-badge status-' + slotProps.data.history.status.id">
             {{
-              $i18n.locale === "kz" ? slotProps.data.history.status.nameKz : $i18n.locale === "ru"
-                  ? slotProps.data.history.status.nameRu : slotProps.data.history.status.nameEn
+              $i18n.locale === "kz" ? slotProps.data.history.status.nameKz : $i18n.locale === "ru" ? slotProps.data.history.status.nameRu : slotProps.data.history.status.nameEn
             }}
           </span>
           </template>
         </Column>
-        <Column field="createdBy" v-bind:header="$t('common.createdBy')" :sortable="true">
+        <Column field="createdBy" v-bind:header="$t('common.createdBy')" :sortable="false">
           <template #body="slotProps">
           <span>
             {{ slotProps.data.createdBy.fullName }}
