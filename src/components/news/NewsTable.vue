@@ -213,6 +213,7 @@ export default {
 
         this.emitter.on('historyNewsModalClose', data => {
           this.historyNewsVisible = data
+          this.selectedHistoryNews = []
         });
 
         this.emitter.on('addEditNewsDialogHide', data => {

@@ -40,7 +40,7 @@ watch(() => props.isVisible, (newVal) => {
 });
 
 const closeModal = () => {
-  emitter.emit("newsViewModalClose", false);
+  emitter.emit("historyNewsModalClose", false);
 }
 </script>
 
