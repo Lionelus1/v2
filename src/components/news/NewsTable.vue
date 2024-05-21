@@ -608,7 +608,7 @@ export default {
           },
           {
             label: this.$t('common.history'),
-            icon: "fa-solid fa-eye",
+            icon: "fa-solid fa-clock-rotate-left",
             command: () => {this.historyNews(this.actionsNode); },
           },
           {
