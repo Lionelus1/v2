@@ -425,7 +425,7 @@
           <div>
             <label for="meetingTime">{{ $t("dissertation.meetingTime") }}</label>
             <PrimeCalendar id="meetingTime" :placeholder="$t('common.select')" style="height:33px" class="pt-1"
-              v-model="selectedDoctoral.meetingTime" :showTime="true" :showIcon="true" :stepMinute="1"
+              v-model="selectedDoctoral.meetingTime" :showTime="true" :showIcon="true" :stepMinute="10"
               :manualInput="true" dateFormat="dd.mm.yy" />
             <small class="p-error" v-if="(submitted && validationErrorsSetMeetingTime.meetingTime)">{{
               $t('common.requiredField') }}</small>
