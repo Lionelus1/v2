@@ -18,7 +18,23 @@
               :header="$t('faq.createDate')"
               :body="formatDate"
           > <template #body="{data}"> {{ formatDate(data?.modifyDate) }} </template> </Column>
-          <Column field="status.nameKz" :header="$t('web.actionID')"></Column>
+          <Column
+              field="status"
+              :header="$t('web.actionID')"
+          >
+            <template #body="{data}">
+              <span
+                  :class="'customer-badge status-' + data?.status.id">
+                {{
+                  locale === "kz"
+                      ? data?.status.nameKz
+                      : locale === "ru"
+                          ? data?.status.nameRu
+                          : data?.status.nameEn
+                }}
+              </span>
+            </template>
+          </Column>
           <Column field="userFullName" :header="$t('web.logUser')"></Column>
         </DataTable>
       </template>
@@ -28,10 +44,12 @@
 
 <script setup>
 import {inject, ref, watch} from "vue";
-import moment from "moment";
 import {formatDate} from "@/helpers/HelperUtil";
+import {useI18n} from "vue-i18n";
+import {useToast} from "primevue/usetoast";
+const {t, locale} = useI18n()
 
-const props = defineProps(['isVisible', 'selectedNews']);
+const props = defineProps(['isVisible', 'selectedNews', '$i18n']);
 const historyNewsVisible = ref(props.isVisible ?? false);
 const emitter = inject('emitter');
 

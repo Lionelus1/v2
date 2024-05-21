@@ -415,7 +415,6 @@ export default {
         historyNews(data) {
           this.newsService.getHistoryNews(data.id).then(res => {
             this.selectedHistoryNews = res.data
-            console.log(this.selectedHistoryNews)
           }).catch(error => {
             console.log("zdes")
             console.log(error)
