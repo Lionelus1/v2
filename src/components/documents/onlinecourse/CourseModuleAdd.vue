@@ -89,7 +89,6 @@
   const toast = useToast()
   const loading = ref(false)
   const service = new OnlineCourseService();
-  const formData = ref(props.module);
   const menu= ref([
     {
       label: t("common.save"),
@@ -116,6 +115,7 @@
       default: Object
     }
   })
+  const formData = ref(props.module);
   const durationTypeOptions = [
     {
       id: 1, name: "hours", name_kz: "сағат", name_ru: "часы", name_en: "hours"
