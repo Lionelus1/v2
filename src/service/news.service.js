@@ -11,6 +11,10 @@ export class NewsService {
         return api.get(`/findNews/${id}`, {headers: getHeader()});
     }
 
+    getHistoryNews(id) {
+        return api.get(`/newsHistory/${id}`, {headers: getHeader()});
+    }
+
     addNews(data) {
         return api.post("/addNews", data, {headers: getHeader()});
     }

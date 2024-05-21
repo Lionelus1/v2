@@ -110,6 +110,11 @@
         </template>
     </Dialog>
 
+  <HistoryNews
+      v-if="historyNewsVisible"
+      :is-visible="historyNewsVisible"
+      :selected-news="selectedHistoryNews"
+  />
     <NewsView v-if="newsViewVisible" :is-visible="newsViewVisible" :selected-news="selectedNews"/>
     <AddEditNews v-if="editVisible" :is-visible="editVisible" :selected-news="newsData" :cat-tree="catTree"
                  :catTreeList="catTreeElementsList"/>
@@ -127,10 +132,11 @@ import AddEditNews from "./AddEditNews";
 import {formatDate, upFirstLetter} from "@/helpers/HelperUtil";
 import ToolbarMenu from "@/components/ToolbarMenu.vue";
 import ActionButton from "@/components/ActionButton.vue";
+import HistoryNews from "@/components/news/HistoryNews.vue";
 
 export default {
     name: "NewsTable",
-    components: {ActionButton, ToolbarMenu, AddEditNews, NewsView},
+    components: {HistoryNews, ActionButton, ToolbarMenu, AddEditNews, NewsView},
     data() {
         return {
             lazyParams: {
@@ -151,12 +157,14 @@ export default {
             deleteVisible: false,
             rejectVisible: false,
             newsViewVisible: false,
+            historyNewsVisible: false,
             submitted: false,
             categories: null,
             newsData: null,
             allNews: [],
             newsCount: 0,
             selectedNews: false,
+            selectedHistoryNews: [],
             filters: {
                 'global': {value: null, matchMode: FilterMatchMode.CONTAINS},
                 'question': {value: null, matchMode: FilterMatchMode.CONTAINS},
@@ -201,6 +209,10 @@ export default {
     mounted() {
         this.emitter.on('newsViewModalClose', data => {
             this.newsViewVisible = data;
+        });
+
+        this.emitter.on('historyNewsModalClose', data => {
+          this.historyNewsVisible = data
         });
 
         this.emitter.on('addEditNewsDialogHide', data => {
@@ -399,6 +411,22 @@ export default {
             this.newsViewVisible = true;
         },
 
+        historyNews(data) {
+          this.newsService.getHistoryNews(data.id).then(res => {
+            this.selectedHistoryNews = res.data
+            console.log(this.selectedHistoryNews)
+          }).catch(error => {
+            console.log("zdes")
+            console.log(error)
+            this.$toast.add({
+              severity: "error",
+              summary: error,
+              life: 3000,
+            });
+          })
+          this.historyNewsVisible = true;
+        },
+
         /**
          * SEND NEWS TO MODERATOR ACTION
          */
@@ -576,6 +604,11 @@ export default {
             label: this.$t('common.show'),
             icon: "fa-solid fa-eye",
             command: () => {this.newsView(this.actionsNode)},
+          },
+          {
+            label: this.$t('common.history'),
+            icon: "fa-solid fa-eye",
+            command: () => {this.historyNews(this.actionsNode); },
           },
           {
             label: this.$t('common.edit'),
