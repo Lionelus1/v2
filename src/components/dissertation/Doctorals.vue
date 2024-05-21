@@ -425,7 +425,7 @@
           <div>
             <label for="meetingTime">{{ $t("dissertation.meetingTime") }}</label>
             <PrimeCalendar id="meetingTime" :placeholder="$t('common.select')" style="height:33px" class="pt-1"
-              v-model="selectedDoctoral.meetingTime" :showTime="true" :showIcon="true" :stepMinute="10"
+              v-model="selectedDoctoral.meetingTime" :showTime="true" :showIcon="true" :stepMinute="1"
               :manualInput="true" dateFormat="dd.mm.yy" />
             <small class="p-error" v-if="(submitted && validationErrorsSetMeetingTime.meetingTime)">{{
               $t('common.requiredField') }}</small>
@@ -1150,6 +1150,7 @@ export default {
       isValidYoutubeLink: true,
       docService: new DocService(),
       isAdmin: false,
+      isDissertationChief: false
     };
   },
   created() {
@@ -1164,6 +1165,7 @@ export default {
       numbers: true,
     });
     this.isAdmin = this.findRole(null, 'main_administrator')
+    this.isDissertationChief = this.findRole(null, 'dissertation_chief')
   },
   mounted() {
     this.getDissertationMember();
@@ -1476,20 +1478,13 @@ export default {
       this.dissertationFile = event.files[0];
     },
     reload(event) {
-      console.log(event)
-      //this.lazyParams = event;
       this.lazyParams = event;
       this.getDoctorals();
     },
     getDoctorals() {
       this.loading = true;
       this.lazyParams.userID = this.$store.state.loginedUser.userID
-      // if (this.searchedUser !== null) {
-      //   this.lazyParams.search_user_id = this.searchedUser[0]?.userID || null;
-      // }
 
-      // this.lazyParams.search_user_id =
-      //this.lazyParams.countMode = null;
       api.post("/dissertation/getdoctorals", this.lazyParams, { headers: getHeader() }).then((response) => {
         this.DoctoralList = response.data;
         if (this.DoctoralList.length > 0 && this.doctoralCount < 0) {
@@ -1520,7 +1515,6 @@ export default {
         )
         .then(response => {
           this.regInfo = response.data
-          console.log(this.regInfo)
           if (this.regInfo.length > 0) {
             this.regInfoDetail = this.regInfo[0].members
           }
@@ -1590,8 +1584,6 @@ export default {
         );
 
         this.regInfo = response.data;
-        console.log(this.regInfo);
-
         if (this.regInfo.length > 0) {
           this.regInfoDetail = this.regInfo[0].members;
         }
@@ -1805,12 +1797,13 @@ export default {
     setMeetingTime() {
       this.submitted = true;
       if (this.validateSetMeetingTimeForm()) {
+        let meetingTimeStr = this.selectedDoctoral.meetingTime.toISOString();
         var request = {
           id: this.selectedDoctoral.dissertation.id,
           url: this.selectedDoctoral.dissertation.url,
           meetingUrl: this.selectedDoctoral.dissertation.meetingUrl,
           meetingPlace: this.selectedDoctoral.dissertation.meetingPlace,
-          meetingTime: this.selectedDoctoral.meetingTime,
+          meetingTime: meetingTimeStr,
           language: this.selectedDoctoral.dissertation.language,
           announce: this.announceData
         }
@@ -2031,7 +2024,6 @@ export default {
         && this.selectedDoctoral.dissertation.video_link)) {
         return false
       }
-      console.log(this.selectedDoctoral.dissertation)
 
       return (this.selectedDoctoral && (this.selectedDoctoral.dissertation.state === 1 || this.selectedDoctoral.dissertation.state === 6))
         && (this.findRole(this.loginedUser, 'dissertation_chief') || this.findRole(this.loginedUser, 'dissertation_council_secretary'))
