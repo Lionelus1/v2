@@ -1250,7 +1250,7 @@ export default {
         },
         quarterYear: "Весь год",
         resultIndicator: "Показатель прямых результатов",
-        summary: "Свод/Подтверждение",
+        summary: "Исполняющее структурное подразделение",
         respExecutor: "Ответственные исполнители",
         halfYear: "полугодие",
         simplePlan: "План",
