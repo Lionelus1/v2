@@ -28,7 +28,13 @@
 
         </div>
       </TabPanel>
-      <TabPanel v-if="docInfo && (docInfo.docHistory.stateId == 2 || docInfo.docHistory.stateId == 6)" :disabled="hideDocSign" :header="$t('ncasigner.sign')">
+      <TabPanel v-if="docInfo && docInfo.docHistory.stateId == 2 && docInfo.folder && docInfo.folder.type === Enum.FolderType.Agreement" :header="$t('ncasigner.sign')">
+        <div class="flex justify-content-center">
+          <Button icon="fa-solid fa-check" class="p-button-success md:col-3" @click="approve" :label="$t('common.action.approve')" :loading="loading" />
+        </div>
+      </TabPanel>
+      <TabPanel v-if="docInfo && docInfo.docHistory.stateId == 2  && !(docInfo.folder && docInfo.folder.type === Enum.FolderType.Agreement)
+              || docInfo && docInfo.docHistory.stateId == 6" :disabled="hideDocSign" :header="$t('ncasigner.sign')">
         <div class="mt-2">
           <Panel v-if="!$isMobile">
             <template #header>
@@ -71,13 +77,25 @@
         </div>
       </TabPanel>
       <TabPanel v-if="docInfo && docInfo.docHistory.stateId === Enum.INAPPROVAL.ID && ((docInfo.sourceType === Enum.DocSourceType.FilledDoc ||
-        (docInfo.docType && (docInfo.docType === Enum.DocType.Contract))) || docInfo.docType === Enum.DocType.WorkPlan)" :header="$t('common.revision')"
+        (docInfo.docType && (docInfo.docType === Enum.DocType.Contract))) || docInfo.docType === Enum.DocType.WorkPlan
+        || docInfo.docType === Enum.DocType.DocTemplate)" :header="$t('common.revision')"
         :disabled="hideDocRevision">
         <div class="card">
           <label> {{ this.$t('common.comment') }} </label>
           <InputText v-model="revisionComment" style="width: 100%; margin-bottom: 2rem;"></InputText>
           <div class="flex justify-content-center">
             <Button icon="fa-regular fa-circle-xmark" class="p-button-danger md:col-3" @click="revision" :label="$t('common.revision')" :loading="loading" />
+          </div>
+        </div>
+      </TabPanel>
+      <TabPanel v-if="docInfo && (docInfo.docHistory.stateId == 2 || docInfo.docHistory.stateId == 6)
+                && docInfo.folder && docInfo.folder.type === Enum.FolderType.Agreement &&
+                isSciadvisor()" :header="$t('common.deny')">
+        <div class="card">
+          <label> {{ this.$t('common.comment') }} </label>
+          <InputText v-model="denyComment" style="width: 100%; margin-bottom: 2rem;"></InputText>
+          <div class="flex justify-content-center">
+            <Button icon="fa-regular fa-circle-xmark" class="p-button-danger md:col-3" @click="deny" :label="$t('common.deny')" :loading="loading" />
           </div>
         </div>
       </TabPanel>
@@ -155,6 +173,7 @@ export default {
 
       hideDocRevision: true,
       revisionComment: null,
+      denyComment: null,
       mobileApp: null,
       isIndivid: null
     }
@@ -335,7 +354,7 @@ export default {
             this.isShow = true
           }
 
-          if (this.docInfo.docType === this.Enum.DocType.ScienceWorks) {
+          if (this.docInfo.docType === this.Enum.DocType.ScienceWorks || this.docInfo.folder && this.docInfo.folder.type === Enum.FolderType.Agreement) {
             this.getDocNew();
           }
         }
@@ -542,6 +561,19 @@ export default {
             if (this.hideDocRevision) {
               this.hideDocRevision = !element.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));
             }
+
+            if (!element.users) {
+              continue;
+            }
+
+            if (this.hideDocRevision) {
+              for (let i = 0; i < element.users.length; i++) {
+                if (element.users[i].userID === this.loginedUserId && element.usersApproved[i] == 0) {
+                  this.hideDocRevision = false;
+                  break;
+                }
+              }
+            }
           }
         }
 
@@ -558,6 +590,82 @@ export default {
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
       });
+    },
+    approve() {
+      this.$confirm.require({
+        message: this.$t("common.doYouWantApprove"),
+        header: this.$t("common.confirm"),
+        icon: 'pi pi-exclamation-triangle',
+        acceptClass: 'p-button p-button-success',
+        rejectClass: 'p-button p-button-danger',
+        accept: () => {
+          this.loading = true;
+
+          this.service.documentApproveV2({
+            uuid: this.docInfo.uuid,
+          }).then(res => {
+            this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
+            location.reload()
+
+            this.loading = false;
+          }).catch(err => {
+            if (err.response && err.response.status == 401) {
+              this.$store.dispatch("logLout")
+            } else if (err.response && err.response.data && err.response.data.localized) {
+              this.showMessage('error', this.$t(err.response.data.localizedPath), null)
+            } else {
+              console.log(err)
+              this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
+            }
+
+            this.loading = false;
+          })
+        },
+      });
+    },
+    deny() {
+      if (this.denyComment === null || this.denyComment.length < 1) {
+        this.$toast.add({
+          severity: "error",
+          detail: this.$t("common.noComment"),
+          life: 3000,
+        })
+        return
+      }
+
+      this.loading = true
+      this.service.documentDenyV2({
+        comment: this.denyComment,
+        uuid: this.docInfo.uuid,
+      }).then(res => {
+        this.loading = false
+        // this.$emit('sentToRevision', this.revisionComment)
+        location.reload()
+      }).catch(err => {
+        if (err.response.status == 401) {
+          this.$store.dispatch("logLout");
+        }
+
+        this.$toast.add({
+          severity: "error",
+          detail: this.$t("common.message.saveError"),
+          life: 3000,
+        })
+
+        this.loading = false
+      })
+    },
+    isSciadvisor() {
+      for (let id in this.docInfo.params) {
+        let param = this.docInfo.params[id]
+        if (param.description === 'sciadvisor') {
+          if (param.value && param.value.data && param.value.data.userID === this.loginedUserId) {
+            return true
+          }
+          break
+        }
+      }
+      return false
     }
   }
 }

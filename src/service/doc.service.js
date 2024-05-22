@@ -69,4 +69,22 @@ export class DocService {
     documentRevisionV2(data) {
         return api.post("/document/revision", data, {headers:getHeader()})
     }
+    documentTemplateCreate(data) {
+        return api.post("/document/templates/create", data, {headers:getHeader()})
+    }
+    documentTemplateSave(data) {
+        return api.post("/document/templates/save", data, {headers:getHeader()})
+    }
+    documentTemplateDelete(data) {
+        return api.post("/document/templates/delete", data, {headers:getHeader()})
+    }
+    sendDocumentTemplateToApproval(data) {
+        return api.post("/document/templates/sendToApprove", data, {headers:getHeader()})
+    }
+    documentApproveV2(data) {
+        return api.post("/document/approve", data, {headers:getHeader()})
+    }
+    documentDenyV2(data) {
+        return api.post("/document/deny", data, {headers:getHeader()})
+    }
 }

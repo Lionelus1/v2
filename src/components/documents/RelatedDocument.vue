@@ -37,10 +37,10 @@
                 <label>{{ $t('contracts.labels.' + param.description) }}</label>
               </div>
               <div class="p-fluid md:col-6" v-if="['text', 'number'].includes(param.name)">
-                <InputText v-model="param.value" type="text" @input="input()"
-                  :disabled="(sciadvisorRequest && contract.docHistory.stateId === Enum.CREATED.ID) ||
-                  contract.docHistory.stateId > Enum.CREATED.ID || (param.properties && param.properties.readonly)"
-                  :placeholder="param.properties && param.properties.readonly ? $t('contracts.autogenerate') : ''"></InputText> 
+                <InputText v-model="param.value" type="text" @input="input()" :disabled="true"
+                  :placeholder="param.properties && param.properties.readonly ? $t('contracts.autogenerate') : ''"></InputText>
+                <!--                  :disabled="(sciadvisorRequest && contract.docHistory.stateId === Enum.CREATED.ID) ||-->
+                <!--                  contract.docHistory.stateId > Enum.CREATED.ID || (param.properties && param.properties.readonly)"-->
               </div>
               <div class="p-fluid md:col-6" v-if="param.name === 'date'">
                 <PrimeCalendar v-model="param.value" dateFormat="dd.mm.yy" :disabled="true"
@@ -48,22 +48,23 @@
               </div>
               <div class="p-fluid md:col-6" v-if="param.name === 'person'">
                 <ContragentSelectV2 :contragent="param.value" @contragentUpdated="(event) => contragentUpdated(event, param)"
-                  :disable="(sciadvisorRequest && contract.docHistory.stateId === Enum.CREATED.ID) ||
-                  contract.docHistory.stateId > Enum.CREATED.ID" :scientist="param.description === 'executor'"></ContragentSelectV2>
+                :disable="true"></ContragentSelectV2>
+<!--                  :disable="(sciadvisorRequest && contract.docHistory.stateId === Enum.CREATED.ID) ||-->
+<!--                  contract.docHistory.stateId > Enum.CREATED.ID" :scientist="param.description === 'executor'"-->
               </div>
               <div class="col-12" v-if="param.name === 'table'">
                 <DataTable :value="param.value" class="p-datatable-small w-full" :editMode="(sciadvisorRequest && 
                   contract.docHistory.stateId === Enum.CREATED.ID) || contract.docHistory.stateId > Enum.CREATED.ID ? '' : 'cell'"
                   :pt="{column: {bodycell: ({ state }) => ({ class: [{ 'pt-0 pb-0': state['d_editing'] }] })}}">
-                  <template v-if="contract.docHistory.stateId === Enum.CREATED.ID && !sciadvisorRequest" #footer>
-                    <Button :label="$t('contracts.newWork')" @click="newWork(id)" class="p-button-link" style="width: fit-content;" />
-                  </template>
+<!--                  <template v-if="contract.docHistory.stateId === Enum.CREATED.ID && !sciadvisorRequest" #footer>-->
+<!--                    <Button :label="$t('contracts.newWork')" @click="newWork(id)" class="p-button-link" style="width: fit-content;" />-->
+<!--                  </template>-->
                   <Column v-for="col in param.properties.columns" :field="col" 
                     :header="$t('contracts.columns.'+col)" :key="col">
                     <template #body="{ data, field }">
                       {{ data[field] }}
                     </template>
-                    <template v-if="col !== 'number' && contract.docHistory.stateId === Enum.CREATED.ID && !sciadvisorRequest" 
+                    <template v-if="col === 'results' && contract.docHistory.stateId === Enum.CREATED.ID && !sciadvisorRequest"
                       #editor="{ data, field, index}">
                       <Textarea v-model="data[field]" autofocus autoResize rows="5" class="w-full" 
                         @update:model-value="param.value[index][field]=data[field]; input()"/>
@@ -208,7 +209,8 @@ export default {
             {
               label: this.$t("contracts.menu.toSciadvisor"),
               icon: "fa-regular fa-handshake",
-              visible: () => this.contract && this.contract.docHistory.stateId === Enum.CREATED.ID && !this.sciadvisorRequest,
+              visible: () => this.contract && this.contract.docHistory.stateId === Enum.CREATED.ID && !this.sciadvisorRequest &&
+                  this.loginedUser.userID === this.contract.creatorID,
               command: () => { this.scienceAdvisorApproval() }
             },
             {

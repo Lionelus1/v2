@@ -135,9 +135,9 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
-                path: '/documents/doctemplate',
-                name: '/documents/doctemplate',
-                component: load('documents/DocTemplate'),
+                path: '/documents/templates',
+                name: '/documents/templates',
+                component: load('documents/catalog/DocumentTemplates'),
                 beforeEnter: ifAuthenticated,
             },
             {

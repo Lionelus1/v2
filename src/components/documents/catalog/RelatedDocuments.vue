@@ -14,9 +14,9 @@
           <Button class="p-button-info align-items-center" style="padding: 0.25rem 1rem;"
             @click="openDocument" :disabled="!currentDocument">
             <i class="fa-regular fa-address-card" /> &nbsp;{{ $t("contracts.card") }}</Button>
-          <Button class="p-button-info align-items-center" style="padding: 0.25rem 1rem;"
-            @click="createAct" :disabled="!templates || templates.length < 1">
-            <i class="fa-solid fa-file-circle-plus" /> &nbsp;{{ $t("contracts.menu.newDocument") }}</Button>
+<!--          <Button class="p-button-info align-items-center" style="padding: 0.25rem 1rem;"-->
+<!--            @click="createAct" :disabled="true || !templates || templates.length < 1">-->
+<!--            <i class="fa-solid fa-file-circle-plus" /> &nbsp;{{ $t("contracts.menu.newDocument") }}</Button>-->
           <Button v-if="this.findRole(null, RolesEnum.roles.ActsToExecution) || this.findRole(null, RolesEnum.roles.MainAdministrator)"
             class="p-button-info align-items-center" style="padding: 0.25rem 1rem;" @click="sendForExecution(currentDocument)" 
             :disabled="!currentDocument || currentDocument.docHistory.stateId !== Enum.APPROVED.ID || executed(currentDocument) || execution(currentDocument)">
@@ -50,6 +50,16 @@
       <Column :header="$t('contracts.columns.regDate')" style="min-width: 100px;">
         <template #body="slotProps">
           {{ slotProps.data.registerDate ? getShortDateString(slotProps.data.registerDate) : "" }}
+        </template>
+      </Column>
+      <Column :header="$t('contracts.columns.contractNumber')" style="min-width: 100px;">
+        <template #body="slotProps">
+          {{ getContractNumber(slotProps.data) }}
+        </template>
+      </Column>
+      <Column :header="$t('contracts.columns.contractDate')" style="min-width: 100px;">
+        <template #body="slotProps">
+          {{ getContractDate(slotProps.data) }}
         </template>
       </Column>
       <!-- <Column :header="$t('contracts.columns.description')" style="min-width: 250px;">
@@ -270,7 +280,7 @@ export default {
       this.service.getDocumentsV2({
         page: this.page,
         rows: this.rows,
-        docType: this.Enum.DocType.RelatedDoc,
+        docType: this.Enum.DocType.ActCompletedWorks,
         relatedTo: this.parentUUID,
       }).then(res => {
         this.documents = res.data.documents;
@@ -495,6 +505,30 @@ export default {
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
       })
+    },
+    getContractNumber(contract) {
+      if (contract.folder && contract.folder.type === this.Enum.FolderType.Agreement) {
+        if (contract.newParams && contract.newParams.mnvo_agreement
+            && contract.newParams.mnvo_agreement.value) {
+          return contract.newParams.mnvo_agreement.value;
+        }
+
+        return "";
+      }
+
+      return "";
+    },
+    getContractDate(contract) {
+      if (contract.folder && contract.folder.type === this.Enum.FolderType.Agreement) {
+        if (contract.newParams && contract.newParams.mnvo
+            && contract.newParams.mnvo.value) {
+          return getShortDateString(contract.newParams.mnvo.value);
+        }
+
+        return "";
+      }
+
+      return "";
     }
   }
 }

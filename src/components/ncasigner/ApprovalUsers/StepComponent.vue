@@ -50,8 +50,8 @@
         <Button v-if="!readonly" :disabled="!(isNewStage && approvalStages.length < 10)" icon="pi pi-plus" class="p-button-rounded p-button-success"
                 @click="addStep"/>
         <Button v-if="!readonly" @click="clearSteps" class="btn danger ml-2"> {{ $t('common.clearApprovalList') }} </Button>
-        <Button v-if="!readonly && isNewStage && isEnuWorker" @click="approvalListControl = true" style="width: auto; color: white; font-weight: 700;"
-                :disabled="!isNewStage" class="p-button-warning"> {{ $t('roleControl.addNewInstance') }} </Button>
+<!--        <Button v-if="!readonly && isNewStage && isEnuWorker" @click="approvalListControl = true" style="width: auto; color: white; font-weight: 700;"-->
+<!--                :disabled="!isNewStage" class="p-button-warning"> {{ $t('roleControl.addNewInstance') }} </Button>-->
       </div>
     </div>
   </div>

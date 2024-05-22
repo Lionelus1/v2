@@ -49,6 +49,16 @@
           </div>
         </template>
       </Column>
+      <Column :header="$t('contracts.columns.contractNumber')" style="min-width: 100px;">
+        <template #body="slotProps">
+          {{ getContractNumber(slotProps.data) }}
+        </template>
+      </Column>
+      <Column :header="$t('contracts.columns.contractDate')" style="min-width: 100px;">
+        <template #body="slotProps">
+          {{ getContractDate(slotProps.data) }}
+        </template>
+      </Column>
       <Column style="min-width: 50px;">
         <template #body="slotProps">
           <div class="flex flex-wrap">
@@ -430,6 +440,30 @@ export default {
       };
       this.filtered = false;
     },
+    getContractNumber(contract) {
+      if (contract.folder && contract.folder.type === this.Enum.FolderType.Agreement) {
+        if (contract.newParams && contract.newParams.mnvo_agreement
+            && contract.newParams.mnvo_agreement.value) {
+          return contract.newParams.mnvo_agreement.value;
+        }
+
+        return "";
+      }
+
+      return "";
+    },
+    getContractDate(contract) {
+      if (contract.folder && contract.folder.type === this.Enum.FolderType.Agreement) {
+        if (contract.newParams && contract.newParams.mnvo
+            && contract.newParams.mnvo.value) {
+          return getShortDateString(contract.newParams.mnvo.value);
+        }
+
+        return "";
+      }
+
+      return "";
+    }
   },
   computed: {
     menu () {
@@ -463,17 +497,17 @@ export default {
           visible: this.actionsNode.docHistory && this.actionsNode.docHistory?.stateId === Enum.APPROVED.ID,
           command: () => {this.currentDocument = this.actionsNode; this.download()},
         },
-        {
-          label: this.$t('common.delete'),
-          icon: "fa-solid fa-trash",
-          visible: (this.actionsNode.docHistory && this.actionsNode.docHistory?.stateId === Enum.CREATED.ID ||
-              this.actionsNode.docHistory?.stateId === Enum.REVISION.ID || this.actionsNode.docHistory?.stateId === Enum.INAPPROVAL.ID) &&
-              this.loginedUser.userID === this.actionsNode.creatorID,
-          command: () => {
-            this.currentDocument = this.actionsNode;
-            this.deleteFile()
-          },
-        }
+        // {
+        //   label: this.$t('common.delete'),
+        //   icon: "fa-solid fa-trash",
+        //   visible: (this.actionsNode.docHistory && this.actionsNode.docHistory?.stateId === Enum.CREATED.ID ||
+        //       this.actionsNode.docHistory?.stateId === Enum.REVISION.ID || this.actionsNode.docHistory?.stateId === Enum.INAPPROVAL.ID) &&
+        //       this.loginedUser.userID === this.actionsNode.creatorID,
+        //   command: () => {
+        //     this.currentDocument = this.actionsNode;
+        //     this.deleteFile()
+        //   },
+        // }
       ]
     },
   }
