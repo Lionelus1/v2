@@ -416,8 +416,6 @@ export default {
           this.newsService.getHistoryNews(data.id).then(res => {
             this.selectedHistoryNews = res.data
           }).catch(error => {
-            console.log("zdes")
-            console.log(error)
             this.$toast.add({
               severity: "error",
               summary: error,
@@ -608,7 +606,8 @@ export default {
           {
             label: this.$t('common.history'),
             icon: "fa-solid fa-clock-rotate-left",
-            command: () => {this.historyNews(this.actionsNode); },
+            visible: this.isAdmin || this.isModer || this.isPublisher,
+            command: () => {this.historyNews(this.actionsNode);},
           },
           {
             label: this.$t('common.edit'),
