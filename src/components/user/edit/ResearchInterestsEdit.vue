@@ -80,6 +80,9 @@
         command: () => {
           createOrUpdateScienceInterests()
         },
+        disabled: () => (!payload.value.name_kz || payload.value.name_kz == "")
+        || (!payload.value.name_ru || payload.value.name_ru == "")
+        || (!payload.value.name_en || payload.value.name_en == "")
       },
     ])
     

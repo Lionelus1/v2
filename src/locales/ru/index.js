@@ -210,6 +210,7 @@ export default {
         personalInfo: 'Личная информация',
         myAddress: 'Адрес',
         creationAndEditing:'Создание и редактирование',
+        users:'Пользователи',
         states: {
             submitted: "Подана",
             created: "создан",
@@ -1579,7 +1580,14 @@ export default {
         scientistsProfile: 'Профиль ученых',
         profileLink: 'Ссылка на профиль',
         academicDegAndAcademicTit: 'Ученая степень и ученое звание',
-        currentPosition:'Текущая должность'
+        currentPosition:'Текущая должность',
+        customerAndSourceInRussia: 'Заказчик и источник финансирования на русском языке',
+        customerAndSourceInKazakh: 'Заказчик и источник финансирования на казахском языке',
+        customerAndSourceInEnglish: 'Заказчик и источник финансирования на английском языке',
+        customerAndSource:'Заказчик и источник финансирования',
+        contract_sum_ru: 'Сумма договора',
+        project_position:'Позиция в проекте',
+        scientific_grants: "Научные гранты"
     },
     personalData: 'Персональные сведения',
     yearPeriod:'Период годов',

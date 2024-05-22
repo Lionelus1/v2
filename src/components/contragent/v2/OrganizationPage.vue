@@ -126,7 +126,7 @@ export default {
   mounted() {
     this.pageReadonly = true;
 
-    if (!this.readonly && (this.findRole(this.loginedUser, this.enum.roles.MainAdministrator) || (this.org && this.loginedUser.mainPosition.organization.id === this.org.id &&
+    if (!this.readonly && (this.findRole(this.loginedUser, this.enum.roles.MainAdministrator) || (this.org && this.loginedUser?.mainPosition?.organization?.id === this.org.id &&
       (this.findRole(this.loginedUser, this.enum.roles.Signer) || this.findRole(this.loginedUser, this.enum.roles.HeadOfCompany))))) {
         this.pageReadonly = false;
     }

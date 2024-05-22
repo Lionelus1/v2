@@ -1,14 +1,14 @@
 <template>
   
-  <div v-if="isView.check" id="carddiv" class="grid">  
-    
-
+  <div v-if="isView.check">  
+  
     <div class="col-12">
-        <Menubar :model="menu" :key="active" style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px"></Menubar>
-      </div>
-      
-    <span   style="white-space: pre-line">
-      <DataTable class="justify-content-between" tableStyle="min-width: 50rem" selectionMode="single" v-model="award" :lazy="true" :value="awards" :loading="loading" v-model:selection="award"
+      <Menubar :model="menu" :key="active" style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px"></Menubar>
+    </div>
+     
+      <DataTable selectionMode="single" 
+      v-model="award" :lazy="true" :value="awards" 
+      :loading="loading" v-model:selection="award"
       :paginator="true" :rows="10" :totalRecords="totalRecords" @page="onPageChange"> 
 
         <Column field="award_type" :header="$t('science.typeOfAward')">
@@ -38,15 +38,14 @@
         <!-- Действия-->
         <Column v-if="!readonly" :header="t('dissertation.dissReportActions')">
             <template #body="slotProps">
-                <Button icon="pi pi-pencil" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="award=slotProps.data;update()"></Button>
-                <Button v-if="!slotProps.data.platonus_award_id" icon="fa-solid fa-trash" class="p-button-danger mb-2 mr-2" @click="award=slotProps.data;deleteValue()"></Button>
+                <Button icon="fa-solid fa-pencil fa-xl" class="p-button-text p-button-warning p-1 mr-2" @click="award=slotProps.data;update()"></Button>
+                <Button v-if="!slotProps.data.platonus_award_id" icon="fa-solid fa-trash-can fa-xl" class="p-button-text p-button-danger p-1 mr-2" @click="award=slotProps.data;deleteValue()"></Button>
             </template>
         </Column>
       
       </DataTable>
-    </span>
+    </div>
 
-  </div>
 
 
   <Sidebar v-model:visible="isView.award"  position="right" class="p-sidebar-lg"  style="overflow-y: scroll">
@@ -77,6 +76,7 @@
   import {  findRole } from "@/config/config";
   import ResearchInterestsEdit from "../edit/ResearchInterestsEdit"
   import UserAwardEdit from "../edit/UserAwardEdit"
+  import {useConfirm} from "primevue/useconfirm";
   const emitter = inject("emitter");
   const {t, locale} = useI18n()
   const toast = useToast()
@@ -116,22 +116,32 @@
 
   const fileData = ref(null)
   const fileView = ref(false)
+  const confirm = useConfirm()
 
   const deleteValue=() => {
-    const req = {
-        id: award.value.id || null,
-        userID: props.userID || null,
-    }
-    loading.value = true
+    confirm.require({
+      message: t('common.doYouWantDelete'),
+      header: t('common.confirm'),
+      icon: 'pi pi-exclamation-triangle',
+      acceptClass: 'p-button p-button-success',
+      rejectClass: 'p-button p-button-danger',
+      accept: () => {
+        const req = {
+          id: award.value.id || null,
+          userID: props.userID || null,
+        }
+          loading.value = true
 
-    scienceService.deleteAwards(req).then(_ => {
-        loading.value = false
-        toast.add({severity: "success", summary: t('common.success'), life: 3000});
-        getScienceAward()
-    }).catch(error => {
-        toast.add({severity: 'error', summary: t('common.error'), life: 3000})
-        loading.value = false;
-    })
+          scienceService.deleteAwards(req).then(_ => {
+            loading.value = false
+            toast.add({severity: "success", summary: t('common.success'), life: 3000});
+            getScienceAward()
+          }).catch(error => {
+            toast.add({severity: 'error', summary: t('common.error'), life: 3000})
+            loading.value = false;
+          })
+      },
+    });
   }
   const menu= ref([
         {
