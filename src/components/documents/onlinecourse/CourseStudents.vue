@@ -343,8 +343,6 @@
         command: () => {
             closeCourse()
         },
-
-        disabled: () => courseHistory.value.state.id === 8
       },
       // {
       //   label: t("course.openNewThread"),
