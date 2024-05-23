@@ -51,7 +51,22 @@
             <label>{{ this.$t("common.head") }}</label>
             <FindUser userType="3" @input="correct" @remove="correct" class="mt-2" :disabled="localReadonly" :editMode="true" v-model="users"  v-model:first="value.chief" :max="1"/>
           </div>
-          
+
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+            <label>{{this.$t('common.type')}}<span class="p-error" v-if="!readonly">*</span></label>
+            <Dropdown
+                @change="correct"
+                class="mt-2"
+                :disabled="localReadonly"
+                v-model="value.type"
+                :options="orgStatus"
+                optionLabel="name"
+                optionValue="id"
+                :placeholder="$t('common.select')"
+            />
+            <small class="p-error" v-if="this.validationErrors.orgForm">{{$t('common.requiredField')}}</small>
+          </div>
+
           <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ this.$t("common.state") }}</label>
             <SelectButton
@@ -192,6 +207,29 @@
                   v-model="value.bank.name"
                 ></InputText>
               </div>
+
+              <div v-if="value.type === 2" class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+                <label>{{ this.$t("bank.swift") }}</label>
+                <InputText
+                    :readonly="localReadonly"
+                    class="mt-2"
+                    type="text"
+                    :placeholder='this.$t("bank.swift")'
+                    @input="correct"
+                    v-model="value.bank.swift"
+                ></InputText>
+              </div>
+              <div v-if="value.type === 2" class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+                <label>{{ this.$t("bank.account") }}</label>
+                <InputText
+                    :readonly="localReadonly"
+                    class="mt-2"
+                    type="text"
+                    :placeholder='this.$t("bank.account")'
+                    @input="correct"
+                    v-model="value.bank.corrswift"
+                ></InputText>
+              </div>
             </div>
           </div>
         </AccordionTab>
@@ -254,6 +292,10 @@ export default {
         address: false,
         addressru: false,
       },
+      orgStatus: [
+        {id: 1, name: this.$t("common.organization")},
+        {id: 2, name: this.$t("bank.title2")}
+      ]
     };
   },
   created() {
