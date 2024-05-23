@@ -395,7 +395,6 @@
       </Dialog>
       <Dialog v-model:visible="dialog.defenseConduct.state" :style="{ width: '600px' }"
         :header="$t('dissertation.defenseConduct')" :modal="true" :maximizable="true" class="p-fluid">
-        
 
         <div
           v-if="!(selectedDoctoral && selectedDoctoral.dissertation.state == dissertationState.VotingFinished) && !(isDissertationMember && ((currentMemberState === memberState.Registered && selectedDoctoral.dissertation.state === dissertationState.VotingStarted) || (currentMemberState === memberState.Voted && selectedDoctoral.dissertation.state === dissertationState.VotingRestarted)))">
@@ -434,7 +433,7 @@
               </Column> -->
               <Column field="remove">
                 <template #body="slotProps">
-                  <Button type="button" icon="pi pi-trash p-button-icon" class="p-button-sm p-button-danger"
+                  <Button v-if="isAdmin || isDissertationChief || isDissertationSecretary" type="button" icon="pi pi-trash p-button-icon" class="p-button-sm p-button-danger"
                     @click="deleteMember(slotProps.data.memberID)" />
 
                 </template>
@@ -881,7 +880,10 @@ export default {
         announce_text_kz: "",
         announce_text_ru: "",
         announce_text_en:""
-      }
+      },
+      isAdmin: false,
+      isDissertationChief: false,
+      isDissertationSecretary: false 
     };
   },
   created() {
@@ -895,6 +897,9 @@ export default {
       length: 10,
       numbers: true,
     });
+    this.isAdmin = this.findRole(null, 'main_administrator')
+    this.isDissertationChief = this.findRole(null, 'dissertation_chief')
+    this.isDissertationSecretary = this.findRole(null, 'dissertation_council_secretary')
   },
   mounted() {
     this.getDissertationMember();
