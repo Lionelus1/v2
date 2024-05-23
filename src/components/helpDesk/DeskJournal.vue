@@ -129,7 +129,7 @@
       </div>
       <div class="field">
         <label>{{ t('helpDesk.applicant') }}</label>
-        <FindUser v-model="tempFilter.applicant" :max="1" searchMode="local"></FindUser>
+        <FindUser v-model="tempFilter.applicant" :max="1" searchMode="local" :userType="3"></FindUser>
       </div>
       <div class="field">
         <label>{{ t('scienceWorks.filter.status') }}</label>
