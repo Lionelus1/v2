@@ -368,7 +368,6 @@ export default {
       
       api.post("/contragent/updateorg", this.value, {headers: getHeader()})
       .then(response=> {
-        console.log("sasa:", response.data)
         this.menu[0].disabled = true
         if (this.value.id == null) { 
           this.value.id = response.data
