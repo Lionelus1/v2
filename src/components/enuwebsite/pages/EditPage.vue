@@ -77,7 +77,7 @@
                 </TabView>
                 <div v-if="isWebAdmin" class="field mt-3" style="margin-bottom: 1.5rem">
                     <label>{{ $t("cafedra.responsible") }}</label>
-                    <FindUser v-model="formData.responsible_users" :editMode="false" />
+                    <FindUser v-model="formData.responsible_users" :user-type="3" :editMode="false" />
                 </div>
                 <Gallery @afterUpload="afterUpload" @on-remove="onGalleryRemove" :file-list="galleryFiles"/>
 

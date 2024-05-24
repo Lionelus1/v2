@@ -76,7 +76,7 @@
 
     <div class="field">
       <label>{{ $t('cafedra.responsible') }}</label>
-      <FindUser v-model="formData.user" :max="1" :editMode="false"/>
+      <FindUser v-model="formData.user" :max="1" :user-type="3" :editMode="false"/>
       <small class="p-error" v-if="formData.user && submitted">{{ $t("common.requiredField") }}</small>
     </div>
     <div class="field">

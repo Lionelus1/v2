@@ -10,7 +10,7 @@
                         <Column v-if="$i18n.locale=='en'" field="nameEn" :styles="{width:'20%'}"></Column>
                         <Column field="responsible" :header="$t('cafedra.responsible')" :styles="{width:'20%'}">
                             <template #editor="slotProps">
-                                <FindUser  :disabled="localReadonly" v-model="slotProps.data.users" v-model:first="slotProps.data.responsible"  :max="1"/>
+                                <FindUser  :disabled="localReadonly" v-model="slotProps.data.users" v-model:first="slotProps.data.responsible" :user-type="3" :max="1"/>
                             </template>
                             <template #body="slotProps">
                                 {{slotProps.data.responsible != null ? slotProps.data.responsible.fullName : ""}}
@@ -28,7 +28,7 @@
                         <Column field="practiceManager" :header="$t('cafedra.practiceManager')">
                             <template #body="slotProps">
                                 <span v-if="!slotProps.node.editing">{{slotProps.node.practiceManager != null ? slotProps.node.practiceManager.fullName : ""}}</span>
-                                <FindUser v-else v-model="slotProps.node.users" v-model:first="slotProps.node.practiceManager" :max="1"></FindUser>
+                                <FindUser v-else v-model="slotProps.node.users" v-model:first="slotProps.node.practiceManager" :max="1" :user-type="3"></FindUser>
                             </template>
                         </Column>
                         <Column filed="editing">
