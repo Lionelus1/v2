@@ -447,6 +447,7 @@ export default {
       validation:{
         quarter: false
       },
+      inputWordCount: 0
     }
   },
   computed: {
@@ -777,29 +778,25 @@ export default {
       if (this.isOperPlan){
         this.wordLimit = 0
       }
-      if (!this.isStandartPlan && (this.inputWordCount > this.wordMaxLimit || this.inputWordCount < this.wordLimit)) {
+      if (!this.isStandartPlan && (this.inputWordCount < this.wordMaxLimit || this.inputWordCount < this.wordLimit)) {
         this.$toast.add({severity: 'warn', detail: this.$t('workPlan.maxWordCount', this.wordMaxLimit), life: 3000})
         this.isBlockUI = false;
         return;
       }
-      
-    
 
       fd.append('work_plan_event_id', this.event.work_plan_event_id);
       fd.append('result', this.isOperPlan ? this.newResult ? this.newResult : "" : this.result);
       if (this.plan && this.isOperPlan) {
+        fd.append("quarter", this.selectedQuarter.value);
         fd.append("is_partially", true);
       }
 
-      if (
-        this.authUser?.mainPosition?.department &&
+      if (this.authUser?.mainPosition?.department &&
         !this.authUser.mainPosition.department.isFaculty &&
-        this.isOperPlan
-      ) {
+        this.isOperPlan) {
         fd.append("fact", this.fact);
       }
 
-      fd.append("quarter", this.selectedQuarter.value);
       if (this.plan && this.isOperPlan && this.resultData)
         fd.append("result_id", this.resultData.event_result_id);
       if (this.files.length > 0) {
