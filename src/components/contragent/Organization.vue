@@ -125,7 +125,7 @@
             <label
               >{{ this.$t("contact.address") }} ({{
                 this.$t("common.language.kz")
-              }})</label
+              }})<span class="p-error" v-if="!readonly">*</span></label
             >
             <InputText
               :readonly="localReadonly"
@@ -141,7 +141,7 @@
             <label
               >{{ this.$t("contact.address") }} ({{
                 this.$t("common.language.ru")
-              }})</label
+              }})<span class="p-error" v-if="!readonly">*</span></label
             >
             <InputText
               :readonly="localReadonly"
