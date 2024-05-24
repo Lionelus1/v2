@@ -909,6 +909,7 @@ export default {
         scientificConsultant: 'Отзыв научного консультанта',
         foreignConsultant: 'Отзыв зарубежного консультанта',
         commissionConclusion: 'Заключение комиссии по этической оценке',
+        councilConclusion: 'Решение диссовета',
         reviewerComment: 'Отзыв официального рецензента',
         setMeetingTimeConfirmMsg: "Нажимая кнопку {btn} ниже, вы подтверждаете корректность информации и данная информация публикуется в виде объявления на сайте.",
         addMemeberToDisCouncil: 'Добавить члена в диссертационный совет',

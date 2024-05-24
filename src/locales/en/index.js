@@ -878,6 +878,7 @@ export default {
         scientificConsultant: 'Review of the scientific consultant',
         foreignConsultant: 'Review of foreign consultant',
         commissionConclusion: 'Conclusion of the ethical assessment committee',
+        councilConclusion: 'Council decision',
         reviewerComment: 'Official reviewer\'s review',
         setMeetingTimeConfirmMsg: "By clicking the {btn} button below, you confirm the correctness of the information and this information is published in the form of an announcement on the site.",
         addMemeberToDisCouncil: 'Add Member to The Dissertation Council',

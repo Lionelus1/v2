@@ -919,6 +919,7 @@ export default {
         scientificConsultant: 'Ғылыми кеңесшінің пікірі',
         foreignConsultant: 'Шетелдік кеңесшінің пікірі',
         commissionConclusion: 'Этикалық бағалау комиссиясының қорытындысы',
+        councilConclusion: 'Кеңестің шешімі',
         reviewerComment: 'Ресми рецензенттің пікірі',
         setMeetingTimeConfirmMsg: "Төмендегі {btn} батырмасын басу арқылы, ақпараттардың дұрыстығын растайсыз және осы ақпарат сайтқа хабарландыру болып шығарылады",
         addMemeberToDisCouncil: 'Диссертациялық кеңеске мүше қосу',

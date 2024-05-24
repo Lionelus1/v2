@@ -16,8 +16,8 @@
         <template #end>
           <Button v-if="findRole(null, 'dissertation_council_secretary')" isSecretary icon="pi pi-plus"
             class="p-button-success mr-2" @click="showAddCouncilDialog()" />
-          <Button v-if="isAdmin" :disabled="!selectedDoctoral" icon="pi pi-pen-to-square" class="mr-2" severity="help"
-            @click="showDialog(dialog.editDissertation)" v-tooltip.top="$t('common.edit')" />
+          <Button v-if="isMainAdministrator" :disabled="!selectedDoctoral" icon="pi pi-pen-to-square" class="mr-2"
+            severity="help" @click="showDialog(dialog.editDissertation)" v-tooltip.top="$t('common.edit')" />
           <Button v-if="canShowUpdateDoctoral" :disabled="!selectedDoctoral" icon="pi pi-pencil" class="mr-2"
             @click="showDialog(dialog.updateDoctoral)" v-tooltip.top="$t('common.edit')" />
           <Button v-if="findRole(null, 'dissertation_chief')"
@@ -718,8 +718,9 @@
         </template>
       </Dialog>
       <!-- Editing -->
-      <Dialog v-if="dialog.editDissertation.state && selectedDoctoral" v-model:visible="dialog.editDissertation.state"  :style="{ width: '600px' }" :header="selectedDoctoral.user.fullName"
-        :modal="true" :maximizable="true" class="p-fluid">
+      <Dialog v-if="dialog.editDissertation.state && selectedDoctoral" v-model:visible="dialog.editDissertation.state"
+        :style="{ width: '600px' }" :header="selectedDoctoral.user.fullName" :modal="true" :maximizable="true"
+        class="p-fluid">
         <div class="grid formgrid">
           <div class="col-12 pb-2 lg:col-12 mb-lg-0">
             <label for="namekz">{{ $t('dissertation.disstitle') + ' ' + $t('common.language.kz') }}</label>
@@ -742,17 +743,19 @@
             <small class="p-error" v-if="(submitted && validationErrors.nameen)">{{ $t('common.requiredField')
               }}</small>
           </div>
-          <TabView>
-            <TabPanel :header="$t('common.annotation') + ' ' + $t('common.language.kz')">
-              <Textarea v-model="selectedDoctoral.dissertation.annotation.kz" rows="10" />
-            </TabPanel>
-            <TabPanel :header="$t('common.annotation') + ' ' + $t('common.language.ru')">
-              <Textarea v-model="selectedDoctoral.dissertation.annotation.ru" rows="10" />
-            </TabPanel>
-            <TabPanel :header="$t('common.annotation') + ' ' + $t('common.language.en')">
-              <Textarea v-model="selectedDoctoral.dissertation.annotation.en" rows="10" />
-            </TabPanel>
-          </TabView>
+          <div class="col-12 pb-2 lg:col-12 md:col-6 mb-lg-0">
+            <TabView>
+              <TabPanel :header="$t('common.annotation') + ' ' + $t('common.language.kz')">
+                <Textarea v-model="selectedDoctoral.dissertation.annotation.kz" rows="10" />
+              </TabPanel>
+              <TabPanel :header="$t('common.annotation') + ' ' + $t('common.language.ru')">
+                <Textarea v-model="selectedDoctoral.dissertation.annotation.ru" rows="10" />
+              </TabPanel>
+              <TabPanel :header="$t('common.annotation') + ' ' + $t('common.language.en')">
+                <Textarea v-model="selectedDoctoral.dissertation.annotation.en" rows="10" />
+              </TabPanel>
+            </TabView>
+          </div>
           <div class="col-12 pb-2 lg:col-12 mb-lg-0">
             <label for="scienceConsultantKz">{{ $t('dissertation.scienceConsultantInfo') + ' ' +
               $t('common.language.kz')
@@ -795,14 +798,14 @@
             <Textarea :placeholder="$t('common.enter')" class="pt-1" type="text" id="foreignConsultantEn" rows="5"
               v-model="selectedDoctoral.dissertation.foreign_consultant_en" />
           </div>
-          <div class="col-12 pb-2 lg:col-12 mb-lg-0">
+          <div class="col-12 pb-2 lg:col-12 mb-lg-0" v-if="selectedDoctoral?.dissertation?.state === 6">
             <label for="videolink">{{ $t('dissertation.videoLink')
               }}</label>
             <Textarea :placeholder="$t('common.enter')" class="pt-1" type="text" id="videolink" rows="5"
               @input="validateYoutubeLink" v-model="selectedDoctoral.dissertation.video_link" />
             <span v-if="!isValidYoutubeLink" style="color: red;">Please enter a valid YouTube video link.</span>
           </div>
-          <div
+          <div class="col-12 pb-2 lg:col-12 md:col-6 mb-lg-0"
             v-if="(selectedDoctoral?.dissertation?.html_kz !== null || selectedDoctoral?.dissertation?.event_id !== null) || (selectedDoctoral?.dissertation?.html_ru !== null || selectedDoctoral?.dissertation?.event_id !== null) || (selectedDoctoral?.dissertation?.html_en !== null || selectedDoctoral?.dissertation?.event_id !== null)">
             <TabView>
               <TabPanel :header="$t('dissertation.event') + ' ' + $t('common.language.kz')">
@@ -817,122 +820,171 @@
             </TabView>
           </div>
           <Fieldset :legend="$t('workPlan.attachments')" class="col-12" toggleable>
-            <div class="field">
-              <div class="inline-container"
-                v-if="selectedDoctoral?.dissertation?.abstract !== null && selectedDoctoral?.dissertation?.abstract.length > 0">
-                <a href="javascript:void(0)" @click.prevent="downloadFile(selectedDoctoral.dissertation.abstract)">
-                  <i class="fa-solid fa-file-arrow-down"></i> {{ $t('dissertation.abstractFile') }} (doc)
-                </a>
-              </div>
+            <div class="field" v-if="selectedDoctoral?.dissertation?.state === 0">
               <div>
                 <label for="abstractfile">{{ $t('dissertation.abstractFile') + ' ' + $t('common.docFormat') }}</label>
-                <CustomFileUpload @upload="uploadFile($event, 'abstractFile')" v-model="abstractFile"
-                  :accept="'application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'"
-                  :multiple="false" />
+                <div class="inline-container"
+                  v-if="selectedDoctoral?.dissertation?.abstract !== null && selectedDoctoral?.dissertation?.abstract.length > 0">
+                  <a href="javascript:void(0)" @click.prevent="downloadFile(selectedDoctoral.dissertation.abstract)">
+                    <i class="fa-solid fa-file-arrow-down"></i> {{ selectedDoctoral.dissertation.abstract }}
+                  </a>
+                </div>
+                <div class="custom-file-upload-margin">
+                  <CustomFileUpload @upload="uploadFile($event, 'abstractFile')" v-model="abstractFile"
+                    :accept="'application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'"
+                    :multiple="false" />
+                </div>
+
               </div>
             </div>
 
-            <div class="field">
-              <div class="inline-container"
-                v-if="selectedDoctoral?.dissertation?.dissFile !== null && selectedDoctoral?.dissertation?.dissFile.length > 0">
-                <a href="javascript:void(0)" @click.prevent="downloadFile(selectedDoctoral.dissertation.dissFile)">
-                  <i class="fa-solid fa-file-arrow-down"></i> {{ $t('dissertation.dissertationFile') }} (doc)
-                </a>
-              </div>
+            <div class="field" v-if="selectedDoctoral?.dissertation?.state === 0">
               <div>
-                <label for="dissertationfile">{{ $t('dissertation.dissertationFile') + ' ' + $t('common.docFormat')
+                <label for="dissertationfile">{{ $t('dissertation.dissertationFile') + ' ' + $t('common.pdfFormat')
                   }}</label>
-                <CustomFileUpload @upload="uploadFile($event, 'dissertationFile')" v-model="dissertationFile" :multiple="false" />
+                <div class="inline-container"
+                  v-if="selectedDoctoral?.dissertation?.dissFile !== null && selectedDoctoral?.dissertation?.dissFile.length > 0">
+                  <a href="javascript:void(0)" @click.prevent="downloadFile(selectedDoctoral.dissertation.dissFile)">
+                    <i class="fa-solid fa-file-arrow-down"></i> {{ selectedDoctoral.dissertation.dissFile }}
+                  </a>
+                </div>
+                <div class="custom-file-upload-margin">
+                  <CustomFileUpload @upload="uploadFile($event, 'dissertationFile')" v-model="dissertationFile"
+                    :accept="'application/pdf'" :multiple="false" />
+                </div>
+
               </div>
             </div>
 
-            <div class="field">
-              <div class="inline-container"
-                v-if="selectedDoctoral?.dissertation?.swListFile !== null && selectedDoctoral?.dissertation?.swListFile.length > 0">
-                <a href="javascript:void(0)" @click.prevent="downloadFile(selectedDoctoral.dissertation.swListFile)">
-                  <i class="fa-solid fa-file-arrow-down"></i> {{ $t('dissertation.swList') }} (pdf)
-                </a>
-              </div>
+            <div class="field" v-if="selectedDoctoral?.dissertation?.state === 0">
               <div>
                 <label for="swList">{{ $t('dissertation.swList') + ' ' + $t('common.pdfFormat') }}</label>
-                <CustomFileUpload @upload="uploadFile($event, 'swListFile')" v-model="swListFile"
-                  :accept="'application/pdf'" :multiple="false" />
+                <div class="inline-container"
+                  v-if="selectedDoctoral?.dissertation?.swListFile !== null && selectedDoctoral?.dissertation?.swListFile.length > 0">
+                  <a href="javascript:void(0)" @click.prevent="downloadFile(selectedDoctoral.dissertation.swListFile)">
+                    <i class="fa-solid fa-file-arrow-down"></i> {{ selectedDoctoral.dissertation.swListFile }}
+                  </a>
+                </div>
+                <div class="custom-file-upload-margin">
+                  <CustomFileUpload @upload="uploadFile($event, 'swListFile')" v-model="swListFile"
+                    :accept="'application/pdf'" :multiple="false" />
+                </div>
+
               </div>
             </div>
 
-            <div class="field">
-              <div class="inline-container"
-                v-if="selectedDoctoral?.dissertation?.scientificConsultantFile !== null && selectedDoctoral?.dissertation?.scientificConsultantFile.length > 0">
-                <a href="javascript:void(0)"
-                  @click.prevent="downloadFile(selectedDoctoral.dissertation.scientificConsultantFile)">
-                  <i class="fa-solid fa-file-arrow-down"></i> {{ $t('dissertation.scientificConsultant') }} (pdf)
-                </a>
-              </div>
+            <div class="field" v-if="selectedDoctoral?.dissertation?.state === 0">
               <div>
                 <label>{{ $t('dissertation.scientificConsultant') + ' ' + $t('common.pdfFormat') }}</label>
-                <CustomFileUpload @upload="uploadFile($event, 'scientificConsultantFile')"
-                  v-model="scientificConsultantFile" :accept="'application/pdf'" :multiple="false" />
+                <div class="inline-container"
+                  v-if="selectedDoctoral?.dissertation?.scientificConsultantFile !== null && selectedDoctoral?.dissertation?.scientificConsultantFile.length > 0">
+                  <a href="javascript:void(0)"
+                    @click.prevent="downloadFile(selectedDoctoral.dissertation.scientificConsultantFile)">
+                    <i class="fa-solid fa-file-arrow-down"></i> {{
+                      selectedDoctoral.dissertation.scientificConsultantFile
+                    }}
+                  </a>
+                </div>
+                <div class="custom-file-upload-margin">
+                  <CustomFileUpload @upload="uploadFile($event, 'scientificConsultantFile')"
+                    v-model="scientificConsultantFile" :accept="'application/pdf'" :multiple="false" />
+                </div>
+
               </div>
             </div>
 
-            <div class="field">
-              <div class="inline-container"
-                v-if="selectedDoctoral?.dissertation?.foreignConsultantFile !== null && selectedDoctoral?.dissertation?.foreignConsultantFile.length > 0">
-                <a href="javascript:void(0)"
-                  @click.prevent="downloadFile(selectedDoctoral.dissertation.foreignConsultantFile)">
-                  <i class="fa-solid fa-file-arrow-down"></i> {{ $t('dissertation.foreignConsultant') }} (pdf)
-                </a>
-              </div>
+            <div class="field" v-if="selectedDoctoral?.dissertation?.state === 0">
               <div>
                 <label>{{ $t('dissertation.foreignConsultant') + ' ' + $t('common.pdfFormat') }}</label>
-                <CustomFileUpload @upload="uploadFile($event, 'foreignConsultantFile')" v-model="foreignConsultantFile"
-                  :accept="'application/pdf'" :multiple="false" />
+                <div class="inline-container"
+                  v-if="selectedDoctoral?.dissertation?.foreignConsultantFile !== null && selectedDoctoral?.dissertation?.foreignConsultantFile.length > 0">
+                  <a href="javascript:void(0)"
+                    @click.prevent="downloadFile(selectedDoctoral.dissertation.foreignConsultantFile)">
+                    <i class="fa-solid fa-file-arrow-down"></i> {{ selectedDoctoral.dissertation.foreignConsultantFile
+                    }}
+                  </a>
+                </div>
+                <div class="custom-file-upload-margin">
+                  <CustomFileUpload @upload="uploadFile($event, 'foreignConsultantFile')"
+                    v-model="foreignConsultantFile" :accept="'application/pdf'" :multiple="false" />
+                </div>
+
               </div>
             </div>
 
-            <div class="field">
-              <div class="inline-container"
-                v-if="selectedDoctoral?.dissertation?.commissionConclusionFile !== null && selectedDoctoral?.dissertation?.commissionConclusionFile.length > 0">
-                <a href="javascript:void(0)"
-                  @click.prevent="downloadFile(selectedDoctoral.dissertation.commissionConclusionFile)">
-                  <i class="fa-solid fa-file-arrow-down"></i> {{ $t('dissertation.commissionConclusion') }} (pdf)
-                </a>
-              </div>
+            <div class="field" v-if="selectedDoctoral?.dissertation?.state === 0">
               <div>
                 <label>{{ $t('dissertation.commissionConclusion') + ' ' + $t('common.pdfFormat') }}</label>
-                <CustomFileUpload @upload="uploadFile($event, 'commissionConclusionFile')"
-                  v-model="commissionConclusionFile" :accept="'application/pdf'" :multiple="false" />
+                <div class="inline-container"
+                  v-if="selectedDoctoral?.dissertation?.commissionConclusionFile !== null && selectedDoctoral?.dissertation?.commissionConclusionFile.length > 0">
+                  <a href="javascript:void(0)"
+                    @click.prevent="downloadFile(selectedDoctoral.dissertation.commissionConclusionFile)">
+                    <i class="fa-solid fa-file-arrow-down"></i> {{
+                      selectedDoctoral.dissertation.commissionConclusionFile
+                    }}
+                  </a>
+                </div>
+                <div class="custom-file-upload-margin">
+                  <CustomFileUpload @upload="uploadFile($event, 'commissionConclusionFile')"
+                    v-model="commissionConclusionFile" :accept="'application/pdf'" :multiple="false" />
+                </div>
+
               </div>
             </div>
 
-            <div class="field">
-              <div class="inline-container"
-                v-if="selectedDoctoral?.dissertation?.reviewer1CommentFile !== null && selectedDoctoral?.dissertation?.reviewer1CommentFile.length > 0">
-                <a href="javascript:void(0)"
-                  @click.prevent="downloadFile(selectedDoctoral.dissertation.reviewer1CommentFile)">
-                  <i class="fa-solid fa-file-arrow-down"></i> {{ $t('dissertation.reviewerComment') }} 1 (pdf)
-                </a>
+            <div class="field" v-if="selectedDoctoral?.dissertation?.state === 6">
+              <div>
+                <label>{{ $t('dissertation.councilConclusion') + ' ' + $t('common.pdfFormat') }}</label>
+                <div class="inline-container"
+                  v-if="selectedDoctoral?.dissertation?.councilConclusionFile !== null && selectedDoctoral?.dissertation?.councilConclusionFile.length > 0">
+                  <a href="javascript:void(0)"
+                    @click.prevent="downloadFile(selectedDoctoral.dissertation.councilConclusionFile)">
+                    <i class="fa-solid fa-file-arrow-down"></i> {{
+                      selectedDoctoral.dissertation.councilConclusionFile
+                    }}
+                  </a>
+                </div>
+                <div class="custom-file-upload-margin">
+                  <CustomFileUpload @upload="uploadFile($event, 'councilConclusionFile')"
+                    v-model="councilConclusionFile" :accept="'application/pdf'" :multiple="false" />
+                </div>
+
               </div>
+            </div>
+
+            <div class="field" v-if="selectedDoctoral?.dissertation?.state === 1">
               <div>
                 <label>{{ $t('dissertation.reviewerComment') + ' ' + $t('common.pdfFormat') + ' 1' }}</label>
-                <CustomFileUpload @upload="uploadFile($event, 'reviewer1CommentFile')"
-                  v-model="reviewer1CommentFile" :accept="'application/pdf'" :multiple="false" />
+                <div class="inline-container"
+                  v-if="selectedDoctoral?.dissertation?.reviewer1CommentFile !== null && selectedDoctoral?.dissertation?.reviewer1CommentFile.length > 0">
+                  <a href="javascript:void(0)"
+                    @click.prevent="downloadFile(selectedDoctoral.dissertation.reviewer1CommentFile)">
+                    <i class="fa-solid fa-file-arrow-down"></i> {{ selectedDoctoral.dissertation.reviewer1CommentFile }}
+                  </a>
+                </div>
+                <div class="custom-file-upload-margin">
+                  <CustomFileUpload @upload="uploadFile($event, 'reviewer1CommentFile')" v-model="reviewer1CommentFile"
+                    :accept="'application/pdf'" :multiple="false" />
+                </div>
+
               </div>
             </div>
 
-            <div class="field">
-              <div class="inline-container"
-                v-if="selectedDoctoral?.dissertation?.reviewer2CommentFile !== null && selectedDoctoral?.dissertation?.reviewer2CommentFile.length > 0">
-                <a href="javascript:void(0)"
-                  @click.prevent="downloadFile(selectedDoctoral.dissertation.reviewer2CommentFile)">
-                  <i class="fa-solid fa-file-arrow-down"></i> {{ $t('dissertation.reviewerComment') }} 1 (pdf)
-                </a>
-              </div>
+            <div class="field" v-if="selectedDoctoral?.dissertation?.state === 1">
               <div>
-                {{ reviewer2CommentFile }}
                 <label>{{ $t('dissertation.reviewerComment') + ' ' + $t('common.pdfFormat') + ' 2' }}</label>
-                <CustomFileUpload @upload="uploadFile($event, 'reviewer2CommentFile')"
-                  v-model="reviewer2CommentFile" :accept="'application/pdf'" :multiple="false" />
+                <div class="inline-container"
+                  v-if="selectedDoctoral?.dissertation?.reviewer2CommentFile !== null && selectedDoctoral?.dissertation?.reviewer2CommentFile.length > 0">
+                  <a href="javascript:void(0)"
+                    @click.prevent="downloadFile(selectedDoctoral.dissertation.reviewer2CommentFile)">
+                    <i class="fa-solid fa-file-arrow-down"></i> {{ selectedDoctoral.dissertation.reviewer2CommentFile }}
+                  </a>
+                </div>
+                <div class="custom-file-upload-margin">
+                  <CustomFileUpload @upload="uploadFile($event, 'reviewer2CommentFile')" v-model="reviewer2CommentFile"
+                    :accept="'application/pdf'" :multiple="false" />
+                </div>
+
               </div>
             </div>
           </Fieldset>
@@ -1149,8 +1201,6 @@ export default {
       },
       isValidYoutubeLink: true,
       docService: new DocService(),
-      isAdmin: false,
-      isDissertationChief: false
     };
   },
   created() {
@@ -1164,8 +1214,6 @@ export default {
       length: 10,
       numbers: true,
     });
-    this.isAdmin = this.findRole(null, 'main_administrator')
-    this.isDissertationChief = this.findRole(null, 'dissertation_chief')
   },
   mounted() {
     this.getDissertationMember();
@@ -1181,47 +1229,52 @@ export default {
     updateDissertation() {
 
       let data = new FormData()
-      if (this.abstractFile){
+      if (this.abstractFile) {
         data.append("abstractFile", this.abstractFile);
-      }else{
+      } else {
         this.dissertation.abstract = this.selectedDoctoral.dissertation.abstract
       }
-      if (this.dissertationFile){
+      if (this.dissertationFile) {
         data.append("dissertationFile", this.dissertationFile)
-      }else{
+      } else {
         this.dissertation.dissFile = this.selectedDoctoral.dissertation.dissFile
       }
-      if (this.swListFile){
+      if (this.swListFile) {
         data.append("swListFile", this.swListFile)
-      }else{
+      } else {
         this.dissertation.swListFile = this.selectedDoctoral.dissertation.swListFile
       }
-      if (this.scientificConsultantFile){
+      if (this.scientificConsultantFile) {
         data.append("scientificConsultantFile", this.scientificConsultantFile)
-      }else{
+      } else {
         this.dissertation.scientificConsultantFile = this.selectedDoctoral.dissertation.scientificConsultantFile
       }
-      if (this.foreignConsultantFile){
+      if (this.foreignConsultantFile) {
         data.append("foreignConsultantFile", this.foreignConsultantFile)
-      }else{
+      } else {
         this.dissertation.foreignConsultantFile = this.selectedDoctoral.dissertation.foreignConsultantFile
       }
-      if (this.commissionConclusionFile){
+      if (this.commissionConclusionFile) {
         data.append("commissionConclusionFile", this.commissionConclusionFile)
-      }else{
+      } else {
         this.dissertation.commissionConclusionFile = this.selectedDoctoral.dissertation.commissionConclusionFile
       }
-      if (this.reviewer1CommentFile){
+      if (this.councilConclusionFile) {
+        data.append("councilConclusionFile", this.councilConclusionFile)
+      } else {
+        this.dissertation.councilConclusionFile = this.selectedDoctoral.dissertation.councilConclusionFile
+      }
+      if (this.reviewer1CommentFile) {
         data.append("reviewer1CommentFile", this.reviewer1CommentFile)
-      }else{
+      } else {
         this.dissertation.reviewer1CommentFile = this.selectedDoctoral.dissertation.reviewer1CommentFile
       }
-      if (this.reviewer2CommentFile){
+      if (this.reviewer2CommentFile) {
         data.append("reviewer2CommentFile", this.reviewer2CommentFile)
-      }else{
+      } else {
         this.dissertation.reviewer2CommentFile = this.selectedDoctoral.dissertation.reviewer2CommentFile
       }
-
+    
       data.append("dissertation", JSON.stringify(this.selectedDoctoral.dissertation))
 
       this.dissertationService.updateDissertation(data).then(res => {
@@ -1244,7 +1297,7 @@ export default {
         }
       });
     },
-    clearDissertationFilePaths(){
+    clearDissertationFilePaths() {
       this.abstractFile = null;
       this.dissertationFile = null;
       this.swListFile = null;
@@ -1253,6 +1306,7 @@ export default {
       this.commissionConclusionFile = null;
       this.reviewer1CommentFile = null;
       this.reviewer2CommentFile = null;
+      this.councilConclusionFile = null;
     },
     autoSetTextareaRowsSize(text) {
       let numLines = text.split('\n').length;
@@ -2031,7 +2085,17 @@ export default {
     isReviewerCommentFileMissing() {
       return ((this.selectedDoctoral && this.selectedDoctoral.dissertation && this.selectedDoctoral.dissertation.state === 1) && (this.selectedDoctoral.dissertation.reviewer1CommentFile === null || this.selectedDoctoral.dissertation.reviewer2CommentFile == null)) //this.selectedDoctoral.dissertation.state === 1 ||
     },
-   
+    isMainAdministrator() {
+      return this.findRole(this.loginedUser, 'main_administrator');
+    },
+    isDissertationChief() {
+      return this.findRole(this.loginedUser, 'dissertation_chief');
+    },
+    isDissertationCouncilSecretary() {
+      return this.findRole(this.loginedUser, 'dissertation_council_secretary');
+    }
+
+
   },
 
 };
@@ -2040,12 +2104,29 @@ export default {
 .rowclass {
   font-size: 13pt;
 }
+
 .inline-container {
   display: flex;
   align-items: center;
+  margin-top: 3px;
 }
 
 .inline-container a {
   margin-right: 5px;
+}
+
+.custom-tabview .p-tabview-panel-content {
+  padding: 0 !important;
+  /* Remove padding from TabPanel content */
+}
+
+.p-tabview {
+  .p-tabview-panels {
+    padding: 0;
+  }
+}
+
+.custom-file-upload-margin {
+  margin-top: 5px;
 }
 </style>
