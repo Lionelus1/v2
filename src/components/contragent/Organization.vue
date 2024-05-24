@@ -181,7 +181,7 @@
       <Accordion style="margin-left: -14px; margin-right: -14px">
         <AccordionTab>
           <template #header>
-            <div class="uppercase">{{ this.$t("bank.requisite") }}</div>
+            <div class="uppercase">{{ this.$t("bank.requisite") }}<span class="p-error" v-if="!readonly && value.type === 2">*</span></div>
           </template>
           <div class="card">
             <div class="grid formgrid">
@@ -197,19 +197,14 @@
                 ></InputText>
               </div>
               <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-                <label>{{ this.$t("bank.title2") }}</label>
-                <InputText
-                  :readonly="localReadonly"
-                  class="mt-2"
-                  type="text"
-                  :placeholder="$t('bank.title2')"
-                  @input="correct"
-                  v-model="value.bank.name"
-                ></InputText>
+                <label>{{ $t('bank.title2') }}</label>
+                <Dropdown  :disabled="localReadonly" v-model="value.bank.id" :optionLabel="bankLabel" optionValue="id"
+                           :options="banks" :placeholder="$t('bank.title2')"
+                           class="dropdown w-full mt-2" @change="correct"></Dropdown>
               </div>
 
               <div v-if="value.type === 2" class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-                <label>{{ this.$t("bank.swift") }}</label>
+                <label>{{ this.$t("bank.swift") }}<span class="p-error" v-if="!readonly && value.type === 2">*</span></label>
                 <InputText
                     :readonly="localReadonly"
                     class="mt-2"
@@ -218,6 +213,7 @@
                     @input="correct"
                     v-model="value.bank.swift"
                 ></InputText>
+                <small class="p-error" v-if="this.validationErrors.swift">{{$t('common.requiredField')}}</small>
               </div>
               <div v-if="value.type === 2" class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
                 <label>{{ this.$t("bank.account") }}</label>
@@ -291,21 +287,24 @@ export default {
         bin: false,
         address: false,
         addressru: false,
+        swift: false,
       },
       orgStatus: [
         {id: 1, name: this.$t("common.organization")},
         {id: 2, name: this.$t("bank.title2")}
-      ]
+      ],
+      banks:[],
+      bank: null,
     };
   },
   created() {
     this.getOrgForms();
+    this.getBanks();
     this.isAdmin = this.findRole(null, 'main_administrator') || this.findRole(null, "career_administrator")
     this.isAdmin = this.message != null
     this.localReadonly =  this.readonly && !this.isAdmin
     if (this.message != null) {
       this.validateAddForm();
-    
     }
 
   },
@@ -340,7 +339,11 @@ export default {
       this.validationErrors.email = !this.value.email || this.value.email == "";
       this.validationErrors.address = !this.value.address || this.value.address == "";
       this.validationErrors.addressru = !this.value.addressru || this.value.addressru == "";
-      console.log(this.value.form.name )
+      if (this.value.type === 2) {
+        this.validationErrors.swift = !this.value.bank.swift || this.value.bank.swift == "";
+      } else {
+        this.validationErrors.swift = false
+      }
       return (
         !this.validationErrors.nameInQazaq &&
         !this.validationErrors.nameInRus &&
@@ -348,7 +351,8 @@ export default {
         !this.validationErrors.email &&
         !this.validationErrors.bin &&
         !this.validationErrors.address &&
-        !this.validationErrors.addressru
+        !this.validationErrors.addressru &&
+        !this.validationErrors.swift
       );
     },
     saveOrganization() {
@@ -397,7 +401,23 @@ export default {
         });
       });
 
+    },
+    bankLabel(item)  {
+      if (item != null) {
+        return item.organization.name
+      }
+    },
+    getBanks() {
+      var req = {"id" : 0, "count": 0};
+      api.post('/contragent/banks', req, {headers: getHeader()}).then(res  => {
+          this.banks = res.data;
+      }).catch(err => {
+        if (err?.response?.status !== 404) {
+          this.$toast.add({severity: 'error', summary: t('common.error'), life: 3000})
+        }
+      })
     }
+
   },
   emits: ['changed'],
   props: {
