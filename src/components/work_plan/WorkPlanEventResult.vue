@@ -15,7 +15,7 @@
                   <div class="p-fluid">
                     <div class="field">
                       <label>{{ $t('cafedra.responsible') }}</label>
-                      <FindUser v-model="resultFilter.responsiveUser" :max="1" searchMode="local" editMode="true"/>
+                      <FindUser v-model="resultFilter.responsiveUser" :max="1" searchMode="local" :user-type="3" editMode="true"/>
                     </div>
                     </div>
                     <div class="field p-fluid">

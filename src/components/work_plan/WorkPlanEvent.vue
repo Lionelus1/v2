@@ -181,7 +181,7 @@
       </div>
       <div class="field">
         <label>{{ $t('cafedra.responsible') }}</label>
-        <FindUser v-model="filters.author.value" :max="1" :editMode="false"/>
+        <FindUser v-model="filters.author.value" :max="1" :editMode="false" :user-type="3"/>
       </div>
       <div class="field">
         <Button :label="$t('common.clear')" @click="clearFilter" class="mb-2 p-button-outlined"/>

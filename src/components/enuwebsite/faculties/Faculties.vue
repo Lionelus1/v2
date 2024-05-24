@@ -30,7 +30,7 @@
                   <div class="p-fluid">
                     <div class="field" style="width: 50vh">
                       <label>{{ $t('cafedra.responsible') }}</label>
-                      <FindUser v-model="formData.user" :max="1" :editMode="false" />
+                      <FindUser v-model="formData.user" :max="1" :editMode="false" :user-type="3" />
                     </div>
                   </div>
                   <div class="field">
