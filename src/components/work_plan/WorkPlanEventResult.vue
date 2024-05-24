@@ -108,7 +108,7 @@
                 <label>{{ $t('common.fact') }}</label>
                 <InputText v-model="fact" @input="factChange"/>
               </div>
-              <div class="field" v-if="isVisibleWritableField">
+              <div class="field" v-if="isVisibleWritableField && isRespUser && (isOperPlan || isStandartPlan)">
                 <Dropdown v-model="selectedQuarter" :options="filteredQuarters" :optionLabel="('quarter_'+$i18n.locale)" :placeholder="$t('common.select')" class="w-full md:w-14rem" required @change="validate"/>
                 <small class="p-error" v-if="validation.quarter">{{$t('common.requiredField')}}</small>
               </div>
@@ -122,7 +122,7 @@
                     <small v-if="isSciencePlan && submitted && (inputWordCount < wordLimit)" class="p-error">{{ $t('workPlan.minWordCount') }}</small>
                 </div>
               </div>
-              <div class="field" v-if="isVisibleWritableField">
+              <div class="field" v-if="isVisibleWritableField && isRespUser">
                 <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadFile($event)" :auto="true" :multiple="true" :chooseLabel="$t('smartenu.chooseAdditionalFile')"></FileUpload>
               </div>
               <div class="field">
