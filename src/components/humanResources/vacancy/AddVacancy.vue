@@ -43,7 +43,7 @@
                       :max="1"
                       :class="{'p-invalid': validation.head}"
                       :editMode="false"
-                      :readonly="readonly"/>
+                      :readonly="readonly" :user-type="3"/>
             <small
                 class="p-error"
                 v-if="validation.head"

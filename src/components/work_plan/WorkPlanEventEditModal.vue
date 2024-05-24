@@ -27,18 +27,18 @@
     </div>
     <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
         <label>{{ $t('workPlan.summaryDepartment') }}</label>
-        <FindUser v-model="summaryDepartment" :max="1" editMode="true"/>
+        <FindUser v-model="summaryDepartment" :max="1" editMode="true" :user-type="3"/>
     </div>
     <div class="field" v-if="plan && plan.plan_type && plan.plan_type.code !== Enum.WorkPlanTypes.Science">
       <label>{{ plan && (plan.is_oper || plan.plan_type.code === Enum.WorkPlanTypes.Oper) ? $t('workPlan.summary') : $t('workPlan.approvalUsers') }}</label>
-      <FindUser v-model="selectedUsers" :editMode="true"></FindUser>
+      <FindUser v-model="selectedUsers" :editMode="true" :user-type="3"></FindUser>
       <small class="p-error" v-if="submitted && formValid.users">{{ $t('workPlan.errors.approvalUserError') }}</small>
     </div>
     <template v-if="plan && plan.plan_type && plan.plan_type.code === Enum.WorkPlanTypes.Science && inputSets">
       <div v-for="(inputSet, index) in inputSets" :key="index">
         <div class="field">
           <label>{{ $t('workPlan.scienceParticipants') }}</label>
-          <FindUser v-model="inputSet.selectedUsers" :editMode="true"></FindUser>
+          <FindUser v-model="inputSet.selectedUsers" :editMode="true" :user-type="3"></FindUser>
           <small class="p-error" v-if="submitted && formValid.users">{{ $t('workPlan.errors.approvalUserError') }}</small>
         </div>
         <div class="field">
