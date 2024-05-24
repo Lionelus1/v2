@@ -447,6 +447,7 @@ export default {
       validation:{
         quarter: false
       },
+      inputWordCount: 0
     }
   },
   computed: {
@@ -766,8 +767,8 @@ export default {
       ];
     },
     saveResult() {
-      if (this.validate()) {
-        this.showMessage("error", this.$t('common.message.fillError'));
+      if ((this.isOperPlan || this.isStandartPlan) && this.validate()) {
+        this.$toast.add({severity: 'error', detail: this.$t('common.message.fillError'), life: 3000});
         return
       }
       this.submitted = true
@@ -782,24 +783,20 @@ export default {
         this.isBlockUI = false;
         return;
       }
-      
-    
 
       fd.append('work_plan_event_id', this.event.work_plan_event_id);
       fd.append('result', this.isOperPlan ? this.newResult ? this.newResult : "" : this.result);
       if (this.plan && this.isOperPlan) {
+        fd.append("quarter", this.selectedQuarter.value);
         fd.append("is_partially", true);
       }
 
-      if (
-        this.authUser?.mainPosition?.department &&
+      if (this.authUser?.mainPosition?.department &&
         !this.authUser.mainPosition.department.isFaculty &&
-        this.isOperPlan
-      ) {
+        this.isOperPlan) {
         fd.append("fact", this.fact);
       }
 
-      fd.append("quarter", this.selectedQuarter.value);
       if (this.plan && this.isOperPlan && this.resultData)
         fd.append("result_id", this.resultData.event_result_id);
       if (this.files.length > 0) {
@@ -1045,11 +1042,11 @@ export default {
       item.isActive = true;
     },
     saveEditResult(item) {
-      if (this.validate()) {
-        this.showMessage("error", this.$t('common.message.fillError'));
+      if ((this.isOperPlan || this.isStandartPlan) && this.validate()) {
+        this.$toast.add({severity: 'error', detail: this.$t('common.message.fillError'), life: 3000});
         return
       }
-      console.log("received quarter:", item.quarter);
+
       this.loading = true;
       const fd = new FormData();
       fd.append("result_id", item.event_result_id)
