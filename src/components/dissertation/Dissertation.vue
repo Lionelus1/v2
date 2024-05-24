@@ -91,7 +91,7 @@
             </div>
             <div class="field">
               <label for="name">{{ $t('dissertation.secretary') }}</label>
-              <FindUser v-model="newCouncil.members" :max="1"></FindUser>
+              <FindUser v-model="newCouncil.members" :max="1" :user-type="3"></FindUser>
               <small class="p-error" v-if="submitted && validationErrors.members">{{
                 $t('dissertation.validationErrors.selectSecretary') }}</small>
             </div>
