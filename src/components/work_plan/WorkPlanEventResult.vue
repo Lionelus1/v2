@@ -766,8 +766,8 @@ export default {
       ];
     },
     saveResult() {
-      if (this.validate()) {
-        this.showMessage("error", this.$t('common.message.fillError'));
+      if ((this.isOperPlan || this.isStandartPlan) && this.validate()) {
+        this.$toast.add({severity: 'error', detail: this.$t('common.message.fillError'), life: 3000});
         return
       }
       this.submitted = true
@@ -1045,11 +1045,11 @@ export default {
       item.isActive = true;
     },
     saveEditResult(item) {
-      if (this.validate()) {
-        this.showMessage("error", this.$t('common.message.fillError'));
+      if ((this.isOperPlan || this.isStandartPlan) && this.validate()) {
+        this.$toast.add({severity: 'error', detail: this.$t('common.message.fillError'), life: 3000});
         return
       }
-      console.log("received quarter:", item.quarter);
+
       this.loading = true;
       const fd = new FormData();
       fd.append("result_id", item.event_result_id)
