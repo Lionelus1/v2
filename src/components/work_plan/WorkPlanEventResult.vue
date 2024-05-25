@@ -18,7 +18,8 @@
                       <FindUser v-model="resultFilter.responsiveUser" :max="1" searchMode="local" :user-type="3" editMode="true"/>
                     </div>
                     </div>
-                    <div class="field p-fluid">
+                    <div v-if="isOperPlan || isStandartPlan" class="field p-fluid">
+                      <label>{{ $t('dissertation.dissQuarter') }}</label>
                       <Dropdown v-model="resultFilter.quarter" :options="quarters" :optionLabel="('quarter_'+$i18n.locale)" :placeholder="$t('common.select')" class="w-full" optionValue="value"/>
                     </div>
                     <div class="p-fluid">
