@@ -1454,12 +1454,13 @@ export default {
     setMeetingTime() {
       this.submitted = true;
       if (this.validateSetMeetingTimeForm()) {
+        let meetingTimeStr = this.selectedDoctoral.meetingTime.toISOString();
         var request = {
           id: this.selectedDoctoral.dissertation.id,
           url: this.selectedDoctoral.dissertation.url,
           meetingUrl: this.selectedDoctoral.dissertation.meetingUrl,
           meetingPlace: this.selectedDoctoral.dissertation.meetingPlace,
-          meetingTime: this.selectedDoctoral.meetingTime,
+          meetingTime: meetingTimeStr,
           language: this.selectedDoctoral.dissertation.language,
           announce:this.announceData
         }
