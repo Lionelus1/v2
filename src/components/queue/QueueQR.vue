@@ -217,7 +217,7 @@ import {getHeader, smartEnuApi} from "@/config/config";
 import {useRoute} from "vue-router";
 import {useI18n} from "vue-i18n";
 import moment from "moment";
-import {socket} from "@/main";
+//import {socket} from "@/main";
 
 const {t, locale} = useI18n()
 const route = useRoute()
@@ -431,7 +431,7 @@ const connected = () => {
 
 
 onMounted(() => {
-  connected()
+  //connected()
   if (parentId.value !== parseInt(localStorage.getItem('queueParentId'))) {
     localStorage.removeItem('phoneNumber')
   }

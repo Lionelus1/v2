@@ -47,7 +47,7 @@
 import { authHeader, getHeader, smartEnuApi, socketApi,findRole, b64toBlob ,queueApi, header} from "@/config/config";
 import axios from "axios";
 import Logo from "@/components/smartenu/Logo.vue"
-import {socket} from "@/main";
+//import {socket} from "@/main";
 
 export default {
   components: {Logo},
@@ -141,7 +141,7 @@ export default {
   created() {
     let queueID = parseInt(this.$route.params.id) ;
     //this.getQueue(parentID)
-    this.connected(queueID,this)
+    //this.connected(queueID,this)
     this.height = (window.innerHeight-50) / this.rowCount    
     //alert("the socket identifier "+queueID);
   },
