@@ -154,7 +154,12 @@ router.beforeEach(function(to, from, next) {
 const app = createApp(App);
 const emitter = mitt();
 app.provide('emitter', emitter);
-export const socket = io(smartEnuApi)
+
+let options = {}
+if (process.env.NODE_ENV === 'production') {
+    options.path = "/api/socket.io"
+}
+export const socket = io(smartEnuApi, options)
 
 /* eslint-disable */
 app.use(PrimeVue, {
