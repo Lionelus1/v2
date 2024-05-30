@@ -47,6 +47,7 @@
 import { authHeader, getHeader, smartEnuApi, socketApi,findRole, b64toBlob ,queueApi, header} from "@/config/config";
 import axios from "axios";
 import Logo from "@/components/smartenu/Logo.vue"
+import {socket} from "@/main";
 
 export default {
   components: {Logo},
@@ -109,58 +110,38 @@ export default {
     },
     //@Description : queuid haitken kunde kelu kerek haitalanbaitin socket identifier
     //@Param qId ---default mani 0
-    connect2RealtimeStream(qId=0, queues, size, self){
-      if (qId==0){
-        alert("must declrare to connect queue");
-        return 
-      }
-      let socket = new WebSocket(socketApi+"/qws");
-      
-      socket.onopen = function(e) {
-        let newTv = new Object();
-        newTv.serviceId =0;
-        newTv.windowId = 0;
-        newTv.queueId = qId;
-        socket.send(JSON.stringify(newTv));
-      };
+    connected (queueID, self) {
+      setTimeout(()=>{
+        const data = {
+          serviceId: 0,
+          windowId: 0,
+          queueId: queueID
+        };
+        socket.emit('join', data)
+        socket.on('msg', (info) => {
+          let msg = info
+          if (msg.lang === 'ru') {
+            msg.lang = 2
+          } else if(msg.lang==='kz') {
+            msg.lang = 1
+          } else {
+            msg.lang=3
+          }
+          msg.window = Number(msg.window)
+          self.getAudio(msg)
+          this.queues.unshift(info);
+          if (this.queues.length > 15) {
+            this.queues = this.queues.slice(0,15)
+          }
+        });
+      },500)
 
-      socket.onmessage = function(event) {
-        var msg = JSON.parse(event.data)
-        if (msg.lang == 'ru') {
-          msg.lang = 2
-        } else if(msg.lang=='kz') {
-          msg.lang = 1
-        } else {
-          msg.lang=3
-        }
-        msg.window = Number(msg.window)
-        self.getAudio(msg)        
-        self.queues.unshift(JSON.parse(event.data))
-        if (self.queues.length() > 15) {
-          self.queues = self.queues.slice(0,15)
-        }
-       
-      };
-
-      socket.onclose = function(event) {
-        if (event.wasClean) {
-          //alert(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
-        } else {
-          // e.g. server process killed or network down
-          // event.code is usually 1006 in this case
-         // alert('[close] Connection died');
-        }
-      };
-
-      socket.onerror = function(error) {
-        alert(`[error] ${error.message}`);
-      };
-    } 
-  },
+    }
+},
   created() {
-    var queueID = parseInt(this.$route.params.id) ;
+    let queueID = parseInt(this.$route.params.id) ;
     //this.getQueue(parentID)
-    this.connect2RealtimeStream(queueID, this.queues, this.colCount*this.rowCount, this)
+    this.connected(queueID,this)
     this.height = (window.innerHeight-50) / this.rowCount    
     //alert("the socket identifier "+queueID);
   },

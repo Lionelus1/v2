@@ -63,6 +63,11 @@
             v-if="slotProps.node.parentId ===null && slotProps.node.createdUserId === loginedUser.userID "
             class="p-button-rounded p-button-help mr-2"  
             @click="$router.push('/queue/queueReport/'+ slotProps.node.key )" />
+            <Button
+              icon="pi pi-fw pi-qrcode"
+              v-tooltip.bottom="'QR'"
+              class="p-button-rounded p-button-info mr-2"
+              @click="itemID(slotProps.node.key)" />
         </template>
       </Column>              
     </TreeTable> 
@@ -155,15 +160,25 @@
         />
       </template>
     </Dialog>
-	</div>
+    <OverlayPanel ref="op">
+      <div class="flex flex-column gap-2">
+        <Button type="button"  class="" icon="fa-solid fa-download" label="SVG" @click="downloadQr('svg')"/>
+        <Button type="button" class="" icon="fa-solid fa-download" label="PNG" @click="downloadQr('png')"/>
+        <Button type="button" class="" icon="fa-solid fa-download" label="JPEG" @click="downloadQr('jpeg')"/>
+      </div>
+    </OverlayPanel>
+    <Qr v-show="false" v-if="dataQR" :qrData="dataQR" :download="downloadQr" ref="refQR"/>
+  </div>
 </template>
 
 <script>
 import api from "@/service/api";
-import {  getHeader, smartEnuApi, findRole } from "@/config/config";
+import {getHeader, smartEnuApi, findRole, apiDomain} from "@/config/config";
 import Enum from "@/enum/docstates";
+import Qr from "@/components/Qr.vue";
 export default {
   name: "Queue",
+  components: {Qr},
   data() {
     return {
       editVisible: false,
@@ -200,7 +215,7 @@ export default {
         responsible: false,
       },
       loginedUser: null,
-
+      dataQR: null,
     }
   },
    
@@ -383,7 +398,17 @@ export default {
       this.currentNode = node
       this.deleteVisible = true;
     },
-     
+    toggle(event) {
+      this.$refs.op.toggle(event);
+    },
+    itemID(queueID) {
+      this.toggle(event)
+      this.dataQR = `${apiDomain}/queue/qr/${queueID}`
+    },
+    downloadQr(extension) {
+      this.$refs.refQR.extensionDownload(extension)
+    },
+
   },
   computed: {
     menu () {

@@ -536,6 +536,11 @@ const routes = [
 
             },
             {
+                path: '/queue/qr/:id',
+                name: '/queueQR',
+                component: load('queue/QueueQR'),
+            },
+            {
                 path: '/reception',
                 name: 'reception',
                 component: load('publicReception/Journal'),
