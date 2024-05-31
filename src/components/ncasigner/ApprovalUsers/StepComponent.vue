@@ -16,8 +16,9 @@
       </ul>
       <div class="steps-content p-fluid">
         <FindUser @add="updateModel" @remove="updateModel" v-model="selectedUsers" :disabled="readonly"></FindUser>
-        <Dropdown :disabled="!isNewStage || readonly" @change="updateModel" class="mt-2" v-model="certificate" dataKey="value"
-          :options="certificates" :optionLabel="'name' + $i18n.locale" :placeholder="$t('ncasigner.certType')" />
+        <Dropdown v-if="mode !== 'doc_template_creating'" :disabled="!isNewStage || readonly" @change="updateModel" class="mt-2"
+                  v-model="certificate" dataKey="value" :options="certificates" :optionLabel="'name' + $i18n.locale"
+                  :placeholder="$t('ncasigner.certType')" />
       </div>
 
       <div>

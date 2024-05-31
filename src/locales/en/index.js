@@ -448,6 +448,7 @@ export default {
             succesUpdated: "Template updated successfully ",
             descriptionNotFilled: "Short description of the template is not entered ",
             succesFilled: "The new template has been added. Enter template text.",
+            textNotFilledBoth: "Please fill out the text of the template in two languages",
         },
         editor: {
             contractElements: "Contract elements",

@@ -28,13 +28,15 @@
 
         </div>
       </TabPanel>
-      <TabPanel v-if="docInfo && docInfo.docHistory.stateId == 2 && docInfo.folder && docInfo.folder.type === Enum.FolderType.Agreement" :header="$t('ncasigner.sign')">
+      <TabPanel v-if="docInfo && docInfo.docHistory.stateId == 2 && docInfo.folder && docInfo.folder.type === Enum.FolderType.Agreement
+              && docInfo.docType === Enum.DocType.Contract" :header="$t('ncasigner.sign')">
         <div class="flex justify-content-center">
           <Button icon="fa-solid fa-check" class="p-button-success md:col-3" @click="approve" :label="$t('common.action.approve')" :loading="loading" />
         </div>
       </TabPanel>
-      <TabPanel v-if="docInfo && docInfo.docHistory.stateId == 2  && !(docInfo.folder && docInfo.folder.type === Enum.FolderType.Agreement)
-              || docInfo && docInfo.docHistory.stateId == 6" :disabled="hideDocSign" :header="$t('ncasigner.sign')">
+      <TabPanel v-if="docInfo && docInfo.docHistory.stateId == 2  && !(docInfo.folder && docInfo.folder.type === Enum.FolderType.Agreement
+                && docInfo.docType === Enum.DocType.Contract) || docInfo && docInfo.docHistory.stateId == 6" :disabled="hideDocSign"
+                :header="$t('ncasigner.sign')">
         <div class="mt-2">
           <Panel v-if="!$isMobile">
             <template #header>

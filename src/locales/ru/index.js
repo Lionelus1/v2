@@ -449,6 +449,7 @@ export default {
             succesUpdated: "Шаблон успешно обновлен",
             descriptionNotFilled: "Не введен короткое описание шаблона",
             succesFilled: "Новый шаблон успено добавлен. Введите текст шаблона",
+            textNotFilledBoth: "Пожалуйста заполните текст шаблона на двух языках",
         },
         editor: {
             contractElements: "Элементы договора",

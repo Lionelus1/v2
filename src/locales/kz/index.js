@@ -447,6 +447,7 @@ export default {
             succesUpdated: "Үлгі сәтті жаңартылды",
             descriptionNotFilled: "Үлгінің қысқаша сипаттамасын көрсетпедіңіз",
             succesFilled: "Жаңа үлгі сәтті қосылды. Үлгі мәтнін енгізіңіз",
+            textNotFilledBoth: "Үлгі мәтінін екі тілде толтырыңыз",
         },
         editor: {
             contractElements: "Келісім-шарт элементтері",

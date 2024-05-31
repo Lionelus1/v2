@@ -209,7 +209,7 @@ export default {
           visible: () => this.mode === 'default' && this.selectedNode && this.selectedNode.data.creatorId ===
               this.loginedUser.userID && (this.selectedNode.data.History[0].stateId === this.DocEnum.CREATED.ID ||
               this.selectedNode.data.History[0].stateId === this.DocEnum.REVISION.ID),
-          command: () => { this.clearStages(); this.open('toApprovalDialog') },
+          command: () => { this.sendToApprove() },
         },
         {
           label: this.$t("common.approvalList"),
@@ -577,6 +577,15 @@ export default {
     },
     selected(docTemplate) {
       this.$emit('onselect', docTemplate);
+    },
+    sendToApprove() {
+      if (this.selectedNode.data.mainTextKaz.length() < 1 || this.selectedNode.data.mainTextRus.length() < 1) {
+        this.showMessage('warn', this.$t('doctemplate.message.textNotFilledBoth'));
+        return
+      }
+
+      this.clearStages()
+      this.open('toApprovalDialog')
     }
   }
 }
