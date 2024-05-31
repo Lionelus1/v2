@@ -348,8 +348,10 @@ getQueue(parentId.value)
 
 watch(() => currentTicketWS.value, (newValue, oldValue) => {
   if (currentTicketWS.value !== null && currentTicketAPI.value !== null) {
-    called.value = currentTicketWS.value === currentTicketAPI.value;
-    localStorage.removeItem('queueKey')
+    if(currentTicketWS.value === currentTicketAPI.value){
+      called.value = currentTicketWS.value === currentTicketAPI.value;
+      localStorage.removeItem('queueKey')
+    }
   }
 });
 
