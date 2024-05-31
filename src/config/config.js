@@ -6,6 +6,7 @@ export const signerApi = process.env.VUE_APP_SIGNER_API
 export const smartEnuApi = process.env.VUE_APP_SMARTENU_API
 export const socketApi = process.env.VUE_APP_SOCKET_API
 export const queueApi = process.env.VUE_APP_QUEUE_API
+export const serverUrl = process.env.VUE_APP_API_SERVER
 export const fileRoute = "/serve?path="
 export const downloadRoute = "/download/"
 

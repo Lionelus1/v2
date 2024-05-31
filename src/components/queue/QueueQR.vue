@@ -213,10 +213,11 @@
 <script setup>
 import {computed, onMounted, ref, watch} from "vue";
 import axios from "axios";
-import {getHeader, smartEnuApi} from "@/config/config";
+import {getHeader, serverUrl, smartEnuApi} from "@/config/config";
 import {useRoute} from "vue-router";
 import {useI18n} from "vue-i18n";
 import moment from "moment";
+import io from "socket.io-client";
 //import {socket} from "@/main";
 
 const {t, locale} = useI18n()
@@ -251,6 +252,13 @@ const reservationBtn = ref(false);
 const selectedItem = ref();
 const daysOfWeek = ['ВС', 'ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ'];
 const futureDays = ref([]);
+let options = {}
+let url = smartEnuApi
+if (process.env.NODE_ENV === 'production') {
+  url = serverUrl
+  options.path = "/api/socket.io"
+}
+const socket = io(url, options)
 
 const changeQueues = (event) => {
   selectDayBool.value = true
@@ -383,7 +391,7 @@ const registerQueue = (queueId, queue) => {
           currentTicketAPI.value = queinfo.value.queueNumber
           const numMin = response.data.averageTime / 60
           queinfo.value.averageTime = numMin.toFixed(0);
-          splitDateTime(response.data.queueDate)
+          //splitDateTime(response.data.queueDate)
           currentStep.value = 3
         })
         .catch((error) => {
@@ -425,13 +433,14 @@ const connected = () => {
         queuesWS.value = queuesWS.value.slice(0, 3);
       }
     });
+    socket.on("connect_error", (err) => {
+      console.log(err)
+    });
   },500)
-
 }
-
+connected()
 
 onMounted(() => {
-  //connected()
   if (parentId.value !== parseInt(localStorage.getItem('queueParentId'))) {
     localStorage.removeItem('phoneNumber')
   }
