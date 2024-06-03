@@ -948,7 +948,9 @@ export default {
         doYouWantSendReport: "Вы уверены, что отправите этот отчет на подпись?",
         videoValid: 'Принимаются только видеоролики с платформы YouTube',
         reviewerCommentFieldWarning: 'Отзыв официального рецензента не прикреплен',
-        event: 'Мероприятие'
+        event: 'Мероприятие',
+        attachedFileNotFound: 'К диссертации не прикреплены файлы.',
+        invalidVideoLink: 'Ссылка на видео недействительна.'
     },
     faq: {
         title: "Служба поддержки",
@@ -1252,7 +1254,7 @@ export default {
         },
         quarterYear: "Весь год",
         resultIndicator: "Показатель прямых результатов",
-        summary: "Свод/Подтверждение",
+        summary: "Исполняющее структурное подразделение",
         respExecutor: "Ответственные исполнители",
         halfYear: "полугодие",
         simplePlan: "План",

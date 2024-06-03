@@ -160,7 +160,6 @@ export default {
       this.planService.getRespUsers(this.report.work_plan_id).then(res => {
         this.respUsers = res.data
       }).catch(error => {
-        console.log(error);
         this.$toast.add({ severity: "error", summary: error, life: 3000 });
       });
     },

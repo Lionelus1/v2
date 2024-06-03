@@ -958,7 +958,9 @@ export default {
         doYouWantSendReport: "Бұл есепті қол қоюға жіберуге сенімдісіз бе?",
         videoValid: 'Тек YouTube платформасынан бейнелер жарайды',
         reviewerCommentFieldWarning: 'Ресми рецензенттің пікірі қосылмаған',
-        event: 'Іс-шара'
+        event: 'Іс-шара',
+        attachedFileNotFound: 'Бұл диссертацияда тіркелген файлдар жоқ.',
+        invalidVideoLink: 'Берілген видеоның сілтемесі жарамсыз.'
     },
     faq: {
         title: "Қолдау қызметі",
@@ -1263,7 +1265,7 @@ export default {
         },
         quarterYear: "Жыл бойы",
         resultIndicator: "Нәтиже көрсеткіші",
-        summary: "Жинақтаушы/Растау",
+        summary: "Орындаушы құрылымдық бөлім",
         respExecutor: "Жауапты орындаушылар",
         halfYear: "жартыжылдық",
         simplePlan: "Жоспар",

@@ -917,7 +917,9 @@ export default {
         doYouWantSendReport: "Are you sure to submit this report for signature?",
         videoValid: 'Only videos from the YouTube platform are allowed',
         reviewerCommentFieldWarning: 'Review from official reviewer not attached',
-        event: 'Event'
+        event: 'Event',
+        attachedFileNotFound: 'There are no files attached to this dissertation.',
+        invalidVideoLink: 'The provided video link is invalid.'
     },
     faq: {
         title: "Help desk",
@@ -1222,7 +1224,7 @@ export default {
         },
         quarterYear: "Whole year",
         resultIndicator: "Indicator of direct results",
-        summary: "Summary/Confirmation",
+        summary: "Executing structural unit",
         respExecutor: "Responsible performers",
         halfYear: "semi-annual",
         simplePlan: "Plan",
