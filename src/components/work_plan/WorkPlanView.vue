@@ -218,26 +218,6 @@ export default {
         }
       });
     },
-    // getSignatures() {
-    //   let data = {doc_id: this.plan.doc_id}
-    //   this.planService.getSignatures(data).then(res => {
-    //     if (res.data) {
-    //       this.signatures = res.data;
-    //       const signUser = res.data.find(x => x.userId === this.loginedUserId);
-    //       if (signUser && signUser.signature && signUser.signature !== '') {
-    //         this.isCurrentUserApproved = true;
-    //       }
-    //       console.log(this.signatures)
-    //     }
-    //   }).catch(error => {
-    //     console.log(error)
-    //     this.$toast.add({
-    //       severity: 'error',
-    //       summary: error,
-    //       life: 3000
-    //     });
-    //   })
-    // },
 
     init() {
       const currentUser = this.approval_users.findIndex(x => x.user.id === this.loginedUserId);

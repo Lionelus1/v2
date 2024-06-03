@@ -156,10 +156,10 @@
                       <div class="flex flex-column justify-content-center align-items-start">
                         <span class="pb-2"><i class="fa-solid fa-user mr-1"></i><b>{{ item.user.thirdName + " " + item.user.firstName }}</b></span>
                         <!-- {{ item.result_text[0].quarter }} -->
-                        
-                        
+
+
                         <span class="pb-2"><strong>{{ getQuarter(item.result_text[0].quarter) }}</strong> | {{ formatDateMoment(item.plan_event_result_history[0].create_date) }}</span>
-                       
+
                       </div>
                       <div class="ml-3">
                         <span :class="'customer-badge status-' + item.plan_event_result_history[0].state_id">
@@ -536,7 +536,7 @@ export default {
     //   if (item.reject_history?.message !== null) {
     //     // Return the non-null reject_history.message
     //     this.rejectMessage = item.reject_history.message;
-    //     return 
+    //     return
     //   }
     // }
     // // If no non-null reject_history.message is found, return an empty string or handle it as per your requirement
@@ -559,6 +559,7 @@ export default {
     findRole: findRole,
     getFirstMonthOfQuarter() {
       const currentDate = new Date();
+      //const currentMonth = currentDate.getMonth();
       const currentMonth = currentDate.getMonth();
       const currentQuarter = Math.floor(currentMonth / 3) + 1;
       const firstMonthOfQuarter = (currentQuarter - 1) * 3;
@@ -572,9 +573,8 @@ export default {
       const currentDate = new Date();
       const currentMonth = currentDate.getMonth() + 1;
       const currentQuarter = Math.ceil(currentMonth / 3);
-
-      if (currentDate.getDate() <= 15 && currentMonth === this.getFirstMonthOfQuarter) {
-        // Eger agymdagy aidyng agymdagy kuni 15-ten kishi nemese teng bolsa agymdagy toqsan men aldynggy toqsandy korsetu. 
+      const currentDay = currentDate.getDate();
+      if (currentDay <= 15 && currentMonth === this.getFirstMonthOfQuarter) {
         // Agymdagy ai agymdagy toqsannyng birinshi aiy bolsa aldyngy toqsanga natije toltyra alady
         return this.quarters.filter(quarter => quarter.value >= currentQuarter - 1 && quarter.value <= currentQuarter);
       } else {
@@ -651,7 +651,7 @@ export default {
       // if (this.resultFilter && this.resultFilter.faculty && this.resultFilter.faculty.id > 0) {
       //   data.result_filter.department_id = this.resultFilter.faculty.id;
       // }
-      
+
       this.planService.getEventResult(data).then(res => {
         if (res.data) {
           this.resultData = res.data;
@@ -785,7 +785,7 @@ export default {
       }
       this.submitted = true
       this.isBlockUI = true;
-     
+
       const fd = new FormData();
       if (this.isOperPlan){
         this.wordLimit = 0
@@ -983,9 +983,6 @@ export default {
         this.getResultHistory();
       }
     },
-    resultChange() {
-      console.log(this.result)
-    },
     editorChange(event) {
       if ((this.result != null && this.result.length > 0) || (this.newResult != null && this.newResult.length > 0)) {
         this.isDisabled = false;
@@ -1066,7 +1063,7 @@ export default {
       fd.append("work_plan_event_id", item.work_plan_event_id)
       fd.append("quarter", this.selectedQuarter);
 
-      
+
       if (this.isFactChanged)
         console.log("fact: ", this.fact);
         fd.append("fact", this.fact)
@@ -1386,23 +1383,23 @@ td {
 }
 
 .customer-badge.value-1 {
-  background-color: #007bff; 
-  color: #ffffff; 
+  background-color: #007bff;
+  color: #ffffff;
 }
 
 .customer-badge.value-2 {
-  background-color: #b30077; 
-  color: #ffffff; 
+  background-color: #b30077;
+  color: #ffffff;
 }
 
 .customer-badge.value-3 {
-  background-color: #6666ff; 
+  background-color: #6666ff;
   color: #ffffff;
 }
 
 .customer-badge.value-4 {
-  background-color: #cc33ff; 
-  color: #ffffff; 
+  background-color: #cc33ff;
+  color: #ffffff;
 }
 @media screen and (max-width: 768px) {
   .overlay-panel {

@@ -910,6 +910,7 @@ export default {
         scientificConsultant: 'Отзыв научного консультанта',
         foreignConsultant: 'Отзыв зарубежного консультанта',
         commissionConclusion: 'Заключение комиссии по этической оценке',
+        councilConclusion: 'Решение диссовета',
         reviewerComment: 'Отзыв официального рецензента',
         setMeetingTimeConfirmMsg: "Нажимая кнопку {btn} ниже, вы подтверждаете корректность информации и данная информация публикуется в виде объявления на сайте.",
         addMemeberToDisCouncil: 'Добавить члена в диссертационный совет',
@@ -947,7 +948,10 @@ export default {
         sendReportForSign: 'Отправить отчет на подпись',
         doYouWantSendReport: "Вы уверены, что отправите этот отчет на подпись?",
         videoValid: 'Принимаются только видеоролики с платформы YouTube',
-        reviewerCommentFieldWarning: 'Отзыв официального рецензента не прикреплен'
+        reviewerCommentFieldWarning: 'Отзыв официального рецензента не прикреплен',
+        event: 'Мероприятие',
+        attachedFileNotFound: 'К диссертации не прикреплены файлы.',
+        invalidVideoLink: 'Ссылка на видео недействительна.'
     },
     faq: {
         title: "Служба поддержки",

@@ -158,9 +158,7 @@ export default {
     if (this.parentData) {
       this.quarters.length = this.quarters.findIndex(x => x.id === this.parentData.quarter) + 1;
       this.quarter = parseInt(this.parentData.quarter);
-      /*let ind = this.quarters.findIndex(x => x.id === parseInt(this.parentData.quarter.String));
-      console.log(ind)
-      this.quarters = this.quarters.slice(0, ind);*/
+
     }
     if (this.summaryDepartment && this.summaryDepartment.length === 0) {
       if (this.selectedUsers.length > 0) {

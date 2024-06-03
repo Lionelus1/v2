@@ -879,6 +879,7 @@ export default {
         scientificConsultant: 'Review of the scientific consultant',
         foreignConsultant: 'Review of foreign consultant',
         commissionConclusion: 'Conclusion of the ethical assessment committee',
+        councilConclusion: 'Council decision',
         reviewerComment: 'Official reviewer\'s review',
         setMeetingTimeConfirmMsg: "By clicking the {btn} button below, you confirm the correctness of the information and this information is published in the form of an announcement on the site.",
         addMemeberToDisCouncil: 'Add Member to The Dissertation Council',
@@ -916,7 +917,10 @@ export default {
         sendReportForSign: 'Send the report for signature',
         doYouWantSendReport: "Are you sure to submit this report for signature?",
         videoValid: 'Only videos from the YouTube platform are allowed',
-        reviewerCommentFieldWarning: 'Review from official reviewer not attached'
+        reviewerCommentFieldWarning: 'Review from official reviewer not attached',
+        event: 'Event',
+        attachedFileNotFound: 'There are no files attached to this dissertation.',
+        invalidVideoLink: 'The provided video link is invalid.'
     },
     faq: {
         title: "Help desk",
