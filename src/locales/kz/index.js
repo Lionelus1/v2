@@ -1602,7 +1602,17 @@ export default {
         customerAndSource:'Тапсырыс беруші және қаржыландыру көзі',
         contract_sum_kz: 'Шарт сомасы',
         project_position:'Жобаның позициясы',
-        scientific_grants: "Ғылыми гранттар"
+        scientific_grants: "Ғылыми гранттар",
+        orgNameKz: 'Ұйымның қазақ тіліндегі атауы',
+        orgNameRu: 'Ұйымның орыс тіліндегі атауы',
+        orgNameEn: 'Ұйымның ағылшын тіліндегі атауы',
+        posNameKz: 'Қазақ тіліндегі лауазымның атауы',
+        posNameRu: 'Орыс тіліндегі лауазымның атауы',
+        posNameEn: 'Ағылшын тіліндегі лауазымның атауы',
+        responsibilitiesKz: 'Қазақ тіліндегі қызметтік міндеттер',
+        responsibilitiesRu: 'Орыс тіліндегі қызметтік міндеттер',
+        responsibilitiesEn: 'Ағылшын тіліндегі қызметтік міндеттер',
+
 
     },
     personalData: 'Жеке ақпарат',
