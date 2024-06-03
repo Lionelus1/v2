@@ -1,5 +1,5 @@
 <template>
-  <div :class="['card',{'talon_bg': currentStep === 3 , 'mt-6': currentStep !==3 }]">
+  <div class="card talon_bg">
     <div :class="['flex', 'flex-column', 'm-auto', 'gap-2', {'text-center': !reservation, 'gap-4': !reservation,}]" v-if="currentStep === 1">
       <template v-if="reservation">
         <h4 class="m-0">{{ $t('contact.lname') }}</h4>
@@ -457,10 +457,8 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .talon_bg {
-  //background: #007dbe;
   height: 100vh;
-  margin: -20px;
-  padding-top: 30px;
+  padding-top: 3em;
 }
 
 .talon {
