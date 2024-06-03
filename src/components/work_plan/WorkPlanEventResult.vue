@@ -557,14 +557,25 @@ export default {
   },
   methods: {
     findRole: findRole,
-
+    getFirstMonthOfQuarter() {
+      const currentDate = new Date();
+      const currentMonth = currentDate.getMonth();
+      const currentQuarter = Math.floor(currentMonth / 3) + 1;
+      const firstMonthOfQuarter = (currentQuarter - 1) * 3;
+      if (firstMonthOfQuarter === 0){
+        //Eger firstMonthIndex "0" teng bolsa "Ақпан" - aiyn qaitarady
+        return 1
+      }
+      return firstMonthOfQuarter;
+    },
     filterQuarters() {
       const currentDate = new Date();
       const currentMonth = currentDate.getMonth() + 1;
       const currentQuarter = Math.ceil(currentMonth / 3);
 
-      if (currentDate.getDate() <= 15) {
+      if (currentDate.getDate() <= 15 && currentMonth === this.getFirstMonthOfQuarter) {
         // Eger agymdagy aidyng agymdagy kuni 15-ten kishi nemese teng bolsa agymdagy toqsan men aldynggy toqsandy korsetu. 
+        // Agymdagy ai agymdagy toqsannyng birinshi aiy bolsa aldyngy toqsanga natije toltyra alady
         return this.quarters.filter(quarter => quarter.value >= currentQuarter - 1 && quarter.value <= currentQuarter);
       } else {
         // Tek agymdagy toqsandy korsetu
