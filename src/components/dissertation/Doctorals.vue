@@ -1217,9 +1217,7 @@ export default {
       length: 10,
       numbers: true,
     });
-    this.isAdmin = this.findRole(null, 'main_administrator')
-    this.isDissertationChief = this.findRole(null, 'dissertation_chief')
-    this.isDissertationSecretary = this.findRole(null, 'dissertation_council_secretary')
+
   },
   mounted() {
     this.getDissertationMember();
@@ -1617,7 +1615,6 @@ export default {
       }
       this.dissertationService.generateAnnounce(data).then(res => {
         if (res.data) {
-
           this.announceData = res.data;
         }
       }).catch(error => {
