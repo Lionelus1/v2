@@ -410,12 +410,12 @@ const registerQueue = (queueId, queue) => {
           headers: getHeader(),
         })
         .then((response) => {
-          //queinfo.value = response.data
-          //currentTicketAPI.value = queinfo.value.queueNumber
-          //const numMin = response.data.averageTime / 60
-          //queinfo.value.averageTime = numMin.toFixed(0);
+          queinfo.value = response.data
+          currentTicketAPI.value = queinfo.value.queueNumber
+          const numMin = response.data.averageTime / 60
+          queinfo.value.averageTime = numMin.toFixed(0);
           //splitDateTime(response.data.queueDate)
-          getRegisterService()
+          //getRegisterService()
           currentStep.value = 3
         })
         .catch((error) => {
@@ -505,7 +505,8 @@ onMounted(() => {
     localStorage.removeItem('phoneNumber')
   }
   if (localStorage.getItem('phoneNumber') !== null && localStorage.getItem('queueKey') !== null && (parentId.value === parseInt(localStorage.getItem('queueParentId')))) {
-    getRegisterService(parseInt(localStorage.getItem('queueKey')), event)
+    registerQueue(parseInt(localStorage.getItem('queueKey')), event)
+    //getRegisterService(parseInt(localStorage.getItem('queueKey')), event)
     currentStep.value = 3
   } else if (localStorage.getItem('phoneNumber') !== null) {
     currentStep.value = 1
@@ -515,7 +516,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .talon_bg {
-  padding-bottom: 20px;
+
   //height: 100vh;
   //padding-top: 3em;
 }
