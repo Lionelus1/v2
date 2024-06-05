@@ -1799,11 +1799,11 @@ export default {
 
         question: 'Question',
         anwers: 'Anwers',
-        questionkz: 'enter a question in Kazakh',
-        questionen: 'enter a question in English',
-        questionru: 'enter a question in Russian',
-        anwerskz: 'enter a anwers in Kazakh',
-        anwersen: 'enter a anwers in English',
-        anwersru: 'enter a anwers in Russian'
+        questionkz: 'Enter a question in Kazakh',
+        questionen: 'Enter a question in English',
+        questionru: 'Enter a question in Russian',
+        anwerskz: 'Enter a anwers in Kazakh',
+        anwersen: 'Enter a anwers in English',
+        anwersru: 'Enter a anwers in Russian'
     } 
 }

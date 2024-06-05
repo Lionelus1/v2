@@ -9,62 +9,62 @@
       <div class="col-12 md:col-12 p-fluid">
         <div class="card">
           <div class="grid formgrid">
-            <!-- Учебное заведение -->
             <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-              <label>{{ $t('telegram.questionkz') }}<span class="p-error" v-if="!readonly">*</span></label>
-              <InputText :readonly="readonly" class="mt-2" type="text" :placeholder="$t('telegram.questionkz')" v-model="telegram.title_kz"></InputText>
+              <label>{{ $t('telegram.questionkz') }}<span class="p-error">*</span></label>
+              <InputText class="mt-2" type="text" :placeholder="$t('telegram.questionkz')" v-model="telegram.title_kz"></InputText>
               <small class="p-error" v-if="validation.titlekz">{{ $t("common.requiredField") }}</small>
             </div>
-              <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-              <label>{{ $t('telegram.anwersru') }}<span class="p-error" v-if="!readonly">*</span></label>
-              <InputText :readonly="readonly" class="mt-2" type="text" :placeholder="$t('telegram.anwersru')" v-model="telegram.anwers_ru"></InputText>
-              <small class="p-error" v-if="validation.anwersru">{{ $t("common.requiredField") }}</small>
-            </div>
             <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-              <label>{{ $t('telegram.questionen') }}<span class="p-error" v-if="!readonly">*</span></label>
-              <InputText :readonly="readonly" class="mt-2" type="text" :placeholder="$t('telegram.questionen')" v-model="telegram.title_en"></InputText>
+              <label>{{ $t('telegram.questionen') }}<span class="p-error">*</span></label>
+              <inputText class="mt-2"  type="text" :placeholder="$t('telegram.questionen')" v-model="telegram.title_en"></inputText>
               <small class="p-error" v-if="validation.titleen">{{ $t("common.requiredField") }}</small>
             </div>
             <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-              <label>{{ $t('telegram.anwerskz') }}<span class="p-error" v-if="!readonly">*</span></label>
-              <InputText :readonly="readonly" class="mt-2" type="text" :placeholder="$t('telegram.anwerskz')" v-model="telegram.anwers_kz"></InputText>
-              <small class="p-error" v-if="validation.anwerskz">{{ $t("common.requiredField") }}</small>
-            </div>
-            <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-              <label>{{ $t('telegram.questionru') }}<span class="p-error" v-if="!readonly">*</span></label>
-              <InputText :readonly="readonly" class="mt-2" type="text" :placeholder="$t('telegram.questionru')" v-model="telegram.title_ru"></InputText>
+              <label>{{ $t('telegram.questionru') }}<span class="p-error">*</span></label>
+              <InputText class="mt-2" type="text" :placeholder="$t('telegram.questionru')" v-model="telegram.title_ru"></InputText>
               <small class="p-error" v-if="validation.titleru">{{ $t("common.requiredField") }}</small>
             </div>
-            <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-              <label>{{ $t('telegram.anwersen') }}<span class="p-error" v-if="!readonly">*</span></label>
-              <InputText :readonly="readonly" class="mt-2" type="text" :placeholder="$t('telegram.anwersen')" v-model="telegram.anwers_en"></InputText>
-              <small class="p-error" v-if="validation.anwersen">{{ $t("common.requiredField") }}</small>
-            </div>
-            <Textarea v-model="value" rows="5" cols="30" />
-  
           </div>
-  
+        </div>
+        </div>
+          <div class="col-12 md:col-12 p-fluid">
+        <div class="card">
+          <div class="grid formgrid">
+            <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+              <label>{{ $t('telegram.anwerskz') }}<span class="p-error">*</span></label>
+              <Textarea rows="5" cols="30" class="mt-2" type="text" :placeholder="$t('telegram.anwerskz')" v-model="telegram.anwers_kz"></Textarea>
+              <small class="p-error" v-if="validation.anwerskz">{{ $t("common.requiredField") }}</small>
+            </div> 
+            <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+              <label>{{ $t('telegram.anwersru') }}<span class="p-error">*</span></label>
+              <Textarea  rows="5" cols="30" class="mt-2" type="text" :placeholder="$t('telegram.anwersru')" v-model="telegram.anwers_ru"></Textarea>
+              <small class="p-error" v-if="validation.anwersru">{{ $t("common.requiredField") }}</small>
+            </div> 
+            <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+              <label>{{ $t('telegram.anwersen') }}<span class="p-error">*</span></label>
+              <Textarea  rows="5" cols="30" class="mt-2" type="text" :placeholder="$t('telegram.anwersen')" v-model="telegram.anwers_en"></Textarea>
+              <small class="p-error" v-if="validation.anwersen">{{ $t("common.requiredField") }}</small>
+          </div>
+          </div>
+        </div>
+        </div>
           <!-- ФОТО ЗАГРУЗИТЬ-->
           <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-            <FileUpload ref="form" mode="basic" class="mt-2" :customUpload="true" accept="image/*" :class="{'p-invalid': validation.file}" @uploader="upload($event)" :auto="true" v-bind:chooseLabel="$t('ncasigner.chooseFile')"/>
+            <FileUpload ref="form" mode="basic" class="mt-2" :customUpload="true"  accept=".pdf,.docx,.png, .jpeg, .jpg" :class="{'p-invalid': validation.file}" @uploader="upload($event)" :auto="true" v-bind:chooseLabel="$t('ncasigner.chooseFile')"/>
             <InlineMessage severity="info" class="mt-2" show v-if="file">
                 {{ $t('ncasigner.chosenFile', {fn: file ? file.name : ""}) }}
             </InlineMessage>
-            <small class="p-error"  v-if="validation.file" >{{ $t("common.requiredField") }}</small>
-          </div>
-  
+            <small class="p-error"  v-if="validation.file" >{{ $t("common.requiredField") }}</small> 
+          </div> 
         </div>
-      </div>
-    </div>
+     
   </template>
   <script setup>
-  
-    import api from "@/service/api";
-    import {getHeader, smartEnuApi} from "@/config/config";
     import { inject, defineProps, ref } from 'vue';
     import {useI18n} from "vue-i18n";
     import {QuestionService} from "@/service/question.service"
     import { useToast } from "primevue/usetoast";
+import InputText from "primevue/inputtext";
     const {t, locale} = useI18n()
     const toast = useToast()
     
@@ -98,13 +98,6 @@
           anwerskz: false,
           anwersen: false,
           anwersru: false,
-          institution: false,
-          institutionAddress: false,
-          faculty: false,
-          speciality: false,
-          receiptDate: false,
-          expirationDate: false,
-          diplomaNumber: false
     })
   
     const telegram = ref(props.modelValue)
@@ -118,10 +111,10 @@
         if (file.value !== null) {
           fd.append("idImage", file.value);
         }
-        console.log('TEST PRINT')
         questionService.createQuestion(fd).then(res  => {
           toast.add({severity: 'success', summary: t('common.success'), life: 3000})
           emitter.emit('telegram', true)
+          emitter.emit('node', true); // Эмитирование события
         }).catch(err => {
           toast.add({
             summary: t('message.actionError'),
@@ -136,7 +129,7 @@
         file.value = event.files[0];
     }
   
-    const validateForm = ()=> {
+    const validationForm = ()=> {
       validation.value.titlekz = !telegram.value.title_kz || telegram.value.title_kz == ""
       validation.value.titleen = !telegram.value.title_en || telegram.value.title_en == ""
       validation.value.titleru = !telegram.value.title_ru || telegram.value.title_ru == ""
@@ -152,21 +145,25 @@
           !validation.value.anwerskz 
       )
     }
+
   
-    const menu2= ref([
-      {
-        label: t("common.save"),
-        icon: "pi pi-fw pi-save",
-        command: () => {
-          create()
-        },
-      },
-    ])
+    const menu2 = ref([
+  {
+    label: t("common.save"),
+    icon: "pi pi-fw pi-save",
+    command: () => {
+      if (validationForm()) {
+        create();
+      }
+    },
+  },
+]);
       
   </script>
   <style>
   #carddiv label {
     position: inherit;
   }
+
   </style>
   
