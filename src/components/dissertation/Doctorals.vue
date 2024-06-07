@@ -820,7 +820,7 @@
           </div>
           <Fieldset :legend="$t('workPlan.attachments')" class="col-12" toggleable>
             <div v-if="hasAttachments">
-            <div class="field" v-if="selectedDoctoral?.dissertation?.state === 0 && selectedDoctoral?.dissertation?.abstract && selectedDoctoral?.dissertation?.abstract.length > 0 && selectedDoctoral?.dissertation?.abstractFileID && selectedDoctoral?.dissertation?.abstractFileID.length > 0">
+            <div class="field" v-if="selectedDoctoral?.dissertation?.abstract && selectedDoctoral?.dissertation?.abstract.length > 0 && selectedDoctoral?.dissertation?.abstractFileID && selectedDoctoral?.dissertation?.abstractFileID.length > 0">
               <div>
                 <label for="abstractfile">{{ $t('dissertation.abstractFile') + ' ' + $t('common.docFormat') }}</label>
                 <div class="inline-container"
@@ -834,11 +834,10 @@
                     :accept="'application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'"
                     :multiple="false" />
                 </div>
-
               </div>
             </div>
 
-            <div class="field" v-if="selectedDoctoral?.dissertation?.state === 0 && selectedDoctoral?.dissertation?.disFile && selectedDoctoral?.dissertation?.disFile.length > 0 && selectedDoctoral?.dissertation?.disFileID && selectedDoctoral?.dissertation?.disFileID.length > 0">
+            <div class="field" v-if="selectedDoctoral?.dissertation?.disFile && selectedDoctoral?.dissertation?.disFile.length > 0 && selectedDoctoral?.dissertation?.disFileID && selectedDoctoral?.dissertation?.disFileID.length > 0">
               <div>
                 <label for="dissertationfile">{{ $t('dissertation.dissertationFile') + ' ' + $t('common.pdfFormat')
                   }}</label>
@@ -856,7 +855,7 @@
               </div>
             </div>
 
-            <div class="field" v-if="selectedDoctoral?.dissertation?.state === 0 && selectedDoctoral?.dissertation?.swListFile && selectedDoctoral?.dissertation?.swListFile.length > 0 && selectedDoctoral?.dissertation?.swListFileID && selectedDoctoral?.dissertation?.swListFileID.length > 0">
+            <div class="field" v-if="selectedDoctoral?.dissertation?.swListFile && selectedDoctoral?.dissertation?.swListFile.length > 0 && selectedDoctoral?.dissertation?.swListFileID && selectedDoctoral?.dissertation?.swListFileID.length > 0">
               <div>
                 <label for="swList">{{ $t('dissertation.swList') + ' ' + $t('common.pdfFormat') }}</label>
                 <div class="inline-container"
@@ -873,7 +872,7 @@
               </div>
             </div>
 
-            <div class="field" v-if="selectedDoctoral?.dissertation?.state === 0 && selectedDoctoral?.dissertation?.scientificConsultantFile && selectedDoctoral?.dissertation?.scientificConsultantFile.length > 0 && selectedDoctoral?.dissertation?.scientificConsultantFileID && selectedDoctoral?.dissertation?.scientificConsultantFileID.length >0">
+            <div class="field" v-if="selectedDoctoral?.dissertation?.scientificConsultantFile && selectedDoctoral?.dissertation?.scientificConsultantFile.length > 0 && selectedDoctoral?.dissertation?.scientificConsultantFileID && selectedDoctoral?.dissertation?.scientificConsultantFileID.length >0">
               <div>
                 <label>{{ $t('dissertation.scientificConsultant') + ' ' + $t('common.pdfFormat') }}</label>
                 <div class="inline-container"
@@ -893,7 +892,7 @@
               </div>
             </div>
 
-            <div class="field" v-if="selectedDoctoral?.dissertation?.state === 0 && selectedDoctoral?.dissertation?.foreignConsultantFile && selectedDoctoral?.dissertation?.foreignConsultantFile.length > 0 && selectedDoctoral?.dissertation?.foreignConsultantFileID && selectedDoctoral?.dissertation?.foreignConsultantFileID.length > 0">
+            <div class="field" v-if="selectedDoctoral?.dissertation?.foreignConsultantFile && selectedDoctoral?.dissertation?.foreignConsultantFile.length > 0 && selectedDoctoral?.dissertation?.foreignConsultantFileID && selectedDoctoral?.dissertation?.foreignConsultantFileID.length > 0">
               <div>
                 <label>{{ $t('dissertation.foreignConsultant') + ' ' + $t('common.pdfFormat') }}</label>
                 <div class="inline-container"
@@ -912,7 +911,7 @@
               </div>
             </div>
 
-            <div class="field" v-if="selectedDoctoral?.dissertation?.state === 0 && selectedDoctoral?.dissertation?.commissionConclusionFile && selectedDoctoral?.dissertation?.commissionConclusionFile.length > 0 && selectedDoctoral?.dissertation?.commissionConclusionFileID && selectedDoctoral?.dissertation?.commissionConclusionFileID.length > 0">
+            <div class="field" v-if="selectedDoctoral?.dissertation?.commissionConclusionFile && selectedDoctoral?.dissertation?.commissionConclusionFile.length > 0 && selectedDoctoral?.dissertation?.commissionConclusionFileID && selectedDoctoral?.dissertation?.commissionConclusionFileID.length > 0">
               <div>
                 <label>{{ $t('dissertation.commissionConclusion') + ' ' + $t('common.pdfFormat') }}</label>
                 <div class="inline-container"
@@ -932,27 +931,7 @@
               </div>
             </div>
 
-            <div class="field" v-if="selectedDoctoral?.dissertation?.state === 6 && selectedDoctoral?.dissertation?.councilConclusionFile && selectedDoctoral?.dissertation?.councilConclusionFile.length > 0 && selectedDoctoral?.dissertation?.councilConclusionFileID && selectedDoctoral?.dissertation?.councilConclusionFileID.length > 0">
-              <div>
-                <label>{{ $t('dissertation.councilConclusion') + ' ' + $t('common.pdfFormat') }}</label>
-                <div class="inline-container"
-                  v-if="selectedDoctoral?.dissertation?.councilConclusionFile && selectedDoctoral?.dissertation?.councilConclusionFile.length > 0">
-                  <a href="javascript:void(0)"
-                    @click.prevent="downloadFile(selectedDoctoral.dissertation.councilConclusionFile)">
-                    <i class="fa-solid fa-file-arrow-down"></i> {{
-                      selectedDoctoral.dissertation.councilConclusionFile
-                    }}
-                  </a>
-                </div>
-                <div class="custom-file-upload-margin">
-                  <CustomFileUpload @upload="uploadFile($event, 'councilConclusionFile')"
-                    v-model="councilConclusionFile" :accept="'application/pdf'" :multiple="false" />
-                </div>
-
-              </div>
-            </div>
-
-            <div class="field" v-if="selectedDoctoral?.dissertation?.state === 1 && selectedDoctoral?.dissertation?.reviewer1CommentFile && selectedDoctoral?.dissertation?.reviewer1CommentFile.length > 0 && selectedDoctoral?.dissertation?.reviewer1CommentFileID && selectedDoctoral?.dissertation?.reviewer1CommentFileID.length > 0">
+            <div class="field" v-if="selectedDoctoral?.dissertation?.state !== 0 && selectedDoctoral?.dissertation?.reviewer1CommentFile && selectedDoctoral?.dissertation?.reviewer1CommentFile.length > 0 && selectedDoctoral?.dissertation?.reviewer1CommentFileID && selectedDoctoral?.dissertation?.reviewer1CommentFileID.length > 0">
               <div>
                 <label>{{ $t('dissertation.reviewerComment') + ' ' + $t('common.pdfFormat') + ' 1' }}</label>
                 <div class="inline-container"
@@ -969,7 +948,7 @@
 
               </div>
             </div>
-            <div class="field" v-if="selectedDoctoral?.dissertation?.state === 1 && selectedDoctoral?.dissertation?.reviewer2CommentFile && selectedDoctoral?.dissertation?.reviewer2CommentFile.length > 0 && selectedDoctoral?.dissertation?.reviewer2CommentFileID && selectedDoctoral?.dissertation?.reviewer2CommentFileID.length > 0">
+            <div class="field" v-if="selectedDoctoral?.dissertation?.state !== 0 && selectedDoctoral?.dissertation?.reviewer2CommentFile && selectedDoctoral?.dissertation?.reviewer2CommentFile.length > 0 && selectedDoctoral?.dissertation?.reviewer2CommentFileID && selectedDoctoral?.dissertation?.reviewer2CommentFileID.length > 0">
               <div>
                 <label>{{ $t('dissertation.reviewerComment') + ' ' + $t('common.pdfFormat') + ' 2' }}</label>
                 <div class="inline-container"
@@ -982,6 +961,25 @@
                 <div class="custom-file-upload-margin">
                   <CustomFileUpload @upload="uploadFile($event, 'reviewer2CommentFile')" v-model="reviewer2CommentFile"
                     :accept="'application/pdf'" :multiple="false" />
+                </div>
+              </div>
+            </div>
+
+            <div class="field" v-if="selectedDoctoral?.dissertation?.state === 6 && selectedDoctoral?.dissertation?.councilConclusionFile && selectedDoctoral?.dissertation?.councilConclusionFile.length > 0 && selectedDoctoral?.dissertation?.councilConclusionFileID && selectedDoctoral?.dissertation?.councilConclusionFileID.length > 0">
+              <div>
+                <label>{{ $t('dissertation.councilConclusion') + ' ' + $t('common.pdfFormat') }}</label>
+                <div class="inline-container"
+                  v-if="selectedDoctoral?.dissertation?.councilConclusionFile && selectedDoctoral?.dissertation?.councilConclusionFile.length > 0">
+                  <a href="javascript:void(0)"
+                    @click.prevent="downloadFile(selectedDoctoral.dissertation.councilConclusionFile)">
+                    <i class="fa-solid fa-file-arrow-down"></i> {{
+                      selectedDoctoral.dissertation.councilConclusionFile
+                    }}
+                  </a>
+                </div>
+                <div class="custom-file-upload-margin">
+                  <CustomFileUpload @upload="uploadFile($event, 'councilConclusionFile')"
+                    v-model="councilConclusionFile" :accept="'application/pdf'" :multiple="false" />
                 </div>
 
               </div>
