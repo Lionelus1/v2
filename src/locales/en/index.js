@@ -1592,8 +1592,16 @@ export default {
         customerAndSource:'Customer and source of funding',
         contract_sum_en: 'Contract amount',
         project_position:'Project position',
-        scientific_grants: "Scientific grants"
-
+        scientific_grants: "Scientific grants",
+        orgNameKz: 'Name of the organization in Kazakh',
+        orgNameRu: 'Name of the organization in Russian',
+        orgNameEn: 'Name of the organization in English',
+        posNameKz: 'Job title in Kazakh',
+        posNameRu: 'Job title in Russian',
+        posNameEn: 'Job title in English',
+        responsibilitiesKz: 'Job responsibilities in Kazakh',
+        responsibilitiesRu: 'Job responsibilities in Russian',
+        responsibilitiesEn: 'Job responsibilities in English',
     },
     personalData: 'Personal information',
     yearPeriod: 'Period of years',
