@@ -92,7 +92,7 @@
             </div>
           </template>
         </Column>
-        <Column field="supporting_docs" v-if="plan && plan.is_oper" :header="$t('common.suppDocs')">
+        <Column field="supporting_docs" v-if="plan && plan?.plan_type?.code === Enum.WorkPlanTypes.Oper" :header="$t('common.suppDocs')">
           <template #body="{ node }">
             {{ node.supporting_docs }}
           </template>
