@@ -306,7 +306,39 @@ const routes = [
                 component: () => import('./components/hdfs/HdfsMain.vue'),
                 beforeEnter: ifAuthenticated,
             },
-
+            {
+                path: '/mailing',
+                name: 'MailingTable',
+                component: load('mailing/MailingComponent'),
+                beforeEnter: ifAuthenticated,
+                children: [
+                    {
+                        path: '',
+                        name: 'MailingTable',
+                        component: load('mailing/MailingTable'),
+                        beforeEnter: ifAuthenticated,
+                    },
+                    {
+                        path: ':id',
+                        name: 'EditMailing',
+                        component: load('mailing/AddEditMailing'),
+                        beforeEnter: ifAuthenticated,
+                    },
+                    // {
+                    //     path: 'add',
+                    //     name: 'AddMailing',
+                    //     component: load('mailing/AddEditMailing'),
+                    //     beforeEnter: ifAuthenticated,
+                    // },
+                    {
+                        path: '/template/:templateId&:selectedCategories&:emails',
+                        name: 'TemplateEditor2',
+                        props: true,
+                        component: load('mailing/TemplateEditor'),
+                        beforeEnter: ifAuthenticated,
+                    },
+                ]
+            },
             {
                 path: '/news',
                 name: 'NewsComponent',

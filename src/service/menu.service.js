@@ -139,6 +139,11 @@ export class MenuService {
                 icon: 'fa-solid fa-calendar-days',
                 to: '/events'
             },
+            {
+                label: $t('smartenu.mailingTitle'),
+                icon: 'fa-solid fa-calendar-days',
+                to: '/mailing'
+            },
             // {
             //     label: $t('vaccination.title'),
             //     icon: 'pi pi-fw pi-check-circle',

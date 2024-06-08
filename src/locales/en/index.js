@@ -59,6 +59,7 @@ export default {
         mgovBusiness: "Sign in eGov Business as a legal entity",
         logout: "Logout",
         enter: "Type in",
+        enterEmail: "Enter mail",
         enterLogin: "Enter IIN or platonus mail",
         enterPassword: "Enter password",
         export: "Export",
@@ -826,9 +827,14 @@ export default {
         catalogNormDocNotFound: "Catalog of regulatory documents not found",
         loadingcatalogNormDoc: "Loading regulatory documents. Please wait.",
         category: "Сategory",
+        mailings: "Mailings",
+        drafts: "Drafts",
+        mailingCategory: "Сategory",
+        templateBuilder: "Template Builder",
         categories: "categories",
         selectCategories: "Select categories",
         newsList: "News list",
+        mailingTitle: "Mailing",
         newsTitle: "News",
         eventsTitle: "Events",
         newsNotFound: "News not found",
@@ -895,6 +901,9 @@ export default {
         posterImageKkInvalid: "The poster in Kazakh not selected",
         posterImageRuInvalid: "The poster in Russian not selected",
         posterImageEnInvalid: "The poster in English not selected",
+    },
+    mailing: {
+        title: "Наименование"
     },
     vaccination: {
         title: "Vaccination",
