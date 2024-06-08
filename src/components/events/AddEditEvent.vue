@@ -398,7 +398,7 @@ export default {
             fd.append("files[]", event.files[0])
             this.fileService.uploadFile(fd).then(res => {
                 if (res.data) {
-                    this.event.main_image_file = res.data[0];
+                    this.event.main_image_file = no.data[0];
                     this.event.main_image_file.url = smartEnuApi + fileRoute + this.event.main_image_file.filepath
                     this.event.main_image_id = this.event.main_image_file.id
                 }
