@@ -482,6 +482,12 @@ export default {
           visible: this.findRole(null, RolesEnum.roles.Accountant) || this.findRole(null, RolesEnum.roles.MainAdministrator),
           command: () => {this.execute(this.currentDocument)},
         },
+        // {
+        //   label: this.$t('contracts.statusGPC'),
+        //   icon: "fa-solid fa-file-waveform",
+        //   visible: this.findRole(null, RolesEnum.roles.MainAdministrator),
+        //   command: () => {this.$router.push('/documents/catalog/acts/status')},
+        // },
       ]
     },
     actions () {
@@ -519,13 +525,6 @@ export default {
   top: 0; bottom: 0; left: 0; right: 0;
   margin: auto;
   z-index: 1102;
-}
-.arrow-icon {
-  cursor: pointer;
-  font-size: 1.25rem;
-  margin-right: 1rem;
-  display: flex;
-  align-items: center;
 }
 .card {
   //flex-grow: 1;

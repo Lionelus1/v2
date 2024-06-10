@@ -16,7 +16,7 @@
       </ul>
       <div class="steps-content p-fluid">
         <FindUser @add="updateModel" @remove="updateModel" v-model="selectedUsers" :disabled="readonly"></FindUser>
-        <Dropdown v-if="mode !== 'doc_template_creating'" :disabled="!isNewStage || readonly" @change="updateModel" class="mt-2"
+        <Dropdown :disabled="!isNewStage || readonly" @change="updateModel" class="mt-2"
                   v-model="certificate" dataKey="value" :options="certificates" :optionLabel="'name' + $i18n.locale"
                   :placeholder="$t('ncasigner.certType')" />
       </div>
@@ -44,7 +44,7 @@
       <div class="steps-content p-fluid">
         <Dropdown v-if="isNewStage" @change="approvalListChanged" v-model="approvalListItem" :options="approvalList" :optionLabel="'title' + $i18n.locale.charAt(0).toUpperCase() + $i18n.locale.slice(1)" :placeholder="$t('roleControl.instance')"></Dropdown>
         <FindUser :disabled="readonly || !approvalStages[activeIndex].userChangeable" class="mt-2" @add="updateModel" @remove="updateModel" v-model="selectedUsers"></FindUser>
-        <Dropdown :disabled="true" @change="updateModel" class="mt-2" v-model="certificate" :options="certificates" optionValue="value" :optionLabel="'name' + $i18n.locale" :placeholder="$t('ncasigner.certType')" />
+        <Dropdown v-if="mode !== 'doc_template_creating'"  :disabled="true" @change="updateModel" class="mt-2" v-model="certificate" :options="certificates" optionValue="value" :optionLabel="'name' + $i18n.locale" :placeholder="$t('ncasigner.certType')" />
       </div>
 
       <div>

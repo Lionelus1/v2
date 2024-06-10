@@ -54,8 +54,8 @@
                 <template v-if="['number', 'date', 'ourside', 'contragent', 'individualEntrepreneur', 'student', 'period',
                   'практика түрі', 'Вид практики', 'Білім беру бағдарламасы', 'Образовательные программы',
                   'sciadvisor', 'mnvo', 'agreement_end_date', 'project_position', 'irn', 'theme',
-                  'mnvo_agreement', 'agreement_sum', 'agreement_sum_text', 'executor_work_place',
-                  'priority', 'subpriority', 'work_types'].includes(param.description)">
+                  'mnvo_agreement', 'agreement_sum', 'executor_work_place',
+                  'priority', 'subpriority', 'work_types', 'financing_type'].includes(param.description)">
                   <label v-if="['number', 'date', 'ourside', 'contragent', 'individualEntrepreneur', 'student', 'period'].includes(param.description)">{{ $t("doctemplate.editor." + param.name) }}</label>
                   <label v-else-if="['практика түрі', 'Вид практики'].includes(param.description)">{{ $t('doctemplate.editor.practiceType') }}</label>
                   <label v-else-if="['Білім беру бағдарламасы', 'Образовательные программы'].includes(param.description)">{{ $t('doctemplate.editor.educationProgram') }}</label>
@@ -160,6 +160,12 @@
                     </template>
                   </Column>
                 </DataTable>
+              </div>
+              <div class="p-fluid md:col-6" v-if="param.name === 'financing_type'">
+                <Dropdown v-model="param.value" :options="financingTypes" class="w-full" @change="input"
+                          :option-label="financingTypesLabel"
+                          :disabled="contract.docHistory.stateId > DocEnum.CREATED.ID && contract.docHistory.stateId != DocEnum.REVISION.ID">
+                </Dropdown>
               </div>
             </div>
           </div>
@@ -346,6 +352,8 @@ export default {
           ]
         }
       ],
+
+      financingTypes: ['government', 'program_targeted', 'grant', 'company'],
 
       notused: {
         users: [],
@@ -565,6 +573,12 @@ export default {
         this.contractParams.push(param);
       }
 
+      param = this.contract.newParams['financing_type'];
+      if (param) {
+        param.uuid = this.generateUUID();
+        this.contractParams.push(param);
+      }
+
       param = this.contract.newParams['mnvo'];
       if (param) {
         param.value = param.value ? new Date(param.value) : null;
@@ -604,12 +618,6 @@ export default {
       }
 
       param = this.contract.newParams['agreement_sum'];
-      if (param) {
-        param.uuid = this.generateUUID();
-        this.contractParams.push(param);
-      }
-
-      param = this.contract.newParams['agreement_sum_text'];
       if (param) {
         param.uuid = this.generateUUID();
         this.contractParams.push(param);
@@ -1054,6 +1062,9 @@ export default {
       this.contractParams[id].value.push(newWork);
 
       this.input();
+    },
+    financingTypesLabel(data) {
+      return this.$t('contracts.financingTypes.' + data);
     },
   }
 }

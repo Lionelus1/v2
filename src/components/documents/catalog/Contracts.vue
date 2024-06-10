@@ -154,6 +154,12 @@
         <InputText type="text" v-model="tempFilter.theme"/>
       </div>
       <div class="field" v-if="filterPage === 1">
+        <label>{{ $t('contracts.filter.financing_type') }}</label>
+        <Dropdown v-model="tempFilter.financingType" :options="financingTypes" class="w-full"
+                  :option-label="financingTypesLabel">
+        </Dropdown>
+      </div>
+      <div class="field" v-if="filterPage === 1">
         <label>{{ $t('contracts.filter.priority') }}</label>
         <InputText type="text" v-model="tempFilter.priority"/>
       </div>
@@ -240,6 +246,7 @@ export default {
         subpriority: null,
         mnvo: null,
         sciadvisor: [],
+        financingType: null,
       },
 
       tempFilter: {
@@ -260,6 +267,7 @@ export default {
         subpriority: null,
         mnvo: null,
         sciadvisor: [],
+        financingType: null,
       },
 
       statuses: [Enum.StatusesArray.StatusCreated, Enum.StatusesArray.StatusInapproval, Enum.StatusesArray.StatusApproved,
@@ -273,6 +281,8 @@ export default {
       folders: [],
       filtered: false,
       actionsNode: {},
+
+      financingTypes: ['government', 'program_targeted', 'grant', 'company'],
     }
   },
   created() {
@@ -490,6 +500,7 @@ export default {
           subpriority: this.filter.subpriority,
           mnvo: this.filter.mnvo,
           sciadvisor: this.filter.sciadvisor.length > 0 && this.filter.sciadvisor[0] ? this.filter.sciadvisor[0].userID : null,
+          financingType: this.filter.financingType,
         },
       }).then(res => {
         this.documents = res.data.documents
@@ -602,6 +613,7 @@ export default {
         subpriority: null,
         mnvo: null,
         sciadvisor: [],
+        financingType: null,
       };
       this.filtered = false;
     },
@@ -656,6 +668,9 @@ export default {
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
       })
+    },
+    financingTypesLabel(data) {
+      return this.$t('contracts.financingTypes.' + data);
     },
   },
   computed: {

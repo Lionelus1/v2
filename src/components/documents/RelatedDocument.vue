@@ -32,7 +32,7 @@
             <InlineMessage severity="error">{{ sciadvisorRejection }}</InlineMessage>
           </div>
           <div class="flex-grow-1" style="overflow: scroll; height: 150px;" v-if="contractParams">
-            <div v-for="(param, id) in contractParams" :key="param.uuid">
+            <div v-for="param in contractParams" :key="param.uuid">
               <div class="p-fluid md:col-6 pb-0">
                 <label>{{ $t('contracts.labels.' + param.description) }}</label>
               </div>

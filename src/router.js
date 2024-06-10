@@ -123,6 +123,12 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
+                path: '/documents/catalog/acts/status',
+                name: '/documents/catalog/acts/status',
+                component: load('documents/catalog/StatusActsGPC'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
                 path: '/documents/catalog/scienceWorks',
                 name: 'ScienceWorks',
                 component: load('documents/catalog/ScienceWorks'),

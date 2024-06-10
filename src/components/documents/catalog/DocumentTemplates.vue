@@ -579,7 +579,9 @@ export default {
       this.$emit('onselect', docTemplate);
     },
     sendToApprove() {
-      if (this.selectedNode.data.mainTextKaz.length() < 1 || this.selectedNode.data.mainTextRus.length() < 1) {
+      if (this.selectedNode.data.mainTextKaz === null || this.selectedNode.data.mainTextKaz === undefined ||
+          this.selectedNode.data.mainTextRus === null || this.selectedNode.data.mainTextRus === undefined ||
+          this.selectedNode.data.mainTextKaz.length < 1 || this.selectedNode.data.mainTextRus.length < 1) {
         this.showMessage('warn', this.$t('doctemplate.message.textNotFilledBoth'));
         return
       }

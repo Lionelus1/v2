@@ -87,4 +87,7 @@ export class DocService {
     documentDenyV2(data) {
         return api.post("/document/deny", data, {headers:getHeader()})
     }
+    getGPCActsStatus(data) {
+        return api.post("/document/gpcActsStatus", data, {headers:getHeader()})
+    }
 }
