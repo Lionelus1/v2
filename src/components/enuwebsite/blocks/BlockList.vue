@@ -536,6 +536,22 @@ const toolbarMenus = computed(() => {
     },
   ]
 })
+const initActionButtons = computed(() => {
+  return [
+    {
+      label: i18n.t('common.show'),
+      icon: 'fa-solid fa-eye',
+      command: () => {
+      }
+    },
+    {
+      label: i18n.t('common.delete'),
+      icon: 'fa-solid fa-trash',
+      command: () => {
+      }
+    },
+  ];
+})
 const showHideUserGuide = () => {
   isGuideVisible.value = !isGuideVisible.value;
 };
