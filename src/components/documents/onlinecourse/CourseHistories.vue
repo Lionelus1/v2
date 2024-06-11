@@ -19,8 +19,7 @@
         {{ formatDate(slotProps.data.startDate) }} - {{ formatDate(slotProps.data.finalDate) }}
       </template>
     </Column>
-    <!-- v-if="findRole(null, 'online_course_administrator')" -->
-    <Column  field="studentCount" :header="t('course.numberParticipants')"></Column>
+    <Column v-if="findRole(null, 'online_course_administrator')"  field="studentCount" :header="t('course.numberParticipants')"></Column>
 
     <Column :field="'state.name'+$i18n.locale" :header="$t('common.state')"></Column>
 
@@ -32,10 +31,7 @@
 
     <Column>
       <template #body="slotProps">
-        <ActionButton :show-label="true" :items="initItems(slotProps).value" @toggle="toggle2(slotProps)"/>
-        <!-- <Button class="p-button-text p-1 mr-2"  @click="courseHistory=slotProps.data;openCourseHistoryStudentsDialog()">
-              <i class="fa-solid fa-eye fa-xl"></i>
-            </Button> -->
+        <ActionButton v-if="isAdmin" :show-label="true" :items="initItems(slotProps).value" @toggle="toggle2(slotProps)"/>
       </template>
     </Column>
 
@@ -233,6 +229,8 @@
 
     });
   }
+
+  const isAdmin = computed(() => findRole(null, 'online_course_administrator') || findRole(null, 'main_administrator'));
 
   onMounted(() => {
     getCourseHistories()
