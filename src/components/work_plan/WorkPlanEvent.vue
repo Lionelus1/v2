@@ -1,7 +1,6 @@
 <template>
   <div class="col-12">
     <TitleBlock :title="plan?.work_plan_name" :show-back-button="true"/>
-
     <div class="card" v-if="plan && planDoc && isRejected">
       <div class="p-fluid">
         <div class="field">
@@ -34,7 +33,7 @@
     </div>
     <ToolbarMenu v-if="plan && planDoc" :data="toolbarMenus" @filter="toggle('global-filter', $event)" :filter="true" :filtered="filtered"/>
     <div class="card" v-if="plan && planDoc">
-      <TreeTable ref="workplantreetable" class="p-treetable-sm" :value="data" :lazy="true" :loading="loading" @nodeExpand="onExpand" scrollHeight="flex"
+      <TreeTable ref="workplantreetable" class="p-treetable-sm" v-model:selectionKeys="selectedWorkPlanEvent" selectionMode="single" :value="data" :lazy="true" :loading="loading" @nodeExpand="onExpand" scrollHeight="flex"
                  responsiveLayout="scroll" :resizableColumns="true" columnResizeMode="fit" showGridlines :paginator="true" :rows="10" :total-records="total"
                  @page="onPage($event)">
         <template #empty> {{ $t('common.noData') }}</template>
@@ -66,7 +65,20 @@
         </Column>
         <Column field="fact" :header="$t('common.fact')" v-if="isOperPlan">
           <template #body="{ node }">
-            <span v-if="node.fact">{{ node.fact }}</span>
+            <span v-if="node.fact && isFactVisible" style="float: left;">{{ node.fact + " " }}</span>
+            <div v-if="node.resp_person_id === loginedUserId">
+              <div v-if="isFactInputVisible && parseInt(Object.keys(selectedWorkPlanEvent)[0]) === parseInt(node['work_plan_event_id'])" style="min-width: 150px;">
+                <div class="inline-container">
+                  <InputText type="text" v-model="factValue" />
+                  <Button @click="updateFact(node.work_plan_event_id, factValue)" icon="pi pi-check" text rounded aria-label="Update" />
+                  <Button @click="cancelFact()" icon="pi pi-times" severity="danger" text rounded aria-label="Cancel" />
+                </div>
+            </div>
+            <span v-if="selectedWorkPlanEvent && Object.keys(selectedWorkPlanEvent)[0] && node">
+              <a v-if="parseInt(Object.keys(selectedWorkPlanEvent)[0]) === parseInt(node['work_plan_event_id']) && isFactVisible" href="javascript:void(0)" @click="factValue=node.fact ;factVisiblity()"><i class="pi pi-pencil"></i></a>
+            </span>
+            <!-- updateFact -->
+            </div>
           </template>
         </Column>
         <Column field="quarter" :header="$t('workPlan.quarter')" v-if="!isSciencePlan">
@@ -92,7 +104,7 @@
             </div>
           </template>
         </Column>
-        <Column field="supporting_docs" v-if="plan && plan.is_oper" :header="$t('common.suppDocs')">
+        <Column field="supporting_docs" v-if="plan && isOperPlan" :header="$t('common.suppDocs')">
           <template #body="{ node }">
             {{ node.supporting_docs }}
           </template>
@@ -372,7 +384,11 @@ export default {
       service: new DocService(),
       DocState: DocState,
       filtered: false,
-      stages: []
+      stages: [],
+      isFactVisible: true,
+      isFactInputVisible:false,
+      factValue: null,
+      selectedWorkPlanEvent:null
     }
   },
   created() {
@@ -439,9 +455,47 @@ export default {
         this.getEventsTree(this.parentNode);
       }
     });
+    this.getEventsTree;
+
   },
   methods: {
     findRole: findRole,
+    factVisiblity(){
+      this.isFactVisible = false;
+      this.isFactInputVisible = true;
+      
+    },
+    cancelFact(){
+      this.isFactInputVisible = false;
+      this.isFactVisible = true;
+    },
+    updateFact(eventId, fact){
+      let data = {
+        event_id: eventId,
+        fact: fact
+      }
+      this.planService.updateEventFact(data).then(res => {
+        if (res.data) {
+          this.isFactVisible = true
+          this.isFactInputVisible = false;
+          this.$toast.add({
+            severity: "success",
+            summary: this.$t("common.success"),
+            life: 3000,
+          });
+          this.getEventsTree();
+          
+        
+        }
+      }).catch(error => {
+        console.log(error)
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
+      });
+    },
     signView(node) {
       this.showReportDoc = true;
     },
@@ -1188,7 +1242,7 @@ export default {
         {
           label: this.$t('workPlan.viewPlan'),
           icon: 'pi pi-eye',
-          visible: this.isFinish && this.planDoc && !(this.isCreatedPlan || this.isPlanUnderRevision),
+          visible: this.showMySign(this.plan?.doc_info?.approvalStages) && this.isFinish && this.planDoc && !(this.isCreatedPlan || this.isPlanUnderRevision),
           command: () => {
             this.showDialog(this.dialog.planView)
           }
@@ -1290,6 +1344,11 @@ export default {
   &.status-2 {
     background: #C8E6C9;
     color: #256029;
+  }
+  .inline-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
   }
 }
 </style>

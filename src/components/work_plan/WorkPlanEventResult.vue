@@ -107,7 +107,7 @@
               </div>
               <div class="field" v-if="(plan && isOperPlan && isSummaryDepartmentUser && isVisibleWritableField)">
                 <label>{{ $t('common.fact') }}</label>
-                  <InputText v-model="newFact" @input="factChange"/>
+                  <InputText v-model="event.fact" @input="factChange"/>
               </div>
               <div class="field" v-if="isVisibleWritableField && isRespUser && (isOperPlan || isStandartPlan)">
                 <Dropdown v-model="selectedQuarter" :options="filteredQuarters" :optionLabel="('quarter_'+$i18n.locale)" :placeholder="$t('common.select')" class="w-full md:w-14rem" required @change="validate"/>
@@ -378,7 +378,7 @@ export default {
       files: [],
       newResult: null,
       fact: null,
-      newFact: null,
+      //newFact: null,
       event_id: this.resultId,
       user_id: JSON.parse(localStorage.getItem("loginedUser")).userID,
       isAdmin: false,
@@ -547,9 +547,8 @@ export default {
     }
     this.getEvent();
     
-
-
   },
+
   methods: {
     findRole: findRole,
     getFirstMonthOfQuarter() {
@@ -644,9 +643,8 @@ export default {
       this.planService.getEventResult(data).then(res => {
         if (res.data) {
           this.resultData = res.data;
-          let factData = res.data
-          this.latestFact(factData)
-          
+          let factData = this.resultData[0].fact
+          this.fact = factData
 
           if (this.resultData.result_text != null) {
             this.resultData.result_text.map(e => {
@@ -808,7 +806,7 @@ export default {
       if (this.authUser?.mainPosition?.department &&
         !this.authUser.mainPosition.department.isFaculty &&
         this.isOperPlan) {
-        fd.append("fact", this.newFact);
+        fd.append("fact", this.event.fact);
       }
 
       if (this.plan && this.isOperPlan && this.resultData)
@@ -1067,7 +1065,7 @@ export default {
 
 
       if (this.isFactChanged)
-        fd.append("fact", this.newFact)
+        fd.append("fact", this.event.fact)
       fd.append("text", item.result_text[0].text)
       if (this.files.length > 0) {
         for (let file of this.files) {
@@ -1260,19 +1258,19 @@ export default {
     showRejectMessageSidebar() {
       this.rejectMessageSidebar = true;
     },
-    latestFact(factData) {
-      if (!factData || !Array.isArray(factData) || factData.length === 0) {
-        return null;
-      }
-      const sortedResults = factData.slice().sort((a, b) => {
-        const dateA = new Date(a.plan_event_result_history[0].create_date);
-        const dateB = new Date(b.plan_event_result_history[0].create_date);
-        return dateB - dateA;
-      });
-      let fact = sortedResults[0].fact
-      this.newFact = fact
-      return sortedResults[0].fact;
-    },
+    // latestFact(factData) {
+    //   if (!factData || !Array.isArray(factData) || factData.length === 0) {
+    //     return null;
+    //   }
+    //   const sortedResults = factData.slice().sort((a, b) => {
+    //     const dateA = new Date(a.plan_event_result_history[0].create_date);
+    //     const dateB = new Date(b.plan_event_result_history[0].create_date);
+    //     return dateB - dateA;
+    //   });
+    //   let fact = sortedResults[0].fact
+    //   this.newFact = fact
+    //   return sortedResults[0].fact;
+    // },
 
   }
 }
