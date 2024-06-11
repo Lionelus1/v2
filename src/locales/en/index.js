@@ -1433,7 +1433,8 @@ export default {
         completeCourse: "Are you sure you want to complete the course?",
         numberParticipants: "Number of participants",
         сompletedСourse: "Completed courses",
-        moduleCredits: 'Credits'
+        moduleCredits: 'Credits',
+        potok: 'Flows'
     },
     roleControl: {
         addSidebar: 'Adding new record',

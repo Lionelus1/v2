@@ -34,7 +34,7 @@
 <!--        <TabPanel :header="$t('course.users')">-->
 <!--          <CourseStudents  :props-course="course" :get-course="getCourse" @update-course="getCourse" />-->
 <!--        </TabPanel>-->
-        <TabPanel  header="Потоки">
+        <TabPanel  :header="$t('course.potok')">
           <CourseHistories  :props-course="course" :get-course="getCourse" @update-course="getCourse" :courseID="course.id"></CourseHistories>
         </TabPanel>
         <!--  КУРС МОДУЛІ  -->

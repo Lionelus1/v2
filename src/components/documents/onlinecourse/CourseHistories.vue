@@ -22,7 +22,7 @@
     <!-- v-if="findRole(null, 'online_course_administrator')" -->
     <Column  field="studentCount" :header="t('course.numberParticipants')"></Column>
 
-    <Column field="state.namekz" header="Статус"></Column>
+    <Column :field="'state.name'+$i18n.locale" :header="$t('common.state')"></Column>
 
     <Column :header="t('contracts.columns.author')">
       <template #body="slotProps">
