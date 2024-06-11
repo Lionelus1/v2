@@ -1,52 +1,59 @@
 <template>
   <div class="col-12">
     <TitleBlock :title="$t('web.blocks')"/>
-    <ToolbarMenu :data="toolbarMenus" @search="initSearch($event)" :search="true"/>
-    <div class="card" v-if="isWebAdmin">
-      <SelectSiteSlug @onSelect="onSlugSelect"/>
-    </div>
-    <div class="card">
-      <TabView>
-        <TabPanel :header="$t('web.properties')">
-          <DataTable :lazy="true" :value="blockList" dataKey="id" :loading="loading" responsiveLayout="scroll"
-                     :rows="10" :rowHover="true" :paginator="true" :totalRecords="total" @page="onPage" @sort="onSort">
-            <template #empty>{{ $t("common.noData") }}</template>
-            <template #loading>{{ $t("common.loading") }}</template>
-            <Column :field="'title_' + $i18n.locale" :header="$t('common.nameIn')" sortable>
-              <template #body="{ data }">
-                <a href="javascript:void(0)" @click="navigateToView(data)">
-                  {{ data['title_' + $i18n.locale] }}
-                  <!--              {{ $i18n.locale === "kz" ? data.title_kz : $i18n.locale === "ru" ? data.title_ru : data.title_en }}-->
-                </a>
-              </template>
-            </Column>
-            <Column :header="$t('web.blockType')" sortable>
-              <template #body="{ data }">
-                {{ data.is_list ? $t('web.list') : !data.is_plugin ? $t('web.content') : $t('web.plugin') }}
-              </template>
-            </Column>
-            <Column :header="$t('web.note')">
-              <template #body="{ data }">
-                {{ data.note }}
-              </template>
-            </Column>
-            <Column :header="$t('faq.createDate')">
-              <template #body="{ data }">
-                {{ formatDate(data.create_date) }}
-              </template>
-            </Column>
-            <Column class="text-right">
-              <template #body="{ data }">
-                <ActionButton :show-label="true" :items="initItems" @toggle="toggle(data)"/>
-              </template>
-            </Column>
-          </DataTable>
-        </TabPanel>
-        <TabPanel :header="$t('web.history')" @click="getTableLogs()">
-          <WebLogs :TN="TN" :key="TN"/>
-        </TabPanel>
-      </TabView>
 
+    <BlockUI v-if="haveAccess" :blocked="loading">
+      <ToolbarMenu :data="toolbarMenus" @search="initSearch($event)" :search="true"/>
+
+      <div class="card" v-if="isWebAdmin">
+        <SelectSiteSlug @onSelect="onSlugSelect"/>
+      </div>
+      <div class="card">
+        <TabView>
+          <TabPanel :header="$t('web.properties')">
+            <DataTable :lazy="true" :value="blockList" dataKey="id" :loading="loading" responsiveLayout="scroll"
+                       :rows="10" :rowHover="true" :paginator="true" :totalRecords="total" @page="onPage" @sort="onSort">
+              <template #empty>{{ $t("common.noData") }}</template>
+              <template #loading>{{ $t("common.loading") }}</template>
+              <Column :field="'title_' + $i18n.locale" :header="$t('common.nameIn')" sortable>
+                <template #body="{ data }">
+                  <a href="javascript:void(0)" @click="navigateToView(data)">
+                    {{ data['title_' + $i18n.locale] }}
+                    <!--              {{ $i18n.locale === "kz" ? data.title_kz : $i18n.locale === "ru" ? data.title_ru : data.title_en }}-->
+                  </a>
+                </template>
+              </Column>
+              <Column :header="$t('web.blockType')" sortable>
+                <template #body="{ data }">
+                  {{ data.is_list ? $t('web.list') : !data.is_plugin ? $t('web.content') : $t('web.plugin') }}
+                </template>
+              </Column>
+              <Column :header="$t('web.note')">
+                <template #body="{ data }">
+                  {{ data.note }}
+                </template>
+              </Column>
+              <Column :header="$t('faq.createDate')">
+                <template #body="{ data }">
+                  {{ formatDate(data.create_date) }}
+                </template>
+              </Column>
+              <Column class="text-right">
+                <template #body="{ data }">
+                  <ActionButton :show-label="true" :items="initItems" @toggle="toggle(data)"/>
+                </template>
+              </Column>
+            </DataTable>
+          </TabPanel>
+          <TabPanel :header="$t('web.history')" @click="getTableLogs()">
+            <WebLogs :TN="TN" :key="TN"/>
+          </TabPanel>
+        </TabView>
+
+      </div>
+    </BlockUI>
+    <div v-else class="card">
+      <Access textMode="short" :showLogo="false" returnMode="back"></Access>
     </div>
   </div>
 
@@ -488,18 +495,21 @@ import {findRole} from "@/config/config";
 import {useStore} from "vuex";
 import ActionButton from "@/components/ActionButton.vue";
 import ToolbarMenu from "@/components/ToolbarMenu.vue";
+import Access from "@/pages/Access.vue";
 
 const store = useStore()
 const i18n = useI18n()
 const toast = useToast()
 const confirm = useConfirm()
+const enuService = new EnuWebService()
+
+const haveAccess = ref(true)
 const loading = ref(false)
 const TN = ref(null)
 let selectedBlock = ref()
 let isCreateModal = ref(false)
 let submitted = ref(false)
 const blockList = ref([])
-const enuService = new EnuWebService()
 const router = useRouter()
 let formData = ref({})
 const options = ref([true, false]);
@@ -529,7 +539,7 @@ const toolbarMenus = computed(() => {
       label: i18n.t('web.addBlock'),
       icon: "pi pi-plus",
       visible: findRole(null, 'enu_web_admin') ||
-          findRole(null, 'enu_web_fac_admin') || this.findRole(null, 'main_administrator'),
+          findRole(null, 'enu_web_fac_admin') || findRole(null, 'main_administrator'),
       command: () => {
         openDialog()
       },
@@ -559,8 +569,12 @@ const getBlockList = () => {
     }
     loading.value = false
   }).catch(error => {
-    loading.value = false
-    toast.add({severity: "error", summary: error, life: 3000});
+    if (error?.response?.status === 403) {
+      haveAccess.value = false
+    } else {
+      loading.value = false
+      toast.add({severity: "error", summary: error, life: 3000});
+    }
   });
 }
 
@@ -569,12 +583,15 @@ const getBlockListTypes = () => {
   enuService.getBlockListTypes().then(res => {
     if (res.data) {
       listTypes.value = res.data;
-
     }
     loading.value = false
   }).catch(error => {
-    loading.value = false
-    toast.add({severity: "error", summary: error, life: 3000});
+    if (error?.response?.status === 403) {
+      haveAccess.value = false
+    } else {
+      loading.value = false
+      toast.add({severity: "error", summary: error, life: 3000});
+    }
   });
 }
 
@@ -586,8 +603,12 @@ const getBlockListViewTypes = () => {
     }
     loading.value = false
   }).catch(error => {
-    loading.value = false
-    toast.add({severity: "error", summary: error, life: 3000});
+    if (error?.response?.status === 403) {
+      haveAccess.value = false
+    } else {
+      loading.value = false
+      toast.add({severity: "error", summary: error, life: 3000});
+    }
   });
 }
 
@@ -611,7 +632,7 @@ const addBlock = () => {
     toast.add({severity: "error", summary: error, life: 3000});
   });
 }
-const isWebAdmin = computed(() => findRole(store.state.loginedUser, "enu_web_admin"))
+const isWebAdmin = computed(() => findRole(null, "enu_web_admin"))
 const initItems = computed(() => {
       return [
         {

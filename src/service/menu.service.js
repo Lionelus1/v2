@@ -113,7 +113,8 @@ export class MenuService {
                     {
                         label: $t('smartenu.categories'),
                         icon: 'fa-solid fa-tags',
-                        to: '/newscategories/cattable'
+                        to: '/newscategories/cattable',
+                        visible: !this.findRole("student")
                     },
                     {
                         label: $t('smartenu.newsList'), 
