@@ -5,7 +5,23 @@
       <div class="card summary">
         <h3>{{ (this.queue != null ? this.queue['queueName' + $i18n.locale]:"")}}</h3>
       </div>
-      <div class="grid p-fluid dashboard">
+      <div class="col-12" v-if="this.queue && this.queue.reservation">
+        <div class="card">
+          <DataTable :value="timesList" tableStyle="min-width: 50rem">
+            <Column field="revision_time" header="Уақыты"></Column>
+            <Column field="full_name" header="ФИО"></Column>
+            <Column field="phone_number" header="Телефон нөмірі"></Column>
+            <Column field="email" header="Почтасы"></Column>
+            <Column field="action" header="">
+              <template #body="{data}">
+                <button>{{data.id}}</button>
+                <Button :label="$t('Келді')" class="mb-1 p-button-success" @click="changeState(1, null, data.id)"></Button>
+              </template>
+            </Column>
+          </DataTable>
+        </div>
+      </div>
+      <div class="grid p-fluid dashboard" v-else>
         <div class="col-12 lg:col-6">
           <div class="card summary m-0">
             <span class="title">{{$t('queue.ticketCount')}}</span>
@@ -15,7 +31,7 @@
             <span class="title">{{$t('queue.downtime')}}</span>
             <span class="count visitors">{{downInfo.duration}}</span>
             <Button :label="$t('queue.next')" :disabled="service.state===0" class="mt-2 mb-1" @click="callNextCustomer(true, null)"></Button>
-            
+
             <Inplace :active="false" class="p-inplace-display"  ref="selectTicket">
               <template #display>
                 <Button :label="$t('queue.selectTicket')" class="p-button-warning" style="left: -0.5rem;" :disabled="service.state===0" ></Button>
@@ -35,7 +51,7 @@
         </div>
         <div class="col-12 lg:col-6">
           <div class="card summary m-0">
-            <span class="title">{{$t('queue.called')}}</span>   
+            <span class="title">{{$t('queue.called')}}</span>
             <span class="count revenue">{{service.number>0 ? service.number : "-"}}</span>
           </div>
           <div class="card summary">
@@ -63,7 +79,7 @@
               </template>
             </Inplace>
           </div>
-        </div>        
+        </div>
       </div>
      </div>
   </div>
@@ -71,18 +87,18 @@
 
 <script>
 
-import {  getHeader, smartEnuApi, findRole } from "@/config/config";
+import {findRole, getHeader} from "@/config/config";
 import api from "@/service/api";
 export default {
 
   data() {
     return {
+      parentID: parseInt(this.$route.params.parentID),
       lazyParams: {
         first: 0,
         rows: 100,
-       
       },
-      selectedQueue: null, 
+      selectedQueue: null,
       number: null,
 
       downInfo: {
@@ -95,7 +111,7 @@ export default {
       },
       queues: [],
       neigbors: [],
-      queue: null,
+      queue: {},
       service:{
         count: null,
         info: {
@@ -109,14 +125,14 @@ export default {
         state: -1,
       },
       counting: true,
-      redirectVisible:false
-
-     
+      redirectVisible:false,
+      loading:false,
+      timesList: []
     }
   },
-  methods: {   
+  methods: {
     getQueue(parentID) {
-        this.loading = true  
+        this.loading = true
         this.lazyParams.parentID = parentID
          //alert(parentID)
         api
@@ -130,6 +146,9 @@ export default {
             this.queues.forEach(queue=> {
               if (queue.key == this.$route.params.id) {
                 this.queue = queue
+                if(this.queue.reservation){
+                  this.getTimes()
+                }
                 return
               }
             })
@@ -150,14 +169,14 @@ export default {
         });
     },
     getNeigborQueue(parentID) {
-        this.loading = true         
+        this.loading = true
         this.lazyParams.id = parentID
         api
         .post("/queue/getneigbors", this.lazyParams, {
           headers: getHeader(),
         })
         .then((response) => {
-          this.neigbors = response.data.queues;      
+          this.neigbors = response.data.queues;
           this.loading = false;
         })
         .catch((error) => {
@@ -174,7 +193,7 @@ export default {
         });
     },
     callNextCustomer(call, number) {
-       this.loading = true  
+       this.loading = true
        api
         .post("/queue/callCustomer", {
           queueID: Number(this.$route.params.parentID),
@@ -198,13 +217,14 @@ export default {
           if (!call) {
             this.service.state = -1
           }
-          
+
           this.counter(this.service.info)
           this.downInfo.counting = !call
-          this.$refs.selectTicket.close()
+          //this.$refs.selectTicket.close()
           this.loading = false;
         })
         .catch((error) => {
+          console.log(error)
           this.loading = false;
           console.log(error.response)
           this.$toast.add({
@@ -216,19 +236,24 @@ export default {
             this.$store.dispatch("logLout");
           }
         });
-
-
     },
-    
-  
-    changeState(state, redirectID){
+    changeState(state, redirectID, serviceID){
       var workSecond=this.service.info.second+(this.service.info.minute*60)+(Number(this.service.info.hour*3600));
       this.loading = true
+      const params = {
+        serviceID: this.service.id,
+        state: state,
+        redirectID: redirectID,
+        workTime: workSecond
+      }
+      if(serviceID){
+        params.serviceID = serviceID
+      }
       api
-        .post("/queue/statusChange", {serviceID: this.service.id, state: state, redirectID: redirectID,workTime: workSecond}, {
+        .post("/queue/statusChange", params, {
           headers: getHeader(),
         })
-        .then((_) => {         
+        .then((_) => {
           this.service = {
             state:-1,
             info:{
@@ -237,7 +262,7 @@ export default {
               counting: false,
               hour: 0,
               minute: 0,
-              second: 0,     
+              second: 0,
             }
           }
           this.getQueue()
@@ -258,14 +283,14 @@ export default {
             life: 3000,
           });
         });
-          
-      
+
+
     },
     padTo2Digits(num) {
       return num.toString().padStart(2, '0');
     },
     counter(info) {
-      var final = Date.now() 
+      var final = Date.now()
       var milliseconds = final- info.start;
       info.second = Math.floor(milliseconds / 1000);
       info.minute = Math.floor(info.second / 60);
@@ -274,7 +299,7 @@ export default {
       info.second = info.second % 60;
       info.minute = info.minute % 60;
       info.hour = info.hour % 24;
-      
+
       info.duration = info.counting ? `${this.padTo2Digits(info.hour)}:${this.padTo2Digits(info.minute)}:${this.padTo2Digits(info.second)}` : "00:00:00";
       if (!info.counting) {
         return
@@ -284,31 +309,58 @@ export default {
       }, 1000)
     },
     getRedirectNumber(){
-    
-      this.redirectVisible=true
-    }
 
-   
+      this.redirectVisible=true
+    },
+    getTimes() {
+      api
+          .post("/queue/getQueueAvailableInfo", {id: parseInt(this.$route.params.id)}, {
+            headers: getHeader(),
+          })
+          .then((response) => {
+            response.data.forEach(entry => {
+              const t = new Date(entry.revision_time).toISOString().substring(11, 16);
+              entry.revision_time = t;
+            });
+            response.data.map(e=>{
+              e.full_name = e.last_name + ' ' + e.first_name
+            });
+            this.timesList = response.data
+          })
+          .catch((error) => {
+            console.log(error)
+            this.loading = false;
+            this.$toast.add({
+              severity: "error",
+              summary: this.$t("smartenu.loadError") + ":\n" + error,
+              life: 3000,
+            });
+            if (error.response.status == 401) {
+              this.$store.dispatch("logLout");
+            }
+          });
+    },
   },
 
   mounted() {
-      var parentID = parseInt(this.$route.params.parentID) ;
-      this.getQueue(parentID); 
+      this.getQueue(this.parentID);
       this.counter(this.downInfo);
-      this.getNeigborQueue(parentID)
-      
+      this.getNeigborQueue(this.parentID)
+      /*if(!findRole(null,'queue_operator')){
+        this.$router.push({path: "/"})
+      }*/
   },
- 
+
 };
 </script>
 
 <style scoped>
-.font-style {    
+.font-style {
     width:300px;
     height:300px;
     font-size:220px;
     overflow: hidden;
- 
+
 }
 
 .p-overflow-hidden {

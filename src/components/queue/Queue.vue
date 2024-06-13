@@ -16,7 +16,13 @@
               <Chip class="mr-2 custom-chip" :label="responsible.fullName"/>
             </span>
           </div>
-
+        </template>
+      </Column>
+      <Column field="queueType" v-bind:header="$t('Кезек түрі')" sortable>
+        <template #body="slotProps">
+          <span v-if="slotProps.node.reservation === true">
+            Бронь
+          </span>
         </template>
       </Column>
       <Column>
@@ -68,6 +74,12 @@
               v-tooltip.bottom="'QR'"
               class="p-button-rounded p-button-info mr-2"
               @click="itemID(slotProps.node.key)" />
+            <Button
+              icon="pi pi-calendar-clock"
+              v-tooltip.bottom="$t('Mode')"
+              v-if="slotProps.node.parentId ===null && slotProps.node.createdUserId === loginedUser.userID "
+              class="p-button-rounded p-button-help mr-2"
+              @click="$router.push('/queue/mode/'+ slotProps.node.key )" />
         </template>
       </Column>              
     </TreeTable> 
@@ -107,7 +119,10 @@
           <FindUser v-model="queue.responsibles" :userType="2"></FindUser>
           <small class="p-error" v-if="!validation.responsibles && submitted">{{ $t("common.requiredField") }}</small>
       </div>
-              
+      <div v-if="currentNode.parentId" class="field-checkbox mt-3">
+        <Checkbox id="landing" name="landing" v-model="queue.reservation" :binary="true"/>
+        <label for="landing">Брондау</label>
+      </div>
       <template #footer>
         <Button
           v-bind:label="$t('common.save')"
@@ -423,7 +438,7 @@ export default {
   },
   created() {
     this.loginedUser = this.$store.state.loginedUser;
-    this.getQueue(null, null); 
+    this.getQueue(null, null);
   },
 
 }
