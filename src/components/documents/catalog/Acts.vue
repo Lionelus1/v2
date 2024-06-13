@@ -482,12 +482,12 @@ export default {
           visible: this.findRole(null, RolesEnum.roles.Accountant) || this.findRole(null, RolesEnum.roles.MainAdministrator),
           command: () => {this.execute(this.currentDocument)},
         },
-        // {
-        //   label: this.$t('contracts.statusGPC'),
-        //   icon: "fa-solid fa-file-waveform",
-        //   visible: this.findRole(null, RolesEnum.roles.MainAdministrator),
-        //   command: () => {this.$router.push('/documents/catalog/acts/status')},
-        // },
+        {
+          label: this.$t('contracts.statusGPC'),
+          icon: "fa-solid fa-file-waveform",
+          visible: this.findRole(null, RolesEnum.roles.MainAdministrator),
+          command: () => {this.$router.push('/documents/catalog/acts/status')},
+        },
       ]
     },
     actions () {

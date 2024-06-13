@@ -360,6 +360,7 @@ export default {
         hint: "Если вам нужна помощь, пишите в наш Telegram Chat или смотрите в справочнике",
         deny: "Отказать",
         doYouWantApprove: "Вы действительно хотите согласовать договор?",
+        changeApprovals: "Замена согласующих лиц",
     },
     positions: {
         menuTitle: 'Поменять позицию',
@@ -653,6 +654,20 @@ export default {
             program_targeted: "Программно-целевое финансирование",
             grant: "Грантовое финансирование",
             company: "Договора с преприятиями",
+        },
+        projectPositions: {
+            researcher: "Научный сотрудник",
+            juniorResearcher: "Младший научный сотрудник",
+            leadResearcher: "Ведущий научный сотрудник",
+            chiefResearcher: "Главный научный сотрудник",
+            support: "Специалист по сопровождению проекта",
+            researchAssistant: "Ассистент по научно-исследовательской группе",
+            teacher: "Профессорско-преподавательский состав",
+            council: "Научно-технический совет",
+            seniorResearcher: "Старший научный сотрудник",
+            engineer: "Инженер",
+            consultant: "Научный консультант",
+            projectManager: "Научный руководитель проекта",
         },
     },
     hdfs: {

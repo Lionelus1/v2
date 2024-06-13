@@ -63,12 +63,18 @@
                 </template>
                 <label v-else>{{ param.description }}</label>
               </div>
-              <div class="p-fluid md:col-6" v-if="['text', 'number'].includes(param.name)">
+              <div class="p-fluid md:col-6" v-if="['text', 'number'].includes(param.name) && param.description !== 'project_position'">
                 <InputText v-model="param.value" type="text" @input="input()"
                            :disabled="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID) ||
                               contract.docHistory.stateId > DocEnum.CREATED.ID && contract.docHistory.stateId != DocEnum.REVISION.ID
                               || param.name == 'number'"
                            :placeholder="param.name == 'number' ? $t('contracts.autogenerate') : ''"></InputText>
+              </div>
+              <div class="p-fluid md:col-6" v-if="['text', 'number'].includes(param.name) && param.description === 'project_position'">
+                <Dropdown v-model="param.value" :options="projectPositions" class="w-full" @change="input"
+                          :option-label="projectPositionsLabel" :disabled="contract.docHistory.stateId > DocEnum.CREATED.ID &&
+                          contract.docHistory.stateId != DocEnum.REVISION.ID">
+                </Dropdown>
               </div>
               <div class="p-fluid md:col-6" v-if="param.name == 'date'">
                 <PrimeCalendar v-model="param.value" dateFormat="dd.mm.yy" :disabled="param.description === 'date' ||
@@ -354,6 +360,11 @@ export default {
       ],
 
       financingTypes: ['government', 'program_targeted', 'grant', 'company'],
+      projectPositions: [
+        'researcher', 'juniorResearcher', 'leadResearcher', 'chiefResearcher',
+        'support', 'researchAssistant', 'teacher', 'council', 'seniorResearcher',
+        'engineer', 'consultant', 'projectManager'
+      ],
 
       notused: {
         users: [],
@@ -1065,6 +1076,9 @@ export default {
     },
     financingTypesLabel(data) {
       return this.$t('contracts.financingTypes.' + data);
+    },
+    projectPositionsLabel(data) {
+      return this.$t('contracts.projectPositions.' + data);
     },
   }
 }

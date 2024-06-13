@@ -31,7 +31,7 @@
       <TabPanel v-if="docInfo && docInfo.docHistory.stateId == 2 && docInfo.folder && docInfo.folder.type === Enum.FolderType.Agreement
               && docInfo.docType === Enum.DocType.Contract" :header="$t('ncasigner.sign')">
         <div class="flex justify-content-center">
-          <Button icon="fa-solid fa-check" class="p-button-success md:col-3" @click="approve" :label="$t('common.action.approve')" :loading="loading" />
+          <Button icon="fa-solid fa-check" class="p-button-success md:col-3" @click="approve" :label="$t('common.action.approve')" :loading="loading" :disabled="hideDocRevision" />
         </div>
       </TabPanel>
       <TabPanel v-if="docInfo && docInfo.docHistory.stateId == 2  && !(docInfo.folder && docInfo.folder.type === Enum.FolderType.Agreement
@@ -93,12 +93,23 @@
       <TabPanel v-if="docInfo && (docInfo.docHistory.stateId == 2 || docInfo.docHistory.stateId == 6)
                 && docInfo.folder && docInfo.folder.type === Enum.FolderType.Agreement &&
                 isSciadvisor()" :header="$t('common.deny')">
-        <div class="card">
-          <label> {{ this.$t('common.comment') }} </label>
-          <InputText v-model="denyComment" style="width: 100%; margin-bottom: 2rem;"></InputText>
-          <div class="flex justify-content-center">
-            <Button icon="fa-regular fa-circle-xmark" class="p-button-danger md:col-3" @click="deny" :label="$t('common.deny')" :loading="loading" />
-          </div>
+        <label> {{ this.$t('common.comment') }} </label>
+        <InputText v-model="denyComment" style="width: 100%; margin-bottom: 2rem;"></InputText>
+        <div class="flex justify-content-center">
+          <Button icon="fa-regular fa-circle-xmark" class="p-button-danger md:col-3" @click="deny" :label="$t('common.deny')" :loading="loading" />
+        </div>
+      </TabPanel>
+      <TabPanel v-if="docInfo && docInfo.docHistory.stateId == 2
+                && docInfo.folder && docInfo.folder.type === Enum.FolderType.Agreement &&
+                isSciadvisor()" :header="$t('common.changeApprovals')"
+                :disabled="currentApprovalUsersLoading">
+        <div class="p-fluid mb-3">
+          <FindUser :userType="0" searchMode="local" v-model="currentApprovalUsers"></FindUser>
+        </div>
+        <div class="flex justify-content-center">
+          <Button icon="fa-solid fa-user-check" class="p-button-success md:col-3"
+                  @click="changeApprovals" :label="$t('common.change')" :loading="loading"
+                  :disabled="currentApprovalUsers.length < 1"/>
         </div>
       </TabPanel>
     </TabView>
@@ -177,7 +188,11 @@ export default {
       revisionComment: null,
       denyComment: null,
       mobileApp: null,
-      isIndivid: null
+      isIndivid: null,
+
+      currentApprovalStage: -1,
+      currentApprovalUsers: [],
+      currentApprovalUsersLoading: true,
     }
   },
   created() {
@@ -577,6 +592,32 @@ export default {
               }
             }
           }
+
+          for (let element of res.data.approvalStages) {
+            let allUsersApproved = true;
+
+            for (let appr of element.usersApproved) {
+              if (appr === 0) {
+                allUsersApproved = false;
+                break;
+              }
+            }
+
+            if (allUsersApproved) {
+              continue;
+            }
+
+            for (let i = 0; i < element.usersApproved.length; i++) {
+              if (element.usersApproved[i] === 0) {
+                this.currentApprovalUsers.push(element.users[i]);
+              }
+            }
+
+            this.currentApprovalStage = element.stage;
+            break;
+          }
+
+          this.currentApprovalUsersLoading = false;
         }
 
         this.loading = false;
@@ -668,7 +709,40 @@ export default {
         }
       }
       return false
-    }
+    },
+    changeApprovals() {
+      if (this.currentApprovalUsers.length < 1) {
+        return
+      }
+
+      let users = [];
+      for (let i = 0; i < this.currentApprovalUsers.length; i++) {
+        users.push(this.currentApprovalUsers[i].userID)
+      }
+
+      this.loading = true;
+
+      this.service.changeCurrentStageApprovals({
+        uuid: this.docInfo.uuid,
+        stage: this.currentApprovalStage,
+        users: users,
+      }).then(res => {
+        this.loading = false;
+
+        location.reload();
+      }).catch(err => {
+        this.loading = false;
+
+        if (err.response && err.response.status == 401) {
+          this.$store.dispatch("logLout");
+        } else if (err.response && err.response.data && err.response.data.localized) {
+          this.showMessage('error', this.$t(err.response.data.localizedPath));
+        } else {
+          console.log(err)
+          this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
+        }
+      });
+    },
   }
 }
 </script>

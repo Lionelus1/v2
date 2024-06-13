@@ -359,6 +359,7 @@ export default {
         hint: "If you need help, write to our Telegram Chat or look in the guide",
         deny: "Refuse",
         doYouWantApprove: "Do you really want to agree to a contract?",
+        changeApprovals: "Replacement of approving persons",
     },
     positions: {
         menuTitle: 'Change position',
@@ -652,6 +653,20 @@ export default {
             program_targeted: "Program-targeted financing",
             grant: "Grant financing",
             company: "Contracts with companies",
+        },
+        projectPositions: {
+            researcher: "Researcher",
+            juniorResearcher: "Junior Researcher",
+            leadResearcher: "Leading Researcher",
+            chiefResearcher: "Chief Researcher",
+            support: "Project support specialist",
+            researchAssistant: "Research Assistant",
+            teacher: "Teaching staff",
+            council: "Scientific and Technical Council",
+            seniorResearcher: "Senior Researcher",
+            engineer: "Engineer",
+            consultant: "Scientific supervisor",
+            projectManager: "Project Scientific Director",
         },
     },
     hdfs: {

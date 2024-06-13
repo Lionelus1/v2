@@ -36,11 +36,16 @@
               <div class="p-fluid md:col-6 pb-0">
                 <label>{{ $t('contracts.labels.' + param.description) }}</label>
               </div>
-              <div class="p-fluid md:col-6" v-if="['text', 'number'].includes(param.name)">
+              <div class="p-fluid md:col-6" v-if="['text', 'number'].includes(param.name) && param.description !== 'project_position'">
                 <InputText v-model="param.value" type="text" @input="input()" :disabled="true"
                   :placeholder="param.properties && param.properties.readonly ? $t('contracts.autogenerate') : ''"></InputText>
                 <!--                  :disabled="(sciadvisorRequest && contract.docHistory.stateId === Enum.CREATED.ID) ||-->
                 <!--                  contract.docHistory.stateId > Enum.CREATED.ID || (param.properties && param.properties.readonly)"-->
+              </div>
+              <div class="p-fluid md:col-6" v-if="['text', 'number'].includes(param.name) && param.description === 'project_position'">
+                <Dropdown v-model="param.value" :options="projectPositions" class="w-full" @change="input"
+                          :option-label="projectPositionsLabel" :disabled="true">
+                </Dropdown>
               </div>
               <div class="p-fluid md:col-6" v-if="param.name === 'date'">
                 <PrimeCalendar v-model="param.value" dateFormat="dd.mm.yy" :disabled="true"
@@ -185,6 +190,12 @@ export default {
 
       selectedUsers: [],
       stages: [],
+
+      projectPositions: [
+        'researcher', 'juniorResearcher', 'leadResearcher', 'chiefResearcher',
+        'support', 'researchAssistant', 'teacher', 'council', 'seniorResearcher',
+        'engineer', 'consultant', 'projectManager'
+      ],
 
       menu: [
         {
@@ -923,6 +934,9 @@ export default {
         const v = c === 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
       });
+    },
+    projectPositionsLabel(data) {
+      return this.$t('contracts.projectPositions.' + data);
     },
   }
 }

@@ -23,7 +23,7 @@
       </Column>
       <Column field="contractDate" :header="$t('contracts.columns.contractDate')" style="min-width: 20px;">
         <template #body="slotProps">
-          {{ slotProps.data.contractDate }}
+          {{ getShortDateString(slotProps.data.contractDate) }}
         </template>
       </Column>
       <Column field="executorName" :header="$t('contracts.columns.executorName')" style="min-width: 30px;">
@@ -38,7 +38,7 @@
       </Column>
       <Column field="executorPosition" :header="$t('contracts.columns.executorPosition')" style="min-width: 20px;">
         <template #body="slotProps">
-          {{ slotProps.data.executorPosition }}
+          {{ projectPositionsLabel(slotProps.data.executorPosition) }}
         </template>
       </Column>
       <Column field="irn" :header="$t('contracts.columns.irn')" style="min-width: 20px;">
@@ -63,7 +63,7 @@
       </Column>
       <Column field="mnvoDate" :header="$t('contracts.columns.mnvoDate')" style="min-width: 20px;">
         <template #body="slotProps">
-          {{ slotProps.data.mnvoDate }}
+          {{ getShortDateString(slotProps.data.mnvoDate) }}
         </template>
       </Column>
       <Column field="contractSum" :header="$t('contracts.columns.contractSum')" style="min-width: 20px;">
@@ -73,7 +73,7 @@
       </Column>
       <Column :header="$t('contracts.columns.serviceDate')" style="min-width: 20px;">
         <template #body="slotProps">
-          {{ slotProps.data.serviceDate }}
+          {{ getShortDateString(slotProps.data.serviceDate) }}
         </template>
       </Column>
       <Column :header="$t('contracts.columns.actSumPercentage')" style="min-width: 20px;">
@@ -93,7 +93,7 @@
       </Column>
       <Column :header="$t('contracts.columns.actDate')" style="min-width: 20px;">
         <template #body="slotProps">
-          {{ slotProps.data.actDate }}
+          {{ getShortDateString(slotProps.data.actDate) }}
         </template>
       </Column>
       <Column :header="$t('contracts.columns.actName')" style="min-width: 50px;">
@@ -160,10 +160,8 @@
         <InputText type="text" v-model="tempFilter.contractSum"/>
       </div>
       <div class="field">
-        <Paginator v-model:first="filterPage" :rows="1" :totalRecords="2"
-                   template="PrevPageLink NextPageLink"></Paginator>
-        <Button :label="$t('common.clear')" @click="clearFilter();toggle('filterOverlayPanel', $event);getContracts()" class="mb-2 p-button-outlined"/>
-        <Button :label="$t('common.search')" @click="saveFilter();toggle('filterOverlayPanel', $event);getContracts()" class="mt-2"/>
+        <Button :label="$t('common.clear')" @click="clearFilter();toggle('filterOverlayPanel', $event);getActs()" class="mb-2 p-button-outlined"/>
+        <Button :label="$t('common.search')" @click="saveFilter();toggle('filterOverlayPanel', $event);getActs()" class="mt-2"/>
       </div>
     </div>
   </OverlayPanel>
@@ -171,6 +169,8 @@
 <script>
 import {DocService} from "@/service/doc.service";
 import FindUser from "@/helpers/FindUser.vue";
+import {getShortDateString} from "@/helpers/helper";
+import {getHeader} from "@/config/config";
 
 export default {
   name: 'StatusActsGPC',
@@ -235,6 +235,7 @@ export default {
     this.$emit('apply-flex', false);
   },
   methods: {
+    getShortDateString: getShortDateString,
     showMessage(msgtype, message, content) {
       this.$toast.add({
         severity: msgtype,
@@ -258,13 +259,59 @@ export default {
       this.service.getGPCActsStatus({
         page: this.page,
         rows: this.rows,
+        type: 'default',
         filter: {
-
+          regNumber: this.filter.regNumber,
+          regDate: this.filter.regDate,
+          contragent: this.filter.contragent.length > 0 && this.filter.contragent[0] ? this.filter.contragent[0].userID : null,
+          executorWorkPlace: this.filter.executorWorkPlace,
+          projectPosition: this.filter.projectPosition,
+          irn: this.filter.irn,
+          theme: this.filter.theme,
+          sciadvisor: this.filter.sciadvisor.length > 0 && this.filter.sciadvisor[0] ? this.filter.sciadvisor[0].userID : null,
+          mnvo: this.filter.mnvo,
+          mnvoDate: this.filter.mnvoDate,
+          contractSum: this.filter.contractSum,
         },
+      }, {
+        headers: getHeader()
       }).then(res => {
-        this.documents = res.data.documents;
         this.total = res.data.total;
+        this.documents = [];
 
+        for (let i = 0; i < res.data.documents.length; i++) {
+          for (let j = 0; j < res.data.documents[i].children.length; j++) {
+            let doc = {};
+            doc.number = this.page*this.rows + i+1;
+            doc.contractNumber = res.data.documents[i].number;
+            doc.contractDate = res.data.documents[i].registerDate;
+            doc.executorName = res.data.documents[i].newParams.contragent.value.data ?
+                this.getFullname(res.data.documents[i].newParams.contragent.value.data) : '';
+            doc.executorWorkPlace = res.data.documents[i].newParams.executor_work_place.value;
+            doc.executorPosition = res.data.documents[i].newParams.project_position.value;
+            doc.irn = res.data.documents[i].newParams.irn.value;
+            doc.theme = res.data.documents[i].newParams.theme.value;
+            doc.sciadviorName = res.data.documents[i].newParams.sciadvisor.value.data ?
+                this.getFullname(res.data.documents[i].newParams.sciadvisor.value.data) : '';
+            doc.mnvoNumber = res.data.documents[i].newParams.mnvo_agreement.value;
+            doc.mnvoDate = res.data.documents[i].newParams.mnvo.value;
+            doc.contractSum = res.data.documents[i].newParams.agreement_sum.value;
+            doc.serviceDate = res.data.documents[i].children[j].newParams.service_date;
+            doc.actSumPercentage = res.data.documents[i].children[j].newParams.percentage;
+            doc.actSum = res.data.documents[i].children[j].newParams.act_amount.value;
+            doc.actNumber = res.data.documents[i].children[j].number;
+            doc.actDate = res.data.documents[i].children[j].registerDate;
+            doc.actName = res.data.documents[i].children[j].newParams.table.value[0].work_type;
+            doc.status = {
+              code: res.data.documents[i].children[j].docHistory.code,
+              eng: res.data.documents[i].children[j].docHistory.stateEn,
+              rus: res.data.documents[i].children[j].docHistory.stateRus,
+              kz: res.data.documents[i].children[j].docHistory.stateKaz,
+            }
+
+            this.documents.push(doc);
+          }
+        }
 
         this.tableLoading = false;
       }).catch(err => {
@@ -314,6 +361,90 @@ export default {
       };
       this.filtered = false;
     },
+    getFullname(user) {
+      if (!user) {
+        return '';
+      }
+
+      let name = '';
+
+      if (this.$i18n.locale === 'en' && this.validString(user.thirdnameEn) && this.validString(user.firstnameEn)) {
+        name = user.thirdnameEn + ' ' + user.firstnameEn
+
+        if (this.validString(user.lastnameEn)) {
+          name += ' ' + user.lastnameEn
+        }
+
+        return name
+      }
+
+      name = user.thirdName + ' ' + user.firstName
+
+      if (this.validString(user.lastName)) {
+        name += ' ' + user.lastName
+      }
+
+      return name
+    },
+    validString(str) {
+      if (str && str.length > 0) {
+        return true;
+      }
+
+      return false;
+    },
+    projectPositionsLabel(data) {
+      return this.$t('contracts.projectPositions.' + data);
+    },
+    exportReport() {
+      this.tableLoading = true;
+
+      this.service.getGPCActsStatus({
+        page: this.page,
+        rows: this.rows,
+        type: 'export',
+        language: this.$i18n.locale,
+        filter: {
+          regNumber: this.filter.regNumber,
+          regDate: this.filter.regDate,
+          contragent: this.filter.contragent.length > 0 && this.filter.contragent[0] ? this.filter.contragent[0].userID : null,
+          executorWorkPlace: this.filter.executorWorkPlace,
+          projectPosition: this.filter.projectPosition,
+          irn: this.filter.irn,
+          theme: this.filter.theme,
+          sciadvisor: this.filter.sciadvisor.length > 0 && this.filter.sciadvisor[0] ? this.filter.sciadvisor[0].userID : null,
+          mnvo: this.filter.mnvo,
+          mnvoDate: this.filter.mnvoDate,
+          contractSum: this.filter.contractSum,
+        },
+      }, {
+        headers: getHeader(),
+        responseType: "blob",
+      }).then(res => {
+        let blob = new Blob([res.data]);
+        let downloadElement = document.createElement("a");
+        let href = window.URL.createObjectURL(blob)
+        downloadElement.href = href;
+        downloadElement.download = 'Статус актов ГПХ.xlsx';
+        document.body.appendChild(downloadElement);
+        downloadElement.click();
+        document.body.removeChild(downloadElement);
+        window.URL.revokeObjectURL(href);
+
+        this.tableLoading = false;
+      }).catch(err => {
+        if (err.response && err.response.status == 401) {
+          this.$store.dispatch("logLout")
+        } else if (err.response && err.response.data && err.response.data.localized) {
+          this.showMessage('error', this.$t(err.response.data.localizedPath), null)
+        } else {
+          console.log(err)
+          this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
+        }
+
+        this.tableLoading = false;
+      });
+    }
   },
   computed: {
     menu() {
@@ -322,6 +453,7 @@ export default {
           label: this.$t('common.export'),
           icon: "fa-solid fa-file-excel",
           command: () => {
+            this.exportReport()
           },
         },
       ]

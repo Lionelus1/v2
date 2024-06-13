@@ -358,6 +358,7 @@ export default {
         hint: "Қандай да бір көмек керек болса, біздің Telegram Chat қа жазыңыз немесе Анықтамадан қараңыз",
         deny: "Бас тарту",
         doYouWantApprove: "Сіз шынымен келісім-шартқа келіскіңіз келе ме?",
+        changeApprovals: "Бекітуші тұлғаларды ауыстыру",
     },
     positions: {
         menuTitle: 'Позицияны өзгерту',
@@ -651,6 +652,20 @@ export default {
             program_targeted: "Бағдарламалық мақсатты қаржыландыру",
             grant: "Гранттық қаржыландыру",
             company: "Кәсіпорындармен келісімдер",
+        },
+        projectPositions: {
+            researcher: "Ғылыми қызметкер",
+            juniorResearcher: "Кіші ғылыми қызметкер",
+            leadResearcher: "Жетекші ғылыми қызметкер",
+            chiefResearcher: "Бас ғылыми қызметкер",
+            support: "Жобаны қолдау жөніндегі маман",
+            researchAssistant: "Ғылыми көмекші",
+            teacher: "Педагогикалық ұжым",
+            council: "Ғылыми-техникалық кеңес",
+            seniorResearcher: "Аға ғылыми қызметкер",
+            engineer: "Инженер",
+            consultant: "Ғылыми кеңесші",
+            projectManager: "Жобаның ғылыми жетекшісі",
         },
     },
     hdfs: {
