@@ -357,7 +357,8 @@ export default {
         unknownUser: "Гость",
         doNotShowAnymore: "Больше не показывать",
         showMore: "Показать больше",
-        hint: "Если вам нужна помощь, пишите в наш Telegram Chat или смотрите в справочнике"
+        hint: "Если вам нужна помощь, пишите в наш Telegram Chat или смотрите в справочнике",
+        sacReportMenuTitle: 'Отчеты Государственной аттестационной комиссии'
     },
     positions: {
         menuTitle: 'Поменять позицию',
@@ -582,7 +583,9 @@ export default {
         modulname: "Код и наименование модуля:",
         eduprogram: "Код и наименование образовательной программы:",
         discipline: "Код и наименование дисциплины:",
-        logo: "Логотип"
+        logo: "Логотип",
+        academicyear: "Академический год",
+        saceduprogram: "Код и наименование образовательной программы:",
     },
     ncasigner: {
         chooseFile: "Выберите файл",

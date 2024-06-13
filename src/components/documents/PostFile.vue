@@ -44,6 +44,13 @@
                 </template>
               </Dialog>
             </div>
+            <!-- <div v-if="param.name==='saceduprogram'">
+              {{ selectedSpecialities }}
+                <SpecialitySearch :style="'height:38px'" class="pt-1" :max="1" :educationLevel="Enums.EducationLevel.Doctorate" v-model="selectedSpecialities" id="speciality"></SpecialitySearch>
+            </div> -->
+            <div v-if="param.name==='academicyear'">
+              <PrimeCalendar v-model="param.value" selectionMode="range" dateFormat="yy" view="month" :manualInput="false" />
+            </div>
             <InputText v-else  v-model="param.value" type="text" />
             <small class="p-error" v-if="validation.param">{{ $t("common.requiredField") }}</small>
           </div>
@@ -98,6 +105,8 @@ import Files from "@/components/documents/Files.vue"
 import {smartEnuApi, getHeader, getFileHeader, fileRoute} from "@/config/config";
 import DepartmentList from "../smartenu/DepartmentList.vue"
 import Enum from "@/enum/docstates/index";
+import SpecialitySearch from "../smartenu/speciality/specialitysearch/SpecialitySearch.vue";
+import Enums from "@/enum/docstates/index";
 
 export default {
     components: {DepartmentList,Files},
@@ -124,7 +133,8 @@ export default {
             approveDate: false,
             author: false,
             catalog: false,
-        }
+        },
+        Enums: Enums
       }
     },
     props: {

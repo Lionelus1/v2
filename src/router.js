@@ -271,6 +271,12 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
+                path: '/documents/reports/sacreports',
+                name: 'sacReports',
+                component: load('documents/reports/SACReports'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
                 path: '/contragent/banks',
                 name: '/contragent/banks',
                 component: load('contragent/Banks'),
