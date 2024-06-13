@@ -383,7 +383,11 @@ const registerQueue = (queueId, queue) => {
     categoryName.value = JSON.parse(localStorage.getItem('queueCategory'))
     const phoneNumber = localStorage.getItem('phoneNumber')
     const req = {
-      queueID: queueId, lang: locale.value, phoneNumber: phoneNumber
+      queueID: queueId, lang: locale.value, phoneNumber: phoneNumber, queue_name: locale.value === "kz"
+          ? categoryName.value.queueNamekz
+          : locale.value === "ru"
+              ? categoryName.value.queueNameru
+              : categoryName.value.queueNameen
     }
     if (reservation.value && name.value.trim() !== '' && lastName.value.trim() !== '' && email.value && selectedTime.value && selectedTime.value) {
       if (queue) {
@@ -418,7 +422,11 @@ const getRegisterService = (queueId, queue) => {
     categoryName.value = JSON.parse(localStorage.getItem('queueCategory'))
     const phoneNumber = localStorage.getItem('phoneNumber')
     const req = {
-      phoneNumber: phoneNumber
+      phoneNumber: phoneNumber, queue_name: locale.value === "kz"
+          ? categoryName.value.queueNamekz
+          : locale.value === "ru"
+              ? categoryName.value.queueNameru
+              : categoryName.value.queueNameen
     }
     if (reservation.value && name.value.trim() !== '' && lastName.value.trim() !== '' && email.value && selectedTime.value && selectedTime.value) {
       req.queueID = queueId,

@@ -14,7 +14,6 @@
             <Column field="email" header="Почтасы"></Column>
             <Column field="action" header="">
               <template #body="{data}">
-                <button>{{data.id}}</button>
                 <Button :label="$t('Келді')" class="mb-1 p-button-success" @click="changeState(1, null, data.id)"></Button>
               </template>
             </Column>
