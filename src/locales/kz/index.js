@@ -1810,7 +1810,7 @@ export default {
     telegram: {
         question: 'Сұрактар',
         anwers: 'Жауаптар',
-        author: 'автор',
+        author: 'Сұрақтың авторы',
 
         questionkz: 'Cұрақты қазақша еңгізіңіз',
         questionen: 'Cұрақты ағылшынша еңгізіңіз',

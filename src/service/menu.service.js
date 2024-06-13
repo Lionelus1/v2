@@ -304,7 +304,7 @@ export class MenuService {
             },
             {
                 label: $t('Telegram'),
-                icon: 'pi pi-spin pi-cog',
+                icon: 'fa-brands fa-telegram',
                 to: '/telegram',
             }
         ]
