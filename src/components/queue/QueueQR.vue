@@ -422,11 +422,7 @@ const getRegisterService = (queueId, queue) => {
     categoryName.value = JSON.parse(localStorage.getItem('queueCategory'))
     const phoneNumber = localStorage.getItem('phoneNumber')
     const req = {
-      phoneNumber: phoneNumber, queue_name: locale.value === "kz"
-          ? categoryName.value.queueNamekz
-          : locale.value === "ru"
-              ? categoryName.value.queueNameru
-              : categoryName.value.queueNameen
+      phoneNumber: phoneNumber
     }
     if (reservation.value && name.value.trim() !== '' && lastName.value.trim() !== '' && email.value && selectedTime.value && selectedTime.value) {
       req.queueID = queueId,
