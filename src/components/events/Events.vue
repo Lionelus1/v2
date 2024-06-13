@@ -9,7 +9,7 @@
                  paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                  :rowsPerPageOptions="[10, 25, 50]"
                  :currentPageReportTemplate="$t('common.showingRecordsCount', {first: '{first}', last: '{last}', totalRecords: '{totalRecords}'})"
-                 class="p-datatable-customers" :rows="10" dataKey="id" :rowHover="true" v-model:selection="selectedNews"
+                 class="p-datatable-customers" :rows="10" dataKey="id" :rowHover="true" v-model:selection="selectedEvent"
                  :filters="filters" filterDisplay="menu" :showFilterMatchModes="false" :loading="loading"
                  responsiveLayout="scroll" @sort="onSort($event)" selectionMode="single">
         <template #empty>{{ $t("smartenu.eventsNotFound") }}</template>
@@ -32,6 +32,16 @@
               $i18n.locale === "kz" ? slotProps.data.history.status.nameKz : $i18n.locale === "ru" ? slotProps.data.history.status.nameRu : slotProps.data.history.status.nameEn
             }}
           </span>
+          </template>
+        </Column>
+        <Column field="eventDate" v-bind:header="$t('common.pDate')">
+          <template #body="slotProps">
+            {{ formatDate(slotProps.data?.eventDate) }}
+          </template>
+        </Column>
+        <Column field="history.modify_date" v-bind:header="$t('common.updated')" sortable>
+          <template #body="slotProps">
+            {{ formatDate(slotProps.data?.history?.modifyDate) }}
           </template>
         </Column>
         <Column field="createdBy" v-bind:header="$t('common.createdBy')" :sortable="false">
@@ -59,14 +69,13 @@ import {getHeader, smartEnuApi} from "@/config/config";
 import {FilterMatchMode} from "primevue/api";
 import {fileRoute, findRole} from "../../config/config";
 import EventsView from "./EventsView";
+import {formatDate} from "@/helpers/HelperUtil";
 import {EventsService} from "../../service/event.service";
 import {PosterService} from "../../service/poster.service";
 import AddEditEvent from "./AddEditEvent";
 import TitleBlock from "@/components/TitleBlock.vue";
 import ToolbarMenu from "@/components/ToolbarMenu.vue";
 import ActionButton from "@/components/ActionButton.vue";
-import {formatDate} from "@/helpers/HelperUtil";
-
 export default {
   name: "Events",
   components: {ActionButton, ToolbarMenu, TitleBlock, AddEditEvent, EventsView},
@@ -182,13 +191,14 @@ export default {
     });
   },
   methods: {
+    formatDate,
     findRole: findRole,
     clearData() {
       if (!this.lazyParams.searchText) {
         return;
       }
       this.lazyParams.searchText = "";
-      this.getAllNews();
+      this.getAllEvents();
     },
     onSort(event) {
       this.lazyParams.sortField = event.sortField;

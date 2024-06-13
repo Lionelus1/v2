@@ -314,6 +314,12 @@ const routes = [
                         beforeEnter: ifAuthenticated,
                     },
                     {
+                        path: ':id',
+                        name: 'HistoryNews',
+                        component: load('news/HistoryNews'),
+                        beforeEnter: ifAuthenticated,
+                    },
+                    {
                         path: 'add',
                         name: 'AddNews',
                         component: load('news/AddEditNews'),
