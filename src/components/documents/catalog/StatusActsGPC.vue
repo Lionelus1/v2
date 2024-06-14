@@ -296,8 +296,8 @@ export default {
             doc.mnvoNumber = res.data.documents[i].newParams.mnvo_agreement.value;
             doc.mnvoDate = res.data.documents[i].newParams.mnvo.value;
             doc.contractSum = res.data.documents[i].newParams.agreement_sum.value;
-            doc.serviceDate = res.data.documents[i].children[j].newParams.service_date;
-            doc.actSumPercentage = res.data.documents[i].children[j].newParams.percentage;
+            doc.serviceDate = res.data.documents[i].children[j].newParams.service_date.value;
+            doc.actSumPercentage = res.data.documents[i].children[j].newParams.percentage.value;
             doc.actSum = res.data.documents[i].children[j].newParams.act_amount.value;
             doc.actNumber = res.data.documents[i].children[j].number;
             doc.actDate = res.data.documents[i].children[j].registerDate;

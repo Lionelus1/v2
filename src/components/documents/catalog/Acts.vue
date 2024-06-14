@@ -441,25 +441,17 @@ export default {
       this.filtered = false;
     },
     getContractNumber(contract) {
-      if (contract.folder && contract.folder.type === this.Enum.FolderType.Agreement) {
-        if (contract.newParams && contract.newParams.mnvo_agreement
-            && contract.newParams.mnvo_agreement.value) {
-          return contract.newParams.mnvo_agreement.value;
-        }
-
-        return "";
+      if (contract.newParams && contract.newParams.parent_registration_number
+          && contract.newParams.parent_registration_number.value) {
+        return contract.newParams.parent_registration_number.value;
       }
 
       return "";
     },
     getContractDate(contract) {
-      if (contract.folder && contract.folder.type === this.Enum.FolderType.Agreement) {
-        if (contract.newParams && contract.newParams.mnvo
-            && contract.newParams.mnvo.value) {
-          return getShortDateString(contract.newParams.mnvo.value);
-        }
-
-        return "";
+      if (contract.newParams && contract.newParams.parent_registration_date
+          && contract.newParams.parent_registration_date.value) {
+        return getShortDateString(contract.newParams.parent_registration_date.value);
       }
 
       return "";
