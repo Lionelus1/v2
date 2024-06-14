@@ -1277,6 +1277,7 @@ export default {
         serviced: "Serviced",
         averageTime: "Average service time",
         redirected: "Redirected",
+        errorPhone: "Reservation already exists for the given phone number!"
     },
     educomplex: {
         title: "Educational-methodical complex of the discipline",

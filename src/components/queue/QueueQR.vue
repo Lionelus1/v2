@@ -3,7 +3,7 @@
     <LanguageDropdown/>
   </div>
   <div class="card talon_bg">
-
+    <Toast />
     <div class="text-center flex flex-column gap-4 m-auto" v-if="currentStep === 1">
       <Button class="justify-content-center p-button-lg" @click="queue(false)">{{ $t('Кезек') }}</Button>
       <Button class="justify-content-center p-button-lg" @click="queue(true)">{{ $t('Брондау') }}</Button>
@@ -48,7 +48,7 @@
         <template v-if="selectedDay">
         </template>
         <Button v-if="reservationBtn" class="justify-content-center p-button-lg w-full"
-                @click="registerQueue(selectedItem.value.key, selectedItem.value)">{{ $t('Брондау') }}
+                @click="registerQueue(selectedItem.value.key, selectedItem.value)" :disabled="disabledRezervation">{{ $t('Брондау') }}
         </Button>
       </template>
     </div>
@@ -195,7 +195,10 @@
             </div>
           </template>
         </div>
-        <div style="width: 90%; margin: auto">
+        <div style="width: 90%; margin: auto"  v-if="reservation">
+        <InlineMessage class="mb-4" severity="info">Ақпаратты скриншот жасап немесе почтаға жіберілген ақпаратты операторға көрсетіңіз!</InlineMessage>
+        </div>
+          <div style="width: 90%; margin: auto">
           <Button v-if="!called" class="p-button-lg p-button-outlined justify-content-center w-full" style="border-radius: 8px;color: red !important;
     background: rgba(255, 0, 0, 0.15);"
                   @click="refusalVisible = true">
@@ -229,9 +232,11 @@ import {useI18n} from "vue-i18n";
 import moment from "moment";
 import io from "socket.io-client";
 import LanguageDropdown from "@/LanguageDropdown.vue";
+import {useToast} from "primevue/usetoast";
 //import {socket} from "@/main";
 
 const {t, locale} = useI18n()
+const toast = useToast()
 const route = useRoute()
 const parentId = ref(parseInt(route.params.id))
 const queues = ref();
@@ -260,6 +265,7 @@ const selectDayBool = ref(false);
 const selectedTime = ref('');
 const selectTimeBool = ref(false);
 const reservationBtn = ref(false);
+const disabledRezervation = ref(false);
 const selectedItem = ref();
 const daysList = ref([]);
 let options = {}
@@ -375,6 +381,7 @@ const combineDateTime = (date, timeSlot) => {
   return `${datePart}T${timeSlot}Z`;
 }
 const registerQueue = (queueId, queue) => {
+  disabledRezervation.value = true
   if (localStorage.getItem('phoneNumber')) {
     localStorage.setItem('queueKey', queueId);
     if (queue) {
@@ -409,6 +416,8 @@ const registerQueue = (queueId, queue) => {
         })
         .catch((error) => {
           console.log(error)
+          toast.add({severity: "error", summary: t(`${error.response.data.error}`), life: 3000});
+          currentStep.value = 1
         });
   }
 }
