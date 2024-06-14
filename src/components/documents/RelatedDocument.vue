@@ -685,6 +685,8 @@ export default {
           }
         }
       }
+
+      return true;
     },
     isNull(param) {
       if (param === null || param === undefined || param === 'null' || param === '') {
