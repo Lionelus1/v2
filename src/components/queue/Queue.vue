@@ -18,7 +18,7 @@
           </div>
         </template>
       </Column>
-      <Column field="queueType" v-bind:header="$t('Кезек түрі')" sortable>
+      <Column v-bind:header="$t('queue.queueType')">
         <template #body="slotProps">
           <span v-if="slotProps.node.reservation === true">
             Бронь
@@ -72,12 +72,13 @@
             <Button
               icon="pi pi-fw pi-qrcode"
               v-tooltip.bottom="'QR'"
+              v-if="slotProps.node.queue_qr === true"
               class="p-button-rounded p-button-info mr-2"
               @click="itemID(slotProps.node.key)" />
             <Button
               icon="pi pi-calendar-clock"
               v-tooltip.bottom="$t('Mode')"
-              v-if="slotProps.node.parentId ===null && slotProps.node.createdUserId === loginedUser.userID "
+              v-if="slotProps.node.queue_mode === true && slotProps.node.createdUserId === loginedUser.userID"
               class="p-button-rounded p-button-help mr-2"
               @click="$router.push('/queue/mode/'+ slotProps.node.key )" />
         </template>
@@ -121,7 +122,15 @@
       </div>
       <div v-if="currentNode && currentNode.parentId" class="field-checkbox mt-3">
         <Checkbox id="landing" name="landing" v-model="queue.reservation" :binary="true"/>
-        <label for="landing">Брондау</label>
+        <label for="landing">{{$t('queue.reservation')}}</label>
+      </div>
+      <div class="field-checkbox mt-3">
+        <Checkbox id="landing" name="landing" v-model="queue.queue_qr" :binary="true"/>
+        <label for="landing">QR</label>
+      </div>
+      <div class="field-checkbox mt-3">
+        <Checkbox id="landing" name="landing" v-model="queue.queue_mode" :binary="true"/>
+        <label for="landing">{{$t('queue.mode')}}</label>
       </div>
       <template #footer>
         <Button
@@ -318,6 +327,7 @@ export default {
 
     editQueue(node) {
       // alert(resId);
+      this.currentNode = node;
       this.queue = JSON.parse(JSON.stringify(node))
       this.editVisible = true;
       this.submitted = false;   

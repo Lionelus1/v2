@@ -1277,7 +1277,10 @@ export default {
         serviced: "Serviced",
         averageTime: "Average service time",
         redirected: "Redirected",
-        errorPhone: "Reservation already exists for the given phone number!"
+        errorPhone: "Reservation already exists for the given phone number!",
+        reservation: "Reservation",
+        queueType: "Queue type",
+        mode: "Operating mode"
     },
     educomplex: {
         title: "Educational-methodical complex of the discipline",
