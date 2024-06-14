@@ -119,7 +119,7 @@
           <FindUser v-model="queue.responsibles" :userType="2"></FindUser>
           <small class="p-error" v-if="!validation.responsibles && submitted">{{ $t("common.requiredField") }}</small>
       </div>
-      <div v-if="currentNode.parentId" class="field-checkbox mt-3">
+      <div v-if="currentNode && currentNode.parentId" class="field-checkbox mt-3">
         <Checkbox id="landing" name="landing" v-model="queue.reservation" :binary="true"/>
         <label for="landing">Брондау</label>
       </div>
