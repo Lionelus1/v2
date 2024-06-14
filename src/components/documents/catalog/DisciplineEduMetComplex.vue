@@ -701,7 +701,7 @@ export default {
           {
             name: "eduprogram",
             value: null,
-            description: "білім беру баағдарламасы атауы",
+            description: "білім беру бағдарламасы атауы",
           },
           {
             name: "discipline",

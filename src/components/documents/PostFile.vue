@@ -44,10 +44,6 @@
                 </template>
               </Dialog>
             </div>
-            <!-- <div v-if="param.name==='saceduprogram'">
-              {{ selectedSpecialities }}
-                <SpecialitySearch :style="'height:38px'" class="pt-1" :max="1" :educationLevel="Enums.EducationLevel.Doctorate" v-model="selectedSpecialities" id="speciality"></SpecialitySearch>
-            </div> -->
             <div v-if="param.name==='academicyear'">
               <PrimeCalendar v-model="param.value" selectionMode="range" dateFormat="yy" view="month" :manualInput="false" />
             </div>
@@ -159,7 +155,35 @@ export default {
       updateValue,
     };
   },
+  computed: {
+    specialityValue: {
+      get() {
+        const param = this.file.params.find(p => p.name === 'saceduprogram');
+        return param ? param.value : null;
+      },
+      set(newValue) {
+        const param = this.file.params.find(p => p.name === 'saceduprogram');
+        if (param) {
+          param.value = newValue;
+          this.selectedSpecialities = newValue;
+        }
+      }
+    }
+  },
+  watch: {
+    'file.params': {
+      handler(newParams) {
+        const param = newParams.find(p => p.name === 'saceduprogram');
+        if (param) {
+          this.selectedSpecialities = param.value;
+        }
+      },
+      deep: true,
+      immediate: true
+    }
+  },
   methods: {
+
     notValid() {
       this.validation.namekz = this.file.namekz === null || this.file.namekz === ''
       this.validation.nameru = this.file.nameru === null || this.file.nameru === ''
