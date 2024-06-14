@@ -334,7 +334,7 @@ import {
   HelpDeskService,
 } from "../../service/helpdesk.service";
 import camundaServiceInstance from "../../service/helpdesk.service";
-
+import DocSignaturesInfo from "@/components/DocSignaturesInfo.vue";
 import { ref, computed, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { findRole, getUser } from "@/config/config";
@@ -525,6 +525,7 @@ onMounted(() => {
 const isDeleteData = ref(null);
 const isDeleting = ref(false);
 const openSignInfo = () => {
+  console.log("currentDocument.uuid:", currentDocument.value.uuid);
   open("documentInfoSidebar");
 };
 const openDelete = (data) => {
