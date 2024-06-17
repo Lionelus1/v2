@@ -77,7 +77,7 @@
               @click="itemID(slotProps.node.key)" />
             <Button
               icon="pi pi-calendar-clock"
-              v-tooltip.bottom="$t('Mode')"
+              v-tooltip.bottom="$t('queue.mode')"
               v-if="slotProps.node.queue_mode === true && slotProps.node.createdUserId === loginedUser.userID"
               class="p-button-rounded p-button-help mr-2"
               @click="$router.push('/queue/mode/'+ slotProps.node.key )" />

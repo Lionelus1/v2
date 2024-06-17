@@ -2,11 +2,11 @@
   <div class="flex justify-content-center">
     <div class="card calendar_days">
       <div class="flex flex-column gap-3">
-        <span class="title">{{ $t('Жұмыс күндері') }}</span>
+        <span class="title">{{ $t('queue.workingDays') }}</span>
         <PrimeCalendar class="" :manualInput="true" v-model="workDays.date" dateFormat="dd.mm.yy"
                        :invalid="!workDays.date && submitted" showIcon iconDisplay="input" selectionMode="range">
         </PrimeCalendar>
-        <span class="title">{{ $t('Режим работы') }}</span>
+        <span class="title">{{ $t('queue.workingHours') }}</span>
         <div class="flex">
           <div>
             <PrimeCalendar v-model="workDays.start_time" timeOnly dateFormat="HH:mm"/>
@@ -15,7 +15,7 @@
             <PrimeCalendar v-model="workDays.end_time" timeOnly/>
           </div>
         </div>
-        <span class="title">{{ $t('Обед') }}</span>
+        <span class="title">{{ $t('queue.lunch') }}</span>
         <div class="flex">
           <div>
             <PrimeCalendar v-model="workDays.lunch_start_time" timeOnly/>
@@ -24,7 +24,7 @@
             <PrimeCalendar v-model="workDays.lunch_final_time" timeOnly/>
           </div>
         </div>
-        <span class="title">{{ $t('Интервал(мин)') }}</span>
+        <span class="title">{{ $t('queue.interval') }}</span>
         <Dropdown v-model="workDays.appointment_duration" :options="intervals" :placeholder="$t('common.select')"/>
         <Button :label="$t('common.edit')" @click="workDaysFunc()"></Button>
       </div>

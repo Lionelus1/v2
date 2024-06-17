@@ -1279,8 +1279,19 @@ export default {
         redirected: "Redirected",
         errorPhone: "Reservation already exists for the given phone number!",
         reservation: "Reservation",
+        reserve: "Reserve",
         queueType: "Queue type",
-        mode: "Operating mode"
+        mode: "Operating mode",
+        emailReq: "Email is required",
+        emailInvalid: "Invalid email address",
+        emailMsg: "Take a screenshot of the information or show the information sent to the mail to the operator!",
+        workingDays: "Working days",
+        workingHours: "Working hours",
+        lunch: "Lunch",
+        interval: "Interval(min)",
+        day: "Day",
+        time: "Time",
+        came: "Came"
     },
     educomplex: {
         title: "Educational-methodical complex of the discipline",

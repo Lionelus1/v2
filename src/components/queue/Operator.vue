@@ -10,13 +10,13 @@
           <div class="card">
             <DataTable :value="timesList" tableStyle="min-width: 50rem">
               <template #empty> {{ $t('common.noData') }}</template>
-              <Column field="revision_time" header="Уақыты"></Column>
-              <Column field="full_name" header="ФИО"></Column>
-              <Column field="phone_number" header="Телефон нөмірі"></Column>
-              <Column field="email" header="Почтасы"></Column>
+              <Column field="revision_time" :header="$t('queue.time')"></Column>
+              <Column field="full_name" :header="$t('common.fullName')"></Column>
+              <Column field="phone_number" :header="$t('contact.phone')"></Column>
+              <Column field="email" :header="$t('contact.email')"></Column>
               <Column field="action" header="">
                 <template #body="{data}">
-                  <Button :label="$t('Келді')" class="mb-1 p-button-success" @click="changeState(1,null, data.id)"></Button>
+                  <Button :label="$t('queue.came')" class="mb-1 p-button-success" @click="changeState(1,null, data.id)"></Button>
                 </template>
               </Column>
             </DataTable>

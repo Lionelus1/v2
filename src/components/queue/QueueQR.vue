@@ -5,8 +5,8 @@
   <div class="card talon_bg">
     <Toast />
     <div class="text-center flex flex-column gap-4 m-auto" v-if="currentStep === 1">
-      <Button class="justify-content-center p-button-lg" @click="queue(false)">{{ $t('Кезек') }}</Button>
-      <Button class="justify-content-center p-button-lg" @click="queue(true)">{{ $t('Брондау') }}</Button>
+      <Button class="justify-content-center p-button-lg" @click="queue(false)">{{ $t('queue.title') }}</Button>
+      <Button class="justify-content-center p-button-lg" @click="queue(true)">{{ $t('queue.reservation') }}</Button>
     </div>
     <div :class="['flex', 'flex-column', 'm-auto', 'gap-2', {'text-center': !reservation, 'gap-4': !reservation,}]" v-if="currentStep === 2">
       <template v-if="reservation">
@@ -41,14 +41,14 @@
       <template v-if="reservation">
         <Dropdown @change="changeQueues" v-model="selectedQueue" :options="queues" option-label="queueNamekz" :placeholder="$t('common.select')"
                   class="p-inputtext-lg w-full mb-4"/>
-        <Dropdown v-if="selectDayBool" @change="changeDay" v-model="selectedDay" :options="daysList" :option-label="formatDay" placeholder="Күн"
+        <Dropdown v-if="selectDayBool" @change="changeDay" v-model="selectedDay" :options="daysList" :option-label="formatDay" :placeholder="$t('queue.day')"
                   class="p-inputtext-lg w-full mb-4"/>
-        <Dropdown v-if="selectTimeBool" @change="changeTime" v-model="selectedTime" :options="timeList" :option-label="formatTime" placeholder="Уақыт"
+        <Dropdown v-if="selectTimeBool" @change="changeTime" v-model="selectedTime" :options="timeList" :option-label="formatTime" :placeholder="$t('queue.time')"
                   class="p-inputtext-lg w-full mb-4"/>
         <template v-if="selectedDay">
         </template>
         <Button v-if="reservationBtn" class="justify-content-center p-button-lg w-full"
-                @click="registerQueue(selectedItem.value.key, selectedItem.value)" :disabled="disabledRezervation">{{ $t('Брондау') }}
+                @click="registerQueue(selectedItem.value.key, selectedItem.value)" :disabled="disabledRezervation">{{ $t('queue.reserve') }}
         </Button>
       </template>
     </div>
@@ -145,11 +145,11 @@
                 <div class="dashed text-left">
                   <span v-if="locale === 'kz'">Құрметті </span>
                   <span v-if="locale === 'ru'">Уважаемый(-ая) </span>
-                  <span v-if="locale === 'en'"> </span>
+                  <span v-if="locale === 'en'">Dear </span>
                   <b>{{ queinfo.last_name + ' ' + queinfo.first_name }} </b>
                   <span v-if="locale === 'kz'">, сіз кезекке сәтті жазылдыңыз!</span>
                   <span v-if="locale === 'ru'">, вы успешно записались!</span>
-                  <span v-if="locale === 'en'"> </span>
+                  <span v-if="locale === 'en'">, you have successfully registered! </span>
                 </div>
                 <div class="dashed text-left">
                   <span v-if="locale === 'kz'">Күні: </span>
@@ -196,7 +196,7 @@
           </template>
         </div>
         <div style="width: 90%; margin: auto"  v-if="reservation">
-        <InlineMessage class="mb-4" severity="info">Ақпаратты скриншот жасап немесе почтаға жіберілген ақпаратты операторға көрсетіңіз!</InlineMessage>
+        <InlineMessage class="mb-4" severity="info">{{ $t('queue.emailMsg') }}</InlineMessage>
         </div>
           <div style="width: 90%; margin: auto">
           <Button v-if="!called" class="p-button-lg p-button-outlined justify-content-center w-full" style="border-radius: 8px;color: red !important;
@@ -233,7 +233,6 @@ import moment from "moment";
 import io from "socket.io-client";
 import LanguageDropdown from "@/LanguageDropdown.vue";
 import {useToast} from "primevue/usetoast";
-//import {socket} from "@/main";
 
 const {t, locale} = useI18n()
 const toast = useToast()
@@ -282,9 +281,9 @@ const queueId = ref();
 const validateEmail = () => {
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!email.value) {
-    emailError.value = 'Email is required';
+    emailError.value = t('queue.emailReq');
   } else if (!emailPattern.test(email.value)) {
-    emailError.value = 'Invalid email address';
+    emailError.value = t('queue.emailInvalid');
   } else {
     emailBool.value = true
     emailError.value = '';
