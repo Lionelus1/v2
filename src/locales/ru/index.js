@@ -615,7 +615,7 @@ export default {
             parent_registration_number: "Регистрационный номер договора",
             parent_registration_date: "Дата регистрации договора",
             executor: "Исполнитель",
-            sciadvisor: "Научный руководитель",
+            sciadvisor: "Научный руководитель проекта",
             table: "Выполненные работы",
             act_amount: "Сумма акта",
             act_amount_words: "Сумма акта (прописью)",

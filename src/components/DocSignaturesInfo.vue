@@ -31,7 +31,7 @@
       <TabPanel v-if="docInfo && docInfo.docHistory.stateId == 2 && docInfo.folder && docInfo.folder.type === Enum.FolderType.Agreement
               && docInfo.docType === Enum.DocType.Contract" :header="$t('ncasigner.sign')">
         <div class="flex justify-content-center">
-          <Button icon="fa-solid fa-check" class="p-button-success md:col-3" @click="approve" :label="$t('common.action.approve')" :loading="loading" />
+          <Button icon="fa-solid fa-check" class="p-button-success md:col-3" @click="approve" :label="$t('common.action.approve')" :loading="loading" :disabled="hideDocApprove" />
         </div>
       </TabPanel>
       <TabPanel v-if="docInfo && docInfo.docHistory.stateId == 2  && !(docInfo.folder && docInfo.folder.type === Enum.FolderType.Agreement
@@ -185,6 +185,7 @@ export default {
       RolesEnum: RolesEnum,
 
       hideDocRevision: true,
+      hideDocApprove: true,
       revisionComment: null,
       denyComment: null,
       mobileApp: null,
@@ -569,6 +570,17 @@ export default {
         uuid: this.docInfo.uuid,
       }).then(res => {
         if (res.data.approvalStages) {
+          for (let element of res.data.approvalStages) {
+            if (this.hideDocApprove) {
+              for (let i = 0; i < element.users.length; i++) {
+                if (element.users[i].userID === this.loginedUserId && element.usersApproved[i] == 0) {
+                  this.hideDocApprove = false;
+                  break;
+                }
+              }
+            }
+          }
+
           for (let element of res.data.approvalStages) {
             console.log(element)
             if (!element.signatures) {

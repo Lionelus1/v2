@@ -94,8 +94,9 @@
                   contract.docHistory.stateId > DocEnum.CREATED.ID && contract.docHistory.stateId != DocEnum.REVISION.ID"></ContragentSelectV2>
               </div>
               <div class="p-fluid md:col-6" v-if="['contragent'].includes(param.name)">
-                <div class="flex flex-wrap gap-3 mb-2" v-if="contract.sourceType === DocEnum.DocSourceType.Template">
-                  <div class="flex align-items-center" v-if="!(contract.folder && contract.folder.type === DocEnum.FolderType.Agreement)">
+                <div class="flex flex-wrap gap-3 mb-2" v-if="contract.sourceType === DocEnum.DocSourceType.Template &&
+                  !(contract.folder && contract.folder.type === DocEnum.FolderType.Agreement)">
+                  <div class="flex align-items-center">
                     <RadioButton v-model="contragentOption" value="email" @update:modelValue="contragentOptionChanged"
                                  :disabled="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID) ||
                       contract.docHistory.stateId > DocEnum.CREATED.ID && contract.docHistory.stateId != DocEnum.REVISION.ID"></RadioButton>
@@ -120,7 +121,7 @@
                 <ContragentSelectV2 v-else :contragent="param.value"
                                     @contragentUpdated="(event) => contragentUpdated(event, param)"
                                     :disable="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID) ||
-                  contract.docHistory.stateId > DocEnum.CREATED.ID && contract.docHistory.stateId != DocEnum.REVISION.ID"></ContragentSelectV2>
+                                    contract.docHistory.stateId > DocEnum.CREATED.ID && contract.docHistory.stateId != DocEnum.REVISION.ID"></ContragentSelectV2>
               </div>
               <div class="p-fluid md:col-6" v-if="param.name == 'student'">
                 <FindUser v-model:first="param.value" searchMode="ldap" :max="1" v-model="notused.users"
@@ -525,6 +526,11 @@ export default {
       param = this.contract.newParams['contragent'];
       if (param) {
         param.uuid = this.generateUUID();
+
+        if (this.contract.folder && this.contract.folder.type === DocEnum.FolderType.Agreement) {
+          param.value.type = this.DocEnum.ContragentType.Person;
+        }
+
         this.contractParams.push(param);
 
         if (this.contragentOption !== 'email' && !this.contragentRequest) {

@@ -107,6 +107,12 @@
             <span :class="'customer-badge status-' + slotProps.data.status.code">
               {{ slotProps.data.status[$i18n.locale === 'en' ? 'eng' : $i18n.locale === 'ru' ? 'rus' : 'kz'] }}
             </span>
+            <span v-if="slotProps.data.executed" class="ml-1 customer-badge status-status_signing">
+              {{ $t('contracts.execution') }}
+            </span>
+            <span v-if="slotProps.data.execution" class="ml-1 customer-badge status-status_signed">
+              {{ $t('contracts.executed') }}
+            </span>
           </div>
         </template>
       </Column>
@@ -171,6 +177,7 @@ import {DocService} from "@/service/doc.service";
 import FindUser from "@/helpers/FindUser.vue";
 import {getShortDateString} from "@/helpers/helper";
 import {getHeader} from "@/config/config";
+import Enum from "@/enum/docstates";
 
 export default {
   name: 'StatusActsGPC',
@@ -185,6 +192,7 @@ export default {
         last: '{last}',
         totalRecords: '{totalRecords}',
       }),
+      Enum: Enum,
 
       loading: false,
       tableLoading: false,
@@ -307,6 +315,24 @@ export default {
               eng: res.data.documents[i].children[j].docHistory.stateEn,
               rus: res.data.documents[i].children[j].docHistory.stateRus,
               kz: res.data.documents[i].children[j].docHistory.stateKaz,
+            };
+            doc.execution = false;
+            doc.executed = false;
+
+            if (res.data.documents[i].children[j].docHistory.stateId === this.Enum.APPROVED.ID) {
+              if (res.data.documents[i].children[j].requests) {
+                for (let k = res.data.documents[i].children[j].requests.length-1; k >= 0; k--) {
+                  if (res.data.documents[i].children[j].requests[k].type === this.Enum.DocumentRequestType.AccountantsExecutionRequest) {
+                    if (res.data.documents[i].children[j].requests[k].status === 0) {
+                      doc.execution = true;
+                    } else if (res.data.documents[i].children[j].requests[k].status === 1) {
+                      doc.executed = true;
+                    }
+
+                    break;
+                  }
+                }
+              }
             }
 
             this.documents.push(doc);
