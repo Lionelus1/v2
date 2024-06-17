@@ -66,13 +66,22 @@ export default {
             headers: getHeader()
           })
           .then((res) => {
-            this.mailingList = res.data;
-            this.count = res.data.NewCount;
+
+            console.log(res.data);
+            if (res.data) {
+              this.mailingList = res.data;
+              this.count = res.data.NewCount;
+            } else {
+              console.log('res.data is null');
+              this.mailingList = [];
+              this.count = 0;
+            }
             this.loading = false;
           })
           .catch((err) => {
-            if (err.response.status == 401) {
-              this.$store.dispatch("logLout");
+            console.log(err);
+            if (err.response && err.response.status === 401) {
+              this.$store.dispatch("logOut");
             }
 
             this.$toast.add({
