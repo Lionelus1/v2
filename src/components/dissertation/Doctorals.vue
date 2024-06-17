@@ -16,7 +16,7 @@
         <template #end>
           <Button v-if="findRole(null, 'dissertation_council_secretary')" isSecretary icon="pi pi-plus"
             class="p-button-success mr-2" @click="showAddCouncilDialog()" />
-          <Button v-if="isMainAdministrator" :disabled="!selectedDoctoral" icon="pi pi-sync" class="mr-2"
+          <Button v-if="isMainAdministrator || isDissertationChief" :disabled="!selectedDoctoral" icon="pi pi-sync" class="mr-2"
             severity="help" @click="showDialog(dialog.editDissertation)" v-tooltip.top="$t('common.edit')" />
           <Button v-if="canShowUpdateDoctoral" :disabled="!selectedDoctoral" icon="pi pi-pencil" class="mr-2"
             @click="showDialog(dialog.updateDoctoral)" v-tooltip.top="$t('common.edit')" />
