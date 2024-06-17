@@ -2102,16 +2102,16 @@ export default {
     hasAttachments() {
       const dissertation = this.selectedDoctoral?.dissertation || {};
       return (
-        (dissertation.state === 0 && (
-          (dissertation.abstract && dissertation.abstract.length > 0 && dissertation.abstractFileID && dissertation.abstractFileID.length > 0) ||
+        
+          ((dissertation.abstract && dissertation.abstract.length > 0 && dissertation.abstractFileID && dissertation.abstractFileID.length > 0) ||
           (dissertation.disFile && dissertation.disFile.length > 0 && dissertation.disFileID && dissertation.disFileID.length > 0) ||
           (dissertation.swListFile && dissertation.swListFile.length > 0 && dissertation.swListFileID && dissertation.swListFileID.length > 0) ||
           (dissertation.scientificConsultantFile && dissertation.scientificConsultantFile.length > 0 && dissertation.scientificConsultantFileID && dissertation.scientificConsultantFileID.length > 0) ||
           (dissertation.foreignConsultantFile && dissertation.foreignConsultantFile.length > 0 && dissertation.foreignConsultantFileID && dissertation.foreignConsultantFileID.length > 0) ||
           (dissertation.commissionConclusionFile && dissertation.commissionConclusionFile.length > 0 && dissertation.commissionConclusionFileID && dissertation.commissionConclusionFileID.length > 0)
-        )) ||
+        ) ||
         (dissertation.state === 6 && dissertation.councilConclusionFile && dissertation.councilConclusionFile.length > 0 && dissertation.councilConclusionFileID && dissertation.councilConclusionFileID.length > 0) ||
-        (dissertation.state === 1 && (
+        (dissertation.state !== 0 && (
           (dissertation.reviewer1CommentFile && dissertation.reviewer1CommentFile.length > 0 && dissertation.reviewer1CommentFileID && dissertation.reviewer1CommentFileID.length > 0) ||
           (dissertation.reviewer2CommentFile && dissertation.reviewer2CommentFile.length > 0 && dissertation.reviewer2CommentFileID && dissertation.reviewer2CommentFileID.length > 0)
         ))
