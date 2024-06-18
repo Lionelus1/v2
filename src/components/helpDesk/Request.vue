@@ -6,96 +6,43 @@
     <h4 class="m-0">{{ t("helpDesk.application.applicationName") }}</h4>
   </div>
   <ToolbarMenu v-if="request" :data="menu" />
-  <TabView
-    v-model:activeIndex="activeTab"
-    @tab-change="tabChanged"
-    class="flex flex-column flex-grow-1"
-  >
+  <TabView v-model:activeIndex="activeTab" @tab-change="tabChanged" class="flex flex-column flex-grow-1">
     <TabPanel :header="selectedDirection['name_' + locale]">
-      <BlockUI
-        v-if="
-          haveAccess && selectedDirection
-          //&& selectedDirection.code !== 'course_application'
-        "
-        :blocked="loading"
-        class="card"
-      >
+      <BlockUI v-if="haveAccess && selectedDirection
+      //&& selectedDirection.code !== 'course_application'
+      " :blocked="loading" class="card">
         <div class="" style="padding: 10px">
-          <div
-            style="margin-bottom: 10px; width: 100px"
-            v-if="status != undefined"
-            :class="'mb-10 customer-badge status-' + (status ?? 'created')"
-          >
+          <div style="margin-bottom: 10px; width: 100px" v-if="status != undefined" :class="'mb-10 customer-badge status-' + (status ?? 'created')">
             {{ getDocStatus(status ?? "created") }}
           </div>
-          <CamundaComponent
-            :components="components"
-            :disabled="status != undefined && status == `inapproval`"
-            style="margin-top: 10px"
-          >
+          <CamundaComponent :components="components" :disabled="status != undefined && status == `inapproval`" style="margin-top: 10px">
           </CamundaComponent>
         </div>
 
         <template #footer>
-          <Button
-            :label="t('common.cancel')"
-            icon="pi pi-times"
-            class="p-button-rounded p-button-danger"
-            @click="closeBasic"
-          />
-          <Button
-            :label="t('common.createNew')"
-            icon="pi pi-check"
-            class="p-button-rounded p-button-success mr-2"
-            :disabled="isDisabled && lang"
-            @click="createHelpDesk"
-          />
+          <Button :label="t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger" @click="closeBasic" />
+          <Button :label="t('common.createNew')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2" :disabled="isDisabled && lang" @click="createHelpDesk" />
         </template>
       </BlockUI>
       <!-- sendToApproveDialog -->
-      <Dialog
-        :header="t('common.action.sendToApprove')"
-        v-model:visible="visibility.sendToApproveDialog"
-        :style="{ width: '50vw' }"
-      >
+      <Dialog :header="t('common.action.sendToApprove')" v-model:visible="visibility.sendToApproveDialog" :style="{ width: '50vw' }">
         <div class="p-fluid">
-          <CamundaComponent
-            :components="senderComponents"
-            @addStagestoValue="addStagestoValue"
-            @finishStep="finishSenderStep"
-            @closeDialog="close('sendToApproveDialog')"
-          ></CamundaComponent>
+          <CamundaComponent :components="senderComponents" @addStagestoValue="addStagestoValue" @finishStep="finishSenderStep" @closeDialog="close('sendToApproveDialog')">
+          </CamundaComponent>
         </div>
       </Dialog>
       <!-- revisionDialog -->
-      <Dialog
-        :header="t('common.revision')"
-        :modal="true"
-        v-model:visible="visibility.revisionDialog"
-        style="width: 30vw"
-      >
+      <Dialog :header="t('common.revision')" :modal="true" v-model:visible="visibility.revisionDialog" style="width: 30vw">
         <div class="p-fluid col-12">
           <Textarea v-model="revisionText" autoResize rows="5" cols="30" />
         </div>
         <template #footer>
-          <Button
-            class="p-button-danger"
-            :disabled="!revisionText"
-            :label="t('common.revision')"
-            @click="revision()"
-          />
-          <Button
-            :label="t('common.cancel')"
-            @click="close('revisionDialog')"
-          />
+          <Button class="p-button-danger" :disabled="!revisionText" :label="t('common.revision')" @click="revision()" />
+          <Button :label="t('common.cancel')" @click="close('revisionDialog')" />
         </template>
       </Dialog>
 
-      <Sidebar
-        v-model:visible="visibility.documentInfoSidebar"
-        position="right"
-        class="p-sidebar-lg"
-      >
+      <Sidebar v-model:visible="visibility.documentInfoSidebar" position="right" class="p-sidebar-lg">
         <DocSignaturesInfo :docIdParam="request.doc.uuid"></DocSignaturesInfo>
       </Sidebar>
       <!-- <CourseRegistration
@@ -107,14 +54,9 @@
         "
       /> -->
     </TabPanel>
-    <TabPanel :header="t('common.show')" :disabled="status != `inapproval`">
+    <TabPanel :header="t('common.show')" :disabled="status == `created` || loading">
       <div class="flex-grow-1 flex flex-row align-items-stretch">
-        <embed
-          :src="pdf"
-          style="width: 100%; height: 100vh"
-          v-if="pdf"
-          type="application/pdf"
-        />
+        <embed :src="pdf" style="width: 100%; height: 100vh" v-if="pdf" type="application/pdf" />
       </div>
     </TabPanel>
   </TabView>
@@ -370,6 +312,7 @@ const saveDoc = async () => {
     i++
   ) {
     console.log("********************", i);
+    console.log("camundaServiceInstance.currentSchema.components[i]:", camundaServiceInstance.currentSchema.components[i]);
     console.log(
       "camundaServiceInstance.currentSchema.components[i].key:",
       camundaServiceInstance.currentSchema.components[i].key
@@ -377,26 +320,27 @@ const saveDoc = async () => {
     console.log(
       "VALUE FULL:",
       camundaServiceInstance.currentSchema.components[i].value[
-        camundaServiceInstance.currentSchema.components[i].key
+      camundaServiceInstance.currentSchema.components[i].key
       ]
     );
     console.log(
       "VALUE:",
       camundaServiceInstance.currentSchema.components[i].value
     );
+    // if(`validate` in camundaServiceInstance.currentSchema.components[i])
     if (
       (`validate` in camundaServiceInstance.currentSchema.components[i] &&
         // camundaServiceInstance.currentSchema.components[i].validate &&
         camundaServiceInstance.currentSchema.components[i].validate &&
         !camundaServiceInstance.currentSchema.components[i].value[
-          camundaServiceInstance.currentSchema.components[i].key
+        camundaServiceInstance.currentSchema.components[i].key
         ]) ||
       (camundaServiceInstance.currentSchema.components[i].validate &&
         camundaServiceInstance.currentSchema.components[i].validate.pattern &&
         !validate(
           camundaServiceInstance.currentSchema.components[i].validate.pattern,
           camundaServiceInstance.currentSchema.components[i].value[
-            camundaServiceInstance.currentSchema.components[i].key
+          camundaServiceInstance.currentSchema.components[i].key
           ]
         ))
     ) {
@@ -437,15 +381,15 @@ const saveDoc = async () => {
           camundaServiceInstance.currentSchema.components[i].properties.selects
         ] =
           camundaServiceInstance.currentSchema.components[i].value[
-            camundaServiceInstance.currentSchema.components[
-              i
-            ].properties.selects
+          camundaServiceInstance.currentSchema.components[
+            i
+          ].properties.selects
           ];
         continue;
       }
       variables[camundaServiceInstance.currentSchema.components[i].key] =
         camundaServiceInstance.currentSchema.components[i].value[
-          camundaServiceInstance.currentSchema.components[i].key
+        camundaServiceInstance.currentSchema.components[i].key
         ];
     }
     console.log("*******************************");

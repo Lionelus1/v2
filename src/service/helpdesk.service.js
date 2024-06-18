@@ -100,12 +100,12 @@ export class CamundaService {
     console.log(
       "response.dataa:",
       response.data.hits.hits[forceGet ?? response.data.hits.hits.length - 1][
-        "_source"
+      "_source"
       ]["currentForm"]
     );
     this.currentFormId =
       response.data.hits.hits[forceGet ?? response.data.hits.hits.length - 1][
-        "_source"
+      "_source"
       ]["currentForm"];
     console.log("this.currentFormId:", this.currentFormId);
     this.flowNodeBpmnId = this.currentFormId;
@@ -126,7 +126,7 @@ export class CamundaService {
       ) {
         this.currentSchema.components[i].value = {
           [this.currentSchema.components[i].key ??
-          this.currentSchema.components[i].id]: null,
+            this.currentSchema.components[i].id]: null,
         }; // Initialize an empty array for 'values'
         console.log("HAHA:", this.currentSchema.components[i].type);
       } else {

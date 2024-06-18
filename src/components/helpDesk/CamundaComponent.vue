@@ -32,6 +32,7 @@
         :options="component.values"
         optionLabel="label"
         :placeholder="$t('common.select')"
+        :disabled="disabled"
         class="w-full md:w-14rem"
       />
       <small v-if="component.incorrect" id="username-help" style="color: red">{{
@@ -128,6 +129,12 @@
         @click="showTalbe(component)"
         >{{ $t(component.properties.button_name) }}</Button
       >
+      <small
+          v-if="component.incorrect"
+          id="username-help"
+          style="color: red"
+          >{{ $t("helpDesk.application.enteredIncorrectly") }}</small
+        >
       <!-- <div v-if="'vue_component' in component.properties && component.properties["vue_component"] == 'ApprovalUsers'"> -->
 
       <!-- </div> -->
@@ -158,16 +165,11 @@
               style="margin-left: 20px"
             />
           </template>
-        </Column>
-        <Column
-          v-for="col of component.columns"
-          :key="col.key"
-          :field="col.key"
-          :header="col.label"
-        ></Column>
-      </DataTable>
-    </div>
-  </div>
+</Column>
+<Column v-for="col of component.columns" :key="col.key" :field="col.key" :header="col.label"></Column>
+</DataTable>
+</div>
+</div>
 </template>
 <script>
 import camundaServiceInstance from "../../service/helpdesk.service";
