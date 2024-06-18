@@ -97,7 +97,7 @@
                   <Column>
                     <template #body="{data, index}">
                       <Button v-if="contract.docHistory.stateId === Enum.CREATED.ID && !sciadvisorRequest"
-                        @click="param.value.splice(index, 1); removeAttachment(data)" class="p-button-text p-button-danger p-1">
+                        @click="param.value.splice(index, 1); removeAttachment(data); input();" class="p-button-text p-button-danger p-1">
                         <i class="fa-solid fa-trash fa-xl"></i>
                       </Button>
                     </template>
@@ -516,6 +516,11 @@ export default {
         this.contract.newParams[this.contractParams[i].description] = this.contractParams[i];
       }
 
+      if (!this.validate()) {
+        this.showMessage("error", this.$t("common.message.fillError"));
+        return;
+      }
+
       let formData = new FormData();
       formData.append("document", JSON.stringify(this.contract));
 
@@ -681,6 +686,7 @@ export default {
           }
         } else if (['table', 'attachments'].includes(prop)) {
           if (this.isNull(this.contract.newParams[prop].value) || this.contract.newParams[prop].value.length < 1) {
+            this.showMessage("error", this.$t("common.message.attachFile"));
             return false;
           }
         }
@@ -730,6 +736,8 @@ export default {
             filename: event.files[0].name,
             temp: uuid,
           });
+
+          this.input();
         }
       }
     },

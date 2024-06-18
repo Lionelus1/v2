@@ -107,7 +107,7 @@
   </Sidebar>
 </template>
 <script>
-import { b64toBlob, findRole } from "@/config/config";
+import {b64toBlob, findRole, getHeader, smartEnuApi} from "@/config/config";
 import { getShortDateString, getLongDateString } from "@/helpers/helper";
 import Enum from "@/enum/docstates/index";
 import RolesEnum from "@/enum/roleControls/index";
@@ -298,6 +298,41 @@ export default {
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
       })
+    },
+    downloadAttachments() {
+      let attachments = this.currentDocument.newParams.attachments.value;
+
+      if (attachments === null || attachments === undefined || attachments.length < 1) {
+        return
+      }
+
+      this.loading = true;
+
+      for (let i = 0; i < attachments.length; i++) {
+        fetch(`${smartEnuApi}/serve?path=${attachments[i].filepath}`, {
+          method: 'GET',
+          headers: getHeader(),
+        }).then(res => res.blob()).then(blob => {
+          var url = window.URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url;
+          a.download = attachments[i].filename;
+          document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
+          a.click();
+          a.remove();
+        }).catch(err => {
+          if (err.response && err.response.status == 401) {
+            this.$store.dispatch("logLout")
+          } else if (err.response && err.response.data && err.response.data.localized) {
+            this.showMessage('error', this.$t(err.response.data.localizedPath), null)
+          } else {
+            console.log(err)
+            this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
+          }
+        })
+      }
+
+      this.loading = false;
     },
     executed(data) {
       if (data.docHistory?.stateId !== this.Enum.APPROVED.ID) {
@@ -494,6 +529,14 @@ export default {
           icon: "fa-solid fa-file-arrow-down",
           visible: this.actionsNode.docHistory && this.actionsNode.docHistory?.stateId === Enum.APPROVED.ID,
           command: () => {this.currentDocument = this.actionsNode; this.download()},
+        },
+        {
+          label: this.$t('common.additionalInfo'),
+          icon: "fa-solid fa-file-arrow-down",
+          visible: this.actionsNode.docHistory && this.actionsNode.docHistory?.stateId === Enum.APPROVED.ID &&
+              this.actionsNode.newParams !== null && this.actionsNode.newParams.attachments !== null &&
+              this.actionsNode.newParams.attachments !== undefined,
+          command: () => {this.currentDocument = this.actionsNode; this.downloadAttachments()},
         },
         // {
         //   label: this.$t('common.delete'),

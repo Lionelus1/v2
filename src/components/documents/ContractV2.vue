@@ -603,6 +603,12 @@ export default {
         this.contractParams.push(param);
       }
 
+      param = this.contract.newParams['mnvo_agreement'];
+      if (param) {
+        param.uuid = this.generateUUID();
+        this.contractParams.push(param);
+      }
+
       param = this.contract.newParams['agreement_end_date'];
       if (param) {
         param.value = param.value ? new Date(param.value) : null;
@@ -623,12 +629,6 @@ export default {
       }
 
       param = this.contract.newParams['theme'];
-      if (param) {
-        param.uuid = this.generateUUID();
-        this.contractParams.push(param);
-      }
-
-      param = this.contract.newParams['mnvo_agreement'];
       if (param) {
         param.uuid = this.generateUUID();
         this.contractParams.push(param);

@@ -287,6 +287,7 @@ export default {
             saveErrorToUpdate: "Error during save. Please refresh the page!",
             actionError: "An error occurred during this action",
             actionErrorContactAdmin: "Please contact the administrators to resolve this issue",
+            attachFile: "Please attach the necessary files",
         },
         language: {
             kz: "in kazakh",
