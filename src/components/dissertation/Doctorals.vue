@@ -805,7 +805,8 @@
               @input="validateVideoLink" v-model="selectedDoctoral.dissertation.video_link" />
             <span v-if="!isValidYoutubeLink" style="color: red;">Please enter a valid YouTube video link.</span>
           </div>
-          <div class="col-12 pb-2 lg:col-12 md:col-6 mb-lg-0" v-if="(selectedDoctoral?.dissertation?.html_kz !== null && selectedDoctoral?.dissertation?.html_kz.length > 0 && selectedDoctoral?.dissertation?.event_id !== null) || (selectedDoctoral?.dissertation?.html_ru !== null && selectedDoctoral?.dissertation?.html_ru.length > 0 && selectedDoctoral?.dissertation?.event_id !== null) || (selectedDoctoral?.dissertation?.html_en !== null && selectedDoctoral?.dissertation?.html_en.length > 0 && selectedDoctoral?.dissertation?.event_id !== null)">
+          <div v-if="isMainAdministrator">
+            <div class="col-12 pb-2 lg:col-12 md:col-6 mb-lg-0" v-if="(selectedDoctoral?.dissertation?.html_kz !== null && selectedDoctoral?.dissertation?.html_kz.length > 0 && selectedDoctoral?.dissertation?.event_id !== null) || (selectedDoctoral?.dissertation?.html_ru !== null && selectedDoctoral?.dissertation?.html_ru.length > 0 && selectedDoctoral?.dissertation?.event_id !== null) || (selectedDoctoral?.dissertation?.html_en !== null && selectedDoctoral?.dissertation?.html_en.length > 0 && selectedDoctoral?.dissertation?.event_id !== null)">
             <TabView>
               <TabPanel :header="$t('dissertation.event') + ' ' + $t('common.language.kz')">
                 <Textarea v-model="selectedDoctoral.dissertation.html_kz" rows="10" />
@@ -818,6 +819,8 @@
               </TabPanel>
             </TabView>
           </div>
+          </div>
+
           <Fieldset :legend="$t('workPlan.attachments')" class="col-12" toggleable>
             <div v-if="hasAttachments">
             <div class="field" v-if="selectedDoctoral?.dissertation?.abstract && selectedDoctoral?.dissertation?.abstract.length > 0 && selectedDoctoral?.dissertation?.abstractFileID && selectedDoctoral?.dissertation?.abstractFileID.length > 0">
