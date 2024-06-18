@@ -40,7 +40,7 @@
 
 <script>
 import api from "@/service/api";
-import {getHeader} from "@/config/config";
+import { getHeader } from "@/config/config";
 
 export default {
   data() {
@@ -56,14 +56,22 @@ export default {
   },
   methods: {
     getFullName(senderJSON) {
-      const senderData = JSON.parse(senderJSON);
-      return `${senderData.firstName} ${senderData.lastName} ${senderData.thirdName}`;
+      try {
+        if (!senderJSON) {
+          return this.$t("mailing.unknownSender");
+        }
+        const senderData = JSON.parse(senderJSON);
+        return `${senderData.firstName || ''} ${senderData.lastName || ''} ${senderData.thirdName || ''}`.trim();
+      } catch (error) {
+        console.error("Error parsing sender JSON:", error);
+        return this.$t("mailing.invalidSenderData");
+      }
     },
     initMailing() {
       this.loading = true;
       api
           .post("/mailingList", this.getParams, {
-            headers: getHeader()
+            headers: getHeader(),
           })
           .then((res) => {
             this.mailingList = res.data;
@@ -72,7 +80,7 @@ export default {
           })
           .catch((err) => {
             if (err.response.status == 401) {
-              this.$store.dispatch("logLout");
+              this.$store.dispatch("logOut");
             }
 
             this.$toast.add({
@@ -83,7 +91,7 @@ export default {
 
             this.loading = false;
           });
-    }
+    },
   },
   mounted() {
     this.initMailing();
