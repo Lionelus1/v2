@@ -1,8 +1,9 @@
 <template>
-  <Dialog :header="$t('workPlan.addEvent')" v-model:visible="showWorkPlanEventModal" :style="{width: '600px'}" @hide="closeBasic" :close-on-escape="true">
+  <Dialog :header="plan && plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule ? $t('workPlan.addTask') : $t('workPlan.addEvent')" v-model:visible="showWorkPlanEventModal" :style="{width: '600px'}" @hide="closeBasic" :close-on-escape="true">
     <div class="p-fluid">
       <div class="field">
-        <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('workPlan.resultIndicator') : $t('workPlan.eventName') }}</label>
+        <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('workPlan.resultIndicator') :
+                    plan && plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule ? $t('workPlan.worksByWeek') : $t('workPlan.eventName') }} </label>
         <InputText v-model="event_name" />
         <small class="p-error" v-if="submitted && formValid.event_name">{{ $t('workPlan.errors.eventNameError') }}</small>
       </div>
@@ -14,6 +15,20 @@
         <label>{{ $t('common.endDate') }}</label>
         <PrimeCalendar v-model="end_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
       </div>
+
+      <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule">
+        <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule ? $t('common.startDate') + "(" + $t('workPlan.week') + ")" : $t('common.startDate') }}</label>
+        <PrimeCalendar v-model="start_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
+      </div>
+      <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule">
+        <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule ? $t('common.endDate') + "(" + $t('workPlan.week') + ")" : $t('common.endDate') }}</label>
+        <PrimeCalendar v-model="end_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
+      </div>
+      <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule">
+        <label>{{ $t('web.note') }}</label>
+        <InputText v-model="comment" />
+      </div>
+      
       <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
         <label>{{ $t('common.unit') }}</label>
         <InputText v-model="unit" />
@@ -32,7 +47,7 @@
         <!-- <small class="p-error" v-if="submitted && formValid.summaryUser">{{ $t("common.requiredField") }}</small> -->
         <small class="p-error" v-if="submitted && formValid.summaryUser">{{ $t('workPlan.errors.approvalUserError') }}</small>
       </div>
-      <div class="field" v-if="plan && plan.plan_type && plan.plan_type.code !== Enum.WorkPlanTypes.Science">
+      <div class="field" v-if="plan && plan.plan_type && (plan.plan_type.code !== Enum.WorkPlanTypes.Science && plan.plan_type.code !== Enum.WorkPlanTypes.WorkSchedule)">
         <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('workPlan.summary') : $t('workPlan.approvalUsers') }}</label>
         <FindUser v-model="selectedUsers" :editMode="true" :user-type="3"></FindUser>
         <small class="p-error" v-if="submitted && formValid.users">{{ $t('workPlan.errors.approvalUserError') }}</small>
@@ -58,7 +73,7 @@
       <Button :label="$t('common.add')" icon="fa-solid fa-add" class="p-button-sm p-button-outlined px-5" @click="addNewUser" />
     </div>
     <div class="p-fluid">
-      <div class="field" v-if="plan && plan.plan_type.code !== Enum.WorkPlanTypes.Science && !parentData || (parentData && parentData.quarter === 5)">
+      <div class="field" v-if="plan && (plan.plan_type.code !== Enum.WorkPlanTypes.Science && plan.plan_type.code !== Enum.WorkPlanTypes.WorkSchedule) && !parentData || (parentData && parentData.quarter === 5)">
         <label>{{ $t('workPlan.quarter') }}</label>
         <Dropdown v-model="quarter" :options="quarters" optionLabel="name" optionValue="id" :placeholder="$t('common.select')" />
         <small class="p-error" v-if="submitted && formValid.quarter">{{ $t('workPlan.errors.quarterError') }}</small>
@@ -67,7 +82,7 @@
         <label>{{ $t('common.suppDocs') }}</label>
         <Textarea v-model="supporting_docs" rows="3" style="resize: vertical" />
       </div>
-      <div class="field">
+      <div class="field"  v-if="plan.plan_type.code !== Enum.WorkPlanTypes.WorkSchedule">
         <label>{{ isOperPlan ? $t('common.additionalInfo') : $t('common.result') }}</label>
         <Textarea v-model="result" rows="3" style="resize: vertical"/>
       </div>
@@ -266,7 +281,8 @@ export default {
         resp_person_id: resp_person_id,
         quarter: this.quarter,
         result: this.result,
-        resp_person_ids: userIds
+        resp_person_ids: userIds,
+        comment: this.comment
       };
       if (this.plan && this.plan.plan_type && this.plan.plan_type.code === this.Enum.WorkPlanTypes.Oper) {
         data.unit = this.unit;
@@ -275,7 +291,7 @@ export default {
         data.supporting_docs = this.supporting_docs;
       }
 
-      if (this.plan && this.plan.plan_type && this.plan.plan_type.code === this.Enum.WorkPlanTypes.Science) {
+      if (this.plan && this.plan.plan_type && (this.plan.plan_type.code === this.Enum.WorkPlanTypes.Science || this.plan.plan_type.code === this.Enum.WorkPlanTypes.WorkSchedule)) {
         data.start_date = this.start_date
         data.end_date = this.end_date
       }
@@ -313,6 +329,7 @@ export default {
     },
     clearModel() {
       this.event_name = null;
+      this.comment = null;
       this.parentId = null;
       this.quarter = null;
       this.result = null;

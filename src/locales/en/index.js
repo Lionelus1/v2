@@ -1,6 +1,8 @@
 export default {
     common: {
         accessDenied: "Access Denied",
+        tasks: "Tasks",
+        members: "Members",
         attention: "Attention",
         welcome: "Welcome",
         loginWelcome: "Welcome to smart.enu system.",
@@ -64,6 +66,7 @@ export default {
         export: "Export",
         error: "Error",
         add: "Add",
+        addMember: "Add member",
         edit: "edit",
         print: "Print",
         orgname: "L.N. Gumilyov Eurasian National University",
@@ -92,6 +95,7 @@ export default {
         graduationyear: "Start of study",
         admissionyear: "Finish of study",
         fullName: "Full name",
+        fullNameNote: "Full name of the student",
         forStudentsAndGraduates: "For students and graduates",
         hei: "HEI",
         updated: "Updated",
@@ -1187,6 +1191,9 @@ export default {
         planName: "Plan Name",
         addPlan: "Add plan",
         addEvent: "Add event",
+        addTask: "Add task",
+        worksByWeek: "List of works by week",
+        week: "week",
         eventName: "Event name",
         approvalUsers: "Responsible persons",
         quarter: "Quarter",
@@ -1200,6 +1207,7 @@ export default {
         createReport: "Create report",
         toCorrect: "Send for correction",
         editEvent: "Edit Event",
+        editTask: "Edit Task",
         errors: {
             eventNameError: "Enter the name of the event",
             approvalUserError: "Select the responsible persons",

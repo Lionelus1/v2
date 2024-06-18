@@ -1,10 +1,35 @@
 <template>
-  <Dialog :header="$t('workPlan.editEvent')" v-model:visible="showWorkPlanEventEditModal" :style="{ width: '450px' }" class="p-fluid" @hide="closeBasic">
+  <Dialog
+    :header="plan && plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule ? $t('workPlan.editTask') : $t('workPlan.editEvent')"
+    v-model:visible="showWorkPlanEventEditModal" :style="{ width: '450px' }" class="p-fluid" @hide="closeBasic">
     <div class="field">
-      <label>{{ plan && plan.is_oper ? $t('workPlan.resultIndicator') : $t('workPlan.eventName') }}</label>
+      <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('workPlan.resultIndicator') :
+        plan && plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule ? $t('workPlan.worksByWeek') :
+        $t('workPlan.eventName') }} </label>
       <InputText v-model="editData.event_name" />
       <small class="p-error" v-if="submitted && formValid.event_name">{{ $t('workPlan.errors.eventNameError') }}</small>
     </div>
+
+    {{ summaryDepartment }}
+
+
+
+
+    <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule">
+      <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule ? $t('common.startDate') + "("
+        +$t('workPlan.week') + ")" : $t('common.startDate') }}</label>
+      <PrimeCalendar v-model="editData.start_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
+    </div>
+    <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule">
+      <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule ? $t('common.endDate') + "("
+        +$t('workPlan.week') + ")" : $t('common.endDate') }}</label>
+      <PrimeCalendar v-model="editData.end_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
+    </div>
+    <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule">
+      <label>{{ $t('web.note') }}</label>
+      <InputText v-model="editData.comment" />
+    </div>
+
     <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Science">
       <label>{{ $t('common.startDate') }}</label>
       <PrimeCalendar v-model="editData.start_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
@@ -29,7 +54,7 @@
         <label>{{ $t('workPlan.summaryDepartment') }}</label>
         <FindUser v-model="summaryDepartment" :max="1" editMode="true" :user-type="3"/>
     </div>
-    <div class="field" v-if="plan && plan.plan_type && plan.plan_type.code !== Enum.WorkPlanTypes.Science">
+    <div class="field" v-if="plan && plan.plan_type && (plan.plan_type.code !== Enum.WorkPlanTypes.Science && plan.plan_type.code !== Enum.WorkPlanTypes.WorkSchedule)">
       <label>{{ plan && (plan.is_oper || plan.plan_type.code === Enum.WorkPlanTypes.Oper) ? $t('workPlan.summary') : $t('workPlan.approvalUsers') }}</label>
       <FindUser v-model="selectedUsers" :editMode="true" :user-type="3"></FindUser>
       <small class="p-error" v-if="submitted && formValid.users">{{ $t('workPlan.errors.approvalUserError') }}</small>
@@ -54,7 +79,7 @@
       <Button :label="$t('common.add')" icon="fa-solid fa-add" class="p-button-sm p-button-outlined px-5" @click="addNewUser" />
     </div>
     <div class="field"
-      v-if="(plan && plan.plan_type.code !== Enum.WorkPlanTypes.Science) && ((editData && parentData && parentData.quarter === 5) || !parentData)">
+      v-if="(plan.plan_type.code !== Enum.WorkPlanTypes.Science && plan.plan_type.code !== Enum.WorkPlanTypes.WorkSchedule) && ((editData && parentData && parentData.quarter === 5) || !parentData)">
       <label>{{ $t('workPlan.quarter') }}</label>
       <Dropdown v-model="editData.quarter" :options="quarters" optionLabel="name" optionValue="id" :placeholder="$t('common.select')" />
       <small class="p-error" v-if="submitted && formValid.quarter">{{ $t('workPlan.errors.quarterError') }}</small>
@@ -63,7 +88,7 @@
       <label>{{ $t('common.suppDocs') }}</label>
       <Textarea v-model="editData.supporting_docs" rows="3" style="resize: vertical" />
     </div>
-    <div class="field">
+    <div class="field" v-if="plan && plan.plan_type.code !== Enum.WorkPlanTypes.WorkSchedule">
       <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('common.additionalInfo') : $t('common.result') }}</label>
       <Textarea v-model="editData.result" rows="3" style="resize: vertical" />
     </div>

@@ -9,7 +9,7 @@
       <InputText :disabled="disable" :readonly="true" type="text" v-model="getOrganizationName"></InputText>
     </IconField>
   </div>
-  <div class="field mb-0" v-if="(contr && contr.type === Enum.ContragentType.Person) || contr.data">
+  <div class="field mb-0" v-if="selectPerson && ((contr && contr.type === Enum.ContragentType.Person) || contr.data)">
     <IconField iconPosition="right">
       <InputIcon>
         <i v-if="signer && signer.userID > 0" class="pi pi-id-card"
@@ -67,6 +67,10 @@ export default {
     scientist: {
       type: Boolean,
       default: false
+    },
+    selectPerson: {
+      type: Boolean,
+      default: true
     }
   },
   emits: ['contragentUpdated'],

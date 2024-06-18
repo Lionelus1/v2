@@ -170,6 +170,18 @@ export class WorkPlanService {
         return api.get('/workPlan/types', {headers: getHeader()});
     }
 
+    getStudents() {
+        return api.get('/workPlan/students', {headers: getHeader()});
+    }
+
+    getPracticeTypes() {
+        return api.get('/workPlan/practiceTypes', {headers: getHeader()});
+    }
+
+    getEduProgByManagerId() {
+        return api.get('/workPlan/eduProgramsByManagerId', {headers: getHeader()});
+    }
+
     updatePlanAttachments(data) {
         return api.post('/workPlan/updatePlanAttachments', data, {headers: getHeader()});
     }

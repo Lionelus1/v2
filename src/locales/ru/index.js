@@ -1,6 +1,8 @@
 export default {
     common: {
         accessDenied: "Доступ запрещен",
+        tasks: "Задачи",
+        members: "Участники",
         attention: "Внимание",
         welcome: "Добро пожаловать",
         loginWelcome: "Добро пожаловать в систему smart.enu",
@@ -64,6 +66,7 @@ export default {
         export: "Экспорт",
         error: "Ошибка",
         add: "Добавить",
+        addMember: "Добавить участника",
         edit: "Редактировать",
         print: "Печать",
         orgname: "Евразийский национальный университет имени Л.Н. Гумилева",
@@ -91,6 +94,7 @@ export default {
         created: "Создан",
         createdBy: "Автор",
         fullName: "ФИО",
+        fullNameNote: "ФИО обучающегося",
         hei: "ВУЗ",
         updated: "Изменен",
         type: "Тип",
@@ -1217,6 +1221,9 @@ export default {
         planName: "Название плана",
         addPlan: "Добавить план",
         addEvent: "Добавить мероприятие",
+        addTask: "Добавить задание",
+        worksByWeek: "Перечень работ по неделям",
+        week: "неделя",
         eventName: "Название мероприятия",
         approvalUsers: "Ответственные лица",
         quarter: "Квартал",
@@ -1230,6 +1237,7 @@ export default {
         createReport: "Создать отчет",
         toCorrect: "Отправить на корректировку",
         editEvent: "Редактировать мероприятие",
+        editTask: "Редактировать задание",
         errors: {
             eventNameError: "Введите название мероприятия",
             approvalUserError: "Выберите ответственных лиц",

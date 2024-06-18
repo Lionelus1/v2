@@ -1,6 +1,8 @@
 export default {
     common: {
         accessDenied: "Рұқсат Жоқ",
+        tasks: "Тапсырмалар",
+        members: "Мүшелер",
         attention: "Назар аударыңыз",
         welcome: "Қош келдіңіз",
         loginWelcome: "Smart.enu жүйесіне қош келдіңіз.",
@@ -64,6 +66,7 @@ export default {
         error: "Қателік",
         enterPassword: "Құпия сөзді еңгізіңіз",
         add: "Қосу",
+        addMember: "Қатысушыны қосу",
         edit: "Өзгерту",
         print: "Принтерге шығару",
         orgname: "Л.Н. Гумилев атындағы Еуразия ұлттық университеті",
@@ -91,6 +94,7 @@ export default {
         checkMyVoice: "Берген дауысымды тексеру",
         yourVoice: "Сіздің дауысыңыз: ",
         fullName: "Толық аты-жөні",
+        fullNameNote: "Студенттің толық аты-жөні",
         hei: "ЖОО",
         updated: "Өзгертілді",
         type: "Типі",
@@ -1228,6 +1232,9 @@ export default {
         planName: "Жоспар атауы",
         addPlan: "Жоспар қосу",
         addEvent: "Іс-шара қосу",
+        addTask: "Тапсырма қосу",
+        worksByWeek: "Апта бойынша жұмыстар тізімі",
+        week: "апта",
         eventName: "Іс-шара атауы",
         approvalUsers: "Жауапты тұлғалар",
         quarter: "Квартал",
@@ -1241,6 +1248,7 @@ export default {
         createReport: "Есеп құру",
         toCorrect: "Түзетуге жіберу",
         editEvent: "Іс-шараны өзгерту",
+        editTask: "Тапсырманы өзгерту",
         errors: {
             eventNameError: "Іс-шара атауын енгізіңіз",
             approvalUserError: "Жауапты тұлғаларды таңдаңыз",
