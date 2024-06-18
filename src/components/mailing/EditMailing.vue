@@ -16,6 +16,7 @@ const description = ref("");
 const toast = useToast();
 let selectedCategories = ref()
 let emails = ref()
+let templateId = ref()
 const mailingId = ref(route.params.id)
 
 onMounted(async () => {
@@ -23,9 +24,10 @@ onMounted(async () => {
     const response = await axios.post(`${smartEnuApi}/getMailingByID`, {
         mailingId: parseInt(route.params.id, 10),
     });
-    selectedCategories.value = JSON.parse(response.data.categoryIds || '[]')
+    selectedCategories.value = Array.isArray(response.data.categoryIds) ? response.data.categoryIds : [];
     emails.value = JSON.parse(response.data.emails || '[]');
     description.value = response.data.description;
+    templateId.value = response.data.templateId;
   } catch (error) {
     console.error("Failed to fetch mailing data:", error);
   }
@@ -76,7 +78,6 @@ const sendMailing = (statusID) => {
     life: 3000,
   });
 
-  console.log(typeof selectedCategories.value)
   const roles = selectedCategories.value.map(id => {
     const category = categories.find(cat => cat.id === id);
     return category ? category.nameen : null;
@@ -85,11 +86,12 @@ const sendMailing = (statusID) => {
   const processedEmails = emails.value.map(email => email.trim());
 
   const mailingData = {
+    mailingID: parseInt(route.params.id, 10),
     filters: {
       roles: roles,
     },
     userID: null,
-    docTemplateID: parseInt(route.params.docTemplateID, 10),
+    docTemplateID: parseInt(templateId.value, 10),
     description: description.value,
     emails: processedEmails,
     filePath: null,
