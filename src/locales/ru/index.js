@@ -914,6 +914,7 @@ export default {
         scientificConsultant: 'Отзыв научного консультанта',
         foreignConsultant: 'Отзыв зарубежного консультанта',
         commissionConclusion: 'Заключение комиссии по этической оценке',
+        councilConclusion: 'Решение диссовета',
         reviewerComment: 'Отзыв официального рецензента',
         setMeetingTimeConfirmMsg: "Нажимая кнопку {btn} ниже, вы подтверждаете корректность информации и данная информация публикуется в виде объявления на сайте.",
         addMemeberToDisCouncil: 'Добавить члена в диссертационный совет',
@@ -951,7 +952,10 @@ export default {
         sendReportForSign: 'Отправить отчет на подпись',
         doYouWantSendReport: "Вы уверены, что отправите этот отчет на подпись?",
         videoValid: 'Принимаются только видеоролики с платформы YouTube',
-        reviewerCommentFieldWarning: 'Отзыв официального рецензента не прикреплен'
+        reviewerCommentFieldWarning: 'Отзыв официального рецензента не прикреплен',
+        event: 'Мероприятие',
+        attachedFileNotFound: 'К диссертации не прикреплены файлы.',
+        invalidVideoLink: 'Ссылка на видео недействительна.'
     },
     faq: {
         title: "Служба поддержки",
@@ -1280,7 +1284,8 @@ export default {
         operationCanceled: "Продолжение действия остановлено",
         rejectionMessage: "Сообщение о отказе",
         summaryDepartment: "Сводящее структурное подразделение",
-        warnAddingSummaryUser: "Вы не можете добавить пользователя, выбранного в поле «Свод структурный отдел», в поле «Свод/Подтверждение»."
+        warnAddingSummaryUser: "Вы не можете добавить пользователя, выбранного в поле «Свод структурный отдел», в поле «Свод/Подтверждение».",
+        topicOfMastersThesis: "Тема магистерской диссертации"
     },
     educomplex: {
         title: "Учебно-методический комплекс дисциплины",
@@ -1595,7 +1600,16 @@ export default {
         customerAndSource:'Заказчик и источник финансирования',
         contract_sum_ru: 'Сумма договора',
         project_position:'Позиция в проекте',
-        scientific_grants: "Научные гранты"
+        scientific_grants: "Научные гранты",
+        orgNameKz: 'Название организации на казахском языке',
+        orgNameRu: 'Название организации на русском языке',
+        orgNameEn: 'Название организации на английском языке',
+        posNameKz: 'Название должность на казахском языке',
+        posNameRu: 'Название должность на русском языке',
+        posNameEn: 'Название должность на английском языке',
+        responsibilitiesKz: 'Должностные обязанности на казахском языке',
+        responsibilitiesRu: 'Должностные обязанности на русском языке',
+        responsibilitiesEn: 'Должностные обязанности на английском языке',
     },
     personalData: 'Персональные сведения',
     yearPeriod:'Период годов',

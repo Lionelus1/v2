@@ -46,7 +46,7 @@
           {{ slotProps.data.mainPosition ? getPositionName(slotProps.data.mainPosition) : '' }}
         </template>
       </Column>
-      <Column field="IIN" :header="$t('contact.iin')" style="min-width: 100px;"></Column>
+      <Column v-if="findRole(null, 'main_administrator')" field="IIN" :header="$t('contact.iin')" style="min-width: 100px;"></Column>
       <Column field="email" :header="$t('contact.email')" style="min-width: 50px;"></Column>
     </DataTable>
   </div>
@@ -58,6 +58,8 @@
 <script>
 import { ContragentService } from "@/service/contragent.service";
 import PersonPage from "@/components/contragent/v2/PersonPage";
+import { findRole } from "@/config/config";
+
 
 export default {
   name: 'PersonsList',
@@ -152,6 +154,7 @@ export default {
     }
   },
   methods: {
+    findRole: findRole,
     showMessage(msgtype, message, content) {
       this.$toast.add({
         severity: msgtype,

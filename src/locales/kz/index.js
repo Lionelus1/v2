@@ -924,6 +924,7 @@ export default {
         scientificConsultant: 'Ғылыми кеңесшінің пікірі',
         foreignConsultant: 'Шетелдік кеңесшінің пікірі',
         commissionConclusion: 'Этикалық бағалау комиссиясының қорытындысы',
+        councilConclusion: 'Кеңестің шешімі',
         reviewerComment: 'Ресми рецензенттің пікірі',
         setMeetingTimeConfirmMsg: "Төмендегі {btn} батырмасын басу арқылы, ақпараттардың дұрыстығын растайсыз және осы ақпарат сайтқа хабарландыру болып шығарылады",
         addMemeberToDisCouncil: 'Диссертациялық кеңеске мүше қосу',
@@ -961,7 +962,10 @@ export default {
         sendReportForSign: 'Есепті қол қоюға жіберу',
         doYouWantSendReport: "Бұл есепті қол қоюға жіберуге сенімдісіз бе?",
         videoValid: 'Тек YouTube платформасынан бейнелер жарайды',
-        reviewerCommentFieldWarning: 'Ресми рецензенттің пікірі қосылмаған'
+        reviewerCommentFieldWarning: 'Ресми рецензенттің пікірі қосылмаған',
+        event: 'Іс-шара',
+        attachedFileNotFound: 'Бұл диссертацияда тіркелген файлдар жоқ.',
+        invalidVideoLink: 'Берілген видеоның сілтемесі жарамсыз.'
     },
     faq: {
         title: "Қолдау қызметі",
@@ -1291,7 +1295,8 @@ export default {
         operationCanceled: "Амалды жалғастыру тоқтатылды",
         rejectionMessage: "Бас тарту туралы хабарлама",
         summaryDepartment: "Жинақтаушы құрылымдық бөлім",
-        warnAddingSummaryUser: "«Жинақтаушы құрылымдық бөлім» өрісінде таңдалған қолданушыны «Жинақтаушы/Растау» өрісіне қоса алмайсыз."
+        warnAddingSummaryUser: "«Жинақтаушы құрылымдық бөлім» өрісінде таңдалған қолданушыны «Жинақтаушы/Растау» өрісіне қоса алмайсыз.",
+        topicOfMastersThesis: "Магистрлік диссертация тақырыбы"
     },
     educomplex: {
         title: "Пәннің оқу-әдістемелік кешені",
@@ -1610,7 +1615,17 @@ export default {
         customerAndSource:'Тапсырыс беруші және қаржыландыру көзі',
         contract_sum_kz: 'Шарт сомасы',
         project_position:'Жобаның позициясы',
-        scientific_grants: "Ғылыми гранттар"
+        scientific_grants: "Ғылыми гранттар",
+        orgNameKz: 'Ұйымның қазақ тіліндегі атауы',
+        orgNameRu: 'Ұйымның орыс тіліндегі атауы',
+        orgNameEn: 'Ұйымның ағылшын тіліндегі атауы',
+        posNameKz: 'Қазақ тіліндегі лауазымның атауы',
+        posNameRu: 'Орыс тіліндегі лауазымның атауы',
+        posNameEn: 'Ағылшын тіліндегі лауазымның атауы',
+        responsibilitiesKz: 'Қазақ тіліндегі қызметтік міндеттер',
+        responsibilitiesRu: 'Орыс тіліндегі қызметтік міндеттер',
+        responsibilitiesEn: 'Ағылшын тіліндегі қызметтік міндеттер',
+
 
     },
     personalData: 'Жеке ақпарат',

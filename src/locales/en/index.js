@@ -883,6 +883,7 @@ export default {
         scientificConsultant: 'Review of the scientific consultant',
         foreignConsultant: 'Review of foreign consultant',
         commissionConclusion: 'Conclusion of the ethical assessment committee',
+        councilConclusion: 'Council decision',
         reviewerComment: 'Official reviewer\'s review',
         setMeetingTimeConfirmMsg: "By clicking the {btn} button below, you confirm the correctness of the information and this information is published in the form of an announcement on the site.",
         addMemeberToDisCouncil: 'Add Member to The Dissertation Council',
@@ -920,7 +921,10 @@ export default {
         sendReportForSign: 'Send the report for signature',
         doYouWantSendReport: "Are you sure to submit this report for signature?",
         videoValid: 'Only videos from the YouTube platform are allowed',
-        reviewerCommentFieldWarning: 'Review from official reviewer not attached'
+        reviewerCommentFieldWarning: 'Review from official reviewer not attached',
+        event: 'Event',
+        attachedFileNotFound: 'There are no files attached to this dissertation.',
+        invalidVideoLink: 'The provided video link is invalid.'
     },
     faq: {
         title: "Help desk",
@@ -1250,7 +1254,9 @@ export default {
         operationCanceled: "Action  canceled",
         rejectionMessage: "Rejection message",
         summaryDepartment: "Converging structural unit",
-        warnAddingSummaryUser: "You cannot add a user selected in the «Summary structural department» field to the «Summary/Confirmation» field."
+        warnAddingSummaryUser: "You cannot add a user selected in the «Summary structural department» field to the «Summary/Confirmation» field.",
+        topicOfMastersThesis: "Topic of master's thesis"
+
     },
     queue: {
 
@@ -1596,8 +1602,16 @@ export default {
         customerAndSource:'Customer and source of funding',
         contract_sum_en: 'Contract amount',
         project_position:'Project position',
-        scientific_grants: "Scientific grants"
-
+        scientific_grants: "Scientific grants",
+        orgNameKz: 'Name of the organization in Kazakh',
+        orgNameRu: 'Name of the organization in Russian',
+        orgNameEn: 'Name of the organization in English',
+        posNameKz: 'Job title in Kazakh',
+        posNameRu: 'Job title in Russian',
+        posNameEn: 'Job title in English',
+        responsibilitiesKz: 'Job responsibilities in Kazakh',
+        responsibilitiesRu: 'Job responsibilities in Russian',
+        responsibilitiesEn: 'Job responsibilities in English',
     },
     personalData: 'Personal information',
     yearPeriod: 'Period of years',

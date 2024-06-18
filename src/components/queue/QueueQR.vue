@@ -1,5 +1,8 @@
 <template>
-  <div :class="['card',{'talon_bg': currentStep === 3 , 'mt-6': currentStep !==3 }]">
+  <div class="card flex justify-content-end">
+    <LanguageDropdown/>
+  </div>
+  <div class="card talon_bg">
     <div :class="['flex', 'flex-column', 'm-auto', 'gap-2', {'text-center': !reservation, 'gap-4': !reservation,}]" v-if="currentStep === 1">
       <template v-if="reservation">
         <h4 class="m-0">{{ $t('contact.lname') }}</h4>
@@ -16,6 +19,19 @@
         {{ $t('common.continue') }}
       </Button>
     </div>
+    <template v-if="currentStep === 4">
+      <div class="card">
+        <Dropdown @change="changeQueues" v-model="selectedQueue" :options="queues" option-label="queueNamekz" :placeholder="$t('common.select')"
+                  class="p-inputtext-lg w-full mb-4"/>
+        <Dropdown v-if="selectDayBool" @change="changeDay" v-model="selectedDay" :options="futureDays" optionLabel="date" placeholder="Күн"
+                  class="p-inputtext-lg w-full mb-4"/>
+        <Dropdown v-if="selectTimeBool" @change="changeTime" v-model="selectedTime" :options="hoursList" placeholder="Уақыт"
+                  class="p-inputtext-lg w-full mb-4"/>
+        <Button v-if="reservationBtn" class="justify-content-center p-button-lg w-full"
+                @click="registerQueue(selectedItem.value.key, selectedItem.value)">{{ $t('Брондау') }}
+        </Button>
+      </div>
+    </template>
     <div class="m-auto flex flex-column gap-3" v-if="currentStep === 2">
       <template v-if="!reservation">
         <Button class="p-button-lg text-left p-3" style="width: 100%" v-for="i of queues" :key="i" @click="registerQueue(i.key,i)">
@@ -28,19 +44,7 @@
           }}
         </Button>
       </template>
-      <template v-if="reservation">
-        <div class="card">
-          <Dropdown @change="changeQueues" v-model="selectedQueue" :options="queues" option-label="queueNamekz" :placeholder="$t('common.select')"
-                    class="p-inputtext-lg w-full mb-4"/>
-          <Dropdown v-if="selectDayBool" @change="changeDay" v-model="selectedDay" :options="futureDays" placeholder="Күн"
-                    class="p-inputtext-lg w-full mb-4"/>
-          <Dropdown v-if="selectTimeBool" @change="changeTime" v-model="selectedTime" :options="hoursList" placeholder="Уақыт"
-                    class="p-inputtext-lg w-full mb-4"/>
-          <Button v-if="reservationBtn" class="justify-content-center p-button-lg w-full"
-                  @click="registerQueue(selectedItem.value.key, selectedItem.value)">{{ $t('Брондау') }}
-          </Button>
-        </div>
-      </template>
+
     </div>
     <div v-if="currentStep === 3">
       <div class="relative">
@@ -213,10 +217,12 @@
 <script setup>
 import {computed, onMounted, ref, watch} from "vue";
 import axios from "axios";
-import {getHeader, smartEnuApi} from "@/config/config";
+import {getHeader, serverUrl, smartEnuApi} from "@/config/config";
 import {useRoute} from "vue-router";
 import {useI18n} from "vue-i18n";
 import moment from "moment";
+import io from "socket.io-client";
+import LanguageDropdown from "@/LanguageDropdown.vue";
 //import {socket} from "@/main";
 
 const {t, locale} = useI18n()
@@ -251,10 +257,33 @@ const reservationBtn = ref(false);
 const selectedItem = ref();
 const daysOfWeek = ['ВС', 'ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ'];
 const futureDays = ref([]);
+let options = {}
+let url = smartEnuApi
+if (process.env.NODE_ENV === 'production') {
+  url = serverUrl
+  options.path = "/api/socket.io"
+}
+const socket = io(url, options)
 
+const getDays = (data) => {
+  axios
+      .post(smartEnuApi + "/queue/queueAvailability", {id: data}, {
+        headers: getHeader(),
+      })
+      .then((response) => {
+        console.log(response.data)
+        futureDays.value = response.data
+        //queues.value = response.data.queues
+      })
+      .catch((error) => {
+        console.log(error)
+      });
+}
 const changeQueues = (event) => {
+  console.log(event)
+  getDays(event.value.key)
   selectDayBool.value = true
-  selectedItem.value = event
+  //selectedItem.value = event
 }
 const changeDay = () => {
   selectTimeBool.value = true
@@ -282,7 +311,7 @@ const calculateFutureDays = () => {
   futureDays.value = days;
 };
 
-calculateFutureDays();
+//calculateFutureDays();
 
 const hoursList = ref([]);
 
@@ -340,8 +369,10 @@ getQueue(parentId.value)
 
 watch(() => currentTicketWS.value, (newValue, oldValue) => {
   if (currentTicketWS.value !== null && currentTicketAPI.value !== null) {
-    called.value = currentTicketWS.value === currentTicketAPI.value;
-    localStorage.removeItem('queueKey')
+    if(currentTicketWS.value === currentTicketAPI.value){
+      called.value = currentTicketWS.value === currentTicketAPI.value;
+      localStorage.removeItem('queueKey')
+    }
   }
 });
 
@@ -383,7 +414,44 @@ const registerQueue = (queueId, queue) => {
           currentTicketAPI.value = queinfo.value.queueNumber
           const numMin = response.data.averageTime / 60
           queinfo.value.averageTime = numMin.toFixed(0);
-          splitDateTime(response.data.queueDate)
+          //splitDateTime(response.data.queueDate)
+          //getRegisterService()
+          currentStep.value = 3
+        })
+        .catch((error) => {
+          console.log(error)
+        });
+  }
+}
+const getRegisterService = (queueId, queue) => {
+  if (localStorage.getItem('phoneNumber')) {
+    localStorage.setItem('queueKey', queueId);
+    if (queue) {
+      localStorage.setItem('queueCategory', JSON.stringify(queue));
+    }
+
+    categoryName.value = JSON.parse(localStorage.getItem('queueCategory'))
+    const phoneNumber = localStorage.getItem('phoneNumber')
+    const req = {
+      phoneNumber: phoneNumber
+    }
+    if (reservation.value && name.value.trim() !== '' && lastName.value.trim() !== '' && selectedDay.value && selectedTime.value) {
+      req.lastName = lastName.value
+      req.firstName = name.value
+      req.email = name.value
+      req.day = selectedDay.value
+      req.time = selectedTime.value
+    }
+    axios
+        .post(smartEnuApi + "/queue/getRegisterService", req, {
+          headers: getHeader(),
+        })
+        .then((response) => {
+          queinfo.value = response.data
+          currentTicketAPI.value = queinfo.value.queueNumber
+          const numMin = response.data.averageTime / 60
+          queinfo.value.averageTime = numMin.toFixed(0);
+          //splitDateTime(response.data.queueDate)
           currentStep.value = 3
         })
         .catch((error) => {
@@ -425,18 +493,20 @@ const connected = () => {
         queuesWS.value = queuesWS.value.slice(0, 3);
       }
     });
+    socket.on("connect_error", (err) => {
+      console.log(err)
+    });
   },500)
-
 }
-
+connected()
 
 onMounted(() => {
-  //connected()
   if (parentId.value !== parseInt(localStorage.getItem('queueParentId'))) {
     localStorage.removeItem('phoneNumber')
   }
   if (localStorage.getItem('phoneNumber') !== null && localStorage.getItem('queueKey') !== null && (parentId.value === parseInt(localStorage.getItem('queueParentId')))) {
     registerQueue(parseInt(localStorage.getItem('queueKey')), event)
+    //getRegisterService(parseInt(localStorage.getItem('queueKey')), event)
     currentStep.value = 3
   } else if (localStorage.getItem('phoneNumber') !== null) {
     currentStep.value = 1
@@ -446,10 +516,9 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .talon_bg {
-  //background: #007dbe;
-  height: 100vh;
-  margin: -20px;
-  padding-top: 30px;
+
+  //height: 100vh;
+  //padding-top: 3em;
 }
 
 .talon {

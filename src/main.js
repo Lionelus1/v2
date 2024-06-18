@@ -136,8 +136,6 @@ import TitleBlock from "./components/TitleBlock";
 import ToolbarMenu from "@/components/ToolbarMenu.vue";
 import ActionButton from "@/components/ActionButton.vue";
 import {isMobile} from "@/helpers/HelperUtil";
-//import {smartEnuApi} from "@/config/config";
-//import io from "socket.io-client";
 
 Date.prototype.toJSON = function(){
     const hoursDiff = this.getHours() - this.getTimezoneOffset() / 60;
@@ -154,12 +152,6 @@ router.beforeEach(function(to, from, next) {
 const app = createApp(App);
 const emitter = mitt();
 app.provide('emitter', emitter);
-
-let options = {}
-if (process.env.NODE_ENV === 'production') {
-    options.path = "/api/socket.io"
-}
-//export const socket = io(smartEnuApi, options)
 
 /* eslint-disable */
 app.use(PrimeVue, {

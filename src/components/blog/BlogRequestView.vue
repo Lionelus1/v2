@@ -1,97 +1,103 @@
 <template>
   <div class="col-12">
-    <TitleBlock :showBackButton="true" :title="$t('blog.question')" />
-    <div class="card">
-      <BlockUI :blocked="loading" :fullScreen="true">
-        <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em" />
-      </BlockUI>
-      <div v-if="question" class="grid">
-        
-        <div class="product-grid-item card">
-          <h5>{{ $t("faq.question") }}</h5>
+    <TitleBlock :showBackButton="true" :title="$t('blog.question')"/>
 
-          <div class="product-grid-item-top mb-2 grid">
-            <div class="lg:col-2 md:col-6 p-sm-6">
+    <BlockUI v-if="haveAccess" :blocked="loading" class="card">
+      <div class="card">
+        <div v-if="question" class="grid">
+          <div class="product-grid-item card">
+            <h5>{{ $t("faq.question") }}</h5>
+            <div class="product-grid-item-top mb-2 grid">
+              <div class="lg:col-2 md:col-6 p-sm-6">
               <span>
                 <i class="fa-solid fa-at product-category-icon"></i>
-                <small>№&nbsp;{{ question.id }} </small><br />
+                <small>№&nbsp;{{ question.id }} </small><br/>
                 <small class="product-category">{{ question.fullName }}</small>
               </span>
-            </div>
-            <div class="lg:col-2 md:col-6 p-sm-6" v-if="question.mobile && question.email">
-              <span><small class="product-category">{{ question.mobile + " " + question.email }}</small></span>
-            </div>
-            <!--          <div class="lg:col-2 md:col-6 p-sm-6">
-                        <i class="fa-solid fa-tags product-category-icon"></i>
-                        <small class="product-category">{{ question.category['name' + $i18n.locale].split("(")[0] }}</small>
-                      </div>-->
-            <div class="lg:col-3 md:col-6 p-sm-6">
+              </div>
+              <div class="lg:col-2 md:col-6 p-sm-6" v-if="question.mobile && question.email">
+                <span><small class="product-category">{{ question.mobile + " " + question.email }}</small></span>
+              </div>
+              <!--          <div class="lg:col-2 md:col-6 p-sm-6">
+                          <i class="fa-solid fa-tags product-category-icon"></i>
+                          <small class="product-category">{{ question.category['name' + $i18n.locale].split("(")[0] }}</small>
+                        </div>-->
+              <div class="lg:col-3 md:col-6 p-sm-6">
               <span v-if="loginedUser && question.state" :class="'customer-badge status-' + question.state.id">{{
-                $t("common.states." + question.state.code) }}</span>
+                  $t("common.states." + question.state.code)
+                }}</span>
+              </div>
+
+              <div class="lg:col-3 md:col-6 p-sm-12 text-right">
+                <i class="fa-solid fa-calendar-days product-category-icon"></i>
+                <small class="product-category">{{
+                    moment(new Date(question.created_date)).utc().format("DD.MM.YYYY")
+                  }}</small>
+              </div>
             </div>
-
-            <div class="lg:col-3 md:col-6 p-sm-12 text-right">
-              <i class="fa-solid fa-calendar-days product-category-icon"></i>
-              <small class="product-category">{{ moment(new Date(question.created_date)).utc().format("DD.MM.YYYY")
-              }}</small>
+            <div class="product-grid-item-content">
+              <p class="block-with-text">{{ question.question }}</p>
             </div>
+            <!--        <div v-if="question.filePath" class="p-w-100 text-right">
+                      <Button :label="$t('faq.attachments')" icon="pi pi-download" @click="downloadFile(question.filePath)"></Button>
+                    </div>-->
           </div>
-          <div class="product-grid-item-content">
-            <p class="block-with-text">{{ question.question }}</p>
-          </div>
-          <!--        <div v-if="question.filePath" class="p-w-100 text-right">
-                    <Button :label="$t('faq.attachments')" icon="pi pi-download" @click="downloadFile(question.filePath)"></Button>
-                  </div>-->
-        </div>
 
-        <div v-if="question.ownedBy" class="product-grid-item card">
-          <h5>{{ $t("faq.answer") }}</h5>
+          <div v-if="question.ownedBy" class="product-grid-item card">
+            <h5>{{ $t("faq.answer") }}</h5>
 
-          <div class="product-grid-item-top mb-2">
-            <div class="col-12 grid">
-              <div v-if="loginedUser" class="lg:col-6  md:col-6 p-sm-6">
+            <div class="product-grid-item-top mb-2">
+              <div class="col-12 grid">
+                <div v-if="loginedUser" class="lg:col-6  md:col-6 p-sm-6">
                 <span v-if="question.ownedBy">
                   <i class="fa-solid fa-user-tag product-category-icon"></i>
                   <small class="product-category">{{ question.ownedBy.fullName }}</small>
                 </span>
-              </div>
-              <div v-if="question.answered_date" class="lg:col-6  md:col-6 p-sm-6 text-right">
-                <i class="fa-solid fa-calendar-days product-category-icon"></i>
-                <small class="product-category">{{ moment(new Date(question.answered_date)).utc().format("DD.MM.YYYY")
-                }}</small>
-              </div>
-            </div>
-          </div>
-          <div class="product-grid-item-content text-left">
-            <div v-if="loginedUser && question.ownedBy.userID && loginedUser.userID === question.ownedBy.userID">
-              <TinyEditor :readonly="question.state.id !== 8" v-model="question.answer" :height="300" />
-              <div class="p-w-100 text-right">
-                <Button v-for="(button, index) in actionButtons" :key="index" :label="button.label" :icon="button.icon"
-                  :class="['p-button-info', 'mt-2', button.customClass]" @click="button.handler" />
+                </div>
+                <div v-if="question.answered_date" class="lg:col-6  md:col-6 p-sm-6 text-right">
+                  <i class="fa-solid fa-calendar-days product-category-icon"></i>
+                  <small class="product-category">{{
+                      moment(new Date(question.answered_date)).utc().format("DD.MM.YYYY")
+                    }}</small>
+                </div>
               </div>
             </div>
-            <div v-else class="block-with-text" v-html="question.answer"></div>
-          </div>
+            <div class="product-grid-item-content text-left">
+              <div v-if="loginedUser && question.ownedBy.userID && loginedUser.userID === question.ownedBy.userID">
+                <TinyEditor :readonly="question.state.id !== 8" v-model="question.answer" :height="300"/>
+                <div class="p-w-100 text-right">
+                  <Button v-for="(button, index) in actionButtons" :key="index" :label="button.label" :icon="button.icon"
+                          :class="['p-button-info', 'mt-2', button.customClass]" @click="button.handler"/>
+                </div>
+              </div>
+              <div v-else class="block-with-text" v-html="question.answer"></div>
+            </div>
 
+          </div>
         </div>
       </div>
+    </BlockUI>
+    <div v-else class="card">
+      <Access textMode="short" :showLogo="false" returnMode="back"></Access>
     </div>
   </div>
 </template>
 
 <script>
-import { useI18n } from "vue-i18n/dist/vue-i18n.esm-bundler";
-import { useToast } from "primevue/usetoast";
-import { useConfirm } from "primevue/useconfirm";
-import { ref } from "vue";
-import { useRoute, useRouter } from "vue-router/dist/vue-router";
-import { BlogService } from "../../service/blog.service";
-import { formatDate } from "../../helpers/HelperUtil";
+import {useI18n} from "vue-i18n/dist/vue-i18n.esm-bundler";
+import {useToast} from "primevue/usetoast";
+import {useConfirm} from "primevue/useconfirm";
+import {ref} from "vue";
+import {useRoute, useRouter} from "vue-router/dist/vue-router";
+import {BlogService} from "../../service/blog.service";
+import {formatDate} from "../../helpers/HelperUtil";
 import TitleBlock from "@/components/TitleBlock.vue";
 import moment from "moment";
+import Access from "@/pages/Access.vue";
 
 export default {
   name: "BlogRequestView",
+  components: {Access},
   setup() {
     const route = useRoute()
     const i18n = useI18n()
@@ -102,6 +108,7 @@ export default {
     const blogService = new BlogService()
     const questionId = ref(route.params.id)
     const loginedUser = ref(JSON.parse(localStorage.getItem("loginedUser")))
+    const haveAccess = ref(true)
 
     const getBlogRequestById = () => {
       loading.value = true;
@@ -110,8 +117,12 @@ export default {
           question.value = res.data
         loading.value = false;
       }).catch(error => {
-        loading.value = false
-        toast.add({ severity: "error", summary: error, life: 3000 });
+        if (error?.response?.status === 403) {
+          haveAccess.value = false
+        } else {
+          loading.value = false
+          toast.add({severity: "error", summary: error, life: 3000});
+        }
       });
     }
     getBlogRequestById();
@@ -132,7 +143,7 @@ export default {
           question.value.state.id = 8;
         },
         reject: () => {
-          toast.add({ severity: 'info', summary: 'Rejected', detail: i18n.t("faq.rejected"), life: 3000 });
+          toast.add({severity: 'info', summary: 'Rejected', detail: i18n.t("faq.rejected"), life: 3000});
         }
       });
 
@@ -153,7 +164,7 @@ export default {
             });
           }
           loading.value = true
-          let data = { id: parseInt(questionId.value), answer: question.value.answer };
+          let data = {id: parseInt(questionId.value), answer: question.value.answer};
           blogService.sendBlogRequestAnswer(data).then(_ => {
             question.value.state.id = 7;
             question.value.state.code = "replied";
@@ -176,13 +187,13 @@ export default {
           });
         },
         reject: () => {
-          toast.add({ severity: 'info', summary: 'Rejected', detail: i18n.t("faq.rejected"), life: 3000 });
+          toast.add({severity: 'info', summary: 'Rejected', detail: i18n.t("faq.rejected"), life: 3000});
         }
       });
     }
 
     return {
-      loading, question, loginedUser,
+      loading, question, loginedUser, haveAccess,
       formatDate, answer, moment, editAnswer
     }
   },
@@ -288,6 +299,7 @@ export default {
     margin-right: -1em;
     padding-right: 1em;
   }
+
   .edit-answer {
     background-color: #256029;
   }
