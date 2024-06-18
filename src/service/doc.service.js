@@ -69,4 +69,8 @@ export class DocService {
     documentRevisionV2(data) {
         return api.post("/document/revision", data, {headers:getHeader()})
     }
+   
+    getDocParams(id){
+        return api.get(`/doc/getDocParams/${id}`, {headers: getHeader()});
+    }
 }
