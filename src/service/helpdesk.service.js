@@ -128,11 +128,8 @@ export class CamundaService {
           [this.currentSchema.components[i].key ??
             this.currentSchema.components[i].id]: null,
         }; // Initialize an empty array for 'values'
-        console.log("HAHA:", this.currentSchema.components[i].type);
       } else {
-        console.log("HEREERERERE:", this.currentSchema.components[i].type);
         this.currentSchema.components[i].value = ref(null);
-        console.log("SUCCESS");
       }
       this.currentSchema.components[i].incorrect = ref(false);
     }
