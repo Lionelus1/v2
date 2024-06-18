@@ -72,6 +72,7 @@ export default {
       const processedEmails = this.emails.map(email => email.trim());
 
       const mailingData = {
+        mailingID: null,
         filters: {
           roles: roles,
         },
