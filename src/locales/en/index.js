@@ -1246,7 +1246,9 @@ export default {
         operationCanceled: "Action  canceled",
         rejectionMessage: "Rejection message",
         summaryDepartment: "Converging structural unit",
-        warnAddingSummaryUser: "You cannot add a user selected in the «Summary structural department» field to the «Summary/Confirmation» field."
+        warnAddingSummaryUser: "You cannot add a user selected in the «Summary structural department» field to the «Summary/Confirmation» field.",
+        topicOfMastersThesis: "Topic of master's thesis"
+
     },
     queue: {
 
