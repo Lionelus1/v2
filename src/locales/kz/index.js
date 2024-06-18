@@ -858,7 +858,9 @@ export default {
         interval: "Интервал(мин)",
         day: "Күні",
         time: "Уақыты",
-        came: "Келді"
+        came: "Келді",
+        liveQueue: "Кәдімгі кезек",
+        choiceTime: "Уақыт таңдау бойынша"
     },
 
     dissertation: {

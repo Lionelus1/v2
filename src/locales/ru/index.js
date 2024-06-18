@@ -850,7 +850,9 @@ export default {
         interval: "Интервал(мин)",
         day: "День",
         time: "Время",
-        came: "Пришел"
+        came: "Пришел",
+        liveQueue: "Живая очередь",
+        choiceTime: "По выбору времени"
     },
     dissertation: {
         title: "Диссертационный совет",

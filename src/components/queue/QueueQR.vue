@@ -5,8 +5,8 @@
   <div class="card talon_bg">
     <Toast />
     <div class="text-center flex flex-column gap-4 m-auto" v-if="currentStep === 1">
-      <Button class="justify-content-center p-button-lg" @click="queue(false)">{{ $t('queue.title') }}</Button>
-      <Button class="justify-content-center p-button-lg" @click="queue(true)">{{ $t('queue.reservation') }}</Button>
+      <Button class="justify-content-center p-button-lg" @click="queue(false)">{{ $t('queue.liveQueue') }}</Button>
+      <Button class="justify-content-center p-button-lg" @click="queue(true)">{{ $t('queue.choiceTime') }}</Button>
     </div>
     <div :class="['flex', 'flex-column', 'm-auto', 'gap-2', {'text-center': !reservation, 'gap-4': !reservation,}]" v-if="currentStep === 2">
       <template v-if="reservation">
@@ -28,7 +28,7 @@
 
     <div class="m-auto flex flex-column gap-3" v-if="currentStep === 3">
       <template v-if="!reservation">
-        <Button class="p-button-lg text-left p-3" style="width: 100%" v-for="i of queues" :key="i" @click="registerQueue(i.key,i)">
+        <Button :disabled="disabledRezervation" class="p-button-lg text-left p-3" style="width: 100%" v-for="i of queues" :key="i" @click="registerQueue(i.key,i)">
           {{
             $i18n.locale === "kz"
                 ? i.queueNamekz
@@ -51,6 +51,9 @@
                 @click="registerQueue(selectedItem.value.key, selectedItem.value)" :disabled="disabledRezervation">{{ $t('queue.reserve') }}
         </Button>
       </template>
+    </div>
+    <div class="flex justify-content-center">
+      <ProgressSpinner v-if="loading" class="progress-spinner" strokeWidth="2" style="width: 50px;"/>
     </div>
     <div v-if="currentStep === 4">
       <div class="relative">
@@ -171,7 +174,7 @@
             </template>
             <div class="dots"></div>
           </template>
-          <ProgressSpinner v-else class="progress-spinner" strokeWidth="2" style="width: 50px;"/>
+          <div v-if="!queinfo">{{ t('common.noData') }}</div>
         </div>
         <div class="talon_list" v-if="!reservation">
           <div class="flex justify-content-between ml-5 mb-2">
@@ -277,6 +280,7 @@ const socket = io(url, options)
 const timeList = ref([]);
 const emailError = ref('');
 const queueId = ref();
+const loading = ref(false);
 
 const validateEmail = () => {
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -380,6 +384,7 @@ const combineDateTime = (date, timeSlot) => {
   return `${datePart}T${timeSlot}Z`;
 }
 const registerQueue = (queueId, queue) => {
+  loading.value = true
   disabledRezervation.value = true
   if (localStorage.getItem('phoneNumber')) {
     localStorage.setItem('queueKey', queueId);
@@ -395,7 +400,7 @@ const registerQueue = (queueId, queue) => {
               ? categoryName.value.queueNameru
               : categoryName.value.queueNameen
     }
-    if (reservation.value && name.value.trim() !== '' && lastName.value.trim() !== '' && email.value && selectedTime.value && selectedTime.value) {
+    if (reservation.value && name.value.trim() !== '' && lastName.value.trim() !== '' && email.value && selectedDay.value && selectedTime.value) {
       if (queue) {
         queue.reserveBool = true
         localStorage.setItem('queueCategory', JSON.stringify(queue));
@@ -411,16 +416,19 @@ const registerQueue = (queueId, queue) => {
         })
         .then((response) => {
           getRegisterService(queueId)
+          loading.value = false
           currentStep.value = 4
         })
         .catch((error) => {
           console.log(error)
-          toast.add({severity: "error", summary: t(`${error.response.data.error}`), life: 3000});
+          toast.add({severity: "error", summary: t(`${error.response.data.error}`)});
+          loading.value = false
           currentStep.value = 1
         });
   }
 }
 const getRegisterService = (queueId, queue) => {
+  loading.value = true
   if (localStorage.getItem('phoneNumber')) {
     localStorage.setItem('queueKey', queueId);
     if (queue) {
@@ -432,11 +440,11 @@ const getRegisterService = (queueId, queue) => {
     const req = {
       phoneNumber: phoneNumber
     }
-    if (reservation.value && name.value.trim() !== '' && lastName.value.trim() !== '' && email.value && selectedTime.value && selectedTime.value) {
-      req.queueID = queueId,
+    if (reservation.value && name.value.trim() !== '' && lastName.value.trim() !== '' && email.value && selectedDay.value && selectedTime.value) {
+      req.queueID = queueId
       req.lastName = lastName.value
       req.firstName = name.value
-      req.email = name.value
+      req.email = email.value
       req.reservision_time = combineDateTime(selectedDay.value, selectedTime.value.time_slot)
     }
     axios
@@ -451,10 +459,14 @@ const getRegisterService = (queueId, queue) => {
           const numMin = response.data.averageTime / 60
           queinfo.value.averageTime = numMin.toFixed(0);
           //splitDateTime(response.data.queueDate)
+          loading.value = false
           currentStep.value = 4
         })
         .catch((error) => {
           console.log(error)
+          toast.add({severity: "error", summary: t(`${error.response.data.error}`)});
+          loading.value = false
+          currentStep.value = 1
         });
   }
 }

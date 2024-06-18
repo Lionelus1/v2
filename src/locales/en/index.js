@@ -1291,7 +1291,9 @@ export default {
         interval: "Interval(min)",
         day: "Day",
         time: "Time",
-        came: "Came"
+        came: "Came",
+        liveQueue: "Queue",
+        choiceTime: "Choice of time"
     },
     educomplex: {
         title: "Educational-methodical complex of the discipline",
