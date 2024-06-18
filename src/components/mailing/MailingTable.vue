@@ -349,7 +349,7 @@ export default {
      *  NEWS PRE EDITING
      */
     editMailing(data) {
-      this.$router.push({name: 'EditMailing', params: {id: data.id}})
+      this.$router.push({name: 'AddEditMailing', params: {id: data.id}})
       /*this.catTreeElementsList = [];
       this.catTree.root = this.createCatTree(null, null);
       this.newsData = {};

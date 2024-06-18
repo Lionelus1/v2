@@ -130,7 +130,6 @@ export default {
           this.savedRange = selection.getRangeAt(0);
         }
 
-        // Удаляем основной текст
         const parser = new DOMParser();
         const doc = parser.parseFromString(this.templateContent, 'text/html');
         const mainContent = doc.querySelector('p:nth-of-type(2)'); // выбираем второй параграф как основной текст
@@ -138,7 +137,6 @@ export default {
           mainContent.innerHTML = '';
           this.templateContent = doc.documentElement.outerHTML;
 
-          // Восстанавливаем позицию курсора
           if (this.savedRange) {
             const range = document.createRange();
             range.setStart(mainContent, 0);

@@ -320,7 +320,7 @@ const routes = [
                     },
                     {
                         path: ':id',
-                        name: 'EditMailing',
+                        name: 'AddEditMailing',
                         component: load('mailing/AddEditMailing'),
                         beforeEnter: ifAuthenticated,
                     },
@@ -338,6 +338,13 @@ const routes = [
                         beforeEnter: ifAuthenticated,
                     },
                 ]
+            },
+            {
+                path: '/editMailing/:id',
+                name: 'EditMailing',
+                component: load('mailing/EditMailing'),
+                props: true,
+                beforeEnter: ifAuthenticated,
             },
             {
                 path: '/news',

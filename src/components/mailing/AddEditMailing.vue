@@ -11,13 +11,11 @@
         <div class="flex flex-wrap gap-3 pt-4">
           <div v-for="category in categories" :key="category.id" class="flex align-items-center pr-3 pb-1">
             <Checkbox class="checkbox-container" v-model="selectedCategories" :id="'category-' + category.id"
-                      :value="category.id"/>
-            <label class="ml-2 label-large" :for="'category-' + category.id">{{
-                category['name' + $i18n.locale]
-              }}</label>
+                      :value="category.id" @change="handleCategoryChange"/>
+            <label class="ml-2 label-large" :for="'category-' + category.id">{{ category['name' + $i18n.locale] }}</label>
           </div>
         </div>
-        <div class="field mt-3">
+        <div v-if="showOtherEmailField" class="field mt-3">
           <FloatLabel>
             <Chips v-model="email" placeholder="Введите почту"/>
           </FloatLabel>
@@ -39,7 +37,6 @@
                 @click="selectTemplate(template.id)"
             >
               <h4>{{ template.template_name }}</h4>
-<!--              <p v-if="template.id !== 1">{{ template.template_content_ru.String }}</p>-->
               <div v-html="template.template_content_ru.String"></div>
             </div>
           </div>
@@ -54,7 +51,7 @@
 
 
 <script>
-import {getHeader, smartEnuApi} from "@/config/config";
+import { getHeader, smartEnuApi } from "@/config/config";
 import 'primeicons/primeicons.css'
 
 export default {
@@ -70,13 +67,14 @@ export default {
       templates: [],
       email: null,
       emails: [],
+      showOtherEmailField: false,
       categories: [
-        {id: 1, nameen: 'Контрагенты', namekz: 'білім алушы', nameru: 'Контрагенты'},
-        {id: 2, nameen: 'Сотрудники', namekz: 'білім алушы', nameru: 'Сотрудники'},
-        {id: 3, nameen: 'Частные лица', namekz: 'білім алушы', nameru: 'Частные лица'},
-        {id: 4, nameen: 'Обучающиеся', namekz: 'білім алушы', nameru: 'Обучающиеся'},
-        {id: 5, nameen: 'Выпускники', namekz: 'білім алушы', nameru: 'Выпускники'},
-        {id: 6, nameen: 'Другое', namekz: 'білім алушы', nameru: 'Другое'},
+        { id: 1, nameen: 'Контрагенты', namekz: 'білім алушы', nameru: 'Контрагенты' },
+        { id: 2, nameen: 'Сотрудники', namekz: 'білім алушы', nameru: 'Сотрудники' },
+        { id: 3, nameen: 'Частные лица', namekz: 'білім алушы', nameru: 'Частные лица' },
+        { id: 4, nameen: 'Обучающиеся', namekz: 'білім алушы', nameru: 'Обучающиеся' },
+        { id: 5, nameen: 'Выпускники', namekz: 'білім алушы', nameru: 'Выпускники' },
+        { id: 6, nameen: 'Другое', namekz: 'білім алушы', nameru: 'Другое' },
       ],
     };
   },
@@ -89,10 +87,13 @@ export default {
         });
         const data = await response.json();
         this.templates = data;
-        console.log(this.templates)
+        console.log(this.templates);
       } catch (error) {
         console.error('Error fetching templates:', error);
       }
+    },
+    handleCategoryChange() {
+      this.showOtherEmailField = this.selectedCategories.includes(6); // Assuming 6 is the ID for "Другое"
     },
     addEmail() {
       if (this.email) {
@@ -103,42 +104,57 @@ export default {
     selectTemplate(templateId) {
       this.selectedTemplate = templateId;
     },
-    nextPage() {
+    async nextPage() {
       if (this.selectedTemplate) {
+        const emailData = await this.fetchEmailData(this.selectedCategories);
         this.$router.push({
           name: 'TemplateEditor2',
           params: {
             templateId: this.selectedTemplate,
             selectedCategories: JSON.stringify(this.selectedCategories),
-            emails: JSON.stringify(this.email),
+            emails: JSON.stringify(emailData),
           },
         });
       } else {
         alert('Please select a template');
       }
     },
+    async fetchEmailData(selectedCategories) {
+      try {
+        const response = await fetch(`${smartEnuApi}/fetchEmails`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', ...getHeader() },
+          body: JSON.stringify({ categories: selectedCategories }),
+        });
+        const data = await response.json();
+        return data.emails; // Adjust according to your API response structure
+      } catch (error) {
+        console.error('Error fetching emails:', error);
+        return [];
+      }
+    },
     validateNews() {
       this.formValid = [];
       if (!this.newsData.titleKz) {
-        this.formValid.push({titleKz: true})
+        this.formValid.push({ titleKz: true });
       }
       if (!this.newsData.titleRu) {
-        this.formValid.push({titleRu: true})
+        this.formValid.push({ titleRu: true });
       }
       if (!this.newsData.titleEn) {
-        this.formValid.push({titleRu: true})
+        this.formValid.push({ titleRu: true });
       }
       if (!this.newsData.contentKz) {
-        this.formValid.push({contentKz: true})
+        this.formValid.push({ contentKz: true });
       }
       if (!this.newsData.contentRu) {
-        this.formValid.push({contentRu: true})
+        this.formValid.push({ contentRu: true });
       }
       if (!this.newsData.contentEn) {
-        this.formValid.push({contentEn: true})
+        this.formValid.push({ contentEn: true });
       }
       if (this.selectedCatTree.length === 0) {
-        this.formValid.push({selectedCatTree: true})
+        this.formValid.push({ selectedCatTree: true });
       }
       if (!this.newsData.image_id) {
         this.formValid.push(this.$t("smartenu.image1Invalid"));
@@ -184,7 +200,6 @@ export default {
   border-color: #007bff;
   background-color: #e9f7fe;
 }
-
 
 .checkbox-container {
   width: 20px;
