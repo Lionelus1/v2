@@ -45,8 +45,6 @@
                   class="p-inputtext-lg w-full mb-4"/>
         <Dropdown v-if="selectTimeBool" @change="changeTime" v-model="selectedTime" :options="timeList" :option-label="formatTime" :placeholder="$t('queue.time')"
                   class="p-inputtext-lg w-full mb-4"/>
-        <template v-if="selectedDay">
-        </template>
         <Button v-if="reservationBtn" class="justify-content-center p-button-lg w-full"
                 @click="registerQueue(selectedItem.value.key, selectedItem.value)" :disabled="disabledRezervation">{{ $t('queue.reserve') }}
         </Button>
@@ -165,6 +163,12 @@
                   <span v-if="locale === 'ru'">Время: </span>
                   <span v-if="locale === 'en'">Time: </span>
                   <b>{{ queinfo.time }}</b>
+                </div>
+                <div class="dashed text-left">
+                  <span v-if="locale === 'kz'">Қабылдайтын оператор: </span>
+                  <span v-if="locale === 'ru'">Принимающий оператор: </span>
+                  <span v-if="locale === 'en'">Receiving operator: </span>
+                  <b>{{ queinfo.queueName }}</b>
                 </div>
                 <!--                <div class="flex justify-content-between font-bold">
                                   <div>{{ talonDate }}</div>
@@ -423,7 +427,9 @@ const registerQueue = (queueId, queue) => {
           console.log(error)
           toast.add({severity: "error", summary: t(`${error.response.data.error}`)});
           loading.value = false
+          timeList.value = []
           currentStep.value = 1
+          disabledRezervation.value = false
         });
   }
 }
@@ -467,6 +473,7 @@ const getRegisterService = (queueId, queue) => {
           toast.add({severity: "error", summary: t(`${error.response.data.error}`)});
           loading.value = false
           currentStep.value = 1
+          disabledRezervation.value = false
         });
   }
 }
@@ -483,6 +490,7 @@ const refusal = () => {
         refusalVisible.value = false
         localStorage.removeItem('queueKey')
         currentStep.value = 1
+        disabledRezervation.value = false
       })
       .catch((error) => {
         console.log(error)

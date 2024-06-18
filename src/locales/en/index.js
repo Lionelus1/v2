@@ -1293,7 +1293,8 @@ export default {
         time: "Time",
         came: "Came",
         liveQueue: "Queue",
-        choiceTime: "Choice of time"
+        choiceTime: "Choice of time",
+        errorFreeOperators: "It is no longer possible to book for this time, please choose another time!"
     },
     educomplex: {
         title: "Educational-methodical complex of the discipline",

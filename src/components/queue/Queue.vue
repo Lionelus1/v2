@@ -21,7 +21,7 @@
       <Column v-bind:header="$t('queue.queueType')">
         <template #body="slotProps">
           <span v-if="slotProps.node.reservation === true">
-            Бронь
+            {{$t('queue.reservation')}}
           </span>
         </template>
       </Column>

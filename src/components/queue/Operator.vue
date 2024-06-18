@@ -1,4 +1,5 @@
 <template>
+  <ConfirmPopup group="came"></ConfirmPopup>
   <div>
     <div style="overflow: hidden;">
       <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em;"/>
@@ -16,7 +17,7 @@
               <Column field="email" :header="$t('contact.email')"></Column>
               <Column field="action" header="">
                 <template #body="{data}">
-                  <Button :label="$t('queue.came')" class="mb-1 p-button-success" @click="changeState(1,null, data.id)"></Button>
+                  <Button :label="$t('queue.came')" class="p-button-success" @click="confirm(1,null, data.id)"></Button>
                 </template>
               </Column>
             </DataTable>
@@ -244,6 +245,20 @@ export default {
               this.$store.dispatch("logLout");
             }
           });
+    },
+    confirm(num, num2, id){
+      this.$confirm.require({
+        target: event.currentTarget,
+        message: this.$t('common.confirmation'),
+        header: this.$t('common.confirm'),
+        group: 'came',
+        icon: 'pi pi-info-circle',
+        acceptClass: 'p-button-rounded p-button-success',
+        rejectClass: 'p-button-rounded p-button-danger',
+        accept: () => {
+          this.changeState(num,num2,id);
+        }
+      });
     },
     changeState(state, redirectID, serviceID) {
       var workSecond = this.service.info.second + (this.service.info.minute * 60) + (Number(this.service.info.hour * 3600));
