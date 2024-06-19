@@ -17,6 +17,7 @@ export default {
         ActsToExecution: "acts_to_execution",
         Accountant: "accountant",
         ScienceDirector: "science_director",
-        OnlineCourseAdministrator: "online_course_administrator"
+        OnlineCourseAdministrator: "online_course_administrator",
+        TemplateManager: "template_manager",
     }
 }

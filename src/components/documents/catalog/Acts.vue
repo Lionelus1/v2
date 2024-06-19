@@ -49,6 +49,16 @@
           </div>
         </template>
       </Column>
+      <Column :header="$t('contracts.columns.contractNumber')" style="min-width: 100px;">
+        <template #body="slotProps">
+          {{ getContractNumber(slotProps.data) }}
+        </template>
+      </Column>
+      <Column :header="$t('contracts.columns.contractDate')" style="min-width: 100px;">
+        <template #body="slotProps">
+          {{ getContractDate(slotProps.data) }}
+        </template>
+      </Column>
       <Column style="min-width: 50px;">
         <template #body="slotProps">
           <div class="flex flex-wrap">
@@ -63,11 +73,19 @@
     <div class="p-fluid" style="min-width: 320px;">
       <div class="field">
         <label>{{ $t('contracts.filter.author') }}</label>
-        <FindUser v-model="filter.author" :max="1" :userType="3"></FindUser>
+        <FindUser v-model="tempFilter.author" :max="1" :userType="3"></FindUser>
+      </div>
+      <div class="field" >
+        <label>{{ $t('contracts.columns.regNumber') }}</label>
+        <InputText type="text" v-model="tempFilter.regNumber"/>
+      </div>
+      <div class="field">
+        <label>{{ $t('contracts.columns.regDate') }}</label>
+        <PrimeCalendar v-model="tempFilter.regDate" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
       </div>
       <div class="field">
         <label>{{ $t('contracts.filter.status') }}</label>
-        <Dropdown v-model="filter.status" :options="statuses" optionValue="id"
+        <Dropdown v-model="tempFilter.status" :options="statuses" optionValue="id"
                   class="p-column-filter" :showClear="true">
           <template #value="slotProps">
             <span v-if="slotProps.value" :class="'customer-badge status-' + statuses.find((e) => e.id === slotProps.value).value">
@@ -84,8 +102,16 @@
         </Dropdown>
       </div>
       <div class="field">
+        <label>{{ $t('contracts.filter.mnvo') }}</label>
+        <InputText type="text" v-model="tempFilter.mnvo"/>
+      </div>
+      <div class="field">
+        <label>{{ $t('contracts.filter.mnvoDate') }}</label>
+        <PrimeCalendar v-model="tempFilter.mnvoDate" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
+      </div>
+      <div class="field">
         <Button :label="$t('common.clear')" @click="clearFilter();toggle('filterOverlayPanel', $event);getActs()" class="mb-2 p-button-outlined"/>
-        <Button :label="$t('common.search')" @click="filtered = true;toggle('filterOverlayPanel', $event);getActs()" class="mt-2"/>
+        <Button :label="$t('common.search')" @click="saveFilter();toggle('filterOverlayPanel', $event);getActs()" class="mt-2"/>
       </div>
     </div>
   </OverlayPanel>
@@ -97,7 +123,7 @@
   </Sidebar>
 </template>
 <script>
-import { b64toBlob, findRole } from "@/config/config";
+import {b64toBlob, findRole, getHeader, smartEnuApi} from "@/config/config";
 import { getShortDateString, getLongDateString } from "@/helpers/helper";
 import Enum from "@/enum/docstates/index";
 import RolesEnum from "@/enum/roleControls/index";
@@ -142,18 +168,27 @@ export default {
       rows: 10,
       actionsNode: {},
       statuses: [Enum.StatusesArray.StatusCreated, Enum.StatusesArray.StatusInapproval, Enum.StatusesArray.StatusApproved],
+
+      filtered: false,
       filter: {
         applied: false,
-        status: null,
         author: [],
-        createdFrom: null,
-        createdTo: null,
-        sourceType: null,
-        template: null,
-        name: null,
-        folder: null,
+        regNumber: null,
+        regDate: null,
+        mnvo: null,
+        mnvoDate: null,
+        status: null,
       },
-      filtered: false,
+
+      tempFilter: {
+        applied: false,
+        author: [],
+        regNumber: null,
+        regDate: null,
+        mnvo: null,
+        mnvoDate: null,
+        status: null,
+      },
     }
   },
   created() {
@@ -233,8 +268,12 @@ export default {
         rows: this.rows,
         docType: this.Enum.DocType.ActCompletedWorks,
         filter: {
-          status: this.filter.status && this.filter.status.length > 0 ? this.filter.status : null,
           author: this.filter.author.length > 0 && this.filter.author[0] ? this.filter.author[0].userID : null,
+          regNumber: this.filter.regNumber && this.filter.regNumber.length > 0 ? this.filter.regNumber : null,
+          regDate: this.filter.regDate,
+          status: this.filter.status && this.filter.status.length > 0 ? this.filter.status : null,
+          mnvo: this.filter.mnvo && this.filter.mnvo.length > 0 ? this.filter.mnvo : null,
+          mnvoDate: this.filter.mnvoDate,
         },
       }).then(res => {
         this.documents = res.data.documents;
@@ -288,6 +327,41 @@ export default {
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
       })
+    },
+    downloadAttachments() {
+      let attachments = this.currentDocument.newParams.attachments.value;
+
+      if (attachments === null || attachments === undefined || attachments.length < 1) {
+        return
+      }
+
+      this.loading = true;
+
+      for (let i = 0; i < attachments.length; i++) {
+        fetch(`${smartEnuApi}/serve?path=${attachments[i].filepath}`, {
+          method: 'GET',
+          headers: getHeader(),
+        }).then(res => res.blob()).then(blob => {
+          var url = window.URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url;
+          a.download = attachments[i].filename;
+          document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
+          a.click();
+          a.remove();
+        }).catch(err => {
+          if (err.response && err.response.status == 401) {
+            this.$store.dispatch("logLout")
+          } else if (err.response && err.response.data && err.response.data.localized) {
+            this.showMessage('error', this.$t(err.response.data.localizedPath), null)
+          } else {
+            console.log(err)
+            this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
+          }
+        })
+      }
+
+      this.loading = false;
     },
     executed(data) {
       if (data.docHistory?.stateId !== this.Enum.APPROVED.ID) {
@@ -414,22 +488,47 @@ export default {
       });
     },
     toggle(ref, event) {
+      if (ref === 'filterOverlayPanel') {
+        this.tempFilter = JSON.parse(JSON.stringify(this.filter));
+        this.tempFilter.regDate = this.tempFilter.regDate ? new Date(this.tempFilter.regDate) : null;
+        this.tempFilter.mnvoDate = this.tempFilter.mnvoDate ? new Date(this.tempFilter.mnvoDate) : null;
+      }
+
       this.$refs[ref].toggle(event);
+    },
+    saveFilter() {
+      this.filter = JSON.parse(JSON.stringify(this.tempFilter));
+      this.filter.applied = true;
+      this.filtered = true;
     },
     clearFilter() {
       this.filter = {
         applied: false,
-        status: null,
         author: [],
-        createdFrom: null,
-        createdTo: null,
-        sourceType: null,
-        template: null,
-        name: null,
-        folder: null,
+        regNumber: null,
+        regDate: null,
+        mnvo: null,
+        mnvoDate: null,
+        status: null,
       };
       this.filtered = false;
     },
+    getContractNumber(contract) {
+      if (contract.newParams && contract.newParams.mnvo_agreement
+          && contract.newParams.mnvo_agreement.value) {
+        return contract.newParams.mnvo_agreement.value;
+      }
+
+      return "";
+    },
+    getContractDate(contract) {
+      if (contract.newParams && contract.newParams.mnvo
+          && contract.newParams.mnvo.value) {
+        return getShortDateString(contract.newParams.mnvo.value);
+      }
+
+      return "";
+    }
   },
   computed: {
     menu () {
@@ -448,6 +547,12 @@ export default {
           visible: this.findRole(null, RolesEnum.roles.Accountant) || this.findRole(null, RolesEnum.roles.MainAdministrator),
           command: () => {this.execute(this.currentDocument)},
         },
+        {
+          label: this.$t('contracts.statusGPC'),
+          icon: "fa-solid fa-file-waveform",
+          visible: this.findRole(null, RolesEnum.roles.MainAdministrator),
+          command: () => {this.$router.push('/documents/catalog/acts/status')},
+        },
       ]
     },
     actions () {
@@ -464,16 +569,24 @@ export default {
           command: () => {this.currentDocument = this.actionsNode; this.download()},
         },
         {
-          label: this.$t('common.delete'),
-          icon: "fa-solid fa-trash",
-          visible: (this.actionsNode.docHistory && this.actionsNode.docHistory?.stateId === Enum.CREATED.ID ||
-              this.actionsNode.docHistory?.stateId === Enum.REVISION.ID || this.actionsNode.docHistory?.stateId === Enum.INAPPROVAL.ID) &&
-              this.loginedUser.userID === this.actionsNode.creatorID,
-          command: () => {
-            this.currentDocument = this.actionsNode;
-            this.deleteFile()
-          },
-        }
+          label: this.$t('common.additionalInfo'),
+          icon: "fa-solid fa-file-arrow-down",
+          visible: this.actionsNode.docHistory && this.actionsNode.docHistory?.stateId === Enum.APPROVED.ID &&
+              this.actionsNode.newParams !== null && this.actionsNode.newParams.attachments !== null &&
+              this.actionsNode.newParams.attachments !== undefined,
+          command: () => {this.currentDocument = this.actionsNode; this.downloadAttachments()},
+        },
+        // {
+        //   label: this.$t('common.delete'),
+        //   icon: "fa-solid fa-trash",
+        //   visible: (this.actionsNode.docHistory && this.actionsNode.docHistory?.stateId === Enum.CREATED.ID ||
+        //       this.actionsNode.docHistory?.stateId === Enum.REVISION.ID || this.actionsNode.docHistory?.stateId === Enum.INAPPROVAL.ID) &&
+        //       this.loginedUser.userID === this.actionsNode.creatorID,
+        //   command: () => {
+        //     this.currentDocument = this.actionsNode;
+        //     this.deleteFile()
+        //   },
+        // }
       ]
     },
   }
@@ -485,13 +598,6 @@ export default {
   top: 0; bottom: 0; left: 0; right: 0;
   margin: auto;
   z-index: 1102;
-}
-.arrow-icon {
-  cursor: pointer;
-  font-size: 1.25rem;
-  margin-right: 1rem;
-  display: flex;
-  align-items: center;
 }
 .card {
   //flex-grow: 1;
