@@ -1,7 +1,6 @@
 <template>
   <div class="col-12">
     <TitleBlock :title="plan?.work_plan_name" :show-back-button="true"/>
-
     <div class="card" v-if="plan && planDoc && isRejected">
       <div class="p-fluid">
         <div class="field">
@@ -364,6 +363,9 @@ export default {
         },
         uploadAdditionalFile: {
           state: false
+        },
+        showMastersEventType: {
+          state: false
         }
       },
       planApprovalStage: null,
@@ -372,7 +374,8 @@ export default {
       service: new DocService(),
       DocState: DocState,
       filtered: false,
-      stages: []
+      stages: [],
+      mastersPlanEventType: null
     }
   },
   created() {
@@ -1163,8 +1166,11 @@ export default {
           icon: 'pi pi-plus',
           visible: (this.isPlanCreator || this.isEventsNull) && !this.isFinish,
           color: 'blue',
-          command: () => {
-            this.showDialog(this.dialog.add)
+          dropdown: this.plan?.plan_type?.code == "masters" ? ["workPlan.mastersThesisInfo", "workPlan.mastersThesisGeneralPlan"] : null,
+          command: (eventType) => {
+              this.mastersPlanEventType = eventType
+              this.plan = {...this.plan, ...{event_type: eventType}}
+              this.showDialog(this.dialog.add)
           }
         },
         {

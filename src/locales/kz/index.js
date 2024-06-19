@@ -1288,7 +1288,10 @@ export default {
         rejectionMessage: "Бас тарту туралы хабарлама",
         summaryDepartment: "Жинақтаушы құрылымдық бөлім",
         warnAddingSummaryUser: "«Жинақтаушы құрылымдық бөлім» өрісінде таңдалған қолданушыны «Жинақтаушы/Растау» өрісіне қоса алмайсыз.",
-        topicOfMastersThesis: "Магистрлік диссертация тақырыбы"
+        topicOfMastersThesis: "Магистрлік диссертация тақырыбы",
+        mastersThesisInfo: "Магистрлік диссертация туралы мәлімет",
+        mastersThesisGeneralPlan: "Магистрлік диссертациямен жұмыс істеудің жалпы жоспары",
+        content: "Мазмұны"
     },
     educomplex: {
         title: "Пәннің оқу-әдістемелік кешені",

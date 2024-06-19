@@ -2,7 +2,7 @@
   <Dialog :header="$t('workPlan.addEvent')" v-model:visible="showWorkPlanEventModal" :style="{width: '600px'}" @hide="closeBasic" :close-on-escape="true">
     <div class="p-fluid">
       <div class="field">
-        <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('workPlan.resultIndicator') : $t('workPlan.eventName') }}</label>
+        <label>{{ plan?.plan_type?.code === Enum.WorkPlanTypes.Oper ? $t('workPlan.resultIndicator') : $t('workPlan.eventName') }}</label>
         <InputText v-model="event_name" />
         <small class="p-error" v-if="submitted && formValid.event_name">{{ $t('workPlan.errors.eventNameError') }}</small>
       </div>
@@ -32,7 +32,8 @@
         <!-- <small class="p-error" v-if="submitted && formValid.summaryUser">{{ $t("common.requiredField") }}</small> -->
         <small class="p-error" v-if="submitted && formValid.summaryUser">{{ $t('workPlan.errors.approvalUserError') }}</small>
       </div>
-      <div class="field" v-if="plan && plan.plan_type && plan.plan_type.code !== Enum.WorkPlanTypes.Science">
+
+      <div class="field" v-if="plan?.plan_type?.code !== (Enum.WorkPlanTypes.Science && Enum.WorkPlanTypes.Masters)">
         <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('workPlan.summary') : $t('workPlan.approvalUsers') }}</label>
         <FindUser v-model="selectedUsers" :editMode="true" :user-type="3"></FindUser>
         <small class="p-error" v-if="submitted && formValid.users">{{ $t('workPlan.errors.approvalUserError') }}</small>
@@ -57,7 +58,7 @@
     <div class="field" v-if="plan && plan.plan_type && plan.plan_type.code === Enum.WorkPlanTypes.Science">
       <Button :label="$t('common.add')" icon="fa-solid fa-add" class="p-button-sm p-button-outlined px-5" @click="addNewUser" />
     </div>
-    <div class="p-fluid">
+    <div class="p-fluid" v-if="plan?.plan_type?.code !== Enum.WorkPlanTypes.Masters">
       <div class="field" v-if="plan && plan.plan_type.code !== Enum.WorkPlanTypes.Science && !parentData || (parentData && parentData.quarter === 5)">
         <label>{{ $t('workPlan.quarter') }}</label>
         <Dropdown v-model="quarter" :options="quarters" optionLabel="name" optionValue="id" :placeholder="$t('common.select')" />
@@ -67,11 +68,31 @@
         <label>{{ $t('common.suppDocs') }}</label>
         <Textarea v-model="supporting_docs" rows="3" style="resize: vertical" />
       </div>
-      <div class="field">
+      <div class="field" v-if="plan?.plan_type?.code !== Enum.WorkPlanTypes.Masters">
         <label>{{ isOperPlan ? $t('common.additionalInfo') : $t('common.result') }}</label>
         <Textarea v-model="result" rows="3" style="resize: vertical"/>
       </div>
     </div>
+
+    <!-- mastersplan -->
+    <div class="p-fluid" v-if="plan?.plan_type?.code === Enum.WorkPlanTypes.Masters">
+      <div class="field">
+        <label>{{$t("workPlan.content")}}</label>
+        <Textarea v-model="result" rows="3" style="resize: vertical"/>
+      </div>
+      <div class="field" v-if="plan?.event_type === 1">
+        <label>{{$t("common.startDate")}}</label>
+        <PrimeCalendar dateFormat="dd.mm.yy" showIcon
+                   :showButtonBar="true"></PrimeCalendar>
+      </div>
+      <div class="field" v-if="plan?.event_type === 1">
+        <label>{{$t("common.endDate")}}</label>
+        <PrimeCalendar  dateFormat="dd.mm.yy" showIcon
+                   :showButtonBar="true"></PrimeCalendar>
+      </div>
+    </div>
+    <!-- mastersplan -->
+
     <template #footer>
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
               @click="closeBasic"/>
@@ -92,6 +113,7 @@ export default {
   props: ['visible', 'data', 'isMain', 'items', 'planData'],
   components: {RolesByName},
   emits: ['hide'],
+ 
   data() {
     return {
       formData: {},
@@ -152,7 +174,9 @@ export default {
       
     }
   },
+
   mounted() {
+   
     if (this.data)
       this.parentData = this.data;
     if (this.parentData) {

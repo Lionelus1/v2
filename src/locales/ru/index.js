@@ -1277,7 +1277,10 @@ export default {
         rejectionMessage: "Сообщение о отказе",
         summaryDepartment: "Сводящее структурное подразделение",
         warnAddingSummaryUser: "Вы не можете добавить пользователя, выбранного в поле «Свод структурный отдел», в поле «Свод/Подтверждение».",
-        topicOfMastersThesis: "Тема магистерской диссертации"
+        topicOfMastersThesis: "Тема магистерской диссертации",
+        mastersThesisInfo: "Информация о магистерской диссертации",
+        mastersThesisGeneralPlan: "Общий план работы над магистерской диссертацией",
+        content: "Содержание"
     },
     educomplex: {
         title: "Учебно-методический комплекс дисциплины",
