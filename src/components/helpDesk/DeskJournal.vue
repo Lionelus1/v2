@@ -389,7 +389,7 @@ const mainMenu = computed(() => [
 ]);
 var user = {};
 onMounted(() => {
-    console.log("$i18n.locale:", useI18n().locale.value);
+    console.log("getUser:", getUser());
     getTicket();
     getCategory();
     requstLocal();

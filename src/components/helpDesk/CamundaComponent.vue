@@ -195,24 +195,13 @@ export default {
       approving: false,
       currentUser: null,
       isComponentsInitialized: false,
+      ALIAS: {}
     };
   },
   mounted() {
-    // console.log("this.components:", this.components);
-    console.log("user:", JSON.parse(localStorage.getItem("loginedUser")));
-    console.log("GET.USER:", getUser());
+    this.initAlias()
     this.currentUser = getUser();
-    console.log("components:", this.components);
-    // for (var i = 0; i < components.value.length; i++) {
-    //   components.value[i].value[components.value[i].key] =
-    //     variables[components.value[i].key];
-    //   console.log(
-    //     "variables[components.value[i]]:",
-    //     variables[components.value[i].key]
-    //   );
-    //   console.log("components.value[i]: ", components.value[i]);
-    //   console.log("components.value[i].key: ", components.value[i].key);
-    // }
+    console.log("this.currentUser:", this.currentUser);
     if (
       this.components[0] &&
       this.components[0].properties &&
@@ -259,15 +248,29 @@ export default {
       this.$emit("finishStep", approval);
     },
     accessProperty(data, key) {
+      if (key == "fullName" && this.$i18n.locale == "en") {
+        return `${data['firstnameEn']} ${data["lastnameEn"]} ${data['thirdnameEn']}`.trim()
+      }
+      if (key in this.ALIAS[this.$i18n.locale] && this.ALIAS[this.$i18n.locale][key]) {
+        key = this.ALIAS[this.$i18n.locale][key];
+      }
       // Check if the key contains a dot
       if (key.includes(".")) {
         // Split the string into parts around the dot
         const parts = key.split(".");
         // Access nested properties based on parts
-        return parts.reduce((acc, part) => acc && acc[part], data);
+        const a = parts.reduce((acc, part) => acc && acc[part], data);
+        return a;
       } else {
         // Access directly if no dot is present
         return data[key];
+      }
+    },
+    initAlias() {
+      this.ALIAS = {
+        "en": { "mainPosition.department.parent.name": "mainPosition.department.parent.nameEn" },
+        "kz": { "mainPosition.department.parent.name": "mainPosition.department.parent.nameKz" },
+        "ru": { "mainPosition.department.parent.name": "mainPosition.department.parent.name" }
       }
     },
     initStages() {

@@ -311,6 +311,12 @@ const saveDoc = async () => {
     i < camundaServiceInstance.currentSchema.components.length;
     i++
   ) {
+    if (camundaServiceInstance.currentSchema.components[i].properties && 'selects' in camundaServiceInstance.currentSchema.components[i].properties && !("key" in camundaServiceInstance.currentSchema.components[i])) {
+      camundaServiceInstance.currentSchema.components[i].key = camundaServiceInstance.currentSchema.components[i].properties.selects
+    }
+    if (camundaServiceInstance.currentSchema.components[i].properties && `validate` in camundaServiceInstance.currentSchema.components[i].properties && camundaServiceInstance.currentSchema.components[i].properties.validate) {
+      camundaServiceInstance.currentSchema.components[i].validate = { required: true }
+    }
     console.log("********************", i);
     console.log("camundaServiceInstance.currentSchema.components[i]:", camundaServiceInstance.currentSchema.components[i]);
     console.log(
