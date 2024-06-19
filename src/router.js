@@ -539,7 +539,12 @@ const routes = [
                 name: '/queueReport',
                 component: load('queue/QueueReport'),
                 beforeEnter: ifAuthenticated,
-
+            },
+            {
+                path: '/queue/mode/:id',
+                name: '/queueMode',
+                component: load('queue/QueueMode'),
+                beforeEnter: ifAuthenticated,
             },
             {
                 path: '/reception',
