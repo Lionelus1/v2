@@ -268,9 +268,9 @@ export default {
     },
     initAlias() {
       this.ALIAS = {
-        "en": { "mainPosition.department.parent.name": "mainPosition.department.parent.nameEn" },
-        "kz": { "mainPosition.department.parent.name": "mainPosition.department.parent.nameKz" },
-        "ru": { "mainPosition.department.parent.name": "mainPosition.department.parent.name" }
+        "en": { "mainPosition.department.parent.name": "mainPosition.department.parent.nameEn", "mainPosition.department.cafedra.name": "mainPosition.department.cafedra.nameEn" },
+        "kz": { "mainPosition.department.parent.name": "mainPosition.department.parent.nameKz", "mainPosition.department.cafedra.name": "mainPosition.department.cafedra.nameKz" },
+        "ru": { "mainPosition.department.parent.name": "mainPosition.department.parent.name", "mainPosition.department.cafedra.name": "mainPosition.department.cafedra.name" }
       }
     },
     initStages() {
