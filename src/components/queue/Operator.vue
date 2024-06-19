@@ -12,6 +12,7 @@
             <DataTable :value="timesList" tableStyle="min-width: 50rem">
               <template #empty> {{ $t('common.noData') }}</template>
               <Column field="revision_time" :header="$t('queue.time')"></Column>
+              <Column field="reservision_number" :header="$t('queue.number')"></Column>
               <Column field="full_name" :header="$t('common.fullName')"></Column>
               <Column field="phone_number" :header="$t('contact.phone')"></Column>
               <Column field="email" :header="$t('contact.email')"></Column>

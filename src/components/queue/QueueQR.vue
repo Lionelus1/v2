@@ -39,7 +39,12 @@
         </Button>
       </template>
       <template v-if="reservation">
-        <Dropdown @change="changeQueues" v-model="selectedQueue" :options="queues" option-label="queueNamekz" :placeholder="$t('common.select')"
+        <Dropdown @change="changeQueues" v-model="selectedQueue" :options="queues"
+                  :option-label="$i18n.locale === 'kz'
+        ? 'queueNamekz'
+        : $i18n.locale === 'ru'
+        ? 'queueNameru'
+        : 'queueNameen'" :placeholder="$t('common.select')"
                   class="p-inputtext-lg w-full mb-4"/>
         <Dropdown v-if="selectDayBool" @change="changeDay" v-model="selectedDay" :options="daysList" :option-label="formatDay" :placeholder="$t('queue.day')"
                   class="p-inputtext-lg w-full mb-4"/>
