@@ -73,11 +73,19 @@
     <div class="p-fluid" style="min-width: 320px;">
       <div class="field">
         <label>{{ $t('contracts.filter.author') }}</label>
-        <FindUser v-model="filter.author" :max="1" :userType="3"></FindUser>
+        <FindUser v-model="tempFilter.author" :max="1" :userType="3"></FindUser>
+      </div>
+      <div class="field" >
+        <label>{{ $t('contracts.columns.regNumber') }}</label>
+        <InputText type="text" v-model="tempFilter.regNumber"/>
+      </div>
+      <div class="field">
+        <label>{{ $t('contracts.columns.regDate') }}</label>
+        <PrimeCalendar v-model="tempFilter.regDate" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
       </div>
       <div class="field">
         <label>{{ $t('contracts.filter.status') }}</label>
-        <Dropdown v-model="filter.status" :options="statuses" optionValue="id"
+        <Dropdown v-model="tempFilter.status" :options="statuses" optionValue="id"
                   class="p-column-filter" :showClear="true">
           <template #value="slotProps">
             <span v-if="slotProps.value" :class="'customer-badge status-' + statuses.find((e) => e.id === slotProps.value).value">
@@ -94,8 +102,16 @@
         </Dropdown>
       </div>
       <div class="field">
+        <label>{{ $t('contracts.filter.mnvo') }}</label>
+        <InputText type="text" v-model="tempFilter.mnvo"/>
+      </div>
+      <div class="field">
+        <label>{{ $t('contracts.filter.mnvoDate') }}</label>
+        <PrimeCalendar v-model="tempFilter.mnvoDate" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
+      </div>
+      <div class="field">
         <Button :label="$t('common.clear')" @click="clearFilter();toggle('filterOverlayPanel', $event);getActs()" class="mb-2 p-button-outlined"/>
-        <Button :label="$t('common.search')" @click="filtered = true;toggle('filterOverlayPanel', $event);getActs()" class="mt-2"/>
+        <Button :label="$t('common.search')" @click="saveFilter();toggle('filterOverlayPanel', $event);getActs()" class="mt-2"/>
       </div>
     </div>
   </OverlayPanel>
@@ -152,18 +168,27 @@ export default {
       rows: 10,
       actionsNode: {},
       statuses: [Enum.StatusesArray.StatusCreated, Enum.StatusesArray.StatusInapproval, Enum.StatusesArray.StatusApproved],
+
+      filtered: false,
       filter: {
         applied: false,
-        status: null,
         author: [],
-        createdFrom: null,
-        createdTo: null,
-        sourceType: null,
-        template: null,
-        name: null,
-        folder: null,
+        regNumber: null,
+        regDate: null,
+        mnvo: null,
+        mnvoDate: null,
+        status: null,
       },
-      filtered: false,
+
+      tempFilter: {
+        applied: false,
+        author: [],
+        regNumber: null,
+        regDate: null,
+        mnvo: null,
+        mnvoDate: null,
+        status: null,
+      },
     }
   },
   created() {
@@ -243,8 +268,12 @@ export default {
         rows: this.rows,
         docType: this.Enum.DocType.ActCompletedWorks,
         filter: {
-          status: this.filter.status && this.filter.status.length > 0 ? this.filter.status : null,
           author: this.filter.author.length > 0 && this.filter.author[0] ? this.filter.author[0].userID : null,
+          regNumber: this.filter.regNumber && this.filter.regNumber.length > 0 ? this.filter.regNumber : null,
+          regDate: this.filter.regDate,
+          status: this.filter.status && this.filter.status.length > 0 ? this.filter.status : null,
+          mnvo: this.filter.mnvo && this.filter.mnvo.length > 0 ? this.filter.mnvo : null,
+          mnvoDate: this.filter.mnvoDate,
         },
       }).then(res => {
         this.documents = res.data.documents;
@@ -459,34 +488,43 @@ export default {
       });
     },
     toggle(ref, event) {
+      if (ref === 'filterOverlayPanel') {
+        this.tempFilter = JSON.parse(JSON.stringify(this.filter));
+        this.tempFilter.regDate = this.tempFilter.regDate ? new Date(this.tempFilter.regDate) : null;
+        this.tempFilter.mnvoDate = this.tempFilter.mnvoDate ? new Date(this.tempFilter.mnvoDate) : null;
+      }
+
       this.$refs[ref].toggle(event);
+    },
+    saveFilter() {
+      this.filter = JSON.parse(JSON.stringify(this.tempFilter));
+      this.filter.applied = true;
+      this.filtered = true;
     },
     clearFilter() {
       this.filter = {
         applied: false,
-        status: null,
         author: [],
-        createdFrom: null,
-        createdTo: null,
-        sourceType: null,
-        template: null,
-        name: null,
-        folder: null,
+        regNumber: null,
+        regDate: null,
+        mnvo: null,
+        mnvoDate: null,
+        status: null,
       };
       this.filtered = false;
     },
     getContractNumber(contract) {
-      if (contract.newParams && contract.newParams.parent_registration_number
-          && contract.newParams.parent_registration_number.value) {
-        return contract.newParams.parent_registration_number.value;
+      if (contract.newParams && contract.newParams.mnvo_agreement
+          && contract.newParams.mnvo_agreement.value) {
+        return contract.newParams.mnvo_agreement.value;
       }
 
       return "";
     },
     getContractDate(contract) {
-      if (contract.newParams && contract.newParams.parent_registration_date
-          && contract.newParams.parent_registration_date.value) {
-        return getShortDateString(contract.newParams.parent_registration_date.value);
+      if (contract.newParams && contract.newParams.mnvo
+          && contract.newParams.mnvo.value) {
+        return getShortDateString(contract.newParams.mnvo.value);
       }
 
       return "";

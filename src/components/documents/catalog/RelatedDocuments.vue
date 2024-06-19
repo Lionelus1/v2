@@ -507,17 +507,17 @@ export default {
       })
     },
     getContractNumber(contract) {
-      if (contract.newParams && contract.newParams.parent_registration_number
-          && contract.newParams.parent_registration_number.value) {
-        return contract.newParams.parent_registration_number.value;
+      if (contract.newParams && contract.newParams.mnvo_agreement
+          && contract.newParams.mnvo_agreement.value) {
+        return contract.newParams.mnvo_agreement.value;
       }
 
       return "";
     },
     getContractDate(contract) {
-      if (contract.newParams && contract.newParams.parent_registration_date
-          && contract.newParams.parent_registration_date.value) {
-        return getShortDateString(contract.newParams.parent_registration_date.value);
+      if (contract.newParams && contract.newParams.mnvo
+          && contract.newParams.mnvo.value) {
+        return getShortDateString(contract.newParams.mnvo.value);
       }
 
       return "";

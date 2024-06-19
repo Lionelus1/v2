@@ -269,7 +269,7 @@ export default {
         rows: this.rows,
         type: 'default',
         filter: {
-          regNumber: this.filter.regNumber,
+          regNumber: this.filter.regNumber && this.filter.regNumber.length > 0 ? this.filter.regNumber : null,
           regDate: this.filter.regDate,
           contragent: this.filter.contragent.length > 0 && this.filter.contragent[0] ? this.filter.contragent[0].userID : null,
           executorWorkPlace: this.filter.executorWorkPlace,
@@ -277,7 +277,7 @@ export default {
           irn: this.filter.irn,
           theme: this.filter.theme,
           sciadvisor: this.filter.sciadvisor.length > 0 && this.filter.sciadvisor[0] ? this.filter.sciadvisor[0].userID : null,
-          mnvo: this.filter.mnvo,
+          mnvo: this.filter.mnvo && this.filter.mnvo.length > 0 ? this.filter.mnvo : null,
           mnvoDate: this.filter.mnvoDate,
           contractSum: this.filter.contractSum,
         },
