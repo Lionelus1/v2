@@ -29,7 +29,7 @@
           <div class="p-fluid md:col-6" v-if="'text' === param.name">
 
             <template v-if="'publicationCategory' === param.description">
-              <Dropdown v-model="param.value" :options="publicationCategories" class="w-full" @change="input" editable
+              <Dropdown v-model="param.value" :options="publicationCategories" class="w-full" @change="input"
                         :option-label="publicationCategoriesLabel" :option-value="publicationCategoriesLabel"
                         :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID && scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)">
               </Dropdown>
@@ -209,7 +209,7 @@ export default {
 
       editionTypes: ['digital', 'printed'],
       koksnvoEditions: [],
-      publicationCategories: ['beforeMastersThesis', 'afterMastersThesis'],
+      publicationCategories: ['beforeMastersThesis', 'afterMastersThesis', 'afterScientificWorks', 'others'],
     }
   },
   mounted() {

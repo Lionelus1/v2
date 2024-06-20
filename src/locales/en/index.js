@@ -1746,6 +1746,8 @@ export default {
         publicationCategories: {
             beforeMastersThesis: "Scientific works published before the defense of the master's thesis",
             afterMastersThesis: "Scientific works published after the defense of the master's thesis",
+            afterScientificWorks: "Scientific works published after obtaining the academic title of Associate Professor (Docent) or Professor",
+            others: "Others"
         },
         buttons: {
             card: "Card",
