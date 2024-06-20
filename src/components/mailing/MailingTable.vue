@@ -206,15 +206,11 @@ export default {
         this.categories = response.data;
         this.categories = this.categories.reverse();
       }).catch((error) => {
-        if (error.response.status == 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: this.$t("smartenu.loadAllCategoriesError") + ":\n" + error,
-            life: 3000,
-          });
-        }
+        this.$toast.add({
+          severity: "error",
+          summary: this.$t("smartenu.loadAllCategoriesError") + ":\n" + error,
+          life: 3000,
+        });
       });
     },
 
@@ -243,15 +239,11 @@ export default {
         this.loading = false;
       }).catch((error) => {
         this.loading = false;
-        if (error && error.response.status == 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: this.$t("smartenu.loadAllNewsError") + ":\n" + error,
-            life: 3000,
-          });
-        }
+        this.$toast.add({
+          severity: "error",
+          summary: this.$t("smartenu.loadAllNewsError") + ":\n" + error,
+          life: 3000,
+        });
       });
     },
     getAllMailing(data) {
@@ -273,15 +265,11 @@ export default {
         this.loading = false;
       }).catch((error) => {
         this.loading = false;
-        if (error && error.response.status == 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: this.$t("smartenu.loadAllNewsError") + ":\n" + error,
-            life: 3000,
-          });
-        }
+        this.$toast.add({
+          severity: "error",
+          summary: this.$t("smartenu.loadAllNewsError") + ":\n" + error,
+          life: 3000,
+        });
       });
     },
     /**
@@ -293,15 +281,11 @@ export default {
           this.getAllNews();
         }
       }).catch((error) => {
-        if (error.response.status == 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: this.$t("smartenu.delNewsError") + ":\n" + error,
-            life: 3000,
-          });
-        }
+        this.$toast.add({
+          severity: "error",
+          summary: this.$t("smartenu.delNewsError") + ":\n" + error,
+          life: 3000,
+        });
       });
       this.deleteVisible = false;
       this.newsData = {};
@@ -411,15 +395,11 @@ export default {
           this.getAllNews();
         }
       }).catch((error) => {
-        if (error.response.status == 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: this.$t("smartenu.saveNewsError") + ":\n" + error,
-            life: 3000,
-          });
-        }
+        this.$toast.add({
+          severity: "error",
+          summary: this.$t("smartenu.saveNewsError") + ":\n" + error,
+          life: 3000,
+        });
       });
     },
 
@@ -438,15 +418,11 @@ export default {
           this.getAllNews();
         }
       }).catch((error) => {
-        if (error.response.status == 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: this.$t("smartenu.saveNewsError") + ":\n" + error,
-            life: 3000,
-          });
-        }
+        this.$toast.add({
+          severity: "error",
+          summary: this.$t("smartenu.saveNewsError") + ":\n" + error,
+          life: 3000,
+        });
       });
     },
 
@@ -491,29 +467,29 @@ export default {
      * @returns {[]}
      */
     createCatTree: function (id, key) {
-      let array = [];
-      let grandparents = this.categories.filter(
-          (category) => category.parentId === id
-      );
-      for (let i = 0; i < grandparents.length; i++) {
-        this.catTreeElementsList.push({
-          key: key + i,
-          data: grandparents[i],
-        });
-        array.push({
-          key: key + i,
-          label:
-              this.$i18n.locale === "kz"
-                  ? grandparents[i].nameKz
-                  : this.$i18n.locale === "ru"
-                      ? grandparents[i].nameRu
-                      : grandparents[i].nameEn,
-          data: grandparents[i],
-          children: this.createCatTree(grandparents[i].id, key + i + "-"),
-        });
-      }
-      return array;
-    },
+        let array = [];
+        let grandparents = this.categories.filter(
+            (category) => category.parentId === id
+        );
+        for (let i = 0; i < grandparents.length; i++) {
+          this.catTreeElementsList.push({
+            key: key + i,
+            data: grandparents[i],
+          });
+          array.push({
+            key: key + i,
+            label:
+                this.$i18n.locale === "kz"
+                    ? grandparents[i].nameKz
+                    : this.$i18n.locale === "ru"
+                        ? grandparents[i].nameRu
+                        : grandparents[i].nameEn,
+            data: grandparents[i],
+            children: this.createCatTree(grandparents[i].id, key + i + "-"),
+          });
+        }
+        return array;
+      },
     getRoles() {
       this.roles.isAdmin = this.findRole(null, "news_administrator");
       this.roles.isPublisher = this.findRole(null, "news_publisher");

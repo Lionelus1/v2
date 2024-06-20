@@ -187,32 +187,38 @@ export default {
     mapCategoryIdsToObjects(ids) {
       return ids.map(id => categories.find(category => category.id === id));
     },
-    handleEditorClick() {
-      if (!this.isDefaultTextRemoved) {
-        // Сохраняем текущую позицию курсора
-        const selection = window.getSelection();
-        if (selection.rangeCount > 0) {
-          this.savedRange = selection.getRangeAt(0);
-        }
+    handleEditorClick(event) {
+      // Сохраняем текущую позицию курсора
+      const selection = window.getSelection();
+      if (selection.rangeCount > 0) {
+        this.savedRange = selection.getRangeAt(0);
+      }
 
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(this.templateContent, 'text/html');
-        const mainContent = doc.querySelector('p:nth-of-type(2)'); // выбираем второй параграф как основной текст
-        if (mainContent) {
-          mainContent.innerHTML = '';
+      // Создание DOMParser для обработки содержимого шаблона
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(this.templateContent, 'text/html');
+
+      // Определяем элемент, по которому кликнули
+      const clickedElement = event.target;
+      const clickedId = clickedElement.id;
+
+      // Проверка и очистка содержимого в зависимости от id
+      if (clickedId === 'main-content' || clickedId === 'title') {
+        const element = doc.getElementById(clickedId);
+        if (element) {
+          element.innerHTML = '';
           this.templateContent = doc.documentElement.outerHTML;
 
           if (this.savedRange) {
             const range = document.createRange();
-            range.setStart(mainContent, 0);
-            range.setEnd(mainContent, 0);
+            range.setStart(element, 0);
+            range.setEnd(element, 0);
             selection.removeAllRanges();
             selection.addRange(range);
           }
         }
-        this.isDefaultTextRemoved = true;
       }
-    }
+    },
   },
   mounted() {
     this.selectedCategories = JSON.parse(this.$route.params.selectedCategories || '[]');
