@@ -15,7 +15,7 @@
           <div style="margin-bottom: 10px; width: 100px" v-if="status != undefined" :class="'mb-10 customer-badge status-' + (status ?? 'created')">
             {{ getDocStatus(status ?? "created") }}
           </div>
-          <CamundaComponent :components="components" :disabled="status != undefined && status == `inapproval`" style="margin-top: 10px">
+          <CamundaComponent :components="components" :disabled="status != undefined && isFormDisabled()" style="margin-top: 10px">
           </CamundaComponent>
         </div>
 
@@ -54,7 +54,7 @@
         "
       /> -->
     </TabPanel>
-    <TabPanel :header="t('common.show')" :disabled="status == `created` || loading">
+    <TabPanel :header="t('common.show')" :disabled="status == undefined || status == `created` || loading">
       <div class="flex-grow-1 flex flex-row align-items-stretch">
         <embed :src="pdf" style="width: 100%; height: 100vh" v-if="pdf" type="application/pdf" />
       </div>
@@ -417,7 +417,7 @@ const menu = computed(() => [
   {
     label: t("common.save"),
     icon: "pi pi-fw pi-save",
-    disabled: status.value == "inapproval" || loading.value,
+    disabled: isFormDisabled() || loading.value,
     // disabled: isAdmin.value
     //   ? true
     //   : !isUserDataVaild() ||
@@ -466,6 +466,12 @@ const menu = computed(() => [
     command: () => open("documentInfoSidebar"),
   },
 ]);
+
+const isFormDisabled = () => {
+  console.log("here:", status.value in ["inapproval", "approved"]);
+  console.log("status.value:", status.value);
+  return ["inapproval", "approved"].includes(status.value);
+}
 
 const revision = () => {
   loading.value = true;
@@ -886,14 +892,12 @@ const initForm = async (
   console.log("variables:", variables);
   console.log("*****************");
   for (var i = 0; i < components.value.length; i++) {
+    if (components.value[i].type == "datetime") {
+      components.value[i].value[components.value[i].key] = new Date(variables[components.value[i].key])
+      continue;
+    }
     components.value[i].value[components.value[i].key] =
       variables[components.value[i].key];
-    console.log(
-      "variables[components.value[i]]:",
-      variables[components.value[i].key]
-    );
-    console.log("components.value[i]: ", components.value[i]);
-    console.log("components.value[i].key: ", components.value[i].key);
   }
   console.log("*****************");
 };

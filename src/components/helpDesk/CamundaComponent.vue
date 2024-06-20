@@ -92,6 +92,7 @@
         <PrimeCalendar
           id="calendar-timeonly"
           :disabled="disabled"
+          dateFormat="dd.mm.yy"
           :placeholder="$t('common.select')"
           v-model="component.value[component.key]"
           timeOnly
@@ -158,6 +159,7 @@
           <template #body="{ data }">
             <Checkbox
               v-model="data.checked"
+              :disabled="disabled"
               :binary="true"
               @change="
                 checkBoxSelect(data, component, component.properties.selects)
