@@ -35,10 +35,10 @@ onMounted(async () => {
 
 const categories = [
   { id: 1, nameen: 'Контрагенты', namekz: 'білім алушы', nameru: 'Контрагенты' },
-  { id: 2, nameen: 'personal', namekz: 'білім алушы', nameru: 'Сотрудники' },
-  { id: 3, nameen: 'individual_entrepreneur', namekz: 'білім алушы', nameru: 'Частные лица' },
-  { id: 4, nameen: 'student', namekz: 'білім алушы', nameru: 'Обучающиеся' },
-  { id: 6, nameen: 'others', namekz: 'білім алушы', nameru: 'Другое' },
+  { id: 19, nameen: 'personal', namekz: 'білім алушы', nameru: 'Сотрудники' },
+  { id: 57, nameen: 'individual_entrepreneur', namekz: 'білім алушы', nameru: 'Частные лица' },
+  { id: 20, nameen: 'student', namekz: 'білім алушы', nameru: 'Обучающиеся' },
+  { id: 83, nameen: 'others', namekz: 'білім алушы', nameru: 'Другое' },
 ];
 
 const menu = computed(() => {
