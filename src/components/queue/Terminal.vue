@@ -141,8 +141,9 @@ export default {
           headers: getHeader(),
         })
       .then(response => {
+        const id = response.data.id
         if(queue){
-          this.getRegisterQueue(queue)
+          this.getRegisterQueue(queue,id)
         }
       })
       .catch((error) => {
@@ -158,11 +159,11 @@ export default {
         }
     });
     },
-    getRegisterQueue(queue) {
+    getRegisterQueue(queue,id) {
       this.selectedQueue = queue
       this.loading = true
       var req = {
-        queueID: queue.key, lang: this.selectedlanguage.code
+        queueID: queue.key, lang: this.selectedlanguage.code, id: id
       }
       api
           .post("/queue/getRegisterService", req,  {
