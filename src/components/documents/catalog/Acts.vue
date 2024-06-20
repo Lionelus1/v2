@@ -519,12 +519,21 @@ export default {
         return contract.newParams.mnvo_agreement.value;
       }
 
+      if (contract.newParams && contract.newParams['workPlan.plancontractnumber'] &&
+          contract.newParams['workPlan.plancontractnumber']?.value) {
+        return contract.newParams['workPlan.plancontractnumber']?.value
+      }
+
       return "";
     },
     getContractDate(contract) {
       if (contract.newParams && contract.newParams.mnvo
           && contract.newParams.mnvo.value) {
         return getShortDateString(contract.newParams.mnvo.value);
+      }
+
+      if (contract.newParams && contract.newParams['workPlan.plancontractdate'] && contract.newParams['workPlan.plancontractdate']?.value) {
+        return getShortDateString(contract.newParams['workPlan.plancontractdate']?.value)
       }
 
       return "";
