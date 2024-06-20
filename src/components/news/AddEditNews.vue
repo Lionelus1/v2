@@ -315,7 +315,7 @@ export default {
       }
     },
     async insertNews() {
-      if (this.uploadedGalleryFiles) {
+      if (this.uploadedGalleryFiles)  {
         this.uploadedGalleryFiles.forEach(item => {
           this.newsData.files = this.newsData.files || [];
           this.newsData.files.push({file_id: item.id, file: item, is_gallery: item.is_gallery});
