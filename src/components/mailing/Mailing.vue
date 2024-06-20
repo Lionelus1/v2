@@ -12,9 +12,14 @@
       </Column>
       <Column field="categories" :header="$t('mailing.categories')">
         <template #body="slotProps">
-          <span v-for="role in slotProps.data.Roles" :key="role.id">{{ role.ru }}</span>
+          <span>{{ slotProps.data.Roles.map(role => role.ru).join(', ') }}</span>
         </template>
       </Column>
+<!--      <Column field="categories" :header="$t('mailing.categories')">-->
+<!--        <template #body="slotProps">-->
+<!--          <span v-for="role in slotProps.data.Roles" :key="role.id">{{ role.ru }}</span>-->
+<!--        </template>-->
+<!--      </Column>-->
       <Column field="author" :header="$t('mailing.author')">
         <template #body="slotProps">
           <span>
@@ -79,10 +84,6 @@ export default {
             this.loading = false;
           })
           .catch((err) => {
-            if (err.response.status == 401) {
-              this.$store.dispatch("logOut");
-            }
-
             this.$toast.add({
               severity: "error",
               detail: this.$t("roleControl.noResult"),
