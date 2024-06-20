@@ -38,7 +38,7 @@ const categories = [
   { id: 2, nameen: 'personal', namekz: 'білім алушы', nameru: 'Сотрудники' },
   { id: 3, nameen: 'individual_entrepreneur', namekz: 'білім алушы', nameru: 'Частные лица' },
   { id: 4, nameen: 'student', namekz: 'білім алушы', nameru: 'Обучающиеся' },
-  { id: 83, nameen: 'others', namekz: 'білім алушы', nameru: 'Другое' },
+  { id: 6, nameen: 'others', namekz: 'білім алушы', nameru: 'Другое' },
 ];
 
 const menu = computed(() => {

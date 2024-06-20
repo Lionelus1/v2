@@ -347,6 +347,13 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
+                path: '/deleteMailing/:id',
+                name: 'DeleteMailing',
+                component: load('mailing/DeleteMailing'),
+                props: true,
+                beforeEnter: ifAuthenticated,
+            },
+            {
                 path: '/news',
                 name: 'NewsComponent',
                 component: load('news/NewsComponent'),

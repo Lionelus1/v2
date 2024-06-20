@@ -6,11 +6,38 @@
         <TinyEditor v-model="templateContent" :height="300" @click="handleEditorClick" />
       </div>
     </div>
+    <div class="field">
+      <div class="grid">
+        <div class="col-12 md:col-5">
+          <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadMainImage($event)"
+                      :auto="true" v-bind:chooseLabel="$t('smartenu.chooseMainImage')" accept="image/*"/>
+        </div>
+      </div>
+      <div v-if="main_image_file">
+        <img :src="main_image_file_url" style="width: 50%; height: 50%"/>
+      </div>
+      <div v-else>
+        <img :src="imageUrl" style="width: 50%; height: 50%"/>
+      </div>
+    </div>
+    <div class="field">
+    <div class="grid">
+      <div class="col-12 md:col-3">
+        <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadFile($event)" :auto="true"
+                    v-bind:chooseLabel="this.$t('smartenu.chooseAdditionalFile')"/>
+      </div>
+      <div class="col-12 md:col-5">
+        <InlineMessage severity="info" show v-if="additionalFileName">
+          {{ this.$t("ncasigner.chosenFile", {fn: additionalFileName}) }}
+        </InlineMessage>
+      </div>
+    </div>
+    </div>
   </div>
 </template>
 
 <script>
-import { smartEnuApi } from "@/config/config";
+import {fileRoute, smartEnuApi} from "@/config/config";
 import { useToast } from "primevue/usetoast";
 import ToolbarMenu from "@/components/ToolbarMenu.vue";
 import { FileService } from "@/service/file.service";
@@ -27,6 +54,7 @@ export default {
   components: { ToolbarMenu },
   data() {
     return {
+      additionalFileId: 0,
       templateContent: '',
       selectedCategories: [],
       emails: [],
@@ -35,19 +63,47 @@ export default {
       toast: new useToast(),
       isDefaultTextRemoved: false,
       savedRange: null,
+      additionalFileName: '',
+      additional_file_path: '',
+      main_image_file: '',
+      main_image_file_url: '',
+      main_image_id: 0,
     };
   },
   methods: {
+    logMainImageFile() {
+      console.log('main_image_file:', this.main_image_file.value);
+    },
+    logImageUrl() {
+      console.log('imageUrl:', this.imageUrl.value);
+    },
     uploadMainImage(event) {
       const fd = new FormData();
       fd.append("files[]", event.files[0]);
       this.fileService.uploadFile(fd).then(res => {
         if (res.data) {
-          console.log(res);
+          this.main_image_file = res.data[0];
+          this.main_image_file_url = smartEnuApi + fileRoute + this.main_image_file.filepath
+          // this.main_image_file_url = smartEnuApi + fileRoute + '/general/files/76ecfed7-77c3-4114-a411-e9126f370a39.png'
+          this.main_image_id = this.main_image_file.id
         }
       }).catch(error => {
         this.$toast.add({ severity: "error", summary: error, life: 3000 });
       });
+    },
+    uploadFile(event) {
+      const fd = new FormData()
+      fd.append("files[]", event.files[0])
+      this.fileService.uploadFile(fd).then(res => {
+        if (res.data) {
+          const file = res.data[0]
+          this.additionalFileId = file.id;
+          this.additionalFileName = file.filename;
+          this.additional_file_path = smartEnuApi + fileRoute + file.filepath;
+        }
+      }).catch(error => {
+        this.$toast.add({severity: "error", summary: error, life: 3000});
+      })
     },
     saveDraft() {
       // Implement save draft logic
@@ -81,8 +137,16 @@ export default {
         description: this.templateContent,
         emails: processedEmails,
         filePath: null,
-        statusID: statusID
+        statusID: statusID,
+        mainImageID: this.main_image_id,
+        AdditionalFileID: this.additionalFileId,
+        MainImagePath: this.main_image_file_url,
+        AdditionalFilePath: this.additional_file_path,
       };
+
+      console.log(":::::::::::::::::::::::::::::::")
+      console.log(mailingData)
+      console.log(":::::::::::::::::::::::::::::::")
 
       fetch(`${smartEnuApi}/mailing`, {
         method: 'POST',

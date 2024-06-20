@@ -45,34 +45,33 @@
 
 <script setup>
 import api from "@/service/api";
-import {getHeader} from "@/config/config";
+import { getHeader } from "@/config/config";
 import ActionButton from "@/components/ActionButton.vue";
-import {computed, onMounted, ref} from "vue";
-import {useI18n} from "vue-i18n";
-const {t, locale} = useI18n()
+import { computed, onMounted, ref } from "vue";
+import { useI18n } from "vue-i18n";
+const { t } = useI18n();
 import { useToast } from "primevue/usetoast";
-import {useRouter} from "vue-router";
+import { useRouter } from "vue-router";
 
-const loading = ref(false)
+const loading = ref(false);
 const toast = useToast();
-const router = useRouter()
-const actionsNode = ref(null)
+const router = useRouter();
+const actionsNode = ref(null);
 const getParams = {
-      pageNum: 1,
-      itemsPerPage: 6,
-      statusId: 2,
-    }
-const mailingList = ref([])
+  pageNum: 1,
+  itemsPerPage: 6,
+  statusId: 2,
+};
+const mailingList = ref([]);
 const count = ref(0);
 
 onMounted(() => {
   initMailing();
 });
 
-
 const toggle = (node) => {
-  actionsNode.value = node
-}
+  actionsNode.value = node;
+};
 
 const getFullName = (senderJSON) => {
   try {
@@ -85,16 +84,15 @@ const getFullName = (senderJSON) => {
     console.error("Error parsing sender JSON:", error);
     return t("mailing.invalidSenderData");
   }
-}
+};
 
 const initMailing = () => {
   loading.value = true;
   api
       .post("/mailingList", getParams, {
-        headers: getHeader()
+        headers: getHeader(),
       })
       .then((res) => {
-
         if (res.data) {
           mailingList.value = res.data;
           count.value = res.data.NewCount;
@@ -119,37 +117,68 @@ const initMailing = () => {
 
         loading.value = false;
       });
-}
+};
 
 const editMailing = (data) => {
-  router.push({name: 'EditMailing', params: {
-    id: data.Notification.id, description: data.Notification.description, selectedCategories: data.Notification.categoryIds, docTemplateID: data.Notification.templateId,
-  }});
-}
+  router.push({ name: 'EditMailing', params: {
+      id: data.Notification.id, description: data.Notification.description, selectedCategories: data.Notification.categoryIds, docTemplateID: data.Notification.templateId,
+    } });
+};
+
+const deleteMailing = (data) => {
+  api
+      .post("/deleteMailingById", { mailingId: data.Notification.id }, {
+        headers: getHeader(),
+      })
+      .then((res) => {
+        console.log(res.data)
+        console.log("+++++++++++++++++++++++++++++++++++++++")
+        console.log(res.data.result)
+        if (res.data === 'success') {
+          toast.add({
+            severity: "success",
+            detail: t("mailing.deletedSuccessfully"),
+            life: 3000,
+          });
+          initMailing();
+        } else {
+          toast.add({
+            severity: "error",
+            detail: t("mailing.deleteFailed"),
+            life: 3000,
+          });
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        toast.add({
+          severity: "error",
+          detail: t("mailing.deleteFailed"),
+          life: 3000,
+        });
+      });
+};
 
 const buttons = computed(() => {
-      return [
-        {
-          label: t('common.edit'),
-          icon: 'fa-solid fa-pencil',
-          command: () => editMailing(actionsNode.value)
-        },
-        {
-          label: t('common.delete'),
-          icon: 'fa-solid fa-trash-can',
-          disabled: true,
-          command: () => {
-            alert('del')
-          }
-        },
-        {
-          label: t('User'),
-          visible: false,
-          icon: 'fa-solid fa-user',
-          command: () => {
-          }
-        },
-      ];
-    }
-)
+  return [
+    {
+      label: t('common.edit'),
+      icon: 'fa-solid fa-pencil',
+      command: () => editMailing(actionsNode.value)
+    },
+    {
+      label: t('common.delete'),
+      icon: 'fa-solid fa-trash-can',
+      disabled: false,
+      command: () => deleteMailing(actionsNode.value)
+    },
+    {
+      label: t('User'),
+      visible: false,
+      icon: 'fa-solid fa-user',
+      command: () => {
+      }
+    },
+  ];
+});
 </script>
