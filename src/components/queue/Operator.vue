@@ -351,6 +351,8 @@ export default {
                 e.full_name = e.last_name + ' ' + e.first_name
               });
               this.timesList = response.data
+            }else {
+              this.timesList = null
             }
           })
           .catch((error) => {
