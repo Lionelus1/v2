@@ -1255,6 +1255,7 @@ export default {
             request: 'Өтініш беру'
         },
         vacancies: "Вакансиялар",
+        archiveVacancies: "Архивтер",
         responsibilitiesLabel: "Функционалдық міндеттері",
         educationLabel: "Білімі",
         qualificationLabel: "Мамандығы бойынша біліктілігі",

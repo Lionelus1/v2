@@ -1,80 +1,138 @@
 <template>
   <div class="card">
-    <Toolbar class="mb-4">
-      <template #start>
-        <Button
-            v-if="view.modifier"
-            :label="$t('common.add')"
-            icon="pi pi-plus"
-            class="p-button-success mr-2"
-            v-on:click="add"
-        />
+    <!-- ОСНОВНАЯ ТАБЛИЦА ДАННЫХ -->
+    <DataTable :lazy="true"
+               :value="vacancies"
+               @page="onPage($event)"
+               :totalRecords="count"
+               :paginator="true"
+               paginatorTemplate="FirstPageLink
+                                  PrevPageLink
+                                  PageLinks
+                                  NextPageLink
+                                  LastPageLink
+                                  CurrentPageReport
+                                  RowsPerPageDropdown"
+               :rowsPerPageOptions="[10, 25, 50]"
+               :currentPageReportTemplate="$t('common.showingRecordsCount',
+                                                    { first: '{first}',
+                                                      last: '{last}',
+                                                      totalRecords: '{totalRecords}'
+                                                    })"
+               class="p-datatable-customers"
+               :rows="10"
+               dataKey="id"
+               :rowHover="true"
+               v-model:selection="vacancy"
+               selection-mode="single"
+               @row-select="select($event)"
+               :filters="filters"
+               :loading="loading"
+               filterDisplay="menu"
+               :showFilterMatchModes="false"
+               responsiveLayout="scroll"
+               @sort="onSort($event)">
+      <!--  HEADER -->
+      <template #header>
+        <div class="table-header flex flex-column md:flex-row justify-content-between">
+          <h4 class="mb-2 md:m-0 p-as-md-center">{{ $t("hr.vacancies") }}</h4>
+          <span class="p-input-icon-left">
+            <InputText type="search"
+                       v-model="lazyParams.searchText"
+                       :placeholder="$t('common.search')"
+                       @keyup.enter="getVacancies"
+                       @click="clearData"/>
+              <Button icon="pi pi-search" class="ml-1" @click="getVacancies"/>
+          </span>
+        </div>
       </template>
-      <template #end>
-        <Button
-            v-if="view.modifier && isCareerAdmin"
-            :label="$t('hr.report.title')"
-            icon="pi pi-list"
-            class="p-button-secondary mr-2"
-            @click="toggle"
-            aria:haspopup="true" aria-controls="overlay_panel"
-        />
-        <OverlayPanel ref="op" appendTo="body"
-                      :showCloseIcon="true"
-                      id="overlay_panel"
-                      style="width: 450px"
-                      :breakpoints="{'960px': '75vw'}">
-          <div class="col-12 md:col-12 p-fluid">
-            <div class="card">
-              <div class="field">
-                <label>{{ $t('common.startDate') }}</label>
-                <PrimeCalendar
-                    class="mt-2"
-                    :class="{'p-invalid': reportValidation.startDate}"
-                    v-model="report.startDate"
-                    :placeholder="$t('common.startDate')"
-                    dateFormat="dd.mm.yy"/>
-              </div>
-              <div class="field">
-                <label>{{ $t('common.endDate') }}</label>
-                <PrimeCalendar
-                    class="mt-2"
-                    :class="{'p-invalid': reportValidation.endDate}"
-                    v-model="report.endDate"
-                    :placeholder="$t('common.endDate')"
-                    dateFormat="dd.mm.yy"/>
-              </div>
-              <div class="field">
-                <div v-if="reportResponse" class="field">
-                  <Message :closable="false" severity="success">{{ $t('hr.report.success') }}</Message>
-                </div>
-              </div>
-              <div class="field">
-                <Button :label="$t('common.createReport')"
-                        icon="pi pi-history"
-                        :onclick="generateReport"/>
-              </div>
-              <div class="field">
-                <Button :label="$t('common.download')"
-                        :disabled="!reportResponse"
-                        icon="pi pi-history"
-                        class="p-button-warning"
-                        :onclick="downloadReport"/>
-              </div>
-            </div>
-          </div>
-        </OverlayPanel>
-      </template>
-    </Toolbar>
-    <TabView>
-      <TabPanel :header="$t('hr.vacancies')">
-        <ActualVacancies @select="select"/>
-      </TabPanel>
-      <TabPanel :header="$t('hr.archiveVacancies')">
-        <ArchiveVacancies @select="select"/>
-      </TabPanel>
-    </TabView>
-
+      <!-- EMPTY -->
+      <template #empty> {{ $t('common.noData') }}</template>
+      <!-- ON LOADING -->
+      <template #loading> {{ $t('common.loading') }}</template>
+      <Column>
+        <template #body="slotProps">
+          <Button icon="pi pi-users"
+                  class="p-button-info"
+                  v-if="slotProps.data.candidateRelation && view.modifier"
+                  @click="apply(slotProps.data)"/>
+        </template>
+      </Column>
+      <!-- NAME COLUMN -->
+      <Column :field="'name' + ($i18n.locale).charAt(0).toUpperCase() + ($i18n.locale).slice(1)"
+              v-bind:header="$t('common.nameIn')"
+              :sortable="true">
+        <template #body="slotProps">
+          <span>
+            {{
+              $i18n.locale === "kz" ? slotProps.data.nameKz : $i18n.locale === "ru"
+                  ? slotProps.data.nameRu : slotProps.data.nameEn
+            }}
+          </span>
+        </template>
+      </Column>
+      <Column field="org"
+              v-bind:header="$t('common.organizationName')"
+              :sortable="false">
+        <template #body="slotProps">
+          <span>
+            {{
+              $i18n.locale === "kz" ? slotProps.data.organization.name : $i18n.locale === "ru"
+                  ? slotProps.data.organization.nameru : slotProps.data.organization.name
+            }}
+          </span>
+        </template>
+      </Column>
+      <Column field="stp"
+              v-bind:header="$t('common.departmentNameLabel')"
+              :sortable="false">
+        <template #body="slotProps">
+          <span>
+            {{
+              $i18n.locale === "kz" ? slotProps.data.department.nameKz : $i18n.locale === "ru"
+                  ? slotProps.data.department.name : slotProps.data.department.nameEn
+            }}
+          </span>
+        </template>
+      </Column>
+      <!-- STATUS COLUMN -->
+      <Column :field=" $i18n.locale === 'kz' ? `history.status.nameKz` :
+                       $i18n.locale === 'ru' ? `history.status.nameRu` : `history.status.nameEn`"
+              v-bind:header="$t('common.status')"
+      >
+        <template #body="slotProps">
+          <span :class="'customer-badge status-' + slotProps.data.history.status.id">
+            {{
+              $i18n.locale === "kz"
+                  ? slotProps.data.history.status.nameKz
+                  : $i18n.locale === "ru"
+                      ? slotProps.data.history.status.nameRu
+                      : slotProps.data.history.status.nameEn
+            }}
+          </span>
+        </template>
+      </Column>
+      <Column field="date"
+              v-bind:header="$t('common.date')"
+              :sortable="false">
+        <template #body="slotProps">
+          <span>
+            {{
+              new Date(slotProps.data.history.modifyDate).toLocaleDateString()
+            }}
+          </span>
+        </template>
+      </Column>
+      <!-- BUTTON COLUMN -->
+      <Column>
+        <template #body="slotProps">
+          <Button v-if="view.modifier"
+                  icon="pi pi-times"
+                  class="p-button-danger"
+                  @click="openDelete(slotProps.data)"/>
+        </template>
+      </Column>
+    </DataTable>
     <!--  БОКОВАЯ ПАНЕЛЬ ДОБАВЛЕНИЯ И РЕДАКТИРОВАНИЯ ДАННЫХ  -->
     <Sidebar v-model:visible="isView"
              position="right"
@@ -128,15 +186,10 @@ import {getHeader, smartEnuApi} from "@/config/config";
 import AddVacancy from "./AddVacancy";
 import VacancyCandidateView from "./VacancyCandidateView";
 import VacancyService, {RIGHTS} from "./VacancyService";
-import ActualVacancies from "@/components/humanResources/vacancy/ActualVacancies.vue";
-import ArchiveVacancies from "@/components/humanResources/vacancy/ArchiveVacancies.vue";
 
 export default {
   name: "Vacancies",
-  components: {
-    ActualVacancies,
-    ArchiveVacancies,
-    AddVacancy},
+  components: {VacancyCandidateView, AddVacancy},
   data() {
     return {
       filters: {
@@ -153,7 +206,8 @@ export default {
         searchText: null,
         sortField: "",
         sortOrder: 0,
-        right: null
+        right: null,
+        isDeleted: false,
       },
       view: {
         candidates: false,
@@ -388,3 +442,18 @@ export default {
   },
 }
 </script>
+
+<style lang="scss" scoped>
+.customer-badge {
+  &.status-3 {
+    background: #feedaf;
+    color: #8a5340;
+  }
+
+  &.status-5 {
+    background: #ffd8b2;
+    color: #805b36;
+  }
+
+}
+</style>
