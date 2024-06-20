@@ -34,7 +34,7 @@
                         :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID && scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)">
               </Dropdown>
             </template>
-            <div v-else-if="param.value && param.description === 'link'" class="p-inputgroup p-input-filled">
+            <div v-else-if="!this.changed && param.value && param.description === 'link'" class="p-inputgroup p-input-filled">
               <Share :data="param.value" :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
                 scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)" :param="param.value && param.description === 'link'" :label="$t('ncasigner.copy')" @copy="onCopy()"/>
             </div>
