@@ -34,30 +34,30 @@
                         :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID && scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)">
               </Dropdown>
             </template>
-            <div v-else-if="!this.changed && param.value && param.description === 'link'" class="p-inputgroup p-input-filled">
-              <Share :data="param.value" :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
+            <div v-else-if="scienceWork.docHistory.stateId !== DocEnum.CREATED.ID && !this.changed && param.value && param.description === 'link'" class="p-inputgroup p-input-filled">
+              <Share  @click="input" :data="param.value" :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
                 scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)" :param="param.value && param.description === 'link'" :label="$t('ncasigner.copy')" @copy="onCopy()"/>
             </div>
             <div v-else class="p-inputgroup p-input-filled">
-              <InputText v-model="param.value" type="text" :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
+              <InputText @click="input" v-model="param.value" type="text" :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
                 scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)" :label="$t('ncasigner.copy')" @copy="onCopy()"/>
             </div>
           </div>
           <div class="p-fluid md:col-6" v-if="'number' === param.name">
-            <InputNumber v-model="param.value"  :minFractionDigits="0" :maxFractionDigits="2" :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
+            <InputNumber @change="input" v-model="param.value"  :minFractionDigits="0" :maxFractionDigits="2" :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
               scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)" @input="input"/>
           </div>
           <div class="p-fluid md:col-6" v-if="'date' === param.name">
-            <PrimeCalendar v-model="param.value" dateFormat="dd.mm.yy" :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
+            <PrimeCalendar @change="input" v-model="param.value" dateFormat="dd.mm.yy" :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
               scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)" @dateSelect="input"></PrimeCalendar>
           </div>
           <div class="p-fluid md:col-6" v-if="'persons' === param.name">
-            <FindUser searchMode="ldap" v-model="param.value" :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
+            <FindUser @change="input" searchMode="ldap" v-model="param.value" :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
               scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)" :userType="0" @input="input()" @remove="input()"></FindUser>
           </div>
           <div class="md:col-6" v-if="'options' === param.name">
             <template v-if="'editionType' === param.description">
-              <SelectButton v-model="param.value" :options="editionTypes" :allowEmpty="false" :unselectable="false" @change="input"
+              <SelectButton  v-model="param.value" :options="editionTypes" :allowEmpty="false" :unselectable="false" @change="input"
                 :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID && scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)">
                 <template #option="slotProps">
                   {{ $t('scienceWorks.editionTypes.' + slotProps.option) }}
