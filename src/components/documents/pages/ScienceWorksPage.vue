@@ -25,16 +25,22 @@
           <div class="p-fluid md:col-6 pb-0">
             <label>{{ $t('scienceWorks.labels.' + param.description) }}</label>
           </div>
+
           <div class="p-fluid md:col-6" v-if="'text' === param.name">
+
             <template v-if="'publicationCategory' === param.description">
               <Dropdown v-model="param.value" :options="publicationCategories" class="w-full" @change="input" editable
                         :option-label="publicationCategoriesLabel" :option-value="publicationCategoriesLabel"
                         :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID && scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)">
               </Dropdown>
             </template>
-            <div v-else class="p-inputgroup p-input-filled">
+            <div v-else-if="param.value && param.description === 'link'" class="p-inputgroup p-input-filled">
               <Share :data="param.value" :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
                 scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)" :param="param.value && param.description === 'link'" :label="$t('ncasigner.copy')" @copy="onCopy()"/>
+            </div>
+            <div v-else class="p-inputgroup p-input-filled">
+              <InputText v-model="param.value" type="text" :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
+                scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)" :label="$t('ncasigner.copy')" @copy="onCopy()"/>
             </div>
           </div>
           <div class="p-fluid md:col-6" v-if="'number' === param.name">
@@ -404,7 +410,7 @@ export default {
       }
 
       this.loading = true;
-
+      console.log(this.contractParams)
       this.service.saveDocumentMultipartV2(formData).then(res => {
         this.scienceWork = res.data;
 
