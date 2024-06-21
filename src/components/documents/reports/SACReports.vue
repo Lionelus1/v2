@@ -253,9 +253,7 @@
       </div>
       <div class="field">
         <label>{{ $t('educomplex.years') }}</label>
-        <PrimeCalendar v-model="filter.years" dateFormat="yy"
-          selectionMode="multiple" view="year" :minDate="new Date(2020, 0)" 
-          :maxDate="new Date(new Date().getFullYear() + 5, 0)"/>
+        <PrimeCalendar v-model="filter.years" dateFormat="yy" selectionMode="range" view="year" />
       </div>
       <div class="field">
         <div class="flex align-items-center">
@@ -669,12 +667,12 @@ export default {
           {
             name: "saceduprogram",
             value: null,
-            description: "білім беру бағдарламасы атауы",
+            description: "saceduprogram",
           },
           {
             name: "academicyear",
             value: null,
-            description: "Оқу жылы",
+            description: "academicyear",
           },
         ],
       }

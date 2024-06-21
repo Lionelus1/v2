@@ -44,8 +44,13 @@
                 </template>
               </Dialog>
             </div>
-            <div v-if="param.name==='academicyear'">
-              <PrimeCalendar v-model="param.value" selectionMode="range" dateFormat="yy" view="month" :manualInput="false" />
+            <div v-else-if="param.name==='saceduprogram'">
+              <SpecialitySearch :style="'height:38px'" class="pt-1" :editMode="true"
+                :educationLevel="Enums.EducationLevel.Doctorate" v-model="param.value" id="speciality">
+              </SpecialitySearch>
+            </div>
+            <div  v-else-if="param.name==='academicyear'">
+              <PrimeCalendar v-model="param.value" selectionMode="range" dateFormat="yy"  view="year" :manualInput="false" />
             </div>
             <InputText v-else  v-model="param.value" type="text" />
             <small class="p-error" v-if="validation.param">{{ $t("common.requiredField") }}</small>
@@ -105,7 +110,7 @@ import SpecialitySearch from "../smartenu/speciality/specialitysearch/Speciality
 import Enums from "@/enum/docstates/index";
 
 export default {
-    components: {DepartmentList,Files},
+    components: {DepartmentList,Files,SpecialitySearch},
     data() {
       return {
         file: this.modelValue,
@@ -155,32 +160,29 @@ export default {
       updateValue,
     };
   },
-  computed: {
-    specialityValue: {
-      get() {
-        const param = this.file.params.find(p => p.name === 'saceduprogram');
-        return param ? param.value : null;
-      },
-      set(newValue) {
-        const param = this.file.params.find(p => p.name === 'saceduprogram');
-        if (param) {
-          param.value = newValue;
-          this.selectedSpecialities = newValue;
-        }
-      }
-    }
-  },
   watch: {
     'file.params': {
-      handler(newParams) {
-        const param = newParams.find(p => p.name === 'saceduprogram');
-        if (param) {
-          this.selectedSpecialities = param.value;
-        }
+      handler(params) {
+        params.forEach(param => {
+          if (param.name === 'saceduprogram') {
+            this.selectedSpecialities = param.value;
+          }
+          if (param.name === 'academicyear') {
+            if (param && (param.value === undefined || param.value === null)) {
+              param.value = [new Date(new Date().getFullYear(), 0)];
+            }
+          }
+        });
       },
       deep: true,
       immediate: true
-    }
+    },
+    selectedSpecialities(newVal) {
+      const param = this.file.params.find(p => p.name === 'saceduprogram');
+      if (param) {
+        param.value = newVal;
+      }
+    },
   },
   methods: {
 

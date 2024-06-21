@@ -67,7 +67,7 @@ export default {
     ActCompletedWorks: 14,
     RequestList: 15,
     DT_Request:16,
-    StateAttestationCommission:18
+    StateAttestationCommission:19
   },
 
   ContragentType: {
