@@ -245,6 +245,7 @@ import moment from "moment";
 import io from "socket.io-client";
 import LanguageDropdown from "@/LanguageDropdown.vue";
 import {useToast} from "primevue/usetoast";
+import {useReCaptcha} from "vue-recaptcha-v3";
 
 const {t, locale} = useI18n()
 const toast = useToast()
@@ -290,6 +291,11 @@ const timeList = ref([]);
 const emailError = ref('');
 const queueId = ref();
 const loading = ref(false);
+const { executeRecaptcha, recaptchaLoaded } = useReCaptcha()
+const recaptcha = async () => {
+  await recaptchaLoaded();
+  return await executeRecaptcha("");
+};
 
 const validateEmail = () => {
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -392,7 +398,7 @@ const combineDateTime = (date, timeSlot) => {
   const datePart = date.split('T')[0];
   return `${datePart}T${timeSlot}Z`;
 }
-const registerQueue = (queueId, queue) => {
+const registerQueue = async (queueId, queue) => {
   loading.value = true
   disabledRezervation.value = true
   if (localStorage.getItem('phoneNumber')) {
@@ -421,7 +427,10 @@ const registerQueue = (queueId, queue) => {
     }
     axios
         .post(smartEnuApi + "/queue/registerService", req, {
-          headers: getHeader(),
+          headers: {
+            ...getHeader(),
+            ...{"G-Recaptcha-Response": await recaptcha()},
+          },
         })
         .then((response) => {
           getRegisterService(queueId)
@@ -693,5 +702,4 @@ onMounted(() => {
 .p-inputtext::placeholder {
   color: #ced4da;
 }
-
 </style>
