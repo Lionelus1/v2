@@ -259,11 +259,15 @@
           </template>
         </Dropdown>
       </div>
-      <div class="field">
+      <div class="field" v-if="docType == eduComplexDocType">
         <label>{{ $t('educomplex.years') }}</label>
         <PrimeCalendar v-model="filter.years" dateFormat="yy"
           selectionMode="multiple" view="year" :minDate="new Date(2020, 0)" 
           :maxDate="new Date(new Date().getFullYear() + 5, 0)"/>
+      </div>
+      <div class="field" v-if="docType == attestationDocReportType">
+        <label>{{ $t('educomplex.years') }}</label>
+        <PrimeCalendar v-model="filter.years" dateFormat="yy" selectionMode="range" view="year" />
       </div>
       <div class="field">
         <div class="flex align-items-center">
