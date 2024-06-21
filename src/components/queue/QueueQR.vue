@@ -9,6 +9,9 @@
       <Button class="justify-content-center p-button-lg" @click="queue(true)">{{ $t('queue.choiceTime') }}</Button>
     </div>
     <div :class="['flex', 'flex-column', 'm-auto', 'gap-2', {'text-center': !reservation, 'gap-4': !reservation,}]" v-if="currentStep === 2">
+      <div class="flex justify-content-end">
+        <Button class="p-button-outlined" :label="$t('educomplex.tooltip.previous')" @click="previous()" icon="pi pi-arrow-left" />
+      </div>
       <template v-if="reservation">
         <h4 class="m-0">{{ $t('contact.lname') }}</h4>
         <InputText class="p-inputtext-lg" v-model="lastName"/>
@@ -304,26 +307,32 @@ const validateEmail = () => {
 };
 
 const getDays = (data) => {
+  loading.value = true
   axios
       .post(smartEnuApi + "/queue/getAvailableDays", {id: data}, {
         headers: getHeader(),
       })
       .then((response) => {
         daysList.value = response.data
+        loading.value = false
       })
       .catch((error) => {
+        loading.value = false
         console.log(error)
       });
 }
 const getTimes = (data,date) => {
+  loading.value = true
   axios
       .post(smartEnuApi + "/queue/getAvailableTimes", {id: data, date: date}, {
         headers: getHeader(),
       })
       .then((response) => {
         timeList.value = response.data
+        loading.value = false
       })
       .catch((error) => {
+        loading.value = false
         console.log(error)
       });
 }
@@ -528,6 +537,9 @@ const formatDay = (date) => {
 }
 const formatTime= (date) => {
   return date.time_slot.substring(0, 5);
+}
+const previous = () => {
+  currentStep.value = 1
 }
 onMounted(() => {
   if (parentId.value !== parseInt(localStorage.getItem('queueParentId'))) {

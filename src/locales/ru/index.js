@@ -853,7 +853,9 @@ export default {
         came: "Пришел",
         liveQueue: "Живая очередь",
         choiceTime: "По выбору времени",
-        errorFreeOperators: "Уже нельзя на это время записаться, выберите другую время!"
+        errorFreeOperators: "Уже нельзя на это время записаться, выберите другую время!",
+        noLunch: "Без перерыва на обед",
+        withoutWeekend: "Без выходных"
     },
     dissertation: {
         title: "Диссертационный совет",
