@@ -74,6 +74,7 @@
               <template v-if="scienceWork.docHistory.stateId === DocEnum.CREATED.ID || scienceWork.docHistory.stateId === DocEnum.REVISION.ID" #footer>
                 <FileUpload mode="basic" accept=".pdf" :customUpload="true" @uploader="uploadAttachment($event)"
                             :auto="true" :chooseLabel="$t('ncasigner.chooseFile')" ref="attachmentUploader"/>
+                <small class="p-error" v-if="validation.filePath">{{ $t("common.requiredField") }}</small>
               </template>
               <Column :header="$t('hdfs.fileName')">
                 <template #body="{data}">
@@ -210,6 +211,9 @@ export default {
       editionTypes: ['digital', 'printed'],
       koksnvoEditions: [],
       publicationCategories: ['beforeMastersThesis', 'afterMastersThesis', 'afterScientificWorks', 'others'],
+      validation: {
+        filePath: false,
+      }
     }
   },
   mounted() {
@@ -398,6 +402,18 @@ export default {
       this.changed = true;
     },
     saveDocument() {
+      if (!this.attachments || Object.keys(this.attachments).length === 0) {
+        const hasAttachmentsParam = this.contractParams.some(param => param.name === 'attachments' && param.value.length !== 0);
+
+        if (!hasAttachmentsParam) {
+          this.validation.filePath = true;
+          this.showMessage("warn", this.$t('common.message.fillError'));
+          return;
+        }
+      }
+
+      this.validation.filePath = false;
+
       for (let i = 0; i < this.contractParams.length; i++) {
         this.scienceWork.newParams[this.contractParams[i].description] = this.contractParams[i];
       }
@@ -410,7 +426,7 @@ export default {
       }
 
       this.loading = true;
-      console.log(this.contractParams)
+
       this.service.saveDocumentMultipartV2(formData).then(res => {
         this.scienceWork = res.data;
 
