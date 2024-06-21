@@ -105,7 +105,7 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
-                path: '/documents/catalog/educomplex',
+                path: '/documents/catalog/educomplex/:docType',
                 name: '/documents/catalog/educomplex',
                 component: load('documents/catalog/DisciplineEduMetComplex'),
                 beforeEnter: ifAuthenticated,

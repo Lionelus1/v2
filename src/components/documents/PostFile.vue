@@ -110,7 +110,7 @@ import SpecialitySearch from "../smartenu/speciality/specialitysearch/Speciality
 import Enums from "@/enum/docstates/index";
 
 export default {
-    components: {DepartmentList,Files,SpecialitySearch},
+    components: {DepartmentList,Files, SpecialitySearch},
     data() {
       return {
         file: this.modelValue,
