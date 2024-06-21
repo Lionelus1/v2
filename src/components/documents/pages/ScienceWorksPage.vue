@@ -403,7 +403,7 @@ export default {
     },
     saveDocument() {
       if (!this.attachments || Object.keys(this.attachments).length === 0) {
-        const hasAttachmentsParam = this.contractParams.some(param => param.name === 'attachments' && param.value.length !== 0);
+        const hasAttachmentsParam = this.contractParams.some(param => param.name === 'attachments' && param.value === null && param.value?.length === 0);
 
         if (!hasAttachmentsParam) {
           this.validation.filePath = true;
