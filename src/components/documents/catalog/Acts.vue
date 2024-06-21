@@ -59,10 +59,18 @@
           {{ getContractDate(slotProps.data) }}
         </template>
       </Column>
+      <Column>
+        <template #body="{data}">
+          <div v-if="showMySign(data?.approvalStages)">
+            <i v-if="greenMySign(data?.approvalStages)" class="pi pi-check-circle" style="color:green;"></i>
+            <i v-else class="pi pi-check-circle" style="color: red;"></i>
+          </div>
+        </template>
+      </Column>
       <Column style="min-width: 50px;">
         <template #body="slotProps">
           <div class="flex flex-wrap">
-            <ActionButton :show-label="true" :items="actions" @toggle="toggleActions(slotProps.data)" />
+            <ActionButton :show-label="true" :items="actions" @toggle="toggleActions(slotProps.data)"/>
           </div>
         </template>
       </Column>
@@ -89,14 +97,18 @@
                   class="p-column-filter" :showClear="true">
           <template #value="slotProps">
             <span v-if="slotProps.value" :class="'customer-badge status-' + statuses.find((e) => e.id === slotProps.value).value">
-              {{ $i18n.locale === 'kz' ? statuses.find((e) => e.id === slotProps.value).nameKz : $i18n.locale === 'ru'
-                ? statuses.find((e) => e.id === slotProps.value).nameRu : statuses.find((e) => e.id === slotProps.value).nameEn }}
+              {{
+                $i18n.locale === 'kz' ? statuses.find((e) => e.id === slotProps.value).nameKz : $i18n.locale === 'ru'
+                    ? statuses.find((e) => e.id === slotProps.value).nameRu : statuses.find((e) => e.id === slotProps.value).nameEn
+              }}
             </span>
           </template>
           <template #option="slotProps">
             <span :class="'customer-badge status-' + slotProps.option.value">
-              {{ $i18n.locale === 'kz' ? slotProps.option.nameKz : $i18n.locale === 'ru'
-                ? slotProps.option.nameRu : slotProps.option.nameEn }}
+              {{
+                $i18n.locale === 'kz' ? slotProps.option.nameKz : $i18n.locale === 'ru'
+                    ? slotProps.option.nameRu : slotProps.option.nameEn
+              }}
             </span>
           </template>
         </Dropdown>
@@ -118,24 +130,24 @@
 
   <!-- documentInfoSidebar -->
   <Sidebar v-model:visible="visibility.documentInfoSidebar" position="right" class="p-sidebar-lg"
-    style="overflow-y: scroll" @hide="getActs">
+           style="overflow-y: scroll" @hide="getActs">
     <DocSignaturesInfo :docIdParam="currentDocument.uuid"></DocSignaturesInfo>
   </Sidebar>
 </template>
 <script>
 import {b64toBlob, findRole, getHeader, smartEnuApi} from "@/config/config";
-import { getShortDateString, getLongDateString } from "@/helpers/helper";
+import {getShortDateString, getLongDateString} from "@/helpers/helper";
 import Enum from "@/enum/docstates/index";
 import RolesEnum from "@/enum/roleControls/index";
 
-import { DocService } from "@/service/doc.service";
+import {DocService} from "@/service/doc.service";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo";
 import FindUser from "@/helpers/FindUser.vue";
 
 export default {
   name: 'Acts',
-  components: {FindUser, DocSignaturesInfo },
-  props: { },
+  components: {FindUser, DocSignaturesInfo},
+  props: {},
   data() {
     return {
       service: new DocService(),
@@ -148,10 +160,10 @@ export default {
       loginedUser: null,
       paginatorTemplate: "FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink JumpToPageDropdown CurrentPageReport RowsPerPageDropdown",
       currentPageReportTemplate: this.$t('common.showingRecordsCount', {
-          first: '{first}',
-          last: '{last}',
-          totalRecords: '{totalRecords}',
-        }),
+        first: '{first}',
+        last: '{last}',
+        totalRecords: '{totalRecords}',
+      }),
 
       visibility: {
         documentInfoSidebar: false,
@@ -311,7 +323,7 @@ export default {
         var link = document.createElement("a");
         link.innerHTML = "Download PDF file";
         link.download = "act.pdf";
-        link.href =  pdf;
+        link.href = pdf;
         link.click();
 
         this.loading = false;
@@ -369,7 +381,7 @@ export default {
       }
 
       if (data.requests) {
-        for (let i = data.requests.length-1; i >= 0; i--) {
+        for (let i = data.requests.length - 1; i >= 0; i--) {
           if (data.requests[i].type === this.Enum.DocumentRequestType.AccountantsExecutionRequest) {
             if (data.requests[i].status === 1) {
               return true;
@@ -388,7 +400,7 @@ export default {
       }
 
       if (data.requests) {
-        for (let i = data.requests.length-1; i >= 0; i--) {
+        for (let i = data.requests.length - 1; i >= 0; i--) {
           if (data.requests[i].type === this.Enum.DocumentRequestType.AccountantsExecutionRequest) {
             if (data.requests[i].status === 0) {
               return true;
@@ -422,7 +434,7 @@ export default {
       let req = null;
 
       if (contract.requests) {
-        for (let i = contract.requests.length-1; i >= 0; i--) {
+        for (let i = contract.requests.length - 1; i >= 0; i--) {
           if (contract.requests[i].type === this.Enum.DocumentRequestType.AccountantsExecutionRequest) {
             if (contract.requests[i].status === 0) {
               req = contract.requests[i];
@@ -537,45 +549,113 @@ export default {
       }
 
       return "";
-    }
+    },
+    showMySign(approvalStages) {
+      try {
+        for (let i in approvalStages) {
+          let stage = approvalStages[i]
+          let stagePassed = true
+
+          for (let j = 0; j < stage.users.length; j++) {
+            if (stage.usersApproved[j] < 1) {
+              stagePassed = false
+            }
+
+            if (stage.users[j].userID === this.loginedUser.userID) {
+              return true
+            }
+          }
+
+          if (!stagePassed) {
+            break
+          }
+        }
+      } catch (e) {
+        console.log(e)
+        return false
+      }
+
+      return false
+    },
+    greenMySign(approvalStages) {
+      let signed = true
+
+      try {
+        for (let i in approvalStages) {
+          let stage = approvalStages[i]
+          let stagePassed = true
+
+          for (let j = 0; j < stage.users.length; j++) {
+            if (stage.usersApproved[j] < 1) {
+              stagePassed = false
+            }
+
+            if (stage.users[j].userID === this.loginedUser.userID && stage.usersApproved[j] < 1) {
+              signed = false
+            }
+          }
+
+          if (!stagePassed) {
+            break
+          }
+        }
+      } catch (e) {
+        console.log(e)
+        return signed
+      }
+
+      return signed
+    },
   },
   computed: {
-    menu () {
+    menu() {
       return [
         {
           label: this.$t('contracts.menu.sendForExecution'),
           icon: "fa-solid fa-circle-check",
           disabled: !this.currentDocument || this.currentDocument.docHistory?.stateId !== Enum.APPROVED.ID || this.executed(this.currentDocument) || this.execution(this.currentDocument),
           visible: this.findRole(null, RolesEnum.roles.ActsToExecution) || this.findRole(null, RolesEnum.roles.MainAdministrator) || this.findRole(null, RolesEnum.roles.ScienceDirector),
-          command: () => {this.sendForExecution(this.currentDocument)},
+          command: () => {
+            this.sendForExecution(this.currentDocument)
+          },
         },
         {
           label: this.$t('contracts.executed'),
           icon: "fa-solid fa-envelope-circle-check",
           disabled: !this.currentDocument || this.currentDocument.docHistory?.stateId !== Enum.APPROVED.ID || this.executed(this.currentDocument) || !this.execution(this.currentDocument),
           visible: this.findRole(null, RolesEnum.roles.Accountant) || this.findRole(null, RolesEnum.roles.MainAdministrator),
-          command: () => {this.execute(this.currentDocument)},
+          command: () => {
+            this.execute(this.currentDocument)
+          },
         },
         {
           label: this.$t('contracts.statusGPC'),
           icon: "fa-solid fa-file-waveform",
           visible: this.findRole(null, RolesEnum.roles.MainAdministrator),
-          command: () => {this.$router.push('/documents/catalog/acts/status')},
+          command: () => {
+            this.$router.push('/documents/catalog/acts/status')
+          },
         },
       ]
     },
-    actions () {
+    actions() {
       return [
         {
           label: this.$t('common.show'),
           icon: "fa-solid fa-eye",
-          command: () => {this.currentDocument = this.actionsNode; this.open('documentInfoSidebar')},
+          command: () => {
+            this.currentDocument = this.actionsNode;
+            this.open('documentInfoSidebar')
+          },
         },
         {
           label: this.$t('common.download'),
           icon: "fa-solid fa-file-arrow-down",
           visible: this.actionsNode.docHistory && this.actionsNode.docHistory?.stateId === Enum.APPROVED.ID,
-          command: () => {this.currentDocument = this.actionsNode; this.download()},
+          command: () => {
+            this.currentDocument = this.actionsNode;
+            this.download()
+          },
         },
         {
           label: this.$t('common.additionalInfo'),
@@ -583,7 +663,10 @@ export default {
           visible: this.actionsNode.docHistory && this.actionsNode.docHistory?.stateId === Enum.APPROVED.ID &&
               this.actionsNode.newParams !== null && this.actionsNode.newParams.attachments !== null &&
               this.actionsNode.newParams.attachments !== undefined,
-          command: () => {this.currentDocument = this.actionsNode; this.downloadAttachments()},
+          command: () => {
+            this.currentDocument = this.actionsNode;
+            this.downloadAttachments()
+          },
         },
         // {
         //   label: this.$t('common.delete'),
@@ -604,10 +687,14 @@ export default {
 <style scoped>
 .progress-spinner {
   position: absolute;
-  top: 0; bottom: 0; left: 0; right: 0;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
   margin: auto;
   z-index: 1102;
 }
+
 .card {
   //flex-grow: 1;
   background-color: #ffffff;
@@ -616,30 +703,37 @@ export default {
   padding: 1rem;
   margin-bottom: 0px;
 }
+
 .status-status_created {
   background: #6c757d;
   color: #fff;
 }
+
 .status-status_signing {
   background: #17a2b8;
   color: #fff;
 }
+
 .status-status_signed {
   background: #28a745;
   color: #fff;
 }
+
 .status-status_inapproval {
   background: #9317b8;
   color: #ffffff;
 }
+
 .status-status_approved {
   background: #007bff;
   color: #ffffff;
 }
+
 .status-status_revision {
   background: #ffcdd2;
   color: #c63737;
 }
+
 :deep(.p-datatable.p-datatable-scrollable > .p-datatable-wrapper > .p-datatable-table > .p-datatable-thead) {
   background: transparent;
 }
