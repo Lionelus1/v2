@@ -31,34 +31,34 @@
             <template v-if="'publicationCategory' === param.description">
               <Dropdown v-model="param.value" :options="publicationCategories" class="w-full" @change="input"
                         :option-label="publicationCategoriesLabel" :option-value="publicationCategoriesLabel"
-                        :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID && scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)">
+                        :disabled="this.needMySign() || (scienceWork.docHistory.stateId !== DocEnum.CREATED.ID && scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)">
               </Dropdown>
             </template>
             <div v-else-if="scienceWork.docHistory.stateId !== DocEnum.CREATED.ID && !this.changed && param.value && param.description === 'link'" class="p-inputgroup p-input-filled">
-              <Share  @click="input" :data="param.value" :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
+              <Share  @click="input" :data="param.value" :disabled="this.needMySign() || (scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
                 scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)" :param="param.value && param.description === 'link'" :label="$t('ncasigner.copy')" @copy="onCopy()"/>
             </div>
             <div v-else class="p-inputgroup p-input-filled">
-              <InputText @click="input" v-model="param.value" type="text" :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
+              <InputText @click="input" v-model="param.value" type="text" :disabled="this.needMySign() || (scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
                 scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)" :label="$t('ncasigner.copy')" @copy="onCopy()"/>
             </div>
           </div>
           <div class="p-fluid md:col-6" v-if="'number' === param.name">
-            <InputNumber @change="input" v-model="param.value"  :minFractionDigits="0" :maxFractionDigits="2" :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
+            <InputNumber @change="input" v-model="param.value"  :minFractionDigits="0" :maxFractionDigits="2" :disabled="this.needMySign() || (scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
               scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)" @input="input"/>
           </div>
           <div class="p-fluid md:col-6" v-if="'date' === param.name">
-            <PrimeCalendar @change="input" v-model="param.value" dateFormat="dd.mm.yy" :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
+            <PrimeCalendar @change="input" v-model="param.value" dateFormat="dd.mm.yy" :disabled="this.needMySign() || (scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
               scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)" @dateSelect="input"></PrimeCalendar>
           </div>
           <div class="p-fluid md:col-6" v-if="'persons' === param.name">
-            <FindUser @change="input" searchMode="ldap" v-model="param.value" :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
+            <FindUser @change="input" searchMode="ldap" v-model="param.value" :disabled="this.needMySign() || (scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
               scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)" :userType="0" @input="input()" @remove="input()"></FindUser>
           </div>
           <div class="md:col-6" v-if="'options' === param.name">
             <template v-if="'editionType' === param.description">
               <SelectButton  v-model="param.value" :options="editionTypes" :allowEmpty="false" :unselectable="false" @change="input"
-                :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID && scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)">
+                :disabled="this.needMySign() || (scienceWork.docHistory.stateId !== DocEnum.CREATED.ID && scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)">
                 <template #option="slotProps">
                   {{ $t('scienceWorks.editionTypes.' + slotProps.option) }}
                 </template>
@@ -67,12 +67,12 @@
           </div>
           <div class="md:col-6" v-if="'koksnvo' === param.name">
             <Dropdown v-model="param.value" :options="koksnvoEditions" class="w-full" optionValue="id" :optionLabel="'name_' + $i18n.locale" @change="input"
-                      :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID && scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)"></Dropdown>
+                      :disabled="this.needMySign() || (scienceWork.docHistory.stateId !== DocEnum.CREATED.ID && scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)"></Dropdown>
           </div>
           <div class="md:col-6" v-if="'attachments' === param.name">
             <DataTable :value="param.value" class="p-datatable-small w-full">
               <template v-if="scienceWork.docHistory.stateId === DocEnum.CREATED.ID || scienceWork.docHistory.stateId === DocEnum.REVISION.ID" #footer>
-                <FileUpload mode="basic" accept=".pdf" :customUpload="true" @uploader="uploadAttachment($event)"
+                <FileUpload :disabled="this.needMySign()" mode="basic" accept=".pdf" :customUpload="true" @uploader="uploadAttachment($event)"
                             :auto="true" :chooseLabel="$t('ncasigner.chooseFile')" ref="attachmentUploader"/>
                 <small class="p-error" v-if="validation.filePath">{{ $t("common.requiredField") }}</small>
               </template>
@@ -87,9 +87,9 @@
                   <i class="fa-solid fa-check fa-xl" v-if="data.filepath"></i>
                 </template>
               </Column>
-              <Column>
+              <Column v-if="!this.needMySign()">
                 <template #body="{data, index}">
-                  <Button v-if="scienceWork.docHistory.stateId === DocEnum.CREATED.ID || scienceWork.docHistory.stateId === DocEnum.REVISION.ID"
+                  <Button :disabled="this.needMySign()" v-if="scienceWork.docHistory.stateId === DocEnum.CREATED.ID || scienceWork.docHistory.stateId === DocEnum.REVISION.ID"
                           @click="param.value.splice(index, 1); removeAttachment(data)" class="p-button-text p-button-danger p-1">
                     <i class="fa-solid fa-trash fa-xl"></i>
                   </Button>
@@ -122,7 +122,7 @@
       <Textarea v-model="revisionText" autoResize rows="5" cols="30" />
     </div>
     <template #footer>
-      <Button class="p-button-danger" :disabled="!revisionText" :label="$t('common.revision')" @click="revision()" />
+      <Button class="p-button-danger" :disabled="this.needMySign() || !revisionText" :label="$t('common.revision')" @click="revision()" />
       <Button :label="$t('common.cancel')" @click="close('revisionDialog')" />
     </template>
   </Dialog>
@@ -403,9 +403,21 @@ export default {
     },
     saveDocument() {
       if (!this.attachments || Object.keys(this.attachments).length === 0) {
-        const hasAttachmentsParam = this.contractParams.some(param => param.name === 'attachments' && param.value === null && param.value?.length === 0);
+        const hasNotAttachmentsParam = this.contractParams.some(param => {
+          if (param.name === 'attachments') {
+            if (param.value === null) {
+              return true;
+            }
 
-        if (!hasAttachmentsParam) {
+            if (param.value.length === 0) {
+              return true;
+            }
+
+            return false
+          }
+        });
+
+        if (hasNotAttachmentsParam) {
           this.validation.filePath = true;
           this.showMessage("warn", this.$t('common.message.fillError'));
           return;
