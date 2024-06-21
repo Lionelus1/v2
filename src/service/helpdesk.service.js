@@ -99,12 +99,18 @@ export class CamundaService {
     });
     console.log(
       "response.dataa:",
-      response.data.hits.hits[forceGet ?? response.data.hits.hits.length - 1][
-      "_source"
-      ]["currentForm"]
+      response.data.hits.hits
     );
+    const arrayToSort = response.data.hits.hits;
+
+    // Sort the array by the id property within the _source object
+    if (arrayToSort.length && arrayToSort[0]._source.order) {
+      arrayToSort.sort((a, b) => {
+        return a._source.order - b._source.order;
+      });
+    }
     this.currentFormId =
-      response.data.hits.hits[forceGet ?? response.data.hits.hits.length - 1][
+      arrayToSort[forceGet ?? arrayToSort.length - 1][
       "_source"
       ]["currentForm"];
     console.log("this.currentFormId:", this.currentFormId);

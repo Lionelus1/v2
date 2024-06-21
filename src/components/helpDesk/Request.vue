@@ -54,7 +54,7 @@
         "
       /> -->
     </TabPanel>
-    <TabPanel :header="t('common.show')" :disabled="status == undefined || status == `created` || loading">
+    <TabPanel :header="t('common.show')" :disabled="!status || status == `created` || loading">
       <div class="flex-grow-1 flex flex-row align-items-stretch">
         <embed :src="pdf" style="width: 100%; height: 100vh" v-if="pdf" type="application/pdf" />
       </div>
@@ -877,14 +877,6 @@ const initForm = async (
   await camundaServiceInstance.initCurrentForm(forceGet);
   await camundaServiceInstance.setCurrentSchema();
   await camundaServiceInstance.initProperties();
-  console.log(
-    "camundaServiceInstance.currentFormId:",
-    camundaServiceInstance.currentFormId
-  );
-  console.log(
-    "camundaServiceInstance.currentSchema",
-    camundaServiceInstance.currentSchema
-  );
   components.value = camundaServiceInstance.currentSchema.components;
   if (!camundaServiceInstance.isEdit) return;
   const variables = await camundaServiceInstance.getProcessVariable();
