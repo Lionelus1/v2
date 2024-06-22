@@ -14,59 +14,7 @@
     </div>
   </div>
 
-  <!--    BEGINNING OF REJECT DIALOG-->
-
-  <Dialog v-model:visible="rejectVisible" :style="{ width: '600px' }" :header="$t('smartenu.createOrEditNews')"
-          :modal="true" class="p-fluid">
-    <div class="card">
-      <div class="field mt-3" style="margin-bottom: 1.5rem">
-          <span class="p-float-label">
-            <InputText id="kz-title" v-model="selectedNews.history.rejectReasonKz" rows="3"/>
-            <label for="kz-title">{{ $t("common.nameInQazaq") }}</label>
-          </span>
-      </div>
-      <div class="field mt-3" style="margin-bottom: 1.5rem">
-          <span class="p-float-label">
-            <InputText id="ru-title" v-model="selectedNews.history.rejectReasonRu" rows="3"/>
-            <label for="ru-title">{{ $t("common.nameInRussian") }}</label>
-          </span>
-      </div>
-      <div class="field mt-3">
-          <span class="p-float-label">
-            <InputText id="en-title" v-model="selectedNews.history.rejectReasonEn" rows="3"/>
-            <label for="en-title">{{ $t("common.nameInEnglish") }}</label>
-          </span>
-      </div>
-    </div>
-    <template #footer>
-      <Button v-bind:label="$t('common.save')" icon="pi pi-check" class="p-button-text" v-on:click="rejectNews"/>
-      <Button v-bind:label="$t('common.cancel')" icon="pi pi-times" class="p-button-text"
-              @click="rejectVisible = false"/>
-    </template>
-  </Dialog>
-
-  <!--    BEGINNING OF DELETE DIALOG-->
-
-  <Dialog v-model:visible="deleteVisible" :style="{ width: '450px' }" :modal="true">
-    <div class="confirmation-content">
-      <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"/>
-      <span v-if="newsData">{{ $t("common.doYouWantDelete") }}
-          <b>
-            {{
-              $i18n.locale === "kz" ? newsData.titleKz : $i18n.locale === "ru" ? newsData.titleRu : newsData.titleEn
-            }}
-          </b>?
-        </span>
-    </div>
-    <template #footer>
-      <Button :label="$t('common.yes')" icon="pi pi-check" class="p-button p-component p-button-success mr-2"
-              @click="deleteNews(newsData.id)"/>
-      <Button :label="$t('common.no')" icon="pi pi-times" class="p-button p-component p-button-danger mr-2"
-              @click="deleteVisible = false"/>
-    </template>
-  </Dialog>
-
-  <MailingView v-if="mailingViewVisible" :is-visible="mailingViewVisible" :selected-news="selectedNews"/>
+  <MailingView v-if="mailingViewVisible" :is-visible="mailingViewVisible" :selected-news="selectedMailing"/>
   <AddEditMailing v-if="editVisible" :is-visible="editVisible" :selected-news="mailingData" />
 <!--  :cat-tree="catTree"-->
   <!--  :catTreeList="catTreeElementsList"-->
@@ -117,7 +65,7 @@ export default {
       mailingData: null,
       allMailing: [],
       newsCount: 0,
-      selectedNews: false,
+      selectedMailing: false,
       itemsPerPage: 6,
       pageNum: 1,
       filters: {
@@ -166,7 +114,7 @@ export default {
       this.mailingViewVisible = data;
     });
 
-    this.emitter.on('AddMailingViewDialogHide', data => {
+    this.emitter.on('addEditMailingDialogHide', data => {
       if (data)
         this.hideDialog();
     });
@@ -184,40 +132,44 @@ export default {
         return;
       }
       this.lazyParams.searchText = "";
-      this.getAllNews();
+      this.getAllMailing();
     },
     onSort(event) {
       this.lazyParams.sortField = event.sortField;
       this.lazyParams.sortOrder = event.sortOrder;
-      this.getAllNews();
+      this.getAllMailing();
     },
     onPage(event) {
       this.lazyParams.page = event.page
       this.lazyParams.rows = event.rows
-      this.getAllNews();
+      this.getAllMailing();
     },
 
     /**
      *  GET ALL CATEGORIES
      */
-    getCategories() {
-      this.categories = [];
-      this.newsService.getCategories().then((response) => {
-        this.categories = response.data;
-        this.categories = this.categories.reverse();
-      }).catch((error) => {
-        this.$toast.add({
-          severity: "error",
-          summary: this.$t("smartenu.loadAllCategoriesError") + ":\n" + error,
-          life: 3000,
-        });
-      });
-    },
+    // getCategories() {
+    //   this.categories = [];
+    //   this.newsService.getCategories().then((response) => {
+    //     this.categories = response.data;
+    //     this.categories = this.categories.reverse();
+    //   }).catch((error) => {
+    //     if (error.response.status == 401) {
+    //       this.$store.dispatch("logLout");
+    //     } else {
+    //       this.$toast.add({
+    //         severity: "error",
+    //         summary: this.$t("smartenu.loadAllCategoriesError") + ":\n" + error,
+    //         life: 3000,
+    //       });
+    //     }
+    //   });
+    // },
 
     /**
      *  GET ALL NEWS
      */
-    getAllNews(data) {
+    getAllMailing(data) {
       this.loading = true
       // this.allNews = [];
       this.lazyParams.searchText = data;
@@ -239,14 +191,18 @@ export default {
         this.loading = false;
       }).catch((error) => {
         this.loading = false;
-        this.$toast.add({
-          severity: "error",
-          summary: this.$t("smartenu.loadAllNewsError") + ":\n" + error,
-          life: 3000,
-        });
+        if (error && error.response.status == 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: this.$t("smartenu.loadAllNewsError") + ":\n" + error,
+            life: 3000,
+          });
+        }
       });
     },
-    getAllMailing(data) {
+    getAllNews(data) {
       this.loading = true
       // this.allNews = [];
       this.newsService.getMailing(this.pageNum, this.itemsPerPage).then((response) => {
@@ -265,11 +221,15 @@ export default {
         this.loading = false;
       }).catch((error) => {
         this.loading = false;
-        this.$toast.add({
-          severity: "error",
-          summary: this.$t("smartenu.loadAllNewsError") + ":\n" + error,
-          life: 3000,
-        });
+        if (error && error.response.status == 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: this.$t("smartenu.loadAllNewsError") + ":\n" + error,
+            life: 3000,
+          });
+        }
       });
     },
     /**
@@ -281,11 +241,15 @@ export default {
           this.getAllNews();
         }
       }).catch((error) => {
-        this.$toast.add({
-          severity: "error",
-          summary: this.$t("smartenu.delNewsError") + ":\n" + error,
-          life: 3000,
-        });
+        if (error.response.status == 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: this.$t("smartenu.delNewsError") + ":\n" + error,
+            life: 3000,
+          });
+        }
       });
       this.deleteVisible = false;
       this.newsData = {};
@@ -315,17 +279,14 @@ export default {
         summary: this.$t("smartenu.saveSuccess"),
         life: 3000,
       });
-      this.getA();
+      this.getAllMailing();
       this.editVisible = false;
-      this.newsData = {};
+      this.mailingData = {};
       this.selectedCatTree = null;
     },
-    /**
-     *  NEWS PRE DELETE
-     */
     delNews(id) {
-      this.newsData = {};
-      this.newsData = this.allNews.find((x) => x.id === id);
+      this.mailingData = {};
+      this.mailingData = this.allNews.find((x) => x.id === id);
       this.deleteVisible = true;
     },
 
@@ -357,7 +318,7 @@ export default {
      * HIDE ADD EDIT DIALOG
      */
     hideDialog() {
-      this.newsData = {};
+      this.mailingData = {};
       this.editVisible = false;
       this.submitted = false;
       this.catTree.root = [];
@@ -376,90 +337,9 @@ export default {
      * VIEW NEWS DIALOG VISIBILITY
      */
     MailingView(data) {
-      this.selectedNews = data;
+      this.selectedMailing = data;
       this.mailingViewVisible = true;
     },
-
-    /**
-     * SEND NEWS TO MODERATOR ACTION
-     */
-    sendNews() {
-      this.newsService.sendNews(this.selectedNews.id, this.selectedNews.history.userId).then((response) => {
-        if (response.data !== null) {
-          this.$toast.add({
-            severity: "success",
-            summary: this.$t("smartenu.saveSuccess"),
-            life: 3000,
-          });
-          this.selectedNews = false;
-          this.getAllNews();
-        }
-      }).catch((error) => {
-        this.$toast.add({
-          severity: "error",
-          summary: this.$t("smartenu.saveNewsError") + ":\n" + error,
-          life: 3000,
-        });
-      });
-    },
-
-    /**
-     * PUBLSIH NEWS ACTION
-     */
-    publishNews() {
-      this.newsService.publishNews(this.selectedNews.id, this.selectedNews.history.userId).then((response) => {
-        if (response.data !== null) {
-          this.$toast.add({
-            severity: "success",
-            summary: this.$t("smartenu.saveSuccess"),
-            life: 3000,
-          });
-          this.selectedNews = false;
-          this.getAllNews();
-        }
-      }).catch((error) => {
-        this.$toast.add({
-          severity: "error",
-          summary: this.$t("smartenu.saveNewsError") + ":\n" + error,
-          life: 3000,
-        });
-      });
-    },
-
-    /**
-     * REJECT NEWS ACTION
-     */
-    rejectNews() {
-      let data = {
-        id: this.selectedNews.id,
-        userId: this.selectedNews.history.userId,
-        rejectReasonKz: this.selectedNews.history.rejectReasonKz,
-        rejectReasonRu: this.selectedNews.history.rejectReasonRu,
-        rejectReasonEn: this.selectedNews.history.rejectReasonEn,
-      }
-      this.newsService.rejectNews(data).then((response) => {
-        if (response.data !== null) {
-          this.$toast.add({
-            severity: "success",
-            summary: this.$t("smartenu.saveSuccess"),
-            life: 3000,
-          });
-          this.rejectVisible = false;
-          this.getAllNews();
-        }
-      }).catch((error) => {
-        if (error.response.status == 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: this.$t("smartenu.saveNewsError") + ":\n" + error,
-            life: 3000,
-          });
-        }
-      });
-    },
-
     /**
      * CREATE CATEGORIES TREE RECURSION FUNCTION
      * @param id
@@ -467,29 +347,29 @@ export default {
      * @returns {[]}
      */
     createCatTree: function (id, key) {
-        let array = [];
-        let grandparents = this.categories.filter(
-            (category) => category.parentId === id
-        );
-        for (let i = 0; i < grandparents.length; i++) {
-          this.catTreeElementsList.push({
-            key: key + i,
-            data: grandparents[i],
-          });
-          array.push({
-            key: key + i,
-            label:
-                this.$i18n.locale === "kz"
-                    ? grandparents[i].nameKz
-                    : this.$i18n.locale === "ru"
-                        ? grandparents[i].nameRu
-                        : grandparents[i].nameEn,
-            data: grandparents[i],
-            children: this.createCatTree(grandparents[i].id, key + i + "-"),
-          });
-        }
-        return array;
-      },
+      let array = [];
+      let grandparents = this.categories.filter(
+          (category) => category.parentId === id
+      );
+      for (let i = 0; i < grandparents.length; i++) {
+        this.catTreeElementsList.push({
+          key: key + i,
+          data: grandparents[i],
+        });
+        array.push({
+          key: key + i,
+          label:
+              this.$i18n.locale === "kz"
+                  ? grandparents[i].nameKz
+                  : this.$i18n.locale === "ru"
+                      ? grandparents[i].nameRu
+                      : grandparents[i].nameEn,
+          data: grandparents[i],
+          children: this.createCatTree(grandparents[i].id, key + i + "-"),
+        });
+      }
+      return array;
+    },
     getRoles() {
       this.roles.isAdmin = this.findRole(null, "news_administrator");
       this.roles.isPublisher = this.findRole(null, "news_publisher");
@@ -504,8 +384,8 @@ export default {
   },
 
   created() {
-    this.getAllNews();
-    this.getCategories();
+    this.getAllMailing();
+    // this.getCategories();
     this.getRoles();
 
   },
@@ -519,29 +399,6 @@ export default {
           // visible: this.isAdmin || this.isModer || this.isEnuWebAdmin || this.isEnuWebFacAdmin,
           command: () => {this.createMailing()},
         },
-        {
-          label: this.$t('common.send'),
-          icon: "pi pi-send",
-          color: "blue",
-          visible: this.selectedNews && this.selectedNews.history.status.id === this.statuses.created && (!this.isModer ||
-              !this.isPublisher || !this.isAdmin || !this.isEnuWebAdmin || !this.isEnuWebFacAdmin),
-          command: () => {this.sendNews()},
-        },
-        {
-          label: this.$t('common.publish'),
-          icon: "pi pi-check",
-          color: "purple",
-          visible: this.selectedNews && (this.selectedNews.history.status.id === this.statuses.sent || this.selectedNews.history.status.id === this.statuses.created) &&
-              (this.isModer || this.isPublisher || this.isAdmin || this.isEnuWebAdmin || this.isEnuWebFacAdmin),
-          command: () => {this.publishNews()},
-        },
-        {
-          label: this.$t('common.reject'),
-          icon: "pi pi-times",
-          color: "red",
-          visible: this.selectedNews && this.selectedNews.history.status.id === this.statuses.sent && (this.isModer || this.isPublisher || this.isAdmin),
-          command: () => {this.rejectReason()},
-        }
       ]
     },
     actions () {

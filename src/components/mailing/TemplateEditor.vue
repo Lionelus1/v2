@@ -7,18 +7,18 @@
       </div>
     </div>
     <div class="field">
-      <div class="grid">
-        <div class="col-12 md:col-5">
-          <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadMainImage($event)"
-                      :auto="true" v-bind:chooseLabel="$t('smartenu.chooseMainImage')" accept="image/*"/>
-        </div>
-      </div>
-      <div v-if="main_image_file">
-        <img :src="main_image_file_url" style="width: 50%; height: 50%"/>
-      </div>
-      <div v-else>
-        <img :src="imageUrl" style="width: 50%; height: 50%"/>
-      </div>
+<!--      <div class="grid">-->
+<!--        <div class="col-12 md:col-5">-->
+<!--          <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadMainImage($event)"-->
+<!--                      :auto="true" v-bind:chooseLabel="$t('smartenu.chooseMainImage')" accept="image/*"/>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--      <div v-if="main_image_file">-->
+<!--        <img :src="main_image_file_url" style="width: 50%; height: 50%"/>-->
+<!--      </div>-->
+<!--      <div v-else>-->
+<!--        <img :src="imageUrl" style="width: 50%; height: 50%"/>-->
+<!--      </div>-->
     </div>
     <div class="field">
     <div class="grid">
@@ -71,26 +71,6 @@ export default {
     };
   },
   methods: {
-    logMainImageFile() {
-      console.log('main_image_file:', this.main_image_file.value);
-    },
-    logImageUrl() {
-      console.log('imageUrl:', this.imageUrl.value);
-    },
-    uploadMainImage(event) {
-      const fd = new FormData();
-      fd.append("files[]", event.files[0]);
-      this.fileService.uploadFile(fd).then(res => {
-        if (res.data) {
-          this.main_image_file = res.data[0];
-          this.main_image_file_url = smartEnuApi + fileRoute + this.main_image_file.filepath
-          // this.main_image_file_url = smartEnuApi + fileRoute + '/general/files/76ecfed7-77c3-4114-a411-e9126f370a39.png'
-          this.main_image_id = this.main_image_file.id
-        }
-      }).catch(error => {
-        this.$toast.add({ severity: "error", summary: error, life: 3000 });
-      });
-    },
     uploadFile(event) {
       const fd = new FormData()
       fd.append("files[]", event.files[0])
@@ -104,14 +84,6 @@ export default {
       }).catch(error => {
         this.$toast.add({severity: "error", summary: error, life: 3000});
       })
-    },
-    saveDraft() {
-      // Implement save draft logic
-      console.log('Save draft');
-    },
-    saveTemplate() {
-      // Implement save template logic
-      console.log('Save template');
     },
     sendMailing(statusID) {
       this.toast.add({
@@ -143,10 +115,6 @@ export default {
         MainImagePath: this.main_image_file_url,
         AdditionalFilePath: this.additional_file_path,
       };
-
-      console.log(":::::::::::::::::::::::::::::::")
-      console.log(mailingData)
-      console.log(":::::::::::::::::::::::::::::::")
 
       fetch(`${smartEnuApi}/mailing`, {
         method: 'POST',
@@ -184,41 +152,32 @@ export default {
             });
           });
     },
-    mapCategoryIdsToObjects(ids) {
-      return ids.map(id => categories.find(category => category.id === id));
-    },
-    handleEditorClick(event) {
-      // Сохраняем текущую позицию курсора
-      const selection = window.getSelection();
-      if (selection.rangeCount > 0) {
-        this.savedRange = selection.getRangeAt(0);
-      }
+    handleEditorClick() {
+      if (!this.isDefaultTextRemoved) {
+        // Сохраняем текущую позицию курсора
+        const selection = window.getSelection();
+        if (selection.rangeCount > 0) {
+          this.savedRange = selection.getRangeAt(0);
+        }
 
-      // Создание DOMParser для обработки содержимого шаблона
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(this.templateContent, 'text/html');
-
-      // Определяем элемент, по которому кликнули
-      const clickedElement = event.target;
-      const clickedId = clickedElement.id;
-
-      // Проверка и очистка содержимого в зависимости от id
-      if (clickedId === 'main-content' || clickedId === 'title') {
-        const element = doc.getElementById(clickedId);
-        if (element) {
-          element.innerHTML = '';
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(this.templateContent, 'text/html');
+        const mainContent = doc.querySelector('p:nth-of-type(2)'); // выбираем второй параграф как основной текст
+        if (mainContent) {
+          mainContent.innerHTML = '';
           this.templateContent = doc.documentElement.outerHTML;
 
           if (this.savedRange) {
             const range = document.createRange();
-            range.setStart(element, 0);
-            range.setEnd(element, 0);
+            range.setStart(mainContent, 0);
+            range.setEnd(mainContent, 0);
             selection.removeAllRanges();
             selection.addRange(range);
           }
         }
+        this.isDefaultTextRemoved = true;
       }
-    },
+    }
   },
   mounted() {
     this.selectedCategories = JSON.parse(this.$route.params.selectedCategories || '[]');
