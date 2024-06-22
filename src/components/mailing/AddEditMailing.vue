@@ -1,7 +1,6 @@
 <template>
   <Dialog v-model:visible="editVisible" :closable="true" :style="{ width: '1200px' }"
-          :breakpoints="{'960px': '75vw', '640px': '90vw'}" @close="hideDialog" @hide="hideDialog"
-          :close-on-escape="true"
+          :breakpoints="{'960px': '75vw', '640px': '90vw'}" @close="hideDialog" @hide="hideDialog" :close-on-escape="true"
           :header="$t('smartenu.mailingCreateTitle')" :modal="true" class="p-fluid">
     <div>
       <div class="card p-fluid">
@@ -11,19 +10,14 @@
         <div class="flex flex-wrap gap-3 pt-4">
           <div v-for="category in categories" :key="category.id" class="flex align-items-center pr-3 pb-1">
             <Checkbox class="checkbox-container" v-model="selectedCategories" :id="'category-' + category.id"
-                      :value="category.id" @change="handleCategoryChange"/>
+                      :value="category.id" @change="handleCategoryChange(category.id)"/>
             <label class="ml-2 label-large" :for="'category-' + category.id">{{ category['name' + $i18n.locale] }}</label>
           </div>
         </div>
         <div v-if="showOtherEmailField" class="field mt-3">
           <FloatLabel>
-            <Chips v-model="email" placeholder="Введите почту"/>
+            <Chips v-model="emails" placeholder="Введите почту"/>
           </FloatLabel>
-        </div>
-        <div class="field mt-3">
-          <ul>
-            <li v-for="email in emails" :key="email">{{ email }}</li>
-          </ul>
         </div>
         <div class="template-selection-container">
           <div class="flex align-items-center">
@@ -49,9 +43,8 @@
   </Dialog>
 </template>
 
-
 <script>
-import { getHeader, smartEnuApi } from "@/config/config";
+import {getHeader, smartEnuApi} from "@/config/config";
 import 'primeicons/primeicons.css'
 
 export default {
@@ -62,20 +55,19 @@ export default {
       editVisible: this.isVisible,
       mailingData: null,
       submitted: false,
-      selectedCategories: [],
+      emails: [],
       selectedTemplate: null,
       templates: [],
-      email: null,
-      emails: [],
       showOtherEmailField: false,
       categories: [
-        { id: 1, nameen: 'Контрагенты', namekz: 'білім алушы', nameru: 'Контрагенты' },
-        { id: 2, nameen: 'Сотрудники', namekz: 'білім алушы', nameru: 'Сотрудники' },
-        { id: 3, nameen: 'Частные лица', namekz: 'білім алушы', nameru: 'Частные лица' },
-        { id: 4, nameen: 'Обучающиеся', namekz: 'білім алушы', nameru: 'Обучающиеся' },
-        { id: 5, nameen: 'Выпускники', namekz: 'білім алушы', nameru: 'Выпускники' },
-        { id: 6, nameen: 'Другое', namekz: 'білім алушы', nameru: 'Другое' },
+        {id: 1, nameen: 'Контрагенты', namekz: 'білім алушы', nameru: 'Контрагенты'},
+        {id: 2, nameen: 'Сотрудники', namekz: 'білім алушы', nameru: 'Сотрудники'},
+        {id: 3, nameen: 'Частные лица', namekz: 'білім алушы', nameru: 'Частные лица'},
+        {id: 4, nameen: 'Обучающиеся', namekz: 'білім алушы', nameru: 'Обучающиеся'},
+        {id: 5, nameen: 'Выпускники', namekz: 'білім алушы', nameru: 'Выпускники'},
+        {id: 6, nameen: 'Другое', namekz: 'білім алушы', nameru: 'Другое'},
       ],
+      selectedCategories: [],
     };
   },
   methods: {
@@ -92,74 +84,31 @@ export default {
         console.error('Error fetching templates:', error);
       }
     },
-    handleCategoryChange() {
-      this.showOtherEmailField = this.selectedCategories.includes(6); // Assuming 6 is the ID for "Другое"
-    },
-    addEmail() {
-      if (this.email) {
-        this.emails.push(this.email);
-        this.email = '';
+    handleCategoryChange(categoryId) {
+      if (categoryId === 6) {
+        this.selectedCategories = [6];
+        this.showOtherEmailField = true;
+      } else {
+        this.selectedCategories = this.selectedCategories.filter(id => id !== 6);
+        this.showOtherEmailField = false;
       }
     },
     selectTemplate(templateId) {
       this.selectedTemplate = templateId;
     },
-    async nextPage() {
+    nextPage() {
       if (this.selectedTemplate) {
-        const emailData = await this.fetchEmailData(this.selectedCategories);
         this.$router.push({
           name: 'TemplateEditor2',
           params: {
             templateId: this.selectedTemplate,
             selectedCategories: JSON.stringify(this.selectedCategories),
-            emails: JSON.stringify(emailData),
+            emails: JSON.stringify(this.emails),
           },
         });
       } else {
         alert('Please select a template');
       }
-    },
-    async fetchEmailData(selectedCategories) {
-      try {
-        const response = await fetch(`${smartEnuApi}/fetchEmails`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', ...getHeader() },
-          body: JSON.stringify({ categories: selectedCategories }),
-        });
-        const data = await response.json();
-        return data.emails; // Adjust according to your API response structure
-      } catch (error) {
-        console.error('Error fetching emails:', error);
-        return [];
-      }
-    },
-    validateNews() {
-      this.formValid = [];
-      if (!this.newsData.titleKz) {
-        this.formValid.push({ titleKz: true });
-      }
-      if (!this.newsData.titleRu) {
-        this.formValid.push({ titleRu: true });
-      }
-      if (!this.newsData.titleEn) {
-        this.formValid.push({ titleRu: true });
-      }
-      if (!this.newsData.contentKz) {
-        this.formValid.push({ contentKz: true });
-      }
-      if (!this.newsData.contentRu) {
-        this.formValid.push({ contentRu: true });
-      }
-      if (!this.newsData.contentEn) {
-        this.formValid.push({ contentEn: true });
-      }
-      if (this.selectedCatTree.length === 0) {
-        this.formValid.push({ selectedCatTree: true });
-      }
-      if (!this.newsData.image_id) {
-        this.formValid.push(this.$t("smartenu.image1Invalid"));
-      }
-      return this.formValid;
     },
     hideDialog() {
       this.emitter.emit('addEditMailingDialogHide', true);
