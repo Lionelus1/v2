@@ -97,6 +97,10 @@ export default {
       this.selectedTemplate = templateId;
     },
     nextPage() {
+      if (this.selectedCategories.length === 0) {
+        alert('Please select a category')
+      }
+
       if (this.selectedTemplate) {
         this.$router.push({
           name: 'TemplateEditor2',
