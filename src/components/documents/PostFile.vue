@@ -46,7 +46,7 @@
             </div>
             <div v-else-if="param.name==='saceduprogram'">
               <SpecialitySearch :style="'height:38px'" class="pt-1" :editMode="true"
-                :educationLevel="Enums.EducationLevel.Doctorate" v-model="param.value" id="speciality">
+                :educationLevel="Enums.EducationLevel.Doctorate || Enums.EducationLevel.Bachelor || Enums.EducationLevel.Magister || Enums.EducationLevel.Residency" v-model="param.value" id="speciality">
               </SpecialitySearch>
             </div>
             <div  v-else-if="param.name==='academicyear'">
