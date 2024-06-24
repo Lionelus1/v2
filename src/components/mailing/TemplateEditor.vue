@@ -116,7 +116,7 @@ export default {
         AdditionalFilePath: this.additional_file_path,
       };
 
-      fetch(`${smartEnuApi}/mailing`, {
+      fetch(`${smartEnuApi}/mailing/mailing`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -184,7 +184,7 @@ export default {
     this.emails = JSON.parse(this.$route.params.emails || '[]');
 
     const templateId = parseInt(this.$route.params.templateId, 10);
-    fetch(`${smartEnuApi}/getMailingTemplateByID`, {
+    fetch(`${smartEnuApi}/mailing/getMailingTemplateByID`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

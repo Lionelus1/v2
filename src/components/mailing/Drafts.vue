@@ -89,7 +89,7 @@ const getFullName = (senderJSON) => {
 const initMailing = () => {
   loading.value = true;
   api
-      .post("/mailingList", getParams, {
+      .post("/mailing/mailingList", getParams, {
         headers: getHeader(),
       })
       .then((res) => {
@@ -127,13 +127,10 @@ const editMailing = (data) => {
 
 const deleteMailing = (data) => {
   api
-      .post("/deleteMailingById", { mailingId: data.Notification.id }, {
+      .post("/mailing/deleteMailingById", { mailingId: data.Notification.id }, {
         headers: getHeader(),
       })
       .then((res) => {
-        console.log(res.data)
-        console.log("+++++++++++++++++++++++++++++++++++++++")
-        console.log(res.data.result)
         if (res.data === 'success') {
           toast.add({
             severity: "success",

@@ -21,7 +21,7 @@ const mailingId = ref(route.params.id)
 
 onMounted(async () => {
   try {
-    const response = await axios.post(`${smartEnuApi}/getMailingByID`, {
+    const response = await axios.post(`${smartEnuApi}/mailing/getMailingByID`, {
         mailingId: parseInt(route.params.id, 10),
     });
     selectedCategories.value = Array.isArray(response.data.categoryIds) ? response.data.categoryIds : [];

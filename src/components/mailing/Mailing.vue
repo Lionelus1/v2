@@ -75,7 +75,7 @@ export default {
     initMailing() {
       this.loading = true;
       api
-          .post("/mailingList", this.getParams, {
+          .post("/mailing/mailingList", this.getParams, {
             headers: getHeader(),
           })
           .then((res) => {
