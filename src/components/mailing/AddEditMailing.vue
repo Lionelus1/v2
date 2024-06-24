@@ -73,7 +73,7 @@ export default {
   methods: {
     async fetchTemplates() {
       try {
-        const response = await fetch(`${smartEnuApi}/getAllMailingTemplates`, {
+        const response = await fetch(`${smartEnuApi}/mailing/getAllMailingTemplates`, {
           method: 'GET',
           headers: getHeader(),
         });
